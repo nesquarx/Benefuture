@@ -45,10 +45,11 @@ To ensure mathematical precision and prevent conflation across foundational conc
 | **$\mathbb{U}$ / `𝕌`** | **Universe** | Total state space of all logically possible patterns | **Total ontological pattern space** ($\mathbb{R} \subseteq \mathbb{U}$). Never write as plain ASCII $U$. |
 | **$\mathbb{R}$ / `ℝ`** | **Reality** | $(\text{Perceivable} \cup \text{Changeable}) \subseteq \mathbb{U}$ | Physical, empirical interactivity domain. |
 | **$U$** | **Understanding** | $\text{PrAcc}(\text{Ml}) + \text{CE}(I(\text{Ml})) - (\text{Cy}(\text{Ml}) \mid \text{PrAcc})$ | **Strictly Epistemic Understanding**. Must **never** be interpreted as "utility". |
-| **$V$** | **Value** | Generalized flourishing payoff $V(A, b)$ | Represents the true "utility" / value function of an action over $U, H, D$. |
+| **$V$** | **Value** | Generalized flourishing payoff $V(A, b)$ | Represents the true "utility" / value function of an action over $U, H, N$. |
 | **$G$** | **Goal** | Civilizational trajectory function $\operatorname{argmax} \sum V \land \uparrow \mathbb{R}$ | Global macro objective. |
-| **$H$** | **Happiness** | Internal affective flourishing | Tier $\beta$ in the priority hierarchy ($U > H > D$). |
-| **$D$** | **Diversity / Novelty** | Non-monoculture distance & entropy | Tier $\gamma$ in the priority hierarchy. |
+| **$H$** | **Happiness** | Internal affective flourishing | Tier $\beta$ in the priority hierarchy ($U > H > N$). |
+| **$N$** | **Novelty** | Inverse empirical frequency: $N(x) := 1 / \text{Frequency}(x \mid \mathbb{R})$ | Tier $\gamma$ in the priority hierarchy ($U > H > N$). An operational input and means toward diversity. |
+| **$\text{Di}$** | **Diversity** | $\text{Balance}(\text{order}, \text{chaos}) \to \text{Variety}(\text{Sys}) \to \text{Resilience} + \text{Innovation}$ | Emergent macro outcome & civilizational subgoal (`SubG.Diversity`), NOT a scalar priority weight. Novelty injection is one means to maintain diversity balance. |
 
 ---
 
