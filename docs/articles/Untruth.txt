@@ -1,0 +1,12 @@
+[[category:Benefuture]]
+An untruth or a lie is a statement which claims a certain level of [[truth]] but is [[proof|provably]] a lesser level, which can sway a [[decision]] if taken at its advertised level.
+
+==Aspects==
+* The main problem of an untruth is the deception between the claimed level of truth and the provable level.
+* At the worst, it is a statement which claims a high level of truth but is provable to the contrary. At the best it is provably different than it implies. The severity varies.
+* The more complex a statement, the more its implied levels of truth can be complicated, and the more it can be used to hold up other untruths which ultimately can change important decisions.
+
+==Examples==
+* A statement like ''the earth is a flat disc'' is provable that it is not - it's an outright lie.
+* A statement like ''everyone who drinks water, dies'' is true as a sequence of unrelated events, but it implies a cause and effect which has provably a very low correlation, there lies the deception.
+----<small>AI Disclaimer: This article is 100% human written.</small>

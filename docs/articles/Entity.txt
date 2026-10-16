@@ -1,0 +1,13 @@
+[[category:Benefuture]] [[Category:Definitions]]
+An entity is a [[thing]] which can perform [[interaction]]s and exhibits any amount of [[sapience]].
+
+==Aspects==
+* Entities with [[sentience]] can be a [[being]], a [[person]], or a [[benesophont]], but by default a non-sentient entity does not exhibit [[sentience]].
+* Entities are capable of reaction. Hence entities require consideration while interacting with than non-entity [[Thing|things]].
+
+==Examples==
+* Most dynamic and reactive systems can be treated as entities.
+* A machine with a particular purpose is an entity.
+* All [[being]]s are entities.
+* A collective group of beings operating under certain regulations can behave as a non-sentient entity, such as a corporation. In that case, the beings comprising it are treated as beings, but not the entity.
+----<small>AI Disclaimer: This article is 100% human written.</small>

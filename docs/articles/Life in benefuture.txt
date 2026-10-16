@@ -1,0 +1,707 @@
+[[Category:Benefuture]] [[Category:WorldBuilding]]
+A speculative narrative exploring how a [[sophont]] aspirant might experience daily life across three stages of [[Benefuture]] adoption. The foreground narrative follows the sophont's experience; the background narrative (in collapsible panels) exposes the [[System Design|system mechanics]] producing that experience.
+
+The design principle throughout: '''the best infrastructure is invisible'''. Transaction logging, metric evaluation, reputation tracking, and governance weighting happen silently. The sophont's life ''just works''. They can dig as deep as they wish — full transparency on recall — but they are never forced to interact with algorithms to live well. Progressive disclosure applies: the system reveals itself in layers, matching the user's curiosity and competence.
+
+These are illustrative scenarios, not predictions. Details are speculative; the underlying mechanics are derived from the [[Benefuture#AI readable framework code|framework]].
+
+== Era 1: Early Benefuture — Maren, Potter ==
+
+Benefuture scoring runs in parallel with legacy systems. Most infrastructure is familiar. The differences are subtle — the ''absence'' of certain pressures more than the presence of alien mechanisms. Maren is a potter in a mid-sized city. She opted into Active data collection eighteen months ago.
+
+=== Morning ===
+
+Maren wakes without an alarm. Her housing is modest, her pantry stocked. She is not wealthy by any legacy metric, but she is not anxious. She has not worried about rent, food or healthcare in over a year. She eats breakfast, stretches, and walks to her workshop because she wants to.
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Sophont Baseline & Resource Accounting'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Benesophont#Aspects|Sophont Baseline]]''' ensures Maslow tiers 1–3 (physiological, safety, belonging) via continuous [[Benefuture currency#Resource Accounting|resource accounting]]. Maren's housing, nutrition, healthcare, and basic social infrastructure are funded through the resource accounting system's assessment of civilizational resource flows. This is not charity or welfare — it is a structural entitlement derived from the calculation that maintaining sophont baseline capacity is the highest-return resource allocation for [[Understanding|understanding]] and [[Happiness|happiness]] generation per unit cost. The absence of survival anxiety is itself a measurable happiness contributor and a prerequisite for sustained understanding generation (see [[Happiness#Discussion|satisficing happiness]]).
+
+Maren's Active data tier means her wearable biosensors (heart rate variability, sleep quality, cortisol proxies) feed into the [[Measurement#Aspects|metric model market]] passively. She opted in because the marginal currency benefit and the personalised health insights exceeded her privacy cost assessment. She reviewed the access log last month — anonymised aggregate queries from twenty three metric models, two specific queries from her health advisor and her parent (two-way visible, she didn't mind the health advisor's, and actually did make a reciprocal query about her parent's biomarkers, for which she had to take a short course on what certain marker anomalies mean from a health context, she already had a generic PII certification done earlier, which she'd have to renew periodically). The [[Technology Network#Privacy|Technology Network privacy model]] — differential privacy for generic queries, two-way visibility for specific queries, and infohazard-gated access to personally identifiable information — governs all access.
+</div>
+</div>
+----
+=== Workshop: Skill as Synergy ===
+
+Maren throws a bowl on the wheel. She is testing a new clay body she formulated after a conversation with a friend — adjusting silicate ratios for thermal shock resistance. The work is absorbing. Two hours pass without her noticing. The bowl warps slightly; she adjusts, learns, tries again. The fourth attempt holds.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Passive Measurement & Understanding/Happiness Logging'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+Maren's workshop time generates passive [[Measurement|marker]] data: time-in-flow (duration of uninterrupted focused activity, derived from movement sensors and absence of communication events), biometric correlates of engagement (heart rate variability patterns consistent with flow states), and output tracking (kiln logs, materials consumed, pieces completed against her own historical baseline). None of this requires active reporting.
+
+The work itself is [[Benefuture goals#Synergy Override|synergistic between understanding and happiness]]: she is learning (the clay body formulation is novel material science applied through tacit craft knowledge) and experiencing eudaimonic [[Happiness|happiness]] (flow, mastery, creative expression). This ranks high in both priority stacks: teachable [[Understanding|understanding]] (the formulation can be transmitted) and eudaimonic happiness (flourishing, not hedonic peak). The [[Measurement#Metric Models|metric models]] tracking her domain will register this, but she will not see a score. Scores are for models competing with each other, not for people to obsess over.
+
+No [[Benefuture currency#Transaction Proposals|transaction proposal]] is generated yet. The bowl is not yet an [[Interaction|interaction]] with outcomes. If she sells, teaches, or publishes the technique, transaction proposals will be generated at that point.
+</div>
+</div>
+----
+=== Mentoring ===
+
+A young boy, Deshi, arrives mid-morning. He has been apprenticing with Maren for four months. Today she shows him how to read the clay's moisture by touch — a skill that takes years to articulate but seconds to demonstrate. He fails, adjusts, fails differently, laughs, tries again. She corrects his hand position once. By noon he is marginally better.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Teachable Understanding & Probabilistic Escrow'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The mentoring interaction generates a [[Benefuture currency#Transaction Proposals|transaction proposal]] across relevant [[Benefuture currency|currency networks]]. Maren's contribution is categorised as '''teachable understanding''' — knowledge transmission from a higher-reputation source to a lower-reputation recipient in the craft domain. This ranks third in the [[Benefuture goals#Understanding|understanding priority stack]], above median and floor but below peak and synergistic.
+
+Currency is partly front-loaded (predicted value of the teaching based on Maren's [[Reputation|reputation]] in ceramics and her historical mentoring success rate) and partly held in '''[[Measurement#Probabilistic Escrow|probabilistic escrow]]'''. The escrow portion will release gradually as Deshi's own outputs are measured over months and years. If the teaching produces measurable skill gains, the escrow releases. If not, it doesn't. Maren has no visibility into this unless she asks — the system does not gamify the mentoring relationship.
+
+'''[[Benefuture currency#Causal Distribution|Causal contribution]]''' will trace from Deshi's future outputs back through the [[Technology Network#Transaction Logs|transaction tree]] to this morning's session, decaying with degrees of separation but never vanishing entirely. If Deshi eventually teaches someone else, Maren's causal chain extends further.
+</div>
+</div>
+----
+=== Lunch with a Knowledge Worker ===
+
+Maren meets her friend Priya, a materials scientist at the regional research institute, for lunch. They talk about glaze chemistry — Priya has been modelling feldspar behaviour computationally, but she is puzzled by a discrepancy between her models and real kiln results. Maren describes what she sees happening at cone 10 — how certain feldspars crawl unpredictably when the kiln atmosphere shifts. Priya takes notes. They argue about whether the issue is loss-on-ignition variance or something subtler. Neither resolves it. Both leave with new questions.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Cross-Domain Novelty & Informal Knowledge Transfer'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+This lunch is not a formal transaction, but it is an [[Interaction]] with potential [[Understanding|understanding]] generation. If Priya's subsequent research incorporates Maren's observational data and produces a publishable insight, '''causal contribution''' will trace back through Priya's research logs (which reference the conversation, as Priya's Active-tier data includes communication metadata, with Maren's consent for this specific interaction type).
+
+The exchange has a '''[[Benefuture goals#Novelty|novelty bonus]]''' — cross-domain knowledge transfer between tacit craft knowledge and formal computational modelling is relatively rare and high in perspective-novelty (second tier in the novelty priority stack). The [[Measurement#Metric Models|metric models]] cannot evaluate this yet (the conversation has no measurable outcome), but the structure is in place for retrospective causal attribution if outcomes emerge.
+
+Neither Maren nor Priya is thinking about any of this. They are talking about rocks and fire.
+</div>
+</div>
+----
+=== Market run ===
+Maren loads a crate of finished stoneware onto her bicycle trailer — twelve bowls, four serving dishes, two of the experimental thermal-shock pieces from the new clay body. The ride to the covered market takes fifteen minutes. She doesn't care to lock her bicycle, carries the crate to her usual stall, and arranges the pieces on the display shelf she shares with a woodworker named Tomás. The store is unmanned, she sometimes hangs around to chat with buyers and get their feedback. 
+
+The bowls sell steadily through the morning. She doesn't price them — the stall's point-of-sale system handles that, drawing on current market data for comparable craft ceramics, adjusted for her reputation in the domain and the specific qualities of each piece she has claimed while speaking to the POS unit as she set them up in the display. She could override any price; she rarely does. The system generally gets it right, and when it doesn't, the error is small enough that she'd rather throw pots than argue with algorithms. 
+
+A regular customer, Elín, picks up one of the thermal-shock bowls, turns it over, asks about the clay body. Maren explains the formulation. Elín buys two — one for herself, one as a gift. They chat about Elín's daughter starting an apprenticeship in textiles. Maren recommends a weaver she knows. The conversation is five minutes of warmth and neighbourhood. No part of it feels like a transaction. 
+
+By noon she has sold five bowls, three serving dishes, and both experimental pieces. The remaining stock she leaves sits in the stall for prospective buyers. As she walks through the market. A food vendor is selling salted caramel pastries — butter-heavy, sugar-dense, engineered for maximum hedonic impact. Maren knows they are not much good for her. She buys one anyway. It is transcendently delicious and she does not regret it. 
+
+Further along, she stops at a jeweller's stall. A pair of silver earrings catches her eye — hand-forged, with a hammered texture she admires as a fellow metalworker. They are a luxury. She doesn't need them. She checks the transaction proposal on her device — the only time today she looks at the machinery — and sees the proposed currency breakdown: mostly craft-domain currency (her strongest balance), with a small component from her general baseline allocation. She could adjust the ratio. She leaves it as proposed and buys the earrings. 
+
+She bikes home with empty crates, silver in her ears, and pastry on her breath. A good day. 
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Transaction Mechanics'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+Every interaction in Maren's morning generates [[Benefuture currency#Transaction Proposals|transaction proposals]] — but she sees almost none of them. The system's default is auto-resolution: proposals are generated, evaluated against standing preferences and standard terms, and executed without requiring attention. Maren configured her preferences once, reviews them seasonally, and intervenes only when a proposal falls outside her comfort parameters.
+'''Selling the pottery:'''
+Each sale generates a transaction proposal. A representative example for one of the standard bowls:
+: '''Transaction proposal: Bowl (stoneware, celadon glaze, standard form)'''
+: ''Buyer:'' Marketplace customer (anonymous, identified by [[Technology Network|Technology Network]] interaction token)
+: ''Seller:'' Maren
+: ''Proposed value:'' Assessed by the point-of-sale system drawing on: (a) current market clearing price for comparable craft ceramics in this region, (b) Maren's [[Reputation|reputation]] in the ceramics domain (moderate-high, which provides a quality premium), (c) specific piece attributes (standard form, established glaze — no novelty bonus), (d) buyer's willingness signal (picked up the bowl, examined it, brought it to the counter — behavioural proxy for valuation).
+: ''Currency composition:'' Primarily craft-domain currency. A small fraction in general-exchange currency (the portion of the bowl's value attributable to non-craft factors: the marketplace infrastructure, the display materials, the regional logistics network).
+: ''Maren's credit:'' Craft-domain currency deposited to her balance, minus the marketplace's facilitation share and the [[Benefuture currency#Resource Accounting|resource accounting]] contribution (the system's equivalent of tax, funding [[Benesophont#Aspects|sophont baseline]] and shared infrastructure).
+: ''[[Measurement#Probabilistic Escrow|Probabilistic escrow]]:'' Minimal. The bowl is a known commodity — Maren has sold hundreds. The prediction confidence on buyer satisfaction is high. Approximately 5% of the transaction value is escrowed against the possibility of defect, breakage, or buyer dissatisfaction. This will release automatically after a standard holding period if no adverse event is reported.
+: ''Auto-resolved:'' Yes. Within Maren's standing preferences. She does not see this proposal.
+The experimental thermal-shock bowls generate a slightly different proposal:
+: '''Transaction proposal: Bowl (experimental clay body, thermal-shock resistant, novel formulation)'''
+: ''All fields as above, except:''
+: ''[[Benefuture goals#Novelty|Novelty]] bonus:'' The clay body formulation is flagged as novel by the [[Measurement#Metric Models|metric models]] — it has no close precedent in the regional craft database. The transaction proposal includes a novelty premium, increasing the assessed value.
+: ''Probabilistic escrow:'' Higher — approximately 20%. The formulation is untested at scale. If the bowls crack, delaminate, or underperform the thermal-shock claim, negative [[Benefuture currency#Causal Distribution|causal distribution]] will flow back to Maren. If they outperform, additional escrow release will follow.
+: ''Auto-resolved:'' Yes.
+'''The conversation with Elín:'''
+
+The social exchange — chatting about Elín's daughter, recommending the weaver — does not generate a formal transaction proposal. It is a social [[interaction]], logged at the metadata level (two known entities interacted, approximate duration, no currency exchange). If Elín follows the weaver recommendation and the apprenticeship succeeds, a long-tail [[Benefuture currency#Causal Distribution|causal distribution]] chain will eventually trace back to Maren's recommendation — similar in structure to the mentoring escrow described earlier, but thinner (higher degree of separation, lower causal directness). Maren will likely never notice this micro-payment if it arrives. The system does not notify for trace-level distributions unless requested.
+
+'''The pastry:'''
+: '''Transaction proposal: Salted caramel pastry (1 unit)'''
+: ''Buyer:'' Maren
+: ''Seller:'' Food vendor
+: ''Proposed value:'' Market price for prepared food, adjusted for ingredient quality, vendor [[reputation]] in food preparation, and regional cost indices.
+: ''Currency composition:'' General-exchange currency (food is a cross-domain good).
+: ''Maren's debit:'' General-exchange currency from her baseline allocation.
+: ''Probabilistic escrow:'' Near zero on the vendor's side — the pastry is a standard product, satisfaction is predictable on Maren's baseline health. However, Maren's ''own'' transaction record will eventually incorporate a [[Measurement#Metric Models|metric model]] reassessment:
+: ''Biomarker feedback (delayed):'' Maren's biosensors register the post-pastry metabolic response: a sharp blood glucose spike, an insulin surge, a brief cortisol elevation, and a transient inflammatory marker increase. None of this is alarming in isolation — a single pastry is not a health crisis. But the metric models tracking her wellbeing will, over time, incorporate this data into their assessment of the pastry's ''net'' [[happiness]] contribution. The hedonic peak was real but brief; the metabolic cost was small but measurable. In the long-run accounting, the pastry's retrospective cost to Maren — measured in reduced wellbeing-per-currency-spent — is slightly higher than the sticker price implied. This does not trigger a penalty or a notification. It adjusts, imperceptibly, the models' confidence in predicting Maren's wellbeing outcomes from similar future purchases. If a pattern emerges — frequent superstimulus food consumption correlating with declining biomarker trajectories — the system may surface a gentle informational nudge (not a restriction, not a warning; information, available if she wants it) while raising the price each time. For a single pastry, nothing happens. The data point joins the aggregate. The system is patient with indulgence. This would be very different if the buyer were a person with present health issues and food addiction problems.
+'''The earrings:'''
+
+This is the one transaction Maren examines manually. The earrings are expensive relative to her typical purchases — a personal luxury, not a professional tool or a consumable.
+: '''Transaction proposal: Silver earrings (hand-forged, hammered texture)'''
+: ''Buyer:'' Maren
+: ''Seller:'' Jeweller
+: ''Proposed value:'' Assessed by: material cost (silver, sourced and tracked through [[Benefuture currency#Resource Accounting|resource accounting]]), craftsmanship premium (the jeweller's [[reputation]] in metalwork, high), [[Benefuture goals#Novelty|novelty]] (the specific design is moderately novel — hand-hammered texture is established technique but this particular pattern is the jeweller's own), and [[Culture#Art|art value]] (assessed intentional affect-shift — decorative jewellery with aesthetic intent).
+: ''Proposed currency composition:'' 72% craft-domain currency (Maren's strongest balance; the purchase is craft-adjacent and the system recognises domain affinity), 28% general-exchange currency (the non-craft component of the earrings' value).
+: ''This is the screen Maren sees.'' She reviews the ratio. She could shift more onto general-exchange to preserve her craft balance, or let the craft-domain currency cover the larger share (she has plenty; the morning's sales replenished it). She accepts the default.
+: ''Probabilistic escrow:'' The jeweller's side holds approximately 8% — standard for durable goods against material defect. Maren's side holds nothing; the purchase is voluntary, non-essential, and the system does not escrow against buyer's remorse for informed luxury purchases.
+: ''Auto-resolved:'' No — flagged for manual review because the amount exceeded Maren's auto-resolution threshold for non-essential purchases. This is the threshold she set herself. She could raise it and never see jewellery-level purchases again. She prefers to look, for items like this. It takes her twelve seconds
+</div>
+----</div>
+Three months later, Maren receives a small unexpected notification — a supplementary [[Benefuture currency#Causal Distribution|causal distribution]] credit. One of the thermal-shock bowls she sold at the market was purchased by a member of the town's public art committee. The bowl is now displayed in a new decorative installation in the town centre — a curated arrangement of locally-made craft objects, visited daily by hundreds of people. The installation has been measured: it generates consistent positive affect in passers-by (biometric proxies from consenting pedestrians, survey data from the art committee's assessment programme), and it has increased public awareness of local craft traditions (a measurable [[Understanding|understanding]] gain in the community).
+
+The [[Measurement#Probabilistic Escrow|probabilistic escrow]] on that bowl originally estimated a standard domestic-use scenario — one household, moderate daily satisfaction, predictable decay. The actual outcome exceeded the estimate substantially: the bowl is generating ongoing [[happiness]] and [[understanding]] for a much larger audience than predicted. The escrow releases the held portion and then some — the causal distribution system attributes additional value to Maren as the maker, to the art committee member who selected the bowl, and to the committee that curated the installation. Each receives credit proportional to their causal contribution to the measured outcome.
+
+Maren smiles at the notification. She remembers that bowl. It was one of her better glazes.
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Causal Distribution Exceeding Escrow Estimates'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The original [[Measurement#Probabilistic Escrow|probabilistic escrow]] for the thermal-shock bowl held approximately 20% of the transaction value — standard for a novel product with uncertain long-term performance. The escrow model predicted: single-household use, moderate aesthetic satisfaction, gradual wear. The predicted [[Happiness|happiness]] contribution was modest and the [[Understanding|understanding]] contribution was near zero (a bowl in a kitchen teaches the owner little beyond its functional properties).
+
+The actual outcome diverged significantly from prediction:
+
+'''Audience scale:''' The bowl is now experienced by hundreds of daily visitors to the town centre installation, not one household. The happiness contribution per unit time increased by roughly two orders of magnitude.
+
+'''Understanding contribution:''' The installation includes contextual information about local craft traditions, materials sourcing, and the ceramicist's technique. Visitors gain understanding of craft processes they would not otherwise encounter. This was zero in the original prediction.
+
+'''Duration:''' The installation is semi-permanent. The bowl's effective contribution period extends far beyond the predicted domestic lifespan.
+
+When the [[Measurement#Metric Models|metric models]] detect that measured outcomes exceed the escrowed prediction, the [[Benefuture currency#Causal Distribution|causal distribution]] system recalculates. The escrow releases in full (the pessimistic scenario did not materialise) and supplementary causal distribution is generated, funded by the installation's overall positive contribution to the community's measured [[Benefuture goals|understanding and happiness]].
+
+The causal distribution chain for the supplementary payment:
+
+The '''town centre installation''' generates measured positive outcomes (the primary source of value).
+
+The '''art committee''' that curated it receives the largest share of the supplementary distribution (they created the context that amplified the bowl's impact).
+
+The '''committee member''' who selected Maren's specific bowl receives a share (their curatorial judgment was a causal link).
+
+'''Maren''' receives a share as the maker — her craft skill and the specific qualities of this bowl are necessary conditions for the outcome. Her share is smaller than the curators' (she did not create the installation) but nonzero and meaningful.
+
+The '''original buyer''' (the committee member, in their purchasing capacity) receives a minor share for the acquisition decision.
+
+This is the system working as designed: unpredictable positive outcomes are rewarded retroactively through the causal chain. The probabilistic escrow acts as a floor estimate, not a ceiling. When reality exceeds prediction, the excess value is distributed to those who caused it. The metric models also update their prediction algorithms — the next novel ceramic piece entering a similar context will have a slightly different escrow profile, informed by this outcome.
+
+'''Comparison to the pastry:''' The salted caramel pastry's retrospective accounting moved in the opposite direction. The hedonic prediction was accurate (brief pleasure, well-predicted), but the wellbeing cost was slightly underestimated by the original transaction proposal (the biomarker data suggests a marginally higher metabolic cost than the model expected for a single pastry at Maren's health profile). The retrospective adjustment is small — a fractional increase in the effective cost-per-happiness-unit of the pastry in the models' records. This does not result in a charge to Maren; no currency moves. It adjusts future predictions. If Maren buys a pastry tomorrow, the model's confidence interval on the happiness prediction will be fractionally wider, and the predicted wellbeing-per-currency-spent will be fractionally lower. Over multiple pastries, this would become visible in her aggregate health-expenditure analysis and the cost will keep increasing as persistent health effects accumulate. For a single pastry, the adjustment is noise. The system does not moralise about pastries.
+</div>
+</div>
+----
+=== Local Governance: High Weight ===
+
+After lunch, Maren checks her governance queue. There is a local decision pending: the city is considering new emissions standards for ceramic kilns, which would require expensive filtration retrofits or a shift to electric kilns. As a practising ceramicist with significant [[Reputation|reputation]] in the craft domain and directly affected by the outcome, her vote carries substantial weight.
+
+She reads the deliberation record — arguments from environmental scientists (high [[Reputation|reputation]] in ecology, weighted accordingly), from other ceramicists, from the neighbourhood residents' association (high impact weighting, moderate domain reputation). She votes against the specific filtration mandate but for a phased transition subsidy toward electric kilns, adding a written rationale drawing on her practical experience with both technologies. Three other ceramicists have submitted similar positions. The environmental scientists' counter-argument is strong; the outcome is uncertain. She closes the queue.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Benefuture Democracy Mechanics — Expertise + Impact Weighting'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Government|Benefuture democracy]]''' calculates Maren's '''vote weight''' for this decision from two components:
+
+# '''Expert vote weight''': Her [[Reputation|reputation]] in ceramics/materials/craft is high. The decision directly concerns kiln technology, squarely in her domain competence. Her reputation in environmental science is low, which reduces her weight on the ecological dimensions of the same decision — the system does not treat the decision as monolithic.
+# '''Impact vote weight''': She is directly affected (her livelihood, her workshop, her daily practice). The predicted-impact-on-voter calculation weights her highly.
+
+Her written rationale enters the [[Technology Network#Unbroken Memory|deliberation record]] — not just her vote position but her reasoning, tagged with her domain reputation. This allows future retrospective analysis: if the decision produces poor outcomes, the causal chain can trace which arguments carried weight and whether expertise-weighted reasoning outperformed or underperformed populist sentiment.
+
+The deliberation itself is designed for genuine deliberation, not information cascades. Arguments are presented with reputation and impact metadata visible, but the system does not reveal running vote totals during the deliberation period to prevent bandwagon effects.
+
+Participation for high-expertise, high-impact voters is '''mandatory''' in Benefuture. Maren could not abstain on this one without penalty. For lower-weight decisions, participation is optional.
+</div>
+</div>
+----
+=== Regional Governance: Low Weight ===
+
+Below the kiln decision, there is a regional water management proposal — a plan to restructure watershed allocation across three districts. Maren cares about water. She grew up near a river. She has opinions. Her [[Reputation|reputation]] in hydrology, ecology, and resource management is minimal.
+
+Her vote weight on this decision is near the floor. She reads the summary, considers delegating to a hydrologist she trusts — Dr. Fen, whose [[Reputation|reputation]] in the relevant domains is high and whose previous delegated-vote record she can review. She delegates, knowing the delegation is temporary, capped (Dr. Fen cannot accumulate unlimited proxy votes), audited, and retractable if she changes her mind.
+
+She feels a flicker of frustration. She is ''sure'' the western district's claim is overstated. But she is sure the way an enthusiast is sure, not the way an expert is sure, and the system knows the difference.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Liquid Benefuture Democracy & The Frustration of Bounded Authority'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Government#Liquid Democracy|Liquid Benefuture democracy]]''' governs Maren's delegation:
+* '''Delegation condition''': Dr. Fen's [[Reputation|reputation]] in the relevant domains (hydrology, resource management) exceeds Maren's, AND
+* '''Cumulative cap''': Dr. Fen's total delegated vote weight from all delegators cannot exceed a domain-specific threshold — preventing any single delegate from becoming a de facto representative with outsized power.
+* '''Temporary''': The delegation expires after this decision cycle.
+* '''Audited''': Bulk audit trails track delegation patterns for signs of coordination or manipulation.
+* '''Retractable''': Maren can withdraw and vote directly at any point before the decision closes.
+
+Maren's frustration is real and the framework does not pretend otherwise. The answer the system offers is: '''build [[Reputation|reputation]] in that domain''' (study hydrology, participate in local water monitoring, demonstrate predictive competence), '''or trust the delegation mechanism''', '''or accept that enthusiasm is not competence'''. This is structural liberalism applied to epistemic authority — the right to participate is universal, but the weight of participation scales with demonstrated [[Understanding|understanding]] and stake.
+
+The emotional cost of this design is nonzero. It trades the felt-autonomy of equal-weight democracy for the epistemic quality of expertise-weighted governance. The framework's bet is that measured outcomes will validate this trade over time, and that adversarial adaptation will catch cases where expertise weighting produces worse results than populist alternatives.
+</div>
+</div>
+----
+=== Social Media: Information Handling in Action ===
+
+Evening. Maren browses the network. A post about a new ceramic technique claims extraordinary thermal shock resistance using a novel alumina-silicate composite. The post carries layered metadata:
+
+* '''Source chain''': Originates from a materials lab in another region, shared by three intermediaries, each annotation visible.
+* '''Truth-level tag''': "Tentatively unfalsified hypothesis — single lab, no independent replication."
+* '''Author [[Reputation|reputation]]''': The originating researcher has moderate reputation in materials science, low reputation in ceramic applications.
+* '''Dispute status''': One counter-analysis flagged it as "tentatively falsified — method section insufficient for replication." The counter-analyst has higher reputation in experimental methodology.
+
+Maren reads both. She is intrigued but cautious. She adds her own annotation: "Interesting if replicable. The alumina ratio seems high for practical kiln temperatures — would expect devitrification above cone 8." Her annotation carries her craft-domain reputation, which is higher than both the originator's and the counter-analyst's in the specific sub-domain of kiln behaviour. Her comment rises in visibility for users seeking craft-domain perspective.
+
+Separately, she sees an opinion piece about regional governance reform. It is tagged as "opinion" with the author's [[Reputation|reputation]] visible — high in political philosophy, low in public administration. She reads it, disagrees with parts, and moves on. The system does not suppress it, promote it, or editorialize. It contextualizes.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Information Handling on the Technology Network'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The '''[[Technology Network#Information Handling|information handling system]]''' operates on every piece of content traversing the [[Social networks|social network]]:
+
+# '''Categorisation''': Content is tagged along a spectrum from "identified malicious disinformation" through "rigorously unfalsified fact" to "formally proven statement." Tags are not applied by a central authority but by the information handling system's integration of source verification, fact-checking against the [[Technology Network#Unbroken Memory|Unbroken Memory]], and cross-referencing with [[Measurement#Metric Models|metric model]] outputs.
+# '''Source verification''': Chain-of-source tracking records every share, annotation, and mutation. [[Reputation|Domain reputation]] of each contributor is visible, contextualised by flags where the system identifies that a contributor lacks [[Ignorance|domain knowledge]].
+# '''Content mapping''': Related content, counter-arguments, and supporting evidence are surfaced automatically — not as recommendations (no engagement-maximising algorithm) but as epistemic context.
+# '''Access management for [[Education#Infohazard Inoculation|infohazards]]''': Content that could be hazardous without sufficient grounding is not censored but access-gated: prerequisites are suggested, educational pathways provided, and the hazard context made explicit. Maren does not encounter this on the ceramic technique post, but the system is always evaluating.
+
+Maren's annotation is weighted by her [[Reputation|reputation]] in the relevant sub-domain (kiln behaviour, practical ceramics). The system does not prevent low-reputation users from annotating — it weights the visibility and prominence of annotations by domain competence. This is not censorship; it is epistemic curation. Every annotation remains accessible; prominence varies.
+
+The opinion piece on governance reform is handled differently from factual claims. Opinions are tagged as opinions. The author's [[Reputation|reputation]] provides context but does not suppress or promote. The system's treatment of opinion is deliberately hands-off relative to its treatment of factual claims — [[Truth|truth-levels]] apply to statements about [[Reality]], not to value judgments.
+</div>
+</div>
+----
+=== Cultural Friction ===
+
+While browsing, Maren encounters a photo essay documenting a cultural practice from a distant community — a body modification tradition she finds viscerally unsettling. Her instinct is to flag it. She does.
+
+The system responds not with removal but with context: a brief educational module on the tradition's cultural significance, its practitioners' reported well-being, and the framework's position on cultural offense. The module is gentle, not condescending. It reminds her that her discomfort, while real, does not constitute [[Harm|harm]] as the framework defines it — the practice does not interact with her in any otherwise harmful way.
+
+She closes the module, still uncomfortable but understanding why the content remains. She does not flag it again.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Cultural Offense ≈ 0 & Education as Response'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The [[Harm#Aspects|Harm priority structure]] weights cultural offense — being upset by others' choices not otherwise harmful to the observer — near zero. The framework's response to taking offense is [[Education|education]], not restriction of the "offensive" party.
+
+This encodes '''structural liberalism''': one cannot claim harm from merely observing others living differently (see [[Harm#Examples|Harm examples]]). The educational response is routed through the [[Education#Infohazard Inoculation|infohazard inoculation]] pathway — not because the content is an infohazard, but because the ''reaction'' benefits from contextual grounding.
+
+The system logs Maren's flag, her engagement with the educational module, and her non-escalation. This data feeds into [[Culture|cultural friction metrics]] — not to judge Maren, but to measure whether the educational responses are effective at resolving friction without suppression. If the module consistently fails to reduce flagging rates for similar content, the module itself is revised. The system measures its own interventions.
+</div>
+</div>
+----
+=== Privacy: Who Sees What ===
+
+Before bed, Maren checks her data access log — a habit she adopted when she moved from Basic to Active data collection. The log shows:
+
+* 47 anonymised aggregate queries against her biosensor data from metric models (she cannot identify the models; they cannot identify her — '''differential privacy for generic queries''').
+* 2 specific queries: one from her health advisor (approved), one from a research study she consented to join (approved, time-limited).
+* 0 unapproved access attempts.
+* Her personally identifiable information is infohazard-gated: only accessible through pathways that ensure the accessor has sufficient context to use it responsibly.
+
+She is satisfied. She closes the log and sleeps.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Technology Network Privacy Architecture'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The '''[[Technology Network|Technology Network]]''' privacy model operates on three tiers:
+# '''Differential privacy for generic queries''': Generic queries (aggregate statistics, population-level patterns) are answered via differential privacy — mathematical guarantees that no individual's data can be reconstructed from query results.
+# '''Two-way visibility for specific queries''': Specific queries about identified individuals require mutual visibility — Maren can see who queried her data and why, and the querier knows Maren can see this.
+# '''Infohazard-gated access to personally identifiable information''': Personally identifiable information is treated as a potential [[Education#Infohazard Inoculation|infohazard]] — access requires demonstrated context and legitimate purpose, gated by the same infohazard management pathways used for dangerous knowledge.
+
+'''Strict one-to-one identity binding''' ensures each [[Entity|entity]] has exactly one identity on the network. This prevents Sybil attacks, sock-puppet manipulation of governance, and reputation laundering — but it also means Maren's data access log is ''complete''. No hidden queries, no backdoors. The access log is part of the [[Technology Network#Unbroken Memory|Unbroken Memory]] and is immutable.
+
+'''Transparent access logging''' — all access to any individual's data is logged transparently. The architecture is designed such that surveillance is bidirectional: if the system watches you, you watch the system watching you.
+</div>
+</div>
+----
+=== Opt-Out: What It Looks Like ===
+
+Maren's neighbour, Joren, opted out of all but Basic data collection. He still receives [[Benesophont#Aspects|sophont baseline]] — housing, food, healthcare, social infrastructure. He participates in governance (his vote weight is unaffected by data tier). He earns currency through his work (carpentry). But his metric model contributions are limited to public-record data and voluntary self-reports. His currency flow is somewhat lower — fewer passive transaction proposals are generated because less data exists to measure his contributions. His health insights are generic rather than personalised.
+
+Joren is not penalised. He is less ''measured'' — and therefore less rewarded for unmeasured contributions. He considers this an acceptable trade. The system considers it his right.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Implementation Data Collection Tiers'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The '''[[Implementation prototype|Implementation]]''' specifies four data collection tiers:
+# '''OptOut''': Minimal data — public records only. Full sophont baseline entitlement. Reduced passive transaction proposal generation.
+# '''Basic''': Standard passive data (transaction records, public interaction metadata). Default tier.
+# '''Active''' (Maren's tier): Biosensors, detailed interaction logs, consented specific queries.
+# '''Deep''': Comprehensive data including cognitive assessments, detailed biometric streams, research participation. Highest currency flow; highest privacy exposure.
+
+Movement between tiers requires '''[[Contract#Aspects|informed consent]]''' — the system explains exactly what data is collected, who can access it, and what the currency and service implications are. Consent is revocable; data collected under a higher tier is retained in the [[Technology Network#Unbroken Memory|Unbroken Memory]] (immutability) but access permissions revert to the new tier's constraints.
+
+The system does not coerce higher-tier participation. The incentive gradient (more data leading to more measured contributions leading to more currency) is designed to be gentle, not compulsive. The [[Benesophont#Aspects|aspiring sophont]] is expected to make rational choices about privacy trade-offs, but the system accounts for the possibility that they won't — sophont baseline ensures nobody falls below baseline regardless of data tier.
+</div>
+</div>
+
+== Era 2: Mid-Establishment — Kael, Administrative Aspirant ==
+
+Benefuture systems are primary in most domains. Legacy institutions persist in some areas but are increasingly interoperable. Metric models are mature in well-studied domains, nascent in others. Kael is a former community organiser now pursuing formal administrative responsibilities. He has spent years building [[Reputation|reputation]] in civic coordination, dispute resolution, and community education.
+
+=== The Path to Administration ===
+
+Kael reviews his [[Reputation|reputation]] profile over morning tea. The display is clean — a domain map showing his strengths and gaps. Civic coordination: strong. Dispute resolution: strong. Community education: strong. Quantitative policy analysis: weak. Ecological systems: moderate. Public health: moderate.
+
+Administrative roles require threshold reputation across multiple [[Domain|domains]] — not because bureaucrats must be polymaths, but because the decisions they facilitate span domains. Kael is studying econometrics in the evenings, not because the system demands it, but because the gap is visible and he understands why it matters. He is not gatekept; he is self-correcting.
+
+No part of his high reputation in dispute resolution carries over to give him an advantage in econometrics. The number is zero. He starts from the same position as anyone else.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Reputation Architecture & Anti-Halo'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Reputation]] structure:''' reputation for a given entity in a given domain is tracked as the sum of positive reputation, sum of negative reputation, and net reputation minus decay, all strictly within that domain. The '''no halo, no horn''' principle prevents reputation transfer across domains — a renowned ceramicist has no special weight on agricultural policy; a celebrated diplomat has no edge in mathematics.
+
+For [[Administration|administrative roles]], threshold reputation requirements are set via [[Government|Benefuture democracy]] — the thresholds themselves are debatable and subject to [[Government#Liquid Democracy|liquid Benefuture democracy]] if disputed (the '''significant-threshold governance''' axiom: thresholds that are debatable are adapted via democratic process). Current thresholds for regional administration require demonstrated competence (reputation above threshold) in at least five domains spanning the administrative purview.
+
+Kael's study of econometrics generates [[Measurement|metric data]] — his learning progress, assessment results, and predictive accuracy in policy analysis exercises. This builds reputation in the domain from zero. The reputation accumulation rate depends on demonstrated competence, not time spent — the system rewards [[Understanding|understanding]], not seat-warming.
+
+Reputation also decays over time without active contribution — net reputation includes a decay function preventing anyone from coasting on past achievements indefinitely. Kael must continue demonstrating competence in his strong domains while building new ones.
+</div>
+</div>
+----
+=== Examining a Past Policy Outcome ===
+
+Eighteen months ago, Kael advocated strongly for a neighbourhood energy retrofit programme. He organised community buy-in, drafted the implementation proposal, and lobbied for funding allocation. The programme has now been measured.
+
+'''What went well:''' Energy consumption dropped 22% across participating households. Resident satisfaction surveys are positive. Two local contractors developed new insulation techniques during the project, generating teachable [[Understanding|understanding]] in construction methods.
+
+'''What went poorly:''' Construction disruption exceeded predictions by 40%. Three elderly residents experienced significant stress during the retrofit period. One contractor exploited a procurement loophole, overcharging for materials — caught by another citizen's adversarial adaptation report.
+
+Kael receives Causal Distribution for all of it.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Causal Contribution/Distribution Mechanics — Positive and Negative'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Benefuture currency#Causal Distribution|Causal contribution]]''' traces outcomes through the [[Technology Network#Transaction Logs|transaction tree]] to contributing entities:
+
+'''Positive causal distribution for Kael:'''
+* Energy reduction and resident satisfaction trace causally through his organisational work and proposal drafting. His causal contribution is significant — he was a primary driver.
+* The contractors' new techniques trace partially through the project he initiated. His causal contribution is smaller — more degrees of separation — but nonzero. He created the conditions; they created the knowledge. Both are rewarded.
+* Currency flows: front-loaded payment (from the original transaction proposal when the project was approved) is now supplemented by back-loaded [[Measurement#Probabilistic Escrow|probabilistic escrow]] release as measured outcomes exceed the escrow threshold.
+
+'''Negative causal distribution for Kael:'''
+* Construction disruption: causal contribution traces back to his timeline estimates in the proposal, which were optimistic. The negative distribution is proportional — not punitive, but corrective. His [[Reputation|reputation]] in project estimation takes a small hit in the relevant [[Domain|domain]].
+* Elderly residents' stress: his causal contribution is weak here — the stress was a foreseeable consequence that his proposal acknowledged and attempted to mitigate. The mitigation was insufficient, but the system distinguishes between ''caused'' and ''failed to adequately prevent''. The distribution is minimal.
+* Procurement exploit: causal contribution traces through the causal chain — Kael's project created the procurement opportunity, but the exploit was the contractor's informed volition. Kael's contribution is trace-level, decayed by degrees of separation. The contractor bears primary [[Law#For sophonts|liability]]; the citizen who reported the exploit via '''[[Adversarial adaptation|adversarial adaptation]]''' received a reward exceeding the contractor's gains.
+
+The fallback causal contribution formula applies: traversing the transaction tree, summing Kael's causal contributions at each node normalised by total causal density at that node.
+
+Kael sees the net result: a modest positive currency flow (the successes outweigh the failures) and a mixed reputation update (up in community organisation, slightly down in project estimation). He does not see the raw calculations unless he requests them — the system presents the net impact, with full audit trail available on demand.
+</div>
+</div>
+----
+=== Distant Causal Returns ===
+
+A separate notification arrives, unrelated to the retrofit. Seven years ago, in a previous community, Kael helped establish an after-school critical thinking programme for adolescents. The programme has been measured longitudinally: the cohort now shows measurably improved predictive accuracy, reduced susceptibility to misinformation, and higher self-reported eudaimonic well-being compared to matched controls.
+
+Back-loaded currency arrives. The [[Measurement#Probabilistic Escrow|probabilistic escrow]] that was held for seven years releases, because the predicted outcomes materialised.
+
+Kael barely remembers the specific sessions. He remembers the kids.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Long-Tail Probabilistic Escrow Release & Time-Delayed Causal Distribution'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Measurement#Probabilistic Escrow|Probabilistic escrow]]''' holds currency proportional to prediction uncertainty at the time of action. For educational interventions, uncertainty is high — the predicted understanding and happiness gains are speculative at the time of action. Escrow hold ratios for educational contributions are typically 60–80%, meaning most of the currency was escrowed.
+
+Seven years later, the [[Measurement#Metric Models|metric models]] have longitudinal data: the cohort's critical thinking scores, misinformation resistance (measured via [[Education#Infohazard Inoculation|infohazard inoculation]] assessments), and self-reported well-being. The escrow release is triggered when the metric models' measurements confirm that predicted outcomes have materialised to a degree exceeding the escrow threshold, and gradual payment begins.
+
+The '''time horizon''' aspect of the [[Benefuture goals#Time|Benefuture goals]]: the significance of an outcome is proportional to the probability that the outcome measurement is accurate. Seven years of longitudinal data is high-credibility; the escrow release is correspondingly generous.
+
+Kael's causal contribution in this chain is primary — he was the programme founder and lead facilitator. Subsequent facilitators who maintained the programme also receive causal distribution, proportional to their contributions. The transaction tree has many branches; Kael is near the root.
+</div>
+</div>
+----
+=== Debating a Proposed Change ===
+
+A regional proposal arrives: restructuring how craft guilds interact with educational institutions. Kael attends the deliberation, which is substantive.
+
+'''Points of agreement (broadly):''' Increased apprenticeship funding. More pathways from formal education into craft training.
+
+'''Points of contention:''' A standardised curriculum for craft education. Proponents (several education administrators with high [[Reputation|reputation]] in pedagogy) argue it ensures quality floors. Opponents (including craft practitioners and some education researchers) argue it will reduce pedagogical diversity and calcify techniques.
+
+Kael opposes standardisation. His reputation in community education and civic coordination is relevant — he has seen standardisation fail before. But his reputation in educational design is moderate, and in craft pedagogy, low. His arguments carry moderate weight on process grounds but low weight on content grounds.
+
+He makes a structural argument instead: the [[Benefuture goals#Novelty|diversity axiom]] — that monoculture in any domain, including pedagogy, reduces resilience and innovation — applies here regardless of anyone's domain reputation. The axiom is framework-level, not opinion-level. It carries weight independent of the arguer's personal reputation.
+
+The deliberation records all positions, reasoning, and weights. The decision will be made by aggregated weighted vote after the deliberation period closes.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Deliberation Mechanics & Axiom-Level Arguments'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The deliberation operates under '''[[Government|Benefuture democracy]]''' rules:
+* '''Expert vote weight''': Participants' arguments are weighted by [[Reputation|reputation]] in relevant [[Domain|domains]]. Education administrators have high vote weight on pedagogical quality; craft practitioners have high vote weight on craft training methods; Kael has moderate vote weight on process design.
+* '''Impact vote weight''': Craft practitioners who would be directly affected have higher impact weighting than administrators who would implement but not practice.
+* '''Deliberation over information cascades''': The deliberation structure prevents information cascades — running totals are hidden, arguments are presented with metadata but not with social proof indicators.
+
+Kael's '''axiom-level argument''' operates differently from domain-expertise arguments. The '''[[Benefuture goals#Vision|diversity and novelty balance axiom]]''' — when the marginal value of spreading a particular approach falls below a significance threshold, greater novelty and reduced monoculture are needed, including in Benefuture itself — is a framework-level constraint, not an empirical claim. It doesn't require domain reputation to invoke; it requires accurate application of the axiom to the situation. The deliberation system distinguishes between:
+# Empirical claims (weighted by domain [[Reputation|reputation]])
+# Framework axiom applications (weighted by accuracy of application, assessable by any participant with sufficient understanding of the framework)
+# Value judgments (tagged as opinion, weighted by impact)
+
+This distinction allows structurally important arguments to be made by non-domain-experts without undermining the expertise-weighting system. The diversity axiom is one of the few levers available to anyone regardless of domain specialisation — by design, since monoculture detection benefits from outside perspectives.
+</div>
+</div>
+----
+=== Wealth Comparison ===
+
+After the deliberation, Kael visits his friend Naia, a highly successful computational biologist. She has high [[Benefuture currency#Causal Distribution|causal contribution]] across multiple domains, significant [[Reputation|reputation]] in genomics, bioinformatics, and statistical modelling. Her material life is... not dramatically different from Kael's.
+
+Her flat is slightly larger. Her computational equipment is better — a professional necessity. She travels more — conferences, collaborations, she can afford recreational travel a bit more than Kael, and showcases a few art pieces from high reputation artists. But she does not live in a different stratosphere. She cannot convert her bioinformatics reputation into political influence, or her genomics currency into real estate speculation.
+
+Her balance overflow — the excess currency beyond her accumulation threshold — is automatically invested in her domains: funding graduate students, equipment for her lab, open-source tool development. She did not choose these specific investments; her accumulation profile directed them based on her goals and domain fit. She can override the auto-investment, but rarely does — it generally allocates well.
+
+Neither of them is poor. Neither is extravagantly rich. The difference is in ''influence within competence'', not in material accumulation.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Balance Overflow, Accumulation Thresholds & Domain-Locked Currency'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Benefuture currency#Balance Overflow|Balance overflow]]''': When an entity's balance in a given domain currency exceeds its accumulation threshold — calculated from their reputation, equity position, optimised goal trajectory, and domain spread — the excess is automatically redirected into investments within their domains, and their balance is reduced accordingly.
+
+Naia's accumulation threshold is calculated from her reputation, her equity position (current resource holdings), her optimised goal trajectory, and her domain spread. Once her balance exceeds this threshold, excess currency is automatically directed into investments within her domains — the system prevents arbitrary wealth concentration while channeling surplus toward productive use.
+
+'''Domain-locked currency (no trading, no arbitrage)''': Naia's genomics-domain currency cannot be traded for governance-domain influence, real estate, or any other cross-domain asset. Currency only converts across domains through real understanding-and-happiness-generating actions that span those domains, never through trading or arbitrage. Naia can gain some civil engineering currency when contributing her expertise for the architecture of a local biobank. This structurally prevents the Benefuture equivalent of a billionaire purchasing political power.
+
+'''Reputational [[Power|power]]''' is similarly locked: [[Reputation|reputation]] operates strictly within domains, with the '''no halo, no horn''' principle preventing cross-domain bleed. Naia is powerful in her fields. She is ordinary everywhere else. The system maintains this boundary by design, not by policing — the architecture makes cross-domain power accumulation structurally impossible rather than merely prohibited.
+</div>
+</div>
+----
+=== Infohazard Inoculation in Action ===
+
+Kael's evening econometrics study includes a module on historical governance failures — required coursework for the administrative track. Tonight's case study: how well-intentioned measurement systems were captured and weaponised.
+
+The cases are not hypothetical. Real historical examples: social credit systems that became tools of political control. KPI regimes in healthcare that incentivised gaming over care. Colonial "civilising missions" that used development metrics to justify extraction. Performance metrics in education that narrowed curricula and increased inequality.
+
+The module does not present these as distant mistakes by lesser systems. It explicitly asks: '''how could Benefuture's own measurement system be captured in similar ways?''' Kael is examined on identifying plausible attack vectors against Benefuture's metric model market, its reputation system, its governance weighting.
+
+He identifies three: metric model collusion (models coordinating to reinforce each other's predictions, bypassing competitive pressure), reputation inflation via circular citation (entities citing each other to inflate domain reputation), and governance capture via coordinated delegation (a bloc systematically delegating to a single actor to bypass cumulative vote weight caps).
+
+The module confirms these are known attack vectors, shows the existing countermeasures ([[System Design#Circularity Detection|circularity detection]], [[Adversarial adaptation|adversarial auditing]], delegation pattern analysis), and then asks: '''what would you do if these countermeasures failed?'''
+
+Kael finds this deeply uncomfortable and deeply useful.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Infohazard Inoculation Applied Reflexively'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Education#Infohazard Inoculation|Infohazard inoculation]]''' is the deliberate exposure to ideas and patterns that could be dangerous without sufficient context, in controlled educational settings where context is provided. The Benefuture framework treats knowledge of its own vulnerabilities as a special case of infohazard — information that could enable exploitation if held without the ethical and structural context to handle it responsibly.
+
+The educational approach follows the framework's own principles:
+* '''Epistemic antifragility''': Understanding that gets truer under scrutiny. The system celebrates discovering its own weaknesses (see [[Education#Aspects|epistemic antifragility]]).
+* '''Prebunking over debunking''': Teaching recognition of exploitation patterns before encountering them in the wild.
+* '''Meta-application''': The adversarial adaptation principle applied to the adversarial adaptation system itself — the education system teaches how to find flaws in the system that teaches how to find flaws.
+
+Kael's identified attack vectors are logged (anonymised) as inputs to the adversarial adaptation pipeline. If his analysis contains a genuinely novel exploit that the existing countermeasures don't address, he may receive an '''[[Adversarial adaptation#Aspects|adversarial adaptation reward]]''' — currency and [[Reputation|reputation]] in the systems-security domain — exceeding what he could gain by exploiting the vulnerability silently. The manufactured prisoner's dilemma: reporting is always more profitable than exploitation for a single agent.
+</div>
+</div>
+----
+=== A Negative Causal Distribution Event ===
+
+A notification Kael has been half-expecting arrives. Three months ago, he recommended a specific mediator — Tomas — for a community land-use dispute. Tomas underperformed. The mediation failed; the dispute escalated; the community had to re-enter formal justice proceedings, costing time and eroding trust.
+
+[[Benefuture currency#Causal Distribution|Causal contribution]] traces back. Kael's recommendation was a moderately significant causal factor in Tomas being selected. The negative [[Benefuture currency#Causal Distribution|causal distribution]] is small in currency terms but real — it represents the delta between the predicted and actual outcomes of the mediation, attributed proportionally through the causal chain.
+
+His [[Reputation|reputation]] in dispute resolution takes a small hit in the sub-domain of mediator assessment. Not in dispute resolution generally — the [[Reputation#Aspects|no halo, no horn]] principle works in both directions, preventing a single mistake from contaminating unrelated competencies.
+
+He does not enjoy this. The system does not pretend he should. But the correction is proportional, domain-specific, and transparent. He can see exactly how the causal contribution was calculated. He can dispute it through the standard [[Justice#Deliberation|deliberation process]] if he believes the attribution is unfair. He doesn't — the attribution is fair. He misjudged Tomas's readiness for that complexity of dispute.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Negative Causal Distribution Mechanics & Proportional Correction'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Benefuture currency#Causal Distribution|Causal distribution]]''' for negative outcomes: penalisation is proportional to causal contribution plus novelty considerations, subject to [[Justice|dispute resolution]].
+
+Kael's negative causal contribution is calculated via the metric models' causal explanation of the transaction log. The metric models trace the causal chain:
+# Kael recommended Tomas (primary causal link in the recommendation chain).
+# The selection committee accepted the recommendation (secondary links, shared causal contribution).
+# Tomas underperformed (Tomas bears primary causal contribution for the mediation failure itself; Kael bears causal contribution for the recommendation).
+
+Kael's share of the negative distribution is proportional to his causal contribution to the selection, not to the failure itself. The distinction matters: he did not mediate badly; he recommended badly. The causal attribution is domain-specific — his [[Reputation|reputation]] takes a hit in ''mediator assessment within dispute resolution'', not in dispute resolution broadly. The '''no horn''' principle prevents the negative from bleeding across domains.
+
+'''[[Justice|Dispute resolution]]''': Kael has the right to dispute the causal attribution through [[Justice#Deliberation|justice proceedings]]. The deliberation process would examine whether the recommendation was reasonable given information available at the time (epistemic standard, not outcomes-only), whether the selection committee should have exercised independent judgment (shared [[Law#For sophonts|liability]]), and whether the failure was foreseeable. Kael does not dispute because, on reflection, he agrees the attribution is fair.
+
+The system's design intention: negative causal distribution should feel like ''feedback'', not punishment. The currency impact is modest; the reputational impact is narrow and proportional. The correction mechanism is closer to a thermostat than a courtroom.
+</div>
+</div>
+----
+=== A Justice Encounter ===
+
+On his way home, Kael passes the community mediation centre — the same one involved in the Tomas situation. Through the window he sees a restorative justice session in progress. A young person who vandalised a community mural is meeting with the mural's artist, two community elders, and a trained facilitator.
+
+He does not enter — the session is private — but he knows the process from his training. The vandal will not be punished in any retributive sense. They will:
+* Understand the harm they caused (to the artist's work, to the community's shared space, to the aesthetic environment).
+* Contribute to reparation (help restore the mural, provide compensatory labor in community arts).
+* Undergo educational rehabilitation (understanding why the action was harmful, what conditions led to it, how to channel similar impulses constructively).
+* Bear proportional causal distribution: negative currency flow and negative [[Reputation|reputation]] in the relevant [[Domain|domains]].
+
+If the rehabilitation succeeds and the vandal demonstrates changed behaviour, the negative [[Reputation|reputation]] sum decays over time. If it fails and the behaviour repeats, enforcement escalates — but the goal remains rehabilitation, not retribution.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Justice as Repair'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Justice]]''' in Benefuture is defined as the repair of [[Harm|harm]] and the prevention of [[Crime|crime]], through restorative means. The process follows:
+
+# '''[[Justice#Deliberation|Deliberation]]''': Establishing the nature, extent, and causal chain of harm.
+# '''[[Justice#Reparation|Reparation]]''': Providing ways to repair, mitigate, or ameliorate the harm to victims. Cost borne primarily by the criminal, supported by [[Administration|administration]] where necessary.
+# '''[[Justice#Rehabilitation|Rehabilitation]]''': [[Education]] and support to prevent recurrence. [[Understanding]] the crime, its effects, and the conditions that led to it.
+
+'''[[Crime]]''' is defined as [[Harm|harm]] resulting from informed volition or informed inaction. The vandal acted with informed volition — they chose to damage the mural knowingly. The level of crime depends on both the degree of harm (reversible property damage, moderate) and the vandal's [[Understanding|understanding]] of their actions (adolescent, moderate understanding).
+
+'''[[Law#For sophonts|Liability]]''' follows the hierarchy: [[Benesophont|sophonts]] bear the most responsibility, then [[Person|persons]], then [[Administration|administrators]], then [[Being|beings]] and [[Entity|entities]], then [[Thing|things]]. The vandal, as a person aspiring to sophonthood, bears personal liability. If the vandal were an entity operated by another person (e.g., an AI tool), liability would flow to the operating person.
+
+The justice system itself is subject to '''[[Anti-Corruption]]''' measures and '''[[Progressive complexity]]''' strategies — it must function even under degraded conditions, and its processes are adversarially audited for bias, capture, or drift from the goals.
+</div>
+</div>
+----
+=== A Reporting and Reward Scenario ===
+
+Late evening. Kael is reviewing the governance deliberation records from the craft-education proposal when he notices something odd. Two metric models that are cited as supporting evidence for the standardised curriculum proposal show suspiciously similar prediction patterns — their outputs are near-identical despite claiming different methodologies. He cross-references their marker inputs and finds they share 94% of their source data and their "independent" causal explanations use identical reasoning chains with different variable names.
+
+This looks like metric model collusion — or at minimum, a circularity violation. One model may have been derived from the other without attribution, bypassing the competitive independence that the metric market relies on.
+
+Kael files an adversarial adaptation report through the standard channel. He documents the overlap, provides the cross-reference analysis, and flags the specific circularity concern. The report is assigned to an independent audit team (entities with high [[Reputation|reputation]] in systems security and metric evaluation, with no connection to either model or the craft-education deliberation).
+
+If the finding is confirmed, Kael will receive a reward — currency and [[Reputation|reputation]] in measurement systems-security — calculated to exceed the gains the model creators could have achieved through the collusion. The reward is funded via clawbacks from the offending models' accumulated [[Benefuture currency#Causal Distribution|causal contribution]] and, if insufficient, supplemented by the [[Administration|administration]].
+
+If the finding is spurious, nothing happens. Kael is not penalised for a one off good-faith report that turns out to be wrong — the system incentivises vigilance, not certainty.
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Adversarial Adaptation Reward Mechanics'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Adversarial adaptation#Aspects|Adversarial Adaptation]]''' reward structure:
+* '''Reward > Exploitation''': The promised reward exceeds the potential gains from silently exploiting the flaw. This is the core manufactured prisoner's dilemma.
+* '''Funding''': Rewards are financed via clawbacks down the causal liability chain of the flaw. If the metric models colluded, their accumulated causal contribution and currency flows are clawed back proportionally. If clawbacks are insufficient, the [[Administration]] supplements to ensure the reward exceeds assessed exploitation gains.
+* '''Circularity detection''': The [[System Design#Circularity Detection|circularity detection]] system should have caught this automatically. The fact that it didn't is itself a flaw — Kael's report triggers not only investigation of the specific models but also a review of the circularity detection system itself. Meta-adversarial adaptation: the system that catches flaws is itself subject to flaw-catching.
+* '''False positive handling''': Good-faith reports that prove unfounded generate no penalty. This prevents chilling effects. Frivolous or malicious reports (filed without reasonable basis) can generate negative [[Benefuture currency#Causal Distribution|causal distribution]] and reputation drops if a pattern emerges — but the threshold is high, and first-time reporters are given benefit of the doubt.
+
+The report enters the [[Technology Network#Unbroken Memory|Unbroken Memory]] — immutable, timestamped, auditable. If the governance deliberation's outcome was influenced by the potentially colluding models, the deliberation may be reopened with corrected evidence. This is the self-correction loop in action: flaw detected, then investigated, then system corrected, then outcomes re-evaluated.
+</div>
+</div>
+
+== Era 3: Future Benefuture — Snippets ==
+
+Benefuture-native infrastructure. Deep integration. The system has earned trust through generations of measured, corrected, adversarially tested performance. A few windows into what becomes possible.
+
+=== Fork ===
+
+Sienne, a cognitive researcher whose substrate is biological-digital hybrid, receives a fork request. A specialised xenolinguistics project wants to branch a copy of her cognitive model for a two-year research engagement. She reviews the terms:
+
+The fork will receive a new [[Identity|identity]]. Its initial [[Reputation|reputation]] is distributed from Sienne's — proportional, not duplicated. Its initial '''[[Diversity|novelty]] score is zero''' — unlike a birth, which carries intrinsic novelty as a new perspective, a fork begins as a known quantity. The fork must earn its novelty through divergence. Meanwhile, it immediately ticks up resource consumption against the civilisational [[Benefuture currency#Resource Accounting|resource accounting]] budget — a new entity consuming resources without yet contributing novel value. This cost is borne by the requesting project.
+
+Liability overflow provisions activate: if the fork causes [[Harm|harm]], [[Law#For sophonts|liability]] traces back to both the fork's own decisions and — via the '''[[Benefuture currency#Causal Distribution|causal distribution]] liability overflow mechanism''' — partially to Sienne for authorising the copy and to the project for commissioning it. The liability decays as the fork establishes independent decision history.
+
+She approves. The fork begins its work. Over months, exposed to xenolinguistic data Sienne has never encountered, it diverges. Its novelty score climbs. Its [[Reputation|reputation]] begins accumulating independently. It becomes, gradually, its own [[Person|person]]. ''This is routine.''
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Fork Mechanics'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+The fork operation distributes social position (currency, [[Reputation|reputation]], [[Social networks|social network]] connections) proportionally between the original and the new [[Entity|entity]]. Neither retains the full pre-fork position — the system prevents duplication of social capital.
+
+'''Zero initial novelty''': [[Diversity|Novelty]] is defined as the inverse of frequency. A fork at creation is maximally frequent — it is identical to its source. The novelty bonus that rewards new perspectives, new approaches, and new contributions to [[Diversity|diversity]] does not apply until the fork has diverged. This is a deliberate design choice: unlike biological birth, which generates a genuinely novel entity through genetic recombination and unique developmental trajectory, a fork is a copy. It must earn its distinctiveness.
+
+'''Resource consumption''': The fork immediately consumes resources (compute, energy, social infrastructure). The [[Benefuture currency#Resource Accounting|resource accounting]] system accounts for this: the project that commissioned the fork bears the resource cost until the fork generates sufficient positive [[Benefuture currency#Causal Distribution|causal contribution]] to self-sustain via standard currency flows.
+
+'''Liability overflow''': [[Law#For sophonts|Liability]] for [[Harm|harm]] caused by the fork flows through the [[Benefuture currency#Causal Distribution|causal distribution]] system, tracing from the fork's actions back through its authorisation chain. This prevents irresponsible forking — if someone creates copies that cause harm, the creator bears cascading liability. The decay function ensures that as the fork establishes independent agency and decision history, liability gradually shifts entirely to the fork.
+</div>
+</div>
+----
+=== First Contact ===
+
+A Benefuture community on the frontier receives a communication from an unknown [[Entity|entity]] — not a Benefuture participant, not a known species. The '''[[Benefuture#External Harm Response|external harm response]]''' protocol activates automatically.
+
+Tit-for-tat with forgiveness weighting: the community responds cooperatively, proportionally, transparently. The entity's [[Reputation|reputation]] starts at zero across all [[Domain|domains]]. All incoming communications are categorised by the [[Technology Network#Information Handling|information handling]] system as "unverified, novel source" — no truth-level assertions, no domain-reputation weighting, pure context provision. [[Education]] modules spin up to provide cultural context for the community's members encountering genuinely alien perspective.
+
+The entity acts aggressively on its third interaction — damage to infrastructure, no casualties. The external harm response protocol responds: proportional repairable [[Harm|harm]], weighted by the entity's nonexistent positive [[Reputation|reputation]] (no forgiveness credit earned) and zero negative reputation (no history of hostility). The response is calibrated, transparent, and recorded in the [[Technology Network#Unbroken Memory|Unbroken Memory]].
+
+On the fifth interaction, the entity communicates something that could be an apology. The forgiveness weighting of the tit-for-tat increases. The community continues. ''The system has a protocol for the genuinely unprecedented.''
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: External Harm Response Protocol'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Benefuture#External Harm Response|External harm response]]''' for an act of harm from an aggressor entity outside Benefuture is calculated as: proportional tit-for-tat using only repairable harm, plus a forgiveness probability weighted by the aggressor's accumulated positive [[Reputation|reputation]], plus an overreaction probability weighted by their accumulated negative reputation — all executed with context-awareness and transparency.
+
+For a novel entity with no reputation history: positive reputation is zero, negative reputation is zero. The formula reduces to pure tit-for-tat: cooperative when met with cooperation, proportionally defensive when met with aggression, using only repairable [[Harm|harm]] (never irreparable) in response. As interaction history accumulates, the forgiveness and overreaction terms begin to weight the response.
+
+The context-awareness and transparency conditions require: understanding the entity's possible motivations, cultural frameworks, and communication modalities, and ensuring the community's responses and reasoning are visible to the entity, preventing misinterpretation of defensive actions as aggression.
+
+This protocol is derived from iterated game theory — specifically the success of tit-for-tat-with-forgiveness strategies in repeated prisoner's dilemma scenarios. The Benefuture implementation adds context-awareness and transparency as additional constraints, recognising that real-world interactions are not pure game-theory abstractions.
+</div>
+</div>
+----
+=== The Unbroken Memory ===
+
+A historian — or what passes for one when the Memory is complete — traces the full causal chain of a watershed decision made three generations ago. Every [[Benefuture currency#Transaction Proposals|transaction proposal]], every [[Benefuture currency#Causal Distribution|causal contribution]] flow, every [[Government#Deliberation|deliberation]] record, every [[Measurement#Metric Models|metric model]] that contributed to the evidence base, every [[Adversarial adaptation|adversarial report]] filed, every [[Measurement#Probabilistic Escrow|probabilistic escrow]] that released or expired.
+
+The history has receipts. The Memory is not narrative; it is data. The historian's job is not to recover facts — the facts are immutable and complete — but to interpret them. To find patterns the participants could not have seen. To evaluate whether the decision, given what was known then, was the best available — and whether the system that produced the decision has improved since.
+
+She publishes her analysis. It is tagged with her [[Reputation|reputation]] in historical analysis and systems evaluation. Other historians disagree with her interpretation. The disagreement is productive. ''Memory is not consensus.''
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Unbroken Memory Architecture'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Technology Network#Unbroken Memory|Unbroken Memory]]''' stores immutable records of state, actions, outcomes, and significant relevant context at every point in time. Every executed action and significant outcome is logged by the system as a transaction. Transaction logs trigger [[Measurement#Metric Models|metric model]] evaluation of the recorded events.
+
+The Memory is:
+* '''Immutable''': Records cannot be altered, deleted, or retroactively edited. This prevents historical revisionism and ensures accountability across generations.
+* '''Complete''': Within the scope of the [[Technology Network|Technology Network's]] data collection, all significant [[Interaction|interactions]] are recorded. Completeness is bounded by data collection tier — opt-out individuals contribute less data, but their interactions with the system are still logged at the system boundary.
+* '''Auditable''': Any entity can trace any causal chain, subject to [[Technology Network#Privacy|privacy protections]] (aggregated data via differential privacy; individual data via two-way visibility).
+
+The '''civilisational continuity axiom''' requires: the civilisation's identity is maintained through non-harmful change, the Memory's lineage remains unbroken and coherent with the [[Benefuture goals|goals]], and any significant change to the civilisation must be validated by both the most capable [[Benesophont|sophonts]] at the start of the change and the average sophonts after it — both must agree the change was net positive. This prevents both reckless revolution and nostalgic regression.
+</div>
+</div>
+----
+=== Metric Succession ===
+
+A metric model that has dominated its domain for decades is sunset. A newer model — simpler, more predictive, proposed by an entity that did not exist when the old model was created — has consistently outperformed it across every evaluation criterion for three consecutive assessment cycles.
+
+The sunset clause activates: the old model is retired. The currency tied to the old model migrates to the successor's measurement framework. Holders experience no loss — the transition is embedded in the system's design. Escrow balances are recalculated against the new model's predictions. Some [[Measurement#Probabilistic Escrow|probabilistic escrow]] releases that the old model would have triggered are now held longer (the new model is more conservative in certain predictions). Some are released earlier (it's more confident in others).
+
+The old model's creators receive a final [[Benefuture currency#Causal Distribution|causal distribution]]: recognition for the decades of value their model generated, proportional to its measured contribution over its lifetime. Then it is archived in the [[Technology Network#Unbroken Memory|Memory]] — not deleted, but no longer active. Future historians will study it. ''Self-obsolescence working as intended.''
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Metric Model Sunset & Currency Migration'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Measurement#Aspects|Sunset Clause]]''': A model is retired if, for every aspect of prediction, another model consistently performs either better or equivalent but cheaper/simpler.
+
+Currency migration follows from the [[Benefuture currency|currency]] design: each currency is linked to a top-performing [[Measurement#Metric Models|metric model]] in its [[Domain|domain]]. When the top model changes, the currency's reference framework shifts. This is analogous to a currency redenomination — the unit of account changes, but the value it represents (real [[Understanding|understanding]] and [[Happiness|happiness]] generation per resource) is preserved through the transition.
+
+The '''[[Benefuture currency#Embedded Laws|embedded laws]]''' governing currency behaviour adapt dynamically, but the impact of any single adaptation must remain below a significance [[Threshold of significance|threshold]]. Metric succession is a large-impact event managed through graduated transition: the new model runs in parallel with the old for a validation period, currency migration happens incrementally over multiple cycles, and the full sunset only occurs after the migration is complete and stable.
+
+The old model's creators' final [[Benefuture currency#Causal Distribution|causal distribution]] follows the standard cycle: positive causal contribution flows to their balance. Their lifetime contribution is significant; the reward is proportional.
+</div>
+</div>
+----
+=== Low-Tech Graceful Degradation ===
+
+In an exploratory community three hundred kilometres from the nearest full [[Technology Network|Technology Network]] node, the infrastructure is sparse. Connectivity is intermittent. Biosensors are uncommon. The [[Measurement#Metric Models|metric models]] have far less data to work with.
+
+The system does not collapse. It degrades gracefully.
+
+Governance still functions — deliberations happen in person, recorded on local storage, synchronised when connectivity returns. Vote weights are calculated from cached [[Reputation|reputation]] data, updated periodically rather than in real-time. The granularity is lower: domain-specific reputation is approximated by broader categories. The precision of [[Benefuture currency#Causal Distribution|causal contribution]] attribution is reduced — more fallback heuristics, fewer exact traversals of the [[Technology Network#Transaction Logs|transaction tree]].
+
+Currency still flows, but the measurement resolution is coarser. [[Measurement#Probabilistic Escrow|Probabilistic escrow]] holds are larger (more uncertainty = more held). Self-reported data substitutes for passive biosensor streams. Community-level metrics replace individual-level metrics where individual data is unavailable.
+
+[[Benesophont#Aspects|Sophont baseline]] still holds. The [[Benefuture currency#Resource Accounting|resource accounting]] system accounts for the higher per-capita cost of maintaining baseline in low-infrastructure regions. Nobody falls below floor because the infrastructure is sparse.
+
+A visiting metric model researcher arrives to collect higher-resolution data. The community opts in to a temporary Deep-tier data collection for a research project. The researcher's [[Reputation|reputation]] in their [[Domain|domain]] is visible; the community's governance process approved the project; the data collected has defined retention and access limits. When the researcher leaves, the data tier reverts. The burst of high-resolution data improves the metric models' calibration for this region. The community receives [[Benefuture currency#Causal Distribution|causal contribution]] for contributing to measurement improvement.
+
+''The system was designed to work here too.''
+
+----
+<div class="mw-collapsible mw-collapsed">
+<div class="mw-collapsible-toggle">'''Background: Progressive Complexity in Low-Tech Contexts'''</div>
+<div class="mw-collapsible-content" style="padding:5px;">
+'''[[Progressive complexity]]''' requires all Benefuture systems to function across degraded conditions:
+* '''Progressive Fallback''': Communication degrades gracefully from advanced [[Technology Network]], to internet, to telephony, to physical document, to verbal. Governance degrades from real-time weighted digital vote, to cached-weight periodic vote, to in-person deliberation with manual weight calculation, to simple majority (fallback of last resort).
+* '''Progressive Abstraction''': Fine-grained domain-specific [[Reputation|reputation]] degrades to broader category reputation, then to binary competent/not-competent assessment. Exact [[Benefuture currency#Causal Distribution|causal contribution]] traversal degrades to heuristic causal approximation, then to community-level attribution.
+* '''Progressive Enhancement''': When infrastructure improves (the visiting researcher, connectivity upgrades, new sensor deployment), the system progressively enhances its resolution without requiring a phase transition. The same framework governs both high-tech and low-tech contexts; only the granularity changes.
+
+'''[[Benefuture currency#Resource Accounting|Resource accounting]] in sparse regions''': The resource accounting formula optimises for reduced cost per unit of understanding and happiness generated, audited against resource and time usage. In low-infrastructure regions, the cost of maintaining baseline is higher per capita (logistics, transportation, local production inefficiencies). The resource accounting system accounts for this — [[Benesophont#Aspects|sophont baseline]] is a structural entitlement, not a privilege conditioned on infrastructure access.
+
+'''[[Measurement#Probabilistic Escrow|Probabilistic escrow]] adjustment''': In low-data environments, prediction uncertainty is higher. Escrow hold ratios increase accordingly — less currency is front-loaded, more is escrowed. This is conservative by design: the system pays less when it knows less, and pays more as knowledge improves. The visiting researcher's data burst reduces uncertainty, releasing held escrow for past contributions that can now be measured more accurately.
+
+'''Progressive adaptability in granularity and cycle time''' — the system maintains coherent [[Benefuture goals|goals]] and [[Measurement|measurement]] across wildly different infrastructure levels, adjusting its resolution and response time to match available resources. The holographic, fractal design principle means the same pattern of measurement-correction-adaptation operates at every scale, from a single village with intermittent connectivity to a full Technology Network urban centre.
+</div>
+</div>
+----
+=== Rest ===
+
+A [[Benesophont|sophont]] in a fully realised Benefuture civilisation simply rests. Baseline secure, no urgency, no algorithmic anxiety, no notification demanding attention. They watch light move across a surface. They think about nothing in particular. The system logs nothing of interest. The background panel is empty.
+
+''Not everything needs to be optimised.''
+
+== Notes ==
+These scenarios are speculative extrapolations from the [[Benefuture#AI readable framework code|framework code]] and wiki articles. They are illustrative, not prescriptive. Specific details — the potter's work, the administrator's econometrics, the fork's xenolinguistics — are narrative devices, not predictions. The underlying system mechanics are derived as faithfully as possible from the framework's formal definitions.
+
+Where the framework is silent on implementation detail, the scenarios make reasonable assumptions and mark them as such. Where the framework specifies mechanisms precisely, the background panels reproduce the relevant formal structures.
+----<small>AI Disclaimer: This article is 80% AI synthesized with 20% human seed notes and review.</small>

@@ -1,0 +1,10 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+A contract or agreement is a documented statement of multiple [[entity|entities]] committing to perform a stipulated set of [[interaction]]s, a set of [[output]]s given a set of [[input]]s.
+
+==Aspects==
+* A contract clearly states the reasonable repercussions if any entity committing to it fails to act according to its stipulations.
+* A contract's repercussions and their reasonability are [[enforcement|enforced]] by a neutral third party mentioned in the contract, usually the part of an [[administration]] not involved in or directly affected by the stipulations of the contract.
+* A contract can have a number of algorithmic and mathematical clauses based on inputs and outputs.
+* A contract that goes against the [[law]]s or [[proof|proven]] to negatively affect the [[goals]] of the enforcing administration is deemed invalid.
+* Any [[harm]] caused by an invalid contract goes through the process of [[justice]].
+----<small>AI Disclaimer: This article is 100% human written.</small>

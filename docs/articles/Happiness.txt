@@ -1,0 +1,87 @@
+[[category:Benefuture]] [[category:WorldBuilding]]
+Happiness is the umbrella term for [[sentient]] feelings which are self described as positive or [[good]] by their own definitions.
+
+It is the secondary of the twin [[goals]] of [[Benefuture]], the other being [[Understanding]]. Both are attempted to be measured using the Benefuture [[measurement]] system.
+
+==Aspects==
+* Sentient entities  [[interact]] with [[reality]] often to effect future [[input]]s and [[Outcome|outcomes]] which would be positive in their belief, this positivity is coded into a feeling of happiness (arguably only for humans and some animals).
+
+* We have only the human scenario, where scopes of happiness and prosperity are indeed enhanced by an outcome which often is a result of increased understanding.
+
+* [[Person]]s often ascribe and predict happiness thus tend to maximise experiences which have been evolutionarily selected for survival and growth, such as sex, food, comfort, power and the genetic drive to live forever through legacy and progeny.
+
+* Generally, the levels of happiness are shown to vary according to changes in current states of well-being oriented utility (see discussion).
+
+* Happiness felt by the experiencing self during an [[Outcome|event]] and the happiness lingering on the remembering self post the event can vary by the type of event<ref>Kahneman, D. (2011). ''Thinking, fast and slow''. Farrar, Straus and Giroux.</ref>. Due to the long term effects of the latter, remembered happiness is valued higher than experienced happiness.
+
+* There are multiple types of happiness, pleasure, thrill, satisfaction, and they encompass a great spectrum, benefuture concerns itself with the kinds of happiness which is both self propagative across communities and synergizes with understanding, hence eudaimonic happiness is a major focus. <ref>Huta, V., Waterman, A.S. '''Eudaimonia and Its Distinction from Hedonia: Developing a Classification and Terminology for Understanding Conceptual and Operational Definitions.''' ''J Happiness Stud'' 15, 1425–1456 (2014). https://doi.org/10.1007/s10902-013-9485-0</ref><ref>Ryan, R. M., & Deci, E. L. (2001). '''On happiness and human potentials: A review of research on hedonic and eudaimonic well-being.''' ''Annual Review of Psychology, 52''(1), 141–166.https://doi.org/10.1146/annurev.psych.52.1.141</ref><ref>Seligman, M. E. P. (2011). '''''Flourish: A visionary new understanding of happiness and well-being''. Simon and Schuster.''' </ref>
+
+* In modern [[society]], these evolutionary tendencies manifest in more complex and convoluted forms, hence the sources of happiness are also complex beyond traditional [[Economy|economic]] considerations.<ref>Helliwell, J. F., Layard, R., Sachs, J. D., De Neve, J.-E., Aknin, L. B., & Wang, S. (Eds.). (2024). World Happiness Report 2024. University of Oxford: Wellbeing Research Centre. ISBN. 978-1-7348080-7-0.
+https://worldhappiness.report/ed/2024/differences-in-life-satisfaction-among-older-adults-in-india/</ref>
+
+* It needs to be acknowledged that actual triggers for happiness are evolved, noisy, can be wrongly anticipated, and otherwise arbitrary and possibly counterproductive.<ref>Gilbert, D. (2006). Stumbling on happiness. Alfred A. Knopf.</ref> Speculated scenarios can imagine happiness to be triggered by actions humans can't condone or comprehend and can reduce understanding.<ref>[https://tvtropes.org/pmwiki/pmwiki.php/Main/BlueAndOrangeMorality Blue and orange morality, TVtropes]</ref>
+
+* There are scenarios where persons tend to gain pleasure or happiness by the action of causing harm, <ref>Hare, R. D. (2003). ''Without conscience: The disturbing world of the psychopaths among us''. Guilford Press.</ref> <ref>Buckels, E. E., Jones, D. N., & Paulhus, D. L. (2013). '''The dark triad of personality: A replication and extension of the dirty dozen.''' ''Personality and Individual Differences, 54''(1), 104-111.</ref> these are situations where universal happiness and understanding definitely decrease, hence they should be understood and mitigated.
+
+* Humans can be conditioned to an extent to feel happiness to certain outcomes via various means based on a combination of nature and nurture.
+
+* The best case scenario for [[benefuture]] is when the conditioning of happiness is towards outcomes which maximise [[understanding]] and the understanding can be applied to further increase happiness. For a society full of sentients where that synergy is not absent, happiness may still be pursued as an orthogonal [[goals|goal]], with [[Diversity|novelty]] counted as a separate term in the [[Benefuture goals#Mathematical approach|value calculation]], and the weight of that term needs to be tuned carefully for benefuture to be effective in preventing stagnation of [[civilization]].
+
+==Discussion==
+Humans often feel happiness as a result of [[interaction]]s regarded more positive than a cognitively significant amount of time in the past. Thus for them, happiness is a often a measurement of positive delta quality of life, and unhappiness caused by negative delta. This relationship is not linear. 
+
+It can be argued that happiness can be maximised for humans by artificially starting them in the worst quality of life and then gradually improving to the best, however, this can be contrary to the [[benefuture goals]] because the lower quality of life beyond a certain threshold heavily decreases [[understanding]] over time. 
+
+Happiness can also be felt with certain chemical changes in the human [[body]], which can also be artificially induced in an experience machine analogue <ref>'''Nozick, R. (1974).''' ''Anarchy, state, and utopia''. Basic Books.</ref>, again, this ceases to be a long term maximisation strategy when the reduction of understanding and poorer quality of remembered happiness is taken into account.
+
+Most successful human happiness maximisation strategies synergistic with understanding might be the ones where quality of life is maintained at which humans retain the highest ability to understand, then rewarding boosts of happiness inducing circumstances when feats of understanding are achieved, leveling back to the optimal state.
+
+Furthermore, happiness is self-reinforcing, with positive experiences, even small ones, contributing to overall well-being <ref name="DienerEtAl2003">Diener, E., Sandvik, E., & Pavot, W. (2003). Happiness is the frequency, not the intensity, of positive versus negative affect. In F. Strack, M. Argyle, & N. Schwarz (Eds.), *Well-being: The foundations of hedonic psychology* (pp. 119–139). Russell Sage Foundation.</ref>, and positive emotions broadening thought patterns and fostering creativity <ref name="Fredrickson2004">Fredrickson B. L. (2004). The broaden-and-build theory of positive emotions. *Philosophical transactions of the Royal Society of London. Series B, Biological sciences, 359*(1449), 1367–1378. https://doi.org/10.1098/rstb.2004.1512</ref>.  Research indicates that both economic and social-psychological factors contribute to well-being, with psychosocial prosperity playing a significant role in positive feelings <ref name="DienerEtAl2010">Diener, E., Ng, W., & Arora, R. (2010). INTERPERSONAL RELATIONS AND GROUP PROCESSES Wealth and Happiness Across the World : Material Prosperity Predicts Life Evaluation , Whereas Psychosocial Prosperity Predicts Positive Feeling.</ref>.  Factors like health, personal security, and freedom of choice have a greater impact on emotional well-being than purely economic factors like income <ref name="BoariniEtAl2012">Boarini, R., Comola, M., Smith, C., Manchin, R., & De Keulenaer, F. (2012). What makes for a better life? The determinants of subjective well-being in OECD countries: Evidence from 1  the Gallup World Poll (Statistics Directorate Working Paper No. 47, STD/DOC(2012)3). Organisation for Economic Co-operation and Development (OECD). https://one.oecd.org/document/STD/DOC(2012)3/en/pdf</ref>.  Engaging with art and culture has also been linked to increased life satisfaction, mediated by physical and mental health and strong interpersonal relationships <ref name="FujiwaraEtAl2018">Fujiwara, Y., Kawachi, I., & Sugawara, Y. (2018). Art and Cultural Participation and Life Satisfaction in Adults: The Mediating Roles of Physical Health, Mental Health, and Interpersonal Relationships. Journal of Happiness Studies, 19(6), 1795–1814.</ref>.  Similarly, participation in community arts groups has been shown to positively influence well-being in older adults <ref name="SonkeEtAl2018">Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analysis. Aging & Mental 2  Health, 22(10), 1312–1320. https://doi.org/10.1080/13607827.2017.1354820</ref>.  Even the act of being creative itself can enhance subjective well-being <ref name="AcarRunco2019">Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. The Journal of Creative Behavior, 53(4), 560–568. https://doi.org/10.1002/jocb.347</ref>.
+
+In utilitarian theoretic models,  Kahneman and Tversky's (1979) prospect theory <ref name="KahnemanTversky1979">Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*, *47*(2), 263-291.</ref> highlights the importance of reference points in evaluating outcomes, suggesting that changes in utility, rather than absolute levels, drive emotional responses.  This aligns with the concept of happiness being tied to gains and losses relative to expectations.  Furthermore, the hedonic treadmill (Brickman & Campbell, 1971) <ref name="BrickmanCampbell1971">Brickman, P., & Campbell, D. T. (1971). Hedonic relativism and planning the good society. *Adaptation level theory: A symposium*, 287-302.</ref> illustrates how individuals adapt to changing circumstances, implying that lasting happiness is less about a fixed state of utility and more about the process of change.  Neuroscience research on reward prediction error (Schultz, Dayan, & Montague, 1997) <ref name="SchultzDayanMontague1997">Schultz, W., Dayan, P., & Montague, P. R. (1997). A neural substrate of prediction and reward. *Science*, *275*(5306), 1593-1599.</ref> provides further support, indicating that dopaminergic responses are linked to the difference between expected and received rewards.  This suggests that happiness might be more closely tied to the surprise of gains or losses than the absolute value of the outcome.  Even the microeconomic principle of diminishing marginal utility (Mankiw, 2021) <ref name="Mankiw2021">Mankiw, N. G. (2021). *Principles of microeconomics* (9th ed.). Cengage learning.</ref> hints at this relationship, as it suggests that the incremental satisfaction from increased consumption diminishes, implying that the change in utility is paramount. This is the primary reason happiness is considered secondary to understanding in benefuture [[goals]].
+
+=== Measurement ===
+While the central notions of happiness are subjective, localized, culture specific, there still are ways to approximate measurements and based on that build an expected model of utility of actions and events. Some of the known ways are:
+
+==== '''Individual Level:''' ====
+
+* '''Active:'''
+** Experience Sampling Method. <ref name="CsikszentmihalyiLarson1987">Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the Experience-Sampling Method. ''Journal of Youth and Adolescence'', ''16''(6), 539-550.</ref>
+** Satisfaction With Life Scale. <ref name="DienerEtAl1985">Diener, E., Emmons, R. A., Larsen, R. J., & Smith, C. (1985). The Satisfaction with Life Scale. ''Journal of personality assessment'', ''49''(1), 71-75. <nowiki>https://doi.org/10.1037/0022-3514.49.1.71</nowiki></ref>
+** Oxford Happiness Questionnaire. <ref name="HillsArgyle2002">Hills, P., & Argyle, M. (2002). The Oxford Happiness Questionnaire: a compact scale for the measurement of psychological well-being. ''Personality and individual differences'', ''33''(7), 1071-1082.</ref>
+** Subjective Happiness Scale. <ref name="LyubomirskyLepper1999">Lyubomirsky, S., & Lepper, H. S. (1999). A measure of subjective happiness: Preliminary psychometric data. ''Social indicators research'', ''46''(1), 137-155. <nowiki>https://doi.org/10.1023/A:1008950211807</nowiki></ref>
+
+* '''Passive:'''
+** Facial expression analysis. <ref name="BartlettEtAl2006">Bartlett, M. S., Littlewort, G., Frank, M., & Movellan, J. R. (2006). Automatic recognition of facial expression: A survey. ''IEEE Transactions on human-machine systems'', ''36''(1), 15-35. <nowiki>https://doi.org/10.1109/TSMCC.2005.859029</nowiki></ref>
+** Skin conductance. <ref name="Critchley2002">Critchley, H. D. (2002). Electrodermal activity. ''Physiological Measurement'', ''23''(3), R23–R39. <nowiki>https://doi.org/10.1088/0967-3334/23/3/R23</nowiki></ref>
+** Wearable sensors. <ref name="DunnNeighbors2019">Dunn, L. B., & Neighbors, C. (2019). Wearable technology: A promising tool for mental health researchers. ''Depression and anxiety'', ''36''(10), 997–1005. <nowiki>https://doi.org/10.1002/da.22951</nowiki></ref>
+** Sentiment analysis of social media. <ref name="PangLee2008">Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. <nowiki>https://doi.org/10.1561/1500000001</nowiki></ref>
+** Brain imaging. <ref name="PhanEtAl2002">Phan, K. L., Wager, T. D., Taylor, S. F., & Liberzon, I. (2002). Functional neuroimaging studies of human emotion: a meta-analysis of emotion activation and regulation. ''NeuroImage'', ''16''(2), 331–342. <nowiki>https://doi.org/10.1006/nimg.2002.1127</nowiki></ref>
+** Heart Rate Variability. <ref name="TaskForce1996">Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation, and clinical use. ''Circulation'', ''93''(5), 1043–1065.</ref>
+
+==== '''Community Level:''' ====
+
+* '''Active:'''
+** Community surveys. <ref name="Fowler2013">Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications.</ref>
+
+* '''Passive:'''
+** Social Network Analyses. <ref name="BorgattiEtAl2018">Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications.</ref><ref name="WassermanFaust1994">Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press.</ref>
+** Emotional contagion in social networks. <ref name="ChristakisFowler2009">Christakis, N. A., & Fowler, J. H. (2009). ''Connected: The surprising power of our social networks and how they shape our lives''. Little, Brown.</ref>
+** Social connections and community well-being. <ref name="Putnam2000">Putnam, R. D. (2000). ''Bowling alone: The collapse and revival of American community''. Simon and Schuster.</ref>
+
+==== '''Societal Level:''' ====
+
+* '''Active:'''
+** National well-being indicators. <ref name="HelliwellEtAl2022">Helliwell, J. F., Layard, R., & Sachs, J. D. (2022). ''World Happiness Report 2022''. Sustainable Development Solutions Network. <nowiki>https://worldhappiness.report/</nowiki></ref>
+
+* '''Passive:'''
+** Global Innovation Index. <ref name="GII">Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. <nowiki>https://www.globalinnovationindex.org/</nowiki></ref>
+** PISA - Educational Assessment. <ref name="PISA">Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. <nowiki>https://www.oecd.org/pisa/</nowiki></ref>
+** Social Progress Index. <ref name="SPI">Porter, M. E., Stern, S., & Green, M. (2016). ''Social Progress Index 2016''. Social Progress Imperative.</ref>
+** Human Development Index. <ref name="HDI">United Nations Development Programme. (Various years). ''Human Development Report''. <nowiki>http://hdr.undp.org/</nowiki></ref>
+** World Governance Indicators. <ref name="WGI">World Bank. (Various years). ''Worldwide Governance Indicators''. <nowiki>http://www.govindicators.org/</nowiki></ref>
+
+
+== References ==
+<references />
+----<small>AI Disclaimer: This article is 10% AI compiled with 90% human notes.</small>

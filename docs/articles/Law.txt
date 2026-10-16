@@ -1,0 +1,36 @@
+[[category:Benefuture]] [[category:WorldBuilding]]
+A law is an agreed upon process of [[interaction]] for [[entity|entities]], specifically [[person]]s. Generally, laws enable a [[civilization]] to maximize the fulfilment of its goals.
+
+In a [[benefuture]] civilisation, laws are [[interaction]] patterns designed to fulfil the [[benefuture goals]] of universal [[understanding]] then [[happiness]].
+
+==Aspects==
+* Laws can be prohibitive patterns, forbidding some interactions because they negatively affect the goals.
+* Laws can be mandatory or recommended.
+* Mandatory laws need to be [[enforcement|enforced]] strictly, not following them constitutes a [[crime]], which needs to be addressed using [[justice]].
+* Recommended laws don't generate a crime if not followed, but generate an [[accolade]] when followed.
+* If a law is found to be negatively affecting progress towards the [[goals]], it needs to be removed or modified to positively affect the goals.
+* If a law can be modified to provide greater progress towards the [[goals]] then it should be.
+* Laws can over time acquire exceptions, nuances and subdivisions via modification.
+* Laws which too bloated with complexity need to be broken down into simpler laws that retain all features of the parent law while generalising its scope.
+* As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+==For sophonts==
+[[Sophont]]s are the primary members of [[benefuture]] whose interactions the laws concern about. Though laws can define interactions between [[being]]s, [[entities]] and [[person]]s, it is the sophonts who are ultimately held to the laws' standards, because sophonts pursue the [[benefuture goals]]. The laws stipulate the following for sophonts.
+
+===Rights===
+Rights are interaction patterns of benefits which a sophont is '''mandatorily''' entitled to. Failure to do so is a crime by the entities who fail to do so.
+
+===Privileges===
+Privileges are benefits which a sophont may enjoy and use best to fulfill their [[goals]] but they are '''optional''' and their loss or removal is not a crime unless it causes [[significant]] [[harm]].
+
+===Duties===
+Duties are interaction patterns which sophonts are '''mandatorily''' to perform because the patterns are discerned to best fulfill the [[goals]]. Failure to perform is a crime by the sophont.
+
+===Responsibilities===
+Responsibilities are interaction patterns which sophonts may perform at their discretion, the patterns are '''recommended but optional''' and failure to perform them is not a crime by the sophont unless it causes [[significant]] [[harm]]. Performing a responsibility instead generates an [[accolade]] for the sophont.
+
+==Examples==
+* A law might mandatorily prohibit harm of a [[person]] by limiting their [[right]]s.
+* A law might recommend enabling another [[benesophont|sophont]] achieve the [[goals]] by providing them resource.
+
+----<small>AI Disclaimer: This article is 100% human written.</small>

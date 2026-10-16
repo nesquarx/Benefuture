@@ -1,0 +1,136 @@
+[[Category:Benefuture]] [[Category:WorldBuilding]]
+
+Government in a [[Benefuture]] [[society]] is a system of [[Administration|administrative]] decision making using '''[[Reputation|expertise]] and impact weighted direct democracy''', facilitated by technology. It is a decentralized, transparent, and continuously adaptive mechanism for collective decision-making, aiming to maximize societal [[Understanding]] (U) and [[Happiness]] (H) while minimizing [[harm]]. It is ''not'' a ruling body, but a facilitator of societal self-governance, with all actions ultimately valued and incentivized through the [[Benefuture currency|Benefuture Currency]].
+
+== Aspects ==
+
+*   '''Direct Democracy (Weighted):''' Citizens directly deliberate and vote on policy decisions.
+*   '''Expertise and Impact-Distance Weighting:''' Votes are weighted based on demonstrated, domain-specific expertise [[reputation]] ''and'' how directly the voter is affected. [[Significant|Significantly]] high weighted voters for a certain issue are obligated to vote on that specific issue, while lower weighted votes are optional but will count if voted.
+*   '''Liquid where needed:''' Votes on trivial decisions can be delegated to experts with a higher comparative expertise whose delegation limits have not reached a cap.
+*   '''Fractal Scope:''' The decision making system operates on all levels of collective, from a family to a workplace to a locality to an association to a nation to a stellar civilization.
+*   '''Clean Deliberation:''' Deliberation is not open to influence that lowers [[Truth|truth-level]]: misinformation, undisclosed persuasion and manipulation of the information voters rely on. Proposals are presented with truth-level tagging and source tracking from the [[Technology Network]], and attempts to degrade the truth-level of a deliberation are handled as manipulation (see Addressing Potential Problems).
+*   '''No Halo/Horn Effects:''' Expertise [[reputation]] weighting is strictly domain-specific; unrelated factors don't affect weighting.
+*   '''Transparency and Accountability:''' All voting records, [[Reputation|expertise]] assessments, and impacts are publicly accessible on [[Technology Network]].
+*   '''Decentralization:''' Decision-making power is distributed; the [[Administration]] facilitates the process.
+*   '''Adaptability:''' The system continuously adapts, with parameters and formulas adjusted based on data and feedback as per [[Progressive complexity]] and [[adversarial adaptation]].
+*   '''Alignment with Benefuture Goals:''' All aspects of governance are designed to promote the [[Benefuture goals]].
+*   '''Expanding Rights and Freedoms:''' The system aims for continuous expansion of rights and freedoms, guided by increasing U/H impact and bound by avoiding [[harm]].
+*   '''Capacity Enhancement:''' Actively promotes development of citizens' cognitive, emotional, and social capacities by embedding [[Goals|goal]] enhancing [[Law|laws]] in [[currency]].
+*   '''Uplift, Not Suppression:''' Addresses inequalities by uplifting the disadvantaged, never by suppressing the privileged.
+*   '''Technology scaling:''' Relies on [[Benefuture currency|Benefuture Currency]]  and its [[Technology Network]], but scaled by [[Progressive|Progressive adaptation]].
+
+== Examples ==
+
+*   '''Environmental Regulation:''' A proposal to limit emissions is put to a vote. Scientists with expertise in environmental science and climate modeling have their votes weighted more heavily on the "expertise" axis. Residents living near affected industries, and those particularly vulnerable to climate change, have their votes weighted more heavily on the "impact distance" axis. The final decision reflects a balance of expert knowledge and the concerns of those most affected.
+*   '''Healthcare Funding:''' A decision on allocating Benefuture Currency to different healthcare research areas is made. Medical researchers, doctors, and patients with relevant conditions have higher expertise weighting. Individuals with pre-existing conditions or a family history of the diseases in question have higher impact-distance weighting.
+*   '''Educational Reform:''' A proposal to change the curriculum in public schools is put to a vote. Teachers, educational researchers, and parents have higher expertise weighting. Students and families in the affected school district have higher impact-distance weighting.
+*   '''Infrastructure Project:''' Deciding whether to use currency to build a new transportation system. Engineers have more weight via expertise, citizens in the region and those using that route for commute have higher impact distance based weight.
+*   '''Dispute Resolution:''' The system can be used to make decisions on justice too, where applicable trained sophonts can have higher weightage, along with affected parties.
+
+== Discussion ==
+Benefuture government's [[System Design]] is its main arbiter of [[Threshold of significance]] in [[Administration|Administrative]] [[Decision]] making at a fractal level, and along with [[Benefuture currency]], trying to solve the problem of collective action <ref>'''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press.</ref>. 
+
+The expertise and impact weightage does relate to Epistocracy <ref name="Brennan2016">Brennan, J. (2016). ''Against Democracy''. Princeton University Press.</ref> but handles its problems <ref name="Estlund2008">Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.</ref> via stakeholder <ref name="Freeman1984">Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman.</ref> affected interests <ref name="Goodin2007">Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68.</ref>.
+
+The proposed delegation constraints attempt to alleviate the issues with liquid democracy <ref name="Blum2016">Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182.</ref> while still allowing delegation.
+
+=== Decision-Making Process ===
+
+1.  '''Issue Proposal:''' Issues are proposed by citizens, expert groups, the [[Administration]], or triggered by the [[Technology Network]].
+
+2.  '''Expertise Assessment:''' The [[Technology Network]] assesses relevant expertise based on [[Benefuture currency|Benefuture Currency]] transaction history (domain-specific contributions to U/H) and [[reputation]].
+
+3.  '''Impact Distance Calculation:''' The [[Technology Network]] calculates the impact distance between each individual and the proposed decision, considering factors like geographic proximity, economic dependence, social connections, and potential consequences (including environmental, ideological, health and relationship impacts).
+
+4.  '''Weighted Voting:''' Citizens deliberate and vote, with weights determined by expertise and impact: VoteWeight = BaseWeight + (ExpertiseWeight  ExpertiseScore) + (ImpactWeight  ImpactScore). Voting and deliberating is generally optional (part of expected [[Benesophont]] activity), but ''mandatory'' for individuals with high expertise and/or low impact distance, above a [[Threshold of significance]].
+
+5.  '''Implementation:''' The [[Administration]] implements decisions reached through the weighted vote.
+
+=== The Role of the Administration ===
+
+The [[Administration]] is a facilitator, not a ruler. Responsibilities include:
+
+*   Maintaining the technological infrastructure.
+*   Ensuring system security and integrity.
+*   Providing clear, unbiased information about proposed issues.
+*   Implementing decisions.
+*   Setting and dynamically updating system parameters and formulas.
+*   '''Capacity Enhancement:''' Actively promoting U/H capacities through [[education]], psychosocial support, and ethical technological augmentation.
+* The [[Administration]] itself is held accountable via the [[Benefuture currency|Benefuture Currency]].
+
+Administrators are chosen for expertise and are subject to the same transparency and accountability standards as all citizens. Administrators are also chosen to be individuals with [[Anti-Corruption|low corruptibility]].
+
+=== The Role of Law ===
+
+[[Law|Laws]] in Benefuture are frameworks for [[Decision|decision-making]] and [[Interaction|interactions]], defining processes for:
+
+*   Issue proposal and debate.
+*   Expertise and impact assessment.
+*   Secure and transparent voting.
+*   Implementation of decisions.
+*   Defining and upholding [[Law|Rights, Duties, Privileges, and Responsibilities]].
+*   Promoting beneficial [[Culture|cultural]] practices and discouraging harmful ones.
+
+=== Rights, Duties, Privileges, and Responsibilities ===
+
+Benefuture society recognizes a clear distinction:
+
+*   '''Rights:''' Correspond to the ''floor'' of Maslow's hierarchy: basic sustenance, shelter, healthcare, education, access to information, safety, and freedom of choice/thought/expression (within the bounds of minimizing harm). Provided for via the baseline [[currency]] generation.
+*   '''Duties:''' Actions all [[Benesophont]]s are expected to perform: participating in the democratic process (especially when expertise/impact is high), respecting others' rights, minimizing harm, contributing to society, and adhering to legal processes.
+*   '''Privileges:''' Advantages not universally guaranteed. Many are due to ''happenstance'' (e.g., ''talents'', ''good health'', ''genetics'', ''supportive upbringing'', ''fortunate circumstances''). These do not justify unequal access to [[Rights]] or opportunities. The system aims to mitigate inequalities arising from these differences by uplifting the disadvantaged, never by suppressing the privileged.
+*   '''Responsibilities:''' Actions that are encouraged but not mandatory, contributing to societal well-being.
+
+=== Economic Implications of Life, Death, and Birth ===
+
+*   '''Living Sophonts:''' Generate baseline [[Currency|Benefuture Currency]] sufficient for basic needs.
+*   '''Death:''' Accumulated un-redistributed currency is depleted; a small portion is also deducted from individuals with close causal distance and the administration to denote the loss of U and H. No inheritance.
+*   '''Birth:''' A new sophont is a net consumer of resources initially. Yet their [[Benefuture currency|probabilistic escrow]] on predicted contributions and satisfaction of caregivers releases upkeep costs till they can mature and eventually handle baseline income and eventually contribute to measurable U/H.
+
+=== Key Performance Indicators (KPIs) ===
+
+The government's performance is measured by its success in:
+
+*   Maximizing overall societal U/H.
+*   Increasing the floor, median, and peak of U.
+*   Increasing the floor and median of H.
+*   Improving the efficiency of R/T use.
+*   Expanding the [[rights]] and freedoms of sophonts.
+* The emphasis on median and floor is to increase the overall level, but benefuture also recognises the importance of peak understanding to generate breakthroughs.
+
+=== Addressing Potential Problems ===
+
+*   '''Tyranny of Experts:''' Mitigated by strict domain-specificity of expertise weighting, no halo/horn effects, and impact distance weighting.
+*   '''Voter Apathy:''' Addressed through education, user-friendly interfaces, small incentives for participation, mandatory voting for experts and high-stake impactees, and mechanisms for non-experts to seek guidance from trusted experts. While full delegation of voting power is not permitted (to maintain the direct democracy principle), non-experts can utilize reputation systems and expert commentary to inform their votes. Experts, however, are expected to exercise their own judgment and cannot delegate their voting responsibility.
+*   '''Complexity:''' Addressed through clear communication through [[social networks]], issue bundling, expert summaries, and staggered voting.
+*   '''Manipulation:''' Addressed through [[Anti-Corruption|anti corruption]] measures like transparency (blockchain), robust reputation systems, and community oversight. Influence that degrades the truth-level of deliberation is itself the target: truth-level verification and source tracking apply to the information around a vote, and [[Adversarial adaptation]] rewards exposing it.
+
+=== Technology ===
+
+The system might rely on:
+
+*   The [[Benefuture currency|Benefuture Currency]] records.
+*   The distributed [[Technology Network]].
+*   Smart Contracts.
+*   Secure online voting platforms.
+
+=== International Relations and Defense ===
+
+Benefuture prioritizes peaceful cooperation and conflict prevention through diplomacy, cultural exchange, and economic integration. However, it recognizes the need for a robust defense capability, particularly in a world with non-Benefuture actors.
+
+'''Non-Aggression:''' Benefuture is fundamentally non-aggressive. The use of force is considered an absolute last resort, only justifiable to prevent [[significant]] irreversible [[harm]].
+
+'''Latent distributed [[Power]]:''' The pursuit of [[Understanding]] and technological advancement, while primarily directed towards peaceful purposes, inherently creates a latent capacity for defense, and even overwhelming offense, if necessary. This capacity is distributed throughout society.
+
+'''Minimum Harm Principle:''' If force is unavoidable, it is applied with the utmost precision and with the goal of minimizing harm to all [[sophont]]s, including adversaries.
+
+'''Deterrence:''' A young Benefuture society may need to rely on strong deterrents to protect itself during its initial growth phase. This may involve developing "porcupine defense" capabilities, forming strategic alliances, and subtly signaling its potential for rapid technological advancement.
+
+'''Sheltering:''' Early-stage Benefuture societies may take measures to minimize their vulnerability, such as geographic isolation (if possible) or developing decentralized and resilient infrastructure.
+
+'''Accountability''': Aggression will be heavily penalized via [[Benefuture currency|Benefuture Currency]].
+
+'''Transparency:''' Benefuture strives for transparency in its defense policies and capabilities, to the extent that it does not compromise its security.
+
+=== References ===
+<references />
+----<small>AI Disclaimer: This article is</small> <small>40% AI compiled with 60% human notes.</small>

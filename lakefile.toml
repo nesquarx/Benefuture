@@ -1,0 +1,10 @@
+name = "Benefuture"
+version = "0.1.0"
+defaultTargets = ["benefuture"]
+
+[[lean_lib]]
+name = "Benefuture"
+
+[[lean_exe]]
+name = "benefuture"
+root = "Main"

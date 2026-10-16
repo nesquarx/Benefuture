@@ -1,0 +1,15 @@
+[[category:Benefuture]] [[Category:Definitions]]
+Interaction is the process of a [[thing]] (interactor) taking [[input]]s and producing [[output]]s, usually from and to [[reality]], or another [[thing]] (interactee).
+
+==Aspects==
+* Input and output involves change, even the passing of pure information is not devoid of change, hence interaction changes the interactor and interactee by definition.
+* Interaction is one of the major aspects of a [[being]].
+* Interaction in the form of [[communication]] is one of the major aspects of a [[person]].
+* For [[being]]s and [[entity|entities]], interactions can have complex chains of intent for the interactor, such as initiating an output to gain an input to be able to perform another output and so on.
+
+==Examples==
+* '''Movement''', to displace the interactor's [[Being#Body|body]], or a part of a body.
+* '''Perception''', to gather information from reality about [[thing]]s.
+* '''Consumption''' and '''Excretion''', to sustain a being.
+* '''[[Communication]]''', to convey information to another [[entity]].
+<small>AI Disclaimer: This article is 100% human written.</small>

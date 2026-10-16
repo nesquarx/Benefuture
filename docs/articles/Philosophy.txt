@@ -1,0 +1,124 @@
+[[category:Benefuture]]
+'''[[Benefuture]]''' is a framework based on '''Cognitive Progressive Utilitarianism'''. It posits that the ultimate ethical [[Benefuture goals|goal]] is the maximization of value, defined as the composition of [[understanding]] then [[happiness]], where understanding is the weighted prerequisite for sustainable happiness, with extra credit where the two reinforce each other (synergy).
+
+It is '''Cognitive''' because it prioritizes [[understanding]], defined as the optimization of cognitive entropy via increasing predictive capacity and parsimonious causal modeling - over [[happiness]], defined as positive affective satisfaction - in the hierarchy of values.
+
+It is '''Progressive''' because it employs a dynamic control [[System Design|system]] for [[Progressive complexity|progressive strategies]] granularizing two level ethical calculation: rule utilitarianism within established, repeatable scenarios to minimize overhead and cognitive load, employing varying levels of act utilitarianism for novel, high-stakes, or disputed parts of [[Interaction|interactions]] to capture nuance and update the rules<ref>Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32.</ref><ref name=":0" />. This follows from the cognitive prior: if understanding is primary, then rules are provisional models subject to Popperian revision by better understanding.
+
+It is '''Utilitarian''' because moral worth is determined by contribution to aggregate value across all [[being]]s over time, in the consequentialist tradition<ref>Sinnott-Armstrong, W. (2023). Consequentialism. In E. N. Zalta (Ed.), ''The Stanford Encyclopedia of Philosophy''.</ref>.
+
+'''Formal statement''': For any action, its utility is determined by its contribution to the [[Goals|function]]: the change it makes in [[Understanding]], [[Happiness]] and [[Diversity|Novelty]], assessed against not acting and weighted so that understanding counts for more than happiness, and happiness for more than novelty (1>α>β>γ...). These are combined through a [[Benefuture goals#Mathematical approach|synergy]] operator which rewards them moving together beyond the sum of the parts. [[Harm]] enters as a weight on losses, heavier for the more severe kinds. The trade-offs are continuous, and understanding leads through its larger weight. For derivation and mechanics, see [[goals]] and [[measurement]].
+
+==Lineage==
+Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism<ref>Nietzsche, F. (1901/1968). ''The Will to Power''. (W. Kaufmann, Trans.). Vintage.</ref>, Sartrean existentialism<ref>Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007.</ref>, and Camus's absurdism<ref>Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard.</ref>. Values are created rather than discovered, purpose chosen rather than given. The framework is therefore pragmatic <ref>Dewey, J. (1939). ''Theory of Valuation''. University of Chicago Press.</ref> and thus consequentialist in pursuing its imposed maximands validated by [[Outcome|outcomes]] instead of metaphysical sanction.
+
+===Classical Utilitarianism===
+
+Classical utilitarianism established that moral worth is determined by contribution to overall utility, originally defined as maximization of pleasure and minimization of pain<ref>Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789).</ref>. Mill refined this to distinguish higher and lower pleasures, introducing an intellectual dimension<ref>Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn.</ref>. Sidgwick systematized the framework, identifying the tension between egoistic and universal hedonism<ref>Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan.</ref>.
+
+Cognitive Progressive Utilitarianism accepts the consequentialist structure but rejects happiness as the sole maximand. It treats [[happiness]] as a noisy signal—an indicator of alignment with evolutionary pressures rather than the engine of flourishing itself.
+
+=== Utilitarian variants ===
+Preference utilitarianism already moved past hedonism, substituting preference-satisfaction as the maximand <ref>Singer, P. (1979). ''Practical Ethics''. Cambridge University Press.</ref> and establishing the need to switch between act and rule <ref name=":0">Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press.</ref> and setting up the requirement for [[Progressive complexity|progressive]] resolution. Ideal utilitarianism (Moore, Rashdall) granted knowledge (and others) as intrinsic value alongside pleasure<ref>Moore, G. E. (1903). ''Principia Ethica''. Cambridge University Press.</ref>; epistemic consequentialism evaluates beliefs by their accuracy and truth-conduciveness <ref>Goldman, A. I. (1986). ''Epistemology and Cognition''. Harvard University Press.</ref>. 
+
+===Decision Theory===
+
+Modern utility theory, formalized by von Neumann and Morgenstern, treats utility as that which rational agents maximize under uncertainty<ref>von Neumann, J., & Morgenstern, O. (1944). ''Theory of Games and Economic Behavior''. Princeton University Press.</ref>. Savage extended this to subjective probability<ref>Savage, L. J. (1954). ''The Foundations of Statistics''. Wiley.</ref>. These frameworks are agnostic about utility's content—they formalize ''how'' to maximize, not ''what'' to maximize.
+
+Cognitive Progressive Utilitarianism addresses the instability of revealed preferences under hedonic adaptation<ref>Frederick, S., & Loewenstein, G. (1999). Hedonic Adaptation. In D. Kahneman, E. Diener, & N. Schwarz (Eds.), ''Well-Being: The Foundations of Hedonic Psychology'' (pp. 302–329). Russell Sage Foundation.</ref> and the reference-dependence problems identified by prospect theory<ref>Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. ''Econometrica'', 47(2), 263–291.</ref> by updating the target: utility is understanding-prioritized happiness, with understanding providing the stable, compoundable substrate that hedonic utility lacks. [[Understanding]] inherits and subsumes all of the previous by prioritizing the meta capacity that mitigates reference dependence, optimizes preferences, knowledge, discernment of beauty, [[Truth|truth-levels]], and both lower and higher pleasures; [[benefuture]] addresses subgoal-formation beyond just their satisfaction. Making way for finding better subgoals to optimize for.
+
+===Rationalist Ethics===
+Distinct philosophical traditions have argued that [[understanding]]—the accurate mapping of [[reality]]—must logically precede satisfaction. Plato's truer reality can only be gleaned via understanding, he also positioned knowledge (''episteme'') above opinion (''doxa'') and sensation <ref>Plato. (1992). ''Republic''. (G. M. A. Grube & C. D. C. Reeve, Trans.). Hackett. (Original work c. 375 BCE).</ref> and ranked intellectual pleasures above the bodily, concluding that knowledge combined with moderate pleasure constitutes the good life, while pleasure without wisdom is mere animal existence<ref>Plato. (1993). ''Philebus''. (D. Frede, Trans.). Hackett. (Original work c. 360 BCE).</ref>. Aristotle's unmoved mover is rooted in cogitation, he identifies ''theoria'' (contemplation) as the highest human activity, the exercise of our distinguishing function and the most self-sufficient form of flourishing<ref>Aristotle. (2009). ''Nicomachean Ethics''. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE).</ref>. Spinoza defined freedom as the triumph of understanding over the bondage of passive emotions<ref>Spinoza, B. (1985). ''Ethics''. (E. Curley, Trans.). Princeton University Press. (Original work published 1677).</ref>. Kant argued that if happiness were life's goal, instinct would suffice; reason exists to produce a good will aligned with universal law<ref>Kant, I. (1998). ''Groundwork of the Metaphysics of Morals''. (M. Gregor, Trans.). Cambridge University Press. (Original work published 1785).</ref>. Hegel's process of ''Geist'' being epistemological in nature, positions comprehension rather than satisfaction as the telos of existence<ref>Hegel, G. W. F. (1977). ''Phenomenology of Spirit''. (A. V. Miller, Trans.). Oxford University Press. (Original work published 1807).</ref>. The Stoics maintained that harm is fundamentally an error in judgment, identifying epistemic clarity as the only robust shield against suffering<ref>Aurelius, M. (2002). ''Meditations''. (G. Hays, Trans.). Modern Library. (Original work c. 180).</ref>.
+
+Beyond cogitation and predictive accuracy, Aristotle's four causes (material, formal, efficient, final) established the foundational Western framework for what constitutes an adequate explanation<ref>Aristotle. (c. 350 BCE). ''Posterior Analytics''. In J. Barnes (Ed.), ''The Complete Works of Aristotle'' (Vol. 1). Princeton University Press, 1984.</ref>. Hempel formalized scientific explanation as logical derivation from general laws and initial conditions<ref>Hempel, C. G., & Oppenheim, P. (1948). Studies in the logic of explanation. ''Philosophy of Science'', ''15''(2), 135-175.</ref>. Deutsch argues that good explanations, which are hard to vary while still accounting for phenomena, are more fundamental than predictive accuracy alone<ref>Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press.</ref>. Benefuture takes both predictive and causal modeling into account.
+
+===Cross-Cultural Convergence===
+
+The prioritization of order or truth analogues over affective satisfaction recurs independently across civilizations:
+
+* '''Aztec''': ''Neltiliztli'' (rootedness in truth) over happiness, which was considered treacherous<ref>Maffie, J. (2014). ''Aztec Philosophy: Understanding a World in Motion''. University Press of Colorado.</ref>.
+* '''Confucian:''' ''Zhi'' (Wisdom) is the ability to judge the character of others and predict the outcomes of actions. It is the prerequisite for ''Ren'' (Benevolence)<ref>Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books.</ref>.
+* '''Vedic''': ''Sat'' (truth/existence) as structural prerequisite for ''Ananda'' (bliss)<ref>Shankara. (1979). ''Upadesasahasri''. (S. Mayeda, Trans.). University of Tokyo Press.</ref>. The highest good in '''Nyaya''' (''Nihsreyasa'') unattainable without ''Tattva-jnana'' (knowledge of reality)<ref>Vatsyayana. (1913). ''Nyaya Sutra Bhashya''. (S. C. Vidyabhusana, Trans.). Panini Office.</ref>.
+* '''Buddhist:''' ''Yatha-bhuta-nana-dassana'' - the ability to perceive and model reality (see things as they are) as a key predecessor to end suffering<ref>''Samyutta Nikaya'' (12.23). In ''The Connected Discourses of the Buddha''. (B. Bodhi, Trans., 2000). Wisdom Publications.</ref>.
+* '''Zoroastrian''': Alignment with ''Asha'' (cosmic order) against ''Druj'' (entropy) as the definition of the good life<ref>Boyce, M. (1975). ''A History of Zoroastrianism''. Brill.</ref>.
+* '''Sumerian''': Humanity's purpose as executing the ''Me'' (divine functions)—society as machine requiring maintenance, not vehicle for leisure<ref>Kramer, S. N. (1963). ''The Sumerians: Their History, Culture, and Character''. University of Chicago Press.</ref>.
+* '''Maori''': ''Kaitiakitanga'' (guardianship) and ''Whakapapa'' (causal layering), placing systemic continuity above individual benefit<ref>Kawharu, M. (2000). Kaitiakitanga: A Maori Anthropological Perspective. ''The Journal of the Polynesian Society'', 109(4), 349–370.</ref>.
+
+This convergence suggests the cognitive prior tracks a structural feature of sustainable systems rather than a culturally contingent preference. Which is not to say all civilizations optimized for understanding analogues, but civilizations which maintained creative vitality attempting different forms of understanding analogues such as philosophy, science, and art, tended toward greater historical impact<ref>Toynbee, A. J. (1934–1961). ''A Study of History''. Oxford University Press.</ref>, their works surviving as ideological inheritance long after political collapse.
+
+=== Contemporary Positioning ===
+The capabilities approach shares this skepticism of hedonic and preference measures, focusing on what [[Being|beings]] can do and be.<ref>Sen, A. (1985). ''Commodities and Capabilities''. North-Holland.</ref><ref>Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press.</ref> While capabilities approaches specify a list of distinct capacities, [[benefuture]] posits [[understanding]] as the meta-capability that grounds, generates, and adjudicates all capacities.
+
+Effective Altruism represents the most developed contemporary attempt to operationalize consequentialist ethics through rigorous [[measurement]].<ref>MacAskill, W. (2022). ''What We Owe the Future''. Basic Books.</ref><ref>Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette.</ref> [[Benefuture]] shares the commitment to evidence-based evaluation and long time horizons, but specifies [[understanding]] as the meta-capacity grounding all evaluation - attempting to resolve the specification problem that leaves EA frameworks agnostic between competing theories of value.
+
+===The Joy of Understanding===
+
+Multiple traditions identify the process of learning itself as the highest form of satisfaction—not understanding as means to happiness, but understanding ''as'' happiness in its most stable form. Aristotle opens the ''Metaphysics'' with "all men by nature desire to know," positioning this desire as fundamental rather than instrumental<ref>Aristotle. (1984). ''Metaphysics''. (W. D. Ross, Trans.). In J. Barnes (Ed.), ''The Complete Works of Aristotle''. Princeton University Press. (Original work c. 350 BCE).</ref>. Aquinas argued that contemplation of truth is more delightful than any other pleasure, with the beatific vision—direct knowledge—as the supreme joy<ref>Aquinas, T. (1947). ''Summa Theologica''. Benziger Bros. (Original work c. 1274).</ref>. Leibniz defined pleasure itself as "the feeling of perfection," where perfection is the comprehension of order and harmony—joy is not a reward for understanding but understanding's phenomenology<ref>Leibniz, G. W. (1989). Principles of Nature and Grace. In ''Philosophical Essays''. (R. Ariew & D. Garber, Trans.). Hackett. (Original work published 1714).</ref>. True felicity is "continuous progress to new pleasures and new perfections"—the process of learning, not arrival at a state. In Islamic philosophy, Al-Ghazali distinguished ''ladhdhat al-'ilm'' (the pleasure of knowledge) as surpassing all sensory pleasures<ref>Al-Ghazali. (2016). ''The Book of Knowledge''. (K. Honerkamp, Trans.). Fons Vitae. (Original work c. 1097).</ref>. Confucius opens the ''Analects'' with "Is it not a pleasure to learn?"—the first pleasure named<ref>Confucius. (2003). ''Analects''. (E. Slingerland, Trans.). Hackett. (Original work c. 500 BCE).</ref>. The Vedantic term ''Jnananandam'' (bliss of knowledge), phoneticized in Benefuture as ''Gyananandam'', captures this synthesis: understanding and bliss are not sequential but unified. Modern neuroscience confirms the structure in humans: curiosity activates reward circuitry directly, with information gain processed as intrinsically rewarding independent of external utility<ref>Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psychological Science'', 20(8), 963–973.</ref>.
+
+==Empirical Support==
+
+Modern research validates the hierarchy and establishes the nature of improving understanding as a meta-competency enhancer regardless of base capacity:
+
+'''Compoundability''': Training in inductive reasoning significantly improves fluid intelligence, demonstrating that understanding-capacity is upgradeable across a single lifetime <ref>Klauer, K. J., & Phye, G. D. (2008). Inductive Reasoning: A Training Approach. ''Review of Educational Research'', 78(1), 85–123.</ref><ref>Ritchie, S. J., & Tucker-Drob, E. M. (2018). How Much Does Education Improve Intelligence? ''Psychological Science'', 29(8), 1349–1362.</ref>. While generationally and across large populations, the compounding accelerates <ref>Tomasello, M. (1999). ''The cultural origins of human cognition''. Harvard University Press.</ref><ref>Romer, P. M. (1990). Endogenous technological change. ''Journal of Political Economy'', ''98''(5), S71–S102.</ref><ref>Fuller, R. B. (1981). ''Critical path''. St. Martin's Press.</ref>.
+
+'''Validity of causal reasoning''': Critical thinking ability is a stronger predictor of avoiding severe negative life outcomes than raw intelligence<ref>Butler, H. A., Pentoney, C., & Bong, M. P. (2017). Predicting Real-World Outcomes: Critical Thinking Ability is a Better Predictor of Life Decisions than Intelligence. ''Thinking Skills and Creativity'', 24, 38–46.</ref>. Cognitive outcomes underpin classical utilitarian judgements<ref>Baron, J., Scott, S., Fincher, K., & Emlen Metz, S. (2015). Why does the Cognitive Reflection Test (sometimes) predict utilitarian moral judgment (and other things)?''Journal of Applied Research in Memory and Cognition, 4''(3), 265–284. <nowiki>https://doi.org/10.1016/j.jarmac.2014.09.003</nowiki></ref>. Rationality and intelligence are partially dissociable constructs<ref>Stanovich, K. E. (2009). ''What Intelligence Tests Miss: The Psychology of Rational Thought''. Yale University Press.</ref>.
+
+'''Biophysical grounding''': The free-energy principle defines survival as minimization of surprise via accurate internal modeling<ref>Friston, K. (2010). The free-energy principle: a unified brain theory? ''Nature Reviews Neuroscience'', 11(2), 127–138.</ref>.
+
+'''Economic returns''': Meta-cognitive capabilities - regulation, planning, communication etc. - yield higher long-term returns than raw cognitive resources<ref>Heckman, J. J., & Kautz, T. (2012). Hard Evidence on Soft Skills. ''Labour Economics'', 19(4), 451–464.</ref>.
+
+==Objections and Responses==
+
+===Against Cognitive Priority===
+
+'''Objection''': Hedonic welfare is the only intrinsically valuable state; understanding is merely instrumental<ref>Crisp, R. (2006). ''Reasons and the Good''. Oxford University Press.</ref>.
+
+'''Response''': If understanding were purely instrumental, its value would reduce to the hedonic states it enables. But understanding satisfies criteria for intrinsic value: it is sought for its own sake, it is non-fungible (one cannot substitute ignorance plus pleasure for knowledge), and it exhibits diminishing marginal substitutability with hedonic goods. Furthermore, hedonic states are unstable under adaptation<ref>Brickman, P., & Campbell, D. T. (1971). Hedonic Relativism and Planning the Good Society. In M. H. Appley (Ed.), ''Adaptation Level Theory: A Symposium'' (pp. 287–302). Academic Press.</ref>, while understanding accumulates.
+
+===Against Lexical Priority===
+
+'''Objection''': Lexical ordering is too rigid; trade-offs between understanding and happiness should be continuous<ref>Griffin, J. (1986). ''Well-Being: Its Meaning, Measurement and Moral Importance''. Oxford University Press.</ref>.
+
+'''Response''': The calculation is continuous. Understanding leads happiness through a larger weight, and actions which increase both are rewarded beyond the sum of the two through [[Benefuture goals#Synergy Override|synergy]]. A large enough gain in happiness can therefore still outweigh a small gain in understanding. What keeps this from sliding into wireheading, where hedonic maximization undermines systemic function, is structural: peak pleasure sits in the lowest tier of happiness, happiness carries the smaller weight, and a state of pure pleasure has no gain in understanding to pair with, so it never earns the synergy bonus.
+
+===Against Consequentialism Generally===
+
+'''Objection''': Consequentialism alienates agents from their personal projects and relationships<ref>Williams, B. (1973). A Critique of Utilitarianism. In J. J. C. Smart & B. Williams, ''Utilitarianism: For and Against'' (pp. 77–150). Cambridge University Press.</ref><ref>Railton, P. (1984). Alienation, Consequentialism, and the Demands of Morality. ''Philosophy & Public Affairs'', 13(2), 134–171.</ref>.
+
+'''Response''': The progressive element addresses this: rule utilitarianism governs ordinary life, permitting personal projects and partial relationships within established norms. Act-utilitarian calculation is reserved for granular nuanced fine tuning when available, or novel or high-stakes situations as needed. This matches Railton's "sophisticated consequentialism" while grounding the rules in understanding rather than convention.
+
+==Philosophical Parallels in Benefuture Concepts==
+
+Several [[Benefuture]] concepts parallel positions in existing philosophical literature:
+
+===Morality===
+
+[[System Design|Morality]] is defined as recognition of the extended [[Being#Self|self]]—the network of interactions between the [[sophont]] and [[reality]]—resulting in rejection of one-shot game reasoning. This parallels:
+* '''Deep Ecology''': Self-realization requires identification with the wider ecosystem<ref>Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press.</ref>.
+* '''Ubuntu''': Personhood is relational; isolated existence is rejected<ref>Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday.</ref>.
+* '''Iterated game theory''': Cooperation emerges when future interactions are valued<ref>Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books.</ref><ref>Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563.</ref>.
+* '''Buddhism:''' dependent origination (''pratītyasamutpāda'') denies isolated selfhood<ref>Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press.</ref>.
+
+The rejection rests on two independent arguments. The first is internal: the memory of an interaction is itself an outcome in the [[Being#Self|self]] that took part, so no interaction leaves the self unchanged and its causal contribution back to the self is never zero. The second is external: a one-shot game would need an interaction that can be neither perceived nor changed, and [[reality]] is defined as what can be perceived or changed, so any such interaction lies outside it. Anonymity, terminal states and extinction-scale acts all fall to this second argument first. A contribution can still be too small to estimate.
+
+===Justice===
+
+[[Justice]] is defined as systemic course correction and restoration rather than retribution. This parallels:
+* '''Ma'at''' (Egyptian): Justice as maintenance of cosmic order against chaos<ref>Karenga, M. (2004). ''Maat, The Moral Ideal in Ancient Egypt''. Routledge.</ref>.
+* '''Mu'tazila theology''': Justice (''Adl'') as objective, rational property discoverable by reason (''Aql'')<ref>Hourani, G. F. (1985). ''Reason and Tradition in Islamic Ethics''. Cambridge University Press.</ref>.
+
+===Identity===
+
+[[Being#Identity|Identity]] is rooted in causal pattern and history rather than metaphysical substance. This parallels:
+* '''Parfit''': Personal identity as psychological continuity, not soul-substance<ref>Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press.</ref>.
+* '''Whakapapa''' (Maori): Identity as causal layering<ref>Roberts, M. (2013). Ways of Seeing: Whakapapa. ''Sites'', 10(1), 93–120.</ref>.
+* '''Process philosophy''': Identity as trajectory of becoming rather than static state<ref>Whitehead, A. N. (1929). ''Process and Reality''. Macmillan.</ref>.
+
+==Self-Application==
+
+The framework applies its own principles reflexively. If Cognitive Progressive Utilitarianism becomes a monoculture yielding diminishing returns to value, it must yield to superior alternatives. This follows from the [[diversity]] axiom: no system, including this one, is exempt from the requirement to demonstrate ongoing contribution to understanding and happiness. For the formal statement, see [[Benefuture goals#Vision|Possible Obsolescence]].
+
+==References==
+<references/>
+
+<small>AI Disclaimer: This article is 80% human notes with 20% AI-assisted literature review and formatting.</small>

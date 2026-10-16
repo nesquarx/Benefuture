@@ -1,0 +1,45 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+Within [[Benefuture]], '''reputation''' is a non-transferable measure of an [[Entity|entity's]] demonstrated contribution to societal [[Understanding]] (U) and [[Happiness]] (H) within specific domains. It is a form of social capital that is earned through consistent positive impact, not through wealth or status. It is not inheritable.
+
+== Aspects ==
+
+*   '''Earned, Not Bought:''' Reputation is earned through actions that generate [[benefuture currency]] above [[significant]] baselines. It ''cannot'' be purchased, traded, or transferred.
+*   '''[[Domain]]-Specific:''' Reputation is specific to areas of expertise or contribution. High reputation in one domain does not automatically confer reputation in another.
+*   '''Ledger asymmetry:''' Negative and positive reputation are summed separately and do not cancel each other <ref name="Rozin2001">Rozin, P., & Royzman, E. B. (2001). Negativity bias, negativity dominance, and contagion. ''Personality and Social Psychology Review'', ''5''(4), 296–320.</ref>. A synthesized score exists for general usage but the individual sums and details are always transparent.
+*   '''Dynamic:''' Reputation scores are continuously updated based on an individual's ongoing contributions and the assessments of the [[Technology Network]]. Clawbacks can reduce reputation.
+*   '''Based on [[Currency]] Generation:''' The primary input for calculating reputation is the amount of [[benefuture currency]] an individual has generated  or destroyed through U/H-increasing activities (above the baseline).
+*   '''Causal Distance Influence:''' The flow of [[Benefuture currency#Discussion|causal distribution]] further refines reputation by considering the impact an individual has had on others.
+*    '''Non-Transferable:''' Reputation is intrinsically linked to an individual's [[identity]] and cannot be transferred.
+*   '''Used for Weighting:''' Domain specific reputation scores of [[Sophont|sophonts]] are used to weigh votes in the [[Government|expertise-weighted direct democracy]] system.
+*   '''Resilience:''' As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures, [[Adversarial adaptation]] and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+== Calculation ==
+
+The precise algorithm and [[Threshold of significance|thresholds]] for calculating reputation is determined and dynamically adjusted by the [[Technology Network]]. It considers factors such as:
+
+*   The amount of [[benefuture currency]] generated through U/H-increasing activities (above the baseline).
+*   The consistency of U/H generation over time.
+*   The domain-specificity of the contributions.
+*   The impact on others, as measured by the [[Benefuture currency#Causal Distribution|causal contribution]] to their understanding and happiness.
+*   The [[Diversity|novelty]] of the contributions, counted as its own term in each domain.
+*   Feedback and evaluations from other individuals within the relevant domain (with safeguards against manipulation).
+
+== Preventing Manipulation ==
+
+The system incorporates several mechanisms to prevent manipulation of reputation scores:
+
+*   '''Non-Transferability:''' Makes reputation farming impossible.
+*   '''Transparency:''' The factors contributing to an individual's reputation score are publicly visible (to the extent allowed by privacy considerations).
+*   '''Decentralized Assessment:''' The [[Technology Network]] relies on a distributed network of nodes for assessment, reducing the risk of centralized bias.
+*   '''Auditing and Oversight:''' The reputation system is subject to ongoing auditing and oversight to detect and address any attempts at manipulation.
+* '''Time Discounting''': Older activities contribute lesser to the synthesized score.
+
+== Examples ==
+* A scientist consistently publishing high-impact research in a specific field will have a high reputation within that field. Their votes on matters related to that field will carry more weight.
+* An artist who creates works that demonstrably increase societal happiness (measured through various metrics) will gain reputation within the artistic community.
+* A community organizer whose efforts lead to measurable improvements in local well-being will gain reputation within the community and in the field of organising skills.
+* An individual attempting to artificially inflate their reputation by creating fake accounts or engaging in other manipulative behaviors will be detected by the [[Technology Network]] and penalized.
+
+=== References ===
+<references />
+----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes.</small>

@@ -1,0 +1,10 @@
+{
+  "name": "bf-test",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "graph:build": "node tools/bf-graph/build-graph.mjs",
+    "graph:watch": "node tools/bf-graph/build-graph.mjs --watch"
+  }
+}

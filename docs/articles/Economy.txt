@@ -1,0 +1,18 @@
+[[category:Benefuture]] [[Category:Definitions]] [[Category:WorldBuilding]]
+An economy is the process of production, distribution, exchange and consumption of resources and value in a [[civilization]].
+
+In a [[benefuture]] economy, value is defined to be [[understanding]] and [[happiness]], and resources are consumable [[Thing|things]] like goods, services, information and even time. They are all managed via a [[Benefuture currency]].
+
+== Aspects ==
+
+* We model the benefuture economy as a system which consumes resources and time, uses [[Benesophont|sophonts]] as a medium, to produce [[understanding]] and [[happiness]] for all beings in a [[civilization]].
+* The major medium of defining value for exchange is [[currency]], human definitions of value in currency and the promises around it (demand, supply, debt, speculation) have largely defined our economies.<ref>Galbraith, J. K. (1975). ''Money: Whence it came, where it went''. Houghton Mifflin.</ref>
+*Traditional models initially started from exchange value, then focused on productivity, and is now often driven by fiat of speculative forces increasingly detached from [[reality]] across [[social networks]].<ref>Keen, S. (2011). ''Debunking economics: The naked emperor dethroned?'' Zed Books.</ref><ref>Krippner, G. R. (2011). ''Capitalizing on crisis: The political origins of the rise of finance''. Harvard University Press. </ref>
+*The benefuture economic model aims to correct for this goal drift by repeatedly tuning economical forces to [[influence]] participants who can otherwise be irrational to maximize the [[benefuture goals]].
+*A benefuture economy is heavily dependent upon technology and communication, but its roots lie in defining the [[benefuture currency]] to constantly map resources to the goals.
+*As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+== References ==
+<references />
+
+----<small>AI Disclaimer: This article is 5% AI compiled with 95% human notes.</small>

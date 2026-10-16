@@ -1,0 +1,12 @@
+[[category:Benefuture]] [[Category:Definitions]]
+A statement is said to be true if it can be [[proof|proven]] to be valid in [[reality]]. If not, the statement is speculation, opinion, or [[untruth]].
+
+==Aspects==
+* Truth is not a binary, it is also contextually multi-dimensional, the levels can vary from absolute [[untruth]] to practically absolute truth.
+* The same statement can have differing levels of truth in different contexts.
+* The level varies with the source and quality of proof.
+* Absolute objective truth is unattainable, but worthwhile to pursue.
+* The level of truth and its context is an important metadata about any statement.
+* Source of information can help estimate the level of truth, but not decide it.
+* Unprovable statements cannot be considered as truth of any kind.
+----<small>AI Disclaimer: This article is 100% human written.</small>

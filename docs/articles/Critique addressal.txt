@@ -1,0 +1,246 @@
+[[Category:Benefuture]] [[Category:Philosophy]]
+Every critique of [[Benefuture]] implicitly endorses either the status quo or a specific alternative. This article steelmans concerns, then addresses them on their own terms. The framework is designed to reward the discovery of its own flaws (see [[Adversarial adaptation]]). This article is itself an instance of that design principle.
+
+== Treatment Notes ==
+
+'''The Bootstrap Problem.''' Every [[Measurement|metric model]], [[Law|law]], [[Reputation|reputation]] estimate, and [[Benefuture currency|currency]] in a new deployment must begin somewhere — without track records, with estimated reputations, with provisional laws. The [[System Design#Evolutionary Bootstrapping|evolutionary bootstrapping]] principle: bootstrap with the best available contemporary [[Understanding|understanding]] of [[Reality|reality]], making the worst failure mode at least equal to already entrenched systems, then evolve via [[Adversarial adaptation|adversarial]], incremental, and novel methods. The bootstrap is not guaranteed to be right. It is guaranteed to be correctable. The [[Implementation prototype]] documents how: parallel operation, phased rollout, conservative [[Benefuture currency#Aspects|probabilistic escrow]], continuous adversarial refinement.
+
+'''Comparative framing.''' Benefuture is not utopian. It is an attempt to improve on observed reality, built by studying reality's failure modes, and reality is therefore the benchmark. Where critiques are evaluated comparatively below, this is noted but kept secondary to the intrinsic response. The comparative is necessary — many objections implicitly endorse a status quo that fails identically or worse — but it is not sufficient, and the framework's own epistemology demands that distinction.
+
+'''Invitation.''' Throughout, we welcome critics to propose specific alternatives rather than objecting in the abstract, and to explore what irrational, malicious, or indifferent actors would make of each mechanism — learning from today's reality is how Benefuture was built, and adversarial stress-testing is how it improves.
+
+== Measurement and Epistemology ==
+
+=== "You cannot measure understanding or happiness" / "Some domains are fundamentally illegible" ===
+
+'''The concern:''' [[Understanding]] and [[Happiness|happiness]] are subjective, multidimensional, culturally contingent, and resist quantification. Some domains — meaning, aesthetic value, spiritual experience — may be fundamentally illegible to predictive modelling.
+
+'''The response:''' If a state is perceivable, it produces markers. If it produces markers, it is measurable. What is truly imperceivable is conjecture — Russell's teapot. The question is not whether measurement is possible but whether it is accurate enough to be useful, and whether it improves over time.
+
+Benefuture claims adversarially-improving approximation via [[Measurement#Aspects|competing metric models]] tested against [[Reality|reality]], audited independently, subject to [[Measurement#Aspects|sunset clauses]], and open-source. It does not claim perfect measurement. Domains that resist quantification get wider [[Benefuture currency#Aspects|probabilistic escrow]] holds, less confident [[Benefuture currency#Causal Distribution|causal attribution]], and more reliance on established markers. [[Progressive complexity]] adapts resolution to what is achievable rather than forcing legibility onto the illegible. [[Benefuture goals#Novelty|Novelty]] bonuses reward new measurement approaches for previously neglected domains.
+
+''Comparative: GDP, standardised testing, credit scores — single-metric, non-competing, non-self-correcting. Current systems do not gracefully degrade for hard-to-measure domains; they make them invisible (care work, ecological services, community cohesion).''
+
+=== "Goodhart's Law will destroy your metrics" / "The framework assumes convergence" ===
+
+'''The concern:''' When a measure becomes a target, it ceases to be a good measure. Models can Goodhart against each other, producing mutually reinforcing proxies disconnected from [[Reality|reality]]. Over time, competing models may settle on local optima that look like convergence but are not.
+
+'''The response:''' Benefuture treats Goodhart as a permanent adversary, not a solvable problem. [[Measurement#Aspects|Competing metric models]] prevent any single metric from becoming ''the'' target. [[Adversarial adaptation]] rewards demonstrating gaming more than gaming itself pays. [[Measurement#Aspects|Sunset clauses]] retire outperformed models. [[System Design#Circularity Detection|Circularity detection]] identifies models that correlate with each other rather than with [[Reality|reality]]. Anti-herding mechanisms reduce confidence when inter-model correlation is excessive.
+
+Goodhart's law has been divided into four variants ([https://arxiv.org/abs/1803.04585 Manheim & Garrabrant, 2018]), and each is met a little differently. The regressional variant, where selecting on a noisy proxy overstates the result, is met by novel markers, which keep the set of proxies moving. The causal and extremal variants, where acting on a proxy that doesn't cause the goal or pushing it past the range where it holds breaks the link, are met by requiring causal explanation and joint correlation among markers within a declared range and declared confounders. The adversarial variant, where agents deliberately game the measure, is met by [[Adversarial adaptation]].
+
+On convergence: the framework expects convergence in ''value amplitudes toward [[Truth|truth]]'' — models getting better at predicting reality. Convergence of ''value vectors'' — models collapsing toward a single approach — would be pathological. The sunset clause requires outperformance across ''all'' dimensions, not just aggregate score, preventing premature consensus. Adversarial adaptation specifically rewards demonstrating that apparent convergence is actually local optima.
+
+The arms race is acknowledged and permanent. The design goal is antifragility, not invulnerability.
+
+''Comparative: current metrics have no competing-model structure, no adversarial auditing, no sunset clauses, no circularity detection, and no mechanism for detecting local optima. They settle on institutional consensus and are Goodharted routinely.''
+
+=== "Causal attribution is philosophically unsolvable" ===
+
+'''The concern:''' Tracing [[Benefuture currency#Causal Distribution|causal contribution]] through [[System Design#Behavioral Transaction Substrate|transaction trees]] assumes causation can be decomposed and attributed proportionally. Philosophy of causation does not support clean decomposition at this granularity.
+
+'''The response:''' Perfect attribution is not claimed. Probabilistic approximation with competing models, fallback heuristics, transaction log traversal with decay over degrees of separation, netting along a chain of what each entity paid onward against what it received so that each link is credited for the value it added and not the volume passing through it, and [[Justice|dispute resolution]] for contested cases. The system degrades gracefully: precise where chains are clear, coarser where ambiguous, with larger [[Benefuture currency#Aspects|escrow]] holds for uncertain cases.
+
+''Comparative: market price attributes zero value to unpaid labour, ecosystem services, and long-term knowledge generation. Most contributions go entirely unattributed. Best formal analogue: Shapley value decomposition, which faces the same scaling challenges.''
+
+== Governance and Power ==
+
+=== "This is a social credit system" / "Epistocracy" / "Who watches the watchmen?" ===
+
+'''The concern:''' [[Reputation]] scoring and behavioural tracking resemble authoritarian social credit. Domain reputation gating vote weight is philosopher-king governance. [[Administration|Administrators]], [[Measurement#Aspects|metric model]] creators, and [[System Design|system designers]] all have leverage, and any oversight structure can be captured.
+
+'''The response:''' A social credit system is how to implement Benefuture wrong. The structural differences: Benefuture [[Reputation|reputation]] is domain-locked (no halo, no horn — your ceramics reputation says nothing about your hydrology competence), computed by [[Measurement#Aspects|competing metric models]] (no single authority), structurally incapable of producing a single score (the architecture prevents it), and corrective rather than punitive.
+
+On epistocracy: the biggest voices in [[Government|governance]] are ''affected experts'' — those with both [[Reputation|domain competence]] and direct [[Government#Decision-Making Process|impact]]. This is bounded epistemic weighting within a democratic structure, not rule by the knowledgeable regardless of stake. [[Government#Aspects|Liquid Benefuture democracy]] provides exit valves: delegation to trusted experts, retractable at any time, with cumulative caps preventing proxy concentration. Axiom-level arguments carry weight independent of the arguer's reputation. Low-weight voters retain participation rights.
+
+On capture: [[Administration|administrators]] maintain systems; they do not rule, and are among the most scrutinised entities in the framework. [[Benesophont#Aspects|Sophont oversight]] provides intervention by high-reputation [[Benesophont|sophonts]] across systems-security and ethics domains. The primary observers are transparent, open-source metric models watched by domain, systems, and ethics specialists — who are watched by [[Adversarial adaptation|adversarial adaptation]] specialists, who are watched by competing adversarial adaptation specialists. This is a network of mutual oversight, not a tree with a single root. The core principle: adversarial adaptation ensures reporting flaws pays more than exploiting them — a manufactured prisoner's dilemma where revelation dominates exploitation.
+
+''Comparative: current reality operates implicit social credit (credit scores, criminal records, social media reputation) — opaque, non-competing, domain-bleedable. Current democracies produce governance by the enthusiastic; current technocracies concentrate expertise without democratic accountability. Current oversight structures feature regulatory capture, revolving doors, and no structural incentive to discover their own flaws.''
+
+=== "Mandatory voting for high-weight decisions is coercive" ===
+
+'''The concern:''' High expertise or high impact means you must vote. This conscripts expertise.
+
+'''The response:''' Not requiring it produces diffusion of responsibility and bystander effects — the most qualified people opt out, leaving decisions to the enthusiastic and the self-interested. Mandatory participation is the cost of having weight. Voter fatigue is mitigated by adjusting [[Threshold of significance|thresholds]] to keep mandatory voting to realistic low intrusion. The alternative — optional participation by those most qualified — is the current system, which produces governance by whoever shows up.
+
+''Comparative: Australia, Belgium, Brazil mandate voting for all citizens with less justification.''
+
+== Privacy and Surveillance ==
+
+=== "Surveillance state" / "Strict identity binding" / "The Unbroken Memory is a panopticon" ===
+
+'''The concern:''' Biosensors, [[System Design#Behavioral Transaction Substrate|transaction logging]], [[Benefuture goals#Vision|Unbroken Memory]] — the data exists, even with privacy tiers. One [[Entity|entity]], one [[Being#Identity|identity]] — no pseudonyms, no anonymous whistleblowing. Immutable records of all significant actions forever produce self-censorship and risk aversion.
+
+'''The response:''' All surveillance in Benefuture is bidirectional. The [[Technology Network#Aspects|Technology Network privacy model]] operates in structured layers: differential privacy for generic queries (no individual reconstructable from aggregate), two-way visibility for specific queries (when someone views your data, you know it and can view theirs), [[Education#Aspects|infohazard]]-gated access to personally identifiable information, and transparent access logging — the system watches you; you watch the system watching you. Opt-out tiers preserve full [[Benesophont#Aspects|sophont baseline]] regardless of data collection level.
+
+On anonymity: [[Philosophy|consequentialism]] fails with anonymity — if [[Outcome|outcomes]] cannot be traced to actors, causal attribution and accountability collapse. Strict binding prevents Sybil attacks, sockpuppet [[Government|governance]] manipulation, and [[Reputation|reputation]] laundering. Information ''is'' effectively anonymous in aggregate; identity becomes relevant only when [[Harm|harm]] needs tracking or specific [[Interaction|interactions]] require accountability. For whistleblowing: [[Adversarial adaptation]] compensates more than fairly by design — the reward for reporting exceeds the gains from exploiting. The whistleblower is identifiable but rewarded more than anyone who stayed silent.
+
+On the Unbroken Memory: the panopticon works through ''asymmetric'' visibility. The Memory is symmetric: you see your records, access logs are transparent, [[Technology Network#Aspects|privacy]] tiers gate access. Being forgotten is entropy. Civilisations that cannot remember their decisions cannot learn from them. The Memory exists so that three generations hence, when a policy is evaluated, the full causal chain is available. This is civilisational accountability, not surveillance.
+
+''Comparative: current reality features opaque corporate data harvesting with no reciprocal visibility, anonymity that is illusory (anonymous to the public, identified to every platform), and institutional memory that is selective, revisionist, and unaccountable. The counterfactual is not freedom from observation — it is freedom from accountability.''
+
+== Economics and Currency ==
+
+=== "Domain-locked currency is artificial scarcity" / "Balance overflow disincentivises excellence" / "Escrow punishes exploratory work" ===
+
+'''The concern:''' Real economies have cross-domain needs; domain-locking creates friction. The [[Benefuture currency#Principles|accumulation threshold]] redirects surplus — why produce at maximum if marginal returns go to investments you don't control? Front-loaded payment incentivises activity; back-loaded [[Benefuture currency#Aspects|escrow]] penalises uncertainty.
+
+'''The response:''' Not all value is equally transferable — why should [[Benefuture currency|currency]] be? [[Domain]] overlap exchange currency covers cross-domain consumption. [[Benesophont#Aspects|Sophont baseline]] ensures fundamental needs for all persons, within the limits of freedom, regardless of domain balances. Domain-locking prevents ''power concentration'', not basic purchasing. A surgeon's skill does not convert into political authority without corruption; Benefuture makes this structural.
+
+On overflow: currency balance is for hedonic use and short-term liquidity. [[Reputation]] does not overflow — and reputation is the primary source of [[Influence|influence]]. The overflow redirects surplus into ''your own domains'': your students, your tools, your field's development. It is channelled reinvestment, not confiscation. The threshold is set via [[Government|Benefuture democracy]] and subject to adaptation.
+
+On escrow: the [[Benefuture goals#Novelty|novelty]] bonus specifically rewards unpredictable work — paradigm-shifting novelty sits at the top of the priority stack. Escrow ratios adjust to domain uncertainty: basic research, art, and [[Education|education]] have different profiles than manufacturing. The highest-priority [[Understanding|understanding]] gets the most favourable escrow treatment, not the least.
+
+''Comparative: current currency's full fungibility is precisely why wealth purchases political [[Influence|influence]]. Current research funding requires predicting outcomes to receive grants — more conservative than probabilistic escrow, not less.''
+
+== Philosophy and Values ==
+
+=== "Understanding-first is a value judgment pretending to be derived" ===
+
+'''The concern:''' Why [[Understanding|understanding]] over [[Happiness|happiness]]? The lexical priority is a choice, not a discovery. A person with severe depression may gain understanding with zero happiness increase.
+
+'''The response:''' Yes. Explicitly yes. The framework is [[Philosophy#Lineage|optimistically nihilistic]] and acknowledges it imposes rather than discovers its values. It cannot prove its own foundations — stated in the [[System Design#Meta-Level Acknowledgment|system design]] article.
+
+The justification is pragmatic: understanding compounds, generalises across [[Domain|domains]], and has empirically demonstrated correlation with happiness generation over long time horizons. Happiness without understanding is volatile and exploitable; understanding without happiness is stable and correctable. The priority is a bet on which ordering produces better outcomes — and the bet is itself subject to [[Adversarial adaptation|adversarial challenge]].
+
+If a better ordering can be proven rather than imposed — by what mechanism shall it be proven? Every proposed foundation faces the same regress. Benefuture's advantage is acknowledging the regress and building in mechanisms for revision. Future [[Benesophont|sophonts]] who disagree with the axiom can use the framework's own [[Benefuture goals#Novelty|novelty]] space — which explicitly operates outside Benefuture rigour — to propose, test, and prove a successor system.
+
+=== "The happiness definition is still hedonic" / "Necessary harm is a consequentialist escape hatch" ===
+
+'''The concern:''' The formal [[Happiness|happiness]] definition grounds in subjective experience, inheriting every problem of subjective welfare economics. And [[Harm#Aspects|necessary harm]] permits atrocity if the mathematics work out.
+
+'''The response on happiness:''' The formal definition ''integrates'' over time and prioritises accordingly: eudaimonic happiness ranks above peak hedonic in the [[Benefuture goals#Aspects|priority structure]]. Bias mitigation addresses adaptive preferences. The experience machine objection is handled by the [[Understanding|understanding]] requirement — happiness without understanding scores zero on the primary [[Benefuture goals|goal]]. Because [[Benefuture goals#Synergy Override|synergy]] is rewarded beyond the sum of the parts, the framework most values states where understanding and happiness co-occur, which weighs against both joyless knowledge and contentment in ignorance.
+
+'''The response on necessary harm:''' The escape hatch exists but is the most heavily guarded in any consequentialist framework. The [[Harm#Aspects|harm priority structure]] ranks irreparable harm highest — nearly impossible to justify. Synergy scoring preferentially selects actions without harm trade-offs, and harm enters as a weight on losses which rises steeply with severity. The [[Benefuture goals#Vision|civilisational continuity axiom]] requires validation by both peak and average [[Benesophont|sophonts]], preventing a small group from authorising large-scale necessary harm.
+
+Practically: surgery, immunisation, exercise, difficult [[Education|education]], restorative [[Justice|justice]] — all involve harm in service of greater value. A framework that cannot model necessary harm cannot model [[Reality|reality]].
+
+''Comparative: every ethical framework handles necessary harm — through just war doctrine, double effect, or not thinking about it. Current welfare economics relies on self-reported satisfaction or revealed preference — more hedonic and less corrected for bias.''
+
+=== "Rule-to-act switching has no clear trigger" / "The framework's relationship with moral traditions is extractive" ===
+
+'''The concern:''' Who determines when situations are "novel" or "high-stakes" enough to switch from rule-based to act-based reasoning? And the framework borrows from multiple traditions without fully engaging their tensions.
+
+'''The response:''' The fuzziness is deliberate. Crisp triggers would be gameable. The progressive aspect subjects the switching criterion itself to [[Adversarial adaptation|adversarial refinement]]. Where fuzziness cannot be resolved by [[Measurement#Aspects|metric models]], [[Government#Aspects|liquid Benefuture democracy]] serves as threshold governance (see the [[System Design#Meta-Level Acknowledgment|significant-threshold governance]] axiom).
+
+The framework is explicitly syncretic — it takes what works from each tradition and subjects the synthesis to adversarial testing. The [[Philosophy|philosophy]] article traces the lineage and engages with specific contributions and limitations. The alternative — purity within one tradition — produces the well-known failure modes of each in isolation.
+
+''Comparative: current legal systems already operate this switch informally (precedent vs. judicial discretion) with no explicit framework for when to switch and no adversarial mechanism for improvement.''
+
+== Cultural and Social Concerns ==
+
+=== "Cultural imperialism" / "No one would opt in" / "The opt-out is structurally punitive" ===
+
+'''The concern:''' A single framework applied universally with Western philosophical lineage. The system requires voluntary participation but creates incentive gradients making non-participation costly. Less [[Measurement|measurement]] means less [[Benefuture currency|currency]] flow — you are free to leave but you will be poorer.
+
+'''The response:''' If a [[Culture|culture]] propagates purely through [[Harm|harm]], it will die under Benefuture. That is not imperialism; it is a minimum standard. Everything else — every practice that does not depend on harming others — is protected by the [[Benefuture goals#Novelty|diversity axiom]], which structurally prevents monoculture, including Benefuture monoculture. Cultural offence is [[Harm#Aspects|weighted near zero]] as harm. The cross-cultural convergence on understanding-analogues is documented in the [[Philosophy#Cross-Cultural Convergence|philosophy]] article.
+
+On opt-in: the [[Implementation prototype]] documents the trajectory — Phase 1 is score-only with no currency impact. Adoption is voluntary and demonstrated by value. M-Pesa achieved 90% penetration in Kenya through superior utility alone.
+
+On opt-out: the system cannot reward unmeasured contributions because it cannot verify they occurred. This is an epistemological constraint, not a policy choice. What the opt-out preserves: [[Benesophont#Aspects|sophont baseline]] (housing, food, healthcare, social infrastructure), [[Government|governance]] participation (vote weight unaffected by data tier), right to re-enter at any time. What it reduces: passive [[Benefuture currency#Transaction Mechanics|transaction proposal]] generation and personalised services.
+
+''Comparative: citizenship is not chosen, tax regimes are not optional, and opting out of current digital infrastructure produces far greater disadvantage with far less baseline protection. Current globalisation is de facto cultural imperialism driven by market power, with less structural protection for [[Diversity|diversity]].''
+
+=== "Utopian, unfalsifiable, and assumes rational actors" ===
+
+'''The concern:''' Grand integrated system, claims to solve everything. Historically, utopian projects fail or become authoritarian.
+
+'''The response:''' The framework explicitly rejects end-states — the [[Benefuture goals#Vision|vision]] is "perpetual becoming," not arrival. It builds in falsification criteria: [[System Design#Antifragility|antifragility axioms]] define conditions triggering intervention ([[Harm|harm]] increasing, resource efficiency declining, [[Benefuture goals#Vision|continuity]] threatened). The [[Benefuture goals#Novelty|diversity axiom]] includes Benefuture itself as a potential monoculture to be replaced. Utopias do not contain instructions for their own replacement. Benefuture does.
+
+The framework does not assume rational actors — the entire [[System Design#Incentive Architecture|incentive architecture]] would be unnecessary if it did. It assumes actors ''can be'' irrational, tribal, spite-motivated, and identity-captured, and designs system incentives to make [[Benefuture goals|goal]]-aligned behaviour the easiest default rather than relying on good faith. [[Progressive complexity]] provides graceful degradation when nudges prove insufficient. Internal irrational actors — demagogues, coordinated identity movements that reject the framework's values while living inside it — are handled by the same layered defences: [[Adversarial adaptation]] rewards exposing manipulation, [[Reputation|reputation]] is domain-locked so charisma in one area doesn't grant authority in others, and [[Government|governance]] weighting by [[Government#Decision-Making Process|impact]] means those with the most to lose have the most say. These defences are not guaranteed to work; they are guaranteed to be more structured than the current approach, which is to hope that democratic norms hold.
+
+''Comparative: current systems are equally unfalsifiable — no mechanism exists to test whether liberal democracy or market capitalism is optimal. Benefuture specifies what would constitute failure and builds in response mechanisms.''
+
+== Structural Critiques ==
+
+=== "Too complex to implement" / "No account of transition power dynamics" ===
+
+'''The concern:''' The framework requires simultaneous deployment across multiple subsystems. And existing [[Power|power]] structures will resist systems designed to dissolve them.
+
+'''The response on complexity:''' Contemporary fintech, martech, medtech, adtech, cryptocurrency, etc. infrastructure processes greater data density and complexity than a startup Benefuture [[Technology Network]] would require. The [[Implementation prototype]] describes phased rollout with [[Progressive complexity]]: Phase 1 is score-only, running in parallel with legacy systems. Complexity scales with adoption.
+
+'''The response on transition:''' Legitimate gap, but not due to theoretical unfeasibility, rather due to the lack of empirical proof of transition, which is impossible for a novel proposal. The framework describes steady-state mechanics better than the path through hostile terrain. The [[Implementation prototype]] is a solid sketch, but not a complete strategy. However: phased rollout demonstrates value before demanding structural change; parallel operation means legacy systems are not displaced until Benefuture proves superior; voluntary adoption driven by demonstrated outcomes is historically viable (M-Pesa, Estonia's e-governance, participatory budgeting). The framework does not require revolution; it requires demonstrated superiority in a parallel system.
+
+''Comparative: global financial markets, international law, and digital infrastructure achieved comparable complexity without coherent goals or self-correction. No existing reform framework has a complete theory of transition through hostile power structures.''
+
+=== "The diversity axiom is self-undermining" / "The continuity axiom is conservative" / "Lock-in prevents self-obsolescence" ===
+
+'''The concern:''' Who measures "better" if not Benefuture's own [[Measurement#Aspects|metric models]] — making self-obsolescence paradoxical? Both peak and average [[Benesophont|sophonts]] must validate change, structurally preventing radical action. And once infrastructure runs on the [[Technology Network]], voluntary exit and self-obsolescence become hollow claims.
+
+'''The response:''' If a separate mechanism of proof and purpose arises that demonstrably outperforms Benefuture's measurements — then why not replace it? The axiom is a standing invitation. A system containing self-obsolescence instructions is more durable than one without, because the alternative is a system that resists replacement regardless of performance.
+
+The [[Benefuture goals#Vision|civilisational continuity axiom]] is a validation and course-correction mechanism, not a veto. It examines changes after the fact using the [[Benefuture goals#Vision|Unbroken Memory]]. The cost is slower radical change; the benefit is ''validated'' radical change. The [[Benefuture goals#Novelty|novelty bonus]] provides counter-pressure against excessive conservatism.
+
+On lock-in: the [[Benefuture goals#Novelty|diversity-novelty balance]] axiom directly addresses this. Any sign of monoculture — including Benefuture monoculture — triggers increasing novelty bonuses for alternatives. The framework structurally rewards the creation of competing approaches. Future sophonts can use the novelty space, which operates outside Benefuture's own rigour, to develop, test, and prove successor systems. Lock-in requires the suppression of alternatives; the framework financially rewards their creation.
+
+''Comparative: current systems have no equivalent validation mechanism, no self-obsolescence clause, and no structural incentive to fund their own alternatives.''
+
+=== "Ontological hierarchy smuggles in a value hierarchy" / "Reputation decay punishes sabbaticals and illness" ===
+
+'''The concern:''' [[Law#For sophonts|Liability]] scales with ontological status, implying lesser [[Being|beings]] have fewer protections. And if you stop contributing, [[Reputation|reputation]] decays — punishing leave, illness, and caregiving.
+
+'''The response on hierarchy:''' The [[Harm|harm]] definition (reduced [[Understanding|understanding]] or reduced [[Happiness|happiness]]) applies universally regardless of ontological level. The liability hierarchy assigns ''responsibility'', not ''worth'': a [[Benesophont|sophont]] bears more responsibility because they have more capacity to foresee consequences, not because their suffering counts for more.
+
+'''The response on decay:''' A true sabbatical involves learning — reputation gains occur in whatever [[Domain|domain]] it engages. Decay is gradual and domain-specific, not cliff-edge. [[Benesophont#Aspects|Sophont baseline]] ensures material security regardless. The alternative — no decay — allows indefinite coasting on past credentials, which is the current problem with tenure and seniority systems.
+
+''Comparative: current legal systems operate implicit ontological hierarchies, less explicit and less principled. Career gaps produce hiring bias; patent holders retain monopoly power for twenty years without innovating. Benefuture's decay is proportional, transparent, and domain-specific.''
+
+=== "External harm response is naive about asymmetric conflict" ===
+
+'''The concern:''' Tit-for-tat with forgiveness fails against actors with overwhelming force. Repairable-only [[Harm|harm]] means unilateral disarmament against existential threats.
+
+'''The response:''' The protocol does not prescribe pacifism. It prescribes proportionality, transparency, and a bias toward forgiveness where stakes permit. Where they do not — existential threats — the [[Benefuture goals#Aspects|value function]] provides its own justification: civilisational destruction is maximal irreparable harm, ranking highest in the [[Harm#Aspects|harm priority structure]], permitting proportionally enormous defensive response.
+
+''Comparative: current international relations operate on no formal response calculus, no proportionality constraint, and no forgiveness mechanism.''
+
+=== "Information handling is censorship by other means" ===
+
+'''The concern:''' [[Truth|Truth-level]] tagging, visibility weighting by [[Reputation|reputation]], and [[Education#Aspects|infohazard]] gating shape what people see.
+
+'''The response:''' Nothing is removed. Every piece of content remains accessible. Truth-levels apply to factual claims, not opinions. Infohazard gating provides a clear [[Education|educational]] path to access — gated content is contextualised with prerequisites, not deleted. The analogy is course prerequisites, not censorship.
+
+''Comparative: current information environments feature algorithmic amplification of engagement-maximising content, opaque content moderation, and no educational pathways. The current system shapes content toward revenue maximisation; Benefuture's shaping is transparent, principled, and adversarially audited.''
+
+=== "Fork mechanics create a person-duplication economy" ===
+
+'''The concern:''' The optimal strategy for high-[[Reputation|reputation]] entities is to fork frequently, creating a workforce of semi-independent copies.
+
+'''The response:''' Fork mechanics handle inevitable forking, not enable it. Constraints: zero initial [[Benefuture goals#Novelty|novelty]], distributed (not duplicated) social capital, immediate [[Benefuture currency#Aspects|resource accounting]] cost borne by the commissioner, cascading [[Law#For sophonts|liability]] overflow. A fork factory gains nothing — each copy starts at zero novelty, each consumes resources, and the parent's social capital is ''divided'' with each fork. The optimal fork diverges rapidly into genuine novelty.
+
+''Comparative: current systems have no framework for cognitive duplication — a gap that becomes critical as artificial intelligence makes copying possible.''
+
+== Peripheral Critiques ==
+
+The following concerns, while differently phrased, resolve to responses already given above:
+
+* '''"This is technocracy"''' — see [[#"This is a social credit system" / "Epistocracy" / "Who watches the watchmen?"|Social credit / Epistocracy / Watchmen]].
+* '''"Reputation is just social capital with extra steps"''' — see [[#"This is a social credit system" / "Epistocracy" / "Who watches the watchmen?"|Social credit / Epistocracy / Watchmen]].
+* '''"What about corruption in metric model creation?"''' — see [[#"This is a social credit system" / "Epistocracy" / "Who watches the watchmen?"|Social credit / Epistocracy / Watchmen]].
+* '''"The framework privileges STEM over humanities"''' — see [[#"Understanding-first is a value judgment pretending to be derived"|Understanding-first as value judgment]] and [[#"Cultural imperialism" / "No one would opt in" / "The opt-out is structurally punitive"|Cultural imperialism]].
+* '''"The framework ignores emotion and intuition"''' — see [[#"Understanding-first is a value judgment pretending to be derived"|Understanding-first as value judgment]] and [[#"The happiness definition is still hedonic" / "Necessary harm is a consequentialist escape hatch"|Happiness definition]].
+* '''"Who decides what counts as harm?"''' — see [[#"You cannot measure understanding or happiness" / "Some domains are fundamentally illegible"|Measurement]] and [[#"The happiness definition is still hedonic" / "Necessary harm is a consequentialist escape hatch"|Necessary harm]].
+* '''"This requires perfect information"''' — see [[#"Causal attribution is philosophically unsolvable"|Causal attribution]] and [[#"You cannot measure understanding or happiness" / "Some domains are fundamentally illegible"|Measurement]].
+* '''"This is just communism with algorithms"''' — see [[#"Domain-locked currency is artificial scarcity" / "Balance overflow disincentivises excellence" / "Escrow punishes exploratory work"|Economics and Currency]].
+* '''"What about people who simply don't want to be measured?"''' — see [[#"Cultural imperialism" / "No one would opt in" / "The opt-out is structurally punitive"|Opt-in / Opt-out]].
+* '''"Children can't consent to being measured"''' — see [[#"Cultural imperialism" / "No one would opt in" / "The opt-out is structurally punitive"|Opt-in / Opt-out]] and [[#"Surveillance state" / "Strict identity binding" / "The Unbroken Memory is a panopticon"|Privacy / Surveillance]].
+* '''"What about non-human animals?"''' — see [[#"Ontological hierarchy smuggles in a value hierarchy" / "Reputation decay punishes sabbaticals and illness"|Ontological hierarchy]].
+* '''"Adversarial adaptation is just bug bounties"''' — see [[#"Goodhart's Law will destroy your metrics" / "The framework assumes convergence"|Goodhart / Convergence]] and [[#"This is a social credit system" / "Epistocracy" / "Who watches the watchmen?"|Watchmen]].
+* '''"The system will be gamed by AI agents"''' — see [[#"Goodhart's Law will destroy your metrics" / "The framework assumes convergence"|Goodhart / Convergence]] and [[#"Fork mechanics create a person-duplication economy"|Fork mechanics]].
+* '''"What happens in a crisis / emergency powers?"''' — see [[#"External harm response is naive about asymmetric conflict"|External harm response]] and [[#"Rule-to-act switching has no clear trigger" / "The framework's relationship with moral traditions is extractive"|Rule-to-act switching]].
+* '''"The framework doesn't account for scarcity"''' — see [[#"Domain-locked currency is artificial scarcity" / "Balance overflow disincentivises excellence" / "Escrow punishes exploratory work"|Economics and Currency]] and [[#"Too complex to implement" / "No account of transition power dynamics"|Transition / Complexity]].
+* '''"Consent across time — future generations didn't choose this"''' — see [[#"The diversity axiom is self-undermining" / "The continuity axiom is conservative" / "Lock-in prevents self-obsolescence"|Diversity / Continuity / Lock-in]] and [[#"Understanding-first is a value judgment pretending to be derived"|Understanding-first as value judgment]].
+
+== Coda ==
+
+Unknown unknowns will continue to exist. The question is whether we handle them better through systems designed to detect, acknowledge, and correct their own failures — or through ones that are not.
+
+== See also ==
+* [[Benefuture#Critical Evaluation|Critical Evaluation]]
+* [[System Design]]
+* [[Adversarial adaptation]]
+* [[Philosophy]]
+* [[Implementation prototype]]
+* [[Progressive complexity]]
+* [[Anti-Corruption]]
+----
+<small>AI Disclaimer: This article is 60% AI formatted with 40% human seed notes and review.</small>

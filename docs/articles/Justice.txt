@@ -1,0 +1,40 @@
+[[category:Benefuture]] [[category:WorldBuilding]]
+Justice is the process of ascertaining and [[understanding]] the nature, degree and impact of a [[crime]], establishing means to repair or reparate the [[harm]] done and prevent future [[crime]]s of the same nature. Even if consequences do ripple and a rough structure of morality naturally emerges, it has gaps as [[Reality]] has no inherent means of enforcing fairness in interactions and enforcing [[goals]], Justice is a process to course correct when unfairness has occurred.
+
+==Aspects==
+
+===Deliberation===
+Once a crime has been discovered, the process of justice must investigate and understand the crime with extreme detail and with the help of evidence and [[proof]], establish the truth of: 
+* The nature of harm.
+* The extent of harm caused.
+* The trail of [[thing]]s, [[entity|entities]], [[being]]s and [[person]]s '''(victims)''' affected now or in the foreseeable future.
+* Possible harm arising from the crime in the distant future.
+* The trail of things, entities, beings and ultimately persons '''(criminals)''' whose outputs have caused the crime.
+* The circumstance of [[input]]s which caused the criminals to consider those outputs.
+* The intents of the criminals when making the outputs, as defined by evidence.
+* The probability of similar circumstances arising in the future.
+* The [[law]]s which have been violated.
+
+===Reparation===
+The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated <ref name="Zehr1990">Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press.</ref>. This can take the shape of:
+* Undoing the harm directly if possible.
+* Providing the victims with resources, materials and support processes that would mitigate the harm.
+* Providing resources that are equal to the estimated value of the harm.
+* If none of the above are possible, especially in the case of irreparable harm, materials and support that could enable the victim to try to reach the levels of benefuture goals they could have reached prior to the harm.
+The prime cost of the reparation is often to be borne by the criminals, enabled via [[enforcement]] and supported as much as possible by the [[administration]] where criminals come short.
+
+===Rehabilitation===
+The process of Justice must provide ways to prevent the same crime in the future, especially by the criminals of the current crime. This can take the shape of:
+* Contributing to the reparations by the criminal as much as possible.
+* Education provided to the criminals so that:
+** They can achieve nuanced [[understanding]] of their crime.
+** Understand what they need to do to avoid committing the crime in the future.
+** Depending upon their intent, are sufficiently dissuaded from pursuing such intents.
+* If the education fails, and the harm is [[significant]] or repeated, [[enforcement]] such that the criminals are forcibly restrained from committing a similar future crime while letting them contribute to society and forward the [[goals]] as much as possible.
+
+==Discussion==
+Justice is often again a separate arm of the [[administration]] than lawmaking and [[enforcement]] to avoid concentration of power. The power allotted to the justice system again has extreme chances of abuse. It should fall under the same scrutiny as other powerful entities and [[Anti-Corruption]] measures should be applied. As a key system of  [[benefuture]] [[civilization]], [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+=== References ===
+<references />
+<small>AI Disclaimer: This article is</small> <small>100% human written.</small>

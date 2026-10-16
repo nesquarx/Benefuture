@@ -1,0 +1,42 @@
+[[category: Benefuture]][[category: WorldBuilding]]
+'''Corruption''' is the mutation of a process of exercising [[power]]  that deviates from a [[civilization]]'s [[goals]]. It often arises from a concentration of power. Thus '''anti-corruption''' is to prevent deviation even when concentration of power exists.
+
+== Aspects ==
+
+==== Corruption happens when doing [[bad]] or even less [[good]] is easier or more gainful than doing most [[good]] ====
+When the process of exercising power is suboptimally designed such that the [[Good and Bad|best]] [[Outcome|outcomes]] are not the easiest and most profitable in the short term, there is a tendency for the [[entity]] which exercises it to use it for less long term good or even universally bad outcomes which provide some short term benefits to the executing entity. This can be avoided via:
+
+* '''Anti corruption by design:''' deliberate [[System Design]] of processes such that the actions with the long term best outcomes are the the easiest to execute and most profitable in the short term for all parties involved. Designed with the following principles.
+** Better the action, easier to perform it is.
+** Worse the action, more difficult to perform it is.
+** Better the action long term, more short term incentives and accolades are added to it.
+** Worse the action long term, more criminality is ascribed to it.
+** [[Adversarial adaptation]] and [[Progressive complexity]] strategies.
+
+==== Corruption happens when [[Power|powerful]] entities are easily [[Influence|influenced]] and less [[Goals|goal]] focused ====
+When a large amount of power is exercised, especially by an [[Administration|administrator]], there are high stakes and a lot of short to medium term gains to be made for individual entities who are affected or can be benefited from the way the power is exercised and distributed. These possible gains incentivize the stakeholders to influence the exercising entity, or the entity itself to try to gain more while doing suboptimal good, or lack of [[understanding]] of optimality. These can be avoided via:
+
+* '''Reducing corruptibility of entities:''' by making sure that powerful entities' means of undue influence and leverage reduce proportionally with power while their level of understanding of their [[Output|actions]] and the goals increase proportionally with power.
+** '''Reducing leverage:''' e.g. higher administration responsibilities to controlled by more ascetic entities whose strongest [[preference]] and triggers of [[happiness]] is in fulfilling the [[goals]] of the [[society]].
+** '''Increasing understanding:''' e.g. higher administration responsibilities only available to beings possessing higher [[Threshold of significance|thresholds]] of [[understanding]] of the [[goals]] and [[reality]].
+
+==== Corruption happens when [[power]] is concentrated ====
+The more power exists in a singular entity, the greater the chance of [[harm]] to other beings exists as a consequence of suboptimal actions. This can be avoided via:
+
+* '''Distributing power:''' Ensuring that by design of society, high concentrations of power don't occur.
+** Designing greater checks and balances required for greater exercising of power.
+** Increasing the number of entities to have parts of the greater power.
+** Limiting the scope of accumulation for tradable sources of power (currency, assets, other financial instruments and contracts)
+
+'''Note: distributing power may increase the time and effort required to exercise it, which can at times make optimal choices less easy to make. The tradeoff needs to be balanced. Technology and speed of communication can alleviate some of it.'''
+
+=== Discussion ===
+Anti-corruption by design works by making optimal actions the natural coordination points<ref>Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press.</ref> —the obvious choices [[entities]] converge on because deviation is both costly and visible. Compliance becomes self-reinforcing; corruption becomes awkward, not merely punished.
+
+Empirical research on long-enduring commons institutions identifies recurring design principles: proportional equivalence between contributions and benefits, observable behavior, graduated sanctions, collective participation in rule-making, and nested governance at multiple scales.<ref>Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press.</ref> The [[benefuture]] architecture incorporates these via [[Benefuture currency|causal distribution]], [[Technology Network|transaction logging]], [[Justice]], and [[Government|weighted democracy]].
+
+No design succeeds permanently. Long-run outcomes depend less on achieving optimal institutions than on the capacity to detect failure and adapt.<ref>North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press.</ref> This is why [[Adversarial adaptation]] and [[Progressive complexity]] are integral: a corruption-resistant system is not one where corruption is impossible, but one where successful corruption reveals the vulnerability and triggers correction.
+
+=== References ===
+<references />
+----<small>AI Disclaimer: This article is 100% human written.</small>

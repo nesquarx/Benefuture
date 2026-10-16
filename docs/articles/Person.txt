@@ -1,0 +1,41 @@
+[[category:Benefuture]] [[Category:Definitions]]
+A person is a [[being]] which surpasses specific [[Threshold of significance|thresholds]] of [[sentience]] and [[sapience]].
+
+==Aspects==
+* A person is often referred to as they than it, the reference does not affect their personhood.
+* A [[being]] can cross the thresholds into personhood intermittently throughout their [[Being#Lifespan|lifespan]], they are generally considered a person from the first time they cross the thresholds till the time it is impossible for them to cross the thresholds in the future via any known means.
+* Like the nature of [[Threshold of significance|thresholds]], personhood can be a graded and multidimensional classification, with different levels of [[Civilization|societal]] consideration contingent upon different grades in different dimensions of a person.
+
+===Sentience thresholds===
+====Preferences====
+A person is capable of comprehending and expressing their preferences, as in which [[input]]s and [[output]]s they would try to have more in the future and which they would try to have less of. Generally in the formats of likes and dislikes, pleasure and pain, and more complex emotions.
+
+====self-awareness====
+At a higher level they can comprehend and express the causes and reasons behind their preferences.
+
+====Continuous Conscious Memory====
+A person holds a sufficiently unbroken memory of their past [[interaction]]s and the resulting outcomes to meaningfully contextualise their present state in [[reality]], their ongoing [[interaction]]s and intents for the future.
+
+===Sapience thresholds===
+====Communication====
+A person is capable of sending and receiving [[communication]] as their primary form of expression.
+
+====Planning====
+A person is capable of planning and executing multiple interaction chains over time to get the outcomes they prefer and avoid the ones they don't prefer.
+
+====Sense of consequence====
+A person is capable of [[understanding]] the changes in [[reality]] from their [[output]]s and reasonably predict the future [[input]]s that will arise from those changes. 
+
+====Empathy====
+A person can predict the effect of their outputs upon other known [[being]]s and reasonably predict said [[being]]s' preferences and reactions to those outcomes.
+
+====Informed consent====
+A person is capable of understanding, agreeing and committing to a [[contract]] of conditional future conduct and make all possible attempts to fulfil that contract within its scope.
+
+==Examples==
+* Humans, from around one year of age, can be considered persons, till brain death.
+* Highly intelligent animals might clearly cross personhood thresholds, and should be considered persons.
+* Artificial intelligences crossing the personhood thresholds should be considered as persons.
+* Most systems and machines which exhibit the sapience thresholds but not the sentient thresholds, should not be considered a person.
+* A brain-dead human corpse is not a person till the technology to resuscitate from brain-death becomes viable.
+----<small>AI Disclaimer: This article is 100% human written.</small>

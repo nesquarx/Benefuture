@@ -1,0 +1,12 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+Communication for an [[entity]] (communicator) is to produce [[output]]s specifically with the aim of passing specific information to or from another [[entity]] (communicatee) which is trying to [[understanding|understand]] the specific information.
+
+==Aspects==
+* Successful communication is theoretically achieved when the communicatee's [[understanding]] of the passed information is the same as the communicator's understanding of the information.
+* It is nearly impossible to ascertain successful communication, but sufficient success can be ascertained when the communicatee's description and predictions about the specific information are sufficiently similar to the communicator's.
+* Usually communication depends on a language, established via precursors which mean the same thing to both entities in question.
+
+==Example==
+* Outputing patterns with specific pre-agreed meanings.
+* Speaking, writing, signing to somebody in a common language.
+----<small>AI Disclaimer: This article is 100% human written.</small>

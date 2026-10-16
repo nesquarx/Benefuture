@@ -1,0 +1,29 @@
+[[category:Benefuture]] [[Category:Worldbuilding]]
+The system of channels of [[communication]] and [[interaction]]s between [[person]]s, [[being]]s and [[entities]] in a [[society]] are called [[social networks]]. [[Benefuture]] social networks are focused on making the channels of communication such that they facilitate [[Understanding]] and [[Happiness]] in the [[Life in benefuture|lives of sophonts]] and thus work towards the [[benefuture goals]].
+
+== Aspects ==
+
+* Amongst human societies, communication is generally achieved via the following means:
+** '''Verbal''' - using symbolic language 
+** '''Nonverbal''' - emotions, actions, etc.
+* The channels used for communication are:
+** '''Physical''' - speech, gestures, expressions, writing and art as [[Thing|things]] in [[reality]] directly from one [[person]] or [[being]] to another.
+** '''Digital''' - the internet and electronic media, used to record, store, transmit and replay the physical communication equivalents.
+** '''Transactional''' - actions, events, purchases, gifts, and any significant [[interaction]] in the [[System Design#Behavioral Transaction Substrate|behavioural substrate]] of the participants of society.
+*Of these, the internet as a nascent global network for communication has become a major network for sharing understanding and generating happiness, but it is not optimized for such. To optimize it, we would need:
+**Establishment of degree and quality [[truth]] in the transmitted communications.
+**Prioritizing the sharing of [[Truth|truths]] which increase understanding and/or happiness and decrease [[ignorance]] or harm.
+*This might mean newer methods of chain-of-source, chain-of-veracity and benefuture goal calculation artefacts inserted into communication to properly contextualize information, such as:
+**Trace its source and mutations.
+**Categorize it and its subcomponents into one or more types such as: identified malicious disinformation / rigorously falsified misinformation / tentatively falsified misinformation / information under debate / fiction / opinion / wild speculation / tentative speculation / tentatively unfalsified fact / rigorously unfalsified fact / formally proven statement - etc.
+**Establish its degree and level of verification and dispute.
+**Calculate its understanding impact and happiness impact.
+*This might mean a different prioritization in the dissemination of news, entertainment and [[education]] through social networks.
+*This might mean newer methods of quantifying, qualifying and weighing information passed through the networks on the basis of happiness and understanding generated and distributing [[currency]] accordingly.
+*As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[system design]].
+
+== Example ==
+
+* Modern social networks exist in multiple formats but is not optimized for benefuture.
+* A [[benefuture currency]] [[Technology Network|technology network]] is a network optimized for benefuture [[society]].
+----<small>AI disclaimer: This article is 100% human written</small>

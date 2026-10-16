@@ -1,0 +1,133 @@
+[[category:Benefuture]] [[Category:Definitions]]
+Understanding a [[thing]] is to maximise the ability to accurately describe the thing and use it to:
+
+* identify the thing, 
+* causally explain and predict any of its [[Interaction|interactions]] with any other thing 
+* while generally minimising the complexity of [[simulation]] of the thing.
+It is the primary of the twin [[goals]] of [[Benefuture]], the other being [[Happiness]]. Both are attempted to be measured using the Benefuture [[measurement]] [[System Design|system]]. The main engine of increasing understanding is [[Education]]. Understanding is the prioritized even before [[Happiness]] as understanding in a [[Civilization]] compounds the predictive capacity which generates a meta-capability to be used to optimize on any subsequent priorities. The synergistic focus keeps it from becoming non-preference-satisfying in its majority.
+
+==Aspects==
+
+* The more complete, accurate and [[True|truer]] the description, explanations, reasons and predictions are, the higher the level of understanding.
+* The level of understanding can vary greatly and is not one-dimensional. (One can have a high understanding of a certain part of a [[thing]] while having a low understanding of another part of the same thing)
+* The value of understanding is also not one dimensional. (Understanding a falling apple can have the value of avoiding an injury, or getting something to eat, or discovering the laws of gravity)
+* Understanding is a key prerequisite of [[sapience]].
+* Understanding two [[Thing|things]] and understanding [[reality]] is necessary to understand how the things [[interact]] with each other in reality.
+* Understanding a thing often allows greater [[influence]] and [[power]] over the thing.
+* The [[entity]] which is understanding can be a [[person]], [[sophont]], organization or [[society]].
+
+==Mathematical Representation==
+The Benefuture definition of understanding is formalized to attempt a quantifiable measure. Understanding a thing (T) is assessed by maximizing the ability to accurately describe it, provide reasoned causal explanations and predictions for its interactions (I) with any other thing (X), while generally minimizing the complexity of its simulation. The mechanism has an interesting parallel to the Free Energy Principle.<ref>'''Friston, K. (2010).''' The free-energy principle: A unified brain theory? ''Nature Reviews Neuroscience'', ''11''(2), 127–138. https://doi.org/10.1038/nrn2787</ref>
+
+===Ideal Case:===
+In the ideal case, understanding involves considering *all* possible interactions of T with any other thing in the universe (<math>\Omega</math>). The Level of Understanding of T, denoted as U(T), might be calculated as:<math display="block">U(T) = M(T, D) \cdot \left\{ \prod_{X \in \Omega} \left[ \prod_{i \in I(T, X)} B(i) \cdot \left( 1 - C(i) \right) \cdot Q(i) \right] \right\}
+</math>Where:
+
+* '''T ([[Thing]]):''' The object, concept, being, or pattern being understood.
+* '''D (Description):''' A [[Communication|communicated]] representation or model of T.
+* '''M(T, D) (Map-Territory Fit):''' A measure of the accuracy or correspondence between D and T in [[reality]]. Range: [0, 1].
+* '''<math>\Omega</math> (Universal Set):''' The set of all possible "[[Thing|things]]."
+* '''X (Interacting Thing):''' Any other [[thing]] (X ∈ <math>\Omega</math>) that can interact with T (including T itself or parts of it).
+* '''I(T, X) (Interaction Set):''' The set of all possible [[Interaction|interactions]] between T and X.
+* '''i (Specific Interaction):''' A specific instance of an interaction between T and X, where i ∈ I(T, X).
+* '''B(i) (Prediction Accuracy):''' The accuracy of a prediction about the outcome of interaction i as compared to reality. Range: [0, 1], higher being more accurate. e.g. one minus the Brier Score, a proper scoring rule <ref name=":1">Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3.</ref>
+* '''Q(i) (Causal Explanation Quality):''' A measure of the quality of the explanations and reasons provided for the mechanism of the interaction and predicted outcomes. Range: [0, 1].
+* '''C(i) (Complexity of simulation):''' A measure complexity where 0 is no simulation required, the description D itself contains the predictions and causal explanations, 1 is where full empirical simulation in reality is performed to provide any answer, all simulated models and computations are somewhere in between. Range: [0, 1].
+
+This model serves as a rough theoretical benchmark but is not practically computable due to the vastness of <math>\Omega</math> and I(T, X).
+
+'''There is an argument to be made that description is also merely a set of predictions where the interactions are methods of examination''', though it makes the model more concise, it might end up ignoring the necessity of communicating understanding. 
+
+===Practical Model (Probability and Impact Weighted Interactions):===
+For practical applications, we consider a relevant subset of interactions weighted by their probability and impact. The Level of Understanding of T, U(T), might be calculated as:
+
+<math display="block">U(T) = M(T, D) \cdot \left[ \frac{\sum_{X \in \Omega} \left( P(X|T) \cdot \sum_{i \in I(T, X)} \left( P(i|T, X) \cdot Imp(i) \cdot Q(i) \cdot B(i) \cdot  \left( 1 - C(i) \right) \right) \right)}{\sum_{X \in \Omega} \left( P(X|T) \cdot \sum_{i \in I(T, X)} \left( P(i|T, X) \cdot Imp(i) \right) \right)} \right]
+</math>
+
+Where, in addition to the variables defined above:
+
+* '''Imp(i) = Impact or Importance of i:''' A measure of the potential consequence or significance of interaction i. The range of this is [0, ∞)
+* '''P(X|T) = Probability of Interaction with X:''' The probability that X may interact with T.
+* '''P(i|T, X) = Probability of Interaction i:''' The probability that interaction i may occur, given that T and X interact.
+
+This allows the following:
+
+* We can ignore things and interactions with probabilities and impacts below certain [[Threshold of significance|thresholds of significance]] that don't contribute enough to the final value. Reducing the computational complexity of the value into practical levels.
+* Certain scenarios with outsized importance (Imp >1) can disproportionately affect the level of understanding, this is a practical consideration, if we have to understand a car, understanding of collision interactions with other objects might be of much more importance than understanding its drag interaction with air.
+* The impact value is generally very contextual, and allows us to filter and shape understanding geared towards certain aspects more than others, as often necessitated by practical scenarios.
+
+U(T) in both models ranges from 0 (no understanding) to 1(perfect understanding, practically unattainable).
+
+Sine the focus is on communicable understanding, that can be replicated and understood itself. The models still suffer from inability to express the value of intuitive understanding where predictive accuracy is high but descriptive quality is low. Intuitive understanding can be considered with the same formulae only without the M(T,D) factor, but it's only of secondary importance in benefuture. 
+
+==Causal explanation==
+A causal explanation relates things in a way that explains how recorded [[reality]] came to be as it is. A new explanation is either complementary to the established ones, reaching what they don't without contradicting any of them, or it subsumes them. Complementing is how understanding tends to grow at its edges. Refuting an established explanation is only possible by subsuming it: explaining the same ground more accurately, or unifying several explanations while remaining at least as testable. An explanation that is merely equivalent to an established one refutes nothing, and one that contradicts the record without explaining it better does not displace it. This is what the causal explanation quality term (Q) above is meant to reward, and it is also how [[Measurement|metric models]] might be held to account for the causal explanations they offer.
+
+==Examples==
+
+* Understanding two chemicals and the laws of chemical interactions in reality allows one to predict what happens when the two chemicals interact in certain ways.
+* Understanding two [[Person|persons]] allows one to predict how would they [[interact]] in the reality of a social situation, or in the reality of a warzone across borders.
+* Understanding reality allows greater [[Power|control over reality]]. It makes it easier for a [[being]] to produce [[Output|outputs]] that change reality to maximise [[Input|inputs]] it prefers.
+
+== Discussion ==
+==== Measuring understanding ====
+For practical mathematical computation, the following techniques can be considered to arrive at the component scores:
+
+* '''For M(T,D) — Map-Territory Fit:''' 
+** The Tversky index offers a means of quantifying the similarity between a description of understanding and a target representation, enabling an evaluation of the "map-territory" match.<ref name=":0">Tversky, A. (1977). Features of similarity. ''Psychological Review, 84''(4), 327–352. https://doi.org/10.1037/0033-295X.84.4.327</ref> Penalising the description when making wrong predictions more than penalising it making incomplete predictions. 
+** Structural similarity indices from information theory provide additional measures of correspondence between model and reality.<ref>Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151.</ref> <ref>Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. ''Annals of Mathematical Statistics'', 22(1), 79-86.</ref>
+* '''For B(i) — Prediction Accuracy:''' 
+** Joyce argues that probabilistic credences, conforming to probability theory, offer a coherent framework for assessing the accuracy of beliefs, suggesting their utility in measuring aspects of understanding.<ref>Joyce, J.M., 1998, "A Nonpragmatic Vindication of Probabilism", ''Philosophy of Science'', 65(4): 575–603.</ref> 
+** The Brier score provides a proper scoring rule for evaluating the accuracy of probabilistic predictions, which can be applied to assess predictive accuracy related to understanding.<ref name=":13">Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3.</ref>
+** Log-likelihood scoring and calibration metrics offer complementary measures of predictive quality.<ref>Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. ''Journal of the American Statistical Association'', 102(477), 359–378.</ref><ref>Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338.</ref> 
+* '''For Q(i) — Causal Explanation Quality:''' 
+** Toulmin's argument model provides structure for evaluating explanatory articulation — claims, warrants, qualifiers, and rebuttals. <ref>Toulmin, S. E. (2003). <nowiki>''The uses of argument''</nowiki>. Cambridge University Press.</ref>
+** Pearl's causal inference framework provides formal criteria for evaluating whether causal claims are structurally valid and identifiable from data, via directed acyclic graphs, do-calculus, and back-door/front-door criteria.<ref>Pearl, J. (2009). ''Causality: Models, Reasoning, and Inference'' (2nd ed.). Cambridge University Press.</ref> 
+** Woodward's interventionist account specifies that genuine explanation requires identifying relationships invariant under intervention, distinguishing mechanistic understanding from mere predictive correlation.<ref>Woodward, J. (2003). ''Making Things Happen: A Theory of Causal Explanation''. Oxford University Press.</ref> 
+** Causal discovery algorithms enable empirical identification of causal structure from observational data.<ref>Spirtes, P., Glymour, C., & Scheines, R. (2000). ''Causation, Prediction, and Search'' (2nd ed.). MIT Press.</ref> 
+* '''For C(i) — Complexity:''' 
+** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions.<ref>Solomonoff, R. J. (1964). A formal theory of inductive inference. ''Information and control'', ''7''(1), 1-22.</ref><ref>Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. ''Problems of information transmission'', ''1''(1), 1-7.</ref> 
+** Minimum Description Length provides a practical approximation to Kolmogorov complexity for model selection.<ref>Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471.</ref><ref>Grünwald, P. D. (2007). ''The Minimum Description Length Principle''. MIT Press.</ref>
+
+The value of understanding is to be gleaned via descriptive and predictive accuracy, because internal states of an entity are often inscrutable, we can only measure understanding via their [[Interaction|interactions]]. 
+
+Some existing [[Reality|real]] world markers and methods for [[measurement]] are:
+
+'''Individual Level:'''
+
+* '''Active:'''
+** Cognitive assessments. <ref>Sattler, J. M. (2014). ''Assessment of children: Cognitive foundations and applications''. Jerome M. Sattler, Publisher.</ref>
+** Analyzing explanations and justifications. <ref name=":2">Toulmin, S. E. (2003). ''The uses of argument''. Cambridge university press.</ref>
+** Concept Maps. <ref>Novak, J. D., & Gowin, D. B. (1984). ''Learning how to learn''. Cambridge University Press.</ref><ref>Ruiz-Primo, M. A., & Shavelson, R. J. (1997). Concept maps as an assessment tool. ''Instructional science'', ''25''(2), 81-105.</ref>
+** Performance Tasks. <ref>Wiggins, G. P. (1998). ''Educative assessment: Designing assessments to inform and improve performance''. Jossey-Bass.</ref><ref>Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass.</ref>
+
+* '''Passive:'''
+** Knowledge representation and measurement. <ref>Anderson, J. R. (2016). ''Cognitive psychology and its implications''. Worth Publishers.</ref>
+** Citation analysis <ref>Garfield, E. (1955). Citation indexes for science. ''Science'', ''122''(3159), 108-111. <nowiki>https://doi.org/10.1126/science.122.3159.108</nowiki></ref> and its modern derivatives.
+** Measuring growth mindset. <ref>Dweck, C. S. (2006). ''Mindset: The new psychology of success''. Random House.</ref>
+** Analysis of learning behaviors. <ref>Siemens, G. (2013). Learning analytics: The dawn of a learning health system. ''American educational research journal'', ''50''(5), 1068-1089. https://doi.org/10.3102/0002831213485277</ref>
+** Portfolios. <ref>Arter, J. A., & McTighe, J. (2001). ''Scoring rubrics in practice: A work in progress''. Corwin Press.</ref><ref>Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press.</ref>
+** Formative Assessment (as an overall approach, including classroom discussions and observations). <ref>Black, P., & Wiliam, D. (1998). ''Inside the Black Box''. GL Assessment.</ref><ref>Dylan, W., & Black, P. (2001). Assessment and classroom learning. ''Assessment in Education: Principles, Policy & Practice'', ''8''(1), 7-74.</ref>
+** Rubrics (as a tool used with other assessments). <ref>Arter, J. A., & McTighe, J. (2001). ''Scoring rubrics in practice: A work in progress''. Corwin Press.</ref>
+** Classroom Discussions (as a source of formative assessment data). <ref>Mercer, N. (2008). Talk and the development of reasoning. ''British Educational Research Journal'', ''34''(1), 1-17.</ref><ref>Chin, C. (2006). Classroom talk that engages students in thinking: A framework for lesson analysis. In P. A. Alexander & P. R. Pintrich (Eds.), ''Handbook of educational psychology'' (2nd ed., pp. 1069-1091). Lawrence Erlbaum Associates Publishers.</ref><ref>Lemke, J. L. (1990). ''Talking science: Language, learning, and values''. Ablex Publishing Corporation.</ref>
+** Observations (as a method of gathering assessment data). <ref>Borich, G. D. (2017). ''Effective teaching methods''. Pearson.</ref><ref>Emmer, E. T., & Stough, L. M. (2001). Classroom management: A critical part of educational psychology, with implications for teacher education. ''Educational Psychologist'', ''36''(2), 103-113.</ref><ref>Stiggins, R., Arter, J., Chappuis, J., & Chappuis, S. (2006). ''Classroom assessment for student learning: Doing it right—using it well''. Educational Testing Service.</ref>
+
+'''Community Level:'''
+
+* '''Active:'''
+** Expert elicitation. <ref>Morgan, M. G., & Henrion, M. (1990). ''Uncertainty: a guide to dealing with uncertainties in quantitative risk and policy analysis''. Cambridge university press.</ref>
+* '''Passive:'''
+** Social Network Analyses. <ref>Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications.</ref><ref>Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press.</ref>
+** Interorganizational networks. <ref>Provan, K. G., & Milward, H. B. (1995). A preliminary theory of interorganizational network effectiveness. ''Administrative science quarterly'', ''40''(1), 1-33.</ref>
+
+'''Societal Level:'''
+
+* '''Passive:'''
+** Global Innovation Index. <ref>Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/</ref>
+** PISA - Educational Assessment. <ref>Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. https://www.oecd.org/pisa/</ref>
+** Human Development Index. <ref>United Nations Development Programme. (Various years). ''Human Development Report''. http://hdr.undp.org/</ref>
+** World Governance Indicators. <ref>World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/</ref>
+Ultimately, we have to start with measuring proxies of understanding, but with constant tuning via data from [[Social networks|social]] and [[Technology Network|currency networks]], it can approach a comprehensive and accurate measurement of understanding.
+
+== References ==
+<references /><small>AI Disclaimer: This article is 85% human notes with 15% AI assisted formatting and literature review.</small>

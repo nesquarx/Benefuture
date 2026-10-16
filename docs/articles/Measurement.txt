@@ -1,0 +1,115 @@
+[[Category:Benefuture]]
+[[Category:Definitions]]
+
+[[Benefuture]] tries to measure [[Understanding]] (U) and [[Happiness]] (H). Given that both are complex concepts where their measurability can be called into question, Benefuture's consequentialist approach is to measure their effects on [[Reality]], if it's perceivable, it's measurable, because perception is measurement. If not perceivable, it's conjecture for theorycrafting but [[Proof|no practical value]] unless it produces perceivable predictions.
+
+A highly antifragile way to measure is via a decentralized market of competing metric models. These models can be anything from an arithmetic equation to a complex machine learning model, the simpler the better - they propose methods for identifying, quantifying, and predicting [[Benefuture goals|Value]] using diverse markers. The goal is to find patterns in [[reality]] that generate patterns of [[Understanding]], [[Happiness]], [[Diversity|Novelty]] or cause [[Harm]], identifying, [[Domain|classifying]], measuring and predicting both [[input]] and [[output]] patterns. The system emphasizes prediction accuracy, novelty, rigorous correlation with established markers, causal explanations, and continuous improvement, avoiding the pitfalls of centralized, static measurements. The process of measuring somewhat mimics the benefuture [[Understanding]] model itself.
+
+==Aspects==
+
+* '''Competing Metric Models:''' The system's core is a market of independent U/H metric models. Each model is an algorithm proposing:
+** Which markers to measure.
+** How to measure those markers.
+** Expected correlations with other known markers which don't correlate as much with each other.
+** Predictions of future correlations and trends.
+** Tentative U/H values consistent with at least one U/H mathematical metric exchange rate in its relevant [[Domain|Domains]].
+** Calibration methods based on measured outcomes.
+** Causal Explanations.
+** The range of conditions it claims to hold in, and the confounding markers it declares.
+** Experiments, where possible, that would discover Value.
+
+* '''Markers:''' Perceivable indicators in [[reality]] correlated with, or directly measuring [[Understanding#Measuring understanding|Understanding]], [[Happiness#Measurement|Happiness]], [[Diversity|Novelty]] or other [[Goals|goal]] contributors. The set of markers is vast, constantly expanding, and includes diverse aspects of existence. Physical resource and time usage (quantities, types, rates) and [[System Design#Behavioral Transaction Substrate|behavioral transaction]] metadata (events, actions, occurrence, participant profiles, domain, timing) are valid markers. The output of another metric model cannot be used as a marker to avoid [[System Design#Circularity Detection|circularity]], if needed, a metric's source markers or causal models and logic can be incorporated in another metric.
+
+* '''Low Barrier to Entry:''' A new model enters if it's valid, has feasible implementation, and outperforms at least one existing model in predicting at least one established marker.
+
+* '''Continuous Evaluation:''' Models are constantly tracked and evaluated based on real-world data.
+
+* '''Synergy and Correlation:''' Success is judged first on predicting better than the model already in use, then on correlation with established markers, then on coherent causal explanations, and last on [[Diversity|novelty]]. These are combined through a [[Benefuture goals#Mathematical approach|synergy]] operator: a model that improves several of them together scores more than the sum of the parts, one alone scores on its own, and negatives count against it. Correlation is scored by how much a model's markers add beyond what the established markers of the domain already achieve among themselves. Echoing one cluster of markers earns little, bridging markers that don't otherwise correlate earns the most, a lone match or noise scores below baseline, and honest weak correlations never lower the score. Ease, security and integrity of data collection+validation mechanisms, and synergy with other successful models, count as well (subject to [[System Design#Circularity Detection|circularity detection]]). Models without a causal explanation still compete, but rank below those with one.
+
+* '''Usable stage:''' Once a model has established itself in the market and risen through the ranks to be better than a certain [[Threshold of significance|Threshold]], they are eligible to be used to measure a [[currency]].
+
+* '''Sunset Clause:''' A model is retired if, for every aspect of prediction, another model consistently performs either better or equivalent but cheaper/simpler.
+
+* '''Model Updates:''' Creators can update and improve their models, releasing new versions to compete.
+
+* '''Transparency:''' Model methodologies and performance data are publicly accessible.
+
+* '''Resilience:''' As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+==Assessment==
+Measurement is mostly used to assess actions: to say how much better or worse [[reality]] is with an action than without it. An assessment is the difference between what follows from the action and what follows from not acting, expressed in units of the [[Threshold of significance|threshold of significance]] of its context. Before the action both sides are predictions. Once it has happened the side with the action is measured, while the side without it can only ever be predicted (derived from matched cohort control records in the [[System Design#Behavioral Transaction Substrate|transaction log]] where available), and that measured difference is what [[Benefuture currency#Aspects|probabilistic escrow]] settles against. Alternatives are compared by the difference in their assessments, so the best alternative is derived. The causal wording matters here: a model can claim an action made the difference only through a causal explanation and its declared confounders, and when an effect can't be separated from its confounders the escrow is widened.
+
+==Examples==
+
+* '''Example Markers (Illustrative Sample):'''
+** '''Behavioral (Active/Passive):'''
+*** Food habits.
+*** Sleep patterns.
+*** Social interaction frequency.
+*** Transaction records.
+*** Emotional expression (via text/voice analysis).
+** '''Cognitive (Active/Passive):'''
+*** Raven's SPM test results.
+*** Problem-solving speed in games.
+*** Navigation efficiency in walking routes when not consulting maps.
+** '''Communication:'''
+*** [[Social networks|Social network]] connectivity.
+*** Community forum participation.
+*** Quality of discourse.
+** '''Biological (Biosensors):'''
+*** Brainwave patterns (EEG).
+*** Hormone levels (cortisol, oxytocin).
+*** Heart rate variability.
+** '''Genetic:''' Population-level trends in genetic predispositions (used ethically and longitudinally).
+** '''Self-Reporting:''' Surveys on life satisfaction, well-being, sense of purpose.
+** '''Educational:'''
+*** Formal test scores.
+*** Online learning progress.
+*** Engagement with educational materials.
+** '''Health:'''
+*** Medical records.
+*** Survival rates.
+*** Fitness levels.
+** '''Predictive Ability:''' Accuracy in forecasting future events based on data.
+** '''Research Output:''' Peer-reviewed publication quality, novelty, and impact.
+** '''Novel Social/Environmental:''' Air quality, biodiversity, social trust, access to green spaces, vocabulary count, gaze speed.
+
+* '''Example Metric Model 1: "Socio-Cognitive Index"'''
+** '''Markers:''' Raven's SPM score, number of close friends.
+** '''Method:'''
+*** Raven's SPM score: Obtained through standardized psychometric testing.
+*** Number of close friends: Determined through [[Social networks|social network]] analysis, defining "close friends" based on [[interaction]] frequency and self-reported relationship quality.
+** '''Exchange Rate (Example):'''  X SPM points + Y friends = A points of [[Understanding]] (M  general intelligence + N  spatial analysis + O  communication quality) and B points of Happiness (C  satisfaction + D  emotional stability + E  lifespan).
+** '''Expected Correlations:'''  Positive correlation with income, self-reported satisfaction, and lifespan.
+** '''Future Predictions:''' Predicts that improvements in SPM score and increased number of close friends upto a certain limit will lead to higher income, satisfaction, and lifespan.
+** '''Causal Explanation:'''  Higher cognitive ability (SPM) aids in problem-solving and combined with social maneuverability enables career success (income). Strong social connections (friends) provide support and reduce stress, improving well-being (satisfaction, lifespan).
+** '''Currency Adoption:''' Likely adopted by [[Benefuture currency|currencies]] focused on rewarding educational achievement and social [[Interaction|interactions]].
+
+* '''Example Metric Model 2: "Bio-Behavioral Well-being"'''
+** '''Markers:''' Daily Omega-3 intake (mg), daily steps walked.
+** '''Method:'''
+*** Daily Omega-3 intake: Calculated from self-reported or device recorded food consumption data, cross-referenced with nutritional databases and, potentially, purchase records.
+*** Daily steps walked: Measured using wearable pedometer biosensors.
+** '''Exchange Rate (Example):'''  X mg Omega-3 + Y steps = A points of [[Happiness]] (C  satisfaction + D  health span [[Domain|domains]]).
+** '''Expected Correlations:''' Positive correlation with self-reported satisfaction, negative correlation with incidence of cardiovascular disease.
+** '''Future Predictions:''' Predicts that increased Omega-3 intake and daily steps will increase lifespan and reduce the risk of specific diseases.
+** '''Causal Explanation:''' Omega-3 fatty acids have known anti-inflammatory and cardioprotective effects. Physical activity (steps) improves cardiovascular health and overall well-being.
+** '''Currency Adoption:''' Likely adopted by [[Benefuture currency|currencies]] focused on incentivizing healthy behaviors and food choices.
+* '''Example competition metric:'''  synergy-contingent aggregation, using the [[Benefuture goals#Mathematical approach|synergy operator]] on the [[#Assessment|assessed]] factors in order of priority: <math>f = Sy\left(\operatorname{As}\left[(\text{skill over the incumbent model}, \alpha), (\text{correlation score}, \beta), (\text{causal explanation}, \gamma), (\text{novelty}, \delta)\right]\right)</math> Where the weights follow 1 > α > β > γ > δ. Factors that rise together score more than the sum of their parts, a factor alone scores on its weight, and negative factors count against the model.
+
+==Discussion==
+All historical and contemporary policymaking is evaluable as U/H measurement approximations; most effective policies can be shown to have relatively better measurement loops for their era; and modern policy is converging on explicit welfare-capability instruments.
+
+The [[Benefuture]] measurement system addresses the inherent difficulty of quantifying subjective experiences (U/H) by creating a decentralized, competitive market of models. In most ways this mimics modern experimental design applied to discovery and measurement of otherwise plural and incommensurable causes and signifiers of Value, with explicit design towards continuous improvement. This approach aims to promote innovation, adaptability, and robustness, mitigating the risks of bias and Goodhart's Law<ref>Strathern, M. (1997). "Improving ratings": audit in the British university system. ''European Review'', 5(3), 305–321</ref>. Goodhart's law has several variants and the design meets them in different places: novel markers for the regressional one, causal explanation and joint correlation within a declared range for the causal and extremal ones, and [[Adversarial adaptation]] for the adversarial one.<ref>Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585.</ref>
+
+'''Primacy of Established Markers:''' Pre-established markers, as derived from extensive scientific research and expert consensus of the present day act as an objective anchors to seed the system, preventing circular reinforcement among models and ensuring that the system remains grounded in [[Reality]]. The initial selection and ongoing refinement of these markers are vital, requiring constant vigilance and diverse input.  All markers are treated as raw physical vectors and pure measurement without attempting input valuation, the output valuation is speculated and needs established predictive accuracy, post which natural value and exchange estimates would arise from the use of [[Benefuture currency|currencies]] and their resource accounting. Models may borrow each other's markers, methods and causal models; what they cannot do is count the same pattern of agreement with the established markers twice (see [[System Design#Circularity Detection|circularity detection]]).
+
+'''Causal Explanations:''' Models that successfully provide causal explanations for their models' predictions. While correlations are important, understanding the why behind them is paramount. This emphasis aligns with [[Benefuture]]'s prioritization of [[Understanding]]. Models lacking plausible causal mechanisms are viewed with greater scrutiny. Metric models function as Lakatosian research programmes, open to entry and retained only while progressive through confirmed novel predictions,<ref>Lakatos, I. (1978). ''The Methodology of Scientific Research Programmes: Philosophical Papers, Vol. 1''. Cambridge University Press.</ref> and attempt to instantiate Strevens' "iron rule of explanation", where any rationale may be held but authority is conferred solely by empirical test.<ref>Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright.</ref>
+
+'''Complexity and Transparency:''' The system's complexity necessitates transparency. While the underlying algorithms may be sophisticated, the principles, methodologies, and performance data of all models are publicly accessible and presented in a user-friendly manner.
+
+'''Continuous Evolution:''' The dynamic nature of the market, with its constant influx of new models and data, ensures that [[Benefuture]]'s understanding of U/H is always evolving. The "sunset clause" maintains system efficiency by removing outdated models. This continuous search for better metrics reflects the [[Benefuture]] principle of maximizing [[Understanding]].
+
+=== References ===
+<references />
+<small>AI Disclaimer: This article is 80% Human written with 20% AI formatting and literature review.</small>

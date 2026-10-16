@@ -1,0 +1,25 @@
+[[category:Benefuture]] [[category:Definitions]]
+Harm is an umbrella term for a wide variety of [[bad]] effects on a [[being]] that reduces the being's [[happiness]] or [[understanding]] over time.
+
+==Aspects==
+* Harm can range from minor momentary unhappiness at the least to end of existence for the [[being]] at the most.
+* Any set of [[input]]s that reduce the level of current or future [[happiness]] or [[understanding]] for a being in comparison to the inputs not being there (the same comparison that [[Measurement#Assessment|assessment]] uses for any action), can be called harmful - that which causes harm. Generally such inputs are not [[preference|preferred]] by the beings.
+* The amount and level of harm is very important in discerning its [[threshold of significance]] for most [[decision]]s.
+* Harm can have physical and mental aspects.
+* Harm can be short or long term or even be deferred in time.
+* Harm cannot befall non-[[sentience|sentient]] [[entities]], circumstances of entities can end up causing harm to [[Person|persons]].
+* Harm experienced as reduction in happiness due to perception or observation of a [[thing]] in [[reality]] (usually disgust or taking offense) that does not [[Interaction|interact]] with the perceiver in any otherwise harmful way is considered an inconvenience, an extremely shallow and reversible harm. It has to be addressed by [[education]] to address the [[Culture|cultural]] roots of the effects and not by trying to change reality.
+* A major differentiator of the level and grade of harm depends on whether it can be reverted for the beings experiencing it.
+** The level of reversible harm is based on the time, effort and resources required to revert it.
+** Harm that cannot be reverted is treated as a far higher grade of harm and stronger measures are taken to avoid them.
+** As understanding increases, harm that was once irreversible can become reversible, and reversible harm can have irreversible effects discovered.
+* Harms are weighted by kind, in roughly descending order: irreparable, irreversible, long-term, passing, time-loss, predicted necessary, cultural offence (near zero) and established necessary (zero). The weights apply to losses in the [[Benefuture goals#Mathematical approach|value calculation]] and rise faster than the weights on gains, so that severe harm counts for more than the same total of mild harm. Which kind a harm belongs to depends on current understanding and can change. See [[Benefuture goals#Harm|the priorities]] for what each kind means.
+* Many types of harm can be apparent only in the future, hence it should be a [[civilization]]'s [[goals|goal]] to better understand causes of harm and make choices based on predicted minimisation of harm.
+* Harm which is needed to enable a [[good]] greater than the harm is called necessary harm. Predicted necessary harm is more tenuous and requires greater scrutiny than established necessary harm.
+
+==Examples==
+* Smoking tobacco or consuming alcohol causes long term but deferred (currently)irreparable physical and thus mental harm by reducing health and lifespan, thus both happiness and understanding in the future. The temporary improvements in happiness can generally be said to not be above a threshold to consume the substances given the understanding of its future effects.
+* A harsh but fair constructive criticism of a person's work which improves it in the future still causes short term harm by reducing happiness, but subsequent gain in understanding and the future gain in happiness makes it reversible, necessary and below the threshold to not make the criticism.
+* A necessary appendectomy causes physical damage and mental unhappiness for days, but without it death is possible, the established gain in future existence is the gain in future understanding and happiness which makes it a necessary choice to perform the surgery. While the predicted gain from an experimental surgery needs further safeguards and scrutiny to be deemed necessary.
+* A person who feels harmed by the lifestyle or beliefs of another person when said lifestyle or beliefs don't cause harm to society in any other way, needs to be addressed by educating the observer to remove the cultural conditioning that causes them to perceive harm, because that is the solution which optimizes freedom.
+----<small>AI Disclaimer: This article is 100% human written.</small>

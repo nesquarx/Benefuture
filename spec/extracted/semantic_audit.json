@@ -1,0 +1,4686 @@
+{
+  "defs": [
+    {
+      "line": 11,
+      "lhs": "Params\u00abPm\u00bb",
+      "rhs": "1 > \u03b1 > \u03b2 > \u03b3 > \u03b4...;",
+      "base_term": "Params",
+      "found_in": [
+        "Math/Order.lean"
+      ]
+    },
+    {
+      "line": 12,
+      "lhs": "(x_1 > x_2 > ... > x_n)",
+      "rhs": "[(x_i, Pm_i)];",
+      "base_term": "(x_1 > x_2 > ... > x_n)",
+      "found_in": []
+    },
+    {
+      "line": 13,
+      "lhs": "Synergy\u00abSy\u00bb_{\u03ba,q\u208a}([(x, w_+ = 1, w_- = w_+)])",
+      "rhs": "\u03a6_+ - \u03a6_- - \u03bb\u00b7\u03a6_+\u03a6_- / (\u03a6_+ + \u03a6_-) | \u03a6_s := \u03a3 w_{s,i} a_{s,i}^{q_s} + \u03ba\u221a(\u03a3_{i<j} w_{s,i} w_{s,j} (a_{s,i} a_{s,j})^{q_s}), a_s := |x| \u2299 [sgn(x) = s], (\u03ba = 1, q\u208a = 1.1, q\u208b = 1.5, \u03bb = \u00bd) \u2208 SigThresholdGov\u00abSigThGv\u00bb, find \u2227 max(\u22c2 \u2191x);",
+      "base_term": "Synergy",
+      "found_in": [
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Systems/Pipeline.lean"
+      ]
+    },
+    {
+      "line": 14,
+      "lhs": "\u015cy(x[])",
+      "rhs": "sgn(s)\u00b7|s|^\u03bd / (|s|^\u03bd + h^\u03bd) | s := Sy(x[]), (\u03bd = 1, h) \u2208 SigThGv;",
+      "base_term": "\u015cy(x[])",
+      "found_in": []
+    },
+    {
+      "line": 16,
+      "lhs": "Reality\u00ab\u211d\u00bb",
+      "rhs": "(Perceivable \u222a Changeable) \u2286 Universe\u00ab\ud835\udd4c\u00bb;",
+      "base_term": "Reality",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 17,
+      "lhs": "T",
+      "rhs": "InfoPattern | renderedIn(org(spctime(Energy, Matter, otherT[])));",
+      "base_term": "T",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 18,
+      "lhs": "Id(T)",
+      "rhs": "\u2203!SubPattern(T):\u00ac\u2203Id(\u211d-T),Disambiguate(Location(T) \u2208 \u211d, History(T));",
+      "base_term": "Id",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 19,
+      "lhs": "I",
+      "rhs": "Process(T \u2190 Inputs \u2192 Outputs\u00abOu\u00bb \u2194 \u211d \u2228 T);",
+      "base_term": "I",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Pipeline.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 20,
+      "lhs": "O",
+      "rhs": "Significant\u00abSig\u00bb perceived \u0394\u211d \u2190 I;",
+      "base_term": "O",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 21,
+      "lhs": "A",
+      "rhs": "Ou \u2192 O;",
+      "base_term": "A",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 22,
+      "lhs": "Domain\u00abDn\u00bb",
+      "rhs": "ClassificationPattern(\u211d),Dn(T):=[(Dn_i,RelType,Wt\u2208[0,1])]|CausalStructure,NaturalOverlap;",
+      "base_term": "Domain",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 23,
+      "lhs": "Sentience\u00abSt\u00bb",
+      "rhs": "SubjectiveExperience\u00abSe\u00bb + Preferences;",
+      "base_term": "Sentience",
+      "found_in": [
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Governance/Democracy.lean"
+      ]
+    },
+    {
+      "line": 25,
+      "lhs": "Threshold\u00abTh\u00bb(Pm_i, Context\u00abCx\u00bb)",
+      "rhs": "(Pm_i \u2265 Th_Cx) \u21d2 Sig(Pm, Cx), (graded, multidimensional, nuanced);",
+      "base_term": "Threshold",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Systems/Governance.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 27,
+      "lhs": "Predict\u00abPr\u00bb(I), PrAcc(Pr)",
+      "rhs": "Proper(Pr, \u211d);",
+      "base_term": "Predict",
+      "found_in": [
+        "Epistemology/Prediction.lean"
+      ]
+    },
+    {
+      "line": 28,
+      "lhs": "CausalExplanation\u00abCE\u00bb",
+      "rhs": "Rel(T[]) : Explain(History(\u211d)) \u2227 (Complement \u2228 Subsum)(CE_estd);",
+      "base_term": "CausalExplanation",
+      "found_in": [
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 29,
+      "lhs": "Understanding\u00abU\u00bb",
+      "rhs": "{",
+      "base_term": "Understanding",
+      "found_in": [
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 30,
+      "lhs": "General(Model\u00abMl\u00bb)",
+      "rhs": "PrAcc(Ml) + CE(I(Ml)) - (Complexity\u00abCy\u00bb(Ml) | PrAcc),",
+      "base_term": "General",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 31,
+      "lhs": "Pragmatic(T, Ml)",
+      "rhs": "MapFit(T, Ml_id) * [\u2211_{X, i} (Wt(i) * CE(i) * PrAcc(i) * (1 - Cy(i))) / \u2211 Wt(i) | Wt(i) = P(X|T) * P(i|T, X) * Impact\u00abImp\u00bb(i) \u2265 Th]",
+      "base_term": "Pragmatic",
+      "found_in": [
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 33,
+      "lhs": "Sapience\u00abSp\u00bb",
+      "rhs": "U & Pr(I);",
+      "base_term": "Sapience",
+      "found_in": [
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 34,
+      "lhs": "LongTerm\u00ablt\u00bb",
+      "rhs": "(t_maxRecord, 0, t_maxPr), time\u00abt\u00bb \u2208 lt, Sig(O_t) \u221d P(O_t) * |O_t|;",
+      "base_term": "LongTerm",
+      "found_in": [
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Reality.lean",
+        "Math/Synergy.lean"
+      ]
+    },
+    {
+      "line": 35,
+      "lhs": "Diversity\u00abDi\u00bb",
+      "rhs": "Balance(order, chaos) \u2192 Variety(System\u00abSys\u00bb) \u2192 Resilience + Innovation;",
+      "base_term": "Diversity",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 36,
+      "lhs": "Novelty\u00abN\u00bb(x)",
+      "rhs": "1 / Frequency(x|\u211d);",
+      "base_term": "Novelty",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Diversity.lean"
+      ]
+    },
+    {
+      "line": 37,
+      "lhs": "Happiness\u00abH\u00bb(t)",
+      "rhs": "\u222bPositive(Se(St(t))) dSt + BiasMitigation + Di, EvoFitnessAttractor, noisy;",
+      "base_term": "Happiness",
+      "found_in": [
+        "Axiology/Priorities.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean"
+      ]
+    },
+    {
+      "line": 39,
+      "lhs": "Ignorance\u00abIg\u00bb(Dn)",
+      "rhs": "\u00ac\u2203U \u2208 Dn;",
+      "base_term": "Ignorance",
+      "found_in": [
+        "Subgoals/Justice.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 40,
+      "lhs": "Truth\u00abTr\u00bb",
+      "rhs": "Statement \u2261 \u211d;",
+      "base_term": "Truth",
+      "found_in": [
+        "Subgoals/Freedom.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 41,
+      "lhs": "Cx_i(Tr_j)",
+      "rhs": "Tr_i : U(Tr_i) -> \u0394U(Tr_j), relevance\u00abRlv\u00bb := \u0394U / U;",
+      "base_term": "Cx_i",
+      "found_in": []
+    },
+    {
+      "line": 42,
+      "lhs": "Tr_lvl(Tr_i, Cx_j)",
+      "rhs": "Th_i_j(\u2248\u211d) [0, 1), \u2191U \u221d \u2191Tr_lvl;",
+      "base_term": "Tr_lvl",
+      "found_in": [
+        "Subgoals/Art.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 43,
+      "lhs": "Fact\u00abF\u00bb",
+      "rhs": "Objective \u2227 Verifiable;",
+      "base_term": "Fact",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 44,
+      "lhs": "Hypothesis\u00abHy\u00bb",
+      "rhs": "Testable;",
+      "base_term": "Hypothesis",
+      "found_in": [
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 46,
+      "lhs": "M",
+      "rhs": "PerceivableProxies(U, H, ...) \u2208 \u211d, Estd, Novel;",
+      "base_term": "M",
+      "found_in": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 47,
+      "lhs": "Measurement\u00abMe\u00bb",
+      "rhs": "{Ml_i} | Ml_i \u2192 Me(U_value, H_value, M, N);",
+      "base_term": "Measurement",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 48,
+      "lhs": "Assess\u00abAs\u00bb(x, A, t)",
+      "rhs": "Norm((t \u2264 t_0 ? Pr : Me)(x \u2190 A) - Pr(x \u2190 \u00acA | Mem_ctrl) | Th_Cx);",
+      "base_term": "Assess",
+      "found_in": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Context.lean"
+      ]
+    },
+    {
+      "line": 49,
+      "lhs": "MetricMl\u00abMM\u00bb",
+      "rhs": "{Ml_i, m[] \u2286 M, Dn[]} \u21c4 Compete(max Sy(As(PrAcc(Ml_i), adopt, t) > CorrSc(m) > CE(m) > N(m))),",
+      "base_term": "MetricMl",
+      "found_in": [
+        "Measurement/MetricModel.lean"
+      ]
+    },
+    {
+      "line": 50,
+      "lhs": "CorrSc(m)",
+      "rhs": "Avg_j[\u015cy(Corr(m, M_\u00acj)[]) - \u015cy(Corr(m_j, M_\u00acj)[])] | M := M_Estd(Dn), Corr \u2265 Th",
+      "base_term": "CorrSc",
+      "found_in": [
+        "Measurement/MetricModel.lean"
+      ]
+    },
+    {
+      "line": 54,
+      "lhs": "Harm\u00abHa\u00bb(t)",
+      "rhs": "\u2193U(t) \u2228 \u2193H(t);",
+      "base_term": "Harm",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 55,
+      "lhs": "NecessaryHa\u00abNHa\u00bb",
+      "rhs": "Ha : Ha \u2192 \u2191V > Ha;",
+      "base_term": "NecessaryHa",
+      "found_in": []
+    },
+    {
+      "line": 57,
+      "lhs": "Priorities",
+      "rhs": "{",
+      "base_term": "Priorities",
+      "found_in": [
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean"
+      ]
+    },
+    {
+      "line": 65,
+      "lhs": "E(t)",
+      "rhs": "T \u2194 I(t) + Sp > 0;",
+      "base_term": "E",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Epistemology/Context.lean",
+        "Systems/Governance.lean",
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 66,
+      "lhs": "Comm\u00abCm\u00bb",
+      "rhs": "Ou(E_i,U_i)\u2192Input(E_j,U_j)|U_i\u2248U_j;",
+      "base_term": "Comm",
+      "found_in": [
+        "Epistemology/Truth.lean"
+      ]
+    },
+    {
+      "line": 67,
+      "lhs": "B",
+      "rhs": "St(E);",
+      "base_term": "B",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Continuity.lean",
+        "Governance/Democracy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 68,
+      "lhs": "Bounds_B",
+      "rhs": "Lifespan(t_0 = St_begin, t_end = St_loss_irreversible),",
+      "base_term": "Bounds_B",
+      "found_in": [
+        "Ontology/Being.lean"
+      ]
+    },
+    {
+      "line": 69,
+      "lhs": "Body : (\u2203min(T \u2208 \u211d) : Ha(Body) = Ha_immediate(B), Id(B)",
+      "rhs": "Id(Body)),",
+      "base_term": "Body",
+      "found_in": [
+        "Ontology/Being.lean"
+      ]
+    },
+    {
+      "line": 71,
+      "lhs": "Pe",
+      "rhs": "B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity\u00abCnt\u00bb, Planning, Cm, Contract\u00abCt\u00bb)),gradedLvls;",
+      "base_term": "Pe",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 73,
+      "lhs": "V(A, b \u2208 B)",
+      "rhs": "Sy_{2}(As([(U(b), \u03b1, Ha_wt), (H(b), \u03b2, \u03b1 * Ha_wt), (N, \u03b3)], A, t));",
+      "base_term": "V",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Math/Synergy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 74,
+      "lhs": "Goal\u00abG\u00bb(t)",
+      "rhs": "argmax_{A(t)} [\u03a3_{b \u2208 B(t)} V(A, b(t))] \u2227 \u2191\u211d;",
+      "base_term": "Goal",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Subgoals/Continuity.lean"
+      ]
+    },
+    {
+      "line": 77,
+      "lhs": "D",
+      "rhs": "Ou(E), In(O), via(Pr , U);",
+      "base_term": "D",
+      "found_in": [
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean"
+      ]
+    },
+    {
+      "line": 78,
+      "lhs": "S",
+      "rhs": "Pe | A \u2192 G;",
+      "base_term": "S",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 79,
+      "lhs": "Good\u00abGd\u00bb(t)",
+      "rhs": "\u2191V(t);",
+      "base_term": "Good",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Governance/Adversarial.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 80,
+      "lhs": "Bad\u00abBd\u00bb(t)",
+      "rhs": "(A, O) \u2192 Ha(t);",
+      "base_term": "Bad",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean"
+      ]
+    },
+    {
+      "line": 82,
+      "lhs": "C",
+      "rhs": "{C_i} | C_i \u2194 MM_j \u2208 TopModels(MM_Acc>Th, Dn_i) ,compete(\u0394V / (\u0394Resource\u00abRc\u00bb + \u0394t));",
+      "base_term": "C",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Freedom.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 83,
+      "lhs": "RcAccounting\u00abRA\u00bb(Transaction\u00abTx\u00bb)",
+      "rhs": "\u2193Cost / \u0394\u2191(U, H) - Audit \u2227 \u2193Usage{Rc, t};",
+      "base_term": "RcAccounting",
+      "found_in": [
+        "Economy/Currency.lean"
+      ]
+    },
+    {
+      "line": 85,
+      "lhs": "TransactionProposal\u00abTP_k\u00bb",
+      "rhs": "{A, E[\u0394V | MM_k], PE(C_k)};",
+      "base_term": "TransactionProposal",
+      "found_in": [
+        "Economy/Currency.lean"
+      ]
+    },
+    {
+      "line": 86,
+      "lhs": "TP_Gen(A)",
+      "rhs": "\u2200c \u2208 CNet(relevantDn(A)) : c \u2192 Gen(TP_{k_c}(A)):price_c=(MM_Me((Rc[],t[])\u2192A|RA)-MM_Pr(V\u2190A)+PE_hold);",
+      "base_term": "TP_Gen",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 87,
+      "lhs": "onExec(A)",
+      "rhs": "{",
+      "base_term": "onExec",
+      "found_in": [
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 96,
+      "lhs": "CausalDistribution\u00abCD\u00bb",
+      "rhs": "(Reward\u00abRw\u00bb, Penalize) \u221d CC + N_CCtype - PE_paid | DisputeResolution(Justice\u00abJ\u00bb);",
+      "base_term": "CausalDistribution",
+      "found_in": [
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 97,
+      "lhs": "Cycle(C_i)",
+      "rhs": "CD(Gd) \u2192 \u2295Bal(E) \u2227 \u2295Supply;",
+      "base_term": "Cycle",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Systems/Pipeline.lean"
+      ]
+    },
+    {
+      "line": 100,
+      "lhs": "Reputation\u00abRe\u00bb(t, CD, Dn)",
+      "rhs": "\u03a3(CC(U(Dn), H(Dn)) + N(Dn)),",
+      "base_term": "Reputation",
+      "found_in": [
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 103,
+      "lhs": "BalOvflw",
+      "rhs": "Bal(E, C_i) > AccumThresh(Re_E, Equity, G_Optim, Dn_i) \u21d2 (DirectedAutoInvest(S = E, Dn_i)) \u2227 \u0394Bal(E) = -(Bal - Thresh_i);",
+      "base_term": "BalOvflw",
+      "found_in": [
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 104,
+      "lhs": "Law\u00abLw\u00bb",
+      "rhs": "Agreed(I), Ap, {prohibit,mandate,recommend};",
+      "base_term": "Law",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 105,
+      "lhs": "So",
+      "rhs": "Civilization\u00abCv\u00bb := {(S, Pe, B, E)[]} + Sys(I) \u2192 CollectiveGoals\u00abCG\u00bb(\u2191G) | Safeguards(AntiFragility\u00abAf\u00bb);",
+      "base_term": "So",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Systems/Governance.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 106,
+      "lhs": "Administration\u00abAd\u00bb",
+      "rhs": "E \u2192 CRUD(Lw, Infra);",
+      "base_term": "Administration",
+      "found_in": [
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Systems/Governance.lean"
+      ]
+    },
+    {
+      "line": 107,
+      "lhs": "Gov\u00abGv\u00bb",
+      "rhs": "Ad(D_So);",
+      "base_term": "Gov",
+      "found_in": [
+        "Systems/Governance.lean"
+      ]
+    },
+    {
+      "line": 108,
+      "lhs": "Democracy\u00abDm\u00bb",
+      "rhs": "Gv | D_i \u2248 \u03a3(VoteWeight\u00abVW\u00bb_i);",
+      "base_term": "Democracy",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean"
+      ]
+    },
+    {
+      "line": 110,
+      "lhs": "Power\u00abPo\u00bb",
+      "rhs": "Capacity(\u2192\u0394);",
+      "base_term": "Power",
+      "found_in": [
+        "Ontology/Entity.lean"
+      ]
+    },
+    {
+      "line": 111,
+      "lhs": "Influence\u00abInf\u00bb",
+      "rhs": "Control(Ou(Others));",
+      "base_term": "Influence",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 112,
+      "lhs": "Imp(A, t)",
+      "rhs": "\u0394V : \u222bMM_Me(\u0394\u211d | A) dt;",
+      "base_term": "Imp",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Subgoals/Freedom.lean"
+      ]
+    },
+    {
+      "line": 113,
+      "lhs": "BfDm(D(Dn_i, j, k...))",
+      "rhs": "Expert(Re(Dn_i, j, k...))VW + Impacted(Pr_Imp \u2192 Voter)VW, Delib!Inf\u2190\u2193Tr, FractalScope, VW < Th \u21d2 VoteOptional;",
+      "base_term": "BfDm",
+      "found_in": [
+        "Governance/Democracy.lean"
+      ]
+    },
+    {
+      "line": 114,
+      "lhs": "LqdBfDm(D_n, Dn_k)",
+      "rhs": "DelegateDnVote(S_i \u2192 S_j) if (Re_k(S_j) > Re_k(S_i) \u2227 CumulativeVoteWeight(S_j) < Th_k \u2227 Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;",
+      "base_term": "LqdBfDm",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Systems/Governance.lean"
+      ]
+    },
+    {
+      "line": 115,
+      "lhs": "Crime\u00abCr\u00bb",
+      "rhs": "Ha | Informed(Volition \u2228 Inaction);",
+      "base_term": "Crime",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Justice.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 116,
+      "lhs": "J",
+      "rhs": "Repair(Ha) \u2227 Prevent(Cr), Restorative;",
+      "base_term": "J",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Substrate.lean"
+      ]
+    },
+    {
+      "line": 117,
+      "lhs": "ExternalHaResponse\u00abEHR\u00bb(Ha_i, Aggressor(E_!Bf)_j)",
+      "rhs": "TitForTat(viaReparableHa)_ij + (\u03b1 * Re_+ve_j) * P(Forgive) + (\u03b4 * Re_-ve_j) * P(Overreact) | (ContextAware \u2227 Transparent);",
+      "base_term": "ExternalHaResponse",
+      "found_in": [
+        "Systems/Governance.lean"
+      ]
+    },
+    {
+      "line": 119,
+      "lhs": "Liability\u00abLia\u00bb",
+      "rhs": "(S > Pe) > Ad > (B, E) > T;",
+      "base_term": "Liability",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Governance/Adversarial.lean"
+      ]
+    },
+    {
+      "line": 120,
+      "lhs": "Enforcement\u00abEn\u00bb",
+      "rhs": "Inf(Pe, G), Proportional, DueProcess, Decentralized;",
+      "base_term": "Enforcement",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Systems/Enforcement.lean"
+      ]
+    },
+    {
+      "line": 121,
+      "lhs": "Accolade\u00abAco\u00bb",
+      "rhs": "Acknowledge(Gd > Duty);",
+      "base_term": "Accolade",
+      "found_in": [
+        "Ontology/Law.lean"
+      ]
+    },
+    {
+      "line": 124,
+      "lhs": "Cu",
+      "rhs": "Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd \u2286 Cu)), J(\u2193Bd \u2286 Cu);",
+      "base_term": "Cu",
+      "found_in": [
+        "Subgoals/Diversity.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 125,
+      "lhs": "Art",
+      "rhs": "E_i -> In((T_a = (Cx_a \u2228 Reorg) <- (T_o \u2286 \u211d)), Cm(\u0394Affect_St + \u0394U)_p) : (B_j <- T_a) -> (\u0394Affect_St(B_j) + U : U \u2260 U(T_a))_q,",
+      "base_term": "Art",
+      "found_in": [
+        "Subgoals/Art.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 126,
+      "lhs": "T_a",
+      "rhs": "Artwork, E_i := Artist, B_j := Audience, Imp_art = |q|, Success := match(p, Avg(q)), V_a = (Tr_lvl(U) + N)_q, \u2203Art : i=j \u2228 o=a;",
+      "base_term": "T_a",
+      "found_in": [
+        "Subgoals/Art.lean"
+      ]
+    },
+    {
+      "line": 127,
+      "lhs": "InfoHazard\u00abIHz\u00bb",
+      "rhs": "Statement_i : \u2203RlvCx_j : (U_i \u00acU_j \u2192 Ha) \u2228 (U_i \u2227 U_j \u2192 \u2193Tr_lvl_i);",
+      "base_term": "InfoHazard",
+      "found_in": [
+        "Epistemology/InfoHandling.lean"
+      ]
+    },
+    {
+      "line": 129,
+      "lhs": "CriticalThinking\u00abCrT\u00bb",
+      "rhs": "(\u2191U(Tr_lvls, I(Tr_lvls)) | Sp) \u2192 \u2191InfoHandling\u00abIH\u00bb;",
+      "base_term": "CriticalThinking",
+      "found_in": [
+        "Epistemology/InfoHandling.lean"
+      ]
+    },
+    {
+      "line": 130,
+      "lhs": "Education\u00abEd\u00bb",
+      "rhs": "\u2191Capacity(U, H), CrT, \u2191EQ, Inoculate(IHz), UniversalAccess;",
+      "base_term": "Education",
+      "found_in": [
+        "Epistemology/InfoHandling.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 131,
+      "lhs": "SoNet\u00abSN\u00bb",
+      "rhs": "Sys(Cm(Pe[]))\u2192So(I,Ed,Cu)|TechNetwork\u00abTN\u00bb;",
+      "base_term": "SoNet",
+      "found_in": [
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 132,
+      "lhs": "TN",
+      "rhs": "Decentralized(Cluster[] : \u2229Tech = Core(DataShare, Security)) \u2227 OpnSrc(Infra) \u2192 Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DiffPrivGenericQ,2wayVisSpecificQ,IHzGatedPII,transparentAccess), Agg(LogIdMl[](E, 1:(0,1)) | \u22652 Cluster) \u2265Th \u21d2 BindId(E, 1:1);",
+      "base_term": "TN",
+      "found_in": [
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 133,
+      "lhs": "IH(TN)",
+      "rhs": "Categorize(Tr_lvls, Opinion, F, Hy...) \u2192 SourceVerify(Re(Dn) / Ig(Dn)) + FactCheck(MemoryData\u00abMem\u00bb) + ContentionMap + ManageAccess(IHz, (preReq(Ed), Provide(Ed), EnsurePath(Ed \u2192 Access) \u2190 Ed | Freedom\u00abFr\u00bb(Tr)), !Censor);",
+      "base_term": "IH",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Epistemology/InfoHandling.lean"
+      ]
+    },
+    {
+      "line": 135,
+      "lhs": "Fr",
+      "rhs": "f_max(\u2203A, Imp, N, Po) | \u00acHa_(Estd \u2228 Pr(P\u00b7severity>Th_high) \u2228 irreversible);",
+      "base_term": "Fr",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Subgoals/Freedom.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 136,
+      "lhs": "Morality\u00abMr\u00bb",
+      "rhs": "U(P(\u2203I(Sl\u2194\u211d) : CC(I \u2192 O(Sl)) = 0) \u2248 0 | Memory(Sl) \u2286 O(Sl)), 1shotGame \u2286 \ud835\udd4c \u2212 \u211d;",
+      "base_term": "Morality",
+      "found_in": [
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 137,
+      "lhs": "Economy\u00abEc\u00bb",
+      "rhs": "Sys(RcCreation & Distribution), Sustainable, Equitable;",
+      "base_term": "Economy",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 140,
+      "lhs": "Implementation\u00abIm\u00bb",
+      "rhs": "PhasedRollout, DataCollection{OptOut, Basic, Active, Deep}, Phase1(ScoreOnly(!(TP, C)), M_Estd, MM_Ap), Phase2(parallel, learn, Ap, update), InformedConsent;",
+      "base_term": "Implementation",
+      "found_in": [
+        "Systems/TechnologyNetwork.lean"
+      ]
+    },
+    {
+      "line": 141,
+      "lhs": "SophontOversight\u00abSO\u00bb(Sys_i)",
+      "rhs": "SafetyNet, Intervention(Intv), Correction, viaS_Sig_Re(Dn_i + SysSec + Ethics);",
+      "base_term": "SophontOversight",
+      "found_in": [
+        "Systems/Governance.lean"
+      ]
+    },
+    {
+      "line": 142,
+      "lhs": "Af",
+      "rhs": "RiskMitigation\u2190(PE + MM + SO + TN(IH)) + Redundancy + FailSafes + Axioms + EHR;",
+      "base_term": "Af",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean"
+      ]
+    },
+    {
+      "line": 143,
+      "lhs": "S_BaselnIncm\u00abSB\u00bb(C_i)",
+      "rhs": "\u2200Pe : ensure(maslow123) \u2190 price_c(A \u2192 maslow123 | Fr) \u2272 0 \u2228 Sig\u2203(C_i) via(RA);",
+      "base_term": "S_BaselnIncm",
+      "found_in": [
+        "Systems/Economy.lean"
+      ]
+    },
+    {
+      "line": 145,
+      "lhs": "Mem",
+      "rhs": "Immutable {State(t), A(t), O(t), SigRlvCx(t)[], ...}, \u2200x \u2208 {Exec(A) \u222a O} : Sys \u2192 Log(Tx(x)) \u2192 BehavioralTxnSubstrate\u00abBTS\u00bb;",
+      "base_term": "Mem",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 150,
+      "lhs": "Harm_Intv",
+      "rhs": "(Ha(t + \u0394t) >= Ha(t) \u21d2 NeedIntervention);",
+      "base_term": "Harm_Intv",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Continuity.lean"
+      ]
+    },
+    {
+      "line": 151,
+      "lhs": "Rc_Innovation",
+      "rhs": "(RA(t + \u0394t) <= RA(t) \u21d2 NeedInnovation);",
+      "base_term": "Rc_Innovation",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ]
+    },
+    {
+      "line": 152,
+      "lhs": "CvCnt",
+      "rhs": "(So_id(t + \u0394t) \u2248 So_id(t)[G, S...B] via non_Ha\u0394) \u2227 (Mem(t + \u0394t) \u2248 Mem(t) \u2227 Lineage(Mem) \u2227 Coherent(Mem, G)),",
+      "base_term": "CvCnt",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ]
+    },
+    {
+      "line": 154,
+      "lhs": "Progressive\u00abProg\u00bb(Ap, granularity, Cy)(So, G)",
+      "rhs": "\u2200Cx : \u2203Strategy : Perform(So, Strategy, G, Cx(\u211d)) \u2227",
+      "base_term": "Progressive",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ]
+    },
+    {
+      "line": 157,
+      "lhs": "SigThGv",
+      "rhs": "Ap(Th \u2208 Debatable? LqdBfDm : Perturb(Th \u00b1 \u03b4\u2208Fr));",
+      "base_term": "SigThGv",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Math/Synergy.lean"
+      ]
+    },
+    {
+      "line": 158,
+      "lhs": "Di_N_Balance",
+      "rhs": "(Marginal\u0394V(Spread(Gd_i)) < Th) \u21d2 Need(\u2191N \u2227 \u2193MonoCu_i), \u2203i=Bf;",
+      "base_term": "Di_N_Balance",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Diversity.lean"
+      ]
+    },
+    {
+      "line": 159,
+      "lhs": "AntiCorruption\u00abAC\u00bb",
+      "rhs": "(Easier(Gd) > Easier(Bd), DistributedPo) -> \u2193Cr(Po_e \u2286 E);",
+      "base_term": "AntiCorruption",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ]
+    },
+    {
+      "line": 160,
+      "lhs": "AdvAp",
+      "rhs": "Rw(SuccessfulGaming(Sys), dissent(Fact)) | Rw > GainIndividualExploit \u2192 (\u2191reveal, \u2193exploit) \u2192 \u2191U(Sys) \u2227 Ap(Sys);",
+      "base_term": "AdvAp",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean"
+      ]
+    },
+    {
+      "line": 161,
+      "lhs": "Trust\u00abTt\u00bbMin",
+      "rhs": "Tt\u2208(0,1), \u2193reqTt(Sys_layer_i), distrReqTt(layer_j:i\u2282j\u2228Adv(i,j)), cascade\u2192reqTt(\u211d);",
+      "base_term": "Trust",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ]
+    },
+    {
+      "line": 181,
+      "lhs": "Concerns\u00abCn\u00bb(Bf) : Eval(Weigh(Cn(Bf), BaseRisk(Sys_\u211d",
+      "rhs": "Sys \u2208 \u211d(now, digital, complex, (Tech_\u211d := (fin,mar,ad,med)tech, crypto, legal), opaque, misguided, boomBust))))",
+      "base_term": "Concerns",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ]
+    }
+  ],
+  "abbrs": [
+    {
+      "abbr": "Bf",
+      "expanded": "Benefuture",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Sophont.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "T",
+      "expanded": "Things",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Axiology/Value.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "E",
+      "expanded": "Entities",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Systems/Governance.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "B",
+      "expanded": "Beings",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Continuity.lean",
+        "Governance/Democracy.lean"
+      ],
+      "found_exp": [
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Freedom.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Pe",
+      "expanded": "Persons",
+      "found_abbr": [
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "S",
+      "expanded": "Sophonts",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "So",
+      "expanded": "Society",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "M",
+      "expanded": "Markers",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "C",
+      "expanded": "Currencies",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "A",
+      "expanded": "Actions",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Freedom.lean",
+        "Governance/Democracy.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "O",
+      "expanded": "Outcomes",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Substrate.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "D",
+      "expanded": "Decisions",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean",
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "I",
+      "expanded": "Interactions",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Morality.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Pipeline.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Pm",
+      "expanded": "Params",
+      "found_abbr": [
+        "Measurement/Threshold.lean",
+        "Math/Order.lean",
+        "Epistemology/Context.lean"
+      ],
+      "found_exp": [
+        "Math/Order.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Sy",
+      "expanded": "Synergy",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Math/Synergy.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "SigThGv",
+      "expanded": "SigThresholdGov",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Math/Synergy.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "\u211d",
+      "expanded": "Reality",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Morality.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "\ud835\udd4c",
+      "expanded": "Universe",
+      "found_abbr": [
+        "Ontology/Thing.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Morality.lean"
+      ],
+      "found_exp": [
+        "Ontology/Thing.lean",
+        "Ontology/Reality.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ou",
+      "expanded": "Outputs",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Entity.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Sig",
+      "expanded": "Significant",
+      "found_abbr": [
+        "Measurement/Threshold.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Epistemology/Context.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Dn",
+      "expanded": "Domain",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Domain.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "St",
+      "expanded": "Sentience",
+      "found_abbr": [
+        "Ontology/Being.lean",
+        "Ontology/Person.lean"
+      ],
+      "found_exp": [
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Governance/Democracy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Se",
+      "expanded": "SubjectiveExperience",
+      "found_abbr": [
+        "Ontology/Being.lean"
+      ],
+      "found_exp": [
+        "Ontology/Being.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Th",
+      "expanded": "Threshold",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Subgoals/Diversity.lean",
+        "Epistemology/Context.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Systems/Governance.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cx",
+      "expanded": "Context",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Reality.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Pr",
+      "expanded": "Predict",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Subgoals/Freedom.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Epistemology/Prediction.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CE",
+      "expanded": "CausalExplanation",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "U",
+      "expanded": "Understanding",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ml",
+      "expanded": "Model",
+      "found_abbr": [
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Ontology/Domain.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Pipeline.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cy",
+      "expanded": "Complexity",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Imp",
+      "expanded": "Impact",
+      "found_abbr": [
+        "Ontology/Entity.lean",
+        "Subgoals/Freedom.lean"
+      ],
+      "found_exp": [
+        "Ontology/Being.lean",
+        "Ontology/Entity.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Freedom.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Substrate.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Sp",
+      "expanded": "Sapience",
+      "found_abbr": [
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "lt",
+      "expanded": "LongTerm",
+      "found_abbr": [
+        "Ontology/Reality.lean"
+      ],
+      "found_exp": [
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Reality.lean",
+        "Math/Synergy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "t",
+      "expanded": "time",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Continuity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Systems/Substrate.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Di",
+      "expanded": "Diversity",
+      "found_abbr": [
+        "Subgoals/Diversity.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Sys",
+      "expanded": "System",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Governance/Adversarial.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "N",
+      "expanded": "Novelty",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Diversity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "H",
+      "expanded": "Happiness",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Governance/Democracy.lean"
+      ],
+      "found_exp": [
+        "Axiology/Priorities.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ig",
+      "expanded": "Ignorance",
+      "found_abbr": [
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Justice.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Tr",
+      "expanded": "Truth",
+      "found_abbr": [
+        "Subgoals/Freedom.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Freedom.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Rlv",
+      "expanded": "relevance",
+      "found_abbr": [
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "F",
+      "expanded": "Fact",
+      "found_abbr": [
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Hy",
+      "expanded": "Hypothesis",
+      "found_abbr": [
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Me",
+      "expanded": "Measurement",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Context.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "As",
+      "expanded": "Assess",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Epistemology/Context.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Context.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "MM",
+      "expanded": "MetricMl",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Law.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Adv",
+      "expanded": "Adversarial",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Context.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "V",
+      "expanded": "discover_Value",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ap",
+      "expanded": "adapt",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Governance/Adversarial.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ha",
+      "expanded": "Harm",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "NHa",
+      "expanded": "NecessaryHa",
+      "found_abbr": [
+        "Axiology/Priorities.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cu",
+      "expanded": "Culture",
+      "found_abbr": [
+        "Subgoals/Diversity.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Diversity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cm",
+      "expanded": "Comm",
+      "found_abbr": [
+        "Ontology/Person.lean",
+        "Subgoals/Art.lean",
+        "Epistemology/Truth.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Sl",
+      "expanded": "Self",
+      "found_abbr": [
+        "Ontology/Being.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Being.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Morality.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cnt",
+      "expanded": "Continuity",
+      "found_abbr": [
+        "Ontology/Person.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ct",
+      "expanded": "Contract",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Ontology/Person.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "G",
+      "expanded": "Goal",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "In",
+      "expanded": "Intent",
+      "found_abbr": [
+        "Ontology/Entity.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean",
+        "Subgoals/Art.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Gd",
+      "expanded": "Good",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Subgoals/Diversity.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Governance/Adversarial.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Bd",
+      "expanded": "Bad",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Subgoals/Diversity.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Rc",
+      "expanded": "Resource",
+      "found_abbr": [
+        "Economy/Currency.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Being.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "RA",
+      "expanded": "RcAccounting",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Tx",
+      "expanded": "Transaction",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Ontology/Law.lean",
+        "Systems/Substrate.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "PE",
+      "expanded": "ProbabilisticEscrow",
+      "found_abbr": [
+        "Economy/Currency.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Systems/Substrate.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "TP_k",
+      "expanded": "TransactionProposal",
+      "found_abbr": [
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CC",
+      "expanded": "CausalContribution",
+      "found_abbr": [
+        "Subgoals/Morality.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "CD",
+      "expanded": "CausalDistribution",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Ontology/Entity.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Systems/Substrate.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Rw",
+      "expanded": "Reward",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Systems/Substrate.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "J",
+      "expanded": "Justice",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Substrate.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Substrate.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Re",
+      "expanded": "Reputation",
+      "found_abbr": [
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Lw",
+      "expanded": "Law",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cv",
+      "expanded": "Civilization",
+      "found_abbr": [
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CG",
+      "expanded": "CollectiveGoals",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Af",
+      "expanded": "AntiFragility",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ad",
+      "expanded": "Administration",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Ontology/Person.lean",
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Gv",
+      "expanded": "Gov",
+      "found_abbr": [
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Dm",
+      "expanded": "Democracy",
+      "found_abbr": [
+        "Governance/Democracy.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "VW",
+      "expanded": "VoteWeight",
+      "found_abbr": [
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Po",
+      "expanded": "Power",
+      "found_abbr": [
+        "Ontology/Entity.lean",
+        "Subgoals/Freedom.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Inf",
+      "expanded": "Influence",
+      "found_abbr": [
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cr",
+      "expanded": "Crime",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Justice.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Justice.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "EHR",
+      "expanded": "ExternalHaResponse",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Lia",
+      "expanded": "Liability",
+      "found_abbr": [
+        "Ontology/Law.lean",
+        "Ontology/Person.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Governance/Adversarial.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "En",
+      "expanded": "Enforcement",
+      "found_abbr": [
+        "Systems/Enforcement.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Aco",
+      "expanded": "Accolade",
+      "found_abbr": [
+        "Ontology/Law.lean"
+      ],
+      "found_exp": [
+        "Ontology/Law.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "IHz",
+      "expanded": "InfoHazard",
+      "found_abbr": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "found_exp": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CrT",
+      "expanded": "CriticalThinking",
+      "found_abbr": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "found_exp": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "IH",
+      "expanded": "InfoHandling",
+      "found_abbr": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "found_exp": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ed",
+      "expanded": "Education",
+      "found_abbr": [
+        "Epistemology/InfoHandling.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Epistemology/InfoHandling.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "SN",
+      "expanded": "SoNet",
+      "found_abbr": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "TN",
+      "expanded": "TechNetwork",
+      "found_abbr": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Mem",
+      "expanded": "MemoryData",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Fr",
+      "expanded": "Freedom",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Subgoals/Freedom.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Subgoals/Freedom.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Mr",
+      "expanded": "Morality",
+      "found_abbr": [
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Morality.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Ec",
+      "expanded": "Economy",
+      "found_abbr": [],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "EL",
+      "expanded": "EmbeddedLaws",
+      "found_abbr": [
+        "Ontology/Law.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Im",
+      "expanded": "Implementation",
+      "found_abbr": [],
+      "found_exp": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "SO",
+      "expanded": "SophontOversight",
+      "found_abbr": [
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "SB",
+      "expanded": "S_BaselnIncm",
+      "found_abbr": [
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "BTS",
+      "expanded": "BehavioralTxnSubstrate",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Subgoals/Justice.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Prog",
+      "expanded": "Progressive",
+      "found_abbr": [
+        "Axioms/Antifragility.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "AC",
+      "expanded": "AntiCorruption",
+      "found_abbr": [
+        "Axioms/Antifragility.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Tt",
+      "expanded": "Trust",
+      "found_abbr": [
+        "Axioms/Antifragility.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Cn",
+      "expanded": "Concerns",
+      "found_abbr": [
+        "Axioms/Antifragility.lean"
+      ],
+      "found_exp": [
+        "Axioms/Antifragility.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "\u015cy",
+      "expanded": "SquashedSynergy",
+      "found_abbr": [
+        "Math/Synergy.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "PrAcc",
+      "expanded": "PredictionAccuracy",
+      "found_abbr": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Tr_lvl",
+      "expanded": "TruthLevel",
+      "found_abbr": [
+        "Subgoals/Art.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Art.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CorrSc",
+      "expanded": "CorrelationScore",
+      "found_abbr": [
+        "Measurement/MetricModel.lean"
+      ],
+      "found_exp": [
+        "Measurement/MetricModel.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "TP",
+      "expanded": "TransactionProposal",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Systems/Substrate.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "CNet",
+      "expanded": "CurrencyNetwork",
+      "found_abbr": [
+        "Economy/Currency.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Bal",
+      "expanded": "Balance",
+      "found_abbr": [
+        "Economy/Currency.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Math/Synergy.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "BalOvflw",
+      "expanded": "BalanceOverflow",
+      "found_abbr": [
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "BfDm",
+      "expanded": "BenefutureDemocracy",
+      "found_abbr": [
+        "Governance/Democracy.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "LqdBfDm",
+      "expanded": "LiquidBenefutureDemocracy",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Systems/Governance.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Fork",
+      "expanded": "Fork",
+      "found_abbr": [
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Merge",
+      "expanded": "Merge",
+      "found_abbr": [
+        "Ontology/Entity.lean"
+      ],
+      "found_exp": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "Art",
+      "expanded": "Art",
+      "found_abbr": [
+        "Subgoals/Art.lean",
+        "Systems/Economy.lean"
+      ],
+      "found_exp": [
+        "Subgoals/Art.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "abbr": "EQ",
+      "expanded": "EmotionalIntelligence",
+      "found_abbr": [
+        "Epistemology/InfoHandling.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Harm_Intv",
+      "expanded": "HarmInterventionAxiom",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Continuity.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Rc_Innovation",
+      "expanded": "ResourceInnovationAxiom",
+      "found_abbr": [
+        "Axioms/Antifragility.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "CvCnt",
+      "expanded": "CivilizationContinuityAxiom",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "Di_N_Balance",
+      "expanded": "DiversityNoveltyBalanceAxiom",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Diversity.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    },
+    {
+      "abbr": "AdvAp",
+      "expanded": "AdversarialAdaptation",
+      "found_abbr": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean"
+      ],
+      "found_exp": [],
+      "has_presence": true
+    }
+  ],
+  "articles": [
+    {
+      "article": "Accolade",
+      "is_redirect": false,
+      "target": "Accolade",
+      "found_in": [
+        "Ontology/Law.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Administration",
+      "is_redirect": false,
+      "target": "Administration",
+      "found_in": [
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Adversarial adaptation",
+      "is_redirect": false,
+      "target": "Adversarial adaptation",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Context.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Anti-Corruption",
+      "is_redirect": false,
+      "target": "Anti-Corruption",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Domain.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Substrate.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Bad",
+      "is_redirect": true,
+      "target": "Good and Bad",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Being",
+      "is_redirect": false,
+      "target": "Being",
+      "found_in": [
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Benefuture currency",
+      "is_redirect": false,
+      "target": "Benefuture currency",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Benefuture goals",
+      "is_redirect": false,
+      "target": "Benefuture goals",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Benefuture",
+      "is_redirect": false,
+      "target": "Benefuture",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Benesophont",
+      "is_redirect": false,
+      "target": "Benesophont",
+      "found_in": [
+        "Ontology/Sophont.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Body",
+      "is_redirect": true,
+      "target": "Being#Body",
+      "found_in": [
+        "Ontology/Being.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Citations",
+      "is_redirect": false,
+      "target": "Citations",
+      "found_in": [],
+      "has_presence": false
+    },
+    {
+      "article": "Civilization",
+      "is_redirect": false,
+      "target": "Civilization",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Communication",
+      "is_redirect": false,
+      "target": "Communication",
+      "found_in": [
+        "Epistemology/Truth.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Contract",
+      "is_redirect": false,
+      "target": "Contract",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Person.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Crime",
+      "is_redirect": false,
+      "target": "Crime",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Justice.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Critique addressal",
+      "is_redirect": false,
+      "target": "Critique addressal",
+      "found_in": [
+        "Axioms/Antifragility.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Culture",
+      "is_redirect": false,
+      "target": "Culture",
+      "found_in": [
+        "Subgoals/Diversity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Currency",
+      "is_redirect": true,
+      "target": "Benefuture currency",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Decision",
+      "is_redirect": false,
+      "target": "Decision",
+      "found_in": [
+        "Measurement/Threshold.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Diversity",
+      "is_redirect": false,
+      "target": "Diversity",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Domain",
+      "is_redirect": false,
+      "target": "Domain",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Duty",
+      "is_redirect": true,
+      "target": "law#Duties",
+      "found_in": [
+        "Ontology/Law.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Economy",
+      "is_redirect": false,
+      "target": "Economy",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Governance/Democracy.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Education",
+      "is_redirect": false,
+      "target": "Education",
+      "found_in": [
+        "Epistemology/InfoHandling.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Enforcement",
+      "is_redirect": false,
+      "target": "Enforcement",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Entities",
+      "is_redirect": true,
+      "target": "entity",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Entity",
+      "is_redirect": false,
+      "target": "Entity",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Goals",
+      "is_redirect": true,
+      "target": "benefuture goals",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Good and Bad",
+      "is_redirect": false,
+      "target": "Good and Bad",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Good",
+      "is_redirect": true,
+      "target": "Good and Bad",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Government",
+      "is_redirect": false,
+      "target": "Government",
+      "found_in": [
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Happiness",
+      "is_redirect": false,
+      "target": "Happiness",
+      "found_in": [
+        "Axiology/Priorities.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Harm",
+      "is_redirect": false,
+      "target": "Harm",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Identity",
+      "is_redirect": true,
+      "target": "Being#Identity",
+      "found_in": [
+        "Ontology/Thing.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Ignorance",
+      "is_redirect": false,
+      "target": "Ignorance",
+      "found_in": [
+        "Subgoals/Justice.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Implementation prototype",
+      "is_redirect": false,
+      "target": "Implementation prototype",
+      "found_in": [
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Influence",
+      "is_redirect": false,
+      "target": "Influence",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Input",
+      "is_redirect": false,
+      "target": "Input",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Interact",
+      "is_redirect": true,
+      "target": "interaction",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Morality.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Pipeline.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Interaction",
+      "is_redirect": false,
+      "target": "Interaction",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Morality.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Pipeline.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Introduction",
+      "is_redirect": false,
+      "target": "Introduction",
+      "found_in": [],
+      "has_presence": false
+    },
+    {
+      "article": "Justice",
+      "is_redirect": false,
+      "target": "Justice",
+      "found_in": [
+        "Ontology/Domain.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Substrate.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Law",
+      "is_redirect": false,
+      "target": "Law",
+      "found_in": [
+        "Ontology/Law.lean",
+        "Subgoals/Diversity.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Life in benefuture",
+      "is_redirect": false,
+      "target": "Life in benefuture",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Main Page",
+      "is_redirect": true,
+      "target": "benefuture",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Measurement",
+      "is_redirect": false,
+      "target": "Measurement",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Outcome",
+      "is_redirect": false,
+      "target": "Outcome",
+      "found_in": [
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Epistemology/Prediction.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Output",
+      "is_redirect": false,
+      "target": "Output",
+      "found_in": [
+        "Measurement/MetricModel.lean",
+        "Ontology/Entity.lean",
+        "Epistemology/Prediction.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Person",
+      "is_redirect": false,
+      "target": "Person",
+      "found_in": [
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Justice.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Economy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Philosophy",
+      "is_redirect": false,
+      "target": "Philosophy",
+      "found_in": [
+        "Axiology/RepugnantConclusion.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Power",
+      "is_redirect": false,
+      "target": "Power",
+      "found_in": [
+        "Ontology/Entity.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Preference",
+      "is_redirect": true,
+      "target": "person#Preferences",
+      "found_in": [
+        "Ontology/Being.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Progressive complexity",
+      "is_redirect": false,
+      "target": "Progressive complexity",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Progressive",
+      "is_redirect": true,
+      "target": "Progressive complexity",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Proof",
+      "is_redirect": false,
+      "target": "Proof",
+      "found_in": [
+        "Math/Order.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Reality",
+      "is_redirect": false,
+      "target": "Reality",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Reputation",
+      "is_redirect": false,
+      "target": "Reputation",
+      "found_in": [
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Right",
+      "is_redirect": true,
+      "target": "Law#Rights",
+      "found_in": [
+        "Ontology/Law.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Rights",
+      "is_redirect": true,
+      "target": "Law#Rights",
+      "found_in": [
+        "Subgoals/Freedom.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Sapience",
+      "is_redirect": false,
+      "target": "Sapience",
+      "found_in": [
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Sentience",
+      "is_redirect": false,
+      "target": "Sentience",
+      "found_in": [
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Governance/Democracy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Sentient",
+      "is_redirect": true,
+      "target": "sentience",
+      "found_in": [
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Governance/Democracy.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Significance",
+      "is_redirect": true,
+      "target": "Threshold of significance",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Significant",
+      "is_redirect": true,
+      "target": "threshold of significance",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Simulation",
+      "is_redirect": true,
+      "target": "Reality#Simulation",
+      "found_in": [
+        "Ontology/Reality.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Social networks",
+      "is_redirect": false,
+      "target": "Social networks",
+      "found_in": [
+        "Ontology/Domain.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Person.lean",
+        "Governance/Democracy.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Society",
+      "is_redirect": true,
+      "target": "civilization",
+      "found_in": [
+        "Ontology/Entity.lean",
+        "Subgoals/Continuity.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Sophont",
+      "is_redirect": true,
+      "target": "benesophont",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Law.lean",
+        "Governance/Democracy.lean",
+        "Systems/Governance.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "System Design",
+      "is_redirect": false,
+      "target": "System Design",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "System design (redirect)",
+      "is_redirect": false,
+      "target": "System design (redirect)",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Ontology/Entity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Technology Network",
+      "is_redirect": false,
+      "target": "Technology Network",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Ontology/Being.lean",
+        "Governance/Democracy.lean",
+        "Epistemology/InfoHandling.lean",
+        "Systems/TechnologyNetwork.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Template",
+      "is_redirect": false,
+      "target": "Template",
+      "found_in": [],
+      "has_presence": false
+    },
+    {
+      "article": "Thing",
+      "is_redirect": false,
+      "target": "Thing",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Threshold of significance",
+      "is_redirect": false,
+      "target": "Threshold of significance",
+      "found_in": [
+        "Economy/Currency.lean",
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/RepugnantConclusion.lean",
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Sophont.lean",
+        "Ontology/Thing.lean",
+        "Ontology/Being.lean",
+        "Ontology/Domain.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Ontology/Person.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Art.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Subgoals/Morality.lean",
+        "Governance/Democracy.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Governance.lean",
+        "Systems/Pipeline.lean",
+        "Systems/Substrate.lean",
+        "Systems/Economy.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Memory.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "True",
+      "is_redirect": true,
+      "target": "truth",
+      "found_in": [
+        "Axioms/Antifragility.lean",
+        "Measurement/Threshold.lean",
+        "Measurement/MetricModel.lean",
+        "Axiology/Value.lean",
+        "Ontology/Being.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Ontology/Reality.lean",
+        "Subgoals/Justice.lean",
+        "Subgoals/Freedom.lean",
+        "Subgoals/Continuity.lean",
+        "Subgoals/Diversity.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean",
+        "Systems/Substrate.lean",
+        "Systems/TechnologyNetwork.lean",
+        "Systems/Enforcement.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Truth",
+      "is_redirect": false,
+      "target": "Truth",
+      "found_in": [
+        "Subgoals/Freedom.lean",
+        "Epistemology/InfoHandling.lean",
+        "Epistemology/Context.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Understanding",
+      "is_redirect": false,
+      "target": "Understanding",
+      "found_in": [
+        "Axiology/Priorities.lean",
+        "Axiology/Value.lean",
+        "Ontology/Law.lean",
+        "Ontology/Entity.lean",
+        "Math/Order.lean",
+        "Math/Synergy.lean",
+        "Subgoals/Art.lean",
+        "Governance/Adversarial.lean",
+        "Epistemology/Prediction.lean",
+        "Epistemology/Truth.lean"
+      ],
+      "has_presence": true
+    },
+    {
+      "article": "Untruth",
+      "is_redirect": false,
+      "target": "Untruth",
+      "found_in": [
+        "Subgoals/Freedom.lean"
+      ],
+      "has_presence": true
+    }
+  ]
+}

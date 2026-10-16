@@ -1,0 +1,26 @@
+[[category:Benefuture]][[category:WorldBuilding]]
+Diversity is the presence of a [[significant]] amount of chaos / randomization / variety / inhomogeneity in a system or [[society]] that makes it self evolve to better fit [[goals]]. <ref>'''Packard, N. H. (1988).''' "Adaptation Toward the Edge of Chaos," in ''Complexity: The Emerging Science at the Edge of Order and Chaos'' (p. 138), edited by G. Gell-Mann & M. Mitchell</ref> 
+
+Diversity is achieved by encouraging differences of circumstance, understanding, opinion, origin, etc. of [[Thing|things]] in a system. It is one of the markers of a resilient system. In [[benefuture]], diversity is built into the '''Novelty factor''' of [[benefuture goals]]. Novelty being the nontrivial<ref>J. Schmidhuber, "Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010)," in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interestingness), Sept. 2010, doi: 10.1109/TAMD.2010.2056368.</ref> uniqueness of a thing.
+
+== Aspects ==
+
+* Diversity allows higher amount of lateral associations in [[understanding]] and hence increases [[sapience]] quotient of any [[thing]].
+* Diversity avoids homogeneity and thus avoids systems to get boxed into suboptimal paths.
+* Diversity has shown to be a key element of survival of life on earth, unless someone can supercede the evidence of billions of years of optimization favouring survival and growth over magnitudes of 10^30 iterations of systems, the advantage of diversity will not be disproven.
+* The significant level of diversity is not achieved till the [[System Design|system]] is regularly and optimally being changed and updated to better fit [[goals]] from the mechanisms of dissonance/mutation and assimilation.
+* Diversity also protects from the perils of unknown unknowns, when the spread of novel [[good]] N reaches certain thesholds, stopping the spread and maintaining a sample of pre N population protects against future catastrophic outcomes from N.
+* Diversity's main [[measurement]] is Novelty, the simple rarity (inverse of frequency of previous encounter) or surprise factor  (inverse log of probability <ref>'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). </ref> ) of any element compared to others in the relevant [[Domain|domains]].
+
+=== Research ===
+
+* Diverse groups, possessing a wider range of perspectives and knowledge, often outperform homogeneous groups in problem-solving and decision-making. <ref>Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press.</ref>   
+
+* Formal models demonstrate how heterogeneous groups, compared to homogeneous ones, can achieve superior outcomes in complex problem-solving scenarios. <ref>Hong, L., & Page, S. E. (2003). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''112''(2), 185-213.</ref>
+
+* Research suggests a "collective intelligence" factor exists in groups, with diverse groups often exhibiting higher collective intelligence and better performance. <ref>Woolley, A. W., Malone, T. W., & Pentland, A. (2008). Evidence for a collective intelligence factor in the performance of human groups. ''Nature'', ''455''(7215), 687-690.</ref>
+
+* The "wisdom of crowds" phenomenon highlights how aggregating diverse opinions can lead to surprisingly accurate and insightful decisions. <ref>Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday.</ref>
+
+=== References ===
+<references />

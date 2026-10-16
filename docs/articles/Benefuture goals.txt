@@ -1,0 +1,216 @@
+[[Category:Benefuture]] [[category:WorldBuilding]]
+The goal of [[benefuture]] is to maximise [[reality|universal]] [[understanding]] then [[happiness]] over time, focusing on synergistic understanding and happiness, prioritizing understanding unless it results in a [[significance|significant]] reduction of happiness over time. The realistic [[measurement]] would be done by competing metrics, and [[System Design|incentivize]] alignment for benefuture [[Sophont|sophonts]] of [[Civilization|society]] via the [[Benefuture currency]] model.
+
+==Aspects==
+
+Executing the [[philosophy]] of maximising the understanding then happiness of the universe is to produce [[output]]s which maximise understanding as it is a meta-competency enhancer towards any other goal, and then happiness, of known [[being]]s in the universe. A poetic notion of the synergy is Gyananandam (in a secular context, also spelled jnanananandam), a Sanskrit term meaning the happiness of understanding.
+
+'''Roughly prioritising it such as:'''
+
+# Maximising the total [[understanding]] present in the universe over time.
+#* Higher priority to understanding which is known to increase happiness.
+# Maximising the total [[happiness]] present in the universe over time.
+#* Higher priority to happiness that is known to increase understanding.
+#* Without significantly reducing understanding.
+Which decompose to the following subgoals
+
+====== '''Subgoals''' ======
+# Maximising processes where [[happiness]] is synergistic with [[understanding]] and the application of it.
+# Maximising the number and quality of [[sophont]]s who would achieve greater [[understanding]] then [[happiness]] and and contribute to these goals now and in the future.
+# Maximising the [[diversity]] of sophonts such that the intersection of [[understanding]] is minimally yet optimally redundant and contains the necessary chaos for maximising future understanding.
+# Altering [[society]] to maximise the range of [[output]]s each [[sophont]] could make (maximising freedom via the range of meaningful choices which don't cause irreversible harm) which would achieve and contribute to these goals now and in the future.
+# Maximising the [[understanding]] achieved by and available to each [[person]], unless there is a [[significant]] depletion of [[happiness]] in the process over time.
+# Maximising the understanding of longtermism - that the [[Interaction|interactions]] between the extended [[Being#Self|self]] and [[reality]] are never causally isolated or one-shot games. Consequences ripple across internal, extended, and external domains and connect within predictable time, though the size of any one contribution may be too small or too slow to estimate, which is a limit of estimation. A one-shot game would need an interaction that can be neither perceived nor changed, which by definition lies outside [[reality]]. Comprehending this structural iteration forms the root of [[Philosophy#Morality|morality]]. Benefuture attempts to make this causal propagation more transparent and tractable.
+# Maximising accurate sharing of understanding.
+# Maximising the chances of inciting and recognizing positive black swan events (breakthroughs), minimizing the chances of inciting negative black swan events (disasters) and maximising the chances of recognizing them early.
+# Maximising the [[happiness]] felt by and available to each [[person]], unless there is a [[significant]] depletion of [[understanding]] in the process over time.
+# Maximising the ways to share happiness.
+# Increasing the ceiling, median and floor of [[understanding]] levels across all [[entities]].
+# Increasing the median and floor of [[happiness]] levels across all [[Being|beings]].
+# Optimizing [[education]], [[Culture|art and culture]] to achieve the above subgoals.
+
+'''The corollary goals would be:'''
+
+# Minimising the spread of ignorance, [[untruth]]s and misunderstanding over time.
+# Minimising [[harm]] to all [[person]]s and [[being]]s over time.
+
+If it were formulated as '''generalized instructions''' to [[person]]s to behave as [[sophont]]s, it would be (in descending order of priority):
+
+# [[Understanding|Understand]] [[Reality]].
+# [[Understanding|Understand]] your own and others' ([[sophont]]s,[[person]]s,[[being]]s,[[entity|entities]]) [[Understanding]] and your and their [[happiness]].
+# Use the understanding to make [[output]]s to successfully increase your own and others' capacity and level of understanding, currently and over time, in the long term, as much as possible.
+# Use the understanding to choose [[output]]s such as to successfully increase your own and others' happiness, currently and over time, in the long term, as much as possible.
+# Synergise your [[happiness]] such that it increases [[understanding]] and vice versa.
+# In case of a conflict, prioritise [[significant]] [[understanding]] over [[significant]] [[happiness]], and avoid [[output]]s which reduce either over time, for you, or for others.
+
+=== Mathematical approach ===
+A simplistic formula for Value V on being b given action A would be the [[Measurement#Assessment|assessed]] change in understanding, happiness and novelty, combined through a synergy operator, with [[harm]] counted as a weight on losses: <math display="inline">V (A, b \in B) \equiv Sy_{\kappa = 2} \left( \operatorname{As} \left[ (U_b, \alpha, w_{Ha}), (H_b, \beta, \alpha \cdot w_{Ha}), (N_b, \gamma) \right] (A, t) \right)
+</math>
+
+Where the goal G would be to maximize it for all beings while increasing the scope of [[Reality]]: <math display="inline">G(t) \equiv \operatorname*{argmax}_{A(t)} \left[ \sum_{b \in B(t)} V (A(t), b) \right]  \land \uparrow\mathbb{R}
+</math>
+
+In a more theoretical zone, given a near perfect understanding of reality, the [[good]] or [[bad]] utility of any action is the Value summed over every being and every moment, from now to the furthest predictable future, which could be: <math display="inline">V_{\text{total}} = { \sum_{t=0}^{t_{\text{max}}} \left\{ \sum_{b \in B_t}\ \left[ \left(C_{t, b} + \frac{1}{1 + D(b, a)}\right) \cdot V_{t, b} \right] \right\} }</math>
+
+This is an ideal limit more than a calculation, it is only as good as the understanding behind it, and the sum is cut off where predictions stop being reliable enough to count.
+
+{| class="wikitable"
+|-
+! Symbol
+! Meaning
+|-
+| a*
+| The chosen action (the one that maximizes utility)
+|-
+| A
+| The set of all possible actions
+|-
+| B(t)
+| The set of all beings at time T
+|-
+| b
+| Represents each individual being (an element of B)
+|-
+| t
+| Represents time, from now (t=0) to the furthest predictable future (t<sub>max</sub>)
+|-
+| C(t, b, a)
+| Credence: predictive confidence based on understanding of reality around being b at time t resulting from action a. It is the prediction side of [[Measurement#Assessment|assessment]].
+|-
+| D(b, a)
+| A measure of the amount of existing data related to actions similar to a and beings similar to b. (to promote [[diversity]] and novelty)
+|-
+| α,β,γ...
+| Weights 1>α>β>γ>δ...
+|-
+| U(t, b)
+| Change in [[understanding]] for being b at time t resulting from action a.
+|-
+| H(t, b)
+| Change in [[happiness]] for being b at time t resulting from action a.
+|-
+|w<sub>Ha</sub>
+|[[Harm]] weight: 1 plus a convex synergy score over the severity tiers of the harm (see [[Benefuture goals#Harm|Harm]] below), applied to losses. Severe and compounding harms therefore count for disproportionately more than mild ones.
+|-
+|N(t, b)
+|Change in [[Diversity|novelty]] for being b at time t resulting from action a.
+|-
+|As
+|[[Measurement#Assessment|Assessment]]: the difference an action makes compared to not acting, in units of the [[threshold of significance]] of its context.
+|-
+|Sy
+|Synergy operator, see below.
+|}
+
+==== Synergy ====
+The synergy operator <math display="inline">Sy</math> scores a list of weighted inputs as follows. Gains and losses are scored separately, <math display="inline">Sy = \Phi_+ - \Phi_- - \lambda \frac{\Phi_+ \Phi_-}{\Phi_+ + \Phi_-}</math>, where each side is <math display="inline">\Phi_s = \sum_i w_i a_i^{q_s} + \kappa \sqrt{\sum_{i<j} w_i w_j (a_i a_j)^{q_s}}</math> over the magnitudes <math display="inline">a_i</math> of the inputs on that side. In words: every input counts in proportion to its weight, inputs that move together in the same direction earn a bonus (scaled by κ), so a single input scores on its weight alone and the bonus grows the more of them coincide. Exponents q above one favour depth, a few large contributions, over breadth, and setting the exponent for losses higher than the one for gains makes harm convex. λ makes a balanced mix of gain and loss come out slightly negative. Starting values might be κ = 1 (2 for Value itself), q<sub>+</sub> = 1.1, q<sub>-</sub> = 1.5 and λ = ½, and the result can optionally be passed through a saturating curve, with a midpoint per [[Domain|domain]], to compare across domains. All of these are [[threshold of significance|thresholds]] in the sense that they are debatable and get tuned.
+
+The operator is a sound starting point. Its form draws on earlier work on interacting criteria and non-additive measures<ref>Choquet, G. (1954). Theory of capacities. ''Annales de l'Institut Fourier'', 5, 131–295.</ref><ref>Grabisch, M. (1997). k-order additive discrete fuzzy measures and their representation. ''Fuzzy Sets and Systems'', 92(2), 167–189.</ref><ref>Grabisch, M., & Roubens, M. (1999). An axiomatic approach to the concept of interaction among players in cooperative games. ''International Journal of Game Theory'', 28(4), 547–565.</ref>, multi-attribute utility<ref>Keeney, R. L., & Raiffa, H. (1976). ''Decisions with Multiple Objectives: Preferences and Value Tradeoffs''. Wiley.</ref>, separate curvature for gains and losses<ref>Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. ''Econometrica'', 47(2), 263–291.</ref><ref>Tversky, A., & Kahneman, D. (1992). Advances in prospect theory: Cumulative representation of uncertainty. ''Journal of Risk and Uncertainty'', 5(4), 297–323.</ref>, explicit aversion to concentrated shortfall<ref>Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263.</ref>, constant-elasticity aggregation<ref>Arrow, K. J., Chenery, H. B., Minhas, B. S., & Solow, R. M. (1961). Capital-labor substitution and economic efficiency. ''Review of Economics and Statistics'', 43(3), 225–250.</ref> and saturating response curves<ref>Hill, A. V. (1910). The possible effects of the aggregation of the molecules of haemoglobin on its dissociation curves. ''Journal of Physiology'', 40, iv–vii.</ref>. Candidates to improve on it include interactions among more than two inputs, interaction coefficients specific to a domain which compete like [[Measurement|metric models]], and parameters which respond to context. An alternative would be adopted if it does better under Benefuture's own [[measurement]]. While these are exploratory initial formulations, the actual practical calculations might incorporate more nuanced handling of objectives, weights and tradeoffs. <ref>J. Figueira; S. Greco & M. Ehrgott (2005). '''''Multiple Criteria Decision Analysis: State of the Art Surveys''.''' Springer Verlag</ref><ref>https://en.wikipedia.org/wiki/Multi-objective_optimization</ref>
+
+== Tradeoff priorities ==
+
+When resources are limited or trade-offs arise, not all kinds of [[understanding]], [[happiness]], [[Diversity|novelty]] or [[harm]] are weighted equally. The framework specifies explicit priorities within each dimension. The orderings are weights: earlier tiers weigh more, the tiers are combined through the synergy operator described in the [[Benefuture goals#Mathematical approach|mathematical approach]], and so a large gain in a lower tier can still outweigh a small gain in a higher one.
+
+=== Understanding ===
+
+# '''Synergistic''' — understanding that also increases happiness and is desirably novel.
+# '''Peak''' — breakthroughs, paradigm shifts, expanding what can be known.
+# '''Teachable''' — knowledge that can be transmitted to others.
+# '''Meta''' — learning how to learn, with diminishing returns at higher levels.
+# '''Median''' — raising the average level across the population.
+# '''Floor''' — ensuring baseline comprehension for all.
+# '''Undirected''' — idle or unfocused understanding.
+
+[[Understanding]] compounds: a single breakthrough can unlock entire fields, and teachable knowledge multiplies across minds. Hence peak and teachable rank high. The emphasis on floor and median reflects the [[Benefuture goals#Subgoals|subgoal]] of increasing understanding levels across all [[entity|entities]], but breakthrough potential justifies prioritising peak first. See [[Measurement]] for how these are tracked via competing [[Measurement#Aspects|metric models]].
+
+=== Happiness ===
+
+# '''Synergistic''' — happiness that also increases understanding and is desirably novel.
+# '''Eudaimonic''' — flourishing, meaning, growth.
+# '''Shareable''' — happiness that propagates through communities, actions and events.
+# '''Satisficing''' — high enough happiness that doesn't impede understanding.
+# '''Baseline''' — the general quantile floor experienced by the worse-off population.
+# '''Median''' — the average level across the population.
+# '''Peak''' — maximum hedonic intensity.
+
+Peak [[happiness]] is structurally lowest, which prevents [[Happiness#Discussion|wireheading scenarios]] where civilisation optimises for maximal pleasure at the expense of understanding or welfare. The baseline refers to lifting the typical condition of those in lower quantiles, not fixating on the single unhappiest individual—Rawlsian in spirit while avoiding inverse [[Benefuture currency#Causal Distribution|utility-monster]] problems. Eudaimonic and shareable happiness rank high because they [[Benefuture goals#Discussion|synergise with understanding]] and propagate across [[social networks]].
+
+=== Harm ===
+
+# '''Irreparable''' — death, permanent destruction of capacity.
+# '''Irreversible''' — trauma, lasting damage, might be reparated but not reversed.
+# '''Long-term''' — extended negative effects.
+# '''Passing''' — temporary harms which do not directly contribute to greater [[good]].
+# '''Time-loss''' — wasted time or opportunity.
+# '''Predicted-necessary''' — anticipated harms for greater good (higher [[Adversarial adaptation|adversarial]] scrutiny than established ones).
+# '''Cultural offence''' — being upset by others' choices not otherwise harmful to the observer, weighted near zero.
+# '''Established-necessary''' — accepted and well known harms for greater good (e.g., surgery, or the strain of exercise), weighted zero.
+
+[[Harm]] severity determines priority of prevention and [[Justice|reparation]]. Cultural offence receives minimal weight; the response is [[Education|education]] of the offended, not restriction of the "offensive" party. This encodes [[Harm#Aspects|structural liberalism]]: one cannot claim harm from merely observing others living differently. Harm enters [[Benefuture goals#Mathematical approach|Value]] as a weight on losses, one plus a score over the tiers present, with the exponent for losses set above the one for gains so that severe harm counts for more than the same total of mild harm. Which tier a harm belongs to depends on current understanding and can be revised, something irreversible today may become reversible with more understanding. Whether a harm is necessary depends on the Value it leads to, and contested cases go to [[Government#Aspects|liquid delegation]] for decision. See [[Progressive complexity]] for how systems degrade gracefully when harm prevention fails.
+
+=== Novelty ===
+
+# '''Paradigm change''' — fundamental shifts in understanding.
+# '''Perspective''' — new points of view.
+# '''Chaotic''' — unpredictable, exploratory non-harmful variation.
+# '''Incremental''' — small improvements.
+# '''Perilous''' — high risk innovation.
+# '''Trivial''' — shallow, predictably noninteresting variation, weighted near zero.
+
+[[Diversity]] requires novelty, but not all novelty is equal. Paradigm shifts receive highest priority as they expand the boundaries of what can be understood. Perilous novelty is still information and is still rewarded as such, but it ranks lowest because the harm it risks is priced separately, and because perilous attempts tend to spend their novelty in a single try. 
+
+===== Distribution Targets =====
+Beyond orderings, the framework specifies target distribution shapes via the skew directive: [[understanding]] and [[happiness]] distributions should be left-skewed (mass toward higher values), [[harm]] should be right-skewed (mass toward lower values, typical harm minimised even if some extreme cases persist), and novelty should follow a normal distribution balancing order and chaos. The goal is not merely to shift means but to reshape entire distributions—raising both floor and ceiling for U and H while compressing the range for Ha.
+
+This skew requirement, paired with depth-favouring synergy ($q_+ > 1$), directly dissolves Parfit's Repugnant Conclusion<ref name="Parfit1984">Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press.</ref>: trading a flourishing society for an astronomical population of lives barely worth living collapses the distribution into a heavily right-skewed sea of marginal states, which the objective explicitly penalizes. Sheer headcount cannot substitute for high-density flourishing.
+
+The same structural architecture checks other classical utilitarian failure modes: convex harm ($q_- > q_+$) prevents sacrificial organ-harvesting trade-offs, prioritizing understanding ($U > H$) with lowest-tier peak pleasure precludes wireheading, and quantile floors with saturating response curves neutralize utility monsters<ref name="Nozick1974">Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books.</ref>.
+
+=== Time ===
+Benefuture's time horizon extends from deepest memory to furthest predictable consequence<ref>Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette Books.</ref>, but the credence term C(t,b) weights contributions by predictive reliability so that speculative futures and contested pasts cannot override present [[understanding]]. Before an action its contributions are predictions and after it they are measurements, which is what lets credence be checked against what happens. [[Benefuture currency#Aspects|Probabilistic escrow]] operationalizes this: uncertain claims receive proportionally less immediate weight.
+
+=== Synergy Override ===
+
+Synergy is the core engine of Benefuture: finding and maximising the intersection of understanding and happiness. The synergy operator is superadditive, so when an action increases understanding, happiness and novelty together the combined score is larger than the sum of its parts, and the more of them move together the larger the bonus. A single input scores on its own weight alone and losses count against the score, which means a non-synergistic option with a large enough gain can still beat a modestly synergistic one. The [[Benefuture goals#Aspects|trade-off logic]] therefore applies everywhere. Understanding comes before happiness through larger weights. "Synergistic" at the top of the understanding and happiness lists above is this bonus.
+
+==Examples==
+
+* Cultivating a [[society]] where growth and happiness are maximised via applied knowledge created by maximised understanding.
+
+* Cultivating a [[civilization]] which maximises [[happiness]] through applied [[understanding]] art and science.
+
+* Educating generations of [[person]]s in the techniques to maximise understanding and conditioning them to achieve happiness through it.
+
+* Making systematic decisions based on understanding and happiness tradeoffs using rational methods. 
+
+* A universal civilization which occupies all of known [[Reality]] and pushing beyond it. With an unbroken memory of all of its constituent species of gradual change and benevolent [[Culture|cultural]], nonviolent assimilation, increasing [[understanding]] and [[happiness]] throughout its history.
+
+== Discussion ==
+The synergistic relationship between understanding and happiness is a powerful engine for the flourishing of civilization.  Deep understanding, such as that demonstrated by expert physicists who categorize problems by underlying principles rather than surface features <ref name="ChiEtAl1981">Chi, M. T. H., Feltovich, P. J., & Glaser, R. (1981). '''Categorization and representation of physics problems by experts and novices.''' ''Cognitive Science, 5''(2), 121–152. https://doi.org/10.1207/s15516709cog0502_2</ref>, leads to better outcomes.  This principle extends beyond technical domains; understanding emotional and behavioral skills is equally crucial for well-being <ref name="SteponaviciusEtAl2023">Steponavičius, M., Gress-Wright, C., & Linzarini, A. (2023). '''Social and emotional skills: Latest evidence on teachability and impact on life outcomes''' (''OECD Education Working Papers No. 304'', EDU/WKP(2023)19, pp. 40-72). OECD Publishing. https://one.oecd.org/document/EDU/WKP(2023)19/en/pdf</ref>.  The link between understanding and happiness is well-documented.  Studies have shown a positive correlation between IQ and happiness <ref name="AliEtAl2013">Ali, A., Ambler, G., Strydom, A., Rai, D., Cooper, C., McManus, S., Hassiotis, A., … '''The relationship between happiness and intelligent quotient: The contribution of socio-economic and clinical factors.''' ''Psychological Medicine, 43''(6), 1303-1312. https://doi.org/10.1017/S0033291712002139</ref>, and between cognitive abilities and subjective well-being <ref name="AhmedEtAl2018">Ahmed, R., Kesavayuth, D., & Zikos, V. (2018). '''Does being smarter make you happier? Evidence from Europe.''' ''Journal of Behavioral and Experimental Economics, 76'', 55-67. https://doi.org/10.1016/j.socec.2018.06.004</ref>, across various age groups, from childhood <ref name="KhandakerEtAl2018">Khandaker, G.M., Stochl, J., Zammit, S., Goodyer, I., Lewis, G., Jones, P.B. '''Childhood inflammatory markers and''' '''intelligence as predictors of subsequent persistent depressive symptoms: A longitudinal cohort study.''' Psychological Medicine, 48(9), 1514-1522. https://doi.org/10.1017/S0033291717003038</ref> to old age <ref name="EnkvistEtAl2013">Enkvist, A., Ekström, H., & Elmståhl, S. (2013). '''Associations between cognitive abilities and life satisfaction in the oldest-old. Results from the longitudinal population study Good Aging in Skåne.''' ''Clinical interventions in aging, 8'', 845–853. https://doi.org/10.2147/CIA.S45382</ref>.  [[Education]], a fundamental tool for enhancing understanding, has broad societal benefits, impacting not only economic productivity but also health, social participation, and overall well-being <ref name="Grossman2006">Grossman, M. (2006). '''Education and nonmarket outcomes. In E. A. Hanushek & F. Welch (Eds.)''', ''Handbook of the economics of education'' (Vol. 1, pp. 577-633). Elsevier. https://doi.org/10.1016/S1574-0692(06)01010-5</ref>.  Even understanding and effectively managing stress, rather than simply avoiding it, can significantly improve well-being <ref name="CrumEtAl2023">Crum, A. J., Santoro, E., Handley-Miner, I., Smith, E. N., Evans, K., Moraveji, N., Achor, S., & Salovey, P. (2023). '''Evaluation of the “rethink stress” mindset intervention: A metacognitive approach to changing mindsets.''' ''Journal of Experimental Psychology: General, 152''(9), 2603–2622. https://doi.org/10.1037/xge0001396</ref><ref name="WilliamsGinty2023">Williams, S. E., & Ginty, A. T. (2023). '''A stress-is-enhancing mindset is associated with lower traumatic stress symptoms during the COVID-19 pandemic.''' ''Anxiety, Stress, & Coping, 37''(3), 293–304. https://doi.org/10.1080/10615806.2023.2282092</ref>.
+
+The influence flows in both directions.  Happiness, in turn, fuels understanding and its positive consequences.  Evolutionary perspectives suggest that happiness and positive emotions play a crucial role in driving behaviors essential for survival and societal advancement <ref name="ClarkEtAl2018">Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press.</ref>.  Happy individuals tend to be more productive and perform better in various [[Domain|domains]] <ref name="Hinton2015">Hinton, C. (2015). '''Happy students learn better'''. ''Edutopia''. Harvard publication.
+
+https://www.gse.harvard.edu/ideas/usable-knowledge/15/03/because-im-happy</ref><ref name="Gilbert2012">Gilbert, D. (2012). '''The science behind the smile.''' ''Harvard Business Review, 90''(1-2), 84-90.</ref><ref name="Achor2010">Achor, S. (2010). '''''The happiness advantage: the seven principles of positive psychology that fuel success and performance at work'''''. Crown Business.</ref>.  This effect extends to innovation, as existing knowledge forms the foundation for new discoveries <ref name="CohenLevinthal1990">Cohen, W. L., & Levinthal, D. A. (1990). '''Absorptive Capacity: A New Perspective on Learning and Innovation.''' ''Administrative Science Quarterly, 35''(1), 128-152. https://doi.org/10.2307/2393553</ref>, and understanding past failures helps prevent future ones <ref name="Klein2007">Klein G. (2007). '''Performing a project premortem.''' ''Harvard Business review 85'', 18–19. https://cltr.nl/wp-content/uploads/2020/11/Project-Pre-Mortem-HBR-Gary-Klein.pdf</ref>.  Simpler, more accessible models enhance understanding and knowledge dissemination <ref name="Feldman2016">Feldman J. (2016). '''The simplicity principle in perception and cognition.''' ''Wiley interdisciplinary reviews. Cognitive science'', 7(5), 330–340. https://doi.org/10.1002/wcs.1406</ref>.  
+
+This synergy is often driven further forward or backward by black swan events, which, by definition highly unpredictable, have outsize impact on [[civilization]]. <ref>Taleb, N. N. (2007). ''The black swan: The impact of the highly improbable''. Random House.</ref> Hence being able to anticipate, if not predict, and mitigate or utilize them based on their impact - is crucial to the benefuture goals.  
+
+This interconnectedness of understanding and happiness creates a powerful virtuous spiral, driving individual flourishing and, collectively, the progress and well-being of civilization.  When individuals possess both deep understanding and a positive emotional state, they are better equipped to innovate, solve problems, build strong communities, and create a more prosperous and fulfilling world for themselves and future generations. That is the core outcome of the [[benefuture]] goals being used as the underlying rubric, primarily [[Enforcement|enforced]] via [[System Design|system design]] of [[civilization]].
+
+== Vision ==
+
+A Benefuture society aspires to be a dynamic and ever-learning civilization, a vibrant tapestry woven from diverse threads of thought and experience, constantly seeking:
+
+*   '''Unfolding Understanding:''' To perpetually expand the horizons of knowledge, wisdom, and insight, deepening our comprehension and pushing at the boundaries of known [[Reality]] and our[[Being#Self|selves]].
+*   '''Flourishing Happiness:''' To cultivate widespread well-being, fostering joy, meaning, and connection for all [[sophont]]s, expanding to [[Person|persons]] and [[Being|beings]].
+*   '''Harmonious Abundance:''' To utilize the resources of [[Reality]] wisely and sustainably, creating abundance in harmony with the natural world and future generations.
+*   '''Boundless Exploration:''' To relentlessly push the boundaries of the known, exploring new frontiers of science, technology, art, philosophy, and the fundamental nature of existence.
+*   '''Unbroken Memory:''' To maintain living, accessible societal memory – a unbroken record of triumphs, failures, and the gradual evolution of the [[sophont]] population – safeguarding core values, learning from the past, and preventing the romanticization of destructive upheaval. This is facilitated by the transparent and immutable nature of the [[benefuture currency|benefuture currency transaction records]] and curated by the [[Technology Network]]. The guiding principle being that positive change should try to be of the nature where both the visionary sophonts at the beginning of the change and the average sophont after it acknowledge it as net positive for civilization.
+*   '''Fractal Flourishing:''' To cultivate progress and [[good]] [[power]] at all scales, from individual growth to societal transformation, from subatomic to intergalactic, a blossoming of potential in every domain, recognizing the interconnectedness of all things.
+*   '''Holographic Antifragility:''' To create a set of interconnected systems which improve when stressed, where the constituent parts learn and grow just like the whole does.
+*   '''Universal Uplift:''' To enhance the capacities of all [[person]]s, [[being]]s, [[entity|entities]], and even [[Thing|things]], empowering them to contribute to the unfolding tapestry of existence.  More capable [[sophont]]s are particularly encouraged to assist in the development and well-being of others.
+*   '''Sophont-Centered Progress:''' To advance in a way that empowers existing forms of sentience and sapience, elevating existing persons, beings, and entities to sophonts wherever feasible.
+*   '''Perpetual Becoming:''' To embrace continuous improvement as a [[Life in benefuture|journey]], not a destination, recognizing that a perfect society is not a fixed state, but a constant striving towards greater [[Understanding]] and [[Happiness]]. Progress is viewed as a path of just improvement, acknowledging both the steps forward and the lessons learned from the past.
+*   '''Possible Obsolescence:''' To be able to apply benefuture [[diversity]] principles to benefuture goals and spread itself, [[Understanding]], [[Happiness]], [[Diversity]](Novelty), and [[measurement]] framework to encourage looking for better goals to optimize for, the Benefuture Goal function being our most converging approximation of a sustainable longterm [[Civilization|civilizational]] goal, if we can find and prove another goal as better (Which might require understanding of that goal and the happiness that comes from it, which in turn might seem to be a self-referential trap, but we haven't found any paradigms which don't require deep understanding to ascertain superiority yet), Benefuture can then shift or even give way to the emergent utility function.
+
+== References ==
+<references /><small>AI Disclaimer: This article is 10% AI compiled with 90% human notes.</small>

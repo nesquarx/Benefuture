@@ -1,0 +1,11 @@
+[/[category:Benefuture]]
+define
+
+==Aspects==
+===sub aspect===
+* one
+* two
+
+==Examples==
+* one
+* two

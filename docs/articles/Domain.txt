@@ -1,0 +1,76 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+A domain is a bounded classification pattern of [[Reality]] within which specific types of [[Interaction|interactions]], resources, and [[Outcome|outcomes]] share causal structure. Domains provide jurisdictional scope for [[Measurement|metric models]], [[Benefuture currency|currencies]] and [[Reputation|Reputation,]] enabling specialized prediction while preventing unbounded claims.
+
+A [[Thing]] belongs to multiple domains simultaneously through multiple relationship types (causal, resource, outcome, substrate, regulatory, etc.), each with a weight in [0,1] representing magnitude of belongingness. Weights are classification artifacts derived from the Thing's measured proclivities matching domain patterns, not assigned by authority. Where domains overlap, multiple models compete; where they don't, models defer to specialists.
+
+== Aspects ==
+
+* '''Causal Grounding:''' Domains are defined by shared causal mechanisms, not topic labels. Classification emerges from measured pattern-matching against characteristic processes — a factory's domain weights reflect what it actually does, not what it claims to do.
+
+* '''Nested Structure:''' Domains nest from broad categories (Physical, Informational, Social, Wellbeing) through intermediate levels to fine-grained specializations. [[Measurement|Metric models]] operate at appropriate granularity for their predictive scope.
+
+* '''Weighted Membership:''' A Thing's domain signature comprises all (Domain, RelationshipType, Weight) tuples where weight > 0. Relationship types are extensible as [[Understanding]] deepens. Weights do not decay temporally — they change when the Thing's actual proclivities change.
+
+* '''Overlap Zones:''' Where Things routinely have significant weights in multiple domains, overlap zones emerge — regions of mandatory competition enabling cross-domain validation and preventing monopoly.
+
+* '''External Classification:''' Domains are defined by consortiums and monitored by competing models trained on causal ontologies and resource flows. Metric models cannot define boundaries they are judged by.
+
+* '''Anti-Gerrymandering:''' Classification stickiness, mandatory overlap competition, orphan detection, and cross-domain consistency checking prevent boundary manipulation.
+
+== Role in Benefuture Systems ==
+
+* '''[[Measurement]]:''' Metric models declare domain coverage and are evaluated on prediction accuracy within those domains. Models may specialize (deep accuracy in narrow scope) or generalize (moderate accuracy across broad scope). Competition occurs wherever domain coverage overlaps.
+
+* '''[[Benefuture currency]]:''' Currencies inherit domain scope from their underlying metric models. Cross-domain transactions involve multiple currencies — a nutrition education program generates offers from EduCoin and HealthCoin simultaneously based on respective domain weights.
+
+* '''[[Benefuture currency#Causal Distribution|Causal Distribution]]:''' When outcomes span domains, attribution traces causal chains weighted by domain membership. A teacher's contribution to a student's later health improvement flows through Education domain weights to Health domain outcomes.
+
+* '''[[Reputation]]:''' Domain-specific and non-transferable. A [[Sophont]]'s reputation accumulates within domains where they generate [[Benefuture currency|currency]] above baseline. High physics reputation carries no weight in agricultural policy.
+
+* '''[[Government]]:''' Expertise and issue weighting in voting is strictly domain-specific — no halo effects. A climate scientist's vote on emissions policy is weighted by climate domain reputation; their vote on education policy is not.
+
+* '''[[Justice]]:''' Domain expertise weights adjudicator influence. [[Crime]] attribution traces through domain-weighted causal chains.
+
+* '''[[Education]]:''' Meta-learning capacity is domain-general; specialized knowledge accumulates domain-specific reputation. Credentials map to domain competencies.
+
+== Initial Structure example ==
+
+Bootstrap hierarchy can be synthesized from established classification systems <ref>ISIC Rev. 4, ICF, ICATUS, Frascati Manual, SEEA, CICES, PERMA, SUMO.</ref> to form Diderot's tree-esque <ref>Diderot, D., & d'Alembert, J. le R. (1751). Système figuré des connoissances humaines. In Encyclopédie, ou dictionnaire raisonné des sciences, des arts et des métiers (Vol. 1). Paris: André Le Breton.</ref> structure of everything:
+
+{| class="wikitable"
+|-
+! Level 1 !! Level 2 !! Level 3 (Examples)
+!Level 4 (Examples with obvious overlaps)
+|-
+| Physical || Biological, Material, Energy || Agriculture, Health, Manufacturing, Ecosystem
+|Diseases, Rivers
+|-
+| Informational || Production, Transmission, Application || Sciences, Education, Professional Services
+|Pedagogy, Experimental Design
+|-
+| Social || Governance, Care, Community || Administration, Justice, Caregiving, Participation
+|Policymaking, ethics
+|-
+| Wellbeing || Hedonic, Eudaimonic, Relational || Satisfaction, Meaning, Belonging
+|Family unit design, Anxiety
+|}
+
+Initial structure bootstraps from existing classifications representing accumulated human understanding of causal categories. Evolution proceeds via low-friction addition (new sub-domains if they improve prediction), high-friction removal (prevent gaming), and overlap expansion for contested boundaries.
+
+== Discussion ==
+
+Domains solve several fundamental problems:
+
+'''Bounded Accountability:''' Without domain boundaries, metric models face impossible scope — every prediction failure attributable to factors outside claimed competence. Domains bound claims, enabling evaluation.
+
+'''Currency Competition:''' Domain overlaps enable multiple metric models to offer transaction proposals for the same action, allowing currencies to compete on prediction accuracy and efficiency.
+
+'''Commensurability Without Comparability:''' [[Understanding]] in physics may not compare to [[Happiness]] from relationships. But both domains consume resources. Efficiency — value per resource — is comparable even when values are not. Cross-domain transactions track resource consumption and outcome production; implicit exchange rates emerge from actor choices and prediction accuracy, not central declaration.
+
+'''Reputation Locality:''' Domain-specificity prevents reputation inflation across unrelated fields. Excellence in one domain must be demonstrated, not transferred.
+
+As a key [[System Design|system]] of [[benefuture]] [[civilization]], domain classification incorporates [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|progressive strategies]]. Under degraded conditions, coarser distinctions (Level 1-2) preserve basic function.
+
+== References ==
+<references />
+----<small>AI Disclaimer: This article is 30% AI compiled with 70% human notes.</small>

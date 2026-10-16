@@ -1,0 +1,20 @@
+[[Category:Benefuture]] [[category:WorldBuilding]]
+An administration is an [[entity]] in a [[society]] that [[Government|creates, modifies, updates]], [[justice|adjudicates]] and [[enforcement|enforce]]s the [[law]]s of the [[society]]. In a [[benefuture]] [[civilization]], the administration's principal aim is to [[Government|make]] and [[Enforcement|enforce]] [[Law|laws]] which result in maximising the [[goals]] of the civilization.
+
+==Aspects==
+===Maintaining direction towards goals===
+* The administration is always checking if the current set of laws and their enforcement is maximizing the goals - understanding and then happiness. 
+* It requires strong mechanisms to measure and [[understanding|understand]] the effects and outcomes of the laws and their enforcement on the [[sophont]]s of the civilization.
+* If a law or its enforcement is [[proof|proven]] to be lacking in maximization of the goals in comparison to a competing law or enforcement method or the absence of it, the law needs to be updated accordingly.
+
+===Reducing abstraction of goals===
+* As an administration becomes complex, abstractions are used to encompass sub-goals and sub-sub-goals that lead towards the [[benefuture goals]], but the abstractions can often bring in aspects which don't maximize the goals. It is a necessary function of the administration to repeatedly unravel abstractions and check if they still maximize understanding and then happiness better than any competing abstraction or the lack of one.
+
+===Preventing Corruption===
+* All aspects of an administration, policymaking, enforcement, adjudication, have the exercise of power and influence in its functions, all functions are prone to corruption or drifting away from the goals, as any concentration of power can get. Hence it need to prevent that by design and execution. It should fall under the same scrutiny as other [[Power|powerful]] entities and [[Anti-Corruption]] measures should be applied. As a key system of  [[benefuture]] [[civilization]], [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
+
+
+==Examples==
+* A [[government]] of a polity is a common form of administration.
+* Often, the leadership of a big organisation also performs in an administration adjacent role.
+----<small>AI Disclaimer: This article is 100% human written.</small>

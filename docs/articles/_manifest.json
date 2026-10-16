@@ -1,0 +1,717 @@
+{
+  "fetched_at": "2026-10-16T03:09:37Z",
+  "total_pages": 79,
+  "pages": [
+    {
+      "pageid": 45,
+      "title": "Accolade",
+      "revid": 223,
+      "timestamp": "2024-12-30T01:00:44Z",
+      "is_redirect": false,
+      "length": 494,
+      "filename": "Accolade.txt"
+    },
+    {
+      "pageid": 43,
+      "title": "Administration",
+      "revid": 694,
+      "timestamp": "2026-01-17T22:49:26Z",
+      "is_redirect": false,
+      "length": 2375,
+      "filename": "Administration.txt"
+    },
+    {
+      "pageid": 76,
+      "title": "Adversarial adaptation",
+      "revid": 1082,
+      "timestamp": "2026-10-16T03:09:23Z",
+      "is_redirect": false,
+      "length": 8443,
+      "filename": "Adversarial adaptation.txt"
+    },
+    {
+      "pageid": 53,
+      "title": "Anti-Corruption",
+      "revid": 997,
+      "timestamp": "2026-02-21T19:36:45Z",
+      "is_redirect": false,
+      "length": 5273,
+      "filename": "Anti-Corruption.txt"
+    },
+    {
+      "pageid": 56,
+      "title": "Bad",
+      "revid": 299,
+      "timestamp": "2025-01-02T23:08:48Z",
+      "is_redirect": true,
+      "length": 26,
+      "filename": "Bad.txt"
+    },
+    {
+      "pageid": 3,
+      "title": "Being",
+      "revid": 1068,
+      "timestamp": "2026-10-11T18:27:16Z",
+      "is_redirect": false,
+      "length": 3747,
+      "filename": "Being.txt"
+    },
+    {
+      "pageid": 20,
+      "title": "Benefuture",
+      "revid": 1080,
+      "timestamp": "2026-10-16T03:09:19Z",
+      "is_redirect": false,
+      "length": 19013,
+      "filename": "Benefuture.txt"
+    },
+    {
+      "pageid": 65,
+      "title": "Benefuture currency",
+      "revid": 1061,
+      "timestamp": "2026-10-11T18:27:04Z",
+      "is_redirect": false,
+      "length": 19845,
+      "filename": "Benefuture currency.txt"
+    },
+    {
+      "pageid": 27,
+      "title": "Benefuture goals",
+      "revid": 1079,
+      "timestamp": "2026-10-11T21:48:12Z",
+      "is_redirect": false,
+      "length": 30747,
+      "filename": "Benefuture goals.txt"
+    },
+    {
+      "pageid": 15,
+      "title": "Benesophont",
+      "revid": 1010,
+      "timestamp": "2026-06-12T21:16:25Z",
+      "is_redirect": false,
+      "length": 1706,
+      "filename": "Benesophont.txt"
+    },
+    {
+      "pageid": 33,
+      "title": "Body",
+      "revid": 92,
+      "timestamp": "2023-12-29T04:56:47Z",
+      "is_redirect": true,
+      "length": 24,
+      "filename": "Body.txt"
+    },
+    {
+      "pageid": 60,
+      "title": "Citations",
+      "revid": 480,
+      "timestamp": "2025-02-27T07:02:11Z",
+      "is_redirect": false,
+      "length": 20427,
+      "filename": "Citations.txt"
+    },
+    {
+      "pageid": 23,
+      "title": "Civilization",
+      "revid": 705,
+      "timestamp": "2026-01-17T23:07:20Z",
+      "is_redirect": false,
+      "length": 1390,
+      "filename": "Civilization.txt"
+    },
+    {
+      "pageid": 7,
+      "title": "Communication",
+      "revid": 711,
+      "timestamp": "2026-01-17T23:11:13Z",
+      "is_redirect": false,
+      "length": 1070,
+      "filename": "Communication.txt"
+    },
+    {
+      "pageid": 51,
+      "title": "Contract",
+      "revid": 1005,
+      "timestamp": "2026-03-01T19:51:38Z",
+      "is_redirect": false,
+      "length": 1039,
+      "filename": "Contract.txt"
+    },
+    {
+      "pageid": 38,
+      "title": "Crime",
+      "revid": 269,
+      "timestamp": "2024-12-30T05:55:21Z",
+      "is_redirect": false,
+      "length": 1199,
+      "filename": "Crime.txt"
+    },
+    {
+      "pageid": 84,
+      "title": "Critique addressal",
+      "revid": 1060,
+      "timestamp": "2026-10-11T18:27:02Z",
+      "is_redirect": false,
+      "length": 37847,
+      "filename": "Critique addressal.txt"
+    },
+    {
+      "pageid": 67,
+      "title": "Culture",
+      "revid": 725,
+      "timestamp": "2026-01-18T02:51:59Z",
+      "is_redirect": false,
+      "length": 7490,
+      "filename": "Culture.txt"
+    },
+    {
+      "pageid": 64,
+      "title": "Currency",
+      "revid": 392,
+      "timestamp": "2025-02-22T04:17:57Z",
+      "is_redirect": true,
+      "length": 33,
+      "filename": "Currency.txt"
+    },
+    {
+      "pageid": 32,
+      "title": "Decision",
+      "revid": 710,
+      "timestamp": "2026-01-17T23:10:17Z",
+      "is_redirect": false,
+      "length": 1054,
+      "filename": "Decision.txt"
+    },
+    {
+      "pageid": 59,
+      "title": "Diversity",
+      "revid": 1031,
+      "timestamp": "2026-07-10T22:13:21Z",
+      "is_redirect": false,
+      "length": 3735,
+      "filename": "Diversity.txt"
+    },
+    {
+      "pageid": 77,
+      "title": "Domain",
+      "revid": 985,
+      "timestamp": "2026-02-15T03:15:17Z",
+      "is_redirect": false,
+      "length": 6842,
+      "filename": "Domain.txt"
+    },
+    {
+      "pageid": 48,
+      "title": "Duty",
+      "revid": 225,
+      "timestamp": "2024-12-30T01:50:17Z",
+      "is_redirect": true,
+      "length": 24,
+      "filename": "Duty.txt"
+    },
+    {
+      "pageid": 61,
+      "title": "Economy",
+      "revid": 807,
+      "timestamp": "2026-01-23T02:37:36Z",
+      "is_redirect": false,
+      "length": 2122,
+      "filename": "Economy.txt"
+    },
+    {
+      "pageid": 70,
+      "title": "Education",
+      "revid": 726,
+      "timestamp": "2026-01-18T03:05:52Z",
+      "is_redirect": false,
+      "length": 9105,
+      "filename": "Education.txt"
+    },
+    {
+      "pageid": 47,
+      "title": "Enforcement",
+      "revid": 730,
+      "timestamp": "2026-01-18T03:46:16Z",
+      "is_redirect": false,
+      "length": 2261,
+      "filename": "Enforcement.txt"
+    },
+    {
+      "pageid": 21,
+      "title": "Entities",
+      "revid": 52,
+      "timestamp": "2023-10-25T05:39:30Z",
+      "is_redirect": true,
+      "length": 20,
+      "filename": "Entities.txt"
+    },
+    {
+      "pageid": 14,
+      "title": "Entity",
+      "revid": 995,
+      "timestamp": "2026-02-21T19:15:11Z",
+      "is_redirect": false,
+      "length": 887,
+      "filename": "Entity.txt"
+    },
+    {
+      "pageid": 26,
+      "title": "Goals",
+      "revid": 77,
+      "timestamp": "2023-12-27T05:55:39Z",
+      "is_redirect": true,
+      "length": 30,
+      "filename": "Goals.txt"
+    },
+    {
+      "pageid": 57,
+      "title": "Good",
+      "revid": 314,
+      "timestamp": "2025-01-05T00:08:45Z",
+      "is_redirect": true,
+      "length": 26,
+      "filename": "Good.txt"
+    },
+    {
+      "pageid": 58,
+      "title": "Good and Bad",
+      "revid": 720,
+      "timestamp": "2026-01-18T02:35:24Z",
+      "is_redirect": false,
+      "length": 1210,
+      "filename": "Good and Bad.txt"
+    },
+    {
+      "pageid": 68,
+      "title": "Government",
+      "revid": 1062,
+      "timestamp": "2026-10-11T18:27:05Z",
+      "is_redirect": false,
+      "length": 14446,
+      "filename": "Government.txt"
+    },
+    {
+      "pageid": 24,
+      "title": "Happiness",
+      "revid": 1069,
+      "timestamp": "2026-10-11T18:27:17Z",
+      "is_redirect": false,
+      "length": 16426,
+      "filename": "Happiness.txt"
+    },
+    {
+      "pageid": 31,
+      "title": "Harm",
+      "revid": 1070,
+      "timestamp": "2026-10-11T18:27:19Z",
+      "is_redirect": false,
+      "length": 4399,
+      "filename": "Harm.txt"
+    },
+    {
+      "pageid": 80,
+      "title": "Identity",
+      "revid": 750,
+      "timestamp": "2026-01-19T03:31:14Z",
+      "is_redirect": true,
+      "length": 28,
+      "filename": "Identity.txt"
+    },
+    {
+      "pageid": 62,
+      "title": "Ignorance",
+      "revid": 386,
+      "timestamp": "2025-02-19T00:55:13Z",
+      "is_redirect": false,
+      "length": 137,
+      "filename": "Ignorance.txt"
+    },
+    {
+      "pageid": 72,
+      "title": "Implementation prototype",
+      "revid": 1072,
+      "timestamp": "2026-10-11T18:27:22Z",
+      "is_redirect": false,
+      "length": 24380,
+      "filename": "Implementation prototype.txt"
+    },
+    {
+      "pageid": 55,
+      "title": "Influence",
+      "revid": 738,
+      "timestamp": "2026-01-18T07:11:44Z",
+      "is_redirect": false,
+      "length": 1194,
+      "filename": "Influence.txt"
+    },
+    {
+      "pageid": 5,
+      "title": "Input",
+      "revid": 702,
+      "timestamp": "2026-01-17T23:04:33Z",
+      "is_redirect": false,
+      "length": 1226,
+      "filename": "Input.txt"
+    },
+    {
+      "pageid": 6,
+      "title": "Interact",
+      "revid": 13,
+      "timestamp": "2023-10-22T23:09:25Z",
+      "is_redirect": true,
+      "length": 25,
+      "filename": "Interact.txt"
+    },
+    {
+      "pageid": 4,
+      "title": "Interaction",
+      "revid": 685,
+      "timestamp": "2026-01-17T22:45:25Z",
+      "is_redirect": false,
+      "length": 1126,
+      "filename": "Interaction.txt"
+    },
+    {
+      "pageid": 71,
+      "title": "Introduction",
+      "revid": 1073,
+      "timestamp": "2026-10-11T18:27:23Z",
+      "is_redirect": false,
+      "length": 13388,
+      "filename": "Introduction.txt"
+    },
+    {
+      "pageid": 49,
+      "title": "Justice",
+      "revid": 743,
+      "timestamp": "2026-01-19T01:34:48Z",
+      "is_redirect": false,
+      "length": 3710,
+      "filename": "Justice.txt"
+    },
+    {
+      "pageid": 34,
+      "title": "Law",
+      "revid": 721,
+      "timestamp": "2026-01-18T02:37:01Z",
+      "is_redirect": false,
+      "length": 3106,
+      "filename": "Law.txt"
+    },
+    {
+      "pageid": 83,
+      "title": "Life in benefuture",
+      "revid": 942,
+      "timestamp": "2026-02-07T21:38:57Z",
+      "is_redirect": false,
+      "length": 93099,
+      "filename": "Life in benefuture.txt"
+    },
+    {
+      "pageid": 1,
+      "title": "Main Page",
+      "revid": 815,
+      "timestamp": "2026-01-23T03:54:59Z",
+      "is_redirect": true,
+      "length": 24,
+      "filename": "Main Page.txt"
+    },
+    {
+      "pageid": 73,
+      "title": "Measurement",
+      "revid": 1081,
+      "timestamp": "2026-10-16T03:09:21Z",
+      "is_redirect": false,
+      "length": 14683,
+      "filename": "Measurement.txt"
+    },
+    {
+      "pageid": 41,
+      "title": "Outcome",
+      "revid": 189,
+      "timestamp": "2024-12-24T06:10:20Z",
+      "is_redirect": false,
+      "length": 728,
+      "filename": "Outcome.txt"
+    },
+    {
+      "pageid": 8,
+      "title": "Output",
+      "revid": 688,
+      "timestamp": "2026-01-17T22:46:28Z",
+      "is_redirect": false,
+      "length": 891,
+      "filename": "Output.txt"
+    },
+    {
+      "pageid": 10,
+      "title": "Person",
+      "revid": 996,
+      "timestamp": "2026-02-21T19:18:37Z",
+      "is_redirect": false,
+      "length": 3097,
+      "filename": "Person.txt"
+    },
+    {
+      "pageid": 82,
+      "title": "Philosophy",
+      "revid": 1065,
+      "timestamp": "2026-10-11T18:27:10Z",
+      "is_redirect": false,
+      "length": 24586,
+      "filename": "Philosophy.txt"
+    },
+    {
+      "pageid": 54,
+      "title": "Power",
+      "revid": 739,
+      "timestamp": "2026-01-18T07:12:19Z",
+      "is_redirect": false,
+      "length": 827,
+      "filename": "Power.txt"
+    },
+    {
+      "pageid": 16,
+      "title": "Preference",
+      "revid": 126,
+      "timestamp": "2024-06-29T13:32:48Z",
+      "is_redirect": true,
+      "length": 76,
+      "filename": "Preference.txt"
+    },
+    {
+      "pageid": 75,
+      "title": "Progressive",
+      "revid": 534,
+      "timestamp": "2025-03-25T23:37:15Z",
+      "is_redirect": true,
+      "length": 37,
+      "filename": "Progressive.txt"
+    },
+    {
+      "pageid": 74,
+      "title": "Progressive complexity",
+      "revid": 1025,
+      "timestamp": "2026-06-20T08:58:12Z",
+      "is_redirect": false,
+      "length": 7320,
+      "filename": "Progressive complexity.txt"
+    },
+    {
+      "pageid": 19,
+      "title": "Proof",
+      "revid": 713,
+      "timestamp": "2026-01-18T02:26:05Z",
+      "is_redirect": false,
+      "length": 1542,
+      "filename": "Proof.txt"
+    },
+    {
+      "pageid": 9,
+      "title": "Reality",
+      "revid": 712,
+      "timestamp": "2026-01-17T23:11:47Z",
+      "is_redirect": false,
+      "length": 1924,
+      "filename": "Reality.txt"
+    },
+    {
+      "pageid": 69,
+      "title": "Reputation",
+      "revid": 1058,
+      "timestamp": "2026-10-11T18:26:59Z",
+      "is_redirect": false,
+      "length": 4740,
+      "filename": "Reputation.txt"
+    },
+    {
+      "pageid": 39,
+      "title": "Right",
+      "revid": 127,
+      "timestamp": "2024-06-29T13:34:38Z",
+      "is_redirect": true,
+      "length": 24,
+      "filename": "Right.txt"
+    },
+    {
+      "pageid": 37,
+      "title": "Rights",
+      "revid": 117,
+      "timestamp": "2024-01-26T04:54:53Z",
+      "is_redirect": true,
+      "length": 24,
+      "filename": "Rights.txt"
+    },
+    {
+      "pageid": 13,
+      "title": "Sapience",
+      "revid": 691,
+      "timestamp": "2026-01-17T22:47:59Z",
+      "is_redirect": false,
+      "length": 824,
+      "filename": "Sapience.txt"
+    },
+    {
+      "pageid": 22,
+      "title": "Sentience",
+      "revid": 706,
+      "timestamp": "2026-01-17T23:07:53Z",
+      "is_redirect": false,
+      "length": 1422,
+      "filename": "Sentience.txt"
+    },
+    {
+      "pageid": 35,
+      "title": "Sentient",
+      "revid": 108,
+      "timestamp": "2024-01-10T02:55:50Z",
+      "is_redirect": true,
+      "length": 23,
+      "filename": "Sentient.txt"
+    },
+    {
+      "pageid": 40,
+      "title": "Significance",
+      "revid": 132,
+      "timestamp": "2024-06-29T14:15:48Z",
+      "is_redirect": true,
+      "length": 39,
+      "filename": "Significance.txt"
+    },
+    {
+      "pageid": 28,
+      "title": "Significant",
+      "revid": 80,
+      "timestamp": "2023-12-27T06:38:09Z",
+      "is_redirect": true,
+      "length": 39,
+      "filename": "Significant.txt"
+    },
+    {
+      "pageid": 12,
+      "title": "Simulation",
+      "revid": 24,
+      "timestamp": "2023-10-24T04:06:37Z",
+      "is_redirect": true,
+      "length": 32,
+      "filename": "Simulation.txt"
+    },
+    {
+      "pageid": 63,
+      "title": "Social networks",
+      "revid": 932,
+      "timestamp": "2026-02-07T00:28:48Z",
+      "is_redirect": false,
+      "length": 3163,
+      "filename": "Social networks.txt"
+    },
+    {
+      "pageid": 25,
+      "title": "Society",
+      "revid": 76,
+      "timestamp": "2023-12-27T05:54:36Z",
+      "is_redirect": true,
+      "length": 26,
+      "filename": "Society.txt"
+    },
+    {
+      "pageid": 36,
+      "title": "Sophont",
+      "revid": 115,
+      "timestamp": "2024-01-26T01:24:13Z",
+      "is_redirect": true,
+      "length": 25,
+      "filename": "Sophont.txt"
+    },
+    {
+      "pageid": 78,
+      "title": "System Design",
+      "revid": 1064,
+      "timestamp": "2026-10-11T18:27:09Z",
+      "is_redirect": false,
+      "length": 13175,
+      "filename": "System Design.txt"
+    },
+    {
+      "pageid": 79,
+      "title": "System design",
+      "revid": 740,
+      "timestamp": "2026-01-18T07:14:10Z",
+      "is_redirect": true,
+      "length": 27,
+      "filename": "System design (redirect).txt"
+    },
+    {
+      "pageid": 66,
+      "title": "Technology Network",
+      "revid": 1063,
+      "timestamp": "2026-10-11T18:27:07Z",
+      "is_redirect": false,
+      "length": 10202,
+      "filename": "Technology Network.txt"
+    },
+    {
+      "pageid": 42,
+      "title": "Template",
+      "revid": 198,
+      "timestamp": "2024-12-24T06:18:04Z",
+      "is_redirect": false,
+      "length": 99,
+      "filename": "Template.txt"
+    },
+    {
+      "pageid": 2,
+      "title": "Thing",
+      "revid": 764,
+      "timestamp": "2026-01-19T05:53:55Z",
+      "is_redirect": false,
+      "length": 881,
+      "filename": "Thing.txt"
+    },
+    {
+      "pageid": 29,
+      "title": "Threshold of significance",
+      "revid": 1056,
+      "timestamp": "2026-10-10T08:28:36Z",
+      "is_redirect": false,
+      "length": 2415,
+      "filename": "Threshold of significance.txt"
+    },
+    {
+      "pageid": 17,
+      "title": "True",
+      "revid": 47,
+      "timestamp": "2023-10-25T03:33:33Z",
+      "is_redirect": true,
+      "length": 19,
+      "filename": "True.txt"
+    },
+    {
+      "pageid": 18,
+      "title": "Truth",
+      "revid": 716,
+      "timestamp": "2026-01-18T02:30:32Z",
+      "is_redirect": false,
+      "length": 865,
+      "filename": "Truth.txt"
+    },
+    {
+      "pageid": 11,
+      "title": "Understanding",
+      "revid": 1071,
+      "timestamp": "2026-10-11T18:27:20Z",
+      "is_redirect": false,
+      "length": 18512,
+      "filename": "Understanding.txt"
+    },
+    {
+      "pageid": 30,
+      "title": "Untruth",
+      "revid": 715,
+      "timestamp": "2026-01-18T02:28:25Z",
+      "is_redirect": false,
+      "length": 1081,
+      "filename": "Untruth.txt"
+    }
+  ]
+}

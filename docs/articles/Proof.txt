@@ -1,0 +1,16 @@
+[[category:Benefuture]] [[Category:Definitions]]
+
+Proof is demonstrating the [[truth]] of a statement by mathematical, logical, or empirical means.  The concept of proof is central to scientific inquiry and the pursuit of knowledge.
+
+==Aspects==
+
+* Empirical proof is proof via sufficient evidence which can best be explained by the statement to be proven.  This approach relies on gathering data and observations that support the claim being made. <ref name="Achinstein2001">Achinstein, P. (2001). *The book of evidence*. Oxford University Press.</ref>
+
+* Empirical proof is always incomplete; more empirical proof makes it less incomplete. Significant empirical evidence can elevate a statement to practically true, though absolute certainty is rarely attainable in empirical domains.  <ref name="Popper1959">Popper, K. (1959). *The logic of scientific discovery*. Hutchinson.</ref>
+
+* For most theories, the value of a proof lies less in how well it explains known data and more in how well it can make predictions which can be tested and verified. <ref name="Franklin2005">Franklin, A. (2005). *Experiment in physics*. University of Chicago Press.</ref> 
+
+* If a statement does not generate any falsifiable, testable, or verifiable scenarios, then it is unprovable and is irrelevant for [[decision]] making. <ref name="Popper1959"/>  <ref name="Kuhn1962">Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press.</ref>
+
+<references />
+----<small>AI Disclaimer: This article is 100% human written.</small>

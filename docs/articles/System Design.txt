@@ -1,0 +1,83 @@
+[[Category:Benefuture]]
+[[Category:Definitions]]
+'''System design''' in [[Benefuture]] follows principles that create trustworthy entities which need minimal trust to operate.  Prioritizing evolutionary bootstrapping, antifragility, incentive alignment, graceful degradation, and circular dependency prevention, goal alignment under pressure, recording behaviour as transactions and establishing reality as iterated games between selves - across all subsystems.
+
+== Aspects ==
+
+=== Trust Minimization ===
+Trust is bounded within the open interval (0, 1): zero-trust systems are impossible because bootstrap requires some initial trust, while complete trust defeats the purpose of safeguards and is easily exploitable. The design principle is to minimize required trust at each layer while distributing residual trust across competing mechanisms.<ref name="Hurwicz1960">Hurwicz, L. (1960). Optimality and informational efficiency in resource allocation processes. In K. J. Arrow, S. Karlin, & P. Suppes (Eds.), ''Mathematical Methods in the Social Sciences'' (pp. 27-46). Stanford University Press.</ref>
+
+Principles that guide this: 
+
+* minimize the magnitude of trust required at each layer,
+* push the burden of trust to meta layers when possible,
+* distribute trust across independent parties, 
+* design systems that reveal violations when they occur, 
+* and enable recovery when trust fails.
+
+=== Evolutionary Bootstrapping ===
+When we start systems that reference and trust other systems, we have to follow the causal chains to the first set of systems, like the first [[Measurement|Metric Models]], the first [[Law|Laws]], the first [[Reputation]] estimates, etc. And it is obvious that biases in bootstrap layers can affect referencing systems down the line. Given that, we design the bootstrap layers with the best estimates of what contemporary [[Understanding]] of [[Reality]] makes available (this makes the worst failure mode of the bootstrap still better than or equal to already entrenched systems), and evolve them via adversarial, incremental, and novel methods which show promise, this is a meta problem at a philosophical level that goes into unknown unknowns, and question of 'can we bootstrap so that nothing goes wrong' very soon becomes an unprovable, hence irrelevant - so we assume that entities can be irrational and things are going to go wrong, and build evolutionary and adaptive systems designed to catch what goes wrong and fix it. If we cannot find the perfect value, we approximate it the best and incrementally improve it.
+
+=== Incentive Architecture ===
+Systems are designed such that truthful, goal-aligned action constitutes the dominant strategy for participants.<ref name="Myerson1981">Myerson, R. B. (1981). Optimal auction design. ''Mathematics of Operations Research'', ''6''(1), 58-73.</ref> The core constraint is that rewards for revealing system flaws must exceed gains from exploitation; see [[Adversarial adaptation]] for the full mechanism. This principle applies recursively to meta-levels as budgets permit, with [[Government|LqdBfDm]] serving as democratic backstop when formal resolution is unavailable.
+
+Goal enforcement operates via nudge<ref name="ThalerSunstein2008">Thaler, R. H., & Sunstein, C. R. (2008). ''Nudge: Improving Decisions about Health, Wealth, and Happiness''. Yale University Press.</ref> rather than coercion: goal-aligned actions are made default, easiest, and most salient. [[Anti-Corruption]] encodes this principle explicitly, while [[Progressive complexity]] provides graceful degradation when nudges prove insufficient.
+
+=== Antifragility ===
+Systems are designed to strengthen under stress rather than merely resist it.<ref name="Taleb2012">Taleb, N. N. (2012). ''Antifragile: Things That Gain from Disorder''. Random House.</ref> Three mechanisms enable this: competing models ensure no metrics are protected from challenge, [[Adversarial adaptation]] converts attacks into training data for system improvement, and [[Progressive complexity]] maintains function through graceful degradation under adverse conditions.
+
+=== Circularity Detection ===
+Self-referential and mutually-referential validation creates risk of circular consensus, where models correlate with each other rather than with reality, attribution chains validate their own conclusions, and reputation networks form mutual-endorsement loops.<ref name="Podsakoff2003">Podsakoff, P. M., MacKenzie, S. B., Lee, J. Y., & Podsakoff, N. P. (2003). Common method biases in behavioral research: A critical review of the literature and recommended remedies. ''Journal of Applied Psychology'', 88(5), 879-903.</ref><ref name="Soros2013">Soros, G. (2013). Fallibility, reflexivity, and the human uncertainty principle. ''Journal of Economic Methodology'', 20(4), 309-329.</ref>
+
+Some mechanisms that can address this:
+*'''External anchoring''' — some validation must originate outside the system being validated
+*'''Provenance tracking''' — validations that share upstream dependencies cannot be treated as independent
+*'''Reflexivity discounting''' — predictions that affect their own outcomes require separate treatment
+*'''Anti-herding''' — excessive inter-model correlation should reduce confidence rather than increase it. The same holds one level up: models which merely share a pattern of agreement with the established markers count closer to one model than to several, while models which agree with those markers in different ways each add confidence. This also leaves room for models to port parts of each other's internals without being penalised for the overlap
+*'''Cartel detection''' — rewards for exposing circular validation patterns must exceed the value of cartel membership
+
+[[Identity]] binding providing Sybil resistance is a prerequisite for these mechanisms; achieved via [[Technology Network]].
+
+=== Alignment ===
+The challenge of specifying values that remain robust under optimization pressure—studied extensively in artificial agent design—applies equally to civilizational systems.<ref>Bostrom, N. (2014). ''Superintelligence: Paths, Dangers, Strategies''. Oxford University Press.</ref> Goodhart's law motivates [[Measurement|competing metric models]]; inner alignment failures motivate [[Technology Network|adversarial auditing]]; the corrigibility problem motivates the [[Benefuture goals#Vision|self-obsolescence]] axiom.<ref>Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''.</ref> The framework treats [[civilization]] as an optimization process facing the same specification challenges identified in AI alignment: a system optimizing for a proxy can diverge catastrophically from intended goals unless the proxy is continuously validated against [[reality]]. [[Benefuture goals#Vision|Civilization continuity]] operationalizes an approximation of coherent extrapolated volition<ref>Yudkowsky, E. (2004). ''Coherent Extrapolated Volition''. Machine Intelligence Research Institute.</ref>: peak [[Sophont|sophonts]] as proxy for idealized judgment, average sophonts with shared memory as proxy for reflective endorsement after living through the change.
+
+=== Behavioral Transaction Substrate ===
+Every action generates a [[Benefuture currency|transaction]], every transaction is logged, and every log triggers [[measurement]]. This architecture unifies four functions: it provides a measurement substrate based on behavioral data rather than self-report, creates an incentive mechanism where the same transactions that reward or penalize also generate training data, maintains a causal record via transaction trees that enable attribution, and builds civilizational memory through an immutable ledger supporting the [[Benefuture goals#Vision|Unbroken Memory]] vision. Privacy is tiered across participation levels; a minority at higher tiers provides training signal that models can generalize to the broader population.
+
+=== Iterated Game Foundation ===
+Benefuture [[Benefuture goals#Subgoals|Morality]] is defined as the understanding that [[Interaction|interactions]] between the [[Being#Self|self]] and [[reality]] are iterative<ref>Robert Axelrod, William D. Hamilton, The Evolution of Cooperation.''Science'''''211''',1390-1396(1981). DOI:10.1126/science.7466396</ref> rather than one-shot. A one-shot game would need an interaction that can be neither perceived nor changed, which lies outside [[reality]] by definition, and the memory of any interaction is already an outcome in the self that took part. This framing leverages the folk theorem<ref name="FudenbergMaskin1986">Fudenberg, D., & Maskin, E. (1986). The folk theorem in repeated games with discounting or with incomplete information. ''Econometrica'', ''54''(3), 533-554.</ref>: cooperation becomes sustainable when participants value future interactions sufficiently. [[Reputation]] creates the conditions for folk theorem equilibria by making past behavior visible and consequential. The concept of extended [[Being#Self|self]] expands the scope of iteration beyond direct reciprocity to include network effects across time and relationships.
+
+===System of systems===
+
+A strong yet modularly replaceable core of the most effective subsystems collaborate to form the skeleton while the rest churn, compete and evolve in a managed [[diversity|chaos]] of growth substrate for the system and the [[civilization]] it supports to ultimately upgrade the skeleton. Each subsystem has the same structure and clear [[Benefuture goals|goal]] orientation in the holographic and fractal spirit of [[Progressive complexity]]. Planned and ad hoc antifragility drills periodically stress test subsystems and linkages by simulating technology degradation, outages, rogue subsystems, infohazard proliferation, metric capture, and other subtle and sophisticated attacks.
+
+=== Meta-Level Acknowledgment ===
+A system cannot prove its own foundations; the meta-metric formula is a founding choice rather than a derivation from deeper principles. The design manages the justification regress through four strategies: n-meta openness allows adversarial challenge at higher levels within budget constraints, democratic backstop via [[Government|LqdBfDm]] provides resolution when formal methods are unavailable, priority constraints ensure that U>H>↓Ha ordering is preserved through adaptations, and self-obsolescence encoded in the [[Diversity]] axiom explicitly includes Bf itself as a monoculture to be avoided if superior alternatives emerge.
+
+== Applications ==
+
+*'''[[Measurement]]''' — metric models compete on predictive accuracy beyond the model already in use <ref name="Hanson2013">Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178.</ref>, correlation with established markers, causal explanation quality, and novelty
+*'''[[Benefuture currency]]''' — currencies are domain-locked with no arbitrage permitted<ref name="Hanson2013" /> competing via resource efficiency; probabilistic escrow adjusts dynamically; the transaction log serves as behavioral substrate
+*'''[[Government]]''' — expertise weighting combined with impact weighting integrates epistocratic<ref name="Estlund2008">Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.</ref> and affected-interests principles; choice architecture creates goal-aligned defaults
+*'''[[Reputation]]''' — reputation is non-transferable and domain-specific, functioning as a costly signal<ref name="Spence1973">Spence, M. (1973). Job market signaling. ''The Quarterly Journal of Economics'', ''87''(3), 355-374.</ref> of competence; halo and horn effects across domains are explicitly prevented
+
+== Discussion ==
+
+=== Mechanism Design Relation ===
+Standard impossibility results from social choice theory<ref name="Gibbard1973">Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601.</ref><ref name="Arrow1951">Arrow, K. J. (1951). ''Social Choice and Individual Values''. Wiley.</ref> apply to one-shot, fixed-parameter mechanisms. The use of repeated games, competing mechanisms, cardinal weighting, and dynamic parameters shifts the relevant question from "is this mechanism incentive-compatible?" to "do violations become visible and costly over time?"
+
+=== Capability Grounding ===
+The multi-currency, multi-metric approach parallels capability theory in welfare economics<ref name="Sen1999">Sen, A. (1999). ''Development as Freedom''. Oxford University Press.</ref><ref name="Nussbaum2011">Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press.</ref>: distinct dimensions of value are measured separately rather than collapsed into a single utility metric.
+
+== See also ==
+* [[Adversarial adaptation]]
+* [[Progressive complexity]]
+* [[Anti-Corruption]]
+* [[Measurement]]
+* [[Technology Network]]
+* [[Benefuture goals]]
+* [[Life in benefuture|Life of a Sophont]].
+
+== References ==
+<references />
+<small>AI Disclaimer: This article is 45% human notes with 55% AI summarization and literature review.</small>

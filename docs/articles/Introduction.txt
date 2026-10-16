@@ -1,0 +1,167 @@
+[[Category:Benefuture]]
+What if civilization were designed to actually increase understanding and then wellbeing — and could measure whether it was working? What if the systems that govern society got stronger when challenged, rewarded those who found their flaws, and were built to replace themselves if something better emerged?
+
+'''Benefuture''' is a consequentialist [[philosophy]] of [[civilization]] that attempts to answer these questions. The thought experiment proposes a dynamic society committed to ''[[Benefuture goals#Vision|perpetual becoming]]'' — a continuous journey of learning and adaptation. Grounded in [[Benefuture#Arguments|optimistic nihilism]], it posits a self-chosen [[Benefuture goals|purpose]]: to maximize universal [[Understanding]] (U), then [[Happiness]] (H), while minimizing [[Harm]] — pursued through systematic [[Measurement|measurement]], [[Benefuture currency|incentive alignment]], and [[Government|adaptive governance]], all on a decentralized [[Technology Network]].
+
+The whole framework is a derivation cascade from one cognitive prior to classical utilitarianism: ''prioritize understanding over happiness''. Most of the framework's structure follows from taking this premise seriously and tracing its consequences: what must be measured, how value should be distributed, how and why systems must challenge themselves, and when they should yield to successors.
+
+== Why Understanding First? ==
+
+Unlike classical utilitarianism which maximizes happiness alone, Benefuture prioritizes [[Understanding]] — the ability to accurately describe, explain, and predict phenomena with minimal complexity, first as a synergistic goal and then as a capacity maximizer.
+
+Why this ordering?
+* '''Substrate:''' Understanding creates meta-competencies towards comprehending, evaluating and optimizing for any other [[Goals|goal]].
+* '''Stability''': Understanding is less reference-dependent than happiness. It doesn't adapt away like hedonic pleasure does.
+* '''Transmissibility''': Knowledge transfers between beings; subjective happiness does not.
+* '''Compounding''': Understanding builds on itself. Each insight enables further insights.
+* '''Measurability''': Predictive accuracy provides external validation. Happiness measurement relies on self-report.
+* '''Enablement''': Understanding reliably increases the capacity for happiness. The reverse is also true but less consistent.
+
+This doesn't dismiss happiness — it sequences it. The [[Benefuture goals|goal]] is synergistic U/H first, where both reinforce each other. When forced to choose, U takes priority unless H would be ''significantly'' reduced.
+
+== Priority Structure ==
+
+The framework specifies explicit priorities when trade-offs arise:
+
+{| class="wikitable"
+|-
+! Dimension !! Priority Order (highest first)
+|-
+| '''Understanding''' || Synergistic > Peak (breakthroughs) > Teachable > Meta-learning > Median > Floor > Undirected
+|-
+| '''Happiness''' || Synergistic > Eudaimonic (flourishing) > Shareable > Satisficing > Baseline > Median > Peak
+|-
+| '''Novelty''' || Paradigm shifts > New perspectives > Chaotic variation > Incremental > Perilous > Trivial ≈ 0
+|-
+| '''Harm''' (severity) || Irreparable > Irreversible > Long-term > Passing > Time-loss > Predicted-necessary > Cultural offense ≈ 0 > Established-necessary = 0
+|}
+
+'''Key asymmetry''': For Understanding, peak matters (invest in breakthroughs). For Happiness, floor matters (eliminate suffering before maximizing pleasure). Peak happiness is ''lowest'' priority — the framework structurally prevents wireheading and hedonic maximization at civilization's expense.
+
+'''Synergy''': In both U and H stacks, synergy comes first. Actions which increase ''both'' understanding and happiness, and are novel, score more than the sum of their parts, and the more of these move together the larger the bonus. The trade-offs are continuous throughout, with understanding ahead through a larger weight.
+
+== Core Ontology ==
+
+Benefuture builds on a hierarchy of existence, where each level carries different moral weight and capability:
+
+* '''[[Thing]]''': Any identifiable pattern of information in [[Reality]] (the perceivable and changeable universe).
+* '''[[Entity]]''': A Thing capable of [[Interaction|interaction]] with some [[Sapience]] (ability to predict).
+* '''[[Being]]''': An Entity with [[Sentience]] (subjective experience, preferences). Beings can be harmed.
+* '''[[Person]]''': A Being meeting thresholds for self-awareness, communication, planning, empathy, and [[Contract|consent]].
+* '''[[Benesophont|Sophont]]''': A Person who actively directs actions toward the [[Benefuture goals|civilization's goals]].
+
+These aren't mere classifications — they determine rights, responsibilities, and how the system treats each category. [[Harm]] can only befall Beings and above. [[Law|Duties]] bind Sophonts. The hierarchy is substrate-neutral: biological, digital, or hybrid entities qualify based on demonstrated capacities, not origin.
+
+== What Makes Benefuture Different ==
+
+{| class="wikitable"
+|-
+! Compared To !! Key Difference
+|-
+| '''Classical Utilitarianism''' || U before H; synergy prioritized; structural anti-wireheading
+|-
+| '''Capitalism''' || [[Benefuture currency|Currency]] tracks U/H generation per resource, not scarcity or speculation; no direct currency trading
+|-
+| '''Representative Democracy''' || [[Government|Expertise + impact weighted]] direct democracy; votes weighted by demonstrated competence and stake
+|-
+| '''Central Planning''' || Competing [[Measurement|metric models]]; no single authority defines value; adversarial auditing
+|-
+| '''Technocracy''' || Expertise is domain-specific (no halo effects); impact weighting balances expertise; liquid delegation is capped
+|-
+| '''Libertarianism''' || Explicit [[Benefuture goals|goal]] structure; baseline guarantees as rights; [[Harm]] includes inaction
+|}
+
+== The Economic Engine ==
+
+The '''[[Benefuture currency]]''' [[Economy|economic]] system aligns individual actions with societal goals through competing digital currencies, each tied to a [[Measurement|metric model's]] demonstrated success in fostering U/H ''per unit of resource and time consumed''.
+
+* '''Competing Metrics''': Multiple models propose how to measure U/H. They compete on how much better they predict than the model already in use, correlation with established markers, causal explanation, and novelty. No single definition dominates.
+* '''Front-loaded / Back-loaded''': Currency is partly paid on predicted value (front-loaded), partly on measured outcomes (back-loaded). Predictions that fail lose value; accurate predictions gain.
+* '''[[Benefuture currency#Aspects|Probabilistic Escrow]]''': Networks hold reserves proportional to prediction uncertainty. Consistent overestimation increases escrow requirements. Payment is settled against how things turn out compared to not having acted.
+* '''No Arbitrage''': Direct currency-to-currency trading is prohibited. Value transfers through real U/H-generating actions only.
+* '''Causal Distribution''': Rewards flow to contributors based on [[Benefuture currency#Causal Distribution|causal attribution]] from transaction records, not proximity to transaction.
+
+== Governance ==
+
+[[Government|Governance]] operates as expertise and impact-weighted direct democracy:
+
+* '''Expertise Weighting''': Votes on domain-specific issues are weighted by demonstrated [[Reputation]] in that domain. A climate scientist's vote on climate policy carries more weight than a layperson's.
+* '''Impact Weighting''': Votes are also weighted by how directly the outcome affects the voter. Those with more at stake have more say.
+* '''No Halo Effects''': Expertise in one domain does not transfer. A renowned physicist has no special weight on agricultural policy.
+* '''[[Government#Aspects|Liquid Delegation]]''': For low-impact decisions, votes can be delegated to trusted experts — but delegation is capped, temporary, audited, and retractable.
+* '''Mandatory Participation''': High-expertise, high-impact voters are ''required'' to participate. Abstention is not neutral.
+
+[[Law|Laws]] are adaptable frameworks refined by measured outcomes. [[Justice]] prioritizes [[Justice#Reparation|reparation]] and [[Justice#Rehabilitation|rehabilitation]] over punishment. [[Enforcement]] emphasizes [[System Design|design]] — making [[Good and Bad|good]] actions easier than bad ones.
+
+== Handling Harm ==
+
+[[Harm]] is any reduction in U or H for [[Being|Beings]]. The framework grades harm by severity and reversibility:
+
+# '''Irreparable harm''' (death, permanent damage) receives highest weight in all calculations.
+# '''Irreversible harm''' (trauma, capacity loss) ranks next.
+# '''Cultural offense''' — being offended by others' harmless choices — is weighted near zero. The response to taking offense is [[education]], not restricting the "offensive" party.
+# '''Necessary harm''' is permitted when it enables greater good — but ''predicted'' necessary harm faces more scrutiny than ''established'' necessary harm.
+
+Harm counts as a weight on losses: one plus a score over the severity tiers, with the weight for losses rising faster than the one for gains, so that severe harm counts for more than the same total of mild harm. Harm that is established and necessary carries no weight.
+
+This is structural liberalism: you cannot claim harm from merely observing others living differently.
+
+== Antifragility and Self-Correction ==
+
+Benefuture is designed to strengthen under attack:
+
+* '''[[Adversarial adaptation]]''': The system rewards those who find exploits, loopholes, or flaws — ''more'' than they could gain by exploiting silently. This flips incentives from exploitation to revelation.
+* '''[[Measurement|Competing Models]]''': No single metric or currency is protected. All must outperform alternatives or be retired via sunset clauses.
+* '''Epistemic Antifragility''': [[Education]] celebrates discovering one's own errors. Avoiding scrutiny is worse than being wrong.
+* '''[[Progressive complexity]]''': Systems are designed to function across degraded conditions — from high-tech to low-tech, from optimal to catastrophic. Graceful degradation is required.
+* '''Self-Obsolescence''': The [[Benefuture goals#Vision|diversity axiom]] applies to Benefuture itself. If a better goal structure is found and proven, Benefuture gives way.
+
+The framework doesn't trust itself. It builds in mechanisms to check, correct, and ultimately replace itself.
+
+== The Technology Network ==
+
+The '''[[Technology Network]]''' is the decentralized infrastructure enabling all Benefuture systems:
+
+* Hosts competing [[Measurement|metrics]] and [[Benefuture currency|currencies]]
+* Supports transparent [[Government|governance]] and [[Justice]]
+* Maintains the '''Unbroken Memory''' — an immutable record of societal decisions, outcomes, and learning
+* Enhances [[Social networks]] with truth verification, source tracking, and misinformation identification
+* Employs [[Progressive complexity|progressive fallback]] — functions even when components fail
+
+Design priorities: data integrity, privacy, security, decentralization, adaptability.
+
+== Culture and Education ==
+
+[[Culture]] is treated as a memetic vehicle — carrying both beneficial and harmful patterns. Benefuture continuously evaluates cultural practices against U/H outcomes, encouraging beneficial ones and transforming harmful ones through [[Education|education]] rather than suppression.
+
+[[Education]] prioritizes ''capacity'' over content:
+* '''Meta-learning first''': Learn how to learn before specific knowledge
+* '''Critical thinking''': Evaluate truth levels, identify bias, update on evidence
+* '''Epistemic antifragility''': Celebrate being wrong; welcome correction
+* '''Emotional intelligence''': Understand and regulate affect
+* '''Infohazard inoculation''': Safely handle knowledge that's dangerous without context
+
+Access is universal. Education is a right, not a privilege.
+
+== A Continuous Journey ==
+
+Benefuture is not an end-state but a process — ''perpetual becoming''. It envisions civilization as a dynamic, self-improving system that:
+
+* Measures its own success against explicit goals
+* Rewards those who improve the measurement
+* Corrects course when predictions fail
+* Replaces its own structures when better alternatives emerge
+* Expands the scope of [[Reality]] it can perceive and change
+
+The goal is not to arrive but to improve — universal [[Understanding]], shared [[Happiness]], minimized [[Harm]], sustained [[Diversity]], across all [[Being|beings]], over all time we can predict.
+
+== Where to Go Next ==
+
+* '''For philosophical foundations''': [[Benefuture goals]], [[Understanding]], [[Happiness]]
+* '''For practical mechanisms''': [[Benefuture currency]], [[Measurement]], [[Government]]
+* '''For ontological definitions''': [[Thing]], [[Entity]], [[Being]], [[Person]], [[Benesophont|Sophont]]
+* '''For system robustness''': [[Adversarial adaptation]], [[Progressive complexity]], [[Anti-Corruption]]
+* '''For implementation''': [[Implementation prototype]]
+* '''For a narrative walkthrough:''' [[Life in benefuture|Life of a Sophont]]
+* '''To critique the framework''': Start with [[Critique addressal]] of [[Benefuture#Critical Evaluation|Critical Evaluation]]
+----<small>AI Disclaimer: This article is 70% AI compiled with 30% human notes.</small>
