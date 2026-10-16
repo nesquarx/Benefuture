@@ -37,7 +37,21 @@ $$\text{Goal } G(t) := \operatorname{argmax}_{A(t)} \left[ \sum_{b \in B(t)} V(A
 
 Benefuture explicitly defines the civilizational goal as the joint maximization of sentient value **and** the expansion of empirical capability and perception in physical Reality ($\uparrow \mathbb{R}$). Actions that seek to maximize subjective pleasure by blinding sensors, shrinking capability, or collapsing into solipsistic simulation are **categorically disqualified**.
 
+### Canonical Notation & Symbol Disambiguation
+
+To ensure mathematical precision and prevent conflation across foundational concepts:
+| Symbol | Canonical Concept | Mathematical Meaning & Formula | Disambiguation Rule |
+| :--- | :--- | :--- | :--- |
+| **$\mathbb{U}$ / `𝕌`** | **Universe** | Total state space of all logically possible patterns | **Total ontological pattern space** ($\mathbb{R} \subseteq \mathbb{U}$). Never write as plain ASCII $U$. |
+| **$\mathbb{R}$ / `ℝ`** | **Reality** | $(\text{Perceivable} \cup \text{Changeable}) \subseteq \mathbb{U}$ | Physical, empirical interactivity domain. |
+| **$U$** | **Understanding** | $\text{PrAcc}(\text{Ml}) + \text{CE}(I(\text{Ml})) - (\text{Cy}(\text{Ml}) \mid \text{PrAcc})$ | **Strictly Epistemic Understanding**. Must **never** be interpreted as "utility". |
+| **$V$** | **Value** | Generalized flourishing payoff $V(A, b)$ | Represents the true "utility" / value function of an action over $U, H, D$. |
+| **$G$** | **Goal** | Civilizational trajectory function $\operatorname{argmax} \sum V \land \uparrow \mathbb{R}$ | Global macro objective. |
+| **$H$** | **Happiness** | Internal affective flourishing | Tier $\beta$ in the priority hierarchy ($U > H > D$). |
+| **$D$** | **Diversity / Novelty** | Non-monoculture distance & entropy | Tier $\gamma$ in the priority hierarchy. |
+
 ---
+
 
 ## The 7 Foundational Theorems
 
