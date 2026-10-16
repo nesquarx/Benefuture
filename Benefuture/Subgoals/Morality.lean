@@ -71,7 +71,7 @@ theorem no_one_shot_harmful_games (conseq : InteractionConsequence) (damage : In
   A theoretical one-shot interaction pattern claimed to operate with zero feedback:
   Lacks empirical perception and physical capability in Reality.
 -/
-def one_shot_game_universe_pattern (id : String) : 𝕌 :=
+def one_shot_game_universe_pattern (id : String) : UniversePattern :=
   { patternId := id, isPerceivable := false, isChangeable := false }
 
 /-- 

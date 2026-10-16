@@ -37,7 +37,7 @@ def run_subsystems_verification : IO Unit := do
   IO.println "    Theorem verified: Equal gains and losses yield strictly negative balance from λ=1/2 formula"
   IO.println "    Theorem verified: Squashed synergy Ŝy is strictly saturated below 1.0"
 
-  -- 2. Internal UHN Priority Synergies
+  -- 2. Internal Priority Synergies: Understanding, Happiness, and Novelty
   let u_tiers : UnderstandingTiers := {
     peak         := 100000, teachable := 80000, metaLearning := 60000,
     median       := 30000,  floor     := 20000, undirected   := 10000
@@ -48,9 +48,15 @@ def run_subsystems_verification : IO Unit := do
     baseline    := 40000,  median    := 30000, peak        := 10000
   }
   let synth_h := synthesize_happiness h_tiers
-  IO.println s!"\n[2. Internal Priority Synergies (UHN)]"
+  let n_tiers : NoveltyTiers := {
+    paradigm    := 100000, perspective := 70000, chaotic := 40000,
+    incremental := 20000,  perilous    := 10000, trivial := 1000
+  }
+  let synth_n := synthesize_novelty n_tiers
+  IO.println s!"\n[2. Internal Priority Synergies: Understanding, Happiness, & Novelty]"
   IO.println s!"    Synthesized Understanding (Sy(peak > teachable > ...)) : {synth_u}"
   IO.println s!"    Synthesized Happiness     (Sy(eudaimonic > shareable > ...)) : {synth_h}"
+  IO.println s!"    Synthesized Novelty       (Sy(paradigm > perspective > ...)) : {synth_n}"
   IO.println "    Theorem verified: Eudaimonic flourishing strictly dominates raw peak pleasure"
 
   -- 3. Reality, Simulations, & LongTerm Continuum (lt)
