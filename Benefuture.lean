@@ -63,3 +63,22 @@ import Benefuture.Systems.Enforcement
 import Benefuture.Systems.Pipeline
 import Benefuture.Axioms.Antifragility
 
+namespace Benefuture
+
+/-- 
+  𝕌 represents the Universe (total pattern state space).
+  Contrasted with ℝ (Reality: perceivable and changeable patterns).
+  Formal theorem: ℝ ⊆ 𝕌.
+-/
+abbrev 𝕌 := Benefuture.Ontology.𝕌
+abbrev Universe := Benefuture.Ontology.Universe
+
+/-- 
+  U represents Understanding (U := PrAcc + CE - Cy).
+  In Benefuture, U is purely epistemic understanding, NOT utilitarian utility.
+  Civilizational objective is Value (V) / Flourishing (G).
+-/
+abbrev U := Benefuture.Epistemology.U
+
+end Benefuture
+

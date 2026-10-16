@@ -11,14 +11,51 @@ import Benefuture.Ontology.Thing
 namespace Benefuture.Ontology
 
 /-- 
+  Universe (𝕌):
+  The total state space of all logically possible patterns, configurations, and abstractions.
+  Corresponds to: Bf_Pseudocode.txt L16:
+  "Reality«ℝ» := (Perceivable ∪ Changeable) ⊆ Universe«𝕌»;"
+-/
+structure UniversePattern where
+  patternId     : String
+  isPerceivable : Bool
+  isChangeable  : Bool
+  deriving Repr, DecidableEq
+
+/-- 
   Reality (ℝ): The subset of the Universe that can be perceived or changed.
-  Reality is defined operatively by causal interactivity.
+  Reality is defined operatively by causal interactivity:
+  (Perceivable ∨ Changeable).
 -/
 structure RealityTouchpoint where
   isPerceivable : Bool
   isChangeable  : Bool
   h_real        : isPerceivable = true ∨ isChangeable = true
   deriving Repr, DecidableEq
+
+/-- Coercion / Canonical Embedding: Every RealityTouchpoint embeds into the Universe 𝕌. -/
+def RealityTouchpoint.toUniverse (r : RealityTouchpoint) (id : String := "real_point") : UniversePattern :=
+  { patternId := id, isPerceivable := r.isPerceivable, isChangeable := r.isChangeable }
+
+/-- 
+  THEOREM: Reality is a Strict Subset of the Universe (ℝ ⊆ 𝕌).
+  Every point in Reality satisfies causal interactivity in the Universe:
+  isPerceivable = true ∨ isChangeable = true.
+-/
+theorem reality_is_subset_of_universe (r : RealityTouchpoint) :
+    let u := r.toUniverse
+    u.isPerceivable = true ∨ u.isChangeable = true := by
+  dsimp [RealityTouchpoint.toUniverse]
+  exact r.h_real
+
+/-- 
+  Theoretical Non-Real Patterns in the Universe (𝕌 − ℝ):
+  Patterns where isPerceivable = false ∧ isChangeable = false (such as one-shot games
+  or solipsistic ungrounded abstractions).
+  Corresponds to: Bf_Pseudocode.txt L136 ("1shotGame ⊆ 𝕌 − ℝ").
+-/
+def is_outside_reality (u : UniversePattern) : Bool :=
+  !u.isPerceivable && !u.isChangeable
 
 /-- 
   The Scope of Reality (ℝ):
@@ -229,6 +266,8 @@ theorem outcome_significance_nonneg (p mag : Int) (hp : 0 ≤ p) (hm : 0 ≤ mag
 /-- Abbreviations aligning with Bf_Pseudocode.txt L16, L34. -/
 abbrev lt := LongTermHorizon
 abbrev ℝ := RealityTouchpoint
+abbrev 𝕌 := UniversePattern
+abbrev Universe := UniversePattern
 
 end Benefuture.Ontology
 

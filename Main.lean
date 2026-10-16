@@ -241,11 +241,11 @@ def run_foundational_theorems_verification : IO Unit := do
   -- Theorem 2: Structural Dissolution of Parfit's Repugnant Conclusion
   let marginalPop : List Int := [10000, 20000, 30000, 40000, 50000]
   let flourishingInd : Int := 500000
-  let u_marginal := aggregate_societal_utility marginalPop
-  let u_flourish := aggregate_societal_utility [flourishingInd]
+  let v_marginal := aggregate_societal_value marginalPop
+  let v_flourish := aggregate_societal_value [flourishingInd]
   IO.println s!"\n2. [Theorem 2: Parfit's Repugnant Conclusion Dissolution]"
-  IO.println s!"   Marginal Population Utility (below floor) : {u_marginal}"
-  IO.println s!"   Flourishing Individual Utility (with depth) : {u_flourish}"
+  IO.println s!"   Marginal Population Value (below floor) : {v_marginal}"
+  IO.println s!"   Flourishing Individual Value (with depth) : {v_flourish}"
   IO.println "   PROVEN: Superadditive depth bonus + baseline floor strictly penalizes marginal lives."
 
   -- Theorem 3: Domain-Locked Currency & Arbitrage Elimination

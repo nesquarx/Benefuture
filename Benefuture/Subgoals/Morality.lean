@@ -6,6 +6,7 @@
 -/
 
 import Benefuture.Ontology.Being
+import Benefuture.Ontology.Reality
 
 namespace Benefuture.Subgoals
 
@@ -65,6 +66,24 @@ theorem no_one_shot_harmful_games (conseq : InteractionConsequence) (damage : In
   unfold is_zero_feedback_interaction
   have hpos := defection_harms_extended_self conseq damage h_dam
   omega
+
+/-- 
+  A theoretical one-shot interaction pattern claimed to operate with zero feedback:
+  Lacks empirical perception and physical capability in Reality.
+-/
+def one_shot_game_universe_pattern (id : String) : 𝕌 :=
+  { patternId := id, isPerceivable := false, isChangeable := false }
+
+/-- 
+  THEOREM: One-Shot Games Belong to (𝕌 − ℝ).
+  Any alleged one-shot defection game lacks physical causal feedback in Reality,
+  meaning it exists strictly as a theoretical fiction outside Reality (1shotGame ⊆ 𝕌 − ℝ).
+  Corresponds to: Bf_Pseudocode.txt L136 ("1shotGame ⊆ 𝕌 − ℝ").
+-/
+theorem one_shot_games_exist_only_outside_reality (id : String) :
+    is_outside_reality (one_shot_game_universe_pattern id) = true := by
+  unfold is_outside_reality one_shot_game_universe_pattern
+  rfl
 
 /- =========================================================================
    INTERNAL MEMORY FEEDBACK: Memory(Sl) ⊆ O(Sl)
