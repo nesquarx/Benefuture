@@ -13,6 +13,9 @@
 -/
 
 import Benefuture.Ontology.Thing
+import Benefuture.Ontology.Reality
+import Benefuture.Ontology.Domain
+import Benefuture.Ontology.Reputation
 import Benefuture.Math.Order
 
 namespace Benefuture.Ontology
@@ -341,6 +344,125 @@ theorem merge_conserves_reputation (mop : MergeOperation) :
 theorem merge_accumulates_novelty (mop : MergeOperation) :
     mop.mergedNovelty = mop.constituentNovelties.foldl (· + ·) 0 :=
   mop.h_nov_sum
+
+/- =========================================================================
+   3.1 [R] FORK SPLITS AND MERGE CONSOLIDATION OVER LEAF DOMAINS
+   Fork(Id(E_i)) gives new distinct ids sharing a history prefix.
+   Currency and ALL reputation components (hPos, hNeg, rel) are split per
+   leaf domain, and the shares sum to the pre-fork amounts.
+   The shared past holds no reputation. Liability spills over via CD.
+   Merge sums currency and all reputation components.
+   ========================================================================= -/
+
+/-- 
+  [R] Fork Leaf State: State of a newly created fork branch on a leaf domain.
+-/
+structure ForkLeafState where
+  currency : ℝ
+  hPos     : ℝ
+  hNeg     : ℝ
+  rel      : ℝ
+
+/-- 
+  [R] Fork Operation over Leaf Domains:
+  Branches parent entity E into new distinct identities E_1, E_2 sharing history prefix.
+  Currency and ALL reputation components split per leaf domain summing to pre-fork amounts.
+-/
+structure ForkSplit (leaves : Finset LeafDomain) where
+  parentEntityId : String
+  fork1EntityId  : String
+  fork2EntityId  : String
+  historyPrefix  : List String
+  h_distinct_ids : fork1EntityId ≠ fork2EntityId
+  h_fork1_fresh  : fork1EntityId ≠ parentEntityId
+  h_fork2_fresh  : fork2EntityId ≠ parentEntityId
+  parentCurrency : LeafDomain → ℝ
+  parentHPos     : LeafDomain → ℝ
+  parentHNeg     : LeafDomain → ℝ
+  parentRel      : LeafDomain → ℝ
+  fork1State     : LeafDomain → ForkLeafState
+  fork2State     : LeafDomain → ForkLeafState
+  -- Currency conservation across leaves
+  h_currency_split : ∀ l ∈ leaves, (fork1State l).currency + (fork2State l).currency = parentCurrency l
+  -- ALL reputation components conserved per leaf domain
+  h_hPos_split     : ∀ l ∈ leaves, (fork1State l).hPos + (fork2State l).hPos = parentHPos l
+  h_hNeg_split     : ∀ l ∈ leaves, (fork1State l).hNeg + (fork2State l).hNeg = parentHNeg l
+  h_rel_split      : ∀ l ∈ leaves, (fork1State l).rel + (fork2State l).rel = parentRel l
+
+/-- THEOREM: Fork Conservation of Per-Domain Currency. -/
+theorem fork_conserves_per_domain_currency {leaves : Finset LeafDomain}
+    (fork : ForkSplit leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    (fork.fork1State l).currency + (fork.fork2State l).currency = fork.parentCurrency l :=
+  fork.h_currency_split l hl
+
+/-- THEOREM: Fork Conservation of Per-Domain hPos. -/
+theorem fork_conserves_per_domain_hPos {leaves : Finset LeafDomain}
+    (fork : ForkSplit leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    (fork.fork1State l).hPos + (fork.fork2State l).hPos = fork.parentHPos l :=
+  fork.h_hPos_split l hl
+
+/-- THEOREM: Fork Conservation of Per-Domain hNeg. -/
+theorem fork_conserves_per_domain_hNeg {leaves : Finset LeafDomain}
+    (fork : ForkSplit leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    (fork.fork1State l).hNeg + (fork.fork2State l).hNeg = fork.parentHNeg l :=
+  fork.h_hNeg_split l hl
+
+/-- THEOREM: Fork Conservation of Per-Domain rel. -/
+theorem fork_conserves_per_domain_rel {leaves : Finset LeafDomain}
+    (fork : ForkSplit leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    (fork.fork1State l).rel + (fork.fork2State l).rel = fork.parentRel l :=
+  fork.h_rel_split l hl
+
+/-- 
+  [R] Merge Branch Record:
+  Constituent entity's holdings before merging.
+-/
+structure MergeBranchRecord where
+  entityId : String
+  currency : LeafDomain → ℝ
+  hPos     : LeafDomain → ℝ
+  hNeg     : LeafDomain → ℝ
+  rel      : LeafDomain → ℝ
+
+/-- 
+  [R] Merge Consolidation:
+  Consolidates multiple constituent entities into a new identity, summing currency and all reputation components.
+-/
+structure MergeConsolidation (leaves : Finset LeafDomain) where
+  constituents   : List MergeBranchRecord
+  mergedEntityId : String
+  mergedCurrency : LeafDomain → ℝ
+  mergedHPos     : LeafDomain → ℝ
+  mergedHNeg     : LeafDomain → ℝ
+  mergedRel      : LeafDomain → ℝ
+  h_currency_sum : ∀ l ∈ leaves, mergedCurrency l = (constituents.map (fun c => c.currency l)).sum
+  h_hPos_sum     : ∀ l ∈ leaves, mergedHPos l = (constituents.map (fun c => c.hPos l)).sum
+  h_hNeg_sum     : ∀ l ∈ leaves, mergedHNeg l = (constituents.map (fun c => c.hNeg l)).sum
+  h_rel_sum      : ∀ l ∈ leaves, mergedRel l = (constituents.map (fun c => c.rel l)).sum
+
+/-- THEOREM: Merge Conservation of Per-Domain Currency. -/
+theorem merge_conserves_per_domain_currency {leaves : Finset LeafDomain}
+    (m : MergeConsolidation leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    m.mergedCurrency l = (m.constituents.map (fun c => c.currency l)).sum :=
+  m.h_currency_sum l hl
+
+/-- THEOREM: Merge Conservation of Per-Domain hPos. -/
+theorem merge_conserves_per_domain_hPos {leaves : Finset LeafDomain}
+    (m : MergeConsolidation leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    m.mergedHPos l = (m.constituents.map (fun c => c.hPos l)).sum :=
+  m.h_hPos_sum l hl
+
+/-- THEOREM: Merge Conservation of Per-Domain hNeg. -/
+theorem merge_conserves_per_domain_hNeg {leaves : Finset LeafDomain}
+    (m : MergeConsolidation leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    m.mergedHNeg l = (m.constituents.map (fun c => c.hNeg l)).sum :=
+  m.h_hNeg_sum l hl
+
+/-- THEOREM: Merge Conservation of Per-Domain rel. -/
+theorem merge_conserves_per_domain_rel {leaves : Finset LeafDomain}
+    (m : MergeConsolidation leaves) (l : LeafDomain) (hl : l ∈ leaves) :
+    m.mergedRel l = (m.constituents.map (fun c => c.rel l)).sum :=
+  m.h_rel_sum l hl
 
 /-- 
   External Harm Response Protocol:

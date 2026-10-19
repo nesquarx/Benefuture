@@ -3,13 +3,19 @@
   Formalization of Domain (Dn ∈ T) as a Bounded Classification Pattern of Reality (ℝ).
   Corresponds to: Bf_Pseudocode.txt L22, and Domain.txt
   
-  "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt∈[0,1])]|CausalStructure,NaturalOverlap;"
+  "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;"
   "A domain is a bounded classification pattern of Reality within which specific types of 
    interactions, resources, and outcomes share causal structure. Domains provide jurisdictional 
    scope for metric models, currencies and reputation, enabling specialized prediction while 
    preventing unbounded claims."
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Tactic.Linarith
 import Benefuture.Math.Order
 import Benefuture.Ontology.Thing
 
@@ -45,7 +51,6 @@ structure Domain extends Thing where
 /-- Coercion: Every Domain is canonically a Thing in Reality. -/
 instance : Coe Domain Thing where
   coe d := d.toThing
-
 
 /-- Helper constructor for standard Domains. -/
 def Domain.mkSimple (id name : String) (cat : DomainCategory := .Physical) 
@@ -146,7 +151,96 @@ theorem disjoint_domains_have_zero_overlap (d1 d2 : Domain) (h : are_causally_di
   unfold causal_overlap_count are_causally_disjoint at *
   exact foldl_overlap_zero d1.causalStructure d2 0 h
 
+/- =========================================================================
+   3.2 [R] DOMAIN PATTERNS, SHARES, AND FUZZY HIERARCHY
+   - Only the domain PATTERN is defined (consortium-maintained, bootstrapped).
+   - Domain-domain relations computed from Mem records, never declared.
+   - Memberships of a Thing/action are SHARES summing to 1 (a partition of unity).
+   - Leaves hold shares; parents are fuzzy sets of leaves with degrees μ_p ∈ [0, 1].
+   ========================================================================= -/
+
+/-- 
+  [R] Leaf Domain: The atomic jurisdictional unit holding discrete shares of credit/value.
+  Decision profiles and reputation balances reside on leaf domains.
+-/
+structure LeafDomain where
+  id   : String
+  name : String := id
+  deriving Repr, DecidableEq
+
+/-- 
+  [R] Generic Partition of Unity:
+  Memberships of an action or thing across leaf domains are non-negative shares summing to 1.
+  Indexed generically by RelType.
+  SPEC-CHOICE: In the single-partition reading, RelType = Unit.
+-/
+structure PartitionOfUnity (RelType : Type) (leaves : Finset LeafDomain) where
+  share : RelType → LeafDomain → ℝ
+  h_nonneg : ∀ r l, 0 ≤ share r l
+  h_sum_one : ∀ r, (leaves.sum (fun l => share r l)) = 1
+  h_support : ∀ r l, l ∉ leaves → share r l = 0
+
+abbrev SinglePartitionOfUnity (leaves : Finset LeafDomain) :=
+  PartitionOfUnity Unit leaves
+
+/-- 
+  [P] Parent Domain: A fuzzy set of leaf domains.
+  Each parent domain has degrees μ_p : LeafDomain → [0, 1] (degree of membership, NOT share).
+-/
+structure ParentDomain (leaves : Finset LeafDomain) where
+  id         : String
+  name       : String := id
+  μ          : LeafDomain → ℝ
+  h_μ_nonneg : ∀ l, 0 ≤ μ l
+  h_μ_bound  : ∀ l, μ l ≤ 1
+
+/-- 
+  [R] Aggregate value or credit at a parent domain:
+  any aggregate at p = Σ_leaf μ_p(leaf) · aggregate(leaf).
+-/
+def aggregate_at_parent {leaves : Finset LeafDomain} (p : ParentDomain leaves)
+    (leaf_agg : LeafDomain → ℝ) : ℝ :=
+  leaves.sum (fun l => p.μ l * leaf_agg l)
+
+/-- 
+  THEOREM: No Double Counting in Parent Domain Aggregation.
+  For any single unit of value v ≥ 0 partitioned across leaves via shares summing to 1,
+  the aggregate measured at any parent domain p cannot exceed v.
+-/
+theorem aggregate_no_double_count {leaves : Finset LeafDomain} (p : ParentDomain leaves)
+    (shares : LeafDomain → ℝ) (h_nonneg : ∀ l, 0 ≤ shares l)
+    (h_sum : leaves.sum shares = 1) (v : ℝ) (hv : 0 ≤ v) :
+    leaves.sum (fun l => p.μ l * (shares l * v)) ≤ v := by
+  have h_le : leaves.sum (fun l => p.μ l * (shares l * v)) ≤ leaves.sum (fun l => 1 * (shares l * v)) := by
+    apply Finset.sum_le_sum
+    intro l _
+    have h_prod : 0 ≤ shares l * v := mul_nonneg (h_nonneg l) hv
+    have h_mu := p.h_μ_bound l
+    nlinarith
+  have h_eq : leaves.sum (fun l => 1 * (shares l * v)) = v := by
+    have h_one : leaves.sum (fun l => 1 * (shares l * v)) = leaves.sum (fun l => shares l * v) := by
+      apply Finset.sum_congr rfl
+      intro l _
+      rw [one_mul]
+    rw [h_one, ← Finset.sum_mul, h_sum, one_mul]
+  linarith
+
+/-- 
+  THEOREM: Monotonicity of Parent Aggregates.
+  If child domain c has degrees μ_c pointwise less than or equal to parent domain p,
+  then for any non-negative leaf aggregate, aggregate(c) ≤ aggregate(p).
+-/
+theorem aggregate_monotonicity {leaves : Finset LeafDomain}
+    (c p : ParentDomain leaves) (h_le : ∀ l, c.μ l ≤ p.μ l)
+    (leaf_agg : LeafDomain → ℝ) (h_agg_nonneg : ∀ l, 0 ≤ leaf_agg l) :
+    aggregate_at_parent c leaf_agg ≤ aggregate_at_parent p leaf_agg := by
+  unfold aggregate_at_parent
+  apply Finset.sum_le_sum
+  intro l _
+  have h_diff := h_le l
+  have h_pos := h_agg_nonneg l
+  nlinarith
+
 abbrev Dn := Domain
 
 end Benefuture.Ontology
-

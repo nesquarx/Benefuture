@@ -1,11 +1,15 @@
 /-
   Benefuture.Ontology.Reality
   Formalization of Reality (ℝ), the Universe (𝕌), and Simulations.
-  Corresponds to: Bf_Pseudocode.txt L16, and Reality.txt / Simulation.txt
+  Corresponds to: Bf_Pseudocode.txt L16, L18, L22, L132 and Reality.txt / Simulation.txt
   "Reality«ℝ» := (Perceivable ∪ Changeable) ⊆ Universe«𝕌»;"
-  "When a thing only exists as a pattern represented symbolically through a substrate pattern in reality, it is a simulation."
+  "Id(T) := ∃!SubPattern(T):¬∃Id(ℝ-T),Disambiguate(Location(T) ∈ ℝ, History(T)), Id ≡ Dn : |Dn ∩ ℝ| = 1;"
+  "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;"
 -/
 
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Real.Basic
 import Benefuture.Ontology.Thing
 
 namespace Benefuture.Ontology
@@ -56,6 +60,136 @@ theorem reality_is_subset_of_universe (r : RealityTouchpoint) :
 -/
 def is_outside_reality (u : UniversePattern) : Bool :=
   !u.isPerceivable && !u.isChangeable
+
+/- =========================================================================
+   3.1 [R] IDENTITY AND DOMAIN PATTERNS MATCHED AGAINST ℝ
+   "Identity and domains are one kind of object: a pattern matched against ℝ."
+   Corresponds to: Bf_Pseudocode.txt L18, L22
+   ========================================================================= -/
+
+/-- 
+  [R] Thing disambiguated identity pattern.
+  Includes location ⊕ history worldline per L18 Disambiguate(Location(T) ∈ ℝ, History(T)).
+-/
+def thing_identity_pattern (t : Thing) : Pattern := {
+  id := "id_" ++ t.id,
+  «matches» := fun t' => (t'.id == t.id) && (t'.grounding.location == t.grounding.location) && (t'.grounding.history == t.grounding.history)
+}
+
+/-- 
+  [R] RealityState: A finite collection of Things existing in Reality (ℝ) at an epoch.
+  Maintains the foundational invariant that identity patterns are injective.
+-/
+structure RealityState where
+  things     : Finset Thing
+  id_pattern : Thing → Pattern := thing_identity_pattern
+  h_id_inj   : ∀ t1 t2, t1 ∈ things → t2 ∈ things → id_pattern t1 = id_pattern t2 → t1 = t2
+
+/-- 
+  [R] Extension of a Pattern against Reality:
+  ext(p)(R) := {t ∈ R | matches p t}
+-/
+def ext (p : Pattern) (R : RealityState) : Finset Thing :=
+  R.things.filter (fun t => p.«matches» t)
+
+/-- 
+  [R] IsIdentity predicate:
+  A pattern p is an identity in RealityState R iff its extension is a singleton:
+  |ext p R| = 1.
+  Corresponds to: Bf_Pseudocode.txt L18: "Id ≡ Dn : |Dn ∩ ℝ| = 1".
+-/
+def IsIdentity (p : Pattern) (R : RealityState) : Prop :=
+  (ext p R).card = 1
+
+/-- 
+  [R] IsDomainPattern predicate:
+  A pattern p is a domain pattern in RealityState R iff its extension has cardinality > 1.
+  Corresponds to: Bf_Pseudocode.txt L18, L22.
+-/
+def IsDomainPattern (p : Pattern) (R : RealityState) : Prop :=
+  1 < (ext p R).card
+
+theorem thing_identity_pattern_matches_self (t : Thing) :
+    (thing_identity_pattern t).«matches» t = true := by
+  unfold thing_identity_pattern
+  dsimp
+  simp
+
+/-- 
+  THEOREM: RealityState Identity Injectivity Invariant.
+  In any valid RealityState R, distinct things have distinct identity patterns.
+-/
+theorem reality_state_id_injective (R : RealityState) (t1 t2 : Thing)
+    (h1 : t1 ∈ R.things) (h2 : t2 ∈ R.things) (h_eq : R.id_pattern t1 = R.id_pattern t2) :
+    t1 = t2 :=
+  R.h_id_inj t1 t2 h1 h2 h_eq
+
+/-- 
+  THEOREM: Singleton Extension Yields Identity.
+  If an identity pattern matches exactly one unique thing in R, it is an Identity in R.
+-/
+theorem identity_pattern_is_identity (R : RealityState) (t : Thing) (ht : t ∈ R.things)
+    (h_uniq : ∀ t' ∈ R.things, (thing_identity_pattern t).«matches» t' = true → t' = t) :
+    IsIdentity (thing_identity_pattern t) R := by
+  unfold IsIdentity ext
+  have h_set : R.things.filter (fun t' => (thing_identity_pattern t).«matches» t') = {t} := by
+    ext x
+    simp only [Finset.mem_filter, Finset.mem_singleton]
+    constructor
+    · intro ⟨hx, hm⟩
+      exact h_uniq x hx hm
+    · intro hx
+      rw [hx]
+      exact ⟨ht, thing_identity_pattern_matches_self t⟩
+  rw [h_set]
+  exact Finset.card_singleton t
+
+/- =========================================================================
+   IDENTITY ESTIMATES AND BIND-ID
+   Corresponds to: Bf_Pseudocode.txt L132:
+   "Agg(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindId(E, 1:1)"
+   ========================================================================= -/
+
+/-- Evidence logged from a decentralized network cluster. -/
+structure ClusterEvidence where
+  clusterId : String
+  logScore  : ℝ
+
+/-- 
+  [R] Identity Estimate before BindId:
+  Before binding, identity is an uncertain distribution over candidate records.
+  Unbound records carry only statistical reputation (consistent with opt-out tier).
+-/
+structure IdentityEstimate where
+  candidateIds     : List (String × ℝ)
+  clusterEvidences : List ClusterEvidence
+  isBound          : Bool := false
+
+/-- 
+  Predicate: Sufficient multi-cluster evidence to trigger BindId (L132).
+  Requires aggregation over ≥ 2 independent clusters and aggregate log score ≥ Th.
+-/
+def can_bind_id (est : IdentityEstimate) (th : ℝ) : Prop :=
+  est.clusterEvidences.length ≥ 2 ∧
+  (est.clusterEvidences.map (·.logScore)).sum ≥ th
+
+/-- 
+  [R] BindId operation:
+  Binds an entity record 1:1 to a singleton identity once threshold evidence is met.
+-/
+def bind_id (est : IdentityEstimate) (boundId : String) : IdentityEstimate := {
+  candidateIds := [(boundId, 1.0)],
+  clusterEvidences := est.clusterEvidences,
+  isBound := true
+}
+
+/-- THEOREM: BindId yields a singleton candidate list with probability 1. -/
+theorem bind_id_yields_singleton (est : IdentityEstimate) (boundId : String) :
+    (bind_id est boundId).candidateIds = [(boundId, 1.0)] := rfl
+
+/- =========================================================================
+   REALITY SCOPE (↑ℝ)
+   ========================================================================= -/
 
 /-- 
   The Scope of Reality (ℝ):
@@ -111,7 +245,6 @@ structure RealitySubstrate extends Thing where
 instance : Coe RealitySubstrate Thing where
   coe s := s.toThing
 
-
 def RealitySubstrate.mkSimple (id : String) (tp : RealityTouchpoint) : RealitySubstrate :=
   { toThing := Thing.mkSimple id s!"substrate_{id}" "reality_substrate" 0,
     touchpoint := tp }
@@ -138,7 +271,6 @@ structure SimulatedThing extends Thing where
 
 instance : Coe SimulatedThing Thing where
   coe st := st.toThing
-
 
 def SimulatedThing.mkSimple (id : String) (sub : RealitySubstrate) (scope : SimulationScope) (agency : Bool := true) : SimulatedThing :=
   { toThing := Thing.mkSimple id s!"sim_{id}" "simulation" 0,
@@ -179,19 +311,12 @@ theorem isolated_simulation_not_in_external_reality (st : SimulatedThing)
    Corresponds to: Bf_Pseudocode.txt L34, L164.
    ========================================================================= -/
 
-/-- 
-  Temporal Era classification centered around the present execution horizon (t = 0):
-  - Historical Past (t < 0): recorded in immutable memory.
-  - Present Execution (t = 0): active interaction and intervention.
-  - Predictive Future (t > 0): subject to probabilistic forecasting and proper scoring.
--/
 inductive TemporalEra where
   | HistoricalPast    : TemporalEra  -- t < 0
   | PresentExecution  : TemporalEra  -- t = 0
   | PredictiveFuture  : TemporalEra  -- t > 0
   deriving Repr, DecidableEq
 
-/-- Classify any integer time coordinate into its temporal era. -/
 def classify_temporal_era (t : Int) : TemporalEra :=
   if t < 0 then .HistoricalPast
   else if t = 0 then .PresentExecution
@@ -214,14 +339,12 @@ structure LongTermHorizon extends Thing where
 instance : Coe LongTermHorizon Thing where
   coe lt := lt.toThing
 
-
 def LongTermHorizon.mkSimple (id : String) (t_past t_future : Int)
     (h_past : t_past < 0 := by decide) (h_fut : 0 < t_future := by decide) : LongTermHorizon :=
   { toThing := Thing.mkSimple id s!"horizon_{id}" "temporal_continuum" 0,
     t_maxRecord := t_past, t_present := 0, t_maxPr := t_future,
     h_record_past := h_past, h_pr_future := h_fut }
 
-/-- Predicate: A time point t is grounded within the LongTerm civilizational horizon. -/
 def is_in_longterm (lt : LongTermHorizon) (t : Int) : Prop :=
   lt.t_maxRecord ≤ t ∧ t ≤ lt.t_maxPr
 
@@ -229,20 +352,9 @@ instance (lt : LongTermHorizon) (t : Int) : Decidable (is_in_longterm lt t) := b
   unfold is_in_longterm
   infer_instance
 
-/-- 
-  Significance of an Outcome across Time:
-  Sig(O_t) ∝ P(O_t) * |O_t|.
-  Scaled in micro-units: Sig = (P * |O|) / SCALE.
-  Corresponds to: Bf_Pseudocode.txt L34.
--/
 def outcome_significance (prob magnitude : Int) : Int :=
   (prob * magnitude) / 1000000
 
-/-- 
-  THEOREM: Present is Invariant in LongTerm Horizon.
-  The present execution horizon (t = 0) is guaranteed to lie strictly 
-  within the LongTerm continuum: t_maxRecord < 0 < t_maxPr.
--/
 theorem present_is_in_longterm (lt : LongTermHorizon) :
     is_in_longterm lt 0 := by
   unfold is_in_longterm
@@ -250,21 +362,15 @@ theorem present_is_in_longterm (lt : LongTermHorizon) :
   have hfut := lt.h_pr_future
   omega
 
-/-- 
-  THEOREM: Outcome Significance Non-Negativity.
-  Non-negative probability and magnitude produce non-negative significance.
--/
 theorem outcome_significance_nonneg (p mag : Int) (hp : 0 ≤ p) (hm : 0 ≤ mag) :
     0 ≤ outcome_significance p mag := by
   unfold outcome_significance
   have hmul : 0 ≤ p * mag := Int.mul_nonneg hp hm
   exact Int.ediv_nonneg hmul (by decide)
 
-/-- Abbreviations aligning with Bf_Pseudocode.txt L16, L34. -/
 abbrev lt := LongTermHorizon
-abbrev ℝ := RealityTouchpoint
+abbrev RealityTouch := RealityTouchpoint
 abbrev 𝕌 := UniversePattern
 abbrev Universe := UniversePattern
 
 end Benefuture.Ontology
-

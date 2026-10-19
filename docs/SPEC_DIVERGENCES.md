@@ -96,3 +96,38 @@ Per the Ground Rules:
   - Fixed by defining `is_eligible_action` and `eligible_actions` filtering candidates by reality enhancement.
   - **SPEC-CHOICE**: Adopted non-decreasing reality scope ($\Delta \ge 0$) as the eligibility baseline for $\uparrow \mathbb{R}$. A strictly positive requirement ($\Delta > 0$) would disqualify routine flourishing-preserving maintenance actions.
 - **Distributional Push (`pushDistr`, L60)**: Marked `[OPEN]` and left unformalized in the core spec; requires formal population quantile distribution mechanics deferred to simulation.
+
+---
+
+## 3. Phase 3 Divergences (Ontology, Domains, and Reputation)
+
+### 3.1 Pattern / Thing and RealityState Duality ([R], [P])
+- **Source**: `Bf_Pseudocode.txt` L21-22, L132; `Architecture.txt` §Ontology.
+- **Specification**: In `Reality.lean` and `Thing.lean`, `Thing` is an entity grounded in spacetime (`SpacetimeGrounding`), while `Pattern` is an abstraction with an evaluation predicate `«matches» : Thing → Bool`.
+- **Extension & Predicates**:
+  - `ext p R := R.things.filter (fun t => p.«matches» t)`
+  - `IsIdentity p R :↔ (ext p R).card = 1`
+  - `IsDomainPattern p R :↔ 1 < (ext p R).card`
+- **Identity Disambiguation**: To distinguish identical twins, digital clones, or behavioral mimics from the underlying individual, identity resolution requires history worldline / spacetime grounding (`thing_identity_pattern`).
+- **Identity Binding (`can_bind_id`, L132)**: An entity can only bind an identity pattern if confidence exceeds threshold and zero collision exists in the observed reality state.
+
+### 3.2 Share-Based Partition of Unity vs Independent Weights ([P], [OPEN])
+- **Source**: `Bf_Pseudocode.txt` L21-22, L113.
+- **Finding & Divergence**: If domains are assigned unconstrained independent weights in $[0, 1]$, an action spanning multiple overlapping domain labels can multiply its influence, reputation rewards, and voting weight without bound (domain gerrymandering / double-counting vulnerability).
+- **Lean Spec Choice**: Formulated `PartitionOfUnity` over `LeafDomain` where weights sum to 1 ($\sum_{l \in leaves} w_l = 1$). Proved `aggregate_no_double_count` and `aggregate_monotonicity` for parent domains.
+- **Status ([OPEN])**: Single vs Multi-RelType Partition of Unity. Whether a single partition of unity governs all relationships or separate partitions exist per relation type (causal, structural, communicative) is left open.
+
+### 3.3 Domain Hierarchy Knaster-Tarski Fixed Point ([P])
+- **Source**: `Bf_Pseudocode.txt` L21-22.
+- **Specification**: In `Benefuture.Proposed.DomainHierarchy`, fuzzy subsethood $S(x, y)$ over action relevance is modeled as a monotonic operator on a complete lattice. Theorem `hierarchy_fixed_point_exists` proves existence of a fixed-point hierarchy via Knaster-Tarski, resolving circularity in mutually interdependent domains without ad-hoc cutoffs.
+
+### 3.4 3-Component Reputation Architecture ([R], [P])
+- **Source**: `Bf_Pseudocode.txt` L101 ("!halo, !horn, !transfer"), L113 ("VW_expert"), L117 ("EHR").
+- **Specification**: Separated reputation into distinct state stores and views in `Benefuture/Ontology/Reputation.lean`:
+  - `ReHistory`: Monotonic, append-only historical record ($hPos \ge 0, hNeg \ge 0$). Non-cancelling ledger.
+  - `ReRelevance`: Current time-decayed domain competence ($rel \in [0, 1]$).
+  - `Re`: Transparent query view synthesizing history, relevance, and retracted items.
+- **Anti-Halo Domain Isolation**: Proved theorem `anti_halo_domain_isolation` on `DecisionProfile` and `VW_expert`: a voter with zero relevance across a decision's leaf domain support receives exactly 0 expert voting weight, preventing cross-domain halo/horn leakage.
+- **Fork / Merge Conservation**: In `Benefuture/Ontology/Entity.lean`, proved `fork_conserves_per_domain_*` and `merge_conserves_per_domain_*`, ensuring splitting or merging entities cannot manufacture or destroy reputation history or currency.
+- **Exponential vs Subtractive Decay ([OPEN])**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision.
+

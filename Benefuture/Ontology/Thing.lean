@@ -19,44 +19,31 @@ structure SpacetimeGrounding where
   deriving Repr, DecidableEq
 
 /-- 
-  Informational Pattern defining the structural identity invariant of a Thing.
--/
-structure Pattern where
-  name       : String
-  invariants : List String
-  h_nonempty : invariants ≠ []
-  deriving Repr, DecidableEq
-
-/-- 
   Thing (T): The universal root of all distinguishable patterns in Reality.
   Guaranteed to possess an informational pattern and disambiguated grounding.
+  Corresponds to: Bf_Pseudocode.txt L16-18.
 -/
 structure Thing where
   id        : String
-  pattern   : Pattern
   grounding : SpacetimeGrounding
   deriving Repr, DecidableEq
 
 /-- Two Things are identical if and only if their identifiers and grounding match. -/
 def thing_eq (t1 t2 : Thing) : Prop :=
-  t1.id = t2.id ∧ t1.pattern = t2.pattern ∧ t1.grounding = t2.grounding
+  t1.id = t2.id ∧ t1.grounding = t2.grounding
 
 instance : DecidableRel thing_eq := by
   intro t1 t2
   unfold thing_eq
   infer_instance
 
-/-- Helper constructor for standard patterns with guaranteed non-empty invariants. -/
-def Pattern.mkSimple (name : String) (invariant : String := "identity_invariant") : Pattern :=
-  ⟨name, [invariant], by intro h; contradiction⟩
-
 /-- Helper constructor for a spatiotemporal point in Reality. -/
 def SpacetimeGrounding.mkPoint (loc : String) (t : Nat) : SpacetimeGrounding :=
   ⟨loc, t, []⟩
 
 /-- Ergonomic constructor for a generic Thing in Reality. -/
-def Thing.mkSimple (id : String) (name : String) (loc : String := "reality_substrate") (t : Nat := 0) : Thing :=
-  ⟨id, Pattern.mkSimple name, SpacetimeGrounding.mkPoint loc t⟩
+def Thing.mkSimple (id : String) (_name : String := id) (loc : String := "reality_substrate") (t : Nat := 0) : Thing :=
+  ⟨id, SpacetimeGrounding.mkPoint loc t⟩
 
 /-- 
   Identity Id(T):
@@ -68,6 +55,18 @@ def identity_of (t : Thing) : String := t.id
 abbrev Id := identity_of
 abbrev T := Thing
 
+/-- 
+  [R] Pattern matched against Reality (ℝ).
+  Corresponds to: Bf_Pseudocode.txt L17-18, L22.
+  "Identity and domains are one kind of object: a pattern matched against ℝ."
+-/
+structure Pattern where
+  id        : String
+  name      : String := id
+  «matches» : Thing → Bool
+
+/-- Helper constructor for standard patterns. -/
+def Pattern.mkSimple (name : String) (_invariant : String := "identity_invariant") : Pattern :=
+  { id := name, name := name, «matches» := fun _ => true }
+
 end Benefuture.Ontology
-
-
