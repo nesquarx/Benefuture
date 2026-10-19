@@ -45,14 +45,8 @@ instance : Coe Person Entity where
 instance : Coe Person Thing where
   coe p := p.toBeing.toEntity.toThing
 
-/-- Theorem: Ontological inclusion Pe ⊆ B holds by construction. -/
-theorem person_is_being (p : Person) : (p : Being).id = p.id := rfl
 
-/-- Theorem: Transitive inclusion Pe ⊆ E holds by construction. -/
-theorem person_is_entity (p : Person) : (p : Entity).id = p.id := rfl
 
-/-- Theorem: Transitive inclusion Pe ⊆ T holds by construction. -/
-theorem person_is_thing (p : Person) : (p : Thing).id = p.id := rfl
 
 abbrev Pe := Person
 

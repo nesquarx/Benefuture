@@ -31,7 +31,6 @@ structure DomainReputation extends Thing where
 instance : Coe DomainReputation Thing where
   coe r := r.toThing
 
-theorem domain_reputation_is_thing (r : DomainReputation) : (r : Thing).id = r.id := rfl
 
 /-- Synthesized reputation score with negativity dominance and decay. -/
 def DomainReputation.score (r : DomainReputation) : Int :=
@@ -63,7 +62,6 @@ structure DomainImpactProfile extends Thing where
 instance : Coe DomainImpactProfile Thing where
   coe dip := dip.toThing
 
-theorem domain_impact_profile_is_thing (dip : DomainImpactProfile) : (dip : Thing).id = dip.id := rfl
 
 def DomainImpactProfile.mkSimple (id : String) (dom : Domain) (need : Int) 
     (h_pos : 0 ≤ need := by decide) : DomainImpactProfile :=
@@ -85,7 +83,6 @@ structure GroundedVoterProfile extends Thing where
 instance : Coe GroundedVoterProfile Thing where
   coe vp := vp.toThing
 
-theorem voter_profile_is_thing (vp : GroundedVoterProfile) : (vp : Thing).id = vp.id := rfl
 
 def GroundedVoterProfile.mkSimple (id : String) (voter : Sophont) (reps : List DomainReputation)
     (impacts : List DomainImpactProfile := []) : GroundedVoterProfile :=
@@ -137,7 +134,6 @@ structure DecisionContext extends Thing where
 instance : Coe DecisionContext Thing where
   coe ctx := ctx.toThing
 
-theorem decision_context_is_thing (ctx : DecisionContext) : (ctx : Thing).id = ctx.id := rfl
 
 def DecisionContext.mkSimple (id : String) (dom : Domain) : DecisionContext :=
   { toThing := Thing.mkSimple id s!"decision_ctx_{id}" dom.name 0,

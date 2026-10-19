@@ -31,8 +31,6 @@ structure Crime extends Thing where
 instance : Coe Crime Thing where
   coe cr := cr.toThing
 
-/-- Theorem: Crime inclusion Cr ∈ T holds by construction. -/
-theorem crime_is_thing (cr : Crime) : (cr : Thing).id = cr.id := rfl
 
 /-- 
   Restorative Package (extends Thing):
@@ -49,8 +47,6 @@ structure RestorativePackage extends Thing where
 instance : Coe RestorativePackage Thing where
   coe rp := rp.toThing
 
-/-- Theorem: RestorativePackage inclusion in Thing holds by construction. -/
-theorem restorative_package_is_thing (rp : RestorativePackage) : (rp : Thing).id = rp.id := rfl
 
 /-- Helper constructor for Crimes grounded in reality. -/
 def Crime.mkSimple (id : String) (perp victim : Person) (harm : Int) (h_pos : 0 < harm) : Crime :=
@@ -101,7 +97,6 @@ structure Accident extends Thing where
 instance : Coe Accident Thing where
   coe acc := acc.toThing
 
-theorem accident_is_thing (acc : Accident) : (acc : Thing).id = acc.id := rfl
 
 /-- 
   Accident Resolution Package:
@@ -117,7 +112,6 @@ structure AccidentResolution extends Thing where
 instance : Coe AccidentResolution Thing where
   coe ar := ar.toThing
 
-theorem accident_resolution_is_thing (ar : AccidentResolution) : (ar : Thing).id = ar.id := rfl
 
 /-- 
   Standard pure restitution resolution for an accident:

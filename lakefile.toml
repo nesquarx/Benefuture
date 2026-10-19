@@ -8,3 +8,8 @@ name = "Benefuture"
 [[lean_exe]]
 name = "benefuture"
 root = "Main"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.29.0"

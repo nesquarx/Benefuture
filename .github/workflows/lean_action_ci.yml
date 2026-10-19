@@ -2,9 +2,7 @@ name: Lean Action CI
 
 on:
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -17,3 +15,5 @@ jobs:
 
       - name: Run Lean Action
         uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true

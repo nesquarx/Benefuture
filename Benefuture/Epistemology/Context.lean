@@ -39,8 +39,6 @@ structure Context extends Thing where
 instance : Coe Context Thing where
   coe cx := cx.toThing
 
-/-- Theorem: Context inclusion Cx ∈ T holds by construction. -/
-theorem context_is_thing (cx : Context) : (cx : Thing).id = cx.id := rfl
 
 /-- Degraded Context Predicate: Telemetry resolution drops below degradation threshold. -/
 def is_degraded (cx : Context) (th_degrade : Int) : Bool :=

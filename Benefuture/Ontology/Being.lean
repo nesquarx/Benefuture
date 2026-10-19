@@ -33,8 +33,6 @@ structure Preference extends Thing where
 instance : Coe Preference Thing where
   coe p := p.toThing
 
-/-- Theorem: Preference inclusion in Thing holds by construction. -/
-theorem preference_is_thing (p : Preference) : (p : Thing).id = p.id := rfl
 
 abbrev Preferences := List Preference
 
@@ -67,7 +65,6 @@ structure SubstrateComponent extends Thing where
 instance : Coe SubstrateComponent Thing where
   coe c := c.toThing
 
-theorem substrate_component_is_thing (c : SubstrateComponent) : (c : Thing).id = c.id := rfl
 
 def SubstrateComponent.mkSimple (id name : String) (vital : Bool) : SubstrateComponent :=
   { toThing := Thing.mkSimple id s!"component_{name}" "biology" 0,
@@ -90,7 +87,6 @@ structure InterdependenceLink extends Thing where
 instance : Coe InterdependenceLink Thing where
   coe link := link.toThing
 
-theorem interdependence_link_is_thing (l : InterdependenceLink) : (l : Thing).id = l.id := rfl
 
 def InterdependenceLink.mkSimple (id targetId : String) (weight : Int)
     (h_pos : 0 < weight := by decide) (h_bnd : weight ≤ SCALE := by decide) : InterdependenceLink :=
@@ -119,11 +115,7 @@ instance : Coe Being Entity where
 instance : Coe Being Thing where
   coe b := b.toEntity.toThing
 
-/-- Theorem: Ontological inclusion B ⊆ E holds by construction. -/
-theorem being_is_entity (b : Being) : (b : Entity).id = b.id := rfl
 
-/-- Theorem: Transitive inclusion B ⊆ T holds by construction. -/
-theorem being_is_thing (b : Being) : (b : Thing).id = b.id := rfl
 
 /- --- The Hair Razor Formalization --- -/
 

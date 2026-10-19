@@ -33,8 +33,6 @@ structure Currency extends Thing where
 instance : Coe Currency Thing where
   coe c := c.toThing
 
-/-- Theorem: Currency inclusion C ∈ T holds by construction. -/
-theorem currency_is_thing (c : Currency) : (c : Thing).id = c.id := rfl
 
 /-- Helper constructor for a Currency backed by a qualified Metric Model. -/
 def Currency.mkSimple (id : String) (mm : MetricModel) (h : is_qualified_top_model mm) : Currency :=
@@ -61,7 +59,6 @@ structure ProbabilisticEscrow extends Thing where
 instance : Coe ProbabilisticEscrow Thing where
   coe pe := pe.toThing
 
-theorem probabilistic_escrow_is_thing (pe : ProbabilisticEscrow) : (pe : Thing).id = pe.id := rfl
 
 def ProbabilisticEscrow.mkSimple (id : String) (conf : Int) (h0 : 0 ≤ conf) (h1 : conf ≤ SCALE) : ProbabilisticEscrow :=
   { toThing := Thing.mkSimple id s!"escrow_{id}" "escrow_substrate" 0,
@@ -100,8 +97,6 @@ structure TransactionProposal extends Thing where
 instance : Coe TransactionProposal Thing where
   coe tp := tp.toThing
 
-/-- Theorem: TransactionProposal inclusion in Thing holds by construction. -/
-theorem transaction_proposal_is_thing (tp : TransactionProposal) : (tp : Thing).id = tp.id := rfl
 
 /-- Helper constructor for TransactionProposal. -/
 def TransactionProposal.mkSimple (id : String) (c : Currency) (act : Action) (dom : Domain) 
@@ -241,7 +236,6 @@ structure CurrencySupplyState extends Thing where
 instance : Coe CurrencySupplyState Thing where
   coe s := s.toThing
 
-theorem currency_supply_state_is_thing (s : CurrencySupplyState) : (s : Thing).id = s.id := rfl
 
 def CurrencySupplyState.mkSimple (id : String) (supply : Int) : CurrencySupplyState :=
   { toThing := Thing.mkSimple id s!"supply_{id}" "currency_ledger" 0,
@@ -349,8 +343,6 @@ structure ResourceAccounting extends Thing where
 instance : Coe ResourceAccounting Thing where
   coe ra := ra.toThing
 
-/-- Theorem: ResourceAccounting inclusion in Thing holds by construction. -/
-theorem resource_accounting_is_thing (ra : ResourceAccounting) : (ra : Thing).id = ra.id := rfl
 
 abbrev RcAccounting := ResourceAccounting
 abbrev RA := ResourceAccounting

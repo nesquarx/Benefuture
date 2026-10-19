@@ -51,8 +51,6 @@ structure Law extends Thing where
 instance : Coe Law Thing where
   coe l := l.toThing
 
-/-- Theorem: Law inclusion L ∈ T holds by construction. -/
-theorem law_is_thing (l : Law) : (l : Thing).id = l.id := rfl
 
 /-- Helper constructor for standard laws. -/
 def Law.mkSimple (id : String) (role : LegalRoleType) (mandatory : Bool) (dom : Domain) (embedded : Bool := false) : Law :=
@@ -77,8 +75,6 @@ structure Contract extends Thing where
 instance : Coe Contract Thing where
   coe k := k.toThing
 
-/-- Theorem: Contract inclusion K ∈ T holds by construction. -/
-theorem contract_is_thing (k : Contract) : (k : Thing).id = k.id := rfl
 
 def Contract.mkSimple (id : String) (signers : List Person) (clauses : List String) (enforcer : String) (bound : Int)
     (h_two : signers.length ≥ 2 := by decide) : Contract :=
@@ -174,8 +170,6 @@ structure Accolade extends Thing where
 instance : Coe Accolade Thing where
   coe a := a.toThing
 
-/-- Theorem: Accolade inclusion in Thing holds by construction. -/
-theorem accolade_is_thing (a : Accolade) : (a : Thing).id = a.id := rfl
 
 abbrev Lw := Law
 abbrev Ct := Contract

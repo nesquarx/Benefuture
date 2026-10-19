@@ -25,7 +25,6 @@ structure CivilizationalEpoch extends Thing where
 instance : Coe CivilizationalEpoch Thing where
   coe ep := ep.toThing
 
-theorem epoch_is_thing (ep : CivilizationalEpoch) : (ep : Thing).id = ep.id := rfl
 
 def CivilizationalEpoch.mkSimple (id : String) (epochId : Nat) (memory : List String) (harm : Int) (coherent : Bool := true) : CivilizationalEpoch :=
   { toThing := Thing.mkSimple id s!"epoch_{epochId}" "civilizational_substrate" epochId,

@@ -40,8 +40,6 @@ structure MemoryRecord extends Thing where
 instance : Coe MemoryRecord Thing where
   coe r := r.toThing
 
-/-- Theorem: MemoryRecord inclusion holds by construction. -/
-theorem record_is_thing (r : MemoryRecord) : (r : Thing).id = r.id := rfl
 
 /-- 
   Immutable Memory Store (Mem ∈ T):
@@ -57,8 +55,6 @@ structure ImmutableMemory extends Thing where
 instance : Coe ImmutableMemory Thing where
   coe m := m.toThing
 
-/-- Theorem: ImmutableMemory inclusion holds by construction. -/
-theorem memory_is_thing (m : ImmutableMemory) : (m : Thing).id = m.id := rfl
 
 /-- Append-only transition: Adding a new record to memory. -/
 def append_record (mem : ImmutableMemory) (rec : MemoryRecord) : ImmutableMemory :=

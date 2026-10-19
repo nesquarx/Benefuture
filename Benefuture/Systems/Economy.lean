@@ -52,7 +52,6 @@ structure DomainPublicPool extends Thing where
 instance : Coe DomainPublicPool Thing where
   coe p := p.toThing
 
-theorem domain_public_pool_is_thing (p : DomainPublicPool) : (p : Thing).id = p.id := rfl
 
 def DomainPublicPool.mkSimple (id : String) (dom : Domain) (bal : Int) : DomainPublicPool :=
   { toThing := Thing.mkSimple id s!"pool_{dom.name}" dom.name 0,
@@ -100,7 +99,6 @@ structure BaselineGood extends Thing where
 instance : Coe BaselineGood Thing where
   coe bg := bg.toThing
 
-theorem baseline_good_is_thing (bg : BaselineGood) : (bg : Thing).id = bg.id := rfl
 
 def BaselineGood.mkSimple (id : String) (tier : Nat) (cost subsidy : Int) : BaselineGood :=
   { toThing := Thing.mkSimple id s!"baseline_good_{id}" "sustenance_infrastructure" 0,
@@ -153,8 +151,6 @@ structure SophontBaselineIncome extends Thing where
 instance : Coe SophontBaselineIncome Thing where
   coe sb := sb.toThing
 
-/-- Theorem: SophontBaselineIncome inclusion in Thing holds by construction. -/
-theorem sophont_baseline_income_is_thing (sb : SophontBaselineIncome) : (sb : Thing).id = sb.id := rfl
 
 /-- THEOREM: Guaranteed non-positive price for all essential goods under baseline income. -/
 theorem baseline_income_guarantees_free_essentials (sb : SophontBaselineIncome) (g : BaselineGood) 

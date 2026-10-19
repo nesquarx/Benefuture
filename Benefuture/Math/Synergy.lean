@@ -58,27 +58,6 @@ theorem offence_dominates_necessary :
   decide
 
 /-- 
-  Integer synergy calculation for two positive components (e.g., Understanding and Happiness).
-  Phi(x, y) = x + y + interaction_bonus.
-  In micro-units, when both inputs are positive, synergy provides superadditive boost.
--/
-def synergy_pair_gains (x y : Int) : Int :=
-  x + y + (if x ≤ y then x else y) / 2
-
-/-- 
-  Theorem: Synergy of positive gains is strictly superadditive 
-  when inputs are above the minimal granularity threshold (x ≥ 2, y ≥ 2).
--/
-theorem synergy_superadditive (x y : Int) (hx : 2 ≤ x) (hy : 2 ≤ y) :
-    synergy_pair_gains x y > x + y := by
-  unfold synergy_pair_gains
-  split
-  · -- x ≤ y
-    omega
-  · -- y < x
-    omega
-
-/-- 
   The interaction loss penalty between positive gains and negative losses:
   penalty(Φ_+, Φ_-) = λ · (Φ_+ · Φ_-) / (Φ_+ + Φ_-) where λ = 1/2.
   Corresponds to: Bf_Pseudocode.txt L13: "λ·Φ_+Φ_- / (Φ_+ + Φ_-) | (λ = ½)"
@@ -95,11 +74,6 @@ def synergy_interaction_penalty (phi_plus phi_minus : Int) : Int :=
 def net_synergy (phi_plus phi_minus : Int) : Int :=
   phi_plus - phi_minus - synergy_interaction_penalty phi_plus phi_minus
 
-/-- 
-  Legacy alias for backwards compatibility.
--/
-def net_synergy_balance (phi_plus phi_minus penalty : Int) : Int :=
-  phi_plus - phi_minus - penalty
 
 /-- 
   THEOREM: Loss Aversion Theorem (Non-Tautological).

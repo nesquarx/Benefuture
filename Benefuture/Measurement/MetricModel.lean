@@ -57,8 +57,6 @@ structure Marker extends Thing where
 instance : Coe Marker Thing where
   coe m := m.toThing
 
-/-- Theorem: Marker inclusion M ∈ T holds by construction. -/
-theorem marker_is_thing (m : Marker) : (m : Thing).id = m.id := rfl
 
 /-- Helper constructor for Markers grounded in a domain. -/
 def Marker.mkSimple (id name : String) (dom : Domain) (novel : Bool := false) : Marker :=
@@ -95,8 +93,6 @@ structure MetricModel extends Thing where
 instance : Coe MetricModel Thing where
   coe mm := mm.toThing
 
-/-- Theorem: MetricModel inclusion MM ∈ T holds by construction. -/
-theorem metric_model_is_thing (mm : MetricModel) : (mm : Thing).id = mm.id := rfl
 
 /-- Helper constructor for MetricModels. -/
 def MetricModel.mkSimple (id : String) (dom : Domain) (m : List Marker) (acc : PredictionAccuracy) 
@@ -164,8 +160,6 @@ structure Assessment extends Thing where
 instance : Coe Assessment Thing where
   coe asmt := asmt.toThing
 
-/-- Theorem: Assessment inclusion As ∈ T holds by construction. -/
-theorem assessment_is_thing (asmt : Assessment) : (asmt : Thing).id = asmt.id := rfl
 
 /-- Predicate: Assessment occurs post-execution in verified Reality. -/
 def is_ex_post (asmt : Assessment) : Bool :=
@@ -213,25 +207,31 @@ def Assessment.mkSimple (id : String) (act : Action) (t t_0 : Int) (th : Thresho
     h_normalized := rfl }
 
 /-- 
-  Theorem: Anti-Circularity Guarantee.
-  Every marker tracked by any conforming Metric Model is strictly grounded in reality 
-  as an empirical observation, and is never the synthetic output of another Metric Model,
-  preventing self-reinforcing echo chambers and Goodhart gaming.
+  [P] Design requirement: Non-circular empirical marker grounding.
+  Markers are empirical by construction (`m.h_empirical : m.origin.isEmpirical = true`).
+  This syntactically excludes direct circular dependency on another MetricModel's output.
+  NOTE: This structural condition does NOT resolve Goodhart's Law; preventing proxy gaming
+  requires distinguishing latent ground truth from noisy observed markers, which is handled
+  via metric model competition and adversarial auditing.
+  Corresponds to: Bf_Pseudocode.txt L46-50.
 -/
-theorem metric_models_are_non_circular (_mm : MetricModel) (m : Marker) (_hm : m ∈ _mm.markers) :
-    m.origin.isEmpirical = true :=
-  m.h_empirical
+structure EmpiricalMarkerRequirement (m : Marker) where
+  marker_is_empirical : m.origin.isEmpirical = true := m.h_empirical
 
-/-- 
-  Constructive Anti-Circularity Proof:
-  A conforming empirical marker cannot structurally equal a synthetic model output.
--/
-theorem empirical_marker_not_model_output (m : Marker) (modelId : String) :
+/-- Syntactic anti-circularity: an empirical marker origin cannot equal a synthetic model output. -/
+theorem empirical_marker_not_model_output (m : Marker) (modelId : String)
+    (req : EmpiricalMarkerRequirement m) :
     m.origin ≠ .MetricModelOutput modelId := by
   intro h_eq
-  have h_emp := m.h_empirical
+  have h_emp := req.marker_is_empirical
   rw [h_eq] at h_emp
   contradiction
+
+/-- Metric model non-circularity follows directly from the empirical marker design requirement. -/
+theorem metric_models_are_non_circular (_mm : MetricModel) (m : Marker) (_hm : m ∈ _mm.markers)
+    (req : EmpiricalMarkerRequirement m) :
+    m.origin.isEmpirical = true :=
+  req.marker_is_empirical
 
 abbrev MM := MetricModel
 abbrev M := Marker

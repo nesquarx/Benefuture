@@ -39,8 +39,6 @@ structure ExploitVulnerability extends Thing where
 instance : Coe ExploitVulnerability Thing where
   coe v := v.toThing
 
-/-- Theorem: Vulnerability inclusion holds by construction. -/
-theorem vulnerability_is_thing (v : ExploitVulnerability) : (v : Thing).id = v.id := rfl
 
 /-- 
   Constructive Bounty Reward Function:
@@ -137,19 +135,27 @@ def creator_liability (exploitGain preventedHarm auditOverhead : Int) : Int :=
   bounty_reward exploitGain preventedHarm + auditOverhead
 
 /-- 
-  THEOREM: Anti-Cobra Effect Theorem (Article Nuance #1).
-  If an actor attempts to deliberately plant a vulnerability and then report it 
-  to harvest the bounty (creator == reporter), the causal liability clawback 
-  strictly exceeds or equals the bounty reward, guaranteeing non-positive net return:
-  Net(PlantAndReport) ≤ 0. Bounty farming is mathematically neutralized.
+  [P] Design requirement: Anti-Cobra Effect Design Specification.
+  In this architecture:
+  1. Clawback is defined as `creator_liability := bounty + auditOverhead`, ensuring
+     `clawback ≥ bounty` by definition whenever audit overhead is non-negative.
+  2. Detecting who planted the flaw (`flaw_planter_attribution_assumption`) is an explicit
+     system assumption; without accurate causal attribution, clawback cannot be levied.
+  Corresponds to: Adversarial adaptation.txt §Nuance 1.
 -/
+structure AntiCobraDesignRequirement where
+  flaw_planter_attribution_assumption : Prop
+  auditOverhead : Int
+  audit_nonneg_assumption : 0 ≤ auditOverhead := by decide
+
+/-- Under the Anti-Cobra design definition and attribution assumption, planting and reporting yields non-positive net return. -/
 theorem anti_cobra_effect_no_bounty_farming 
-    (gain harm auditOverhead : Int)
-    (_h_overhead : 0 ≤ auditOverhead) :
+    (gain harm : Int) (req : AntiCobraDesignRequirement) :
     let bounty := bounty_reward gain harm
-    let clawback := creator_liability gain harm auditOverhead
+    let clawback := creator_liability gain harm req.auditOverhead
     bounty - clawback ≤ 0 := by
   dsimp [creator_liability]
+  have h := req.audit_nonneg_assumption
   omega
 
 /-- 

@@ -46,8 +46,6 @@ structure Domain extends Thing where
 instance : Coe Domain Thing where
   coe d := d.toThing
 
-/-- Theorem: Domain inclusion Dn ∈ T holds by construction. -/
-theorem domain_is_thing (d : Domain) : (d : Thing).id = d.id := rfl
 
 /-- Helper constructor for standard Domains. -/
 def Domain.mkSimple (id name : String) (cat : DomainCategory := .Physical) 
@@ -131,12 +129,12 @@ def requires_model_competition (overlapScore : Int) (th_competition : Int) : Boo
   overlapScore ≥ th_competition
 
 /-- 
-  THEOREM: Anti-Gerrymandering Causal Grounding Theorem.
-  Domain boundaries are strictly determined by shared causal mechanisms in Reality,
-  ensuring that topic rebranding cannot alter causal accountability.
+  [P] Design requirement: Anti-Gerrymandering Causal Grounding.
+  Domain boundaries are required to possess non-empty causal grounding in Reality
+  via the `h_causal_nonempty` structure field of `Domain`, ensuring that topic rebranding
+  alone cannot evade causal accountability.
 -/
-theorem anti_gerrymandering_causal_grounding (d : Domain) :
-    d.causalStructure ≠ [] :=
+abbrev anti_gerrymandering_causal_grounding (d : Domain) : d.causalStructure ≠ [] :=
   d.h_causal_nonempty
 
 /-- 

@@ -29,8 +29,6 @@ structure BehavioralTx extends Thing where
 instance : Coe BehavioralTx Thing where
   coe tx := tx.toThing
 
-/-- Theorem: BehavioralTx inclusion in Thing holds by construction. -/
-theorem behavioral_tx_is_thing (tx : BehavioralTx) : (tx : Thing).id = tx.id := rfl
 
 /-- Helper constructor for BehavioralTx on the BTS. -/
 def BehavioralTx.mkSimple (id actorId actionId : String) (t : Nat) (rc : Int) (impact : Int) : BehavioralTx :=
@@ -52,7 +50,6 @@ structure TxTreeNode extends Thing where
 instance : Coe TxTreeNode Thing where
   coe node := node.toThing
 
-theorem txtree_node_is_thing (node : TxTreeNode) : (node : Thing).id = node.id := rfl
 
 def TxTreeNode.mkSimple (id entityId : String) (received produced : Int) : TxTreeNode :=
   { toThing := Thing.mkSimple id s!"txtree_{entityId}" "bts_tree" 0,
@@ -112,7 +109,6 @@ structure UpstreamLink extends Thing where
 instance : Coe UpstreamLink Thing where
   coe link := link.toThing
 
-theorem upstream_link_is_thing (link : UpstreamLink) : (link : Thing).id = link.id := rfl
 
 def UpstreamLink.mkSimple (id ancestorId : String) (weight : Int) 
     (h_pos : 0 < weight := by decide) : UpstreamLink :=
@@ -209,8 +205,6 @@ structure CausalDistribution extends Thing where
 instance : Coe CausalDistribution Thing where
   coe cd := cd.toThing
 
-/-- Theorem: CausalDistribution inclusion in Thing holds by construction. -/
-theorem causal_distribution_is_thing (cd : CausalDistribution) : (cd : Thing).id = cd.id := rfl
 
 /-- 
   Execution Lifecycle Record onExec(A) (extends Thing):
@@ -229,8 +223,6 @@ structure ExecutionRecord extends Thing where
 instance : Coe ExecutionRecord Thing where
   coe er := er.toThing
 
-/-- Theorem: ExecutionRecord inclusion in Thing holds by construction. -/
-theorem execution_record_is_thing (er : ExecutionRecord) : (er : Thing).id = er.id := rfl
 
 /-- Standard onExec lifecycle constructor. -/
 def on_exec (actionId : String) (dom : String) (selected : String) (candidates : List String) : ExecutionRecord :=

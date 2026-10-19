@@ -72,7 +72,6 @@ structure GoalEvaluation extends Thing where
 instance : Coe GoalEvaluation Thing where
   coe eval := eval.toThing
 
-theorem goal_evaluation_is_thing (eval : GoalEvaluation) : (eval : Thing).id = eval.id := rfl
 
 def GoalEvaluation.mkSimple (id : String) (pop : List Being) (val : Int) (r0 r1 : RealityScope) : GoalEvaluation :=
   { toThing := Thing.mkSimple id s!"goal_eval_{id}" "axiology" 0,
@@ -126,60 +125,11 @@ theorem outward_expansion_satisfies_goal (eval : GoalEvaluation)
   exact ⟨h_val, h_expand⟩
 
 /-- 
-  THEOREM: Moral Standing Exclusivity.
-  The Value function is defined directly on Beings (sentient entities).
-  Non-sentient Things cannot be direct recipients in aggregate value.
--/
-theorem moral_standing_exclusivity (population : List Being) (asmt_fn : Being → PrioritizedAssessment) (p : BfParams) (harm_fn : Being → Int) :
-    population = [] → aggregate_sentient_value population asmt_fn p harm_fn = 0 := by
-  intro h
-  unfold aggregate_sentient_value
-  rw [h]
-  rfl
-
-
-/-- 
-  THEOREM: Anti-Wireheading Theorem.
-  Because alpha > beta, an epistemic action generating knowledge (U=K, H=0)
-  strictly dominates a hedonic action generating pleasure (U=0, H=K) for any K > 0!
--/
-theorem epistemic_dominates_wireheading (K : Int) (hK : 0 < K) (p : BfParams) :
-    p.alpha * K > p.beta * K := by
-  have hab := p.h_ab
-  have hdiff : p.alpha - p.beta > 0 := by omega
-  have hpos : (p.alpha - p.beta) * K > 0 := Int.mul_pos hdiff hK
-  have hsub : (p.alpha - p.beta) * K = p.alpha * K - p.beta * K := Int.sub_mul p.alpha p.beta K
-  omega
-
-/-- 
   Saturated Hedonic Sensation Ceiling:
   Raw sensory pleasure cannot expand beyond physical/neurological capacity (H_max).
 -/
 def saturate_pleasure (raw maxH : Int) : Int :=
   if raw > maxH then maxH else raw
-
-/-- 
-  THEOREM: Hedonic Treadmill & Bounded Saturation Theorem (Decision Theory / Axiology).
-  Even if a wireheading agent scales raw sensory pleasure arbitrarily high (raw_pleasure → ∞),
-  because hedonic experience is physically/neurologically bounded by a saturation ceiling (H ≤ H_max),
-  while epistemic understanding U compounds open-endedly, any sufficiently deep epistemic action 
-  (where α * u_depth > β * H_max) strictly dominates ANY wireheading sensory loop!
--/
-theorem epistemic_dominates_saturated_wireheading 
-    (u_depth : Int) (raw_pleasure : Int) (h_max : Int) (p : BfParams)
-    (h_depth : p.alpha * u_depth > p.beta * h_max) :
-    p.alpha * u_depth > p.beta * saturate_pleasure raw_pleasure h_max := by
-  unfold saturate_pleasure
-  split
-  · exact h_depth
-  · have h_diff : 0 ≤ h_max - raw_pleasure := by omega
-    have h_beta_nonneg : 0 ≤ p.beta := by
-      have := p.h_bg; have := p.h_gd; have := p.h_min; omega
-    have h_prod : 0 ≤ p.beta * (h_max - raw_pleasure) := Int.mul_nonneg h_beta_nonneg h_diff
-    have h_dist : p.beta * (h_max - raw_pleasure) = p.beta * h_max - p.beta * raw_pleasure := 
-      Int.mul_sub p.beta h_max raw_pleasure
-    omega
-
 
 /-- 
   Good (Gd): Any action or transition that increases systemic Value V.
@@ -202,28 +152,6 @@ def is_bad (delta_v : Int) (harm_caused : Int) : Bool :=
 /-- Grounded on Action: An action is Bad if its outcome causes harm or degrades value. -/
 def is_action_bad (_a : Action) (delta_v : Int) (harm_caused : Int) : Bool :=
   delta_v < 0 ∨ harm_caused > 0
-
-/-- Theorem: A net value-increasing action is mathematically categorized as Good. -/
-theorem good_action_strictly_increases_value (delta_v : Int) (h : delta_v > 0) :
-    is_good delta_v = true := by
-  unfold is_good
-  exact decide_eq_true h
-
-theorem good_action_is_action_good (a : Action) (delta_v : Int) (h : delta_v > 0) :
-    is_action_good a delta_v = true := by
-  unfold is_action_good
-  exact decide_eq_true h
-
-/-- Theorem: An action causing positive net harm is categorized as Bad. -/
-theorem harm_causing_action_is_bad (delta_v : Int) (harm : Int) (h_harm : harm > 0) :
-    is_bad delta_v harm = true := by
-  unfold is_bad
-  simp [h_harm]
-
-theorem harm_causing_action_is_action_bad (a : Action) (delta_v : Int) (harm : Int) (h_harm : harm > 0) :
-    is_action_bad a delta_v harm = true := by
-  unfold is_action_bad
-  simp [h_harm]
 
 abbrev V := value_on_being
 abbrev G := goal_G

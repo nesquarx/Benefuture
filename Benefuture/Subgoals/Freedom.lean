@@ -115,7 +115,6 @@ structure FreedomScope extends Thing where
 instance : Coe FreedomScope Thing where
   coe s := s.toThing
 
-theorem freedom_scope_is_thing (s : FreedomScope) : (s : Thing).id = s.id := rfl
 
 def FreedomScope.mkSimple (id : String) (acts : List Action) (power novelty : Int) : FreedomScope :=
   { toThing := Thing.mkSimple id s!"freedom_{id}" "action_space" 0,
@@ -156,7 +155,6 @@ structure ThresholdPerturbation extends Thing where
 instance : Coe ThresholdPerturbation Thing where
   coe p := p.toThing
 
-theorem threshold_perturbation_is_thing (p : ThresholdPerturbation) : (p : Thing).id = p.id := rfl
 
 def ThresholdPerturbation.mkSimple (id : String) (nom delta maxD : Int)
     (h_pos : 0 < maxD := by decide)
