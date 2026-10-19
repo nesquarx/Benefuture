@@ -1,9 +1,12 @@
 name = "Benefuture"
 version = "0.1.0"
-defaultTargets = ["Benefuture"]
+defaultTargets = ["Benefuture", "BenefutureReference", "benefuture"]
 
 [[lean_lib]]
 name = "Benefuture"
+
+[[lean_lib]]
+name = "BenefutureReference"
 
 [[lean_exe]]
 name = "benefuture"

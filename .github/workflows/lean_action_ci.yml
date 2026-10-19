@@ -13,6 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Guard against Mathlib/Benefuture in Reference or Main
+        run: |
+          if grep -rnE '^import (Mathlib|Benefuture\.)' BenefutureReference* Main.lean; then
+            echo "ERROR: Reference library or Main.lean imports Mathlib or Benefuture spec library!"
+            exit 1
+          fi
+
       - name: Run Lean Action
         uses: leanprover/lean-action@v1
         with:

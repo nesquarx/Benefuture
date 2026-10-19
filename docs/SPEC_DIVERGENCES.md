@@ -172,4 +172,17 @@ Per the Ground Rules:
 - **Uncollateralized Exploit Vulnerability ([OPEN])**: Documented `UncollateralizedExploitVulnerability`: if market short gains exceed $C$, or attacker wealth $W < C$, clawbacks cannot deter exploit planting.
 - **Anti-Collusion EHR Attenuation**: Proved `complete_cyclic_attenuation` for mutual review pairs $(A \to B, B \to A)$, and noted limitation for cycles of length $\ge 3$ requiring global eigenvector centrality (`SybilCycleDetectionRequirement`).
 
+---
+
+## 5. Phase 5 Divergences (Reference Implementation & Test Vectors)
+
+### 5.1 Decoupled Float Reference Architecture ([R], [P])
+- **Source**: `Bf_Pseudocode.txt` L13-14, L21-22, L26, L48, L73, L101, L113, L117, L157.
+- **Specification Architecture**:
+  - The specification (`Benefuture`, over $\mathbb{R}$) uses Mathlib real numbers to prove axiomatic properties and structural invariants without floating-point rounding artifacts.
+  - The reference implementation (`BenefutureReference`, over `Float`) is completely decoupled from Mathlib and from the specification library.
+  - `Main.lean` (the executable `benefuture`) imports only `BenefutureReference`.
+- **Test Vectors**: Emits canonical test vectors (`spec/vectors/*.json`) for $Sy, \hat{Sy}, As, V$, escrow splits, continuous lazy decay, and voting weights to guide downstream simulation implementations (e.g., in Julia).
+
+
 

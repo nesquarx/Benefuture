@@ -129,6 +129,27 @@ lake build
 
 ---
 
+## For Implementers
+
+This repository maintains a two-tier formalization architecture:
+1. **The Formal Specification (`Benefuture`, over $\mathbb{R}$)**:
+   - Formulated over real numbers ($\mathbb{R}$) using Mathlib.
+   - States foundational definitions, structural theorems, state transition semantics (`Step`), and exact conservation invariants (append-only memory, identity injectivity, escrow soundness, and supply balance identities).
+   - Serves as the mathematical source of truth.
+2. **The Computable Reference Library (`BenefutureReference`, over `Float`)**:
+   - Zero Mathlib dependencies; completely decoupled from the spec library.
+   - Implements computable, Float-based versions of core mathematical operators ($Sy, \hat{Sy}, As, V$, escrow splitting, lazy continuous decay, parent domain aggregation, and voting weights).
+   - Generates deterministic JSON test vectors to `spec/vectors/*.json`.
+
+### Working with Simulations (e.g. Julia)
+- Spec ↔ reference correspondence is **not** proved in Lean (which uses classical reals).
+- Implementers writing simulations (such as the Benefuture agent-based simulation in Julia) should:
+  1. Ingest and match the canonical JSON test vectors from `spec/vectors/*.json`.
+  2. Implement simulation state transitions conforming to `Step`.
+  3. Validate at runtime that simulated trajectories preserve the state invariants proven in `Benefuture.Systems.State`.
+
+---
+
 ## License
 
 This project is licensed under the **GNU Lesser General Public License v2.1** (LGPL-2.1). See the [LICENSE](LICENSE) file for complete terms.

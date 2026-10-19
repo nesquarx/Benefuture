@@ -1,0 +1,14 @@
+{
+  "case_70_win": {
+    "nominal": 1000.0,
+    "upfront": 665.000000,
+    "hold": 285.000000,
+    "overhead": 50.000000
+  },
+  "case_50_win": {
+    "nominal": 500.0,
+    "upfront": 225.000000,
+    "hold": 225.000000,
+    "overhead": 50.000000
+  }
+}
