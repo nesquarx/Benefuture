@@ -131,3 +131,45 @@ Per the Ground Rules:
 - **Fork / Merge Conservation**: In `Benefuture/Ontology/Entity.lean`, proved `fork_conserves_per_domain_*` and `merge_conserves_per_domain_*`, ensuring splitting or merging entities cannot manufacture or destroy reputation history or currency.
 - **Exponential vs Subtractive Decay ([OPEN])**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision.
 
+---
+
+## 4. Phase 4 Divergences (State, Step, Invariants, Governance & Incentives)
+
+### 4.1 Ground Truth vs Measurement (Latent vs Observed) ([R], [P])
+- **Source**: `Bf_Pseudocode.txt` L48-50; `Architecture.txt` §Measurement.
+- **Specification**: In `Benefuture.Systems.State`, true flourishing variables ($U, H, N$) are latent world model properties (`LatentFlourishing`), distinct from noisy empirical observations (`ObservedMeasurement`).
+- **Measurement Gap**: Defined `LatentObsGap(actual, observed) := |actual - observed|`.
+- **Goodhart Resistance**: Incentives must strictly reward latent improvement, not purely observed proxies (`GoodhartResistantIncentive`).
+
+### 4.2 Operational Semantics (State, Event, Step) ([R])
+- **Source**: `Bf_Pseudocode.txt` L25, L26, L101, L113, L132, L155, L157.
+- **Specification**: Small-step transition semantics `Step : State → Event → State → Prop` over 12 operational events (`mint`, `spend`, `escrow_lock`, `escrow_release`, `escrow_forfeit`, `bounty_post`, `bounty_claim`, `bounty_clawback`, `vote_cast`, `entity_fork`, `entity_merge`, `time_advance`).
+
+### 4.3 RepCache & Lazy Continuous Decay ([R])
+- **Source**: `Bf_Pseudocode.txt` L101 ("continuous decay").
+- **Specification**: Defined `RepCache` storing `(lastUpdateTime, cachedScore, decayRate)`. Reads compute lazy decay $s \cdot e^{-\lambda \Delta t}$ on demand, avoiding continuous chain-wide writes.
+- **Theorems Proved**:
+  - `cache_correct`: Exponential decay commutes with summation over disjoint score components.
+  - `decay_transitive`: Multi-checkpoint decay composition is transitive.
+  - `checkpoint_sound`: Updating a cache at time $t$ preserves identical readings for all future queries $t' \ge t$.
+- **Recount Triggers**: Formalized predicate `RecountNeeded` triggered by elapsed time $\Delta t > \Delta t_{\max}$, uncheckpointed events $N > N_{\max}$, or formal dispute.
+
+### 4.4 System Invariant Preservation ([R])
+- **Source**: `Bf_Pseudocode.txt` L26, L132, L155.
+- **Theorems Proved over `Step`**:
+  - `step_preserves_mem`: Append-only memory ledger. Past records are immutable (`Invariant_Mem`).
+  - `step_preserves_id`: Active identity injectivity / uniqueness (`Invariant_Id`).
+  - `SupplyAccountingIdentity`: Exact supply conservation ($\Delta \text{Supply} = \sum \text{Mint} - \sum \text{Burn} - \sum \text{Lost}$).
+  - `step_preserves_escrow_soundness`: Escrow nominal equals upfront plus ongoing hold (`Invariant_EscrowSoundness`).
+  - `auto_spill_enforces_ceiling`: Automatic balance spill to community treasury enforces $balance(E) \le Th_{bal}$ (`Invariant_BalOvflw`).
+
+### 4.5 Governance & Incentives ([R], [P], [OPEN])
+- **Source**: `Bf_Pseudocode.txt` L34, L114, L117, L157.
+- **Liquid Democracy Acyclicity**: Defined `DelegationGraph` with well-founded acyclicity condition. Proved `delegation_no_trivial_cycles`.
+- **Delegation Cap & Power Concentration ([OPEN])**: Theorem `star_topology_power_concentration` proves that without a cap, a star delegation graph allows a single entity to concentrate 100% of voting weight. Proposed `SatisfiesDelegationCap` (e.g. 5% max weight).
+- **Strict Propriety of Brier Score**: In `Benefuture.Governance.Incentives`, proved `brier_score_strictly_proper` via algebraic decomposition $\mathbb{E}[L(p)] = (p - q)^2 + q(1-q)$. Reporting truth $p = q$ is the unique global minimizer.
+- **Anti-Cobra Incentive Compatibility**: Proved `bounty_incentive_compatible`: under clawback $C \ge B + D$, expected farming payoff is strictly negative whenever detection probability $p_{detect} > B / C$.
+- **Uncollateralized Exploit Vulnerability ([OPEN])**: Documented `UncollateralizedExploitVulnerability`: if market short gains exceed $C$, or attacker wealth $W < C$, clawbacks cannot deter exploit planting.
+- **Anti-Collusion EHR Attenuation**: Proved `complete_cyclic_attenuation` for mutual review pairs $(A \to B, B \to A)$, and noted limitation for cycles of length $\ge 3$ requiring global eigenvector centrality (`SybilCycleDetectionRequirement`).
+
+
