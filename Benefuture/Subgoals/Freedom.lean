@@ -5,6 +5,9 @@
   "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible);"
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Linarith
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 import Benefuture.Ontology.Entity
@@ -17,24 +20,22 @@ open Benefuture.Ontology
 open Benefuture.Axiology
 
 /-- 
-  Freedom boundary evaluation directly on an Action and its predicted HarmProfile:
-  Corresponds to: Bf_Pseudocode.txt L135:
+  [R] Freedom boundary evaluation directly on an Action and its predicted HarmProfile (L135):
   "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible);"
   An Action is permissible under the Benefuture Freedom Principle iff:
   1. It causes zero irreparable harm: harm.irreparable ≤ 0
   2. It causes zero irreversible harm: harm.irreversible ≤ 0
 -/
-def is_action_freedom_permissible (_a : Action) (harm : HarmProfile) : Bool :=
+noncomputable def is_action_freedom_permissible (_a : Action) (harm : HarmProfile) : Bool :=
   harm.irreparable ≤ 0 && harm.irreversible ≤ 0
 
 /-- 
-  Freedom within Truth Boundaries (Fr(Tr)):
-  Corresponds to: Bf_Pseudocode.txt L133, L135.
+  [R] Freedom within Truth Boundaries (Fr(Tr)) (L133, L135):
   An action operates within the civilizational freedom boundary Fr(Tr) iff:
   1. It avoids severe or irreversible harm: is_action_freedom_permissible a harm = true
   2. It does not actively degrade truth in Reality: delta_truth ≥ 0
 -/
-def is_action_freedom_within_truth (a : Action) (harm : HarmProfile) (delta_truth : Int) : Bool :=
+noncomputable def is_action_freedom_within_truth (a : Action) (harm : HarmProfile) (delta_truth : Int) : Bool :=
   is_action_freedom_permissible a harm && (delta_truth ≥ 0)
 
 /-- 
@@ -46,7 +47,7 @@ theorem irreversible_harm_strictly_impermissible
     (a : Action) (harm : HarmProfile) (h_irrev : harm.irreversible > 0) :
     is_action_freedom_permissible a harm = false := by
   unfold is_action_freedom_permissible
-  have h_not : ¬(harm.irreversible ≤ 0) := by omega
+  have h_not : ¬(harm.irreversible ≤ 0) := by linarith
   simp [h_not]
 
 /-- 
@@ -58,8 +59,33 @@ theorem irreparable_harm_strictly_impermissible
     (a : Action) (harm : HarmProfile) (h_irrep : harm.irreparable > 0) :
     is_action_freedom_permissible a harm = false := by
   unfold is_action_freedom_permissible
-  have h_not : ¬(harm.irreparable ≤ 0) := by omega
+  have h_not : ¬(harm.irreparable ≤ 0) := by linarith
   simp [h_not]
+
+/-- 
+  [OPEN] Freedom vs Necessary Harm Tension (Fr vs NHa):
+  Pseudocode L55 defines Necessary Harm:
+  NHa := Ha : Ha → ↑V > Ha.
+  A transient harm whose downstream consequence generates strictly greater Value.
+  
+  Pseudocode L135 defines Freedom:
+  Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible).
+  Any irreversible harm is categorically prohibited by Freedom.
+  
+  TENSION: Consider an action causing an irreversible harm, but whose value yield
+  strictly exceeds the harm (0 < net_necessary_gain nh).
+  Under L55, this action is a valid Necessary Harm that increases civilizational Value.
+  Under L135, this action is strictly impermissible under Freedom (is_action_freedom_permissible = false).
+  Freedom's deontological non-harm boundary excludes a globally value-positive action!
+  This tension is left unresolved in the spec as an open design question.
+-/
+theorem freedom_excludes_irreversible_necessary_harm
+    (a : Action) (harm : HarmProfile) (nh : NecessaryHarm)
+    (h_irrev : harm.irreversible > 0) :
+    is_action_freedom_permissible a harm = false ∧ 0 < net_necessary_gain nh := by
+  constructor
+  · exact irreversible_harm_strictly_impermissible a harm h_irrev
+  · exact necessary_harm_produces_net_positive_value nh
 
 /-- 
   THEOREM: Truth Degradation Invariant.
@@ -78,7 +104,7 @@ theorem truth_degradation_excluded_from_freedom_tr
   f_max(∃A, Imp, N, Po) | ¬Ha_irreversible
   Filters permissible actions and aggregates their power capacity and novelty yield.
 -/
-def calculate_freedom_metric 
+noncomputable def calculate_freedom_metric 
     (actions : List Action) 
     (harm_fn : Action → HarmProfile) 
     (power_fn : Action → Int) 
@@ -98,8 +124,6 @@ theorem freedom_metric_monotone_with_permissible_action
 
 /- --- Backwards-Compatible Adapters for Threshold Perturbation & Simple Constraints --- -/
 
-/- --- Backwards-Compatible Adapters for Threshold Perturbation & Simple Constraints --- -/
-
 /-- 
   Freedom Scope (extends Thing):
   Grounded action set and capacity available to an agent in Reality.
@@ -114,7 +138,6 @@ structure FreedomScope extends Thing where
 
 instance : Coe FreedomScope Thing where
   coe s := s.toThing
-
 
 def FreedomScope.mkSimple (id : String) (acts : List Action) (power novelty : Int) : FreedomScope :=
   { toThing := Thing.mkSimple id s!"freedom_{id}" "action_space" 0,
@@ -155,7 +178,6 @@ structure ThresholdPerturbation extends Thing where
 instance : Coe ThresholdPerturbation Thing where
   coe p := p.toThing
 
-
 def ThresholdPerturbation.mkSimple (id : String) (nom delta maxD : Int)
     (h_pos : 0 < maxD := by decide)
     (h_low : -maxD ≤ delta := by decide)
@@ -175,6 +197,6 @@ theorem perturbation_safety_invariant (p : ThresholdPerturbation) :
   have h2 := p.h_upper_bound
   constructor <;> omega
 
-abbrev Fr := is_action_freedom_permissible
+noncomputable abbrev Fr := is_action_freedom_permissible
 
 end Benefuture.Subgoals

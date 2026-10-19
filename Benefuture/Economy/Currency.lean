@@ -27,7 +27,6 @@ open Benefuture.Measurement
 structure Currency extends Thing where
   backingModel : MetricModel
   h_qualified  : is_qualified_top_model backingModel
-  deriving Repr
 
 /-- Coercion: Every Currency is canonically a Thing in Reality. -/
 instance : Coe Currency Thing where
@@ -91,7 +90,6 @@ structure TransactionProposal extends Thing where
   predictedValue   : Int  -- Assessed value delta evaluated by currency's Metric Model
   escrow           : ProbabilisticEscrow
   h_res_pos        : 0 < resourceCost
-  deriving Repr
 
 /-- Coercion: Every TransactionProposal is canonically a Thing in Reality. -/
 instance : Coe TransactionProposal Thing where

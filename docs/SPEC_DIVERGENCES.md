@@ -44,3 +44,55 @@ Per the Ground Rules:
 - **Definitional Good/Bad Theorems**: Removed `good_action_*` and `harm_causing_action_*` which merely restated `decide (delta_v > 0)`.
 - **Non-Spec Synergy Additions**: Removed `net_synergy_balance`, `synergy_pair_gains`, and `synergy_superadditive` (not part of L13 pseudocode formula).
 - **Epistemic Dominance of Wireheading**: Dropped integer toy versions `epistemic_dominates_wireheading` and `epistemic_dominates_saturated_wireheading` pending faithful real formulation in Phase 2.
+
+---
+
+## 2. Phase 2 Divergences (Faithful Core Mathematics)
+
+### 2.1 Unified Parameter Governance (GovParams & ParamSchedule) ([R], [P])
+- **Source**: `Bf_Pseudocode.txt` L11-14, L25, L101, L155.
+- **Specification**: All governed parameters ($\alpha, \beta, \gamma, \delta, \kappa, q_+, q_-, \lambda, \nu, h, \lambda_+, \lambda_-, Th_{sig}, Th_{gov}$) are unified into one record `GovParams` subject to Significant Threshold Governance (`SigThGv`).
+- **Priority Schedule**: Instead of hardcoding ad-hoc integer multipliers (100, 60, 40), tiered priorities take weights from a general strictly decreasing `ParamSchedule` over $\mathbb{R}$.
+
+### 2.2 Faithful Synergy Operator ($Sy$ and $\hat{Sy}$) over $\mathbb{R}$ ([R])
+- **Source**: `Bf_Pseudocode.txt` L13-14.
+- **Specification**: Formalized exactly per pseudocode:
+  $$\Phi_s := \sum_i w_{s,i} a_{s,i}^{q_s} + \kappa \sqrt{\sum_{i<j} w_{s,i} w_{s,j} (a_{s,i} a_{s,j})^{q_s}}$$
+  $$Sy := \Phi_+ - \Phi_- - \lambda \frac{\Phi_+ \Phi_-}{\Phi_+ + \Phi_-} \quad (0 \text{ when } \Phi_+ + \Phi_- = 0)$$
+  $$\hat{Sy}(s) := \operatorname{sgn}(s) \frac{|s|^\nu}{|s|^\nu + h^\nu}$$
+- **Proved Lemmas**:
+  - `equal_gains_and_losses_are_negative`: for equal potentials $v > 0$ and $\lambda > 0$, $Sy(v, v) = -\lambda v / 2 < 0$.
+  - `squashed_synergy_odd`: $\hat{Sy}(-s) = -\hat{Sy}(s)$.
+  - `squashed_synergy_bounds`: $\hat{Sy}(s) \in (-1, 1)$ for $h > 0, \nu > 0$.
+  - `squashed_synergy_strictly_monotone_nu_one`: strictly monotone for canonical $\nu = 1$.
+  - `net_synergy_single_positive` & `net_synergy_single_negative`: strictly positive/negative for single positive/negative items.
+
+### 2.3 Loss Aversion Scale Inversion below 1.0 ([OPEN])
+- **Source**: `Bf_Pseudocode.txt` L13: $q_+ = 1.1, q_- = 1.5$.
+- **Finding**: With $q_- > q_+ > 1$, loss aversion behaves correctly for magnitudes $m > 1$ (`loss_aversion_holds_above_one`), but inverts for $0 < m < 1$ (`loss_aversion_fails_below_one`):
+  $$\forall m \in (0, 1), \quad m^{q_-} < m^{q_+}$$
+- **Spec Implication**: Because exponents $> 1$ compress sub-unitary quantities, higher penalty powers perversely attenuate micro-harms unless input variables are explicitly normalized against a unit scale threshold. Tagged `[OPEN]`.
+
+### 2.4 Harm Tiers: Weighted vs Lexical Readings ([OPEN])
+- **Source**: `Bf_Pseudocode.txt` L61-63; `Benefuture goals.txt` #Harm.
+- **Finding**:
+  - Under a weighted reading (`HarmWeights`), $\mathbb{R}$ is Archimedean, so `finite_exchange_rate_weighted` proves $\exists n : \mathbb{N}, n \cdot w_{pass} \ge w_{irrep}$ (aggregation dilemma).
+  - Under a lexical reading (`LexicalHarmLt`), `no_finite_exchange_rate_lexical` proves $\forall n : \mathbb{N}, (0, n) <_{lex} (1, 0)$ (no quantity of minor harms compensates one catastrophic harm).
+- **Spec Implication**: Left unresolved as an open ethical parameterization choice between utilitarian optimization and deontological thresholds.
+
+### 2.5 Freedom vs Necessary Harm Tension (Fr vs NHa) ([OPEN])
+- **Source**: `Bf_Pseudocode.txt` L55 ($NHa := Ha : Ha \to \uparrow V > Ha$) vs L135 ($Fr := f_{max}(\dots) \mid \neg Ha_{irreversible}$).
+- **Finding**: Theorem `freedom_excludes_irreversible_necessary_harm` constructs an action causing irreversible harm where value yield exceeds harm ($\Delta V > Ha$). It satisfies $NHa$ (value-positive) but is categorically rejected by $Fr$ (deontological non-harm constraint).
+- **Spec Implication**: Fundamental structural tension between global optimization and rights constraints; tagged `[OPEN]`.
+
+### 2.6 Dynamic Assessment $As$ (L48) ([R])
+- **Source**: `Bf_Pseudocode.txt` L48.
+- **Specification**: Formalized `dynamic_assessment_real` over $\mathbb{R}$ with abstract functions `pr_predict`, `pr_counter`, and `me_measure` supplied by `MetricModel`. Proved `ex_post_uses_measurement_real` ($t > t_0$) and `ex_ante_uses_prediction_real` ($t \le t_0$).
+
+### 2.7 Value $V$ and Goal $G$ Bugfix (SPEC-CHOICE)
+- **Source**: `Bf_Pseudocode.txt` L73-74.
+- **Value Function Simplification**: Removed early draft ad-hoc $\delta$ penalty and sentience multiplier `experienceLevel` from $V(A, b)$ (sentience multiplier tagged `[OPEN]`). $V$ computes $Sy_2$ directly over assessed inputs $[(U, \alpha \cdot Ha\_wt), (H, \beta \cdot \alpha \cdot Ha\_wt), (N, \gamma)]$.
+- **Goal G Contracting Action Bugfix**: Previously, `goal_G` assigned value 0 to contracting actions, allowing an illegal contracting action (value 0) to outrank an eligible expanding action with negative value (e.g. -5).
+  - Fixed by defining `is_eligible_action` and `eligible_actions` filtering candidates by reality enhancement.
+  - **SPEC-CHOICE**: Adopted non-decreasing reality scope ($\Delta \ge 0$) as the eligibility baseline for $\uparrow \mathbb{R}$. A strictly positive requirement ($\Delta > 0$) would disqualify routine flourishing-preserving maintenance actions.
+- **Distributional Push (`pushDistr`, L60)**: Marked `[OPEN]` and left unformalized in the core spec; requires formal population quantile distribution mechanics deferred to simulation.
