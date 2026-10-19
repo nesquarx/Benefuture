@@ -55,7 +55,6 @@ structure EducationProfile extends Thing where
 instance : Coe EducationProfile Thing where
   coe ed := ed.toThing
 
-theorem education_profile_is_thing (ed : EducationProfile) : (ed : Thing).id = ed.id := rfl
 
 def EducationProfile.mkSimple (id : String) (p : Person) (lvl : Nat) (crt : Int) (inoc : Nat) : EducationProfile :=
   { toThing := Thing.mkSimple id s!"edu_{id}" "education" 0,

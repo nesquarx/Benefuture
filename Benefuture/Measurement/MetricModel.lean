@@ -57,8 +57,6 @@ structure Marker extends Thing where
 instance : Coe Marker Thing where
   coe m := m.toThing
 
-/-- Theorem: Marker inclusion M ∈ T holds by construction. -/
-theorem marker_is_thing (m : Marker) : (m : Thing).id = m.id := rfl
 
 /-- Helper constructor for Markers grounded in a domain. -/
 def Marker.mkSimple (id name : String) (dom : Domain) (novel : Bool := false) : Marker :=
@@ -89,14 +87,15 @@ structure MetricModel extends Thing where
   hasCausalTheory  : Bool -- Causal explanation quality (CE)
   noveltyScore     : Int  -- Novelty of proposed proxies
   h_markers_exist  : markers ≠ []
-  deriving Repr
+  -- Abstract predictive and measurement functions supplied by the model (L48):
+  pr_predict       : (target : String) → (a : Action) → (t : ℝ) → ℝ := fun _ _ _ => 0
+  pr_counter       : (target : String) → (mem_ctrl : List String) → (t : ℝ) → ℝ := fun _ _ _ => 0
+  me_measure       : (target : String) → (a : Action) → (t : ℝ) → ℝ := fun _ _ _ => 0
 
 /-- Coercion: Every MetricModel is canonically a Thing in Reality. -/
 instance : Coe MetricModel Thing where
   coe mm := mm.toThing
 
-/-- Theorem: MetricModel inclusion MM ∈ T holds by construction. -/
-theorem metric_model_is_thing (mm : MetricModel) : (mm : Thing).id = mm.id := rfl
 
 /-- Helper constructor for MetricModels. -/
 def MetricModel.mkSimple (id : String) (dom : Domain) (m : List Marker) (acc : PredictionAccuracy) 
@@ -164,8 +163,6 @@ structure Assessment extends Thing where
 instance : Coe Assessment Thing where
   coe asmt := asmt.toThing
 
-/-- Theorem: Assessment inclusion As ∈ T holds by construction. -/
-theorem assessment_is_thing (asmt : Assessment) : (asmt : Thing).id = asmt.id := rfl
 
 /-- Predicate: Assessment occurs post-execution in verified Reality. -/
 def is_ex_post (asmt : Assessment) : Bool :=
@@ -199,6 +196,40 @@ theorem ex_ante_uses_prediction (t t_0 : Int) (pr_act me_act pr_ctrl : Int) (th 
   unfold dynamic_assessment
   simp [h_ante]
 
+/-- 
+  [R] Dynamic Temporal Assessment Formula over ℝ (L48):
+  Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx).
+  Corresponds to: Bf_Pseudocode.txt L48, Measurement.txt L39-41.
+  
+  Before action execution (t ≤ t_0): both action outcome and counterfactual are Predictions (Pr).
+  After action execution (t > t_0): action outcome is empirical Measurement (Me), while 
+  inaction counterfactual remains a Prediction conditioned on control memory (Mem_ctrl).
+  The resulting difference is normalized by the context threshold: (x_action - x_counter) / Th_Cx.
+-/
+noncomputable def dynamic_assessment_real 
+    (mm : MetricModel) (target : String) (act : Action) (t t_0 : ℝ) 
+    (mem_ctrl : List String) (th_cx : ℝ) : ℝ :=
+  let action_branch := if t ≤ t_0 then mm.pr_predict target act t else mm.me_measure target act t
+  let counter_branch := mm.pr_counter target mem_ctrl t
+  (action_branch - counter_branch) / th_cx
+
+/-- THEOREM: Ex-Post Assessment Uses Empirical Measurement over ℝ. -/
+theorem ex_post_uses_measurement_real (mm : MetricModel) (target : String) (act : Action)
+    (t t_0 : ℝ) (mem_ctrl : List String) (th_cx : ℝ) (h_post : t > t_0) :
+    dynamic_assessment_real mm target act t t_0 mem_ctrl th_cx = 
+    (mm.me_measure target act t - mm.pr_counter target mem_ctrl t) / th_cx := by
+  unfold dynamic_assessment_real
+  have h_not : ¬(t ≤ t_0) := by linarith
+  simp [h_not]
+
+/-- THEOREM: Ex-Ante Assessment Uses Prediction over ℝ. -/
+theorem ex_ante_uses_prediction_real (mm : MetricModel) (target : String) (act : Action)
+    (t t_0 : ℝ) (mem_ctrl : List String) (th_cx : ℝ) (h_ante : t ≤ t_0) :
+    dynamic_assessment_real mm target act t t_0 mem_ctrl th_cx = 
+    (mm.pr_predict target act t - mm.pr_counter target mem_ctrl t) / th_cx := by
+  unfold dynamic_assessment_real
+  simp [h_ante]
+
 /-- Helper constructor for Assessments. -/
 def Assessment.mkSimple (id : String) (act : Action) (t t_0 : Int) (th : Threshold) 
     (actOut ctrlOut : Int) : Assessment :=
@@ -213,25 +244,31 @@ def Assessment.mkSimple (id : String) (act : Action) (t t_0 : Int) (th : Thresho
     h_normalized := rfl }
 
 /-- 
-  Theorem: Anti-Circularity Guarantee.
-  Every marker tracked by any conforming Metric Model is strictly grounded in reality 
-  as an empirical observation, and is never the synthetic output of another Metric Model,
-  preventing self-reinforcing echo chambers and Goodhart gaming.
+  [P] Design requirement: Non-circular empirical marker grounding.
+  Markers are empirical by construction (`m.h_empirical : m.origin.isEmpirical = true`).
+  This syntactically excludes direct circular dependency on another MetricModel's output.
+  NOTE: This structural condition does NOT resolve Goodhart's Law; preventing proxy gaming
+  requires distinguishing latent ground truth from noisy observed markers, which is handled
+  via metric model competition and adversarial auditing.
+  Corresponds to: Bf_Pseudocode.txt L46-50.
 -/
-theorem metric_models_are_non_circular (_mm : MetricModel) (m : Marker) (_hm : m ∈ _mm.markers) :
-    m.origin.isEmpirical = true :=
-  m.h_empirical
+structure EmpiricalMarkerRequirement (m : Marker) where
+  marker_is_empirical : m.origin.isEmpirical = true := m.h_empirical
 
-/-- 
-  Constructive Anti-Circularity Proof:
-  A conforming empirical marker cannot structurally equal a synthetic model output.
--/
-theorem empirical_marker_not_model_output (m : Marker) (modelId : String) :
+/-- Syntactic anti-circularity: an empirical marker origin cannot equal a synthetic model output. -/
+theorem empirical_marker_not_model_output (m : Marker) (modelId : String)
+    (req : EmpiricalMarkerRequirement m) :
     m.origin ≠ .MetricModelOutput modelId := by
   intro h_eq
-  have h_emp := m.h_empirical
+  have h_emp := req.marker_is_empirical
   rw [h_eq] at h_emp
   contradiction
+
+/-- Metric model non-circularity follows directly from the empirical marker design requirement. -/
+theorem metric_models_are_non_circular (_mm : MetricModel) (m : Marker) (_hm : m ∈ _mm.markers)
+    (req : EmpiricalMarkerRequirement m) :
+    m.origin.isEmpirical = true :=
+  req.marker_is_empirical
 
 abbrev MM := MetricModel
 abbrev M := Marker

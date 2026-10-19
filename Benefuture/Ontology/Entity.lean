@@ -167,15 +167,6 @@ abbrev Civilization := Society
 
 /- --- Fundamental Primitive Inclusion Theorems --- -/
 
-theorem entity_is_thing (e : Entity) : (e : Thing).id = e.id := rfl
-theorem interaction_is_thing (i : Interaction) : (i : Thing).id = i.id := rfl
-theorem outcome_is_thing (o : Outcome) : (o : Thing).id = o.id := rfl
-theorem action_is_thing (a : Action) : (a : Thing).id = a.id := rfl
-theorem decision_is_thing (d : Decision) : (d : Thing).id = d.id := rfl
-theorem society_is_entity (so : Society) : (so : Entity).id = so.id := rfl
-theorem society_is_thing (so : Society) : (so : Thing).id = so.id := rfl
-theorem input_is_thing (inp : Input) : (inp : Thing).id = inp.id := rfl
-theorem output_is_thing (ou : Output) : (ou : Thing).id = ou.id := rfl
 
 /-- 
   Intent (In ∈ T):
@@ -235,10 +226,6 @@ structure Impact extends Thing where
 instance : Coe Impact Thing where
   coe imp := imp.toThing
 
-theorem intent_is_thing (in_ : Intent) : (in_ : Thing).id = in_.id := rfl
-theorem power_is_thing (po : Power) : (po : Thing).id = po.id := rfl
-theorem influence_is_thing (inf : Influence) : (inf : Thing).id = inf.id := rfl
-theorem impact_is_thing (imp : Impact) : (imp : Thing).id = imp.id := rfl
 
 /-- 
   Good vs Bad Influence Classification (Article Nuance: Influence.txt L7):
@@ -312,7 +299,6 @@ structure ForkOperation extends Thing where
 instance : Coe ForkOperation Thing where
   coe op := op.toThing
 
-theorem fork_operation_is_thing (op : ForkOperation) : (op : Thing).id = op.id := rfl
 
 /-- THEOREM: Zero Initial Novelty Invariant for Cognitive Forks. -/
 theorem fork_initial_novelty_is_zero (op : ForkOperation) :
@@ -345,7 +331,6 @@ structure MergeOperation extends Thing where
 instance : Coe MergeOperation Thing where
   coe mop := mop.toThing
 
-theorem merge_operation_is_thing (mop : MergeOperation) : (mop : Thing).id = mop.id := rfl
 
 /-- THEOREM: Conservation of Reputation under Identity Merging. -/
 theorem merge_conserves_reputation (mop : MergeOperation) :
@@ -375,7 +360,6 @@ structure ExternalHarmResponse extends Thing where
 instance : Coe ExternalHarmResponse Thing where
   coe ehr := ehr.toThing
 
-theorem external_harm_response_is_thing (ehr : ExternalHarmResponse) : (ehr : Thing).id = ehr.id := rfl
 
 def ExternalHarmResponse.mkSimple (id : String) (incoming response forgiveness : Int) : ExternalHarmResponse :=
   { toThing := Thing.mkSimple id s!"ehr_{id}" "external_defense_substrate" 0,

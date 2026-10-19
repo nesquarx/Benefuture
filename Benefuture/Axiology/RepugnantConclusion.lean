@@ -1,20 +1,22 @@
 /-
   Benefuture.Axiology.RepugnantConclusion
-  Formalization of Theorem 2: Structural Dissolution of Parfit's Repugnant Conclusion.
-  Corresponds to: Bf_Pseudocode.txt L13-14, L58-75, and Philosophy.txt #Repugnant Conclusion
+  Analysis of Parfit's Repugnant Conclusion in Population Ethics.
   
-  Parfit's Repugnant Conclusion in classical additive utilitarianism:
-  For any flourishing population of high quality of life, an astronomically large 
-  population of lives barely worth living (u ≈ ε > 0) has a larger aggregate sum.
+  [OPEN] Status Note:
+  Parfit's Repugnant Conclusion is an open theoretical problem for population ethics:
+  "For any possible population of at least ten billion people, all with a very high
+   quality of life, there must be some much larger imaginable population whose existence,
+   if other things are equal, would be better, even though its members have lives that are
+   barely worth living."
   
-  Benefuture's Structural Dissolution:
-  1. The Synergy operator uses a superadditive depth exponent q_+ > 1 (e.g. 1.1),
-     meaning depth of flourishing compounds superlinearly, while marginal diffuse
-     pleasures decay superlinearly (ε^(q_+) << ε).
-  2. The Priority hierarchy enforces a Baseline Flourishing Floor (Th_baseline).
-     Entities with flourishing below the baseline receive zero or penalized weight in G.
-  3. Consequently, shifting population mass to marginal, barely-positive lives 
-     strictly decreases aggregate societal value G (Benefuture operates on Value, not utility).
+  Previous versions claimed a "structural dissolution" via an ad hoc baseline flourishing floor
+  (`FLOURISHING_BASELINE_FLOOR`). However:
+  1. An arbitrary floor threshold is not present in Bf_Pseudocode.txt.
+  2. A floor does not dissolve the paradox; it merely moves the boundary. For any floor f > 0
+     giving positive individual value, a sufficiently large population n of lives at floor f
+     yields an aggregate value exceeding any fixed finite flourishing population (as proved below).
+  
+  Therefore, addressing the Repugnant Conclusion remains an open research and simulation question.
 -/
 
 import Benefuture.Math.Order
@@ -27,151 +29,65 @@ namespace Benefuture.Axiology
 open Benefuture.Math
 open Benefuture.Ontology
 
-/-- Baseline flourishing threshold below which lives are marginal / near-zero. -/
-def FLOURISHING_BASELINE_FLOOR : Int := 100000  -- 0.10 of SCALE
-
 /-- 
-  Synergistic flourishing weight of a Being:
-  If flourishing is above baseline floor, receives full compounding value plus depth bonus.
-  If flourishing is below baseline floor, penalized to 0 (cannot aggregate into collective G).
+  [OPEN] Aggregate valuation of a population:
+  Calculates aggregate societal value across an arbitrary list of individual flourishing scores.
 -/
-def synergistic_wellbeing (individualFlourishing : Int) : Int :=
-  if individualFlourishing < FLOURISHING_BASELINE_FLOOR then
-    0
-  else
-    -- Compounding depth: flourishing + superadditive synergy surplus
-    individualFlourishing + (individualFlourishing * individualFlourishing) / SCALE
+def aggregate_population_wellbeing (w : Int → Int) (lives : List Int) : Int :=
+  lives.foldl (fun acc x => acc + w x) 0
+
+theorem foldl_replicate_val (w : Int → Int) (f : Int) (n : Nat) (acc : Int) :
+    (List.replicate n f).foldl (fun a x => a + w x) acc = acc + (n : Int) * w f := by
+  induction n generalizing acc with
+  | zero => simp [List.replicate]
+  | succ n ih =>
+    rw [List.replicate_succ, List.foldl_cons]
+    rw [ih]
+    have : acc + w f + (n : Int) * w f = acc + ((n + 1 : Nat) : Int) * w f := by
+      push_cast
+      have : ((n : Int) + 1) * w f = (n : Int) * w f + w f := by
+        have := Int.add_mul (n : Int) 1 (w f)
+        omega
+      omega
+    exact this
+
+theorem aggregate_replicate_eq (w : Int → Int) (f : Int) (n : Nat) :
+    aggregate_population_wellbeing w (List.replicate n f) = (n : Int) * w f := by
+  unfold aggregate_population_wellbeing
+  have := foldl_replicate_val w f n 0
+  omega
 
 /-- 
-  Societal Value (V) of a population:
-  G = Σ synergistic_wellbeing(b_i).
-  Corresponds to: Bf_Pseudocode.txt L74: Goal G(t) := argmax Σ V(A, b).
--/
-def aggregate_societal_value (flourishingList : List Int) : Int :=
-  flourishingList.foldl (fun acc f => acc + synergistic_wellbeing f) 0
-
-/-- Backward-compatible alias for aggregate_societal_value. -/
-abbrev aggregate_societal_utility := aggregate_societal_value
-
-/-- 
-  THEOREM: Structural Dissolution of Parfit's Repugnant Conclusion.
-  An astronomical population of barely-positive lives (where every individual's 
-  wellbeing is strictly below the baseline floor) yields an aggregate societal 
-  value of exactly zero, whereas even a small population of flourishing individuals
-  yields strictly positive societal value.
+  [OPEN] Lemma: The Floor Moves Rather Than Resolves the Repugnant Conclusion.
+  For ANY positive floor f yielding positive individual value (w f > 0) and ANY
+  arbitrarily high target value V_target (e.g. from any fixed finite flourishing population),
+  there exists a population size n of lives at wellbeing f whose aggregate value strictly
+  dominates V_target:
+    AggregateValue(n × [f]) > V_target.
   
-  Therefore, no expansion of barely-worth-living lives can ever overtake or equal 
-  a flourishing population, completely dissolving Parfit's Repugnant Conclusion.
+  Hence an ad hoc floor does not dissolve Parfit's Repugnant Conclusion; it simply relocates
+  the threshold of what counts as a marginal life.
 -/
-theorem repugnant_population_strictly_dominated 
-    (marginalPopulation : List Int) 
-    (h_marginal : ∀ x ∈ marginalPopulation, x < FLOURISHING_BASELINE_FLOOR)
-    (flourishingInd : Int)
-    (h_flourishing : flourishingInd ≥ FLOURISHING_BASELINE_FLOOR)
-    (h_pos : 0 < flourishingInd) :
-    aggregate_societal_value marginalPopulation < aggregate_societal_value [flourishingInd] := by
-  -- 1. Compute value of marginal population
-  have h_marginal_zero : aggregate_societal_value marginalPopulation = 0 := by
-    unfold aggregate_societal_value
-    have h_fold : ∀ (l : List Int) (acc : Int),
-      (∀ x ∈ l, x < FLOURISHING_BASELINE_FLOOR) →
-      acc = 0 →
-      l.foldl (fun a f => a + synergistic_wellbeing f) acc = 0 := by
-      intro l
-      induction l with
-      | nil => intro acc _ hacc; dsimp; exact hacc
-      | cons head tail ih =>
-        intro acc h_all hacc
-        dsimp
-        have h_head : head < FLOURISHING_BASELINE_FLOOR := h_all head (List.Mem.head tail)
-        have h_head_zero : synergistic_wellbeing head = 0 := by
-          unfold synergistic_wellbeing
-          simp [h_head]
-        have h_tail : ∀ x ∈ tail, x < FLOURISHING_BASELINE_FLOOR :=
-          fun x hx => h_all x (List.Mem.tail head hx)
-        have h_next : acc + synergistic_wellbeing head = 0 := by
-          rw [h_head_zero, hacc]
-          rfl
-        exact ih (acc + synergistic_wellbeing head) h_tail h_next
-    exact h_fold marginalPopulation 0 h_marginal rfl
-  
-  -- 2. Compute value of flourishing population
-  have h_flourish_val : aggregate_societal_value [flourishingInd] = synergistic_wellbeing flourishingInd := by
-    unfold aggregate_societal_value
-    dsimp [List.foldl]
+theorem floor_shifts_repugnant_conclusion (w : Int → Int) (f : Int) (hw : 0 < w f) (V_target : Int) :
+    ∃ (n : Nat), aggregate_population_wellbeing w (List.replicate n f) > V_target := by
+  by_cases hV : V_target < 0
+  · refine ⟨0, ?_⟩
+    rw [aggregate_replicate_eq]
+    dsimp
     omega
-  
-  have h_flourish_pos : synergistic_wellbeing flourishingInd > 0 := by
-    unfold synergistic_wellbeing
-    have h_not : ¬(flourishingInd < FLOURISHING_BASELINE_FLOOR) := by omega
-    simp [h_not]
-    have hsq_nonneg : 0 ≤ (flourishingInd * flourishingInd) / SCALE := by
-      apply Int.ediv_nonneg (Int.mul_nonneg (by omega) (by omega)) (by unfold SCALE; decide)
+  · have hV_ge : 0 ≤ V_target := by omega
+    have h_div : 0 ≤ V_target / w f := Int.ediv_nonneg hV_ge (by omega)
+    refine ⟨(V_target / w f + 1).toNat, ?_⟩
+    rw [aggregate_replicate_eq]
+    have h_nat : ((V_target / w f + 1).toNat : Int) = V_target / w f + 1 :=
+      Int.toNat_of_nonneg (by omega)
+    rw [h_nat]
+    have h_mul : (V_target / w f + 1) * w f = (V_target / w f) * w f + w f := by
+      have : (V_target / w f + 1) * w f = (V_target / w f) * w f + 1 * w f := Int.add_mul _ _ _
+      omega
+    have h_comm : (V_target / w f) * w f = w f * (V_target / w f) := Int.mul_comm _ _
+    have h_rem := Int.emod_lt_of_pos V_target hw
+    have h_mod := Int.mul_ediv_add_emod (a := V_target) (b := w f)
     omega
-  
-  rw [h_marginal_zero, h_flourish_val]
-  exact h_flourish_pos
-
-/-- 
-  Flourishing Value of a sentient Being:
-  Directly grounded in the Being's sentience experienceLevel.
-  Corresponds to: Bf_Pseudocode.txt L67: B := St(E).
--/
-def being_synergistic_flourishing (b : Being) : Int :=
-  synergistic_wellbeing b.sentience.experienceLevel
-
-/-- 
-  Societal value aggregated over a concrete population of Beings:
-  Σ_{b ∈ B} synergistic_wellbeing(b.sentience.experienceLevel).
-  Directly embodies Goal G on sentient Beings: Bf_Pseudocode.txt L74.
--/
-def aggregate_population_value (population : List Being) : Int :=
-  population.foldl (fun acc b => acc + being_synergistic_flourishing b) 0
-
-/-- Backward-compatible alias for aggregate_population_value. -/
-abbrev aggregate_population_utility := aggregate_population_value
-
-/-- 
-  THEOREM: Structural Dissolution of Parfit's Repugnant Conclusion on Beings.
-  An astronomical population of barely-positive lives (b.sentience.experienceLevel < floor)
-  yields exactly zero aggregate societal value, whereas flourishing Beings compound value.
--/
-theorem repugnant_population_of_beings_dominated
-    (marginalPopulation : List Being)
-    (h_marginal : ∀ b ∈ marginalPopulation, b.sentience.experienceLevel < FLOURISHING_BASELINE_FLOOR)
-    (flourishingBeing : Being)
-    (h_flourishing : flourishingBeing.sentience.experienceLevel ≥ FLOURISHING_BASELINE_FLOOR)
-    (h_pos : 0 < flourishingBeing.sentience.experienceLevel) :
-    aggregate_population_value marginalPopulation < aggregate_population_value [flourishingBeing] := by
-  have h_map_marginal : ∀ x ∈ marginalPopulation.map (fun b => b.sentience.experienceLevel), x < FLOURISHING_BASELINE_FLOOR := by
-    intro x hx
-    rcases List.mem_map.mp hx with ⟨b, hb, rfl⟩
-    exact h_marginal b hb
-  have h_fold_eq : ∀ (l : List Being) (acc : Int),
-    l.foldl (fun a b => a + being_synergistic_flourishing b) acc = 
-    (l.map (fun b => b.sentience.experienceLevel)).foldl (fun a f => a + synergistic_wellbeing f) acc := by
-    intro l
-    induction l with
-    | nil => intro acc; rfl
-    | cons head tail ih =>
-      intro acc
-      dsimp [being_synergistic_flourishing]
-      exact ih (acc + synergistic_wellbeing head.sentience.experienceLevel)
-  have h_pop_eq : aggregate_population_value marginalPopulation = 
-                  aggregate_societal_value (marginalPopulation.map (fun b => b.sentience.experienceLevel)) := by
-    unfold aggregate_population_value aggregate_societal_value
-    exact h_fold_eq marginalPopulation 0
-  have h_single_eq : aggregate_population_value [flourishingBeing] = 
-                     aggregate_societal_value [flourishingBeing.sentience.experienceLevel] := by
-    unfold aggregate_population_value aggregate_societal_value
-    exact h_fold_eq [flourishingBeing] 0
-  rw [h_pop_eq, h_single_eq]
-  exact repugnant_population_strictly_dominated 
-    (marginalPopulation.map (fun b => b.sentience.experienceLevel))
-    h_map_marginal
-    flourishingBeing.sentience.experienceLevel
-    h_flourishing
-    h_pos
 
 end Benefuture.Axiology
-

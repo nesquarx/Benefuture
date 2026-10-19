@@ -41,8 +41,6 @@ structure IdentityBinding extends Thing where
 instance : Coe IdentityBinding Thing where
   coe b := b.toThing
 
-/-- Theorem: IdentityBinding is a Thing in Reality. -/
-theorem identity_binding_is_thing (b : IdentityBinding) : (b : Thing).id = b.id := rfl
 
 /-- Predicate: Valid identity binding meets the cross-cluster significance threshold. -/
 def is_valid_identity (b : IdentityBinding) : Bool :=
@@ -117,7 +115,6 @@ structure DifferentialPrivacyBudget extends Thing where
 instance : Coe DifferentialPrivacyBudget Thing where
   coe dp := dp.toThing
 
-theorem differential_privacy_budget_is_thing (dp : DifferentialPrivacyBudget) : (dp : Thing).id = dp.id := rfl
 
 def DifferentialPrivacyBudget.mkSimple (id : String) (maxQ curQ : Nat) (eps : Int) (h_pos : eps > 0) : DifferentialPrivacyBudget :=
   { toThing := Thing.mkSimple id s!"dp_{id}" "privacy_substrate" 0,
@@ -237,7 +234,6 @@ structure SocialNetwork extends Thing where
 instance : Coe SocialNetwork Thing where
   coe sn := sn.toThing
 
-theorem social_network_is_thing (sn : SocialNetwork) : (sn : Thing).id = sn.id := rfl
 
 abbrev SN := SocialNetwork
 abbrev TN := IdentityBinding

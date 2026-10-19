@@ -28,7 +28,6 @@ structure InteractionConsequence extends Thing where
 instance : Coe InteractionConsequence Thing where
   coe c := c.toThing
 
-theorem interaction_consequence_is_thing (c : InteractionConsequence) : (c : Thing).id = c.id := rfl
 
 def InteractionConsequence.mkSimple (id : String) (act : Being) (target : String) (lnk : InterdependenceLink) 
     (h_self : lnk ∈ act.extendedSelf) (h_tgt : lnk.targetId = target) : InteractionConsequence :=
@@ -74,16 +73,7 @@ theorem no_one_shot_harmful_games (conseq : InteractionConsequence) (damage : In
 def one_shot_game_universe_pattern (id : String) : UniversePattern :=
   { patternId := id, isPerceivable := false, isChangeable := false }
 
-/-- 
-  THEOREM: One-Shot Games Belong to (𝕌 − ℝ).
-  Any alleged one-shot defection game lacks physical causal feedback in Reality,
-  meaning it exists strictly as a theoretical fiction outside Reality (1shotGame ⊆ 𝕌 − ℝ).
-  Corresponds to: Bf_Pseudocode.txt L136 ("1shotGame ⊆ 𝕌 − ℝ").
--/
-theorem one_shot_games_exist_only_outside_reality (id : String) :
-    is_outside_reality (one_shot_game_universe_pattern id) = true := by
-  unfold is_outside_reality one_shot_game_universe_pattern
-  rfl
+
 
 /- =========================================================================
    INTERNAL MEMORY FEEDBACK: Memory(Sl) ⊆ O(Sl)

@@ -43,8 +43,6 @@ structure Threshold extends Thing where
 instance : Coe Threshold Thing where
   coe th := th.toThing
 
-/-- Theorem: Threshold inclusion Th ∈ T holds by construction. -/
-theorem threshold_is_thing (th : Threshold) : (th : Thing).id = th.id := rfl
 
 /-- 
   Binary significance predicate:

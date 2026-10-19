@@ -41,7 +41,6 @@ structure ClosedLoopTrace where
   metricModel        : MetricModel
   currency           : Currency
   txTreeNode         : TxTreeNode
-  deriving Repr
 
 /-- 
   Consistency Invariants:

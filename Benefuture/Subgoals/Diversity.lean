@@ -30,7 +30,6 @@ structure Culture extends Thing where
 instance : Coe Culture Thing where
   coe cu := cu.toThing
 
-theorem culture_is_thing (cu : Culture) : (cu : Thing).id = cu.id := rfl
 
 def Culture.mkSimple (id name : String) : Culture :=
   { toThing := Thing.mkSimple id s!"culture_{name}" "memetic_substrate" 0,
@@ -52,7 +51,6 @@ structure DiversityBalance extends Thing where
 instance : Coe DiversityBalance Thing where
   coe db := db.toThing
 
-theorem diversity_balance_is_thing (db : DiversityBalance) : (db : Thing).id = db.id := rfl
 
 def DiversityBalance.mkSimple (id : String) (order chaos : Int) (h_s : order + chaos = SCALE) (ho : 0 < order) (hc : 0 < chaos) : DiversityBalance :=
   { toThing := Thing.mkSimple id s!"diversity_{id}" "diversity_substrate" 0,

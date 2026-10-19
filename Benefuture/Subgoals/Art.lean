@@ -22,8 +22,6 @@ structure Artwork extends Thing where
 instance : Coe Artwork Thing where
   coe a := a.toThing
 
-/-- Theorem: Artwork inclusion in Thing holds by construction. -/
-theorem artwork_is_thing (a : Artwork) : (a : Thing).id = a.id := rfl
 
 /-- 
   Artistic Transmission (extends Thing):
@@ -41,7 +39,6 @@ structure ArtExperience extends Thing where
 instance : Coe ArtExperience Thing where
   coe exp := exp.toThing
 
-theorem art_experience_is_thing (exp : ArtExperience) : (exp : Thing).id = exp.id := rfl
 
 def ArtExperience.mkSimple (id : String) (art : Artwork) (aud : Being) (aff u nov : Int) : ArtExperience :=
   { toThing := Thing.mkSimple id s!"art_exp_{id}" "aesthetic_cognitive_substrate" 0,

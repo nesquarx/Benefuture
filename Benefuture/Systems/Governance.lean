@@ -34,7 +34,6 @@ structure LiquidDelegationVote extends Thing where
 instance : Coe LiquidDelegationVote Thing where
   coe v := v.toThing
 
-theorem liquid_delegation_vote_is_thing (v : LiquidDelegationVote) : (v : Thing).id = v.id := rfl
 
 def LiquidDelegationVote.mkSimple 
     (id : String) (delExp dgtExp dgtWt delImp capTh impTh : Int) : LiquidDelegationVote :=
@@ -72,7 +71,6 @@ structure ExternalHarmInteraction extends Thing where
 instance : Coe ExternalHarmInteraction Thing where
   coe ehr := ehr.toThing
 
-theorem external_harm_interaction_is_thing (ehr : ExternalHarmInteraction) : (ehr : Thing).id = ehr.id := rfl
 
 def ExternalHarmInteraction.mkSimple (id : String) (harm rep : Int) (h_pos : 0 < harm) : ExternalHarmInteraction :=
   { toThing := Thing.mkSimple id s!"ehr_{id}" "external_defense" 0,
@@ -130,8 +128,6 @@ instance : Coe Administration Entity where
 instance : Coe Administration Thing where
   coe ad := ad.toEntity.toThing
 
-theorem administration_is_entity (ad : Administration) : (ad : Entity).id = ad.id := rfl
-theorem administration_is_thing (ad : Administration) : (ad : Thing).id = ad.id := rfl
 
 /-- 
   Government (Gv ∈ T):
@@ -147,7 +143,6 @@ structure Government extends Thing where
 instance : Coe Government Thing where
   coe gv := gv.toThing
 
-theorem government_is_thing (gv : Government) : (gv : Thing).id = gv.id := rfl
 
 /-- 
   Sophont Oversight (SO ∈ T):
@@ -166,7 +161,6 @@ structure SophontOversight extends Thing where
 instance : Coe SophontOversight Thing where
   coe so := so.toThing
 
-theorem sophont_oversight_is_thing (so : SophontOversight) : (so : Thing).id = so.id := rfl
 
 /-- Predicate: Oversight intervention is legally authorized if overseer reputation meets the threshold. -/
 def is_oversight_authorized (so : SophontOversight) : Bool :=

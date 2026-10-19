@@ -111,7 +111,6 @@ structure RealitySubstrate extends Thing where
 instance : Coe RealitySubstrate Thing where
   coe s := s.toThing
 
-theorem reality_substrate_is_thing (s : RealitySubstrate) : (s : Thing).id = s.id := rfl
 
 def RealitySubstrate.mkSimple (id : String) (tp : RealityTouchpoint) : RealitySubstrate :=
   { toThing := Thing.mkSimple id s!"substrate_{id}" "reality_substrate" 0,
@@ -140,7 +139,6 @@ structure SimulatedThing extends Thing where
 instance : Coe SimulatedThing Thing where
   coe st := st.toThing
 
-theorem simulated_thing_is_thing (st : SimulatedThing) : (st : Thing).id = st.id := rfl
 
 def SimulatedThing.mkSimple (id : String) (sub : RealitySubstrate) (scope : SimulationScope) (agency : Bool := true) : SimulatedThing :=
   { toThing := Thing.mkSimple id s!"sim_{id}" "simulation" 0,
@@ -216,7 +214,6 @@ structure LongTermHorizon extends Thing where
 instance : Coe LongTermHorizon Thing where
   coe lt := lt.toThing
 
-theorem longterm_horizon_is_thing (lt : LongTermHorizon) : (lt : Thing).id = lt.id := rfl
 
 def LongTermHorizon.mkSimple (id : String) (t_past t_future : Int)
     (h_past : t_past < 0 := by decide) (h_fut : 0 < t_future := by decide) : LongTermHorizon :=

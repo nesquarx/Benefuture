@@ -46,8 +46,6 @@ structure EnforcementAction extends Thing where
 instance : Coe EnforcementAction Thing where
   coe ea := ea.toThing
 
-/-- Theorem: EnforcementAction inclusion in Thing holds by construction. -/
-theorem enforcement_action_is_thing (ea : EnforcementAction) : (ea : Thing).id = ea.id := rfl
 
 /-- 
   Rule: Forcible restraint is impermissible without explicit anti-corruption audit.

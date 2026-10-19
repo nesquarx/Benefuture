@@ -53,7 +53,6 @@ structure EHRState extends Thing where
 instance : Coe EHRState Thing where
   coe s := s.toThing
 
-theorem ehr_state_is_thing (s : EHRState) : (s : Thing).id = s.id := rfl
 
 def EHRState.mkSimple (id : String) (harm : Int) (mode : EHRMode := .MonitoringNormal) : EHRState :=
   { toThing := Thing.mkSimple id s!"ehr_state_{id}" "antifragility_monitor" 0,
@@ -216,31 +215,6 @@ def progressive_selector (cx : Context) (th_degrade : Int) : ProgressiveStrategy
   else
     .GranularAuctionOpt
 
-/-- 
-  Guaranteed Core Goal Value yield under strategy execution in Context:
-  Even under zero telemetry (RobustRuleFallback), the system delivers 
-  a guaranteed baseline positive yield (BaselineCore = 1000).
-  Under granular optimization, it delivers enhanced yield.
--/
-def progressive_goal_yield (cx : Context) (th_degrade : Int) : Int :=
-  match progressive_selector cx th_degrade with
-  | .RobustRuleFallback => 1000
-  | .GranularAuctionOpt => 1000 + (cx.telemetryResolution / 1000)
-
-/-- 
-  THEOREM: Progressive Antifragility Theorem (Prog).
-  Across ALL possible operational contexts (from total blackout up to full AI telemetry),
-  progressive strategy selection guarantees a strictly positive core goal yield:
-  ProgressiveGoalYield(Cx) ≥ BaselineCore > 0.
--/
-theorem progressive_preserves_core_goal_under_all_contexts (cx : Context) (th : Int) :
-    progressive_goal_yield cx th ≥ 1000 := by
-  unfold progressive_goal_yield progressive_selector
-  split
-  · omega
-  · have h_pos := cx.h_telemetry_nonneg
-    omega
-
 /- =========================================================================
    AXIOM 5: Significant Threshold Governance (SigThGv)
    "SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ ∈ Fr));"
@@ -274,7 +248,6 @@ structure ParadigmState extends Thing where
 instance : Coe ParadigmState Thing where
   coe ps := ps.toThing
 
-theorem paradigm_state_is_thing (ps : ParadigmState) : (ps : Thing).id = ps.id := rfl
 
 def ParadigmState.mkSimple (id : String) (spread : Int) (isBf : Bool := false) : ParadigmState :=
   { toThing := Thing.mkSimple id s!"paradigm_{id}" "epistemic_paradigm_substrate" 0,
@@ -319,16 +292,23 @@ def effort_bad (baseEffort restorativeFriction auditBurden : Int) : Int :=
   baseEffort + restorativeFriction + auditBurden
 
 /-- 
-  THEOREM: Anti-Corruption Effort Inversion Theorem (AC).
-  Under automated restorative friction (> 0) and non-negative audit burden,
-  acting aligned with Good is strictly easier (requires strictly less effort)
-  than executing corrupt or harmful actions: Effort(Good) < Effort(Bad).
+  [P] Design requirement: Anti-Corruption Choice Architecture.
+  Restorative debit friction must be strictly positive (`ac_friction_pos_assumption : 0 < restorativeFriction`)
+  and audit burden non-negative for Good to be strictly easier than Bad: Effort(Good) < Effort(Bad).
+  Corresponds to: Bf_Pseudocode.txt L156 (§Af_Axioms: AntiCorruption).
 -/
-theorem good_strictly_easier_than_bad (baseEffort restorativeFriction auditBurden : Int)
-    (h_fric_pos : 0 < restorativeFriction)
-    (h_audit_nonneg : 0 ≤ auditBurden) :
-    effort_good baseEffort < effort_bad baseEffort restorativeFriction auditBurden := by
+structure AntiCorruptionDesignRequirement where
+  restorativeFriction : Int
+  auditBurden : Int
+  ac_friction_pos_assumption : 0 < restorativeFriction
+  audit_nonneg_assumption : 0 ≤ auditBurden := by decide
+
+/-- Under the AntiCorruptionDesignRequirement, acting aligned with Good requires strictly less effort than Bad. -/
+theorem good_strictly_easier_than_bad (baseEffort : Int) (req : AntiCorruptionDesignRequirement) :
+    effort_good baseEffort < effort_bad baseEffort req.restorativeFriction req.auditBurden := by
   unfold effort_good effort_bad
+  have h1 := req.ac_friction_pos_assumption
+  have h2 := req.audit_nonneg_assumption
   omega
 
 /- =========================================================================
@@ -398,96 +378,5 @@ theorem trust_bounded_in_open_interval (tt_reality unmitigated : Nat) (n : Nat)
     exact h_pos
   · omega
 
-/-- 
-  Civilizational Concern Evaluation (Concerns«Cn»):
-  Corresponds to: Bf_Pseudocode.txt L181 & Critique addressal.txt:
-  "Concerns«Cn»(Bf) : Eval(Weigh(Cn(Bf), BaseRisk(Sys_ℝ)))"
-  Evaluates concerns regarding systemic complexity, opacity, and boom-bust cycles
-  against the unmitigated baseline risk of legacy socioeconomic systems.
--/
-structure CivilizationalConcern extends Thing where
-  concernDescription   : String
-  legacyBaselineRisk   : Int  -- Unmitigated risk of opacity, financialization, and boom-bust
-  benefutureMitigation : Int  -- Risk reduction achieved through Af axioms, BTS, and MM
-  deriving Repr
-
-instance : Coe CivilizationalConcern Thing where
-  coe cn := cn.toThing
-
-theorem civilizational_concern_is_thing (cn : CivilizationalConcern) : (cn : Thing).id = cn.id := rfl
-
-/-- 
-  Concrete Systemic Defense Parameters:
-  Risk mitigation is mathematically derived from the three operational pillars:
-  1. BTS telemetry tracking coverage percentage (0..100)
-  2. Metric Model anti-circularity verification fidelity percentage (0..100)
-  3. Distributed adversarial audit clusters (count)
--/
-structure BenefutureSystemMitigation where
-  btsCoveragePercent   : Nat
-  mmFidelityPercent    : Nat
-  adversarialClusters  : Nat
-  deriving Repr, DecidableEq
-
-/-- 
-  Calculates systemic risk mitigation score from institutional verification depth:
-  Full telemetry (100) + high fidelity MM (100) + ≥3 audit clusters guarantees mitigation ≥ 1000,
-  dominating legacy opacity baselines.
--/
-def calculate_systemic_mitigation (sm : BenefutureSystemMitigation) : Int :=
-  (sm.btsCoveragePercent * 4 + sm.mmFidelityPercent * 4 + sm.adversarialClusters * 100 : Nat)
-
-/-- Operational readiness standard: Verified deployment configuration. -/
-def standard_operational_mitigation : BenefutureSystemMitigation :=
-  { btsCoveragePercent := 90,
-    mmFidelityPercent := 95,
-    adversarialClusters := 5 }
-
-def CivilizationalConcern.mkSimple (id : String) (desc : String) (baselineRisk : Int) 
-    (sm : BenefutureSystemMitigation := standard_operational_mitigation) : CivilizationalConcern :=
-  { toThing := Thing.mkSimple id s!"concern_{id}" "institutional_critique" 0,
-    concernDescription := desc,
-    legacyBaselineRisk := baselineRisk,
-    benefutureMitigation := calculate_systemic_mitigation sm }
-
-/-- Residual risk under Benefuture after institutional mitigations. -/
-def residual_risk (cn : CivilizationalConcern) : Int :=
-  if cn.benefutureMitigation ≥ cn.legacyBaselineRisk then 0
-  else cn.legacyBaselineRisk - cn.benefutureMitigation
-
-/-- THEOREM: Benefuture Mitigations Strictly Suppress Legacy Systemic Risk. -/
-theorem benefuture_suppresses_legacy_risk (cn : CivilizationalConcern) 
-    (h_mitig : cn.benefutureMitigation ≥ cn.legacyBaselineRisk) :
-    residual_risk cn = 0 := by
-  unfold residual_risk
-  simp [h_mitig]
-
-/-- 
-  THEOREM: Benefuture Mitigations Strictly Suppress Legacy Systemic Risk from Grounded Parameters.
-  For any standard Benefuture deployment (where BTS coverage ≥ 80%, MM fidelity ≥ 80%,
-  and at least 3 adversarial clusters audit the system), the derived systemic mitigation
-  strictly exceeds legacy opacity risks up to 900 points, guaranteeing zero residual risk!
--/
-theorem standard_benefuture_deployment_eliminates_legacy_risk 
-    (sm : BenefutureSystemMitigation)
-    (h_bts : sm.btsCoveragePercent ≥ 80)
-    (h_mm : sm.mmFidelityPercent ≥ 80)
-    (h_adv : sm.adversarialClusters ≥ 3)
-    (legacyRisk : Int)
-    (h_legacy_bound : legacyRisk ≤ 900) :
-    let mitig := calculate_systemic_mitigation sm
-    let cn : CivilizationalConcern := {
-      toThing := Thing.mkSimple "cn_eval" "eval" "critique" 0,
-      concernDescription := "systemic_comparison",
-      legacyBaselineRisk := legacyRisk,
-      benefutureMitigation := mitig
-    }
-    residual_risk cn = 0 := by
-  dsimp [calculate_systemic_mitigation, residual_risk]
-  have _h_calc : (sm.btsCoveragePercent * 4 + sm.mmFidelityPercent * 4 + sm.adversarialClusters * 100 : Int) ≥ 940 := by
-    omega
-  have h_ge : (sm.btsCoveragePercent * 4 + sm.mmFidelityPercent * 4 + sm.adversarialClusters * 100 : Int) ≥ legacyRisk := by
-    omega
-  simp [h_ge]
-
 end Benefuture.Axioms
+

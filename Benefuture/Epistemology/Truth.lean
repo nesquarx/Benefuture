@@ -33,8 +33,6 @@ structure Statement extends Thing where
 instance : Coe Statement Thing where
   coe s := s.toThing
 
-/-- Theorem: Statement inclusion in Thing holds by construction. -/
-theorem statement_is_thing (s : Statement) : (s : Thing).id = s.id := rfl
 
 /-- Helper constructor for Statements. -/
 def Statement.mkSimple (id content : String) (dom : Domain) : Statement :=
@@ -64,8 +62,6 @@ structure Fact extends Statement where
 instance : Coe Fact Thing where
   coe f := f.toStatement.toThing
 
-/-- Theorem: Fact inclusion in Thing holds by construction. -/
-theorem fact_is_thing (f : Fact) : (f : Thing).id = f.id := rfl
 
 /-- 
   Hypothesis (Hy): A Statement that is Testable and Falsifiable.
@@ -79,8 +75,6 @@ structure Hypothesis extends Statement where
 instance : Coe Hypothesis Thing where
   coe h := h.toStatement.toThing
 
-/-- Theorem: Hypothesis inclusion in Thing holds by construction. -/
-theorem hypothesis_is_thing (h : Hypothesis) : (h : Thing).id = h.id := rfl
 
 /-- 
   Epistemic Context (Cx ∈ T, extends Context):
@@ -99,7 +93,6 @@ instance : Coe EpistemicContext Context where
 instance : Coe EpistemicContext Thing where
   coe ec := ec.toContext.toThing
 
-theorem epistemic_context_is_thing (ec : EpistemicContext) : (ec : Thing).id = ec.id := rfl
 
 def EpistemicContext.mkSimple (id : String) (dom : Domain) (priorU : Int)
     (h_pos : 0 < priorU := by decide) : EpistemicContext :=
@@ -141,7 +134,6 @@ structure CausalExplanation extends Thing where
 instance : Coe CausalExplanation Thing where
   coe ce := ce.toThing
 
-theorem causal_explanation_is_thing (ce : CausalExplanation) : (ce : Thing).id = ce.id := rfl
 
 def CausalExplanation.mkSimple (id : String) (dom : Domain) (rel : List Thing := [])
     (subsumes complements : Bool := true)
@@ -187,7 +179,6 @@ structure PragmaticAssessment extends Thing where
 instance : Coe PragmaticAssessment Thing where
   coe asmt := asmt.toThing
 
-theorem pragmatic_assessment_is_thing (asmt : PragmaticAssessment) : (asmt : Thing).id = asmt.id := rfl
 
 def PragmaticAssessment.mkSimple (id targetId : String) (fit wt ce acc comp : Int) : PragmaticAssessment :=
   { toThing := Thing.mkSimple id s!"asmt_{id}" "pragmatics" 0,
@@ -214,7 +205,6 @@ structure SapienceProfile extends Thing where
 instance : Coe SapienceProfile Thing where
   coe sp := sp.toThing
 
-theorem sapience_profile_is_thing (sp : SapienceProfile) : (sp : Thing).id = sp.id := rfl
 
 def SapienceProfile.mkSimple (id : String) (u pr : Int)
     (h_u : 0 < u := by decide) (h_pr : 0 < pr := by decide) : SapienceProfile :=
@@ -238,7 +228,6 @@ structure Communication extends Interaction where
 instance : Coe Communication Thing where
   coe cm := cm.toInteraction.toThing
 
-theorem communication_is_thing (cm : Communication) : (cm : Thing).id = cm.id := rfl
 
 /-- 
   THEOREMS: Epistemic Dominance and Grounding.

@@ -1,16 +1,20 @@
 /-
   Benefuture.Axiology.Priorities
-  Formalization of the internal tiered synergies for Understanding, Happiness, Novelty, and Harm Weight.
-  Corresponds to: Bf_Pseudocode.txt L57-63, and Benefuture goals.txt (Tradeoff priorities)
-
-  Priorities: {
-    U:     Sy(peak > teachable > meta^x > median > floor > undirected),
-    H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
-    N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
-    Ha_wt: 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0)
-  }
+  Formalization of internal tiered priorities for Understanding (U), Happiness (H),
+  Novelty (N), and Harm Weight (Ha_wt) using Sy over ℝ and ParamSchedule.
+  Corresponds to: Bf_Pseudocode.txt L55, L57-63.
+  
+  "Priorities: {
+     U:     Sy(peak > teachable > meta^x > median > floor > undirected),
+     H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
+     N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
+     Ha_wt: 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0)
+   }"
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Linarith
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 
@@ -18,142 +22,149 @@ namespace Benefuture.Axiology
 
 open Benefuture.Math
 
-/- --- 1. Understanding Priority Tiers --- -/
+/- --- 1. Understanding Priority Tiers (L57) --- -/
 
 /-- 
-  Tiers of Understanding in strict priority order:
+  [R] Tiers of Understanding in strict priority order (L57):
   Peak (breakthroughs) > Teachable (multipliers) > Meta (learning how to learn) >
   Median (population mean) > Floor (universal comprehension) > Undirected (idle)
 -/
 structure UnderstandingTiers where
-  peak         : Int  -- Breakthroughs, paradigm shifts
-  teachable    : Int  -- Communicable knowledge
-  metaLearning : Int  -- Meta-learning capacity
-  median       : Int  -- Population baseline shift
-  floor        : Int  -- Minimal safety floor
-  undirected   : Int  -- Idle / unfocused
-  deriving Repr, DecidableEq
+  peak         : ℝ  -- Breakthroughs, paradigm shifts
+  teachable    : ℝ  -- Communicable knowledge
+  metaLearning : ℝ  -- Meta-learning capacity
+  median       : ℝ  -- Population baseline shift
+  floor        : ℝ  -- Minimal safety floor
+  undirected   : ℝ  -- Idle / unfocused
 
 /-- 
-  Tiered synthesis of Understanding: Sy(peak > teachable > meta > median > floor > undirected).
-  Higher tiers carry strictly larger compounding weights.
+  [R] Tiered synthesis of Understanding: Sy(peak > teachable > meta > median > floor > undirected).
+  Weights are taken strictly from a ParamSchedule, pairing items by priority.
 -/
-def synthesize_understanding (u : UnderstandingTiers) : Int :=
-  -- Weighted sum with diminishing weights across tiers + synergy between peak & teachable
-  let base := (100 * u.peak + 60 * u.teachable + 40 * u.metaLearning + 25 * u.median + 15 * u.floor + 2 * u.undirected) / 100
-  let peak_teachable_bonus := if u.peak > 0 ∧ u.teachable > 0 then (u.peak + u.teachable) / 4 else 0
-  base + peak_teachable_bonus
+noncomputable def synthesize_understanding (u : UnderstandingTiers) (sched : ParamSchedule) (p : GovParams) : ℝ :=
+  let items := zip_priority_weights [u.peak, u.teachable, u.metaLearning, u.median, u.floor, u.undirected] sched
+  net_synergy items p
 
-
-/- --- 2. Happiness Priority Tiers --- -/
+/- --- 2. Happiness Priority Tiers (L58) --- -/
 
 /-- 
-  Tiers of Happiness in strict priority order:
+  [R] Tiers of Happiness in strict priority order (L58):
   Eudaimonic (flourishing) > Shareable (contagious/networked) > Satisficing (contentment) >
   Baseline (Rawlsian quantile floor) > Median (average hedonic) > Peak (maximum hedonic intensity - ranked lowest!)
 -/
 structure HappinessTiers where
-  eudaimonic  : Int  -- Meaning, flourishing, growth
-  shareable   : Int  -- Propagates through community
-  satisficing : Int  -- Sufficient well-being that enables understanding
-  baseline    : Int  -- Raising the worst-off quantile
-  median      : Int  -- Average hedonic tone
-  peak        : Int  -- Raw sensory hedonic intensity (ranked last to prevent wireheading)
-  deriving Repr, DecidableEq
+  eudaimonic  : ℝ  -- Meaning, flourishing, growth
+  shareable   : ℝ  -- Propagates through community
+  satisficing : ℝ  -- Sufficient well-being that enables understanding
+  baseline    : ℝ  -- Raising the worst-off quantile
+  median      : ℝ  -- Average hedonic tone
+  peak        : ℝ  -- Raw sensory hedonic intensity (ranked last to prevent wireheading)
 
 /-- 
-  Tiered synthesis of Happiness: Sy(eudaimonic > shareable > satisficing > baseline > median > peak).
-  Notice: Peak pleasure has the smallest structural weight (5%), preventing wireheading!
+  [R] Tiered synthesis of Happiness: Sy(eudaimonic > shareable > satisficing > baseline > median > peak).
+  Notice: Peak sensory pleasure has the lowest structural priority, preventing wireheading.
 -/
-def synthesize_happiness (h : HappinessTiers) : Int :=
-  let base := (100 * h.eudaimonic + 70 * h.shareable + 45 * h.satisficing + 30 * h.baseline + 15 * h.median + 5 * h.peak) / 100
-  let eudaimonic_shareable_bonus := if h.eudaimonic > 0 ∧ h.shareable > 0 then (h.eudaimonic + h.shareable) / 4 else 0
-  base + eudaimonic_shareable_bonus
+noncomputable def synthesize_happiness (h : HappinessTiers) (sched : ParamSchedule) (p : GovParams) : ℝ :=
+  let items := zip_priority_weights [h.eudaimonic, h.shareable, h.satisficing, h.baseline, h.median, h.peak] sched
+  net_synergy items p
 
-/- --- 3. Novelty Priority Tiers --- -/
+/- --- 3. Novelty Priority Tiers (L59) --- -/
 
 /-- 
-  Tiers of Novelty in strict priority order:
+  [R] Tiers of Novelty in strict priority order (L59):
   Paradigm > Perspective > Chaotic > Incremental > Perilous > Trivial (~0)
 -/
 structure NoveltyTiers where
-  paradigm    : Int  -- Fundamental shifts in model space
-  perspective : Int  -- New points of view
-  chaotic     : Int  -- Exploratory variation
-  incremental : Int  -- Minor improvements
-  perilous    : Int  -- High risk innovation (priced with separate harm penalty)
-  trivial     : Int  -- Superficial variation (weighted near zero)
-  deriving Repr, DecidableEq
+  paradigm    : ℝ  -- Fundamental shifts in model space
+  perspective : ℝ  -- New points of view (PoV)
+  chaotic     : ℝ  -- Exploratory variation
+  incremental : ℝ  -- Minor improvements
+  perilous    : ℝ  -- High risk innovation (priced with separate harm penalty)
+  trivial     : ℝ  -- Superficial variation (weighted near zero)
 
-/-- Tiered synthesis of Novelty. -/
-def synthesize_novelty (n : NoveltyTiers) : Int :=
-  (100 * n.paradigm + 60 * n.perspective + 35 * n.chaotic + 15 * n.incremental + 5 * n.perilous + 1 * n.trivial) / 100
+/-- [R] Tiered synthesis of Novelty: Sy(paradigm > PoV > chaotic > incremental > perilous > trivial). -/
+noncomputable def synthesize_novelty (n : NoveltyTiers) (sched : ParamSchedule) (p : GovParams) : ℝ :=
+  let items := zip_priority_weights [n.paradigm, n.perspective, n.chaotic, n.incremental, n.perilous, n.trivial] sched
+  net_synergy items p
 
-/- --- 4. Convex Harm Weighting (Ha_wt) --- -/
+/- --- 4. Distributional Push (pushDistr, L60) --- -/
+
+/--
+  [OPEN] Distributional Push: pushDistr(median, quantile_spread) ⇄ Sy(...) (L60).
+  Represents distribution-wide optimization prioritizing the raising of the floor and lower quantiles
+  over the unbounded elevation of top percentiles.
+  Marked [OPEN] and unformalized in the core spec; requires detailed population distribution semantics
+  to be modeled and evaluated in simulation.
+-/
+def pushDistr_unformalized_spec_note : String :=
+  "[OPEN] pushDistr requires formal distribution-quantile mechanics deferred to simulation."
+
+/- --- 5. Convex Harm Weighting (Ha_wt, L61) --- -/
 
 /-- 
-  Harm Severity Multiplier Profile:
-  1 + Sy_{1/2, 1.5}(Irreparable > Irreversible > Longterm > Passing > TimeLoss > Necessary)
+  [R] Harm Severity Profile:
+  Evaluated across all tiers:
+  Irreparable > Irreversible > Longterm > Passing > TimeLoss > NHa_Pr > CulturalOffence > NHa_Estd (=0).
 -/
 structure HarmProfile where
-  irreparable     : Int  -- Destruction of life/capacity
-  irreversible    : Int  -- Permanent non-fatal damage
-  longterm        : Int  -- Multi-year impacts
-  passing         : Int  -- Transient harm
-  timeLoss        : Int  -- Opportunity waste
-  nhaPredicted    : Int := 0  -- Predicted necessary harm (NHa_Pr)
-  culturalOffence : Int := 0  -- Subjective cultural offence (Cu_offence ≈ 0)
-  nhaEstablished  : Int := 0  -- Established necessary training/strain (NHa_Estd = 0)
-  deriving Repr, DecidableEq
+  irreparable     : ℝ  -- Destruction of life/capacity
+  irreversible    : ℝ  -- Permanent non-fatal damage
+  longterm        : ℝ  -- Multi-year impacts
+  passing         : ℝ  -- Transient harm
+  timeLoss        : ℝ  -- Opportunity waste
+  nhaPredicted    : ℝ := 0  -- Predicted necessary harm (NHa_Pr)
+  culturalOffence : ℝ := 0  -- Subjective cultural offence (Cu_offence ≈ 0)
+  nhaEstablished  : ℝ := 0  -- Established necessary training/strain (NHa_Estd = 0)
 
 /-- 
-  Computes Ha_wt multiplier in micro-units (SCALE = 1.0x baseline).
-  Severe harm compounding is convex: irreparable harm yields a massive multiplier.
-  Corresponds to: Bf_Pseudocode.txt L61:
-  "Ha_wt: 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0)"
+  [R] Computes Ha_wt multiplier (L61):
+  Ha_wt := 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0).
+  Uses q₊ = 0.5 and q₋ = 1.5 as explicitly mandated by L61.
 -/
-def compute_harm_weight (hp : HarmProfile) : Int :=
-  let base_wt := SCALE  -- 1.0 baseline
-  let severity_sum := 10 * hp.irreparable + 5 * hp.irreversible + 2 * hp.longterm + 
-                      hp.passing + (hp.timeLoss / 2) + (hp.nhaPredicted / 5) + (hp.culturalOffence / 1000)
-  base_wt + severity_sum
+noncomputable def compute_harm_weight (hp : HarmProfile) (sched : ParamSchedule) (p : GovParams) : ℝ :=
+  let items := zip_priority_weights [
+    hp.irreparable,
+    hp.irreversible,
+    hp.longterm,
+    hp.passing,
+    hp.timeLoss,
+    hp.nhaPredicted,
+    hp.culturalOffence,
+    0.0 -- Established necessary harm carries 0 weight (NHa_Estd = 0)
+  ] sched
+  -- Override parameters with L61 mandated powers: q₊ = 0.5, q₋ = 1.5
+  let harm_params : GovParams := {
+    p with
+    q_plus        := 0.5
+    q_minus       := 1.5
+    h_q_plus_pos  := by norm_num
+    h_q_minus_pos := by norm_num
+  }
+  1 + net_synergy items harm_params
+
+/- --- 6. Necessary Harm (NHa, L55) --- -/
 
 /-- 
-  Necessary Harm (NHa):
-  NHa := Ha : Ha → ↑V > Ha.
-  Corresponds to: Bf_Pseudocode.txt L55.
+  [R] Necessary Harm (NHa):
+  NHa := Ha : Ha → ↑V > Ha (L55).
   A transient harm whose downstream consequence generates strictly greater Value.
 -/
 structure NecessaryHarm where
-  rawHarm    : Int
-  valueYield : Int
-  h_positive : rawHarm > 0
-  h_net_gain : valueYield > rawHarm
-  deriving Repr
+  rawHarm    : ℝ
+  valueYield : ℝ
+  h_positive : 0 < rawHarm
+  h_net_gain : rawHarm < valueYield
 
-/-- Net value added by undergoing necessary harm. -/
-def net_necessary_gain (nh : NecessaryHarm) : Int :=
+/-- Net value added by undergoing necessary harm: ↑V - Ha. -/
+def net_necessary_gain (nh : NecessaryHarm) : ℝ :=
   nh.valueYield - nh.rawHarm
 
-/-- Theorem: Necessary harm is mathematically justified by positive net value yield. -/
+/-- Theorem: Necessary harm is justified by positive net value yield. -/
 theorem necessary_harm_produces_net_positive_value (nh : NecessaryHarm) :
-    net_necessary_gain nh > 0 := by
+    0 < net_necessary_gain nh := by
   unfold net_necessary_gain
   have h := nh.h_net_gain
-  omega
-
-/-- 
-  THEOREM: Established Necessary Harm carries exactly Zero Weight Multiplier.
-  Undergoing established growth/training (exercise, medical intervention) incurs no punitive multiplier.
--/
-theorem established_necessary_harm_incurs_zero_weight_penalty (hp : HarmProfile) 
-    (_h_nha : hp.nhaEstablished > 0) 
-    (hp_pure : hp.irreparable = 0 ∧ hp.irreversible = 0 ∧ hp.longterm = 0 ∧ 
-               hp.passing = 0 ∧ hp.timeLoss = 0 ∧ hp.nhaPredicted = 0 ∧ hp.culturalOffence = 0) :
-    compute_harm_weight hp = SCALE := by
-  unfold compute_harm_weight
-  rcases hp_pure with ⟨h1, h2, h3, h4, h5, h6, h7⟩
-  simp [h1, h2, h3, h4, h5, h6, h7]
+  linarith
 
 /-- 
   Comprehensive Assessment Profile:
@@ -164,21 +175,7 @@ structure PrioritizedAssessment where
   h_tiers   : HappinessTiers
   n_tiers   : NoveltyTiers
   harm_prof : HarmProfile
-  deriving Repr
-
-/-- 
-  Theorem: Peak pleasure contributes strictly less than eudaimonic flourishing per unit.
-  This formalizes the structural defense against wireheading at the tier level.
--/
-theorem eudaimonic_dominates_peak_pleasure (v : Int) (hv : v > 0) :
-    let euda_only : HappinessTiers := { eudaimonic := v, shareable := 0, satisficing := 0, baseline := 0, median := 0, peak := 0 }
-    let peak_only : HappinessTiers := { eudaimonic := 0, shareable := 0, satisficing := 0, baseline := 0, median := 0, peak := v }
-    synthesize_happiness euda_only > synthesize_happiness peak_only := by
-  dsimp [synthesize_happiness]
-  omega
 
 abbrev NHa := NecessaryHarm
 
 end Benefuture.Axiology
-
-

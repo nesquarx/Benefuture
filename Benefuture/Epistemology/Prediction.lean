@@ -39,8 +39,6 @@ structure Prediction extends Thing where
 instance : Coe Prediction Thing where
   coe pr := pr.toThing
 
-/-- Theorem: Prediction inclusion holds by construction. -/
-theorem prediction_is_thing (pr : Prediction) : (pr : Thing).id = pr.id := rfl
 
 /-- 
   Proper Scoring Rule (Brier Accuracy) in Reality (ℝ):
@@ -83,8 +81,6 @@ structure Sapience extends Thing where
 instance : Coe Sapience Thing where
   coe sp := sp.toThing
 
-/-- Theorem: Sapience inclusion holds by construction. -/
-theorem sapience_is_thing (sp : Sapience) : (sp : Thing).id = sp.id := rfl
 
 /-- 
   Sapience Index:
