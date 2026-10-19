@@ -8,6 +8,7 @@
 import Benefuture.Economy.Currency
 import Benefuture.Measurement.MetricModel
 import Benefuture.Ontology.Sophont
+import Benefuture.Ontology.Reputation
 
 namespace Benefuture.Governance
 
@@ -161,12 +162,40 @@ def calculate_grounded_voting_weight (gvp : GroundedVoterProfile) (ctx : Decisio
   base_weight + expertise + impact
 
 /-- 
-  THEOREM: Anti-Halo Domain Isolation Theorem.
-  If a voter has immense reputation in Domain A, but has zero reputation in Domain B,
-  their expertise component on a decision in Domain B is strictly zero.
-  Reputation in unrelated domains CANNOT leak across domain boundaries.
+  [R] THEOREM: Anti-Halo Domain Isolation over Decision Profiles.
+  Corresponds to: Bf_Pseudocode.txt L101 ("!halo, !horn, !transfer"), L113 ("VW_expert").
+  If a decision context D has decision profile dp with support on leaves L_D,
+  and a voter has zero relevance across all leaves in L_D, then their expert voting
+  weight on D is strictly zero (assuming baseline f(0) = 0).
+  Reputation in other domains CANNOT leak into decision D, even with complex domain overlap.
 -/
-theorem anti_halo_domain_isolation (vp : GroundedVoterProfile) (domainA domainB : Domain) 
+theorem anti_halo_domain_isolation {leaves : Finset LeafDomain}
+    (dp : DecisionProfile leaves)
+    (relScores : LeafDomain → ReRelevance)
+    (f : ℝ → ℝ)
+    (hf0 : f 0 = 0)
+    (h_zero_relevant : ∀ l ∈ leaves, dp.weights l > 0 → (relScores l).rel = 0) :
+    VW_expert dp relScores f = 0 := by
+  unfold VW_expert
+  have h_terms_zero : ∀ l ∈ leaves, dp.weights l * f (relScores l).rel = 0 := by
+    intro l hl
+    by_cases hw : dp.weights l = 0
+    · rw [hw, zero_mul]
+    · have h_pos : dp.weights l > 0 := lt_of_le_of_ne (dp.h_weights_nonneg l) (Ne.symm hw)
+      have h_rel := h_zero_relevant l hl h_pos
+      rw [h_rel, hf0, mul_zero]
+  have h_sum_zero : leaves.sum (fun l => dp.weights l * f (relScores l).rel) =
+                    leaves.sum (fun _ => 0) := by
+    apply Finset.sum_congr rfl
+    intro l hl
+    exact h_terms_zero l hl
+  rw [h_sum_zero, Finset.sum_const_zero]
+
+/-- 
+  THEOREM: Anti-Halo Domain Isolation on Grounded Voter Profiles.
+  If a voter has reputations only in Domain A, their queried reputation in a distinct Domain B is 0.
+-/
+theorem anti_halo_grounded_isolation (vp : GroundedVoterProfile) (domainA domainB : Domain) 
     (h_distinct : domainA.id ≠ domainB.id)
     (h_only_A : ∀ r ∈ vp.reputations, r.domain.id = domainA.id) :
     get_domain_reputation vp domainB = 0 := by
@@ -217,8 +246,8 @@ theorem scientist_multi_domain_voting_invariants
     get_domain_reputation gvp musicDomain = 0 ∧
     get_domain_reputation gvp foodDomain = 0 := by
   constructor
-  · exact anti_halo_domain_isolation gvp sciDomain musicDomain h_sci_distinct_music h_only_sci_rep
-  · exact anti_halo_domain_isolation gvp sciDomain foodDomain h_sci_distinct_food h_only_sci_rep
+  · exact anti_halo_grounded_isolation gvp sciDomain musicDomain h_sci_distinct_music h_only_sci_rep
+  · exact anti_halo_grounded_isolation gvp sciDomain foodDomain h_sci_distinct_food h_only_sci_rep
 
 /-- 
   Synthesized Reputation Score:
