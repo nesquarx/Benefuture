@@ -1,13 +1,13 @@
 [[Category:Benefuture]] [[Category:Definitions]]
 A domain is a bounded classification pattern of [[Reality]] within which specific types of [[Interaction|interactions]], resources, and [[Outcome|outcomes]] share causal structure. Domains provide jurisdictional scope for [[Measurement|metric models]], [[Benefuture currency|currencies]] and [[Reputation|Reputation,]] enabling specialized prediction while preventing unbounded claims.
 
-A [[Thing]] belongs to multiple domains simultaneously through multiple relationship types (causal, resource, outcome, substrate, regulatory, etc.), each with a weight in [0,1] representing magnitude of belongingness. Weights are classification artifacts derived from the Thing's measured proclivities matching domain patterns, not assigned by authority. Where domains overlap, multiple models compete; where they don't, models defer to specialists.
+A [[Thing]] belongs to multiple domains simultaneously through multiple relationship types (causal, resource, outcome, substrate, regulatory, etc.), each with a weight in [0,1] representing magnitude of belongingness, the weights summing to 1 so that nothing is counted twice. Weights are classification artifacts derived from the Thing's measured proclivities matching domain patterns, not assigned by authority. Where domains overlap, multiple models compete; where they don't, models defer to specialists.
 
 == Aspects ==
 
 * '''Causal Grounding:''' Domains are defined by shared causal mechanisms, not topic labels. Classification emerges from measured pattern-matching against characteristic processes — a factory's domain weights reflect what it actually does, not what it claims to do.
 
-* '''Nested Structure:''' Domains nest from broad categories (Physical, Informational, Social, Wellbeing) through intermediate levels to fine-grained specializations. [[Measurement|Metric models]] operate at appropriate granularity for their predictive scope.
+* '''Nested Structure:''' Domains nest from broad categories (Physical, Informational, Social, Wellbeing) through intermediate levels to fine-grained specializations. Nesting is fuzzy: relations between domains are not declared, they are recorded from the empirical and causal correlations of their members' interactions. [[Measurement|Metric models]] operate at appropriate granularity for their predictive scope.
 
 * '''Weighted Membership:''' A Thing's domain signature comprises all (Domain, RelationshipType, Weight) tuples where weight > 0. Relationship types are extensible as [[Understanding]] deepens. Weights do not decay temporally — they change when the Thing's actual proclivities change.
 
@@ -25,7 +25,7 @@ A [[Thing]] belongs to multiple domains simultaneously through multiple relation
 
 * '''[[Benefuture currency#Causal Distribution|Causal Distribution]]:''' When outcomes span domains, attribution traces causal chains weighted by domain membership. A teacher's contribution to a student's later health improvement flows through Education domain weights to Health domain outcomes.
 
-* '''[[Reputation]]:''' Domain-specific and non-transferable. A [[Sophont]]'s reputation accumulates within domains where they generate [[Benefuture currency|currency]] above baseline. High physics reputation carries no weight in agricultural policy.
+* '''[[Reputation]]:''' Domain-specific and non-transferable. A [[Sophont]]'s reputation accumulates within domains where they generate [[Benefuture currency|currency]] above baseline. High physics reputation carries no weight in agricultural policy. A broader domain includes the reputation of its sub-domains in its calculation, without double counting. A pattern with only one member in [[Reality]] is not a domain but an [[Being#Identity|identity]].
 
 * '''[[Government]]:''' Expertise and issue weighting in voting is strictly domain-specific — no halo effects. A climate scientist's vote on emissions policy is weighted by climate domain reputation; their vote on education policy is not.
 
