@@ -4,6 +4,7 @@ defaultTargets = ["Benefuture", "BenefutureReference", "benefuture"]
 
 [[lean_lib]]
 name = "Benefuture"
+globs = ["Benefuture", "Benefuture.+"]
 
 [[lean_lib]]
 name = "BenefutureReference"
