@@ -131,8 +131,8 @@ theorem pareto_trans {k : ℕ} {p q r : Fin k → ℝ}
   obtain ⟨hle₂, i, hi⟩ := hqr
   exact ⟨fun j => le_trans (hle₂ j) (hle₁ j), i, lt_of_lt_of_le hi (hle₁ i)⟩
 
-/-- [P] Pareto filter: keep only candidates not dominated by another candidate. -/
 open Classical in
+/-- [P] Pareto filter: keep only candidates not dominated by another candidate. -/
 noncomputable def pareto_front {k : ℕ} (ps : List (Fin k → ℝ)) : List (Fin k → ℝ) :=
   ps.filter (fun p => decide (¬ ∃ q ∈ ps, pareto_dominates q p))
 
