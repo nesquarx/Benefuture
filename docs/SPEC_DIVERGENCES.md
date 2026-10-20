@@ -80,7 +80,7 @@ Per the Ground Rules:
   - Under a lexical reading (`LexicalHarmLt`), `no_finite_exchange_rate_lexical` proves $\forall n : \mathbb{N}, (0, n) <_{lex} (1, 0)$ (no quantity of minor harms compensates one catastrophic harm).
 - **Spec Implication**: Left unresolved as an open ethical parameterization choice between utilitarian optimization and deontological thresholds.
 
-### 2.5 Freedom vs Necessary Harm Tension (Fr vs NHa) ([OPEN])
+### 2.5 Freedom vs Necessary Harm Tension (Fr vs NHa) ([OPEN] → resolved in §6.1, [P])
 - **Source**: `Bf_Pseudocode.txt` L55 ($NHa := Ha : Ha \to \uparrow V > Ha$) vs L135 ($Fr := f_{max}(\dots) \mid \neg Ha_{irreversible}$).
 - **Finding**: Theorem `freedom_excludes_irreversible_necessary_harm` constructs an action causing irreversible harm where value yield exceeds harm ($\Delta V > Ha$). It satisfies $NHa$ (value-positive) but is categorically rejected by $Fr$ (deontological non-harm constraint).
 - **Spec Implication**: Fundamental structural tension between global optimization and rights constraints; tagged `[OPEN]`.
@@ -186,3 +186,34 @@ Per the Ground Rules:
 
 
 
+
+---
+
+## 6. Phase 6 Divergences (Population Direction)
+
+### 6.1 Population Axiology by Direction ([R] decisions, [P] formalization)
+- **Source**: `Bf_Pseudocode.txt` L54-55 ($Ha$, $NHa$), L62 (`pushDistr`), L68 ($Bounds_B$), L74 ($G$), L135 ($Fr$), L150 ($Harm\_Intv$).
+- **Decisions ratified by the author**:
+  - Bf ranks actions, not worlds. $V$ is per action; a being-level value is only an expected (speculated) lifetime tally over $Bounds_B$.
+  - Existing beings may only be uplifted; removal via irreparable harm is never an option.
+  - Withholding available uplift is not $Ha$, but is always comparatively worse than providing it under argmax.
+  - `pushDistr` skew is a direction, not a target shape. The skew directions set the exchange rate between max and min.
+  - Net-negative expected tallies never outweigh a smaller positive population.
+  - $\uparrow$min may dip through an $NHa$ gap; priorities resolve which gaps to tunnel through.
+- **Lean Spec Choice** (`Benefuture.Proposed.PopulationDirection`, not imported by core):
+  - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_never_irreparable` proves the chosen action never carries irreparable or irreversible harm.
+  - `progress`, `pushDistr_aligned`, `pareto_dominates` (strict partial order: `pareto_irrefl`, `pareto_trans`), `pareto_front`.
+  - `min_holds_over`: $\uparrow$min holds at the trajectory endpoint, with every dip covered by $NHa$. `tunnel_admissible_but_not_stepwise` proves that a stepwise filter rejects tunnels the trajectory criterion admits, so Pareto filtering must compare trajectories over the prediction horizon (L34).
+  - `expected_tally`; `net_negative_never_outweighs_positive`.
+  - `effective_types` (distinct types); `copies_add_no_diversity`, `new_type_adds_diversity`.
+- **Resolves**: §2.5 ($Fr$ vs $NHa$) as a lexical ordering — $Fr$ filters the action set before $NHa$ can justify a harm, mirroring `eligible_actions` for $\uparrow\mathbb{R}$ (§2.7).
+- **Partially addresses**: §1.1 (Repugnant Conclusion) and the `pushDistr` note in §2.7. `floor_shifts_repugnant_conclusion` remains true, but its premise (ranking worlds by summed value) is not Bf's mechanism under this proposal.
+- **[OPEN]**:
+  - Conflict resolution among Pareto-front actions (proposed: Sy-weighted magnitudes).
+  - Computing skew statistics from populations (`DistrStats` is supplied by MetricModel).
+  - Formal $Harm\_Intv$ closure condition on tunnels.
+  - Whether diversity enters as a population-level term or only through $N$ (PoV, paradigm tiers) in per-action $V$.
+
+### 6.2 Build Coverage of Proposed Modules (SPEC-CHOICE)
+- **Finding**: The `Benefuture` library built only modules reachable from `Benefuture.lean`. `Proposed/` modules are deliberately not imported by core, so they were never compiled in CI.
+- **Fix**: `lakefile.toml` globs `Benefuture.+`, so every module under `Benefuture/` is compiled without core importing `Proposed/`.
