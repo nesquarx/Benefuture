@@ -147,6 +147,14 @@ This repository maintains a two-tier formalization architecture:
   1. Ingest and match the canonical JSON test vectors from `spec/vectors/*.json`.
   2. Implement simulation state transitions conforming to `Step`.
   3. Validate at runtime that simulated trajectories preserve the state invariants proven in `Benefuture.Systems.State`.
+- Vector files and the spec definitions they match:
+  - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
+  - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).
+  - `value.json`: `compute_harm_weight` (κ = ½, q₊ = 1.5) and `value_on_being` (items (x, w₊, w₋), κ = 2) (L61, L73).
+  - `escrow.json`, `reputation.json`, `democracy.json`: escrow split, lazy decay, voting weight and EHR attenuation.
+  - `population.json`: `skew_key`, `population_novelty_hist`, `effective_types`, `pareto_front`, `accumulate_capped` (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Governance.Incentives`).
+- Runtime checks that follow from proved theorems: chosen plans carry no irreparable or irreversible harm and never contract ℝ (`choose_plan_sound`); no delegate exceeds Th_k + max single weight (`accumulate_capped_bound`); summed novelty never exceeds the number of distinct types (`population_novelty_hist_le`).
+- Regenerate vectors with `lake exe benefuture` (Mathlib-free; builds in seconds).
 
 ---
 
