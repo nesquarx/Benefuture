@@ -212,10 +212,11 @@ Per the Ground Rules:
 - **Arbitration note**: `Benefuture goals.txt` speaks of "target distribution shapes"; the author specified "more direction than shape". Reconciled through the pseudocode's `pushDistr` (L62): the push is toward a skew class (left, right, normal), not toward a parametrised target shape.
 - **Resolves**: §2.5 ($Fr$ vs $NHa$) as a lexical ordering — $Fr$ filters the action set before $NHa$ can justify a harm, mirroring `eligible_actions` for $\uparrow\mathbb{R}$ (§2.7). Also resolves where diversity enters (through $N$).
 - **Partially addresses**: §1.1 (Repugnant Conclusion) and the `pushDistr` note in §2.7. `floor_shifts_repugnant_conclusion` remains true, but its premise (ranking worlds by summed value) is not Bf's mechanism under this proposal.
+  - `population_novelty_hist`; `population_novelty_hist_le`: with frequency counted against history in ℝ (L36), summed novelty is at most the number of distinct types (equality with empty history, `population_novelty_hist_nil`).
+  - Choice pipeline: `Plan`, `plan_admissible` ($Fr$ ∧ `is_eligible_action`), `choose_plan`. `choose_plan_sound`: for any Pareto-monotone score, the chosen plan carries no irreparable or irreversible harm, does not contract ℝ, and is not Pareto-dominated by any admissible plan. `weighted_score_pareto_monotone`: positive-weight sums qualify.
 - **[OPEN]**:
-  - Sy-weighted choice among Pareto-front trajectories (the `max` half of L13).
-  - Frequency in $N$ is taken within the population; L36 specifies frequency in $\mathbb{R}$ (historical encounters).
-  - Integration of `choose_action` with `eligible_actions` (↑ℝ) and trajectory-level candidates.
+  - Whether Sy (L13) over trajectory progress is Pareto-monotone. Progress components can be negative, and Sy's cross term $-\lambda\Phi_+\Phi_-/(\Phi_++\Phi_-)$ couples gains and losses; until proved, `choose_plan_sound` is stated for any Pareto-monotone score, with positive-weight sums as the proved instance.
+  - Estimating `prog` (trajectory-level progress over the horizon) from MetricModel predictions.
 
 ### 6.2 Build Coverage of Proposed Modules (SPEC-CHOICE)
 - **Finding**: The `Benefuture` library built only modules reachable from `Benefuture.lean`. `Proposed/` modules are deliberately not imported by core, so they were never compiled in CI.
