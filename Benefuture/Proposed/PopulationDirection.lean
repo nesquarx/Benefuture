@@ -36,6 +36,7 @@ import Benefuture.Ontology.Entity
 import Benefuture.Axiology.Priorities
 import Benefuture.Axiology.Value
 import Benefuture.Subgoals.Freedom
+import Benefuture.Systems.ParamSpace
 
 namespace Benefuture.Proposed
 
@@ -43,6 +44,7 @@ open Benefuture.Math
 open Benefuture.Ontology
 open Benefuture.Axiology
 open Benefuture.Subgoals
+open Benefuture.Systems
 
 /- --- 1. Harm and withholding (L54) --- -/
 
@@ -552,5 +554,36 @@ theorem choose_plan_sy_sound (fp : FrParams) (w v : Fin 11 → ℝ) (qp qm kappa
       ¬ ∃ d ∈ cs.filter (plan_admissible fp), pareto_dominates d.prog c.prog :=
   choose_plan_sound fp _ (sy_score_pareto_monotone w v qp qm kappa lambda hw hv hqp hqm hk hl0 hl1)
     cs c hc
+
+/--
+  [P] THEOREM: At every admissible parameter point, choice with Sy as the score is sound.
+-/
+theorem admissible_choose_plan_sy_sound (pv : ParamVector) (h : Admissible pv)
+    (w v : Fin 11 → ℝ) (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i)
+    (cs : List Plan) (c : Plan)
+    (hc : c ∈ choose_plan pv.toFrParams (sy_score w v pv.q_plus pv.q_minus pv.kappa pv.lambda) cs) :
+    ¬ established_severe c.harm pv.toFrParams ∧
+      c.harm.confidence * severity_score c.harm.profile pv.toFrParams ≤ pv.toFrParams.thHigh ∧
+      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      ¬ ∃ d ∈ cs.filter (plan_admissible pv.toFrParams), pareto_dominates d.prog c.prog :=
+  choose_plan_sy_sound pv.toFrParams w v pv.q_plus pv.q_minus pv.kappa pv.lambda hw hv
+    (by linarith [h.q_plus_gt_one]) (by linarith [h.q_plus_gt_one, h.q_plus_le_q_minus])
+    h.kappa_nonneg h.lambda_nonneg h.lambda_le_one cs c hc
+
+/--
+  [P] THEOREM: Wherever SigThGv takes the parameters from bootstrap, choice with Sy stays sound.
+-/
+theorem governed_choose_plan_sy_sound (qs : List ParamVector)
+    (w v : Fin 11 → ℝ) (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (cs : List Plan) (c : Plan)
+    (hc : c ∈ choose_plan (gov_run bootstrapParams qs).toFrParams
+      (sy_score w v (gov_run bootstrapParams qs).q_plus (gov_run bootstrapParams qs).q_minus
+        (gov_run bootstrapParams qs).kappa (gov_run bootstrapParams qs).lambda) cs) :
+    ¬ established_severe c.harm (gov_run bootstrapParams qs).toFrParams ∧
+      c.harm.confidence * severity_score c.harm.profile (gov_run bootstrapParams qs).toFrParams ≤
+        (gov_run bootstrapParams qs).toFrParams.thHigh ∧
+      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      ¬ ∃ d ∈ cs.filter (plan_admissible (gov_run bootstrapParams qs).toFrParams),
+        pareto_dominates d.prog c.prog :=
+  admissible_choose_plan_sy_sound _ (governed_params_admissible qs) w v hw hv cs c hc
 
 end Benefuture.Proposed
