@@ -235,9 +235,12 @@ def u_harm_ref (history : List Float) (uNow : Float) : Float :=
   let d := m - uNow
   if d > 0.0 then d else 0.0
 
-/-- Σ unflagged non-negative intensities + Di. Matches `happiness_score`. -/
-def happiness_score_ref (sources : List (Float × Bool)) (di : Float) : Float :=
-  let pos := sources.map (fun (i, flagged) => if flagged then 0.0 else (if i > 0.0 then i else 0.0))
+/--
+  H := ∫Positive + BiasMitigation + Di (L37). sources: (intensity, bias degree, MM confidence).
+  Each source counts (1 − c·b) of its non-negative intensity. Matches `happiness_score`.
+-/
+def happiness_score_ref (sources : List (Float × Float × Float)) (di : Float) : Float :=
+  let pos := sources.map (fun (i, b, c) => (1.0 - c * b) * (if i > 0.0 then i else 0.0))
   sumFloat pos + (if di > 0.0 then di else 0.0)
 
 end BenefutureReference

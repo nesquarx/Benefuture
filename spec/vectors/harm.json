@@ -3,5 +3,6 @@
   "h_harm_below_average_window_1115_to_1": 1.000000,
   "u_harm_forgetting_hist_358_to_6": 2.000000,
   "u_harm_at_max_hist_358_to_8": 0.000000,
-  "happiness_score_with_flagged_malicious": 3.500000
+  "happiness_sources": "(intensity, bias degree, MM confidence): conversation (2, 0, 0), malicious (5, 1, 1), doom-scroll (3, 0.5, 0.8), stupor (4, 0.8, 0.9)",
+  "happiness_score_mixed_di_0_5": 5.420000
 }

@@ -17,6 +17,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Finset.Card
 import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Tactic.LinearCombination
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 
@@ -111,38 +112,99 @@ def pushDistr_unformalized_spec_note : String :=
 noncomputable def experiential_variety {τ : Type*} [DecidableEq τ] (stream : List τ) : ℝ :=
   if stream = [] then 0 else (stream.toFinset.card : ℝ) / stream.length
 
-/-- [R] A happiness source with the MM bias flag (dark triad, malicious pleasure; L37 BiasMitigation). -/
+/--
+  [R] An MM's bias claim on a happiness source (L37 BiasMitigation, applied at MM level).
+  `degree` b ∈ [0, 1]: how far the source is misaligned with long-run U and H (malice, addictive
+  doom-scrolling, impairing stupor). It is claimed independently of tier: peak-tier sources are
+  already down-weighted by the L59 priorities and must not be discounted again for being peaks.
+  `confidence` c ∈ [0, 1]: the MM's confidence in the claim.
+-/
+structure BiasClaim where
+  degree     : ℝ
+  confidence : ℝ
+  h_degree   : 0 ≤ degree ∧ degree ≤ 1
+  h_conf     : 0 ≤ confidence ∧ confidence ≤ 1
+
+/-- No bias claimed. -/
+def BiasClaim.none : BiasClaim := ⟨0, 0, by norm_num, by norm_num⟩
+
+/-- Effective discount c · b ∈ [0, 1]. -/
+def BiasClaim.discount (b : BiasClaim) : ℝ := b.confidence * b.degree
+
+theorem BiasClaim.discount_mem (b : BiasClaim) : 0 ≤ b.discount ∧ b.discount ≤ 1 := by
+  unfold BiasClaim.discount
+  obtain ⟨hd0, hd1⟩ := b.h_degree
+  obtain ⟨hc0, hc1⟩ := b.h_conf
+  exact ⟨mul_nonneg hc0 hd0, mul_le_one₀ hc1 hd0 hd1⟩
+
+/-- [R] A happiness source: measured intensity (kept raw, Me) and the MM's bias claim. -/
 structure HappinessSource where
-  intensity     : ℝ
-  flaggedBiased : Bool
+  intensity : ℝ
+  bias      : BiasClaim := BiasClaim.none
+
+/-- ∫Positive(Se) (L37): sum of non-negative measured intensities. -/
+noncomputable def positive_integral (sources : List HappinessSource) : ℝ :=
+  (sources.map (fun s => max 0 s.intensity)).sum
+
+/-- BiasMitigation (L37): the separate, non-positive correction −Σ c·b·intensity. -/
+noncomputable def bias_mitigation (sources : List HappinessSource) : ℝ :=
+  -(sources.map (fun s => s.bias.discount * max 0 s.intensity)).sum
 
 /--
-  [R] Happiness score (L37): a positive structure. Σ of unflagged, non-negative source intensities
-  plus experiential variety Di. Bias mitigation is done by MMs; Lean only honours their flag.
+  [R] Happiness score (L37): H := ∫Positive(Se) + BiasMitigation + Di.
+  Measurements stay raw; MM bias claims enter as a separate term, so they can be audited,
+  contested and revised without touching what was measured.
 -/
 noncomputable def happiness_score (sources : List HappinessSource) (di : ℝ) : ℝ :=
-  (sources.map (fun s => if s.flaggedBiased then 0 else max 0 s.intensity)).sum + max 0 di
+  positive_integral sources + bias_mitigation sources + max 0 di
 
+/-- THEOREM: Each source counts (1 − c·b) of its intensity. -/
+theorem happiness_score_eq (sources : List HappinessSource) (di : ℝ) :
+    happiness_score sources di =
+      (sources.map (fun s => (1 - s.bias.discount) * max 0 s.intensity)).sum + max 0 di := by
+  unfold happiness_score positive_integral bias_mitigation
+  induction sources with
+  | nil => simp
+  | cons s ss ih =>
+    simp only [List.map_cons, List.sum_cons]
+    linear_combination ih
+
+/-- THEOREM: The H score is a positive structure, whatever the MM claims. -/
 theorem happiness_score_nonneg (sources : List HappinessSource) (di : ℝ) :
     0 ≤ happiness_score sources di := by
-  unfold happiness_score
-  have h1 : 0 ≤ (sources.map (fun s => if s.flaggedBiased then 0 else max 0 s.intensity)).sum := by
+  rw [happiness_score_eq]
+  have h1 : 0 ≤ (sources.map (fun s => (1 - s.bias.discount) * max 0 s.intensity)).sum := by
     apply List.sum_nonneg
     intro x hx
     rw [List.mem_map] at hx
     obtain ⟨s, _, rfl⟩ := hx
-    split_ifs
-    · exact le_refl 0
-    · exact le_max_left 0 _
-  have h2 : 0 ≤ max 0 di := le_max_left 0 di
-  linarith
+    exact mul_nonneg (by linarith [s.bias.discount_mem.2]) (le_max_left 0 _)
+  linarith [le_max_left 0 di]
 
-/-- [R] THEOREM: MM-flagged biased happiness (e.g. malicious pleasure) contributes nothing. -/
-theorem flagged_happiness_contributes_nothing (s : HappinessSource) (ss : List HappinessSource)
-    (di : ℝ) (hs : s.flaggedBiased = true) :
+/-- THEOREM: A source with no bias claim counts its full measured intensity. -/
+theorem unclaimed_source_counts_fully (i di : ℝ) :
+    happiness_score [⟨i, BiasClaim.none⟩] di = max 0 i + max 0 di := by
+  rw [happiness_score_eq]
+  simp [BiasClaim.none, BiasClaim.discount]
+
+/--
+  THEOREM: Fully biased happiness claimed with full confidence (e.g. malicious pleasure)
+  contributes nothing. The victim's harm still counts through Ha, so harm for pleasure is net negative.
+-/
+theorem fully_biased_contributes_nothing (s : HappinessSource) (ss : List HappinessSource) (di : ℝ)
+    (hb : s.bias.degree = 1) (hc : s.bias.confidence = 1) :
     happiness_score (s :: ss) di = happiness_score ss di := by
-  unfold happiness_score
-  simp [hs]
+  rw [happiness_score_eq, happiness_score_eq]
+  simp [BiasClaim.discount, hb, hc]
+
+/-- THEOREM: A larger effective bias discount never raises happiness. -/
+theorem more_bias_less_happiness (i : ℝ) (b₁ b₂ : BiasClaim) (di : ℝ)
+    (h : b₁.discount ≤ b₂.discount) :
+    happiness_score [⟨i, b₂⟩] di ≤ happiness_score [⟨i, b₁⟩] di := by
+  rw [happiness_score_eq, happiness_score_eq]
+  simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero]
+  have := le_max_left 0 i
+  nlinarith
 
 theorem experiential_variety_le_one {τ : Type*} [DecidableEq τ] (stream : List τ) :
     experiential_variety stream ≤ 1 := by
