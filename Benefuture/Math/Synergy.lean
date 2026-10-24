@@ -461,4 +461,145 @@ theorem net_synergy_single_zero_val (w : ℝ) (p : GovParams) :
   dsimp [net_synergy]
   simp
 
+/- --- 5. Monotonicity of Sy --- -/
+
+theorem sum_map_le_of_le {ι : Type*} (f g : ι → ℝ) :
+    ∀ (l : List ι), (∀ i ∈ l, f i ≤ g i) → (l.map f).sum ≤ (l.map g).sum
+  | [], _ => by simp
+  | a :: t, h => by
+    simp only [List.map_cons, List.sum_cons]
+    have ha := h a List.mem_cons_self
+    have ht := sum_map_le_of_le f g t (fun i hi => h i (List.mem_cons_of_mem a hi))
+    linarith
+
+theorem sum_map_lt_of_le_of_lt {ι : Type*} (f g : ι → ℝ) :
+    ∀ (l : List ι), (∀ i ∈ l, f i ≤ g i) → (∃ i ∈ l, f i < g i) →
+      (l.map f).sum < (l.map g).sum
+  | [], _, hs => by
+    obtain ⟨i, hi, _⟩ := hs
+    simp at hi
+  | a :: t, h, hs => by
+    simp only [List.map_cons, List.sum_cons]
+    have ha := h a List.mem_cons_self
+    have ht : ∀ i ∈ t, f i ≤ g i := fun i hi => h i (List.mem_cons_of_mem a hi)
+    obtain ⟨i, hi, hlt⟩ := hs
+    rcases List.mem_cons.mp hi with rfl | hit
+    · have := sum_map_le_of_le f g t ht
+      linarith
+    · have := sum_map_lt_of_le_of_lt f g t ht ⟨i, hit, hlt⟩
+      linarith
+
+theorem pairwiseCrossSum_map_le {ι : Type*} (f g : ι → ℝ) :
+    ∀ (l : List ι), (∀ i ∈ l, 0 ≤ f i ∧ f i ≤ g i) →
+      pairwiseCrossSum (l.map f) ≤ pairwiseCrossSum (l.map g)
+  | [], _ => by simp
+  | a :: t, h => by
+    simp only [List.map_cons, pairwiseCrossSum]
+    obtain ⟨ha0, ha⟩ := h a List.mem_cons_self
+    have ht : ∀ i ∈ t, 0 ≤ f i ∧ f i ≤ g i := fun i hi => h i (List.mem_cons_of_mem a hi)
+    have hs := sum_map_le_of_le f g t (fun i hi => (ht i hi).2)
+    have hs0 : 0 ≤ (t.map f).sum := by
+      apply List.sum_nonneg
+      intro x hx
+      obtain ⟨j, hj, rfl⟩ := List.mem_map.mp hx
+      exact (ht j hj).1
+    have hrec := pairwiseCrossSum_map_le f g t ht
+    have hmul : f a * (t.map f).sum ≤ g a * (t.map g).sum :=
+      mul_le_mul ha hs hs0 (le_trans ha0 ha)
+    linarith
+
+/-- Branch potential over an index list: Σ y_i + κ √(Σ_{i<j} y_i y_j). -/
+noncomputable def phi_of {ι : Type*} (l : List ι) (y : ι → ℝ) (kappa : ℝ) : ℝ :=
+  (l.map y).sum + kappa * Real.sqrt (pairwiseCrossSum (l.map y))
+
+theorem phi_of_nonneg {ι : Type*} (l : List ι) (y : ι → ℝ) (kappa : ℝ) (hk : 0 ≤ kappa)
+    (h : ∀ i ∈ l, 0 ≤ y i) : 0 ≤ phi_of l y kappa := by
+  unfold phi_of
+  have h1 : 0 ≤ (l.map y).sum := by
+    apply List.sum_nonneg
+    intro x hx
+    obtain ⟨j, hj, rfl⟩ := List.mem_map.mp hx
+    exact h j hj
+  have h2 : 0 ≤ kappa * Real.sqrt (pairwiseCrossSum (l.map y)) :=
+    mul_nonneg hk (Real.sqrt_nonneg _)
+  linarith
+
+/-- THEOREM: Φ is monotone in each non-negative contribution y_i (κ ≥ 0). -/
+theorem phi_of_mono {ι : Type*} (l : List ι) (y y' : ι → ℝ) (kappa : ℝ) (hk : 0 ≤ kappa)
+    (h : ∀ i ∈ l, 0 ≤ y i ∧ y i ≤ y' i) : phi_of l y kappa ≤ phi_of l y' kappa := by
+  unfold phi_of
+  exact add_le_add (sum_map_le_of_le y y' l (fun i hi => (h i hi).2))
+    (mul_le_mul_of_nonneg_left (Real.sqrt_le_sqrt (pairwiseCrossSum_map_le y y' l h)) hk)
+
+/-- THEOREM: Φ strictly increases when some contribution strictly increases. -/
+theorem phi_of_strict_mono {ι : Type*} (l : List ι) (y y' : ι → ℝ) (kappa : ℝ) (hk : 0 ≤ kappa)
+    (h : ∀ i ∈ l, 0 ≤ y i ∧ y i ≤ y' i) (hs : ∃ i ∈ l, y i < y' i) :
+    phi_of l y kappa < phi_of l y' kappa := by
+  unfold phi_of
+  exact add_lt_add_of_lt_of_le (sum_map_lt_of_le_of_lt y y' l (fun i hi => (h i hi).2) hs)
+    (mul_le_mul_of_nonneg_left (Real.sqrt_le_sqrt (pairwiseCrossSum_map_le y y' l h)) hk)
+
+/--
+  THEOREM: Sy is strictly increasing in the gain potential Φ₊ for 0 ≤ λ ≤ 1.
+  Sy(P', M) − Sy(P, M) = (P' − P)(1 − λM² / ((P + M)(P' + M))) > 0.
+-/
+theorem net_synergy_raw_strict_mono_plus (P P' M lambda : ℝ) (hP : 0 ≤ P) (hPP : P < P')
+    (hM : 0 ≤ M) (hl0 : 0 ≤ lambda) (hl1 : lambda ≤ 1) :
+    net_synergy_raw P M lambda < net_synergy_raw P' M lambda := by
+  have hP' : 0 < P' := lt_of_le_of_lt hP hPP
+  have hS' : 0 < P' + M := by linarith
+  unfold net_synergy_raw
+  rw [if_neg (ne_of_gt hS')]
+  by_cases hS0 : P + M = 0
+  · rw [if_pos hS0]
+    have hM0 : M = 0 := by linarith
+    subst hM0
+    simp only [mul_zero, zero_div, sub_zero]
+    exact hP'
+  · rw [if_neg hS0]
+    have hS : 0 < P + M := lt_of_le_of_ne (by linarith) (Ne.symm hS0)
+    have key : lambda * (P' * M) / (P' + M) - lambda * (P * M) / (P + M) < P' - P := by
+      rw [mul_div_assoc, mul_div_assoc, ← mul_sub,
+        div_sub_div _ _ (ne_of_gt hS') (ne_of_gt hS)]
+      have hnum : P' * M * (P + M) - (P' + M) * (P * M) = M * M * (P' - P) := by ring
+      rw [hnum]
+      have hden : 0 < (P' + M) * (P + M) := mul_pos hS' hS
+      have hfrac : M * M * (P' - P) / ((P' + M) * (P + M)) < P' - P := by
+        rw [div_lt_iff₀ hden]
+        have hMM : M * M < (P' + M) * (P + M) := by
+          nlinarith [mul_pos hP' hS, mul_nonneg hM hP]
+        nlinarith [mul_lt_mul_of_pos_left hMM (sub_pos.mpr hPP)]
+      have hfrac0 : 0 ≤ M * M * (P' - P) / ((P' + M) * (P + M)) :=
+        div_nonneg (mul_nonneg (mul_nonneg hM hM) (sub_nonneg.mpr hPP.le)) hden.le
+      nlinarith
+    linarith
+
+/--
+  THEOREM: Sy is strictly decreasing in the loss potential Φ₋ for λ ≥ 0.
+  Sy(P, M') − Sy(P, M) = −(M' − M) − λP²(M' − M) / ((P + M)(P + M')) < 0.
+-/
+theorem net_synergy_raw_strict_anti_minus (P M M' lambda : ℝ) (hP : 0 ≤ P) (hM : 0 ≤ M)
+    (hMM : M < M') (hl0 : 0 ≤ lambda) :
+    net_synergy_raw P M' lambda < net_synergy_raw P M lambda := by
+  have hM' : 0 < M' := lt_of_le_of_lt hM hMM
+  have hS' : 0 < P + M' := by linarith
+  unfold net_synergy_raw
+  rw [if_neg (ne_of_gt hS')]
+  by_cases hS0 : P + M = 0
+  · rw [if_pos hS0]
+    have hP0 : P = 0 := by linarith
+    subst hP0
+    simp only [zero_mul, mul_zero, zero_div, sub_zero, zero_sub]
+    linarith
+  · rw [if_neg hS0]
+    have hS : 0 < P + M := lt_of_le_of_ne (by linarith) (Ne.symm hS0)
+    have key : 0 ≤ lambda * (P * M') / (P + M') - lambda * (P * M) / (P + M) := by
+      rw [mul_div_assoc, mul_div_assoc, ← mul_sub,
+        div_sub_div _ _ (ne_of_gt hS') (ne_of_gt hS)]
+      have hnum : P * M' * (P + M) - (P + M') * (P * M) = P * P * (M' - M) := by ring
+      rw [hnum]
+      exact mul_nonneg hl0 (div_nonneg (mul_nonneg (mul_nonneg hP hP) (sub_nonneg.mpr hMM.le))
+        (mul_pos hS' hS).le)
+    linarith
+
 end Benefuture.Math

@@ -25,6 +25,7 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.MinMax
+import Mathlib.Data.List.FinRange
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Real.Sqrt
@@ -38,6 +39,7 @@ import Benefuture.Subgoals.Freedom
 
 namespace Benefuture.Proposed
 
+open Benefuture.Math
 open Benefuture.Ontology
 open Benefuture.Axiology
 open Benefuture.Subgoals
@@ -464,5 +466,91 @@ theorem choose_plan_sound (fp : FrParams) (score : (Fin 11 → ℝ) → ℝ) (hs
   have h1 := List.le_of_mem_argmax hd hc
   have h2 := hs _ _ hdom
   linarith
+
+/- --- 8. Sy over trajectory progress is Pareto-monotone (L13) --- -/
+
+/--
+  [P] Sy score of a progress vector (L13): gains p_i⁺ enter Φ₊ with weights w, losses p_i⁻ enter Φ₋
+  with weights v. Zero components contribute nothing to either branch.
+-/
+noncomputable def sy_score {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ) : ℝ :=
+  net_synergy_raw (phi_of (List.finRange k) (fun i => w i * (max 0 (p i)) ^ qp) kappa)
+    (phi_of (List.finRange k) (fun i => v i * (max 0 (-p i)) ^ qm) kappa) lambda
+
+/--
+  [P] THEOREM: Sy is Pareto-monotone for positive weights, positive exponents, κ ≥ 0 and 0 ≤ λ ≤ 1.
+  So `choose_plan_sound` holds with Sy itself as the score.
+-/
+theorem sy_score_pareto_monotone {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ)
+    (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (hqp : 0 < qp) (hqm : 0 < qm)
+    (hk : 0 ≤ kappa) (hl0 : 0 ≤ lambda) (hl1 : lambda ≤ 1) :
+    pareto_monotone (sy_score w v qp qm kappa lambda) := by
+  intro p q hdom
+  obtain ⟨hle, j, hj⟩ := hdom
+  unfold sy_score
+  have gain_nonneg : ∀ (r : Fin k → ℝ) i, 0 ≤ w i * (max 0 (r i)) ^ qp := fun r i =>
+    mul_nonneg (hw i).le (Real.rpow_nonneg (le_max_left _ _) _)
+  have loss_nonneg : ∀ (r : Fin k → ℝ) i, 0 ≤ v i * (max 0 (-r i)) ^ qm := fun r i =>
+    mul_nonneg (hv i).le (Real.rpow_nonneg (le_max_left _ _) _)
+  have gain_le : ∀ i ∈ List.finRange k,
+      0 ≤ w i * (max 0 (p i)) ^ qp ∧ w i * (max 0 (p i)) ^ qp ≤ w i * (max 0 (q i)) ^ qp :=
+    fun i _ => ⟨gain_nonneg p i, mul_le_mul_of_nonneg_left
+      (Real.rpow_le_rpow (le_max_left _ _) (max_le_max (le_refl 0) (hle i)) hqp.le) (hw i).le⟩
+  have loss_le : ∀ i ∈ List.finRange k,
+      0 ≤ v i * (max 0 (-q i)) ^ qm ∧ v i * (max 0 (-q i)) ^ qm ≤ v i * (max 0 (-p i)) ^ qm :=
+    fun i _ => ⟨loss_nonneg q i, mul_le_mul_of_nonneg_left
+      (Real.rpow_le_rpow (le_max_left _ _) (max_le_max (le_refl 0) (neg_le_neg (hle i))) hqm.le)
+      (hv i).le⟩
+  set Pp := phi_of (List.finRange k) (fun i => w i * (max 0 (p i)) ^ qp) kappa
+  set Pq := phi_of (List.finRange k) (fun i => w i * (max 0 (q i)) ^ qp) kappa
+  set Mp := phi_of (List.finRange k) (fun i => v i * (max 0 (-p i)) ^ qm) kappa
+  set Mq := phi_of (List.finRange k) (fun i => v i * (max 0 (-q i)) ^ qm) kappa
+  have hP : Pp ≤ Pq := phi_of_mono _ _ _ kappa hk gain_le
+  have hM : Mq ≤ Mp := phi_of_mono _ _ _ kappa hk loss_le
+  have hPp0 : 0 ≤ Pp := phi_of_nonneg _ _ kappa hk (fun i _ => gain_nonneg p i)
+  have hPq0 : 0 ≤ Pq := phi_of_nonneg _ _ kappa hk (fun i _ => gain_nonneg q i)
+  have hMq0 : 0 ≤ Mq := phi_of_nonneg _ _ kappa hk (fun i _ => loss_nonneg q i)
+  have hMp0 : 0 ≤ Mp := le_trans hMq0 hM
+  have mono_plus : net_synergy_raw Pp Mp lambda ≤ net_synergy_raw Pq Mp lambda := by
+    rcases hP.lt_or_eq with h | h
+    · exact (net_synergy_raw_strict_mono_plus Pp Pq Mp lambda hPp0 h hMp0 hl0 hl1).le
+    · rw [h]
+  have anti_minus : net_synergy_raw Pq Mp lambda ≤ net_synergy_raw Pq Mq lambda := by
+    rcases hM.lt_or_eq with h | h
+    · exact (net_synergy_raw_strict_anti_minus Pq Mq Mp lambda hPq0 hMq0 h hl0).le
+    · rw [h]
+  by_cases hqj : 0 < q j
+  · have hgain : w j * (max 0 (p j)) ^ qp < w j * (max 0 (q j)) ^ qp := by
+      apply mul_lt_mul_of_pos_left _ (hw j)
+      rw [max_eq_right hqj.le]
+      exact Real.rpow_lt_rpow (le_max_left _ _) (max_lt hqj hj) hqp
+    have hPs : Pp < Pq := phi_of_strict_mono _ _ _ kappa hk gain_le
+      ⟨j, List.mem_finRange j, hgain⟩
+    have := net_synergy_raw_strict_mono_plus Pp Pq Mp lambda hPp0 hPs hMp0 hl0 hl1
+    linarith
+  · have hqj' : 0 ≤ -q j := by linarith
+    have hloss : v j * (max 0 (-q j)) ^ qm < v j * (max 0 (-p j)) ^ qm := by
+      apply mul_lt_mul_of_pos_left _ (hv j)
+      rw [max_eq_right hqj']
+      exact Real.rpow_lt_rpow hqj' (lt_of_lt_of_le (by linarith) (le_max_right _ _)) hqm
+    have hMs : Mq < Mp := phi_of_strict_mono _ _ _ kappa hk loss_le
+      ⟨j, List.mem_finRange j, hloss⟩
+    have := net_synergy_raw_strict_anti_minus Pq Mq Mp lambda hPq0 hMq0 hMs hl0
+    linarith
+
+/--
+  [P] THEOREM: The choice pipeline is sound with Sy as the score: the chosen plan passes Fr,
+  does not contract ℝ, and is not Pareto-dominated by any admissible plan.
+-/
+theorem choose_plan_sy_sound (fp : FrParams) (w v : Fin 11 → ℝ) (qp qm kappa lambda : ℝ)
+    (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (hqp : 0 < qp) (hqm : 0 < qm)
+    (hk : 0 ≤ kappa) (hl0 : 0 ≤ lambda) (hl1 : lambda ≤ 1)
+    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan fp (sy_score w v qp qm kappa lambda) cs) :
+    ¬ established_severe c.harm fp ∧
+      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
+      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      ¬ ∃ d ∈ cs.filter (plan_admissible fp), pareto_dominates d.prog c.prog :=
+  choose_plan_sound fp _ (sy_score_pareto_monotone w v qp qm kappa lambda hw hv hqp hqm hk hl0 hl1)
+    cs c hc
 
 end Benefuture.Proposed
