@@ -64,6 +64,7 @@ import Benefuture.Systems.Pipeline
 import Benefuture.Systems.State
 import Benefuture.Systems.ParamSpace
 import Benefuture.Systems.Conjectures
+import Benefuture.Systems.FixedPoint
 import Benefuture.Governance.Incentives
 import Benefuture.Ontology.Reputation
 import Benefuture.Axioms.Antifragility
