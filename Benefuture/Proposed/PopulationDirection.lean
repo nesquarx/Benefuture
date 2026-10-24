@@ -33,6 +33,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 import Benefuture.Ontology.Entity
 import Benefuture.Axiology.Priorities
+import Benefuture.Axiology.Value
 import Benefuture.Subgoals.Freedom
 
 namespace Benefuture.Proposed
@@ -377,5 +378,80 @@ theorem population_novelty_eq_effective_types {τ : Type*} [DecidableEq τ] (pop
   have hc : (pop.count x : ℝ) ≠ 0 := by
     exact_mod_cast (List.count_pos_iff.mpr (List.mem_toFinset.mp hx)).ne'
   rw [nsmul_eq_mul, Nat.cast_one, mul_one_div_cancel hc]
+
+/--
+  [R] Novelty against history: frequency counts prior encounters in ℝ (L36) plus the population.
+-/
+noncomputable def population_novelty_hist {τ : Type*} [DecidableEq τ] (hist pop : List τ) : ℝ :=
+  (pop.map (fun x => 1 / ((hist ++ pop).count x : ℝ))).sum
+
+theorem population_novelty_hist_nil {τ : Type*} [DecidableEq τ] (pop : List τ) :
+    population_novelty_hist [] pop = population_novelty pop := by
+  simp [population_novelty_hist, population_novelty]
+
+/--
+  [P] THEOREM: With history, summed novelty is bounded by the number of distinct types.
+  Familiar types contribute less; diversity still cannot be bought by headcount.
+-/
+theorem population_novelty_hist_le {τ : Type*} [DecidableEq τ] (hist pop : List τ) :
+    population_novelty_hist hist pop ≤ effective_types pop := by
+  unfold population_novelty_hist effective_types
+  rw [Finset.sum_list_map_count, Finset.card_eq_sum_ones, Nat.cast_sum]
+  apply Finset.sum_le_sum
+  intro x hx
+  have hc : (0 : ℝ) < pop.count x := by
+    exact_mod_cast List.count_pos_iff.mpr (List.mem_toFinset.mp hx)
+  have hh : (0 : ℝ) ≤ hist.count x := Nat.cast_nonneg _
+  rw [nsmul_eq_mul, Nat.cast_one, List.count_append, Nat.cast_add, mul_one_div,
+    div_le_one (by linarith)]
+  linarith
+
+/- --- 7. Full choice pipeline: Fr ∧ ↑ℝ, then Pareto, then a monotone score (L13, L74, L135) --- -/
+
+/-- [P] A plan: an evaluated action, its predicted harm, and its trajectory-level pushDistr progress. -/
+structure Plan where
+  eval : ActionEvaluation
+  harm : HarmProfile
+  prog : Fin 11 → ℝ
+
+/-- [P] Admissible plans pass Fr (L135) and ↑ℝ eligibility (L74, `is_eligible_action`). -/
+noncomputable def plan_admissible (c : Plan) : Bool :=
+  is_action_freedom_permissible c.eval.action c.harm && is_eligible_action c.eval
+
+/-- [P] A score is Pareto-monotone if dominance strictly raises it. -/
+def pareto_monotone {k : ℕ} (score : (Fin k → ℝ) → ℝ) : Prop :=
+  ∀ p q, pareto_dominates q p → score p < score q
+
+/-- [P] Positive-weight sums are Pareto-monotone; a stand-in for Sy-weighting until Sy's monotonicity is proved. -/
+theorem weighted_score_pareto_monotone {k : ℕ} (w : Fin k → ℝ) (hw : ∀ i, 0 < w i) :
+    pareto_monotone (fun p => ∑ i, w i * p i) := by
+  intro p q ⟨hle, i, hi⟩
+  exact Finset.sum_lt_sum (fun j _ => mul_le_mul_of_nonneg_left (hle j) (hw j).le)
+    ⟨i, Finset.mem_univ i, mul_lt_mul_of_pos_left hi (hw i)⟩
+
+/-- [P] Choice: filter admissible plans, then maximise a score over trajectory progress. -/
+noncomputable def choose_plan (score : (Fin 11 → ℝ) → ℝ) (cs : List Plan) : Option Plan :=
+  (cs.filter plan_admissible).argmax (fun c => score c.prog)
+
+/--
+  [P] THEOREM: Soundness of the choice pipeline. For any Pareto-monotone score, the chosen plan
+  carries no irreparable or irreversible harm, does not contract ℝ, and is not Pareto-dominated
+  by any admissible plan. The score only chooses within the Pareto front.
+-/
+theorem choose_plan_sound (score : (Fin 11 → ℝ) → ℝ) (hs : pareto_monotone score)
+    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan score cs) :
+    c.harm.irreparable ≤ 0 ∧ c.harm.irreversible ≤ 0 ∧
+      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      ¬ ∃ d ∈ cs.filter plan_admissible, pareto_dominates d.prog c.prog := by
+  have hm := List.argmax_mem hc
+  rw [List.mem_filter] at hm
+  have hp := hm.2
+  simp only [plan_admissible, is_action_freedom_permissible, is_eligible_action,
+    Bool.and_eq_true, decide_eq_true_eq] at hp
+  refine ⟨hp.1.1, hp.1.2, hp.2, ?_⟩
+  rintro ⟨d, hd, hdom⟩
+  have h1 := List.le_of_mem_argmax hd hc
+  have h2 := hs _ _ hdom
+  linarith
 
 end Benefuture.Proposed
