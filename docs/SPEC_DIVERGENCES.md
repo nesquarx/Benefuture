@@ -276,3 +276,28 @@ Per the Ground Rules:
 - **Lean Spec Choice**: `BiasClaim`, `HappinessSource`, `positive_integral`, `bias_mitigation`, `happiness_score`; `rolling_average`, `h_harm`, `u_harm`.
 - **Proved**: `happiness_score_eq` (each source counts (1 − c·b)), `happiness_score_nonneg`, `unclaimed_source_counts_fully`, `fully_biased_contributes_nothing` (malice with full confidence adds nothing; the victim's Ha still counts, so harm for pleasure is net negative), `more_bias_less_happiness`; `forgetting_is_harm`, `u_at_max_no_harm`, `h_at_or_above_average_no_harm`, `coming_down_not_harm` (window [1,1,1,5], H 5 → 2). `withholding_incurs_no_harm` (Proposed) uses these reference points.
 - **Parameters, not open questions ([R])**: the rolling-window length and the weights that aggregate competing MMs' bias claims (from MM competition results, L49) are parameters. They start from bootstrap defaults (Bf system-design bootstrap) and are then governed by SigThGv (L157). The spec defines the space; simulation explores values.
+
+---
+
+## 8. Phase 8 Divergences (Meta Space, Integration, Simulation Readiness)
+
+### 8.1 Sy is Pareto-Monotone ([R])
+- **Source**: L13.
+- **Proved**: `net_synergy_raw_strict_mono_plus` (strictly increasing in Φ₊ for 0 ≤ λ ≤ 1: the change is (P′ − P)(1 − λM²/((P + M)(P′ + M))) > 0), `net_synergy_raw_strict_anti_minus` (strictly decreasing in Φ₋ for λ ≥ 0), `phi_of_mono`, `phi_of_strict_mono`. `sy_score_pareto_monotone`: Sy over trajectory progress is Pareto-monotone for positive weights and exponents, κ ≥ 0, 0 ≤ λ ≤ 1. `choose_plan_sy_sound`: the choice pipeline is sound with Sy itself as the score.
+- **Consequence**: λ ≤ 1 is a structural requirement, recorded in `Admissible` (§8.2). Above 1, a mixed gain/loss profile could rank below a dominated one.
+
+### 8.2 Parameter Space and SigThGv ([R] structure, [P] bootstrap values)
+- **Source**: L11, L13–14, L25, L54, L61, L73, L101, L114, L135, L155, L157.
+- **Lean Spec Choice** (`Benefuture.Systems.ParamSpace`): `ParamVector` (every governed parameter), `Admissible` (ranges and joint constraints: L11 order; q₊ > 1; q₋ ≥ q₊; 0 ≤ λ ≤ 1; Fr confidence in (0, 1]; ordered severities; window ≥ 1; delegation cap in (0, 1]), `bootstrapParams`, `toGovParams`, `toFrParams`, `GovMode`, `gov_step`/`gov_run` (proposals adopted only if admissible), `perturb_step`/`perturb_run` (controlled perturbation within δ).
+- **Proved**: `bootstrap_admissible`, `governed_params_admissible` (every point SigThGv can reach is admissible), `perturb_run_drift` (n perturbation steps move each field by at most n·δ; large moves need debate), `admissible_loss_aversion`, `governed_choose_plan_sy_sound`.
+
+### 8.3 Goal G Staged; No Sentience Multiplier; Kind-Labelled Tiers ([R] decisions, [P] formalization)
+- **6a (G, L62 vs L74)**: `goal_G` filters Fr ∧ ↑ℝ ∧ ↑min (trajectory-level min U and min H non-decreasing), takes the Pareto front on pushDistr progress (`plan_front`), then argmax ΣV. `goal_G_sound`, `goal_G_some` (G always chooses when a G-admissible plan exists).
+- **6b (sentience)**: V has no sentience multiplier (L73). Capacity enters through absolute magnitudes of U and H; saturation (Ŝy) stays available if simulation shows utility-monster behaviour.
+- **6c (L37 → L59)**: MMs label happiness sources (`HappinessKind`) and understanding changes (`UnderstandingKind`) by kind; `happiness_tiers_of` / `understanding_tiers_of` fill kind tiers from labelled items and take distributional tiers (baseline, median, floor) from the population. `kind_tiers_partition_happiness`: the kind tiers sum exactly to the bias-corrected H score. Di joins the eudaimonic tier ([P]).
+
+### 8.4 Behavioural Conjectures ([CONJ])
+- `Benefuture.Systems.Conjectures`: `SimTrace` (observables per step) and `Conj_MMCompetitionConverges`, `Conj_GoodhartReduction`, `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_MinTracksPrediction`, `Conj_FloorsRise`, `Conj_NoRepugnantDrift`, `Conj_ParamStability`, `Conj_DelegationDispersed`. Definitions only: neither assumed nor proved.
+
+### 8.5 Legacy Fixed-Point Modules ([R])
+- About 25 modules still encode quantities as `Int` at SCALE = 10⁶. Full migration to ℝ is deferred; `Benefuture.Systems.FixedPoint` proves the key operations are within one micro-unit of their ℝ counterparts: `int_ediv_approx`, `escrow_fixed_point` (L84), `norm_assessment_fixed_point` (L48), `novelty_fixed_point` (L36). Simulations implement the ℝ / Float definitions.
