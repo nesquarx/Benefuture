@@ -228,6 +228,7 @@ theorem h_at_or_above_average_no_harm (window : List ℝ) (h_now : ℝ)
 theorem coming_down_not_harm : h_harm [1, 1, 1, 5] 2 = 0 := by
   apply h_at_or_above_average_no_harm
   unfold rolling_average
+  rw [if_neg (List.cons_ne_nil _ _)]
   norm_num
 
 /- --- 5. Convex Harm Weighting (Ha_wt, L61) --- -/
