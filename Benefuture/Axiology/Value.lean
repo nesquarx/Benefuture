@@ -41,13 +41,17 @@ noncomputable def value_on_being
   let h_val := synthesize_happiness asmt.h_tiers sched p
   let n_val := synthesize_novelty asmt.n_tiers sched p
   let ha_wt := compute_harm_weight asmt.harm_prof sched p
-  -- Items: (U, α·Ha_wt), (H, β·α·Ha_wt), (N, γ)
-  let items : List (ℝ × ℝ) := [
-    (u_val, p.alpha * ha_wt),
-    (h_val, p.beta * (p.alpha * ha_wt)),
-    (n_val, p.gamma)
+  -- SPEC-CHOICE: items read through the Sy signature [(x, w₊, w₋ = w₊)] (L13):
+  -- U: gains α, losses Ha_wt; H: gains β, losses α·Ha_wt; N: γ both ways.
+  -- Benefuture goals.txt: harm is "counted as a weight on losses".
+  let items : List (ℝ × ℝ × ℝ) := [
+    (u_val, p.alpha, ha_wt),
+    (h_val, p.beta, p.alpha * ha_wt),
+    (n_val, p.gamma, p.gamma)
   ]
-  net_synergy items p
+  -- SPEC-CHOICE: Sy_{2} (L73) read through Sy_{κ,q₊} (L13) as κ = 2;
+  -- Benefuture goals.txt: "κ = 1 (2 for Value itself)".
+  net_synergy_signed items (p.with_kappa 2 (by norm_num))
 
 /-- 
   [R] The Aggregate Sentient Value Sum over a population of Beings (L74):

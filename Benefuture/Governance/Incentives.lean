@@ -79,6 +79,31 @@ theorem star_topology_power_concentration (n : ℕ) (hn : n > 0) (baseWeight : �
 def SatisfiesDelegationCap (delegateWeight : ℝ) (totalWeight : ℝ) (capRatio : ℝ) : Prop :=
   totalWeight > 0 → delegateWeight ≤ capRatio * totalWeight
 
+/--
+  [R] Sequential delegation under the L114 rule: a delegation to S_j is accepted only while
+  CumulativeVoteWeight(S_j) < Th_k. Returns S_j's weight after processing the delegators in order.
+-/
+def accumulate_capped (cap : ℝ) : ℝ → List ℝ → ℝ
+  | cur, [] => cur
+  | cur, w :: ws => accumulate_capped cap (if cur < cap then cur + w else cur) ws
+
+/--
+  [R] THEOREM: The L114 cap bounds concentration. If every delegator's weight is at most M and the
+  delegate starts below cap + M, the delegate never exceeds cap + M, however many delegate to it.
+  The star topology of `star_topology_power_concentration` cannot form under L114.
+-/
+theorem accumulate_capped_bound (cap M : ℝ) :
+    ∀ (ws : List ℝ) (cur : ℝ), cur < cap + M → (∀ w ∈ ws, w ≤ M) →
+      accumulate_capped cap cur ws < cap + M
+  | [], cur, hcur, _ => hcur
+  | w :: ws, cur, hcur, hw => by
+    unfold accumulate_capped
+    apply accumulate_capped_bound cap M ws
+    · split_ifs with h
+      · linarith [hw w List.mem_cons_self]
+      · exact hcur
+    · exact fun x hx => hw x (List.mem_cons_of_mem w hx)
+
 /-!
   # 2. Truth and Brier Score Strict Propriety
   Corresponds to: Bf_Pseudocode.txt L34, Epistemology.txt §Truth.

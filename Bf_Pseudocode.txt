@@ -15,11 +15,11 @@ Benefuture«Bf» {
 
     Reality«ℝ» := (Perceivable ∪ Changeable) ⊆ Universe«𝕌»;
     T := InfoPattern | renderedIn(org(spctime(Energy, Matter, otherT[])));
-    Id(T) := ∃!SubPattern(T):¬∃Id(ℝ-T),Disambiguate(Location(T) ∈ ℝ, History(T));
+    Id(T) := ∃!SubPattern(T):¬∃Id(ℝ-T),Disambiguate(Location(T) ∈ ℝ, History(T)), Id ≡ Dn : |Dn ∩ ℝ| = 1;
     I := Process(T ← Inputs → Outputs«Ou» ↔ ℝ ∨ T);
     O := Significant«Sig» perceived Δℝ ← I;
     A := Ou → O;
-    Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt∈[0,1])]|CausalStructure,NaturalOverlap;
+    Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;
     Sentience«St» := SubjectiveExperience«Se» + Preferences;
 
     Threshold«Th»(Pm_i, Context«Cx») := (Pm_i ≥ Th_Cx) ⇒ Sig(Pm, Cx), (graded, multidimensional, nuanced);
@@ -98,7 +98,7 @@ Benefuture«Bf» {
     Tx(A, TP) ↔ ΔBal(E);
     {J(Ha) ∨ RA(Rc, t) ∨ CD(Bd)} → ⊖Bal(E) ∧ ⊖Supply;
     Reputation«Re»(t, CD, Dn) := Σ(CC(U(Dn), H(Dn)) + N(Dn)),
-      Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Re_net - Decay]_Dn, !halo, !horn, !transfer;
+      Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;
 
     BalOvflw :: Bal(E, C_i) > AccumThresh(Re_E, Equity, G_Optim, Dn_i) ⇒ (DirectedAutoInvest(S = E, Dn_i)) ∧ ΔBal(E) = -(Bal - Thresh_i);
     Law«Lw» := Agreed(I), Ap, {prohibit,mandate,recommend};
@@ -110,16 +110,16 @@ Benefuture«Bf» {
     Power«Po» := Capacity(→Δ);
     Influence«Inf» := Control(Ou(Others));
     Imp(A, t) := ΔV : ∫MM_Me(Δℝ | A) dt;
-    BfDm(D(Dn_i, j, k...)) := Expert(Re(Dn_i, j, k...))VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
+    BfDm(D(Dn_i, j, k...)) := Expert(Σŵ_i·Re(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
     LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;
     Crime«Cr» := Ha | Informed(Volition ∨ Inaction);
     J := Repair(Ha) ∧ Prevent(Cr), Restorative;
-    ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * Re_+ve_j) * P(Forgive) + (δ * Re_-ve_j) * P(Overreact) | (ContextAware ∧ Transparent);
+    ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * Re_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * Re_-ve_j(Dn(Ha_i))) * P(Overreact) | (ContextAware ∧ Transparent);
 
     Liability«Lia» := (S > Pe) > Ad > (B, E) > T;
     Enforcement«En» := Inf(Pe, G), Proportional, DueProcess, Decentralized;
     Accolade«Aco» := Acknowledge(Gd > Duty);
-    Fork(Id(E_i))→(Distribute(SoPo_i:C,Re,...)→New(Ids[i,j]),LiabilityOverflow←CD,N=|i-j|,ΣRA);
+    Fork(Id(E_i))→(Split_Dn(SoPo_i:C,Re,...)→New(Ids[i,j]),LiabilityOverflow←CD,N=|i-j|,ΣRA);
     Merge(Ids[])→(Σ(SoPo_i,N)→EstNew(Id));
     Cu := Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd ⊆ Cu)), J(↓Bd ⊆ Cu);
     Art := E_i -> In((T_a = (Cx_a ∨ Reorg) <- (T_o ⊆ ℝ)), Cm(ΔAffect_St + ΔU)_p) : (B_j <- T_a) -> (ΔAffect_St(B_j) + U : U ≠ U(T_a))_q,

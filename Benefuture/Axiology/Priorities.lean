@@ -119,7 +119,10 @@ structure HarmProfile where
 /-- 
   [R] Computes Ha_wt multiplier (L61):
   Ha_wt := 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0).
-  Uses q₊ = 0.5 and q₋ = 1.5 as explicitly mandated by L61.
+  -- SPEC-CHOICE: Sy_{½,1.5} (L61) read through the Sy_{κ,q₊} signature (L13): κ = ½, q₊ = 1.5.
+  Severity magnitudes are non-negative, so they enter Φ₊; q₊ = 1.5 > 1 makes the score convex
+  (Benefuture goals.txt: "1 plus a convex synergy score over the severity tiers").
+  Earlier drafts read the subscripts as q₊ = 0.5, q₋ = 1.5, which made Ha_wt concave in severity.
 -/
 noncomputable def compute_harm_weight (hp : HarmProfile) (sched : ParamSchedule) (p : GovParams) : ℝ :=
   let items := zip_priority_weights [
@@ -132,15 +135,27 @@ noncomputable def compute_harm_weight (hp : HarmProfile) (sched : ParamSchedule)
     hp.culturalOffence,
     0.0 -- Established necessary harm carries 0 weight (NHa_Estd = 0)
   ] sched
-  -- Override parameters with L61 mandated powers: q₊ = 0.5, q₋ = 1.5
+  -- Override parameters per L61: κ = ½, q₊ = 1.5
   let harm_params : GovParams := {
     p with
-    q_plus        := 0.5
-    q_minus       := 1.5
-    h_q_plus_pos  := by norm_num
-    h_q_minus_pos := by norm_num
+    kappa          := 0.5
+    q_plus         := 1.5
+    h_kappa_nonneg := by norm_num
+    h_q_plus_pos   := by norm_num
   }
   1 + net_synergy items harm_params
+
+/--
+  THEOREM: Harm weighting is superlinear in severity. With q₊ = 1.5 (L61), doubling a tier's
+  magnitude more than doubles its contribution: (2x)^{1.5} > 2·x^{1.5} for x > 0.
+-/
+theorem harm_tier_superlinear (x : ℝ) (hx : 0 < x) :
+    2 * x ^ (1.5 : ℝ) < (2 * x) ^ (1.5 : ℝ) := by
+  rw [Real.mul_rpow (by norm_num) hx.le]
+  have h2 : (2 : ℝ) < 2 ^ (1.5 : ℝ) := by
+    have := Real.rpow_lt_rpow_of_exponent_lt (by norm_num : (1 : ℝ) < 2) (by norm_num : (1 : ℝ) < 1.5)
+    simpa using this
+  exact mul_lt_mul_of_pos_right h2 (Real.rpow_pos_of_pos hx _)
 
 /- --- 6. Necessary Harm (NHa, L55) --- -/
 

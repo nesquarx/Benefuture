@@ -185,6 +185,21 @@ noncomputable def net_synergy (items : List (ℝ × ℝ)) (p : GovParams) : ℝ 
   let phi_neg := phiBranch neg_items p.q_minus p.kappa
   net_synergy_raw phi_pos phi_neg p.lambda
 
+/--
+  [R] Signed-weight Synergy (L13): Sy([(x, w_+ = 1, w_- = w_+)]).
+  Each item carries a gain weight w₊ and a loss weight w₋; gains enter Φ₊ with w₊,
+  losses enter Φ₋ with w₋. `net_synergy` is the special case w₋ = w₊.
+-/
+noncomputable def net_synergy_signed (items : List (ℝ × ℝ × ℝ)) (p : GovParams) : ℝ :=
+  let pos_items := items.filterMap (fun (x, wp, _) => if x > 0 then some (x, wp) else none)
+  let neg_items := items.filterMap (fun (x, _, wn) => if x < 0 then some (-x, wn) else none)
+  net_synergy_raw (phiBranch pos_items p.q_plus p.kappa)
+    (phiBranch neg_items p.q_minus p.kappa) p.lambda
+
+/-- GovParams with κ overridden, e.g. κ = 2 for Value (L73) or κ = ½ for Ha_wt (L61). -/
+def GovParams.with_kappa (p : GovParams) (k : ℝ) (hk : 0 ≤ k) : GovParams :=
+  { p with kappa := k, h_kappa_nonneg := hk }
+
 /-- Binary/two-argument synergy shorthand: Sy₂(x, y). -/
 noncomputable def net_synergy_binary (x y : ℝ) (w_x w_y : ℝ) (p : GovParams) : ℝ :=
   net_synergy [(x, w_x), (y, w_y)] p
@@ -245,6 +260,21 @@ theorem loss_aversion_holds_above_one (m : ℝ) (hm : 1 < m) (q_plus q_minus : �
 theorem loss_aversion_fails_below_one (m : ℝ) (hm_pos : 0 < m) (hm_lt : m < 1) (q_plus q_minus : ℝ) (hq : q_plus < q_minus) :
     m ^ q_minus < m ^ q_plus := by
   exact Real.rpow_lt_rpow_of_exponent_gt hm_pos hm_lt hq
+
+/--
+  [R] THEOREM: Normalisation resolves the scale inversion for significant inputs.
+  As normalises by the context threshold (L48: Norm(… | Th_Cx)), and an input is significant
+  iff its magnitude reaches the threshold (L25). Every significant assessed magnitude is therefore
+  ≥ 1 in threshold units, where loss aversion holds: m^{q₊} ≤ m^{q₋}.
+  Sub-threshold inputs are insignificant, which is where the inversion lives.
+-/
+theorem significant_assessment_preserves_loss_aversion (d th q_plus q_minus : ℝ)
+    (hth : 0 < th) (hsig : th ≤ |d|) (hq : q_plus ≤ q_minus) :
+    |d / th| ^ q_plus ≤ |d / th| ^ q_minus := by
+  have hm : 1 ≤ |d / th| := by
+    rw [abs_div, abs_of_pos hth, le_div_iff₀ hth, one_mul]
+    exact hsig
+  exact Real.rpow_le_rpow_of_exponent_le hm hq
 
 /-- Ŝy is zero at zero. -/
 @[simp]
@@ -396,6 +426,34 @@ theorem net_synergy_single_negative (x w : ℝ) (hx : x < 0) (hw : 0 < w) (p : G
   have h_phi_neg : 0 < w * (-x) ^ p.q_minus := mul_pos hw (Real.rpow_pos_of_pos h_neg_x p.q_minus)
   rw [net_synergy_raw_zero_pos _ h_phi_neg]
   linarith
+
+/-- A single gain is scored with its gain weight w₊ alone: Sy = w₊ · x^{q₊}. -/
+theorem net_synergy_signed_single_gain (x wp wn : ℝ) (hx : 0 < x) (hw : 0 < wp) (p : GovParams) :
+    net_synergy_signed [(x, wp, wn)] p = wp * x ^ p.q_plus := by
+  have hnot_neg : ¬(x < 0) := by linarith
+  dsimp [net_synergy_signed]
+  simp only [hx, hnot_neg, ite_true, ite_false, List.filterMap_cons, List.filterMap_nil]
+  rw [phiBranch_singleton, phiBranch_nil]
+  exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx p.q_plus)) _
+
+/-- A single loss is scored with its loss weight w₋ alone: Sy = −w₋ · |x|^{q₋}. -/
+theorem net_synergy_signed_single_loss (x wp wn : ℝ) (hx : x < 0) (hw : 0 < wn) (p : GovParams) :
+    net_synergy_signed [(x, wp, wn)] p = -(wn * (-x) ^ p.q_minus) := by
+  have hnot_pos : ¬(x > 0) := by linarith
+  have h_neg_x : 0 < -x := by linarith
+  dsimp [net_synergy_signed]
+  simp only [hnot_pos, hx, ite_true, ite_false, List.filterMap_cons, List.filterMap_nil]
+  rw [phiBranch_nil, phiBranch_singleton]
+  exact net_synergy_raw_zero_pos _ (mul_pos hw (Real.rpow_pos_of_pos h_neg_x p.q_minus)) _
+
+/--
+  THEOREM: The loss weight never touches a gain. In V (L73) Ha_wt sits in the w₋ slot, so harm
+  weighting applies to losses only (Benefuture goals.txt: "applied to losses").
+-/
+theorem net_synergy_signed_gain_ignores_loss_weight (x wp wn₁ wn₂ : ℝ) (hx : 0 < x) (hw : 0 < wp)
+    (p : GovParams) :
+    net_synergy_signed [(x, wp, wn₁)] p = net_synergy_signed [(x, wp, wn₂)] p := by
+  rw [net_synergy_signed_single_gain x wp wn₁ hx hw, net_synergy_signed_single_gain x wp wn₂ hx hw]
 
 /-- Synergy of a single item is zero iff the value is zero or the weight is zero. -/
 theorem net_synergy_single_zero_val (w : ℝ) (p : GovParams) :
