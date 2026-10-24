@@ -116,6 +116,7 @@ def established_severe (hf : HarmForecast) (fp : FrParams) : Prop :=
   priced by its severity multiplier. Mild chances of passing harm or time loss never block.
 -/
 noncomputable def fr_permissible (hf : HarmForecast) (fp : FrParams) : Bool :=
+  haveI := Classical.propDecidable (established_severe hf fp)
   !(decide (established_severe hf fp)) &&
     decide (hf.confidence * severity_score hf.profile fp ≤ fp.thHigh)
 
@@ -128,19 +129,30 @@ theorem fr_permissible_spec (hf : HarmForecast) (fp : FrParams)
     decide_eq_true_eq] at h
   exact h
 
+/-- THEOREM: Harm that is not established-severe and within the severity ceiling passes Fr. -/
+theorem fr_permissible_of (hf : HarmForecast) (fp : FrParams)
+    (h1 : ¬ established_severe hf fp)
+    (h2 : hf.confidence * severity_score hf.profile fp ≤ fp.thHigh) :
+    fr_permissible hf fp = true := by
+  unfold fr_permissible
+  simp only [Bool.and_eq_true, Bool.not_eq_true', decide_eq_false_iff_not,
+    decide_eq_true_eq]
+  exact ⟨h1, h2⟩
+
 /-- THEOREM: Established harm at the long-term tier or worse blocks Fr. -/
 theorem established_severe_blocks (hf : HarmForecast) (fp : FrParams)
     (h : established_severe hf fp) : fr_permissible hf fp = false := by
-  unfold fr_permissible
-  simp [h]
+  cases hfr : fr_permissible hf fp
+  · rfl
+  · exact absurd h (fr_permissible_spec hf fp hfr).1
 
 /-- THEOREM: Expected severity above the ceiling blocks Fr, however speculative the harm. -/
 theorem probable_severe_harm_blocks (hf : HarmForecast) (fp : FrParams)
     (h : fp.thHigh < hf.confidence * severity_score hf.profile fp) :
     fr_permissible hf fp = false := by
-  unfold fr_permissible
-  have h_not : ¬(hf.confidence * severity_score hf.profile fp ≤ fp.thHigh) := not_le.mpr h
-  simp [h_not]
+  cases hfr : fr_permissible hf fp
+  · rfl
+  · exact absurd (fr_permissible_spec hf fp hfr).2 (not_le.mpr h)
 
 /-- Profile with the given magnitude per severity tier. -/
 def unit_harm (irreparable irreversible longterm passing timeLoss : ℝ) : HarmProfile :=
@@ -150,8 +162,11 @@ def unit_harm (irreparable irreversible longterm passing timeLoss : ℝ) : HarmP
 /-- THEOREM (defaults): a 50% chance of one passing harm does not block Fr. -/
 theorem mild_passing_chance_permitted :
     fr_permissible ⟨unit_harm 0 0 0 1 0, 0.5⟩ defaultFrParams = true := by
-  unfold fr_permissible established_severe severity_score unit_harm defaultFrParams
-  norm_num
+  apply fr_permissible_of
+  · unfold established_severe unit_harm defaultFrParams
+    norm_num
+  · unfold severity_score unit_harm defaultFrParams
+    norm_num
 
 /-- THEOREM (defaults): a 1% chance of one irreparable harm blocks Fr. -/
 theorem speculative_catastrophe_blocks :
@@ -163,8 +178,11 @@ theorem speculative_catastrophe_blocks :
 /-- THEOREM (defaults): a 0.1% chance of one irreversible non-fatal harm does not paralyse action. -/
 theorem remote_irreversible_chance_permitted :
     fr_permissible ⟨unit_harm 0 1 0 0 0, 0.001⟩ defaultFrParams = true := by
-  unfold fr_permissible established_severe severity_score unit_harm defaultFrParams
-  norm_num
+  apply fr_permissible_of
+  · unfold established_severe unit_harm defaultFrParams
+    norm_num
+  · unfold severity_score unit_harm defaultFrParams
+    norm_num
 
 /-- THEOREM (defaults): certain long-term harm blocks Fr. -/
 theorem certain_longterm_harm_blocks :

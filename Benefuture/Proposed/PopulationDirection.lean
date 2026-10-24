@@ -95,7 +95,7 @@ theorem removal_never_chosen (fp : FrParams) (cs : List Candidate) (c : Candidat
     c.harm.profile.irreparable ≤ 0 := by
   have h := (chosen_action_fr_sound fp cs c hc).1
   by_contra hpos
-  exact h ⟨hconf, Or.inl (lt_of_not_ge hpos)⟩
+  exact h ⟨hconf, Or.inl (not_le.mp hpos)⟩
 
 /- --- 3. Directional pushDistr (L62) and Pareto dominance --- -/
 
