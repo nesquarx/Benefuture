@@ -210,7 +210,11 @@ theorem mul_abs_strictMono : StrictMono (fun x : ℝ => x * |x|) := by
   rcases le_total 0 a with ha | ha <;> rcases le_total 0 b with hb | hb
   · rw [abs_of_nonneg ha, abs_of_nonneg hb]; nlinarith
   · linarith
-  · rw [abs_of_nonpos ha, abs_of_nonneg hb]; nlinarith
+  · rw [abs_of_nonpos ha, abs_of_nonneg hb]
+    rcases hb.lt_or_eq with hb' | hb'
+    · nlinarith [mul_pos hb' hb', mul_self_nonneg a]
+    · subst hb'
+      nlinarith [mul_pos (neg_pos.mpr hab) (neg_pos.mpr hab)]
   · rw [abs_of_nonpos ha, abs_of_nonpos hb]; nlinarith
 
 /--
@@ -284,7 +288,7 @@ def harm_intv_fires (m : ℕ → ℝ) (t : ℕ) : Prop :=
 theorem nonclosing_tunnel_triggers_harm_intv (m : ℕ → ℝ) (h : ℕ) (hopen : m h < m 0) :
     ∃ t < h, harm_intv_fires m t := by
   by_contra hno
-  push_neg at hno
+  simp only [not_exists, not_and] at hno
   have hs : stepwise_min_monotone m h := fun t ht => by
     have := hno t ht
     unfold harm_intv_fires at this
