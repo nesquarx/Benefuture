@@ -559,7 +559,7 @@ theorem net_synergy_raw_strict_mono_plus (P P' M lambda : ℝ) (hP : 0 ≤ P) (h
   · rw [if_neg hS0]
     have hS : 0 < P + M := lt_of_le_of_ne (by linarith) (Ne.symm hS0)
     have key : lambda * (P' * M) / (P' + M) - lambda * (P * M) / (P + M) < P' - P := by
-      rw [mul_div_assoc, mul_div_assoc, ← mul_sub,
+      rw [mul_div_assoc lambda (P' * M) (P' + M), mul_div_assoc lambda (P * M) (P + M), ← mul_sub,
         div_sub_div _ _ (ne_of_gt hS') (ne_of_gt hS)]
       have hnum : P' * M * (P + M) - (P' + M) * (P * M) = M * M * (P' - P) := by ring
       rw [hnum]
@@ -594,7 +594,7 @@ theorem net_synergy_raw_strict_anti_minus (P M M' lambda : ℝ) (hP : 0 ≤ P) (
   · rw [if_neg hS0]
     have hS : 0 < P + M := lt_of_le_of_ne (by linarith) (Ne.symm hS0)
     have key : 0 ≤ lambda * (P * M') / (P + M') - lambda * (P * M) / (P + M) := by
-      rw [mul_div_assoc, mul_div_assoc, ← mul_sub,
+      rw [mul_div_assoc lambda (P * M') (P + M'), mul_div_assoc lambda (P * M) (P + M), ← mul_sub,
         div_sub_div _ _ (ne_of_gt hS') (ne_of_gt hS)]
       have hnum : P * M' * (P + M) - (P + M') * (P * M) = P * P * (M' - M) := by ring
       rw [hnum]
