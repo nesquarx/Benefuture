@@ -7,8 +7,8 @@
   Design decisions (from discussion with the framework author):
   1. Bf ranks actions, not worlds. V is per action; a being-level value exists only as an
      expected lifetime tally over Bounds_B, computed under the best available uplift policy.
-  2. Existing beings may only be uplifted. Removal is irreparable harm, excluded by Fr before
-     any NHa justification is considered (Fr filters, then argmax; resolves SPEC_DIVERGENCES §2.5).
+  2. Existing beings may only be uplifted. Removal is irreparable harm known to occur, excluded
+     by Fr before any NHa justification is considered (Fr filters, then argmax; §2.5).
   3. Withholding uplift is not Ha (no ↓U, ↓H); it is only comparatively worse under argmax.
   4. pushDistr is directional: actions are compared by signed deltas of skew, max and min.
      The skew directions are only non-degenerate jointly with ↑min (left skew can otherwise be
@@ -57,37 +57,45 @@ theorem withholding_incurs_no_harm (u h : ℝ) : ¬ harm_occurs u u h h := by
 
 /- --- 2. Fr filters before NHa and argmax (L55, L74, L135) --- -/
 
-/-- [P] A candidate action with its predicted harm profile and assessed value. -/
+/-- [P] A candidate action with its predicted harm (with confidence) and assessed value. -/
 structure Candidate where
   action : Action
-  harm   : HarmProfile
+  harm   : HarmForecast
   value  : ℝ
 
-/-- [R] Fr permissibility of a candidate (L135). -/
-noncomputable def fr_permitted (c : Candidate) : Bool :=
-  is_action_freedom_permissible c.action c.harm
+/-- [R] Fr permissibility of a candidate (L135, `fr_permissible`). -/
+noncomputable def fr_permitted (fp : FrParams) (c : Candidate) : Bool :=
+  fr_permissible c.harm fp
 
 /--
   [P] Action choice: Fr filters the candidate set, then argmax over value.
   NHa (L55) can only justify a harm among Fr-permitted candidates.
 -/
-noncomputable def choose_action (cs : List Candidate) : Option Candidate :=
-  (cs.filter fr_permitted).argmax (·.value)
+noncomputable def choose_action (fp : FrParams) (cs : List Candidate) : Option Candidate :=
+  (cs.filter (fr_permitted fp)).argmax (·.value)
 
 /--
-  [P] THEOREM: The chosen action never carries irreparable or irreversible harm,
-  however large its value would have been. In particular, removing existing beings
-  (irreparable harm) is never chosen, whatever their expected tally.
+  [P] THEOREM: The chosen action carries no established harm at the long-term tier or worse,
+  and its expected severity stays within Fr's ceiling, however large its value would have been.
 -/
-theorem chosen_action_never_irreparable (cs : List Candidate) (c : Candidate)
-    (hc : c ∈ choose_action cs) :
-    c.harm.irreparable ≤ 0 ∧ c.harm.irreversible ≤ 0 := by
+theorem chosen_action_fr_sound (fp : FrParams) (cs : List Candidate) (c : Candidate)
+    (hc : c ∈ choose_action fp cs) :
+    ¬ established_severe c.harm fp ∧
+      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh := by
   have hm := List.argmax_mem hc
   rw [List.mem_filter] at hm
-  have hp := hm.2
-  simp only [fr_permitted, is_action_freedom_permissible, Bool.and_eq_true,
-    decide_eq_true_eq] at hp
-  exact hp
+  exact fr_permissible_spec _ _ hm.2
+
+/--
+  [P] THEOREM: Removal is never chosen. Removing an existing being is irreparable harm known
+  to occur (confidence ≥ thConf), so no chosen action carries it, whatever the being's tally.
+-/
+theorem removal_never_chosen (fp : FrParams) (cs : List Candidate) (c : Candidate)
+    (hc : c ∈ choose_action fp cs) (hconf : fp.thConf ≤ c.harm.confidence) :
+    c.harm.profile.irreparable ≤ 0 := by
+  have h := (chosen_action_fr_sound fp cs c hc).1
+  by_contra hpos
+  exact h ⟨hconf, Or.inl (lt_of_not_ge hpos)⟩
 
 /- --- 3. Directional pushDistr (L62) and Pareto dominance --- -/
 
@@ -411,12 +419,12 @@ theorem population_novelty_hist_le {τ : Type*} [DecidableEq τ] (hist pop : Lis
 /-- [P] A plan: an evaluated action, its predicted harm, and its trajectory-level pushDistr progress. -/
 structure Plan where
   eval : ActionEvaluation
-  harm : HarmProfile
+  harm : HarmForecast
   prog : Fin 11 → ℝ
 
 /-- [P] Admissible plans pass Fr (L135) and ↑ℝ eligibility (L74, `is_eligible_action`). -/
-noncomputable def plan_admissible (c : Plan) : Bool :=
-  is_action_freedom_permissible c.eval.action c.harm && is_eligible_action c.eval
+noncomputable def plan_admissible (fp : FrParams) (c : Plan) : Bool :=
+  fr_permissible c.harm fp && is_eligible_action c.eval
 
 /-- [P] A score is Pareto-monotone if dominance strictly raises it. -/
 def pareto_monotone {k : ℕ} (score : (Fin k → ℝ) → ℝ) : Prop :=
@@ -430,25 +438,29 @@ theorem weighted_score_pareto_monotone {k : ℕ} (w : Fin k → ℝ) (hw : ∀ i
     ⟨i, Finset.mem_univ i, mul_lt_mul_of_pos_left hi (hw i)⟩
 
 /-- [P] Choice: filter admissible plans, then maximise a score over trajectory progress. -/
-noncomputable def choose_plan (score : (Fin 11 → ℝ) → ℝ) (cs : List Plan) : Option Plan :=
-  (cs.filter plan_admissible).argmax (fun c => score c.prog)
+noncomputable def choose_plan (fp : FrParams) (score : (Fin 11 → ℝ) → ℝ) (cs : List Plan) :
+    Option Plan :=
+  (cs.filter (plan_admissible fp)).argmax (fun c => score c.prog)
 
 /--
   [P] THEOREM: Soundness of the choice pipeline. For any Pareto-monotone score, the chosen plan
-  carries no irreparable or irreversible harm, does not contract ℝ, and is not Pareto-dominated
-  by any admissible plan. The score only chooses within the Pareto front.
+  passes Fr (no established severe harm; expected severity within the ceiling), does not
+  contract ℝ, and is not Pareto-dominated by any admissible plan.
 -/
-theorem choose_plan_sound (score : (Fin 11 → ℝ) → ℝ) (hs : pareto_monotone score)
-    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan score cs) :
-    c.harm.irreparable ≤ 0 ∧ c.harm.irreversible ≤ 0 ∧
+theorem choose_plan_sound (fp : FrParams) (score : (Fin 11 → ℝ) → ℝ) (hs : pareto_monotone score)
+    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan fp score cs) :
+    ¬ established_severe c.harm fp ∧
+      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
       reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      ¬ ∃ d ∈ cs.filter plan_admissible, pareto_dominates d.prog c.prog := by
+      ¬ ∃ d ∈ cs.filter (plan_admissible fp), pareto_dominates d.prog c.prog := by
   have hm := List.argmax_mem hc
   rw [List.mem_filter] at hm
   have hp := hm.2
-  simp only [plan_admissible, is_action_freedom_permissible, is_eligible_action,
-    Bool.and_eq_true, decide_eq_true_eq] at hp
-  refine ⟨hp.1.1, hp.1.2, hp.2, ?_⟩
+  simp only [plan_admissible, Bool.and_eq_true] at hp
+  have hfr := fr_permissible_spec _ _ hp.1
+  have hel := hp.2
+  simp only [is_eligible_action, decide_eq_true_eq] at hel
+  refine ⟨hfr.1, hfr.2, hel, ?_⟩
   rintro ⟨d, hd, hdom⟩
   have h1 := List.le_of_mem_argmax hd hc
   have h2 := hs _ _ hdom

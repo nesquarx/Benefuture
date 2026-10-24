@@ -175,4 +175,27 @@ noncomputable def defaultSchedule : ParamSchedule := {
     norm_num
 }
 
+/--
+  [P] Harm tier schedule for Ha_wt (L61), one weight per tier with NHa_Estd = 0 excluded:
+  Irreparable 0.9 > Irreversible 0.7 > Longterm 0.45 > Passing 0.15 > TimeLoss 0.08 >
+  NHa_Pr 0.04 > Culture_offence 0.01 (≈ 0). Catastrophic and irreversible tiers dominate
+  (irreparable / passing = 6), in line with longtermist priorities.
+-/
+noncomputable def harmSchedule : ParamSchedule := {
+  weights := [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01],
+  h_nonempty := by decide,
+  h_upper_bound := by
+    intro w hw
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hw
+    rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num,
+  h_lower_bound := by
+    intro w hw
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hw
+    rcases hw with rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num,
+  h_decreasing := by
+    simp only [List.pairwise_cons, List.not_mem_nil, IsEmpty.forall_iff,
+      List.mem_cons, or_false, forall_eq_or_imp, forall_eq]
+    norm_num
+}
+
 end Benefuture.Math

@@ -40,7 +40,7 @@ noncomputable def value_on_being
   let u_val := synthesize_understanding asmt.u_tiers sched p
   let h_val := synthesize_happiness asmt.h_tiers sched p
   let n_val := synthesize_novelty asmt.n_tiers sched p
-  let ha_wt := compute_harm_weight asmt.harm_prof sched p
+  let ha_wt := compute_harm_weight asmt.harm_prof p
   -- SPEC-CHOICE: items read through the Sy signature [(x, w₊, w₋ = w₊)] (L13):
   -- U: gains α, losses Ha_wt; H: gains β, losses α·Ha_wt; N: γ both ways.
   -- Benefuture goals.txt: harm is "counted as a weight on losses".

@@ -20,7 +20,8 @@ open Benefuture.Ontology
 open Benefuture.Axiology
 
 /-- 
-  [R] Freedom boundary evaluation directly on an Action and its predicted HarmProfile (L135):
+  [P] Certain-harm boundary: the special case of `fr_permissible` (below) for harm known to occur.
+  Kept for the freedom metric; Fr itself is `fr_permissible` (L135, author's reading).
   "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible);"
   An Action is permissible under the Benefuture Freedom Principle iff:
   1. It causes zero irreparable harm: harm.irreparable ≤ 0
@@ -62,31 +63,115 @@ theorem irreparable_harm_strictly_impermissible
   have h_not : ¬(harm.irreparable ≤ 0) := by linarith
   simp [h_not]
 
-/--
-  [R] Fr boundary with the probable-severity clause (L135):
-  ¬Ha_(Pr(P·severity > Th_high) ∨ irreversible). An action is permissible iff it causes no
-  irreparable or irreversible harm and its expected severity P·severity does not exceed Th_high.
-  The `Ha_Estd` clause is not encoded here; its reading is [OPEN] (SPEC_DIVERGENCES §7.7).
--/
-noncomputable def is_action_freedom_permissible_pr (a : Action) (harm : HarmProfile)
-    (pSevere severity thHigh : ℝ) : Bool :=
-  is_action_freedom_permissible a harm && decide (pSevere * severity ≤ thHigh)
+/- --- Fr per L135, author's reading --- -/
 
-/-- THEOREM: Probable severe harm (P·severity > Th_high) is impermissible under Fr (L135). -/
-theorem probable_severe_harm_impermissible (a : Action) (harm : HarmProfile)
-    (pSevere severity thHigh : ℝ) (h : thHigh < pSevere * severity) :
-    is_action_freedom_permissible_pr a harm pSevere severity thHigh = false := by
-  unfold is_action_freedom_permissible_pr
-  have h_not : ¬(pSevere * severity ≤ thHigh) := not_le.mpr h
+/--
+  [R] A predicted harm with the confidence that it occurs.
+  `profile` holds the magnitude per severity tier; `confidence` ∈ [0, 1].
+-/
+structure HarmForecast where
+  profile    : HarmProfile
+  confidence : ℝ
+
+/--
+  [P] Fr parameters. `thConf`: confidence at which a predicted harm counts as established.
+  `thHigh`: ceiling on expected severity. `sev*`: severity multipliers per tier.
+-/
+structure FrParams where
+  thConf          : ℝ
+  thHigh          : ℝ
+  sevIrreparable  : ℝ
+  sevIrreversible : ℝ
+  sevLongterm     : ℝ
+  sevPassing      : ℝ
+  sevTimeLoss     : ℝ
+
+/--
+  [P] Longtermist defaults: established at 90% confidence; expected severity ceiling 1;
+  severities 1000 / 100 / 10 / 1 / 0.5. A 1% chance of one irreparable harm still blocks;
+  a 50% chance of one passing harm does not.
+-/
+noncomputable def defaultFrParams : FrParams :=
+  { thConf := 0.9, thHigh := 1, sevIrreparable := 1000, sevIrreversible := 100,
+    sevLongterm := 10, sevPassing := 1, sevTimeLoss := 0.5 }
+
+/-- Severity score of a harm profile under Fr's multipliers. -/
+noncomputable def severity_score (hp : HarmProfile) (fp : FrParams) : ℝ :=
+  fp.sevIrreparable * hp.irreparable + fp.sevIrreversible * hp.irreversible +
+    fp.sevLongterm * hp.longterm + fp.sevPassing * hp.passing + fp.sevTimeLoss * hp.timeLoss
+
+/--
+  [R] Established severe harm (`Ha_Estd` in L135, author's reading): confidence at least thConf,
+  and some harm at the long-term tier or worse.
+-/
+def established_severe (hf : HarmForecast) (fp : FrParams) : Prop :=
+  fp.thConf ≤ hf.confidence ∧
+    (0 < hf.profile.irreparable ∨ 0 < hf.profile.irreversible ∨ 0 < hf.profile.longterm)
+
+/--
+  [R] Fr (L135): Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity > Th_high) ∨ irreversible).
+  Permissible iff the harm is not established-severe and its expected severity
+  confidence · severity_score stays within thHigh. The irreversible clause is carried by both:
+  established irreversible harm is established-severe, and speculative irreversible harm is
+  priced by its severity multiplier. Mild chances of passing harm or time loss never block.
+-/
+noncomputable def fr_permissible (hf : HarmForecast) (fp : FrParams) : Bool :=
+  !(decide (established_severe hf fp)) &&
+    decide (hf.confidence * severity_score hf.profile fp ≤ fp.thHigh)
+
+/-- THEOREM: Fr-permissible harm is neither established-severe nor over the severity ceiling. -/
+theorem fr_permissible_spec (hf : HarmForecast) (fp : FrParams)
+    (h : fr_permissible hf fp = true) :
+    ¬ established_severe hf fp ∧ hf.confidence * severity_score hf.profile fp ≤ fp.thHigh := by
+  unfold fr_permissible at h
+  simp only [Bool.and_eq_true, Bool.not_eq_true', decide_eq_false_iff_not,
+    decide_eq_true_eq] at h
+  exact h
+
+/-- THEOREM: Established harm at the long-term tier or worse blocks Fr. -/
+theorem established_severe_blocks (hf : HarmForecast) (fp : FrParams)
+    (h : established_severe hf fp) : fr_permissible hf fp = false := by
+  unfold fr_permissible
+  simp [h]
+
+/-- THEOREM: Expected severity above the ceiling blocks Fr, however speculative the harm. -/
+theorem probable_severe_harm_blocks (hf : HarmForecast) (fp : FrParams)
+    (h : fp.thHigh < hf.confidence * severity_score hf.profile fp) :
+    fr_permissible hf fp = false := by
+  unfold fr_permissible
+  have h_not : ¬(hf.confidence * severity_score hf.profile fp ≤ fp.thHigh) := not_le.mpr h
   simp [h_not]
 
-/-- THEOREM: The probable-severity boundary refines the irreversible-harm boundary. -/
-theorem freedom_pr_refines (a : Action) (harm : HarmProfile) (pSevere severity thHigh : ℝ)
-    (h : is_action_freedom_permissible_pr a harm pSevere severity thHigh = true) :
-    is_action_freedom_permissible a harm = true := by
-  unfold is_action_freedom_permissible_pr at h
-  simp only [Bool.and_eq_true] at h
-  exact h.1
+/-- Profile with the given magnitude per severity tier. -/
+def unit_harm (irreparable irreversible longterm passing timeLoss : ℝ) : HarmProfile :=
+  { irreparable := irreparable, irreversible := irreversible, longterm := longterm,
+    passing := passing, timeLoss := timeLoss }
+
+/-- THEOREM (defaults): a 50% chance of one passing harm does not block Fr. -/
+theorem mild_passing_chance_permitted :
+    fr_permissible ⟨unit_harm 0 0 0 1 0, 0.5⟩ defaultFrParams = true := by
+  unfold fr_permissible established_severe severity_score unit_harm defaultFrParams
+  norm_num
+
+/-- THEOREM (defaults): a 1% chance of one irreparable harm blocks Fr. -/
+theorem speculative_catastrophe_blocks :
+    fr_permissible ⟨unit_harm 1 0 0 0 0, 0.01⟩ defaultFrParams = false := by
+  apply probable_severe_harm_blocks
+  unfold severity_score unit_harm defaultFrParams
+  norm_num
+
+/-- THEOREM (defaults): a 0.1% chance of one irreversible non-fatal harm does not paralyse action. -/
+theorem remote_irreversible_chance_permitted :
+    fr_permissible ⟨unit_harm 0 1 0 0 0, 0.001⟩ defaultFrParams = true := by
+  unfold fr_permissible established_severe severity_score unit_harm defaultFrParams
+  norm_num
+
+/-- THEOREM (defaults): certain long-term harm blocks Fr. -/
+theorem certain_longterm_harm_blocks :
+    fr_permissible ⟨unit_harm 0 0 1 0 0, 1⟩ defaultFrParams = false := by
+  apply established_severe_blocks
+  unfold established_severe unit_harm defaultFrParams
+  norm_num
 
 /--
   [OPEN] Freedom vs Necessary Harm Tension (Fr vs NHa):
@@ -224,6 +309,6 @@ theorem perturbation_safety_invariant (p : ThresholdPerturbation) :
   have h2 := p.h_upper_bound
   constructor <;> omega
 
-noncomputable abbrev Fr := is_action_freedom_permissible
+noncomputable abbrev Fr := fr_permissible
 
 end Benefuture.Subgoals

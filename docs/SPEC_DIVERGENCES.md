@@ -201,7 +201,7 @@ Per the Ground Rules:
   - Net-negative expected tallies never outweigh a smaller positive population.
   - $\uparrow$min may dip through an $NHa$ gap; priorities resolve which gaps to tunnel through.
 - **Lean Spec Choice** (`Benefuture.Proposed.PopulationDirection`, not imported by core):
-  - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_never_irreparable` proves the chosen action never carries irreparable or irreversible harm.
+  - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_fr_sound` proves the chosen action passes Fr (§7.8); `removal_never_chosen`: removing an existing being (irreparable harm known to occur) is never chosen.
   - `progress`, `pushDistr_aligned`, `pareto_dominates` (strict partial order: `pareto_irrefl`, `pareto_trans`), `pareto_front`. `pareto_front_nonempty` proves the filter never empties a non-empty choice set. Pareto-first is grounded in Sy's `find ∧ max(⋂ ↑x)` (L13).
   - Skew from populations: `pop_mean`, `pop_m2`, `pop_m3`, `skewness`, and the square-root-free direction key `skew_key` (`skew_key_eq`: key = γ·|γ|; `mul_abs_strictMono`: the key orders populations exactly as γ does). Direction-only `pushDistr` needs only a strictly monotone transform of γ.
   - `skew_direction_alone_permits_min_decline`: lowering the worst-off being ([2,6,8,9,10] → [0,6,8,9,10]) moves U toward left skew while min falls. Hence ↑min must hold jointly with the skew push.
@@ -255,6 +255,12 @@ Per the Ground Rules:
 - The root `Bf_Pseudocode.txt` (2026-10-16) predated the decisions recorded in `spec/Bf_Pseudocode.txt` (2026-10-19). The root copy is now identical to `spec/`, the recorded source of truth.
 
 ### 7.7 Open Findings
-- **Harm schedule truncation ([OPEN], low impact)**: `compute_harm_weight` zips 8 tiers against `defaultSchedule` (6 weights), so `zip` silently drops Culture_offence and NHa_Estd. Both are ≈ 0 or 0 by L61, so values are unaffected; the truncation is implicit and fragile. The harm tiers also reuse the generic schedule (irreparable 0.8 vs passing 0.25).
-- **Di in H ([OPEN])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`; `HappinessTiers` (L59) has no Di term. Diversity currently reaches V only through N.
-- **Fr clauses ([OPEN])**: `is_action_freedom_permissible_pr` now encodes the irreversible/irreparable and `Pr(P·severity > Th_high)` clauses of L135 (`probable_severe_harm_impermissible`, `freedom_pr_refines`). `Ha_Estd` is not encoded; its meaning in Fr (established harm, as distinct from `NHa_Estd`) needs the author's reading.
+- **Harm schedule ([P], resolved)**: `compute_harm_weight` used the generic 6-weight schedule against 8 tiers, silently dropping Culture_offence and NHa_Estd. It now uses `harmSchedule`, one weight per tier: 0.9 > 0.7 > 0.45 > 0.15 > 0.08 > 0.04 > 0.01 (NHa_Estd = 0 omitted).
+- **Di in H ([P])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`. Di is read as experiential variety within one life (`experiential_variety` = distinct experiences / total; `repetitive_experience_variety`, `experiential_variety_le_one`), distinct from N, which scores outcomes against ℝ. `happiness_from_components` sums the L37 components; mapping them onto the L59 tiers is [OPEN].
+
+### 7.8 Fr per the Author's Reading of L135 ([R] reading, [P] parameters)
+- **Source**: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
+- **Divergence fixed**: the previous Fr blocked any non-zero irreversible harm at any probability, which would block nearly every action.
+- **Lean Spec Choice**: `HarmForecast` (profile + confidence), `FrParams`, `severity_score`, `established_severe`, `fr_permissible` (now `Fr`). Defaults: established at confidence 0.9; expected-severity ceiling 1; severities 1000 / 100 / 10 / 1 / 0.5 (irreparable / irreversible / long-term / passing / time loss).
+- **Proved**: `fr_permissible_spec`, `established_severe_blocks`, `probable_severe_harm_blocks`; with defaults, `mild_passing_chance_permitted` (50% passing harm), `speculative_catastrophe_blocks` (1% irreparable), `remote_irreversible_chance_permitted` (0.1% irreversible), `certain_longterm_harm_blocks`.
+- The certain-harm boundary `is_action_freedom_permissible` is kept as the special case used by the freedom metric.

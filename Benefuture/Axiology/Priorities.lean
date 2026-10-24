@@ -15,6 +15,7 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finset.Card
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 
@@ -99,6 +100,41 @@ noncomputable def synthesize_novelty (n : NoveltyTiers) (sched : ParamSchedule) 
 def pushDistr_unformalized_spec_note : String :=
   "[OPEN] pushDistr requires formal distribution-quantile mechanics deferred to simulation."
 
+/- --- 4b. Happiness components (L37) --- -/
+
+/--
+  [P] Experiential variety of a being's experience stream: distinct experiences / total.
+  Reading of Di in L37 `H(t) := ∫Positive(Se) + BiasMitigation + Di` as variety within one
+  life (a counter to hedonic adaptation), distinct from N, which scores outcomes against ℝ.
+-/
+noncomputable def experiential_variety {τ : Type*} [DecidableEq τ] (stream : List τ) : ℝ :=
+  if stream = [] then 0 else (stream.toFinset.card : ℝ) / stream.length
+
+/-- [P] Happiness from its L37 components, before L59 tiering. -/
+def happiness_from_components (positive biasMitigation di : ℝ) : ℝ :=
+  positive + biasMitigation + di
+
+theorem experiential_variety_le_one {τ : Type*} [DecidableEq τ] (stream : List τ) :
+    experiential_variety stream ≤ 1 := by
+  unfold experiential_variety
+  split_ifs with h
+  · norm_num
+  · have hlen : (0 : ℝ) < stream.length := by
+      exact_mod_cast List.length_pos_iff.mpr h
+    rw [div_le_one hlen]
+    exact_mod_cast List.toFinset_card_le (l := stream)
+
+/-- THEOREM: Repeating one experience n times leaves variety at 1/n. -/
+theorem repetitive_experience_variety {τ : Type*} [DecidableEq τ] (x : τ) (n : ℕ) (hn : 0 < n) :
+    experiential_variety (List.replicate n x) = 1 / n := by
+  unfold experiential_variety
+  have hne : List.replicate n x ≠ [] := by
+    simpa [List.replicate_eq_nil_iff] using Nat.pos_iff_ne_zero.mp hn
+  rw [if_neg hne, List.length_replicate]
+  have hcard : (List.replicate n x).toFinset.card = 1 := by
+    rw [List.toFinset_replicate_of_ne_zero (Nat.pos_iff_ne_zero.mp hn), Finset.card_singleton]
+  rw [hcard, Nat.cast_one]
+
 /- --- 5. Convex Harm Weighting (Ha_wt, L61) --- -/
 
 /-- 
@@ -124,7 +160,8 @@ structure HarmProfile where
   (Benefuture goals.txt: "1 plus a convex synergy score over the severity tiers").
   Earlier drafts read the subscripts as q₊ = 0.5, q₋ = 1.5, which made Ha_wt concave in severity.
 -/
-noncomputable def compute_harm_weight (hp : HarmProfile) (sched : ParamSchedule) (p : GovParams) : ℝ :=
+noncomputable def compute_harm_weight (hp : HarmProfile) (p : GovParams) : ℝ :=
+  -- One weight per tier from `harmSchedule`; NHa_Estd carries weight 0 by L61 and is omitted.
   let items := zip_priority_weights [
     hp.irreparable,
     hp.irreversible,
@@ -132,9 +169,8 @@ noncomputable def compute_harm_weight (hp : HarmProfile) (sched : ParamSchedule)
     hp.passing,
     hp.timeLoss,
     hp.nhaPredicted,
-    hp.culturalOffence,
-    0.0 -- Established necessary harm carries 0 weight (NHa_Estd = 0)
-  ] sched
+    hp.culturalOffence
+  ] harmSchedule
   -- Override parameters per L61: κ = ½, q₊ = 1.5
   let harm_params : GovParams := {
     p with
