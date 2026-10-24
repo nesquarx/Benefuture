@@ -62,7 +62,33 @@ theorem irreparable_harm_strictly_impermissible
   have h_not : ¬(harm.irreparable ≤ 0) := by linarith
   simp [h_not]
 
-/-- 
+/--
+  [R] Fr boundary with the probable-severity clause (L135):
+  ¬Ha_(Pr(P·severity > Th_high) ∨ irreversible). An action is permissible iff it causes no
+  irreparable or irreversible harm and its expected severity P·severity does not exceed Th_high.
+  The `Ha_Estd` clause is not encoded here; its reading is [OPEN] (SPEC_DIVERGENCES §7.7).
+-/
+noncomputable def is_action_freedom_permissible_pr (a : Action) (harm : HarmProfile)
+    (pSevere severity thHigh : ℝ) : Bool :=
+  is_action_freedom_permissible a harm && decide (pSevere * severity ≤ thHigh)
+
+/-- THEOREM: Probable severe harm (P·severity > Th_high) is impermissible under Fr (L135). -/
+theorem probable_severe_harm_impermissible (a : Action) (harm : HarmProfile)
+    (pSevere severity thHigh : ℝ) (h : thHigh < pSevere * severity) :
+    is_action_freedom_permissible_pr a harm pSevere severity thHigh = false := by
+  unfold is_action_freedom_permissible_pr
+  have h_not : ¬(pSevere * severity ≤ thHigh) := not_le.mpr h
+  simp [h_not]
+
+/-- THEOREM: The probable-severity boundary refines the irreversible-harm boundary. -/
+theorem freedom_pr_refines (a : Action) (harm : HarmProfile) (pSevere severity thHigh : ℝ)
+    (h : is_action_freedom_permissible_pr a harm pSevere severity thHigh = true) :
+    is_action_freedom_permissible a harm = true := by
+  unfold is_action_freedom_permissible_pr at h
+  simp only [Bool.and_eq_true] at h
+  exact h.1
+
+/--
   [OPEN] Freedom vs Necessary Harm Tension (Fr vs NHa):
   Pseudocode L55 defines Necessary Harm:
   NHa := Ha : Ha → ↑V > Ha.
@@ -76,8 +102,9 @@ theorem irreparable_harm_strictly_impermissible
   strictly exceeds the harm (0 < net_necessary_gain nh).
   Under L55, this action is a valid Necessary Harm that increases civilizational Value.
   Under L135, this action is strictly impermissible under Freedom (is_action_freedom_permissible = false).
-  Freedom's deontological non-harm boundary excludes a globally value-positive action!
-  This tension is left unresolved in the spec as an open design question.
+  Freedom's deontological non-harm boundary excludes a globally value-positive action.
+  [P] Resolution (SPEC_DIVERGENCES §6.1): a lexical ordering. Fr filters the action set first;
+  NHa can only justify a harm among Fr-permitted actions (`Proposed.PopulationDirection.choose_plan`).
 -/
 theorem freedom_excludes_irreversible_necessary_harm
     (a : Action) (harm : HarmProfile) (nh : NecessaryHarm)

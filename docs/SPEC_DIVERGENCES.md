@@ -257,4 +257,4 @@ Per the Ground Rules:
 ### 7.7 Open Findings
 - **Harm schedule truncation ([OPEN])**: `compute_harm_weight` zips 8 tiers against `defaultSchedule` (6 weights); `zip` drops NHa_Pr and Culture_offence, though L61 ranks NHa_Pr above Culture_offence. A 7-weight harm schedule is needed (NHa_Estd is 0 by definition).
 - **Di in H ([OPEN])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`; `HappinessTiers` (L59) has no Di term. Diversity currently reaches V only through N.
-- **Fr clauses ([OPEN])**: `is_action_freedom_permissible` encodes the irreversible/irreparable clause of L135 only. `Pr(P·severity > Th_high)` and `Ha_Estd` are not yet encoded; the meaning of `Ha_Estd` in Fr (established harm, as distinct from `NHa_Estd`) needs the author's reading.
+- **Fr clauses ([OPEN])**: `is_action_freedom_permissible_pr` now encodes the irreversible/irreparable and `Pr(P·severity > Th_high)` clauses of L135 (`probable_severe_harm_impermissible`, `freedom_pr_refines`). `Ha_Estd` is not encoded; its meaning in Fr (established harm, as distinct from `NHa_Estd`) needs the author's reading.
