@@ -1,4 +1,5 @@
 {
-  "assessment_ex_post": 7.500000,
-  "assessment_ex_ante": 8.000000
+  "inputs": {"predicted": 10.0, "counter": 2.0, "measured": 7.5, "t0": 10.0, "th_cx": 2.0},
+  "assessment_ex_post_t15": 2.750000,
+  "assessment_ex_ante_t5": 4.000000
 }

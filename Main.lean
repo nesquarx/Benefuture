@@ -18,16 +18,19 @@ def main : IO Unit := do
   let synJson := s!"\{\n  \"synergy_positive\": {synPos},\n  \"synergy_negative\": {synNeg},\n  \"synergy_equal_cancellation\": {synEqual},\n  \"synergy_zero\": {synZero},\n  \"synergy_single\": {synSingle},\n  \"squashed_synergy_pos\": {syHatPos},\n  \"squashed_synergy_neg\": {syHatNeg},\n  \"squashed_synergy_zero\": {syHatZero}\n}\n"
   IO.FS.writeFile "spec/vectors/synergy.json" synJson
 
-  -- 2. assessment.json
-  let asExPost := As_ref 10.0 2.0 7.5 15.0 10.0
-  let asExAnte := As_ref 10.0 2.0 7.5 5.0 10.0
-  let asJson := s!"\{\n  \"assessment_ex_post\": {asExPost},\n  \"assessment_ex_ante\": {asExAnte}\n}\n"
+  -- 2. assessment.json (L48: ((t ≤ t0 ? Pr : Me) - Pr_counter) / Th_Cx)
+  let asExPost := As_ref 10.0 2.0 7.5 15.0 10.0 2.0
+  let asExAnte := As_ref 10.0 2.0 7.5 5.0 10.0 2.0
+  let asJson := s!"\{\n  \"inputs\": \{\"predicted\": 10.0, \"counter\": 2.0, \"measured\": 7.5, \"t0\": 10.0, \"th_cx\": 2.0},\n  \"assessment_ex_post_t15\": {asExPost},\n  \"assessment_ex_ante_t5\": {asExAnte}\n}\n"
   IO.FS.writeFile "spec/vectors/assessment.json" asJson
 
-  -- 3. value.json
-  let vStandard := V_ref 10.0 2.0 5.0 1.0 1.0 0.4 1.0 1.0 0.5 1.1 1.5
-  let vHarmDominated := V_ref 2.0 10.0 1.0 1.0 1.0 0.4 1.0 1.0 0.5 1.1 1.5
-  let vJson := s!"\{\n  \"value_standard\": {vStandard},\n  \"value_harm_dominated\": {vHarmDominated}\n}\n"
+  -- 3. value.json (defaultGovParams: α=0.8, β=0.6, γ=0.4, λ=0.5, q₊=1.1, q₋=1.5; κ=2 for V)
+  let haTiers : List (Float × Float) := [(0.0, 0.8), (0.0, 0.6), (1.0, 0.4), (2.0, 0.25)]
+  let haWt := HaWt_ref haTiers 0.5
+  let vGains := V_ref 2.0 1.5 1.2 0.8 0.6 0.4 haWt 0.5 1.1 1.5
+  let vULoss := V_ref (-2.0) 1.5 1.2 0.8 0.6 0.4 haWt 0.5 1.1 1.5
+  let vULossNoHarm := V_ref (-2.0) 1.5 1.2 0.8 0.6 0.4 1.0 0.5 1.1 1.5
+  let vJson := s!"\{\n  \"harm_tiers\": [[0.0, 0.8], [0.0, 0.6], [1.0, 0.4], [2.0, 0.25]],\n  \"harm_weight\": {haWt},\n  \"value_all_gains\": {vGains},\n  \"value_u_loss\": {vULoss},\n  \"value_u_loss_unit_harm_weight\": {vULossNoHarm}\n}\n"
   IO.FS.writeFile "spec/vectors/value.json" vJson
 
   -- 4. escrow.json
@@ -50,5 +53,12 @@ def main : IO Unit := do
   let ehrNone := EHR_attenuate_ref 100.0 0.0
   let demJson := s!"\{\n  \"voting_weight_profile\": {vwBase},\n  \"ehr_full_attenuation\": {ehrFull},\n  \"ehr_half_attenuation\": {ehrHalf},\n  \"ehr_zero_attenuation\": {ehrNone}\n}\n"
   IO.FS.writeFile "spec/vectors/democracy.json" demJson
+
+  -- 7. population.json (Benefuture.Proposed.PopulationDirection)
+  let p0 : List Float := [2.0, 6.0, 8.0, 9.0, 10.0]
+  let p1 : List Float := [0.0, 6.0, 8.0, 9.0, 10.0]
+  let fronts := pareto_front_ref [[1.0, 1.0], [0.5, 1.0], [2.0, 0.0], [0.0, 0.0]]
+  let popJson := s!"\{\n  \"skew_key_before\": {skew_key_ref p0},\n  \"skew_key_after_lowering_min\": {skew_key_ref p1},\n  \"novelty_copies_5\": {population_novelty_ref [] [7, 7, 7, 7, 7]},\n  \"novelty_distinct_5\": {population_novelty_ref [] [1, 2, 3, 4, 5]},\n  \"novelty_with_history\": {population_novelty_ref [1, 1, 2] [1, 2, 3]},\n  \"effective_types_mixed\": {effective_types_ref [1, 1, 2, 3, 3, 3]},\n  \"pareto_front_indices\": {fronts},\n  \"delegation_capped_cap100_w10x30\": {accumulate_capped_ref 100.0 0.0 (List.replicate 30 10.0)}\n}\n"
+  IO.FS.writeFile "spec/vectors/population.json" popJson
 
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"

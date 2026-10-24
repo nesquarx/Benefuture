@@ -64,26 +64,46 @@ def Sy_hat_ref (s : Float) (nu : Float) (h : Float) : Float :=
 
 /--
   Reference calculation of Dynamic Assessment As.
-  Corresponds to: Bf_Pseudocode.txt L48.
-  If t > t0 (ex-post), returns measured empirical delta;
-  otherwise (ex-ante), returns predicted delta minus counterfactual.
+  Corresponds to: Bf_Pseudocode.txt L48:
+  As(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx).
+  Ex-ante (t ≤ t0) uses the prediction, ex-post the measurement; the counterfactual prediction
+  is subtracted in both cases, and the difference is normalised by the context threshold.
+  Matches `dynamic_assessment_real` in the spec.
 -/
-def As_ref (predicted : Float) (counter : Float) (measured : Float) (t : Float) (t0 : Float) : Float :=
-  if t > t0 then
-    measured
-  else
-    predicted - counter
+def As_ref (predicted : Float) (counter : Float) (measured : Float) (t : Float) (t0 : Float)
+    (thCx : Float) : Float :=
+  let actionBranch := if t > t0 then measured else predicted
+  (actionBranch - counter) / thCx
 
 /--
-  Reference calculation of Tiered Value V over Understanding (U), Harm (H), and Novelty (N).
-  Corresponds to: Bf_Pseudocode.txt L73.
+  Reference signed-weight synergy (L13): Sy([(x, w_+ = 1, w_- = w_+)]).
+  items: list of (x, w₊, w₋). Gains enter Φ₊ with w₊, losses enter Φ₋ with |x| and w₋.
+  Matches `net_synergy_signed` in the spec.
+-/
+def Sy_signed_ref (items : List (Float × Float × Float))
+    (lambda : Float) (kappa : Float) (qPlus : Float) (qMinus : Float) : Float :=
+  let posItems := items.filterMap (fun (x, wp, _) => if x > 0.0 then some (x, wp) else none)
+  let negItems := items.filterMap (fun (x, _, wn) => if x < 0.0 then some (-x, wn) else none)
+  Sy_ref posItems negItems lambda kappa qPlus qMinus
+
+/--
+  Reference calculation of the harm weight Ha_wt (L61): 1 + Sy_{½,1.5}(tiers).
+  tiers: list of (severity magnitude ≥ 0, priority weight), highest tier first.
+  κ = ½, q₊ = 1.5 per the Sy_{κ,q₊} signature (L13). Matches `compute_harm_weight`.
+-/
+def HaWt_ref (tiers : List (Float × Float)) (lambda : Float) : Float :=
+  1.0 + Sy_ref tiers [] lambda 0.5 1.5 1.5
+
+/--
+  Reference calculation of Value V (L73):
+  V := Sy_{2}(As[(U, α, Ha_wt), (H, β, α·Ha_wt), (N, γ)]), items as (x, w₊, w₋), κ = 2.
+  u, h, n are assessed (threshold-normalised) changes. Matches `value_on_being`.
 -/
 def V_ref (u : Float) (h : Float) (n : Float)
-    (alpha : Float) (beta : Float) (gamma : Float) (ha_wt : Float)
-    (lambda : Float) (kappa : Float) (qPlus : Float) (qMinus : Float) : Float :=
-  let posItems := [(u, 1.0), (n, gamma)]
-  let negItems := [(h, beta * alpha * ha_wt)]
-  Sy_ref posItems negItems lambda kappa qPlus qMinus
+    (alpha : Float) (beta : Float) (gamma : Float) (haWt : Float)
+    (lambda : Float) (qPlus : Float) (qMinus : Float) : Float :=
+  Sy_signed_ref [(u, alpha, haWt), (h, beta, alpha * haWt), (n, gamma, gamma)]
+    lambda 2.0 qPlus qMinus
 
 /--
   Reference calculation of Escrow Fund Splitting:
@@ -130,5 +150,50 @@ def EHR_attenuate_ref (rawWeight : Float) (cycleOverlap : Float) : Float :=
 -/
 def Voting_weight_ref (base : Float) (expertise : Float) (impact : Float) : Float :=
   base + expertise + impact
+
+/- --- Population direction (Benefuture.Proposed.PopulationDirection) --- -/
+
+def mean_ref (xs : List Float) : Float :=
+  if xs.isEmpty then 0.0 else sumFloat xs / xs.length.toFloat
+
+def central_moment_ref (xs : List Float) (k : Float) : Float :=
+  let m := mean_ref xs
+  if xs.isEmpty then 0.0 else sumFloat (xs.map (fun x => (x - m).pow k)) / xs.length.toFloat
+
+/-- Third central moment with sign preserved (Float.pow is undefined for negative bases). -/
+def m3_ref (xs : List Float) : Float :=
+  let m := mean_ref xs
+  if xs.isEmpty then 0.0 else sumFloat (xs.map (fun x => (x - m) * (x - m) * (x - m))) / xs.length.toFloat
+
+/-- Square-root-free skew direction key γ·|γ| = m₃·|m₃| / m₂³. Matches `skew_key`. -/
+def skew_key_ref (xs : List Float) : Float :=
+  let m2 := central_moment_ref xs 2.0
+  let m3 := m3_ref xs
+  if m2 == 0.0 then 0.0 else m3 * m3.abs / (m2 * m2 * m2)
+
+/-- Σ_b 1 / Frequency(type b), frequency within history ++ population. Matches `population_novelty_hist`. -/
+def population_novelty_ref (hist pop : List Nat) : Float :=
+  let all := hist ++ pop
+  sumFloat (pop.map (fun x => 1.0 / (all.count x).toFloat))
+
+/-- Number of distinct types. Matches `effective_types`. -/
+def effective_types_ref (pop : List Nat) : Nat :=
+  pop.eraseDups.length
+
+/-- q Pareto-dominates p: at least as good everywhere, strictly better somewhere. -/
+def pareto_dominates_ref (q p : List Float) : Bool :=
+  (q.zip p).all (fun (a, b) => b ≤ a) && (q.zip p).any (fun (a, b) => b < a)
+
+/-- Indices of non-dominated progress vectors. Matches `pareto_front`. -/
+def pareto_front_ref (ps : List (List Float)) : List Nat :=
+  (List.range ps.length).filter (fun i =>
+    match ps[i]? with
+    | some p => !(ps.any (fun q => pareto_dominates_ref q p))
+    | none => false)
+
+/-- Sequential capped delegation (L114). Matches `accumulate_capped`. -/
+def accumulate_capped_ref (cap : Float) : Float → List Float → Float
+  | cur, [] => cur
+  | cur, w :: ws => accumulate_capped_ref cap (if cur < cap then cur + w else cur) ws
 
 end BenefutureReference

@@ -67,13 +67,13 @@ Per the Ground Rules:
   - `squashed_synergy_strictly_monotone_nu_one`: strictly monotone for canonical $\nu = 1$.
   - `net_synergy_single_positive` & `net_synergy_single_negative`: strictly positive/negative for single positive/negative items.
 
-### 2.3 Loss Aversion Scale Inversion below 1.0 ([OPEN])
+### 2.3 Loss Aversion Scale Inversion below 1.0 ([OPEN] → resolved in §7.2, [R])
 - **Source**: `Bf_Pseudocode.txt` L13: $q_+ = 1.1, q_- = 1.5$.
 - **Finding**: With $q_- > q_+ > 1$, loss aversion behaves correctly for magnitudes $m > 1$ (`loss_aversion_holds_above_one`), but inverts for $0 < m < 1$ (`loss_aversion_fails_below_one`):
   $$\forall m \in (0, 1), \quad m^{q_-} < m^{q_+}$$
 - **Spec Implication**: Because exponents $> 1$ compress sub-unitary quantities, higher penalty powers perversely attenuate micro-harms unless input variables are explicitly normalized against a unit scale threshold. Tagged `[OPEN]`.
 
-### 2.4 Harm Tiers: Weighted vs Lexical Readings ([OPEN])
+### 2.4 Harm Tiers: Weighted vs Lexical Readings ([OPEN] → resolved in §7.3, [P])
 - **Source**: `Bf_Pseudocode.txt` L61-63; `Benefuture goals.txt` #Harm.
 - **Finding**:
   - Under a weighted reading (`HarmWeights`), $\mathbb{R}$ is Archimedean, so `finite_exchange_rate_weighted` proves $\exists n : \mathbb{N}, n \cdot w_{pass} \ge w_{irrep}$ (aggregation dilemma).
@@ -166,7 +166,7 @@ Per the Ground Rules:
 ### 4.5 Governance & Incentives ([R], [P], [OPEN])
 - **Source**: `Bf_Pseudocode.txt` L34, L114, L117, L157.
 - **Liquid Democracy Acyclicity**: Defined `DelegationGraph` with well-founded acyclicity condition. Proved `delegation_no_trivial_cycles`.
-- **Delegation Cap & Power Concentration ([OPEN])**: Theorem `star_topology_power_concentration` proves that without a cap, a star delegation graph allows a single entity to concentrate 100% of voting weight. Proposed `SatisfiesDelegationCap` (e.g. 5% max weight).
+- **Delegation Cap & Power Concentration ([OPEN] → resolved in §7.4, [R])**: Theorem `star_topology_power_concentration` proves that without a cap, a star delegation graph allows a single entity to concentrate 100% of voting weight. Proposed `SatisfiesDelegationCap` (e.g. 5% max weight).
 - **Strict Propriety of Brier Score**: In `Benefuture.Governance.Incentives`, proved `brier_score_strictly_proper` via algebraic decomposition $\mathbb{E}[L(p)] = (p - q)^2 + q(1-q)$. Reporting truth $p = q$ is the unique global minimizer.
 - **Anti-Cobra Incentive Compatibility**: Proved `bounty_incentive_compatible`: under clawback $C \ge B + D$, expected farming payoff is strictly negative whenever detection probability $p_{detect} > B / C$.
 - **Uncollateralized Exploit Vulnerability ([OPEN])**: Documented `UncollateralizedExploitVulnerability`: if market short gains exceed $C$, or attacker wealth $W < C$, clawbacks cannot deter exploit planting.
@@ -221,3 +221,40 @@ Per the Ground Rules:
 ### 6.2 Build Coverage of Proposed Modules (SPEC-CHOICE)
 - **Finding**: The `Benefuture` library built only modules reachable from `Benefuture.lean`. `Proposed/` modules are deliberately not imported by core, so they were never compiled in CI.
 - **Fix**: `lakefile.toml` globs `Benefuture.+`, so every module under `Benefuture/` is compiled without core importing `Proposed/`.
+
+---
+
+## 7. Phase 7 Divergences (Coherence and Simulation Readiness)
+
+### 7.1 Sy Signature, Value and Harm Weight (SPEC-CHOICE, from L13)
+- **Source**: `Bf_Pseudocode.txt` L13 (`Sy_{κ,q₊}([(x, w_+ = 1, w_- = w_+)])`), L61 (`Ha_wt: 1 + Sy_{½,1.5}(…)`), L73 (`V := Sy_{2}(As([(U, α, Ha_wt), (H, β, α·Ha_wt), (N, γ)]))`); `Benefuture goals.txt` (V uses "κ = 2"; harm is "counted as a weight on losses"; Ha_wt is "a convex synergy score").
+- **Divergences fixed**:
+  - V applied α·Ha_wt to U gains as well as losses, and used the default κ. Now `net_synergy_signed` takes items (x, w₊, w₋); V uses U: (α, Ha_wt), H: (β, α·Ha_wt), N: (γ, γ), with κ = 2.
+  - Ha_wt read `Sy_{½,1.5}` as q₊ = 0.5, q₋ = 1.5, making it concave in severity. Read through the L13 signature it is κ = ½, q₊ = 1.5 (convex). `harm_tier_superlinear` proves doubling a tier more than doubles its contribution.
+  - The reference `V_ref` treated H as harm and swapped λ and κ in its test vector. Rewritten to match the spec.
+- **Proved**: `net_synergy_signed_single_gain`, `net_synergy_signed_single_loss`, `net_synergy_signed_gain_ignores_loss_weight` (harm weight never touches a gain).
+
+### 7.2 Loss-Aversion Inversion Resolved by Significance (resolves §2.3, [R])
+- **Source**: L25 (`(Pm_i ≥ Th_Cx) ⇒ Sig`), L48 (`As := Norm(… | Th_Cx)`).
+- **Resolution**: Sy's inputs are As outputs in threshold units. `significant_assessment_preserves_loss_aversion`: every significant input has magnitude ≥ 1, where $m^{q_+} \le m^{q_-}$. The inversion lives only below the significance threshold.
+
+### 7.3 Weighted vs Lexical Harm Resolved by Fr (resolves §2.4, [P])
+- **Source**: L61 (Ha_wt is a Sy-weighted sum), L135 (Fr excludes irreversible harm).
+- **Resolution**: Both readings hold, at different layers. Fr removes irreversible and irreparable harm lexically before any weighting (`choose_plan_sound`, §6.1); Ha_wt weights the remaining tiers. No finite quantity of passing harm is ever traded against an irreversible one inside an admissible choice.
+
+### 7.4 Delegation Cap from L114 (resolves §4.5 cap, [R])
+- **Source**: L114 (`DelegateDnVote(S_i → S_j) if … CumulativeVoteWeight(S_j) < Th_k …`).
+- **Resolution**: The cap is in the pseudocode. `accumulate_capped_bound`: under sequential delegation, a delegate's weight never exceeds Th_k + M, where M bounds a single delegator's weight. The star topology cannot form.
+
+### 7.5 Reference Library Fidelity (simulation readiness)
+- `As_ref` returned the raw measurement ex post and never normalised. Now `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx`, matching `dynamic_assessment_real`.
+- Added `Sy_signed_ref`, `HaWt_ref`, and population operators matching `Benefuture.Proposed.PopulationDirection`: `skew_key_ref`, `population_novelty_ref`, `effective_types_ref`, `pareto_front_ref`, `accumulate_capped_ref`.
+- Vectors: `assessment.json` and `value.json` regenerated with `defaultGovParams`; new `population.json`. Values agree with the Lean theorems (e.g. skew key −81/128 → −1.0646; novelty of 5 copies = 1).
+
+### 7.6 Pseudocode Copies
+- The root `Bf_Pseudocode.txt` (2026-10-16) predated the decisions recorded in `spec/Bf_Pseudocode.txt` (2026-10-19). The root copy is now identical to `spec/`, the recorded source of truth.
+
+### 7.7 Open Findings
+- **Harm schedule truncation ([OPEN])**: `compute_harm_weight` zips 8 tiers against `defaultSchedule` (6 weights); `zip` drops NHa_Pr and Culture_offence, though L61 ranks NHa_Pr above Culture_offence. A 7-weight harm schedule is needed (NHa_Estd is 0 by definition).
+- **Di in H ([OPEN])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`; `HappinessTiers` (L59) has no Di term. Diversity currently reaches V only through N.
+- **Fr clauses ([OPEN])**: `is_action_freedom_permissible` encodes the irreversible/irreparable clause of L135 only. `Pr(P·severity > Th_high)` and `Ha_Estd` are not yet encoded; the meaning of `Ha_Estd` in Fr (established harm, as distinct from `NHa_Estd`) needs the author's reading.

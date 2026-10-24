@@ -1,0 +1,10 @@
+{
+  "skew_key_before": -0.632812,
+  "skew_key_after_lowering_min": -1.064622,
+  "novelty_copies_5": 1.000000,
+  "novelty_distinct_5": 5.000000,
+  "novelty_with_history": 1.833333,
+  "effective_types_mixed": 3,
+  "pareto_front_indices": [0, 2],
+  "delegation_capped_cap100_w10x30": 100.000000
+}
