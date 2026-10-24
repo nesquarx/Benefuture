@@ -16,7 +16,7 @@
 This repository hosts the **type-checked specification in Lean 4**. In this architecture:
 - **Lean 4 holds the specification**: types, invariants, definitions, structural properties, and mathematical sanity lemmas.
 - **Assumptions and requirements** are stated explicitly as hypotheses, structure fields, and design requirements rather than tautological theorems.
-- **Behavioural and empirical claims** (such as convergence under adversarial agents, gaming resistance, and stability of metric-model competition) are formulated as conjectures (`Conj_*`) intended for empirical validation in simulation (e.g. in Julia).
+- **Behavioural and empirical claims** (such as convergence under adversarial agents, gaming resistance, and stability of metric-model competition) are formulated as conjectures (`Conj_*` in `Benefuture.Systems.Conjectures`) over a `SimTrace` of simulation observables: definitions only, neither assumed nor proved, intended for empirical validation in simulation (e.g. in Julia).
 
 ---
 
@@ -158,6 +158,8 @@ This repository maintains a two-tier formalization architecture:
   - `freedom.json`: `fr_permissible` with longtermist defaults, `experiential_variety` (L135, L37).
   - `population.json`: `skew_key`, `population_novelty_hist`, `effective_types`, `pareto_front`, `accumulate_capped` (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Governance.Incentives`).
 - Runtime checks that follow from proved theorems: chosen plans pass Fr (no established harm at long-term severity or worse, expected severity within the ceiling) and never contract ℝ (`choose_plan_sound`); no delegate exceeds Th_k + max single weight (`accumulate_capped_bound`); summed novelty never exceeds the number of distinct types (`population_novelty_hist_le`).
+- Parameter space: `Benefuture.Systems.ParamSpace` defines every governed parameter (`ParamVector`), the admissible region (`Admissible`), bootstrap defaults (`bootstrapParams`) and SigThGv steps. Sweep parameters only inside `Admissible`; every structural theorem holds there (`governed_params_admissible`, `governed_choose_plan_sy_sound`).
+- Conjectures to test: implement `SimTrace` and check each `Conj_*` on simulated runs.
 - Regenerate vectors with `lake exe benefuture` (Mathlib-free; builds in seconds).
 
 ---
