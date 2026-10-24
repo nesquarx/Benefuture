@@ -31,9 +31,10 @@ open Benefuture.Ontology
   3. Novelty (N) with weight γ
   
   NOTE: The ad hoc δ penalty and experienceLevel multiplier from early drafts are removed.
-  [OPEN] Sentience Capacity Multiplier:
-  Scaling value by sentience capacity (e.g. experienceLevel) is a proposed extension
-  but is omitted from the core pseudocode L73; marked [OPEN] pending empirical calibration.
+  [R] No sentience multiplier (decision 6b): L73 has none. Capacity enters through magnitudes:
+  U and H are measured on absolute scales (U: model accuracy and explanation; H: positive
+  experience), so a being of small capacity has small assessed changes. Saturation (Ŝy, L14)
+  remains available if simulation shows utility-monster behaviour.
 -/
 noncomputable def value_on_being 
     (_b : Being) (asmt : PrioritizedAssessment) (sched : ParamSchedule) (p : GovParams) : ℝ :=

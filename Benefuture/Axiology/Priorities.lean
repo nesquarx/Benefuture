@@ -137,10 +137,19 @@ theorem BiasClaim.discount_mem (b : BiasClaim) : 0 ≤ b.discount ∧ b.discount
   obtain ⟨hc0, hc1⟩ := b.h_conf
   exact ⟨mul_nonneg hc0 hd0, mul_le_one₀ hc1 hd0 hd1⟩
 
-/-- [R] A happiness source: measured intensity (kept raw, Me) and the MM's bias claim. -/
+/-- [R] Kind of a happiness source, labelled by MMs; the L59 kind tiers (decision 6c). -/
+inductive HappinessKind where
+  | eudaimonic  : HappinessKind
+  | shareable   : HappinessKind
+  | satisficing : HappinessKind
+  | peak        : HappinessKind
+  deriving DecidableEq, Repr
+
+/-- [R] A happiness source: measured intensity (kept raw, Me), the MM's bias claim and kind label. -/
 structure HappinessSource where
   intensity : ℝ
   bias      : BiasClaim := BiasClaim.none
+  kind      : HappinessKind := .satisficing
 
 /-- ∫Positive(Se) (L37): sum of non-negative measured intensities. -/
 noncomputable def positive_integral (sources : List HappinessSource) : ℝ :=
@@ -183,7 +192,7 @@ theorem happiness_score_nonneg (sources : List HappinessSource) (di : ℝ) :
 
 /-- THEOREM: A source with no bias claim counts its full measured intensity. -/
 theorem unclaimed_source_counts_fully (i di : ℝ) :
-    happiness_score [⟨i, BiasClaim.none⟩] di = max 0 i + max 0 di := by
+    happiness_score [{ intensity := i, bias := BiasClaim.none }] di = max 0 i + max 0 di := by
   rw [happiness_score_eq]
   simp [BiasClaim.none, BiasClaim.discount]
 
@@ -200,11 +209,81 @@ theorem fully_biased_contributes_nothing (s : HappinessSource) (ss : List Happin
 /-- THEOREM: A larger effective bias discount never raises happiness. -/
 theorem more_bias_less_happiness (i : ℝ) (b₁ b₂ : BiasClaim) (di : ℝ)
     (h : b₁.discount ≤ b₂.discount) :
-    happiness_score [⟨i, b₂⟩] di ≤ happiness_score [⟨i, b₁⟩] di := by
+    happiness_score [{ intensity := i, bias := b₂ }] di ≤
+      happiness_score [{ intensity := i, bias := b₁ }] di := by
   rw [happiness_score_eq, happiness_score_eq]
   simp only [List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, add_zero]
   have := le_max_left 0 i
   nlinarith
+
+/-- [R] Bias-corrected happiness from sources of one kind. -/
+noncomputable def kind_score (k : HappinessKind) (sources : List HappinessSource) : ℝ :=
+  (sources.map (fun s => if s.kind = k then (1 - s.bias.discount) * max 0 s.intensity else 0)).sum
+
+/--
+  [P] A being's H tiers (L59, decision 6c): kind tiers from its labelled sources, distributional
+  tiers (baseline = worse-off quantile floor, median) from the population's H scores.
+  Experiential variety Di joins the eudaimonic tier (variety within a life as growth).
+-/
+noncomputable def happiness_tiers_of (sources : List HappinessSource) (di baseline median : ℝ) :
+    HappinessTiers :=
+  { eudaimonic := kind_score .eudaimonic sources + max 0 di,
+    shareable := kind_score .shareable sources,
+    satisficing := kind_score .satisficing sources,
+    baseline := baseline,
+    median := median,
+    peak := kind_score .peak sources }
+
+theorem kind_scores_sum (sources : List HappinessSource) :
+    kind_score .eudaimonic sources + kind_score .shareable sources +
+      kind_score .satisficing sources + kind_score .peak sources =
+    (sources.map (fun s => (1 - s.bias.discount) * max 0 s.intensity)).sum := by
+  induction sources with
+  | nil => simp [kind_score]
+  | cons s ss ih =>
+    simp only [kind_score, List.map_cons, List.sum_cons] at ih ⊢
+    cases hk : s.kind <;> simp [hk] <;> linarith
+
+/--
+  THEOREM: The kind tiers partition the H score: they sum exactly to the being's bias-corrected
+  happiness, so labelling by kind neither loses nor double-counts any happiness.
+-/
+theorem kind_tiers_partition_happiness (sources : List HappinessSource) (di baseline median : ℝ) :
+    (happiness_tiers_of sources di baseline median).eudaimonic +
+      (happiness_tiers_of sources di baseline median).shareable +
+      (happiness_tiers_of sources di baseline median).satisficing +
+      (happiness_tiers_of sources di baseline median).peak =
+    happiness_score sources di := by
+  simp only [happiness_tiers_of]
+  rw [happiness_score_eq, ← kind_scores_sum]
+  ring
+
+/-- [R] Kind of an understanding change, labelled by MMs; the L58 kind tiers (decision 6c). -/
+inductive UnderstandingKind where
+  | peak         : UnderstandingKind
+  | teachable    : UnderstandingKind
+  | metaLearning : UnderstandingKind
+  | undirected   : UnderstandingKind
+  deriving DecidableEq, Repr
+
+/-- [R] An assessed change in understanding with its MM kind label. -/
+structure UnderstandingChange where
+  amount : ℝ
+  kind   : UnderstandingKind
+
+/-- Sum of understanding changes of one kind. -/
+noncomputable def u_kind_score (k : UnderstandingKind) (cs : List UnderstandingChange) : ℝ :=
+  (cs.map (fun c => if c.kind = k then c.amount else 0)).sum
+
+/--
+  [P] A being's U tiers (L58, decision 6c): kind tiers from labelled changes, distributional tiers
+  (median, floor) from the population's U distribution.
+-/
+noncomputable def understanding_tiers_of (cs : List UnderstandingChange) (median floor : ℝ) :
+    UnderstandingTiers :=
+  { peak := u_kind_score .peak cs, teachable := u_kind_score .teachable cs,
+    metaLearning := u_kind_score .metaLearning cs, median := median, floor := floor,
+    undirected := u_kind_score .undirected cs }
 
 theorem experiential_variety_le_one {τ : Type*} [DecidableEq τ] (stream : List τ) :
     experiential_variety stream ≤ 1 := by

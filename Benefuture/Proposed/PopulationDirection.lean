@@ -586,4 +586,80 @@ theorem governed_choose_plan_sy_sound (qs : List ParamVector)
         pareto_dominates d.prog c.prog :=
   admissible_choose_plan_sy_sound _ (governed_params_admissible qs) w v hw hv cs c hc
 
+/- --- 9. Goal G, staged (decision 6a; L62, L74, L135) --- -/
+
+/-- [P] ↑min over the horizon: trajectory-level min U and min H do not fall (progress indices 4, 5). -/
+noncomputable def min_nondecreasing (c : Plan) : Bool :=
+  haveI := Classical.propDecidable (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
+  decide (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
+
+/-- [P] G-admissible plans: Fr ∧ ↑ℝ ∧ ↑min. -/
+noncomputable def plan_admissible_G (fp : FrParams) (c : Plan) : Bool :=
+  plan_admissible fp c && min_nondecreasing c
+
+open Classical in
+/-- [P] Plans whose pushDistr progress no other plan in the list Pareto-dominates. -/
+noncomputable def plan_front (ps : List Plan) : List Plan :=
+  ps.filter (fun p => decide (¬ ∃ q ∈ ps, pareto_dominates q.prog p.prog))
+
+/--
+  [P] Goal G (L74), staged: filter by Fr ∧ ↑ℝ ∧ ↑min, take the Pareto front on pushDistr progress
+  (whose floor and median inputs are the distributional tiers), then argmax ΣV over the front.
+-/
+noncomputable def goal_G (fp : FrParams) (cs : List Plan) : Option Plan :=
+  (plan_front (cs.filter (plan_admissible_G fp))).argmax (·.eval.aggregateValue)
+
+/--
+  [P] THEOREM: Soundness of staged G. The chosen plan passes Fr, does not contract ℝ, keeps min U
+  and min H from falling over the horizon, is not Pareto-dominated by any G-admissible plan, and
+  has the highest ΣV on the front.
+-/
+theorem goal_G_sound (fp : FrParams) (cs : List Plan) (c : Plan) (hc : c ∈ goal_G fp cs) :
+    ¬ established_severe c.harm fp ∧
+      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
+      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧
+      (¬ ∃ d ∈ cs.filter (plan_admissible_G fp), pareto_dominates d.prog c.prog) ∧
+      ∀ d ∈ plan_front (cs.filter (plan_admissible_G fp)),
+        d.eval.aggregateValue ≤ c.eval.aggregateValue := by
+  have hm := List.argmax_mem hc
+  unfold plan_front at hm
+  rw [List.mem_filter] at hm
+  obtain ⟨hadm, hnd⟩ := hm
+  have hadm' := (List.mem_filter.mp hadm).2
+  simp only [plan_admissible_G, plan_admissible, min_nondecreasing, Bool.and_eq_true,
+    decide_eq_true_eq] at hadm'
+  obtain ⟨⟨hfr, hel⟩, hmin⟩ := hadm'
+  have hfr' := fr_permissible_spec _ _ hfr
+  simp only [is_eligible_action, decide_eq_true_eq] at hel
+  simp only [decide_eq_true_eq] at hnd
+  exact ⟨hfr'.1, hfr'.2, hel, hmin.1, hmin.2, hnd,
+    fun d hd => List.le_of_mem_argmax hd hc⟩
+
+theorem sum_prog_lt_of_dominates {p q : Plan} (h : pareto_dominates q.prog p.prog) :
+    ∑ i, p.prog i < ∑ i, q.prog i :=
+  sum_lt_of_dominates h
+
+/-- [P] THEOREM: Staged G always chooses when some plan is G-admissible. -/
+theorem goal_G_some (fp : FrParams) (cs : List Plan)
+    (hne : cs.filter (plan_admissible_G fp) ≠ []) : goal_G fp cs ≠ none := by
+  obtain ⟨p, hp⟩ : ∃ p, p ∈ (cs.filter (plan_admissible_G fp)).argmax (fun p => ∑ i, p.prog i) := by
+    cases h : (cs.filter (plan_admissible_G fp)).argmax (fun p => ∑ i, p.prog i) with
+    | none => exact absurd (List.argmax_eq_none.mp h) hne
+    | some p => exact ⟨p, rfl⟩
+  have hpf : p ∈ plan_front (cs.filter (plan_admissible_G fp)) := by
+    unfold plan_front
+    rw [List.mem_filter]
+    refine ⟨List.argmax_mem hp, ?_⟩
+    simp only [decide_eq_true_eq]
+    rintro ⟨q, hq, hdom⟩
+    have h1 := List.le_of_mem_argmax hq hp
+    have h2 := sum_prog_lt_of_dominates hdom
+    linarith
+  unfold goal_G
+  intro hnone
+  rw [List.argmax_eq_none] at hnone
+  rw [hnone] at hpf
+  simp at hpf
+
 end Benefuture.Proposed
