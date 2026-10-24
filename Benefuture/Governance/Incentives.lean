@@ -83,7 +83,7 @@ def SatisfiesDelegationCap (delegateWeight : ℝ) (totalWeight : ℝ) (capRatio 
   [R] Sequential delegation under the L114 rule: a delegation to S_j is accepted only while
   CumulativeVoteWeight(S_j) < Th_k. Returns S_j's weight after processing the delegators in order.
 -/
-def accumulate_capped (cap : ℝ) : ℝ → List ℝ → ℝ
+noncomputable def accumulate_capped (cap : ℝ) : ℝ → List ℝ → ℝ
   | cur, [] => cur
   | cur, w :: ws => accumulate_capped cap (if cur < cap then cur + w else cur) ws
 
