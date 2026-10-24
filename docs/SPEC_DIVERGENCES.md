@@ -202,17 +202,20 @@ Per the Ground Rules:
   - $\uparrow$min may dip through an $NHa$ gap; priorities resolve which gaps to tunnel through.
 - **Lean Spec Choice** (`Benefuture.Proposed.PopulationDirection`, not imported by core):
   - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_never_irreparable` proves the chosen action never carries irreparable or irreversible harm.
-  - `progress`, `pushDistr_aligned`, `pareto_dominates` (strict partial order: `pareto_irrefl`, `pareto_trans`), `pareto_front`.
+  - `progress`, `pushDistr_aligned`, `pareto_dominates` (strict partial order: `pareto_irrefl`, `pareto_trans`), `pareto_front`. `pareto_front_nonempty` proves the filter never empties a non-empty choice set. Pareto-first is grounded in Sy's `find ∧ max(⋂ ↑x)` (L13).
+  - Skew from populations: `pop_mean`, `pop_m2`, `pop_m3`, `skewness`, and the square-root-free direction key `skew_key` (`skew_key_eq`: key = γ·|γ|; `mul_abs_strictMono`: the key orders populations exactly as γ does). Direction-only `pushDistr` needs only a strictly monotone transform of γ.
+  - `skew_direction_alone_permits_min_decline`: lowering the worst-off being ([2,6,8,9,10] → [0,6,8,9,10]) moves U toward left skew while min falls. Hence ↑min must hold jointly with the skew push.
   - `min_holds_over`: $\uparrow$min holds at the trajectory endpoint, with every dip covered by $NHa$. `tunnel_admissible_but_not_stepwise` proves that a stepwise filter rejects tunnels the trajectory criterion admits, so Pareto filtering must compare trajectories over the prediction horizon (L34).
+  - `harm_intv_fires`; `nonclosing_tunnel_triggers_harm_intv`: a tunnel still open at the horizon has triggered $Harm\_Intv$ (L150) at some step.
   - `expected_tally`; `net_negative_never_outweighs_positive`.
-  - `effective_types` (distinct types); `copies_add_no_diversity`, `new_type_adds_diversity`.
-- **Resolves**: §2.5 ($Fr$ vs $NHa$) as a lexical ordering — $Fr$ filters the action set before $NHa$ can justify a harm, mirroring `eligible_actions` for $\uparrow\mathbb{R}$ (§2.7).
+  - `effective_types`; `copies_add_no_diversity`, `new_type_adds_diversity`. `population_novelty_eq_effective_types`: summing $N(x) := 1/Frequency(x)$ (L36) over a population gives the number of distinct types, so saturating diversity is derived from $N$, not added as a population term. Grounded in `Diversity.txt`: "diversity is built into the Novelty factor".
+- **Arbitration note**: `Benefuture goals.txt` speaks of "target distribution shapes"; the author specified "more direction than shape". Reconciled through the pseudocode's `pushDistr` (L62): the push is toward a skew class (left, right, normal), not toward a parametrised target shape.
+- **Resolves**: §2.5 ($Fr$ vs $NHa$) as a lexical ordering — $Fr$ filters the action set before $NHa$ can justify a harm, mirroring `eligible_actions` for $\uparrow\mathbb{R}$ (§2.7). Also resolves where diversity enters (through $N$).
 - **Partially addresses**: §1.1 (Repugnant Conclusion) and the `pushDistr` note in §2.7. `floor_shifts_repugnant_conclusion` remains true, but its premise (ranking worlds by summed value) is not Bf's mechanism under this proposal.
 - **[OPEN]**:
-  - Conflict resolution among Pareto-front actions (proposed: Sy-weighted magnitudes).
-  - Computing skew statistics from populations (`DistrStats` is supplied by MetricModel).
-  - Formal $Harm\_Intv$ closure condition on tunnels.
-  - Whether diversity enters as a population-level term or only through $N$ (PoV, paradigm tiers) in per-action $V$.
+  - Sy-weighted choice among Pareto-front trajectories (the `max` half of L13).
+  - Frequency in $N$ is taken within the population; L36 specifies frequency in $\mathbb{R}$ (historical encounters).
+  - Integration of `choose_action` with `eligible_actions` (↑ℝ) and trajectory-level candidates.
 
 ### 6.2 Build Coverage of Proposed Modules (SPEC-CHOICE)
 - **Finding**: The `Benefuture` library built only modules reachable from `Benefuture.lean`. `Proposed/` modules are deliberately not imported by core, so they were never compiled in CI.
