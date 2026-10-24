@@ -242,7 +242,7 @@ theorem kind_scores_sum (sources : List HappinessSource) :
   | nil => simp [kind_score]
   | cons s ss ih =>
     simp only [kind_score, List.map_cons, List.sum_cons] at ih ⊢
-    cases hk : s.kind <;> simp [hk] <;> linarith
+    cases hk : s.kind <;> simp <;> linarith
 
 /--
   THEOREM: The kind tiers partition the H score: they sum exactly to the being's bias-corrected

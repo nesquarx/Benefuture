@@ -634,7 +634,7 @@ theorem goal_G_sound (fp : FrParams) (cs : List Plan) (c : Plan) (hc : c ∈ goa
   simp only [is_eligible_action, decide_eq_true_eq] at hel
   simp only [decide_eq_true_eq] at hnd
   exact ⟨hfr'.1, hfr'.2, hel, hmin.1, hmin.2, hnd,
-    fun d hd => List.le_of_mem_argmax hd hc⟩
+    fun d hd => List.le_of_mem_argmax (f := fun p : Plan => p.eval.aggregateValue) hd hc⟩
 
 theorem sum_prog_lt_of_dominates {p q : Plan} (h : pareto_dominates q.prog p.prog) :
     ∑ i, p.prog i < ∑ i, q.prog i :=
