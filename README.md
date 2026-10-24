@@ -151,7 +151,9 @@ This repository maintains a two-tier formalization architecture:
   - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
   - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).
   - `value.json`: `compute_harm_weight` (κ = ½, q₊ = 1.5, `harmSchedule`) and `value_on_being` (items (x, w₊, w₋), κ = 2) (L61, L73).
-  - `escrow.json`, `reputation.json`, `democracy.json`: escrow split, lazy decay, voting weight and EHR attenuation.
+  - `escrow.json`: `upfront_payment` / `escrow_hold` (L84; no overhead).
+  - `reputation.json`: lazy exponential decay (`RepCache`).
+  - `democracy.json`: voting weight (L113; Government.txt: base + expertise·Σŵ·Re + impact; optional below Th) and cyclic-review attenuation (`attenuate_cyclic_reviews`).
   - `harm.json`: `h_harm` (below rolling average), `u_harm` (below running maximum), `happiness_score` with graded MM bias claims (L54, L37).
   - `freedom.json`: `fr_permissible` with longtermist defaults, `experiential_variety` (L135, L37).
   - `population.json`: `skew_key`, `population_novelty_hist`, `effective_types`, `pareto_front`, `accumulate_capped` (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Governance.Incentives`).

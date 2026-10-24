@@ -106,16 +106,12 @@ def V_ref (u : Float) (h : Float) (n : Float)
     lambda 2.0 qPlus qMinus
 
 /--
-  Reference calculation of Escrow Fund Splitting:
-  Returns (upfrontPayout, ongoingHold, protocolOverhead).
-  Corresponds to: Bf_Pseudocode.txt L26, L157.
+  Reference calculation of Probabilistic Escrow splitting (L84):
+  PE := Pay_t0(P(As(V, A, t_0) > 0)), hold(1 − P). Returns (upfrontPayout, ongoingHold).
+  No protocol overhead: none is specified in L84. Matches `upfront_payment` / `escrow_hold`.
 -/
-def Escrow_split_ref (nominal : Float) (pWin : Float) (overheadRate : Float) : Float × Float × Float :=
-  let overhead := nominal * overheadRate
-  let distributable := nominal - overhead
-  let upfront := distributable * pWin
-  let hold := distributable * (1.0 - pWin)
-  (upfront, hold, overhead)
+def Escrow_split_ref (nominal : Float) (pWin : Float) : Float × Float :=
+  (nominal * pWin, nominal * (1.0 - pWin))
 
 /--
   Reference calculation of continuous lazy reputation decay.
@@ -137,19 +133,24 @@ def Parent_aggregate_ref (leafValues : List Float) (weights : List Float) : Floa
   sumFloat (pairs.map (fun (v, w) => v * w))
 
 /--
-  Reference calculation of EHR anti-collusion cyclic attenuation.
-  Corresponds to: Bf_Pseudocode.txt L117.
+  Reference calculation of anti-collusion attenuation of cyclic review pairs (A → B, B → A).
+  Matches `attenuate_cyclic_reviews` (Governance.Incentives). Not EHR (L117, External Harm Response).
 -/
-def EHR_attenuate_ref (rawWeight : Float) (cycleOverlap : Float) : Float :=
-  let discount := if cycleOverlap < 0.0 then 0.0 else if cycleOverlap > 1.0 then 1.0 else cycleOverlap
-  rawWeight * (1.0 - discount)
+def cyclic_review_attenuate_ref (rawWeight : Float) (attenuation : Float) : Float :=
+  let a := if attenuation < 0.0 then 0.0 else if attenuation > 1.0 then 1.0 else attenuation
+  rawWeight * (1.0 - a)
 
 /--
-  Reference calculation of Weighted Democratic Voting Weight.
-  Corresponds to: Bf_Pseudocode.txt L113.
+  Reference calculation of Weighted Democratic Voting Weight (L113; Government.txt):
+  VW = BaseWeight + ExpertiseWeight · Σ ŵ_i·Re(Dn_i) + ImpactWeight · Impact, Σ ŵ = 1.
+  profile: decision-profile leaves (ŵ_i, Re(Dn_i)). Returns (weight, voteOptional) with
+  voteOptional = weight < thOptional (L113: VW < Th ⇒ VoteOptional).
 -/
-def Voting_weight_ref (base : Float) (expertise : Float) (impact : Float) : Float :=
-  base + expertise + impact
+def Voting_weight_ref (base : Float) (expertiseWeight : Float) (profile : List (Float × Float))
+    (impactWeight : Float) (impact : Float) (thOptional : Float) : Float × Bool :=
+  let expertise := sumFloat (profile.map (fun (w, r) => w * r))
+  let vw := base + expertiseWeight * expertise + impactWeight * impact
+  (vw, vw < thOptional)
 
 /- --- Population direction (Benefuture.Proposed.PopulationDirection) --- -/
 

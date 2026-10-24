@@ -34,9 +34,9 @@ def main : IO Unit := do
   IO.FS.writeFile "spec/vectors/value.json" vJson
 
   -- 4. escrow.json
-  let (up1, hold1, over1) := Escrow_split_ref 1000.0 0.7 0.05
-  let (up2, hold2, over2) := Escrow_split_ref 500.0 0.5 0.10
-  let escJson := s!"\{\n  \"case_70_win\": \{\n    \"nominal\": 1000.0,\n    \"upfront\": {up1},\n    \"hold\": {hold1},\n    \"overhead\": {over1}\n  },\n  \"case_50_win\": \{\n    \"nominal\": 500.0,\n    \"upfront\": {up2},\n    \"hold\": {hold2},\n    \"overhead\": {over2}\n  }\n}\n"
+  let (up1, hold1) := Escrow_split_ref 1000.0 0.7
+  let (up2, hold2) := Escrow_split_ref 500.0 0.5
+  let escJson := s!"\{\n  \"case_70_win\": \{\n    \"nominal\": 1000.0,\n    \"upfront\": {up1},\n    \"hold\": {hold1}\n  },\n  \"case_50_win\": \{\n    \"nominal\": 500.0,\n    \"upfront\": {up2},\n    \"hold\": {hold2}\n  }\n}\n"
   IO.FS.writeFile "spec/vectors/escrow.json" escJson
 
   -- 5. reputation.json
@@ -47,11 +47,12 @@ def main : IO Unit := do
   IO.FS.writeFile "spec/vectors/reputation.json" repJson
 
   -- 6. democracy.json
-  let vwBase := Voting_weight_ref 1000.0 250.0 100.0
-  let ehrFull := EHR_attenuate_ref 100.0 1.0
-  let ehrHalf := EHR_attenuate_ref 100.0 0.5
-  let ehrNone := EHR_attenuate_ref 100.0 0.0
-  let demJson := s!"\{\n  \"voting_weight_profile\": {vwBase},\n  \"ehr_full_attenuation\": {ehrFull},\n  \"ehr_half_attenuation\": {ehrHalf},\n  \"ehr_zero_attenuation\": {ehrNone}\n}\n"
+  let (vwExpert, optExpert) := Voting_weight_ref 1.0 1.0 [(0.6, 4.0), (0.4, 1.0)] 1.0 0.5 2.0
+  let (vwBystander, optBystander) := Voting_weight_ref 1.0 1.0 [(0.6, 0.0), (0.4, 0.0)] 1.0 0.0 2.0
+  let cycFull := cyclic_review_attenuate_ref 100.0 1.0
+  let cycHalf := cyclic_review_attenuate_ref 100.0 0.5
+  let cycNone := cyclic_review_attenuate_ref 100.0 0.0
+  let demJson := s!"\{\n  \"voting_weight_expert\": \{\"weight\": {vwExpert}, \"vote_optional\": {optExpert}},\n  \"voting_weight_bystander\": \{\"weight\": {vwBystander}, \"vote_optional\": {optBystander}},\n  \"cyclic_review_full_attenuation\": {cycFull},\n  \"cyclic_review_half_attenuation\": {cycHalf},\n  \"cyclic_review_zero_attenuation\": {cycNone}\n}\n"
   IO.FS.writeFile "spec/vectors/democracy.json" demJson
 
   -- 7. population.json (Benefuture.Proposed.PopulationDirection)

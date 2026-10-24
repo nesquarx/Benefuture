@@ -1,6 +1,7 @@
 {
-  "voting_weight_profile": 1350.000000,
-  "ehr_full_attenuation": 0.000000,
-  "ehr_half_attenuation": 50.000000,
-  "ehr_zero_attenuation": 100.000000
+  "voting_weight_expert": {"weight": 4.300000, "vote_optional": false},
+  "voting_weight_bystander": {"weight": 1.000000, "vote_optional": true},
+  "cyclic_review_full_attenuation": 0.000000,
+  "cyclic_review_half_attenuation": 50.000000,
+  "cyclic_review_zero_attenuation": 100.000000
 }

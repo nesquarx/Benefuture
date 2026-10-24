@@ -249,6 +249,9 @@ Per the Ground Rules:
 ### 7.5 Reference Library Fidelity (simulation readiness)
 - `As_ref` returned the raw measurement ex post and never normalised. Now `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx`, matching `dynamic_assessment_real`.
 - Added `Sy_signed_ref`, `HaWt_ref`, and population operators matching `Benefuture.Proposed.PopulationDirection`: `skew_key_ref`, `population_novelty_ref`, `effective_types_ref`, `pareto_front_ref`, `accumulate_capped_ref`.
+- `Escrow_split_ref` took a protocol overhead that L84 does not specify; removed (upfront = nominal·P, hold = nominal·(1 − P)).
+- `Voting_weight_ref` now takes the decision profile (Σŵ·Re, L113), the Government.txt coefficients (base, expertise, impact weights) and returns whether the vote is optional (VW < Th, L113). The base weight comes from Government.txt; L113 is silent on it.
+- `EHR_attenuate_ref` was misnamed: it implements cyclic-review attenuation (`attenuate_cyclic_reviews`), not EHR (L117). Renamed `cyclic_review_attenuate_ref`.
 - Vectors: `assessment.json` and `value.json` regenerated with `defaultGovParams`; new `population.json`. Values agree with the Lean theorems (e.g. skew key −81/128 → −1.0646; novelty of 5 copies = 1).
 
 ### 7.6 Pseudocode Copies
@@ -257,6 +260,8 @@ Per the Ground Rules:
 ### 7.7 Open Findings
 - **Harm schedule ([P], resolved)**: `compute_harm_weight` used the generic 6-weight schedule against 8 tiers, silently dropping Culture_offence and NHa_Estd. It now uses `harmSchedule`, one weight per tier: 0.9 > 0.7 > 0.45 > 0.15 > 0.08 > 0.04 > 0.01 (NHa_Estd = 0 omitted).
 - **Di in H ([P])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`. Di is read as experiential variety within one life (`experiential_variety` = distinct experiences / total; `repetitive_experience_variety`, `experiential_variety_le_one`), distinct from N, which scores outcomes against ℝ. See §7.9 for the H score.
+
+- **EHR ([OPEN], needs author's reading)**: L117 `EHR := TitForTat(viaReparableHa) + (α·Re₊(Dn(Ha))) · P(Forgive) + (δ·Re₋(Dn(Ha))) · P(Overreact)`. `ehr_defensive_response` (Int) encodes only `max(0, harm − α·Re₊)`: it drops P(Forgive), the δ·Re₋·P(Overreact) term, and domain-specific reputation. A generous-tit-for-tat reading (forgiveness probability rising with α·Re₊, overreaction probability with δ·Re₋) is plausible but unratified.
 
 ### 7.8 Fr per the Author's Reading of L135 ([R] reading, [P] parameters)
 - **Source**: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
