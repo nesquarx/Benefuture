@@ -255,6 +255,6 @@ Per the Ground Rules:
 - The root `Bf_Pseudocode.txt` (2026-10-16) predated the decisions recorded in `spec/Bf_Pseudocode.txt` (2026-10-19). The root copy is now identical to `spec/`, the recorded source of truth.
 
 ### 7.7 Open Findings
-- **Harm schedule truncation ([OPEN])**: `compute_harm_weight` zips 8 tiers against `defaultSchedule` (6 weights); `zip` drops NHa_Pr and Culture_offence, though L61 ranks NHa_Pr above Culture_offence. A 7-weight harm schedule is needed (NHa_Estd is 0 by definition).
+- **Harm schedule truncation ([OPEN], low impact)**: `compute_harm_weight` zips 8 tiers against `defaultSchedule` (6 weights), so `zip` silently drops Culture_offence and NHa_Estd. Both are ≈ 0 or 0 by L61, so values are unaffected; the truncation is implicit and fragile. The harm tiers also reuse the generic schedule (irreparable 0.8 vs passing 0.25).
 - **Di in H ([OPEN])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`; `HappinessTiers` (L59) has no Di term. Diversity currently reaches V only through N.
 - **Fr clauses ([OPEN])**: `is_action_freedom_permissible_pr` now encodes the irreversible/irreparable and `Pr(P·severity > Th_high)` clauses of L135 (`probable_severe_harm_impermissible`, `freedom_pr_refines`). `Ha_Estd` is not encoded; its meaning in Fr (established harm, as distinct from `NHa_Estd`) needs the author's reading.
