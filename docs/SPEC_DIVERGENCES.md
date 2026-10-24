@@ -256,7 +256,7 @@ Per the Ground Rules:
 
 ### 7.7 Open Findings
 - **Harm schedule ([P], resolved)**: `compute_harm_weight` used the generic 6-weight schedule against 8 tiers, silently dropping Culture_offence and NHa_Estd. It now uses `harmSchedule`, one weight per tier: 0.9 > 0.7 > 0.45 > 0.15 > 0.08 > 0.04 > 0.01 (NHa_Estd = 0 omitted).
-- **Di in H ([P])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`. Di is read as experiential variety within one life (`experiential_variety` = distinct experiences / total; `repetitive_experience_variety`, `experiential_variety_le_one`), distinct from N, which scores outcomes against ℝ. `happiness_from_components` sums the L37 components; mapping them onto the L59 tiers is [OPEN].
+- **Di in H ([P])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`. Di is read as experiential variety within one life (`experiential_variety` = distinct experiences / total; `repetitive_experience_variety`, `experiential_variety_le_one`), distinct from N, which scores outcomes against ℝ. See §7.9 for the H score.
 
 ### 7.8 Fr per the Author's Reading of L135 ([R] reading, [P] parameters)
 - **Source**: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
@@ -264,3 +264,9 @@ Per the Ground Rules:
 - **Lean Spec Choice**: `HarmForecast` (profile + confidence), `FrParams`, `severity_score`, `established_severe`, `fr_permissible` (now `Fr`). Defaults: established at confidence 0.9; expected-severity ceiling 1; severities 1000 / 100 / 10 / 1 / 0.5 (irreparable / irreversible / long-term / passing / time loss).
 - **Proved**: `fr_permissible_spec`, `established_severe_blocks`, `probable_severe_harm_blocks`; with defaults, `mild_passing_chance_permitted` (50% passing harm), `speculative_catastrophe_blocks` (1% irreparable), `remote_irreversible_chance_permitted` (0.1% irreversible), `certain_longterm_harm_blocks`.
 - The certain-harm boundary `is_action_freedom_permissible` is kept as the special case used by the freedom metric.
+
+### 7.9 Harm Reference Points and the H Score ([R])
+- **Source**: L54 `Ha(t) := ↓U(t) ∨ ↓H(t)`, L37 `H := ∫Positive(Se) + BiasMitigation + Di`. Author: the H score is a positive structure; H-harm is a drop below the rolling average; U-harm is a drop below the being's running maximum. Coming down from a giddy rush is not harm; forgetting understood relationships is. Bias mitigation is done by MMs, which flag biased happiness (dark triad, malicious pleasure). Consistent with `Happiness.txt` ("rewarding boosts … leveling back to the optimal state") and `Harm.txt` ("reduces … over time").
+- **Lean Spec Choice**: `HappinessSource` (intensity + MM flag), `happiness_score`, `rolling_average`, `h_harm`, `u_harm`.
+- **Proved**: `happiness_score_nonneg`, `flagged_happiness_contributes_nothing`, `forgetting_is_harm`, `u_at_max_no_harm`, `h_at_or_above_average_no_harm`, `coming_down_not_harm` (window [1,1,1,5], H 5 → 2). `withholding_incurs_no_harm` (Proposed) now uses these reference points.
+- **[OPEN]**: rolling-window length (a threshold, SigThGv).

@@ -44,16 +44,15 @@ open Benefuture.Subgoals
 
 /- --- 1. Harm and withholding (L54) --- -/
 
-/-- [R] Ha := ↓U ∨ ↓H (L54), on one being's levels before and after an action. -/
-def harm_occurs (u₀ u₁ h₀ h₁ : ℝ) : Prop :=
-  u₁ < u₀ ∨ h₁ < h₀
-
-/-- [P] Withholding uplift leaves levels unchanged, hence is not Ha (decision 3). -/
-theorem withholding_incurs_no_harm (u h : ℝ) : ¬ harm_occurs u u h h := by
-  unfold harm_occurs
-  rintro (hu | hh)
-  · exact lt_irrefl _ hu
-  · exact lt_irrefl _ hh
+/--
+  [P] Withholding uplift is not Ha (decision 3). Harm is measured against reference points
+  (U: running maximum; H: rolling average; `u_harm`, `h_harm`). A being whose levels are
+  unchanged at an unharmed state stays unharmed.
+-/
+theorem withholding_incurs_no_harm (history window : List ℝ) (u h : ℝ)
+    (hu : ∀ x ∈ history, x ≤ u) (hh : rolling_average window ≤ h) :
+    u_harm history u = 0 ∧ h_harm window h = 0 :=
+  ⟨u_at_max_no_harm history u hu, h_at_or_above_average_no_harm window h hh⟩
 
 /- --- 2. Fr filters before NHa and argmax (L55, L74, L135) --- -/
 

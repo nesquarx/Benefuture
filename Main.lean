@@ -65,4 +65,8 @@ def main : IO Unit := do
   let frJson := s!"\{\n  \"mild_passing_50pct\": {fr_permissible_ref 0.0 0.0 0.0 1.0 0.0 0.5},\n  \"speculative_irreparable_1pct\": {fr_permissible_ref 1.0 0.0 0.0 0.0 0.0 0.01},\n  \"remote_irreversible_0_1pct\": {fr_permissible_ref 0.0 1.0 0.0 0.0 0.0 0.001},\n  \"certain_longterm\": {fr_permissible_ref 0.0 0.0 1.0 0.0 0.0 1.0},\n  \"experiential_variety_repetitive_4\": {experiential_variety_ref [3, 3, 3, 3]},\n  \"experiential_variety_varied_4\": {experiential_variety_ref [1, 2, 3, 3]}\n}\n"
   IO.FS.writeFile "spec/vectors/freedom.json" frJson
 
+  -- 9. harm.json (L54: U-harm below running max, H-harm below rolling average; L37 H score)
+  let hJson := s!"\{\n  \"h_harm_coming_down_window_1115_to_2\": {h_harm_ref [1.0, 1.0, 1.0, 5.0] 2.0},\n  \"h_harm_below_average_window_1115_to_1\": {h_harm_ref [1.0, 1.0, 1.0, 5.0] 1.0},\n  \"u_harm_forgetting_hist_358_to_6\": {u_harm_ref [3.0, 5.0, 8.0] 6.0},\n  \"u_harm_at_max_hist_358_to_8\": {u_harm_ref [3.0, 5.0, 8.0] 8.0},\n  \"happiness_score_with_flagged_malicious\": {happiness_score_ref [(2.0, false), (5.0, true), (1.0, false)] 0.5}\n}\n"
+  IO.FS.writeFile "spec/vectors/harm.json" hJson
+
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"

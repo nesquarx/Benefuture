@@ -218,4 +218,26 @@ def fr_permissible_ref (irreparable irreversible longterm passing timeLoss confi
 def experiential_variety_ref (stream : List Nat) : Float :=
   if stream.isEmpty then 0.0 else stream.eraseDups.length.toFloat / stream.length.toFloat
 
+/- --- Harm reference points (L54, author's reading) --- -/
+
+/-- Rolling average of the preceding window. Matches `rolling_average`. -/
+def rolling_average_ref (window : List Float) : Float :=
+  if window.isEmpty then 0.0 else sumFloat window / window.length.toFloat
+
+/-- H falls below its rolling average. Matches `h_harm`. -/
+def h_harm_ref (window : List Float) (hNow : Float) : Float :=
+  let d := rolling_average_ref window - hNow
+  if d > 0.0 then d else 0.0
+
+/-- U falls below its running maximum. Matches `u_harm`. -/
+def u_harm_ref (history : List Float) (uNow : Float) : Float :=
+  let m := history.foldr (fun a b => if a > b then a else b) uNow
+  let d := m - uNow
+  if d > 0.0 then d else 0.0
+
+/-- Σ unflagged non-negative intensities + Di. Matches `happiness_score`. -/
+def happiness_score_ref (sources : List (Float × Bool)) (di : Float) : Float :=
+  let pos := sources.map (fun (i, flagged) => if flagged then 0.0 else (if i > 0.0 then i else 0.0))
+  sumFloat pos + (if di > 0.0 then di else 0.0)
+
 end BenefutureReference

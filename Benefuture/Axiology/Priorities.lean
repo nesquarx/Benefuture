@@ -16,6 +16,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Finset.Card
+import Mathlib.Algebra.Order.BigOperators.Group.List
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 
@@ -110,9 +111,38 @@ def pushDistr_unformalized_spec_note : String :=
 noncomputable def experiential_variety {τ : Type*} [DecidableEq τ] (stream : List τ) : ℝ :=
   if stream = [] then 0 else (stream.toFinset.card : ℝ) / stream.length
 
-/-- [P] Happiness from its L37 components, before L59 tiering. -/
-def happiness_from_components (positive biasMitigation di : ℝ) : ℝ :=
-  positive + biasMitigation + di
+/-- [R] A happiness source with the MM bias flag (dark triad, malicious pleasure; L37 BiasMitigation). -/
+structure HappinessSource where
+  intensity     : ℝ
+  flaggedBiased : Bool
+
+/--
+  [R] Happiness score (L37): a positive structure. Σ of unflagged, non-negative source intensities
+  plus experiential variety Di. Bias mitigation is done by MMs; Lean only honours their flag.
+-/
+noncomputable def happiness_score (sources : List HappinessSource) (di : ℝ) : ℝ :=
+  (sources.map (fun s => if s.flaggedBiased then 0 else max 0 s.intensity)).sum + max 0 di
+
+theorem happiness_score_nonneg (sources : List HappinessSource) (di : ℝ) :
+    0 ≤ happiness_score sources di := by
+  unfold happiness_score
+  have h1 : 0 ≤ (sources.map (fun s => if s.flaggedBiased then 0 else max 0 s.intensity)).sum := by
+    apply List.sum_nonneg
+    intro x hx
+    rw [List.mem_map] at hx
+    obtain ⟨s, _, rfl⟩ := hx
+    split_ifs
+    · exact le_refl 0
+    · exact le_max_left 0 _
+  have h2 : 0 ≤ max 0 di := le_max_left 0 di
+  linarith
+
+/-- [R] THEOREM: MM-flagged biased happiness (e.g. malicious pleasure) contributes nothing. -/
+theorem flagged_happiness_contributes_nothing (s : HappinessSource) (ss : List HappinessSource)
+    (di : ℝ) (hs : s.flaggedBiased = true) :
+    happiness_score (s :: ss) di = happiness_score ss di := by
+  unfold happiness_score
+  simp [hs]
 
 theorem experiential_variety_le_one {τ : Type*} [DecidableEq τ] (stream : List τ) :
     experiential_variety stream ≤ 1 := by
@@ -134,6 +164,71 @@ theorem repetitive_experience_variety {τ : Type*} [DecidableEq τ] (x : τ) (n 
   have hcard : (List.replicate n x).toFinset.card = 1 := by
     rw [List.toFinset_replicate_of_ne_zero (Nat.pos_iff_ne_zero.mp hn), Finset.card_singleton]
   rw [hcard, Nat.cast_one]
+
+/- --- 4c. Harm reference points (L54, author's reading) --- -/
+
+/-- Rolling average of H over the preceding window. -/
+noncomputable def rolling_average (window : List ℝ) : ℝ :=
+  if window = [] then 0 else window.sum / window.length
+
+/--
+  [R] Happiness harm (↓H in L54): how far H falls below its rolling average.
+  Coming down from a peak to at or above the average is not harm.
+-/
+noncomputable def h_harm (window : List ℝ) (h_now : ℝ) : ℝ :=
+  max 0 (rolling_average window - h_now)
+
+/--
+  [R] Understanding harm (↓U in L54): how far U falls below the being's running maximum.
+  Any forgetting of understood relationships is harm.
+-/
+noncomputable def u_harm (history : List ℝ) (u_now : ℝ) : ℝ :=
+  max 0 (history.foldr max u_now - u_now)
+
+theorem le_foldr_max_of_mem (l : List ℝ) (b x : ℝ) (hx : x ∈ l) : x ≤ l.foldr max b := by
+  induction l with
+  | nil => simp at hx
+  | cons a t ih =>
+    rw [List.foldr_cons]
+    rcases List.mem_cons.mp hx with rfl | ht
+    · exact le_max_left _ _
+    · exact le_trans (ih ht) (le_max_right _ _)
+
+theorem foldr_max_le (l : List ℝ) (b : ℝ) (h : ∀ x ∈ l, x ≤ b) : l.foldr max b ≤ b := by
+  induction l with
+  | nil => exact le_refl b
+  | cons a t ih =>
+    rw [List.foldr_cons]
+    exact max_le (h a List.mem_cons_self) (ih (fun x hx => h x (List.mem_cons_of_mem a hx)))
+
+/-- [R] THEOREM: Forgetting is harm. If U falls below any earlier level, U-harm is positive. -/
+theorem forgetting_is_harm (history : List ℝ) (u_now u : ℝ) (hu : u ∈ history) (hlt : u_now < u) :
+    0 < u_harm history u_now := by
+  unfold u_harm
+  have := le_foldr_max_of_mem history u_now u hu
+  exact lt_max_of_lt_right (by linarith)
+
+/-- [R] THEOREM: U at its running maximum carries no U-harm. -/
+theorem u_at_max_no_harm (history : List ℝ) (u_now : ℝ) (h : ∀ x ∈ history, x ≤ u_now) :
+    u_harm history u_now = 0 := by
+  unfold u_harm
+  have := foldr_max_le history u_now h
+  exact max_eq_left (by linarith)
+
+/-- [R] THEOREM: H at or above its rolling average carries no H-harm. -/
+theorem h_at_or_above_average_no_harm (window : List ℝ) (h_now : ℝ)
+    (h : rolling_average window ≤ h_now) : h_harm window h_now = 0 := by
+  unfold h_harm
+  exact max_eq_left (by linarith)
+
+/--
+  [R] THEOREM: Coming down from a giddy rush is not harm. After a window [1, 1, 1, 5],
+  H falling from 5 to 2 sits at the rolling average, so H-harm is 0.
+-/
+theorem coming_down_not_harm : h_harm [1, 1, 1, 5] 2 = 0 := by
+  apply h_at_or_above_average_no_harm
+  unfold rolling_average
+  norm_num
 
 /- --- 5. Convex Harm Weighting (Ha_wt, L61) --- -/
 
