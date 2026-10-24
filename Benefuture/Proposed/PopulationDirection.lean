@@ -26,6 +26,8 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
@@ -136,6 +138,96 @@ open Classical in
 noncomputable def pareto_front {k : ℕ} (ps : List (Fin k → ℝ)) : List (Fin k → ℝ) :=
   ps.filter (fun p => decide (¬ ∃ q ∈ ps, pareto_dominates q p))
 
+theorem sum_lt_of_dominates {k : ℕ} {p q : Fin k → ℝ} (h : pareto_dominates q p) :
+    ∑ i, p i < ∑ i, q i := by
+  obtain ⟨hle, i, hi⟩ := h
+  exact Finset.sum_lt_sum (fun j _ => hle j) ⟨i, Finset.mem_univ i, hi⟩
+
+/--
+  [P] THEOREM: The Pareto filter never empties a non-empty choice set.
+  This is the "find ∧ max(⋂ ↑x)" step of Sy (L13): find the actions not dominated on the
+  intersection of improvements, then maximise among them (Sy-weighted, [OPEN]).
+-/
+theorem pareto_front_nonempty {k : ℕ} (ps : List (Fin k → ℝ)) (hne : ps ≠ []) :
+    pareto_front ps ≠ [] := by
+  obtain ⟨p, hp⟩ : ∃ p, p ∈ ps.argmax (fun p => ∑ i, p i) := by
+    cases h : ps.argmax (fun p => ∑ i, p i) with
+    | none => exact absurd (List.argmax_eq_none.mp h) hne
+    | some p => exact ⟨p, rfl⟩
+  apply List.ne_nil_of_mem (a := p)
+  unfold pareto_front
+  rw [List.mem_filter]
+  refine ⟨List.argmax_mem hp, ?_⟩
+  simp only [decide_eq_true_eq]
+  rintro ⟨q, hq, hdom⟩
+  have h1 := List.le_of_mem_argmax hq hp
+  have h2 := sum_lt_of_dominates hdom
+  linarith
+
+/- --- 3b. Skew direction computed from a population (L62) --- -/
+
+/-- Population mean. -/
+noncomputable def pop_mean (l : List ℝ) : ℝ :=
+  l.sum / l.length
+
+/-- Second central moment. -/
+noncomputable def pop_m2 (l : List ℝ) : ℝ :=
+  (l.map (fun x => (x - pop_mean l) ^ 2)).sum / l.length
+
+/-- Third central moment. -/
+noncomputable def pop_m3 (l : List ℝ) : ℝ :=
+  (l.map (fun x => (x - pop_mean l) ^ 3)).sum / l.length
+
+/-- Standardized skewness γ = m₃ / m₂^{3/2}. -/
+noncomputable def skewness (l : List ℝ) : ℝ :=
+  pop_m3 l / (pop_m2 l * Real.sqrt (pop_m2 l))
+
+/--
+  [P] Square-root-free direction key: γ·|γ| = m₃·|m₃| / m₂³.
+  Because pushDistr is directional, any strictly monotone transform of γ serves.
+-/
+noncomputable def skew_key (l : List ℝ) : ℝ :=
+  pop_m3 l * |pop_m3 l| / pop_m2 l ^ 3
+
+theorem skew_key_eq (l : List ℝ) (h : 0 < pop_m2 l) :
+    skew_key l = skewness l * |skewness l| := by
+  unfold skew_key skewness
+  have hs : 0 < Real.sqrt (pop_m2 l) := Real.sqrt_pos.mpr h
+  have hsq : Real.sqrt (pop_m2 l) ^ 2 = pop_m2 l := Real.sq_sqrt h.le
+  rw [abs_div, abs_of_pos (mul_pos h hs), div_mul_div_comm]
+  have hden : (pop_m2 l * Real.sqrt (pop_m2 l)) * (pop_m2 l * Real.sqrt (pop_m2 l)) =
+      pop_m2 l ^ 3 := by
+    have : (pop_m2 l * Real.sqrt (pop_m2 l)) * (pop_m2 l * Real.sqrt (pop_m2 l)) =
+        pop_m2 l ^ 2 * Real.sqrt (pop_m2 l) ^ 2 := by ring
+    rw [this, hsq]
+    ring
+  rw [hden]
+
+/-- x ↦ x·|x| is strictly monotone, so skew_key orders populations exactly as γ does. -/
+theorem mul_abs_strictMono : StrictMono (fun x : ℝ => x * |x|) := by
+  intro a b hab
+  simp only
+  rcases le_total 0 a with ha | ha <;> rcases le_total 0 b with hb | hb
+  · rw [abs_of_nonneg ha, abs_of_nonneg hb]; nlinarith
+  · linarith
+  · rw [abs_of_nonpos ha, abs_of_nonneg hb]; nlinarith
+  · rw [abs_of_nonpos ha, abs_of_nonpos hb]; nlinarith
+
+/--
+  [P] THEOREM: Skew direction alone is degenerate.
+  Lowering the worst-off being from 2 to 0, bulk unchanged, moves U toward left skew
+  (skew_key: -81/128 → about -1.06) while min falls. Hence ↑min must hold jointly with the skew push.
+-/
+theorem skew_direction_alone_permits_min_decline :
+    skew_key [0, 6, 8, 9, 10] < skew_key [2, 6, 8, 9, 10] := by
+  have a2 : pop_m2 [2, 6, 8, 9, 10] = 8 := by norm_num [pop_m2, pop_mean]
+  have a3 : pop_m3 [2, 6, 8, 9, 10] = -18 := by norm_num [pop_m3, pop_mean]
+  have b2 : pop_m2 [0, 6, 8, 9, 10] = 316 / 25 := by norm_num [pop_m2, pop_mean]
+  have b3 : pop_m3 [0, 6, 8, 9, 10] = -5796 / 125 := by norm_num [pop_m3, pop_mean]
+  unfold skew_key
+  rw [a2, a3, b2, b3, abs_of_neg (by norm_num), abs_of_neg (by norm_num)]
+  norm_num
+
 /- --- 4. ↑min over a trajectory, with NHa tunnels (L55, L62, L150) --- -/
 
 /-- [P] Stepwise ↑min: min never dips at any step of the horizon. -/
@@ -180,6 +272,25 @@ theorem tunnel_admissible_but_not_stepwise :
     · norm_num [tunnel_example] at hdip
   · have h0 := hs 0 (by norm_num)
     norm_num [tunnel_example] at h0
+
+/-- [P] Harm_Intv (L150) fires at step t when tunnel depth does not shrink (min does not rise). -/
+def harm_intv_fires (m : ℕ → ℝ) (t : ℕ) : Prop :=
+  m (t + 1) ≤ m t
+
+/--
+  [P] THEOREM: A tunnel still open at the horizon has triggered Harm_Intv at some step.
+  Harm_Intv (L150) is the closure guard: an NHa gap that does not close cannot pass silently.
+-/
+theorem nonclosing_tunnel_triggers_harm_intv (m : ℕ → ℝ) (h : ℕ) (hopen : m h < m 0) :
+    ∃ t < h, harm_intv_fires m t := by
+  by_contra hno
+  push_neg at hno
+  have hs : stepwise_min_monotone m h := fun t ht => by
+    have := hno t ht
+    unfold harm_intv_fires at this
+    exact le_of_lt (not_le.mp this)
+  have := stepwise_endpoint m h hs
+  linarith
 
 /- --- 5. Expected lifetime tallies (L68) --- -/
 
@@ -241,5 +352,26 @@ theorem new_type_adds_diversity {τ : Type*} [DecidableEq τ] (x : τ) (pop : Li
   unfold effective_types
   rw [List.toFinset_cons]
   exact Finset.card_insert_of_notMem (by rwa [List.mem_toFinset])
+
+/--
+  [R] Population novelty: Σ_b N(type b), with N(x) := 1 / Frequency(x) (L36), frequency taken
+  within the population. Diversity.txt: "diversity is built into the Novelty factor".
+-/
+noncomputable def population_novelty {τ : Type*} [DecidableEq τ] (pop : List τ) : ℝ :=
+  (pop.map (fun x => 1 / (pop.count x : ℝ))).sum
+
+/--
+  [P] THEOREM: Summed novelty equals the number of distinct types.
+  Saturating diversity is therefore derived from N (L36), not an added population term.
+-/
+theorem population_novelty_eq_effective_types {τ : Type*} [DecidableEq τ] (pop : List τ) :
+    population_novelty pop = effective_types pop := by
+  unfold population_novelty effective_types
+  rw [Finset.sum_list_map_count, Finset.card_eq_sum_ones, Nat.cast_sum]
+  apply Finset.sum_congr rfl
+  intro x hx
+  have hc : (pop.count x : ℝ) ≠ 0 := by
+    exact_mod_cast (List.count_pos_iff.mpr (List.mem_toFinset.mp hx)).ne'
+  rw [nsmul_eq_mul, Nat.cast_one, mul_one_div_cancel hc]
 
 end Benefuture.Proposed
