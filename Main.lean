@@ -25,12 +25,12 @@ def main : IO Unit := do
   IO.FS.writeFile "spec/vectors/assessment.json" asJson
 
   -- 3. value.json (defaultGovParams: α=0.8, β=0.6, γ=0.4, λ=0.5, q₊=1.1, q₋=1.5; κ=2 for V)
-  let haTiers : List (Float × Float) := [(0.0, 0.8), (0.0, 0.6), (1.0, 0.4), (2.0, 0.25)]
+  let haTiers : List (Float × Float) := [0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 0.0].zip harmSchedule_ref
   let haWt := HaWt_ref haTiers 0.5
   let vGains := V_ref 2.0 1.5 1.2 0.8 0.6 0.4 haWt 0.5 1.1 1.5
   let vULoss := V_ref (-2.0) 1.5 1.2 0.8 0.6 0.4 haWt 0.5 1.1 1.5
   let vULossNoHarm := V_ref (-2.0) 1.5 1.2 0.8 0.6 0.4 1.0 0.5 1.1 1.5
-  let vJson := s!"\{\n  \"harm_tiers\": [[0.0, 0.8], [0.0, 0.6], [1.0, 0.4], [2.0, 0.25]],\n  \"harm_weight\": {haWt},\n  \"value_all_gains\": {vGains},\n  \"value_u_loss\": {vULoss},\n  \"value_u_loss_unit_harm_weight\": {vULossNoHarm}\n}\n"
+  let vJson := s!"\{\n  \"harm_tier_magnitudes\": [0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 0.0],\n  \"harm_schedule\": [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01],\n  \"harm_weight\": {haWt},\n  \"value_all_gains\": {vGains},\n  \"value_u_loss\": {vULoss},\n  \"value_u_loss_unit_harm_weight\": {vULossNoHarm}\n}\n"
   IO.FS.writeFile "spec/vectors/value.json" vJson
 
   -- 4. escrow.json
@@ -60,5 +60,9 @@ def main : IO Unit := do
   let fronts := pareto_front_ref [[1.0, 1.0], [0.5, 1.0], [2.0, 0.0], [0.0, 0.0]]
   let popJson := s!"\{\n  \"skew_key_before\": {skew_key_ref p0},\n  \"skew_key_after_lowering_min\": {skew_key_ref p1},\n  \"novelty_copies_5\": {population_novelty_ref [] [7, 7, 7, 7, 7]},\n  \"novelty_distinct_5\": {population_novelty_ref [] [1, 2, 3, 4, 5]},\n  \"novelty_with_history\": {population_novelty_ref [1, 1, 2] [1, 2, 3]},\n  \"effective_types_mixed\": {effective_types_ref [1, 1, 2, 3, 3, 3]},\n  \"pareto_front_indices\": {fronts},\n  \"delegation_capped_cap100_w10x30\": {accumulate_capped_ref 100.0 0.0 (List.replicate 30 10.0)}\n}\n"
   IO.FS.writeFile "spec/vectors/population.json" popJson
+
+  -- 8. freedom.json (L135, author's reading; defaults thConf = 0.9, thHigh = 1)
+  let frJson := s!"\{\n  \"mild_passing_50pct\": {fr_permissible_ref 0.0 0.0 0.0 1.0 0.0 0.5},\n  \"speculative_irreparable_1pct\": {fr_permissible_ref 1.0 0.0 0.0 0.0 0.0 0.01},\n  \"remote_irreversible_0_1pct\": {fr_permissible_ref 0.0 1.0 0.0 0.0 0.0 0.001},\n  \"certain_longterm\": {fr_permissible_ref 0.0 0.0 1.0 0.0 0.0 1.0},\n  \"experiential_variety_repetitive_4\": {experiential_variety_ref [3, 3, 3, 3]},\n  \"experiential_variety_varied_4\": {experiential_variety_ref [1, 2, 3, 3]}\n}\n"
+  IO.FS.writeFile "spec/vectors/freedom.json" frJson
 
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"

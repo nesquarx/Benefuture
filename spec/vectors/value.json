@@ -1,7 +1,8 @@
 {
-  "harm_tiers": [[0.0, 0.8], [0.0, 0.6], [1.0, 0.4], [2.0, 0.25]],
-  "harm_weight": 2.373022,
+  "harm_tier_magnitudes": [0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 0.0],
+  "harm_schedule": [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01],
+  "harm_weight": 2.092735,
   "value_all_gains": 6.548924,
-  "value_u_loss": -4.914954,
+  "value_u_loss": -4.085088,
   "value_u_loss_unit_harm_weight": -0.749590
 }

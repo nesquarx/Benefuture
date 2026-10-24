@@ -196,4 +196,26 @@ def accumulate_capped_ref (cap : Float) : Float → List Float → Float
   | cur, [] => cur
   | cur, w :: ws => accumulate_capped_ref cap (if cur < cap then cur + w else cur) ws
 
+/- --- Freedom (L135, author's reading) --- -/
+
+/-- Harm schedule weights for Ha_wt (L61). Matches `harmSchedule`. -/
+def harmSchedule_ref : List Float := [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01]
+
+/-- Fr severity score with longtermist multipliers 1000 / 100 / 10 / 1 / 0.5. Matches `severity_score`. -/
+def severity_score_ref (irreparable irreversible longterm passing timeLoss : Float) : Float :=
+  1000.0 * irreparable + 100.0 * irreversible + 10.0 * longterm + 1.0 * passing + 0.5 * timeLoss
+
+/--
+  Fr with defaults (thConf = 0.9, thHigh = 1). Blocks established harm at long-term severity
+  or worse, and any harm with confidence · severity above 1. Matches `fr_permissible`.
+-/
+def fr_permissible_ref (irreparable irreversible longterm passing timeLoss confidence : Float) : Bool :=
+  let established := confidence ≥ 0.9 && (irreparable > 0.0 || irreversible > 0.0 || longterm > 0.0)
+  let expected := confidence * severity_score_ref irreparable irreversible longterm passing timeLoss
+  !established && expected ≤ 1.0
+
+/-- Distinct experiences / total. Matches `experiential_variety`. -/
+def experiential_variety_ref (stream : List Nat) : Float :=
+  if stream.isEmpty then 0.0 else stream.eraseDups.length.toFloat / stream.length.toFloat
+
 end BenefutureReference

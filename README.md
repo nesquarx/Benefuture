@@ -150,8 +150,9 @@ This repository maintains a two-tier formalization architecture:
 - Vector files and the spec definitions they match:
   - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
   - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).
-  - `value.json`: `compute_harm_weight` (κ = ½, q₊ = 1.5) and `value_on_being` (items (x, w₊, w₋), κ = 2) (L61, L73).
+  - `value.json`: `compute_harm_weight` (κ = ½, q₊ = 1.5, `harmSchedule`) and `value_on_being` (items (x, w₊, w₋), κ = 2) (L61, L73).
   - `escrow.json`, `reputation.json`, `democracy.json`: escrow split, lazy decay, voting weight and EHR attenuation.
+  - `freedom.json`: `fr_permissible` with longtermist defaults, `experiential_variety` (L135, L37).
   - `population.json`: `skew_key`, `population_novelty_hist`, `effective_types`, `pareto_front`, `accumulate_capped` (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Governance.Incentives`).
 - Runtime checks that follow from proved theorems: chosen plans pass Fr (no established harm at long-term severity or worse, expected severity within the ceiling) and never contract ℝ (`choose_plan_sound`); no delegate exceeds Th_k + max single weight (`accumulate_capped_bound`); summed novelty never exceeds the number of distinct types (`population_novelty_hist_le`).
 - Regenerate vectors with `lake exe benefuture` (Mathlib-free; builds in seconds).
