@@ -103,6 +103,8 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B14 | **Noise robustness:** G's choices degrade smoothly as MM noise grows | Links measurement quality to decision quality directly. |
 | B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal; the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. |
 | B17 | **Skew gate:** the significance threshold on range change neither freezes skew nor lets it override floors | `skew_ignored_when_range_significant` fixes the mechanism; sim tunes Th. |
+| B18 | **NHa relabelling:** harm relabelled as NHa to escape Ha_max does not pay | `ha_lt` excludes closing NHa dips; the incentive to label is new. |
+| B19 | **Diversity flip point:** where γ·Σ N lets a large diverse population outweigh a small homogeneous one | Depends on γ, q and headcount; the opening Parfit case. |
 | B15 | **Population size converges** under birth escrow and creation policies | Government (Birth) and the population-direction rules imply but do not state it. |
 
 ## C. Not testable by simulation

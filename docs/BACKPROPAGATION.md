@@ -132,8 +132,8 @@ Range moves outrank skew; skew counts only when the range change is not signific
 A with ¬A (As, L48), so inaction is always admissible and a trolley pull does not lower the floor.
 Lean: `goal_G`, `goal_G_sound`, `goal_G_some`, `inaction_admissible`, `goal_value_strict_mono`,
 `skew_ignored_when_range_significant`, `skew_counts_when_range_static`.
-Proposed edits: L62 `pushDistr((↑(U, H)(max, min)_lt | U_max > U_min > H_min > H_max, ↓Ha(max, min)) > skew(…) | ¬Sig(Δrange))`;
-L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min))`; range priority U_max > U_min > H_min > H_max (`range_priority_order`). N has no range bounds (floor: a proton's pattern; peak: any ID_t); novelty counts through its effects.
+Proposed edits: L62 `pushDistr((↑(U, H)(max, min), ↓Ha_max(¬NHa))_lt | U_max > U_min > Ha_max > H_min > H_max) > skew(…) | ¬Sig(Δrange))`;
+L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min))`; range priority U_max > U_min > Ha_max > H_min > H_max (`range_priority_order`). Ha_max is counted over lt with closing NHa dips excluded (`ha_lt`); min Ha is dropped (almost always 0). N's normal-shape skew term stays: it is Di's order/chaos balance, while Σ N (variety) enters through ΣV. N has no range bounds (floor: a proton's pattern; peak: any ID_t); novelty counts through its effects.
 
 **4.5 No sentience multiplier (A).**
 Capacity enters through absolute magnitudes of U and H.

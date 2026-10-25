@@ -74,21 +74,21 @@ structure DistrStats where
   minH     : ℝ
   maxU     : ℝ
   maxH     : ℝ
-  maxHa    : ℝ
-  minHa    : ℝ
+  maxHa    : ℝ  -- worst harm over lt, NHa dips that close within lt excluded (`ha_lt`)
 
 /--
   [P] Progress vector from s₀ to s₁, oriented so that higher is better in every component:
-  U, H toward left skew; Ha toward right skew; N toward normal; ↑(U, H)(max, min); ↓Ha(max, min).
+  U, H toward left skew; Ha toward right skew; N toward normal; ↑(U, H)(max, min); ↓Ha_max.
+  min Ha has nothing to push (someone is almost always unharmed).
   N has no range bounds: its floor is a proton's pattern and its peak any ID_t (unique); novelty
   counts through its effects, in V (author). In G, s₀ is the counterfactual (after ¬A) and s₁ the outcome after A (As, L48).
 -/
-def progress (s₀ s₁ : DistrStats) : Fin 10 → ℝ :=
+def progress (s₀ s₁ : DistrStats) : Fin 9 → ℝ :=
   ![s₀.skewU - s₁.skewU, s₀.skewH - s₁.skewH, s₁.skewHa - s₀.skewHa,
     s₀.normDevN - s₁.normDevN,
     s₁.minU - s₀.minU, s₁.minH - s₀.minH,
     s₁.maxU - s₀.maxU, s₁.maxH - s₀.maxH,
-    s₀.maxHa - s₁.maxHa, s₀.minHa - s₁.minHa]
+    s₀.maxHa - s₁.maxHa]
 
 /-- [P] A step is pushDistr-aligned iff no component moves the wrong way. -/
 def pushDistr_aligned (s₀ s₁ : DistrStats) : Prop :=
@@ -270,6 +270,22 @@ theorem nonclosing_tunnel_triggers_harm_intv (m : ℕ → ℝ) (h : ℕ) (hopen 
     exact le_of_lt (not_le.mp this)
   have := stepwise_endpoint m h hs
   linarith
+
+/--
+  [R] A harm counted toward Ha over lt (L34, L55): an NHa dip is excluded only if it closes within
+  the horizon; a non-closing one counts, and Harm_Intv fires for it.
+-/
+noncomputable def ha_lt (harm : ℝ) (isNHa closes : Bool) : ℝ :=
+  if isNHa && closes then 0 else harm
+
+theorem ha_lt_closing_nha (harm : ℝ) : ha_lt harm true true = 0 := by
+  simp [ha_lt]
+
+theorem ha_lt_nonclosing_counts (harm : ℝ) (isNHa : Bool) : ha_lt harm isNHa false = harm := by
+  simp [ha_lt]
+
+theorem ha_lt_non_nha_counts (harm : ℝ) (closes : Bool) : ha_lt harm false closes = harm := by
+  simp [ha_lt]
 
 /- --- 4. Expected lifetime tallies (L68) --- -/
 
@@ -479,18 +495,18 @@ structure Plan where
   value     : ℕ → ℝ
 
 /-- [R] Assessed distribution change of a plan: stats after A against stats after ¬A (As, L48). -/
-def Plan.prog (c : Plan) : Fin 10 → ℝ :=
+def Plan.prog (c : Plan) : Fin 9 → ℝ :=
   progress c.statsNotA c.statsA
 
-/-- [R] Range components of pushDistr: ↑(U, H)(max, min) and ↓Ha(max, min). -/
-def range_idx : List (Fin 10) := [4, 5, 6, 7, 8, 9]
+/-- [R] Range components of pushDistr: ↑(U, H)(max, min) and ↓Ha_max. -/
+def range_idx : List (Fin 9) := [4, 5, 6, 7, 8]
 
 /-- Restriction of a progress vector to a set of components, zero elsewhere. -/
-def restrict (idx : List (Fin 10)) (p : Fin 10 → ℝ) : Fin 10 → ℝ :=
+def restrict (idx : List (Fin 9)) (p : Fin 9 → ℝ) : Fin 9 → ℝ :=
   fun i => if i ∈ idx then p i else 0
 
 /-- Magnitude of the assessed range change. -/
-noncomputable def range_change (p : Fin 10 → ℝ) : ℝ :=
+noncomputable def range_change (p : Fin 9 → ℝ) : ℝ :=
   (range_idx.map (fun i => |p i|)).sum
 
 /-- [P] Graded significance (L25): a linear ramp reaching 1 at the threshold. -/
@@ -498,7 +514,7 @@ noncomputable def graded_sig (m th : ℝ) : ℝ :=
   min 1 (m / th)
 
 /-- [R] Skew gate (L62): skew counts only as far as the range change is not significant. -/
-noncomputable def skew_gate (th : ℝ) (p : Fin 10 → ℝ) : ℝ :=
+noncomputable def skew_gate (th : ℝ) (p : Fin 9 → ℝ) : ℝ :=
   1 - graded_sig (range_change p) th
 
 /-- [P] Parameters of G: Sy exponents and λ, κ; distribution weight w_D; significance threshold;
@@ -510,20 +526,20 @@ structure GParams where
   lambda : ℝ
   wD     : ℝ
   th     : ℝ
-  wRange : Fin 10 → ℝ
-  wSkew  : Fin 10 → ℝ
+  wRange : Fin 9 → ℝ
+  wSkew  : Fin 9 → ℝ
 
 /--
   [R] Assessed distribution term D (L62): Sy over the range changes, plus Sy over the skew changes
   weighted by the skew gate.
 -/
-noncomputable def dist_score (gp : GParams) (p : Fin 10 → ℝ) : ℝ :=
+noncomputable def dist_score (gp : GParams) (p : Fin 9 → ℝ) : ℝ :=
   sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda (restrict range_idx p) +
     skew_gate gp.th p *
       sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p)
 
 /-- THEOREM: When the range change is significant, skew is ignored. -/
-theorem skew_ignored_when_range_significant (gp : GParams) (p : Fin 10 → ℝ) (hth : 0 < gp.th)
+theorem skew_ignored_when_range_significant (gp : GParams) (p : Fin 9 → ℝ) (hth : 0 < gp.th)
     (h : gp.th ≤ range_change p) :
     dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
       (restrict range_idx p) := by
@@ -534,7 +550,7 @@ theorem skew_ignored_when_range_significant (gp : GParams) (p : Fin 10 → ℝ) 
   ring
 
 /-- THEOREM: When the range is static, skew counts in full. -/
-theorem skew_counts_when_range_static (gp : GParams) (p : Fin 10 → ℝ) (h : range_change p = 0) :
+theorem skew_counts_when_range_static (gp : GParams) (p : Fin 9 → ℝ) (h : range_change p = 0) :
     dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
       (restrict range_idx p) +
       sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p) := by
@@ -632,12 +648,12 @@ theorem sy_score_single {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : �
   exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx _)) _
 
 /-- A gain x in component j alone. -/
-def unit_gain (j : Fin 10) (x : ℝ) : Fin 10 → ℝ :=
+def unit_gain (j : Fin 9) (x : ℝ) : Fin 9 → ℝ :=
   fun i => if i = j then x else 0
 
 /-- THEOREM: A single range gain scores w_j · x^q₊ in D; the skew term contributes nothing. -/
-theorem dist_score_unit_gain (gp : GParams) (j : Fin 10) (hj : j ∈ range_idx)
-    (hjs : j ∉ ([0, 1, 2, 3] : List (Fin 10))) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
+theorem dist_score_unit_gain (gp : GParams) (j : Fin 9) (hj : j ∈ range_idx)
+    (hjs : j ∉ ([0, 1, 2, 3] : List (Fin 9))) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
     (hw : 0 < gp.wRange j) (x : ℝ) (hx : 0 < x) :
     dist_score gp (unit_gain j x) = gp.wRange j * x ^ gp.qp := by
   have hr : restrict range_idx (unit_gain j x) = unit_gain j x := by
@@ -660,25 +676,28 @@ theorem dist_score_unit_gain (gp : GParams) (j : Fin 10) (hj : j ∈ range_idx)
   simp [unit_gain]
 
 /--
-  [R] Range priority (author): max U (index 6) > min U (4) > min H (5) > max H (7). Max H keeps a
-  low nonzero weight (L59: peak is the last H tier).
+  [R] Range priority (author): max U (index 6) > min U (4) > ↓Ha_max (8) > min H (5) > max H (7).
+  Harm that would lower a floor is already blocked by ¬↓; Ha_max protects beings above it.
+  Max H keeps a low nonzero weight (L59: peak is the last H tier).
 -/
-def RangePriority (w : Fin 10 → ℝ) : Prop :=
-  w 4 < w 6 ∧ w 5 < w 4 ∧ w 7 < w 5
+def RangePriority (w : Fin 9 → ℝ) : Prop :=
+  w 4 < w 6 ∧ w 8 < w 4 ∧ w 5 < w 8 ∧ w 7 < w 5
 
-/-- THEOREM: Under the range priority, equal gains score max U > min U > min H > max H in D. -/
+/-- THEOREM: Under the range priority, equal gains score max U > min U > ↓Ha_max > min H > max H. -/
 theorem range_priority_order (gp : GParams) (hpr : RangePriority gp.wRange)
     (hw : ∀ i, 0 < gp.wRange i) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm) (x : ℝ) (hx : 0 < x) :
     dist_score gp (unit_gain 7 x) < dist_score gp (unit_gain 5 x) ∧
-      dist_score gp (unit_gain 5 x) < dist_score gp (unit_gain 4 x) ∧
+      dist_score gp (unit_gain 5 x) < dist_score gp (unit_gain 8 x) ∧
+      dist_score gp (unit_gain 8 x) < dist_score gp (unit_gain 4 x) ∧
       dist_score gp (unit_gain 4 x) < dist_score gp (unit_gain 6 x) := by
   have hxq : 0 < x ^ gp.qp := Real.rpow_pos_of_pos hx _
   rw [dist_score_unit_gain gp 7 (by unfold range_idx; decide) (by decide) hqp hqm (hw 7) x hx,
     dist_score_unit_gain gp 5 (by unfold range_idx; decide) (by decide) hqp hqm (hw 5) x hx,
+    dist_score_unit_gain gp 8 (by unfold range_idx; decide) (by decide) hqp hqm (hw 8) x hx,
     dist_score_unit_gain gp 4 (by unfold range_idx; decide) (by decide) hqp hqm (hw 4) x hx,
     dist_score_unit_gain gp 6 (by unfold range_idx; decide) (by decide) hqp hqm (hw 6) x hx]
-  exact ⟨mul_lt_mul_of_pos_right hpr.2.2 hxq, mul_lt_mul_of_pos_right hpr.2.1 hxq,
-    mul_lt_mul_of_pos_right hpr.1 hxq⟩
+  exact ⟨mul_lt_mul_of_pos_right hpr.2.2.2 hxq, mul_lt_mul_of_pos_right hpr.2.2.1 hxq,
+    mul_lt_mul_of_pos_right hpr.2.1 hxq, mul_lt_mul_of_pos_right hpr.1 hxq⟩
 
 /-- [R] A being's term in G: Sy(V_b, D) with gain and loss weights (1, w_D) (L13 default w = 1). -/
 noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
@@ -805,13 +824,13 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
   linarith
 
 /-- [R] G's parameters at an admissible point; range and skew priority weights stay explicit. -/
-noncomputable def toGParams (pv : ParamVector) (wRange wSkew : Fin 10 → ℝ) : GParams :=
+noncomputable def toGParams (pv : ParamVector) (wRange wSkew : Fin 9 → ℝ) : GParams :=
   { qp := pv.q_plus, qm := pv.q_minus, kappa := pv.kappa, lambda := pv.lambda,
     wD := pv.dist_weight, th := pv.th_sig, wRange := wRange, wSkew := wSkew }
 
 /-- THEOREM: At every admissible point, and so throughout SigThGv, G never chooses a dominated plan. -/
 theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible pv)
-    (wRange wSkew : Fin 10 → ℝ) (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
+    (wRange wSkew : Fin 9 → ℝ) (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
     (hb : better ∈ cs) (hba : plan_admissible_G better = true)
     (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
     (hlt : ∃ b ∈ pop, worse.value b < better.value b)
