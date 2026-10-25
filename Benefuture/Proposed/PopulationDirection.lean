@@ -522,6 +522,27 @@ theorem pairwiseCrossSum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
         (fun hia => hn.1 (hia ▸ hi))), mul_zero]
     · rw [h a (by simp) haj, zero_mul]
 
+theorem sum_map_eq_add_single {ι : Type*} (g g' : ι → ℝ) (i : ι) :
+    ∀ l : List ι, l.Nodup → i ∈ l → (∀ b ∈ l, b ≠ i → g' b = g b) →
+      (l.map g').sum = (l.map g).sum + (g' i - g i)
+  | [], _, hi, _ => absurd hi (by simp)
+  | a :: t, hn, hi, h => by
+    rw [List.nodup_cons] at hn
+    simp only [List.map_cons, List.sum_cons]
+    by_cases hai : a = i
+    · subst hai
+      have ht : t.map g' = t.map g := List.map_congr_left
+        (fun b hb => h b (List.mem_cons_of_mem _ hb) (fun hba => hn.1 (hba ▸ hb)))
+      rw [ht]
+      ring
+    · have hit : i ∈ t := by
+        rcases List.mem_cons.mp hi with h' | h'
+        · exact absurd h'.symm hai
+        · exact h'
+      rw [h a (by simp) hai, sum_map_eq_add_single g g' i t hn.2 hit
+        (fun b hb hbi => h b (List.mem_cons_of_mem a hb) hbi)]
+      ring
+
 /-- THEOREM: Sy of a zero vector is zero. -/
 theorem sy_score_of_zero {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
     (hqp : 0 < qp) (hqm : 0 < qm) (h : ∀ i, p i = 0) : sy_score w v qp qm kappa lambda p = 0 := by
@@ -690,6 +711,146 @@ theorem higher_harm_reduction_valued_more (gp : GParams) (hs : Shapes gp) (i : �
   have := hs.ha_convex a b d hab hd
   linarith
 
+/-- [R] D is a difference of population sums of W at absolute levels. -/
+theorem level_gain_eq (W : ℝ → ℝ) (pop : List ℕ) (a n : ℕ → ℝ) :
+    level_gain W pop a n = (pop.map (fun b => W (a b))).sum - (pop.map (fun b => W (n b))).sum := by
+  unfold level_gain
+  induction pop with
+  | nil => simp
+  | cons x t ih =>
+    simp only [List.map_cons, List.sum_cons]
+    rw [ih]
+    ring
+
+/--
+  THEOREM: D is not redundant with V (micro and macro nudges differ). V counts a one-unit H gain
+  the same wherever it lands; under the satisficing transform min(x, 1), D scores it 1 for a being
+  at 0 and 0 for a being already at satisficing.
+-/
+theorem pushDistr_not_redundant :
+    level_gain (fun x => min x 1) [0] (fun _ => 1) (fun _ => 0) = 1 ∧
+      level_gain (fun x => min x 1) [0] (fun _ => 2) (fun _ => 1) = 0 ∧
+      ((1 : ℝ) - 0 = 2 - 1) := by
+  refine ⟨?_, ?_, by norm_num⟩ <;> simp [level_gain] <;> norm_num [min_def]
+
+/-- Levels with being i set to x. -/
+def one_update (f : ℕ → ℝ) (i : ℕ) (x : ℝ) : ℕ → ℝ :=
+  fun b => if b = i then x else f b
+
+/-- Levels with beings i and j set to x and y. -/
+def two_update (f : ℕ → ℝ) (i j : ℕ) (x y : ℝ) : ℕ → ℝ :=
+  fun b => if b = i then x else if b = j then y else f b
+
+theorem sum_two_update (W : ℝ → ℝ) (pop : List ℕ) (hn : pop.Nodup) (f : ℕ → ℝ) (i j : ℕ)
+    (hij : i ≠ j) (hi : i ∈ pop) (hj : j ∈ pop) (x y : ℝ) :
+    (pop.map (fun b => W (two_update f i j x y b))).sum =
+      (pop.map (fun b => W (f b))).sum + (W x - W (f i)) + (W y - W (f j)) := by
+  have hji : j ≠ i := fun h => hij h.symm
+  have h1 : (pop.map (fun b => W (one_update f i x b))).sum =
+      (pop.map (fun b => W (f b))).sum + (W (one_update f i x i) - W (f i)) :=
+    sum_map_eq_add_single (fun b => W (f b)) (fun b => W (one_update f i x b)) i pop hn hi
+      (fun b _ hbi => by simp [one_update, hbi])
+  have h2 : (pop.map (fun b => W (two_update f i j x y b))).sum =
+      (pop.map (fun b => W (one_update f i x b))).sum +
+        (W (two_update f i j x y j) - W (one_update f i x j)) :=
+    sum_map_eq_add_single (fun b => W (one_update f i x b)) (fun b => W (two_update f i j x y b))
+      j pop hn hj (fun b _ hbj => by
+        by_cases hbi : b = i
+        · simp [one_update, two_update, hbi]
+        · simp [one_update, two_update, hbi, hbj])
+  have e1 : one_update f i x i = x := by simp [one_update]
+  have e2 : one_update f i x j = f j := by simp [one_update, hji]
+  have e3 : two_update f i j x y j = y := by simp [two_update, hji]
+  rw [e1] at h1
+  rw [e3, e2] at h2
+  linarith
+
+/--
+  THEOREM: Pigou–Dalton for H. Moving t of H from a better-off being j to a worse-off being i
+  (without reversing their order) never lowers Σ W_H, for every concave-shaped W_H.
+-/
+theorem pigou_dalton_h (W : ℝ → ℝ) (hW : DecreasingDiff W) (pop : List ℕ) (hn : pop.Nodup)
+    (f : ℕ → ℝ) (i j : ℕ) (hij : i ≠ j) (hi : i ∈ pop) (hj : j ∈ pop) (t : ℝ) (ht : 0 ≤ t)
+    (hle : f i ≤ f j - t) :
+    (pop.map (fun b => W (f b))).sum ≤
+      (pop.map (fun b => W (two_update f i j (f i + t) (f j - t) b))).sum := by
+  rw [sum_two_update W pop hn f i j hij hi hj]
+  have hd := hW (f i) (f j - t) t hle ht
+  rw [sub_add_cancel] at hd
+  linarith
+
+/--
+  THEOREM: The U dual. With convex-shaped W_U, a fixed amount of U placed at the higher being
+  never lowers Σ W_U. On paper this reads as concentration; U does not transfer as a fixed stock
+  but compounds and diffuses (teachable tiers, As over lt), so this fixed-total comparison is the
+  conservative case, not the dynamics (author).
+-/
+theorem frontier_u_preferred (W : ℝ → ℝ) (hW : IncreasingDiff W) (pop : List ℕ) (hn : pop.Nodup)
+    (f : ℕ → ℝ) (i j : ℕ) (hij : i ≠ j) (hi : i ∈ pop) (hj : j ∈ pop) (t : ℝ) (ht : 0 ≤ t)
+    (hle : f i ≤ f j) :
+    (pop.map (fun b => W (f b))).sum ≤
+      (pop.map (fun b => W (two_update f i j (f i - t) (f j + t) b))).sum := by
+  rw [sum_two_update W pop hn f i j hij hi hj]
+  have hd := hW (f i - t) (f j) t (by linarith) ht
+  rw [sub_add_cancel] at hd
+  linarith
+
+/-- A Pigou–Dalton step on H levels: t from j to i. -/
+def pd_step (f : ℕ → ℝ) (i j : ℕ) (t : ℝ) : ℕ → ℝ :=
+  two_update f i j (f i + t) (f j - t)
+
+/-- A sequence of Pigou–Dalton steps. -/
+def pd_run : (ℕ → ℝ) → List (ℕ × ℕ × ℝ) → (ℕ → ℝ)
+  | f, [] => f
+  | f, (i, j, t) :: ts => pd_run (pd_step f i j t) ts
+
+/-- Every step of a sequence is a valid transfer within the population. -/
+def pd_run_valid (pop : List ℕ) : (ℕ → ℝ) → List (ℕ × ℕ × ℝ) → Prop
+  | _, [] => True
+  | f, (i, j, t) :: ts =>
+    (i ≠ j ∧ i ∈ pop ∧ j ∈ pop ∧ 0 ≤ t ∧ f i ≤ f j - t) ∧ pd_run_valid pop (pd_step f i j t) ts
+
+/--
+  THEOREM: Robust across the whole concave family. Any finite sequence of Pigou–Dalton transfers
+  raises Σ W_H for every concave-shaped W_H at once, so the sim tunes W_H only within a family
+  whose ranking of such distributions is already fixed. This is the "if" direction of
+  Hardy–Littlewood–Pólya / Karamata; the converse (majorisation ⇒ a transfer sequence) is not
+  formalised here.
+-/
+theorem pd_run_raises (W : ℝ → ℝ) (hW : DecreasingDiff W) (pop : List ℕ) (hn : pop.Nodup) :
+    ∀ (ts : List (ℕ × ℕ × ℝ)) (f : ℕ → ℝ), pd_run_valid pop f ts →
+      (pop.map (fun b => W (f b))).sum ≤ (pop.map (fun b => W (pd_run f ts b))).sum
+  | [], f, _ => by simp [pd_run]
+  | (i, j, t) :: ts, f, h => by
+    simp only [pd_run_valid] at h
+    obtain ⟨⟨hij, hi, hj, ht, hle⟩, hr⟩ := h
+    simp only [pd_run]
+    exact le_trans (pigou_dalton_h W hW pop hn f i j hij hi hj t ht hle)
+      (pd_run_raises W hW pop hn ts (pd_step f i j t) hr)
+
+/--
+  THEOREM: D sees only the decision-time population: beings outside it (e.g. new beings) cannot
+  change D, so headcount cannot buy distribution credit.
+-/
+theorem dist_score_ignores_absent (gp : GParams) (pop : List ℕ) (c c' : Plan)
+    (hsA : c'.statsA = c.statsA) (hsN : c'.statsNotA = c.statsNotA)
+    (hA : ∀ b ∈ pop, c'.levelsA b = c.levelsA b) (hN : ∀ b ∈ pop, c'.levelsNotA b = c.levelsNotA b) :
+    dist_score gp pop c' = dist_score gp pop c := by
+  have hu : level_gain gp.WU pop (fun b => (c'.levelsA b).u) (fun b => (c'.levelsNotA b).u) =
+      level_gain gp.WU pop (fun b => (c.levelsA b).u) (fun b => (c.levelsNotA b).u) := by
+    unfold level_gain
+    exact congrArg List.sum (List.map_congr_left (fun b hb => by simp only [hA b hb, hN b hb]))
+  have hh : level_gain gp.WH pop (fun b => (c'.levelsA b).h) (fun b => (c'.levelsNotA b).h) =
+      level_gain gp.WH pop (fun b => (c.levelsA b).h) (fun b => (c.levelsNotA b).h) := by
+    unfold level_gain
+    exact congrArg List.sum (List.map_congr_left (fun b hb => by simp only [hA b hb, hN b hb]))
+  have hha : level_gain gp.WHa pop (fun b => (c'.levelsA b).ha) (fun b => (c'.levelsNotA b).ha) =
+      level_gain gp.WHa pop (fun b => (c.levelsA b).ha) (fun b => (c.levelsNotA b).ha) := by
+    unfold level_gain
+    exact congrArg List.sum (List.map_congr_left (fun b hb => by simp only [hA b hb, hN b hb]))
+  unfold dist_score dist_vec Plan.prog
+  rw [hu, hh, hha, hsA, hsN]
+
 /-- THEOREM: Inaction leaves D at zero: its counterfactual is itself. -/
 theorem inaction_dist_zero (gp : GParams) (pop : List ℕ) (c : Plan) (hqp : 0 < gp.qp)
     (hqm : 0 < gp.qm) (hs : c.statsA = c.statsNotA) (hl : c.levelsA = c.levelsNotA) :
@@ -851,6 +1012,20 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
   have hstrict := goal_value_strict_mono gp hw hqp hqm hk hl0 hl1 pop better worse hle hlt hd
   rw [hcw] at hmax
   linarith
+
+/--
+  THEOREM: Uplift beats inaction. An admissible plan no worse in V for anyone, better for someone,
+  and with D ≥ 0 is always chosen over doing nothing.
+-/
+theorem uplift_beats_inaction (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (pop : List ℕ) (cs : List Plan) (up idle c : Plan)
+    (hup : up ∈ cs) (hupa : plan_admissible_G up = true)
+    (hs : idle.statsA = idle.statsNotA) (hl : idle.levelsA = idle.levelsNotA)
+    (hle : ∀ b ∈ pop, idle.value b ≤ up.value b) (hlt : ∃ b ∈ pop, idle.value b < up.value b)
+    (hD : 0 ≤ dist_score gp pop up) (hc : c ∈ goal_G gp pop cs) : c ≠ idle :=
+  dominated_plan_not_chosen gp hw hqp hqm hk hl0 hl1 pop cs up idle c hup hupa hle hlt
+    (by rw [inaction_dist_zero gp pop idle hqp hqm hs hl]; exact hD) hc
 
 /-- [R] G's parameters at an admissible point; dimension weights and level transforms explicit. -/
 noncomputable def toGParams (pv : ParamVector) (wDim : Fin 4 → ℝ) (WU WH WHa : ℝ → ℝ) :

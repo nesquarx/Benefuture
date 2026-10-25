@@ -102,7 +102,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B13 | **Partial adoption:** Bf mechanisms keep their properties when coexisting with a fiat economy | Transition is where most frameworks fail (Critique addressal, transition). |
 | B14 | **Noise robustness:** G's choices degrade smoothly as MM noise grows | Links measurement quality to decision quality directly. |
 | B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal; the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. |
-| B17 | **Frontier concentration:** convex W_U does not let high-capacity beings absorb most U gains | Measure the top-decile share of U gains as ε grows; refines A37. |
+| B17 | **Frontier compounding:** frontier U gains diffuse and compound, so convex W_U does not leave the floor behind | `frontier_u_preferred` is the static fixed-stock case; measure diffusion of frontier gains into later floor gains and the top-decile share as ε grows; refines A37. |
 | B18 | **NHa relabelling:** harm relabelled as NHa to escape Ha_max does not pay | `ha_lt` excludes closing NHa dips; the incentive to label is new. |
 | B19 | **Diversity flip point:** where γ·Σ N lets a large diverse population outweigh a small homogeneous one | Depends on γ, q and headcount; the opening Parfit case. |
 | B15 | **Population size converges** under birth escrow and creation policies | Government (Birth) and the population-direction rules imply but do not state it. |
