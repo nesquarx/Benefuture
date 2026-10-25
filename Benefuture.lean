@@ -46,6 +46,7 @@ import Benefuture.Epistemology.InfoHandling
 import Benefuture.Measurement.Threshold
 import Benefuture.Measurement.MetricModel
 import Benefuture.Economy.Currency
+import Benefuture.Economy.Pricing
 import Benefuture.Governance.Democracy
 import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom

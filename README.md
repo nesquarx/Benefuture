@@ -151,6 +151,7 @@ This repository maintains a two-tier formalization architecture:
   - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
   - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).
   - `value.json`: `compute_harm_weight` (κ = ½, q₊ = 1.5, `harmSchedule`) and `value_on_being` (items (x, w₊, w₋), κ = 2) (L61, L73).
+  - `pricing.json`: `resource_cost` (physical + compute + network + time), `transaction_price` (L86), `supply_delta` (L99), `competition_efficiency` (L82).
   - `escrow.json`: `upfront_payment` / `escrow_hold` (L84; no overhead).
   - `reputation.json`: lazy exponential decay (`RepCache`).
   - `democracy.json`: voting weight (L113; Government.txt: base + expertise·Σŵ·Re + impact; optional below Th) and cyclic-review attenuation (`attenuate_cyclic_reviews`).

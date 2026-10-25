@@ -244,4 +244,27 @@ def happiness_score_ref (sources : List (Float × Float × Float)) (di : Float) 
   let pos := sources.map (fun (i, b, c) => (1.0 - c * b) * (if i > 0.0 then i else 0.0))
   sumFloat pos + (if di > 0.0 then di else 0.0)
 
+/- --- Transaction pricing (L82, L83, L86, L99) --- -/
+
+/--
+  Resource cost: Σ quantity·unit cost + compute·c + network·n + time·t. Matches `resource_cost`.
+  Infrastructure (MM compute, TN bandwidth) is a resource of the action, not a protocol fee.
+-/
+def resource_cost_ref (physical : List (Float × Float)) (compute network time : Float)
+    (computeCost networkCost timeCost : Float) : Float :=
+  sumFloat (physical.map (fun (q, c) => q * c)) + computeCost * compute + networkCost * network +
+    timeCost * time
+
+/-- L86 price = resource cost − credit + credit·(1 − P) = cost − P·credit. Matches `transaction_price`. -/
+def transaction_price_ref (cost credit pWin : Float) : Float :=
+  cost - credit + credit * (1.0 - pWin)
+
+/-- L99 supply change = measured good − resource cost − harm. Matches `supply_delta`. -/
+def supply_delta_ref (good cost harm : Float) : Float :=
+  good - cost - harm
+
+/-- L82 currency efficiency ΔV / (ΔRc + Δt). Matches `competition_efficiency`. -/
+def competition_efficiency_ref (dV cost dt : Float) : Float :=
+  dV / (cost + dt)
+
 end BenefutureReference

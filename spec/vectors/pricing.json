@@ -1,0 +1,11 @@
+{
+  "inputs": "physical [(2, 10), (1, 5)]; compute cost 2, network cost 1, time cost 3; network 1, time 1",
+  "resource_cost_compute_1": 31.000000,
+  "resource_cost_compute_50": 129.000000,
+  "price_light_credit_40_p_0_8": -1.000000,
+  "price_heavy_credit_40_p_0_8": 97.000000,
+  "price_unmodelled_light": 31.000000,
+  "supply_delta_no_good_light": -31.000000,
+  "efficiency_light_dV_100_dt_1": 3.125000,
+  "efficiency_heavy_dV_100_dt_1": 0.769231
+}

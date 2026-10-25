@@ -301,3 +301,9 @@ Per the Ground Rules:
 
 ### 8.5 Legacy Fixed-Point Modules ([R])
 - About 25 modules still encode quantities as `Int` at SCALE = 10⁶. Full migration to ℝ is deferred; `Benefuture.Systems.FixedPoint` proves the key operations are within one micro-unit of their ℝ counterparts: `int_ediv_approx`, `escrow_fixed_point` (L84), `norm_assessment_fixed_point` (L48), `novelty_fixed_point` (L36). Simulations implement the ℝ / Float definitions.
+
+### 8.6 Transaction Pricing and Infrastructure Cost ([R])
+- **Source**: L82, L83, L84, L86, L96, L99; `Benefuture currency.txt` (Resource Accounting, Pricing, endogenous supply).
+- **Finding**: the reference escrow split had taken a 5% "protocol overhead" with no source (removed in §7.5). If it was meant to price MM/TN infrastructure, it had the wrong base (predicted value, not resources consumed), the wrong destination (a rent, where L99 burns resource use and L96 pays contributors) and the wrong timing (taxing uncertainty held in escrow).
+- **Lean Spec Choice** (`Benefuture.Economy.Pricing`, ℝ): `ResourceUse` (physical, compute, network, time), `ResourcePrices`, `resource_cost`, `transaction_price` = resource cost − credit + credit·(1 − P), `supply_delta` (measured good − resource cost − harm; no protocol term), `competition_efficiency` = ΔV / (ΔRc + Δt).
+- **Proved**: `transaction_price_eq` (price = cost − P·credit), `price_strictly_increases_with_compute`, `price_strictly_increases_with_network`, `unmodelled_action_pays_resource_cost`, `price_negative_when_value_exceeds_cost`, `resource_use_without_good_burns`, `heavier_model_less_efficient` (a compute-heavy MM lowers its currency's efficiency and loses competition).

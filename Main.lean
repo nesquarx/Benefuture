@@ -70,4 +70,11 @@ def main : IO Unit := do
   let hJson := s!"\{\n  \"h_harm_coming_down_window_1115_to_2\": {h_harm_ref [1.0, 1.0, 1.0, 5.0] 2.0},\n  \"h_harm_below_average_window_1115_to_1\": {h_harm_ref [1.0, 1.0, 1.0, 5.0] 1.0},\n  \"u_harm_forgetting_hist_358_to_6\": {u_harm_ref [3.0, 5.0, 8.0] 6.0},\n  \"u_harm_at_max_hist_358_to_8\": {u_harm_ref [3.0, 5.0, 8.0] 8.0},\n  \"happiness_sources\": \"(intensity, bias degree, MM confidence): conversation (2, 0, 0), malicious (5, 1, 1), doom-scroll (3, 0.5, 0.8), stupor (4, 0.8, 0.9)\",\n  \"happiness_score_mixed_di_0_5\": {happiness_score_ref [(2.0, 0.0, 0.0), (5.0, 1.0, 1.0), (3.0, 0.5, 0.8), (4.0, 0.8, 0.9)] 0.5}\n}\n"
   IO.FS.writeFile "spec/vectors/harm.json" hJson
 
+  -- 10. pricing.json (L82, L83, L86, L99): infra cost is a resource of the action
+  let phys : List (Float × Float) := [(2.0, 10.0), (1.0, 5.0)]
+  let costLight := resource_cost_ref phys 1.0 1.0 1.0 2.0 1.0 3.0
+  let costHeavy := resource_cost_ref phys 50.0 1.0 1.0 2.0 1.0 3.0
+  let prJson := s!"\{\n  \"inputs\": \"physical [(2, 10), (1, 5)]; compute cost 2, network cost 1, time cost 3; network 1, time 1\",\n  \"resource_cost_compute_1\": {costLight},\n  \"resource_cost_compute_50\": {costHeavy},\n  \"price_light_credit_40_p_0_8\": {transaction_price_ref costLight 40.0 0.8},\n  \"price_heavy_credit_40_p_0_8\": {transaction_price_ref costHeavy 40.0 0.8},\n  \"price_unmodelled_light\": {transaction_price_ref costLight 40.0 0.0},\n  \"supply_delta_no_good_light\": {supply_delta_ref 0.0 costLight 0.0},\n  \"efficiency_light_dV_100_dt_1\": {competition_efficiency_ref 100.0 costLight 1.0},\n  \"efficiency_heavy_dV_100_dt_1\": {competition_efficiency_ref 100.0 costHeavy 1.0}\n}\n"
+  IO.FS.writeFile "spec/vectors/pricing.json" prJson
+
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"
