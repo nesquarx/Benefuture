@@ -669,7 +669,7 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
   linarith
 
 /-- [R] G's parameters at an admissible point; range and skew priority weights stay explicit. -/
-noncomputable def ParamVector.toGParams (pv : ParamVector) (wRange wSkew : Fin 12 → ℝ) : GParams :=
+noncomputable def toGParams (pv : ParamVector) (wRange wSkew : Fin 12 → ℝ) : GParams :=
   { qp := pv.q_plus, qm := pv.q_minus, kappa := pv.kappa, lambda := pv.lambda,
     wD := pv.dist_weight, th := pv.th_sig, wRange := wRange, wSkew := wSkew }
 
@@ -679,10 +679,10 @@ theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible 
     (hb : better ∈ cs) (hba : plan_admissible_G better = true)
     (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
     (hlt : ∃ b ∈ pop, worse.value b < better.value b)
-    (hd : dist_score (pv.toGParams wRange wSkew) worse.prog ≤
-      dist_score (pv.toGParams wRange wSkew) better.prog)
-    (hc : c ∈ goal_G (pv.toGParams wRange wSkew) pop cs) : c ≠ worse :=
-  dominated_plan_not_chosen (pv.toGParams wRange wSkew) h.dist_weight_pos
+    (hd : dist_score (toGParams pv wRange wSkew) worse.prog ≤
+      dist_score (toGParams pv wRange wSkew) better.prog)
+    (hc : c ∈ goal_G (toGParams pv wRange wSkew) pop cs) : c ≠ worse :=
+  dominated_plan_not_chosen (toGParams pv wRange wSkew) h.dist_weight_pos
     (by show 0 < pv.q_plus; linarith [h.q_plus_gt_one])
     (by show 0 < pv.q_minus; linarith [h.q_plus_gt_one, h.q_plus_le_q_minus])
     h.kappa_nonneg h.lambda_nonneg h.lambda_le_one pop cs better worse c hb hba hle hlt hd hc
