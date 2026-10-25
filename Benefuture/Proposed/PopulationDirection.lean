@@ -475,6 +475,92 @@ theorem sy_score_pareto_monotone {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa la
 
 /- --- 8. Goal G (L62, L74): Σ_b Sy(V_b, As(D)) under ↑ℝ and ¬↓(U(max, min), H(min)) --- -/
 
+/- --- Sy on a single gain --- -/
+
+theorem sum_map_zero {ι : Type*} (y : ι → ℝ) (l : List ι) (h : ∀ i ∈ l, y i = 0) :
+    (l.map y).sum = 0 :=
+  List.sum_eq_zero (fun x hx => by
+    obtain ⟨i, hi, rfl⟩ := List.mem_map.mp hx
+    exact h i hi)
+
+theorem pairwiseCrossSum_map_zero {ι : Type*} (y : ι → ℝ) :
+    ∀ l : List ι, (∀ i ∈ l, y i = 0) → pairwiseCrossSum (l.map y) = 0
+  | [], _ => by simp
+  | a :: t, h => by
+    simp only [List.map_cons, pairwiseCrossSum]
+    rw [h a (by simp), zero_mul, zero_add]
+    exact pairwiseCrossSum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem a hi))
+
+theorem sum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
+    ∀ l : List ι, l.Nodup → j ∈ l → (∀ i ∈ l, i ≠ j → y i = 0) → (l.map y).sum = y j
+  | [], _, hj, _ => absurd hj (by simp)
+  | a :: t, hn, hj, h => by
+    rw [List.nodup_cons] at hn
+    simp only [List.map_cons, List.sum_cons]
+    by_cases haj : a = j
+    · subst haj
+      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
+        (fun hia => hn.1 (hia ▸ hi))), add_zero]
+    · have hjt : j ∈ t := by
+        rcases List.mem_cons.mp hj with h' | h'
+        · exact absurd h'.symm haj
+        · exact h'
+      rw [h a (by simp) haj, zero_add]
+      exact sum_map_single y j t hn.2 hjt (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij)
+
+theorem pairwiseCrossSum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
+    ∀ l : List ι, l.Nodup → (∀ i ∈ l, i ≠ j → y i = 0) → pairwiseCrossSum (l.map y) = 0
+  | [], _, _ => by simp
+  | a :: t, hn, h => by
+    rw [List.nodup_cons] at hn
+    simp only [List.map_cons, pairwiseCrossSum]
+    rw [pairwiseCrossSum_map_single y j t hn.2
+      (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij), add_zero]
+    by_cases haj : a = j
+    · subst haj
+      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
+        (fun hia => hn.1 (hia ▸ hi))), mul_zero]
+    · rw [h a (by simp) haj, zero_mul]
+
+/-- THEOREM: Sy of a zero vector is zero. -/
+theorem sy_score_of_zero {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
+    (hqp : 0 < qp) (hqm : 0 < qm) (h : ∀ i, p i = 0) : sy_score w v qp qm kappa lambda p = 0 := by
+  have hy : ∀ i ∈ List.finRange k, w i * (max 0 (p i)) ^ qp = 0 := fun i _ => by
+    rw [h i, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
+  have hz : ∀ i ∈ List.finRange k, v i * (max 0 (-p i)) ^ qm = 0 := fun i _ => by
+    rw [h i, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  unfold sy_score phi_of
+  rw [sum_map_zero _ _ hy, pairwiseCrossSum_map_zero _ _ hy, sum_map_zero _ _ hz,
+    pairwiseCrossSum_map_zero _ _ hz]
+  simp
+
+/-- THEOREM: Sy of a single gain x in component j is w_j · x^q₊. -/
+theorem sy_score_single {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
+    (j : Fin k) (hqp : 0 < qp) (hqm : 0 < qm) (hw : 0 < w j) (hx : 0 < p j)
+    (h0 : ∀ i, i ≠ j → p i = 0) : sy_score w v qp qm kappa lambda p = w j * (p j) ^ qp := by
+  have hy : ∀ i ∈ List.finRange k, i ≠ j → w i * (max 0 (p i)) ^ qp = 0 := fun i _ hij => by
+    rw [h0 i hij, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
+  have hz : ∀ i ∈ List.finRange k, i ≠ j → v i * (max 0 (-p i)) ^ qm = 0 := fun i _ hij => by
+    rw [h0 i hij, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  have hzj : v j * (max 0 (-p j)) ^ qm = 0 := by
+    rw [max_eq_left (show -p j ≤ 0 by linarith), Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  have hP : phi_of (List.finRange k) (fun i => w i * (max 0 (p i)) ^ qp) kappa =
+      w j * (p j) ^ qp := by
+    unfold phi_of
+    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hy,
+      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hy]
+    simp only [Real.sqrt_zero, mul_zero, add_zero, max_eq_right hx.le]
+  have hM : phi_of (List.finRange k) (fun i => v i * (max 0 (-p i)) ^ qm) kappa = 0 := by
+    unfold phi_of
+    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hz,
+      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hz]
+    simp only [Real.sqrt_zero, mul_zero, add_zero]
+    exact hzj
+  unfold sy_score
+  rw [hP, hM]
+  exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx _)) _
+
+
 /-- [P] A being's assessed levels: U, H and Ha (Ha over lt via `ha_lt`). -/
 structure Levels where
   u  : ℝ
@@ -611,91 +697,6 @@ theorem inaction_dist_zero (gp : GParams) (pop : List ℕ) (c : Plan) (hqp : 0 <
   apply sy_score_of_zero _ _ _ _ _ _ _ hqp hqm
   intro i
   fin_cases i <;> simp [dist_vec, level_gain, hl, Plan.prog, hs, progress]
-
-/- --- Sy on a single gain --- -/
-
-theorem sum_map_zero {ι : Type*} (y : ι → ℝ) (l : List ι) (h : ∀ i ∈ l, y i = 0) :
-    (l.map y).sum = 0 :=
-  List.sum_eq_zero (fun x hx => by
-    obtain ⟨i, hi, rfl⟩ := List.mem_map.mp hx
-    exact h i hi)
-
-theorem pairwiseCrossSum_map_zero {ι : Type*} (y : ι → ℝ) :
-    ∀ l : List ι, (∀ i ∈ l, y i = 0) → pairwiseCrossSum (l.map y) = 0
-  | [], _ => by simp
-  | a :: t, h => by
-    simp only [List.map_cons, pairwiseCrossSum]
-    rw [h a (by simp), zero_mul, zero_add]
-    exact pairwiseCrossSum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem a hi))
-
-theorem sum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
-    ∀ l : List ι, l.Nodup → j ∈ l → (∀ i ∈ l, i ≠ j → y i = 0) → (l.map y).sum = y j
-  | [], _, hj, _ => absurd hj (by simp)
-  | a :: t, hn, hj, h => by
-    rw [List.nodup_cons] at hn
-    simp only [List.map_cons, List.sum_cons]
-    by_cases haj : a = j
-    · subst haj
-      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
-        (fun hia => hn.1 (hia ▸ hi))), add_zero]
-    · have hjt : j ∈ t := by
-        rcases List.mem_cons.mp hj with h' | h'
-        · exact absurd h'.symm haj
-        · exact h'
-      rw [h a (by simp) haj, zero_add]
-      exact sum_map_single y j t hn.2 hjt (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij)
-
-theorem pairwiseCrossSum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
-    ∀ l : List ι, l.Nodup → (∀ i ∈ l, i ≠ j → y i = 0) → pairwiseCrossSum (l.map y) = 0
-  | [], _, _ => by simp
-  | a :: t, hn, h => by
-    rw [List.nodup_cons] at hn
-    simp only [List.map_cons, pairwiseCrossSum]
-    rw [pairwiseCrossSum_map_single y j t hn.2
-      (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij), add_zero]
-    by_cases haj : a = j
-    · subst haj
-      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
-        (fun hia => hn.1 (hia ▸ hi))), mul_zero]
-    · rw [h a (by simp) haj, zero_mul]
-
-/-- THEOREM: Sy of a zero vector is zero. -/
-theorem sy_score_of_zero {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
-    (hqp : 0 < qp) (hqm : 0 < qm) (h : ∀ i, p i = 0) : sy_score w v qp qm kappa lambda p = 0 := by
-  have hy : ∀ i ∈ List.finRange k, w i * (max 0 (p i)) ^ qp = 0 := fun i _ => by
-    rw [h i, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
-  have hz : ∀ i ∈ List.finRange k, v i * (max 0 (-p i)) ^ qm = 0 := fun i _ => by
-    rw [h i, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
-  unfold sy_score phi_of
-  rw [sum_map_zero _ _ hy, pairwiseCrossSum_map_zero _ _ hy, sum_map_zero _ _ hz,
-    pairwiseCrossSum_map_zero _ _ hz]
-  simp
-
-/-- THEOREM: Sy of a single gain x in component j is w_j · x^q₊. -/
-theorem sy_score_single {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
-    (j : Fin k) (hqp : 0 < qp) (hqm : 0 < qm) (hw : 0 < w j) (hx : 0 < p j)
-    (h0 : ∀ i, i ≠ j → p i = 0) : sy_score w v qp qm kappa lambda p = w j * (p j) ^ qp := by
-  have hy : ∀ i ∈ List.finRange k, i ≠ j → w i * (max 0 (p i)) ^ qp = 0 := fun i _ hij => by
-    rw [h0 i hij, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
-  have hz : ∀ i ∈ List.finRange k, i ≠ j → v i * (max 0 (-p i)) ^ qm = 0 := fun i _ hij => by
-    rw [h0 i hij, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
-  have hzj : v j * (max 0 (-p j)) ^ qm = 0 := by
-    rw [max_eq_left (show -p j ≤ 0 by linarith), Real.zero_rpow (ne_of_gt hqm), mul_zero]
-  have hP : phi_of (List.finRange k) (fun i => w i * (max 0 (p i)) ^ qp) kappa =
-      w j * (p j) ^ qp := by
-    unfold phi_of
-    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hy,
-      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hy]
-    simp only [Real.sqrt_zero, mul_zero, add_zero, max_eq_right hx.le]
-  have hM : phi_of (List.finRange k) (fun i => v i * (max 0 (-p i)) ^ qm) kappa = 0 := by
-    unfold phi_of
-    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hz,
-      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hz]
-    simp only [Real.sqrt_zero, mul_zero, add_zero]
-    exact hzj
-  unfold sy_score
-  rw [hP, hM]
-  exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx _)) _
 
 
 /-- A gain x in dimension j of D alone. -/
