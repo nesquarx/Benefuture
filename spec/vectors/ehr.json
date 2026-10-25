@@ -1,0 +1,8 @@
+{
+  "novel_entity": 10.000000,
+  "cooperation": 0.000000,
+  "positive_history_0_5": 6.000000,
+  "negative_history_2": 11.000000,
+  "equal_history_0_5_p_forgive": 0.400000,
+  "equal_history_0_5_p_overreact": 0.100000
+}

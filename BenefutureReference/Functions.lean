@@ -267,4 +267,21 @@ def supply_delta_ref (good cost harm : Float) : Float :=
 def competition_efficiency_ref (dV cost dt : Float) : Float :=
   dV / (cost + dt)
 
+/- --- External Harm Response (L117) --- -/
+
+/-- p_F = min(1, α·Re₊). Matches `p_forgive`. -/
+def p_forgive_ref (alpha rePos : Float) : Float :=
+  let x := alpha * rePos
+  if x < 1.0 then x else 1.0
+
+/-- p_O = min(1 − p_F, δ·Re₋). Matches `p_overreact`. -/
+def p_overreact_ref (alpha delta rePos reNeg : Float) : Float :=
+  let cap := 1.0 - p_forgive_ref alpha rePos
+  let x := delta * reNeg
+  if x < cap then x else cap
+
+/-- Expected response h·(1 − p_F + margin·p_O). Matches `ehr_expected_response`. -/
+def ehr_expected_response_ref (alpha delta margin h rePos reNeg : Float) : Float :=
+  h * (1.0 - p_forgive_ref alpha rePos + margin * p_overreact_ref alpha delta rePos reNeg)
+
 end BenefutureReference

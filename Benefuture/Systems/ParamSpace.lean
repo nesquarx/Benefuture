@@ -16,11 +16,13 @@ import Mathlib.Tactic.Linarith
 import Benefuture.Math.Order
 import Benefuture.Math.Synergy
 import Benefuture.Subgoals.Freedom
+import Benefuture.Governance.ExternalHarm
 
 namespace Benefuture.Systems
 
 open Benefuture.Math
 open Benefuture.Subgoals
+open Benefuture.Governance
 
 /-- [R] One point in the Bf parameter space. -/
 structure ParamVector where
@@ -57,6 +59,8 @@ structure ParamVector where
   -- H-harm rolling window (L54) and delegation cap Th_k as a share of total weight (L114)
   h_window         : ℕ
   deleg_cap        : ℝ
+  -- EHR overreaction margin (L117)
+  ehr_margin       : ℝ
 
 /-- [R] Admissible parameter vectors: the ranges and joint constraints the proved theorems need. -/
 structure Admissible (pv : ParamVector) : Prop where
@@ -99,6 +103,8 @@ structure Admissible (pv : ParamVector) : Prop where
   h_window_pos       : 1 ≤ pv.h_window
   deleg_cap_pos      : 0 < pv.deleg_cap
   deleg_cap_le_one   : pv.deleg_cap ≤ 1
+  -- L117
+  ehr_margin_nonneg  : 0 ≤ pv.ehr_margin
 
 /--
   [P] Bootstrap defaults (Bf system-design bootstrap), matching `defaultGovParams`,
@@ -115,7 +121,7 @@ noncomputable def bootstrapParams : ParamVector :=
     fr_thConf := 0.9, fr_thHigh := 1,
     sev_irreparable := 1000, sev_irreversible := 100, sev_longterm := 10,
     sev_passing := 1, sev_timeLoss := 0.5,
-    h_window := 10, deleg_cap := 0.05 }
+    h_window := 10, deleg_cap := 0.05, ehr_margin := 0.25 }
 
 /-- THEOREM: The bootstrap point is admissible. -/
 theorem bootstrap_admissible : Admissible bootstrapParams := by
@@ -143,6 +149,10 @@ noncomputable def ParamVector.toFrParams (pv : ParamVector) : FrParams :=
   { thConf := pv.fr_thConf, thHigh := pv.fr_thHigh,
     sevIrreparable := pv.sev_irreparable, sevIrreversible := pv.sev_irreversible,
     sevLongterm := pv.sev_longterm, sevPassing := pv.sev_passing, sevTimeLoss := pv.sev_timeLoss }
+
+/-- [R] EHR parameters of a parameter vector (L117): α and δ from L11, overreaction margin. -/
+noncomputable def ParamVector.toEHRParams (pv : ParamVector) : EHRParams :=
+  { alpha := pv.alpha, delta := pv.delta, margin := pv.ehr_margin }
 
 /- --- SigThGv governance (L157) --- -/
 
@@ -252,5 +262,19 @@ theorem admissible_loss_aversion (pv : ParamVector) (h : Admissible pv) (d th : 
     |d / th| ^ pv.q_plus ≤ |d / th| ^ pv.q_minus :=
   significant_assessment_preserves_loss_aversion d th pv.q_plus pv.q_minus hth hsig
     h.q_plus_le_q_minus
+
+/--
+  THEOREM: At every admissible point EHR is biased toward forgiveness: with equal accumulated
+  reputation on both ledgers (below the cap), forgiveness is strictly more likely than overreaction,
+  because δ < α in the L11 priority order.
+-/
+theorem admissible_forgiveness_bias (pv : ParamVector) (h : Admissible pv) (r : ℝ) (hr : 0 < r)
+    (hcap : pv.alpha * r ≤ 1) :
+    p_overreact pv.toEHRParams r r < p_forgive pv.toEHRParams r :=
+  forgiveness_bias pv.toEHRParams r hr
+    (by
+      show pv.delta < pv.alpha
+      linarith [h.delta_lt_gamma, h.gamma_lt_beta, h.beta_lt_alpha])
+    hcap
 
 end Benefuture.Systems

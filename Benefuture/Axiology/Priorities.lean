@@ -113,11 +113,11 @@ noncomputable def experiential_variety {τ : Type*} [DecidableEq τ] (stream : L
   if stream = [] then 0 else (stream.toFinset.card : ℝ) / stream.length
 
 /--
-  [R] An MM's bias claim on a happiness source (L37 BiasMitigation, applied at MM level).
+  [R] Bias claim on a happiness source (L37 BiasMitigation): measurement metadata.
   `degree` b ∈ [0, 1]: how far the source is misaligned with long-run U and H (malice, addictive
   doom-scrolling, impairing stupor). It is claimed independently of tier: peak-tier sources are
   already down-weighted by the L59 priorities and must not be discounted again for being peaks.
-  `confidence` c ∈ [0, 1]: the MM's confidence in the claim.
+  `confidence` c ∈ [0, 1]: confidence in the claim.
 -/
 structure BiasClaim where
   degree     : ℝ
@@ -137,7 +137,7 @@ theorem BiasClaim.discount_mem (b : BiasClaim) : 0 ≤ b.discount ∧ b.discount
   obtain ⟨hc0, hc1⟩ := b.h_conf
   exact ⟨mul_nonneg hc0 hd0, mul_le_one₀ hc1 hd0 hd1⟩
 
-/-- [R] Kind of a happiness source, labelled by MMs; the L59 kind tiers (decision 6c). -/
+/-- [R] Kind of a happiness source (measurement metadata); the L59 kind tiers (decision 6c). -/
 inductive HappinessKind where
   | eudaimonic  : HappinessKind
   | shareable   : HappinessKind
@@ -145,7 +145,11 @@ inductive HappinessKind where
   | peak        : HappinessKind
   deriving DecidableEq, Repr
 
-/-- [R] A happiness source: measured intensity (kept raw, Me), the MM's bias claim and kind label. -/
+/--
+  [R] A happiness source: a measurement (intensity, kept raw) with its metadata, the bias claim
+  and kind label. Metadata is produced by the measuring model alongside the measurement; H's
+  definition (L37) only consumes it, so H makes no forward reference to MMs.
+-/
 structure HappinessSource where
   intensity : ℝ
   bias      : BiasClaim := BiasClaim.none
@@ -161,7 +165,7 @@ noncomputable def bias_mitigation (sources : List HappinessSource) : ℝ :=
 
 /--
   [R] Happiness score (L37): H := ∫Positive(Se) + BiasMitigation + Di.
-  Measurements stay raw; MM bias claims enter as a separate term, so they can be audited,
+  Measurements stay raw; bias claims enter as a separate term, so they can be audited,
   contested and revised without touching what was measured.
 -/
 noncomputable def happiness_score (sources : List HappinessSource) (di : ℝ) : ℝ :=
@@ -178,7 +182,7 @@ theorem happiness_score_eq (sources : List HappinessSource) (di : ℝ) :
     simp only [List.map_cons, List.sum_cons]
     linear_combination ih
 
-/-- THEOREM: The H score is a positive structure, whatever the MM claims. -/
+/-- THEOREM: The H score is a positive structure, whatever the bias claims. -/
 theorem happiness_score_nonneg (sources : List HappinessSource) (di : ℝ) :
     0 ≤ happiness_score sources di := by
   rw [happiness_score_eq]
@@ -258,7 +262,7 @@ theorem kind_tiers_partition_happiness (sources : List HappinessSource) (di base
   rw [happiness_score_eq, ← kind_scores_sum]
   ring
 
-/-- [R] Kind of an understanding change, labelled by MMs; the L58 kind tiers (decision 6c). -/
+/-- [R] Kind of an understanding change (measurement metadata); the L58 kind tiers (decision 6c). -/
 inductive UnderstandingKind where
   | peak         : UnderstandingKind
   | teachable    : UnderstandingKind
@@ -266,7 +270,7 @@ inductive UnderstandingKind where
   | undirected   : UnderstandingKind
   deriving DecidableEq, Repr
 
-/-- [R] An assessed change in understanding with its MM kind label. -/
+/-- [R] An assessed change in understanding with its kind label (metadata). -/
 structure UnderstandingChange where
   amount : ℝ
   kind   : UnderstandingKind

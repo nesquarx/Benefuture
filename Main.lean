@@ -77,4 +77,8 @@ def main : IO Unit := do
   let prJson := s!"\{\n  \"inputs\": \"physical [(2, 10), (1, 5)]; compute cost 2, network cost 1, time cost 3; network 1, time 1\",\n  \"resource_cost_compute_1\": {costLight},\n  \"resource_cost_compute_50\": {costHeavy},\n  \"price_light_credit_40_p_0_8\": {transaction_price_ref costLight 40.0 0.8},\n  \"price_heavy_credit_40_p_0_8\": {transaction_price_ref costHeavy 40.0 0.8},\n  \"price_unmodelled_light\": {transaction_price_ref costLight 40.0 0.0},\n  \"supply_delta_no_good_light\": {supply_delta_ref 0.0 costLight 0.0},\n  \"efficiency_light_dV_100_dt_1\": {competition_efficiency_ref 100.0 costLight 1.0},\n  \"efficiency_heavy_dV_100_dt_1\": {competition_efficiency_ref 100.0 costHeavy 1.0}\n}\n"
   IO.FS.writeFile "spec/vectors/pricing.json" prJson
 
+  -- 11. ehr.json (L117; α = 0.8, δ = 0.2, margin = 0.25, harm 10)
+  let ehrJson := s!"\{\n  \"novel_entity\": {ehr_expected_response_ref 0.8 0.2 0.25 10.0 0.0 0.0},\n  \"cooperation\": {ehr_expected_response_ref 0.8 0.2 0.25 0.0 0.5 0.5},\n  \"positive_history_0_5\": {ehr_expected_response_ref 0.8 0.2 0.25 10.0 0.5 0.0},\n  \"negative_history_2\": {ehr_expected_response_ref 0.8 0.2 0.25 10.0 0.0 2.0},\n  \"equal_history_0_5_p_forgive\": {p_forgive_ref 0.8 0.5},\n  \"equal_history_0_5_p_overreact\": {p_overreact_ref 0.8 0.2 0.5 0.5}\n}\n"
+  IO.FS.writeFile "spec/vectors/ehr.json" ehrJson
+
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"

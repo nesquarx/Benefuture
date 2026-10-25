@@ -261,7 +261,7 @@ Per the Ground Rules:
 - **Harm schedule ([P], resolved)**: `compute_harm_weight` used the generic 6-weight schedule against 8 tiers, silently dropping Culture_offence and NHa_Estd. It now uses `harmSchedule`, one weight per tier: 0.9 > 0.7 > 0.45 > 0.15 > 0.08 > 0.04 > 0.01 (NHa_Estd = 0 omitted).
 - **Di in H ([P])**: L37 defines `H(t) := ∫Positive(Se) + BiasMitigation + Di`. Di is read as experiential variety within one life (`experiential_variety` = distinct experiences / total; `repetitive_experience_variety`, `experiential_variety_le_one`), distinct from N, which scores outcomes against ℝ. See §7.9 for the H score.
 
-- **EHR ([OPEN], needs author's reading)**: L117 `EHR := TitForTat(viaReparableHa) + (α·Re₊(Dn(Ha))) · P(Forgive) + (δ·Re₋(Dn(Ha))) · P(Overreact)`. `ehr_defensive_response` (Int) encodes only `max(0, harm − α·Re₊)`: it drops P(Forgive), the δ·Re₋·P(Overreact) term, and domain-specific reputation. A generous-tit-for-tat reading (forgiveness probability rising with α·Re₊, overreaction probability with δ·Re₋) is plausible but unratified.
+- **EHR**: resolved in §8.7.
 
 ### 7.8 Fr per the Author's Reading of L135 ([R] reading, [P] parameters)
 - **Source**: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
@@ -307,3 +307,10 @@ Per the Ground Rules:
 - **Finding**: the reference escrow split had taken a 5% "protocol overhead" with no source (removed in §7.5). If it was meant to price MM/TN infrastructure, it had the wrong base (predicted value, not resources consumed), the wrong destination (a rent, where L99 burns resource use and L96 pays contributors) and the wrong timing (taxing uncertainty held in escrow).
 - **Lean Spec Choice** (`Benefuture.Economy.Pricing`, ℝ): `ResourceUse` (physical, compute, network, time), `ResourcePrices`, `resource_cost`, `transaction_price` = resource cost − credit + credit·(1 − P), `supply_delta` (measured good − resource cost − harm; no protocol term), `competition_efficiency` = ΔV / (ΔRc + Δt).
 - **Proved**: `transaction_price_eq` (price = cost − P·credit), `price_strictly_increases_with_compute`, `price_strictly_increases_with_network`, `unmodelled_action_pays_resource_cost`, `price_negative_when_value_exceeds_cost`, `resource_use_without_good_burns`, `heavier_model_less_efficient` (a compute-heavy MM lowers its currency's efficiency and loses competition).
+
+### 8.7 External Harm Response ([R] reading, [P] margin)
+- **Source**: L117; `Life in benefuture.txt` (External Harm Response Protocol); `Critique addressal.txt`. Author: irreversible harm can be reparable, so "reparable only" excludes irreparable harm alone.
+- **Lean Spec Choice** (`Benefuture.Governance.ExternalHarm`): `domain_ledger` (Σŵ·ΣRe± over the harm's domains: accumulated, un-decayed ledgers, L101), `p_forgive` = min(1, α·Re₊), `p_overreact` = min(1 − p_F, δ·Re₋), `ehr_expected_response` = h·(1 − p_F + margin·p_O), `ReparableResponse` (irreparable component = 0). `ehr_margin` added to the parameter space.
+- **Proved**: `probabilities_sum_le_one`, `novel_entity_pure_tit_for_tat`, `cooperation_met_with_cooperation`, `ehr_response_bounds` (0 ≤ response ≤ (1 + margin)·h), `more_positive_reputation_lowers_response`, `forgiveness_bias` and `admissible_forgiveness_bias` (δ < α from L11 makes forgiveness strictly more likely than overreaction for equal ledgers: the "bias toward forgiveness" of Critique addressal.txt follows from the priority order).
+- **[OPEN]**: whether existential threats lift the reparable cap inside EHR, or are decided by G.
+- **Metadata**: bias claims and kind labels on measurements are model output metadata; H's definition (L37) consumes them without referring to MMs.
