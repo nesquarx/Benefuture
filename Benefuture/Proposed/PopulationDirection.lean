@@ -12,8 +12,9 @@
      (a fair-weather rule for action-space maximisation), not a filter on G; in tragic choices
      (trolley problems) the priorities decide.
   3. Withholding uplift is not Ha (no ↓U, ↓H); it is only comparatively worse under argmax.
-  4. pushDistr is directional and assessed counterfactually (As, L48): range moves come first and
-     skew counts only when the range change is not significant. ↑min is a hard constraint on G,
+  4. pushDistr is directional and assessed counterfactually (As, L48), at absolute levels rather
+     than quantile ranks: D sums each being's change through a priority-shaped transform (U slightly
+     convex, H concave, harm convex), so bound shifts cannot fake progress. ¬↓(U(max, min), H(min)) is hard on G,
      held over the trajectory; inaction always satisfies it (its counterfactual is itself).
   5. ↑min may dip inside an NHa tunnel, provided the trajectory endpoint recovers within the
      prediction horizon (lt, L34). A stepwise filter would reject every such tunnel.
@@ -64,31 +65,23 @@ theorem withholding_incurs_no_harm (history window : List ℝ) (u h : ℝ)
 
 /- --- 2. Directional pushDistr (L62) and Pareto dominance --- -/
 
-/-- [P] Summary statistics of the population distributions, supplied by MetricModel. -/
+/--
+  [P] Population statistics supplied by MetricModel over lt: the bounds held by ¬↓ and N's
+  deviation from the normal shape (Di's order/chaos balance).
+-/
 structure DistrStats where
-  skewU    : ℝ
-  skewH    : ℝ
-  skewHa   : ℝ
   normDevN : ℝ  -- deviation of N from the normal shape (|skew|, excess kurtosis)
   minU     : ℝ
   minH     : ℝ
   maxU     : ℝ
-  maxH     : ℝ
-  maxHa    : ℝ  -- worst harm over lt, NHa dips that close within lt excluded (`ha_lt`)
 
 /--
   [P] Progress vector from s₀ to s₁, oriented so that higher is better in every component:
-  U, H toward left skew; Ha toward right skew; N toward normal; ↑(U, H)(max, min); ↓Ha_max.
-  min Ha has nothing to push (someone is almost always unharmed).
-  N has no range bounds: its floor is a proton's pattern and its peak any ID_t (unique); novelty
-  counts through its effects, in V (author). In G, s₀ is the counterfactual (after ¬A) and s₁ the outcome after A (As, L48).
+  N toward normal; ↑min U, ↑min H, ↑max U. In G, s₀ is the counterfactual (after ¬A) and s₁ the
+  outcome after A (As, L48).
 -/
-def progress (s₀ s₁ : DistrStats) : Fin 9 → ℝ :=
-  ![s₀.skewU - s₁.skewU, s₀.skewH - s₁.skewH, s₁.skewHa - s₀.skewHa,
-    s₀.normDevN - s₁.normDevN,
-    s₁.minU - s₀.minU, s₁.minH - s₀.minH,
-    s₁.maxU - s₀.maxU, s₁.maxH - s₀.maxH,
-    s₀.maxHa - s₁.maxHa]
+def progress (s₀ s₁ : DistrStats) : Fin 4 → ℝ :=
+  ![s₀.normDevN - s₁.normDevN, s₁.minU - s₀.minU, s₁.minH - s₀.minH, s₁.maxU - s₀.maxU]
 
 /-- [P] A step is pushDistr-aligned iff no component moves the wrong way. -/
 def pushDistr_aligned (s₀ s₁ : DistrStats) : Prop :=
@@ -480,89 +473,146 @@ theorem sy_score_pareto_monotone {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa la
     have := net_synergy_raw_strict_anti_minus Pq Mq Mp lambda hPq0 hMq0 hMs hl0
     linarith
 
-/- --- 8. Goal G (L62, L74): Σ_b Sy(V_b, As(D)) under ↑ℝ and ¬↓min --- -/
+/- --- 8. Goal G (L62, L74): Σ_b Sy(V_b, As(D)) under ↑ℝ and ¬↓(U(max, min), H(min)) --- -/
+
+/-- [P] A being's assessed levels: U, H and Ha (Ha over lt via `ha_lt`). -/
+structure Levels where
+  u  : ℝ
+  h  : ℝ
+  ha : ℝ
 
 /--
-  [P] A plan: an evaluated action, its predicted harm, the population statistics after the action
-  and after not acting (counterfactual, As L48), and the assessed V(A, b) of each being b present
-  at decision time.
+  [P] A plan: an evaluated action, its predicted harm, the population statistics and each being's
+  levels after the action and after not acting (counterfactual, As L48), and the assessed V(A, b)
+  of each being b present at decision time.
 -/
 structure Plan where
-  eval      : ActionEvaluation
-  harm      : HarmForecast
-  statsNotA : DistrStats
-  statsA    : DistrStats
-  value     : ℕ → ℝ
+  eval       : ActionEvaluation
+  harm       : HarmForecast
+  statsNotA  : DistrStats
+  statsA     : DistrStats
+  levelsNotA : ℕ → Levels
+  levelsA    : ℕ → Levels
+  value      : ℕ → ℝ
 
-/-- [R] Assessed distribution change of a plan: stats after A against stats after ¬A (As, L48). -/
-def Plan.prog (c : Plan) : Fin 9 → ℝ :=
+/-- [R] Assessed change in population statistics: after A against after ¬A (As, L48). -/
+def Plan.prog (c : Plan) : Fin 4 → ℝ :=
   progress c.statsNotA c.statsA
 
-/-- [R] Range components of pushDistr: ↑(U, H)(max, min) and ↓Ha_max. -/
-def range_idx : List (Fin 9) := [4, 5, 6, 7, 8]
-
-/-- Restriction of a progress vector to a set of components, zero elsewhere. -/
-def restrict (idx : List (Fin 9)) (p : Fin 9 → ℝ) : Fin 9 → ℝ :=
-  fun i => if i ∈ idx then p i else 0
-
-/-- Magnitude of the assessed range change. -/
-noncomputable def range_change (p : Fin 9 → ℝ) : ℝ :=
-  (range_idx.map (fun i => |p i|)).sum
-
-/-- [P] Graded significance (L25): a linear ramp reaching 1 at the threshold. -/
-noncomputable def graded_sig (m th : ℝ) : ℝ :=
-  min 1 (m / th)
-
-/-- [R] Skew gate (L62): skew counts only as far as the range change is not significant. -/
-noncomputable def skew_gate (th : ℝ) (p : Fin 9 → ℝ) : ℝ :=
-  1 - graded_sig (range_change p) th
-
-/-- [P] Parameters of G: Sy exponents and λ, κ; distribution weight w_D; significance threshold;
-  priority weights of range and skew components (range > skew, L12). -/
+/--
+  [P] Parameters of G: Sy exponents, κ and λ; distribution weight w_D; dimension weights of D
+  ([U, H, Ha, N]); and the absolute-level transforms W_U, W_H, W_Ha.
+-/
 structure GParams where
   qp     : ℝ
   qm     : ℝ
   kappa  : ℝ
   lambda : ℝ
   wD     : ℝ
-  th     : ℝ
-  wRange : Fin 9 → ℝ
-  wSkew  : Fin 9 → ℝ
+  wDim   : Fin 4 → ℝ
+  WU     : ℝ → ℝ
+  WH     : ℝ → ℝ
+  WHa    : ℝ → ℝ
 
 /--
-  [R] Assessed distribution term D (L62): Sy over the range changes, plus Sy over the skew changes
-  weighted by the skew gate.
+  [R] Population gain at absolute levels: Σ_b W(level after A) − W(level after ¬A). Equivalently
+  ∫ w(x)·ΔS(x) dx with S(x) the number of beings at or above x and W' = w, so fixed absolute
+  levels, not quantile ranks: bound shifts cannot fake progress.
 -/
-noncomputable def dist_score (gp : GParams) (p : Fin 9 → ℝ) : ℝ :=
-  sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda (restrict range_idx p) +
-    skew_gate gp.th p *
-      sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p)
+noncomputable def level_gain (W : ℝ → ℝ) (pop : List ℕ) (a n : ℕ → ℝ) : ℝ :=
+  (pop.map (fun b => W (a b) - W (n b))).sum
 
-/-- THEOREM: When the range change is significant, skew is ignored. -/
-theorem skew_ignored_when_range_significant (gp : GParams) (p : Fin 9 → ℝ) (hth : 0 < gp.th)
-    (h : gp.th ≤ range_change p) :
-    dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
-      (restrict range_idx p) := by
-  have hg : graded_sig (range_change p) gp.th = 1 :=
-    min_eq_left ((one_le_div hth).mpr h)
-  unfold dist_score skew_gate
-  rw [hg]
-  ring
+/-- [R] Increasing differences (convex shape): the same gain counts more at a higher level. -/
+def IncreasingDiff (W : ℝ → ℝ) : Prop :=
+  ∀ a b d, a ≤ b → 0 ≤ d → W (a + d) - W a ≤ W (b + d) - W b
 
-/-- THEOREM: When the range is static, skew counts in full. -/
-theorem skew_counts_when_range_static (gp : GParams) (p : Fin 9 → ℝ) (h : range_change p = 0) :
-    dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
-      (restrict range_idx p) +
-      sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p) := by
-  have hg : graded_sig (range_change p) gp.th = 0 := by
-    unfold graded_sig
-    rw [h, zero_div]
-    exact min_eq_right zero_le_one
-  unfold dist_score skew_gate
-  rw [hg]
-  ring
+/-- [R] Decreasing differences (concave shape): the same gain counts more at a lower level. -/
+def DecreasingDiff (W : ℝ → ℝ) : Prop :=
+  ∀ a b d, a ≤ b → 0 ≤ d → W (b + d) - W b ≤ W (a + d) - W a
 
-/- --- Range priority: max U > min U > min H (author) --- -/
+/--
+  [R] Shape requirements (author): U slightly convex (higher U raises societal meta-capacity;
+  breakthroughs shift paradigms); H concave (satisficing is desirable, peaks unstable); harm convex.
+  Ease of raising H is a cost, priced at L82/L86, not encoded here.
+-/
+structure Shapes (gp : GParams) : Prop where
+  u_mono    : Monotone gp.WU
+  h_mono    : Monotone gp.WH
+  ha_mono   : Monotone gp.WHa
+  u_convex  : IncreasingDiff gp.WU
+  h_concave : DecreasingDiff gp.WH
+  ha_convex : IncreasingDiff gp.WHa
+
+/-- [R] D's inputs: U, H gains and Ha reduction at absolute levels, and N toward normal. -/
+noncomputable def dist_vec (gp : GParams) (pop : List ℕ) (c : Plan) : Fin 4 → ℝ :=
+  ![level_gain gp.WU pop (fun b => (c.levelsA b).u) (fun b => (c.levelsNotA b).u),
+    level_gain gp.WH pop (fun b => (c.levelsA b).h) (fun b => (c.levelsNotA b).h),
+    -level_gain gp.WHa pop (fun b => (c.levelsA b).ha) (fun b => (c.levelsNotA b).ha),
+    c.prog 0]
+
+/-- [R] Assessed distribution term D (L62): Sy over the dimension gains. -/
+noncomputable def dist_score (gp : GParams) (pop : List ℕ) (c : Plan) : ℝ :=
+  sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (dist_vec gp pop c)
+
+/-- THEOREM: D is anonymous: reordering the population changes nothing. -/
+theorem level_gain_perm (W : ℝ → ℝ) (pop pop' : List ℕ) (a n : ℕ → ℝ) (h : pop.Perm pop') :
+    level_gain W pop a n = level_gain W pop' a n :=
+  (h.map _).sum_eq
+
+/-- THEOREM: Levelling down never helps: lowering levels never yields a positive gain. -/
+theorem levelling_down_never_helps (W : ℝ → ℝ) (hW : Monotone W) (pop : List ℕ) (a n : ℕ → ℝ)
+    (h : ∀ b ∈ pop, a b ≤ n b) : level_gain W pop a n ≤ 0 := by
+  unfold level_gain
+  have h1 := sum_map_le_of_le (fun b => W (a b) - W (n b)) (fun _ => (0 : ℝ)) pop
+    (fun b hb => by linarith [hW (h b hb)])
+  simpa using h1
+
+/-- THEOREM: Uplift never yields a negative gain. -/
+theorem uplift_gain_nonneg (W : ℝ → ℝ) (hW : Monotone W) (pop : List ℕ) (a n : ℕ → ℝ)
+    (h : ∀ b ∈ pop, n b ≤ a b) : 0 ≤ level_gain W pop a n := by
+  unfold level_gain
+  have h1 := sum_map_le_of_le (fun _ => (0 : ℝ)) (fun b => W (a b) - W (n b)) pop
+    (fun b hb => by linarith [hW (h b hb)])
+  simpa using h1
+
+theorem level_gain_single (W : ℝ → ℝ) (i : ℕ) (x y : ℝ) :
+    level_gain W [i] (fun _ => x) (fun _ => y) = W x - W y := by
+  simp [level_gain]
+
+/-- THEOREM: The same U gain counts at least as much for a being at a higher level. -/
+theorem higher_u_gain_valued_more (gp : GParams) (hs : Shapes gp) (i : ℕ) (a b d : ℝ)
+    (hab : a ≤ b) (hd : 0 ≤ d) :
+    level_gain gp.WU [i] (fun _ => a + d) (fun _ => a) ≤
+      level_gain gp.WU [i] (fun _ => b + d) (fun _ => b) := by
+  rw [level_gain_single, level_gain_single]
+  exact hs.u_convex a b d hab hd
+
+/-- THEOREM: The same H gain counts at least as much for a being at a lower level (satisficing). -/
+theorem lower_h_gain_valued_more (gp : GParams) (hs : Shapes gp) (i : ℕ) (a b d : ℝ)
+    (hab : a ≤ b) (hd : 0 ≤ d) :
+    level_gain gp.WH [i] (fun _ => b + d) (fun _ => b) ≤
+      level_gain gp.WH [i] (fun _ => a + d) (fun _ => a) := by
+  rw [level_gain_single, level_gain_single]
+  exact hs.h_concave a b d hab hd
+
+/-- THEOREM: Reducing a higher harm by the same amount counts at least as much. -/
+theorem higher_harm_reduction_valued_more (gp : GParams) (hs : Shapes gp) (i : ℕ) (a b d : ℝ)
+    (hab : a ≤ b) (hd : 0 ≤ d) :
+    -level_gain gp.WHa [i] (fun _ => a) (fun _ => a + d) ≤
+      -level_gain gp.WHa [i] (fun _ => b) (fun _ => b + d) := by
+  rw [level_gain_single, level_gain_single]
+  have := hs.ha_convex a b d hab hd
+  linarith
+
+/-- THEOREM: Inaction leaves D at zero: its counterfactual is itself. -/
+theorem inaction_dist_zero (gp : GParams) (pop : List ℕ) (c : Plan) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hs : c.statsA = c.statsNotA) (hl : c.levelsA = c.levelsNotA) :
+    dist_score gp pop c = 0 := by
+  apply sy_score_of_zero _ _ _ _ _ _ _ hqp hqm
+  intro i
+  fin_cases i <;> simp [dist_vec, level_gain, hl, Plan.prog, hs, progress]
+
+/- --- Sy on a single gain --- -/
 
 theorem sum_map_zero {ι : Type*} (y : ι → ℝ) (l : List ι) (h : ∀ i ∈ l, y i = 0) :
     (l.map y).sum = 0 :=
@@ -647,57 +697,35 @@ theorem sy_score_single {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : �
   rw [hP, hM]
   exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx _)) _
 
-/-- A gain x in component j alone. -/
-def unit_gain (j : Fin 9) (x : ℝ) : Fin 9 → ℝ :=
+
+/-- A gain x in dimension j of D alone. -/
+def unit_gain (j : Fin 4) (x : ℝ) : Fin 4 → ℝ :=
   fun i => if i = j then x else 0
 
-/-- THEOREM: A single range gain scores w_j · x^q₊ in D; the skew term contributes nothing. -/
-theorem dist_score_unit_gain (gp : GParams) (j : Fin 9) (hj : j ∈ range_idx)
-    (hjs : j ∉ ([0, 1, 2, 3] : List (Fin 9))) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
-    (hw : 0 < gp.wRange j) (x : ℝ) (hx : 0 < x) :
-    dist_score gp (unit_gain j x) = gp.wRange j * x ^ gp.qp := by
-  have hr : restrict range_idx (unit_gain j x) = unit_gain j x := by
-    funext i
-    unfold restrict unit_gain
-    by_cases hij : i = j
-    · rw [hij, if_pos hj]
-    · simp [hij]
-  have hs : ∀ i, restrict [0, 1, 2, 3] (unit_gain j x) i = 0 := by
-    intro i
-    unfold restrict unit_gain
-    by_cases hij : i = j
-    · rw [hij, if_neg hjs]
-    · simp [hij]
-  unfold dist_score
-  rw [hr, sy_score_of_zero _ _ _ _ _ _ _ hqp hqm hs, mul_zero, add_zero]
-  have h1 := sy_score_single gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda (unit_gain j x) j
+theorem sy_score_unit_gain (gp : GParams) (j : Fin 4) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
+    (hw : 0 < gp.wDim j) (x : ℝ) (hx : 0 < x) :
+    sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain j x) =
+      gp.wDim j * x ^ gp.qp := by
+  have h1 := sy_score_single gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain j x) j
     hqp hqm hw (by simp [unit_gain, hx]) (fun i hij => by simp [unit_gain, hij])
   rw [h1]
   simp [unit_gain]
 
-/--
-  [R] Range priority (author): max U (index 6) > min U (4) > ↓Ha_max (8) > min H (5) > max H (7).
-  Harm that would lower a floor is already blocked by ¬↓; Ha_max protects beings above it.
-  Max H keeps a low nonzero weight (L59: peak is the last H tier).
--/
-def RangePriority (w : Fin 9 → ℝ) : Prop :=
-  w 4 < w 6 ∧ w 8 < w 4 ∧ w 5 < w 8 ∧ w 7 < w 5
+/-- [R] Dimension priority (author): U (index 0) > Ha (2) > H (1). -/
+def DimPriority (w : Fin 4 → ℝ) : Prop :=
+  w 2 < w 0 ∧ w 1 < w 2
 
-/-- THEOREM: Under the range priority, equal gains score max U > min U > ↓Ha_max > min H > max H. -/
-theorem range_priority_order (gp : GParams) (hpr : RangePriority gp.wRange)
-    (hw : ∀ i, 0 < gp.wRange i) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm) (x : ℝ) (hx : 0 < x) :
-    dist_score gp (unit_gain 7 x) < dist_score gp (unit_gain 5 x) ∧
-      dist_score gp (unit_gain 5 x) < dist_score gp (unit_gain 8 x) ∧
-      dist_score gp (unit_gain 8 x) < dist_score gp (unit_gain 4 x) ∧
-      dist_score gp (unit_gain 4 x) < dist_score gp (unit_gain 6 x) := by
+/-- THEOREM: Under the dimension priority, equal gains score U > Ha reduction > H in D. -/
+theorem dim_priority_order (gp : GParams) (hpr : DimPriority gp.wDim)
+    (hw : ∀ i, 0 < gp.wDim i) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm) (x : ℝ) (hx : 0 < x) :
+    sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain 1 x) <
+      sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain 2 x) ∧
+    sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain 2 x) <
+      sy_score gp.wDim gp.wDim gp.qp gp.qm gp.kappa gp.lambda (unit_gain 0 x) := by
   have hxq : 0 < x ^ gp.qp := Real.rpow_pos_of_pos hx _
-  rw [dist_score_unit_gain gp 7 (by unfold range_idx; decide) (by decide) hqp hqm (hw 7) x hx,
-    dist_score_unit_gain gp 5 (by unfold range_idx; decide) (by decide) hqp hqm (hw 5) x hx,
-    dist_score_unit_gain gp 8 (by unfold range_idx; decide) (by decide) hqp hqm (hw 8) x hx,
-    dist_score_unit_gain gp 4 (by unfold range_idx; decide) (by decide) hqp hqm (hw 4) x hx,
-    dist_score_unit_gain gp 6 (by unfold range_idx; decide) (by decide) hqp hqm (hw 6) x hx]
-  exact ⟨mul_lt_mul_of_pos_right hpr.2.2.2 hxq, mul_lt_mul_of_pos_right hpr.2.2.1 hxq,
-    mul_lt_mul_of_pos_right hpr.2.1 hxq, mul_lt_mul_of_pos_right hpr.1 hxq⟩
+  rw [sy_score_unit_gain gp 1 hqp hqm (hw 1) x hx, sy_score_unit_gain gp 2 hqp hqm (hw 2) x hx,
+    sy_score_unit_gain gp 0 hqp hqm (hw 0) x hx]
+  exact ⟨mul_lt_mul_of_pos_right hpr.2 hxq, mul_lt_mul_of_pos_right hpr.1 hxq⟩
 
 /-- [R] A being's term in G: Sy(V_b, D) with gain and loss weights (1, w_D) (L13 default w = 1). -/
 noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
@@ -705,15 +733,15 @@ noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
 
 /-- [R] G's objective (L74): Σ over beings present at decision time of Sy(V(A, b), As(D)). -/
 noncomputable def goal_value (gp : GParams) (pop : List ℕ) (c : Plan) : ℝ :=
-  (pop.map (fun b => being_term gp (c.value b) (dist_score gp c.prog))).sum
+  (pop.map (fun b => being_term gp (c.value b) (dist_score gp pop c))).sum
 
 /--
   [R] ¬↓(U(max, min), H(min)) (L62): counterfactual, trajectory-level min U, min H and max U do
   not fall. Max H has no hard limit: happiness peaks are unstable (author).
 -/
 noncomputable def min_nondecreasing (c : Plan) : Bool :=
-  haveI := Classical.propDecidable (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6)
-  decide (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6)
+  haveI := Classical.propDecidable (0 ≤ c.prog 1 ∧ 0 ≤ c.prog 2 ∧ 0 ≤ c.prog 3)
+  decide (0 ≤ c.prog 1 ∧ 0 ≤ c.prog 2 ∧ 0 ≤ c.prog 3)
 
 /-- [R] G-admissible plans: ↑ℝ ∧ ¬↓min. Fr is a subgoal, not a filter on G. -/
 noncomputable def plan_admissible_G (c : Plan) : Bool :=
@@ -750,7 +778,7 @@ theorem goal_G_some (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan) 
 theorem goal_G_sound (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan)
     (hc : c ∈ goal_G gp pop cs) :
     reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6 ∧
+      0 ≤ c.prog 1 ∧ 0 ≤ c.prog 2 ∧ 0 ≤ c.prog 3 ∧
       ∀ d ∈ cs.filter plan_admissible_G, goal_value gp pop d ≤ goal_value gp pop c := by
   have hm := (List.mem_filter.mp (List.argmax_mem hc)).2
   simp only [plan_admissible_G, min_nondecreasing, is_eligible_action, Bool.and_eq_true,
@@ -793,7 +821,7 @@ theorem goal_value_strict_mono (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
     (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
     (pop : List ℕ) (c c' : Plan)
     (hle : ∀ b ∈ pop, c'.value b ≤ c.value b) (hlt : ∃ b ∈ pop, c'.value b < c.value b)
-    (hd : dist_score gp c'.prog ≤ dist_score gp c.prog) :
+    (hd : dist_score gp pop c' ≤ dist_score gp pop c) :
     goal_value gp pop c' < goal_value gp pop c := by
   unfold goal_value
   apply sum_map_lt_of_le_of_lt
@@ -815,7 +843,7 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
     (hb : better ∈ cs) (hba : plan_admissible_G better = true)
     (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
     (hlt : ∃ b ∈ pop, worse.value b < better.value b)
-    (hd : dist_score gp worse.prog ≤ dist_score gp better.prog)
+    (hd : dist_score gp pop worse ≤ dist_score gp pop better)
     (hc : c ∈ goal_G gp pop cs) : c ≠ worse := by
   intro hcw
   have hmax := (goal_G_sound gp pop cs c hc).2.2.2.2 better (List.mem_filter.mpr ⟨hb, hba⟩)
@@ -823,21 +851,22 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
   rw [hcw] at hmax
   linarith
 
-/-- [R] G's parameters at an admissible point; range and skew priority weights stay explicit. -/
-noncomputable def toGParams (pv : ParamVector) (wRange wSkew : Fin 9 → ℝ) : GParams :=
+/-- [R] G's parameters at an admissible point; dimension weights and level transforms explicit. -/
+noncomputable def toGParams (pv : ParamVector) (wDim : Fin 4 → ℝ) (WU WH WHa : ℝ → ℝ) :
+    GParams :=
   { qp := pv.q_plus, qm := pv.q_minus, kappa := pv.kappa, lambda := pv.lambda,
-    wD := pv.dist_weight, th := pv.th_sig, wRange := wRange, wSkew := wSkew }
+    wD := pv.dist_weight, wDim := wDim, WU := WU, WH := WH, WHa := WHa }
 
 /-- THEOREM: At every admissible point, and so throughout SigThGv, G never chooses a dominated plan. -/
 theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible pv)
-    (wRange wSkew : Fin 9 → ℝ) (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
+    (wDim : Fin 4 → ℝ) (WU WH WHa : ℝ → ℝ) (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
     (hb : better ∈ cs) (hba : plan_admissible_G better = true)
     (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
     (hlt : ∃ b ∈ pop, worse.value b < better.value b)
-    (hd : dist_score (toGParams pv wRange wSkew) worse.prog ≤
-      dist_score (toGParams pv wRange wSkew) better.prog)
-    (hc : c ∈ goal_G (toGParams pv wRange wSkew) pop cs) : c ≠ worse :=
-  dominated_plan_not_chosen (toGParams pv wRange wSkew) h.dist_weight_pos
+    (hd : dist_score (toGParams pv wDim WU WH WHa) pop worse ≤
+      dist_score (toGParams pv wDim WU WH WHa) pop better)
+    (hc : c ∈ goal_G (toGParams pv wDim WU WH WHa) pop cs) : c ≠ worse :=
+  dominated_plan_not_chosen (toGParams pv wDim WU WH WHa) h.dist_weight_pos
     (by show 0 < pv.q_plus; linarith [h.q_plus_gt_one])
     (by show 0 < pv.q_minus; linarith [h.q_plus_gt_one, h.q_plus_le_q_minus])
     h.kappa_nonneg h.lambda_nonneg h.lambda_le_one pop cs better worse c hb hba hle hlt hd hc

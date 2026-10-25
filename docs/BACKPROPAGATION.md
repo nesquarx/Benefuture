@@ -128,12 +128,12 @@ Proposed edit: L62 `pushDistr(…direction…, ↑min over lt (NHa dips ⇒ Harm
 **4.4 pushDistr enters G as an assessed term, and ↑min is counterfactual (A).**
 L74 says `argmax ΣV ∧ ↑ℝ`; L62 is not referenced by it. Author: V is already assessed, so assess
 the distribution too and combine per being through Sy (not additively, so it is not discounted).
-Range moves outrank skew; skew counts only when the range change is not significant. ↑min compares
+Measured at absolute levels through priority-shaped transforms (U slightly convex, H concave, Ha convex), dimensions U > Ha > H; no moment skew or gate. ¬↓ compares
 A with ¬A (As, L48), so inaction is always admissible and a trolley pull does not lower the floor.
 Lean: `goal_G`, `goal_G_sound`, `goal_G_some`, `inaction_admissible`, `goal_value_strict_mono`,
-`skew_ignored_when_range_significant`, `skew_counts_when_range_static`.
-Proposed edits: L62 `pushDistr((↑(U, H)(max, min), ↓Ha_max(¬NHa))_lt | U_max > U_min > Ha_max > H_min > H_max) > skew(…) | ¬Sig(Δrange))`;
-L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min))`; range priority U_max > U_min > Ha_max > H_min > H_max (`range_priority_order`). Ha_max is counted over lt with closing NHa dips excluded (`ha_lt`); min Ha is dropped (almost always 0). N's normal-shape skew term stays: it is Di's order/chaos balance, while Σ N (variety) enters through ΣV. N has no range bounds (floor: a proton's pattern; peak: any ID_t); novelty counts through its effects.
+`levelling_down_never_helps`, `higher_u_gain_valued_more`, `lower_h_gain_valued_more`, `dim_priority_order`.
+Proposed edits: L62 `pushDistr(Σ_{b ∈ B(t)} ΔW((U, convex), (H, concave), (Ha(¬NHa), convex))_lt | U > Ha > H, (N, norm(—^—)))`;
+L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min))`. Ha is counted over lt with closing NHa dips excluded (`ha_lt`). N's normal-shape skew term stays: it is Di's order/chaos balance, while Σ N (variety) enters through ΣV. N has no range bounds (floor: a proton's pattern; peak: any ID_t); novelty counts through its effects.
 
 **4.5 No sentience multiplier (A).**
 Capacity enters through absolute magnitudes of U and H.

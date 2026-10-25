@@ -71,7 +71,7 @@ Benefuture«Bf» {
       H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
       N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
       Ha_wt: 1 + Sy_{κ=½,q₊=1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture«Cu»_offence ≈ 0 > NHa_Estd = 0),
-      pushDistr((↑(U, H)(max, min), ↓Ha_max(¬NHa))_lt | U_max > U_min > Ha_max > H_min > H_max) > skew(((U, H), left(——^)), ((Ha, right(^——)), (N, norm(—^—)))) | ¬Sig(Δrange))
+      pushDistr(Σ_{b ∈ B(t)} ΔW((U, convex), (H, concave), (Ha(¬NHa), convex))_lt | U > Ha > H, (N, norm(—^—)))
     };
 
     E(t) := T ↔ I(t) + Sp > 0;
