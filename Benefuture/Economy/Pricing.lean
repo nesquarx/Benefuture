@@ -17,6 +17,7 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.List
 
 namespace Benefuture.Economy
