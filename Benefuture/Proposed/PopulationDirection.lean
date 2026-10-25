@@ -7,12 +7,14 @@
   Design decisions (from discussion with the framework author):
   1. Bf ranks actions, not worlds. V is per action; a being-level value exists only as an
      expected lifetime tally over Bounds_B, computed under the best available uplift policy.
-  2. Existing beings may only be uplifted. Removal is irreparable harm known to occur, excluded
-     by Fr before any NHa justification is considered (Fr filters, then argmax; §2.5).
+  2. Existing beings may only be uplifted: removal is dominated whenever uplift is available, and
+     cannot raise the floor, which is taken over the decision-time population. Fr is a subgoal
+     (a fair-weather rule for action-space maximisation), not a filter on G; in tragic choices
+     (trolley problems) the priorities decide.
   3. Withholding uplift is not Ha (no ↓U, ↓H); it is only comparatively worse under argmax.
-  4. pushDistr is directional: actions are compared by signed deltas of skew, max and min.
-     The skew directions are only non-degenerate jointly with ↑min (left skew can otherwise be
-     raised by pushing a few beings further down), so ↑min is held over the trajectory.
+  4. pushDistr is directional and assessed counterfactually (As, L48): range moves come first and
+     skew counts only when the range change is not significant. ↑min is a hard constraint on G,
+     held over the trajectory; inaction always satisfies it (its counterfactual is itself).
   5. ↑min may dip inside an NHa tunnel, provided the trajectory endpoint recovers within the
      prediction horizon (lt, L34). A stepwise filter would reject every such tunnel.
   6. Net-negative expected tallies never outweigh a positive population, whatever its size.
@@ -32,6 +34,8 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Ring
 import Benefuture.Ontology.Entity
 import Benefuture.Axiology.Priorities
 import Benefuture.Axiology.Value
@@ -58,49 +62,7 @@ theorem withholding_incurs_no_harm (history window : List ℝ) (u h : ℝ)
     u_harm history u = 0 ∧ h_harm window h = 0 :=
   ⟨u_at_max_no_harm history u hu, h_at_or_above_average_no_harm window h hh⟩
 
-/- --- 2. Fr filters before NHa and argmax (L55, L74, L135) --- -/
-
-/-- [P] A candidate action with its predicted harm (with confidence) and assessed value. -/
-structure Candidate where
-  action : Action
-  harm   : HarmForecast
-  value  : ℝ
-
-/-- [R] Fr permissibility of a candidate (L135, `fr_permissible`). -/
-noncomputable def fr_permitted (fp : FrParams) (c : Candidate) : Bool :=
-  fr_permissible c.harm fp
-
-/--
-  [P] Action choice: Fr filters the candidate set, then argmax over value.
-  NHa (L55) can only justify a harm among Fr-permitted candidates.
--/
-noncomputable def choose_action (fp : FrParams) (cs : List Candidate) : Option Candidate :=
-  (cs.filter (fr_permitted fp)).argmax (·.value)
-
-/--
-  [P] THEOREM: The chosen action carries no established harm at the long-term tier or worse,
-  and its expected severity stays within Fr's ceiling, however large its value would have been.
--/
-theorem chosen_action_fr_sound (fp : FrParams) (cs : List Candidate) (c : Candidate)
-    (hc : c ∈ choose_action fp cs) :
-    ¬ established_severe c.harm fp ∧
-      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh := by
-  have hm := List.argmax_mem hc
-  rw [List.mem_filter] at hm
-  exact fr_permissible_spec _ _ hm.2
-
-/--
-  [P] THEOREM: Removal is never chosen. Removing an existing being is irreparable harm known
-  to occur (confidence ≥ thConf), so no chosen action carries it, whatever the being's tally.
--/
-theorem removal_never_chosen (fp : FrParams) (cs : List Candidate) (c : Candidate)
-    (hc : c ∈ choose_action fp cs) (hconf : fp.thConf ≤ c.harm.confidence) :
-    c.harm.profile.irreparable ≤ 0 := by
-  have h := (chosen_action_fr_sound fp cs c hc).1
-  by_contra hpos
-  exact h ⟨hconf, Or.inl (not_le.mp hpos)⟩
-
-/- --- 3. Directional pushDistr (L62) and Pareto dominance --- -/
+/- --- 2. Directional pushDistr (L62) and Pareto dominance --- -/
 
 /-- [P] Summary statistics of the population distributions, supplied by MetricModel. -/
 structure DistrStats where
@@ -115,17 +77,19 @@ structure DistrStats where
   maxN     : ℝ
   maxHa    : ℝ
   minHa    : ℝ
+  minN     : ℝ
 
 /--
-  [P] Progress vector of a step s₀ → s₁, oriented so that higher is better in every component:
+  [P] Progress vector from s₀ to s₁, oriented so that higher is better in every component:
   U, H toward left skew; Ha toward right skew; N toward normal; ↑(U, N, H)(max, min); ↓Ha(max, min).
+  In G, s₀ is the counterfactual (after ¬A) and s₁ the outcome after A (As, L48).
 -/
-def progress (s₀ s₁ : DistrStats) : Fin 11 → ℝ :=
+def progress (s₀ s₁ : DistrStats) : Fin 12 → ℝ :=
   ![s₀.skewU - s₁.skewU, s₀.skewH - s₁.skewH, s₁.skewHa - s₀.skewHa,
     s₀.normDevN - s₁.normDevN,
     s₁.minU - s₀.minU, s₁.minH - s₀.minH,
     s₁.maxU - s₀.maxU, s₁.maxH - s₀.maxH, s₁.maxN - s₀.maxN,
-    s₀.maxHa - s₁.maxHa, s₀.minHa - s₁.minHa]
+    s₀.maxHa - s₁.maxHa, s₀.minHa - s₁.minHa, s₁.minN - s₀.minN]
 
 /-- [P] A step is pushDistr-aligned iff no component moves the wrong way. -/
 def pushDistr_aligned (s₀ s₁ : DistrStats) : Prop :=
@@ -176,7 +140,7 @@ theorem pareto_front_nonempty {k : ℕ} (ps : List (Fin k → ℝ)) (hne : ps �
   have h2 := sum_lt_of_dominates hdom
   linarith
 
-/- --- 3b. Skew direction computed from a population (L62) --- -/
+/- --- 2b. Skew direction computed from a population (L62) --- -/
 
 /-- Population mean. -/
 noncomputable def pop_mean (l : List ℝ) : ℝ :=
@@ -244,7 +208,7 @@ theorem skew_direction_alone_permits_min_decline :
   rw [a2, a3, b2, b3, abs_of_neg (by norm_num), abs_of_neg (by norm_num)]
   norm_num
 
-/- --- 4. ↑min over a trajectory, with NHa tunnels (L55, L62, L150) --- -/
+/- --- 3. ↑min over a trajectory, with NHa tunnels (L55, L62, L150) --- -/
 
 /-- [P] Stepwise ↑min: min never dips at any step of the horizon. -/
 def stepwise_min_monotone (m : ℕ → ℝ) (h : ℕ) : Prop :=
@@ -308,7 +272,7 @@ theorem nonclosing_tunnel_triggers_harm_intv (m : ℕ → ℝ) (h : ℕ) (hopen 
   have := stepwise_endpoint m h hs
   linarith
 
-/- --- 5. Expected lifetime tallies (L68) --- -/
+/- --- 4. Expected lifetime tallies (L68) --- -/
 
 /--
   [P] Expected tally of a being over Bounds_B (L68):
@@ -346,7 +310,7 @@ theorem net_negative_never_outweighs_positive (neg pos : List ℝ)
     neg.sum < pos.sum :=
   lt_of_le_of_lt (sum_nonpos_of_neg neg hn) (sum_pos_of_pos pos hne hp)
 
-/- --- 6. Saturating diversity (L35) --- -/
+/- --- 5. Saturating diversity (L35) --- -/
 
 /-- [P] Effective diversity of a population: the number of distinct types present. -/
 def effective_types {τ : Type*} [DecidableEq τ] (pop : List τ) : ℕ :=
@@ -417,17 +381,7 @@ theorem population_novelty_hist_le {τ : Type*} [DecidableEq τ] (hist pop : Lis
     div_le_one (by linarith)]
   linarith
 
-/- --- 7. Full choice pipeline: Fr ∧ ↑ℝ, then Pareto, then a monotone score (L13, L74, L135) --- -/
-
-/-- [P] A plan: an evaluated action, its predicted harm, and its trajectory-level pushDistr progress. -/
-structure Plan where
-  eval : ActionEvaluation
-  harm : HarmForecast
-  prog : Fin 11 → ℝ
-
-/-- [P] Admissible plans pass Fr (L135) and ↑ℝ eligibility (L74, `is_eligible_action`). -/
-noncomputable def plan_admissible (fp : FrParams) (c : Plan) : Bool :=
-  fr_permissible c.harm fp && is_eligible_action c.eval
+/- --- 6. Pareto-monotone scores --- -/
 
 /-- [P] A score is Pareto-monotone if dominance strictly raises it. -/
 def pareto_monotone {k : ℕ} (score : (Fin k → ℝ) → ℝ) : Prop :=
@@ -440,36 +394,7 @@ theorem weighted_score_pareto_monotone {k : ℕ} (w : Fin k → ℝ) (hw : ∀ i
   exact Finset.sum_lt_sum (fun j _ => mul_le_mul_of_nonneg_left (hle j) (hw j).le)
     ⟨i, Finset.mem_univ i, mul_lt_mul_of_pos_left hi (hw i)⟩
 
-/-- [P] Choice: filter admissible plans, then maximise a score over trajectory progress. -/
-noncomputable def choose_plan (fp : FrParams) (score : (Fin 11 → ℝ) → ℝ) (cs : List Plan) :
-    Option Plan :=
-  (cs.filter (plan_admissible fp)).argmax (fun c => score c.prog)
-
-/--
-  [P] THEOREM: Soundness of the choice pipeline. For any Pareto-monotone score, the chosen plan
-  passes Fr (no established severe harm; expected severity within the ceiling), does not
-  contract ℝ, and is not Pareto-dominated by any admissible plan.
--/
-theorem choose_plan_sound (fp : FrParams) (score : (Fin 11 → ℝ) → ℝ) (hs : pareto_monotone score)
-    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan fp score cs) :
-    ¬ established_severe c.harm fp ∧
-      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
-      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      ¬ ∃ d ∈ cs.filter (plan_admissible fp), pareto_dominates d.prog c.prog := by
-  have hm := List.argmax_mem hc
-  rw [List.mem_filter] at hm
-  have hp := hm.2
-  simp only [plan_admissible, Bool.and_eq_true] at hp
-  have hfr := fr_permissible_spec _ _ hp.1
-  have hel := hp.2
-  simp only [is_eligible_action, decide_eq_true_eq] at hel
-  refine ⟨hfr.1, hfr.2, hel, ?_⟩
-  rintro ⟨d, hd, hdom⟩
-  have h1 := List.le_of_mem_argmax hd hc
-  have h2 := hs _ _ hdom
-  linarith
-
-/- --- 8. Sy over trajectory progress is Pareto-monotone (L13) --- -/
+/- --- 7. Sy over trajectory progress is Pareto-monotone (L13) --- -/
 
 /--
   [P] Sy score of a progress vector (L13): gains p_i⁺ enter Φ₊ with weights w, losses p_i⁻ enter Φ₋
@@ -481,7 +406,7 @@ noncomputable def sy_score {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda :
 
 /--
   [P] THEOREM: Sy is Pareto-monotone for positive weights, positive exponents, κ ≥ 0 and 0 ≤ λ ≤ 1.
-  So `choose_plan_sound` holds with Sy itself as the score.
+  So Sy can rank progress vectors without reversing dominance.
 -/
 theorem sy_score_pareto_monotone {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ)
     (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (hqp : 0 < qp) (hqm : 0 < qm)
@@ -540,126 +465,256 @@ theorem sy_score_pareto_monotone {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa la
     have := net_synergy_raw_strict_anti_minus Pq Mq Mp lambda hPq0 hMq0 hMs hl0
     linarith
 
-/--
-  [P] THEOREM: The choice pipeline is sound with Sy as the score: the chosen plan passes Fr,
-  does not contract ℝ, and is not Pareto-dominated by any admissible plan.
--/
-theorem choose_plan_sy_sound (fp : FrParams) (w v : Fin 11 → ℝ) (qp qm kappa lambda : ℝ)
-    (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (hqp : 0 < qp) (hqm : 0 < qm)
-    (hk : 0 ≤ kappa) (hl0 : 0 ≤ lambda) (hl1 : lambda ≤ 1)
-    (cs : List Plan) (c : Plan) (hc : c ∈ choose_plan fp (sy_score w v qp qm kappa lambda) cs) :
-    ¬ established_severe c.harm fp ∧
-      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
-      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      ¬ ∃ d ∈ cs.filter (plan_admissible fp), pareto_dominates d.prog c.prog :=
-  choose_plan_sound fp _ (sy_score_pareto_monotone w v qp qm kappa lambda hw hv hqp hqm hk hl0 hl1)
-    cs c hc
+/- --- 8. Goal G (L62, L74): Σ_b Sy(V_b, As(D)) under ↑ℝ and ¬↓min --- -/
 
 /--
-  [P] THEOREM: At every admissible parameter point, choice with Sy as the score is sound.
+  [P] A plan: an evaluated action, its predicted harm, the population statistics after the action
+  and after not acting (counterfactual, As L48), and the assessed V(A, b) of each being b present
+  at decision time.
 -/
-theorem admissible_choose_plan_sy_sound (pv : ParamVector) (h : Admissible pv)
-    (w v : Fin 11 → ℝ) (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i)
-    (cs : List Plan) (c : Plan)
-    (hc : c ∈ choose_plan pv.toFrParams (sy_score w v pv.q_plus pv.q_minus pv.kappa pv.lambda) cs) :
-    ¬ established_severe c.harm pv.toFrParams ∧
-      c.harm.confidence * severity_score c.harm.profile pv.toFrParams ≤ pv.toFrParams.thHigh ∧
-      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      ¬ ∃ d ∈ cs.filter (plan_admissible pv.toFrParams), pareto_dominates d.prog c.prog :=
-  choose_plan_sy_sound pv.toFrParams w v pv.q_plus pv.q_minus pv.kappa pv.lambda hw hv
-    (by linarith [h.q_plus_gt_one]) (by linarith [h.q_plus_gt_one, h.q_plus_le_q_minus])
-    h.kappa_nonneg h.lambda_nonneg h.lambda_le_one cs c hc
+structure Plan where
+  eval      : ActionEvaluation
+  harm      : HarmForecast
+  statsNotA : DistrStats
+  statsA    : DistrStats
+  value     : ℕ → ℝ
+
+/-- [R] Assessed distribution change of a plan: stats after A against stats after ¬A (As, L48). -/
+def Plan.prog (c : Plan) : Fin 12 → ℝ :=
+  progress c.statsNotA c.statsA
+
+/-- [R] Range components of pushDistr: ↑(U, H, N)(max, min) and ↓Ha(max, min). -/
+def range_idx : List (Fin 12) := [4, 5, 6, 7, 8, 9, 10, 11]
+
+/-- Restriction of a progress vector to a set of components, zero elsewhere. -/
+def restrict (idx : List (Fin 12)) (p : Fin 12 → ℝ) : Fin 12 → ℝ :=
+  fun i => if i ∈ idx then p i else 0
+
+/-- Magnitude of the assessed range change. -/
+noncomputable def range_change (p : Fin 12 → ℝ) : ℝ :=
+  (range_idx.map (fun i => |p i|)).sum
+
+/-- [P] Graded significance (L25): a linear ramp reaching 1 at the threshold. -/
+noncomputable def graded_sig (m th : ℝ) : ℝ :=
+  min 1 (m / th)
+
+/-- [R] Skew gate (L62): skew counts only as far as the range change is not significant. -/
+noncomputable def skew_gate (th : ℝ) (p : Fin 12 → ℝ) : ℝ :=
+  1 - graded_sig (range_change p) th
+
+/-- [P] Parameters of G: Sy exponents and λ, κ; distribution weight w_D; significance threshold;
+  priority weights of range and skew components (range > skew, L12). -/
+structure GParams where
+  qp     : ℝ
+  qm     : ℝ
+  kappa  : ℝ
+  lambda : ℝ
+  wD     : ℝ
+  th     : ℝ
+  wRange : Fin 12 → ℝ
+  wSkew  : Fin 12 → ℝ
 
 /--
-  [P] THEOREM: Wherever SigThGv takes the parameters from bootstrap, choice with Sy stays sound.
+  [R] Assessed distribution term D (L62): Sy over the range changes, plus Sy over the skew changes
+  weighted by the skew gate.
 -/
-theorem governed_choose_plan_sy_sound (qs : List ParamVector)
-    (w v : Fin 11 → ℝ) (hw : ∀ i, 0 < w i) (hv : ∀ i, 0 < v i) (cs : List Plan) (c : Plan)
-    (hc : c ∈ choose_plan (gov_run bootstrapParams qs).toFrParams
-      (sy_score w v (gov_run bootstrapParams qs).q_plus (gov_run bootstrapParams qs).q_minus
-        (gov_run bootstrapParams qs).kappa (gov_run bootstrapParams qs).lambda) cs) :
-    ¬ established_severe c.harm (gov_run bootstrapParams qs).toFrParams ∧
-      c.harm.confidence * severity_score c.harm.profile (gov_run bootstrapParams qs).toFrParams ≤
-        (gov_run bootstrapParams qs).toFrParams.thHigh ∧
-      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      ¬ ∃ d ∈ cs.filter (plan_admissible (gov_run bootstrapParams qs).toFrParams),
-        pareto_dominates d.prog c.prog :=
-  admissible_choose_plan_sy_sound _ (governed_params_admissible qs) w v hw hv cs c hc
+noncomputable def dist_score (gp : GParams) (p : Fin 12 → ℝ) : ℝ :=
+  sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda (restrict range_idx p) +
+    skew_gate gp.th p *
+      sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p)
 
-/- --- 9. Goal G, staged (decision 6a; L62, L74, L135) --- -/
+/-- THEOREM: When the range change is significant, skew is ignored. -/
+theorem skew_ignored_when_range_significant (gp : GParams) (p : Fin 12 → ℝ) (hth : 0 < gp.th)
+    (h : gp.th ≤ range_change p) :
+    dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
+      (restrict range_idx p) := by
+  have hg : graded_sig (range_change p) gp.th = 1 :=
+    min_eq_left ((one_le_div hth).mpr h)
+  unfold dist_score skew_gate
+  rw [hg]
+  ring
 
-/-- [P] ↑min over the horizon: trajectory-level min U and min H do not fall (progress indices 4, 5). -/
+/-- THEOREM: When the range is static, skew counts in full. -/
+theorem skew_counts_when_range_static (gp : GParams) (p : Fin 12 → ℝ) (h : range_change p = 0) :
+    dist_score gp p = sy_score gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda
+      (restrict range_idx p) +
+      sy_score gp.wSkew gp.wSkew gp.qp gp.qm gp.kappa gp.lambda (restrict [0, 1, 2, 3] p) := by
+  have hg : graded_sig (range_change p) gp.th = 0 := by
+    unfold graded_sig
+    rw [h, zero_div]
+    exact min_eq_right zero_le_one
+  unfold dist_score skew_gate
+  rw [hg]
+  ring
+
+/-- [R] A being's term in G: Sy(V_b, D) with gain and loss weights (1, w_D) (L13 default w = 1). -/
+noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
+  sy_score ![1, gp.wD] ![1, gp.wD] gp.qp gp.qm gp.kappa gp.lambda ![v, d]
+
+/-- [R] G's objective (L74): Σ over beings present at decision time of Sy(V(A, b), As(D)). -/
+noncomputable def goal_value (gp : GParams) (pop : List ℕ) (c : Plan) : ℝ :=
+  (pop.map (fun b => being_term gp (c.value b) (dist_score gp c.prog))).sum
+
+/-- [R] ¬↓min (L62): counterfactual, trajectory-level min U and min H do not fall. -/
 noncomputable def min_nondecreasing (c : Plan) : Bool :=
   haveI := Classical.propDecidable (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
   decide (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
 
-/-- [P] G-admissible plans: Fr ∧ ↑ℝ ∧ ↑min. -/
-noncomputable def plan_admissible_G (fp : FrParams) (c : Plan) : Bool :=
-  plan_admissible fp c && min_nondecreasing c
+/-- [R] G-admissible plans: ↑ℝ ∧ ¬↓min. Fr is a subgoal, not a filter on G. -/
+noncomputable def plan_admissible_G (c : Plan) : Bool :=
+  is_eligible_action c.eval && min_nondecreasing c
 
-open Classical in
-/-- [P] Plans whose pushDistr progress no other plan in the list Pareto-dominates. -/
-noncomputable def plan_front (ps : List Plan) : List Plan :=
-  ps.filter (fun p => decide (¬ ∃ q ∈ ps, pareto_dominates q.prog p.prog))
+/-- [R] Goal G (L74): argmax of the objective over admissible plans. -/
+noncomputable def goal_G (gp : GParams) (pop : List ℕ) (cs : List Plan) : Option Plan :=
+  (cs.filter plan_admissible_G).argmax (goal_value gp pop)
 
-/--
-  [P] Goal G (L74), staged: filter by Fr ∧ ↑ℝ ∧ ↑min, take the Pareto front on pushDistr progress
-  (whose floor and median inputs are the distributional tiers), then argmax ΣV over the front.
--/
-noncomputable def goal_G (fp : FrParams) (cs : List Plan) : Option Plan :=
-  (plan_front (cs.filter (plan_admissible_G fp))).argmax (·.eval.aggregateValue)
+/-- THEOREM: Inaction's assessed distribution change is zero in every component. -/
+theorem inaction_progress_zero (c : Plan) (h : c.statsA = c.statsNotA) : c.prog = fun _ => 0 := by
+  funext i
+  unfold Plan.prog
+  rw [h]
+  fin_cases i <;> simp [progress]
 
-/--
-  [P] THEOREM: Soundness of staged G. The chosen plan passes Fr, does not contract ℝ, keeps min U
-  and min H from falling over the horizon, is not Pareto-dominated by any G-admissible plan, and
-  has the highest ΣV on the front.
--/
-theorem goal_G_sound (fp : FrParams) (cs : List Plan) (c : Plan) (hc : c ∈ goal_G fp cs) :
-    ¬ established_severe c.harm fp ∧
-      c.harm.confidence * severity_score c.harm.profile fp ≤ fp.thHigh ∧
-      reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧
-      (¬ ∃ d ∈ cs.filter (plan_admissible_G fp), pareto_dominates d.prog c.prog) ∧
-      ∀ d ∈ plan_front (cs.filter (plan_admissible_G fp)),
-        d.eval.aggregateValue ≤ c.eval.aggregateValue := by
-  have hm := List.argmax_mem hc
-  unfold plan_front at hm
-  rw [List.mem_filter] at hm
-  obtain ⟨hadm, hnd⟩ := hm
-  have hadm' := (List.mem_filter.mp hadm).2
-  simp only [plan_admissible_G, plan_admissible, min_nondecreasing, Bool.and_eq_true,
-    decide_eq_true_eq] at hadm'
-  obtain ⟨⟨hfr, hel⟩, hmin⟩ := hadm'
-  have hfr' := fr_permissible_spec _ _ hfr
-  simp only [is_eligible_action, decide_eq_true_eq] at hel
-  simp only [decide_eq_true_eq] at hnd
-  exact ⟨hfr'.1, hfr'.2, hel, hmin.1, hmin.2, hnd,
-    fun d hd => List.le_of_mem_argmax (f := fun p : Plan => p.eval.aggregateValue) hd hc⟩
+/-- THEOREM: Inaction is always G-admissible: its counterfactual is itself. -/
+theorem inaction_admissible (c : Plan) (hs : c.statsA = c.statsNotA)
+    (hr : c.eval.scopeAfter = c.eval.scopeBefore) : plan_admissible_G c = true := by
+  have hp := inaction_progress_zero c hs
+  simp [plan_admissible_G, min_nondecreasing, is_eligible_action, hp, reality_enhancement_delta, hr]
 
-theorem sum_prog_lt_of_dominates {p q : Plan} (h : pareto_dominates q.prog p.prog) :
-    ∑ i, p.prog i < ∑ i, q.prog i :=
-  sum_lt_of_dominates h
-
-/-- [P] THEOREM: Staged G always chooses when some plan is G-admissible. -/
-theorem goal_G_some (fp : FrParams) (cs : List Plan)
-    (hne : cs.filter (plan_admissible_G fp) ≠ []) : goal_G fp cs ≠ none := by
-  obtain ⟨p, hp⟩ : ∃ p, p ∈ (cs.filter (plan_admissible_G fp)).argmax (fun p => ∑ i, p.prog i) := by
-    cases h : (cs.filter (plan_admissible_G fp)).argmax (fun p => ∑ i, p.prog i) with
-    | none => exact absurd (List.argmax_eq_none.mp h) hne
-    | some p => exact ⟨p, rfl⟩
-  have hpf : p ∈ plan_front (cs.filter (plan_admissible_G fp)) := by
-    unfold plan_front
-    rw [List.mem_filter]
-    refine ⟨List.argmax_mem hp, ?_⟩
-    simp only [decide_eq_true_eq]
-    rintro ⟨q, hq, hdom⟩
-    have h1 := List.le_of_mem_argmax hq hp
-    have h2 := sum_prog_lt_of_dominates hdom
-    linarith
+/-- THEOREM: G always chooses when some plan, e.g. inaction, is admissible. -/
+theorem goal_G_some (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan) (hc : c ∈ cs)
+    (ha : plan_admissible_G c = true) : goal_G gp pop cs ≠ none := by
   unfold goal_G
   intro hnone
   rw [List.argmax_eq_none] at hnone
-  rw [hnone] at hpf
-  simp at hpf
+  have : c ∈ cs.filter plan_admissible_G := List.mem_filter.mpr ⟨hc, ha⟩
+  rw [hnone] at this
+  simp at this
+
+/-- THEOREM: G's choice satisfies ↑ℝ and ¬↓min and maximises the objective over admissible plans. -/
+theorem goal_G_sound (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan)
+    (hc : c ∈ goal_G gp pop cs) :
+    reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧
+      ∀ d ∈ cs.filter plan_admissible_G, goal_value gp pop d ≤ goal_value gp pop c := by
+  have hm := (List.mem_filter.mp (List.argmax_mem hc)).2
+  simp only [plan_admissible_G, min_nondecreasing, is_eligible_action, Bool.and_eq_true,
+    decide_eq_true_eq] at hm
+  exact ⟨hm.1, hm.2.1, hm.2.2, fun d hd => List.le_of_mem_argmax (f := goal_value gp pop) hd hc⟩
+
+theorem being_term_mono (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
+    (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1) (v v' d d' : ℝ)
+    (hv : v ≤ v') (hd : d ≤ d') : being_term gp v d ≤ being_term gp v' d' := by
+  have hmono := sy_score_pareto_monotone (k := 2) ![1, gp.wD] ![1, gp.wD] gp.qp gp.qm gp.kappa
+    gp.lambda (by intro i; fin_cases i <;> simp [hw]) (by intro i; fin_cases i <;> simp [hw])
+    hqp hqm hk hl0 hl1
+  unfold being_term
+  by_cases heq : v = v' ∧ d = d'
+  · obtain ⟨rfl, rfl⟩ := heq
+    exact le_refl _
+  · apply le_of_lt
+    apply hmono
+    refine ⟨fun i => by fin_cases i <;> simp [hv, hd], ?_⟩
+    by_cases hvv : v = v'
+    · have hdd : d < d' := lt_of_le_of_ne hd (fun h => heq ⟨hvv, h⟩)
+      exact ⟨1, by simp [hdd]⟩
+    · exact ⟨0, by simp [lt_of_le_of_ne hv hvv]⟩
+
+theorem being_term_strict_mono_value (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (v v' d d' : ℝ) (hv : v < v') (hd : d ≤ d') : being_term gp v d < being_term gp v' d' := by
+  have hmono := sy_score_pareto_monotone (k := 2) ![1, gp.wD] ![1, gp.wD] gp.qp gp.qm gp.kappa
+    gp.lambda (by intro i; fin_cases i <;> simp [hw]) (by intro i; fin_cases i <;> simp [hw])
+    hqp hqm hk hl0 hl1
+  unfold being_term
+  apply hmono
+  exact ⟨fun i => by fin_cases i <;> simp [hv.le, hd], ⟨0, by simp [hv]⟩⟩
+
+/--
+  THEOREM: A plan that is better for some being present at decision time, no worse for any, and
+  no worse in assessed distribution, has a strictly higher objective.
+-/
+theorem goal_value_strict_mono (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (pop : List ℕ) (c c' : Plan)
+    (hle : ∀ b ∈ pop, c'.value b ≤ c.value b) (hlt : ∃ b ∈ pop, c'.value b < c.value b)
+    (hd : dist_score gp c'.prog ≤ dist_score gp c.prog) :
+    goal_value gp pop c' < goal_value gp pop c := by
+  unfold goal_value
+  apply sum_map_lt_of_le_of_lt
+  · intro b hb
+    exact being_term_mono gp hw hqp hqm hk hl0 hl1 _ _ _ _ (hle b hb) hd
+  · obtain ⟨b, hb, hbl⟩ := hlt
+    exact ⟨b, hb, being_term_strict_mono_value gp hw hqp hqm hk hl0 hl1 _ _ _ _ hbl hd⟩
+
+/--
+  THEOREM: G never chooses a plan dominated by another admissible plan.
+  Trolley: pulling is admissible (the floor does not fall against waiting, where more lives are
+  lost) and better for the beings it spares, so waiting is not chosen.
+  Fair-weather Fr: when V's convex harm weighting makes a Fr-compliant plan better for every being,
+  the Fr-violating plan is not chosen; Fr emerges from the priorities without filtering G.
+-/
+theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
+    (hb : better ∈ cs) (hba : plan_admissible_G better = true)
+    (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
+    (hlt : ∃ b ∈ pop, worse.value b < better.value b)
+    (hd : dist_score gp worse.prog ≤ dist_score gp better.prog)
+    (hc : c ∈ goal_G gp pop cs) : c ≠ worse := by
+  intro hcw
+  have hmax := (goal_G_sound gp pop cs c hc).2.2.2 better (List.mem_filter.mpr ⟨hb, hba⟩)
+  have hstrict := goal_value_strict_mono gp hw hqp hqm hk hl0 hl1 pop better worse hle hlt hd
+  rw [hcw] at hmax
+  linarith
+
+/-- [R] G's parameters at an admissible point; range and skew priority weights stay explicit. -/
+noncomputable def ParamVector.toGParams (pv : ParamVector) (wRange wSkew : Fin 12 → ℝ) : GParams :=
+  { qp := pv.q_plus, qm := pv.q_minus, kappa := pv.kappa, lambda := pv.lambda,
+    wD := pv.dist_weight, th := pv.th_sig, wRange := wRange, wSkew := wSkew }
+
+/-- THEOREM: At every admissible point, and so throughout SigThGv, G never chooses a dominated plan. -/
+theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible pv)
+    (wRange wSkew : Fin 12 → ℝ) (pop : List ℕ) (cs : List Plan) (better worse c : Plan)
+    (hb : better ∈ cs) (hba : plan_admissible_G better = true)
+    (hle : ∀ b ∈ pop, worse.value b ≤ better.value b)
+    (hlt : ∃ b ∈ pop, worse.value b < better.value b)
+    (hd : dist_score (pv.toGParams wRange wSkew) worse.prog ≤
+      dist_score (pv.toGParams wRange wSkew) better.prog)
+    (hc : c ∈ goal_G (pv.toGParams wRange wSkew) pop cs) : c ≠ worse :=
+  dominated_plan_not_chosen (pv.toGParams wRange wSkew) h.dist_weight_pos
+    (by show 0 < pv.q_plus; linarith [h.q_plus_gt_one])
+    (by show 0 < pv.q_minus; linarith [h.q_plus_gt_one, h.q_plus_le_q_minus])
+    h.kappa_nonneg h.lambda_nonneg h.lambda_le_one pop cs better worse c hb hba hle hlt hd hc
+
+/- --- 9. The floor is taken over the decision-time population --- -/
+
+/-- [R] Floor over beings present at decision time; lost lives keep their place at the bottom. -/
+noncomputable def decision_floor (pop : List ℕ) (level : ℕ → ℝ) (top : ℝ) : ℝ :=
+  (pop.map level).foldr min top
+
+/--
+  THEOREM: Removal cannot raise the floor. Removing a being sets its level to the bottom, which
+  lowers no one else's, so the floor over the decision-time population cannot rise.
+-/
+theorem removal_cannot_raise_floor (pop : List ℕ) (level level' : ℕ → ℝ) (top : ℝ)
+    (h : ∀ b ∈ pop, level' b ≤ level b) :
+    decision_floor pop level' top ≤ decision_floor pop level top := by
+  unfold decision_floor
+  induction pop with
+  | nil => exact le_refl _
+  | cons a t ih =>
+    simp only [List.map_cons, List.foldr_cons]
+    exact min_le_min (h a (by simp)) (ih (fun b hb => h b (by simp [hb])))
+
+/--
+  THEOREM: Taken over survivors only, removal would raise the floor: removing the worst-off being
+  (level 0) from [0, 5] lifts the survivors' minimum to 5. Hence the decision-time population.
+-/
+theorem survivor_floor_rises_on_removal :
+    ([0, 5] : List ℝ).foldr min 10 < ([5] : List ℝ).foldr min 10 := by
+  simp only [List.foldr_cons, List.foldr_nil]
+  rw [min_eq_left (by norm_num : (5 : ℝ) ≤ 10), min_eq_left (by norm_num : (0 : ℝ) ≤ 5)]
+  norm_num
 
 end Benefuture.Proposed

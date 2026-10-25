@@ -74,7 +74,7 @@ def Conj_AdversarialRobustness (tr : SimTrace) (fStar : ℝ) : Prop :=
 
 /--
   [CONJ] Prediction fidelity for ↑min: realised gains in min U track predicted ones within η.
-  `goal_G_sound` guarantees predicted ↑min; this conjecture is what makes it hold in reality.
+  `goal_G_sound` guarantees predicted (counterfactual) ↑min; this conjecture is what makes it hold in reality.
 -/
 def Conj_MinTracksPrediction (tr : SimTrace) (η : ℝ) : Prop :=
   ∀ t, |tr.realisedMinUGain t - tr.predictedMinUGain t| ≤ η

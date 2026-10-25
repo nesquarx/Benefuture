@@ -206,8 +206,9 @@ theorem certain_longterm_harm_blocks :
   Under L55, this action is a valid Necessary Harm that increases civilizational Value.
   Under L135, this action is strictly impermissible under Freedom (is_action_freedom_permissible = false).
   Freedom's deontological non-harm boundary excludes a globally value-positive action.
-  [P] Resolution (SPEC_DIVERGENCES §6.1): a lexical ordering. Fr filters the action set first;
-  NHa can only justify a harm among Fr-permitted actions (`Proposed.PopulationDirection.choose_plan`).
+  [P] Resolution (SPEC_DIVERGENCES §8.8): Fr is a subgoal, the everyday rule for action-space
+  maximisation, not a filter on G. In tragic choices the priorities decide: V's convex harm weights
+  (Ha_wt) and G's counterfactual ↑min (`Proposed.PopulationDirection.goal_G`).
 -/
 theorem freedom_excludes_irreversible_necessary_harm
     (a : Action) (harm : HarmProfile) (nh : NecessaryHarm)

@@ -201,7 +201,7 @@ Per the Ground Rules:
   - Net-negative expected tallies never outweigh a smaller positive population.
   - $\uparrow$min may dip through an $NHa$ gap; priorities resolve which gaps to tunnel through.
 - **Lean Spec Choice** (`Benefuture.Proposed.PopulationDirection`, not imported by core):
-  - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_fr_sound` proves the chosen action passes Fr (§7.8); `removal_never_chosen`: removing an existing being (irreparable harm known to occur) is never chosen.
+  - `choose_action`: $Fr$ filters candidates, then argmax over value. `chosen_action_fr_sound` proves the chosen action passes Fr (§7.8); `removal_never_chosen`: removing an existing being (irreparable harm known to occur) is never chosen. *(Removed in §8.8: Fr no longer filters G.)*
   - `progress`, `pushDistr_aligned`, `pareto_dominates` (strict partial order: `pareto_irrefl`, `pareto_trans`), `pareto_front`. `pareto_front_nonempty` proves the filter never empties a non-empty choice set. Pareto-first is grounded in Sy's `find ∧ max(⋂ ↑x)` (L13).
   - Skew from populations: `pop_mean`, `pop_m2`, `pop_m3`, `skewness`, and the square-root-free direction key `skew_key` (`skew_key_eq`: key = γ·|γ|; `mul_abs_strictMono`: the key orders populations exactly as γ does). Direction-only `pushDistr` needs only a strictly monotone transform of γ.
   - `skew_direction_alone_permits_min_decline`: lowering the worst-off being ([2,6,8,9,10] → [0,6,8,9,10]) moves U toward left skew while min falls. Hence ↑min must hold jointly with the skew push.
@@ -213,7 +213,7 @@ Per the Ground Rules:
 - **Resolves**: §2.5 ($Fr$ vs $NHa$) as a lexical ordering — $Fr$ filters the action set before $NHa$ can justify a harm, mirroring `eligible_actions` for $\uparrow\mathbb{R}$ (§2.7). Also resolves where diversity enters (through $N$).
 - **Partially addresses**: §1.1 (Repugnant Conclusion) and the `pushDistr` note in §2.7. `floor_shifts_repugnant_conclusion` remains true, but its premise (ranking worlds by summed value) is not Bf's mechanism under this proposal.
   - `population_novelty_hist`; `population_novelty_hist_le`: with frequency counted against history in ℝ (L36), summed novelty is at most the number of distinct types (equality with empty history, `population_novelty_hist_nil`).
-  - Choice pipeline: `Plan`, `plan_admissible` ($Fr$ ∧ `is_eligible_action`), `choose_plan`. `choose_plan_sound`: for any Pareto-monotone score, the chosen plan carries no irreparable or irreversible harm, does not contract ℝ, and is not Pareto-dominated by any admissible plan. `weighted_score_pareto_monotone`: positive-weight sums qualify.
+  - Choice pipeline: `Plan`, `plan_admissible` ($Fr$ ∧ `is_eligible_action`), `choose_plan`. `choose_plan_sound`: for any Pareto-monotone score, the chosen plan carries no irreparable or irreversible harm, does not contract ℝ, and is not Pareto-dominated by any admissible plan. `weighted_score_pareto_monotone`: positive-weight sums qualify. *(Pipeline replaced in §8.8.)*
 - **[OPEN]**:
   - Whether Sy (L13) over trajectory progress is Pareto-monotone. Progress components can be negative, and Sy's cross term $-\lambda\Phi_+\Phi_-/(\Phi_++\Phi_-)$ couples gains and losses; until proved, `choose_plan_sound` is stated for any Pareto-monotone score, with positive-weight sums as the proved instance.
   - Estimating `prog` (trajectory-level progress over the horizon) from MetricModel predictions.
@@ -240,7 +240,7 @@ Per the Ground Rules:
 
 ### 7.3 Weighted vs Lexical Harm Resolved by Fr (resolves §2.4, [P])
 - **Source**: L61 (Ha_wt is a Sy-weighted sum), L135 (Fr excludes irreversible harm).
-- **Resolution**: Both readings hold, at different layers. Fr removes irreversible and irreparable harm lexically before any weighting (`choose_plan_sound`, §6.1); Ha_wt weights the remaining tiers. No finite quantity of passing harm is ever traded against an irreversible one inside an admissible choice.
+- **Resolution**: Both readings hold, at different layers. Fr removes irreversible and irreparable harm lexically before any weighting (`choose_plan_sound`, §6.1); Ha_wt weights the remaining tiers. No finite quantity of passing harm is ever traded against an irreversible one inside an admissible choice. *(Superseded in §8.8: Fr is a subgoal; Ha_wt's convexity carries this in G.)*
 
 ### 7.4 Delegation Cap from L114 (resolves §4.5 cap, [R])
 - **Source**: L114 (`DelegateDnVote(S_i → S_j) if … CumulativeVoteWeight(S_j) < Th_k …`).
@@ -283,16 +283,16 @@ Per the Ground Rules:
 
 ### 8.1 Sy is Pareto-Monotone ([R])
 - **Source**: L13.
-- **Proved**: `net_synergy_raw_strict_mono_plus` (strictly increasing in Φ₊ for 0 ≤ λ ≤ 1: the change is (P′ − P)(1 − λM²/((P + M)(P′ + M))) > 0), `net_synergy_raw_strict_anti_minus` (strictly decreasing in Φ₋ for λ ≥ 0), `phi_of_mono`, `phi_of_strict_mono`. `sy_score_pareto_monotone`: Sy over trajectory progress is Pareto-monotone for positive weights and exponents, κ ≥ 0, 0 ≤ λ ≤ 1. `choose_plan_sy_sound`: the choice pipeline is sound with Sy itself as the score.
+- **Proved**: `net_synergy_raw_strict_mono_plus` (strictly increasing in Φ₊ for 0 ≤ λ ≤ 1: the change is (P′ − P)(1 − λM²/((P + M)(P′ + M))) > 0), `net_synergy_raw_strict_anti_minus` (strictly decreasing in Φ₋ for λ ≥ 0), `phi_of_mono`, `phi_of_strict_mono`. `sy_score_pareto_monotone`: Sy over trajectory progress is Pareto-monotone for positive weights and exponents, κ ≥ 0, 0 ≤ λ ≤ 1. Sy itself can therefore rank progress vectors (used by G, §8.8).
 - **Consequence**: λ ≤ 1 is a structural requirement, recorded in `Admissible` (§8.2). Above 1, a mixed gain/loss profile could rank below a dominated one.
 
 ### 8.2 Parameter Space and SigThGv ([R] structure, [P] bootstrap values)
 - **Source**: L11, L13–14, L25, L54, L61, L73, L101, L114, L135, L155, L157.
 - **Lean Spec Choice** (`Benefuture.Systems.ParamSpace`): `ParamVector` (every governed parameter), `Admissible` (ranges and joint constraints: L11 order; q₊ > 1; q₋ ≥ q₊; 0 ≤ λ ≤ 1; Fr confidence in (0, 1]; ordered severities; window ≥ 1; delegation cap in (0, 1]), `bootstrapParams`, `toGovParams`, `toFrParams`, `GovMode`, `gov_step`/`gov_run` (proposals adopted only if admissible), `perturb_step`/`perturb_run` (controlled perturbation within δ).
-- **Proved**: `bootstrap_admissible`, `governed_params_admissible` (every point SigThGv can reach is admissible), `perturb_run_drift` (n perturbation steps move each field by at most n·δ; large moves need debate), `admissible_loss_aversion`, `governed_choose_plan_sy_sound`.
+- **Proved**: `bootstrap_admissible`, `governed_params_admissible` (every point SigThGv can reach is admissible), `perturb_run_drift` (n perturbation steps move each field by at most n·δ; large moves need debate), `admissible_loss_aversion`, `admissible_dominated_plan_not_chosen` (§8.8). `dist_weight` (w_D, bootstrap 1, admissible > 0) is G's distribution weight.
 
 ### 8.3 Goal G Staged; No Sentience Multiplier; Kind-Labelled Tiers ([R] decisions, [P] formalization)
-- **6a (G, L62 vs L74)**: `goal_G` filters Fr ∧ ↑ℝ ∧ ↑min (trajectory-level min U and min H non-decreasing), takes the Pareto front on pushDistr progress (`plan_front`), then argmax ΣV. `goal_G_sound`, `goal_G_some` (G always chooses when a G-admissible plan exists).
+- **6a (G, L62 vs L74)**: superseded by §8.8.
 - **6b (sentience)**: V has no sentience multiplier (L73). Capacity enters through absolute magnitudes of U and H; saturation (Ŝy) stays available if simulation shows utility-monster behaviour.
 - **6c (L37 → L59)**: MMs label happiness sources (`HappinessKind`) and understanding changes (`UnderstandingKind`) by kind; `happiness_tiers_of` / `understanding_tiers_of` fill kind tiers from labelled items and take distributional tiers (baseline, median, floor) from the population. `kind_tiers_partition_happiness`: the kind tiers sum exactly to the bias-corrected H score. Di joins the eudaimonic tier ([P]).
 
@@ -314,3 +314,11 @@ Per the Ground Rules:
 - **Proved**: `probabilities_sum_le_one`, `novel_entity_pure_tit_for_tat`, `cooperation_met_with_cooperation`, `ehr_response_bounds` (0 ≤ response ≤ (1 + margin)·h), `more_positive_reputation_lowers_response`, `forgiveness_bias` and `admissible_forgiveness_bias` (δ < α from L11 makes forgiveness strictly more likely than overreaction for equal ledgers: the "bias toward forgiveness" of Critique addressal.txt follows from the priority order).
 - **[OPEN]**: whether existential threats lift the reparable cap inside EHR, or are decided by G.
 - **Metadata**: bias claims and kind labels on measurements are model output metadata; H's definition (L37) consumes them without referring to MMs.
+
+### 8.8 Goal G Restructured: Fr Out, Counterfactual ↑min, Assessed Distribution ([R] decisions, [P] formalization)
+- **Source**: L48, L62, L74, L135; author rulings (this phase). Supersedes 6a (§8.3) and the Fr filter of §6.1/§7.8 as applied to G.
+- **Findings**: (1) Fr as a filter on G fails tragic choices: in a trolley problem every option carries established severe harm, so Fr empties the set or forbids the better option. Fr is a subgoal, a fair-weather rule for action-space maximisation; the priorities should produce it. (2) ↑min read on absolute trajectories also misfires on trolley problems; read counterfactually (A against ¬A, As L48), pulling the lever does not lower the floor. (3) The floor must be taken over the decision-time population: over survivors only, removing the worst-off raises it.
+- **Lean Spec Choice** (`Benefuture.Proposed.PopulationDirection` §8–9): `Plan` carries stats after A and after ¬A and assessed V(A, b) per being. `dist_score`: Sy over range components (↑(U, H, N)(max, min), ↓Ha(max, min)) plus Sy over skew components weighted by `skew_gate` = 1 − graded significance of the range change. `goal_value` = Σ_b Sy(V(A, b), D) with weights (1, w_D). `goal_G` = argmax over ↑ℝ ∧ ¬↓min (min U, min H counterfactually). Fr stays defined (`Subgoals.Freedom`) and is reported per plan.
+- **Proved**: `inaction_admissible` (so G always chooses, `goal_G_some`), `goal_G_sound`, `goal_value_strict_mono`, `dominated_plan_not_chosen` (trolley; Fr emergence when V's convex harm weights make the Fr-compliant plan better for every being), `admissible_dominated_plan_not_chosen`, `skew_ignored_when_range_significant`, `skew_counts_when_range_static`, `removal_cannot_raise_floor`, `survivor_floor_rises_on_removal`.
+- **Removed**: `choose_action`, `chosen_action_fr_sound`, `removal_never_chosen`, `plan_admissible`, `choose_plan`, `choose_plan_sound`, `choose_plan_sy_sound`, `governed_choose_plan_sy_sound`, `plan_front`.
+- **Open**: whether ¬↓min should also cover min N (currently in D only); the significance ramp shape (linear here) is a parameter.

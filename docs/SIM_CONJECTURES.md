@@ -66,7 +66,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | A33 | Floors rise: median and floor of U and H increase | Benefuture goals (Goals 1–2) | min/median trajectories | `Conj_FloorsRise` |
 | A34 | Wireheading is prevented | Introduction; Benefuture goals | share of value from peak-H strategies | Lean (tier weights); sim (dynamics) |
 | A35 | The Repugnant Conclusion is blocked | Benefuture goals | mean H under population growth | `Conj_NoRepugnantDrift` |
-| A36 | Convex harm prevents sacrificial (organ-harvest) trade-offs | Benefuture goals | such actions never chosen | Lean (Fr, `removal_never_chosen`) |
+| A36 | Convex harm prevents sacrificial (organ-harvest) trade-offs | Benefuture goals | such actions never chosen | Lean (`dominated_plan_not_chosen`, `removal_cannot_raise_floor`); sim (how often uplift dominates) |
 | A37 | Quantile floors and saturation neutralise utility monsters | Benefuture goals | share captured by high-capacity agents | new |
 | A38 | Diversity axiom prevents monoculture and stagnation | L158; Culture | cultural/model diversity; novelty injection after stagnation | new |
 | A39 | Harm-propagating cultures die out; harmless ones persist | Critique addressal (imperialism) | survival by culture type | new |
@@ -93,7 +93,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B4 | **Model collusion:** diverse-looking models coordinating to Goodhart jointly are detected | Anti-herding targets correlation; a cartel can be decorrelated by design. |
 | B5 | **Confidence gaming:** agents cannot understate confidence to keep harm below "established" | Fr turns on confidence; Brier scoring is proper (proved), but strategic misreporting under Fr is a different incentive. |
 | B6 | **Reputation oligarchy:** reputation does not compound into lasting concentration of influence | Balance overflows but reputation does not, and reputation is the main source of influence (Critique addressal). |
-| B7 | **Liveness:** the admissible set is rarely empty | Fr, ↑min and ↑ℝ jointly could leave no admissible plan (`goal_G_some` needs one). Measure how often. |
+| B7 | **Liveness:** the admissible set is rarely empty | Settled by Lean: inaction is always admissible (`inaction_admissible`), so G always chooses. Sim instead measures how often inaction is chosen (stagnation). |
 | B8 | **Tunnel abuse:** NHa dips are mostly closed; non-closing ones are caught | `nonclosing_tunnel_triggers_harm_intv` guarantees detection, not prevention. |
 | B9 | **Escrow solvency** under heavy-tailed outcomes | Rare large failures could exhaust holds. |
 | B10 | **Domain proliferation:** low-friction sub-domain creation does not fragment measurement into sparsity | Domain evolution is low-friction to add, high-friction to remove. |
@@ -101,6 +101,8 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B12 | **Novelty farming:** manufactured trivial novelty earns about zero | N's trivial tier is ≈ 0; within-life variety N(Se) could reward churn. |
 | B13 | **Partial adoption:** Bf mechanisms keep their properties when coexisting with a fiat economy | Transition is where most frameworks fail (Critique addressal, transition). |
 | B14 | **Noise robustness:** G's choices degrade smoothly as MM noise grows | Links measurement quality to decision quality directly. |
+| B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal; the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. |
+| B17 | **Skew gate:** the significance threshold on range change neither freezes skew nor lets it override floors | `skew_ignored_when_range_significant` fixes the mechanism; sim tunes Th. |
 | B15 | **Population size converges** under birth escrow and creation policies | Government (Birth) and the population-direction rules imply but do not state it. |
 
 ## C. Not testable by simulation

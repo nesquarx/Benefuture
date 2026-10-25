@@ -61,6 +61,8 @@ structure ParamVector where
   deleg_cap        : ℝ
   -- EHR overreaction margin (L117)
   ehr_margin       : ℝ
+  -- Weight of the assessed distribution term in G (L62, L74): w_D in Sy(V, As(pushDistr))
+  dist_weight      : ℝ
 
 /-- [R] Admissible parameter vectors: the ranges and joint constraints the proved theorems need. -/
 structure Admissible (pv : ParamVector) : Prop where
@@ -105,6 +107,8 @@ structure Admissible (pv : ParamVector) : Prop where
   deleg_cap_le_one   : pv.deleg_cap ≤ 1
   -- L117
   ehr_margin_nonneg  : 0 ≤ pv.ehr_margin
+  -- L62, L74: the distribution term enters G through Sy, not additively, so it is not discounted
+  dist_weight_pos    : 0 < pv.dist_weight
 
 /--
   [P] Bootstrap defaults (Bf system-design bootstrap), matching `defaultGovParams`,
@@ -121,7 +125,8 @@ noncomputable def bootstrapParams : ParamVector :=
     fr_thConf := 0.9, fr_thHigh := 1,
     sev_irreparable := 1000, sev_irreversible := 100, sev_longterm := 10,
     sev_passing := 1, sev_timeLoss := 0.5,
-    h_window := 10, deleg_cap := 0.05, ehr_margin := 0.25 }
+    h_window := 10, deleg_cap := 0.05, ehr_margin := 0.25,
+    dist_weight := 1 }
 
 /-- THEOREM: The bootstrap point is admissible. -/
 theorem bootstrap_admissible : Admissible bootstrapParams := by

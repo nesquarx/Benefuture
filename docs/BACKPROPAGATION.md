@@ -82,10 +82,12 @@ being's sources; the second from the population distribution.
 Lean: `happiness_tiers_of`, `understanding_tiers_of`, `kind_tiers_partition_happiness`.
 Proposed edit: mark positions, e.g. `H: Sy(eudaimonic > shareable > satisficing > baseline_q > median_q > peak)`.
 
-**2.5 NHa operates inside Fr (A).**
-Necessary harm can only justify a harm among Fr-permitted actions; Fr filters first.
-Lean: `choose_action`, `chosen_action_fr_sound`.
-Proposed edit: L55 `NHa := Ha ∈ Fr : Ha → ↑V > Ha`.
+**2.5 Fr is a subgoal, not a filter on G (A, superseded).**
+An earlier reading had Fr filter first and NHa operate inside it. Author: Fr is a fair-weather rule
+for action-space maximisation and fails on trolley problems; the priorities should produce it.
+G now filters only ↑ℝ and counterfactual ↑min; Fr is reported per plan.
+Lean: `dominated_plan_not_chosen` (trolley and Fr emergence), `inaction_admissible`.
+Proposed edit: L135 drop `NHa ⊆ Fr, G ⊆ Fr`; Harm.txt states the everyday-rule reading.
 
 ## 3. Freedom (L135)
 
@@ -100,19 +102,21 @@ Proposed edit: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th_conf, �
 
 **4.1 Bf ranks actions, not worlds (A).**
 Being-level value exists only as an expected lifetime tally over Bounds_B, under the best available
-uplift policy. Existing beings may only be uplifted; removal is never chosen; net-negative tallies
-never outweigh a positive population. Withholding uplift is not Ha, only comparatively worse.
-Lean: `expected_tally`, `removal_never_chosen`, `net_negative_never_outweighs_positive`,
+uplift policy. Existing beings may only be uplifted; removal is dominated whenever uplift is
+available and cannot raise the floor, which is taken over the decision-time population;
+net-negative tallies never outweigh a positive population. Withholding uplift is not Ha, only
+comparatively worse.
+Lean: `expected_tally`, `dominated_plan_not_chosen`, `removal_cannot_raise_floor`,
+`survivor_floor_rises_on_removal`, `net_negative_never_outweighs_positive`,
 `withholding_incurs_no_harm`.
 Proposed edit: an article section (Benefuture goals.txt or a population-ethics article) stating these.
 
 **4.2 The Repugnant Conclusion is not "directly dissolved" by the floor or skew alone (B).**
 Benefuture goals.txt says the skew requirement with q₊ > 1 "directly dissolves" it. A floor alone
 only moves the threshold; skew alone can be met by pushing the worst-off further down. What blocks
-it is the combination of directional pushDistr, ↑min held jointly, and Fr.
+it is the combination of directional pushDistr and ↑min held jointly, with V's convex harm weights.
 Lean: `floor_shifts_repugnant_conclusion`, `skew_direction_alone_permits_min_decline`, `goal_G_sound`.
-Proposed edit: reword to "is blocked by the skew directive held jointly with ↑min and the Freedom
-boundary: …".
+Proposed edit: reword to "is blocked by the skew directive held jointly with ↑min: …".
 
 **4.3 pushDistr is directional, and ↑min holds over the trajectory (A, B).**
 Skew sets direction, not a target shape (A). ↑min is hard but may dip inside an NHa tunnel that
@@ -121,11 +125,15 @@ Lean: `pushDistr_aligned`, `min_holds_over`, `tunnel_admissible_but_not_stepwise
 `nonclosing_tunnel_triggers_harm_intv`.
 Proposed edit: L62 `pushDistr(…direction…, ↑min over lt (NHa dips ⇒ Harm_Intv), …)`.
 
-**4.4 G needs an explicit order of operations (A).**
-L74 says `argmax ΣV ∧ ↑ℝ`. The staged form is: filter Fr ∧ ↑ℝ ∧ ↑min, take the Pareto front on
-pushDistr progress, then argmax ΣV.
-Lean: `goal_G`, `goal_G_sound`, `goal_G_some`.
-Proposed edit: L74 `G(t) := argmax_{A ∈ Front_{pushDistr}(Fr ∧ ↑ℝ ∧ ↑min)} Σ_b V(A, b)`.
+**4.4 pushDistr enters G as an assessed term, and ↑min is counterfactual (A).**
+L74 says `argmax ΣV ∧ ↑ℝ`; L62 is not referenced by it. Author: V is already assessed, so assess
+the distribution too and combine per being through Sy (not additively, so it is not discounted).
+Range moves outrank skew; skew counts only when the range change is not significant. ↑min compares
+A with ¬A (As, L48), so inaction is always admissible and a trolley pull does not lower the floor.
+Lean: `goal_G`, `goal_G_sound`, `goal_G_some`, `inaction_admissible`, `goal_value_strict_mono`,
+`skew_ignored_when_range_significant`, `skew_counts_when_range_static`.
+Proposed edits: L62 `pushDistr((↑(U, N, H)(max, min)_lt, ↓Ha(max, min)) > skew(…) | ¬Sig(Δrange))`;
+L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr, A, t))] ∧ ↑ℝ ∧ ¬↓min`.
 
 **4.5 No sentience multiplier (A).**
 Capacity enters through absolute magnitudes of U and H.

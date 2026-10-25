@@ -71,7 +71,7 @@ Benefuture«Bf» {
       H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
       N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
       Ha_wt: 1 + Sy_{κ=½,q₊=1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture«Cu»_offence ≈ 0 > NHa_Estd = 0),
-      pushDistr(skew(((U, H), left(——^)), ((Ha, right(^——)), (N, norm(—^—)))), ↑(U, N, H)(max, min)_lt, ↓Ha(max, min))
+      pushDistr((↑(U, N, H)(max, min)_lt, ↓Ha(max, min)) > skew(((U, H), left(——^)), ((Ha, right(^——)), (N, norm(—^—)))) | ¬Sig(Δrange))
     };
 
     E(t) := T ↔ I(t) + Sp > 0;
@@ -83,7 +83,7 @@ Benefuture«Bf» {
     Pe := B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity«Cnt», Planning, Cm, Contract«Ct»)),gradedLvls;
 
     V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));
-    Goal«G»(t) := argmax_{A(t) ∈ find(⋂↑pushDistr)} [Σ_{b ∈ B(t)} V(A, b(t))] ∧ ↑ℝ;
+    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓min;
 
     Intent«In» : E_Precommit(Ou, Ct(Self));
     D := Ou(E), In(O), via(Pr , U);
@@ -144,7 +144,7 @@ Benefuture«Bf» {
     TN := Decentralized(Cluster[] : ∩Tech = Core(DataShare, Security)) ∧ OpnSrc(Infra) → Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DiffPrivGenericQ,2wayVisSpecificQ,IHzGatedPII,transparentAccess), Agg(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindId(E, 1:1);
     IH(TN) := Categorize(Tr_lvls, Opinion, F, Hy...) → SourceVerify(Re(Dn) / Ig(Dn)) + FactCheck(MemoryData«Mem») + ContentionMap + ManageAccess(IHz, (preReq(Ed), Provide(Ed), EnsurePath(Ed → Access) ← Ed | Freedom«Fr»(Tr)), !Censor);
 
-    Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high), NHa ⊆ Fr, G ⊆ Fr;
+    Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high);
     Morality«Mr» := U(P(∃I(Sl↔ℝ) : CC(I → O(Sl)) = 0) ≈ 0 | Memory(Sl) ⊆ O(Sl)), 1shotGame ⊆ 𝕌 − ℝ;
     Economy«Ec» := Sys(RcCreation & Distribution), Sustainable, Equitable;
     EmbeddedLaws«EL»(C, MM) | DynamicAp: ΔImp(ΔLw) < Th;
