@@ -71,7 +71,7 @@ Benefuture«Bf» {
       H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
       N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
       Ha_wt: 1 + Sy_{κ=½,q₊=1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture«Cu»_offence ≈ 0 > NHa_Estd = 0),
-      pushDistr((↑(U, N, H)(max, min)_lt, ↓Ha(max, min)) > skew(((U, H), left(——^)), ((Ha, right(^——)), (N, norm(—^—)))) | ¬Sig(Δrange))
+      pushDistr((↑(U, N, H)(max, min)_lt | U_max > U_min > H_min, ↓Ha(max, min)) > skew(((U, H), left(——^)), ((Ha, right(^——)), (N, norm(—^—)))) | ¬Sig(Δrange))
     };
 
     E(t) := T ↔ I(t) + Sp > 0;
@@ -83,7 +83,7 @@ Benefuture«Bf» {
     Pe := B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity«Cnt», Planning, Cm, Contract«Ct»)),gradedLvls;
 
     V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));
-    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓min;
+    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min));
 
     Intent«In» : E_Precommit(Ou, Ct(Self));
     D := Ou(E), In(O), via(Pr , U);

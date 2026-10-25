@@ -547,6 +547,134 @@ theorem skew_counts_when_range_static (gp : GParams) (p : Fin 12 → ℝ) (h : r
   rw [hg]
   ring
 
+/- --- Range priority: max U > min U > min H (author) --- -/
+
+theorem sum_map_zero {ι : Type*} (y : ι → ℝ) (l : List ι) (h : ∀ i ∈ l, y i = 0) :
+    (l.map y).sum = 0 :=
+  List.sum_eq_zero (fun x hx => by
+    obtain ⟨i, hi, rfl⟩ := List.mem_map.mp hx
+    exact h i hi)
+
+theorem pairwiseCrossSum_map_zero {ι : Type*} (y : ι → ℝ) :
+    ∀ l : List ι, (∀ i ∈ l, y i = 0) → pairwiseCrossSum (l.map y) = 0
+  | [], _ => by simp
+  | a :: t, h => by
+    simp only [List.map_cons, pairwiseCrossSum]
+    rw [h a (by simp), zero_mul, zero_add]
+    exact pairwiseCrossSum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem a hi))
+
+theorem sum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
+    ∀ l : List ι, l.Nodup → j ∈ l → (∀ i ∈ l, i ≠ j → y i = 0) → (l.map y).sum = y j
+  | [], _, hj, _ => absurd hj (by simp)
+  | a :: t, hn, hj, h => by
+    rw [List.nodup_cons] at hn
+    simp only [List.map_cons, List.sum_cons]
+    by_cases haj : a = j
+    · subst haj
+      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
+        (fun hia => hn.1 (hia ▸ hi))), add_zero]
+    · have hjt : j ∈ t := by
+        rcases List.mem_cons.mp hj with h' | h'
+        · exact absurd h'.symm haj
+        · exact h'
+      rw [h a (by simp) haj, zero_add]
+      exact sum_map_single y j t hn.2 hjt (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij)
+
+theorem pairwiseCrossSum_map_single {ι : Type*} (y : ι → ℝ) (j : ι) :
+    ∀ l : List ι, l.Nodup → (∀ i ∈ l, i ≠ j → y i = 0) → pairwiseCrossSum (l.map y) = 0
+  | [], _, _ => by simp
+  | a :: t, hn, h => by
+    rw [List.nodup_cons] at hn
+    simp only [List.map_cons, pairwiseCrossSum]
+    rw [pairwiseCrossSum_map_single y j t hn.2
+      (fun i hi hij => h i (List.mem_cons_of_mem a hi) hij), add_zero]
+    by_cases haj : a = j
+    · subst haj
+      rw [sum_map_zero y t (fun i hi => h i (List.mem_cons_of_mem _ hi)
+        (fun hia => hn.1 (hia ▸ hi))), mul_zero]
+    · rw [h a (by simp) haj, zero_mul]
+
+/-- THEOREM: Sy of a zero vector is zero. -/
+theorem sy_score_of_zero {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
+    (hqp : 0 < qp) (hqm : 0 < qm) (h : ∀ i, p i = 0) : sy_score w v qp qm kappa lambda p = 0 := by
+  have hy : ∀ i ∈ List.finRange k, w i * (max 0 (p i)) ^ qp = 0 := fun i _ => by
+    rw [h i, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
+  have hz : ∀ i ∈ List.finRange k, v i * (max 0 (-p i)) ^ qm = 0 := fun i _ => by
+    rw [h i, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  unfold sy_score phi_of
+  rw [sum_map_zero _ _ hy, pairwiseCrossSum_map_zero _ _ hy, sum_map_zero _ _ hz,
+    pairwiseCrossSum_map_zero _ _ hz]
+  simp
+
+/-- THEOREM: Sy of a single gain x in component j is w_j · x^q₊. -/
+theorem sy_score_single {k : ℕ} (w v : Fin k → ℝ) (qp qm kappa lambda : ℝ) (p : Fin k → ℝ)
+    (j : Fin k) (hqp : 0 < qp) (hqm : 0 < qm) (hw : 0 < w j) (hx : 0 < p j)
+    (h0 : ∀ i, i ≠ j → p i = 0) : sy_score w v qp qm kappa lambda p = w j * (p j) ^ qp := by
+  have hy : ∀ i ∈ List.finRange k, i ≠ j → w i * (max 0 (p i)) ^ qp = 0 := fun i _ hij => by
+    rw [h0 i hij, max_self, Real.zero_rpow (ne_of_gt hqp), mul_zero]
+  have hz : ∀ i ∈ List.finRange k, i ≠ j → v i * (max 0 (-p i)) ^ qm = 0 := fun i _ hij => by
+    rw [h0 i hij, neg_zero, max_self, Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  have hzj : v j * (max 0 (-p j)) ^ qm = 0 := by
+    rw [max_eq_left (show -p j ≤ 0 by linarith), Real.zero_rpow (ne_of_gt hqm), mul_zero]
+  have hP : phi_of (List.finRange k) (fun i => w i * (max 0 (p i)) ^ qp) kappa =
+      w j * (p j) ^ qp := by
+    unfold phi_of
+    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hy,
+      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hy]
+    simp only [Real.sqrt_zero, mul_zero, add_zero, max_eq_right hx.le]
+  have hM : phi_of (List.finRange k) (fun i => v i * (max 0 (-p i)) ^ qm) kappa = 0 := by
+    unfold phi_of
+    rw [sum_map_single _ j _ (List.nodup_finRange k) (List.mem_finRange j) hz,
+      pairwiseCrossSum_map_single _ j _ (List.nodup_finRange k) hz]
+    simp only [Real.sqrt_zero, mul_zero, add_zero]
+    exact hzj
+  unfold sy_score
+  rw [hP, hM]
+  exact net_synergy_raw_pos_zero _ (mul_pos hw (Real.rpow_pos_of_pos hx _)) _
+
+/-- A gain x in component j alone. -/
+def unit_gain (j : Fin 12) (x : ℝ) : Fin 12 → ℝ :=
+  fun i => if i = j then x else 0
+
+/-- THEOREM: A single range gain scores w_j · x^q₊ in D; the skew term contributes nothing. -/
+theorem dist_score_unit_gain (gp : GParams) (j : Fin 12) (hj : j ∈ range_idx)
+    (hjs : j ∉ ([0, 1, 2, 3] : List (Fin 12))) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
+    (hw : 0 < gp.wRange j) (x : ℝ) (hx : 0 < x) :
+    dist_score gp (unit_gain j x) = gp.wRange j * x ^ gp.qp := by
+  have hr : restrict range_idx (unit_gain j x) = unit_gain j x := by
+    funext i
+    unfold restrict unit_gain
+    by_cases hij : i = j
+    · rw [hij, if_pos hj]
+    · simp [hij]
+  have hs : ∀ i, restrict [0, 1, 2, 3] (unit_gain j x) i = 0 := by
+    intro i
+    unfold restrict unit_gain
+    by_cases hij : i = j
+    · rw [hij, if_neg hjs]
+    · simp [hij]
+  unfold dist_score
+  rw [hr, sy_score_of_zero _ _ _ _ _ _ _ hqp hqm hs, mul_zero, add_zero]
+  have h1 := sy_score_single gp.wRange gp.wRange gp.qp gp.qm gp.kappa gp.lambda (unit_gain j x) j
+    hqp hqm hw (by simp [unit_gain, hx]) (fun i hij => by simp [unit_gain, hij])
+  rw [h1]
+  simp [unit_gain]
+
+/-- [R] Range priority (author): max U (index 6) > min U (4) > min H (5). -/
+def RangePriority (w : Fin 12 → ℝ) : Prop :=
+  w 4 < w 6 ∧ w 5 < w 4
+
+/-- THEOREM: Under the range priority, equal gains score max U > min U > min H in D. -/
+theorem range_priority_order (gp : GParams) (hpr : RangePriority gp.wRange)
+    (hw : ∀ i, 0 < gp.wRange i) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm) (x : ℝ) (hx : 0 < x) :
+    dist_score gp (unit_gain 5 x) < dist_score gp (unit_gain 4 x) ∧
+      dist_score gp (unit_gain 4 x) < dist_score gp (unit_gain 6 x) := by
+  have hxq : 0 < x ^ gp.qp := Real.rpow_pos_of_pos hx _
+  rw [dist_score_unit_gain gp 5 (by unfold range_idx; decide) (by decide) hqp hqm (hw 5) x hx,
+    dist_score_unit_gain gp 4 (by unfold range_idx; decide) (by decide) hqp hqm (hw 4) x hx,
+    dist_score_unit_gain gp 6 (by unfold range_idx; decide) (by decide) hqp hqm (hw 6) x hx]
+  exact ⟨mul_lt_mul_of_pos_right hpr.2 hxq, mul_lt_mul_of_pos_right hpr.1 hxq⟩
+
 /-- [R] A being's term in G: Sy(V_b, D) with gain and loss weights (1, w_D) (L13 default w = 1). -/
 noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
   sy_score ![1, gp.wD] ![1, gp.wD] gp.qp gp.qm gp.kappa gp.lambda ![v, d]
@@ -555,10 +683,13 @@ noncomputable def being_term (gp : GParams) (v d : ℝ) : ℝ :=
 noncomputable def goal_value (gp : GParams) (pop : List ℕ) (c : Plan) : ℝ :=
   (pop.map (fun b => being_term gp (c.value b) (dist_score gp c.prog))).sum
 
-/-- [R] ¬↓min (L62): counterfactual, trajectory-level min U and min H do not fall. -/
+/--
+  [R] ¬↓(U(max, min), H(min)) (L62): counterfactual, trajectory-level min U, min H and max U do
+  not fall. Max H has no hard limit: happiness peaks are unstable (author).
+-/
 noncomputable def min_nondecreasing (c : Plan) : Bool :=
-  haveI := Classical.propDecidable (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
-  decide (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5)
+  haveI := Classical.propDecidable (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6)
+  decide (0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6)
 
 /-- [R] G-admissible plans: ↑ℝ ∧ ¬↓min. Fr is a subgoal, not a filter on G. -/
 noncomputable def plan_admissible_G (c : Plan) : Bool :=
@@ -591,16 +722,16 @@ theorem goal_G_some (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan) 
   rw [hnone] at this
   simp at this
 
-/-- THEOREM: G's choice satisfies ↑ℝ and ¬↓min and maximises the objective over admissible plans. -/
+/-- THEOREM: G's choice satisfies ↑ℝ and ¬↓(U(max, min), H(min)) and maximises the objective over admissible plans. -/
 theorem goal_G_sound (gp : GParams) (pop : List ℕ) (cs : List Plan) (c : Plan)
     (hc : c ∈ goal_G gp pop cs) :
     reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
-      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧
+      0 ≤ c.prog 4 ∧ 0 ≤ c.prog 5 ∧ 0 ≤ c.prog 6 ∧
       ∀ d ∈ cs.filter plan_admissible_G, goal_value gp pop d ≤ goal_value gp pop c := by
   have hm := (List.mem_filter.mp (List.argmax_mem hc)).2
   simp only [plan_admissible_G, min_nondecreasing, is_eligible_action, Bool.and_eq_true,
     decide_eq_true_eq] at hm
-  exact ⟨hm.1, hm.2.1, hm.2.2, fun d hd => List.le_of_mem_argmax (f := goal_value gp pop) hd hc⟩
+  exact ⟨hm.1, hm.2.1, hm.2.2.1, hm.2.2.2, fun d hd => List.le_of_mem_argmax (f := goal_value gp pop) hd hc⟩
 
 theorem being_term_mono (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
     (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1) (v v' d d' : ℝ)
@@ -663,7 +794,7 @@ theorem dominated_plan_not_chosen (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.
     (hd : dist_score gp worse.prog ≤ dist_score gp better.prog)
     (hc : c ∈ goal_G gp pop cs) : c ≠ worse := by
   intro hcw
-  have hmax := (goal_G_sound gp pop cs c hc).2.2.2 better (List.mem_filter.mpr ⟨hb, hba⟩)
+  have hmax := (goal_G_sound gp pop cs c hc).2.2.2.2 better (List.mem_filter.mpr ⟨hb, hba⟩)
   have hstrict := goal_value_strict_mono gp hw hqp hqm hk hl0 hl1 pop better worse hle hlt hd
   rw [hcw] at hmax
   linarith

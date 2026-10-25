@@ -133,7 +133,7 @@ A with ¬A (As, L48), so inaction is always admissible and a trolley pull does n
 Lean: `goal_G`, `goal_G_sound`, `goal_G_some`, `inaction_admissible`, `goal_value_strict_mono`,
 `skew_ignored_when_range_significant`, `skew_counts_when_range_static`.
 Proposed edits: L62 `pushDistr((↑(U, N, H)(max, min)_lt, ↓Ha(max, min)) > skew(…) | ¬Sig(Δrange))`;
-L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr, A, t))] ∧ ↑ℝ ∧ ¬↓min`.
+L74 `G(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min))`; range priority U_max > U_min > H_min (`range_priority_order`).
 
 **4.5 No sentience multiplier (A).**
 Capacity enters through absolute magnitudes of U and H.
