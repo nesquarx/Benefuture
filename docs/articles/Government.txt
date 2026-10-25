@@ -6,7 +6,7 @@ Government in a [[Benefuture]] [[society]] is a system of [[Administration|admin
 
 *   '''Direct Democracy (Weighted):''' Citizens directly deliberate and vote on policy decisions.
 *   '''Expertise and Impact-Distance Weighting:''' Votes are weighted based on demonstrated, domain-specific expertise [[reputation]] ''and'' how directly the voter is affected. [[Significant|Significantly]] high weighted voters for a certain issue are obligated to vote on that specific issue, while lower weighted votes are optional but will count if voted.
-*   '''Liquid where needed:''' Votes on trivial decisions can be delegated to experts with a higher comparative expertise whose delegation limits have not reached a cap.
+*   '''Liquid where needed:''' Votes on trivial decisions can be delegated to experts with a higher comparative expertise whose delegation limits have not reached a cap; a delegate can pass the cap by at most one delegation.
 *   '''Fractal Scope:''' The decision making system operates on all levels of collective, from a family to a workplace to a locality to an association to a nation to a stellar civilization.
 *   '''Clean Deliberation:''' Deliberation is not open to influence that lowers [[Truth|truth-level]]: misinformation, undisclosed persuasion and manipulation of the information voters rely on. Proposals are presented with truth-level tagging and source tracking from the [[Technology Network]], and attempts to degrade the truth-level of a deliberation are handled as manipulation (see Addressing Potential Problems).
 *   '''No Halo/Horn Effects:''' Expertise [[reputation]] weighting is strictly domain-specific; unrelated factors don't affect weighting.

@@ -7,6 +7,7 @@ Harm is an umbrella term for a wide variety of [[bad]] effects on a [[being]] th
 * The amount and level of harm is very important in discerning its [[threshold of significance]] for most [[decision]]s.
 * Harm can have physical and mental aspects.
 * Harm can be short or long term or even be deferred in time.
+* Harm is measured against reference points: [[understanding]] is harmed when it falls below the being's own highest level so far (forgetting understood relationships is harm), [[happiness]] when it falls below its recent average (coming down from a giddy rush is not harm).
 * Harm cannot befall non-[[sentience|sentient]] [[entities]], circumstances of entities can end up causing harm to [[Person|persons]].
 * Harm experienced as reduction in happiness due to perception or observation of a [[thing]] in [[reality]] (usually disgust or taking offense) that does not [[Interaction|interact]] with the perceiver in any otherwise harmful way is considered an inconvenience, an extremely shallow and reversible harm. It has to be addressed by [[education]] to address the [[Culture|cultural]] roots of the effects and not by trying to change reality.
 * A major differentiator of the level and grade of harm depends on whether it can be reverted for the beings experiencing it.
@@ -16,6 +17,7 @@ Harm is an umbrella term for a wide variety of [[bad]] effects on a [[being]] th
 * Harms are weighted by kind, in roughly descending order: irreparable, irreversible, long-term, passing, time-loss, predicted necessary, cultural offence (near zero) and established necessary (zero). The weights apply to losses in the [[Benefuture goals#Mathematical approach|value calculation]] and rise faster than the weights on gains, so that severe harm counts for more than the same total of mild harm. Which kind a harm belongs to depends on current understanding and can change. See [[Benefuture goals#Harm|the priorities]] for what each kind means.
 * Many types of harm can be apparent only in the future, hence it should be a [[civilization]]'s [[goals|goal]] to better understand causes of harm and make choices based on predicted minimisation of harm.
 * Harm which is needed to enable a [[good]] greater than the harm is called necessary harm. Predicted necessary harm is more tenuous and requires greater scrutiny than established necessary harm.
+* [[Benefuture goals#Subgoals|Freedom]] excludes established harm (predicted with high confidence, long-term or worse) and any harm whose probability times severity is too high: a fair chance of passing harm or time loss does not block an action, a small chance of irreparable harm does. Necessary harm is weighed only among actions freedom allows.
 
 ==Examples==
 * Smoking tobacco or consuming alcohol causes long term but deferred (currently)irreparable physical and thus mental harm by reducing health and lifespan, thus both happiness and understanding in the future. The temporary improvements in happiness can generally be said to not be above a threshold to consume the substances given the understanding of its future effects.
