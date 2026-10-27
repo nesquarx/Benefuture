@@ -20,6 +20,9 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Coherence critiques are independent of comparative ones and are welcome.
 
 ## Verification
-- Lean cannot be built in cloud sessions (no toolchain; installing one is not permitted). Verify through GitHub Actions: push, then check the latest "Lean Action CI" run for the head commit. A red run is diagnosed from its job log before any further edit.
+- Toolchains: `tools/setup/toolchains.sh` installs Julia and Lean (idempotent; binaries in `~/.local/bin`). If they are missing, run it before verifying.
+- Lean: `lake exe cache get` once per container, then `lake build`. Julia: `julia --project=sim -e 'using Pkg; Pkg.test()'`.
+- CI is the gate: after pushing, check the "Lean Action CI" and "Julia Sim CI" runs for the head commit. A red run is diagnosed from its job log before any further edit.
 - The Lean analogue of the dual suites: acceptance theorems state what must hold; counterexample theorems (e.g. `survivor_floor_rises_on_removal`) state what must fail.
+- Simulation (`sim/`, Julia package `BenefutureSim`): each increment starts with acceptance tests against `spec/vectors/` and an adversarial suite, run red before implementing.
 - `BenefutureReference` and `Main.lean` must not import Mathlib or `Benefuture.*` (CI guard).
