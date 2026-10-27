@@ -27,7 +27,7 @@ Which decompose to the following subgoals
 # Maximising the ways to share happiness.
 # Increasing the ceiling, median and floor of [[understanding]] levels across all [[entities]].
 # Increasing the median and floor of [[happiness]] levels across all [[Being|beings]].
-# Optimizing [[education]], [[Culture|art and culture]] to achieve the above subgoals.
+# Optimizing [[education]], [[art]] and [[culture]] to achieve the above subgoals.
 
 '''The corollary goals would be:'''
 

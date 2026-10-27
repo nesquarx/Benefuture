@@ -1,0 +1,56 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+'''Art''' is an [[entity]]'s intended [[communication]] of a change in feeling and [[understanding]], made by recontextualising or reorganising a [[thing]] of [[reality]] into an artwork, and the change in feeling and understanding, other than understanding of the artwork itself, that the artwork brings about in the [[Being|beings]] who receive it.
+
+==Aspects==
+* The artist is any entity that intends; the intent is to communicate a change in feeling and understanding.
+* The artwork is a thing of reality, recontextualised or reorganised: a medium for intended feeling and for information across [[Domain|domains]].
+* The audience are the beings who receive the artwork. What counts is the change in their feeling and understanding beyond understanding the artwork itself.
+* Impact is the size of what the audience receives.
+* Success is how well the intent matches the spread of reception, so a work meant to divide or to be read many ways succeeds when it does.
+* Value is the [[truth]] level of the understanding conveyed, and the [[Diversity|novelty]] of its execution. The feeling counts through [[Benefuture goals#Mathematical approach|value]] like that of any action; art's own value is what it adds beyond that.
+* The artist can be the audience, and the original thing can be the artwork: art can be implicit, made by an observer for themselves, including from a natural source.
+* Art's value is measured; its making answers to no test.
+
+==Examples==
+* '''A novel:''' every sentence is false and the understanding it conveys is true; its value lies in the truth of the understanding, not of the text.
+* '''A propaganda poster:''' high impact and intent matched, so a success, but of low value: the understanding it conveys has a low truth level.
+* '''A divisive work:''' meant to split its audience, it succeeds when reception spreads as intended.
+* '''A forgery:''' the same reception as the original, little novelty, and so little value of its own.
+* '''A pop song:''' its joy counts through value like any action's; its art value is what it conveys beyond that, and the novelty of how.
+* '''A readymade:''' a manufactured object recontextualised as an artwork.
+* '''A sunset:''' the observer makes it art for themselves; artist and audience are one, and the artwork is the original thing.
+* '''Virtuoso technique with nothing to say:''' craft mastery has craft understanding and craft value, not art value.
+
+==Discussion==
+===Intent and reception===
+Tolstoy defined art as the transmission of feeling from artist to audience, succeeding when the audience is infected by it.<ref>Tolstoy, L. (1897). [https://www.gutenberg.org/ebooks/64908 ''What Is Art?''] (A. Maude, Trans.).</ref> Wimsatt and Beardsley argued the opposite, that the author's intention is neither available nor a standard for judging the work.<ref>Wimsatt, W. K., & Beardsley, M. C. (1946). [https://www.jstor.org/stable/27537676 The Intentional Fallacy]. ''The Sewanee Review'', 54(3), 468–488.</ref> Benefuture splits the question: success is judged against intent, while value is judged on what the audience receives, so a work can fail its artist and still be valuable, or succeed and be worth little.
+
+===Art as understanding===
+Goodman treated artworks as symbol systems that advance understanding much as science does;<ref>Goodman, N. (1976). [https://openlibrary.org/isbn/0915144344 ''Languages of Art: An Approach to a Theory of Symbols''] (2nd ed.). Hackett.</ref> Benefuture's value of art is of this kind. Measuring the truth level of the understanding conveyed, rather than of the work, is what lets fiction carry true understanding through false statements. Excluding understanding of the artwork itself is a contested commitment: Bell located art's value in significant form, independent of what a work conveys,<ref>Bell, C. (1914). [https://www.gutenberg.org/ebooks/16917 ''Art'']. Chatto and Windus.</ref> and formal mastery earns no art value here. It is not lost: craft mastery has its own understanding and its own value, as craft rather than as art.
+
+===Many readings===
+Eco described works deliberately left open to many readings, completed differently by each audience.<ref>Eco, U. (1989). [https://openlibrary.org/isbn/0674639758 ''The Open Work''] (A. Cancogni, Trans.). Harvard University Press.</ref> Matching intent against the spread of reception, rather than its average, lets such works succeed when they divide or multiply as intended, where an average would score them as failures.
+
+===Feeling and value===
+Under understanding over happiness, art's feeling is not discounted but counted where all feeling is, in value; art's own value is the surplus of understanding and novelty. This keeps art that conveys mostly feeling, such as much music and comedy, fully counted, while its distinct value as art rests on what it lets an audience understand.
+
+===Art and the iron rule===
+Strevens describes science's iron rule: any reason may be held privately, but only empirical test confers public authority.<ref>Strevens, M. (2020). [https://openlibrary.org/isbn/1631491377 ''The Knowledge Machine: How Irrationality Created Modern Science'']. Liveright.</ref> Benefuture extends the rule to everything that confers authority. Art sits between: its value is measured, but its making answers to no test, and the novelty space, which operates outside Benefuture's rigour, is the true outside.
+
+===Found and implicit art===
+Duchamp's readymade, a manufactured urinal submitted to an exhibition, made recontextualisation the whole of the work;<ref>Duchamp, M. (1917, replica 1964). [https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573 ''Fountain'']. Tate.</ref> the definition admits it directly. The same clause admits art no one made: a landscape becomes art when an observer recontextualises it for themselves, as artist and audience at once.
+
+===Art in the system===
+[[Culture]] is a memetic vehicle, and art is among its strongest carriers. Optimising education, art and culture toward the [[Benefuture goals#Subgoals|subgoals]] is itself a subgoal, artistic expression that promotes understanding and empathy is a practice culture encourages, and the [[Benefuture currency|currency]] funds cultural projects with an emphasis on novel contributions.
+
+==See also==
+* [[Culture]]
+* [[Communication]]
+* [[Understanding]]
+* [[Truth]]
+* [[Diversity]]
+
+==References==
+<references/>
+
+<small>AI Disclaimer: Definition and aspects are human notes; examples and discussion are AI written.</small>

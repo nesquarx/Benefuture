@@ -270,3 +270,11 @@ dispositions, and placement among moral theories. Philosophy §Morality keeps th
 points to it; links in Being, Benefuture goals, System Design, Justice, Benefuture (reading
 order) and Introduction (where to go next) now target it. The wiki page must be created by hand:
 `tools/wiki_sync` edits with `nocreate`.
+
+**7.16 Art article.** New `docs/articles/Art.txt`: definition in the order of the pseudocode line
+(L125), eight aspects restating the author, examples and a discussion (intent and reception,
+art as understanding, many readings, feeling and value, the iron rule, found art, art in the
+system), every reference linked. Craft mastery has craft understanding and craft value, not art
+value (author). Culture's art paragraph is a one-line pointer; links in Benefuture goals,
+Philosophy (positioning) and the reading order now target it. The wiki page must be created by
+hand.

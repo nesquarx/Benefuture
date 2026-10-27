@@ -221,7 +221,7 @@ The articles in this wiki are cross referenced to inform each other wherever nec
 # Base concepts: [[Benefuture goals]], [[Understanding]], [[Happiness]], [[measurement]], [[Harm]], [[Morality]], [[Ignorance]], [[Diversity]]
 # Extended definitions: [[Input]], [[Output]], [[Outcome]], [[Interaction]], [[Communication]], [[Contract]]
 # Extended concepts: [[Good and Bad]], [[Truth]], [[Proof]], [[Untruth]], [[Decision]], [[Domain]], [[Threshold of significance]], [[Progressive complexity]], [[Adversarial adaptation]], [[System Design]]
-# Worldbuilding ideas: [[Civilization]], [[Administration]], [[Law]], [[Enforcement]], [[Justice]], [[Economy]], [[Technology Network|technology network]], [[Currency]], [[Reputation]], [[Social networks]], [[Culture]], [[Education]], [[Implementation prototype|implementation]], [[philosophy]]
+# Worldbuilding ideas: [[Civilization]], [[Administration]], [[Law]], [[Enforcement]], [[Justice]], [[Economy]], [[Technology Network|technology network]], [[Currency]], [[Reputation]], [[Social networks]], [[Culture]], [[Art]], [[Education]], [[Implementation prototype|implementation]], [[philosophy]]
 # Worldbuilding definitions: [[Crime]], [[Accolade]], [[Power]], [[Influence]], [[Anti-Corruption]]
 # For a narrative walkthrough: [[Life in benefuture|Life of a Sophont]]
 

@@ -9,7 +9,7 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - **Domain-relative expertise.** Government proposes the expertise term relative within each domain; carry it into L113 and `Governance.Democracy`, or reject it.
 - **Abbreviation sweep.** Articles spell out Benefuture's own abbreviations and symbols (common parlance and names are fine); earlier text still contains some (for example U/H, MM). Edited lines comply.
 - **Simulation.** Implement `SimTrace` and test the `Conj_*` and B-list conjectures, including B20–B25.
-- **Wiki.** Create the Morality page on the wiki by hand (the sync tool cannot create pages), then add it to `docs/articles/_manifest.json` from a fresh fetch.
+- **Wiki.** Create the Morality and Art pages on the wiki by hand (the sync tool cannot create pages), then add it to `docs/articles/_manifest.json` from a fresh fetch.
 - **Open readings.** EHR (BACKPROPAGATION 5.5); reputation decay form and partition of unity (5.6); end-of-horizon conduct (B25).
 
 ## Part 1: Done
@@ -19,5 +19,6 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - Coherence audit against the articles: findings and applied edits in `docs/BACKPROPAGATION.md` §7; conjectures B20–B25.
 - Self over the long-term window, causal and ideological inheritance, art success by spread of reception, debits for informed falsehood only (BACKPROPAGATION 7.12–7.13).
 - Positioning line in Introduction (short) and Philosophy (full, glossed).
+- Art article, with Culture's paragraph reduced to a pointer (BACKPROPAGATION 7.16).
 - Morality article, with links repointed and Philosophy §Morality trimmed to its parallels (BACKPROPAGATION 7.15).
 - Coding style imported to `docs/CODING_STYLE.md`; agent notes in `CLAUDE.md`.
