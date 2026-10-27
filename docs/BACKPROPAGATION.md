@@ -245,7 +245,8 @@ domain is proposed in Government but not yet in L113 or `Governance.Democracy`.
 `Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self
 includes its history. Being: the causal self (objective, mostly unrecognised; morality is
 understanding it) and the recognised self (a cognitive artefact, articles only, not measured;
-anything may be recognised, measured harm follows the usual tiers). The lifespan bounds
+anything may be recognised, measured harm follows the usual tiers; neither self confers any
+claim over self-things beyond established relations). The lifespan bounds
 experienced harm, not the self's reach or intent; property is not inherited, causal and
 ideological inheritance continue (Being, Government, Reputation). Philosophy §Morality: morality
 grows with understanding; Socratic intellectualism and weakness of will. B25 restated.
