@@ -49,3 +49,5 @@ end
     @test_throws ArgumentError squashed_synergy(1.0; ν = 1.0, h = -1.0)
     @test_throws ArgumentError squashed_synergy(NaN; ν = 1.0, h = 5.0)
 end
+
+include("value_tests.jl")

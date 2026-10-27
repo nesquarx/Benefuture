@@ -7,7 +7,9 @@ library (`BenefutureReference`) and are checked against its test vectors in `spe
 module BenefutureSim
 
 export phi, net_synergy, squashed_synergy
+export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being
 
 include("synergy.jl")
+include("value.jl")
 
 end
