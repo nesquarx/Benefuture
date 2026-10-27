@@ -16,6 +16,7 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Understanding is shared, not moved: teaching raises the learner and leaves the teacher's level intact. Never model U as a fixed stock transferred between beings.
 - The self is causal, over the long-term window (`Ha_lt`); the recognised self is a cognitive artefact kept in articles only, never measured. Neither self confers any claim over self-things beyond established relations (contracts, law, causal distribution). Property is not inherited; causal and ideological inheritance are.
 - Articles spell everything out: no abbreviations (understanding, not U; personally identifiable information, not PII). Symbols belong in the pseudocode and Lean.
+- Core article format: a minimal definition (following its pseudocode line's order where one exists, key terms linked up top), pithy aspects, pithy examples; exploration belongs in the discussion; every reference carries a link. Definitions and aspects restate the author; examples and discussion may be AI-written, and the disclaimer says which.
 - Coherence critiques are independent of comparative ones and are welcome.
 
 ## Verification

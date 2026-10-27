@@ -103,15 +103,13 @@ Several [[Benefuture]] concepts parallel positions in existing philosophical lit
 
 ===Morality===
 
-[[System Design|Morality]] is defined as recognition of the extended [[Being#Self|self]]—the network of interactions between the [[sophont]] and [[reality]]—resulting in rejection of one-shot game reasoning. This parallels:
+''Main article: [[Morality]]''
+
+[[Morality]] is defined as the understanding that the interactions between the extended [[Being#Self|self]] and [[reality]] are almost never isolated, so that a one-shot game does not meaningfully exist. This parallels:
 * '''Deep Ecology''': Self-realization requires identification with the wider ecosystem<ref>Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press.</ref>.
 * '''Ubuntu''': Personhood is relational; isolated existence is rejected<ref>Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday.</ref>.
 * '''Iterated game theory''': Cooperation emerges when future interactions are valued<ref>Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books.</ref><ref>Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563.</ref>.
 * '''Buddhism:''' dependent origination (''pratītyasamutpāda'') denies isolated selfhood<ref>Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press.</ref>.
-
-The rejection rests on two independent arguments. The first is internal: the memory of an interaction is itself an outcome in the [[Being#Self|self]] that took part, so no interaction leaves the self unchanged and its causal contribution back to the self is never zero. The second is external: a one-shot game would need an interaction that can be neither perceived nor changed, and [[reality]] is defined as what can be perceived or changed, so any such interaction lies outside it. Anonymity, terminal states and extinction-scale acts all fall to this second argument first. A contribution can still be too small to estimate.
-
-The [[Being#Self|self]] extends causally beyond what a being recognises, and beyond its lifespan through causal and ideological inheritance, so morality grows with understanding: wrongdoing is, in large part, ignorance of the extent of one's own self. This is close to Socratic intellectualism, that no one does wrong willingly.<ref>Plato. (1992). ''Protagoras''. (S. Lombardo & K. Bell, Trans.). Hackett. (Original work c. 380 BCE).</ref> The classic objection is weakness of will, knowingly acting against what one judges best.<ref>Aristotle. (2009). ''Nicomachean Ethics'', Book VII. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE).</ref> Read through [[output]]s, weakness of will appears as a failure to predict one's own outputs, which is itself a gap in understanding.
 
 ===Justice===
 

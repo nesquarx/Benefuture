@@ -261,3 +261,12 @@ error at most widens escrow.
 power (`Fr`'s harm gate excludes concentrations whose expected harm is too high). Critique
 addressal: non-domination is met by contestability, transparency and distributed power; unused
 capacity matters only through the outputs it changes, measured as harm.
+
+**7.15 Morality article.** New `docs/articles/Morality.txt`: definition in the order of the
+pseudocode line (L136), seven aspects restating the author, examples, and a discussion covering
+the self, propagation (strictness, chaos, the parallel cone, saturation, the worm, the closed
+network across games), memory over repetition (Axelrod and Hamilton; Morozov and Feigel 2026),
+dispositions, and placement among moral theories. Philosophy §Morality keeps the parallels and
+points to it; links in Being, Benefuture goals, System Design, Justice, Benefuture (reading
+order) and Introduction (where to go next) now target it. The wiki page must be created by hand:
+`tools/wiki_sync` edits with `nocreate`.
