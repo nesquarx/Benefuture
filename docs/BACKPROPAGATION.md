@@ -256,3 +256,8 @@ grows with understanding; Socratic intellectualism and weakness of will. B25 res
 surplus. Philosophy positioning: art's value is measured, its making answers to no test; the
 novelty space is the outside. Benefuture currency: only informed falsehood is debited; honest
 error at most widens escrow.
+
+**7.14 Power and domination.** Anti-Corruption: distributing power is the freedom gate applied to
+power (`Fr`'s harm gate excludes concentrations whose expected harm is too high). Critique
+addressal: non-domination is met by contestability, transparency and distributed power; unused
+capacity matters only through the outputs it changes, measured as harm.
