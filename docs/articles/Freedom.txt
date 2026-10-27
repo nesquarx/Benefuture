@@ -1,0 +1,54 @@
+[[Category:Benefuture]] [[Category:Definitions]]
+'''Freedom''' is the maximisation of the [[output]]s a [[Being|being]] can make, with their impact, [[Diversity|novelty]] and [[power]], excluding [[harm]] that is established, probable beyond its [[Threshold of significance|threshold]] and long-term or worse, and harm whose probability times severity is too high.
+
+==Aspects==
+* Freedom is the range of meaningful outputs a being can make. Outputs are weighed by their impact and novelty, so trivial options add little.
+* Power is part of freedom, bounded by the harm gate: concentrations whose expected harm is too high fall outside it, harmless ones do not.
+* Influence either happens or it does not. Freedom asks for no power to block every source of influence.
+* Only established or too-probable harm excludes an output. A fair chance of passing harm or time loss does not; a small chance of irreparable harm does.
+* Harm through the self counts like any harm. A being may recognise anything as its [[Being#Self|self]], and harm tiers apply as usual. Freedom marks; chosen risks are priced, not forbidden.
+* Taking offence at others' harmless choices is no ground to restrict them; educating the observer is the solution that maximises freedom.
+* Freedom includes the freedom to know the [[truth]]: nothing is censored, and gating dangerous information is legitimate only with an educational path to it.
+* Freedom is a subgoal, not a filter on the [[Benefuture goals|goal]]. In tragic choices, where every option harms, the priorities decide.
+* Freedom is read through outputs.
+
+==Examples==
+* '''A risky climb:''' a small chance of death marks it outside freedom; it is priced, the climber's own gains against the expected harm across their extended self, not forbidden.
+* '''A thousand flavours:''' a thousand near-identical options add less freedom than a few that differ in kind.
+* '''A neighbour's lifestyle:''' disgust at it is offence, weighted near zero; the observer is educated, the neighbour left alone.
+* '''A dominant firm:''' a firm that leads because its work is the best stays within freedom; a firm whose dominance carries too high an expected harm, such as control over a necessity others cannot do without, falls outside it.
+* '''An honest mistake:''' a false claim made in good faith carries no debit; keeping it up after a correction is offered does.
+* '''Dangerous knowledge:''' gated behind the education that makes it safe to hold, never deleted.
+* '''A trolley problem:''' every option harms, so freedom has nothing to give; the priorities decide.
+
+==Discussion==
+===Positive freedom, weighed===
+Berlin distinguished negative liberty, freedom from interference, from positive liberty, the capacity to act, and warned that positive liberty can license paternalism.<ref>Berlin, I. (1969). [https://openlibrary.org/isbn/0192810340 ''Four Essays on Liberty''], "Two Concepts of Liberty". Oxford University Press.</ref> Benefuture's freedom is positive, a capability to be maximised, close to Sen's development as freedom.<ref>Sen, A. (1999). [https://openlibrary.org/isbn/0198297580 ''Development as Freedom'']. Oxford University Press.</ref> Counting options is the standard way to rank freedom of choice, and its standard flaw is that a trivial option counts as much as a meaningful one;<ref>Pattanaik, P. K., & Xu, Y. (1990). [https://www.jstor.org/stable/40723933 On Ranking Opportunity Sets in Terms of Freedom of Choice]. ''Recherches Économiques de Louvain'', 56(3/4), 383–390.</ref> weighing each output by impact and novelty answers that flaw directly.
+
+===The harm gate===
+The gate follows longtermist common sense. Established harm, probable and long-term or worse, excludes an output; speculative harm does not, unless its probability times severity is too high, which is why a small chance of irreparable harm excludes while a remote chance of irreversible harm does not. The weight of irreparable harm invites Pascal's mugging, where tiny probabilities of enormous stakes are invented to block action;<ref>Bostrom, N. (2009). [https://doi.org/10.1093/analys/anp062 Pascal's Mugging]. ''Analysis'', 69(3), 443–445.</ref> that the gate resists it is a conjecture for simulation. Freedom is a fair-weather rule: as a filter on the goal it would empty the choice set in a trolley problem, where every option carries established severe harm, so it stays a subgoal, and the priorities, with their convex weights on harm, produce it wherever it can be had.
+
+===The self and paternalism===
+Mill's harm principle limits power over a person to preventing harm to others; their own good is not warrant enough.<ref name="Mill1859">Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son.</ref> Benefuture holds no such boundary, because the self extends over everything whose harm would return to it, and almost no act is purely self-regarding. It meets Berlin's warning by pricing rather than prohibiting: a chosen risk is weighed with the chooser's own gains in understanding, happiness and novelty, and freedom only marks where established harm lies.
+
+===Power and domination===
+Pettit's republicanism holds that freedom is non-domination: one is unfree whenever another can interfere arbitrarily, even if they never do.<ref>Pettit, P. (1997). [https://openlibrary.org/isbn/0198290837 ''Republicanism: A Theory of Freedom and Government'']. Oxford University Press.</ref> Benefuture treats influence as something that happens or does not. A dormant capacity matters only through the outputs it changes, such as deference or self-censorship, which are measured as harm, and the institutional remedies Pettit asks for, contestability, transparency and distributed power, are built in ([[Critique addressal]], [[Anti-Corruption]]). Power inside freedom and the distribution of power are one rule: the harm gate applied to power.
+
+===Speech and truth===
+Mill also argued that false opinions have value, since truth stays alive by colliding with error.<ref name="Mill1859" /> Benefuture debits only informed falsehood, a claim kept up after a correction is offered, while honest error at most widens escrow ([[Benefuture currency]]). Information is never removed: gating is a prerequisite, not a ban, and completing the gating education is a recorded acknowledgement of what misuse would cause ([[Technology Network]]).
+
+===Freedom in the system===
+Baseline needs are priced at or below zero for uses within freedom ([[Benesophont#Aspects|sophont baseline]]); governed thresholds are perturbed only within freedom ([[Threshold of significance]]); and [[Government|governance]] measures itself partly by the expansion of rights and freedoms.
+
+==See also==
+* [[Harm]]
+* [[Power]]
+* [[Influence]]
+* [[Anti-Corruption]]
+* [[Morality]]
+* [[Law#Rights|Rights]]
+
+==References==
+<references/>
+
+<small>AI Disclaimer: Definition and aspects are human notes; examples and discussion are AI written.</small>

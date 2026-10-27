@@ -24,7 +24,7 @@ The [[Technology Network]] is the decentralized, transparent, and evolving compu
 *** [[Untruth|Misinformation]] detection and flagging.
 *** Source tracking of information.
 *** Mapping contention for statements under debate.
-*** Infohazard detection and gating, [[education]] prerequisite determination and path provisioning. Gating is only legitimate where a path to access through education is provided, and is held to strict scrutiny as a limit on the freedom to know the [[Truth|truth]]. Completing the gating education is a recorded acknowledgement of the outcomes it teaches: harmful use after it is informed volition by definition (see [[Crime]]), so the gate establishes intent rather than screening for it.
+*** Infohazard detection and gating, [[education]] prerequisite determination and path provisioning. Gating is only legitimate where a path to access through education is provided, and is held to strict scrutiny as a limit on the [[freedom]] to know the [[Truth|truth]]. Completing the gating education is a recorded acknowledgement of the outcomes it teaches: harmful use after it is informed volition by definition (see [[Crime]]), so the gate establishes intent rather than screening for it.
 *** Privacy tracking and reciprocal privacy enablement.
 *** Facilitation of deliberative [[Government|democracy]] (weighted voting, expert consultation).
 *** Secure and transparent [[Benefuture currency|transaction]] processing.

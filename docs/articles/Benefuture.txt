@@ -218,7 +218,7 @@ creatorURL(https://www.nesquarx.com/)}
 The articles in this wiki are cross referenced to inform each other wherever necessary, however a possible sequential order of approaching these articles would be to start with an [[introduction]], then:
 
 # Base definitions: [[Thing]], [[Reality]],  [[Sapience]], [[Sentience]], [[Entity]], [[Being]], [[Person]], [[Benesophont|Sophont]]
-# Base concepts: [[Benefuture goals]], [[Understanding]], [[Happiness]], [[measurement]], [[Harm]], [[Morality]], [[Ignorance]], [[Diversity]]
+# Base concepts: [[Benefuture goals]], [[Understanding]], [[Happiness]], [[measurement]], [[Harm]], [[Morality]], [[Freedom]], [[Ignorance]], [[Diversity]]
 # Extended definitions: [[Input]], [[Output]], [[Outcome]], [[Interaction]], [[Communication]], [[Contract]]
 # Extended concepts: [[Good and Bad]], [[Truth]], [[Proof]], [[Untruth]], [[Decision]], [[Domain]], [[Threshold of significance]], [[Progressive complexity]], [[Adversarial adaptation]], [[System Design]]
 # Worldbuilding ideas: [[Civilization]], [[Administration]], [[Law]], [[Enforcement]], [[Justice]], [[Economy]], [[Technology Network|technology network]], [[Currency]], [[Reputation]], [[Social networks]], [[Culture]], [[Art]], [[Education]], [[Implementation prototype|implementation]], [[philosophy]]

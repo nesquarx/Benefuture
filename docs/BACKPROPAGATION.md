@@ -278,3 +278,12 @@ system), every reference linked. Craft mastery has craft understanding and craft
 value (author). Culture's art paragraph is a one-line pointer; links in Benefuture goals,
 Philosophy (positioning) and the reading order now target it. The wiki page must be created by
 hand.
+
+**7.17 Freedom article.** New `docs/articles/Freedom.txt`: definition in the order of the
+pseudocode line (L135), nine aspects restating the author's rulings (range of meaningful outputs,
+power within the harm gate, no blocking of all influence, the established-harm gate, harm
+through the self, offence met by education, freedom to know, subgoal not filter, outputs only),
+examples and a discussion (positive freedom, the gate and Pascal's mugging, the self and
+paternalism, domination, speech and truth, freedom in the system), every reference linked.
+Links in Harm, Anti-Corruption, Critique addressal, Benefuture goals, Government, Technology
+Network, the reading order and Introduction now target it. The wiki page must be created by hand.

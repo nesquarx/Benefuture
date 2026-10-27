@@ -23,7 +23,7 @@ When a large amount of power is exercised, especially by an [[Administration|adm
 ==== Corruption happens when [[power]] is concentrated ====
 The more power exists in a singular entity, the greater the chance of [[harm]] to other beings exists as a consequence of suboptimal actions. This can be avoided via:
 
-* '''Distributing power:''' Ensuring that by design of society, high concentrations of power don't occur. This is the [[Harm#Aspects|freedom]] gate applied to power: concentrations whose expected harm is too high fall outside freedom, while concentrations that harm no one, such as deep expertise in one domain, do not.
+* '''Distributing power:''' Ensuring that by design of society, high concentrations of power don't occur. This is the [[freedom]] gate applied to power: concentrations whose expected harm is too high fall outside freedom, while concentrations that harm no one, such as deep expertise in one domain, do not.
 ** Designing greater checks and balances required for greater exercising of power.
 ** Increasing the number of entities to have parts of the greater power.
 ** Limiting the scope of accumulation for tradable sources of power (currency, assets, other financial instruments and contracts)

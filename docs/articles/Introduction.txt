@@ -159,7 +159,7 @@ The goal is not to arrive but to improve — universal [[Understanding]], shared
 
 == Where to Go Next ==
 
-* '''For philosophical foundations''': [[Benefuture goals]], [[Understanding]], [[Happiness]], [[Morality]]
+* '''For philosophical foundations''': [[Benefuture goals]], [[Understanding]], [[Happiness]], [[Morality]], [[Freedom]]
 * '''For practical mechanisms''': [[Benefuture currency]], [[Measurement]], [[Government]]
 * '''For ontological definitions''': [[Thing]], [[Entity]], [[Being]], [[Person]], [[Benesophont|Sophont]]
 * '''For system robustness''': [[Adversarial adaptation]], [[Progressive complexity]], [[Anti-Corruption]]
