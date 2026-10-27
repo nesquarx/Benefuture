@@ -16,4 +16,6 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - Lean 4 specification of the pseudocode with invariants and sanity lemmas; behavioural claims as conjectures over `SimTrace`; Float reference library and JSON test vectors.
 - Population direction: staged G, counterfactual floors, assessed distribution term, Pigou–Dalton for H, U shared rather than moved (`u_sharing_gain_nonneg`).
 - Coherence audit against the articles: findings and applied edits in `docs/BACKPROPAGATION.md` §7; conjectures B20–B25.
+- Self over the long-term window, causal and ideological inheritance, art success by spread of reception, debits for informed falsehood only (BACKPROPAGATION 7.12–7.13).
+- Positioning line in Introduction (short) and Philosophy (full, glossed).
 - Coding style imported to `docs/CODING_STYLE.md`; agent notes in `CLAUDE.md`.

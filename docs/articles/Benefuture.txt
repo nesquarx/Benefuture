@@ -79,7 +79,7 @@ Benefuture«Bf» {
     B := St(E);
     Bounds_B := Lifespan(t_0 = St_begin, t_end = St_loss_irreversible),
                Body : (∃min(T ∈ ℝ) : Ha(Body) = Ha_immediate(B), Id(B):=Id(Body)),
-               Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_t_max(B));
+               Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B));
     Pe := B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity«Cnt», Planning, Cm, Contract«Ct»)),gradedLvls;
 
     V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));
@@ -135,7 +135,7 @@ Benefuture«Bf» {
     Merge(Ids[])→(Σ(SoPo_i,N)→EstNew(Id));
     Cu := Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd ⊆ Cu)), J(↓Bd ⊆ Cu);
     Art := E_i -> In((T_a = (Cx_a ∨ Reorg) <- (T_o ⊆ ℝ)), Cm(ΔAffect_St + ΔU)_p) : (B_j <- T_a) -> (ΔAffect_St(B_j) + U : U ≠ U(T_a))_q,
-      T_a := Artwork, E_i := Artist, B_j := Audience, Imp_art = |q|, Success := match(p, Avg(q)), V_a = (Tr_lvl(U) + N)_q, ∃Art : i=j ∨ o=a;
+      T_a := Artwork, E_i := Artist, B_j := Audience, Imp_art = |q|, Success := match(p, Dist(q)), V_a = (Tr_lvl(U) + N)_q, ∃Art : i=j ∨ o=a;
     InfoHazard«IHz» := Statement_i : ∃RlvCx_j : (U_i ¬U_j → Ha) ∨ (U_i ∧ U_j → ↓Tr_lvl_i);
 
     CriticalThinking«CrT» := (↑U(Tr_lvls, I(Tr_lvls)) | Sp) → ↑InfoHandling«IH»;

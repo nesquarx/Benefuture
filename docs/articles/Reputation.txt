@@ -1,5 +1,5 @@
 [[Category:Benefuture]] [[Category:Definitions]]
-Within [[Benefuture]], '''reputation''' is a non-transferable measure of an [[Entity|entity's]] demonstrated contribution to societal [[Understanding]] (U) and [[Happiness]] (H) within specific domains. It is a form of social capital that is earned through consistent positive impact, not through wealth or status. It is not inheritable.
+Within [[Benefuture]], '''reputation''' is a non-transferable measure of an [[Entity|entity's]] demonstrated contribution to societal [[Understanding]] and [[Happiness]] within specific domains. It is a form of social capital that is earned through consistent positive impact, not through wealth or status. It is not inheritable, but it outlives its holder: reputation is recounted from memory, so outcomes that arrive after a lifespan ends still update the record.
 
 == Aspects ==
 

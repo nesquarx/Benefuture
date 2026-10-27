@@ -110,7 +110,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B22 | **Tacit knowledge:** competition among MMs aggregates dispersed knowledge comparably to prices | Hayek (1945) knowledge problem; prices are model quotes, TP composition is the feedback. |
 | B23 | **Visible manipulation:** manipulation of weighted votes becomes visible and costly over time | Gibbard (1973): manipulability survives repetition; the design claims detection, not immunity. |
 | B24 | **Tier adverse selection:** high contributors opt into deep tiers disproportionately; reweighting keeps MMs unbiased | Tiers trade accuracy of Re, so the incentive to opt in is asymmetric. |
-| B25 | **End-of-horizon conduct:** agents near end of lifespan (no inheritance, non-transferable Re) do not defect more | Folk-theorem cooperation needs continuation value; deterrence there rests on design and escrow. |
+| B25 | **End-of-horizon conduct:** agents near end of lifespan do not defect more | No property inheritance, but posthumous CD and recounted Re keep attributing outcomes to the record and to causal and ideological heirs. Measure defection rate against remaining lifespan. |
 | B15 | **Population size converges** under birth escrow and creation policies | Government (Birth) and the population-direction rules imply but do not state it. |
 
 ## C. Not testable by simulation

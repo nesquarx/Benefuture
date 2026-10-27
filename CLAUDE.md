@@ -14,6 +14,7 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 ## Corpus conventions
 - Benefuture reads outputs only: beliefs and preferences are not directly accessible, so definitions, enforcement and alignment are stated over outputs.
 - Understanding is shared, not moved: teaching raises the learner and leaves the teacher's level intact. Never model U as a fixed stock transferred between beings.
+- The self is causal, over the long-term window (`Ha_lt`); the recognised self is a cognitive artefact kept in articles only, never measured. Property is not inherited; causal and ideological inheritance are.
 - Articles spell everything out: no abbreviations (understanding, not U; personally identifiable information, not PII). Symbols belong in the pseudocode and Lean.
 - Coherence critiques are independent of comparative ones and are welcome.
 

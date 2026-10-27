@@ -7,7 +7,7 @@
   "B := St(E);"
   "Bounds_B := Lifespan(t_0 = St_begin, t_end = St_loss_irreversible),"
   "Body : (∃min(T ∈ ℝ) : Ha(Body) = Ha_immediate(B), Id(B):=Id(Body)),"
-  "Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_t_max(B));"
+  "Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B));"
 -/
 
 import Benefuture.Ontology.Entity

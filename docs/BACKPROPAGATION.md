@@ -240,3 +240,18 @@ comparative ones and welcome.
 
 **7.11 Open.** End-of-horizon conduct under no inheritance (B25). Expertise normalised within
 domain is proposed in Government but not yet in L113 or `Governance.Democracy`.
+
+**7.12 Self, lifespan and inheritance.** The self's harm horizon is the long-term window:
+`Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self
+includes its history. Being: the causal self (objective, mostly unrecognised; morality is
+understanding it) and the recognised self (a cognitive artefact, articles only, not measured;
+anything may be recognised, measured harm follows the usual tiers). The lifespan bounds
+experienced harm, not the self's reach or intent; property is not inherited, causal and
+ideological inheritance continue (Being, Government, Reputation). Philosophy §Morality: morality
+grows with understanding; Socratic intellectualism and weakness of will. B25 restated.
+
+**7.13 Art and speech.** Art success matches intent against the spread of reception
+(`Success := match(p, Dist(q))`, all three copies); feeling counts through V, art's value is the
+surplus. Philosophy positioning: art's value is measured, its making answers to no test; the
+novelty space is the outside. Benefuture currency: only informed falsehood is debited; honest
+error at most widens escrow.

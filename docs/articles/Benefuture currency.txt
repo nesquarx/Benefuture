@@ -93,7 +93,7 @@ Sophont chooses mix based on risk preference and time horizon.
 
 '''Harmful Action:'''
 
-Sophont posts misinformation. InfoCoin debits 60 units. Options:
+Sophont knowingly posts a falsehood, or keeps one up after a correction has been offered. InfoCoin debits 60 units; honest error carries no debit, at most a wider escrow on the claim, since debate with error keeps truth alive. Options:
 
 * Accept debit.
 * Partially accept; seek alternative (e.g., DebateCoin offers smaller debit if sophont successfully engages in structured debate).
