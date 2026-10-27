@@ -7,7 +7,7 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - **Ratify §7 of `docs/BACKPROPAGATION.md`.** Coherence edits applied to articles and pseudocode as [P].
 - **Quantile floors in Lean.** Define the thresholded low quantile used by G's floors (L74) and prove `removal_cannot_raise_floor` for it: order statistics are monotone in each level, so the literal-minimum proof should generalise.
 - **Domain-relative expertise.** Government proposes the expertise term relative within each domain; carry it into L113 and `Governance.Democracy`, or reject it.
-- **Abbreviation sweep.** Articles must not use abbreviations; earlier text still contains some (for example U/H, PII). Edited lines comply.
+- **Abbreviation sweep.** Articles spell out Benefuture's own abbreviations and symbols (common parlance and names are fine); earlier text still contains some (for example U/H, MM). Edited lines comply.
 - **Simulation.** Implement `SimTrace` and test the `Conj_*` and B-list conjectures, including B20–B25.
 - **Wiki.** Create the Morality page on the wiki by hand (the sync tool cannot create pages), then add it to `docs/articles/_manifest.json` from a fresh fetch.
 - **Open readings.** EHR (BACKPROPAGATION 5.5); reputation decay form and partition of unity (5.6); end-of-horizon conduct (B25).
