@@ -102,9 +102,15 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B13 | **Partial adoption:** Bf mechanisms keep their properties when coexisting with a fiat economy | Transition is where most frameworks fail (Critique addressal, transition). |
 | B14 | **Noise robustness:** G's choices degrade smoothly as MM noise grows | Links measurement quality to decision quality directly. |
 | B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal; the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. |
-| B17 | **Frontier compounding:** frontier U gains diffuse and compound, so convex W_U does not leave the floor behind | `frontier_u_preferred` is the static fixed-stock case; measure diffusion of frontier gains into later floor gains and the top-decile share as ε grows; refines A37. |
+| B17 | **Frontier compounding:** frontier U gains are shared through teachable tiers and compound, so convex W_U does not leave the floor behind | U is shared, not moved (`u_sharing_gain_nonneg`); measure how frontier gains reach later floor gains and the top-decile share as ε grows; peak ranks above teachable, so untransmissible peak gains are the case to watch; refines A37. |
 | B18 | **NHa relabelling:** harm relabelled as NHa to escape Ha_max does not pay | `ha_lt` excludes closing NHa dips; the incentive to label is new. |
 | B19 | **Diversity flip point:** where γ·Σ N lets a large diverse population outweigh a small homogeneous one | Depends on γ, q and headcount; the opening Parfit case. |
+| B20 | **Counterfactual inflation:** a model biased toward pessimism about ¬A is detected | The escrow ratchet sees over-estimation only on the measured leg; cohort records discipline ¬A. Measure detection lag for novel actions without cohort records. |
+| B21 | **Gate deterrence:** misuse of gated PII falls when completing IHz education establishes intent | Education acknowledgement makes misuse informed crime (Crime, TN). Measure misuse rate and time to target notification. |
+| B22 | **Tacit knowledge:** competition among MMs aggregates dispersed knowledge comparably to prices | Hayek (1945) knowledge problem; prices are model quotes, TP composition is the feedback. |
+| B23 | **Visible manipulation:** manipulation of weighted votes becomes visible and costly over time | Gibbard (1973): manipulability survives repetition; the design claims detection, not immunity. |
+| B24 | **Tier adverse selection:** high contributors opt into deep tiers disproportionately; reweighting keeps MMs unbiased | Tiers trade accuracy of Re, so the incentive to opt in is asymmetric. |
+| B25 | **End-of-horizon conduct:** agents near end of lifespan (no inheritance, non-transferable Re) do not defect more | Folk-theorem cooperation needs continuation value; deterrence there rests on design and escrow. |
 | B15 | **Population size converges** under birth escrow and creation policies | Government (Birth) and the population-direction rules imply but do not state it. |
 
 ## C. Not testable by simulation

@@ -71,8 +71,8 @@ theorem withholding_incurs_no_harm (history window : List ℝ) (u h : ℝ)
 -/
 structure DistrStats where
   normDevN : ℝ  -- deviation of N from the normal shape (|skew|, excess kurtosis)
-  minU     : ℝ
-  minH     : ℝ
+  minU     : ℝ  -- floor: a thresholded low quantile, not the literal tail (L74)
+  minH     : ℝ  -- floor: a thresholded low quantile, not the literal tail (L74)
   maxU     : ℝ
 
 /--
@@ -780,20 +780,21 @@ theorem pigou_dalton_h (W : ℝ → ℝ) (hW : DecreasingDiff W) (pop : List ℕ
   linarith
 
 /--
-  THEOREM: The U dual. With convex-shaped W_U, a fixed amount of U placed at the higher being
-  never lowers Σ W_U. On paper this reads as concentration; U does not transfer as a fixed stock
-  but compounds and diffuses (teachable tiers, As over lt), so this fixed-total comparison is the
-  conservative case, not the dynamics (author).
+  THEOREM: Sharing U never lowers D's U gain. U is shared, not moved: teaching raises the learner i
+  by t and leaves every other level, the teacher's included, unchanged. Unlike H (Pigou–Dalton
+  above), U has no fixed-stock transfer to model; a frontier gain counting more higher up is
+  `higher_u_gain_valued_more`, and its diffusion through teachable tiers is conjecture B17.
 -/
-theorem frontier_u_preferred (W : ℝ → ℝ) (hW : IncreasingDiff W) (pop : List ℕ) (hn : pop.Nodup)
-    (f : ℕ → ℝ) (i j : ℕ) (hij : i ≠ j) (hi : i ∈ pop) (hj : j ∈ pop) (t : ℝ) (ht : 0 ≤ t)
-    (hle : f i ≤ f j) :
-    (pop.map (fun b => W (f b))).sum ≤
-      (pop.map (fun b => W (two_update f i j (f i - t) (f j + t) b))).sum := by
-  rw [sum_two_update W pop hn f i j hij hi hj]
-  have hd := hW (f i - t) (f j) t (by linarith) ht
-  rw [sub_add_cancel] at hd
-  linarith
+theorem u_sharing_gain_nonneg (W : ℝ → ℝ) (hW : Monotone W) (pop : List ℕ) (n : ℕ → ℝ) (i : ℕ)
+    (t : ℝ) (ht : 0 ≤ t) :
+    0 ≤ level_gain W pop (one_update n i (n i + t)) n :=
+  uplift_gain_nonneg W hW pop _ n (fun b _ => by
+    by_cases h : b = i
+    · have e : one_update n i (n i + t) b = n i + t := if_pos h
+      rw [e, h]
+      linarith
+    · have e : one_update n i (n i + t) b = n b := if_neg h
+      exact le_of_eq e.symm)
 
 /-- A Pigou–Dalton step on H levels: t from j to i. -/
 def pd_step (f : ℕ → ℝ) (i j : ℕ) (t : ℝ) : ℕ → ℝ :=
@@ -1049,7 +1050,11 @@ theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible 
 
 /- --- 9. The floor is taken over the decision-time population --- -/
 
-/-- [R] Floor over beings present at decision time; lost lives keep their place at the bottom. -/
+/--
+  [R] Floor over beings present at decision time; lost lives keep their place at the bottom.
+  Stated here for the literal minimum; G's floors are thresholded low quantiles (L74), and the
+  removal bound below carries over because every order statistic is monotone in each level.
+-/
 noncomputable def decision_floor (pop : List ℕ) (level : ℕ → ℝ) (top : ℝ) : ℝ :=
   (pop.map level).foldr min top
 

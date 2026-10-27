@@ -45,7 +45,7 @@ Benefuture«Bf» {
 
     M := PerceivableProxies(U, H, ...) ∈ ℝ, Estd, Novel;
     Measurement«Me» := {Ml_i} | Ml_i → Me(U_value, H_value, M, N) ⊕ Meta(Bias, Kind);
-    Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx);
+    Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx), ¬A := ∄Ou(actor);
     MetricMl«MM» := {Ml_i, m[] ⊆ M, Dn[]} ⇄ Compete(max Sy(As(PrAcc(Ml_i), adopt, t) > CorrSc(m) > CE(m) > N(m))),
                         CorrSc(m) := Avg_j[Ŝy(Corr(m, M_¬j)[]) - Ŝy(Corr(m_j, M_¬j)[])] | M := M_Estd(Dn), Corr ≥ Th
                         | ({Declared(Range, Confounders), Adversarial«Adv»Audits, IncrementalApprox(ℝ), OpenSource, ↑N(M), ExperimentalDesign → discover_Value«V», !loop, !herd}),
@@ -71,7 +71,7 @@ Benefuture«Bf» {
     Pe := B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity«Cnt», Planning, Cm, Contract«Ct»)),gradedLvls;
 
     V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));
-    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min));
+    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min)) | min := Th_quantile, tail → Me;
 
     Intent«In» : E_Precommit(Ou, Ct(Self));
     D := Ou(E), In(O), via(Pr , U);

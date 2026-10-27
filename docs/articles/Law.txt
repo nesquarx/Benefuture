@@ -18,7 +18,7 @@ In a [[benefuture]] civilisation, laws are [[interaction]] patterns designed to 
 [[Sophont]]s are the primary members of [[benefuture]] whose interactions the laws concern about. Though laws can define interactions between [[being]]s, [[entities]] and [[person]]s, it is the sophonts who are ultimately held to the laws' standards, because sophonts pursue the [[benefuture goals]]. The laws stipulate the following for sophonts.
 
 ===Rights===
-Rights are interaction patterns of benefits which a sophont is '''mandatorily''' entitled to. Failure to do so is a crime by the entities who fail to do so.
+Rights are interaction patterns of benefits which a [[person]] is '''mandatorily''' entitled to. Failure to do so is a crime by the entities who fail to do so. Baseline rights (Maslow tiers 1–3) appear as transactions priced at or below zero for the person whose needs they meet.
 
 ===Privileges===
 Privileges are benefits which a sophont may enjoy and use best to fulfill their [[goals]] but they are '''optional''' and their loss or removal is not a crime unless it causes [[significant]] [[harm]].

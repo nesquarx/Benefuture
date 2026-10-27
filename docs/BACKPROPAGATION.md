@@ -2,8 +2,8 @@
 
 Formalising Benefuture in Lean forced decisions the pseudocode and articles leave implicit, and proved
 some properties that only hold under conditions the sources do not state. This document lists each
-such nuance with its evidence and a proposed edit to the sources. Nothing here has been applied to
-`spec/Bf_Pseudocode.txt` or `docs/articles/`; the author decides.
+such nuance with its evidence and a proposed edit to the sources. Sections 1–6 are proposals the
+author decides; section 7 lists edits applied to the sources as [P], awaiting ratification.
 
 Classes:
 - **A — Author's ruling, not yet in the sources.** Decided in discussion; the sources should say it.
@@ -188,3 +188,55 @@ Keep one source (spec/), or generate the other.
 **6.2 Encodings.** About 25 modules use fixed-point integers; they are within one micro-unit of the
 ℝ definitions (`Systems.FixedPoint`). Not a source issue, but the sources could state SCALE
 semantics if fixed point is intended for implementations.
+
+## 7. Coherence audit: edits applied to the sources ([P])
+
+Rulings from a coherence review, applied to the articles and pseudocode. Each line names the
+source change; Lean and simulation counterparts are named where they exist.
+
+**7.1 Outputs, not preferences.** Benefuture reads outputs only. Benesophont: alignment is a track
+record of goal-aligned outputs (reputation), with the goals, not the mechanisms; dissent over
+mechanisms goes through Adversarial adaptation. Enforcement: it influences outputs; force applies
+only to violations of mandatory laws; lawful goal-negative outputs meet design, pricing,
+persuasion and law updates.
+
+**7.2 Understanding is shared, not moved.** Introduction (transmissibility) and Life in benefuture
+say "shared". Lean: `u_sharing_gain_nonneg` replaces the fixed-stock transfer dual; B17 restated.
+
+**7.3 Floors are thresholded quantiles; inaction is absence of outputs.** L74
+`| min := Th_quantile, tail → Me`; L48 `¬A := ∄Ou(actor)` (both pseudocode copies and the copy
+embedded in Benefuture.txt). Benefuture goals and Measurement state both. Lean: `DistrStats`
+documents the quantile; `removal_cannot_raise_floor` is proved for the literal minimum.
+
+**7.4 Baseline is negative pricing, owed to persons.** Law (rights belong to persons, appearing
+as transactions priced at or below zero), Government (living persons; births: newborn needs are
+baseline through caregivers' transactions, escrow covers only above-baseline upkeep), Benefuture
+currency (life cycle), Life in benefuture (a guaranteed floor, also justified by return).
+
+**7.5 Reputation tiers buy accuracy, not influence.** Implementation prototype: higher tiers give
+a more accurate reputation and so a more precise voting weight; opt-outs sit outside the pilot
+polity; tier is a declared confounder with population reweighting (also System Design); tier
+adverse selection noted. B24.
+
+**7.6 Infohazard gating.** No owner approval: access is by education alone. Completing the
+education is a recorded acknowledgement, so misuse is informed crime (Technology Network, Crime,
+Implementation prototype, Critique addressal on stalking). B21.
+
+**7.7 Self-regarding risk.** Harm: freedom marks, it does not forbid; chosen risks are priced
+against harm across the extended self; Benefuture holds no purely self-regarding boundary.
+
+**7.8 Governance.** Government: Estlund's demographic objection answered (earned expertise,
+domain-relative expertise term, back-loaded reputation, base and impact weight); ideological
+impact is mapped through the same priorities, so offence contributes near zero; the death
+mapping is harm through causal distribution, not a levy. System Design: Arrow is escaped by
+cardinal comparable weights, manipulability is not, so detection is a conjecture. B23.
+
+**7.9 Economy and measurement.** Benefuture currency: Hayek's knowledge problem and discovery by
+model competition. B20, B22. Benefuture goals: the utility-monster sentence names what blocks it
+(teachability, synergy, floors, concave happiness).
+
+**7.10 Critique framing.** Critique addressal: coherence critiques are independent of
+comparative ones and welcome.
+
+**7.11 Open.** End-of-horizon conduct under no inheritance (B25). Expertise normalised within
+domain is proposed in Government but not yet in L113 or `Governance.Democracy`.

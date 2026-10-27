@@ -1,12 +1,13 @@
 [[category:Benefuture]] [[category:WorldBuilding]]
-Enforcement is to influence all [[person]]s to be [[sophont]]s, sometimes against their immediate will, to always act in a manner which forwards the [[goals]] of the [[society]]. Enforcement takes [[law]]s as guidelines but must always consider the [[goals]] as paramount.
+Enforcement is to influence the [[output]]s of all [[person]]s toward the [[goals]] of the [[society]], sometimes against their immediate will. Enforcement takes mandatory [[law]]s as the only mandate for force, and the [[goals]] as paramount in everything else.
 
 ==Aspects==
 * The most effective method of enforcement is via design, that is, to create the structures, mechanisms and laws of society such that:
 ** Optimal goal forwarding actions are easier to take and encouraged by the [[administration]] via [[accolade]]s.
 ** Suboptimal or goal-negative actions are more difficult to take and are discouraged via punitive measures such as providing [[Justice#Reparation|reparation]] and undergoing [[Justice#Rehabilitation|rehabilitation]].
 * The next effective method is via forcible influence:
-** When enforcement encounters [[person]]s providing [[output]]s that are clearly against the [[goals]] or [[law]]s, persuasive influence is applied first and then forcible influence applied to the [[person]]s, subsequent processes should follow [[justice]].
+** When enforcement encounters [[person]]s providing [[output]]s that clearly violate mandatory [[law]]s, persuasive influence is applied first and then forcible influence, and subsequent processes follow [[justice]].
+** [[Output]]s that are lawful but goal-negative are met by design, pricing and persuasion, and by law updates triggered through [[Adversarial adaptation]], never by force.
 ** When [[justice]] prescribes reparations and rehabilitations, enforcement needs to influence all the persons involved to undergo them, persuasively or forcibly.
 * The balance of design, persuasion, and force is delicate. The power to do so can be easily abused and must be kept under strict restraint.
 * Enforcement is often a separate part of the administration that the part which makes the laws, as a measure against concentration of power. It should fall under the same scrutiny as other powerful entities and [[Anti-Corruption]] measures should be applied.

@@ -12,7 +12,7 @@ Unlike classical utilitarianism which maximizes happiness alone, Benefuture prio
 Why this ordering?
 * '''Substrate:''' Understanding creates meta-competencies towards comprehending, evaluating and optimizing for any other [[Goals|goal]].
 * '''Stability''': Understanding is less reference-dependent than happiness. It doesn't adapt away like hedonic pleasure does.
-* '''Transmissibility''': Knowledge transfers between beings; subjective happiness does not.
+* '''Transmissibility''': Knowledge is shared between beings without being lost to the one who shares it; subjective happiness is not.
 * '''Compounding''': Understanding builds on itself. Each insight enables further insights.
 * '''Measurability''': Predictive accuracy provides external validation. Happiness measurement relies on self-report.
 * '''Enablement''': Understanding reliably increases the capacity for happiness. The reverse is also true but less consistent.

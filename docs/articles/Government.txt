@@ -30,7 +30,7 @@ Government in a [[Benefuture]] [[society]] is a system of [[Administration|admin
 == Discussion ==
 Benefuture government's [[System Design]] is its main arbiter of [[Threshold of significance]] in [[Administration|Administrative]] [[Decision]] making at a fractal level, and along with [[Benefuture currency]], trying to solve the problem of collective action <ref>'''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press.</ref>. 
 
-The expertise and impact weightage does relate to Epistocracy <ref name="Brennan2016">Brennan, J. (2016). ''Against Democracy''. Princeton University Press.</ref> but handles its problems <ref name="Estlund2008">Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.</ref> via stakeholder <ref name="Freeman1984">Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman.</ref> affected interests <ref name="Goodin2007">Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68.</ref>.
+The expertise and impact weightage does relate to Epistocracy <ref name="Brennan2016">Brennan, J. (2016). ''Against Democracy''. Princeton University Press.</ref> but handles its problems <ref name="Estlund2008">Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.</ref> via stakeholder <ref name="Freeman1984">Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman.</ref> affected interests <ref name="Goodin2007">Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68.</ref>. Estlund's demographic objection, that any competence criterion tracks existing privilege, is met three ways. Expertise is earned from measured contribution rather than credentials; credential transpilation is used only at bootstrap, and is where founding bias can enter. The expertise term is relative within each of the issue's [[Domain|domains]] (weights summing to 1), so a domain whose value resolves slowly is not outweighed by one whose value resolves quickly. Back-loaded value credits [[Reputation|reputation]] when [[Benefuture currency|escrow]] releases, so uncertainty delays weight but does not cap it. Base and impact weight carry everyone else.
 
 The proposed delegation constraints attempt to alleviate the issues with liquid democracy <ref name="Blum2016">Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182.</ref> while still allowing delegation.
 
@@ -40,7 +40,7 @@ The proposed delegation constraints attempt to alleviate the issues with liquid 
 
 2.  '''Expertise Assessment:''' The [[Technology Network]] assesses relevant expertise based on [[Benefuture currency|Benefuture Currency]] transaction history (domain-specific contributions to U/H) and [[reputation]], weighted by the issue's domain profile (weights summing to 1).
 
-3.  '''Impact Distance Calculation:''' The [[Technology Network]] calculates the impact distance between each individual and the proposed decision, considering factors like geographic proximity, economic dependence, social connections, and potential consequences (including environmental, ideological, health and relationship impacts).
+3.  '''Impact Distance Calculation:''' The [[Technology Network]] calculates the impact distance between each individual and the proposed decision, considering factors like geographic proximity, economic dependence, social connections, and potential consequences (including environmental, ideological, health and relationship impacts, each mapped through the same [[Benefuture goals#Tradeoff priorities|priorities]], so cultural offence contributes near zero).
 
 4.  '''Weighted Voting:''' Citizens deliberate and vote, with weights determined by expertise and impact: VoteWeight = BaseWeight + (ExpertiseWeight  ExpertiseScore) + (ImpactWeight  ImpactScore). Voting and deliberating is generally optional (part of expected [[Benesophont]] activity), but ''mandatory'' for individuals with high expertise and/or low impact distance, above a [[Threshold of significance]].
 
@@ -82,9 +82,9 @@ Benefuture society recognizes a clear distinction:
 
 === Economic Implications of Life, Death, and Birth ===
 
-*   '''Living Sophonts:''' Generate baseline [[Currency|Benefuture Currency]] sufficient for basic needs.
-*   '''Death:''' Accumulated un-redistributed currency is depleted; a small portion is also deducted from individuals with close causal distance and the administration to denote the loss of U and H. No inheritance.
-*   '''Birth:''' A new sophont is a net consumer of resources initially. Yet their [[Benefuture currency|probabilistic escrow]] on predicted contributions and satisfaction of caregivers releases upkeep costs till they can mature and eventually handle baseline income and eventually contribute to measurable U/H.
+*   '''Living Persons:''' Baseline needs are priced at or below zero in every transaction that meets them ([[Benesophont#Aspects|sophont baseline]]), guaranteed by [[Benefuture currency#Resource Accounting|resource accounting]].
+*   '''Death:''' Accumulated un-redistributed currency is depleted; the losses of understanding and happiness the death causes to those close to the deceased are mapped like any [[harm]], through [[Benefuture currency#Causal Distribution|causal distribution]] and escrow settlement; there is no levy. No inheritance.
+*   '''Birth:''' A newborn's needs are baseline: transactions that meet them, made by caregivers on the newborn's behalf, are priced at or below zero. Above baseline, [[Benefuture currency|probabilistic escrow]] on predicted contributions and the satisfaction of caregivers funds upkeep until the new person matures and contributes measurable understanding and happiness.
 
 === Key Performance Indicators (KPIs) ===
 
