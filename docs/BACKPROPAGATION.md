@@ -483,3 +483,41 @@ negative parts".
 - Questions: is not braking an inaction (no output) or part of driving? What makes an action
   "expected": a contract, law, role, or the actor's own prior outputs? Does informed inaction by a
   bystander who did not create the hazard count as crime, given L115's wording?
+
+**8.16 [P] Outcome-first causal distribution (author's outline; specification proposed).**
+The author's model: there are no mixed outcomes. A measurement records an outcome, positive or
+negative; a positive outcome generates currency (L96), a negative one requires destruction or
+reparation (L98, Justice: Repair(Ha)). Metric models then assess each contributing action (and
+downstream actions) against its counterfactual: inaction (¬A, L48), or, where a contract or duty
+commits the actor, the committed action. Those assessments give CC (L94: CC(O_i, E_j) ↔
+MM_CE(TxLog)); without a confident enough assessment, CC falls back to domain-specific traversal of
+the transaction substrate (L95). Outlined in the sources, never specified. Proposed changes:
+- Sources: (1) define the outcome as the unit of distribution: a measured, signed record per
+  being, domain and measurement period, its sign from assessment (L48); (2) give L48 a committed
+  counterfactual: As against Pr(x ← A_committed) where a contract or duty binds the actor, else
+  ¬A; (3) define Duty, now only in Accolade (L121), as outputs committed through contract (L76
+  Intent := E_Precommit(Ou, Ct(Self)); Contract.txt), law as agreement (L102), and possibly
+  hazards of one's own making; (4) state L94's switch: CC from MM_CE when its confidence reaches a
+  threshold, else the L95 traversal, with its degree-of-separation weights and NetC terms
+  specified; (5) normalise CC within each outcome among contributors on the outcome's side, with a
+  rule for overdetermination (two causes each sufficient, each assessed at zero against its own
+  counterfactual): Shapley-style averaging over contributor subsets, which Benefuture currency
+  already names; (6) say who receives reparation for a negative outcome (the harmed being, its
+  guardians, or the commons) and what is destroyed.
+- Lean: an `Outcome` record (signed, per being, domain, period); a counterfactual type
+  (inaction | committed by contract or duty) in `dynamic_assessment_real`; CC as assessed shares
+  per outcome with a confidence gate and the traversal fallback, replacing the clamped
+  value-added ratio (`cc_clamped_overdistributes` stays as the reason); minting and burning per
+  outcome sign (`Systems.Economy`); `Subgoals.Justice.Crime` admitting informed inaction under duty
+  (8.15). Theorems to aim for: each outcome fully distributed (shares sum to 1 on its side); no
+  share without assessed contribution; a duty-bound non-action is negative when the duty was
+  feasible; no duty, no share for a bystander's inaction.
+- Simulation: replace the per-action split (`assessed_parts`, 8.14) with outcome records per
+  being and period, valued as the being's assessed change in V (one signed number per being, so
+  the synergy between understanding and happiness stays in the outcome and nothing is left
+  undistributed); MM_CE as a model estimating each contributor's counterfactual contribution with
+  confidence, falling back to traversal; a world that moves on its own (hazards), so inaction can
+  cause harm; contracts and duties as agents' commitments; reparation to harmed beings.
+- Decisions needed: the unit of an outcome (per being's ΔV per domain and period, or per
+  marker); the overdetermination rule; the sources of duty; the confidence threshold and
+  traversal weights; the recipient of reparation.
