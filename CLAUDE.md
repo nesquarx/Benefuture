@@ -25,4 +25,5 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - CI is the gate: after pushing, check the "Lean Action CI" and "Julia Sim CI" runs for the head commit. A red run is diagnosed from its job log before any further edit.
 - The Lean analogue of the dual suites: acceptance theorems state what must hold; counterexample theorems (e.g. `survivor_floor_rises_on_removal`) state what must fail.
 - Simulation (`sim/`, Julia package `BenefutureSim`): each increment starts with acceptance tests against `spec/vectors/` and an adversarial suite, run red before implementing.
+- Rules live once, in the Lean reference (`BenefutureReference`), exported through `BenefutureReference/Export.lean`; Julia calls them by `ccall` and holds only the world model and input guards. Loading `BenefutureSim` rebuilds the shared library only when the hash of the Lean sources changes. A new rule is a Lean reference function plus one export and one thin Julia wrapper, never a Julia reimplementation.
 - `BenefutureReference` and `Main.lean` must not import Mathlib or `Benefuture.*` (CI guard).

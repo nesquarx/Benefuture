@@ -1,8 +1,16 @@
-# Assessment (L48), signed synergy (L13), harm weight (L61) and value on a being (L73);
-# mirror `As_ref`, `Sy_signed_ref`, `HaWt_ref` and `V_ref` in BenefutureReference.
+# Assessment (L48), signed synergy (L13), harm weight (L61) and value on a being (L73),
+# computed by the Lean reference (`As_ref`, `Sy_signed_ref`, `HaWt_ref`, `V_ref`).
 
-"Priority weights of the harm tiers, irreparable first (`harmSchedule_ref`)."
-const HARM_SCHEDULE = [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01]
+"Priority weights of the harm tiers, irreparable first, read from `harmSchedule_ref` at load."
+const HARM_SCHEDULE = Float64[]
+
+function load_harm_schedule!()
+    n = ccall(sym(:bf_harm_schedule_len), Csize_t, (Ptr{Cvoid},), Ptr{Cvoid}(1))
+    empty!(HARM_SCHEDULE)
+    for i in 0:(n - 1)
+        push!(HARM_SCHEDULE, ccall(sym(:bf_harm_schedule_at), Float64, (Csize_t,), i))
+    end
+end
 
 """
     assess(predicted, counter, measured; t, t0, th)
@@ -13,7 +21,8 @@ of the context's threshold of significance. Before or at t0 only the prediction 
 function assess(predicted::Real, counter::Real, measured::Real; t::Real, t0::Real, th::Real)
     check(all(isfinite, (predicted, counter, measured, t, t0, th)), "inputs must be finite")
     check(th > 0, "threshold of significance must be positive")
-    ((t > t0 ? measured : predicted) - counter) / th
+    ccall(sym(:bf_as), Float64, (Float64, Float64, Float64, Float64, Float64, Float64),
+          predicted, counter, measured, t, t0, th)
 end
 
 """
@@ -22,12 +31,16 @@ end
 Sy over signed items `(x, w₊, w₋)`: gains enter Φ₊ with w₊, losses enter Φ₋ with |x| and w₋.
 """
 function signed_synergy(items; λ::Real, κ::Real, qp::Real, qm::Real)
-    for (x, _, _) in items
-        check(isfinite(x), "item value $x must be finite")
+    for (x, wp, wn) in items
+        check(all(isfinite, (x, wp, wn)), "item ($x, $wp, $wn) must be finite")
+        check(wp >= 0 && wn >= 0, "item ($x, $wp, $wn) must have non-negative weights")
     end
-    pos = [(x, wp) for (x, wp, _) in items if x > 0]
-    neg = [(-x, wn) for (x, _, wn) in items if x < 0]
-    net_synergy(pos, neg; λ, κ, qp, qm)
+    check(all(isfinite, (λ, κ, qp, qm)), "parameters must be finite")
+    check(λ >= 0 && κ >= 0 && qp > 0 && qm > 0, "λ, κ non-negative and exponents positive")
+    ccall(sym(:bf_sy_signed), Float64,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+          floatarray([x for (x, _, _) in items]), floatarray([w for (_, w, _) in items]),
+          floatarray([w for (_, _, w) in items]), λ, κ, qp, qm)
 end
 
 """
@@ -36,7 +49,12 @@ end
 `Ha_wt = 1 + Sy_{κ=½, q=1.5}(tiers)` over `(severity, priority weight)` pairs; 1 when there is no
 harm, rising with severity.
 """
-harm_weight(tiers; λ::Real) = 1.0 + net_synergy(tiers, []; λ, κ = 0.5, qp = 1.5, qm = 1.5)
+function harm_weight(tiers; λ::Real)
+    check_items(tiers)
+    check(isfinite(λ) && λ >= 0, "λ must be finite and non-negative")
+    ccall(sym(:bf_ha_wt), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          floatarray(mags(tiers)), floatarray(weights(tiers)), λ)
+end
 
 """
     value_on_being(u, h, n; harm_wt, α, β, γ, λ, qp, qm)
@@ -46,7 +64,11 @@ priority, losses by priority scaled by the harm weight.
 """
 function value_on_being(u::Real, h::Real, n::Real; harm_wt::Real,
                         α::Real, β::Real, γ::Real, λ::Real, qp::Real, qm::Real)
+    check(all(isfinite, (u, h, n, λ, qp, qm)), "inputs must be finite")
     check(isfinite(harm_wt) && harm_wt >= 1, "harm weight must be at least 1")
     check(1 > α > β > γ > 0, "priorities must satisfy 1 > α > β > γ > 0")
-    signed_synergy([(u, α, harm_wt), (h, β, α * harm_wt), (n, γ, γ)]; λ, κ = 2.0, qp, qm)
+    check(λ >= 0 && qp > 0 && qm > 0, "λ non-negative and exponents positive")
+    ccall(sym(:bf_v), Float64,
+          (Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          u, h, n, α, β, γ, harm_wt, λ, qp, qm)
 end

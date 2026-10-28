@@ -51,3 +51,4 @@ end
 end
 
 include("value_tests.jl")
+include("goal_tests.jl")

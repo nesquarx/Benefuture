@@ -1,9 +1,7 @@
-# Synergy operators, pseudocode L13–L14; mirror `Sy_ref` and `Sy_hat_ref` in BenefutureReference.
-# Items are (magnitude, weight) pairs with magnitude = |x| on its side (gain or loss).
-# Invalid inputs throw rather than score: a negative or non-finite magnitude, weight or
-# parameter would otherwise produce a plausible-looking but meaningless value.
-
-const Item = Tuple{<:Real,<:Real}
+# Synergy operators, pseudocode L13–L14, computed by the Lean reference (`phi_ref`, `Sy_ref`,
+# `Sy_hat_ref`). Items are (magnitude, weight) pairs with magnitude = |x| on its side.
+# The guards here are the bridge's input contract, not rules: invalid inputs throw rather than
+# reach the reference, which would return a plausible-looking but meaningless value.
 
 check(cond, msg) = cond || throw(ArgumentError(msg))
 
@@ -14,6 +12,9 @@ function check_items(items)
     end
 end
 
+mags(items) = [Float64(a) for (a, _) in items]
+weights(items) = [Float64(w) for (_, w) in items]
+
 """
     phi(items, q, κ)
 
@@ -21,14 +22,8 @@ Synergy potential of one side: `Σ wᵢ aᵢ^q + κ √(Σ_{i<j} wᵢ wⱼ (aᵢ
 """
 function phi(items, q::Real, κ::Real)
     check_items(items)
-    linear = sum((w * a^q for (a, w) in items); init = 0.0)
-    cross = 0.0
-    for i in eachindex(items), j in eachindex(items)
-        i < j || continue
-        (a1, w1), (a2, w2) = items[i], items[j]
-        cross += w1 * w2 * (a1 * a2)^q
-    end
-    linear + κ * sqrt(cross)
+    ccall(sym(:bf_phi), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+          floatarray(mags(items)), floatarray(weights(items)), q, κ)
 end
 
 """
@@ -40,9 +35,12 @@ function net_synergy(pos, neg; λ::Real, κ::Real, qp::Real, qm::Real)
     check(all(isfinite, (λ, κ, qp, qm)), "parameters must be finite")
     check(λ >= 0 && κ >= 0, "λ and κ must be non-negative")
     check(qp > 0 && qm > 0, "exponents must be positive")
-    p, m = phi(pos, qp, κ), phi(neg, qm, κ)
-    total = p + m
-    total == 0 ? 0.0 : p - m - λ * p * m / total
+    check_items(pos)
+    check_items(neg)
+    ccall(sym(:bf_sy), Float64,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+          floatarray(mags(pos)), floatarray(weights(pos)), floatarray(mags(neg)), floatarray(weights(neg)),
+          λ, κ, qp, qm)
 end
 
 """
@@ -54,7 +52,5 @@ function squashed_synergy(s::Real; ν::Real, h::Real)
     check(isfinite(s) && isfinite(ν) && isfinite(h), "inputs must be finite")
     check(ν > 0, "ν must be positive")
     check(h >= 0, "h must be non-negative")
-    s == 0 && return 0.0
-    num = abs(s)^ν
-    sign(s) * num / (num + h^ν)
+    ccall(sym(:bf_sy_hat), Float64, (Float64, Float64, Float64), s, ν, h)
 end
