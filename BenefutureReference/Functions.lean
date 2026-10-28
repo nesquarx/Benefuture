@@ -152,6 +152,14 @@ def Voting_weight_ref (base : Float) (expertiseWeight : Float) (profile : List (
   let vw := base + expertiseWeight * expertise + impactWeight * impact
   (vw, vw < thOptional)
 
+/--
+  [P] Domain-relative expertise (Government, discussion; PLAN: carry into L113 or reject): each
+  voter's reputation in a domain as a share of the domain's total, so expertise weights sum to 1.
+-/
+def relative_reputation_ref (reps : Array Float) : Array Float :=
+  let total := reps.foldl (· + ·) 0.0
+  if total ≤ 0.0 then reps.map fun _ => 0.0 else reps.map (· / total)
+
 /- --- Population direction (Benefuture.Proposed.PopulationDirection) --- -/
 
 def mean_ref (xs : List Float) : Float :=

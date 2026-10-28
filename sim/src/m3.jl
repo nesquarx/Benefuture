@@ -23,6 +23,9 @@ struct DomainAgent
     end
 end
 
+Base.:(==)(a::DomainAgent, b::DomainAgent) = a.skills == b.skills && a.focus == b.focus && a.sloppiness == b.sloppiness
+Base.hash(a::DomainAgent, h::UInt) = hash((a.skills, a.focus, a.sloppiness), h)
+
 "M3 parameters: the M1 world, the agents, and relevance decay rates for gains and losses."
 struct M3Params
     world::M1Params

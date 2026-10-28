@@ -686,7 +686,7 @@ function run_m3c(p::M3cParams; seed)
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                repaired = world.repaired[], side_hazards = world.side_hazards[],
-               params = gov.params, kept = gov.kept[], reverted = gov.reverted[],
+               params = gov.params, kept = gov.kept[], reverted = gov.reverted[], agents = p.agents,
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

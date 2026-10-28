@@ -18,6 +18,7 @@ export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood
 export membership_rolling, accuracy, currency_eligible, scarcity_cost
+export voting_weight, accumulate_capped, relative_reputation, M5Params, run_m5
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount
 
 include("lean.jl")
@@ -34,6 +35,8 @@ include("m2.jl")
 include("m3.jl")
 include("m3b.jl")
 include("m3c.jl")
+include("governance.jl")
+include("m5.jl")
 
 function __init__()
     load_lean_lib()

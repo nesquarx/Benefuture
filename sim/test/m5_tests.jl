@@ -1,0 +1,54 @@
+# Toy model M5: governance by weighted liquid democracy (L113 BfDm, L114 LqdBfDm). Decisions arise in
+# domains; each agent's signal of the right option is sharper the more skilled it is there (a toy
+# assumption); votes are weighted by base + expertise × domain reputation + impact (L113), voting
+# optional below a threshold; an agent may delegate its vote in a domain to a higher-reputation
+# agent while that agent's accumulated weight is under the cap, unless the delegator is heavily
+# impacted (L114). Reputations come from an M3c run.
+
+@testset "Voting rules (Lean reference): acceptance against the spec vectors" begin
+    v = vectors("democracy")
+    w, opt = voting_weight(1.0, 1.0, [0.6, 0.4], [4.0, 1.0], 1.0, 0.5; optional_below = 2.0)
+    @test w ≈ v["voting_weight_expert"]["weight"] && opt == v["voting_weight_expert"]["vote_optional"]
+    w, opt = voting_weight(1.0, 1.0, [0.6, 0.4], [0.0, 0.0], 1.0, 0.0; optional_below = 2.0)
+    @test w ≈ v["voting_weight_bystander"]["weight"] && opt == v["voting_weight_bystander"]["vote_optional"]
+    @test accumulate_capped(100.0, 0.0, fill(10.0, 30)) ≈ vectors("population")["delegation_capped_cap100_w10x30"]
+end
+
+@testset "Voting rules (Lean reference): adversarial and edge cases" begin
+    # Domain-relative expertise (Government, discussion): reputations as shares of the domain's total.
+    @test relative_reputation([3.0, 1.0, 0.0]) ≈ [0.75, 0.25, 0.0] && relative_reputation([0.0, 0.0]) == [0.0, 0.0]
+    @test_throws ArgumentError relative_reputation([-1.0, 2.0])
+    # However many delegate, a delegate never exceeds the cap plus one delegator's weight.
+    @test accumulate_capped(5.0, 0.0, fill(3.0, 1000)) < 5.0 + 3.0
+    @test_throws ArgumentError voting_weight(1.0, 1.0, [0.7, 0.7], [1.0, 1.0], 0.0, 0.0; optional_below = 1.0)
+end
+
+@testset "M5: acceptance" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+    # Expertise weighting decides better than one agent, one vote, when reputation tracks skill.
+    eq = run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400); seed = 1)
+    bf = run_m5(M5Params(m3, 1:4; expertise_weight = 1.0, decisions = 400); seed = 1)
+    @test bf.correct > eq.correct
+    # Delegation under the cap: no delegate ever holds more than the cap plus one delegator's weight.
+    dl = run_m5(M5Params(m3, 1:4; expertise_weight = 1.0, decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
+    @test all(dl.max_share .<= 0.1 .+ dl.max_single .+ 1e-12)
+    @test run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3) == run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3)
+    # Relative expertise keeps expertise from concentrating weight: no voter holds most of it.
+    rel = run_m5(M5Params(m3, 1:4; decisions = 200, relative_expertise = true); seed = 1)
+    raw = run_m5(M5Params(m3, 1:4; decisions = 200); seed = 1)
+    @test mean(rel.max_share) < mean(raw.max_share)
+end
+
+@testset "M5: adversarial and edge cases" begin
+    # Specialists in each domain; the others, unaffected by a domain's decisions, may delegate to them.
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+    # Without a cap, delegation concentrates weight; the cap prevents it.
+    uncapped = run_m5(M5Params(m3, 1:4; decisions = 100, p_delegate = 1.0, cap = 1.0); seed = 1)
+    capped = run_m5(M5Params(m3, 1:4; decisions = 100, p_delegate = 1.0, cap = 0.2); seed = 1)
+    @test maximum(uncapped.max_share) > maximum(capped.max_share)
+    @test_throws ArgumentError M5Params(m3, 1:4; cap = 0.0)
+end

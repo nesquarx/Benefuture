@@ -33,7 +33,7 @@ assumptions it still makes, and graduates to them.
 | M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
 | M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation by the floors' movement ([P]); next, the simulation's own gates and debatable thresholds (M5) | `Conj_ParamStability` | first pass done |
-| M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
+| M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run; domain-relative expertise as an option ([P]); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
 | M7 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
@@ -59,7 +59,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters (M4); debatable parameters and the simulation's own gates not yet |
-| `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | not yet | voting, delegation cap, Brier incentives (M5) |
+| `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | partial | voting weight, capped delegation, decisions in domains (M5); Brier incentives, cyclic review attenuation, oversight not yet |
 | `Governance.Adversarial`, `Axioms.Antifragility` | not yet | bounties, clawbacks, revelation (M6) |
 | `Governance.ExternalHarm` | not yet | external harm response (M6) |
 | `Ontology.Entity`, `Ontology.Being`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | not yet | forks, merges, extended self, liability (M7, M8) |
@@ -294,6 +294,30 @@ Within this range the outcomes do not depend on the parameters (consistent with
 floors is far noisier than any effect of a 0.02 change, so adaptation needs longer epochs or a
 paired comparison to mean anything.
 
+## M5 observations
+
+Decisions arise in domains; each agent's signal of the right option is sharper the more skilled it
+is there (a toy assumption: skill sharpens judgement). Votes carry L113 weights (base + expertise ×
+domain reputation + impact), reputations taken from an M3c run; an agent unaffected enough may
+delegate to a higher-reputation agent whose weight is under the cap (L114). Tests: the weights and
+delegation match the spec vectors; expertise weighting decides better than one agent, one vote;
+no delegate exceeds the cap plus one delegator's weight; without a cap, delegation concentrates
+weight. 20 agents (five per domain, skills 0.1 to 0.5), 1,000 decisions, 5 seeds:
+
+| Weighting | Decided correctly | Largest share of weight one voter holds |
+|---|---|---|
+| One agent, one vote | 94.8% | 5% |
+| Raw expertise (L113 as written) | 98.5% | 36% |
+| Domain-relative expertise, weight 5 | 98.0% | 13% |
+| Domain-relative expertise, weight 20 | 98.6% | 21% |
+| ... with delegation capped at 5% | 98.6% | 21% |
+| ... with uncapped delegation | 98.4% | 48% |
+
+With raw reputation, expertise itself concentrates weight (one voter holds a third on average,
+with no delegation at all), which the delegation cap cannot touch; the domain-relative term
+proposed in Government's discussion keeps nearly all the accuracy at a fraction of the
+concentration. Uncapped delegation concentrates weight further without improving decisions.
+
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
 | Base, factor | Share of net earnings reinvested | Gini of balances |
@@ -313,6 +337,8 @@ ratified.
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
 | Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
+| Voting weights: base, expertise, impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 1, 1, 0 | L113 |
+| Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |

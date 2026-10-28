@@ -152,6 +152,19 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_perturb_step] def perturbStep (cur cand fields : FloatArray) (δ : Float) : FloatArray :=
   ⟨perturb_step_ref cur.data cand.data (fields.data.map fun x => x.toUInt64.toNat) δ⟩
 
+@[export bf_voting_weight] def votingWeight (base expertiseWeight : Float) (shares reps : FloatArray)
+    (impactWeight impact thOptional : Float) : Float :=
+  (Voting_weight_ref base expertiseWeight (pairs shares reps) impactWeight impact thOptional).1
+
+@[export bf_vote_optional] def voteOptional (base expertiseWeight : Float) (shares reps : FloatArray)
+    (impactWeight impact thOptional : Float) : UInt8 :=
+  if (Voting_weight_ref base expertiseWeight (pairs shares reps) impactWeight impact thOptional).2 then 1 else 0
+
+@[export bf_accumulate_capped] def accumulateCapped (cap cur : Float) (ws : FloatArray) : Float :=
+  accumulate_capped_ref cap cur ws.data.toList
+
+@[export bf_relative_reputation] def relativeReputation (reps : FloatArray) : FloatArray := ⟨relative_reputation_ref reps.data⟩
+
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
 

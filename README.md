@@ -290,6 +290,11 @@ means over 5 seeds of 500 steps.
   epoch the outcomes do not depend on them; adaptation judged by the floors' movement over epochs of
   50 steps is no better than chance ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
   [sim/README.md, M4](sim/README.md#m4-observations)).
+- Governance: expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in
+  a toy where skill sharpens judgement), but raw reputation concentrates a third of the weight in one
+  voter; domain-relative expertise keeps nearly all the accuracy with far less concentration; the
+  delegation cap holds (no delegate exceeds the cap plus one delegator's weight)
+  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, M5](sim/README.md#m5-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the
   share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
   ([sim/README.md, M3c](sim/README.md#m3c-observations)).

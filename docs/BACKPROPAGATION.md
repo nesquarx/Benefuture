@@ -577,3 +577,13 @@ against what comparison (the previous epoch, or a paired counterfactual from rec
 thresholds are debatable? Also: the simulation's own gates (currency eligibility, classification,
 formation, overflow, the causal-assessment confidence) are not in `ParamVector`; adding them, with
 their admissible ranges, would let SigThGv govern them.
+
+**8.21 Finding: raw reputation concentrates voting weight; the domain-relative term does not (M5).**
+L113 adds expertise as Σŵ·Re in raw units to a base weight; with reputations in the hundreds, the
+top expert in a domain holds about a third of all weight with no delegation at all, beyond the
+reach of L114's delegation cap. The domain-relative term in Government's discussion (reputation as
+a share of the domain's total, summing to 1) keeps nearly all the accuracy (98.0–98.6% correct
+against 98.5%) with the largest holding at 13–21%. Decision needed (open in PLAN: carry into L113
+and `Governance.Democracy`, or reject): adopt the relative term, and what expertise weight relative
+to the base? The toy assumes skill sharpens judgement; how reputation relates to judgement in
+reality is the open empirical question.
