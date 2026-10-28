@@ -106,6 +106,5 @@ end
     @test carry_fee(2.0, false; accolade_rate = 0.05, contract_share = 0.2) ≈ 0.1
     @test carry_fee(2.0, true; accolade_rate = 0.05, contract_share = 0.2) ≈ 0.4
     @test carry_fee(-1.0, true; accolade_rate = 0.05, contract_share = 0.2) == 0  # no fee out of a loss
-    @test duty_payment(3.0; rate = 0.05) ≈ 0.15 && duty_payment(-1.0; rate = 0.05) == 0
     @test_throws ArgumentError carry_fee(1.0, false; accolade_rate = 1.5, contract_share = 0.2)
 end

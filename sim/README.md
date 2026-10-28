@@ -274,16 +274,16 @@ distribution, hazards in half of all steps (each threatening 10% of beings), 5 s
 Duties recover most of what unguarded hazards cost; what guardians miss for lack of notice becomes
 accidents, and negligence becomes crime, both repaired from the penalties.
 
-### Contribution types and duty payments (8.22)
+### Contribution types and preventions (8.22, 8.24)
 
 Carrying another's output on earns, out of the maker's positive share, an accolade outside contract
 (`accolade_rate`) or the contracted share under contract (`contract_share`); nothing comes out of a
-loss (Lean `carry_fee_ref`). Preventing a hazard under duty earns a duty payment on the harm avoided
-(`duty_rate`, Lean `duty_payment_ref`), never the value saved; a shock to those protected is clawed
-back. Readings, seed 1: carriers who add nothing earn 502 in accolades, 5% of the 9,507 their makers
-are paid; all under contract at 0.2, they earn 1,960. A diligent, always-informed guardian
-prevented 76 hazards, 2,080 of harm avoided, and was paid 104; with a shock every time, 29 was
-clawed back.
+loss (Lean `carry_fee_ref`, the N_CCtype term of L96). Readings, seed 1: carriers who add nothing
+earn 502 in accolades, 5% of the 9,507 their makers are paid; all under contract at 0.2, they earn
+1,960. A prevention is the guardian's ordinary action: recorded with its measured outputs on the
+beings it reached (its skill in the domain, less any shock), which mint or destroy currency as any
+outcome does; the averted harm is no output, so the guardian's earnings do not depend on the
+hazard's size (tested), and nothing rewards courting near misses.
 
 ## M4 observations
 
@@ -341,9 +341,35 @@ Balance overflow trades reinvestment against spread of wealth (strict-tree versi
 | 500, 1.0 (default) | 34% | 0.45 |
 | 1,000, 1.0 | 11% | 0.53 |
 
+## Parsimony audit
+
+What the simulation does beyond the Lean and the pseudocode (CLAUDE.md, Parsimony). Native: a
+pseudocode line or Lean object does it. Ruled: the author ruled it, with a home proposed in the
+sources. World: a property of reality, not a rule. Introduced: the simulation's own, a candidate
+for removal.
+
+| Mechanism | Status | Note |
+|---|---|---|
+| Transactions quoted per currency, screened by G, logged | Native | L86–L89, L145 |
+| Outcome-first causal distribution, traversal fallback | Native | L94–L96; coalition values [P] 8.18 |
+| Balance overflow into reinvestment | Native | L100 |
+| Crime or accident by notice and mandate | Native | L115, L104; 8.25.3 |
+| Preventions as ordinary recorded actions | Native | L97, L145; 8.24 (replaced a duty payment) |
+| Hazard penalty of a lone contributor | Native | its whole outcome; a one-player Shapley call removed |
+| Carrying fee (accolade or contract share) | Native, basis [P] | L96 N_CCtype, L121; gaming check in 8.22 |
+| Score-only start, eligibility thresholds | Native | Implementation Phase 1, L82 |
+| Overlaps as rolling averages; formation from blockages | Ruled | 8.6, 8.12 |
+| StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
+| Normalised reputation in votes | Ruled | 8.21, 8.22 |
+| Repair funded by penalties | Ruled | 8.17; how repair is carried out is still a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
+| Unguarded harm left unattributed | Introduced | to replace by the administration as insurer through the commons (L119 Liability; 8.22.4) |
+| M4 adaptation by floor movement | Introduced [P] | to replace by experimental design (8.22.3) |
+| Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
+| Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
+
 ## Governed thresholds
 
-Every gate value the simulation sets is a threshold to be governed later (SigThGv, M4–M5;
+Every gate value, modifier and coefficient a rule uses is a threshold to be governed later (SigThGv, M4–M5;
 `Systems.ParamSpace`). Defaults are approximate, chosen to make the toy world behave, not
 ratified.
 
@@ -364,8 +390,9 @@ ratified.
 | Reputation decay | `λpos`, `λneg` | 0.02, 0.05 | L101 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
+| Metric-model scoring window | `window` | 10 | L82 |
+| Steps between reclassifications of memory | `μ_every` | 25 | 8.12 |
 | Accolade for carrying an output outside contract (share of the maker's positive share) | `accolade_rate` | 0.05 | L95, L121; 8.22 |
-| Duty payment per unit of harm a prevention avoids | `duty_rate` | 0.05 | 8.22 |
 
 ## Noise
 

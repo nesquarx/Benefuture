@@ -92,7 +92,6 @@ struct M3cParams
     side_share::Float64          # share of the beings it touches that the side effect harms
     side_size::Float64           # harm per being of the side effect
     p_foresee::Float64           # chance the actor foresaw the side effect
-    duty_rate::Float64           # a prevention's duty payment per unit of harm avoided (governed; 8.22)
     p_shock::Float64             # chance a prevention shocks the beings it protects
     shock_size::Float64          # that shock's harm per being, on happiness
     # Governed thresholds (M4; SigThGv, L157; `Systems.ParamSpace` [R]).
@@ -121,7 +120,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    p_contracted::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
                    hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
-                   p_foresee::Real = 0.5, duty_rate::Real = 0.05, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
+                   p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
@@ -144,8 +143,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(guardians) || (length(guardians) == length(leaf_parent) && all(g -> 0 <= g <= length(agents), guardians)),
           "one guardian (or 0) per true domain")
     check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
-    check(all(x -> 0 <= x <= 1, (accolade_rate, contract_share, p_contracted, duty_rate, p_shock)) && isfinite(shock_size) &&
-          shock_size >= 0, "contribution rates, duty rate and chances in [0, 1], shock size non-negative")
+    check(all(x -> 0 <= x <= 1, (accolade_rate, contract_share, p_contracted, p_shock)) && isfinite(shock_size) &&
+          shock_size >= 0, "contribution rates and chances in [0, 1], shock size non-negative")
     check(gov_epoch >= 1 && isfinite(gov_δ) && gov_δ >= 0, "governance epoch positive, δ non-negative")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
@@ -159,7 +158,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
-              side_size, p_foresee, duty_rate, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ,
+              side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -263,7 +262,7 @@ function run_m3c(p::M3cParams; seed)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
-             duty_paid = Ref(0.0), prevented_value = Ref(0.0), shocks = Ref(0))
+             prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
@@ -595,27 +594,26 @@ function run_m3c(p::M3cParams; seed)
             informed = g > 0 && rand(hrng) < p.p_informed
             if informed && rand(hrng) < p.diligence[g]
                 world.prevented[] += 1
-                # Preventing is duty well done (author ruling 8.22): a duty payment for the skill
-                # used, at the governed rate on the harm avoided, never the value saved; a shock to
-                # the beings protected is clawed back from the guardian.
+                # A prevention is the guardian's action, nothing special (author rulings 8.22, 8.24):
+                # recorded with its measured outputs on the beings it reached, its skill in the
+                # domain and any shock it caused, which mint or destroy currency as any outcome
+                # does. Assessed against the committed action, the averted harm is no output.
                 if any(hit)
-                    avoided = -plan_value(harm, t)
-                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
-                    st, pm = classify_sig(sig), parent_mem(sig)
-                    pay = duty_payment(avoided; rate = p.duty_rate)
-                    shock = 0.0
+                    act = plan_with_mean(hrng, p.agents[g].skills[l], t)
+                    act = carried_out(hrng, p.agents[g].sloppiness, ToyPlan(act.du .* hit, act.dh .* hit))
                     if p.p_shock > 0 && rand(hrng) < p.p_shock
-                        jolt = ToyPlan(zeros(t.n), -p.shock_size .* hit)
-                        s.u .+= jolt.du; s.h .+= jolt.dh
-                        shock = plan_value(observed_plan(hrng, jolt, p.marker_σ), t)
+                        act = ToyPlan(act.du, act.dh .- p.shock_size .* hit)
                         world.shocks[] += 1
                     end
-                    credit!(step, sig, st, pay + shock, pm, price_shares(st), [(g, pay, shock)])
+                    s.u .+= act.du; s.h .+= act.dh
+                    measured = plan_value(observed_plan(hrng, act, p.marker_σ), t)
+                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                    st, pm = classify_sig(sig), parent_mem(sig)
+                    credit!(step, sig, st, measured, pm, price_shares(st), [(g, max(measured, 0.0), min(measured, 0.0))])
+                    world.prevention_records[] += 1
                     if !scoring_only
-                        balance[g, :] .+= split_signed(st, pay + shock)[1]
-                        world.duty_paid[] += pay
-                        world.prevented_value[] += avoided
-                        world.hazard_debits[] += -shock
+                        balance[g, :] .+= split_signed(st, measured)[1]
+                        world.prevention_measured[] += measured
                     end
                 end
             elseif any(hit)
@@ -627,7 +625,7 @@ function run_m3c(p::M3cParams; seed)
                     is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
                     sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
                     st, pm = classify_sig(sig), parent_mem(sig)
-                    φ = shapley([0.0, measured])[1]  # one contributor, assessed against its committed action
+                    φ = measured  # its one contributor's whole share, assessed against the committed action
                     credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
                     world.hazard_penalties[] += -φ
                     if !scoring_only
@@ -729,7 +727,7 @@ function run_m3c(p::M3cParams; seed)
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
-               duty_paid = world.duty_paid[], prevented_value = world.prevented_value[], shocks = world.shocks[],
+               prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

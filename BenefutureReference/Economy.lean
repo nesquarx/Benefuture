@@ -65,8 +65,4 @@ comes out of a loss. -/
 def carry_fee_ref (makerPos accoladeRate contractShare : Float) (contracted : Bool) : Float :=
   if makerPos ≤ 0 then 0 else (if contracted then contractShare else accoladeRate) * makerPos
 
-/-- Preventing a hazard under duty is duty well done (8.22): paid at the governed rate on the harm
-avoided, never the value saved. -/
-def duty_payment_ref (avoided rate : Float) : Float := rate * (if avoided > 0 then avoided else 0)
-
 end BenefutureReference

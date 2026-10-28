@@ -99,16 +99,6 @@ function carry_fee(maker_pos::Real, contracted::Bool; accolade_rate::Real, contr
 end
 
 """
-    duty_payment(avoided; rate) -> payment
-
-A prevention's duty payment (Lean `duty_payment_ref`): the governed rate on the harm avoided.
-"""
-function duty_payment(avoided::Real; rate::Real)
-    check(isfinite(avoided) && 0 <= rate <= 1, "rate in [0, 1], harm finite")
-    ccall(sym(:bf_duty_payment), Float64, (Float64, Float64), avoided, rate)
-end
-
-"""
     shapley(v) -> shares
 
 Shapley shares of an outcome among n contributors, from coalition values indexed by bitmask:

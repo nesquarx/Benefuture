@@ -29,10 +29,13 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - `BenefutureReference` and `Main.lean` must not import Mathlib or `Benefuture.*` (CI guard).
 - Lean ignores borrow annotations on `@[export]`: exported functions consume every argument. Arrays returned to Julia are read through `lean_floats` (`sim/src/domains.jl`), which takes a reference before each read.
 - The simulation's outcome is a system of rules ready for implementation: the end state models the Lean objects one to one, keeps no toy assumptions, and absorbs messy reality. Toy worlds are stages that name the objects they approximate and the toy assumptions they still make, and graduate (`docs/PLAN.md`).
-- Every gate value the simulation sets is a threshold to be governed later: list it in `sim/README.md` (Governed thresholds) with its default and source.
+- Every gate value, modifier and coefficient a rule uses is a threshold to be governed later: list it in `sim/README.md` (Governed thresholds) with its default and source. Properties of the world (skills, noise, contract terms) are not thresholds; they go under Noise or the world's parameters.
 - Every step that can go wrong in reality carries a noise parameter, on its own random stream, with a range to explore (`sim/README.md`, Noise).
 
 ## Working
+- Parsimony. Before adding a mechanism, establish that no existing one handles the case: an outcome recorded with its measured outputs mints or destroys currency, causal distribution shares it, laws and contracts learn from it. The simulation should need nothing beyond the Lean and the pseudocode; where it does, the extra is named in `sim/README.md` (Parsimony audit) as introduced, with the reason, and is a candidate for removal. Actively look for introduced mechanisms that native ones already cover, and for redundancy in the corpus (proposals go to `docs/BACKPROPAGATION.md`).
+- Gaming. For every mechanism added, ask how it can be gamed or complied with maliciously before building it (a payment for braking rewards near misses), and record the answer with it; plausible exploits become M6 tests.
+- Duties stay minimal. Freedom pushes back on duties and laws: they protect only against outcomes beyond the freedom harm boundary. Never model duties as a separate rule set binding agents; they are contracts and communicated laws, assessed through ordinary outcomes.
 - When instructed to make progress and blocked on something that needs the author, first make the unambiguous progress that is independent of the block; then stop and ask. Not when asked for one specific task.
 
 ## Records

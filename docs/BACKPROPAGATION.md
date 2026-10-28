@@ -613,11 +613,13 @@ reality is the open empirical question.
    against every unassigned hazard to the extent of its capability. Catastrophe and black-swan
    tests are needed to see whether Benefuture adapts; the corpus has material on these.
    Candidate homes: Administration, Antifragility, L150.
-   Simulation status: (1) M5, relative reputation by default; (2) M3d/M3e, `carry_fee_ref` and
-   `duty_payment_ref` in the Lean reference. [P] the fee comes out of the maker's positive share
-   (an accolade or contract fee is the maker's cost of having the output carried, and nothing comes
-   out of a loss); a prevention's duty payment is a governed rate on the harm avoided, newly minted
-   like any measured positive outcome. Both bases are proposals awaiting the author.
+   Simulation status: (1) M5, relative reputation by default; (2) M3d, `carry_fee_ref` in the Lean
+   reference (the N_CCtype term of L96; L121 Accolade). [P] the fee comes out of the maker's
+   positive share, and nothing comes out of a loss. ~~A prevention's duty payment at a governed
+   rate on the harm avoided (`duty_payment_ref`).~~ Withdrawn by 8.24: a prevention is an ordinary
+   recorded action. Gaming check on the fee: relays inserting themselves into a chain to collect
+   accolades drain the maker's share; the accolade should require that the carrying was needed
+   (the output would not otherwise have reached), which the causal assessment can judge. An M6 test.
 
 **8.23 Author ruling on degradation and enhancement (extending 8.22.4).** System Design and
 Progressive complexity apply: any lack or corruption of capability, process, data or inputs is
@@ -628,4 +630,30 @@ measurement or record has a named simpler fallback, and the catastrophe tests ch
 fallback engages, that outcomes degrade gracefully rather than collapse, and that recovery follows
 when the capability returns; a positive shock (a breakthrough) is tested for being put to use
 without crowding out the pre-N sample. Candidate homes: Progressive complexity, System Design,
-Antifragility, L142.
+Antifragility, L142. Native: L154 Progressive (Cx↓ → Maintain, Degraded, Fallback; Cx↑ → Leverage),
+and L151 Rc_Innovation.
+
+**8.24 Author ruling on parsimony, duties and gaming.**
+1. Parsimony: add no mechanism unless sure the existing ones do not handle the case; ideally the
+   simulation needs nothing beyond what the Lean provides. Pursue it though it is impractical in
+   full, actively reducing complexity, and propose simplifications where the corpus double counts.
+2. A duty fulfilled is no special kind of payment: the record of the duty event and its
+   understanding and happiness outputs generate currency natively (L97 Cycle, L145 Mem → measure),
+   which flows as causal distribution directs, and laws learn from the event.
+3. Duties are not a separate set of rules binding people: freedom pushes against the encroachment
+   of duties and laws, which protect only against outcomes beyond the freedom harm boundary.
+4. Consider how each new mechanism can be gamed or maliciously complied with: a duty payment for
+   braking would reward near misses with pedestrians.
+5. Every modifier, gate and coefficient gets threshold treatment.
+Candidate homes: Freedom, Law, Contract, AdvAp (L160), the article on causal distribution.
+
+**8.25 Corpus simplifications proposed (from the parsimony audit, [P]).**
+1. L99 `{J(Ha) ∨ RA ∨ CD(Bd)} → ⊖Bal`: a harm can be destroyed both through causal distribution of
+   a bad outcome and through justice. L96 already routes disputes from causal distribution to
+   justice; say that one harm is debited once, by causal distribution unless disputed.
+2. Accolade (L121, Acknowledge(Gd > Duty)) and N_CCtype (L96) both weigh contributions by type.
+   One home: the accolade is the N_CCtype weight for good beyond any contract or duty.
+3. Crime's Inaction (L115) is culpable only against a mandate (L104 Law: mandate; a contract):
+   say so, so no free-standing duty to act is read into it (8.24.3).
+4. L142 Af's Redundancy and FailSafes and L154 Progressive's Fallback name one idea; Af could cite
+   Progressive for degradation.
