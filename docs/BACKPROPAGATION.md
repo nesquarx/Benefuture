@@ -287,3 +287,12 @@ examples and a discussion (positive freedom, the gate and Pascal's mugging, the 
 paternalism, domination, speech and truth, freedom in the system), every reference linked.
 Links in Harm, Anti-Corruption, Critique addressal, Benefuture goals, Government, Technology
 Network, the reading order and Introduction now target it. The wiki page must be created by hand.
+
+## 8. Simulation findings
+
+**8.1 Floors are only as good as measurement (M1, `sim/README.md`).** G's ¬↓ filter (L74) holds
+exactly under perfect measurement. With marker noise on current levels alone, the true floor
+falls in about 9% of steps; with moderate prediction noise, about 14%; with heavy prediction
+noise G chooses inaction in most steps. Candidate rule, for the author: an uncertainty margin on
+admissibility, requiring a floor's predicted change to clear its measurement uncertainty, the
+escrow principle applied to ↑min. Open.

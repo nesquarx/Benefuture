@@ -8,6 +8,7 @@
 
 import BenefutureReference.Functions
 import BenefutureReference.Goal
+import BenefutureReference.Measurement
 
 namespace BenefutureReference.Export
 
@@ -49,5 +50,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 
 @[export bf_g_choose] def gChoose (values dScope dMinU dMinH dMaxU : FloatArray) : UInt64 :=
   (g_choose_ref values.data dScope.data dMinU.data dMinH.data dMaxU.data).toUInt64
+
+@[export bf_mm_score] def mmScore (pred obs : FloatArray) : Float := mm_score_ref pred.data obs.data
+
+@[export bf_mm_adopt] def mmAdopt (scores : FloatArray) : UInt64 := (mm_adopt_ref scores.data).toUInt64
 
 end BenefutureReference.Export

@@ -19,8 +19,8 @@ Each rung adds one source of mess and must still run in minutes, not hours.
 | Rung | World | Status |
 |---|---|---|
 | M0 | Fixed population; random plan menus; perfect measurement; every loss is passing harm; no novelty, scope or distribution term | done |
-| M1 | Measurement through competing metric models with bias and noise; latent against observed levels | next |
-| M2 | Currency, probabilistic escrow and causal distribution; reputation | |
+| M1 | Measurement through competing metric models with bias and noise, scored against established markers; latent against observed levels | done |
+| M2 | Currency, probabilistic escrow and causal distribution; reputation | next |
 | M3 | Adversarial agents: gaming, exploit against reveal | |
 | M4 | Governance: weighted voting, capped liquid delegation, threshold drift | |
 | M5 | Population change: births, deaths, forks | |
@@ -33,3 +33,21 @@ Each rung adds one source of mess and must still run in minutes, not hours.
 - A plan beats inaction in 89 of 100 steps.
 - Floors of understanding and happiness rise (3.7 → 10.1 and 3.7 → 9.5), as `Conj_FloorsRise` requires; in M0 it holds exactly, since measurement is perfect and G never accepts a plan that lowers a floor against inaction.
 - The peak of understanding pulls away from the median (8.0 → 38.6 against 5.1 → 16.2). With the distribution term D absent and gain exponent q₊ > 1, concentrated gains score well; this is the frontier-compounding question of conjecture B17, to revisit once D and sharing of understanding are modelled.
+
+## M1 observations
+
+Competition settles on the most accurate model, and a precise but biased model loses to an
+unbiased one of equal noise (tests). With perfect models and exact markers M1 reproduces M0.
+Floors under noise, 200 beings, 100 steps, 20 plans a step, mean of 5 seeds:
+
+| Model noise | Marker noise | Steps the true floor falls | Steps a plan is chosen |
+|---|---|---|---|
+| 0 | 0 | 0 | 90% |
+| 0 | 0.1 | 9% | 91% |
+| 0.5 | 0 | 14% | 85% |
+| 2.0 | 0 | 2% | 7% |
+
+The floors' guarantee is exactly as good as measurement. Noise on current levels alone breaks it,
+because G misjudges who is at the floor; moderate prediction noise admits plans that lower the
+true floor; heavy prediction noise freezes G, which then chooses inaction in most steps. Noise
+turns the hard filter into either harm or stagnation (conjectures B7, B14).

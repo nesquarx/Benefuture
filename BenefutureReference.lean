@@ -6,4 +6,5 @@
 
 import BenefutureReference.Functions
 import BenefutureReference.Goal
+import BenefutureReference.Measurement
 import BenefutureReference.Export
