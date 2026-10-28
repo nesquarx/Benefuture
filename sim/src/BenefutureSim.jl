@@ -16,6 +16,7 @@ export running_mean, settling_step, ci_halfwidth
 export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for
+export DomainAgent, M3Params, run_m3
 
 include("lean.jl")
 include("synergy.jl")
@@ -28,6 +29,7 @@ include("m0.jl")
 include("m1.jl")
 include("analysis.jl")
 include("m2.jl")
+include("m3.jl")
 
 function __init__()
     load_lean_lib()

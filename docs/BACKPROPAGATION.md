@@ -296,3 +296,10 @@ falls in about 9% of steps; with moderate prediction noise, about 14%; with heav
 noise G chooses inaction in most steps. Candidate rule, for the author: an uncertainty margin on
 admissibility, requiring a floor's predicted change to clear its measurement uncertainty, the
 escrow principle applied to ↑min. Open.
+
+**8.2 Domain profiles must be measured, not declared (M3, `sim/README.md`).** With a fixed
+profile per action, attribution splits whole-action outcomes by declared shares: per-domain skill
+cannot be identified, and an actor setting its own profile could steer reputation into domains
+of its choosing. L22 already has domain relations come from memory, not declaration; the sources
+could say the same of an action's profile: assigned by metric models from where its effects
+land, open to dispute.

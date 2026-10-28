@@ -31,15 +31,20 @@ struct M2Params
     end
 end
 
-function agent_plan(rng::AbstractRNG, a::Agent, t::ToyParams)
+"A plan whose effect on each touched being has mean `μ`."
+function plan_with_mean(rng::AbstractRNG, μ::Real, t::ToyParams)
     share = t.touch[1] + rand(rng) * (t.touch[2] - t.touch[1])
     mask = rand(rng, t.n) .< share
-    ToyPlan(mask .* (a.skill .+ t.spread .* randn(rng, t.n)), mask .* (a.skill .+ t.spread .* randn(rng, t.n)))
+    ToyPlan(mask .* (μ .+ t.spread .* randn(rng, t.n)), mask .* (μ .+ t.spread .* randn(rng, t.n)))
 end
 
-carried_out(rng::AbstractRNG, a::Agent, plan::ToyPlan) =
-    (m = touched(plan); ToyPlan(plan.du .+ m .* a.sloppiness .* randn(rng, length(m)),
-                                plan.dh .+ m .* a.sloppiness .* randn(rng, length(m))))
+agent_plan(rng::AbstractRNG, a::Agent, t::ToyParams) = plan_with_mean(rng, a.skill, t)
+
+"A plan as carried out: its intended changes plus execution noise of size `sloppiness`."
+carried_out(rng::AbstractRNG, sloppiness::Real, plan::ToyPlan) =
+    (m = touched(plan); ToyPlan(plan.du .+ m .* sloppiness .* randn(rng, length(m)),
+                                plan.dh .+ m .* sloppiness .* randn(rng, length(m))))
+carried_out(rng::AbstractRNG, a::Agent, plan::ToyPlan) = carried_out(rng, a.sloppiness, plan)
 
 observed_plan(rng::AbstractRNG, plan::ToyPlan, σ) =
     (m = touched(plan); ToyPlan(m .* observe(rng, plan.du, σ), m .* observe(rng, plan.dh, σ)))

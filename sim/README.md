@@ -22,12 +22,14 @@ against named conjectures.
 |---|---|---|---|
 | M0 | Fixed population; random plan menus; perfect measurement; every loss is passing harm | `Conj_FloorsRise` | done |
 | M1 | Competing metric models with bias and noise, scored against established markers | `Conj_MMCompetitionConverges`, B14 | done |
-| M2 | Agents propose the plans; imperfect agents (noisy self-assessment, myopia, error); currency paid through probabilistic escrow and causal distribution; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
-| M3 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | next |
-| M4 | Governance: weighted voting (base, expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B6, B11, B23 | |
-| M5 | Malicious and gaming agents: inflating measured outcomes, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
-| M6 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
-| M7 | Domains and networks; propagation and leakage across games; end of lifespan and causal inheritance | B10, B25 | |
+| M2 | Agents propose the plans; imperfect agents (skill, sloppiness); escrow payment and settlement; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
+| M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
+| M3b | Measured domain profiles (effects land on beings' domains; models assign the profile); pricing as opportunity cost within each domain; spending from domain balances; baseline negative pricing; several contributors per plan with causal distribution | B6, B9 | next |
+| M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
+| M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
+| M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
+| M7 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
+| M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
 ## Run length
 
@@ -93,3 +95,15 @@ so a skilled but sloppy agent contributes less, often harm. That is reputation w
 specified, demonstrated contribution rather than latent skill; it also means escrow settlements
 are large and frequently clawbacks, the solvency question of conjecture B9. Contributions from
 several agents to one plan, and causal distribution among them, are still to come.
+
+## M3 observations
+
+With one domain M3 reproduces M2 exactly; payments and history are conserved across domains, and
+a domain outside an agent's profile receives nothing (tests). 4 domains, 40 agents with random
+skills per domain, half specialists and half generalists, 500 steps, mean of 5 seeds: relevance
+in a domain correlates only weakly with skill in that domain (Spearman 0.36), and barely better
+with profile share × overall effect (0.44). With a fixed profile per action, attribution splits
+whole-action outcomes by declared shares, so per-domain skill cannot be identified, and an agent
+able to set its own profile could claim reputation in a domain of its choosing. The spec points
+the other way: domain relations come from memory, not declaration (L22, `!declared`). M3b
+therefore measures each action's profile from where its effects land.
