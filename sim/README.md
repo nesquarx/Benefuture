@@ -22,8 +22,8 @@ against named conjectures.
 |---|---|---|---|
 | M0 | Fixed population; random plan menus; perfect measurement; every loss is passing harm | `Conj_FloorsRise` | done |
 | M1 | Competing metric models with bias and noise, scored against established markers | `Conj_MMCompetitionConverges`, B14 | done |
-| M2 | Agents propose the plans; imperfect agents (noisy self-assessment, myopia, error); currency paid through probabilistic escrow and causal distribution; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | next |
-| M3 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
+| M2 | Agents propose the plans; imperfect agents (noisy self-assessment, myopia, error); currency paid through probabilistic escrow and causal distribution; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
+| M3 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | next |
 | M4 | Governance: weighted voting (base, expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B6, B11, B23 | |
 | M5 | Malicious and gaming agents: inflating measured outcomes, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
 | M6 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
@@ -72,3 +72,24 @@ The floors' guarantee is exactly as good as measurement. Noise on current levels
 because G misjudges who is at the floor; moderate prediction noise admits plans that lower the
 true floor; heavy prediction noise freezes G, which then chooses inaction in most steps. Noise
 turns the hard filter into either harm or stagnation (conjectures B7, B14).
+
+## M2 observations
+
+Agents propose the plans; the proposer of the chosen plan is paid its predicted value split by
+the model's confidence, then settled against the markers. Under perfect measurement and careful
+agents nothing is settled, predicted and realised floor changes match, and payments sum to the
+measured value of the plans chosen (tests). 30 agents with skills from −0.2 to 0.6, 200 beings,
+500 steps, 15 plans a step, exact measurement, mean of 5 seeds:
+
+| Agents' sloppiness | Reputation against skill (Spearman) | Settlement relative to value | Chosen plans measured negative |
+|---|---|---|---|
+| none | 0.98 | 0 | 0 |
+| 0.3 | 0.97 | 21% | 0 |
+| mixed 0, 1, 2 | 0.23 | 96% | 40% |
+
+With heavy sloppiness reputation tracks carefulness (Spearman 0.64 against carefulness, 0.23
+against skill): convex harm makes execution noise cost more in losses than it gives in gains,
+so a skilled but sloppy agent contributes less, often harm. That is reputation working as
+specified, demonstrated contribution rather than latent skill; it also means escrow settlements
+are large and frequently clawbacks, the solvency question of conjecture B9. Contributions from
+several agents to one plan, and causal distribution among them, are still to come.
