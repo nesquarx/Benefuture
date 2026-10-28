@@ -10,6 +10,7 @@ import BenefutureReference.Functions
 import BenefutureReference.Goal
 import BenefutureReference.Measurement
 import BenefutureReference.Economy
+import BenefutureReference.Domains
 
 namespace BenefutureReference.Export
 
@@ -74,5 +75,13 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
   competition_efficiency_ref dV cost dt
 
 @[export bf_settlement] def settle (measured upfrontPaid : Float) : Float := settlement_ref measured upfrontPaid
+
+@[export bf_profile_valid] def profileValid (shares : FloatArray) : UInt8 :=
+  if profile_valid_ref shares.data then 1 else 0
+
+@[export bf_attribute] def attributeShare (share cc contribution : Float) : Float := attribute_ref share cc contribution
+
+@[export bf_decay_rate_for] def decayRateFor (signed lambdaPos lambdaNeg : Float) : Float :=
+  decay_rate_for_ref signed lambdaPos lambdaNeg
 
 end BenefutureReference.Export

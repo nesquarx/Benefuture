@@ -15,6 +15,7 @@ export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth
 export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement
 export spearman, Agent, M2Params, run_m2
+export profile_valid, attribute, decay_rate_for
 
 include("lean.jl")
 include("synergy.jl")
@@ -22,6 +23,7 @@ include("value.jl")
 include("goal.jl")
 include("measurement.jl")
 include("economy.jl")
+include("domains.jl")
 include("m0.jl")
 include("m1.jl")
 include("analysis.jl")
