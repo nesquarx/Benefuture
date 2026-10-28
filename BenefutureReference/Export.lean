@@ -55,4 +55,21 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 
 @[export bf_mm_adopt] def mmAdopt (scores : FloatArray) : UInt64 := (mm_adopt_ref scores.data).toUInt64
 
+@[export bf_escrow_upfront] def escrowUpfront (nominal pWin : Float) : Float := (Escrow_split_ref nominal pWin).1
+@[export bf_escrow_hold] def escrowHold (nominal pWin : Float) : Float := (Escrow_split_ref nominal pWin).2
+
+@[export bf_rep_decay] def repDecay (score dt rate : Float) : Float := Rep_decay_ref score dt rate
+
+@[export bf_resource_cost] def resourceCost (quantities unitCosts : FloatArray)
+    (compute network time computeCost networkCost timeCost : Float) : Float :=
+  resource_cost_ref (pairs quantities unitCosts) compute network time computeCost networkCost timeCost
+
+@[export bf_transaction_price] def transactionPrice (cost credit pWin : Float) : Float :=
+  transaction_price_ref cost credit pWin
+
+@[export bf_supply_delta] def supplyDelta (good cost harm : Float) : Float := supply_delta_ref good cost harm
+
+@[export bf_competition_efficiency] def competitionEfficiency (dV cost dt : Float) : Float :=
+  competition_efficiency_ref dV cost dt
+
 end BenefutureReference.Export
