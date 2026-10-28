@@ -18,10 +18,15 @@
 # top-level domains are not modelled (author ruling: implausible). Each currency's model predicts the plans it prices: accurate (`σ_leaf`) for its own leaf,
 # broader (`σ_branch`) for a parent on leaves it knows, coarse (`σ_coarse`) otherwise; a novel
 # leaf's model learns from coarse with its records. Every model on the classification path is
-# scored against the outcome. Blockages (plans mostly stuck at a parent or the root) that cluster
-# within `form_radius`, `form_count` strong, form a novel leaf at their centroid. μ starts from the
-# bootstrap pattern (signature overlap) and is learnt from memory as fuzzy subsethood every
-# `μ_every` steps and at each formation, when memory is reclassified and reputation recounted.
+# scored against the outcome. Benefuture starts score-only (Implementation, Phase 1): for the first
+# `init_steps` no currency backs value; G chooses on the best available models, and work is
+# executed, scored and logged. μ starts from a bootstrap classification that knows each leaf's
+# primary parent only, and moves as a long-term rolling average (`μ_rate`) of the memberships of
+# every logged action, executed or blocked (author ruling): overlaps are learnt and shift as
+# reality does, and a leaf without new actions keeps its degrees (domains do not fade). Memory is
+# reclassified and reputation recounted every `μ_every` steps and at each formation.
+# Blockages (plans mostly stuck at a parent or the root) that cluster within `form_radius`,
+# `form_count` strong, form a novel leaf at their centroid (or reuse a leaf already there).
 # Reputation is kept where actions are classified; a parent's aggregates its leaves' by μ.
 
 "M3c parameters: the toy world, agents over true leaves, the initial network, and thresholds."
@@ -48,7 +53,7 @@ struct M3cParams
     threshold::Float64
     novel_threshold::Float64
     min_records::Int
-    μ_k::Float64
+    μ_rate::Float64
     μ_every::Int
     endowment::Float64
     cost_per_touch::Float64
@@ -60,6 +65,7 @@ struct M3cParams
     form_count::Int
     form_radius::Float64
     max_new::Int
+    init_steps::Int
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -72,10 +78,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = 0.0, window::Integer = 10, spread::Real = 0.03, classify_σ::Real = 0.03,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = 0.3, σ_branch::Real = 0.5, σ_coarse::Real = 0.75, n_learn::Real = 20,
-                   threshold::Real = 0.55, novel_threshold::Real = 0.52, min_records::Integer = 10, μ_k::Real = 5,
+                   threshold::Real = 0.55, novel_threshold::Real = 0.52, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
-                   form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16,
+                   form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -84,19 +90,19 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(leaf_parent[l] > 0 for l in 1:nl if known[l]), "known leaves belong to a parent")
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
-    check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1, "counts must be positive")
+    check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
     check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1, "shares and thresholds in (0, 1]")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
           "rates, noises, thresholds and costs must be non-negative")
     check(all(x -> isfinite(x) && x >= 0, (bias_σ, cost_σ, regen_σ)) && 0 <= memory_loss <= 1 && 0 <= participation <= 1,
           "noise sizes non-negative, chances in [0, 1]")
-    check(n_learn > 0 && μ_k > 0 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
+    check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_k, μ_every, endowment,
-              cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
+              cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -137,11 +143,11 @@ function run_m3c(p::M3cParams; seed)
         p.known[l] && (push!(lsig, true_sig[l]); push!(ltrue, l); push!(lnovel, false))
     end
     lmax = length(lsig) + p.max_new
-    μ0 = zeros(np, lmax)
-    for (j, σ) in enumerate(lsig), q in 1:np
-        μ0[q, j] = projection_membership(σ, parent_sig[q])
+    μ_boot = zeros(np, lmax)
+    for (j, l) in enumerate(ltrue)
+        μ_boot[p.leaf_parent[l], j] = 1.0  # the bootstrap knows primary parents, not overlaps
     end
-    μ = copy(μ0)
+    μ = copy(μ_boot)
     nleaves() = length(lsig)
     col_parent(q) = lmax + q
     root = lmax + np + 1
@@ -179,9 +185,11 @@ function run_m3c(p::M3cParams; seed)
     memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem),
                         Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64}}}[]
     buffers = Dict{Int,Vector{Vector{Float64}}}()
-    formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step),NTuple{4,Int}}[]
+    formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
+    # Blocked proposals, logged as classification evidence (L88, L145).
+    evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
     available = p.capacity
-    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0))
+    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0))
     tr = (floor_u = Float64[], floor_h = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
           stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[],
           lane_costs = Float64[], lane_measured = Float64[])
@@ -190,7 +198,14 @@ function run_m3c(p::M3cParams; seed)
         mine = rel_gain[a, :] .+ rel_loss[a, :]
         [aggregate_at_parent(μ[q, 1:nleaves()], mine[1:nleaves()]) + mine[col_parent(q)] for q in 1:np]
     end
+    # Each logged action moves the overlap degrees of the leaves it lies in (no action, no change).
+    function observe_membership!(st, pm)
+        for j in 1:nleaves(), q in 1:np
+            st[j] > 0 && (μ[q, j] = membership_rolling(μ[q, j], st[j], pm[q]; rate = p.μ_rate))
+        end
+    end
     function credit!(a, step, c, st, measured, pm)
+        observe_membership!(st, pm)
         net, pos, neg = split_signed(st, measured)
         h_pos[a, :] .+= pos; h_neg[a, :] .+= neg
         (measured >= 0 ? rel_gain : rel_loss)[a, :] .+= net
@@ -210,15 +225,13 @@ function run_m3c(p::M3cParams; seed)
                 push!(phist[q], sc(get(() -> predict(mrng, MetricModel(pbias[q], parent_σ(q, l)), plan), quoted, col_parent(q))))
         end
     end
-    function relearn!(step)
+    function reclassify!(step)
         for m in eachindex(memory)
             memory[m] = merge(memory[m], (profile = classify_sig(memory[m].signature),))
         end
-        ce = ones(length(memory))
-        for j in 1:nleaves(), q in 1:np
-            mx = [m.profile[j] for m in memory]
-            S = subsethood(mx, [m.parent_mem[q] for m in memory], ce)
-            μ[q, j] = membership_update(μ0[q, j], S, count(>(0), mx); k = p.μ_k)
+        # A new leaf learns its overlaps from the logged actions now classified to it.
+        for e in eachindex(evidence)
+            evidence[e] = merge(evidence[e], (profile = classify_sig(evidence[e].signature),))
         end
         h_pos .= 0; h_neg .= 0; rel_gain .= 0; rel_loss .= 0
         for m in memory
@@ -231,7 +244,11 @@ function run_m3c(p::M3cParams; seed)
     record!() = (push!(tr.floor_u, floor_quantile(s.u, t.q)); push!(tr.floor_h, floor_quantile(s.h, t.q)))
     record!()
     obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
+    best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :
+        c <= lmax ? (c, predict(mrng, MetricModel(lbias[c], leaf_σ(c, l)), plan)) :
+                    (c, predict(mrng, MetricModel(pbias[c - lmax], parent_σ(c - lmax, l)), plan)))
     for step in 1:t.steps
+        scoring_only = step <= p.init_steps
         proposers = rand(rng, 1:na, t.plans)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         plans = [plan_with_mean(rng, p.agents[a].skills[l], t) for (a, l) in zip(proposers, leaves)]
@@ -247,6 +264,14 @@ function run_m3c(p::M3cParams; seed)
             if k > lmax && stops[j][k] > 0.5
                 push!(get!(buffers, k, Vector{Float64}[]), sigs[j])
                 length(buffers[k]) > 4 * p.form_count && popfirst!(buffers[k])
+                push!(evidence, (signature = sigs[j], profile = stops[j], parent_mem = pms[j]))
+                observe_membership!(stops[j], pms[j])
+            end
+            if scoring_only
+                bp = best_prediction(stops[j], leaves[j], plans[j])
+                bp === nothing && continue
+                push!(menu, j); push!(menu_preds, bp[2]); offers[j] = [(bp[1], 0.0, bp[2], 0.0)]
+                continue
             end
             if priced[j][root] > 0.5
                 push!(lane_queue, j)  # no currency can value it: StandCoin, at full resource cost
@@ -270,7 +295,22 @@ function run_m3c(p::M3cParams; seed)
         f = choose(obs, menu_preds, t)
         rel_gain .= reputation_decay.(rel_gain, 1.0; rate = rate_gain)
         rel_loss .= reputation_decay.(rel_loss, 1.0; rate = rate_loss)
-        if f == 1
+        if scoring_only
+            # Score-only: no currency moves; the work is executed, scored and logged.
+            if f > 1
+                j = menu[f - 1]
+                a, plan, l = proposers[j], plans[j], leaves[j]
+                done = carried_out(rng, p.agents[a].sloppiness, plan)
+                seen = observed_plan(mrng, done, p.marker_σ)
+                measured = plan_value(seen, t)
+                score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
+                credit!(a, step, sigs[j], stops[j], measured, pms[j])
+                lane.init_executed[] += 1
+                available -= count(touched(plan))
+                s.u .+= done.du
+                s.h .+= done.dh
+            end
+        elseif f == 1
             push!(tr.chosen_agent, 0)
         else
             j = menu[f - 1]
@@ -298,13 +338,12 @@ function run_m3c(p::M3cParams; seed)
         # ahead if the proposer, with experts, can pay its full resource cost.
         for j in lane_queue
             a, plan, l = proposers[j], plans[j], leaves[j]
-            c = argmax(stops[j][1:(root - 1)])
-            if stops[j][c] <= 0
+            bp = best_prediction(stops[j], l, plan)
+            if bp === nothing
                 lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
                 continue
             end
-            pred = c <= lmax ? predict(mrng, MetricModel(lbias[c], leaf_σ(c, l)), plan) :
-                predict(mrng, MetricModel(pbias[c - lmax], parent_σ(c - lmax, l)), plan)
+            c, pred = bp
             if choose(obs, [pred], t) == 1
                 lane.screened_out[] += 1
                 continue
@@ -341,7 +380,7 @@ function run_m3c(p::M3cParams; seed)
             s.h .+= done.dh
         end
         available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
-        # Formation of novel leaves from clustered blockages; then μ is relearnt from memory.
+        # Formation of novel leaves from clustered blockages; then memory is reclassified.
         formed = false
         for k in sort(collect(keys(buffers)))
             nleaves() < lmax || break
@@ -351,19 +390,23 @@ function run_m3c(p::M3cParams; seed)
             best = argmax(length.(near))
             length(near[best]) >= p.form_count || continue
             centroid = mean(buf[near[best]])
-            push!(lsig, centroid); push!(lnovel, true)
-            push!(ltrue, argmin([distance(centroid, σ) for σ in true_sig]))
-            for q in 1:np
-                μ0[q, nleaves()] = projection_membership(centroid, parent_sig[q])
+            # Seeded from the formation's own evidence (signature overlap); then a rolling average.
+            existing = findfirst(σ -> distance(centroid, σ) <= p.form_radius, lsig)
+            if existing === nothing
+                push!(lsig, centroid); push!(lnovel, true)
+                push!(ltrue, argmin([distance(centroid, σ) for σ in true_sig]))
+                leaf = nleaves()
+            else
+                leaf = existing  # a leaf already there: reused, never duplicated
             end
-            μ[:, nleaves()] .= μ0[:, nleaves()]
-            push!(formations, (step = step, leaf = nleaves(), nearest_leaf = ltrue[end], eligible_step = 0))
+            existing === nothing && (μ[:, leaf] .= [projection_membership(centroid, parent_sig[q]) for q in 1:np])
+            push!(formations, (step = step, leaf = leaf, nearest_leaf = ltrue[leaf], eligible_step = 0, reused = existing !== nothing))
             deleteat!(buf, near[best])
             formed = true
         end
-        (formed || step % p.μ_every == 0) && relearn!(step)
+        (formed || step % p.μ_every == 0) && reclassify!(step)
         for (i, fm) in enumerate(formations)
-            fm.eligible_step == 0 && leaf_ok(fm.leaf) && (formations[i] = merge(fm, (eligible_step = step,)))
+            !scoring_only && fm.eligible_step == 0 && leaf_ok(fm.leaf) && (formations[i] = merge(fm, (eligible_step = step,)))
         end
         for a in 1:na
             totals = rel_gain[a, :] .+ rel_loss[a, :]
@@ -384,7 +427,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own,
                relevance_leaf = own[:, 1:L], relevance_resid = own[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[],
+               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

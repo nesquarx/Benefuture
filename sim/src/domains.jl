@@ -129,10 +129,10 @@ function subsethood(mx, my, ce)
     ccall(sym(:bf_subsethood), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}), floatarray(mx), floatarray(my), floatarray(ce))
 end
 
-"Membership from memory: the bootstrap `prior` giving way to subsethood `s` as `n` actions accrue."
-function membership_update(prior::Real, s::Real, n::Real; k::Real)
-    check(all(isfinite, (prior, s, n, k)) && n >= 0 && k > 0, "evidence count non-negative, prior strength positive")
-    ccall(sym(:bf_membership_update), Float64, (Float64, Float64, Float64, Float64), prior, s, n, k)
+"An overlap degree moved by one logged action: a long-term rolling average; no action, no change."
+function membership_rolling(μ::Real, m_leaf::Real, m_parent::Real; rate::Real)
+    check(all(x -> isfinite(x) && 0 <= x <= 1, (μ, m_leaf, m_parent, rate)), "degrees, memberships and rate lie in [0, 1]")
+    ccall(sym(:bf_membership_rolling), Float64, (Float64, Float64, Float64, Float64), μ, m_leaf, m_parent, rate)
 end
 
 "A model's accuracy in [0, 1] from its score (negative mean squared error); also its escrow confidence."

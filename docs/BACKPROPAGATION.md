@@ -383,7 +383,7 @@ say so.
 - Resolved (8.11): work in the StandCoin lane is screened by the best available model.
 - Resolved (8.11): experts who co-fund StandCoin work are credited through causal distribution.
 
-**8.10 Proposal: memberships learnt from memory start from the bootstrap pattern.**
+**8.10 Superseded by 8.12. Was: memberships learnt from memory start from the bootstrap pattern.**
 `Proposed.DomainHierarchy` damps sparse evidence toward zero (S·n/(n+k)). For a domain network
 bootstrapped from established classifications (Domain: initial structure), the simulation blends
 toward the bootstrap degree instead: μ = c·S + (1 − c)·μ₀, c = n/(n+k), so a new or sparsely used
@@ -402,5 +402,19 @@ leaf keeps its consortium membership until memory overrules it. Recorded in
   L86). In the simulation, a harmful agent's StandCoin work almost never passes the screen.
 - Experts who co-fund StandCoin work are credited through causal distribution (L94) once the
   outcome is measured.
-- Open, 8.10: for a bootstrapped leaf rarely used after the score-only phase, whether learnt
-  membership keeps the consortium degree (blend) or fades toward zero (`Proposed.DomainHierarchy`).
+- 8.10 is settled by 8.12.
+
+**8.12 Author ruling: domains do not fade; overlaps are long-term rolling averages.** Domains are
+living classifications whose history memory keeps. A domain never fades from disuse; its overlaps
+with other domains shift slowly to mirror shifts in reality, as the long-term rolling average of
+the memberships of logged actions. This settles 8.10: neither the bootstrap blend nor
+`Proposed.DomainHierarchy`'s damping toward zero (S·n/(n+k)), which would fade sparse leaves.
+Candidate homes: Domain (weighted membership: "weights do not decay temporally" already says the
+first half; add that overlaps are rolling averages of members' memberships), L22 (`Rel ← Mem`),
+`Proposed.DomainHierarchy` (replace or reinterpret `S_with_confidence`).
+- Finding (M3c): learning is slow by design. At a rolling rate of 0.02, a leaf with about 35
+  logged actions has moved its overlap degrees about halfway from the bootstrap to their true
+  values; busy leaves converge, quiet ones lag. The rate is a governed parameter (SigThGv), and
+  the score-only start should be long enough for the network to settle.
+- Requirement (author): the simulations' outcome is a system of rules ready for implementation,
+  with no toy assumptions and robust to messy reality.

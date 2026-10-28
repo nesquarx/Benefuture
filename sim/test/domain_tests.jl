@@ -80,10 +80,10 @@ const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
     # Fallback: an ineligible leaf's share goes to its eligible parents by μ.
     @test fallback_network(MU, [true, true, false], [true, true], [0, 0, 1.0, 0, 0, 0]) ≈ [0, 0, 0, 0.3 / 1.3, 1 / 1.3, 0]
     @test fallback_network(MU, [false, true, true], [false, true], [1.0, 0, 0, 0, 0, 0]) ≈ [0, 0, 0, 0, 0, 1]
-    # Aggregates at parents, subsethood from memory, and the bootstrap blend.
+    # Aggregates at parents, subsethood from memory, and overlap degrees as a long-term rolling average.
     @test aggregate_at_parent(MU[1, :], [2.0, 3.0, 10.0]) ≈ 8.0
     @test subsethood([1.0, 1.0, 0.0], [0.3, 0.3, 1.0], ones(3)) ≈ 0.3
-    @test membership_update(1.0, 0.0, 5.0; k = 5.0) ≈ 0.5
+    @test membership_rolling(0.5, 1.0, 0.3; rate = 0.1) ≈ 0.48
     # Accuracy and eligibility; a novel domain needs its score-only records first.
     @test accuracy(-0.25) ≈ 1 / 1.5
     @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
@@ -102,9 +102,11 @@ end
     end
     # A novel domain's threshold never drops below 0.5, however it is set.
     @test !currency_eligible(0.45, 100; novel = true, threshold = 0.6, novel_threshold = 0.3, min_records = 10)
-    # Membership is clamped to [0, 1]; no evidence leaves the bootstrap pattern untouched.
+    # Membership is clamped to [0, 1]; a leaf with no new action keeps its degree (domains do not fade),
+    # and one action moves a degree by at most the rate.
     @test projection_membership([-1.0, 0.0], [1.0, 0.0]) == 0 && projection_membership([3.0, 0.0], [1.0, 0.0]) == 1
-    @test subsethood(zeros(3), ones(3), ones(3)) == 0 && membership_update(0.4, 0.9, 0.0; k = 5.0) ≈ 0.4
+    @test subsethood(zeros(3), ones(3), ones(3)) == 0 && membership_rolling(0.4, 0.0, 0.9; rate = 0.1) == 0.4
+    @test abs(membership_rolling(0.9, 1.0, 0.0; rate = 0.02) - 0.9) <= 0.02 && 0 <= membership_rolling(0.0, 1.0, 0.0; rate = 1.0) <= 1
     @test isfinite(scarcity_cost(1.0, 0.0, 100.0)) && scarcity_cost(1.0, 0.0, 100.0) > 100
     @test_throws ArgumentError classify_network([1.0], [0.1, 0.2], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
     @test_throws ArgumentError classify_network([1.0, 0.0], [0.1, 0.2, 0.3], MU; parent_threshold = 0.0, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)

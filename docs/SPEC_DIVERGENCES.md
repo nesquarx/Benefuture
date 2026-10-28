@@ -323,8 +323,7 @@ Per the Ground Rules:
 - **Removed**: `choose_action`, `chosen_action_fr_sound`, `removal_never_chosen`, `plan_admissible`, `choose_plan`, `choose_plan_sound`, `choose_plan_sy_sound`, `governed_choose_plan_sy_sound`, `plan_front`.
 - **Open**: the W family (e.g. x^{1+ε} for U, satisficing-saturating for H) is a parameter for SigThGv and sim; robustness across whole families (second-order dominance for concave W, increasing convex order for convex W) is a candidate proof.
 
-### 8.9 Domain Memberships Learnt from Memory, from a Bootstrap Prior ([P], simulation)
-- **Source**: L22 (`Rel ← Mem !declared`); Domain.txt (initial structure bootstrapped from established classifications); `Benefuture.Proposed.DomainHierarchy` (`S_with_confidence` = S·n/(n+k)).
-- **Lean Spec Choice** (`BenefutureReference.Domains`): `membership_update_ref` = c·S + (1 − c)·μ₀ with c = n/(n+k), where μ₀ is the bootstrap degree (projection of signatures). Diverges from `S_with_confidence`, which damps sparse evidence toward zero; with a bootstrap network, damping to zero would detach sparsely used leaves from their consortium parents.
+### 8.9 Domain Overlaps as Long-Term Rolling Averages ([R] ruling, [P] formalization; simulation)
+- **Source**: L22 (`Rel ← Mem !declared`); Domain.txt (weights do not decay temporally; initial structure bootstrapped from established classifications); author ruling BACKPROPAGATION 8.12; `Benefuture.Proposed.DomainHierarchy` (`S_with_confidence` = S·n/(n+k)).
+- **Lean Spec Choice** (`BenefutureReference.Domains`): `membership_rolling_ref` μ ← μ + r·(min(m_leaf, m_p) − m_leaf·μ), clamped to [0, 1], applied per logged action (executed or blocked). Its long-run average is the subsethood S(leaf, p); an action outside the leaf leaves μ unchanged, so domains never fade. Diverges from `S_with_confidence`, whose damping toward zero would fade sparsely used leaves.
 - **Also**: `classify_network_ref` (descent from parents matched by signature membership to their member leaves, μ ≥ μ_min; remainder stuck at parents or the root), `fallback_network_ref` (ineligible leaves to eligible parents by μ, else StandCoin), `currency_eligible_ref` (novel threshold floored at 0.5, after a score-only phase), `accuracy_ref` (1 / (1 + RMSE); also the escrow confidence).
-- **Open**: author ruling BACKPROPAGATION 8.10.

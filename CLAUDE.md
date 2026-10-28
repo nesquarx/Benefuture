@@ -28,7 +28,7 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Rules live once, in the Lean reference (`BenefutureReference`), exported through `BenefutureReference/Export.lean`; Julia calls them by `ccall` and holds only the world model and input guards. Loading `BenefutureSim` rebuilds the shared library only when the hash of the Lean sources changes. A new rule is a Lean reference function plus one export and one thin Julia wrapper, never a Julia reimplementation.
 - `BenefutureReference` and `Main.lean` must not import Mathlib or `Benefuture.*` (CI guard).
 - Lean ignores borrow annotations on `@[export]`: exported functions consume every argument. Arrays returned to Julia are read through `lean_floats` (`sim/src/domains.jl`), which takes a reference before each read.
-- The simulation's end state models the Lean objects one to one; toy worlds are stages that name the objects they approximate and graduate to them (`docs/PLAN.md`).
+- The simulation's outcome is a system of rules ready for implementation: the end state models the Lean objects one to one, keeps no toy assumptions, and absorbs messy reality. Toy worlds are stages that name the objects they approximate and the toy assumptions they still make, and graduate (`docs/PLAN.md`).
 - Every step that can go wrong in reality carries a noise parameter, on its own random stream, with a range to explore (`sim/README.md`, Noise).
 
 ## Records

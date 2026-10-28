@@ -128,11 +128,13 @@ def subsethood_ref (mx my ce : Array Float) : Float :=
   let num := ((mx.zip my).zip ce).foldl (fun a ((x, y), c) => a + min x y * c) 0.0
   if den ≤ 0.0 then 0.0 else num / den
 
-/-- Membership from memory, starting from the bootstrap pattern: with n observed actions and prior
-    strength k, μ = c·S + (1 − c)·prior, c = n / (n + k). -/
-def membership_update_ref (prior s n k : Float) : Float :=
-  let c := if n + k ≤ 0.0 then 0.0 else n / (n + k)
-  c * s + (1.0 - c) * prior
+/-- An overlap degree as a long-term rolling average of memberships (author ruling,
+    BACKPROPAGATION 8.12): each logged action moves μ_p(leaf) toward its share of the action that
+    also lies in p, by `rate` × its membership in the leaf, μ + rate · (min(m_leaf, m_p) − m_leaf · μ).
+    Averaged over many actions this is the subsethood above; an action outside the leaf leaves μ
+    untouched, so domains never fade, and overlaps shift only as reality does. -/
+def membership_rolling_ref (mu mLeaf mParent rate : Float) : Float :=
+  max 0.0 (min 1.0 (mu + rate * (min mLeaf mParent - mLeaf * mu)))
 
 /-- A model's accuracy in [0, 1] from its score (negative mean squared error): 1 / (1 + RMSE). It is
     also the confidence that splits escrow. -/

@@ -119,7 +119,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_subsethood] def subsethood (mx my ce : FloatArray) : Float := subsethood_ref mx.data my.data ce.data
 
-@[export bf_membership_update] def membershipUpdate (prior s n k : Float) : Float := membership_update_ref prior s n k
+@[export bf_membership_rolling] def membershipRolling (mu mLeaf mParent rate : Float) : Float :=
+  membership_rolling_ref mu mLeaf mParent rate
 
 @[export bf_accuracy] def accuracy (score : Float) : Float := accuracy_ref score
 

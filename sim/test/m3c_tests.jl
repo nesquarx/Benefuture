@@ -1,5 +1,6 @@
 # Toy model M3c: M3b on the domain network. Leaves hold shares; parents are fuzzy sets of leaves
-# whose degrees μ are learnt from memory. Classification descends from matched parents to member
+# whose overlap degrees μ start from a bootstrap classification (primary parents only) and move as a
+# long-term rolling average of the memberships memory logs; the network starts score-only. Classification descends from matched parents to member
 # leaves; pricing falls back from ineligible currencies to eligible parents by μ, else to StandCoin,
 # which predicts no value: work only it would take is priced at full resource cost and goes ahead
 # if the proposer, with co-funding experts, can pay. Clustered blockages form novel leaves, which
@@ -8,12 +9,13 @@
 const T3c = ToyParams(n = 80, steps = 200, plans = 10)
 # Two parents of two known leaves each; `hidden` adds true leaves missing from the network (their
 # primary parent, or 0 for a new top-level domain). Agents work only in the leaves listed.
-function m3c(; hidden = Int[], work = [1], n_agents = 6, skill = 0.6, kw...)
+function m3c(; hidden = Int[], work = [1], n_agents = 6, skill = 0.6, steps = 200, kw...)
     leaf_parent = [1, 1, 2, 2, hidden...]
     nl = length(leaf_parent)
     agents = [DomainAgent([l in work ? skill : 0.0 for l in 1:nl], [l in work ? 1 / length(work) : 0.0 for l in 1:nl], 0.0)
               for _ in 1:n_agents]
-    M3cParams(T3c, agents, leaf_parent, [trues(4); falses(length(hidden))]; λpos = 0.02, λneg = 0.05, kw...)
+    M3cParams(ToyParams(n = 80, steps = steps, plans = 10), agents, leaf_parent, [trues(4); falses(length(hidden))];
+              λpos = 0.02, λneg = 0.05, kw...)
 end
 
 @testset "M3c: acceptance" begin
@@ -30,10 +32,17 @@ end
     @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
     @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
     @test tr == run_m3c(m3c(work = [1, 3]); seed = 1)
-    # Overlap: leaf 3 belongs to parent 2 and weakly (0.3) to parent 1; memory keeps both degrees.
+    # The score-only start: no currency moves, but work is chosen, executed, scored and logged.
+    tr = run_m3c(m3c(work = [1, 3], steps = 40, init_steps = 40); seed = 1)
+    @test all(tr.balance .== tr.endowment) && isempty(tr.chosen_step) && tr.init_executed > 0 && !isempty(tr.memory)
+    # Domains do not fade: unused leaves keep their bootstrap degrees.
+    tr = run_m3c(m3c(work = [1, 3]); seed = 1)
+    @test tr.μ[1, 2] == 1 && tr.μ[2, 4] == 1 && tr.μ[1, 1] > 0.9 && tr.μ[2, 3] > 0.9
+    # Overlap: leaf 3 belongs to parent 2 and, in reality, weakly (0.3) to parent 1, which the
+    # bootstrap does not know; the rolling average learns it.
     tr = run_m3c(m3c(work = [3], overlaps = [(3, 1, 0.3)]); seed = 2)
     @test tr.μ[2, 3] ≈ 1 atol = 0.05
-    @test tr.μ[1, 3] ≈ 0.3 atol = 0.05
+    @test tr.μ[1, 3] ≈ 0.3 atol = 0.07
     # A hidden leaf under parent 1: blockages form a novel leaf there; it is scored but prices
     # nothing until it qualifies, then classifies and prices the hidden work.
     tr = run_m3c(m3c(hidden = [1], work = [1, 5]); seed = 2)
@@ -47,6 +56,11 @@ end
 end
 
 @testset "M3c: adversarial and edge cases" begin
+    # A rarely used leaf keeps its place: its work is still classified to it, and no duplicate forms.
+    agents = [DomainAgent([0.6, 0.6, 0.0, 0.0], [0.97, 0.03, 0.0, 0.0], 0.0) for _ in 1:6]
+    tr = run_m3c(M3cParams(ToyParams(n = 80, steps = 400, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05); seed = 5)
+    @test size(tr.μ, 2) == 4 && isempty(tr.formations) && tr.μ[1, 2] > 0.9
+    @test all(tr.stop_leaf[tr.true_leaf .== 2] .== 2)
     # Without formation, work in the hidden leaf earns its parent's reputation, never a leaf's.
     tr = run_m3c(m3c(hidden = [1], work = [5], form_count = 10^6); seed = 2)
     @test isempty(tr.formations)

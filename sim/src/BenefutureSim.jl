@@ -17,7 +17,7 @@ export escrow_split, reputation_decay, resource_cost, transaction_price, supply_
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood
-export membership_update, accuracy, currency_eligible, scarcity_cost
+export membership_rolling, accuracy, currency_eligible, scarcity_cost
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount
 
 include("lean.jl")
