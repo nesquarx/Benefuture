@@ -102,15 +102,30 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 
 @[export bf_overflow] def overflowExcess (balance threshold : Float) : Float := overflow_ref balance threshold
 
-@[export bf_classify_tree] def classifyTree (parents dists thresholds : FloatArray) (temperature : Float) :
-    FloatArray :=
-  ⟨classify_tree_ref (nats parents) dists.data thresholds.data temperature⟩
+private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
-@[export bf_fallback] def fallbackShares (parents eligible shares : FloatArray) : FloatArray :=
-  ⟨fallback_ref (nats parents) (eligible.data.map (· > 0.5)) shares.data⟩
+@[export bf_projection_membership] def projectionMembership (sig parent : FloatArray) : Float :=
+  projection_membership_ref sig.data parent.data
 
-@[export bf_subtree_sum] def subtreeSum (parents own : FloatArray) : FloatArray :=
-  ⟨subtree_sum_ref (nats parents) own.data⟩
+@[export bf_classify_network] def classifyNetwork (parentMem leafDists mu : FloatArray)
+    (parentThreshold muMin leafThreshold temperature : Float) : FloatArray :=
+  ⟨classify_network_ref parentMem.data leafDists.data mu.data parentThreshold muMin leafThreshold temperature⟩
+
+@[export bf_fallback_network] def fallbackNetwork (mu leafOk parentOk shares : FloatArray) : FloatArray :=
+  ⟨fallback_network_ref mu.data (bools leafOk) (bools parentOk) shares.data⟩
+
+@[export bf_aggregate_at_parent] def aggregateAtParent (muRow leafAmounts : FloatArray) : Float :=
+  aggregate_at_parent_ref muRow.data leafAmounts.data
+
+@[export bf_subsethood] def subsethood (mx my ce : FloatArray) : Float := subsethood_ref mx.data my.data ce.data
+
+@[export bf_membership_update] def membershipUpdate (prior s n k : Float) : Float := membership_update_ref prior s n k
+
+@[export bf_accuracy] def accuracy (score : Float) : Float := accuracy_ref score
+
+@[export bf_currency_eligible] def currencyEligible (acc records minRecords : Float) (novel : UInt8)
+    (threshold novelThreshold : Float) : UInt8 :=
+  if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold then 1 else 0
 
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity

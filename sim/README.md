@@ -16,7 +16,9 @@ sources changes. Toolchains: `tools/setup/toolchains.sh`.
 
 Each rung adds one source of mess and must still run in minutes, not hours. Every rung keeps the
 earlier ones as special cases (perfect settings reproduce the rung below), and each is judged
-against named conjectures.
+against named conjectures. Toy worlds are a stage: the simulation's end state models the Lean
+objects one to one (domains, leaf and parent domains, metric models, currencies, transaction
+proposals, memory), so each rung names the Lean objects it approximates and graduates to them.
 
 | Rung | World added | Judged against | Status |
 |---|---|---|---|
@@ -25,8 +27,8 @@ against named conjectures.
 | M2 | Agents propose the plans; imperfect agents (skill, sloppiness); escrow payment and settlement; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
-| M3c | Domain tree: classification descends to a leaf; a plan stuck at a branch is priced by the nearest eligible ancestor; StandCoin at the root predicts nothing and charges resource cost by availability; clustered blockages form subdomains, and memory is recounted | B6, B9, B10 | first pass done |
-| M3d | The tree-ish overlap network: nodes with several parents and overlap zones with mandatory competition; harder classification (overlapping signatures); baseline negative pricing; several contributors per plan with causal distribution | B6, B9, B10 | next |
+| M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
+| M3d | Transactions and the behavioural transaction substrate: every action a transaction; each relevant currency's model generates a proposal (TP_Gen, L86); the actor composes them (L88); every executed action and outcome logged to memory and measured (L145); transaction trees with several contributors, causal contribution and distribution (L93–94); baseline negative pricing (L143); G as prices rather than a central chooser | B6, B9, `Conj_MinTracksPrediction` | next |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -135,35 +137,46 @@ no outcomes and charges only resource cost (M3c).
 
 ## M3c observations
 
-Classification descends a domain tree (Lean `classify_tree_ref`); pricing falls back to the
-nearest eligible ancestor (`fallback_ref`); a domain's reputation sums its subdomains'
-(`subtree_sum_ref`); StandCoin, at the root, prices only resource cost by availability
-(`scarcity_cost_ref`). Tests: plans reach their true leaf; a hidden leaf under a branch is priced
-by the branch until clustered blockages form a subdomain near it, which then prices it; a hidden
-top-level domain is never chosen until it forms; StandCoin never pays for value; incremental
-reputation equals a recount from memory; without formation, reputation for hidden work stays at
-the branch. 3 branches of 4 known leaves, plus two hidden leaves under branches and one hidden
-top-level domain; 45 agents, three per leaf, sloppiness 0.3; 200 beings, 500 steps, 15 plans a
-step, marker noise 0.05, 5 seeds (about 7 s a run):
+Domains form a network, as in Lean's ratified model: an action's shares sit on leaf domains, and
+parents are fuzzy sets of leaves with degrees μ (`aggregate_at_parent`). μ starts from the
+bootstrap pattern (signature overlap) and is learnt from memory as fuzzy subsethood
+(`Proposed.DomainHierarchy`), blended so evidence takes over from the prior. Classification
+descends from matched parents to member leaves; pricing falls back from ineligible currencies to
+eligible parents by μ, or to StandCoin; work only StandCoin would take pays its full resource
+cost and goes ahead if the proposer, with experts, can pay. Tests: plans reach their true leaf;
+parent reputation equals Σ μ × leaf reputation plus what stuck at the parent; memory recovers an
+overlap degree; a hidden leaf forms, is scored but prices nothing until it qualifies, then takes
+its work; top-level work runs on StandCoin while funded and halts when not; experts co-fund when
+no currency qualifies; incremental reputation equals a recount; under every noise source at once
+the books still balance.
 
-| Reading | With formation | Without |
-|---|---|---|
-| Subdomains formed (all near a hidden domain; none spurious) | 3 | 0 |
-| Step of formation (mean) | 20–24 | n/a |
-| Chosen plans in the hidden top-level domain | 20.8 | 0 |
-| Chosen plans in the two hidden branch leaves | 10.6, 11.6 | 10.0, 6.8 |
-| Proposals blocked at the root, per step | 0.04 | 0.99 |
-| Floor growth, understanding | 33.6 | 33.2 |
-| Reputation against skill in the agent's own leaf (Spearman) | 0.89 | 0.91 (known leaves only) |
+3 parents of 4 known leaves (three with weak overlaps of 0.2–0.4 on a second parent) and two
+hidden leaves under parents; 42 agents, three per leaf, sloppiness 0.3; 200 beings, 500 steps,
+15 plans a step, marker noise 0.05; 5 seeds (about 7 s a run). Heavy noise: classification 0.08,
+model bias 0.3, cost error 0.3, regeneration variability 0.5, memory loss 10%, expert
+participation 50%.
 
-Without formation, work in a domain no model recognises is never done: no currency can value it,
-so it leaves the menu, and the only trace is a steady stream of blockages at the root. Work stuck
-at a branch is still done, priced by the coarse branch model at lower confidence, and is chosen
-less often. Blockages identify the missing domains within about 20 steps. The world remains too
-easy (signatures are well separated, a strict tree, every known plan classified correctly), so
-false formations are untested; M3d adds overlap.
+| Reading | Formation | No formation | Formation, heavy noise |
+|---|---|---|---|
+| Novel leaves formed (none spurious) | 2 | 0 | 2 |
+| Step of formation (mean) | 18 | n/a | 20 |
+| Novel leaves qualifying within 500 steps | 5 of 10 | n/a | 3 of 10 |
+| Score-only phase of those that qualified (steps) | 216 | n/a | 164 |
+| Known work classified to its leaf | 100% | 100% | 84% |
+| Error of learnt overlap degrees μ | 0.005 | 0.005 | 0.008 |
+| StandCoin lane: executed, halted (per run) | 0, 0 | 0, 0 | 23, 71 |
+| Floor growth, understanding | 36.3 | 34.4 | 29.8 |
 
-Balance overflow trades reinvestment against spread of wealth (3 seeds):
+Missing domains are found within about 20 steps and nothing spurious forms, even under heavy
+noise; memory recovers overlap degrees almost exactly. The score-only phase is the bottleneck: a
+novel leaf qualifies only as fast as its work is executed and scored, and work in a new domain is
+a small share of activity, so half the novel leaves never qualify within 500 steps; meanwhile
+their work is priced by the parent at coarse confidence, which is why formation changes how
+often it is chosen very little. Under heavy noise, model bias costs some parents their
+eligibility; their work falls to StandCoin, where three in four plans halt for lack of funds,
+and floors grow 18% less.
+
+Balance overflow trades reinvestment against spread of wealth (strict-tree version, 3 seeds):
 
 | Base, factor | Share of net earnings reinvested | Gini of balances |
 |---|---|---|
@@ -172,5 +185,24 @@ Balance overflow trades reinvestment against spread of wealth (3 seeds):
 | 500, 1.0 (default) | 34% | 0.45 |
 | 1,000, 1.0 | 11% | 0.53 |
 
-Resource cost is about 6% of valued outcomes at full availability. Both are approximate until
-governance sets them (M5).
+## Noise
+
+Every step that can go wrong in reality has a noise parameter, drawn from its own random stream
+so that turning one off changes nothing else. Defaults are toy-level; the ranges are first
+guesses at reality, to be swept once the model is solid.
+
+| Step | Parameter | Default | Range to explore |
+|---|---|---|---|
+| A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 |
+| Carrying a plan out | agent `sloppiness` | 0–0.3 | 0–2 |
+| Markers measuring levels and outcomes | `marker_σ` | 0–0.05 | 0.05–0.5 |
+| Metric model predictions | `σ_leaf`, `σ_branch`, `σ_coarse`, `MetricModel.σ` | 0.3, 0.5, 0.75 | 0.2–2 |
+| Systematic model bias | `bias_σ`, `MetricModel.bias` | 0 | 0–0.5 |
+| An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.03, 0.03 | 0.03–0.15 |
+| Resource accounting | `cost_σ` | 0 | 0–0.5 |
+| Resource regeneration | `regen_σ` | 0 | 0–1 |
+| Records reaching memory | `memory_loss` | 0 | 0–0.2 |
+| Experts joining co-funding | `participation` | 1 | 0.3–1 |
+
+Still without noise, to add as their rungs arrive: identity binding (M6), votes and delegation
+(M5), threshold estimates (M4), transaction logging and composition (M3d).

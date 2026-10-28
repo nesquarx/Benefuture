@@ -80,7 +80,7 @@ function run_m3(p::M3Params; seed)
             a, plan, pred = proposers[i - 1], plans[i - 1], preds[adopted][i - 1]
             agent = p.agents[a]
             push!(tr.chosen_agent, a)
-            confidence = 1 / (1 + sqrt(-rolling()[adopted]))
+            confidence = accuracy(rolling()[adopted])
             upfront, _ = escrow_split(plan_value(pred, t), confidence)
             done = carried_out(rng, agent.sloppiness, plan)
             seen = observed_plan(mrng, done, w.marker_σ)

@@ -329,7 +329,7 @@ sources).**
   zones, mandatory competition).
 - Thresholds may be set approximately for simulation and handed to governance later.
 
-**8.5 Proposal: a newly formed domain prices from formation (surfaced by M3c).** If a new
+**8.5 Withdrawn (author ruling, 8.8): models wait for accuracy thresholds before backing currencies.** Was: a newly formed domain prices from formation (surfaced by M3c). If a new
 domain's currency had to earn eligibility from scored records before pricing anything, a new
 top-level domain would deadlock: work only it could value is never done, so its model is never
 scored. Proposed: a domain formed from blockages prices from formation at the confidence its
@@ -350,3 +350,45 @@ accumulation threshold moves the share of net earnings reinvested from 84% to 11
 of balances rises from 0.18 to 0.53. The threshold is a distributional choice, not just a
 velocity floor; Benefuture currency (supply stability) and the overflow critique addressal could
 say so.
+
+**8.8 Author rulings on domains, eligibility and StandCoin (not yet in the sources).**
+- Work only StandCoin would take still happens. It is priced high, since no predicted outcome
+  offsets its resource cost, and halts only if the proposer cannot pay or gather other experts
+  to provide enough currency (Benefuture currency: StandCoin entry, Transaction mechanics).
+- Models wait for accuracy thresholds before backing currencies (L82). Novel domains may have a
+  lower threshold; dropping to just over 50% would need extraordinary grounds, and it is never
+  lower. A novel domain's model starts in the score-only phase (Implementation, Phase 1).
+- An undiscovered top-level domain is extremely improbable; novelty normally appears as a
+  missing subdomain.
+- A domain can overlap strongly with a bigger domain and weakly with others; the domain network
+  is an artifact mapping existing memberships and causal signature overlaps (Domain: weighted
+  membership, overlap zones; Ontology.Domain [R]: parents as fuzzy sets of leaves). The rules may
+  need refinement before the final model.
+- The simulation must ultimately model the Lean objects one to one; toy models graduate to them.
+- Every step that can go wrong in reality needs a noise parameter, so noise can be raised once
+  the model is solid.
+- Plan to move from proposals chosen by G to the transaction model, establishing the behavioural
+  transaction substrate (L145; System Design: Behavioral Transaction Substrate).
+
+**8.9 Findings from the domain network (M3c, `sim/README.md`).**
+- Memory recovers domain overlap degrees almost exactly (error 0.005), supporting relations
+  computed from memory rather than declared (L22).
+- The score-only phase is a bottleneck: a novel domain qualifies only as fast as its work is
+  executed and scored. With new-domain work a small share of activity, half the novel domains
+  had not qualified after 500 steps; meanwhile their work is priced by the parent at coarse
+  confidence. Open: whether this is acceptable, or whether qualification should also draw on
+  evidence other than the new domain's own scored predictions.
+- Under heavy noise, model bias can cost a parent its eligibility; its work then falls to
+  StandCoin, where most of it halted for lack of funds, and floors grew 18% less.
+- [OPEN] Work in the StandCoin lane has no predicted outcome, so G's floor check cannot screen it
+  in advance; harm is only measured afterwards. The sources should say what bounds such work
+  (scale limits, harm models from overlapping domains, or escrow against reputation).
+- [OPEN] Experts who co-fund StandCoin work are not yet rewarded; causal distribution (L94)
+  presumably credits them once the outcome is measured (M3d).
+
+**8.10 Proposal: memberships learnt from memory start from the bootstrap pattern.**
+`Proposed.DomainHierarchy` damps sparse evidence toward zero (S·n/(n+k)). For a domain network
+bootstrapped from established classifications (Domain: initial structure), the simulation blends
+toward the bootstrap degree instead: μ = c·S + (1 − c)·μ₀, c = n/(n+k), so a new or sparsely used
+leaf keeps its consortium membership until memory overrules it. Recorded in
+`docs/SPEC_DIVERGENCES.md`.

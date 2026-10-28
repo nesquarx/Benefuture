@@ -5,7 +5,7 @@
 # predicts. G chooses on the adopted model's predictions (as in M1). The proposer of the chosen
 # plan is paid its predicted value split by the model's confidence (escrow), then settled against
 # the markers' measurement of what actually happened. Reputation is the agent's measured
-# contribution, decaying each step. A model's confidence is 1 / (1 + its rolling error), so a
+# contribution, decaying each step. A model's confidence is its accuracy (Lean accuracy_ref, 1 / (1 + RMSE)), so a
 # perfect model pays in full upfront. Rules (Lean): everything in M1, plus escrow split,
 # settlement and reputation decay.
 
@@ -86,7 +86,7 @@ function run_m2(p::M2Params; seed)
             push!(tr.chosen_agent, a)
             push!(tr.predicted_floor_u_change, floor_quantile(obs.u .+ pred.du, t.q) - floor_quantile(obs.u, t.q))
             scores = rolling()
-            confidence = 1 / (1 + sqrt(-scores[adopted]))
+            confidence = accuracy(scores[adopted])
             upfront, _ = escrow_split(plan_value(pred, t), confidence)
             done = carried_out(rng, p.agents[a], plan)
             seen = observed_plan(mrng, done, w.marker_σ)

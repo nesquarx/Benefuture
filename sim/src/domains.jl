@@ -56,13 +56,7 @@ function overflow(balance::Real, threshold::Real)
     ccall(sym(:bf_overflow), Float64, (Float64, Float64), balance, threshold)
 end
 
-# The domain tree (author ruling, BACKPROPAGATION 8.3). Nodes are numbered from 1, the root
-# (StandCoin); `parents[1] == 0` and every other node's parent comes before it.
-
-function check_tree(parents)
-    check(!isempty(parents) && parents[1] == 0 && all(1 <= parents[i] < i for i in 2:length(parents)),
-          "parents must form a tree rooted at node 1, each parent before its children")
-end
+# Arrays returned by Lean (`bf_fa_size`, `bf_fa_get`, `bf_fa_drop`).
 
 """
 Take a reference to a Lean object, as `lean_inc_ref` in `lean.h` does: the count is the first
@@ -84,38 +78,74 @@ function lean_floats(a::Ptr{Cvoid})
     xs
 end
 
-lean_parents(parents) = floatarray([i == 1 ? 0 : parents[i] - 1 for i in eachindex(parents)])
+# The domain network (Ontology.Domain [R]: leaves hold shares, parents are fuzzy sets of leaves
+# with degrees μ, a parents × leaves matrix; BACKPROPAGATION 8.3, 8.4, 8.8). Shares are laid out
+# as leaves, then parent residuals, then the root (StandCoin).
 
-"""
-    classify_tree(parents, dists; thresholds, temperature) -> stopping shares
+rowmajor(μ::AbstractMatrix) = vec(permutedims(μ))
 
-Classification by descent from the root: `dists[i]` is the distance from an action's measured
-causal signature to node `i`'s; `thresholds[k]` matches children of nodes at depth `k - 1`.
-Returns each node's share of the action where descent stopped: a leaf when recognised, a branch
-when stuck there, the root when no domain recognises it.
-"""
-function classify_tree(parents, dists; thresholds, temperature::Real)
-    check_tree(parents)
-    check(length(dists) == length(parents) && all(d -> isfinite(d) && d >= 0, dists), "one non-negative distance per node")
-    check(length(thresholds) >= 1 && all(t -> isfinite(t) && t >= 0, thresholds), "thresholds must be non-negative")
-    check(isfinite(temperature) && temperature > 0, "temperature must be positive")
-    lean_floats(ccall(sym(:bf_classify_tree), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
-                      lean_parents(parents), floatarray(dists), floatarray(thresholds), temperature))
+"An action's membership in a parent: its signature's projection on the parent's, clamped to [0, 1]."
+function projection_membership(sig, parent)
+    check(length(sig) == length(parent) && all(isfinite, sig) && all(isfinite, parent), "signatures must match in length")
+    ccall(sym(:bf_projection_membership), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(sig), floatarray(parent))
 end
 
-"Each node's share moved to its nearest eligible ancestor; the root (StandCoin) is always eligible."
-function fallback(parents, eligible, shares)
-    check_tree(parents)
-    check(length(eligible) == length(shares) == length(parents), "one eligibility and one share per node")
-    lean_floats(ccall(sym(:bf_fallback), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
-                      lean_parents(parents), floatarray(Float64.(eligible)), floatarray(shares)))
+"""
+    classify_network(parent_mem, leaf_dists, μ; parent_threshold, μ_min, leaf_threshold, temperature)
+
+An action's shares by descent: matched parents (membership ≥ `parent_threshold`), their member
+leaves (μ ≥ `μ_min`) by closeness, the remainder stuck at the matched parents, or at the root.
+"""
+function classify_network(parent_mem, leaf_dists, μ::AbstractMatrix; parent_threshold::Real, μ_min::Real,
+                          leaf_threshold::Real, temperature::Real)
+    check(size(μ) == (length(parent_mem), length(leaf_dists)), "μ must be parents × leaves")
+    check(all(m -> isfinite(m) && 0 <= m <= 1, parent_mem) && all(m -> isfinite(m) && 0 <= m <= 1, μ), "memberships lie in [0, 1]")
+    check(all(d -> isfinite(d) && d >= 0, leaf_dists), "distances must be non-negative")
+    check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && isfinite(leaf_threshold) && leaf_threshold >= 0 &&
+          isfinite(temperature) && temperature > 0, "thresholds in range and temperature positive")
+    lean_floats(ccall(sym(:bf_classify_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+                      floatarray(parent_mem), floatarray(leaf_dists), floatarray(rowmajor(μ)),
+                      parent_threshold, μ_min, leaf_threshold, temperature))
 end
 
-"Each node's total over its subtree: its own amount plus all its subdomains'."
-function subtree_sum(parents, own)
-    check_tree(parents)
-    check(length(own) == length(parents) && all(isfinite, own), "one finite amount per node")
-    lean_floats(ccall(sym(:bf_subtree_sum), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}), lean_parents(parents), floatarray(own)))
+"Shares moved from ineligible currencies: leaves to eligible parents by μ, otherwise to the root."
+function fallback_network(μ::AbstractMatrix, leaf_ok, parent_ok, shares)
+    np, nl = size(μ)
+    check(length(leaf_ok) == nl && length(parent_ok) == np && length(shares) == nl + np + 1, "one flag per node, one share per slot")
+    check(profile_valid(shares), "shares must be a partition of unity")
+    lean_floats(ccall(sym(:bf_fallback_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                      floatarray(rowmajor(μ)), floatarray(Float64.(leaf_ok)), floatarray(Float64.(parent_ok)), floatarray(shares)))
+end
+
+"An amount aggregated at a parent: Σ μ(leaf) × amount(leaf)."
+function aggregate_at_parent(μ_row, amounts)
+    check(length(μ_row) == length(amounts) && all(isfinite, amounts), "one amount per leaf")
+    ccall(sym(:bf_aggregate_at_parent), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(μ_row), floatarray(amounts))
+end
+
+"Fuzzy subsethood of x in y over remembered actions, weighted by causal evidence `ce`."
+function subsethood(mx, my, ce)
+    check(length(mx) == length(my) == length(ce) && all(>=(0), mx) && all(>=(0), my) && all(>=(0), ce), "non-negative memberships")
+    ccall(sym(:bf_subsethood), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}), floatarray(mx), floatarray(my), floatarray(ce))
+end
+
+"Membership from memory: the bootstrap `prior` giving way to subsethood `s` as `n` actions accrue."
+function membership_update(prior::Real, s::Real, n::Real; k::Real)
+    check(all(isfinite, (prior, s, n, k)) && n >= 0 && k > 0, "evidence count non-negative, prior strength positive")
+    ccall(sym(:bf_membership_update), Float64, (Float64, Float64, Float64, Float64), prior, s, n, k)
+end
+
+"A model's accuracy in [0, 1] from its score (negative mean squared error); also its escrow confidence."
+function accuracy(score::Real)
+    check(isfinite(score) && score <= 0, "a score is a negative mean squared error")
+    ccall(sym(:bf_accuracy), Float64, (Float64,), score)
+end
+
+"Whether a domain's model may back its currency (novel domains: after `min_records`, never below 0.5)."
+function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::Real, novel_threshold::Real, min_records::Integer)
+    check(isfinite(acc) && 0 <= acc <= 1 && records >= 0 && min_records >= 0, "accuracy in [0, 1], counts non-negative")
+    ccall(sym(:bf_currency_eligible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64),
+          acc, records, min_records, novel, threshold, novel_threshold) == 1
 end
 
 "Resource cost per unit by availability: `base` × capacity / available, exhaustion dear but finite."

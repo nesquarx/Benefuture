@@ -61,44 +61,54 @@ end
     @test_throws ArgumentError overflow(NaN, 1.0)
 end
 
-# The domain tree (author ruling, BACKPROPAGATION 8.3): currency metric models descend from the
-# root to a leaf; a plan stuck at a branch is priced by the nearest ancestor whose currency is
-# eligible; the root (StandCoin) is always eligible but prices resource cost only. A domain's
-# reputation sums its subdomains'; a subdomain's never includes its parent's. Tree used below:
-# 1 root → {2, 3}; 2 → {4, 5}.
-const PARENTS = [0, 1, 1, 2, 2]
-@testset "Domain tree: acceptance" begin
-    # Descends to the matching leaf.
-    s = classify_tree(PARENTS, [0.0, 0.3, 2.0, 0.1, 1.0]; thresholds = [0.8, 0.4], temperature = 0.01)
-    @test s ≈ [0, 0, 0, 1, 0] atol = 1e-12
-    # Stuck at branch 2 when no child matches; at the root when no branch matches.
-    @test classify_tree(PARENTS, [0.0, 0.3, 2.0, 0.9, 1.0]; thresholds = [0.8, 0.4], temperature = 0.01) ≈ [0, 1, 0, 0, 0]
-    @test classify_tree(PARENTS, [0.0, 1.5, 2.0, 0.1, 0.1]; thresholds = [0.8, 0.4], temperature = 0.01) ≈ [1, 0, 0, 0, 0]
-    # Thresholds are per depth: a looser leaf threshold lets the same plan reach leaf 4.
-    @test classify_tree(PARENTS, [0.0, 0.3, 2.0, 0.6, 1.0]; thresholds = [0.8, 0.7], temperature = 0.01)[4] ≈ 1
-    # Fallback to the nearest eligible ancestor.
-    @test fallback(PARENTS, [true, true, true, false, true], [0, 0, 0, 1.0, 0]) ≈ [0, 1, 0, 0, 0]
-    @test fallback(PARENTS, [true, false, true, false, true], [0, 0, 0.5, 0.5, 0]) ≈ [0.5, 0, 0.5, 0, 0]
-    # Subtree sums: a domain sums its subdomains, a leaf only itself.
-    @test subtree_sum(PARENTS, [1.0, 2.0, 3.0, 4.0, 5.0]) ≈ [15, 11, 3, 4, 5]
-    # Resource cost by availability: full availability costs the base rate, half costs double.
+# The domain network (Ontology.Domain [R]: leaves hold shares, parents are fuzzy sets of leaves;
+# Proposed.DomainHierarchy [P]: μ from memory; BACKPROPAGATION 8.3, 8.4, 8.8). Shares are laid out
+# as leaves, then parent residuals, then the root (StandCoin). Network below: parents A, B; leaves
+# 1, 2 in A, leaf 3 in B and weakly (0.3) in A.
+const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
+@testset "Domain network: acceptance" begin
+    @test projection_membership([1.0, 0.3, 0.5], [1.0, 0.0, 0.0]) ≈ 1.0
+    @test projection_membership([0.1, 0.3, 0.5], [0.0, 1.0, 0.0]) ≈ 0.3
+    # Descends from a matched parent to its matching member leaf.
+    s = classify_network([1.0, 0.0], [0.1, 0.9, 1.5], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
+    @test s ≈ [1, 0, 0, 0, 0, 0] atol = 1e-12
+    # No member leaf matches: stuck at the parent; no parent matches: at the root.
+    @test classify_network([1.0, 0.0], [0.9, 0.9, 1.5], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01) ≈ [0, 0, 0, 1, 0, 0]
+    @test classify_network([0.1, 0.0], [0.1, 0.9, 1.5], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01) ≈ [0, 0, 0, 0, 0, 1]
+    # A weak member (μ 0.3 ≥ μ_min) is a candidate under A too.
+    @test classify_network([1.0, 0.0], [0.9, 0.9, 0.1], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)[3] ≈ 1
+    # Fallback: an ineligible leaf's share goes to its eligible parents by μ.
+    @test fallback_network(MU, [true, true, false], [true, true], [0, 0, 1.0, 0, 0, 0]) ≈ [0, 0, 0, 0.3 / 1.3, 1 / 1.3, 0]
+    @test fallback_network(MU, [false, true, true], [false, true], [1.0, 0, 0, 0, 0, 0]) ≈ [0, 0, 0, 0, 0, 1]
+    # Aggregates at parents, subsethood from memory, and the bootstrap blend.
+    @test aggregate_at_parent(MU[1, :], [2.0, 3.0, 10.0]) ≈ 8.0
+    @test subsethood([1.0, 1.0, 0.0], [0.3, 0.3, 1.0], ones(3)) ≈ 0.3
+    @test membership_update(1.0, 0.0, 5.0; k = 5.0) ≈ 0.5
+    # Accuracy and eligibility; a novel domain needs its score-only records first.
+    @test accuracy(-0.25) ≈ 1 / 1.5
+    @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
+    @test !currency_eligible(0.7, 5; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
+    @test currency_eligible(0.57, 10; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
     @test scarcity_cost(2.0, 100.0, 100.0) ≈ 2.0
     @test scarcity_cost(2.0, 50.0, 100.0) ≈ 4.0
 end
 
-@testset "Domain tree: adversarial and edge cases" begin
-    # Whatever the distances, the stop shares are a partition of unity.
-    for d in ([0.0, 0.5, 0.5, 0.2, 0.2], [0.0, 9.0, 9.0, 9.0, 9.0], [0.0, 0.79, 0.8, 0.39, 0.4])
-        @test profile_valid(classify_tree(PARENTS, d; thresholds = [0.8, 0.4], temperature = 0.05))
+@testset "Domain network: adversarial and edge cases" begin
+    # Shares are always a partition of unity, and fallback never loses any.
+    for (pm, ld) in (([1.0, 1.0], [0.1, 0.1, 0.1]), ([0.0, 0.0], [9.0, 9.0, 9.0]), ([0.6, 0.5], [0.39, 0.4, 0.41]))
+        s = classify_network(pm, ld, MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.05)
+        @test profile_valid(s)
+        @test profile_valid(fallback_network(MU, [false, true, false], [true, false], s))
     end
-    # The root is always eligible, so nothing falls off the tree.
-    @test fallback(PARENTS, [false, false, false, false, false], [0, 0.2, 0.2, 0.3, 0.3]) ≈ [1, 0, 0, 0, 0]
-    # A subdomain's total never includes its parent's own reputation.
-    @test subtree_sum(PARENTS, [0.0, 7.0, 0.0, 0.0, 0.0])[4:5] == [0.0, 0.0]
-    # Exhausted resources cost much more but stay finite.
+    # A novel domain's threshold never drops below 0.5, however it is set.
+    @test !currency_eligible(0.45, 100; novel = true, threshold = 0.6, novel_threshold = 0.3, min_records = 10)
+    # Membership is clamped to [0, 1]; no evidence leaves the bootstrap pattern untouched.
+    @test projection_membership([-1.0, 0.0], [1.0, 0.0]) == 0 && projection_membership([3.0, 0.0], [1.0, 0.0]) == 1
+    @test subsethood(zeros(3), ones(3), ones(3)) == 0 && membership_update(0.4, 0.9, 0.0; k = 5.0) ≈ 0.4
     @test isfinite(scarcity_cost(1.0, 0.0, 100.0)) && scarcity_cost(1.0, 0.0, 100.0) > 100
-    @test_throws ArgumentError classify_tree([0, 2, 1], [0.0, 0.1, 0.1]; thresholds = [0.8], temperature = 0.1)
-    @test_throws ArgumentError classify_tree(PARENTS, [0.0, 0.1]; thresholds = [0.8], temperature = 0.1)
-    @test_throws ArgumentError fallback(PARENTS, [true], [1.0, 0, 0, 0, 0])
+    @test_throws ArgumentError classify_network([1.0], [0.1, 0.2], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
+    @test_throws ArgumentError classify_network([1.0, 0.0], [0.1, 0.2, 0.3], MU; parent_threshold = 0.0, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
+    @test_throws ArgumentError fallback_network(MU, [true], [true, true], zeros(6))
+    @test_throws ArgumentError accuracy(0.5)
     @test_throws ArgumentError scarcity_cost(1.0, 10.0, 0.0)
 end

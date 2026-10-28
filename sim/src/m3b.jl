@@ -83,7 +83,7 @@ function run_m3b(p::M3bParams; seed)
         plans = [plan_with_mean(rng, d == 0 ? mean(p.agents[a].skills) : p.agents[a].skills[d], t) for (a, d) in zip(proposers, doms)]
         causal = [(d == 0 ? novel : signatures[d]) .+ p.spread .* randn(drng, nd) for d in doms]
         preds = [[predict(mrng, m, plan) for plan in plans] for m in w.models]
-        confidence = 1 / (1 + sqrt(-rolling()[adopted]))
+        confidence = accuracy(rolling()[adopted])
         profiles = map(causal) do c
             seen_c = c .+ p.classify_σ .* randn(crng, nd)
             classify([sqrt(sum(abs2, seen_c .- σ)) for σ in signatures]; threshold = p.threshold, temperature = p.temperature)

@@ -51,74 +51,99 @@ def accumulation_threshold_ref (base factor relevance : Float) : Float :=
 def overflow_ref (balance threshold : Float) : Float := max (balance - threshold) 0.0
 
 /-!
-  The domain tree (author ruling, BACKPROPAGATION 8.3). Nodes are indexed from 0, the root, which
-  carries StandCoin; `parents[i] < i` for every other node, so parents precede children.
+  The domain network (Ontology.Domain [R]: leaves hold shares, parents are fuzzy sets of leaves
+  with degrees μ; Proposed.DomainHierarchy [P]: μ from memory as fuzzy subsethood; author rulings,
+  BACKPROPAGATION 8.3, 8.4, 8.8). Parents are indexed 0..P-1 and leaves 0..L-1; `mu` is row-major,
+  parents × leaves. Shares are laid out as L leaves, then P parent residuals, then the root
+  (StandCoin).
 -/
 
-/-- Depth of each node: the root at 0, every other node one below its parent. -/
-def depths_ref (parents : Array Nat) : Array Nat :=
-  (List.range parents.size).foldl
-    (fun ds i => ds.push (if i == 0 then 0 else ds.getD (parents.getD i 0) 0 + 1)) #[]
+def mu_at (mu : Array Float) (nLeaves p l : Nat) : Float := mu.getD (p * nLeaves + l) 0.0
 
-/-- The children of node `v`. -/
-def children_ref (parents : Array Nat) (v : Nat) : Array Nat :=
-  ((List.range parents.size).filter fun i => i != 0 && parents.getD i 0 == v).toArray
+/-- An action's membership in a parent from causal signature overlap: its projection on the
+    parent's signature, clamped to [0, 1]. -/
+def projection_membership_ref (sig parent : Array Float) : Float :=
+  let dot := (sig.zip parent).foldl (fun a (x, y) => a + x * y) 0.0
+  let nn := parent.foldl (fun a y => a + y * y) 0.0
+  if nn ≤ 0.0 then 0.0 else max 0.0 (min 1.0 (dot / nn))
 
 /--
-  Classification by descent. Currency metric models match an action's causal signature from the
-  root down: at each node the children within the threshold for their depth share the action by
-  closeness (`classify_ref`), and whatever no child matches stops there. `dists[i]` is the
-  distance from the action's signature to node `i`'s; `thresholds[k]` applies to children of a
-  node at depth `k` (the last entry to any deeper level). Returns each node's stopping share, a
-  partition of unity: all at a leaf for a recognised action, at a branch for one stuck there, at
-  the root for one no domain recognises.
+  Classification by descent through the network. Parents whose membership reaches
+  `parentThreshold` match; the candidate leaves are their members (μ ≥ `muMin`), or, when no parent
+  matches, the leaves belonging to no parent. Candidates share the action by closeness
+  (`classify_ref`); what no candidate takes stays with the matched parents in proportion to
+  membership (stuck at a branch), or at the root when no parent matched. A partition of unity.
 -/
-def classify_tree_ref (parents : Array Nat) (dists thresholds : Array Float) (temperature : Float) :
+def classify_network_ref (parentMem leafDists mu : Array Float)
+    (parentThreshold muMin leafThreshold temperature : Float) : Array Float :=
+  let np := parentMem.size
+  let nl := leafDists.size
+  let matched := (List.range np).filter fun p => parentMem.getD p 0.0 ≥ parentThreshold
+  let candidate (l : Nat) : Bool :=
+    if matched.isEmpty then (List.range np).all fun p => mu_at mu nl p l < muMin
+    else matched.any fun p => mu_at mu nl p l ≥ muMin
+  let cands := ((List.range nl).filter candidate).toArray
+  let w := if cands.isEmpty then #[1.0]
+    else classify_ref (cands.map fun l => leafDists.getD l 0.0) leafThreshold temperature
+  let out := (List.range cands.size).foldl (fun o k => o.set! (cands.getD k 0) (w.getD k 0.0))
+    (Array.replicate (nl + np + 1) 0.0)
+  let resid := w.getD cands.size 0.0
+  if matched.isEmpty then out.modify (nl + np) (· + resid)
+  else
+    let tot := matched.foldl (fun a p => a + parentMem.getD p 0.0) 0.0
+    matched.foldl (fun o p => o.modify (nl + p) (· + resid * parentMem.getD p 0.0 / tot)) out
+
+/--
+  Pricing by fallback (L82: a currency exists in a domain only while a model there qualifies). An
+  ineligible leaf's share moves to its eligible parents in proportion to μ, or to the root when it
+  has none; an ineligible parent's residual moves to the root. The root, StandCoin, predicts no
+  value: what reaches it is charged resource cost only.
+-/
+def fallback_network_ref (mu : Array Float) (leafOk parentOk : Array Bool) (shares : Array Float) :
     Array Float :=
-  let n := parents.size
-  let ds := depths_ref parents
-  let init : Array Float × Array Float := ((Array.replicate n 0.0).set! 0 1.0, Array.replicate n 0.0)
-  let (_, stop) := (List.range n).foldl (fun (acc : Array Float × Array Float) v =>
-    let (flow, stop) := acc
-    let f := flow.getD v 0.0
-    let cs := children_ref parents v
-    if f == 0.0 then acc
-    else if cs.isEmpty then (flow, stop.modify v (· + f))
+  let nl := leafOk.size
+  let np := parentOk.size
+  let root := nl + np
+  let out := (List.range nl).foldl (fun o l =>
+    let s := shares.getD l 0.0
+    if leafOk.getD l false then o.modify l (· + s)
     else
-      let th := thresholds.getD (ds.getD v 0) (thresholds.back?.getD 0.0)
-      let w := classify_ref (cs.map fun c => dists.getD c 0.0) th temperature
-      let flow := (List.range cs.size).foldl
-        (fun fl k => fl.modify (cs.getD k 0) (· + f * w.getD k 0.0)) flow
-      (flow, stop.modify v (· + f * w.getD cs.size 0.0))) init
-  stop
+      let ps := (List.range np).filter fun p => parentOk.getD p false && mu_at mu nl p l > 0.0
+      let tot := ps.foldl (fun a p => a + mu_at mu nl p l) 0.0
+      if tot ≤ 0.0 then o.modify root (· + s)
+      else ps.foldl (fun o p => o.modify (nl + p) (· + s * mu_at mu nl p l / tot)) o)
+    (Array.replicate (nl + np + 1) 0.0)
+  let out := (List.range np).foldl
+    (fun o p => o.modify (if parentOk.getD p false then nl + p else root) (· + shares.getD (nl + p) 0.0)) out
+  out.modify root (· + shares.getD root 0.0)
 
-/-- The nearest ancestor of `v` (or `v` itself) whose currency is eligible; the root always is. -/
-def eligible_ancestor_ref (parents : Array Nat) (eligible : Array Bool) (v : Nat) : Nat :=
-  go v parents.size
-where
-  go (v fuel : Nat) : Nat :=
-    match fuel with
-    | 0 => 0
-    | fuel + 1 => if v == 0 || eligible.getD v false then v else go (parents.getD v 0) fuel
+/-- Aggregate at a parent (Ontology.Domain `aggregate_at_parent`): Σ_leaf μ_p(leaf) · amount(leaf). -/
+def aggregate_at_parent_ref (muRow leafAmounts : Array Float) : Float :=
+  (muRow.zip leafAmounts).foldl (fun a (m, x) => a + m * x) 0.0
 
-/--
-  Pricing by fallback: each node's share moves to its nearest eligible ancestor (L82: a currency
-  exists in a domain only while a model there is accurate above threshold). The root, StandCoin,
-  is always eligible but predicts no value, so what reaches it is charged resource cost only.
--/
-def fallback_ref (parents : Array Nat) (eligible : Array Bool) (shares : Array Float) : Array Float :=
-  (List.range shares.size).foldl
-    (fun acc v => acc.modify (eligible_ancestor_ref parents eligible v) (· + shares.getD v 0.0))
-    (Array.replicate shares.size 0.0)
+/-- Fuzzy subsethood of x in y over remembered actions (Proposed.DomainHierarchy [P]):
+    Σ min(m_x, m_y)·CE / Σ m_x·CE, zero without evidence. -/
+def subsethood_ref (mx my ce : Array Float) : Float :=
+  let den := (mx.zip ce).foldl (fun a (m, c) => a + m * c) 0.0
+  let num := ((mx.zip my).zip ce).foldl (fun a ((x, y), c) => a + min x y * c) 0.0
+  if den ≤ 0.0 then 0.0 else num / den
 
-/--
-  A domain's total over its subtree: its own amount plus all its subdomains' (Domain: a broader
-  domain includes the reputation of its sub-domains, without double counting). A subdomain's
-  total never includes its parent's.
--/
-def subtree_sum_ref (parents : Array Nat) (own : Array Float) : Array Float :=
-  (List.range own.size).reverse.foldl
-    (fun acc v => if v == 0 then acc else acc.modify (parents.getD v 0) (· + acc.getD v 0.0)) own
+/-- Membership from memory, starting from the bootstrap pattern: with n observed actions and prior
+    strength k, μ = c·S + (1 − c)·prior, c = n / (n + k). -/
+def membership_update_ref (prior s n k : Float) : Float :=
+  let c := if n + k ≤ 0.0 then 0.0 else n / (n + k)
+  c * s + (1.0 - c) * prior
+
+/-- A model's accuracy in [0, 1] from its score (negative mean squared error): 1 / (1 + RMSE). It is
+    also the confidence that splits escrow. -/
+def accuracy_ref (score : Float) : Float := 1.0 / (1.0 + Float.sqrt (max (-score) 0.0))
+
+/-- Currency eligibility (L82, author ruling): an established domain's model qualifies at
+    `threshold`; a novel domain's, after its score-only phase of `minRecords` scored predictions,
+    at `novelThreshold`, never below 0.5. -/
+def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
+    (threshold novelThreshold : Float) : Bool :=
+  if novel then records ≥ minRecords && accuracy ≥ max novelThreshold 0.5 else accuracy ≥ threshold
 
 /--
   Resource cost by availability (L83, StandCoin: charges resource cost as per availability): the

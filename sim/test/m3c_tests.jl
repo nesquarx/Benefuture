@@ -1,77 +1,90 @@
-# Toy model M3c: M3b on a domain tree. Classification descends the tree; a plan stuck at a branch
-# is priced by the nearest eligible ancestor; one stuck at the root (StandCoin, which predicts no
-# value) leaves the menu as a novelty signal. Repeated blockages at a node form a new subdomain,
-# whose model is scored on predictions alone until eligible; reputation is recounted from memory.
+# Toy model M3c: M3b on the domain network. Leaves hold shares; parents are fuzzy sets of leaves
+# whose degrees μ are learnt from memory. Classification descends from matched parents to member
+# leaves; pricing falls back from ineligible currencies to eligible parents by μ, else to StandCoin,
+# which predicts no value: work only it would take is priced at full resource cost and goes ahead
+# if the proposer, with co-funding experts, can pay. Clustered blockages form novel leaves, which
+# price only after a score-only phase at their (lower, never below 0.5) threshold.
 
 const T3c = ToyParams(n = 80, steps = 200, plans = 10)
-# Two branches of two known leaves each; `hidden` adds true leaves missing from the initial tree
-# (branch index, or 0 for a new top-level domain). Agents work only in the leaves listed.
+# Two parents of two known leaves each; `hidden` adds true leaves missing from the network (their
+# primary parent, or 0 for a new top-level domain). Agents work only in the leaves listed.
 function m3c(; hidden = Int[], work = [1], n_agents = 6, skill = 0.6, kw...)
-    leaf_branch = [1, 1, 2, 2, hidden...]
-    nl = length(leaf_branch)
+    leaf_parent = [1, 1, 2, 2, hidden...]
+    nl = length(leaf_parent)
     agents = [DomainAgent([l in work ? skill : 0.0 for l in 1:nl], [l in work ? 1 / length(work) : 0.0 for l in 1:nl], 0.0)
               for _ in 1:n_agents]
-    M3cParams(T3c, agents, leaf_branch, [trues(4); falses(length(hidden))]; λpos = 0.02, λneg = 0.05, kw...)
+    M3cParams(T3c, agents, leaf_parent, [trues(4); falses(length(hidden))]; λpos = 0.02, λneg = 0.05, kw...)
 end
 
 @testset "M3c: acceptance" begin
-    # A complete tree: plans reach their true leaf; nothing forms; StandCoin pays no value.
+    # A complete network: plans reach their true leaf; nothing forms; StandCoin pays no value.
     tr = run_m3c(m3c(work = [1, 3]); seed = 1)
-    @test mean(tr.stop_node .== tr.leaf_node[tr.true_leaf]) > 0.95
+    @test mean(tr.stop_leaf .== tr.true_leaf) > 0.95
     @test isempty(tr.formations)
-    @test all(tr.balance[:, 1] .<= tr.endowment + 1e-9)
-    # Subtree sums: a branch's total is its own plus its leaves'; a leaf's is its own.
-    for a in axes(tr.relevance_own, 1)
-        @test tr.relevance[a, :] ≈ subtree_sum(tr.parents, tr.relevance_own[a, :])
+    @test all(tr.balance[:, end] .<= tr.endowment + 1e-9)
+    # A parent's reputation aggregates its member leaves' by μ, plus what stuck at it.
+    for a in axes(tr.relevance_leaf, 1), p in axes(tr.μ, 1)
+        @test tr.relevance_parent[a, p] ≈ aggregate_at_parent(tr.μ[p, :], tr.relevance_leaf[a, :]) + tr.relevance_resid[a, p]
     end
-    # Incremental reputation equals a recount from memory.
+    # Incremental reputation equals a recount from memory; currency is conserved.
     @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
-    # Currency moves by measured value in valued shares, less resource cost, less overflow.
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
     @test tr == run_m3c(m3c(work = [1, 3]); seed = 1)
-    # A hidden leaf under branch 1: plans stick at the branch until blockages form a subdomain
-    # there, near the hidden leaf; its model qualifies, and later plans stop and are priced at it.
-    tr = run_m3c(m3c(hidden = [1], work = [5]); seed = 2)
+    # Overlap: leaf 3 belongs to parent 2 and weakly (0.3) to parent 1; memory keeps both degrees.
+    tr = run_m3c(m3c(work = [3], overlaps = [(3, 1, 0.3)]); seed = 2)
+    @test tr.μ[2, 3] ≈ 1 atol = 0.05
+    @test tr.μ[1, 3] ≈ 0.3 atol = 0.05
+    # A hidden leaf under parent 1: blockages form a novel leaf there; it is scored but prices
+    # nothing until it qualifies, then classifies and prices the hidden work.
+    tr = run_m3c(m3c(hidden = [1], work = [1, 5]); seed = 2)
     @test length(tr.formations) == 1
     f = tr.formations[1]
-    @test f.parent == tr.branch_node[1] && f.nearest_leaf == 5
-    after = tr.chosen_step .> f.step + 30
-    @test mean(tr.stop_node[after] .== f.node) > 0.9
-    @test any(tr.priced_node[after] .== f.node)
-    # A hidden top-level domain: stuck at the root, never chosen until a top-level domain forms.
-    tr = run_m3c(m3c(hidden = [0], work = [5]); seed = 3)
-    @test length(tr.formations) == 1 && tr.formations[1].parent == 1
-    @test all(tr.chosen_step .> tr.formations[1].step)
-    @test tr.root_blocked > 0
+    @test argmax(tr.μ[:, f.leaf]) == 1 && f.nearest_leaf == 5
+    @test f.eligible_step > f.step
+    @test !any(tr.priced_leaf[tr.chosen_step .< f.eligible_step] .== f.leaf)
+    after = (tr.true_leaf .== 5) .& (tr.chosen_step .> f.eligible_step + 30)
+    @test mean(tr.stop_leaf[after] .== f.leaf) > 0.9 && any(tr.priced_leaf[after] .== f.leaf)
 end
 
 @testset "M3c: adversarial and edge cases" begin
-    # Without enough blockages nothing forms, and work in the hidden leaf earns the branch's
-    # reputation, never a leaf's.
+    # Without formation, work in the hidden leaf earns its parent's reputation, never a leaf's.
     tr = run_m3c(m3c(hidden = [1], work = [5], form_count = 10^6); seed = 2)
     @test isempty(tr.formations)
-    @test all(iszero, tr.relevance_own[:, tr.leaf_node[1:4]]) && all(tr.relevance[:, tr.branch_node[1]] .> 0)
-    # A subdomain's reputation never includes its parent's.
-    @test all(iszero, tr.relevance[:, tr.leaf_node[1:2]])
-    # StandCoin never pays for value.
+    @test all(iszero, tr.relevance_leaf) && all(tr.relevance_resid[:, 1] .> 0)
+    # A new top-level domain: only StandCoin takes the work, at full resource cost; it goes ahead
+    # while funded and halts when no one can pay.
     tr = run_m3c(m3c(hidden = [0], work = [5]); seed = 3)
-    @test all(tr.balance[:, 1] .<= tr.endowment + 1e-9)
+    @test tr.lane_executed > 0 && all(tr.balance[:, end] .<= tr.endowment + 1e-9) && all(tr.balance[:, end] .>= -1e-9)
+    tr = run_m3c(m3c(hidden = [0], work = [5], endowment = 0.0); seed = 3)
+    @test tr.lane_executed == 0 && tr.lane_halted > 0
+    # No currency qualifies: everything falls to StandCoin, and experts with reputation in the
+    # work's parent co-fund it once proposers run short.
+    tr = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0); seed = 1)
+    @test isempty(tr.chosen_step) && tr.lane_executed > 0 && tr.cofunded > 0
+    @test all(tr.balance[:, end] .>= -1e-9)
     # Scarcity: a small resource capacity raises the cost per touched being.
     cheap = run_m3c(m3c(work = [1], capacity = 1e6); seed = 1)
     dear = run_m3c(m3c(work = [1], capacity = 400.0); seed = 1)
     @test mean(dear.costs ./ dear.touched) > mean(cheap.costs ./ cheap.touched)
-    @test_throws ArgumentError m3c(thresholds = [0.8])
+    # Every extra noise source at once: the books still balance and runs still repeat exactly.
+    noisy = m3c(hidden = [1], work = [1, 5], marker_σ = 0.2, classify_σ = 0.08, bias_σ = 0.3, cost_σ = 0.3, regen_σ = 0.5,
+                memory_loss = 0.1, participation = 0.5)
+    tr = run_m3c(noisy; seed = 4)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test tr == run_m3c(noisy; seed = 4)
+    @test_throws ArgumentError m3c(memory_loss = 1.5)
+    @test_throws ArgumentError m3c(parent_threshold = 0.0)
     @test_throws ArgumentError M3cParams(T3c, [DomainAgent([0.6], [1.0], 0.0)], [1, 1], trues(2); λpos = 0.02, λneg = 0.05)
     @test_throws ArgumentError m3c(form_count = 0)
+    @test_throws ArgumentError m3c(overlaps = [(9, 1, 0.3)])
 end
 
 @testset "M3c: runs fast enough to iterate" begin
-    leaf_branch = [b for b in 1:3 for _ in 1:4]
-    append!(leaf_branch, [1, 2, 0])
-    nl = length(leaf_branch)
+    leaf_parent = [[b for b in 1:3 for _ in 1:4]; [1, 2]]
+    nl = length(leaf_parent)
     agents = [DomainAgent([l == k ? 0.6 : 0.0 for l in 1:nl], [l == k ? 1.0 : 0.0 for l in 1:nl], 0.5) for k in 1:nl for _ in 1:3]
-    p = M3cParams(ToyParams(n = 200, steps = 300, plans = 20), agents, leaf_branch, [trues(12); falses(3)];
-                  λpos = 0.02, λneg = 0.05, marker_σ = 0.1)
+    p = M3cParams(ToyParams(n = 200, steps = 300, plans = 20), agents, leaf_parent, [trues(12); falses(2)];
+                  λpos = 0.02, λneg = 0.05, marker_σ = 0.1, overlaps = [(4, 2, 0.3), (8, 3, 0.3)])
     run_m3c(m3c(); seed = 1)
     @test (@elapsed run_m3c(p; seed = 1)) < 90
 end
