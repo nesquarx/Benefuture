@@ -128,6 +128,11 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (threshold novelThreshold : Float) : UInt8 :=
   if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold then 1 else 0
 
+@[export bf_cc_share] def ccShare (part sideTotal : Float) : Float := cc_share_ref part sideTotal
+
+@[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=
+  cause_settlement_ref cc total upfrontPaid
+
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
 

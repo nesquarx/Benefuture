@@ -53,17 +53,43 @@ function random_plan(rng::AbstractRNG, p::ToyParams)
     ToyPlan(mask .* (μu .+ p.spread .* randn(rng, p.n)), mask .* (μh .+ p.spread .* randn(rng, p.n)))
 end
 
+"V on one being of assessed changes `du`, `dh` (in units of the threshold); every loss is passing harm."
+function being_value(du::Real, dh::Real, p::ToyParams)
+    passing = 4  # tier index of passing harm in HARM_SCHEDULE
+    tiers = [(i == passing ? abs(min(du, 0)) + abs(min(dh, 0)) : 0.0, w) for (i, w) in enumerate(HARM_SCHEDULE)]
+    value_on_being(du, dh, 0.0; harm_wt = harm_weight(tiers; λ = p.gp.λ), p.gp...)
+end
+
 "Σ V over the beings a plan touches; in M0 every loss is passing harm."
 function plan_value(plan::ToyPlan, p::ToyParams)
-    passing = 4  # tier index of passing harm in HARM_SCHEDULE
     total = 0.0
     for b in eachindex(plan.du)
         du, dh = plan.du[b] / p.th, plan.dh[b] / p.th
         du == 0 && dh == 0 && continue
-        tiers = [(i == passing ? abs(min(du, 0)) + abs(min(dh, 0)) : 0.0, w) for (i, w) in enumerate(HARM_SCHEDULE)]
-        total += value_on_being(du, dh, 0.0; harm_wt = harm_weight(tiers; λ = p.gp.λ), p.gp...)
+        total += being_value(du, dh, p)
     end
     total
+end
+
+"""
+    assessed_parts(change, p) -> (positive, negative)
+
+An outcome's constituent parts: each being's understanding and happiness changes are assessed
+against not acting (As, L48, ex post: measured less counterfactual, here no change, over the
+threshold); a being's gains are valued together with V, and its losses together, so a wholly
+positive or wholly negative outcome is not split and keeps the synergy between understanding and
+happiness. Returns the summed values of the positive parts and of the negative parts.
+"""
+function assessed_parts(change::ToyPlan, p::ToyParams)
+    pos, neg = 0.0, 0.0
+    for b in eachindex(change.du)
+        change.du[b] == 0 && change.dh[b] == 0 && continue
+        au = assess(0.0, 0.0, change.du[b]; t = 1.0, t0 = 0.0, th = p.th)
+        ah = assess(0.0, 0.0, change.dh[b]; t = 1.0, t0 = 0.0, th = p.th)
+        (au > 0 || ah > 0) && (pos += being_value(max(au, 0.0), max(ah, 0.0), p))
+        (au < 0 || ah < 0) && (neg += being_value(min(au, 0.0), min(ah, 0.0), p))
+    end
+    pos, neg
 end
 
 """

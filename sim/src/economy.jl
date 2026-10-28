@@ -73,3 +73,16 @@ function settlement(measured::Real, upfront::Real)
     check(isfinite(measured) && isfinite(upfront), "inputs must be finite")
     ccall(sym(:bf_settlement), Float64, (Float64, Float64), measured, upfront)
 end
+
+"A contributor's share of one side of an outcome: its part over the side's total, in [0, 1]."
+function cc_share(part::Real, side_total::Real)
+    check(isfinite(part) && isfinite(side_total) && side_total != 0, "side total must be finite and non-zero")
+    check(sign(part) * sign(side_total) >= 0, "a part lies on its side's sign")
+    ccall(sym(:bf_cc_share), Float64, (Float64, Float64), part, side_total)
+end
+
+"Causal distribution: contribution × outcome, net of escrow already paid upfront."
+function cause_settlement(cc::Real, total::Real, upfront::Real)
+    check(isfinite(total) && isfinite(upfront) && 0 <= cc <= 1, "contribution in [0, 1], amounts finite")
+    ccall(sym(:bf_cause_settlement), Float64, (Float64, Float64, Float64), cc, total, upfront)
+end

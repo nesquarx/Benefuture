@@ -67,6 +67,12 @@ struct M3cParams
     max_new::Int
     init_steps::Int
     transactions::Bool
+    # Transaction trees and causal distribution (M3d; author ruling, BACKPROPAGATION 8.14).
+    cd_parts::Bool          # credit outcomes by their assessed parts, to every contributor
+    p_upstream::Float64     # chance an action builds on a recent output of another agent in its domain
+    β_upstream::Float64     # how much of that output's effect per being the action carries
+    recent_outputs::Int     # outputs kept per domain to build on
+    attribution_σ::Float64  # metric models' error in separating an upstream output's part
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -83,6 +89,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
+                   cd_parts::Bool = false, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
+                   attribution_σ::Real = 0.0,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -98,12 +106,15 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "rates, noises, thresholds and costs must be non-negative")
     check(all(x -> isfinite(x) && x >= 0, (bias_σ, cost_σ, regen_σ)) && 0 <= memory_loss <= 1 && 0 <= participation <= 1,
           "noise sizes non-negative, chances in [0, 1]")
+    check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
+          isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
+              cd_parts, p_upstream, β_upstream, recent_outputs, attribution_σ,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -125,6 +136,7 @@ function run_m3c(p::M3cParams; seed)
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
+    urng, arng = Xoshiro(hash((seed, :upstream))), Xoshiro(hash((seed, :attribution)))
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     ntop = count(==(0), p.leaf_parent)
@@ -184,8 +196,13 @@ function run_m3c(p::M3cParams; seed)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     reinvested = zeros(ncol)
     # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
-    memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem, :priced),
-                        Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64}}}[]
+    memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem, :priced, :credits),
+                        Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64},
+                              Vector{Tuple{Int,Float64,Float64}}}}[]
+    # Recent outputs per true domain that later actions may build on: (agent, effect per being on U, on H).
+    outputs = Dict{Int,Vector{Tuple{Int,Float64,Float64}}}()
+    credit_pos, credit_neg, upstream_pos, upstream_neg = zeros(na), zeros(na), zeros(na), zeros(na)
+    cofunder_credit, interaction = Ref(0.0), Ref(0.0)
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
@@ -206,13 +223,23 @@ function run_m3c(p::M3cParams; seed)
             st[j] > 0 && (μ[q, j] = membership_rolling(μ[q, j], st[j], pm[q]; rate = p.μ_rate))
         end
     end
-    function credit!(a, step, c, st, measured, pm, pr)
+    # Reputation from one contributor's parts of an outcome: positive parts are gains, negative losses.
+    function apply_credit!(a, st, pos, neg; dt = 0.0)
+        _, gain, _ = split_signed(st, pos)
+        _, _, loss = split_signed(st, neg)
+        h_pos[a, :] .+= gain; h_neg[a, :] .+= loss
+        rel_gain[a, :] .+= reputation_decay.(gain, dt; rate = rate_gain)
+        rel_loss[a, :] .-= reputation_decay.(loss, dt; rate = rate_loss)
+    end
+    function credit!(step, c, st, measured, pm, pr, credits)
         observe_membership!(st, pm)
-        net, pos, neg = split_signed(st, measured)
-        h_pos[a, :] .+= pos; h_neg[a, :] .+= neg
-        (measured >= 0 ? rel_gain : rel_loss)[a, :] .+= net
+        for (a, pos, neg) in credits
+            apply_credit!(a, st, pos, neg)
+            credit_pos[a] += pos; credit_neg[a] += neg
+        end
         rand(nrng) < p.memory_loss && return  # lost before reaching memory: gone at the next recount
-        push!(memory, (agent = a, step = step, signature = c, measured = measured, profile = st, parent_mem = pm, priced = pr))
+        push!(memory, (agent = credits[1][1], step = step, signature = c, measured = measured, profile = st,
+                       parent_mem = pm, priced = pr, credits = credits))
     end
     # Every model on the classification path is scored against the outcome.
     function score!(st, pm, l, plan, seen, quoted)
@@ -236,11 +263,8 @@ function run_m3c(p::M3cParams; seed)
             evidence[e] = merge(evidence[e], (profile = classify_sig(evidence[e].signature),))
         end
         h_pos .= 0; h_neg .= 0; rel_gain .= 0; rel_loss .= 0
-        for m in memory
-            net, pos, neg = split_signed(m.profile, m.measured)
-            h_pos[m.agent, :] .+= pos; h_neg[m.agent, :] .+= neg
-            r = m.measured >= 0 ? rate_gain : rate_loss
-            (m.measured >= 0 ? rel_gain : rel_loss)[m.agent, :] .+= reputation_decay.(net, step - m.step; rate = r)
+        for m in memory, (a, pos, neg) in m.credits
+            apply_credit!(a, m.profile, pos, neg; dt = step - m.step)
         end
     end
     record!() = (push!(tr.floor_u, floor_quantile(s.u, t.q)); push!(tr.floor_h, floor_quantile(s.h, t.q)))
@@ -253,7 +277,65 @@ function run_m3c(p::M3cParams; seed)
         scoring_only = step <= p.init_steps
         proposers = rand(rng, 1:na, t.plans)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
-        plans = [plan_with_mean(rng, p.agents[a].skills[l], t) for (a, l) in zip(proposers, leaves)]
+        own_plans = [plan_with_mean(rng, p.agents[a].skills[l], t) for (a, l) in zip(proposers, leaves)]
+        # Transaction trees: an action may build on a recent output of another agent in its domain,
+        # carrying β of that output's effect on each being it touches.
+        ups = Vector{Union{Nothing,Tuple{Int,ToyPlan}}}(nothing, length(own_plans))
+        if p.p_upstream > 0
+            for j in eachindex(own_plans)
+                pool = [o for o in get(outputs, leaves[j], Tuple{Int,Float64,Float64}[]) if o[1] != proposers[j]]
+                (isempty(pool) || rand(urng) >= p.p_upstream) && continue
+                ua, qu, qh = pool[rand(urng, 1:length(pool))]
+                m = touched(own_plans[j])
+                ups[j] = (ua, ToyPlan(m .* (p.β_upstream * qu), m .* (p.β_upstream * qh)))
+            end
+        end
+        plans = [ups[j] === nothing ? own_plans[j] :
+                 ToyPlan(own_plans[j].du .+ ups[j][2].du, own_plans[j].dh .+ ups[j][2].dh) for j in eachindex(own_plans)]
+        # Carry out action j by agent a; the outcome is measured by the markers.
+        function perform!(j, a)
+            own = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
+            done = ups[j] === nothing ? own : ToyPlan(own.du .+ ups[j][2].du, own.dh .+ ups[j][2].dh)
+            seen = observed_plan(mrng, done, p.marker_σ)
+            m = touched(own_plans[j])
+            if p.p_upstream > 0 && any(m)
+                out = get!(outputs, leaves[j], Tuple{Int,Float64,Float64}[])
+                push!(out, (a, mean(own.du[m]), mean(own.dh[m])))
+                length(out) > p.recent_outputs && popfirst!(out)
+            end
+            done, seen, plan_value(seen, t)
+        end
+        # Contributors and their parts of the outcome (author ruling, BACKPROPAGATION 8.14): the
+        # outcome is split into assessed parts; metric models separate the upstream output's part
+        # (with error `attribution_σ`); co-funders share the actor's parts by their share of the cost.
+        # Positive parts pay their contributors and negative parts penalise theirs, each side
+        # distributed by contribution in [0, 1] (Lean `cc_share_ref`, `cause_settlement_ref`).
+        function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 1.0)
+            p.cd_parts || return [(a, max(measured, 0.0), min(measured, 0.0))]
+            m = touched(plans[j])
+            up = ups[j] === nothing ? nothing :
+                ToyPlan(ups[j][2].du .+ m .* p.attribution_σ .* randn(arng, length(m)),
+                        ups[j][2].dh .+ m .* p.attribution_σ .* randn(arng, length(m)))
+            own = up === nothing ? seen : ToyPlan(seen.du .- up.du, seen.dh .- up.dh)
+            op, on = assessed_parts(own, t)
+            funded = sum(last, pledges; init = 0.0) / need
+            parts = [(a, (1 - funded) * op, (1 - funded) * on); [(e, g / need * op, g / need * on) for (e, g) in pledges]]
+            if up !== nothing
+                upp, upn = assessed_parts(up, t)
+                push!(parts, (ups[j][1], upp, upn))
+            end
+            P, N = sum(x[2] for x in parts), sum(x[3] for x in parts)
+            interaction[] += measured - (P + N)
+            credits = [(e, P == 0 ? 0.0 : cause_settlement(cc_share(pp, P), P, 0.0),
+                           N == 0 ? 0.0 : cause_settlement(cc_share(nn, N), N, 0.0)) for (e, pp, nn) in parts]
+            for (k, (e, pp, nn)) in enumerate(credits)
+                k > 1 && k <= 1 + length(pledges) && (cofunder_credit[] += pp + nn)
+                if up !== nothing && k == length(credits)
+                    upstream_pos[e] += pp; upstream_neg[e] += nn
+                end
+            end
+            credits
+        end
         sigs = [true_sig[l] .+ p.spread .* randn(drng, dims) .+ p.classify_σ .* randn(crng, dims) for l in leaves]
         pms = [parent_mem(c) for c in sigs]
         stops = [classify_sig(c) for c in sigs]
@@ -303,20 +385,23 @@ function run_m3c(p::M3cParams; seed)
         accept!(pred) = p.transactions && (pend_u .+= pred.du; pend_h .+= pred.dh; true)
         function execute_priced!(j)
             a, plan, l = proposers[j], plans[j], leaves[j]
-            done = carried_out(rng, p.agents[a].sloppiness, plan)
-            seen = observed_plan(mrng, done, p.marker_σ)
-            measured = plan_value(seen, t)
+            done, seen, measured = perform!(j, a)
+            credits = credits_for(j, a, seen, measured)
             balance[a, root] -= priced[j][root] * costs[j]
             for (c, sh, pr, acc) in offers[j]
                 upfront = sh * acc * plan_value(pr, t)
-                balance[a, c] += upfront - sh * costs[j] + settlement(sh * measured, upfront)
+                own = credits[1][2] + credits[1][3]
+                balance[a, c] += upfront - sh * costs[j] + settlement(sh * own, upfront)
+                for (e, pp, nn) in credits[2:end]
+                    balance[e, c] += sh * (pp + nn)  # other contributors: causal distribution, nothing upfront
+                end
             end
             push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
-            push!(tr.valued_measured, (1 - priced[j][root]) * measured)
+            push!(tr.valued_measured, (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]))
-            credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
@@ -327,11 +412,9 @@ function run_m3c(p::M3cParams; seed)
             if f > 1
                 j = menu[f - 1]
                 a, plan, l = proposers[j], plans[j], leaves[j]
-                done = carried_out(rng, p.agents[a].sloppiness, plan)
-                seen = observed_plan(mrng, done, p.marker_σ)
-                measured = plan_value(seen, t)
+                done, seen, measured = perform!(j, a)
                 score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
-                credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
+                credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured))
                 lane.init_executed[] += 1
                 available -= count(touched(plan))
                 s.u .+= done.du
@@ -383,14 +466,12 @@ function run_m3c(p::M3cParams; seed)
                 balance[e, root] -= g
                 lane.cofunded[] += g
             end
-            done = carried_out(rng, p.agents[a].sloppiness, plan)
-            seen = observed_plan(mrng, done, p.marker_σ)
-            measured = plan_value(seen, t)
+            done, seen, measured = perform!(j, a)
             push!(tr.lane_costs, need); push!(tr.lane_measured, measured)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
-            credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured; pledges, need))
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
@@ -444,6 +525,8 @@ function run_m3c(p::M3cParams; seed)
                relevance_leaf = own[:, 1:L], relevance_resid = own[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
                reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[],
+               credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
+               cofunder_credit = cofunder_credit[], interaction = interaction[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end
@@ -458,10 +541,11 @@ function recount(tr)
     na, n = size(tr.relevance_own)
     rate_gain, rate_loss = decay_rate_for(1.0; λpos = tr.λpos, λneg = tr.λneg), decay_rate_for(-1.0; λpos = tr.λpos, λneg = tr.λneg)
     hp, hn, rel = zeros(na, n), zeros(na, n), zeros(na, n)
-    for m in tr.memory
-        net, pos, neg = split_signed(m.profile, m.measured)
-        hp[m.agent, :] .+= pos; hn[m.agent, :] .+= neg
-        rel[m.agent, :] .+= reputation_decay.(net, tr.steps - m.step; rate = m.measured >= 0 ? rate_gain : rate_loss)
+    for m in tr.memory, (a, pos, neg) in m.credits
+        _, gain, _ = split_signed(m.profile, pos)
+        _, _, loss = split_signed(m.profile, neg)
+        hp[a, :] .+= gain; hn[a, :] .+= loss
+        rel[a, :] .+= reputation_decay.(gain, tr.steps - m.step; rate = rate_gain) .- reputation_decay.(loss, tr.steps - m.step; rate = rate_loss)
     end
     hp, hn, rel
 end

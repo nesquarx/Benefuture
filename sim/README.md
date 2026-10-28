@@ -30,7 +30,7 @@ assumptions it still makes, and graduates to them.
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
 | M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
-| M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); next, transaction trees with several contributors, causal contribution and distribution (L93–94), pending the author's ruling (BACKPROPAGATION 8.13) | B6, B9, `Conj_MinTracksPrediction` | transactions done; trees pending a ruling |
+| M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -54,7 +54,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
 | `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
-| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes (M3d); transaction trees and causal contribution pending a ruling (BACKPROPAGATION 8.13) |
+| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; causal distribution by assessed parts (M3d); deeper chains and degree of separation not yet |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | not yet | governed parameters, SigThGv (M4, M5) |
@@ -237,6 +237,21 @@ work, which settlement claws back; model bias magnifies the harmful share. Selec
 the union of all concerned currencies; it is tested with gaming agents (M6). Baseline negative
 pricing (L143) needs beings who transact for basic needs themselves (M7).
 
+Transaction trees and causal distribution: an action may build on a recent output of another
+agent in its domain, carrying part of its effect. The outcome is split into constituent parts
+(each being's gains together, its losses together, each contributor), each part's side decided by
+its assessment against not acting; positive parts pay their contributors, negative parts penalise
+theirs, each contributor's share of a side in [0, 1] (Lean `cc_share_ref`, `cause_settlement_ref`).
+Tests: parts by assessment; a wholly positive outcome is not split; agents who pass outputs on
+without adding to them earn almost nothing while the makers upstream are paid; a bad output is
+penalised through the losses it carries downstream; co-funders share the credit of StandCoin work;
+the books balance and reputation recounts exactly, with attribution error too. With half of all
+actions building on others' outputs, about 10% of credit flows upstream (13% with attribution
+error 0.3). The remainder that parts cannot carry (mixed beings, contributors' effects meeting on
+one being) is about 8% of measured value (12% with attribution error) and is not distributed.
+Splitting understanding from happiness even in wholly positive outcomes had discarded their
+synergy, half of all value; parts now split only what is mixed.
+
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
 | Base, factor | Share of net earnings reinvested | Gini of balances |
@@ -265,6 +280,7 @@ guesses at reality, to be swept once the model is solid.
 | Resource regeneration | `regen_σ` | 0 | 0–1 |
 | Records reaching memory | `memory_loss` | 0 | 0–0.2 |
 | Experts joining co-funding | `participation` | 1 | 0.3–1 |
+| Separating an upstream output's part | `attribution_σ` | 0 | 0–0.5 |
 
 Still without noise, to add as their rungs arrive: identity binding (M6), votes and delegation
 (M5), threshold estimates (M4), transaction logging and composition (M3d).

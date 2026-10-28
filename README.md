@@ -218,7 +218,10 @@ metric models are non-circular given the empirical-marker requirement
 - Causal contribution as specified (clamped value added, L93's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
-  Open (BACKPROPAGATION 8.13).
+  Resolved by the author's ruling: credit follows an outcome's assessed parts (BACKPROPAGATION 8.14).
+- Informed inaction is a crime in the pseudocode (L115) but classifies as an accident in Lean
+  (`Subgoals.Justice.Crime` requires volition); harm through inaction cannot arise in the
+  simulation's world, which does not change unless acted on (BACKPROPAGATION 8.15).
 
 ### Demonstrated in simulation
 
@@ -257,6 +260,11 @@ means over 5 seeds of 500 steps.
   measured harmful, against 2%; 27% under model bias); with exact models, screening each step's
   transactions together keeps every floor from falling ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
   [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- Causal distribution by assessed parts: agents who pass outputs on without adding to them earn
+  almost nothing while the makers upstream are paid; a bad output is penalised through the losses
+  it carries downstream; co-funders share the credit of the work they fund; the books balance
+  exactly. About 8% of measured value (mixed outcomes, contributors meeting on one being) is not
+  distributed ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the
   share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
   ([sim/README.md, M3c](sim/README.md#m3c-observations)).

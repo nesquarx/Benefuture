@@ -231,12 +231,13 @@ def on_exec (actionId : String) (dom : String) (selected : String) (candidates :
 
 abbrev CD := CausalDistribution
 /--
-  [OPEN] COUNTEREXAMPLE: CC by clamped value added over-distributes along a chain with a loss.
+  COUNTEREXAMPLE: CC by clamped value added over-distributes along a chain with a loss.
   A adds 10 (receives 0, produces 10), B adds 5 (receives 10, produces 15), C destroys 10 (receives
   15, produces 5); the measured outcome is 5. CC credits A 10 and B 5 and C nothing: 15 distributed
   for an outcome of 5, and C's loss is distributed to no one. Signed value added (produced −
-  received) would telescope to the outcome exactly, but leaves L93's range [0, 1]
-  (BACKPROPAGATION 8.13).
+  received) would telescope to the outcome exactly, but leaves L93's range [0, 1]. Resolved by the
+  author's ruling (BACKPROPAGATION 8.14): credit follows the outcome's assessed parts, positive
+  parts paying their contributors and negative parts penalising theirs, each side within [0, 1].
 -/
 theorem cc_clamped_overdistributes :
     let a := TxTreeNode.mkSimple "a" "A" 0 10

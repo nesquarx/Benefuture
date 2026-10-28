@@ -419,7 +419,7 @@ first half; add that overlaps are rolling averages of members' memberships), L22
 - Requirement (author): the simulations' outcome is a system of rules ready for implementation,
   with no toy assumptions and robust to messy reality.
 
-**8.13 [OPEN] Causal contribution along a transaction tree: range versus conservation.** L93 gives
+**8.13 Resolved by 8.14. Causal contribution along a transaction tree: range versus conservation.** L93 gives
 CC a range of [0, 1], and `Systems.Substrate` computes it as clamped value added
 (`causal_contribution_ratio`: (produced − received) / outcome, zero when either is non-positive);
 L94 distributes rewards and penalties in proportion to CC, net of escrow paid. Along a chain with a
@@ -439,3 +439,47 @@ paid onward. Candidate homes: L93–94, Benefuture currency (Causal Distribution
   harmful from 2% to 9% (27% under model bias); settlement claws it back. Whether the screen should
   require more than beating inaction (a margin scaled to the model's uncertainty, as in 8.1) is
   open.
+
+**8.14 Author ruling: outcomes are credited by their parts.** A positive outcome pays its
+contributors and a negative outcome penalises its contributors; a mixed outcome is split into its
+constituent parts by domain and by understanding and happiness impact. A part's side is decided by
+its assessment against not acting (As, L48), not by the raw sign of a change. Each contributor's
+share of a side is its part over the side's total, in [0, 1] as L93 states, so the chain of 8.13
+pays A 10 and B 5 and penalises C 10. Candidate homes: L93–94 and Benefuture currency (Causal
+Distribution): "rewards ∝ CC on the positive parts of an assessed outcome, penalties ∝ CC on its
+negative parts".
+- Simulation decisions (open to the author): (1) a being's gains are valued together and its
+  losses together, so only mixed outcomes are split; splitting understanding from happiness even
+  in a wholly positive outcome discarded their synergy (κ), half of all measured value. (2) The
+  remainder V(outcome) − Σ V(parts), from mixed beings and from contributors' effects meeting on
+  one being, is not distributed; it is about 8% of measured value (12% with attribution error).
+  (3) Co-funders of StandCoin work share the actor's parts in proportion to their share of the
+  cost, as reputation only, since no currency can value that work; a currency share would follow
+  once a domain qualifies.
+- Finding (M3d trees): with half of all actions building on another agent's recent output, about
+  10% of credit flows to upstream contributors; agents who add nothing to what they pass on earn
+  almost nothing; a bad output is penalised through the losses it carries downstream.
+
+**8.15 [OPEN] Harm through inaction when action was expected (a driver who does not brake).**
+- Sources: inaction is ¬A := ∄Ou(actor), the actor producing no output (L48); assessment compares
+  an action with that counterfactual, so not acting has zero assessed value by construction, and
+  braking is assessed at the harm it prevents. Crime is harm by informed volition or informed
+  inaction (L115, Crime.txt), so a driver who sees the pedestrian and does not brake commits a
+  crime; one who could not have known causes an accident. Duty appears only in Accolade (L121:
+  good beyond duty is acknowledged); what is expected of an actor is not defined.
+- Causal attribution: the collision's harm is carried by the car's motion, an output of the
+  driver's ongoing action (driving), so it reaches the driver through causal distribution as a
+  negative part of the driving transaction, whatever the brake. Whether "not braking" is a
+  separate inaction or part of the action of driving decides which branch applies; the sources
+  do not say, and the answer matters for anyone who could have acted but was not acting (a
+  bystander).
+- Lean gap: `Subgoals.Justice.Crime` requires `hasVolition = true` (`h_culpable`) and
+  `is_crime_classification` is informed ∧ volition, so informed inaction classifies as an
+  `Accident`, contradicting L115 and the module's own docstring.
+- Simulation gap: the toy world has no harm without action (beings change only when acted on), so
+  ¬A always means no change and no case of harm through inaction can arise. Modelling it needs a
+  world that moves on its own (hazards, decay), where the counterfactual is predicted from records
+  (Mem_ctrl, L48) and assessment decides positive and negative parts against it.
+- Questions: is not braking an inaction (no output) or part of driving? What makes an action
+  "expected": a contract, law, role, or the actor's own prior outputs? Does informed inaction by a
+  bystander who did not create the hazard count as crime, given L115's wording?
