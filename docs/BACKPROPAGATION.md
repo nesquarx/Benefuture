@@ -626,6 +626,12 @@ reality is the open empirical question.
    balance overflow reinvests (L103), whose DirectedAutoInvest is directed by the entity, not the
    administration. Gaming check: harm passed off as unassigned escapes its contributor at the
    commons' cost; the causal assessment must find contributors before insurance pays.
+   (3) M4: experimental design in randomised blocks (a fixed order was confounded by the trend in
+   floor movement), shifting only on a gain of `th_sig` standard errors (Lean `select_candidate_ref`).
+   [P] reading L25's significance threshold as the z-threshold for adaptation, and randomised blocks
+   as part of Perturb's method; candidate home L157. Gaming check: a faction able to time its
+   activity to a candidate's epochs could bias the trial; randomised order hides which candidate is
+   live, so do not publish the schedule ahead of time.
 
 **8.23 Author ruling on degradation and enhancement (extending 8.22.4).** System Design and
 Progressive complexity apply: any lack or corruption of capability, process, data or inputs is

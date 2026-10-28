@@ -295,9 +295,11 @@ means over 5 seeds of 500 steps.
   administration is funded is open; the simulation uses the pool balance overflow reinvests)
   ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
-  epoch the outcomes do not depend on them; adaptation judged by the floors' movement over epochs of
-  50 steps is no better than chance ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
-  [sim/README.md, M4](sim/README.md#m4-observations)).
+  epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
+  tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
+  make no difference it shifted once in eight rounds, against every round with a fixed order (floor
+  movement trends over time). Not yet: gauging freedom ranges, the debatable escape
+  ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, M4](sim/README.md#m4-observations)).
 - Governance: expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in
   a toy where skill sharpens judgement), but raw reputation concentrates a third of the weight in one
   voter; domain-relative expertise (now the default, by the author's ruling) keeps nearly all the

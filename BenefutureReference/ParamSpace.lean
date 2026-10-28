@@ -39,4 +39,15 @@ def admissible_ref (v : Array Float) : Bool :=
 def perturb_step_ref (cur cand : Array Float) (fields : Array Nat) (δ : Float) : Array Float :=
   if admissible_ref cand && fields.all (fun i => (cand.getD i 0.0 - cur.getD i 0.0).abs ≤ δ) then cand else cur
 
+/-- Adaptation as experimental design (author ruling, BACKPROPAGATION 8.22; L157 Ap): given each
+    candidate's mean outcome and its standard error, the incumbent first (index 0), shift to the
+    best candidate only if it beats the incumbent by `thSig` (L25) combined standard errors. -/
+def select_candidate_ref (means ses : Array Float) (thSig : Float) : Nat := Id.run do
+  let mut best := 0
+  for i in [1:means.size] do
+    if means.getD i 0.0 > means.getD best 0.0 then best := i
+  let gap := means.getD best 0.0 - means.getD 0 0.0
+  let se := Float.sqrt (ses.getD best 0.0 ^ 2 + ses.getD 0 0.0 ^ 2)
+  if best != 0 && gap > thSig * se then best else 0
+
 end BenefutureReference

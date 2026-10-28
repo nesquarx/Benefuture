@@ -155,6 +155,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_perturb_step] def perturbStep (cur cand fields : FloatArray) (δ : Float) : FloatArray :=
   ⟨perturb_step_ref cur.data cand.data (fields.data.map fun x => x.toUInt64.toNat) δ⟩
 
+@[export bf_select_candidate] def selectCandidate (means ses : FloatArray) (thSig : Float) : USize :=
+  (select_candidate_ref means.data ses.data thSig).toUSize
+
 @[export bf_voting_weight] def votingWeight (base expertiseWeight : Float) (shares reps : FloatArray)
     (impactWeight impact thOptional : Float) : Float :=
   (Voting_weight_ref base expertiseWeight (pairs shares reps) impactWeight impact thOptional).1

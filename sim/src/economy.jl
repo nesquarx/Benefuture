@@ -148,6 +148,19 @@ function admissible(v)
     ccall(sym(:bf_admissible), UInt8, (Ptr{Cvoid},), floatarray(v)) == 1
 end
 
+"""
+    select_candidate(means, ses; th_sig) -> index
+
+Adaptation as experimental design (Lean `select_candidate_ref`): the incumbent is first; shift to
+the best candidate only if it beats the incumbent by `th_sig` combined standard errors (1-based).
+"""
+function select_candidate(means, ses; th_sig::Real)
+    check(length(means) == length(ses) >= 1 && all(isfinite, means) && all(x -> isfinite(x) && x >= 0, ses),
+          "one finite mean and non-negative standard error per candidate")
+    check(isfinite(th_sig) && th_sig >= 0, "significance threshold non-negative")
+    Int(ccall(sym(:bf_select_candidate), Csize_t, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(means), floatarray(ses), th_sig)) + 1
+end
+
 "Controlled perturbation: `cand` if admissible and within δ of `cur` in every governed field, else `cur`."
 function perturb(cur, cand, fields; δ::Real)
     check(length(cur) == length(cand) == length(PARAM_FIELDS) && all(isfinite, cand), "two full parameter vectors")

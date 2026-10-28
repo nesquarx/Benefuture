@@ -1,8 +1,18 @@
 # Toy model M4: governed thresholds (SigThGv, L157; `Systems.ParamSpace` [R]). The parameter vector
 # starts at the bootstrap point; non-debatable parameters are perturbed: a candidate within δ of the
 # current vector in every governed field is adopted only if admissible (`perturb_step`). Adaptation
-# (L52 `adapt«Ap»`; [P], BACKPROPAGATION 8.20) keeps a candidate only if the next epoch's observed
-# floors move at least as well as the previous epoch's, else reverts.
+# is experimental design (author ruling, BACKPROPAGATION 8.22): each round tries the incumbent and
+# perturbed candidates within the freedom range, interleaved over epochs, observes the outcome they
+# aim to improve (the floors' movement), and shifts to the best only if it beats the incumbent by
+# the significance threshold in standard errors (Lean `select_candidate_ref`, `th_sig`).
+
+@testset "Candidate selection (Lean reference)" begin
+    @test select_candidate([1.0, 3.0], [0.1, 0.1]; th_sig = 1.0) == 2
+    @test select_candidate([1.0, 3.0], [2.0, 2.0]; th_sig = 1.0) == 1      # not significant: keep the incumbent
+    @test select_candidate([1.0, 2.0, 4.0, 3.0], [0.1, 0.1, 0.1, 0.1]; th_sig = 1.0) == 3
+    @test select_candidate([5.0, 2.0, 4.0], [0.1, 0.1, 0.1]; th_sig = 0.0) == 1  # the incumbent is best
+    @test_throws ArgumentError select_candidate([1.0, 2.0], [0.1]; th_sig = 1.0)
+end
 
 @testset "Parameter space (Lean reference): acceptance" begin
     pv = bootstrap_params()
@@ -28,7 +38,7 @@ end
     @test_throws ArgumentError perturb(pv, pv[1:3], [1]; δ = 0.02)
 end
 
-gov(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
+gov(; steps = 300, kw...) = M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
                          [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true, govern = true, kw...)
 
 @testset "M4: acceptance" begin
@@ -37,13 +47,20 @@ gov(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgen
     @test any(tr.params[k] != tr.params[1] for k in 2:length(tr.params))
     epochs = length(tr.params) - 1
     @test all(abs.(tr.params[end] .- tr.params[1]) .<= epochs * 0.02 + 1e-12)
-    tr = run_m3c(gov(); seed = 1)
-    @test all(admissible, tr.params) && tr.reverted + tr.kept == length(tr.params) - 2  # no decision on the first epoch
-    @test tr == run_m3c(gov(); seed = 1)
+    # Experimental design: rounds of candidates × trials epochs; every candidate admissible.
+    tr = run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed = 1)
+    @test tr.rounds == 2 && length(tr.params) == tr.rounds + 1 && all(admissible, tr.tried)
+    @test length(tr.tried) == 2 * 3 && tr.shifts <= tr.rounds
+    @test tr == run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed = 1)
 end
 
 @testset "M4: adversarial and edge cases" begin
     tr = run_m3c(gov(gov_δ = 0.0); seed = 2)
-    @test all(==(tr.params[1]), tr.params)
+    @test all(==(tr.params[1]), tr.params) && tr.shifts == 0
+    # Where the parameters make no measurable difference, selection does not chase noise: across
+    # seeds, shifts are rare (the floor-based rule it replaces shifted half the time).
+    shifts = sum(run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed).shifts for seed in 1:4)
+    @test shifts <= 2
     @test_throws ArgumentError gov(gov_epoch = 0)
+    @test_throws ArgumentError gov(gov_trials = 1)
 end
