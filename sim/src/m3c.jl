@@ -88,6 +88,11 @@ struct M3cParams
     side_share::Float64          # share of the beings it touches that the side effect harms
     side_size::Float64           # harm per being of the side effect
     p_foresee::Float64           # chance the actor foresaw the side effect
+    # Governed thresholds (M4; SigThGv, L157; `Systems.ParamSpace` [R]).
+    govern::Bool                 # perturb the value parameters through SigThGv
+    adapt::Bool                  # keep a candidate only if the next epoch's floors do as well ([P], 8.20)
+    gov_epoch::Int               # steps between governance steps (governed)
+    gov_δ::Float64               # largest move of a field per perturbation (governed)
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -108,7 +113,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    attribution_σ::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
                    hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
-                   p_foresee::Real = 0.5,
+                   p_foresee::Real = 0.5, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
+                   gov_δ::Real = 0.02,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -130,6 +136,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(guardians) || (length(guardians) == length(leaf_parent) && all(g -> 0 <= g <= length(agents), guardians)),
           "one guardian (or 0) per true domain")
     check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
+    check(gov_epoch >= 1 && isfinite(gov_δ) && gov_δ >= 0, "governance epoch positive, δ non-negative")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
@@ -142,7 +149,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
-              side_size, p_foresee,
+              side_size, p_foresee, govern, adapt, gov_epoch, gov_δ,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -166,6 +173,15 @@ function run_m3c(p::M3cParams; seed)
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
     urng, arng = Xoshiro(hash((seed, :upstream))), Xoshiro(hash((seed, :attribution)))
     hrng, srng = Xoshiro(hash((seed, :hazard))), Xoshiro(hash((seed, :side)))
+    grng = Xoshiro(hash((seed, :governance)))
+    # Governed value parameters (α, β, γ, q₊, q₋, λ), from the bootstrap point.
+    governed = [1, 2, 3, 6, 7, 8]
+    pv = bootstrap_params()
+    with_params(t, v) = ToyParams(n = t.n, steps = t.steps, plans = t.plans, q = t.q, th = t.th, touch = t.touch,
+                                  shift = t.shift, spread = t.spread, gp = (α = v[1], β = v[2], γ = v[3], λ = v[8], qp = v[6], qm = v[7]))
+    p.govern && (t = with_params(t, pv))
+    gov = (params = [copy(pv)], kept = Ref(0), reverted = Ref(0), prev = Ref(copy(pv)), pending = Ref(false),
+           baseline = Ref(NaN), start = Ref((0.0, 0.0)))
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     ntop = count(==(0), p.leaf_parent)
@@ -623,6 +639,38 @@ function run_m3c(p::M3cParams; seed)
         end
         obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
         record!()
+        # SigThGv's perturbation branch: at the end of each epoch, adaptation judges the candidate
+        # tried during it by the observed floors' movement (free of the parameters being tuned), then
+        # a new candidate within δ is adopted if admissible (Lean `perturb_step_ref`).
+        if p.govern && step >= p.init_steps && (step - p.init_steps) % p.gov_epoch == 0
+            floors = (floor_quantile(obs.u, t.q), floor_quantile(obs.h, t.q))
+            if step == p.init_steps  # the first epoch runs on the bootstrap point, as the baseline
+                gov.start[] = floors
+                continue
+            end
+            begin
+                score = (floors[1] - gov.start[][1]) + (floors[2] - gov.start[][2])
+                if gov.pending[]
+                    if p.adapt && !isnan(gov.baseline[]) && score < gov.baseline[]
+                        pv = copy(gov.prev[]); gov.reverted[] += 1
+                    else
+                        gov.kept[] += 1; gov.baseline[] = score
+                    end
+                else
+                    gov.baseline[] = score
+                end
+            end
+            gov.prev[] = copy(pv)
+            cand = copy(pv)
+            for f in governed
+                cand[f] += p.gov_δ * (2 * rand(grng) - 1)
+            end
+            pv = perturb(pv, cand, governed; δ = p.gov_δ)
+            gov.pending[] = true
+            t = with_params(t, pv)
+            gov.start[] = floors
+            push!(gov.params, copy(pv))
+        end
     end
     L = nleaves()
     cols = [1:L; (lmax + 1):ncol]
@@ -638,6 +686,7 @@ function run_m3c(p::M3cParams; seed)
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                repaired = world.repaired[], side_hazards = world.side_hazards[],
+               params = gov.params, kept = gov.kept[], reverted = gov.reverted[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

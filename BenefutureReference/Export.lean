@@ -14,6 +14,7 @@ import BenefutureReference.Measurement
 import BenefutureReference.Economy
 import BenefutureReference.Domains
 import BenefutureReference.Justice
+import BenefutureReference.ParamSpace
 
 namespace BenefutureReference.Export
 
@@ -144,6 +145,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_is_crime] def isCrime (informed volition breached : UInt8) : UInt8 :=
   if is_crime_ref (informed == 1) (volition == 1) (breached == 1) then 1 else 0
+
+@[export bf_param_count] def paramCount (_ : Unit) : USize := paramFields.length.toUSize
+@[export bf_bootstrap_params] def bootstrapParams (_ : Unit) : FloatArray := ⟨bootstrap_params_ref⟩
+@[export bf_admissible] def admissible (v : FloatArray) : UInt8 := if admissible_ref v.data then 1 else 0
+@[export bf_perturb_step] def perturbStep (cur cand fields : FloatArray) (δ : Float) : FloatArray :=
+  ⟨perturb_step_ref cur.data cand.data (fields.data.map fun x => x.toUInt64.toNat) δ⟩
 
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity

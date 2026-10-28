@@ -286,6 +286,10 @@ means over 5 seeds of 500 steps.
   steps the floor falls; guardians bound by contract recover most of it; what they miss for lack of
   notice is accident, negligence is crime, and penalties fund repair either way
   ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
+- Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
+  epoch the outcomes do not depend on them; adaptation judged by the floors' movement over epochs of
+  50 steps is no better than chance ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
+  [sim/README.md, M4](sim/README.md#m4-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the
   share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
   ([sim/README.md, M3c](sim/README.md#m3c-observations)).

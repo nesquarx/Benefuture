@@ -118,3 +118,29 @@ end
 "Crime (L115): harm through informed volition or informed inaction against a committed action; else accident."
 is_crime(informed::Bool, volition::Bool, breached_duty::Bool) =
     ccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1
+
+# The governed parameter space (`Systems.ParamSpace` [R]; L157 SigThGv), in the order of `ParamVector`.
+const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, :lambda, :kappa_value, :kappa_harm,
+                      :q_harm, :nu, :h_param, :lambda_plus, :lambda_minus, :th_sig, :th_gov, :fr_thConf, :fr_thHigh,
+                      :sev_irreparable, :sev_irreversible, :sev_longterm, :sev_passing, :sev_timeLoss, :h_window,
+                      :deleg_cap, :ehr_margin, :dist_weight)
+
+"The bootstrap parameter vector (`bootstrapParams`)."
+function bootstrap_params()
+    check(ccall(sym(:bf_param_count), Csize_t, (Ptr{Cvoid},), C_NULL) == length(PARAM_FIELDS), "field lists must agree")
+    lean_floats(ccall(sym(:bf_bootstrap_params), Ptr{Cvoid}, (Ptr{Cvoid},), C_NULL))
+end
+
+"Whether a parameter vector is admissible: the ranges and joint constraints the proofs rely on."
+function admissible(v)
+    length(v) == length(PARAM_FIELDS) && all(isfinite, v) || return false
+    ccall(sym(:bf_admissible), UInt8, (Ptr{Cvoid},), floatarray(v)) == 1
+end
+
+"Controlled perturbation: `cand` if admissible and within δ of `cur` in every governed field, else `cur`."
+function perturb(cur, cand, fields; δ::Real)
+    check(length(cur) == length(cand) == length(PARAM_FIELDS) && all(isfinite, cand), "two full parameter vectors")
+    check(all(i -> 1 <= i <= length(PARAM_FIELDS), fields) && isfinite(δ) && δ >= 0, "fields in range, δ non-negative")
+    lean_floats(ccall(sym(:bf_perturb_step), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+                      floatarray(cur), floatarray(cand), floatarray(Float64.(fields) .- 1), δ))
+end

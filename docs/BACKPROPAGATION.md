@@ -563,3 +563,17 @@ accident, negligence is crime, and penalties fund repair either way. Toy assumpt
 fulfilled costs and earns nothing (contract payments are not modelled; L121 accolades for good
 beyond duty neither); natural hazards with no guardian are not repaired (the sources do not say who
 repairs harm with no contributor: the commons, insurance, or no one).
+
+**8.20 [OPEN] What SigThGv's adaptation measures.** SigThGv := Ap(Th ∈ Debatable? LqdBfDm :
+Perturb(Th ± δ ∈ Fr)) (L157), with Ap the adaptation of L52 (`adapt«Ap»`). `Systems.ParamSpace`
+gives the perturbation step ([R]: adopt a candidate within δ if admissible) but no selection, so
+without adaptation the parameters walk at random inside the admissible region. The simulation
+([P]) keeps a candidate only if the floors moved at least as well during its epoch as during the
+previous one. Finding: over epochs of 50 steps this is a coin toss (half of candidates reverted),
+because floor movement varies far more between epochs than any effect of a 0.02 change; outcomes
+do not depend on the value parameters within that range. Questions: what does adaptation measure
+(G's objective as measured, the floors, a parameter-specific outcome), over what horizon, and
+against what comparison (the previous epoch, or a paired counterfactual from records)? Which
+thresholds are debatable? Also: the simulation's own gates (currency eligibility, classification,
+formation, overflow, the causal-assessment confidence) are not in `ParamVector`; adding them, with
+their admissible ranges, would let SigThGv govern them.

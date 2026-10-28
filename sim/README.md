@@ -32,7 +32,7 @@ assumptions it still makes, and graduates to them.
 | M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
 | M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
 | M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
-| M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
+| M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation by the floors' movement ([P]); next, the simulation's own gates and debatable thresholds (M5) | `Conj_ParamStability` | first pass done |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
 | M7 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
@@ -58,7 +58,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
-| `Systems.ParamSpace` | not yet | governed parameters, SigThGv (M4, M5) |
+| `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters (M4); debatable parameters and the simulation's own gates not yet |
 | `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | not yet | voting, delegation cap, Brier incentives (M5) |
 | `Governance.Adversarial`, `Axioms.Antifragility` | not yet | bounties, clawbacks, revelation (M6) |
 | `Governance.ExternalHarm` | not yet | external harm response (M6) |
@@ -274,6 +274,26 @@ distribution, hazards in half of all steps (each threatening 10% of beings), 5 s
 Duties recover most of what unguarded hazards cost; what guardians miss for lack of notice becomes
 accidents, and negligence becomes crime, both repaired from the penalties.
 
+## M4 observations
+
+The value parameters (α, β, γ, q₊, q₋, λ) start at the Lean bootstrap point and are governed by
+SigThGv's perturbation branch: every epoch a candidate within δ of the current vector in each
+field is adopted if admissible (`perturb_step`). Adaptation ([P], BACKPROPAGATION 8.20) keeps a
+candidate only if the floors moved at least as well during its epoch as during the previous one;
+the first epoch runs on the bootstrap point as the baseline. Tests: every vector stays admissible;
+drift is bounded by epochs × δ; δ = 0 changes nothing. 600 steps, epochs of 50, δ = 0.02, 5 seeds:
+
+| Parameters | Floor growth, understanding | Steps the floor falls | Largest drift | Kept, reverted |
+|---|---|---|---|---|
+| Fixed at bootstrap | 123 ± 23 | 8.3% | 0 | – |
+| Perturbed | 123 ± 24 | 8.1% | 0.058 | 10, 0 |
+| Perturbed with adaptation | 124 ± 23 | 8.6% | 0.044 | 5, 5 |
+
+Within this range the outcomes do not depend on the parameters (consistent with
+`Conj_ParamStability` at this scale), and adaptation is a coin toss: epoch-to-epoch movement of the
+floors is far noisier than any effect of a 0.02 change, so adaptation needs longer epochs or a
+paired comparison to mean anything.
+
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
 | Base, factor | Share of net earnings reinvested | Gini of balances |
@@ -292,6 +312,7 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
