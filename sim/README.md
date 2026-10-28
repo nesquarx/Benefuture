@@ -14,17 +14,38 @@ sources changes. Toolchains: `tools/setup/toolchains.sh`.
 
 ## Model ladder
 
-Each rung adds one source of mess and must still run in minutes, not hours.
+Each rung adds one source of mess and must still run in minutes, not hours. Every rung keeps the
+earlier ones as special cases (perfect settings reproduce the rung below), and each is judged
+against named conjectures.
 
-| Rung | World | Status |
+| Rung | World added | Judged against | Status |
+|---|---|---|---|
+| M0 | Fixed population; random plan menus; perfect measurement; every loss is passing harm | `Conj_FloorsRise` | done |
+| M1 | Competing metric models with bias and noise, scored against established markers | `Conj_MMCompetitionConverges`, B14 | done |
+| M2 | Agents propose the plans; imperfect agents (noisy self-assessment, myopia, error); currency paid through probabilistic escrow and causal distribution; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | next |
+| M3 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
+| M4 | Governance: weighted voting (base, expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B6, B11, B23 | |
+| M5 | Malicious and gaming agents: inflating measured outcomes, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
+| M6 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
+| M7 | Domains and networks; propagation and leakage across games; end of lifespan and causal inheritance | B10, B25 | |
+
+## Run length
+
+Measured on M1 (200 beings, 20 plans a step, three models, ten seeds of 1,000 steps; about 11 s
+a run):
+
+| Reading | Running mean settles within 10% (median, worst seed) | Spread across ten seeds (relative 95% half-width) at 100 / 300 / 1,000 steps |
 |---|---|---|
-| M0 | Fixed population; random plan menus; perfect measurement; every loss is passing harm; no novelty, scope or distribution term | done |
-| M1 | Measurement through competing metric models with bias and noise, scored against established markers; latent against observed levels | done |
-| M2 | Currency, probabilistic escrow and causal distribution; reputation | next |
-| M3 | Adversarial agents: gaming, exploit against reveal | |
-| M4 | Governance: weighted voting, capped liquid delegation, threshold drift | |
-| M5 | Population change: births, deaths, forks | |
-| M6 | Domains, networks, propagation and leakage across games; end of lifespan | |
+| Share of steps acting | 81, 208 | 4.5% / 1.7% / 0.6% |
+| Floor growth, happiness | 482, 576 | 8.3% / 5.2% / 2.2% |
+| Floor growth, understanding | 570, 681 | 10.4% / 4.7% / 3.0% |
+| Floor falls (rare) | 736, 884 | 16.4% / 10.3% / 6.3% |
+
+Model adoption locks onto the best model by step 4 (median; 19 at worst). Rates are not steady
+from the start: floor growth is about 0.06 a step over the first 100 steps and 0.10–0.12 after,
+so the slow settling of growth rates is mostly warm-up. Guidance: discard a burn-in of 200
+steps; measure rates over at least 500 steps after it, and rare events such as floor falls over
+1,000; use ten seeds. Spread falls roughly with the square root of steps times seeds.
 
 ## M0 observations
 
