@@ -274,6 +274,15 @@ distribution, hazards in half of all steps (each threatening 10% of beings), 5 s
 Duties recover most of what unguarded hazards cost; what guardians miss for lack of notice becomes
 accidents, and negligence becomes crime, both repaired from the penalties.
 
+Unassigned harm is insured by the administration through the commons, to its capability (8.22.4):
+repair drawn from what overflow reinvested, never more. With overflow at base 50, factor 0.5,
+unguarded hazards and full repair efficiency, 5 seeds: floor growth on understanding 73 without
+hazards, 67 unguarded and uninsured, 68.5 insured; the commons repaired 1,962 of 3,270 harm (it is
+empty during the score-only start and fills with time). Insurance restores totals more than the
+floor, since repair is spread over those harmed rather than aimed at the worst off. Gaming risk:
+harm passed off as unassigned escapes its contributor's penalty at the commons' cost; the causal
+assessment is the defence, an M6 test.
+
 ### Contribution types and preventions (8.22, 8.24)
 
 Carrying another's output on earns, out of the maker's positive share, an accolade outside contract
@@ -362,7 +371,7 @@ for removal.
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
 | Repair funded by penalties | Ruled | 8.17; how repair is carried out is still a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
-| Unguarded harm left unattributed | Introduced | to replace by the administration as insurer through the commons (L119 Liability; 8.22.4) |
+| Administration insuring unassigned harm from the commons | Native, funding [P] | L119 Liability; 8.22.4; the commons is what overflow reinvested (L103), the only collective fund the simulation has; gated by the world's `repair_efficiency`, no switch of its own |
 | M4 adaptation by floor movement | Introduced [P] | to replace by experimental design (8.22.3) |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |

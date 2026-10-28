@@ -262,7 +262,8 @@ function run_m3c(p::M3cParams; seed)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
-             prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0))
+             prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0), commons_spent = Ref(0.0),
+             insured = Ref(0.0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
@@ -621,6 +622,16 @@ function run_m3c(p::M3cParams; seed)
                 measured = plan_value(observed_plan(hrng, harm, p.marker_σ), t)
                 if g == 0
                     world.unattributed[] += -measured
+                    # No contributor: the administration insures it through the commons, to its
+                    # capability (author ruling 8.22; L119 Liability ranks it before beings). [P] the
+                    # commons is what balance overflow reinvested; repair costs its measured harm.
+                    spend = min(sum(reinvested) - world.commons_spent[], -measured)
+                    if p.repair_efficiency > 0 && spend > 0
+                        f = p.repair_efficiency * spend / -measured
+                        push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
+                        world.commons_spent[] += spend
+                        world.insured[] += p.repair_efficiency * spend
+                    end
                 else
                     is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
                     sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
@@ -728,6 +739,7 @@ function run_m3c(p::M3cParams; seed)
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
                prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
+               commons_spent = world.commons_spent[], insured = world.insured[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

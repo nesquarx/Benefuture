@@ -47,6 +47,15 @@ end
     # Unguarded hazards have no contributor: harm is unattributed and no bystander is penalised.
     tr = run_m3c(hz(zeros(Int, 4)); seed = 3)
     @test tr.unattributed > 0 && tr.crimes == 0 && tr.accidents == 0 && tr.hazard_penalties == 0
+    # The administration insures unassigned harm through the commons, to its capability (author
+    # ruling 8.22; L119 Liability ranks it before beings): repair drawn from what overflow put in
+    # the commons, never more; with an empty commons nothing is repaired.
+    rich = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = 5.0, overflow_factor = 0.0); seed = 3)
+    @test rich.insured > 0 && rich.commons_spent <= sum(rich.reinvested) + 1e-9
+    poor = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf); seed = 3)
+    @test poor.insured == 0 && sum(poor.reinvested) == 0
+    @test sum(rich.balance) - rich.endowed ≈ sum(rich.valued_measured) - sum(rich.costs) - sum(rich.lane_costs) -
+                                             sum(rich.reinvested) - rich.hazard_debits + rich.prevention_measured atol = 1e-6
     # The books balance: penalties for hazards are destroyed (or fund repair), nothing else moves.
     tr = run_m3c(hz([1, 2, 3, 4]; p_informed = 0.5, diligence = [0.5, 0.5, 0.5, 0.5]); seed = 4)
     @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) -

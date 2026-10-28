@@ -620,6 +620,12 @@ reality is the open empirical question.
    recorded action. Gaming check on the fee: relays inserting themselves into a chain to collect
    accolades drain the maker's share; the accolade should require that the carrying was needed
    (the output would not otherwise have reached), which the causal assessment can judge. An M6 test.
+   (4) M3e: the administration repairs unassigned harm from the commons, to what the commons holds.
+   [OPEN] how the administration is funded: the pseudocode defines it (L106, CRUD of laws and
+   infrastructure) and ranks its liability (L119) but names no fund; the simulation uses the pool
+   balance overflow reinvests (L103), whose DirectedAutoInvest is directed by the entity, not the
+   administration. Gaming check: harm passed off as unassigned escapes its contributor at the
+   commons' cost; the causal assessment must find contributors before insurance pays.
 
 **8.23 Author ruling on degradation and enhancement (extending 8.22.4).** System Design and
 Progressive complexity apply: any lack or corruption of capability, process, data or inputs is
