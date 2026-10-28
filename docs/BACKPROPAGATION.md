@@ -613,3 +613,19 @@ reality is the open empirical question.
    against every unassigned hazard to the extent of its capability. Catastrophe and black-swan
    tests are needed to see whether Benefuture adapts; the corpus has material on these.
    Candidate homes: Administration, Antifragility, L150.
+   Simulation status: (1) M5, relative reputation by default; (2) M3d/M3e, `carry_fee_ref` and
+   `duty_payment_ref` in the Lean reference. [P] the fee comes out of the maker's positive share
+   (an accolade or contract fee is the maker's cost of having the output carried, and nothing comes
+   out of a loss); a prevention's duty payment is a governed rate on the harm avoided, newly minted
+   like any measured positive outcome. Both bases are proposals awaiting the author.
+
+**8.23 Author ruling on degradation and enhancement (extending 8.22.4).** System Design and
+Progressive complexity apply: any lack or corruption of capability, process, data or inputs is
+handled by falling back to simpler heuristics and toy models, ruling and acting in practice; any
+enhancement is consumed by researching and implementing means to use it better, keeping room for
+the diversity–novelty balance axiom. For the simulation: every component that consumes a model,
+measurement or record has a named simpler fallback, and the catastrophe tests check that the
+fallback engages, that outcomes degrade gracefully rather than collapse, and that recovery follows
+when the capability returns; a positive shock (a breakthrough) is tested for being put to use
+without crowding out the pre-N sample. Candidate homes: Progressive complexity, System Design,
+Antifragility, L142.

@@ -76,3 +76,36 @@ end
     @test_throws ArgumentError m3c(p_upstream = 1.5)
     @test_throws ArgumentError m3c(cc_threshold = 1.5)
 end
+
+# Contribution types (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype). Carrying another
+# agent's output on, outside any contract, is a communicative contribution and earns an accolade, a
+# minor share of what the output carried; under contract it is paid as the contracted share, as
+# completion of the contract, not as contribution. Losses stay with whoever caused them.
+@testset "Contribution types: acceptance" begin
+    free = run_m3c(cdp([makers(); passers()]; accolade_rate = 0.05, p_contracted = 0.0); seed = 1)
+    @test free.accolade_credit > 0 && free.contract_credit == 0
+    @test sum(free.credit_pos[4:6]) ≈ free.accolade_credit rtol = 0.2
+    hired = run_m3c(cdp([makers(); passers()]; contract_share = 0.2, p_contracted = 1.0); seed = 1)
+    @test hired.contract_credit > 0 && hired.accolade_credit == 0
+    @test sum(hired.credit_pos[4:6]) > sum(free.credit_pos[4:6])
+    for tr in (free, hired)
+        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    end
+end
+
+@testset "Contribution types: adversarial and edge cases" begin
+    # A carrier never takes a share of a loss it did not cause: bad outputs stay with their maker.
+    bad = [DomainAgent([-0.3, 0, 0, 0], [1.0, 0, 0, 0], 0.0)]
+    tr = run_m3c(cdp([makers(); bad]; p_contracted = 1.0); seed = 2)
+    @test tr.upstream_neg[4] < 0
+    @test_throws ArgumentError m3c(accolade_rate = 1.5)
+    @test_throws ArgumentError m3c(contract_share = -0.1)
+end
+
+@testset "Contribution-type rules (Lean reference)" begin
+    @test carry_fee(2.0, false; accolade_rate = 0.05, contract_share = 0.2) ≈ 0.1
+    @test carry_fee(2.0, true; accolade_rate = 0.05, contract_share = 0.2) ≈ 0.4
+    @test carry_fee(-1.0, true; accolade_rate = 0.05, contract_share = 0.2) == 0  # no fee out of a loss
+    @test duty_payment(3.0; rate = 0.05) ≈ 0.15 && duty_payment(-1.0; rate = 0.05) == 0
+    @test_throws ArgumentError carry_fee(1.0, false; accolade_rate = 1.5, contract_share = 0.2)
+end

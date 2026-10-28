@@ -88,6 +88,27 @@ function cause_settlement(cc::Real, total::Real, upfront::Real)
 end
 
 """
+    carry_fee(maker_pos, contracted; accolade_rate, contract_share) -> fee
+
+What carrying another's output on earns out of the maker's positive share (Lean `carry_fee_ref`):
+an accolade outside contract, the contracted share under contract; nothing out of a loss.
+"""
+function carry_fee(maker_pos::Real, contracted::Bool; accolade_rate::Real, contract_share::Real)
+    check(isfinite(maker_pos) && 0 <= accolade_rate <= 1 && 0 <= contract_share <= 1, "rates in [0, 1], share finite")
+    ccall(sym(:bf_carry_fee), Float64, (Float64, Float64, Float64, UInt8), maker_pos, accolade_rate, contract_share, contracted)
+end
+
+"""
+    duty_payment(avoided; rate) -> payment
+
+A prevention's duty payment (Lean `duty_payment_ref`): the governed rate on the harm avoided.
+"""
+function duty_payment(avoided::Real; rate::Real)
+    check(isfinite(avoided) && 0 <= rate <= 1, "rate in [0, 1], harm finite")
+    ccall(sym(:bf_duty_payment), Float64, (Float64, Float64), avoided, rate)
+end
+
+"""
     shapley(v) -> shares
 
 Shapley shares of an outcome among n contributors, from coalition values indexed by bitmask:

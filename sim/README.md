@@ -274,6 +274,17 @@ distribution, hazards in half of all steps (each threatening 10% of beings), 5 s
 Duties recover most of what unguarded hazards cost; what guardians miss for lack of notice becomes
 accidents, and negligence becomes crime, both repaired from the penalties.
 
+### Contribution types and duty payments (8.22)
+
+Carrying another's output on earns, out of the maker's positive share, an accolade outside contract
+(`accolade_rate`) or the contracted share under contract (`contract_share`); nothing comes out of a
+loss (Lean `carry_fee_ref`). Preventing a hazard under duty earns a duty payment on the harm avoided
+(`duty_rate`, Lean `duty_payment_ref`), never the value saved; a shock to those protected is clawed
+back. Readings, seed 1: carriers who add nothing earn 502 in accolades, 5% of the 9,507 their makers
+are paid; all under contract at 0.2, they earn 1,960. A diligent, always-informed guardian
+prevented 76 hazards, 2,080 of harm avoided, and was paid 104; with a shock every time, 29 was
+clawed back.
+
 ## M4 observations
 
 The value parameters (α, β, γ, q₊, q₋, λ) start at the Lean bootstrap point and are governed by
@@ -353,6 +364,8 @@ ratified.
 | Reputation decay | `λpos`, `λneg` | 0.02, 0.05 | L101 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
+| Accolade for carrying an output outside contract (share of the maker's positive share) | `accolade_rate` | 0.05 | L95, L121; 8.22 |
+| Duty payment per unit of harm a prevention avoids | `duty_rate` | 0.05 | 8.22 |
 
 ## Noise
 
@@ -379,6 +392,8 @@ guesses at reality, to be swept once the model is solid.
 | A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
+| A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
+| A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |
 
 Still without noise, to add as their rungs arrive: identity binding (M6), votes and delegation
 (M5), threshold estimates (M4), transaction logging and composition (M3d).

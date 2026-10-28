@@ -75,6 +75,10 @@ struct M3cParams
     β_upstream::Float64     # how much of that output's effect per being the action carries
     recent_outputs::Int     # outputs kept per domain to build on
     attribution_σ::Float64  # metric models' error in separating an upstream output's part
+    # Contribution types (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype).
+    accolade_rate::Float64  # share of a carried output's positive share earned by carrying it outside contract (governed)
+    contract_share::Float64 # the same share when the carrying is contracted: paid as contract completion
+    p_contracted::Float64   # chance a carrying is under contract
     # A world that moves on its own (M3e; author rulings, BACKPROPAGATION 8.15, 8.17).
     p_hazard::Float64            # chance a hazard arises in some domain each step
     hazard_share::Float64        # share of beings a hazard threatens
@@ -88,6 +92,9 @@ struct M3cParams
     side_share::Float64          # share of the beings it touches that the side effect harms
     side_size::Float64           # harm per being of the side effect
     p_foresee::Float64           # chance the actor foresaw the side effect
+    duty_rate::Float64           # a prevention's duty payment per unit of harm avoided (governed; 8.22)
+    p_shock::Float64             # chance a prevention shocks the beings it protects
+    shock_size::Float64          # that shock's harm per being, on happiness
     # Governed thresholds (M4; SigThGv, L157; `Systems.ParamSpace` [R]).
     govern::Bool                 # perturb the value parameters through SigThGv
     adapt::Bool                  # keep a candidate only if the next epoch's floors do as well ([P], 8.20)
@@ -110,10 +117,11 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
                    causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
-                   attribution_σ::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
+                   attribution_σ::Real = 0.0, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
+                   p_contracted::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
                    hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
-                   p_foresee::Real = 0.5, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
+                   p_foresee::Real = 0.5, duty_rate::Real = 0.05, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
@@ -136,6 +144,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(guardians) || (length(guardians) == length(leaf_parent) && all(g -> 0 <= g <= length(agents), guardians)),
           "one guardian (or 0) per true domain")
     check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
+    check(all(x -> 0 <= x <= 1, (accolade_rate, contract_share, p_contracted, duty_rate, p_shock)) && isfinite(shock_size) &&
+          shock_size >= 0, "contribution rates, duty rate and chances in [0, 1], shock size non-negative")
     check(gov_epoch >= 1 && isfinite(gov_δ) && gov_δ >= 0, "governance epoch positive, δ non-negative")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
@@ -147,9 +157,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
-              p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
+              accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
-              side_size, p_foresee, govern, adapt, gov_epoch, gov_δ,
+              side_size, p_foresee, duty_rate, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -172,6 +182,7 @@ function run_m3c(p::M3cParams; seed)
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
     urng, arng = Xoshiro(hash((seed, :upstream))), Xoshiro(hash((seed, :attribution)))
+    krng = Xoshiro(hash((seed, :contract)))
     hrng, srng = Xoshiro(hash((seed, :hazard))), Xoshiro(hash((seed, :side)))
     grng = Xoshiro(hash((seed, :governance)))
     # Governed value parameters (α, β, γ, q₊, q₋, λ), from the bootstrap point.
@@ -248,9 +259,11 @@ function run_m3c(p::M3cParams; seed)
     outputs = Dict{Int,Vector{Tuple{Int,Float64,Float64}}}()
     credit_pos, credit_neg, upstream_pos, upstream_neg = zeros(na), zeros(na), zeros(na), zeros(na)
     cofunder_credit, interaction = Ref(0.0), Ref(0.0)
+    accolade_credit, contract_credit = Ref(0.0), Ref(0.0)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
-             hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0))
+             hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
+             duty_paid = Ref(0.0), prevented_value = Ref(0.0), shocks = Ref(0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
@@ -410,6 +423,16 @@ function run_m3c(p::M3cParams; seed)
             interaction[] += measured - (P + N)
             credits = [(who[k], P == 0 ? 0.0 : cause_settlement(cc_share(pos[k], P), P, 0.0),
                                 N == 0 ? 0.0 : cause_settlement(cc_share(neg[k], N), N, 0.0)) for k in 1:n]
+            # Carrying the upstream output on: outside contract, a communicative contribution earning
+            # an accolade; under contract, the contracted share, paid as completion of the contract.
+            # Either comes out of the maker's positive share; losses stay with whoever caused them.
+            if up !== nothing && credits[n][2] > 0
+                hired = rand(krng) < p.p_contracted
+                fee = carry_fee(credits[n][2], hired; p.accolade_rate, p.contract_share)
+                credits[n] = (credits[n][1], credits[n][2] - fee, credits[n][3])
+                credits[1] = (credits[1][1], credits[1][2] + fee, credits[1][3])
+                (hired ? contract_credit : accolade_credit)[] += fee
+            end
             for (k, (e, pp, nn)) in enumerate(credits)
                 2 <= k <= 1 + nf && (cofunder_credit[] += pp + nn)
                 if up !== nothing && k == n
@@ -572,6 +595,29 @@ function run_m3c(p::M3cParams; seed)
             informed = g > 0 && rand(hrng) < p.p_informed
             if informed && rand(hrng) < p.diligence[g]
                 world.prevented[] += 1
+                # Preventing is duty well done (author ruling 8.22): a duty payment for the skill
+                # used, at the governed rate on the harm avoided, never the value saved; a shock to
+                # the beings protected is clawed back from the guardian.
+                if any(hit)
+                    avoided = -plan_value(harm, t)
+                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                    st, pm = classify_sig(sig), parent_mem(sig)
+                    pay = duty_payment(avoided; rate = p.duty_rate)
+                    shock = 0.0
+                    if p.p_shock > 0 && rand(hrng) < p.p_shock
+                        jolt = ToyPlan(zeros(t.n), -p.shock_size .* hit)
+                        s.u .+= jolt.du; s.h .+= jolt.dh
+                        shock = plan_value(observed_plan(hrng, jolt, p.marker_σ), t)
+                        world.shocks[] += 1
+                    end
+                    credit!(step, sig, st, pay + shock, pm, price_shares(st), [(g, pay, shock)])
+                    if !scoring_only
+                        balance[g, :] .+= split_signed(st, pay + shock)[1]
+                        world.duty_paid[] += pay
+                        world.prevented_value[] += avoided
+                        world.hazard_debits[] += -shock
+                    end
+                end
             elseif any(hit)
                 s.u .+= harm.du; s.h .+= harm.dh
                 measured = plan_value(observed_plan(hrng, harm, p.marker_σ), t)
@@ -682,6 +728,8 @@ function run_m3c(p::M3cParams; seed)
                reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
+               accolade_credit = accolade_credit[], contract_credit = contract_credit[],
+               duty_paid = world.duty_paid[], prevented_value = world.prevented_value[], shocks = world.shocks[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

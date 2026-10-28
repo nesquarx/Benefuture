@@ -282,6 +282,12 @@ means over 5 seeds of 500 steps.
   penalised through the losses it carries downstream; co-funders whose money was needed are
   credited; every outcome is fully distributed and the books balance (coalition values as in
   BACKPROPAGATION 8.18, a decision open to the author) ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- Contribution types (author ruling 8.22): carrying another's output outside contract earns an
+  accolade, under contract the contracted share, both out of the maker's positive share and never
+  out of a loss; preventing a hazard under duty earns a duty payment on the harm avoided, not the
+  value saved, less a clawback for any shock caused; the books still balance. The fee and payment
+  bases are proposals ([P]) awaiting the author ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
+  [sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, contribution types](sim/README.md#contribution-types-and-duty-payments-822)).
 - A world that moves on its own: unguarded hazards cut floor growth by a sixth and double the
   steps the floor falls; guardians bound by contract recover most of it; what they miss for lack of
   notice is accident, negligence is crime, and penalties fund repair either way

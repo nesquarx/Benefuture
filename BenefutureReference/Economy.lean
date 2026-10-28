@@ -58,4 +58,15 @@ def traversal_shares_ref (netC degree : Array Float) (decay : Float) : Array Flo
     escrow already paid upfront. -/
 def cause_settlement_ref (cc total upfrontPaid : Float) : Float := cc * total - upfrontPaid
 
+/-- Carrying another's output on (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype):
+outside contract, a communicative contribution earning an accolade; under contract, the contracted
+share, paid as completion of the contract. Either comes out of the maker's positive share; nothing
+comes out of a loss. -/
+def carry_fee_ref (makerPos accoladeRate contractShare : Float) (contracted : Bool) : Float :=
+  if makerPos ≤ 0 then 0 else (if contracted then contractShare else accoladeRate) * makerPos
+
+/-- Preventing a hazard under duty is duty well done (8.22): paid at the governed rate on the harm
+avoided, never the value saved. -/
+def duty_payment_ref (avoided rate : Float) : Float := rate * (if avoided > 0 then avoided else 0)
+
 end BenefutureReference

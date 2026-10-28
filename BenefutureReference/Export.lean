@@ -135,6 +135,11 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=
   cause_settlement_ref cc total upfrontPaid
 
+@[export bf_carry_fee] def carryFee (makerPos accoladeRate contractShare : Float) (contracted : UInt8) : Float :=
+  carry_fee_ref makerPos accoladeRate contractShare (contracted != 0)
+
+@[export bf_duty_payment] def dutyPayment (avoided rate : Float) : Float := duty_payment_ref avoided rate
+
 @[export bf_shapley] def shapleyShares (n : USize) (v : FloatArray) : FloatArray := ⟨shapley_ref n.toNat v.data⟩
 
 @[export bf_cc_assessed] def ccAssessed (confidence threshold : Float) : UInt8 :=
