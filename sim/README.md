@@ -275,13 +275,16 @@ Duties recover most of what unguarded hazards cost; what guardians miss for lack
 accidents, and negligence becomes crime, both repaired from the penalties.
 
 Unassigned harm is insured by the administration through the commons, to its capability (8.22.4):
-repair drawn from what overflow reinvested, never more. With overflow at base 50, factor 0.5,
-unguarded hazards and full repair efficiency, 5 seeds: floor growth on understanding 73 without
-hazards, 67 unguarded and uninsured, 68.5 insured; the commons repaired 1,962 of 3,270 harm (it is
-empty during the score-only start and fills with time). Insurance restores totals more than the
-floor, since repair is spread over those harmed rather than aimed at the worst off. Gaming risk:
-harm passed off as unassigned escapes its contributor's penalty at the commons' cost; the causal
-assessment is the defence, an M6 test.
+repair is work, paid its resource cost (L83) from what overflow reinvested, never more. A first
+version priced repair at the harm's value in V; screening a catastrophe reading (13,293 paid, no
+visible recovery) showed V's loss aversion valued one catastrophe at 1.9 million against a commons
+of 12,803, so 0.7% was repaired: value is minted to whoever does the work when it is measured, not
+paid out of the commons. With the commons always filled (overflow base 5, factor 0), unguarded
+hazards and full repair efficiency, 5 seeds: floor growth on understanding after the score-only
+start 67.3 without hazards, 63.7 unguarded, 68.4 insured, at a cost of 20.6. Hazards during the
+score-only start stay unrepaired: no currency moves then. Gaming risk: harm passed off as
+unassigned escapes its contributor's penalty at the commons' cost; the causal assessment is the
+defence, an M6 test.
 
 ### Contribution types and preventions (8.22, 8.24)
 
@@ -293,6 +296,26 @@ earn 502 in accolades, 5% of the 9,507 their makers are paid; all under contract
 beings it reached (its skill in the domain, less any shock), which mint or destroy currency as any
 outcome does; the averted harm is no output, so the guardian's earnings do not depend on the
 hazard's size (tested), and nothing rewards courting near misses.
+
+## Black swans (8.22.4, 8.23)
+
+World events test whether Benefuture keeps acting through a shock, falls back where a capability is
+lost (L154 Progressive: degrade, fall back; leverage what improves), and recovers. Each fallback is
+native. Same world as the tests (6 agents in leaves 1 and 3, transactions, causal distribution),
+300 steps, 5 seeds, mean floor on understanding.
+
+| Event | Fallback or response | Reading |
+|---|---|---|
+| Measurement outage, steps 100–149 | Paid by escrow's prediction-based upfront (L86); G screens on the last observation; actions logged unmeasured, nothing credited or scored | Floor growth over the outage 35.1 against 35.6 without; 115.2 after, as without |
+| Catastrophe at step 150: half the beings lose 30 | None but repair | Floor drops 24.7 and takes 30–40 steps to regain its level; ends 170.7 against 192.0 |
+| The same, insured by the administration from the commons | Repair at resource cost (L83) | Restored the next step for 2.1 in currency; at half repair efficiency, regained in 8–19 steps |
+| Metric capture: leaf 1's model biased by 3, steps 100–249 | Scoring costs it eligibility (L82); its work is priced by its parent (fallback by μ) | Leaf 1 prices its own work 100% before, 0% during, 100% after |
+| Breakthrough: agent 1's skill up by 1 from step 150 | Put to use through ordinary transactions | Floor growth over steps 150–300: 157.5 against 115.2 |
+
+Not yet: rogue agents (M6), infohazards, technology degradation of models short of capture, and
+the diversity–novelty balance under a breakthrough (8.23: enhancement used without crowding out the
+pre-N sample). An outage leaves its actions unmeasured for good; re-measuring them when markers
+return is not modelled.
 
 ## M4 observations
 
@@ -387,7 +410,9 @@ for removal.
 | Overlaps as rolling averages; formation from blockages | Ruled | 8.6, 8.12 |
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
-| Repair funded by penalties | Ruled | 8.17; how repair is carried out is still a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
+| Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4; paid at resource cost (L83); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
+| Outage fallback (prediction-based payment, last observation) | Native | L154 Progressive, L86 escrow |
+| World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
 | Administration insuring unassigned harm from the commons | Native, funding [P] | L119 Liability; 8.22.4; the commons is what overflow reinvested (L103), the only collective fund the simulation has; gated by the world's `repair_efficiency`, no switch of its own |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |

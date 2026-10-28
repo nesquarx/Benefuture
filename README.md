@@ -291,9 +291,17 @@ means over 5 seeds of 500 steps.
 - A world that moves on its own: unguarded hazards cut floor growth by a sixth and double the
   steps the floor falls; guardians bound by contract recover most of it; what they miss for lack of
   notice is accident, negligence is crime, and penalties fund repair either way; harm with no
-  contributor is repaired by the administration from the commons, never beyond what it holds (how the
-  administration is funded is open; the simulation uses the pool balance overflow reinvests)
+  contributor is repaired by the administration from the commons at resource cost, never beyond what
+  it holds (how the administration is funded is open; the simulation uses the pool balance overflow
+  reinvests)
   ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
+- Black swans, each with a native fallback: through a measurement outage work continues, paid by
+  prediction and logged unmeasured, and floor growth holds; a catastrophe takes 30–40 steps to
+  recover from alone and one step with the administration repairing from the commons; a captured
+  metric model loses eligibility while captured and its parent prices its work, then it requalifies;
+  a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
+  diversity–novelty balance not yet tested ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
+  [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters

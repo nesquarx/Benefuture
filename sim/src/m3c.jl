@@ -29,6 +29,8 @@
 # `form_count` strong, form a novel leaf at their centroid (or reuse a leaf already there).
 # Reputation is kept where actions are classified; a parent's aggregates its leaves' by μ.
 
+const Shock = NamedTuple{(:kind, :step, :duration, :size, :share, :target),Tuple{Symbol,Int,Int,Float64,Float64,Int}}
+
 "M3c parameters: the toy world, agents over true leaves, the initial network, and thresholds."
 struct M3cParams
     toy::ToyParams
@@ -109,6 +111,21 @@ struct M3cParams
     regen_σ::Float64       # variability of resource regeneration, relative
     memory_loss::Float64   # chance a record never reaches memory
     participation::Float64 # chance an asked expert takes part in co-funding
+    events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
+end
+
+"""
+    shock(kind; step, duration = 1, size = 0.0, share = 0.0, target = 0) -> Shock
+
+A world event (catastrophes and black swans; author rulings 8.22, 8.23): `:outage` (no markers
+for `duration` steps), `:catastrophe` (one hazard at `step` harming each being with chance `share`
+by `size`), `:capture` (leaf `target`'s model biased by `size` for `duration` steps),
+`:breakthrough` (agent `target`'s skill raised by `size` for `duration` steps).
+"""
+function shock(kind::Symbol; step::Integer, duration::Integer = 1, size::Real = 0.0, share::Real = 0.0, target::Integer = 0)
+    check(kind in (:outage, :catastrophe, :capture, :breakthrough), "kind: outage, catastrophe, capture or breakthrough")
+    check(step >= 1 && duration >= 1 && isfinite(size) && 0 <= share <= 1, "step and duration positive, size finite, share in [0, 1]")
+    (kind = kind, step = Int(step), duration = Int(duration), size = Float64(size), share = Float64(share), target = Int(target))
 end
 
 function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λneg::Real, overlaps = Tuple{Int,Int,Float64}[],
@@ -126,7 +143,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
+                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -154,6 +171,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
+    check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
+          all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
@@ -164,7 +183,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
-              bias_σ, cost_σ, regen_σ, memory_loss, participation)
+              bias_σ, cost_σ, regen_σ, memory_loss, participation, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -192,6 +211,10 @@ function run_m3c(p::M3cParams; seed)
     # Governed value parameters (α, β, γ, q₊, q₋, λ), from the bootstrap point.
     governed = [1, 2, 3, 6, 7, 8]
     pv = bootstrap_params()
+    # World events (catastrophes and black swans): which are live at the current step.
+    cur, blind = Ref(0), Ref(false)
+    live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
+    skill(a, l) = p.agents[a].skills[l] + sum((e.size for e in live(:breakthrough) if e.target == a); init = 0.0)
     with_params(t, v) = ToyParams(n = t.n, steps = t.steps, plans = t.plans, q = t.q, th = t.th, touch = t.touch,
                                   shift = t.shift, spread = t.spread, gp = (α = v[1], β = v[2], γ = v[3], λ = v[8], qp = v[6], qm = v[7]))
     p.govern && (t = with_params(t, pv))
@@ -251,6 +274,7 @@ function run_m3c(p::M3cParams; seed)
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
     rolling(h, prior) = isempty(h) ? -prior^2 : mean(@view h[max(1, end - p.window + 1):end])
     leaf_prior(j) = lnovel[j] ? p.σ_coarse : p.σ_leaf
+    lb(j) = lbias[j] + sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
     leaf_acc(j) = accuracy(rolling(lhist[j], leaf_prior(j)))
     parent_acc(q) = accuracy(rolling(phist[q], p.σ_branch))
     leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = p.threshold,
@@ -320,6 +344,12 @@ function run_m3c(p::M3cParams; seed)
         rel_loss[a, :] .-= reputation_decay.(loss, dt; rate = rate_loss)
     end
     function credit!(step, c, st, measured, pm, pr, credits)
+        # Without markers nothing is measured: the action is logged unmeasured, credited to no one.
+        if blind[]
+            push!(memory, (agent = credits[1][1], step = step, signature = c, measured = NaN, profile = st,
+                           parent_mem = pm, priced = pr, credits = Tuple{Int,Float64,Float64}[]))
+            return
+        end
         observe_membership!(st, pm)
         for (a, pos, neg) in credits
             apply_credit!(a, st, pos, neg)
@@ -331,11 +361,12 @@ function run_m3c(p::M3cParams; seed)
     end
     # Every model on the classification path is scored against the outcome.
     function score!(st, pm, l, plan, seen, quoted)
+        blind[] && return  # nothing realised to score against
         mask = touched(plan)
         realised = [seen.du[mask]; seen.dh[mask]]
         sc(pr) = mm_score([pr.du[mask]; pr.dh[mask]], realised)
         for j in 1:nleaves()
-            st[j] > 0 && push!(lhist[j], sc(get(() -> predict(mrng, MetricModel(lbias[j], leaf_σ(j, l)), plan), quoted, j)))
+            st[j] > 0 && push!(lhist[j], sc(get(() -> predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), quoted, j)))
         end
         for q in 1:np
             pm[q] >= p.parent_threshold &&
@@ -359,13 +390,15 @@ function run_m3c(p::M3cParams; seed)
     record!()
     obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
     best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :
-        c <= lmax ? (c, predict(mrng, MetricModel(lbias[c], leaf_σ(c, l)), plan)) :
+        c <= lmax ? (c, predict(mrng, MetricModel(lb(c), leaf_σ(c, l)), plan)) :
                     (c, predict(mrng, MetricModel(pbias[c - lmax], parent_σ(c - lmax, l)), plan)))
     for step in 1:t.steps
         scoring_only = step <= p.init_steps
+        cur[] = step
+        blind[] = !isempty(live(:outage))
         proposers = rand(rng, 1:na, t.plans)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
-        own_plans = [plan_with_mean(rng, p.agents[a].skills[l], t) for (a, l) in zip(proposers, leaves)]
+        own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
         # Transaction trees: an action may build on a recent output of another agent in its domain,
         # carrying β of that output's effect on each being it touches.
         ups = Vector{Union{Nothing,Tuple{Int,ToyPlan}}}(nothing, length(own_plans))
@@ -495,7 +528,7 @@ function run_m3c(p::M3cParams; seed)
             quotes = Tuple{Int,Float64,ToyPlan,Float64}[]
             for c in 1:(root - 1)
                 priced[j][c] > 0 || continue
-                σ, b, acc = c <= lmax ? (leaf_σ(c, leaves[j]), lbias[c], leaf_acc(c)) :
+                σ, b, acc = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c), leaf_acc(c)) :
                     (parent_σ(c - lmax, leaves[j]), pbias[c - lmax], parent_acc(c - lmax))
                 push!(quotes, (c, priced[j][c], predict(mrng, MetricModel(b, σ), plans[j]), acc))
             end
@@ -517,20 +550,32 @@ function run_m3c(p::M3cParams; seed)
         function execute_priced!(j)
             a, plan, l = proposers[j], plans[j], leaves[j]
             done, seen, measured = perform!(j, a)
-            credits = credits_for(j, a, seen, measured)
             balance[a, root] -= priced[j][root] * costs[j]
-            for (c, sh, pr, acc) in offers[j]
-                upfront = sh * acc * plan_value(pr, t)
-                actor_value = credits[1][2] + credits[1][3]
-                balance[a, c] += upfront - sh * costs[j] + settlement(sh * actor_value, upfront)
-                for (e, pp, nn) in credits[2:end]
-                    balance[e, c] += sh * (pp + nn)  # other contributors: causal distribution, nothing upfront
+            minted = 0.0
+            if blind[]
+                # Measurement outage (L154 Progressive: degrade, fall back): paid by prediction
+                # alone, escrow's upfront (L86), with no settlement.
+                credits = [(a, 0.0, 0.0)]
+                for (c, sh, pr, acc) in offers[j]
+                    upfront = sh * acc * plan_value(pr, t)
+                    balance[a, c] += upfront - sh * costs[j]
+                    minted += upfront
+                end
+            else
+                credits = credits_for(j, a, seen, measured)
+                for (c, sh, pr, acc) in offers[j]
+                    upfront = sh * acc * plan_value(pr, t)
+                    actor_value = credits[1][2] + credits[1][3]
+                    balance[a, c] += upfront - sh * costs[j] + settlement(sh * actor_value, upfront)
+                    for (e, pp, nn) in credits[2:end]
+                        balance[e, c] += sh * (pp + nn)  # other contributors: causal distribution, nothing upfront
+                    end
                 end
             end
             push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
-            push!(tr.valued_measured, (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
+            push!(tr.valued_measured, blind[] ? minted : (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]))
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
             available -= count(touched(plan))
@@ -598,11 +643,12 @@ function run_m3c(p::M3cParams; seed)
                 lane.cofunded[] += g
             end
             done, seen, measured = perform!(j, a)
-            push!(tr.lane_costs, need); push!(tr.lane_measured, measured)
+            push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
-            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
+                    blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
@@ -611,11 +657,12 @@ function run_m3c(p::M3cParams; seed)
         # domain who does not act is assessed against that committed action (the prevented outcome,
         # no change), so the harm is its contribution: a crime if it was informed, an accident if
         # not, penalised either way to fund repair. An unguarded hazard has no contributor.
-        if p.p_hazard > 0 && rand(hrng) < p.p_hazard
+        function hazard!(share, sz)
+            local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ
             world.hazards[] += 1
             l = rand(hrng, 1:ntrue)
-            hit = rand(hrng, t.n) .< p.hazard_share
-            size = p.hazard_size .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
+            hit = rand(hrng, t.n) .< share
+            size = sz .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
             harm = ToyPlan(-hit .* size, -hit .* size)
             g = isempty(p.guardians) ? 0 : p.guardians[l]
             informed = g > 0 && rand(hrng) < p.p_informed
@@ -626,7 +673,7 @@ function run_m3c(p::M3cParams; seed)
                 # domain and any shock it caused, which mint or destroy currency as any outcome
                 # does. Assessed against the committed action, the averted harm is no output.
                 if any(hit)
-                    act = plan_with_mean(hrng, p.agents[g].skills[l], t)
+                    act = plan_with_mean(hrng, skill(g, l), t)
                     act = carried_out(hrng, p.agents[g].sloppiness, ToyPlan(act.du .* hit, act.dh .* hit))
                     if p.p_shock > 0 && rand(hrng) < p.p_shock
                         act = ToyPlan(act.du, act.dh .- p.shock_size .* hit)
@@ -638,7 +685,7 @@ function run_m3c(p::M3cParams; seed)
                     st, pm = classify_sig(sig), parent_mem(sig)
                     credit!(step, sig, st, measured, pm, price_shares(st), [(g, max(measured, 0.0), min(measured, 0.0))])
                     world.prevention_records[] += 1
-                    if !scoring_only
+                    if !scoring_only && !blind[]
                         balance[g, :] .+= split_signed(st, measured)[1]
                         world.prevention_measured[] += measured
                     end
@@ -650,10 +697,12 @@ function run_m3c(p::M3cParams; seed)
                     world.unattributed[] += -measured
                     # No contributor: the administration insures it through the commons, to its
                     # capability (author ruling 8.22; L119 Liability ranks it before beings). [P] the
-                    # commons is what balance overflow reinvested; repair costs its measured harm.
-                    spend = min(sum(reinvested) - world.commons_spent[], -measured)
-                    if p.repair_efficiency > 0 && spend > 0
-                        f = p.repair_efficiency * spend / -measured
+                    # commons is what balance overflow reinvested; repair is work, paid its resource
+                    # cost (L83), not the value of the harm.
+                    need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
+                    spend = min(sum(reinvested) - world.commons_spent[], need)
+                    if p.repair_efficiency > 0 && spend > 0 && !blind[]
+                        f = p.repair_efficiency * spend / need
                         push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
                         world.commons_spent[] += spend
                         world.insured[] += p.repair_efficiency * spend
@@ -664,6 +713,7 @@ function run_m3c(p::M3cParams; seed)
                     st, pm = classify_sig(sig), parent_mem(sig)
                     φ = measured  # its one contributor's whole share, assessed against the committed action
                     credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
+                    blind[] && return  # unmeasured: no penalty, so nothing funds repair
                     world.hazard_penalties[] += -φ
                     if !scoring_only
                         balance[g, :] .+= split_signed(st, φ)[1]
@@ -675,6 +725,10 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
             end
+        end
+        p.p_hazard > 0 && rand(hrng) < p.p_hazard && hazard!(p.hazard_share, p.hazard_size)
+        for e in p.events
+            e.kind == :catastrophe && e.step == step && hazard!(e.share, e.size)
         end
         for rep in repairs
             s.u .+= rep.du; s.h .+= rep.dh
@@ -718,7 +772,7 @@ function run_m3c(p::M3cParams; seed)
                 reinvested[c] += excess
             end
         end
-        obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
+        blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
         # SigThGv's perturbation branch (L157). Without adaptation, a random walk: each epoch a
         # candidate within δ is adopted if admissible. With adaptation, experimental design (8.22):

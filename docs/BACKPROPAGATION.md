@@ -625,7 +625,14 @@ reality is the open empirical question.
    infrastructure) and ranks its liability (L119) but names no fund; the simulation uses the pool
    balance overflow reinvests (L103), whose DirectedAutoInvest is directed by the entity, not the
    administration. Gaming check: harm passed off as unassigned escapes its contributor at the
-   commons' cost; the causal assessment must find contributors before insurance pays.
+   commons' cost; the causal assessment must find contributors before insurance pays. [P] repair
+   from the commons is work paid its resource cost (L83), not the harm's value: value is minted to
+   whoever does the work when its outcome is measured (screened: pricing at value repaired 0.7% of
+   a catastrophe).
+   (f) Black swans: outage, catastrophe, capture and breakthrough tested with native fallbacks.
+   [P] during a measurement outage, payment falls back to escrow's prediction-based upfront and the
+   actions stay unmeasured; candidate home L154 (Progressive) or the article on measurement.
+   [OPEN] whether actions taken during an outage are re-measured once markers return.
    (3) M4: experimental design in randomised blocks (a fixed order was confounded by the trend in
    floor movement), shifting only on a gain of `gov_z` standard errors (Lean `select_candidate_ref`);
    the freedom radius gauged in the same rounds (`gauge_radius_ref`). [P] randomised blocks,
