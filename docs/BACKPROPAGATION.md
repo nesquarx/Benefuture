@@ -418,3 +418,24 @@ first half; add that overlaps are rolling averages of members' memberships), L22
   the score-only start should be long enough for the network to settle.
 - Requirement (author): the simulations' outcome is a system of rules ready for implementation,
   with no toy assumptions and robust to messy reality.
+
+**8.13 [OPEN] Causal contribution along a transaction tree: range versus conservation.** L93 gives
+CC a range of [0, 1], and `Systems.Substrate` computes it as clamped value added
+(`causal_contribution_ratio`: (produced − received) / outcome, zero when either is non-positive);
+L94 distributes rewards and penalties in proportion to CC, net of escrow paid. Along a chain with a
+loss this over-distributes and leaves the loss with no one: links adding 10 and 5 followed by one
+destroying 10 (outcome 5) receive 15, and the destroyer is not penalised (proved:
+`cc_clamped_overdistributes`). Signed value added, each link credited with what it produced less
+what it received, sums exactly to the measured outcome (rewards and penalties alike) and matches
+the currency article's "each link is credited for the value it added", but leaves [0, 1] (the
+destroyer's share is negative, an upstream link's can exceed 1). Options: (a) signed value added,
+with CC's range widened, or [0, 1] kept for a separate positive-part score; (b) [0, 1] by
+normalising positive and negative value added separately, rewards ∝ positive parts and penalties ∝
+negative parts, each summing to its side of the outcome; (c) something else. The same rule settles
+how co-funders of StandCoin work share the outcome (8.11): as links that produced the resources they
+paid onward. Candidate homes: L93–94, Benefuture currency (Causal Distribution), `Systems.Substrate`.
+- Finding (M3d, transactions): admitting every transaction that beats inaction, rather than G's
+  single best choice, roughly triples floor growth and raises the share of executed work measured
+  harmful from 2% to 9% (27% under model bias); settlement claws it back. Whether the screen should
+  require more than beating inaction (a margin scaled to the model's uncertainty, as in 8.1) is
+  open.

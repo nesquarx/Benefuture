@@ -30,7 +30,7 @@ assumptions it still makes, and graduates to them.
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
 | M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
-| M3d | Transactions and the behavioural transaction substrate: every action a transaction; each relevant currency's model generates a proposal (TP_Gen, L86); the actor composes them (L88); every executed action and outcome logged to memory and measured (L145); transaction trees with several contributors, causal contribution and distribution (L93–94); baseline negative pricing (L143); G as prices rather than a central chooser | B6, B9, `Conj_MinTracksPrediction` | next |
+| M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); next, transaction trees with several contributors, causal contribution and distribution (L93–94), pending the author's ruling (BACKPROPAGATION 8.13) | B6, B9, `Conj_MinTracksPrediction` | transactions done; trees pending a ruling |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -54,7 +54,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
 | `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
-| `Systems.Substrate`, `Systems.Pipeline` | not yet | transaction trees, causal contribution (M3d) |
+| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes (M3d); transaction trees and causal contribution pending a ruling (BACKPROPAGATION 8.13) |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | not yet | governed parameters, SigThGv (M4, M5) |
@@ -212,6 +212,30 @@ work is executed and scored; half have not within 500 steps, and meanwhile their
 by the parent at coarse confidence. Under heavy noise, model bias costs some parents their
 eligibility; their work falls to StandCoin, where most halts for lack of funds, and floors grow
 about 17% less.
+
+## M3d observations
+
+Every proposal is a transaction: each relevant currency quotes it (TP_Gen, L86); G screens it
+against the observed state plus the predicted effects of the transactions already accepted that
+step, so concurrent work cannot jointly breach a floor on its predictions; it executes if its
+proposer can pay; memory logs it with the quotes composed for it (L89, L145). Tests: many
+transactions a step; with exact models and markers no floor ever falls; every executed transaction
+is logged with its quotes; a harmful agent's transactions are screened out; with the switch off,
+M3c is unchanged. Same world as the M3c reading, with the score-only start excluded:
+
+| Reading | G picks one plan | Transactions | G, model bias 0.3 | Transactions, model bias 0.3 |
+|---|---|---|---|---|
+| Actions executed per step | 0.99 | 4.1 | 0.99 | 4.9 |
+| Floor growth, understanding (450 steps) | 33 | 98 | 28 | 98 |
+| Steps the true floor of understanding falls | 7.3% | 9.7% | 13% | 15% |
+| Executed actions measured harmful | 1.7% | 8.9% | 14% | 27% |
+
+G's single argmax takes the best of fifteen proposals; the transaction screen admits anything
+predicted to beat inaction. That roughly triples progress and admits more mediocre and harmful
+work, which settlement claws back; model bias magnifies the harmful share. Selective composition
+(quoting from a subset of currencies) changes nothing here, since settlement already runs against
+the union of all concerned currencies; it is tested with gaming agents (M6). Baseline negative
+pricing (L143) needs beings who transact for basic needs themselves (M7).
 
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 

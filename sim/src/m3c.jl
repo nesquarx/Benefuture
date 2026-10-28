@@ -66,6 +66,7 @@ struct M3cParams
     form_radius::Float64
     max_new::Int
     init_steps::Int
+    transactions::Bool
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -81,7 +82,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    threshold::Real = 0.55, novel_threshold::Real = 0.52, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
-                   form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50,
+                   form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -102,7 +103,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
-              cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps,
+              cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -182,8 +183,9 @@ function run_m3c(p::M3cParams; seed)
     endowed = sum(balance)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     reinvested = zeros(ncol)
-    memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem),
-                        Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64}}}[]
+    # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
+    memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem, :priced),
+                        Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64}}}[]
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
@@ -204,13 +206,13 @@ function run_m3c(p::M3cParams; seed)
             st[j] > 0 && (μ[q, j] = membership_rolling(μ[q, j], st[j], pm[q]; rate = p.μ_rate))
         end
     end
-    function credit!(a, step, c, st, measured, pm)
+    function credit!(a, step, c, st, measured, pm, pr)
         observe_membership!(st, pm)
         net, pos, neg = split_signed(st, measured)
         h_pos[a, :] .+= pos; h_neg[a, :] .+= neg
         (measured >= 0 ? rel_gain : rel_loss)[a, :] .+= net
         rand(nrng) < p.memory_loss && return  # lost before reaching memory: gone at the next recount
-        push!(memory, (agent = a, step = step, signature = c, measured = measured, profile = st, parent_mem = pm))
+        push!(memory, (agent = a, step = step, signature = c, measured = measured, profile = st, parent_mem = pm, priced = pr))
     end
     # Every model on the classification path is scored against the outcome.
     function score!(st, pm, l, plan, seen, quoted)
@@ -292,28 +294,14 @@ function run_m3c(p::M3cParams; seed)
             all(price[c] <= 0 || price[c] <= balance[proposers[j], c] for c in 1:ncol) || continue
             push!(menu, j); push!(menu_preds, quotes[argmax([q[2] for q in quotes])][3]); offers[j] = quotes
         end
-        f = choose(obs, menu_preds, t)
         rel_gain .= reputation_decay.(rel_gain, 1.0; rate = rate_gain)
         rel_loss .= reputation_decay.(rel_loss, 1.0; rate = rate_loss)
-        if scoring_only
-            # Score-only: no currency moves; the work is executed, scored and logged.
-            if f > 1
-                j = menu[f - 1]
-                a, plan, l = proposers[j], plans[j], leaves[j]
-                done = carried_out(rng, p.agents[a].sloppiness, plan)
-                seen = observed_plan(mrng, done, p.marker_σ)
-                measured = plan_value(seen, t)
-                score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
-                credit!(a, step, sigs[j], stops[j], measured, pms[j])
-                lane.init_executed[] += 1
-                available -= count(touched(plan))
-                s.u .+= done.du
-                s.h .+= done.dh
-            end
-        elseif f == 1
-            push!(tr.chosen_agent, 0)
-        else
-            j = menu[f - 1]
+        # Predicted effects of the transactions accepted so far this step: concurrent work is
+        # screened together, so it cannot jointly breach a floor (transactions only).
+        pend_u, pend_h = zeros(length(s.u)), zeros(length(s.h))
+        screened() = ToyState(obs.u .+ pend_u, obs.h .+ pend_h)
+        accept!(pred) = p.transactions && (pend_u .+= pred.du; pend_h .+= pred.dh; true)
+        function execute_priced!(j)
             a, plan, l = proposers[j], plans[j], leaves[j]
             done = carried_out(rng, p.agents[a].sloppiness, plan)
             seen = observed_plan(mrng, done, p.marker_σ)
@@ -328,10 +316,37 @@ function run_m3c(p::M3cParams; seed)
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
             push!(tr.valued_measured, (1 - priced[j][root]) * measured)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]))
-            credit!(a, step, sigs[j], stops[j], measured, pms[j])
+            credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
+        end
+        if scoring_only
+            # Score-only: no currency moves; the work G chooses is executed, scored and logged.
+            f = choose(obs, menu_preds, t)
+            if f > 1
+                j = menu[f - 1]
+                a, plan, l = proposers[j], plans[j], leaves[j]
+                done = carried_out(rng, p.agents[a].sloppiness, plan)
+                seen = observed_plan(mrng, done, p.marker_σ)
+                measured = plan_value(seen, t)
+                score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
+                credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
+                lane.init_executed[] += 1
+                available -= count(touched(plan))
+                s.u .+= done.du
+                s.h .+= done.dh
+            end
+        elseif p.transactions
+            # Every proposal is a transaction: screened by G, executed if paid for (L86-L89).
+            for (k, j) in enumerate(menu)
+                choose(screened(), [menu_preds[k]], t) == 2 || continue
+                accept!(menu_preds[k])
+                execute_priced!(j)
+            end
+        else
+            f = choose(obs, menu_preds, t)
+            f == 1 ? push!(tr.chosen_agent, 0) : execute_priced!(menu[f - 1])
         end
         # The StandCoin lane: work no qualified currency can value. It is still screened by G on
         # the best available model, qualified or not (score-only models predict too), and goes
@@ -344,7 +359,7 @@ function run_m3c(p::M3cParams; seed)
                 continue
             end
             c, pred = bp
-            if choose(obs, [pred], t) == 1
+            if choose(screened(), [pred], t) == 1
                 lane.screened_out[] += 1
                 continue
             end
@@ -373,8 +388,9 @@ function run_m3c(p::M3cParams; seed)
             measured = plan_value(seen, t)
             push!(tr.lane_costs, need); push!(tr.lane_measured, measured)
             lane.executed[] += 1
+            accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
-            credit!(a, step, sigs[j], stops[j], measured, pms[j])
+            credit!(a, step, sigs[j], stops[j], measured, pms[j], priced[j])
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh

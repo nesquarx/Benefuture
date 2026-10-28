@@ -32,6 +32,6 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Every step that can go wrong in reality carries a noise parameter, on its own random stream, with a range to explore (`sim/README.md`, Noise).
 
 ## Records
-- `README.md` (Claims) states in plain words what is proved in Lean, true by construction, or demonstrated in simulation, with links, hypotheses and toy assumptions; never more. Update it with each increment; regenerate `docs/THEOREM_INDEX.md` with `python3 tools/theorem_index.py` when theorems change.
+- `README.md` (Claims) states in plain words what is proved in Lean, true by construction, or demonstrated in simulation, with links, hypotheses and toy assumptions; never more. Links name the theorem (its ID) and its file, never a line number; `python3 tools/check_readme_claims.py` checks every named theorem exists. Update it with each increment; regenerate `docs/THEOREM_INDEX.md` with `python3 tools/theorem_index.py` when theorems change.
 - Author clarifications, and strong requirements or proposals the work surfaces, go to `docs/BACKPROPAGATION.md` as they arise, with candidate homes in the sources; withdrawn proposals are marked, not deleted.
 - Process changes the author asks for go into this file and `docs/PLAN.md` in the same commit.
