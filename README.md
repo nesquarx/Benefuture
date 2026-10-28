@@ -235,8 +235,9 @@ metric models are non-circular given the empirical-marker requirement
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
   Resolved by the author's ruling: credit follows an outcome's assessed parts (BACKPROPAGATION 8.14).
-- Harm through inaction cannot yet arise in the simulation's world, which does not change unless
-  acted on (BACKPROPAGATION 8.15); the Lean now classifies informed inaction under a duty as crime.
+- Harm through inaction under a duty is simulated with hazards and guardians (M3e); whether "not
+  braking" is inaction or part of driving, and duty from hazards of one's own making, follow the
+  author's rulings (BACKPROPAGATION 8.15, 8.17).
 
 ### Demonstrated in simulation
 
@@ -281,6 +282,10 @@ means over 5 seeds of 500 steps.
   penalised through the losses it carries downstream; co-funders whose money was needed are
   credited; every outcome is fully distributed and the books balance (coalition values as in
   BACKPROPAGATION 8.18, a decision open to the author) ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- A world that moves on its own: unguarded hazards cut floor growth by a sixth and double the
+  steps the floor falls; guardians bound by contract recover most of it; what they miss for lack of
+  notice is accident, negligence is crime, and penalties fund repair either way
+  ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the
   share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
   ([sim/README.md, M3c](sim/README.md#m3c-observations)).

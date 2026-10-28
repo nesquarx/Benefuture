@@ -555,3 +555,11 @@ the assessment's confidence is below its threshold, shares come from the L95 tra
 actor's outcome net of the upstream output it received, the co-funders' payments and the upstream
 output as logged, by degree of separation. Candidate homes: Benefuture currency (Causal
 Distribution), L94–95.
+
+**8.19 Finding: duties and repair under hazards (M3e, `sim/README.md`).** With hazards in half of
+all steps, unguarded domains lose about a sixth of their floor growth and the floor falls in twice
+as many steps; guardians bound by contract recover most of it. What they miss for lack of notice is
+accident, negligence is crime, and penalties fund repair either way. Toy assumptions: duty
+fulfilled costs and earns nothing (contract payments are not modelled; L121 accolades for good
+beyond duty neither); natural hazards with no guardian are not repaired (the sources do not say who
+repairs harm with no contributor: the commons, insurance, or no one).

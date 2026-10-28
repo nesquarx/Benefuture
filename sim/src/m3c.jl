@@ -75,6 +75,19 @@ struct M3cParams
     β_upstream::Float64     # how much of that output's effect per being the action carries
     recent_outputs::Int     # outputs kept per domain to build on
     attribution_σ::Float64  # metric models' error in separating an upstream output's part
+    # A world that moves on its own (M3e; author rulings, BACKPROPAGATION 8.15, 8.17).
+    p_hazard::Float64            # chance a hazard arises in some domain each step
+    hazard_share::Float64        # share of beings a hazard threatens
+    hazard_size::Float64         # its harm per being, on understanding and happiness
+    hazard_σ::Float64            # variability of that harm
+    guardians::Vector{Int}       # per true domain, the agent bound by contract to prevent its hazards (0: none)
+    p_informed::Float64          # chance a guardian learns of a hazard in time
+    diligence::Vector{Float64}   # per agent, chance it acts on a duty it knows of
+    repair_efficiency::Float64   # share of a penalised harm that repair restores (governed)
+    p_side::Float64              # chance an action creates a hazard as a side effect
+    side_share::Float64          # share of the beings it touches that the side effect harms
+    side_size::Float64           # harm per being of the side effect
+    p_foresee::Float64           # chance the actor foresaw the side effect
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -92,7 +105,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
                    causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
-                   attribution_σ::Real = 0.0,
+                   attribution_σ::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
+                   hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
+                   repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
+                   p_foresee::Real = 0.5,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -108,6 +124,12 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "rates, noises, thresholds and costs must be non-negative")
     check(all(x -> isfinite(x) && x >= 0, (bias_σ, cost_σ, regen_σ)) && 0 <= memory_loss <= 1 && 0 <= participation <= 1,
           "noise sizes non-negative, chances in [0, 1]")
+    check(all(x -> 0 <= x <= 1, (p_hazard, hazard_share, p_informed, repair_efficiency, p_side, side_share, p_foresee)),
+          "chances, shares and repair efficiency in [0, 1]")
+    check(all(x -> isfinite(x) && x >= 0, (hazard_size, hazard_σ, side_size)), "harm sizes non-negative")
+    check(isempty(guardians) || (length(guardians) == length(leaf_parent) && all(g -> 0 <= g <= length(agents), guardians)),
+          "one guardian (or 0) per true domain")
+    check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
@@ -118,6 +140,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
+              p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
+              isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
+              side_size, p_foresee,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -140,6 +165,7 @@ function run_m3c(p::M3cParams; seed)
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
     urng, arng = Xoshiro(hash((seed, :upstream))), Xoshiro(hash((seed, :attribution)))
+    hrng, srng = Xoshiro(hash((seed, :hazard))), Xoshiro(hash((seed, :side)))
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     ntop = count(==(0), p.leaf_parent)
@@ -207,6 +233,9 @@ function run_m3c(p::M3cParams; seed)
     credit_pos, credit_neg, upstream_pos, upstream_neg = zeros(na), zeros(na), zeros(na), zeros(na)
     cofunder_credit, interaction = Ref(0.0), Ref(0.0)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
+    world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
+             hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0))
+    repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
@@ -299,6 +328,20 @@ function run_m3c(p::M3cParams; seed)
         # Carry out action j by agent a; the outcome is measured by the markers.
         function perform!(j, a)
             own_done = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
+            # A created hazard is direct harm: a crime if foreseen, an accident if not; repaired either way.
+            if p.p_side > 0 && rand(srng) < p.p_side
+                hit = touched(own_plans[j]) .& (rand(srng, t.n) .< p.side_share)
+                if any(hit)
+                    side = ToyPlan(-p.side_size .* hit, -p.side_size .* hit)
+                    own_done = ToyPlan(own_done.du .+ side.du, own_done.dh .+ side.dh)
+                    world.side_hazards[] += 1
+                    is_crime(rand(srng) < p.p_foresee, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    if p.repair_efficiency > 0
+                        push!(repairs, ToyPlan(-p.repair_efficiency .* side.du, -p.repair_efficiency .* side.dh))
+                        world.repaired[] += p.repair_efficiency * abs(plan_value(side, t))
+                    end
+                end
+            end
             done = ups[j] === nothing ? own_done : ToyPlan(own_done.du .+ ups[j][2].du, own_done.dh .+ ups[j][2].dh)
             seen = observed_plan(mrng, done, p.marker_σ)
             m = touched(own_plans[j])
@@ -499,6 +542,47 @@ function run_m3c(p::M3cParams; seed)
             s.u .+= done.du
             s.h .+= done.dh
         end
+        # Hazards: the world moves on its own. A guardian bound by contract to prevent them in its
+        # domain who does not act is assessed against that committed action (the prevented outcome,
+        # no change), so the harm is its contribution: a crime if it was informed, an accident if
+        # not, penalised either way to fund repair. An unguarded hazard has no contributor.
+        if p.p_hazard > 0 && rand(hrng) < p.p_hazard
+            world.hazards[] += 1
+            l = rand(hrng, 1:ntrue)
+            hit = rand(hrng, t.n) .< p.hazard_share
+            size = p.hazard_size .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
+            harm = ToyPlan(-hit .* size, -hit .* size)
+            g = isempty(p.guardians) ? 0 : p.guardians[l]
+            informed = g > 0 && rand(hrng) < p.p_informed
+            if informed && rand(hrng) < p.diligence[g]
+                world.prevented[] += 1
+            elseif any(hit)
+                s.u .+= harm.du; s.h .+= harm.dh
+                measured = plan_value(observed_plan(hrng, harm, p.marker_σ), t)
+                if g == 0
+                    world.unattributed[] += -measured
+                else
+                    is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                    st, pm = classify_sig(sig), parent_mem(sig)
+                    φ = shapley([0.0, measured])[1]  # one contributor, assessed against its committed action
+                    credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
+                    world.hazard_penalties[] += -φ
+                    if !scoring_only
+                        balance[g, :] .+= split_signed(st, φ)[1]
+                        world.hazard_debits[] += -φ
+                    end
+                    if p.repair_efficiency > 0
+                        push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
+                        world.repaired[] += p.repair_efficiency * -φ
+                    end
+                end
+            end
+        end
+        for rep in repairs
+            s.u .+= rep.du; s.h .+= rep.dh
+        end
+        empty!(repairs)
         available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
         # Formation of novel leaves from clustered blockages; then memory is reclassified.
         formed = false
@@ -551,6 +635,9 @@ function run_m3c(p::M3cParams; seed)
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
+               hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
+               unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
+               repaired = world.repaired[], side_hazards = world.side_hazards[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

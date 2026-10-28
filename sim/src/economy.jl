@@ -114,3 +114,7 @@ function traversal_shares(net_contribution, degree; decay::Real)
     lean_floats(ccall(sym(:bf_traversal_shares), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
                       floatarray(net_contribution), floatarray(degree), decay))
 end
+
+"Crime (L115): harm through informed volition or informed inaction against a committed action; else accident."
+is_crime(informed::Bool, volition::Bool, breached_duty::Bool) =
+    ccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1

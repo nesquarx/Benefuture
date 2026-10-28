@@ -31,6 +31,7 @@ assumptions it still makes, and graduates to them.
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
 | M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
 | M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
+| M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -62,7 +63,8 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Governance.Adversarial`, `Axioms.Antifragility` | not yet | bounties, clawbacks, revelation (M6) |
 | `Governance.ExternalHarm` | not yet | external harm response (M6) |
 | `Ontology.Entity`, `Ontology.Being`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | not yet | forks, merges, extended self, liability (M7, M8) |
-| `Subgoals.*`, `Epistemology.*`, `Ontology.Law`, `Systems.Enforcement` | not yet | freedom, justice, diversity, truth, information handling, law and enforcement (M6–M8) |
+| `Subgoals.Justice` | partial | crime or accident by notice and duty, repair funded by penalties (M3e); restorative packages not yet |
+| `Subgoals.*` (others), `Epistemology.*`, `Ontology.Law`, `Systems.Enforcement` | not yet | freedom, justice, diversity, truth, information handling, law and enforcement (M6–M8) |
 | `Systems.Conjectures` | partial | readings in this file; `SimTrace` and the `Conj_*` checks not yet |
 | `Systems.FixedPoint` | not applicable | the simulation uses Float, not the Int fixed point |
 
@@ -250,6 +252,28 @@ distributed; a bad output is penalised through the losses it carries downstream;
 money was needed are credited; heavy attribution error switches distribution to the fallback; the
 books balance and reputation recounts exactly.
 
+## M3e observations
+
+Hazards arise in domains and harm beings unless prevented. A guardian bound by contract to
+prevent them in its domain who does not act is assessed against that committed action, so the harm
+is its contribution: a crime if it was informed, an accident if not (Lean `is_crime_ref`, L115),
+penalised either way to fund repair. Unguarded hazards have no contributor: the harm is recorded as
+unattributed and no bystander is penalised. Actions may create hazards as side effects: direct
+harm to their actors, a crime if foreseen and an accident if not, repaired either way. Tests cover
+each case and the books balance. Same world as the M3d reading, transactions with causal
+distribution, hazards in half of all steps (each threatening 10% of beings), 5 seeds:
+
+| Condition | Floor growth, understanding | Steps the floor falls | Crimes | Accidents |
+|---|---|---|---|---|
+| No hazards | 97 | 8.7% | 0 | 0 |
+| Unguarded hazards | 81 | 18.8% | 0 | 0 (all harm unattributed) |
+| Guarded (informed 80% of the time) | 96 | 12.3% | 0 | 49 |
+| Guarded, repair efficiency 0.5 | 98 | 10.2% | 0 | 49 |
+| Half-diligent guardians, repair 0.5 | 93 | 12.6% | 103 | 51 |
+
+Duties recover most of what unguarded hazards cost; what guardians miss for lack of notice becomes
+accidents, and negligence becomes crime, both repaired from the penalties.
+
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
 | Base, factor | Share of net earnings reinvested | Gini of balances |
@@ -300,6 +324,11 @@ guesses at reality, to be swept once the model is solid.
 | Records reaching memory | `memory_loss` | 0 | 0–0.2 |
 | Experts joining co-funding | `participation` | 1 | 0.3–1 |
 | Separating an upstream output's part | `attribution_σ` | 0 | 0–0.5 |
+| Hazard harm | `hazard_σ` | 0.2 | 0–1 |
+| A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
+| A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |
+| An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
+| Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 
 Still without noise, to add as their rungs arrive: identity binding (M6), votes and delegation
 (M5), threshold estimates (M4), transaction logging and composition (M3d).

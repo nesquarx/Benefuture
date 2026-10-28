@@ -13,7 +13,7 @@ export floor_quantile, g_choose
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth
-export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, cause_settlement, shapley, cc_assessed, traversal_shares
+export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, cause_settlement, shapley, cc_assessed, traversal_shares, is_crime
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood

@@ -9,4 +9,5 @@ import BenefutureReference.Goal
 import BenefutureReference.Measurement
 import BenefutureReference.Economy
 import BenefutureReference.Domains
+import BenefutureReference.Justice
 import BenefutureReference.Export
