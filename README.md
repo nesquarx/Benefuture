@@ -66,6 +66,194 @@ Rather than asserting ungrounded real-world guarantees, the specification distin
 
 ---
 
+## Claims
+
+What this repository establishes, in plain words, with links to the proof or the code and its
+results. Three kinds of evidence, never to be read as more than they are:
+
+- **Proved** (Lean 4 with Mathlib, over ℝ unless noted; checked by CI, no `sorry`, `admit`, custom
+  axioms or `native_decide`). A proof establishes the statement *for the definitions as written,
+  under the hypotheses listed*; it says nothing about whether the definitions describe the world.
+- **By construction**: the theorem confirms that a rule is encoded as intended (the property is a
+  structure field or follows directly from a definition). These check the encoding; they are not
+  discoveries.
+- **Demonstrated in simulation**: observed in the Julia agent-based simulation (`sim/`) under the
+  stated toy assumptions, as tests that pass on every CI run or as readings averaged over a few
+  seeds. Not proofs, and not significance-tested.
+
+The simulation does not run the ℝ specification: it calls the Float reference library
+(`BenefutureReference`, Mathlib-free) through C exports. The reference reproduces the spec's test
+vectors (`spec/vectors/`), but correspondence between `Benefuture` and `BenefutureReference` is not
+proved. Every theorem with its docstring: [docs/THEOREM_INDEX.md](docs/THEOREM_INDEX.md)
+(generated, docstrings unreviewed).
+
+### Proved
+
+Synergy and value
+- Net synergy rises strictly with the gain potential when the cross-term weight λ is in [0, 1],
+  and falls strictly with the loss potential for λ ≥ 0 ([`net_synergy_raw_strict_mono_plus`](Benefuture/Math/Synergy.lean#L546),
+  [`net_synergy_raw_strict_anti_minus`](Benefuture/Math/Synergy.lean#L581)). Equal gains and losses net strictly negative for λ > 0
+  ([`equal_gains_and_losses_are_negative`](Benefuture/Math/Synergy.lean#L229)).
+- The squashed synergy Ŝy is odd and lies strictly in (−1, 1) for h > 0 ([`squashed_synergy_odd`](Benefuture/Math/Synergy.lean#L286),
+  [`squashed_synergy_bounds`](Benefuture/Math/Synergy.lean#L302)); with ν = 1 it is strictly increasing
+  ([`squashed_synergy_strictly_monotone_nu_one`](Benefuture/Math/Synergy.lean#L350)).
+- Loss aversion (losses weigh more than gains of equal size, q₋ > q₊) holds for magnitudes above 1
+  and **fails** below 1 ([`loss_aversion_holds_above_one`](Benefuture/Math/Synergy.lean#L249), [`loss_aversion_fails_below_one`](Benefuture/Math/Synergy.lean#L260));
+  normalising by the context threshold restores it for every significant input
+  ([`significant_assessment_preserves_loss_aversion`](Benefuture/Math/Synergy.lean#L271)), at every admissible parameter point
+  ([`admissible_loss_aversion`](Benefuture/Systems/ParamSpace.lean#L265)).
+- With harm-tier exponent 1.5, doubling a harm more than doubles its weight
+  ([`harm_tier_superlinear`](Benefuture/Axiology/Priorities.lean#L429)). Whether harm tiers trade at a finite rate is open: under a weighted
+  reading enough passing harms outweigh one irreparable harm ([`finite_exchange_rate_weighted`](Benefuture/Math/Synergy.lean#L58));
+  under a lexical reading none do ([`no_finite_exchange_rate_lexical`](Benefuture/Math/Synergy.lean#L84)).
+- Sy never reverses Pareto dominance, for positive weights and exponents, κ ≥ 0 and λ in [0, 1]
+  ([`sy_score_pareto_monotone`](Benefuture/Proposed/PopulationDirection.lean#L419)).
+- Harm reference points: understanding below any earlier level is harm ([`forgetting_is_harm`](Benefuture/Axiology/Priorities.lean#L350));
+  happiness at or above its rolling average is not ([`h_at_or_above_average_no_harm`](Benefuture/Axiology/Priorities.lean#L364),
+  [`coming_down_not_harm`](Benefuture/Axiology/Priorities.lean#L373)). The happiness kind tiers sum exactly to the bias-corrected happiness
+  score ([`kind_tiers_partition_happiness`](Benefuture/Axiology/Priorities.lean#L255)).
+
+Goal G and distribution (`Benefuture.Proposed.PopulationDirection`, status [P])
+- Some plan is always chosen when one is admissible, and inaction always is
+  ([`inaction_admissible`](Benefuture/Proposed/PopulationDirection.lean#L925), [`goal_G_some`](Benefuture/Proposed/PopulationDirection.lean#L931)). The chosen plan never contracts reality, never lowers the
+  maximum or minimum understanding or the minimum happiness against not acting, and maximises the
+  objective over admissible plans ([`goal_G_sound`](Benefuture/Proposed/PopulationDirection.lean#L941)).
+- G never chooses a plan that another admissible plan dominates (no worse for any being present at
+  decision time, better for one, no worse in distribution), under positive weights and exponents,
+  κ ≥ 0, λ in [0, 1] ([`dominated_plan_not_chosen`](Benefuture/Proposed/PopulationDirection.lean#L1003)); likewise at every admissible parameter point
+  ([`admissible_dominated_plan_not_chosen`](Benefuture/Proposed/PopulationDirection.lean#L1038)). Uplift with no losers beats inaction
+  ([`uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean#L1021)).
+- The floor is taken over the decision-time population: removing a being cannot raise it
+  ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean#L1065)), whereas over survivors only it would ([`survivor_floor_rises_on_removal`](Benefuture/Proposed/PopulationDirection.lean#L1079)).
+- The distribution term D ignores the order of beings ([`level_gain_perm`](Benefuture/Proposed/PopulationDirection.lean#L665)) and beings absent at
+  decision time ([`dist_score_ignores_absent`](Benefuture/Proposed/PopulationDirection.lean#L836)); levelling down never helps and uplift never hurts,
+  for monotone shapes ([`levelling_down_never_helps`](Benefuture/Proposed/PopulationDirection.lean#L670), [`uplift_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean#L678)). Moving happiness from a
+  better-off to a worse-off being without reversing their order never lowers D, for every concave
+  shape, and any sequence of such moves likewise ([`pigou_dalton_h`](Benefuture/Proposed/PopulationDirection.lean#L772), [`pd_run_raises`](Benefuture/Proposed/PopulationDirection.lean#L821)). Sharing
+  understanding (the learner rises, the teacher keeps their level) never lowers D
+  ([`u_sharing_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean#L788)).
+- Population: any number of net-negative tallies never outweighs a non-empty set of positive ones
+  ([`net_negative_never_outweighs_positive`](Benefuture/Proposed/PopulationDirection.lean#L316)); copies of one type add at most one type
+  ([`copies_add_no_diversity`](Benefuture/Proposed/PopulationDirection.lean#L328)); summed novelty equals the number of distinct types
+  ([`population_novelty_eq_effective_types`](Benefuture/Proposed/PopulationDirection.lean#L355)) and, with history, never exceeds it
+  ([`population_novelty_hist_le`](Benefuture/Proposed/PopulationDirection.lean#L379)).
+- Checking ↑min step by step is stricter than over a trajectory: a temporary dip that closes is
+  admissible over the trajectory but not stepwise ([`tunnel_admissible_but_not_stepwise`](Benefuture/Proposed/PopulationDirection.lean#L238)); a dip still
+  open at the horizon has triggered harm intervention at some step ([`nonclosing_tunnel_triggers_harm_intv`](Benefuture/Proposed/PopulationDirection.lean#L256)).
+
+Economy, reputation and domains
+- A closed cycle of transactions with zero predicted value loses exactly its resource cost
+  ([`closed_cycle_arbitrage_negative`](Benefuture/Economy/Currency.lean#L149)); an action no model can value pays its full resource cost
+  ([`unmodelled_action_pays_resource_cost`](Benefuture/Economy/Pricing.lean#L87)); confident predicted value above cost makes the price
+  negative ([`price_negative_when_value_exceeds_cost`](Benefuture/Economy/Pricing.lean#L96)).
+- At a parent domain, aggregated value never exceeds the value an action carried
+  ([`aggregate_no_double_count`](Benefuture/Ontology/Domain.lean#L210)), and parents with larger degrees aggregate more
+  ([`aggregate_monotonicity`](Benefuture/Ontology/Domain.lean#L233)).
+- Reputation summed over leaf domains equals the attributed contribution, when every action's
+  shares sum to 1 ([`conservation_positive`](Benefuture/Ontology/Reputation.lean#L206), [`conservation_negative`](Benefuture/Ontology/Reputation.lean#L235)); a domain outside an action's
+  profile is untouched ([`reputation_locality`](Benefuture/Ontology/Reputation.lean#L264)); zero causal contribution earns nothing
+  ([`reputation_no_transfer`](Benefuture/Ontology/Reputation.lean#L284)); history never decreases as memory grows ([`hPos_nondecreasing_on_append`](Benefuture/Ontology/Reputation.lean#L296)).
+- Lazily decayed reputation is exact: decay distributes over sums, chains across checkpoints, and
+  checkpointing changes no later reading ([`cache_correct`](Benefuture/Systems/State.lean#L93), [`decay_transitive`](Benefuture/Systems/State.lean#L102), [`checkpoint_sound`](Benefuture/Systems/State.lean#L140)).
+- The Int fixed-point versions of escrow, assessment normalisation and novelty are within one
+  micro-unit of their real values ([`escrow_fixed_point`](Benefuture/Systems/FixedPoint.lean#L52), [`norm_assessment_fixed_point`](Benefuture/Systems/FixedPoint.lean#L64),
+  [`novelty_fixed_point`](Benefuture/Systems/FixedPoint.lean#L76)).
+- Fuzzy subsethood lies in [0, 1], equals 1 for a domain and itself, and ignores renaming
+  ([`fuzzy_subsethood_in_unit_interval`](Benefuture/Proposed/DomainHierarchy.lean#L61), [`fuzzy_subsethood_self`](Benefuture/Proposed/DomainHierarchy.lean#L91), [`fuzzy_subsethood_rename_invariant`](Benefuture/Proposed/DomainHierarchy.lean#L134));
+  a hierarchy fixed point exists **if** the update operator is monotone, which is assumed, not
+  shown ([`hierarchy_fixed_point_exists`](Benefuture/Proposed/DomainHierarchy.lean#L167)).
+
+Governance and incentives
+- The Brier score is strictly proper: reporting one's belief uniquely minimises expected loss
+  ([`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean#L142)).
+- With the delegation cap, no delegate ever exceeds the cap plus one delegator's maximum weight,
+  however many delegate to it ([`accumulate_capped_bound`](Benefuture/Governance/Incentives.lean#L95)); without a cap a star topology hands one
+  node all the weight ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean#L64)).
+- Planting flaws to farm bounties is unprofitable in expectation when the clawback covers bounty
+  plus damage and detection is likelier than bounty ÷ clawback ([`bounty_incentive_compatible`](Benefuture/Governance/Incentives.lean#L184)).
+- External harm response: forgiveness and overreaction probabilities form a valid split
+  ([`probabilities_sum_le_one`](Benefuture/Governance/ExternalHarm.lean#L85)); the expected response lies between 0 and (1 + margin) × harm
+  ([`ehr_response_bounds`](Benefuture/Governance/ExternalHarm.lean#L112)); more positive reputation never raises it
+  ([`more_positive_reputation_lowers_response`](Benefuture/Governance/ExternalHarm.lean#L136)); with equal ledgers and δ < α, forgiveness is
+  strictly likelier than overreaction ([`forgiveness_bias`](Benefuture/Governance/ExternalHarm.lean#L154)), at every admissible point
+  ([`admissible_forgiveness_bias`](Benefuture/Systems/ParamSpace.lean#L276)).
+- Every parameter vector reachable from the bootstrap point by governance steps is admissible
+  ([`governed_params_admissible`](Benefuture/Systems/ParamSpace.lean#L199)); n evolutionary perturbations move a parameter by at most n·δ
+  ([`perturb_run_drift`](Benefuture/Systems/ParamSpace.lean#L245)).
+- The modelled state transitions (`Step`) keep memory append-only, identities injective and
+  escrow sound ([`step_preserves_mem`](Benefuture/Systems/State.lean#L401), [`step_preserves_id`](Benefuture/Systems/State.lean#L461), [`step_preserves_escrow_soundness`](Benefuture/Systems/State.lean#L529)).
+
+### By construction
+
+These confirm encoded rules: the priority order of understanding over happiness over novelty over
+harm's base weight ([`understanding_dominates_happiness`](Benefuture/Math/Order.lean#L107), a structure field); escrow conservation
+([`escrow_conservation`](Benefuture/Economy/Currency.lean#L75)); conservation under forks and merges ([`fork_conserves_per_domain_currency`](Benefuture/Ontology/Entity.lean#L393),
+[`merge_conserves_per_domain_currency`](Benefuture/Ontology/Entity.lean#L444)); overflow conservation and its ceiling
+([`balance_overflow_conservation_law`](Benefuture/Systems/Economy.lean#L74), [`auto_spill_enforces_ceiling`](Benefuture/Systems/State.lean#L614)); Phase 1 issues no currency
+proposals ([`phase1_score_only_forbids_currency_proposals`](Benefuture/Systems/TechnologyNetwork.lean#L164)); a currency needs a qualified model
+([`currency_requires_qualified_model`](Benefuture/Economy/Currency.lean#L322)); crime needs information and volition, otherwise accident
+([`crime_and_accident_mutually_exclusive`](Benefuture/Subgoals/Justice.lean#L151)); the freedom rules block irreversible, irreparable and
+established severe harm ([`irreversible_harm_strictly_impermissible`](Benefuture/Subgoals/Freedom.lean#L47), [`established_severe_blocks`](Benefuture/Subgoals/Freedom.lean#L143));
+anti-halo isolation: no relevance in a decision's domains, no expert weight
+([`anti_halo_domain_isolation`](Benefuture/Governance/Democracy.lean#L172)); harm to a coupled part of the extended self is positive harm to
+the being ([`defection_harms_extended_self`](Benefuture/Subgoals/Morality.lean#L58): damage × positive coupling); completing the required
+education zeroes an infohazard's modelled risk ([`education_inoculates_infohazard`](Benefuture/Epistemology/InfoHandling.lean#L81)); reporting an
+exploit pays more than exploiting it, because the bounty is defined above the gain
+([`revelation_strictly_dominates`](Benefuture/Governance/Adversarial.lean#L83)); the antifragility and continuity triggers fire on their
+defining conditions ([`harm_growth_activates_intervention`](Benefuture/Axioms/Antifragility.lean#L91), [`rising_harm_mandates_intervention`](Benefuture/Subgoals/Continuity.lean#L55));
+metric models are non-circular given the empirical-marker requirement
+([`metric_models_are_non_circular`](Benefuture/Measurement/MetricModel.lean#L268)).
+
+### Negative and open results
+
+- A positive floor moves the repugnant conclusion rather than resolving it: under additive
+  aggregation, enough beings at any positive floor exceed any finite total
+  ([`floor_shifts_repugnant_conclusion`](Benefuture/Axiology/RepugnantConclusion.lean#L71)). The [P] distribution design answers with the
+  decision-time population and diversity bounds above, not with the floor.
+- Loss aversion fails for sub-unit magnitudes without normalisation ([`loss_aversion_fails_below_one`](Benefuture/Math/Synergy.lean#L260)).
+- Skew direction alone admits plans that lower the minimum ([`skew_direction_alone_permits_min_decline`](Benefuture/Proposed/PopulationDirection.lean#L193)).
+- Freedom excludes irreversible harm even when it is necessary harm with positive net gain
+  ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean#L213)); the tension is open.
+- Without a delegation cap, power concentrates ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean#L64)).
+
+### Demonstrated in simulation
+
+Common toy assumptions, still to be removed (see `sim/README.md`, model ladder): beings and plans
+in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's skill);
+causal signatures as points near unit axes; model and measurement error as Gaussian noise of fixed
+size; G chooses one plan a step from a menu of proposals (transactions come in M3d); fixed agents
+and skills; one measured value per plan, with every loss counted as passing harm. Readings are
+means over 5 seeds of 500 steps.
+
+- Rules are defined once: every simulated rule is a Lean reference function called through C
+  exports; the shared library rebuilds only when the Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
+- With perfect measurement, the floors of understanding and happiness never fall, and the peak of
+  understanding never falls ([sim/test/m0_tests.jl](sim/test/m0_tests.jl)).
+  With noise, the floors' guarantee is only as good as measurement: noise on current levels alone
+  lets the true floor fall in 9% of steps, and heavy prediction noise freezes G (G acts in 7% of
+  steps) ([sim/README.md, M1](sim/README.md#m1-observations)).
+- Metric model competition settles on the most accurate model, and a precise but biased model
+  loses to an unbiased one of equal noise ([sim/test/m1_tests.jl](sim/test/m1_tests.jl)).
+- Reputation tracks agents' skill (Spearman 0.98) when they are careful; with heavy execution noise
+  it tracks carefulness instead (0.64), since convex harm makes noise cost more than it gives
+  ([sim/README.md, M2](sim/README.md#m2-observations)).
+- Payments and reputation are conserved across domains and never leak into domains outside an
+  action's profile ([sim/test/m3_tests.jl](sim/test/m3_tests.jl)). Profiles declared by actors
+  cannot identify per-domain skill (Spearman 0.39); profiles measured from causal signatures can
+  (0.71) ([sim/README.md, M3b](sim/README.md#m3b-observations)).
+- On the domain network: domains missing from the bootstrap classification form from clustered
+  blocked work within about 20 steps, with no spurious domain in 5 seeds, also under heavy noise;
+  overlap degrees unknown to the bootstrap are learnt, slowly by design; a rarely used domain keeps
+  its place; work no qualified currency can value is screened by G on the best available model (a
+  harmful agent's passes in 2 of 2,000 plans, both measured beneficial) and halts when unfunded;
+  the books balance under every noise source at once ([sim/test/m3c_tests.jl](sim/test/m3c_tests.jl),
+  [sim/README.md, M3c](sim/README.md#m3c-observations)).
+- Balance overflow trades reinvestment against concentration: raising the threshold moves the
+  share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
+  ([sim/README.md, M3c](sim/README.md#m3c-observations)).
+
+---
+
 ## Repository Structure
 
 ```
@@ -141,12 +329,15 @@ This repository maintains a two-tier formalization architecture:
    - Implements computable, Float-based versions of core mathematical operators ($Sy, \hat{Sy}, As, V$, escrow splitting, lazy continuous decay, parent domain aggregation, and voting weights).
    - Generates deterministic JSON test vectors to `spec/vectors/*.json`.
 
-### Working with Simulations (e.g. Julia)
+### Working with Simulations (Julia, `sim/`)
 - Spec ↔ reference correspondence is **not** proved in Lean (which uses classical reals).
-- Implementers writing simulations (such as the Benefuture agent-based simulation in Julia) should:
-  1. Ingest and match the canonical JSON test vectors from `spec/vectors/*.json`.
-  2. Implement simulation state transitions conforming to `Step`.
-  3. Validate at runtime that simulated trajectories preserve the state invariants proven in `Benefuture.Systems.State`.
+- The agent-based simulation (`sim/`, Julia package `BenefutureSim`) defines no rule itself: every
+  rule is a function of the Lean reference library, exported through
+  `BenefutureReference/Export.lean` and called by `ccall`; Julia holds the world model and input
+  guards. Loading the package rebuilds the shared library only when the Lean sources change.
+  Ladder of models, run lengths, noise ranges and readings: [sim/README.md](sim/README.md).
+- Each simulation increment starts with acceptance tests (against `spec/vectors/*.json` where they
+  apply) and an adversarial suite, run red before implementing.
 - Vector files and the spec definitions they match:
   - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
   - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).

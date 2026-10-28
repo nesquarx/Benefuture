@@ -37,6 +37,35 @@ assumptions it still makes, and graduates to them.
 | M7 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
+## Coverage of the specification
+
+The end state simulates every aspect of the Lean specification and the pseudocode. Where each Lean
+module stands (simulated: its rules run in the simulation through the Lean reference; partial:
+some of its rules or a simplified stand-in; not yet: no simulated counterpart):
+
+| Lean module | Status | Where |
+|---|---|---|
+| `Math.Synergy`, `Math.Order` | simulated | Sy, Ŝy, V weights (all rungs) |
+| `Axiology.Value`, `Axiology.Priorities` | partial | V, harm schedule and passing-tier harm (M0+); happiness kinds, bias claims, U and H harm reference points not yet |
+| `Measurement.MetricModel` | partial | scoring by −MSE, adoption, accuracy, eligibility (M1, M3c); markers, novelty and causal explanation terms not yet |
+| `Measurement.Threshold` | not yet | M4 |
+| `Economy.Pricing`, `Economy.Currency` | partial | escrow, settlement, transaction price, scarcity cost, overflow (M2–M3c); supply minting and burning not yet |
+| `Ontology.Domain`, `Proposed.DomainHierarchy` | simulated | leaf shares, fuzzy parents, aggregation, learnt overlaps (M3c) |
+| `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
+| `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
+| `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
+| `Systems.Substrate`, `Systems.Pipeline` | not yet | transaction trees, causal contribution (M3d) |
+| `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
+| `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
+| `Systems.ParamSpace` | not yet | governed parameters, SigThGv (M4, M5) |
+| `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | not yet | voting, delegation cap, Brier incentives (M5) |
+| `Governance.Adversarial`, `Axioms.Antifragility` | not yet | bounties, clawbacks, revelation (M6) |
+| `Governance.ExternalHarm` | not yet | external harm response (M6) |
+| `Ontology.Entity`, `Ontology.Being`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | not yet | forks, merges, extended self, liability (M7, M8) |
+| `Subgoals.*`, `Epistemology.*`, `Ontology.Law`, `Systems.Enforcement` | not yet | freedom, justice, diversity, truth, information handling, law and enforcement (M6–M8) |
+| `Systems.Conjectures` | partial | readings in this file; `SimTrace` and the `Conj_*` checks not yet |
+| `Systems.FixedPoint` | not applicable | the simulation uses Float, not the Int fixed point |
+
 ## Run length
 
 Measured on M1 (200 beings, 20 plans a step, three models, ten seeds of 1,000 steps; about 11 s

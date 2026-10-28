@@ -12,10 +12,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # The toolchain download from releases.lean-lang.org fails intermittently: cache it, and retry.
+      - name: Cache the Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean-toolchain') }}
+
       - name: Install elan
         run: |
-          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          fi
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install the Lean toolchain
+        run: |
+          for attempt in 1 2 3 4; do
+            elan toolchain install "$(cat lean-toolchain)" && exit 0
+            sleep $((attempt * 15))
+          done
+          exit 1
 
       # The rules the simulation calls live in the Lean reference library.
       - name: Build the Lean reference library
