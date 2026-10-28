@@ -627,9 +627,11 @@ reality is the open empirical question.
    administration. Gaming check: harm passed off as unassigned escapes its contributor at the
    commons' cost; the causal assessment must find contributors before insurance pays.
    (3) M4: experimental design in randomised blocks (a fixed order was confounded by the trend in
-   floor movement), shifting only on a gain of `th_sig` standard errors (Lean `select_candidate_ref`).
-   [P] reading L25's significance threshold as the z-threshold for adaptation, and randomised blocks
-   as part of Perturb's method; candidate home L157. Gaming check: a faction able to time its
+   floor movement), shifting only on a gain of `gov_z` standard errors (Lean `select_candidate_ref`);
+   the freedom radius gauged in the same rounds (`gauge_radius_ref`). [P] randomised blocks,
+   significance in standard errors and the gauging rule as Perturb's method; candidate home L157.
+   ~~Reading L25's significance threshold as the z-threshold.~~ Withdrawn: L25 measures value
+   changes, not standard errors, and its bootstrap 0.5 made adaptation chase noise. Gaming check: a faction able to time its
    activity to a candidate's epochs could bias the trial; randomised order hides which candidate is
    live, so do not publish the schedule ahead of time.
 

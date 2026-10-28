@@ -313,15 +313,23 @@ Within this range the outcomes do not depend on the parameters (consistent with
 `Conj_ParamStability` at this scale), and adaptation by comparing consecutive epochs was a coin
 toss. It is replaced (author ruling 8.22) by experimental design: each round tries the incumbent
 and perturbed candidates (`gov_candidates`, 3) for `gov_trials` (4) epochs each, in randomised
-blocks, and shifts to the best only if it beats the incumbent by `th_sig` standard errors (Lean
+blocks, and shifts to the best only if it beats the incumbent by `gov_z` standard errors (Lean
 `select_candidate_ref`). Screening the first version found a confound: floor movement rises from
 one epoch to the next (≈37, 38, 40 per 25-step epoch with nothing changed, SE ≈ 2.3 over four
 trials), so a fixed order made whichever candidate ran last look better, and every round shifted
 (8 of 8). Randomised order fixes it: 1 shift in 8 rounds where the parameters make no difference.
-Still to do: gauging each threshold's freedom range (the radius beyond which it is easily
-harmful), targets other than the floors for thresholds that aim at other outcomes, and the
-debatable escape (a proposal beyond the harm zone voted by domain experts and tried at a chosen
-scale). `th_sig` as a z-threshold is a reading [P]: its bootstrap 0.5 is permissive for this use.
+
+The freedom range is gauged in the same rounds: a candidate significantly worse than the incumbent
+means harm lies within the radius, which shrinks by `gov_gauge`; otherwise it widens (Lean
+`gauge_radius_ref`), bounded in effect by admissibility, since candidates that break the hard
+constraints are rejected. A second screening: reading L25's `th_sig` (0.5) as the z-threshold
+found harm in most rounds and shrank the radius to 0.001–0.005 where nothing matters (one
+comparison at 0.5 SE errs about 31% of the time); with `gov_z` = 2, 4 seeds of 4 rounds found
+false harm 3 times in 16 and the radius ended at 0.02, 0.32, 0.08 and 0.32 from 0.02. At radii
+that large the value parameters' candidates mostly break L11's order and are rejected, so the
+parameters did not move. Still to do: targets other than the floors for thresholds that aim at
+other outcomes, and the debatable escape (a proposal beyond the harm zone voted by domain experts
+and tried at a chosen scale).
 
 ## M5 observations
 
@@ -381,7 +389,7 @@ for removal.
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
 | Repair funded by penalties | Ruled | 8.17; how repair is carried out is still a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
 | Administration insuring unassigned harm from the commons | Native, funding [P] | L119 Liability; 8.22.4; the commons is what overflow reinvested (L103), the only collective fund the simulation has; gated by the world's `repair_efficiency`, no switch of its own |
-| Adaptation by experiment (randomised blocks, significance) | Ruled, rule [P] | 8.22.3; Lean `select_candidate_ref`; freedom-range gauging and the debatable escape still to come |
+| Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
 
@@ -395,7 +403,7 @@ ratified.
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
 | Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
-| Experimental design: candidates per round, trials each; significance | `gov_candidates`, `gov_trials`, `th_sig` | 3, 4, 0.5 | L157, L25; 8.22 |
+| Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L157; 8.22 |
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |

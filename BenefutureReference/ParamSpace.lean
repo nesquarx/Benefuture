@@ -41,13 +41,18 @@ def perturb_step_ref (cur cand : Array Float) (fields : Array Nat) (δ : Float) 
 
 /-- Adaptation as experimental design (author ruling, BACKPROPAGATION 8.22; L157 Ap): given each
     candidate's mean outcome and its standard error, the incumbent first (index 0), shift to the
-    best candidate only if it beats the incumbent by `thSig` (L25) combined standard errors. -/
-def select_candidate_ref (means ses : Array Float) (thSig : Float) : Nat := Id.run do
+    best candidate only if it beats the incumbent by `z` combined standard errors (a governed confidence). -/
+def select_candidate_ref (means ses : Array Float) (z : Float) : Nat := Id.run do
   let mut best := 0
   for i in [1:means.size] do
     if means.getD i 0.0 > means.getD best 0.0 then best := i
   let gap := means.getD best 0.0 - means.getD 0 0.0
   let se := Float.sqrt (ses.getD best 0.0 ^ 2 + ses.getD 0 0.0 ^ 2)
-  if best != 0 && gap > thSig * se then best else 0
+  if best != 0 && gap > z * se then best else 0
+
+/-- Gauging a threshold's freedom range (8.22): harm found within the perturbation radius (a
+    candidate significantly worse than the incumbent) shrinks it by `factor`; none found widens it. -/
+def gauge_radius_ref (δ : Float) (harmed : Bool) (factor : Float) : Float :=
+  if harmed then δ / factor else δ * factor
 
 end BenefutureReference

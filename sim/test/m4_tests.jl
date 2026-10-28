@@ -4,14 +4,17 @@
 # is experimental design (author ruling, BACKPROPAGATION 8.22): each round tries the incumbent and
 # perturbed candidates within the freedom range, interleaved over epochs, observes the outcome they
 # aim to improve (the floors' movement), and shifts to the best only if it beats the incumbent by
-# the significance threshold in standard errors (Lean `select_candidate_ref`, `th_sig`).
+# `gov_z` standard errors (Lean `select_candidate_ref`).
 
 @testset "Candidate selection (Lean reference)" begin
-    @test select_candidate([1.0, 3.0], [0.1, 0.1]; th_sig = 1.0) == 2
-    @test select_candidate([1.0, 3.0], [2.0, 2.0]; th_sig = 1.0) == 1      # not significant: keep the incumbent
-    @test select_candidate([1.0, 2.0, 4.0, 3.0], [0.1, 0.1, 0.1, 0.1]; th_sig = 1.0) == 3
-    @test select_candidate([5.0, 2.0, 4.0], [0.1, 0.1, 0.1]; th_sig = 0.0) == 1  # the incumbent is best
-    @test_throws ArgumentError select_candidate([1.0, 2.0], [0.1]; th_sig = 1.0)
+    @test select_candidate([1.0, 3.0], [0.1, 0.1]; z = 1.0) == 2
+    @test select_candidate([1.0, 3.0], [2.0, 2.0]; z = 1.0) == 1      # not significant: keep the incumbent
+    @test select_candidate([1.0, 2.0, 4.0, 3.0], [0.1, 0.1, 0.1, 0.1]; z = 1.0) == 3
+    @test select_candidate([5.0, 2.0, 4.0], [0.1, 0.1, 0.1]; z = 0.0) == 1  # the incumbent is best
+    @test_throws ArgumentError select_candidate([1.0, 2.0], [0.1]; z = 1.0)
+    # Gauging the freedom range: harm found within the radius halves it, none found doubles it.
+    @test gauge_radius(0.1, true; factor = 2.0) ≈ 0.05 && gauge_radius(0.1, false; factor = 2.0) ≈ 0.2
+    @test_throws ArgumentError gauge_radius(0.1, true; factor = 1.0)
 end
 
 @testset "Parameter space (Lean reference): acceptance" begin
@@ -51,6 +54,8 @@ gov(; steps = 300, kw...) = M3cParams(ToyParams(n = 80, steps = steps, plans = 1
     tr = run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed = 1)
     @test tr.rounds == 2 && length(tr.params) == tr.rounds + 1 && all(admissible, tr.tried)
     @test length(tr.tried) == 2 * 3 && tr.shifts <= tr.rounds
+    # The freedom radius is gauged each round (8.22).
+    @test length(tr.radii) == tr.rounds + 1 && all(>(0), tr.radii)
     @test tr == run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed = 1)
 end
 
@@ -59,8 +64,11 @@ end
     @test all(==(tr.params[1]), tr.params) && tr.shifts == 0
     # Where the parameters make no measurable difference, selection does not chase noise: across
     # seeds, shifts are rare (the floor-based rule it replaces shifted half the time).
-    shifts = sum(run_m3c(gov(steps = 650, gov_epoch = 25, gov_candidates = 3, gov_trials = 4); seed).shifts for seed in 1:4)
-    @test shifts <= 2
+    runs = [run_m3c(gov(steps = 650, gov_epoch = 25); seed) for seed in 1:4]
+    @test sum(r.shifts for r in runs) <= 2
+    # Nor does gauging find harm where there is none: across seeds the radius widens.
+    @test sum(log2(r.radii[end] / r.radii[1]) for r in runs) > 0
     @test_throws ArgumentError gov(gov_epoch = 0)
     @test_throws ArgumentError gov(gov_trials = 1)
+    @test_throws ArgumentError gov(gov_gauge = 0.5)
 end

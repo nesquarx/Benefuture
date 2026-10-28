@@ -298,7 +298,9 @@ means over 5 seeds of 500 steps.
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
   make no difference it shifted once in eight rounds, against every round with a fixed order (floor
-  movement trends over time). Not yet: gauging freedom ranges, the debatable escape
+  movement trends over time). The freedom radius is gauged in the same rounds, shrinking on
+  significant harm and widening otherwise; where nothing matters it widens across seeds until
+  admissibility rejects the candidates. Not yet: the debatable escape
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, M4](sim/README.md#m4-observations)).
 - Governance: expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in
   a toy where skill sharpens judgement), but raw reputation concentrates a third of the weight in one

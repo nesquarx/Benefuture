@@ -101,6 +101,8 @@ struct M3cParams
     gov_δ::Float64               # largest move of a field per perturbation (governed)
     gov_candidates::Int          # candidates per round, the incumbent included (governed)
     gov_trials::Int              # epochs each candidate is tried per round (governed)
+    gov_z::Float64               # standard errors a difference must exceed to count (governed)
+    gov_gauge::Float64           # factor by which the gauged radius shrinks on harm, widens without (governed)
     # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
@@ -123,7 +125,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
-                   gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4,
+                   gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -147,8 +149,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
     check(all(x -> 0 <= x <= 1, (accolade_rate, contract_share, p_contracted, p_shock)) && isfinite(shock_size) &&
           shock_size >= 0, "contribution rates and chances in [0, 1], shock size non-negative")
-    check(gov_epoch >= 1 && isfinite(gov_δ) && gov_δ >= 0 && gov_candidates >= 2 && gov_trials >= 2,
-          "governance epoch positive, δ non-negative, at least two candidates and two trials")
+    check(gov_epoch >= 1 && isfinite(gov_δ) && gov_δ >= 0 && gov_candidates >= 2 && gov_trials >= 2 &&
+          isfinite(gov_gauge) && gov_gauge > 1 && isfinite(gov_z) && gov_z >= 0, "governance epoch positive, δ non-negative, two candidates and trials, gauge above 1")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
@@ -161,7 +163,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
-              side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials,
+              side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -194,14 +196,14 @@ function run_m3c(p::M3cParams; seed)
                                   shift = t.shift, spread = t.spread, gp = (α = v[1], β = v[2], γ = v[3], λ = v[8], qp = v[6], qm = v[7]))
     p.govern && (t = with_params(t, pv))
     gov = (params = [copy(pv)], tried = Vector{Float64}[], rounds = Ref(0), shifts = Ref(0), cands = Vector{Float64}[],
-           scores = Vector{Float64}[], slot = Ref(0), order = Int[], start = Ref((0.0, 0.0)))
+           scores = Vector{Float64}[], slot = Ref(0), order = Int[], start = Ref((0.0, 0.0)), radii = [p.gov_δ])
     # A candidate within δ of the incumbent in each governed field, adopted only if admissible.
     function candidate(cur)
         cand = copy(cur)
         for f in governed
-            cand[f] += p.gov_δ * (2 * rand(grng) - 1)
+            cand[f] += gov.radii[end] * (2 * rand(grng) - 1)
         end
-        perturb(cur, cand, governed; δ = p.gov_δ)
+        perturb(cur, cand, governed; δ = gov.radii[end])
     end
     function new_round!()
         empty!(gov.cands); empty!(gov.scores); empty!(gov.order); gov.slot[] = 0
@@ -722,7 +724,7 @@ function run_m3c(p::M3cParams; seed)
         # candidate within δ is adopted if admissible. With adaptation, experimental design (8.22):
         # each round tries the incumbent and perturbed candidates, interleaved, `gov_trials` epochs
         # each in randomised blocks, observing the outcome they aim to improve (the observed floors' movement, free of
-        # the parameters tuned), then shifts to the best only if significant (`select_candidate`).
+        # the parameters tuned), then shifts to the best only if it wins by `gov_z` standard errors (`select_candidate`).
         if p.govern && step >= p.init_steps && (step - p.init_steps) % p.gov_epoch == 0
             floors = (floor_quantile(obs.u, t.q), floor_quantile(obs.h, t.q))
             if !p.adapt
@@ -737,8 +739,14 @@ function run_m3c(p::M3cParams; seed)
                     if gov.slot[] == p.gov_candidates * p.gov_trials
                         means = mean.(gov.scores)
                         ses = [std(x) / sqrt(length(x)) for x in gov.scores]
-                        b = select_candidate(means, ses; th_sig = pv[16])
+                        b = select_candidate(means, ses; z = p.gov_z)
                         gov.shifts[] += b != 1
+                        # Gauging the freedom range: a candidate significantly worse than the
+                        # incumbent means harm lies within the radius.
+                        harmed = any(select_candidate([means[k], means[1]], [ses[k], ses[1]]; z = p.gov_z) == 2
+                                     for k in 2:length(means))
+                        gov.radii[end] > 0 && push!(gov.radii, gauge_radius(gov.radii[end], harmed; factor = p.gov_gauge))
+                        gov.radii[end] > 0 || push!(gov.radii, 0.0)
                         pv = copy(gov.cands[b])
                         gov.rounds[] += 1
                         push!(gov.params, copy(pv))
@@ -768,7 +776,7 @@ function run_m3c(p::M3cParams; seed)
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                repaired = world.repaired[], side_hazards = world.side_hazards[],
-               params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], agents = p.agents,
+               params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end
