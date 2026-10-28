@@ -1,6 +1,7 @@
 using BenefutureSim
 using JSON
 using Test
+using Statistics
 
 const VECTORS = joinpath(@__DIR__, "..", "..", "spec", "vectors")
 vectors(name) = JSON.parsefile(joinpath(VECTORS, name * ".json"))
@@ -56,3 +57,4 @@ include("m0_tests.jl")
 include("m1_tests.jl")
 include("analysis_tests.jl")
 include("economy_tests.jl")
+include("m2_tests.jl")

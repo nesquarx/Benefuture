@@ -63,3 +63,13 @@ function competition_efficiency(dV::Real, cost::Real, dt::Real)
     check(cost + dt > 0, "resource and time consumed must be positive")
     ccall(sym(:bf_competition_efficiency), Float64, (Float64, Float64, Float64), dV, cost, dt)
 end
+
+"""
+    settlement(measured, upfront)
+
+Settlement of escrow: the measured value less what was paid upfront; negative is a clawback.
+"""
+function settlement(measured::Real, upfront::Real)
+    check(isfinite(measured) && isfinite(upfront), "inputs must be finite")
+    ccall(sym(:bf_settlement), Float64, (Float64, Float64), measured, upfront)
+end

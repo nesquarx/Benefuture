@@ -11,6 +11,8 @@
     # Spread across seeds: the half-width of a 95% interval for the mean.
     @test ci_halfwidth([1.0, 1.0, 1.0]) == 0.0
     @test ci_halfwidth([0.0, 2.0]) ≈ 1.96 * 1.0 atol = 1e-12
+    @test spearman([1.0, 2.0, 3.0], [10.0, 40.0, 90.0]) ≈ 1.0
+    @test spearman([1.0, 2.0, 3.0], [3.0, 2.0, 1.0]) ≈ -1.0
 end
 
 @testset "Analysis: adversarial and edge cases" begin

@@ -9,6 +9,7 @@
 import BenefutureReference.Functions
 import BenefutureReference.Goal
 import BenefutureReference.Measurement
+import BenefutureReference.Economy
 
 namespace BenefutureReference.Export
 
@@ -71,5 +72,7 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 
 @[export bf_competition_efficiency] def competitionEfficiency (dV cost dt : Float) : Float :=
   competition_efficiency_ref dV cost dt
+
+@[export bf_settlement] def settle (measured upfrontPaid : Float) : Float := settlement_ref measured upfrontPaid
 
 end BenefutureReference.Export

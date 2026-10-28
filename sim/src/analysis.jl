@@ -30,3 +30,11 @@ function ci_halfwidth(xs)
     check(length(xs) >= 2, "at least two readings are needed")
     1.96 * std(xs) / sqrt(length(xs))
 end
+
+ranks(xs) = (r = similar(xs, Float64); r[sortperm(xs)] = 1:length(xs); r)
+
+"Spearman rank correlation (ties broken by order)."
+function spearman(x, y)
+    check(length(x) == length(y) >= 2, "two series of equal length, at least two, are needed")
+    cor(ranks(x), ranks(y))
+end
