@@ -27,3 +27,31 @@ function decay_rate_for(signed::Real; λpos::Real, λneg::Real)
     check(all(isfinite, (signed, λpos, λneg)) && λpos >= 0 && λneg >= 0, "rates must be finite and non-negative")
     ccall(sym(:bf_decay_rate_for), Float64, (Float64, Float64, Float64), signed, λpos, λneg)
 end
+
+"""
+    classify(dists; threshold, temperature) -> profile
+
+An action's profile as currency metric models assign it, from the distances between its measured
+causal signature and each domain's: one share per domain plus StandCoin last, which takes the
+whole profile when no domain is within `threshold` (a new scenario, flagged for adjudication).
+"""
+function classify(dists; threshold::Real, temperature::Real)
+    check(!isempty(dists) && all(d -> isfinite(d) && d >= 0, dists), "distances must be non-negative")
+    check(isfinite(threshold) && threshold >= 0 && isfinite(temperature) && temperature > 0,
+          "threshold must be non-negative and temperature positive")
+    [ccall(sym(:bf_classify_at), Float64, (Ptr{Cvoid}, Float64, Float64, Csize_t),
+           floatarray(dists), threshold, temperature, i) for i in 0:length(dists)]
+end
+
+"Accumulation threshold of a domain balance: `base` plus `factor` × positive relevance."
+function accumulation_threshold(base::Real, factor::Real, relevance::Real)
+    check(!isnan(base) && base >= 0 && isfinite(factor) && factor >= 0 && isfinite(relevance),
+          "base and factor must be non-negative, relevance finite")
+    ccall(sym(:bf_accumulation_threshold), Float64, (Float64, Float64, Float64), base, factor, relevance)
+end
+
+"The part of a balance above its accumulation threshold, to be reinvested in the domain."
+function overflow(balance::Real, threshold::Real)
+    check(isfinite(balance) && !isnan(threshold), "balance must be finite")
+    ccall(sym(:bf_overflow), Float64, (Float64, Float64), balance, threshold)
+end

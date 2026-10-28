@@ -303,3 +303,12 @@ cannot be identified, and an actor setting its own profile could steer reputatio
 of its choosing. L22 already has domain relations come from memory, not declaration; the sources
 could say the same of an action's profile: assigned by metric models from where its effects
 land, open to dispute.
+
+**8.3 Classification is tree traversal by currency metric models (author ruling; not yet in the
+sources).** Currency metric models assign an action's profile by matching its causal reasons to
+domains' causal signatures, descending the domain tree to a leaf. A match stuck at a branch goes
+back up until a model is willing to price it. StandCoin is a root-level currency: it cannot
+predict outcomes and charges only resource cost, by availability. Net-new scenarios land there and
+are marked for adjudication; many blockages at one branch call for a new subdomain. Candidate
+homes: Domain (Aspects: causal grounding, nested structure; anti-gerrymandering's orphan
+detection), Benefuture currency (StandCoin entry), and pseudocode L22 or L86 (all three copies).

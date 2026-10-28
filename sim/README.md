@@ -24,7 +24,8 @@ against named conjectures.
 | M1 | Competing metric models with bias and noise, scored against established markers | `Conj_MMCompetitionConverges`, B14 | done |
 | M2 | Agents propose the plans; imperfect agents (skill, sloppiness); escrow payment and settlement; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
-| M3b | Measured domain profiles (effects land on beings' domains; models assign the profile); pricing as opportunity cost within each domain; spending from domain balances; baseline negative pricing; several contributors per plan with causal distribution | B6, B9 | next |
+| M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
+| M3c | Domain tree: classification traverses to a leaf; a plan stuck at a branch is priced by the nearest ancestor whose model will price it; StandCoin at the root predicts nothing and charges resource cost by availability; repeated blockages at a branch form a new subdomain, and memory is recounted; calibrated thresholds; baseline negative pricing; several contributors per plan with causal distribution | B6, B9, B10 | next |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -107,3 +108,26 @@ whole-action outcomes by declared shares, so per-domain skill cannot be identifi
 able to set its own profile could claim reputation in a domain of its choosing. The spec points
 the other way: domain relations come from memory, not declaration (L22, `!declared`). M3b
 therefore measures each action's profile from where its effects land.
+
+## M3b observations
+
+Flat first pass: D leaf domains, plus StandCoin for anything matching none. With one domain, no
+cost and no overflow, M3b reproduces M2; balances move by measured value less resource cost less
+overflow; declaring a focus buys no reputation outside the domains a plan is classified into; new
+scenarios go to StandCoin and are flagged; plans an agent cannot afford leave the menu (tests).
+Same setup as the M3 reading (4 domains, 40 agents, sloppiness 0.3, 500 steps, 5 seeds; about 6 s
+a run):
+
+| Reading | M3 (declared profile) | M3b | M3b, 5% new scenarios |
+|---|---|---|---|
+| Relevance against focus × skill per domain (Spearman) | 0.39 | 0.71 | 0.72 |
+| Known plans classified to their own domain | n/a | 100% | 100% |
+| New scenarios sent to StandCoin | n/a | n/a | 100% |
+| Share of net earnings overflowing into reinvestment | n/a | 83% | 82% |
+
+Measuring profiles nearly doubles how well domain reputation tracks domain skill; what remains is
+sloppiness and selection. The approximate thresholds are not yet calibrated: signatures are so
+well separated that classification is perfect, overflow takes most earnings, and a resource cost
+of 0.01 per touched being changes nothing measurable. Superseded in part: StandCoin here pays for
+predicted value like any other currency, whereas it sits at the root of the domain tree, predicts
+no outcomes and charges only resource cost (M3c).

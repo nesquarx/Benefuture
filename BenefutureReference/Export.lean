@@ -84,4 +84,12 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_decay_rate_for] def decayRateFor (signed lambdaPos lambdaNeg : Float) : Float :=
   decay_rate_for_ref signed lambdaPos lambdaNeg
 
+@[export bf_classify_at] def classifyAt (dists : FloatArray) (threshold temperature : Float) (i : USize) : Float :=
+  (classify_ref dists.data threshold temperature).getD i.toNat 0.0
+
+@[export bf_accumulation_threshold] def accumulationThreshold (base factor relevance : Float) : Float :=
+  accumulation_threshold_ref base factor relevance
+
+@[export bf_overflow] def overflowExcess (balance threshold : Float) : Float := overflow_ref balance threshold
+
 end BenefutureReference.Export
