@@ -72,24 +72,15 @@ function plan_value(plan::ToyPlan, p::ToyParams)
 end
 
 """
-    assessed_parts(change, p) -> (positive, negative)
+    assessed_value(du, dh, p)
 
-An outcome's constituent parts: each being's understanding and happiness changes are assessed
-against not acting (As, L48, ex post: measured less counterfactual, here no change, over the
-threshold); a being's gains are valued together with V, and its losses together, so a wholly
-positive or wholly negative outcome is not split and keeps the synergy between understanding and
-happiness. Returns the summed values of the positive parts and of the negative parts.
+An outcome on one being: its understanding and happiness changes assessed against not acting
+(As, L48, ex post: measured less counterfactual, here no change, over the threshold) and valued
+together with V, so their synergy stays in the outcome.
 """
-function assessed_parts(change::ToyPlan, p::ToyParams)
-    pos, neg = 0.0, 0.0
-    for b in eachindex(change.du)
-        change.du[b] == 0 && change.dh[b] == 0 && continue
-        au = assess(0.0, 0.0, change.du[b]; t = 1.0, t0 = 0.0, th = p.th)
-        ah = assess(0.0, 0.0, change.dh[b]; t = 1.0, t0 = 0.0, th = p.th)
-        (au > 0 || ah > 0) && (pos += being_value(max(au, 0.0), max(ah, 0.0), p))
-        (au < 0 || ah < 0) && (neg += being_value(min(au, 0.0), min(ah, 0.0), p))
-    end
-    pos, neg
+function assessed_value(du::Real, dh::Real, p::ToyParams)
+    du == 0 && dh == 0 && return 0.0
+    being_value(assess(0.0, 0.0, du; t = 1.0, t0 = 0.0, th = p.th), assess(0.0, 0.0, dh; t = 1.0, t0 = 0.0, th = p.th), p)
 end
 
 """

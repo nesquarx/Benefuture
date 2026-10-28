@@ -275,11 +275,12 @@ means over 5 seeds of 500 steps.
   measured harmful, against 2%; 27% under model bias); with exact models, screening each step's
   transactions together keeps every floor from falling ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
   [sim/README.md, M3d](sim/README.md#m3d-observations)).
-- Causal distribution by assessed parts: agents who pass outputs on without adding to them earn
-  almost nothing while the makers upstream are paid; a bad output is penalised through the losses
-  it carries downstream; co-funders share the credit of the work they fund; the books balance
-  exactly. About 8% of measured value (mixed outcomes, contributors meeting on one being) is not
-  distributed ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- Outcome-first causal distribution: contributors share each outcome Shapley-style, with the
+  traversal fallback when the causal assessment is not confident; intermediaries who add nothing
+  to what they pass on earn almost nothing while the makers upstream are paid; a bad output is
+  penalised through the losses it carries downstream; co-funders whose money was needed are
+  credited; every outcome is fully distributed and the books balance (coalition values as in
+  BACKPROPAGATION 8.18, a decision open to the author) ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the
   share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
   ([sim/README.md, M3c](sim/README.md#m3c-observations)).

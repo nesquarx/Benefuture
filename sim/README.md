@@ -54,7 +54,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
 | `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
-| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; causal distribution by assessed parts (M3d); deeper chains and degree of separation not yet |
+| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | not yet | governed parameters, SigThGv (M4, M5) |
@@ -237,20 +237,18 @@ work, which settlement claws back; model bias magnifies the harmful share. Selec
 the union of all concerned currencies; it is tested with gaming agents (M6). Baseline negative
 pricing (L143) needs beings who transact for basic needs themselves (M7).
 
-Transaction trees and causal distribution: an action may build on a recent output of another
-agent in its domain, carrying part of its effect. The outcome is split into constituent parts
-(each being's gains together, its losses together, each contributor), each part's side decided by
-its assessment against not acting; positive parts pay their contributors, negative parts penalise
-theirs, each contributor's share of a side in [0, 1] (Lean `cc_share_ref`, `cause_settlement_ref`).
-Tests: parts by assessment; a wholly positive outcome is not split; agents who pass outputs on
-without adding to them earn almost nothing while the makers upstream are paid; a bad output is
-penalised through the losses it carries downstream; co-funders share the credit of StandCoin work;
-the books balance and reputation recounts exactly, with attribution error too. With half of all
-actions building on others' outputs, about 10% of credit flows upstream (13% with attribution
-error 0.3). The remainder that parts cannot carry (mixed beings, contributors' effects meeting on
-one being) is about 8% of measured value (12% with attribution error) and is not distributed.
-Splitting understanding from happiness even in wholly positive outcomes had discarded their
-synergy, half of all value; parts now split only what is mixed.
+Transaction trees and outcome-first causal distribution (BACKPROPAGATION 8.16–8.18): an action
+may build on a recent output of another agent in its domain, carrying part of its effect. Each
+being an action touches is an outcome, its assessed change in V. The causal-explanation model
+estimates each contributor's effect; contributors share each outcome Shapley-style (Lean
+`shapley_ref`) over coalition values (V of the members' summed effects, the actor's own effect
+counting only if the coalition can fund the action); positive shares are paid and negative shares
+penalised. Below the confidence threshold (`cc_assessed_ref`), the traversal fallback shares the
+outcome by net contribution and degree of separation (`traversal_shares_ref`). Tests: intermediaries
+who add nothing earn almost nothing while the makers upstream are paid; every outcome is fully
+distributed; a bad output is penalised through the losses it carries downstream; co-funders whose
+money was needed are credited; heavy attribution error switches distribution to the fallback; the
+books balance and reputation recounts exactly.
 
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
@@ -279,8 +277,8 @@ ratified.
 | Expert co-funding share | `expert_share` | 0.5 | 8.8 |
 | Resource cost and regeneration | `cost_per_touch`, `capacity`, `regen` | 0.05, 10⁴, 0.02 | L83 |
 | Reputation decay | `λpos`, `λneg` | 0.02, 0.05 | L101 |
-| Causal assessment confidence (else traversal) | `cc_assessed` threshold | to be set in M3e | L94; 8.17 |
-| Traversal decay by degree of separation | `traversal_shares` decay | to be set in M3e | L95; 8.17 |
+| Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
+| Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
 
 ## Noise
 

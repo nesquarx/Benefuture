@@ -68,7 +68,9 @@ struct M3cParams
     init_steps::Int
     transactions::Bool
     # Transaction trees and causal distribution (M3d; author ruling, BACKPROPAGATION 8.14).
-    cd_parts::Bool          # credit outcomes by their assessed parts, to every contributor
+    causal_distribution::Bool  # share each outcome among its contributors (8.16–8.18)
+    cc_threshold::Float64      # confidence the causal assessment needs, else traversal (L94; governed)
+    traversal_decay::Float64   # weight per degree of separation in the traversal fallback (L95; governed)
     p_upstream::Float64     # chance an action builds on a recent output of another agent in its domain
     β_upstream::Float64     # how much of that output's effect per being the action carries
     recent_outputs::Int     # outputs kept per domain to build on
@@ -89,7 +91,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
-                   cd_parts::Bool = false, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
+                   causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
                    attribution_σ::Real = 0.0,
                    bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0)
     agents = collect(DomainAgent, agents)
@@ -106,6 +108,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "rates, noises, thresholds and costs must be non-negative")
     check(all(x -> isfinite(x) && x >= 0, (bias_σ, cost_σ, regen_σ)) && 0 <= memory_loss <= 1 && 0 <= participation <= 1,
           "noise sizes non-negative, chances in [0, 1]")
+    check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
@@ -114,7 +117,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
-              cd_parts, p_upstream, β_upstream, recent_outputs, attribution_σ,
+              causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               bias_σ, cost_σ, regen_σ, memory_loss, participation)
 end
 
@@ -203,6 +206,7 @@ function run_m3c(p::M3cParams; seed)
     outputs = Dict{Int,Vector{Tuple{Int,Float64,Float64}}}()
     credit_pos, credit_neg, upstream_pos, upstream_neg = zeros(na), zeros(na), zeros(na), zeros(na)
     cofunder_credit, interaction = Ref(0.0), Ref(0.0)
+    assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
@@ -294,43 +298,62 @@ function run_m3c(p::M3cParams; seed)
                  ToyPlan(own_plans[j].du .+ ups[j][2].du, own_plans[j].dh .+ ups[j][2].dh) for j in eachindex(own_plans)]
         # Carry out action j by agent a; the outcome is measured by the markers.
         function perform!(j, a)
-            own = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
-            done = ups[j] === nothing ? own : ToyPlan(own.du .+ ups[j][2].du, own.dh .+ ups[j][2].dh)
+            own_done = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
+            done = ups[j] === nothing ? own_done : ToyPlan(own_done.du .+ ups[j][2].du, own_done.dh .+ ups[j][2].dh)
             seen = observed_plan(mrng, done, p.marker_σ)
             m = touched(own_plans[j])
             if p.p_upstream > 0 && any(m)
                 out = get!(outputs, leaves[j], Tuple{Int,Float64,Float64}[])
-                push!(out, (a, mean(own.du[m]), mean(own.dh[m])))
+                push!(out, (a, mean(own_done.du[m]), mean(own_done.dh[m])))
                 length(out) > p.recent_outputs && popfirst!(out)
             end
             done, seen, plan_value(seen, t)
         end
-        # Contributors and their parts of the outcome (author ruling, BACKPROPAGATION 8.14): the
-        # outcome is split into assessed parts; metric models separate the upstream output's part
-        # (with error `attribution_σ`); co-funders share the actor's parts by their share of the cost.
-        # Positive parts pay their contributors and negative parts penalise theirs, each side
-        # distributed by contribution in [0, 1] (Lean `cc_share_ref`, `cause_settlement_ref`).
-        function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 1.0)
-            p.cd_parts || return [(a, max(measured, 0.0), min(measured, 0.0))]
+        # Outcome-first causal distribution (author rulings, BACKPROPAGATION 8.16–8.18). Each being
+        # the action touched is an outcome, its assessed change in V. The causal-explanation model
+        # estimates each contributor's effect (the upstream output's with error `attribution_σ`); a
+        # coalition's value is V of its members' summed effects, the actor's own effect counting
+        # only if the coalition can fund the action. Contributors share each outcome Shapley-style
+        # (Lean `shapley_ref`); positive shares are paid and negative shares penalised, each side
+        # normalised within [0, 1] (`cc_share_ref`, `cause_settlement_ref`). When the assessment
+        # is not confident enough (`cc_assessed_ref`), shares come from traversing the transaction
+        # substrate (`traversal_shares_ref`): net contributions by degree of separation.
+        function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 0.0, own_pay = 0.0)
+            p.causal_distribution || return [(a, max(measured, 0.0), min(measured, 0.0))]
             m = touched(plans[j])
             up = ups[j] === nothing ? nothing :
                 ToyPlan(ups[j][2].du .+ m .* p.attribution_σ .* randn(arng, length(m)),
                         ups[j][2].dh .+ m .* p.attribution_σ .* randn(arng, length(m)))
-            own = up === nothing ? seen : ToyPlan(seen.du .- up.du, seen.dh .- up.dh)
-            op, on = assessed_parts(own, t)
-            funded = sum(last, pledges; init = 0.0) / need
-            parts = [(a, (1 - funded) * op, (1 - funded) * on); [(e, g / need * op, g / need * on) for (e, g) in pledges]]
-            if up !== nothing
-                upp, upn = assessed_parts(up, t)
-                push!(parts, (ups[j][1], upp, upn))
+            eff = up === nothing ? seen : ToyPlan(seen.du .- up.du, seen.dh .- up.dh)  # the actor's own effect
+            who = [a; first.(pledges); up === nothing ? Int[] : [ups[j][1]]]
+            n, nf = length(who), length(pledges)
+            funded(mask) = isodd(mask) && own_pay + sum((pledges[k][2] for k in 1:nf if mask & (1 << k) != 0); init = 0.0) >= need - 1e-9
+            hasup(mask) = up !== nothing && mask & (1 << (n - 1)) != 0
+            pos, neg = zeros(n), zeros(n)
+            if n <= 10 && cc_assessed(accuracy(-p.attribution_σ^2); threshold = p.cc_threshold)
+                assessed_outcomes[] += 1
+                for b in findall(m)
+                    v = [assessed_value((funded(mask) ? eff.du[b] : 0.0) + (hasup(mask) ? up.du[b] : 0.0),
+                                        (funded(mask) ? eff.dh[b] : 0.0) + (hasup(mask) ? up.dh[b] : 0.0), t) for mask in 0:(2^n - 1)]
+                    φ = shapley(v)
+                    pos .+= max.(φ, 0.0); neg .+= min.(φ, 0.0)
+                end
+            else
+                fallback_outcomes[] += 1
+                # The substrate records what each link passed on: the upstream output as logged, the
+                # co-funders' payments, and the actor's outcome net of what it received.
+                rec = up === nothing ? 0.0 : max(sum(assessed_value(ups[j][2].du[b], ups[j][2].dh[b], t) for b in findall(m); init = 0.0), 0.0)
+                netc = [max(abs(measured) - rec, 0.0); last.(pledges); up === nothing ? Float64[] : [rec]]
+                share = traversal_shares(netc, [0.0; ones(n - 1)]; decay = p.traversal_decay)
+                pos .= max(measured, 0.0) .* share; neg .= min(measured, 0.0) .* share
             end
-            P, N = sum(x[2] for x in parts), sum(x[3] for x in parts)
+            P, N = sum(pos), sum(neg)
             interaction[] += measured - (P + N)
-            credits = [(e, P == 0 ? 0.0 : cause_settlement(cc_share(pp, P), P, 0.0),
-                           N == 0 ? 0.0 : cause_settlement(cc_share(nn, N), N, 0.0)) for (e, pp, nn) in parts]
+            credits = [(who[k], P == 0 ? 0.0 : cause_settlement(cc_share(pos[k], P), P, 0.0),
+                                N == 0 ? 0.0 : cause_settlement(cc_share(neg[k], N), N, 0.0)) for k in 1:n]
             for (k, (e, pp, nn)) in enumerate(credits)
-                k > 1 && k <= 1 + length(pledges) && (cofunder_credit[] += pp + nn)
-                if up !== nothing && k == length(credits)
+                2 <= k <= 1 + nf && (cofunder_credit[] += pp + nn)
+                if up !== nothing && k == n
                     upstream_pos[e] += pp; upstream_neg[e] += nn
                 end
             end
@@ -390,8 +413,8 @@ function run_m3c(p::M3cParams; seed)
             balance[a, root] -= priced[j][root] * costs[j]
             for (c, sh, pr, acc) in offers[j]
                 upfront = sh * acc * plan_value(pr, t)
-                own = credits[1][2] + credits[1][3]
-                balance[a, c] += upfront - sh * costs[j] + settlement(sh * own, upfront)
+                actor_value = credits[1][2] + credits[1][3]
+                balance[a, c] += upfront - sh * costs[j] + settlement(sh * actor_value, upfront)
                 for (e, pp, nn) in credits[2:end]
                     balance[e, c] += sh * (pp + nn)  # other contributors: causal distribution, nothing upfront
                 end
@@ -447,21 +470,21 @@ function run_m3c(p::M3cParams; seed)
                 continue
             end
             need = costs[j]
-            own = min(need, max(balance[a, root], 0.0))
+            self_pay = min(need, max(balance[a, root], 0.0))
             experts = sort([(e, sum(relevance_parents(e) .* (pms[j] .> 0))) for e in 1:na if e != a]; by = x -> -x[2])
             pledges = Tuple{Int,Float64}[]
             for (e, r) in experts
-                own + sum(last, pledges; init = 0.0) >= need && break
+                self_pay + sum(last, pledges; init = 0.0) >= need && break
                 r > 0 || break
                 rand(nrng) < p.participation || continue
-                give = min(need - own - sum(last, pledges; init = 0.0), p.expert_share * max(balance[e, root], 0.0))
+                give = min(need - self_pay - sum(last, pledges; init = 0.0), p.expert_share * max(balance[e, root], 0.0))
                 give > 0 && push!(pledges, (e, give))
             end
-            if own + sum(last, pledges; init = 0.0) < need - 1e-12
+            if self_pay + sum(last, pledges; init = 0.0) < need - 1e-12
                 lane.halted[] += 1
                 continue
             end
-            balance[a, root] -= own
+            balance[a, root] -= self_pay
             for (e, g) in pledges
                 balance[e, root] -= g
                 lane.cofunded[] += g
@@ -471,7 +494,7 @@ function run_m3c(p::M3cParams; seed)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
-            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured; pledges, need))
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
@@ -519,14 +542,15 @@ function run_m3c(p::M3cParams; seed)
     end
     L = nleaves()
     cols = [1:L; (lmax + 1):ncol]
-    own = (rel_gain .+ rel_loss)[:, cols]
+    own_rel = (rel_gain .+ rel_loss)[:, cols]
     merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
-               h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own,
-               relevance_leaf = own[:, 1:L], relevance_resid = own[:, (L + 1):(L + np)],
+               h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
+               relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
                reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
+               assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

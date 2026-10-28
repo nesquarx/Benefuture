@@ -448,7 +448,8 @@ share of a side is its part over the side's total, in [0, 1] as L93 states, so t
 pays A 10 and B 5 and penalises C 10. Candidate homes: L93–94 and Benefuture currency (Causal
 Distribution): "rewards ∝ CC on the positive parts of an assessed outcome, penalties ∝ CC on its
 negative parts".
-- Simulation decisions (open to the author): (1) a being's gains are valued together and its
+- Superseded by 8.16–8.18 (outcome-first distribution; nothing is left undistributed). Were the
+  simulation decisions: (1) a being's gains are valued together and its
   losses together, so only mixed outcomes are split; splitting understanding from happiness even
   in a wholly positive outcome discarded their synergy (κ), half of all measured value. (2) The
   remainder V(outcome) − Σ V(parts), from mixed beings and from contributors' effects meeting on
@@ -539,3 +540,18 @@ the transaction substrate (L95). Outlined in the sources, never specified. Propo
 Candidate homes: L48 (committed counterfactual), L76 and L121 (duty from contracts and
 communicated laws), L94–98 (outcome events, Shapley CC, minting and destruction by sign), L115 and
 Crime.txt (intent; repair regardless), Justice.txt (reparation by the outcome's nature).
+
+**8.18 [P] Coalition values for Shapley shares (simulation decision, open to the author).** Shapley
+shares depend on what a coalition's value means. If an outcome happened only when its actor acted,
+an agent who merely passes an upstream output on would be necessary and receive half of what the
+output carried, contradicting the netting rule ("each link is credited for the value it added and
+not for the volume passing through it", Benefuture currency) and `pure_intermediary_earns_zero_cc`.
+The simulation instead takes a coalition's value as V of its members' summed effects, as the
+causal-explanation model estimates them (each contributor's effect separable, an intermediary
+replaceable), except that the actor's own effect counts only if the coalition can fund the action,
+so co-funders whose money was needed share the outcome. With this, intermediaries earn almost
+nothing, outcomes are fully distributed (Shapley efficiency), and co-funders are credited. When
+the assessment's confidence is below its threshold, shares come from the L95 traversal: the
+actor's outcome net of the upstream output it received, the co-funders' payments and the upstream
+output as logged, by degree of separation. Candidate homes: Benefuture currency (Causal
+Distribution), L94–95.

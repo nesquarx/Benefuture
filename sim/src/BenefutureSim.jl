@@ -10,7 +10,7 @@ module BenefutureSim
 export phi, net_synergy, squashed_synergy
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being
 export floor_quantile, g_choose
-export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_parts
+export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth
 export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, cause_settlement, shapley, cc_assessed, traversal_shares

@@ -32,6 +32,9 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Every gate value the simulation sets is a threshold to be governed later: list it in `sim/README.md` (Governed thresholds) with its default and source.
 - Every step that can go wrong in reality carries a noise parameter, on its own random stream, with a range to explore (`sim/README.md`, Noise).
 
+## Working
+- When instructed to make progress and blocked on something that needs the author, first make the unambiguous progress that is independent of the block; then stop and ask. Not when asked for one specific task.
+
 ## Records
 - `README.md` (Claims) states in plain words what is proved in Lean, true by construction, or demonstrated in simulation, with links, hypotheses and toy assumptions; never more. Links name the theorem (its ID) and its file, never a line number; `python3 tools/check_readme_claims.py` checks every named theorem exists. Update it with each increment; regenerate `docs/THEOREM_INDEX.md` with `python3 tools/theorem_index.py` when theorems change.
 - Author clarifications, and strong requirements or proposals the work surfaces, go to `docs/BACKPROPAGATION.md` as they arise, with candidate homes in the sources; withdrawn proposals are marked, not deleted.
