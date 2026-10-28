@@ -23,8 +23,11 @@ structure Crime extends Thing where
   harmAmount   : Int
   isInformed   : Bool
   hasVolition  : Bool
+  /-- Informed inaction against a committed action: a duty from a contract, including a law once
+      communicated (author ruling, BACKPROPAGATION 8.17). -/
+  breachedDuty : Bool := false
   h_harm_pos   : 0 < harmAmount
-  h_culpable   : isInformed = true ∧ hasVolition = true
+  h_culpable   : isInformed = true ∧ (hasVolition = true ∨ breachedDuty = true)
   deriving Repr
 
 /-- Coercion: Every Crime is canonically a Thing in Reality. -/
@@ -52,7 +55,7 @@ instance : Coe RestorativePackage Thing where
 def Crime.mkSimple (id : String) (perp victim : Person) (harm : Int) (h_pos : 0 < harm) : Crime :=
   { toThing := Thing.mkSimple id s!"crime_{id}" "reality_substrate" 0,
     perpetrator := perp, victim := victim, harmAmount := harm,
-    isInformed := true, hasVolition := true, h_harm_pos := h_pos, h_culpable := ⟨rfl, rfl⟩ }
+    isInformed := true, hasVolition := true, h_harm_pos := h_pos, h_culpable := ⟨rfl, Or.inl rfl⟩ }
 
 /-- Helper constructor for RestorativePackages. -/
 def RestorativePackage.mkSimple (id : String) (cr : Crime) (reparation rehab : Int) : RestorativePackage :=
@@ -81,7 +84,8 @@ theorem full_reparation_eliminates_residual_harm
 /-- 
   Accident (extends Thing):
   When harm is caused without informed volition or culpable inaction:
-  Harm occurs, but (isInformed = false ∨ hasVolition = false).
+  Harm occurs, but isInformed = false ∨ (hasVolition = false ∧ breachedDuty = false).
+  Repair is owed either way (author ruling, BACKPROPAGATION 8.17).
   Corresponds to: Crime.txt L9.
 -/
 structure Accident extends Thing where
@@ -90,8 +94,9 @@ structure Accident extends Thing where
   harmAmount  : Int
   isInformed  : Bool
   hasVolition : Bool
+  breachedDuty : Bool := false
   h_harm_pos  : 0 < harmAmount
-  h_accidental : isInformed = false ∨ hasVolition = false
+  h_accidental : isInformed = false ∨ (hasVolition = false ∧ breachedDuty = false)
   deriving Repr
 
 instance : Coe Accident Thing where
@@ -139,8 +144,8 @@ theorem accident_requires_pure_restitution_without_punitive_friction (acc : Acci
   Otherwise, it is an Accident.
   Corresponds to: Bf_Pseudocode.txt L115 & Crime.txt L9.
 -/
-def is_crime_classification (isInformed : Bool) (hasVolition : Bool) : Bool :=
-  isInformed && hasVolition
+def is_crime_classification (isInformed : Bool) (hasVolition : Bool) (breachedDuty : Bool := false) : Bool :=
+  isInformed && (hasVolition || breachedDuty)
 
 /-- 
   THEOREM: Crime and Accident Invariants are Mutually Exclusive.
@@ -209,6 +214,30 @@ theorem warning_ignored_constitutes_crime :
 theorem absence_of_notice_is_accident (proceeded : Bool) :
     classify_harmful_action .NoWarningAvailable proceeded = false := by
   cases proceeded <;> rfl
+
+/--
+  THEOREM: Informed inaction against a committed action is a crime (L115: Informed(Volition ∨
+  Inaction)). A driver bound by traffic law who sees the pedestrian and does not brake.
+-/
+theorem informed_inaction_under_duty_is_crime :
+    is_crime_classification true false true = true := by
+  rfl
+
+/--
+  THEOREM: Inaction without a committed action is not a crime, informed or not. A bystander with
+  no duty has no causal contribution to the harm (assessed against inaction, its counterfactual is
+  itself), so no crime arises from it.
+-/
+theorem inaction_without_duty_is_not_crime (isInformed : Bool) :
+    is_crime_classification isInformed false false = false := by
+  cases isInformed <;> rfl
+
+/--
+  THEOREM: An uninformed breach is an accident: repair is owed, no crime.
+-/
+theorem uninformed_breach_is_accident (hasVolition breachedDuty : Bool) :
+    is_crime_classification false hasVolition breachedDuty = false := by
+  rfl
 
 abbrev Cr := Crime
 abbrev J := RestorativePackage

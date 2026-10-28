@@ -261,6 +261,27 @@ Balance overflow trades reinvestment against spread of wealth (strict-tree versi
 | 500, 1.0 (default) | 34% | 0.45 |
 | 1,000, 1.0 | 11% | 0.53 |
 
+## Governed thresholds
+
+Every gate value the simulation sets is a threshold to be governed later (SigThGv, M4–M5;
+`Systems.ParamSpace`). Defaults are approximate, chosen to make the toy world behave, not
+ratified.
+
+| Gate | Parameter | Default | Source |
+|---|---|---|---|
+| Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
+| Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
+| Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
+| Formation of novel domains | `form_count`, `form_radius` | 20, 0.5 | 8.6 |
+| Score-only start | `init_steps` | 50 | Implementation, Phase 1; 8.11 |
+| Balance overflow | `overflow_base`, `overflow_factor` | 500, 1.0 | L100; 8.7 |
+| Expert co-funding share | `expert_share` | 0.5 | 8.8 |
+| Resource cost and regeneration | `cost_per_touch`, `capacity`, `regen` | 0.05, 10⁴, 0.02 | L83 |
+| Reputation decay | `λpos`, `λneg` | 0.02, 0.05 | L101 |
+| Causal assessment confidence (else traversal) | `cc_assessed` threshold | to be set in M3e | L94; 8.17 |
+| Traversal decay by degree of separation | `traversal_shares` decay | to be set in M3e | L95; 8.17 |
+
 ## Noise
 
 Every step that can go wrong in reality has a noise parameter, drawn from its own random stream

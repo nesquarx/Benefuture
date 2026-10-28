@@ -1,6 +1,7 @@
 using BenefutureSim
 using JSON
 using Test
+using Random
 using Statistics
 
 const VECTORS = joinpath(@__DIR__, "..", "..", "spec", "vectors")
@@ -59,6 +60,7 @@ include("analysis_tests.jl")
 include("economy_tests.jl")
 include("m2_tests.jl")
 include("domain_tests.jl")
+include("shapley_tests.jl")
 include("m3_tests.jl")
 include("m3b_tests.jl")
 include("m3c_tests.jl")

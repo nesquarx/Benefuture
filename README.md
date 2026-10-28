@@ -163,6 +163,22 @@ Economy, reputation and domains
   a hierarchy fixed point exists **if** the update operator is monotone, which is assumed, not
   shown ([`hierarchy_fixed_point_exists`](Benefuture/Proposed/DomainHierarchy.lean)).
 
+Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
+- A duty left undone is assessed negative: against the action a contract or communicated law
+  committed the actor to, an outcome worse than the committed one assesses below zero
+  ([`breached_duty_assessed_negative`](Benefuture/Proposed/OutcomeDistribution.lean)); without a committed action, not acting assesses at
+  zero ([`inaction_without_duty_assessed_zero`](Benefuture/Proposed/OutcomeDistribution.lean)).
+- A contributor whose presence changes no coalition's assessed outcome receives no Shapley share
+  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the shares sum to the outcome (efficiency) is not proved here; it
+  is checked numerically on random games ([sim/test/shapley_tests.jl](sim/test/shapley_tests.jl)).
+- Paying positive shares and penalising negative ones distributes exactly the sum of the shares
+  ([`sides_sum`](Benefuture/Proposed/OutcomeDistribution.lean)), and each paid contributor's share of its side lies in [0, 1]
+  ([`paid_share_in_unit`](Benefuture/Proposed/OutcomeDistribution.lean)).
+- Informed inaction against a committed action is a crime (L115); inaction without one is not,
+  informed or not; an uninformed breach is an accident
+  ([`informed_inaction_under_duty_is_crime`](Benefuture/Subgoals/Justice.lean), [`inaction_without_duty_is_not_crime`](Benefuture/Subgoals/Justice.lean),
+  [`uninformed_breach_is_accident`](Benefuture/Subgoals/Justice.lean)).
+
 Governance and incentives
 - The Brier score is strictly proper: reporting one's belief uniquely minimises expected loss
   ([`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean)).
@@ -219,9 +235,8 @@ metric models are non-circular given the empirical-marker requirement
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
   Resolved by the author's ruling: credit follows an outcome's assessed parts (BACKPROPAGATION 8.14).
-- Informed inaction is a crime in the pseudocode (L115) but classifies as an accident in Lean
-  (`Subgoals.Justice.Crime` requires volition); harm through inaction cannot arise in the
-  simulation's world, which does not change unless acted on (BACKPROPAGATION 8.15).
+- Harm through inaction cannot yet arise in the simulation's world, which does not change unless
+  acted on (BACKPROPAGATION 8.15); the Lean now classifies informed inaction under a duty as crime.
 
 ### Demonstrated in simulation
 

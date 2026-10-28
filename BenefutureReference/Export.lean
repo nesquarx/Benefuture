@@ -133,6 +133,14 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=
   cause_settlement_ref cc total upfrontPaid
 
+@[export bf_shapley] def shapleyShares (n : USize) (v : FloatArray) : FloatArray := ⟨shapley_ref n.toNat v.data⟩
+
+@[export bf_cc_assessed] def ccAssessed (confidence threshold : Float) : UInt8 :=
+  if cc_assessed_ref confidence threshold then 1 else 0
+
+@[export bf_traversal_shares] def traversalShares (netC degree : FloatArray) (decay : Float) : FloatArray :=
+  ⟨traversal_shares_ref netC.data degree.data decay⟩
+
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
 

@@ -86,3 +86,31 @@ function cause_settlement(cc::Real, total::Real, upfront::Real)
     check(isfinite(total) && isfinite(upfront) && 0 <= cc <= 1, "contribution in [0, 1], amounts finite")
     ccall(sym(:bf_cause_settlement), Float64, (Float64, Float64, Float64), cc, total, upfront)
 end
+
+"""
+    shapley(v) -> shares
+
+Shapley shares of an outcome among n contributors, from coalition values indexed by bitmask:
+`v[m + 1]` is the assessed outcome had only the contributors in m acted.
+"""
+function shapley(v)
+    n = round(Int, log2(length(v)))
+    check(length(v) >= 1 && 2^n == length(v) && all(isfinite, v), "one finite value per coalition (2^n of them)")
+    n == 0 && return Float64[]
+    lean_floats(ccall(sym(:bf_shapley), Ptr{Cvoid}, (Csize_t, Ptr{Cvoid}), n, floatarray(v)))
+end
+
+"Whether contributions come from the causal assessment (confident enough) rather than traversal (L94)."
+function cc_assessed(confidence::Real; threshold::Real)
+    check(all(x -> isfinite(x) && 0 <= x <= 1, (confidence, threshold)), "confidence and threshold in [0, 1]")
+    ccall(sym(:bf_cc_assessed), UInt8, (Float64, Float64), confidence, threshold) == 1
+end
+
+"Fallback shares by traversal (L95): net contributions weighted by decay^degree of separation, normalised."
+function traversal_shares(net_contribution, degree; decay::Real)
+    check(length(net_contribution) == length(degree) && all(x -> isfinite(x) && x >= 0, net_contribution) &&
+          all(d -> isfinite(d) && d >= 0, degree), "one non-negative contribution and degree per link")
+    check(isfinite(decay) && 0 < decay <= 1, "decay in (0, 1]")
+    lean_floats(ccall(sym(:bf_traversal_shares), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+                      floatarray(net_contribution), floatarray(degree), decay))
+end

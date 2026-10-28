@@ -521,3 +521,21 @@ the transaction substrate (L95). Outlined in the sources, never specified. Propo
 - Decisions needed: the unit of an outcome (per being's ΔV per domain and period, or per
   marker); the overdetermination rule; the sources of duty; the confidence threshold and
   traversal weights; the recipient of reparation.
+
+**8.17 Author rulings on outcome-first distribution (settling 8.16's decisions).**
+1. An outcome is an event; a metric model's measurement estimates its understanding, happiness and
+   novelty per domain and per being.
+2. Overdetermination is handled as specified: CC from metric models' assessments, Shapley-style
+   (Benefuture currency: "approximates shapley-esque mechanisms"). Simulation reading, open to the
+   author: Shapley shares sum to the outcome, and a contributor working against it has a negative
+   share; following 8.14, positive shares are paid and negative shares penalised, each side
+   normalised within [0, 1].
+3. Laws are contracts once communicated, and adjudicable against the goals (Contract.txt: invalid
+   when proven to harm them). A hazard one creates is direct harm; intent decides accident or
+   crime; repair happens either way.
+4. Confidence thresholds and traversal weights are set approximately now and governed later.
+5. Reparation depends on the outcome's nature: harm destroys at the being level; harm to a commons
+   affects every being using it; contributors' penalties fund the repair.
+Candidate homes: L48 (committed counterfactual), L76 and L121 (duty from contracts and
+communicated laws), L94–98 (outcome events, Shapley CC, minting and destruction by sign), L115 and
+Crime.txt (intent; repair regardless), Justice.txt (reparation by the outcome's nature).
