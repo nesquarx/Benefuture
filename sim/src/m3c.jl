@@ -11,10 +11,11 @@
 # while its model's accuracy (expected accuracy before records, for established models) reaches
 # `threshold`; a novel leaf's after `min_records` scored predictions, at `novel_threshold`, never
 # below 0.5 (Lean). Ineligible leaves' shares fall back to eligible parents by μ, else to StandCoin.
-# A plan mostly at StandCoin cannot be valued, so it is not in G's menu: it is priced at its full
-# resource cost and goes ahead if the proposer, with experts (agents with reputation in the
-# parents it overlaps) contributing up to `expert_share` of their StandCoin, can pay; otherwise it
-# halts. Each currency's model predicts the plans it prices: accurate (`σ_leaf`) for its own leaf,
+# A plan mostly at StandCoin cannot be valued by a qualified currency, so it is not in G's menu:
+# it is priced at its full resource cost, screened by G on the best available model (qualified or
+# not), and goes ahead if the proposer, with experts (agents with reputation in the parents it
+# overlaps) contributing up to `expert_share` of their StandCoin, can pay; otherwise it halts. New
+# top-level domains are not modelled (author ruling: implausible). Each currency's model predicts the plans it prices: accurate (`σ_leaf`) for its own leaf,
 # broader (`σ_branch`) for a parent on leaves it knows, coarse (`σ_coarse`) otherwise; a novel
 # leaf's model learns from coarse with its records. Every model on the classification path is
 # scored against the outcome. Blockages (plans mostly stuck at a parent or the root) that cluster
@@ -110,7 +111,7 @@ root, StandCoin (last): `balance` and own reputation (`h_pos_own`, `h_neg_own`, 
 split it out; `μ` is parents × leaves. Per plan chosen by G: `chosen_step`, `true_leaf` (index of
 the world's leaf), `stop_leaf` and `priced_leaf` (the network leaf holding the largest
 classification or priced share, 0 if none), `costs`, `touched`, `valued_measured`. StandCoin
-lane: `lane_executed`, `lane_halted`, `lane_costs`, `cofunded`.
+lane: `lane_executed`, `lane_halted`, `lane_screened_out`, `lane_costs`, `cofunded`.
 """
 function run_m3c(p::M3cParams; seed)
     t = p.toy
@@ -180,7 +181,7 @@ function run_m3c(p::M3cParams; seed)
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step),NTuple{4,Int}}[]
     available = p.capacity
-    lane = (executed = Ref(0), halted = Ref(0), cofunded = Ref(0.0))
+    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0))
     tr = (floor_u = Float64[], floor_h = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
           stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[],
           lane_costs = Float64[], lane_measured = Float64[])
@@ -292,9 +293,22 @@ function run_m3c(p::M3cParams; seed)
             s.u .+= done.du
             s.h .+= done.dh
         end
-        # The StandCoin lane: unvalued work goes ahead if the proposer, with experts, can pay.
+        # The StandCoin lane: work no qualified currency can value. It is still screened by G on
+        # the best available model, qualified or not (score-only models predict too), and goes
+        # ahead if the proposer, with experts, can pay its full resource cost.
         for j in lane_queue
             a, plan, l = proposers[j], plans[j], leaves[j]
+            c = argmax(stops[j][1:(root - 1)])
+            if stops[j][c] <= 0
+                lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
+                continue
+            end
+            pred = c <= lmax ? predict(mrng, MetricModel(lbias[c], leaf_σ(c, l)), plan) :
+                predict(mrng, MetricModel(pbias[c - lmax], parent_σ(c - lmax, l)), plan)
+            if choose(obs, [pred], t) == 1
+                lane.screened_out[] += 1
+                continue
+            end
             need = costs[j]
             own = min(need, max(balance[a, root], 0.0))
             experts = sort([(e, sum(relevance_parents(e) .* (pms[j] .> 0))) for e in 1:na if e != a]; by = x -> -x[2])
@@ -320,7 +334,7 @@ function run_m3c(p::M3cParams; seed)
             measured = plan_value(seen, t)
             push!(tr.lane_costs, need); push!(tr.lane_measured, measured)
             lane.executed[] += 1
-            score!(stops[j], pms[j], l, plan, seen, Dict{Int,ToyPlan}())
+            score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
             credit!(a, step, sigs[j], stops[j], measured, pms[j])
             available -= count(touched(plan))
             s.u .+= done.du
@@ -370,7 +384,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own,
                relevance_leaf = own[:, 1:L], relevance_resid = own[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[],
+               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[],
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
 end

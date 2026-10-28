@@ -143,11 +143,12 @@ bootstrap pattern (signature overlap) and is learnt from memory as fuzzy subseth
 (`Proposed.DomainHierarchy`), blended so evidence takes over from the prior. Classification
 descends from matched parents to member leaves; pricing falls back from ineligible currencies to
 eligible parents by μ, or to StandCoin; work only StandCoin would take pays its full resource
-cost and goes ahead if the proposer, with experts, can pay. Tests: plans reach their true leaf;
+cost, is still screened by G on the best available model (qualified or not), and goes ahead if
+the proposer, with experts, can pay. New top-level domains are not modelled (implausible). Tests: plans reach their true leaf;
 parent reputation equals Σ μ × leaf reputation plus what stuck at the parent; memory recovers an
 overlap degree; a hidden leaf forms, is scored but prices nothing until it qualifies, then takes
-its work; top-level work runs on StandCoin while funded and halts when not; experts co-fund when
-no currency qualifies; incremental reputation equals a recount; under every noise source at once
+its work; when no currency qualifies, StandCoin work is screened (a harmful agent's almost never
+passes, and what passes is measured beneficial), halts when unfunded, and is co-funded by experts; incremental reputation equals a recount; under every noise source at once
 the books still balance.
 
 3 parents of 4 known leaves (three with weak overlaps of 0.2–0.4 on a second parent) and two

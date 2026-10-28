@@ -380,11 +380,8 @@ say so.
   evidence other than the new domain's own scored predictions.
 - Under heavy noise, model bias can cost a parent its eligibility; its work then falls to
   StandCoin, where most of it halted for lack of funds, and floors grew 18% less.
-- [OPEN] Work in the StandCoin lane has no predicted outcome, so G's floor check cannot screen it
-  in advance; harm is only measured afterwards. The sources should say what bounds such work
-  (scale limits, harm models from overlapping domains, or escrow against reputation).
-- [OPEN] Experts who co-fund StandCoin work are not yet rewarded; causal distribution (L94)
-  presumably credits them once the outcome is measured (M3d).
+- Resolved (8.11): work in the StandCoin lane is screened by the best available model.
+- Resolved (8.11): experts who co-fund StandCoin work are credited through causal distribution.
 
 **8.10 Proposal: memberships learnt from memory start from the bootstrap pattern.**
 `Proposed.DomainHierarchy` damps sparse evidence toward zero (S·n/(n+k)). For a domain network
@@ -392,3 +389,18 @@ bootstrapped from established classifications (Domain: initial structure), the s
 toward the bootstrap degree instead: μ = c·S + (1 − c)·μ₀, c = n/(n+k), so a new or sparsely used
 leaf keeps its consortium membership until memory overrules it. Recorded in
 `docs/SPEC_DIVERGENCES.md`.
+
+**8.11 Author rulings on novelty, models and co-funding.**
+- A new top-level domain is like discovering an aspect of reality with little or no overlap with
+  anything else (antigravity, magic): implausible, and not modelled. Novelty appears as
+  subdomains of existing domains.
+- Benefuture as a whole starts with a score-only phase (Implementation, Phase 1) in which a
+  robust set of domains and metric models forms; later novel subdomains are small additions to it.
+- Having no model at all for an action is unrealistic. Work that no qualified currency can value
+  is still predicted by the best available model (score-only models predict too), so G screens
+  it before it runs; only its pricing falls to StandCoin (Benefuture currency: StandCoin entry;
+  L86). In the simulation, a harmful agent's StandCoin work almost never passes the screen.
+- Experts who co-fund StandCoin work are credited through causal distribution (L94) once the
+  outcome is measured.
+- Open, 8.10: for a bootstrapped leaf rarely used after the score-only phase, whether learnt
+  membership keeps the consortium degree (blend) or fades toward zero (`Proposed.DomainHierarchy`).

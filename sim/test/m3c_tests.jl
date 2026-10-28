@@ -51,11 +51,14 @@ end
     tr = run_m3c(m3c(hidden = [1], work = [5], form_count = 10^6); seed = 2)
     @test isempty(tr.formations)
     @test all(iszero, tr.relevance_leaf) && all(tr.relevance_resid[:, 1] .> 0)
-    # A new top-level domain: only StandCoin takes the work, at full resource cost; it goes ahead
-    # while funded and halts when no one can pay.
-    tr = run_m3c(m3c(hidden = [0], work = [5]); seed = 3)
-    @test tr.lane_executed > 0 && all(tr.balance[:, end] .<= tr.endowment + 1e-9) && all(tr.balance[:, end] .>= -1e-9)
-    tr = run_m3c(m3c(hidden = [0], work = [5], endowment = 0.0); seed = 3)
+    # Work no qualified currency can value goes to StandCoin at full resource cost, but is still
+    # screened by G on the best available (score-only) model: a harmful agent's work almost
+    # never passes, and what passes is measured beneficial; unfunded work halts.
+    harmful = m3c(work = [1], skill = -0.8, threshold = 0.99, novel_threshold = 0.99)
+    tr = run_m3c(harmful; seed = 3)
+    @test tr.lane_screened_out > 0.99 * (tr.lane_screened_out + tr.lane_executed + tr.lane_halted)
+    @test all(>=(0), tr.lane_measured)
+    tr = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 0.0); seed = 3)
     @test tr.lane_executed == 0 && tr.lane_halted > 0
     # No currency qualifies: everything falls to StandCoin, and experts with reputation in the
     # work's parent co-fund it once proposers run short.
