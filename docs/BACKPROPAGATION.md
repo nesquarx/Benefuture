@@ -587,3 +587,29 @@ against 98.5%) with the largest holding at 13–21%. Decision needed (open in PL
 and `Governance.Democracy`, or reject): adopt the relative term, and what expertise weight relative
 to the base? The toy assumes skill sharpens judgement; how reputation relates to judgement in
 reality is the open empirical question.
+
+**8.22 Author rulings on governance, contribution types, adaptation and unassigned harm.**
+1. Reputation in voting is normalised (domain-relative, settling 8.21). A domain may have only a few
+   experts with meaningful reputation, one of whom holds 30% of the expertise weight when optional
+   voters abstain; impact weight should still mitigate that. LqdBfDm should be scalable: a
+   household decision works as well as global policy. Candidate homes: L113, Government.
+2. Contribution types (L95: CD ∝ CC + N_CCtype): passing an output on outside any contract or duty
+   is still a communicative contribution to the behavioural transaction substrate and earns an
+   accolade, a minor share but a share; passing it under contract or duty is paid as completion of
+   the contract or duty, not as contribution. The researcher who told a colleague of a new
+   development that led to a project's completion gets an accolade share; the delivery driver of a
+   rocket part gets the contracted share. A driver who brakes and saves a pedestrian gets the
+   substrate's payment for using driving skill well and nothing else, and may face a clawback for
+   the pedestrian's shock. Candidate homes: L94–95, L121 (Accolade), Benefuture currency (Causal
+   Distribution), Contract.
+3. Threshold adaptation (SigThGv, settling 8.20) is experimental design or gradient descent: gauge
+   the threshold's freedom range, beyond which it is easily harmful; choose the outcomes the
+   threshold is meant to improve; perturb within the range; observe; shift the threshold to the best
+   performing value. Debatability is the escape: when someone proposes moving a threshold beyond
+   the harm zone, a test case goes to a vote, and domain experts decide whether it is worth trying
+   and at what scale; a success may redraw the threshold's harm boundaries once its outcomes are
+   measured. Candidate homes: L157, Threshold of significance, Government.
+4. Unassigned harm (settling 8.19): the administration repairs it through the commons, as insurer
+   against every unassigned hazard to the extent of its capability. Catastrophe and black-swan
+   tests are needed to see whether Benefuture adapts; the corpus has material on these.
+   Candidate homes: Administration, Antifragility, L150.

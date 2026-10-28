@@ -29,16 +29,29 @@ end
                             for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
     # Expertise weighting decides better than one agent, one vote, when reputation tracks skill.
     eq = run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400); seed = 1)
-    bf = run_m5(M5Params(m3, 1:4; expertise_weight = 1.0, decisions = 400); seed = 1)
+    bf = run_m5(M5Params(m3, 1:4; decisions = 400); seed = 1)
     @test bf.correct > eq.correct
     # Delegation under the cap: no delegate ever holds more than the cap plus one delegator's weight.
-    dl = run_m5(M5Params(m3, 1:4; expertise_weight = 1.0, decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
+    dl = run_m5(M5Params(m3, 1:4; decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
     @test all(dl.max_share .<= 0.1 .+ dl.max_single .+ 1e-12)
     @test run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3) == run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3)
     # Relative expertise keeps expertise from concentrating weight: no voter holds most of it.
-    rel = run_m5(M5Params(m3, 1:4; decisions = 200, relative_expertise = true); seed = 1)
-    raw = run_m5(M5Params(m3, 1:4; decisions = 200); seed = 1)
+    rel = run_m5(M5Params(m3, 1:4; decisions = 200); seed = 1)
+    raw = run_m5(M5Params(m3, 1:4; decisions = 200, relative_expertise = false); seed = 1)
     @test mean(rel.max_share) < mean(raw.max_share)
+end
+
+@testset "M5: scalability (author ruling 8.22)" begin
+    # LqdBfDm works at every scale: a household of five decides about as well as a polity of a
+    # hundred, and normalised expertise keeps any one voter from dominating either.
+    world(n_per) = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / max(n_per - 1, 1) : 0.0 for l in 1:4],
+                                                  [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:n_per],
+                                     [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+    small = run_m5(M5Params(world(2), 1:4; decisions = 400, expertise_weight = 5.0); seed = 1)   # 8 agents
+    large = run_m5(M5Params(world(25), 1:4; decisions = 400, expertise_weight = 5.0); seed = 1)  # 100 agents
+    @test small.correct > 0.9 && large.correct > 0.9
+    @test mean(large.max_share) < 0.5 && mean(small.max_share) < 0.6
 end
 
 @testset "M5: adversarial and edge cases" begin

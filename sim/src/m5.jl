@@ -7,8 +7,8 @@
 # agent's focus on the domain. In random order, each agent with impact below `impact_threshold`
 # (Th_b) delegates with chance `p_delegate` to the highest-reputation agent above it in the domain
 # whose accumulated weight is still under `cap` × total weight (Th_k); delegates vote with all
-# they hold. With `relative_expertise` ([P]), reputations enter as shares of the
-# domain's total. Rules (Lean): voting weight, capped delegation, relative reputation.
+# they hold. Reputations enter as shares of the domain's total (author ruling 8.22; the
+# `relative_expertise` default). Rules (Lean): voting weight, capped delegation, relative reputation.
 
 "M5 parameters: an M3c run (its agents and reputations), the domains decided in, and the rules' weights."
 struct M5Params
@@ -26,13 +26,13 @@ struct M5Params
     p_delegate::Float64
     cap::Float64
     impact_threshold::Float64
-    relative_expertise::Bool   # [P] expertise as shares of the domain's reputation (Government, discussion)
+    relative_expertise::Bool   # expertise as shares of the domain's reputation (author ruling 8.22)
 end
 
-function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 1.0, impact_weight::Real = 1.0,
+function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
                   optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = 1.0, skill_gain::Real = 5.0,
                   p_delegate::Real = 0.0, cap::Real = 0.05, impact_threshold::Real = 0.5,
-                  relative_expertise::Bool = false)
+                  relative_expertise::Bool = true)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")

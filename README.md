@@ -292,7 +292,8 @@ means over 5 seeds of 500 steps.
   [sim/README.md, M4](sim/README.md#m4-observations)).
 - Governance: expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in
   a toy where skill sharpens judgement), but raw reputation concentrates a third of the weight in one
-  voter; domain-relative expertise keeps nearly all the accuracy with far less concentration; the
+  voter; domain-relative expertise (now the default, by the author's ruling) keeps nearly all the
+  accuracy with far less concentration, from a household of eight to a polity of a hundred; the
   delegation cap holds (no delegate exceeds the cap plus one delegator's weight)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, M5](sim/README.md#m5-observations)).
 - Balance overflow trades reinvestment against concentration: raising the threshold moves the

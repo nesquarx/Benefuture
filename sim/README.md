@@ -33,7 +33,7 @@ assumptions it still makes, and graduates to them.
 | M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
 | M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation by the floors' movement ([P]); next, the simulation's own gates and debatable thresholds (M5) | `Conj_ParamStability` | first pass done |
-| M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run; domain-relative expertise as an option ([P]); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
+| M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
 | M7 | Population change: births, deaths, forks; teaching that shares understanding | `Conj_NoRepugnantDrift`, B15, B17, B19 | |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
@@ -317,6 +317,9 @@ With raw reputation, expertise itself concentrates weight (one voter holds a thi
 with no delegation at all), which the delegation cap cannot touch; the domain-relative term
 proposed in Government's discussion keeps nearly all the accuracy at a fraction of the
 concentration. Uncapped delegation concentrates weight further without improving decisions.
+The author ruled for normalised reputation (8.22); it is the default, with expertise weight 5.
+Scalability: a household of eight and a polity of a hundred both decide above 90% correctly, with
+no voter dominating (tests).
 
 Balance overflow trades reinvestment against spread of wealth (strict-tree version of M3c, 3 seeds):
 
@@ -337,7 +340,7 @@ ratified.
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
 | Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
-| Voting weights: base, expertise, impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 1, 1, 0 | L113 |
+| Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
