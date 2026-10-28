@@ -25,7 +25,8 @@ against named conjectures.
 | M2 | Agents propose the plans; imperfect agents (skill, sloppiness); escrow payment and settlement; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
-| M3c | Domain tree: classification traverses to a leaf; a plan stuck at a branch is priced by the nearest ancestor whose model will price it; StandCoin at the root predicts nothing and charges resource cost by availability; repeated blockages at a branch form a new subdomain, and memory is recounted; calibrated thresholds; baseline negative pricing; several contributors per plan with causal distribution | B6, B9, B10 | next |
+| M3c | Domain tree: classification descends to a leaf; a plan stuck at a branch is priced by the nearest eligible ancestor; StandCoin at the root predicts nothing and charges resource cost by availability; clustered blockages form subdomains, and memory is recounted | B6, B9, B10 | first pass done |
+| M3d | The tree-ish overlap network: nodes with several parents and overlap zones with mandatory competition; harder classification (overlapping signatures); baseline negative pricing; several contributors per plan with causal distribution | B6, B9, B10 | next |
 | M4 | Thresholds: significance thresholds per context, harm tiers by kind, floor quantile and other governed parameters inside the admissible region, perturbed by SigThGv | `Conj_ParamStability` | |
 | M5 | Governance: weighted voting (base, domain expertise, impact), capped liquid delegation, debate on thresholds; the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | |
@@ -131,3 +132,45 @@ well separated that classification is perfect, overflow takes most earnings, and
 of 0.01 per touched being changes nothing measurable. Superseded in part: StandCoin here pays for
 predicted value like any other currency, whereas it sits at the root of the domain tree, predicts
 no outcomes and charges only resource cost (M3c).
+
+## M3c observations
+
+Classification descends a domain tree (Lean `classify_tree_ref`); pricing falls back to the
+nearest eligible ancestor (`fallback_ref`); a domain's reputation sums its subdomains'
+(`subtree_sum_ref`); StandCoin, at the root, prices only resource cost by availability
+(`scarcity_cost_ref`). Tests: plans reach their true leaf; a hidden leaf under a branch is priced
+by the branch until clustered blockages form a subdomain near it, which then prices it; a hidden
+top-level domain is never chosen until it forms; StandCoin never pays for value; incremental
+reputation equals a recount from memory; without formation, reputation for hidden work stays at
+the branch. 3 branches of 4 known leaves, plus two hidden leaves under branches and one hidden
+top-level domain; 45 agents, three per leaf, sloppiness 0.3; 200 beings, 500 steps, 15 plans a
+step, marker noise 0.05, 5 seeds (about 7 s a run):
+
+| Reading | With formation | Without |
+|---|---|---|
+| Subdomains formed (all near a hidden domain; none spurious) | 3 | 0 |
+| Step of formation (mean) | 20–24 | n/a |
+| Chosen plans in the hidden top-level domain | 20.8 | 0 |
+| Chosen plans in the two hidden branch leaves | 10.6, 11.6 | 10.0, 6.8 |
+| Proposals blocked at the root, per step | 0.04 | 0.99 |
+| Floor growth, understanding | 33.6 | 33.2 |
+| Reputation against skill in the agent's own leaf (Spearman) | 0.89 | 0.91 (known leaves only) |
+
+Without formation, work in a domain no model recognises is never done: no currency can value it,
+so it leaves the menu, and the only trace is a steady stream of blockages at the root. Work stuck
+at a branch is still done, priced by the coarse branch model at lower confidence, and is chosen
+less often. Blockages identify the missing domains within about 20 steps. The world remains too
+easy (signatures are well separated, a strict tree, every known plan classified correctly), so
+false formations are untested; M3d adds overlap.
+
+Balance overflow trades reinvestment against spread of wealth (3 seeds):
+
+| Base, factor | Share of net earnings reinvested | Gini of balances |
+|---|---|---|
+| 50, 0.5 | 84% | 0.18 |
+| 200, 1.0 | 59% | 0.35 |
+| 500, 1.0 (default) | 34% | 0.45 |
+| 1,000, 1.0 | 11% | 0.53 |
+
+Resource cost is about 6% of valued outcomes at full availability. Both are approximate until
+governance sets them (M5).

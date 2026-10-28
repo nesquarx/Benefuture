@@ -312,3 +312,41 @@ predict outcomes and charges only resource cost, by availability. Net-new scenar
 are marked for adjudication; many blockages at one branch call for a new subdomain. Candidate
 homes: Domain (Aspects: causal grounding, nested structure; anti-gerrymandering's orphan
 detection), Benefuture currency (StandCoin entry), and pseudocode L22 or L86 (all three copies).
+
+**8.4 Author clarifications on domains and pricing (ratified in discussion; not yet in the
+sources).**
+- Every transaction needs domains: pricing and reputation are both domain-scoped, so domains
+  precede any economic mechanism (Domain, Benefuture currency).
+- A domain's reputation sums its subdomains'; a subdomain's never counts its parent's (Domain:
+  "a broader domain includes the reputation of its sub-domains" states only the first half).
+- StandCoin has no universal value predictor; one would contradict incommensurability. Every
+  outcome is measured, but an outcome no domain can price is a surprise that drives novelty,
+  investigation, research and development (Benefuture currency, StandCoin entry; Novelty).
+- A currency's willingness to price is its eligibility (L82: `MM_Acc > Th` in the domain) and
+  its confidence score; no separate criterion.
+- The domain structure is a tree-ish overlap network, not a strict tree: descent and fallback
+  rules need fine tuning for nodes with several parents and for overlap zones (Domain: overlap
+  zones, mandatory competition).
+- Thresholds may be set approximately for simulation and handed to governance later.
+
+**8.5 Proposal: a newly formed domain prices from formation (surfaced by M3c).** If a new
+domain's currency had to earn eligibility from scored records before pricing anything, a new
+top-level domain would deadlock: work only it could value is never done, so its model is never
+scored. Proposed: a domain formed from blockages prices from formation at the confidence its
+untrained model's expected error warrants (a large escrow hold), keeping eligibility only while
+its rolling score stays above threshold. The research that formed the domain is its initial
+model. Candidate homes: Domain (low-friction addition), L82, Implementation (Phase 1 score-only
+applies to established systems, not to each new domain).
+
+**8.6 Finding: blockages are the signal for new domains (M3c, `sim/README.md`).** In the toy,
+clustered blockages identified every missing domain within about 20 steps and formed none
+spuriously. Without formation, work in a domain at the root of the tree is never done, and its
+only trace is a steady stream of blockages. Supports "too many cases of branch blockages ask for
+new subdomains" as a rule. The anti-gerrymandering aspect (orphan detection, low-friction
+addition) could name blockage clustering as the trigger.
+
+**8.7 Finding: balance overflow trades reinvestment against concentration (M3c).** Raising the
+accumulation threshold moves the share of net earnings reinvested from 84% to 11% while the Gini
+of balances rises from 0.18 to 0.53. The threshold is a distributional choice, not just a
+velocity floor; Benefuture currency (supply stability) and the overflow critique addressal could
+say so.

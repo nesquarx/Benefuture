@@ -3,7 +3,9 @@
   C-callable entry points for the simulation (`sim/`, Julia `ccall`). Each export wraps one
   reference function; it adds no semantics. Lists cross the boundary as `FloatArray`s, built
   from the caller with `bf_fa_mk` and `bf_fa_push`. Array arguments are owned: each call consumes
-  them, so a caller passes every array exactly once.
+  them, so a caller passes every array exactly once. An array returned to the caller is read with
+  `bf_fa_size` and `bf_fa_get`, each consuming a reference the caller takes first, and released
+  with `bf_fa_drop`.
 -/
 
 import BenefutureReference.Functions
@@ -18,6 +20,14 @@ open BenefutureReference
 
 @[export bf_fa_mk] def faMk (capacity : USize) : FloatArray := FloatArray.emptyWithCapacity capacity.toNat
 @[export bf_fa_push] def faPush (a : FloatArray) (x : Float) : FloatArray := a.push x
+-- Exported functions take every argument owned (a borrow annotation is not honoured on export),
+-- so reading consumes a reference: the caller takes one (`lean_inc_ref`) before each read.
+@[export bf_fa_size] def faSize (a : FloatArray) : USize := a.size.toUSize
+@[export bf_fa_get] def faGet (a : FloatArray) (i : USize) : Float := a.data.getD i.toNat 0.0
+/-- Releases an array returned to the caller: the argument is owned, so the call consumes it. -/
+@[export bf_fa_drop] def faDrop (_ : FloatArray) : UInt8 := 0
+
+private def nats (a : FloatArray) : Array Nat := a.data.map fun x => x.toUInt64.toNat
 
 private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zip b.data.toList
 
@@ -91,5 +101,18 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
   accumulation_threshold_ref base factor relevance
 
 @[export bf_overflow] def overflowExcess (balance threshold : Float) : Float := overflow_ref balance threshold
+
+@[export bf_classify_tree] def classifyTree (parents dists thresholds : FloatArray) (temperature : Float) :
+    FloatArray :=
+  ⟨classify_tree_ref (nats parents) dists.data thresholds.data temperature⟩
+
+@[export bf_fallback] def fallbackShares (parents eligible shares : FloatArray) : FloatArray :=
+  ⟨fallback_ref (nats parents) (eligible.data.map (· > 0.5)) shares.data⟩
+
+@[export bf_subtree_sum] def subtreeSum (parents own : FloatArray) : FloatArray :=
+  ⟨subtree_sum_ref (nats parents) own.data⟩
+
+@[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
+  scarcity_cost_ref base available capacity
 
 end BenefutureReference.Export
