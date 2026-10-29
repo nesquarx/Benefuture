@@ -8,10 +8,10 @@ Culture, in a general sense, encompasses the shared beliefs, values, customs, be
 *   '''Local Minima Problem:''' Cultural practices can become entrenched, even if suboptimal (local minima), resisting beneficial change due to inertia and tradition.
 ----
 *   '''Benefuture's Approach:''' Continuous critical evaluation of all cultural practices, assessing their impact on [[Understanding]] (U), [[Happiness]] (H), and [[harm]] minimization. Beneficial practices are encouraged; harmful ones are discouraged. 
-*   '''Protection of diversity:''' Crucially, [[Benefuture goals]] actively reward novel cultural expressions and approaches to achieving U/H, fostering [[diversity]] and preventing stagnation and imperialism.
+*   '''Protection of diversity:''' Crucially, [[Benefuture goals]] actively reward novel cultural expressions and approaches to achieving understanding/happiness, fostering [[diversity]] and preventing stagnation and imperialism.
 *   '''Caution and Gradualism:''' Cultural change is approached with caution, respect, and sensitivity. Change is gradual, evidence-based, and driven by community consensus.
 *   '''Systemic Integration:''' Actively integrated into the core systems. [[Law|Laws]] protect cultural rights and support cultural institutions. The [[economy]] and [[Benefuture currency|Benefuture Currency]] rewards activities with positive cultural impact. [[Government|Government processes]] promote participation, protect cultural heritage, and foster cultural exchange.
-*    '''Novelty as a Core Value:''' The [[Benefuture goals]] incorporates a "novelty factor" in its assessment of U/H contributions. New, original, and [[Diversity|diverse]] approaches to achieving societal goals are ''inherently'' valued and rewarded.
+*    '''Novelty as a Core Value:''' The [[Benefuture goals]] incorporates a "novelty factor" in its assessment of understanding/happiness contributions. New, original, and [[Diversity|diverse]] approaches to achieving societal goals are ''inherently'' valued and rewarded.
 
 == Examples ==
 
@@ -38,7 +38,7 @@ Culture, in a general sense, encompasses the shared beliefs, values, customs, be
 
 === Cultural Relativism and Universal Values ===
 
-Benefuture acknowledges cultural differences in values and practices. While respecting this diversity, Benefuture upholds the universal values of maximizing [[Understanding]] and [[Happiness]] and minimizing [[harm]]. This requires a delicate balancing act, engaging in open dialogue and cross-cultural learning. The system's inherent reward for novelty provides a strong mechanism for balancing universal values with cultural diversity, incentivizing unique cultural expressions that contribute to U/H.
+Benefuture acknowledges cultural differences in values and practices. While respecting this diversity, Benefuture upholds the universal values of maximizing [[Understanding]] and [[Happiness]] and minimizing [[harm]]. This requires a delicate balancing act, engaging in open dialogue and cross-cultural learning. The system's inherent reward for novelty provides a strong mechanism for balancing universal values with cultural diversity, incentivizing unique cultural expressions that contribute to understanding/happiness.
 
 === Cultural Preservation ===
 
@@ -62,7 +62,7 @@ Cultural change is a gradual and participatory process, driven by:
 *   '''Resistance to Change:''' People often resist changing ingrained beliefs and practices.
 *   '''Defining "Harm":''' Determining what constitutes "harm" can be subjective.
 *   '''Unintended Consequences:''' Attempts to shape culture can have unforeseen negative effects.
-*   '''Cultural Imperialism:''' There's a risk of imposing a single, dominant culture. Benefuture actively guards against this through the [[Benefuture goals|Benefuture Goals]]' inherent reward for novelty and avoidance of monocultures, promoting a constant exploration of diverse approaches to achieving U/H, and the emphasis on decentralized decision making.
+*   '''Cultural Imperialism:''' There's a risk of imposing a single, dominant culture. Benefuture actively guards against this through the [[Benefuture goals|Benefuture Goals]]' inherent reward for novelty and avoidance of monocultures, promoting a constant exploration of diverse approaches to achieving understanding/happiness, and the emphasis on decentralized decision making.
 *   '''Backlash:''' Pushing for change too quickly can lead to resistance.
 
 === References ===
