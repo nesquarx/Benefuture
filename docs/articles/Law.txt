@@ -24,7 +24,7 @@ Rights are interaction patterns of benefits which a [[person]] is '''mandatorily
 Privileges are benefits which a sophont may enjoy and use best to fulfill their [[goals]] but they are '''optional''' and their loss or removal is not a crime unless it causes [[significant]] [[harm]].
 
 ===Duties===
-Duties are interaction patterns which sophonts are '''mandatorily''' to perform because the patterns are discerned to best fulfill the [[goals]]. Failure to perform is a crime by the sophont.
+Duties are interaction patterns which sophonts are '''mandatorily''' to perform because the patterns are discerned to best fulfill the [[goals]]. Failure to perform is a crime by the sophont. Duties are not a separate set of rules: they come from [[contract]]s and from laws, which are contracts once communicated. They stay minimal, since [[freedom]] pushes back against the encroachment of duties and laws, which protect only against outcomes beyond its harm boundary. A duty fulfilled is no special kind of payment: its record and outcomes generate currency like any other, and laws learn from it.
 
 ===Responsibilities===
 Responsibilities are interaction patterns which sophonts may perform at their discretion, the patterns are '''recommended but optional''' and failure to perform them is not a crime by the sophont unless it causes [[significant]] [[harm]]. Performing a responsibility instead generates an [[accolade]] for the sophont.

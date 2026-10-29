@@ -9,7 +9,11 @@ A [[Thing]] belongs to multiple domains simultaneously through multiple relation
 
 * '''Nested Structure:''' Domains nest from broad categories (Physical, Informational, Social, Wellbeing) through intermediate levels to fine-grained specializations. Nesting is fuzzy: relations between domains are not declared, they are recorded from the empirical and causal correlations of their members' interactions. [[Measurement|Metric models]] operate at appropriate granularity for their predictive scope.
 
-* '''Weighted Membership:''' A Thing's domain signature comprises all (Domain, RelationshipType, Weight) tuples where weight > 0. Relationship types are extensible as [[Understanding]] deepens. Weights do not decay temporally — they change when the Thing's actual proclivities change.
+* '''Weighted Membership:''' A Thing's domain signature comprises all (Domain, RelationshipType, Weight) tuples where weight > 0. Relationship types are extensible as [[Understanding]] deepens. Weights do not decay temporally — they change when the Thing's actual proclivities change. Domains never fade from disuse: their overlaps are long-term rolling averages of the memberships of logged actions, shifting slowly to mirror reality.
+
+* '''Classification:''' Currency metric models assign an action's domains by matching its causal reasons to domains' causal signatures, descending the domain network to a leaf. A match stuck at a branch goes back up until a model is willing to price it; if none is, it lands in StandCoin ([[Benefuture currency#Example currencies|root-level currency]]) and is marked for adjudication. Many blockages at one branch call for a new sub-domain.
+
+* '''Novelty:''' An undiscovered top-level domain would be an aspect of reality with little or no overlap with anything known, which is extremely improbable; novelty normally appears as a missing sub-domain. A new sub-domain's model starts score-only and backs a currency only once it passes the status threshold ([[Measurement]]).
 
 * '''Overlap Zones:''' Where Things routinely have significant weights in multiple domains, overlap zones emerge — regions of mandatory competition enabling cross-domain validation and preventing monopoly.
 
@@ -25,7 +29,7 @@ A [[Thing]] belongs to multiple domains simultaneously through multiple relation
 
 * '''[[Benefuture currency#Causal Distribution|Causal Distribution]]:''' When outcomes span domains, attribution traces causal chains weighted by domain membership. A teacher's contribution to a student's later health improvement flows through Education domain weights to Health domain outcomes.
 
-* '''[[Reputation]]:''' Domain-specific and non-transferable. A [[Sophont]]'s reputation accumulates within domains where they generate [[Benefuture currency|currency]] above baseline. High physics reputation carries no weight in agricultural policy. A broader domain includes the reputation of its sub-domains in its calculation, without double counting. A pattern with only one member in [[Reality]] is not a domain but an [[Being#Identity|identity]].
+* '''[[Reputation]]:''' Domain-specific and non-transferable. A [[Sophont]]'s reputation accumulates within domains where they generate [[Benefuture currency|currency]] above baseline. High physics reputation carries no weight in agricultural policy. A broader domain includes the reputation of its sub-domains in its calculation, without double counting; a sub-domain never counts its parent's. A pattern with only one member in [[Reality]] is not a domain but an [[Being#Identity|identity]].
 
 * '''[[Government]]:''' Expertise and issue weighting in voting is strictly domain-specific — no halo effects. A climate scientist's vote on emissions policy is weighted by climate domain reputation; their vote on education policy is not.
 
