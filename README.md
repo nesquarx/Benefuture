@@ -158,8 +158,11 @@ Goal G and distribution (`Benefuture.Proposed.PopulationDirection`, status [P])
   κ ≥ 0, λ in [0, 1] ([`dominated_plan_not_chosen`](Benefuture/Proposed/PopulationDirection.lean)); likewise at every admissible parameter point
   ([`admissible_dominated_plan_not_chosen`](Benefuture/Proposed/PopulationDirection.lean)). Uplift with no losers beats inaction
   ([`uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean)).
-- The floor is taken over the decision-time population: removing a being cannot raise it
-  ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean)), whereas over survivors only it would ([`survivor_floor_rises_on_removal`](Benefuture/Proposed/PopulationDirection.lean)).
+- The floor is taken over the decision-time population: removing a being cannot raise it, for the
+  literal minimum ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean)) and for G's floor as a
+  thresholded low quantile, the (k+1)-th smallest level ([`removal_cannot_raise_quantile_floor`](Benefuture/Proposed/PopulationDirection.lean));
+  over survivors only it would rise, in both forms ([`survivor_floor_rises_on_removal`](Benefuture/Proposed/PopulationDirection.lean),
+  [`survivor_quantile_floor_rises_on_removal`](Benefuture/Proposed/PopulationDirection.lean)).
 - The distribution term D ignores the order of beings ([`level_gain_perm`](Benefuture/Proposed/PopulationDirection.lean)) and beings absent at
   decision time ([`dist_score_ignores_absent`](Benefuture/Proposed/PopulationDirection.lean)); for monotone shapes, levelling down never helps and
   uplift never hurts ([`levelling_down_never_helps`](Benefuture/Proposed/PopulationDirection.lean), [`uplift_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean)). For every concave shape,

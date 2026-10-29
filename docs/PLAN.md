@@ -5,7 +5,6 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 ## Part 2: Direction and next steps
 
 - **Ratify §7 of `docs/BACKPROPAGATION.md`.** Coherence edits applied to articles and pseudocode as [P].
-- **Quantile floors in Lean.** Define the thresholded low quantile used by G's floors (L74) and prove `removal_cannot_raise_floor` for it: order statistics are monotone in each level, so the literal-minimum proof should generalise.
 - **Domain-relative expertise.** Government proposes the expertise term relative within each domain; carry it into L113 and `Governance.Democracy`, or reject it.
 - **Abbreviation sweep.** Articles spell out Benefuture's own abbreviations and symbols (common parlance and names are fine); earlier text still contains some (for example U/H, MM). Edited lines comply.
 - **Simulation** (`sim/`, small increments, red first; rules in Lean, world in Julia; ladder, run lengths and noise ranges in `sim/README.md`). The outcome is a system of rules ready for implementation: the end state has no toy assumptions, absorbs messy reality, and replicates every aspect of the Lean specification and the pseudocode (each pseudocode line and Lean module either simulated or listed as not yet covered in `sim/README.md`). `README.md` (Claims) lists what is proved, by construction or demonstrated, with links and assumptions; it is updated with each increment. Done: M0, M1, first passes of M2, M3, M3b (flat) and M3c (the domain network of Ontology.Domain [R] with a score-only start, overlap degrees as long-term rolling averages, eligibility with a score-only phase for novel leaves, the screened StandCoin lane, novel leaves from blockages). Next:
@@ -28,6 +27,7 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 
 ## Part 1: Done
 
+- Quantile floors in Lean: G's floor as the (k+1)-th smallest level over the decision-time population (`quantile_floor`), removal cannot raise it (`removal_cannot_raise_quantile_floor`), and over survivors alone it would (`survivor_quantile_floor_rises_on_removal`).
 - Lean 4 specification of the pseudocode with invariants and sanity lemmas; behavioural claims as conjectures over `SimTrace`; Float reference library and JSON test vectors.
 - Population direction: staged G, counterfactual floors, assessed distribution term, Pigou–Dalton for H, U shared rather than moved (`u_sharing_gain_nonneg`).
 - Coherence audit against the articles: findings and applied edits in `docs/BACKPROPAGATION.md` §7; conjectures B20–B25.

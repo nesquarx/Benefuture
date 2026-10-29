@@ -1052,8 +1052,8 @@ theorem admissible_dominated_plan_not_chosen (pv : ParamVector) (h : Admissible 
 
 /--
   [R] Floor over beings present at decision time; lost lives keep their place at the bottom.
-  Stated here for the literal minimum; G's floors are thresholded low quantiles (L74), and the
-  removal bound below carries over because every order statistic is monotone in each level.
+  Stated here for the literal minimum; G's floors are thresholded low quantiles (L74), for which
+  the same bound is `removal_cannot_raise_quantile_floor` below.
 -/
 noncomputable def decision_floor (pop : List ℕ) (level : ℕ → ℝ) (top : ℝ) : ℝ :=
   (pop.map level).foldr min top
@@ -1081,5 +1081,90 @@ theorem survivor_floor_rises_on_removal :
   simp only [List.foldr_cons, List.foldr_nil]
   rw [min_eq_left (by norm_num : (5 : ℝ) ≤ 10), min_eq_left (by norm_num : (0 : ℝ) ≤ 5)]
   norm_num
+
+/--
+  [P] G's floor as a thresholded low quantile (L74): the (k+1)-th smallest level over the
+  decision-time population, as the least level at or below which at least k+1 beings stand.
+-/
+noncomputable def quantile_floor (pop : Finset ℕ) (level : ℕ → ℝ) (k : ℕ) : ℝ :=
+  sInf {x : ℝ | k + 1 ≤ (pop.filter (fun b => level b ≤ x)).card}
+
+/--
+  THEOREM: Removal cannot raise the quantile floor. Over the decision-time population, lowering
+  any levels (a removed being drops to the bottom) leaves every order statistic no higher.
+-/
+theorem removal_cannot_raise_quantile_floor (pop : Finset ℕ) (level level' : ℕ → ℝ) (k : ℕ)
+    (hk : k < pop.card) (h : ∀ b ∈ pop, level' b ≤ level b) :
+    quantile_floor pop level' k ≤ quantile_floor pop level k := by
+  unfold quantile_floor
+  apply csInf_le_csInf
+  · -- bounded below: a point of the set has some being at or below it
+    refine ⟨-(pop.sum fun b => |level' b|), fun x hx => ?_⟩
+    have hpos : 0 < (pop.filter (fun b => level' b ≤ x)).card := by
+      simp only [Set.mem_setOf_eq] at hx; omega
+    obtain ⟨b, hb⟩ := Finset.card_pos.mp hpos
+    rw [Finset.mem_filter] at hb
+    have h1 : |level' b| ≤ pop.sum fun b => |level' b| :=
+      Finset.single_le_sum (f := fun b => |level' b|) (fun _ _ => abs_nonneg _) hb.1
+    have h2 : -|level' b| ≤ level' b := neg_abs_le _
+    linarith [hb.2]
+  · -- nonempty: at a level above everyone's, all beings stand at or below it
+    refine ⟨pop.sum fun b => |level b|, ?_⟩
+    simp only [Set.mem_setOf_eq]
+    have hall : pop.filter (fun b => level b ≤ pop.sum fun b => |level b|) = pop := by
+      apply Finset.filter_true_of_mem
+      intro b hb
+      exact le_trans (le_abs_self _) (Finset.single_le_sum (f := fun b => |level b|) (fun _ _ => abs_nonneg _) hb)
+    rw [hall]; omega
+  · -- lowering levels only enlarges the set of points with k+1 beings at or below
+    intro x hx
+    simp only [Set.mem_setOf_eq] at hx ⊢
+    refine le_trans hx (Finset.card_le_card fun b hb => ?_)
+    rw [Finset.mem_filter] at hb ⊢
+    exact ⟨hb.1, le_trans (h b hb.1) hb.2⟩
+
+/--
+  THEOREM: Taken over survivors only, removal would raise the quantile floor too: with levels 0, 5
+  and 7, the second-smallest is 5; removing the being at 0 makes it 7.
+-/
+theorem survivor_quantile_floor_rises_on_removal :
+    quantile_floor {0, 1, 2} (fun b => if b = 0 then 0 else if b = 1 then 5 else 7) 1 <
+    quantile_floor {1, 2} (fun b => if b = 0 then 0 else if b = 1 then 5 else 7) 1 := by
+  have key : ∀ (S : Finset ℕ) (v : ℝ), (∀ x, (1 + 1 ≤ (S.filter (fun b => (if b = 0 then (0:ℝ) else if b = 1 then 5 else 7) ≤ x)).card ↔ v ≤ x)) →
+      quantile_floor S (fun b => if b = 0 then 0 else if b = 1 then 5 else 7) 1 = v := by
+    intro S v hv
+    unfold quantile_floor
+    have : {x : ℝ | 1 + 1 ≤ (S.filter (fun b => (if b = 0 then (0:ℝ) else if b = 1 then 5 else 7) ≤ x)).card} = Set.Ici v := by
+      ext x; simp only [Set.mem_setOf_eq, Set.mem_Ici]; exact hv x
+    rw [this, csInf_Ici]
+  rw [key {0, 1, 2} 5, key {1, 2} 7]
+  · norm_num
+  · intro x
+    by_cases h7 : (7:ℝ) ≤ x
+    · have h5 : (5:ℝ) ≤ x := by linarith
+      simp [Finset.filter_insert, Finset.filter_singleton, h5, h7]
+    · have hsub : ({1, 2} : Finset ℕ).filter
+          (fun b => (if b = 0 then (0:ℝ) else if b = 1 then 5 else 7) ≤ x) ⊆ {1} := by
+        intro b hb
+        simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton] at hb ⊢
+        rcases hb with ⟨rfl | rfl, hle⟩
+        · rfl
+        · simp at hle; exact absurd hle h7
+      have hc := Finset.card_le_card hsub
+      rw [Finset.card_singleton] at hc
+      exact ⟨fun h2 => by omega, fun h => absurd h h7⟩
+  · intro x
+    by_cases h5 : (5:ℝ) ≤ x
+    · by_cases h7 : (7:ℝ) ≤ x
+      · have h0 : (0:ℝ) ≤ x := by linarith
+        simp [Finset.filter_insert, Finset.filter_singleton, h0, h5, h7]
+      · have h0 : (0:ℝ) ≤ x := by linarith
+        simp [Finset.filter_insert, Finset.filter_singleton, h0, h5, h7]
+    · by_cases h0 : (0:ℝ) ≤ x
+      · have h7 : ¬ (7:ℝ) ≤ x := by intro h; exact h5 (by linarith)
+        simp [Finset.filter_insert, Finset.filter_singleton, h0, h5, h7]
+      · have h7 : ¬ (7:ℝ) ≤ x := by intro h; exact h0 (by linarith)
+        have h5' : ¬ (5:ℝ) ≤ x := h5
+        simp [Finset.filter_insert, Finset.filter_singleton, h0, h5', h7]
 
 end Benefuture.Proposed
