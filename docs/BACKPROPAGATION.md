@@ -865,3 +865,25 @@ distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `
 **8.34 ruling (for now).** Yes: a fork divides the base vote with the rest of its social power, and
 a copy earns its own only as its novelty separates it into a distinct identity. More nuance later.
 The simulation's default (`fork_rule = :divided`) stands.
+
+**8.35 Author rulings on 8.32 (model accuracy and currency status) and on forks.**
+1. Options (a) and (b) together: accuracy as skill, and escrow scaling trust continuously.
+2. The threshold (L82) is a status threshold: which models may back a currency. At least 0.9 for
+   established sub-domains; at least 0.75 for new or very coarse ones; 0.55 only for discovering
+   something with no precedent ("magic").
+3. Accuracy adjusts for all convolving noise (what the outcome carries that no model could predict:
+   measurement, the actor's execution); its reference echoes the state of the art's understanding of
+   the domain's spread of outcomes. Corrected by the author: accuracy 0 is no better than random
+   guessing, not than the domain's average (that is skill, which competition between models, L82,
+   already handles). Models predict with credence; accuracy is the quality of the credence match
+   (a proper score, calibration); the credence is what feeds probabilistic escrow (L84: Pay_t0 by
+   P(As(V, A, t0) > 0)). [P] accuracy = (B_random − B_model) / (B_random − B_ideal) on the Brier
+   score of credences that an action's assessed value is positive, B_ideal the best attainable given
+   the convolving noise; escrow's upfront = credence × predicted value. Awaiting confirmation.
+4. Below the threshold, work goes to StandCoin: permissiveness is a race to the bottom; today's
+   coarsest models already exceed 0.75 in probabilistic accuracy, so nothing worse should back a
+   currency.
+5. Forks (refining 8.34): human birth is a merge of two forks, partialised by memory loss; by the
+   time personhood suffices for a relevant vote, enough novel identity and reputation has accrued
+   for a fresh base vote. A base vote follows novelty and personhood, not identity count.
+Candidate homes: L82, L84, Measurement (accuracy), Being, L113, L122–123.
