@@ -174,3 +174,33 @@ function perturb(cur, cand, fields; δ::Real)
     lean_floats(ccall(sym(:bf_perturb_step), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
                       floatarray(cur), floatarray(cand), floatarray(Float64.(fields) .- 1), δ))
 end
+
+"""
+    advap_reward(exploit_gain, prevented_harm; share, floor) -> reward
+
+The reward for revealing successful gaming (AdvAp, L160; Lean `advap_reward_ref`): the exploit's
+gain to a single entity plus `share` of the harm the revelation prevents, at least `floor`.
+"""
+function advap_reward(exploit_gain::Real, prevented_harm::Real; share::Real, floor::Real)
+    check(isfinite(exploit_gain) && isfinite(prevented_harm), "gain and harm finite")
+    check(isfinite(share) && share >= 0 && isfinite(floor) && floor >= 0, "share and floor finite, non-negative")
+    ccall(sym(:bf_advap_reward), Float64, (Float64, Float64, Float64, Float64), exploit_gain, prevented_harm, share, floor)
+end
+
+"What an established exploit's causal chain is charged: the reward and the audit (Lean `advap_liability_ref`)."
+function advap_liability(reward::Real; audit_cost::Real)
+    check(isfinite(reward) && isfinite(audit_cost) && audit_cost >= 0, "reward finite, audit cost finite, non-negative")
+    ccall(sym(:bf_advap_liability), Float64, (Float64, Float64), reward, audit_cost)
+end
+
+"""
+    report_penalty(unfounded, threshold; audit_cost) -> penalty
+
+What an unfounded report costs its reporter (Lean `report_penalty_ref`): nothing in good faith,
+its audit once the reporter's unfounded reports in the window exceed `threshold`.
+"""
+function report_penalty(unfounded::Integer, threshold::Real; audit_cost::Real)
+    check(unfounded >= 0 && isfinite(threshold) && threshold >= 0, "count and threshold non-negative")
+    check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
+    ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
+end

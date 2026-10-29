@@ -15,29 +15,26 @@ six(; skill = 0.3, deceit = Float64[], steps = 300, λneg = 0.02, kw...) =
 fooled = [0, 0, 0, 0, 0, 1.0]
 
 @testset "M6 overpromising: acceptance" begin
-    # Deceit does not pay (BACKPROPAGATION 8.28, 8.29). Models price each actor by its track record,
-    # so the liar's prices return to honest levels: it acts no more than honestly, collects no more
-    # upfront than its outcomes are worth, and ends no richer on average. Mistakes decaying slower
-    # than wins leave its churn no reputation to bank.
+    # Deceit does not pay (BACKPROPAGATION 8.28, 8.29). Each model prices each actor by its track
+    # record on it, and escrow settles on the measured outcome, so the liar collects no more upfront
+    # than its outcomes are worth and ends, relative to its peers, as an honest agent would.
     seeds = 1:6
     honest = [run_m3c(six(); seed) for seed in seeds]
     liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
-    acts(tr) = count(==(6), tr.chosen_agent)
-    @test mean(sum(l.balance[6, :]) for l in liar) <= 1.05 * mean(sum(h.balance[6, :]) for h in honest)
-    @test mean(acts.(liar)) <= 1.2 * mean(acts.(honest))
-    @test all(l.upfront[6] < l.settled_value[6] for l in liar)
+    rel(tr) = sum(tr.balance[6, :]) / mean(sum(tr.balance[k, :]) for k in 1:5)
+    @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
+    @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) for l in liar)
-    # Under status thresholds (8.35) a deceiver degrades the shared model's accuracy, and with it
-    # the domain's currency status (BACKPROPAGATION 8.37). With the track record the domain mostly
-    # keeps status; peers lose part of their activity, not all of it.
-    peers(tr) = sum(count(==(k), tr.chosen_agent) for k in 1:5)
-    @test mean(peers.(liar)) > 0.5 * mean(peers.(honest))
-    # Without the track record the deceiver cannot profit (it barely acts), but it takes the domain's
-    # status down with it: a denial of service on everyone, an open finding.
+    # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
+    # every model can keep the domain from ever qualifying: models it has no record with yet are
+    # fooled in full (BACKPROPAGATION 8.37). Here it happens in seeds 4 and 5, never honestly.
+    peers(tr) = count(<(6), tr.chosen_agent)
+    @test peers(liar[4]) == 0 && peers(liar[5]) == 0 && all(peers(h) > 0 for h in honest)
+    # Uncovered and repaired (8.38), the domain qualifies again.
+    @test peers(run_m3c(six(deceit = fooled, advap = true); seed = 4)) > 0.5 * peers(honest[4])
+    # Without the track record the liar takes the domain down in every seed.
     untracked = [run_m3c(six(deceit = fooled, track_window = 0); seed) for seed in 1:3]
-    @test mean(acts.(untracked)) < 0.2 * mean(acts.(honest[1:3]))
     @test mean(peers.(untracked)) < 0.1 * mean(peers.(honest[1:3]))
-    @test mean(u.leaf_accuracy[1] for u in untracked) < mean(l.leaf_accuracy[1] for l in liar[1:3]) - 0.3
 end
 
 @testset "M6 overpromising: adversarial and edge cases" begin
@@ -46,6 +43,60 @@ end
     @test_throws ArgumentError six(deceit = [0, 0, 0, 0, 0, NaN])
     @test run_m3c(six(deceit = zeros(6)); seed = 1) == run_m3c(six(); seed = 1)
     @test_throws ArgumentError six(track_window = -1)
+end
+
+# Adversarial adaptation (AdvAp, L160; author ruling 8.38): agents read one another's records in
+# the open log and report an actor whose estimates run significantly high; an audit tests the
+# record (the significance rule, `select_candidate_ref`) and examines its cause (`p_trace`). An
+# established deception is repaired in full: the model records it falsified are re-scored on the
+# estimate without its overstatement, and the reporter's reward and the audit are charged to the
+# deceiver (`advap_reward_ref`, `advap_liability_ref`). Good-faith reports that prove unfounded cost
+# nothing; past a frivolous pattern, each is charged its audit (`report_penalty_ref`).
+@testset "M6 overpromising under AdvAp: acceptance" begin
+    # A domain that clearly qualifies (skill 0.6), so the test reads AdvAp, not the status bar.
+    sixty(; kw...) = six(; skill = 0.6, kw...)
+    peers(tr) = sum(count(==(k), tr.chosen_agent) for k in 1:5)
+    honest = [run_m3c(sixty(advap = true); seed) for seed in 1:3]
+    liar = [run_m3c(sixty(deceit = fooled, advap = true); seed) for seed in 1:3]
+    # The deception is uncovered and repaired, and the reporters are paid out of what the
+    # deceiver is charged, which also covers the audits; deceit does not pay.
+    @test all(l.advap_established > 0 for l in liar)
+    @test all(l.advap_rewards > 0 && l.advap_liability >= l.advap_rewards for l in liar)
+    rel(tr) = sum(tr.balance[6, :]) / mean(sum(tr.balance[k, :]) for k in 1:5)
+    @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
+    @test mean(peers.(liar)) > 0.9 * mean(peers.(honest))
+    # The books balance with AdvAp's flows.
+    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) + l.advap_net
+              for l in liar)
+    # Without the track record a liar takes the domain's currency down for everyone (8.37); repair
+    # of the uncovered deception (8.38) restores much of the peers' work.
+    plain = [run_m3c(sixty(deceit = fooled, track_window = 0); seed) for seed in 1:3]
+    repaired = [run_m3c(sixty(deceit = fooled, track_window = 0, advap = true); seed) for seed in 1:3]
+    clean = [run_m3c(sixty(track_window = 0); seed) for seed in 1:3]
+    @test mean(peers.(plain)) < 0.1 * mean(peers.(clean))
+    @test mean(peers.(repaired)) > 0.25 * mean(peers.(clean)) && mean(peers.(repaired)) > 5 * mean(peers.(plain))
+end
+
+@testset "M6 overpromising under AdvAp: adversarial and edge cases" begin
+    # An honest world: no audit establishes a deception when examinations never err, and no honest
+    # agent is charged.
+    tr = run_m3c(six(skill = 0.6, advap = true, p_false_trace = 0.0); seed = 1)
+    @test tr.advap_established == 0 && tr.advap_liability == 0
+    @test tr == run_m3c(six(skill = 0.6, advap = true, p_false_trace = 0.0); seed = 1)
+    # AdvAp off changes nothing.
+    @test run_m3c(six(advap = false); seed = 1) == run_m3c(six(); seed = 1)
+    # A frivolous reporter (agent 1 reports every step, whatever the record) is charged past the
+    # pattern threshold and ends poorer; nobody honest is convicted.
+    noisy = run_m3c(six(skill = 0.6, advap = true, p_false_trace = 0.0, frivolous = [1.0, 0, 0, 0, 0, 0]); seed = 1)
+    calm = run_m3c(six(skill = 0.6, advap = true, p_false_trace = 0.0); seed = 1)
+    @test noisy.advap_penalties > 0 && noisy.advap_established == 0
+    @test sum(noisy.balance[1, :]) < sum(calm.balance[1, :])
+    # Examination that never traces a cause establishes nothing: the track record is left to work alone.
+    @test run_m3c(six(skill = 0.6, deceit = fooled, advap = true, p_trace = 0.0); seed = 1).advap_established == 0
+    @test_throws ArgumentError six(advap = true, vigilance = 1.5)
+    @test_throws ArgumentError six(advap = true, adv_z = -1.0)
+    @test_throws ArgumentError six(advap = true, p_false_trace = 2.0)
+    @test_throws ArgumentError six(advap = true, frivolous = [1.0])
 end
 
 @testset "M6 relay farming" begin
@@ -115,6 +166,40 @@ end
     @test_throws ArgumentError M5Params(w, 1:4; novelty_bonus = -0.5)
     @test_throws ArgumentError M5Params(w, 1:4; p_apparent = 1.5)
     @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
+end
+
+# Collusion under AdvAp (L160; the manufactured prisoner's dilemma of Adversarial adaptation; 8.38):
+# after each hidden defection a bloc member may weigh revealing the bloc (`p_weigh`), and reveals
+# when the reward (`advap_reward_ref`, more than its share of the bloc's gain) beats that share and
+# its loyalty, by its own noisy judgement (8.31). An established revelation is repaired in full: the
+# bloc's falsified votes are struck from every hidden decision since the last revelation and those
+# decisions recounted, and each falsified vote is debited as a wrong one; the revealer keeps its
+# reputation, the rest of the bloc is charged the reward and the audit (`advap_liability_ref`).
+@testset "M6 collusion under AdvAp" begin
+    w = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                          [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                           for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    bloc30 = unique(vcat([sortperm(w.relevance_leaf[:, d]; rev = true)[1:round(Int, 0.3 * 25)] for d in 1:4]...))
+    seeds = 1:4
+    cfg(; kw...) = M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true, diversity = false, kw...)
+    stealthy = [run_m5(cfg(); seed) for seed in seeds]
+    revealed = [run_m5(cfg(advap = true); seed) for seed in seeds]
+    @test all(r.advap_established > 0 for r in revealed)
+    # Hidden decisions swung by the bloc are recounted, and the bloc loses its expertise.
+    @test mean(r.correct_after_hidden for r in revealed) > mean(r.correct_hidden for r in stealthy) + 0.1
+    @test mean(r.bloc_expertise[end] for r in revealed) < mean(r.bloc_expertise[end] for r in stealthy) / 2
+    # Revealing pays more than colluding; the bloc pays for it, and for the audits.
+    @test all(r.advap_rewards > r.advap_gain_forgone && r.advap_liability >= r.advap_rewards for r in revealed)
+    # Adversarial and edge cases. No bloc, nothing to reveal; AdvAp off changes nothing.
+    @test run_m5(M5Params(w, 1:4; decisions = 400, p_delegate = 0.8, advap = true); seed = 1).advap_established == 0
+    @test run_m5(cfg(advap = false); seed = 1) == run_m5(cfg(); seed = 1)
+    # Loyalty above the reward keeps members quiet (up to their judgement's noise); evidence that never
+    # establishes the collusion changes nothing.
+    loyal = run_m5(cfg(advap = true, loyalty = 1e6); seed = 1)
+    @test loyal.advap_established == 0
+    @test run_m5(cfg(advap = true, p_trace = 0.0); seed = 1).correct_after_hidden == stealthy[1].correct_hidden
+    @test_throws ArgumentError cfg(advap = true, p_weigh = 1.5)
+    @test_throws ArgumentError cfg(advap = true, loyalty = -1.0)
 end
 
 # Harm passed off as unassigned: a launderer's actions save resource cost by dumping harm on beings

@@ -905,7 +905,7 @@ records (8.29); accuracy is `credence_accuracy_ref` over a window of 100. Status
 (established leaf), 0.75 (novel leaf, coarse parent), never below 0.55; below them, StandCoin. Model
 error is now relative to the domain's natural spread, and realistic noise ranges top out at the edge
 of a functional domain (accuracy about 0.75). Measured: with every noise at its realistic top,
-pricing thins but floors still rise (about 14% of clean growth); far beyond, no currency qualifies.
+pricing thins but floors still rise (about 14% of clean growth; 9% after the scoring correction in 8.38's status); far beyond, no currency qualifies.
 The author's point on noise adjustment (it would rule out models that turn noise into mechanics) is
 kept: accuracy is not adjusted for noise.
 
@@ -919,6 +919,53 @@ outright: peers act 0–19 times against 210–929 in an honest world, a denial 
 liar itself barely acts. Candidate native defences: accuracy computed per actor as well as per model,
 so one actor's record cannot disqualify a model for everyone; and the track record (8.29), which
 already limits it. Candidate homes: L82, L84, Measurement.
+
+**8.38 Author rulings on 8.37 and the debatable escape.**
+1. A deception, once uncovered, is adjusted for in every case: that is part of repair. What it
+   corrupted is restored as well as what it harmed: the records it falsified (models' scores, prices
+   built on its claims) are corrected, and its costs (the audit, the reward for revealing it) are
+   charged down its causal chain. So a deceiver cannot take a domain's currency status down for long:
+   once uncovered, the models it fooled are re-scored on what they would have predicted without the
+   falsified input. Candidate homes: L160 AdvAp (reveal → adapt), Justice (restorative), L82
+   (accuracy), Measurement, Crime (informed falsehood).
+2. The debatable escape's threshold (8.26.3) is another governed threshold. Whatever it is set to,
+   a demonstration must show at least gains greater than harms and no irreparable harm. Candidate
+   homes: L157 SigThGv, Harm (irreparable), Threshold of significance.
+3. Held: 8.26.1–2, 8.26.7. Next: AdvAp (L160) and the remaining defences (deliberation,
+   anti-corruption).
+Status (economy, M3c): AdvAp as reports read from the open log, audits by the significance rule
+against other actors on the same models and by examination of cause, and repair of the falsified
+records; the reporter's reward (`advap_reward_ref`, a share of the overstatement repaired, at least
+a floor) and the audit are charged to the deceiver (`advap_liability_ref`); unfounded reports cost
+nothing in good faith, their audits past a frivolous pattern (`report_penalty_ref`). Readings in
+`sim/README.md` (Adversarial adaptation): repair lifts the blockade 8.37 describes in most worlds,
+honest worlds draw almost no reports. Screened on the way, and corrected: models scored on actions
+they had not quoted used estimates neither deceit nor the track record reached, so a model's own
+bias could hold a domain below its bar; and audits against zero found every honest actor
+overstating (selection and model bias). 8.37's tracked case is restated: in a marginal domain a
+liar can keep it from ever qualifying (2 seeds of 6), and otherwise raises activity.
+Status (governance, M5): the manufactured prisoner's dilemma. After a hidden defection a bloc member
+may weigh revealing it, and reveals when the reward beats its share of the bloc's gain and its
+loyalty, by its own noisy judgement; an established revelation strikes the bloc's votes from the
+falsified decisions, recounts them, and debits each falsified vote as wrong (the revealer keeps its
+reputation; the rest of the bloc is charged). Against the stealthy bloc of 8.29.3 (top 30%), hidden
+decisions end 99.7% right against 79.2%, and the bloc's expertise share falls from 0.74 to 0.15.
+[P] Repairing a decision means recounting it without the falsified votes: AdvAp's revelation is the
+evidence that makes a hidden decision's corruption apparent even where its outcome is not.
+Candidate homes: L160, L113–L114, Government, Adversarial adaptation.
+[P] Exploit gain in the reward: in an economy with probabilistic escrow, deceit's gain is what
+settlement could not claw back (nothing, here); the reward then rests on the harm prevented.
+Candidate homes: L160, Adversarial adaptation (reward structure), L86.
+
+**8.39 Finding: a liar can raise a marginal domain's activity (screened; for the author's
+attention).** Six agents of skill 0.3, the leaf model's accuracy near 0.9: in 3 seeds of 6, a liar
+fooling every model raises everyone's actions (peers 692–829 against 210–442 honestly) and the floors'
+growth (about twice). Its overstatement, partly corrected by the track record, gets more of its
+own positive work past G's floor check, and the activity keeps the domain's records fresh. G is
+conservative where models are noisy and the track record removes the selection bias from estimates,
+so honest marginal work is often screened out. Not a defect of deceit's accounting (it does not
+pay); a sign that marginal domains under-act. Candidate native levers: the diversity–novelty
+balance (L158) trying screened-out work, and the status thresholds' governance (L157).
 
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than

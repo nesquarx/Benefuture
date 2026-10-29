@@ -122,6 +122,17 @@ struct M3cParams
     choice_σ::Float64       # base ceiling of agents' choice noise, before skill (8.31; world)
     choice_gain::Float64    # how fast skill lowers that ceiling (8.31; world)
     ability_spread::Float64 # scatter of persons' ceilings around the skill trend (8.31; world)
+    # Adversarial adaptation (AdvAp, L160; author ruling 8.38): reports, audits, repair.
+    advap::Bool                  # agents report gaming they read in the log; audits examine and repair
+    vigilance::Float64           # chance per step an agent reads another actor's record (world)
+    adv_z::Float64               # standard errors an actor's overstatement must exceed for a founded report (governed)
+    adv_share::Float64           # the reward's share of the harm a revelation prevents (governed)
+    adv_floor::Float64           # least reward for a revelation (governed)
+    audit_cost::Float64          # resource cost of one audit (world)
+    frivolous_threshold::Float64 # unfounded reports in the window before each is charged its audit (governed)
+    adv_window::Int              # steps over which a reporter's unfounded reports are counted (governed)
+    p_false_trace::Float64       # chance an examination wrongly establishes an honest actor's deception (noise)
+    frivolous::Vector{Float64}   # per agent, chance per step to report someone whatever the record (M6; world)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -155,7 +166,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
                    bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, choice_σ::Real = 0.5, choice_gain::Real = 5.0,
-                   ability_spread::Real = 0.5, events = Shock[])
+                   ability_spread::Real = 0.5, advap::Bool = false, vigilance::Real = 0.05, adv_z::Real = 3.0, adv_share::Real = 0.1,
+                   adv_floor::Real = 1.0, audit_cost::Real = 1.0, frivolous_threshold::Real = 5.0, adv_window::Integer = 100,
+                   p_false_trace::Real = 0.01, frivolous = Float64[], events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -190,6 +203,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check((isempty(launder) || (length(launder) == length(agents) && all(x -> 0 <= x <= 1, launder))) && 0 <= launder_saving <= 1,
           "one laundering chance in [0, 1] per agent; saving in [0, 1]")
     check(all(x -> isfinite(x) && x >= 0, (choice_σ, choice_gain, ability_spread)), "choice noise, gain and spread non-negative")
+    check(0 <= vigilance <= 1 && 0 <= p_false_trace <= 1 && adv_window >= 1, "vigilance and false-trace chance in [0, 1], window positive")
+    check(all(x -> isfinite(x) && x >= 0, (adv_z, adv_share, adv_floor, audit_cost, frivolous_threshold)),
+          "AdvAp's z, share, floor, audit cost and threshold non-negative")
+    check(isempty(frivolous) || (length(frivolous) == length(agents) && all(x -> 0 <= x <= 1, frivolous)), "one frivolous chance in [0, 1] per agent")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -207,7 +224,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
               isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace,
               isempty(launder) ? zeros(length(agents)) : collect(Float64, launder), launder_saving, choice_σ, choice_gain,
-              ability_spread, collect(Shock, events))
+              ability_spread, advap, vigilance, adv_z, adv_share, adv_floor, audit_cost, frivolous_threshold, adv_window, p_false_trace,
+              isempty(frivolous) ? zeros(length(agents)) : collect(Float64, frivolous), collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -240,27 +258,28 @@ function run_m3c(p::M3cParams; seed)
     deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
     pending_launder = Tuple{ToyPlan,BitVector,Int,Int}[]  # harm of no apparent cause, to examine this step
     # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world
-    # property). Models estimate from track record (author ruling 8.29): each actor's recent
-    # prediction errors, per being touched, correct its next estimates. Records reach the models at
-    # the end of each step.
-    pending_track = Tuple{Int,Float64,Float64}[]
+    # property). Models estimate from track record (author ruling 8.29): each model's recent errors
+    # on an actor, per being touched, correct its next estimates for that actor (a model's own
+    # biases and the actor's overstatement alike). Records reach the models at the end of each step.
+    pending_track = Tuple{Int,Int,Float64,Float64}[]  # (actor, model, raw error on U, on H)
     pending_err = Tuple{Int,Float64}[]  # value errors of estimates for each actor, for its credences
-    function correction(a)
-        r = @view track[a][max(1, end - p.track_window + 1):end]
-        (p.track_window == 0 || isempty(r)) ? (0.0, 0.0) : (mean(first, r), mean(last, r))
+    # A captured model (world event) ignores its record: the capture's aim is biased prices.
+    captured(c) = c <= lmax && c <= length(ltrue) && any(e.target == ltrue[c] for e in live(:capture))
+    function correction(a, c)
+        h = get(track[a], c, nothing)
+        (p.track_window == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
+        r = @view h[max(1, end - p.track_window + 1):end]
+        (mean(first, r), mean(last, r))
     end
-    function fooled(pred, a, plan)
-        cu, ch = correction(a)
+    function fooled(pred, a, plan, c)
+        cu, ch = correction(a, c)
         m = touched(plan)
         (p.deceit[a] == 0 && cu == 0 && ch == 0) ? pred :
             ToyPlan(pred.du .+ (p.deceit[a] - cu) .* m, pred.dh .+ (p.deceit[a] - ch) .* m)
     end
-    # The raw error of an estimate (before the correction applied to it), for the actor's record.
+    # The value error of an actor's priced estimate, for the credences of its next ones.
     function learn!(a, plan, pred, seen)
-        m = touched(plan)
-        any(m) || return
-        cu, ch = correction(a)
-        push!(pending_track, (a, mean(pred.du[m]) + cu - mean(seen.du[m]), mean(pred.dh[m]) + ch - mean(seen.dh[m])))
+        any(touched(plan)) || return
         push!(pending_err, (a, plan_value(pred, t) - plan_value(seen, t)))
     end
     live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
@@ -294,8 +313,16 @@ function run_m3c(p::M3cParams; seed)
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
-    track = [Tuple{Float64,Float64}[] for _ in 1:na]  # each actor's past estimate errors (8.29)
+    track = [Dict{Int,Vector{Tuple{Float64,Float64}}}() for _ in 1:na]  # each model's past errors on each actor (8.29)
+    audit_log = [Tuple{Int,Float64,Float64}[] for _ in 1:na]          # and all of them in order, for audits (L160)
     actor_err = [Float64[] for _ in 1:na]               # and the value errors of its corrected estimates
+    # AdvAp (L160): where an audit of each actor starts in its record, and each reporter's
+    # unfounded reports (steps).
+    audit_from = ones(Int, na)
+    unfounded = [Int[] for _ in 1:na]
+    vrng = Xoshiro(hash((seed, :advap)))
+    adv = (reports = Ref(0), founded = Ref(0), established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0),
+           penalties = Ref(0.0), net = Ref(0.0), audits = Ref(0.0))
     ntop = count(==(0), p.leaf_parent)
     dims = np + ntop + ntrue
     axis(i) = Float64.((1:dims) .== i)
@@ -325,7 +352,12 @@ function run_m3c(p::M3cParams; seed)
     # Models: one per leaf and per parent; histories of scores.
     # Each scored prediction's credence that the action's assessed value is positive, whether it was
     # (1 or 0), and the error of its predicted value (author rulings 8.35, 8.36).
-    Rec = NamedTuple{(:credence, :outcome, :err),Tuple{Float64,Float64,Float64}}
+    # A model's record of one prediction: its credence, the outcome (assessed value positive) and
+    # its value error, with what an audit needs to repair it (8.38): the actor, the currency, the
+    # prediction, the beings it touched, the measured value, the track-record corrections then (the
+    # actor's, and the mean of other actors'), and whether an audit has repaired it.
+    Rec = NamedTuple{(:credence, :outcome, :err, :actor, :c, :pr, :mask, :measured, :corr, :peer_corr, :fixed),
+                     Tuple{Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool}}
     lhist, phist = [Rec[] for _ in 1:lmax], [Rec[] for _ in 1:np]
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
     # Accuracy over the recent window is the quality of a model's credences (Lean
@@ -436,20 +468,50 @@ function run_m3c(p::M3cParams; seed)
                        parent_mem = pm, priced = pr, credits = credits))
     end
     # Every model on the classification path is scored against the outcome.
-    function score!(st, pm, l, plan, seen, quoted)
+    function score!(st, pm, l, plan, seen, quoted, a)
         blind[] && return  # nothing realised to score against
         measured = plan_value(seen, t)
+        mask = touched(plan)
+        # Each model's record: its raw error on this actor (before the correction applied), for
+        # its track record; and the corrections it applied, for an audit's repair.
         function sc(c, pr)
             v = plan_value(pr, t)
-            (credence = cred(c, pr), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured)
+            corr = correction(a, c)
+            others = [correction(k, c) for k in 1:na if k != a && haskey(track[k], c)]
+            peer = isempty(others) ? (0.0, 0.0) : (mean(first, others), mean(last, others))
+            if any(mask)
+                push!(pending_track, (a, c, mean(pr.du[mask]) + corr[1] - mean(seen.du[mask]),
+                                      mean(pr.dh[mask]) + corr[2] - mean(seen.dh[mask])))
+            end
+            (credence = cred(c, pr), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
+             mask = mask, measured = measured, corr = corr, peer_corr = peer, fixed = false)
         end
+        # A model that did not quote is scored on the estimate it would have quoted: fooled by the
+        # actor's claims and corrected by its track record, as every quote is.
         for j in 1:nleaves()
-            st[j] > 0 && push!(lhist[j], sc(j, get(() -> predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), quoted, j)))
+            st[j] > 0 && push!(lhist[j], sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, j), quoted, j)))
         end
         for q in 1:np
             pm[q] >= p.parent_threshold &&
-                push!(phist[q], sc(col_parent(q), get(() -> predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), quoted, col_parent(q))))
+                push!(phist[q], sc(col_parent(q), get(() -> fooled(predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), a, plan, col_parent(q)), quoted, col_parent(q))))
         end
+    end
+    # Repair of an established deception (8.38): every unrepaired record of the actor is re-scored
+    # on the prediction without the overstatement the audit estimated (`du`, `dh` per being touched,
+    # beyond other actors'), less what the track record had already corrected beyond theirs.
+    # Returns the value the repaired leaf records had overstated.
+    function repair_records!(b, du, dh)
+        overstated = 0.0
+        for (hists, leafy) in ((lhist, true), (phist, false)), h in hists, i in eachindex(h)
+            r = h[i]
+            (r.actor == b && !r.fixed) || continue
+            ou, oh = du - (r.corr[1] - r.peer_corr[1]), dh - (r.corr[2] - r.peer_corr[2])
+            pr = ToyPlan(r.pr.du .- ou .* r.mask, r.pr.dh .- oh .* r.mask)
+            v = plan_value(pr, t)
+            leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0))
+            h[i] = merge(r, (credence = cred(r.c, pr), err = v - r.measured, pr = pr, fixed = true))
+        end
+        overstated
     end
     function reclassify!(step)
         for m in eachindex(memory)
@@ -616,7 +678,7 @@ function run_m3c(p::M3cParams; seed)
             if scoring_only
                 bp = best_prediction(stops[j], leaves[j], plans[j])
                 bp === nothing && continue
-                bp = (bp[1], fooled(bp[2], proposers[j], plans[j]))
+                bp = (bp[1], fooled(bp[2], proposers[j], plans[j], bp[1]))
                 push!(menu, j); push!(menu_preds, bp[2]); offers[j] = [(bp[1], 0.0, bp[2], 0.0)]
                 continue
             end
@@ -628,7 +690,7 @@ function run_m3c(p::M3cParams; seed)
             for c in 1:(root - 1)
                 priced[j][c] > 0 || continue
                 σ, b = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c)) : (parent_σ(c - lmax, leaves[j]), pb(c - lmax))
-                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j])
+                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j], c)
                 push!(quotes, (c, priced[j][c], pred, cred(c, pred, proposers[j])))  # escrow pays by credence (L84)
             end
             price = zeros(ncol)
@@ -680,7 +742,7 @@ function run_m3c(p::M3cParams; seed)
                     end
                     tr.valued_measured[idx] += delta
                     learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen_late)
-                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]))
+                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
                     credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
                 end)
             else
@@ -700,7 +762,7 @@ function run_m3c(p::M3cParams; seed)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
             push!(tr.valued_measured, blind[] ? minted : (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
-            score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]))
+            score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
             available -= count(touched(plan))
             s.u .+= done.du
@@ -713,7 +775,7 @@ function run_m3c(p::M3cParams; seed)
                 j = menu[f - 1]
                 a, plan, l = proposers[j], plans[j], leaves[j]
                 done, seen, measured = perform!(j, a)
-                score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
+                score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]), a)
                 learn!(a, plan, offers[j][1][3], seen)
                 credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured))
                 lane.init_executed[] += 1
@@ -743,7 +805,7 @@ function run_m3c(p::M3cParams; seed)
                 lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
                 continue
             end
-            c, pred = bp[1], fooled(bp[2], a, plan)
+            c, pred = bp[1], fooled(bp[2], a, plan, bp[1])
             if choose(screened(), [pred], t) == 1
                 lane.screened_out[] += 1
                 continue
@@ -778,7 +840,7 @@ function run_m3c(p::M3cParams; seed)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
             lane.executed[] += 1
             accept!(pred)
-            score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
+            score!(stops[j], pms[j], l, plan, seen, Dict(c => pred), a)
             blind[] || learn!(a, plan, pred, seen)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
                     blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
@@ -787,7 +849,7 @@ function run_m3c(p::M3cParams; seed)
                     seen_late = observed_plan(mrng, done, p.marker_σ + p.remeasure_σ)
                     measured_late = plan_value(seen_late, t)
                     push!(tr.lane_measured, measured_late)
-                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred))
+                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred), a)
                     credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j],
                             credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ))
                 end)
@@ -992,13 +1054,77 @@ function run_m3c(p::M3cParams; seed)
                 reinvested[c] += excess
             end
         end
-        for (a, ru, rh) in pending_track
-            push!(track[a], (ru, rh))
+        for (a, c, ru, rh) in pending_track
+            push!(get!(track[a], c, Tuple{Float64,Float64}[]), (ru, rh))
+            push!(audit_log[a], (c, ru, rh))
         end
         for (a, e) in pending_err
             push!(actor_err[a], e)
         end
         empty!(pending_track); empty!(pending_err)
+        # Adversarial adaptation (L160; author ruling 8.38). Agents read one another's records in the
+        # open log (Benefuture reads outputs only): a reader reports an actor whose raw estimates run
+        # high by more than `adv_z` standard errors in its own noisy reading (8.31), and a frivolous
+        # reporter reports whatever the record. The audit tests the record with the significance
+        # rule and examines the cause: established, the deception is repaired (its falsified records
+        # re-scored) and its reward and audit are charged to the deceiver; a report that proves
+        # unfounded costs nothing in good faith, its audit only past a frivolous pattern.
+        if p.advap && !blind[] && !scoring_only && na > 1
+            for r in 1:na
+                frivol = p.frivolous[r] > 0 && rand(vrng) < p.frivolous[r]
+                (frivol || rand(vrng) < p.vigilance) || continue
+                b = rand(vrng, [k for k in 1:na if k != r])
+                # The actor's raw errors since its last audit, against other actors' recent ones on
+                # the same models: overstatement beyond what the models err on everyone.
+                rec = audit_log[b][audit_from[b]:end]
+                length(rec) >= 5 || frivol || continue
+                # Per model, other actors' recent raw errors: what it errs on everyone.
+                w = max(p.track_window, 20)
+                peers_of(c) = vcat([track[k][c][max(1, end - w + 1):end] for k in 1:na if k != b && haskey(track[k], c)]...)
+                base = Dict(c => peers_of(c) for c in unique(first.(rec)))
+                mu(c, f) = isempty(base[c]) ? 0.0 : mean(f, base[c])
+                res_u = [ru - mu(c, first) for (c, ru, _) in rec]
+                res_h = [rh - mu(c, last) for (c, _, rh) in rec]
+                cen = vcat([[(x[1] + x[2]) / 2 - (mu(c, first) + mu(c, last)) / 2 for x in base[c]] for c in keys(base)]...)
+                stat(x) = (isempty(x) ? 0.0 : mean(x), length(x) < 2 ? Inf : max(std(x), 1e-12) / sqrt(length(x)))
+                (m, se), (m0, se0) = stat((res_u .+ res_h) ./ 2), stat(cen)
+                lb_ = argmax(p.agents[b].focus)
+                ok = isfinite(se) && isfinite(se0)
+                frivol || (ok && (m - m0) / sqrt(se^2 + se0^2) + choice_noise(xrng, choice_caps[r, lb_]) > p.adv_z) || continue
+                adv.reports[] += 1
+                adv.audits[] += p.audit_cost
+                founded = ok && select_candidate([m0, m], [se0, se]; z = p.adv_z) == 2
+                sig = true_sig[lb_]
+                st = price_shares(classify_sig(sig))
+                if founded
+                    adv.founded[] += 1
+                    traced = rand(vrng) < (p.deceit[b] > 0 ? p.p_trace : p.p_false_trace)
+                    traced || continue  # not established: the audit is the commons' cost
+                    adv.established[] += 1
+                    is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    du, dh = mean(res_u), mean(res_h)
+                    prevented = repair_records!(b, du, dh)
+                    # What deceit gained the actor: nothing settlement has not already clawed back
+                    # (escrow pays upfront by credence and settles on the measured outcome, L86).
+                    reward = advap_reward(0.0, prevented; share = p.adv_share, floor = p.adv_floor)
+                    liability = advap_liability(reward; audit_cost = p.audit_cost)
+                    balance[b, :] .+= split_signed(st, -liability)[1]
+                    balance[r, :] .+= split_signed(st, reward)[1]
+                    adv.rewards[] += reward; adv.liability[] += liability; adv.net[] += reward - liability
+                    credit!(step, sig, classify_sig(sig), reward - liability, parent_mem(sig), st, [(b, 0.0, -liability), (r, reward, 0.0)])
+                    audit_from[b] = length(audit_log[b]) + 1
+                else
+                    push!(unfounded[r], step)
+                    filter!(x -> x > step - p.adv_window, unfounded[r])
+                    pen = report_penalty(length(unfounded[r]), p.frivolous_threshold; audit_cost = p.audit_cost)
+                    if pen > 0
+                        balance[r, :] .+= split_signed(st, -pen)[1]
+                        adv.penalties[] += pen; adv.net[] -= pen
+                        credit!(step, sig, classify_sig(sig), -pen, parent_mem(sig), st, [(r, 0.0, -pen)])
+                    end
+                end
+            end
+        end
         blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
         # SigThGv's perturbation branch (L157). Without adaptation, a random walk: each epoch a
@@ -1056,6 +1182,11 @@ function run_m3c(p::M3cParams; seed)
                repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
                laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
                leaf_accuracy = [leaf_acc(k) for k in 1:L],
+               leaf_records = [[(actor = r.actor, credence = r.credence, outcome = r.outcome, err = r.err, fixed = r.fixed)
+                                for r in window_of(lhist[k])] for k in 1:L],
+               advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
+               advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
+               advap_net = adv.net[], advap_audits = adv.audits[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

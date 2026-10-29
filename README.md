@@ -314,18 +314,29 @@ means over 5 seeds of 500 steps.
   untraceable (a tracing rate of 0.1 already makes it a loss); identity forks capture votes only if
   each fork gets its own base vote; by the author's ruling for now, forks divide it ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
   [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
-- Gaming (M6, toy world, 6–8 seeds): an agent whose plans fool every metric model gains nothing
-  beyond noise once models price actors by their track record and mistakes decay slower than wins
-  (author ruling 8.29); without the track record it acts twice as often and is paid upfront several
-  times what its outcomes were worth, which escrow claws back, and before the decay ruling it ended
-  richer than honest agents. A colluding bloc of the most reputable fifth of
-  experts lowers decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's
-  capture (30% of experts: 66% with delegation, 86% without) until votes earn or cost reputation
-  and delegations are audited (L114), when the bloc's expertise share collapses and accuracy
-  returns to 96% (toy decision world; outcomes apparent 70% of the time); a bloc that defects only
-  where outcomes stay hidden escapes this (69% correct on hidden decisions), an open problem;
-  keeping the option not chosen available to locales by a novelty bonus (diversity, L158) corrects
-  most of that damage (hidden decisions 89% after trials) at about a point of welfare
+- Gaming (M6, toy world, 3–6 seeds): an agent whose plans fool every metric model gains nothing
+  relative to its peers once each model prices each actor by its record on it (8.29) and escrow
+  settles on measured outcomes. Its harm falls on the domain: a model with no record of it is fooled
+  in full, so in a marginal domain (accuracy near its status bar) it can keep the domain from ever
+  qualifying (2 seeds of 6), and without track records it takes the domain's currency down in every
+  seed (BACKPROPAGATION 8.37). Adversarial adaptation (AdvAp, L160; author ruling 8.38) uncovers and
+  repairs it: agents reading the open log report an actor whose estimates run significantly above
+  other actors' on the same models, an audit tests and examines the report, and an established
+  deception's falsified records are re-scored while the reporter's reward and the audit are charged
+  to the deceiver. Repair restores a blocked marginal domain (one seed: no actions to 772; another
+  stays blocked, too little work for a report) and a third or more of peers' work without track
+  records; honest worlds draw almost no reports, and a frivolous reporter pays for its audits.
+  A colluding bloc of the most reputable fifth of experts lowers decision accuracy only from 97% to
+  93%; delegation amplifies a larger bloc's capture (30% of experts: 66% with delegation, 86%
+  without) until votes earn or cost reputation and delegations are audited (L114), when the bloc's
+  expertise share collapses and accuracy returns to 96% (toy decision world; outcomes apparent 70% of
+  the time; readings before the scoring correction of 8.38's status). A bloc that defects only where
+  outcomes stay hidden escapes this (79% correct on hidden decisions in the current build); keeping
+  the option not chosen available to locales by a novelty bonus (diversity, L158) corrects part of
+  that damage (89%), and AdvAp's manufactured prisoner's dilemma, a member revealing the bloc for a
+  reward above its share of the bloc's gain, with the bloc's falsified votes struck and the hidden
+  decisions recounted, restores them to 99.7% while the bloc's expertise share falls from 0.74 to
+  0.15 (4 seeds; each member weighs revealing with chance 0.05 after a hidden defection)
   ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
 - Convergence under heavy friction (8.31; toy decision world, 16 seeds): voters with noisy choices
   (per-person ceilings, inverse to expertise only on average), outcomes apparent 40% of the time,
@@ -333,9 +344,9 @@ means over 5 seeds of 500 steps.
   true reputations give; the effect is small (expertise is worth about two points there). In the
   economy, with accuracy as the quality of models' credences and thresholds as currency status
   (author rulings 8.35–8.36), every noise source at the top of its realistic range at once thins
-  pricing but floors still rise (about 14% of clean growth); far beyond a functional domain, no
+  pricing but floors still rise (about 9% of clean growth, 14% before the scoring correction of 8.38's status); far beyond a functional domain, no
   currency qualifies and work goes to StandCoin. Under status thresholds a deceiver can degrade a
-  domain's currency status for everyone, a finding recorded for the author (8.37)
+  domain's currency status for everyone, (8.37), which uncovering and repairing the deception largely restores (AdvAp, 8.38; Gaming below)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)

@@ -1,5 +1,6 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
 # Severity 0 is the least realistic noise and no attack; 1 the realistic top of each range (sim/README.md, Noise);
+# AdvAp (L160) is on, its frictions factors;
 # rays run to 2. Convergence (an evaluation criterion, not a rule): floor growth on understanding
 # after the score-only start is at least `GROWTH` of the clean world's, by the seeds' vote, and
 # deceit and laundering (when present) do not pay. An attack pays when the attackers' wealth
@@ -28,6 +29,9 @@ const FACTORS = [
     ("capture", (s, kw) -> (kw[:capture] = 3s)),
     ("side harm", (s, kw) -> (kw[:p_side] = min(0.2s, 1.0))),
     ("laundering", (s, kw) -> (kw[:launder_chance] = min(0.5s, 1.0))),
+    # AdvAp's frictions: readers who seldom read the log, examinations that convict the innocent
+    ("inattention", (s, kw) -> (kw[:vigilance] = max(0.3 - 0.29s, 0.0))),
+    ("audit errors", (s, kw) -> (kw[:p_false_trace] = min(0.1s, 1.0))),
 ]
 names = first.(FACTORS)
 
@@ -46,6 +50,7 @@ function world(sev)
     M3cParams(ToyParams(n = 80, steps = STEPS, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4],
               diligence = fill(dil, 8), p_foresee = 1.0, repair_efficiency = 0.5, deceit = [0, 0, 0, 0, 0, 0, d, d], launder = [0, 0, 0, 0, 0, lc, 0, 0],
+              advap = true,
               events, kw...)
 end
 gain(tr) = tr.floor_u[end] - tr.floor_u[51]

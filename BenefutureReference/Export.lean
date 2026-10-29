@@ -14,6 +14,7 @@ import BenefutureReference.Measurement
 import BenefutureReference.Economy
 import BenefutureReference.Domains
 import BenefutureReference.Justice
+import BenefutureReference.Adversarial
 import BenefutureReference.ParamSpace
 
 namespace BenefutureReference.Export
@@ -152,6 +153,15 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_is_crime] def isCrime (informed volition breached : UInt8) : UInt8 :=
   if is_crime_ref (informed == 1) (volition == 1) (breached == 1) then 1 else 0
+
+@[export bf_advap_reward] def advapReward (gain harm share floor : Float) : Float :=
+  advap_reward_ref gain harm share floor
+
+@[export bf_advap_liability] def advapLiability (reward auditCost : Float) : Float :=
+  advap_liability_ref reward auditCost
+
+@[export bf_report_penalty] def reportPenalty (unfounded threshold auditCost : Float) : Float :=
+  report_penalty_ref unfounded threshold auditCost
 
 @[export bf_param_count] def paramCount (_ : Unit) : USize := paramFields.length.toUSize
 @[export bf_bootstrap_params] def bootstrapParams (_ : Unit) : FloatArray := ⟨bootstrap_params_ref⟩

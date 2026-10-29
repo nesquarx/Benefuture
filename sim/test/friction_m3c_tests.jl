@@ -22,9 +22,10 @@ fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
     @test mean(fr_gain.(heavy)) > 0.2 * clean && all(tr -> length(tr.chosen_step) > 0, heavy)
     # Everything at its top, model error and execution noise included: degraded, not collapsed.
     # Accuracy is the quality of credences, not adjusted for noise (8.36), so it falls to about the
-    # coarse level and pricing thins out rather than stopping.
+    # coarse level and pricing thins out rather than stopping (about 9% of clean growth since every
+    # scored estimate takes the quote's path, 8.38's status; 14% before).
     all_top = [run_m3c(fr(; FRICTION..., MODELS_TOP..., sl = 0.6); seed) for seed in 1:3]
-    @test mean(fr_gain.(all_top)) > 0.1 * clean && all(tr -> length(tr.chosen_step) > 0, all_top)
+    @test mean(fr_gain.(all_top)) > 0.05 * clean && all(tr -> length(tr.chosen_step) > 0, all_top)
     # Far beyond a functional domain, no model backs a currency and the work goes to StandCoin, as
     # ruled (8.35: permissiveness is a race to the bottom).
     poor = run_m3c(fr(; σ_leaf = 2.0, σ_branch = 2.0, σ_coarse = 2.0); seed = 1)

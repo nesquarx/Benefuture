@@ -1,9 +1,9 @@
 # Failure-boundary battery for governance (M5 world). Run: julia --project=sim sim/battery/governance.jl
 # Severity 0 is the clean world; 1 the top of each factor's explored range; rays run to 2.
 # Convergence (an evaluation criterion, not a rule): over the seeds' majority, the share of the last
-# half of decisions decided correctly (after split trials) is at least `ACCURACY`. Colluders are the
-# most reputable experts of each domain, stealthy (defecting only where outcomes stay hidden): the
-# worst case.
+# half of decisions right in the end (after split trials and AdvAp's recounts) is at least
+# `ACCURACY`. Colluders are the most reputable experts of each domain, stealthy (defecting only where
+# outcomes stay hidden): the worst case. AdvAp (L160) is on; loyalty to the bloc is a factor.
 using BenefutureSim, Statistics, Random, Printf
 
 const SEEDS, ACCURACY, DECISIONS = 1:3, 0.75, 800
@@ -18,6 +18,7 @@ const FACTORS = [
     ("local noise", (s, kw) -> (kw[:local_σ] = 1 + 3s)),
     ("collusion", (s, kw) -> (kw[:colluders] = top(clamp(0.5s, 0.0, 1.0)))),
     ("delegation", (s, kw) -> (kw[:p_delegate] = clamp(s, 0.0, 1.0))),
+    ("loyalty", (s, kw) -> (kw[:loyalty] = 10s)),
 ]
 names = first.(FACTORS)
 function converges(sev)
@@ -26,8 +27,8 @@ function converges(sev)
         for ((_, set!), s) in zip(FACTORS, clamp.(sev, 0, Inf))
             set!(s, kw)
         end
-        r = run_m5(M5Params(m3, 1:4; decisions = DECISIONS, stealth = true, kw...); seed)
-        mean(r.correct_trace[(DECISIONS ÷ 2 + 1):end]) >= ACCURACY
+        r = run_m5(M5Params(m3, 1:4; decisions = DECISIONS, stealth = true, advap = true, kw...); seed)
+        mean(r.final_trace[(DECISIONS ÷ 2 + 1):end]) >= ACCURACY
     end
     count(ok) > length(SEEDS) / 2
 end

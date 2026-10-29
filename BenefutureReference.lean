@@ -10,5 +10,6 @@ import BenefutureReference.Measurement
 import BenefutureReference.Economy
 import BenefutureReference.Domains
 import BenefutureReference.Justice
+import BenefutureReference.Adversarial
 import BenefutureReference.ParamSpace
 import BenefutureReference.Export

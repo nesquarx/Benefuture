@@ -526,8 +526,68 @@ decisions, 50 locales:
 
 Without a bloc, keeping the alternative available changes accuracy by at most 0.4 points. Diversity
 corrects what the bloc does rather than unmasking the bloc: its expertise falls only modestly.
-Deliberation (needs social networks) and AdvAp (a global mechanism) remain. Not yet: sabotaged outages
+Deliberation (needs social networks) and AdvAp in governance remain. Not yet: sabotaged outages
 (examined by cause), harm passed off as unassigned, identity forks.
+
+### Adversarial adaptation (AdvAp, L160; 8.38)
+
+Agents read one another's records in the open log (Benefuture reads outputs only). Each step an
+agent reads another actor's record with chance `vigilance`, and reports it when the actor's raw
+errors since its last audit run above other actors' on the same models by more than `adv_z`
+standard errors, in its own noisy reading (choice noise, 8.31). The audit applies the significance
+rule (`select_candidate_ref`) to the record and examines the cause (`p_trace`; an honest actor is
+wrongly convicted with `p_false_trace`). Established, the deception is repaired in full: every
+record of the actor's is re-scored on the prediction without the overstatement the audit
+estimated, the reporter is paid `advap_reward_ref` (a share of the overstatement repaired, at least
+a floor; deceit's gain is nothing settlement has not already clawed back) and the deceiver is
+charged `advap_liability_ref` (the reward and the audit), recorded as an outcome in the log. An
+unfounded report costs nothing in good faith; past `frivolous_threshold` unfounded reports in
+`adv_window` steps, each is charged its audit (`report_penalty_ref`).
+
+Screened on the way. Models scored on actions they did not quote used a fresh prediction that
+neither deceit nor the track record reached, while quotes got both; a model's own bias, corrected
+only through actors' track records, then held a domain below its status bar once it lost status
+(the uncorrected records kept its accuracy down). Every scored prediction now takes the quote's
+path, and track records are per model and actor (8.29: each model estimates from its record).
+With that, audits against zero found every honest actor overstating (selection and model bias);
+they compare the actor with other actors on the same models.
+
+Readings, six agents, 300 steps (`sim/test/m6_tests.jl`):
+
+| World | Peers' actions, no AdvAp | With AdvAp | Deceptions established |
+|---|---|---|---|
+| Skill 0.3 (marginal), liar, seeds 1–6 | 712, 692, 829, 0, 0, 401 (honest 442, 228, 210, 453, 946, 449) | seed 4: 772; seed 5: 0; seed 6: 908 | 1–5 per run |
+| Skill 0.6, liar, no track record, seeds 1–2 | 38, 25 (honest 1,765, 1,622) | 1,423, 617 (liar's balance 474, 309 against an honest agent's 1,645, 718) | 5–7 |
+| Skill 0.6, liar whose work harms (skill −0.3) | 1,600, 1,590 | 1,584, 1,590 | 3 |
+
+In a marginal domain a liar can keep the domain from ever qualifying (models it has no record with
+are fooled in full); in others its partly corrected overstatement lets more of its (positive) work
+through G, and everyone acts more. Repair lifts most blockades; where almost nothing is done
+(seed 5), too few records accrue for a report. Honest worlds draw almost no reports and no
+convictions. Gaming checks: planting a flaw and reporting it (alone or with an accomplice) nets
+the audit's cost, since the liability covers the reward (Lean `anti_cobra_effect_no_bounty_farming`);
+a frivolous reporter is charged past the pattern threshold and ends poorer (tested); harassing an
+honest actor fails the significance test unless the examination errs (`p_false_trace`).
+
+In governance (M5) AdvAp is the manufactured prisoner's dilemma: after each hidden defection a bloc
+member weighs revealing the bloc (`p_weigh`), and reveals when the reward (more than its share of
+the bloc's gain, `collusion_gain` per falsified decision) beats that share and its `loyalty`, by its
+own noisy judgement. An established revelation (`p_trace`) strikes the bloc's votes from every hidden
+decision falsified since the last one, recounts them, and debits each falsified vote as a wrong
+one; the revealer keeps its reputation and the rest of the bloc is charged the reward and the
+audit. Stealthy bloc of the top 30%, delegation 0.8, 800 decisions, 4 seeds:
+
+| Defence | Correct (hidden) | Hidden after repair or trial | Bloc's expertise share |
+|---|---|---|---|
+| Vote reputation and audited delegation only | 93.2% (79.2%) | 79.2% | 0.74 → 0.49 |
+| Diversity (novelty bonus 0.5) | 93.8% (81.2%) | 89.1% | 0.74 → 0.45 |
+| AdvAp | 98.8% (96.9%) | 99.7% | 0.74 → 0.15 |
+| AdvAp, loyalty 5 | 98.8% (96.9%) | 99.7% | 0.74 → 0.16 |
+| AdvAp and diversity | 98.3% (95.4%) | 98.4% | 0.74 → 0.16 |
+
+Loyalty matters little because the reward's premium grows with the falsified gain. Gaming checks: a
+ring rotating revealers to farm rewards pays each reward and audit through the rest of the ring
+(liability at least the reward); a false revelation needs evidence the examination establishes.
 
 ## M4 observations
 
@@ -630,6 +690,7 @@ for removal.
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
+| AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
 
@@ -658,7 +719,9 @@ ratified.
 | Expert co-funding share | `expert_share` | 0.5 | 8.8 |
 | Resource cost and regeneration | `cost_per_touch`, `capacity`, `regen` | 0.05, 10⁴, 0.02 | L83 |
 | Reputation decay (mistakes decay slower than wins) | `λpos`, `λneg` | 0.05, 0.02 | L101; 8.29 |
-| Track record models estimate from (past actions per actor) | `track_window` | 20 | L84, L86; 8.29 |
+| Track record models estimate from (each model's past actions per actor) | `track_window` | 20 | L84, L86; 8.29 |
+| AdvAp: standard errors a founded report must exceed; reward's share of the harm prevented and its floor (M3c; the share and floor also M5) | `adv_z`, `adv_share`, `adv_floor` | 3, 0.1, 1 | L160; `Governance.Adversarial` (share 1/10, floor 1); 8.38 |
+| AdvAp: unfounded reports tolerated in a window before each is charged its audit | `frivolous_threshold`, `adv_window` | 5, 100 | Adversarial adaptation (frivolous patterns); 8.38 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
 | Metric-model scoring window (accuracy and uncertainty) | `window` | 100 | L82; 8.36 |
@@ -699,6 +762,11 @@ rare but present).
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
+| Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
+| An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |
+| An agent reporting whatever the record (adversary) | `frivolous` | 0 | 0–1 |
+| A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
+| Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
 | Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |
