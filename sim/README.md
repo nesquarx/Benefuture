@@ -310,7 +310,7 @@ native. Same world as the tests (6 agents in leaves 1 and 3, transactions, causa
 
 | Event | Fallback or response | Reading |
 |---|---|---|
-| Measurement outage, steps 100–149 | Paid by escrow's prediction-based upfront (L86); G screens on the last observation; actions logged unmeasured, nothing credited or scored | Floor growth over the outage 35.1 against 35.6 without; 115.2 after, as without |
+| Measurement outage, steps 100–149 | Paid by escrow's prediction-based upfront (L86); G screens on the last observation; actions logged unmeasured, then re-measured and settled when markers return, with extra noise (`remeasure_σ`) and through the causal-assessment confidence gate (8.26.5) | Floor growth over the outage 35.1 against 35.6 without; 115.2 after, as without. A negligent guardian's penalties: 6,548 without an outage, 6,595 with one of 100 steps; an outage that never ends lets them escape (2,153), which examining the outage's cause must catch (M6) |
 | Catastrophe at step 150: half the beings lose 30 | None but repair | Floor drops 24.7 and takes 30–40 steps to regain its level; ends 170.7 against 192.0 |
 | The same, insured through the commons | Repair priced as a transaction (L86) | Restored the next step; its cost (2.1) covered by its own predicted good |
 | Metric capture: leaf 1's model biased by 3, steps 100–249 | Scoring costs it eligibility (L82); its work is priced by its parent (fallback by μ) | Leaf 1 prices its own work 100% before, 0% during, 100% after |
@@ -318,8 +318,11 @@ native. Same world as the tests (6 agents in leaves 1 and 3, transactions, causa
 
 Not yet: rogue agents (M6), infohazards, technology degradation of models short of capture, and
 the diversity–novelty balance under a breakthrough (8.23: enhancement used without crowding out the
-pre-N sample). An outage leaves its actions unmeasured for good; re-measuring them when markers
-return is not modelled.
+pre-N sample). Screening the re-measurement found a closure fault: deferred measurements shared the step's
+variables (the Julia scoping trap noted in CLAUDE.md's history), so every late record of a step
+carried the last action's outcome and credits stopped summing to outcomes (12,792 measured, 3,450
+credited). Declaring the action's variables local fixed it; a test now checks that each late
+record is fully distributed and that late outcomes differ.
 
 ## M4 observations
 
@@ -415,7 +418,7 @@ for removal.
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
 | Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4, 8.26; priced as a transaction (L86); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
-| Outage fallback (prediction-based payment, last observation) | Native | L154 Progressive, L86 escrow |
+| Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
@@ -470,6 +473,7 @@ guesses at reality, to be swept once the model is solid.
 | Records reaching memory | `memory_loss` | 0 | 0–0.2 |
 | Experts joining co-funding | `participation` | 1 | 0.3–1 |
 | Separating an upstream output's part | `attribution_σ` | 0 | 0–0.5 |
+| Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–1 |
 | Hazard harm | `hazard_σ` | 0.2 | 0–1 |
 | A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
 | A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |

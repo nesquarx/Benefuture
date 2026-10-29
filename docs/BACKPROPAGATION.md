@@ -699,7 +699,11 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
 5. Actions taken during a measurement outage are re-measured once markers return where possible:
    an attempt must be made, else outages can be gamed. As catastrophe prevention examines causes,
    which would uncover sabotage, outages are examined too. Candidate homes: L145 Mem, L146
-   Tx → Trigger(MM_Me), L154 Progressive, Antifragility.
+   Tx → Trigger(MM_Me), L154 Progressive, Antifragility. Simulation: deferred measurements run when
+   markers return, with extra noise (`remeasure_σ`, 0.3; the author: coarse post-outage records are
+   noisy) and through the causal-assessment confidence gate, so a noisy late measurement falls back
+   to the traversal. The unmeasured record stays and the measurement is appended (Mem immutable).
+   An outage that never ends still hides negligence: examining its cause is an M6 item.
 6. 8.25 ratified.
 7. Resource accounting must eke out the commons by balancing resources, commons and gains; the act
    of reparation carries its own pricing, which can partly pay for it. [OPEN] the balance: the

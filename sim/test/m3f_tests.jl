@@ -17,12 +17,20 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
 
 @testset "Black swans: acceptance" begin
     # Measurement outage: work goes on, paid by prediction; nothing is measured, credited or
-    # scored while it lasts; measurement resumes after.
-    tr = run_m3c(base(events = [shock(:outage; step = 100, duration = 50)]); seed = 1)
-    during = [m for m in tr.memory if 100 <= m.step < 150]
-    @test !isempty(during) && all(m -> isnan(m.measured) && isempty(m.credits), during)
+    # scored while it lasts. When markers return, everything done during it is re-measured and
+    # settled (author ruling 8.26.5: else outages can be gamed); the unmeasured record stays.
+    tr = run_m3c(base(events = [shock(:outage; step = 100, duration = 50)], p_hazard = 0.3, guardians = [1, 2, 3, 4],
+                      p_informed = 0.5); seed = 1)
+    unmeasured = [m for m in tr.memory if isnan(m.measured)]
+    remeasured = [m for m in tr.memory if 100 <= m.step < 150 && !isnan(m.measured)]
+    @test !isempty(unmeasured) && all(m -> 100 <= m.step < 150 && isempty(m.credits), unmeasured)
+    @test length(remeasured) == length(unmeasured) && all(m -> !isempty(m.credits), remeasured)
+    # Each late measurement is of its own action: fully distributed, and not all alike.
+    @test all(m -> sum(c[2] + c[3] for c in m.credits) ≈ m.measured, remeasured)
+    @test length(unique(m.measured for m in remeasured)) > length(remeasured) ÷ 2
     @test any(m -> m.step >= 150 && !isnan(m.measured), tr.memory)
     @test count(s -> 100 <= s < 150, tr.chosen_step) > 0 && balanced(tr)
+    @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
     @test tr.floor_u[151] >= tr.floor_u[100]  # degraded, not collapsed
     # Catastrophe: one hazard harming half the beings by about 40 steps of floor growth; the floor
     # drops and recovers; the administration, repairing from the commons at resource cost, restores
@@ -50,6 +58,14 @@ end
     @test balanced(tr)
     @test all(m -> isnan(m.measured) && isempty(m.credits), filter(m -> m.step >= 51, tr.memory))
     @test isequal(tr, run_m3c(base(events = [shock(:outage; step = 51, duration = 250)]); seed = 2))
+    # Re-measuring from coarse post-outage records is noisier, never skipped (8.26.5): noise by
+    # default, and through the same confidence gate as any causal assessment (L94): too noisy, and
+    # the late outcomes are shared by the traversal fallback instead.
+    @test base().remeasure_σ > 0
+    late = run_m3c(base(events = [shock(:outage; step = 100, duration = 50)], remeasure_σ = 2.0); seed = 1)
+    @test balanced(late) && count(m -> 100 <= m.step < 150 && !isnan(m.measured), late.memory) > 0
+    @test late.fallback_outcomes > 0 && run_m3c(base(remeasure_σ = 2.0); seed = 1).fallback_outcomes == 0
+    @test_throws ArgumentError base(remeasure_σ = -0.1)
     @test_throws ArgumentError shock(:meteor; step = 10)
     @test_throws ArgumentError shock(:outage; step = 10, duration = 0)
     @test_throws ArgumentError base(events = [shock(:capture; step = 10, size = 1.0, target = 9)])

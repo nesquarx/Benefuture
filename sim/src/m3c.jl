@@ -111,6 +111,7 @@ struct M3cParams
     regen_σ::Float64       # variability of resource regeneration, relative
     memory_loss::Float64   # chance a record never reaches memory
     participation::Float64 # chance an asked expert takes part in co-funding
+    remeasure_σ::Float64   # extra marker error when measuring late, after an outage
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -143,7 +144,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, events = Shock[])
+                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -171,6 +172,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
+    check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
@@ -183,7 +185,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
-              bias_σ, cost_σ, regen_σ, memory_loss, participation, collect(Shock, events))
+              bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -213,6 +215,7 @@ function run_m3c(p::M3cParams; seed)
     pv = bootstrap_params()
     # World events (catastrophes and black swans): which are live at the current step.
     cur, blind = Ref(0), Ref(false)
+    deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
     live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
     skill(a, l) = p.agents[a].skills[l] + sum((e.size for e in live(:breakthrough) if e.target == a); init = 0.0)
     with_params(t, v) = ToyParams(n = t.n, steps = t.steps, plans = t.plans, q = t.q, th = t.th, touch = t.touch,
@@ -396,6 +399,14 @@ function run_m3c(p::M3cParams; seed)
         scoring_only = step <= p.init_steps
         cur[] = step
         blind[] = !isempty(live(:outage))
+        # Markers are back: everything done during the outage is measured now, late, and settled,
+        # so an outage cannot be used to escape measurement (author ruling 8.26.5).
+        if !blind[] && !isempty(deferred)
+            for settle! in deferred
+                settle!()
+            end
+            empty!(deferred)
+        end
         proposers = rand(rng, 1:na, t.plans)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
@@ -449,7 +460,7 @@ function run_m3c(p::M3cParams; seed)
         # normalised within [0, 1] (`cc_share_ref`, `cause_settlement_ref`). When the assessment
         # is not confident enough (`cc_assessed_ref`), shares come from traversing the transaction
         # substrate (`traversal_shares_ref`): net contributions by degree of separation.
-        function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 0.0, own_pay = 0.0)
+        function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 0.0, own_pay = 0.0, late_σ = 0.0)
             p.causal_distribution || return [(a, max(measured, 0.0), min(measured, 0.0))]
             m = touched(plans[j])
             up = ups[j] === nothing ? nothing :
@@ -461,7 +472,8 @@ function run_m3c(p::M3cParams; seed)
             funded(mask) = isodd(mask) && own_pay + sum((pledges[k][2] for k in 1:nf if mask & (1 << k) != 0); init = 0.0) >= need - 1e-9
             hasup(mask) = up !== nothing && mask & (1 << (n - 1)) != 0
             pos, neg = zeros(n), zeros(n)
-            if n <= 10 && cc_assessed(accuracy(-p.attribution_σ^2); threshold = p.cc_threshold)
+            # Confidence falls with attribution error and, for a late measurement, its extra noise.
+            if n <= 10 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
                 assessed_outcomes[] += 1
                 for b in findall(m)
                     v = [assessed_value((funded(mask) ? eff.du[b] : 0.0) + (hasup(mask) ? up.du[b] : 0.0),
@@ -548,6 +560,8 @@ function run_m3c(p::M3cParams; seed)
         screened() = ToyState(obs.u .+ pend_u, obs.h .+ pend_h)
         accept!(pred) = p.transactions && (pend_u .+= pred.du; pend_h .+= pred.dh; true)
         function execute_priced!(j)
+            # Local, not the step's: a deferred measurement must keep this action's own values.
+            local a, plan, l, done, seen, measured, credits, minted, idx
             a, plan, l = proposers[j], plans[j], leaves[j]
             done, seen, measured = perform!(j, a)
             balance[a, root] -= priced[j][root] * costs[j]
@@ -561,6 +575,24 @@ function run_m3c(p::M3cParams; seed)
                     balance[a, c] += upfront - sh * costs[j]
                     minted += upfront
                 end
+                idx = length(tr.valued_measured) + 1
+                push!(deferred, function ()
+                    seen_late = observed_plan(mrng, done, p.marker_σ + p.remeasure_σ)
+                    measured_late = plan_value(seen_late, t)
+                    late = credits_for(j, a, seen_late, measured_late; late_σ = p.remeasure_σ)
+                    delta = 0.0
+                    for (c, sh, pr, acc) in offers[j]
+                        upfront = sh * acc * plan_value(pr, t)
+                        x = settlement(sh * (late[1][2] + late[1][3]), upfront)
+                        balance[a, c] += x; delta += x
+                        for (e, pp, nn) in late[2:end]
+                            balance[e, c] += sh * (pp + nn); delta += sh * (pp + nn)
+                        end
+                    end
+                    tr.valued_measured[idx] += delta
+                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]))
+                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
+                end)
             else
                 credits = credits_for(j, a, seen, measured)
                 for (c, sh, pr, acc) in offers[j]
@@ -611,6 +643,7 @@ function run_m3c(p::M3cParams; seed)
         # the best available model, qualified or not (score-only models predict too), and goes
         # ahead if the proposer, with experts, can pay its full resource cost.
         for j in lane_queue
+            local a, plan, l, bp, c, pred, need, self_pay, experts, pledges, done, seen, measured
             a, plan, l = proposers[j], plans[j], leaves[j]
             bp = best_prediction(stops[j], l, plan)
             if bp === nothing
@@ -649,6 +682,16 @@ function run_m3c(p::M3cParams; seed)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
                     blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
+            if blind[]
+                push!(deferred, function ()
+                    seen_late = observed_plan(mrng, done, p.marker_σ + p.remeasure_σ)
+                    measured_late = plan_value(seen_late, t)
+                    push!(tr.lane_measured, measured_late)
+                    score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred))
+                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j],
+                            credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ))
+                end)
+            end
             available -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
@@ -657,6 +700,17 @@ function run_m3c(p::M3cParams; seed)
         # domain who does not act is assessed against that committed action (the prevented outcome,
         # no change), so the harm is its contribution: a crime if it was informed, an accident if
         # not, penalised either way to fund repair. An unguarded hazard has no contributor.
+        # A hazard's measurement: now, or, during an outage, an unmeasured record now and the
+        # measurement later (8.26.5).
+        function measure!(settle!, l, a)
+            if blind[]
+                a > 0 && credit!(step, true_sig[l], classify_sig(true_sig[l]), NaN, parent_mem(true_sig[l]),
+                                 price_shares(classify_sig(true_sig[l])), [(a, 0.0, 0.0)])
+                push!(deferred, () -> settle!(p.marker_σ + p.remeasure_σ))
+            else
+                settle!(p.marker_σ)
+            end
+        end
         function hazard!(share, sz)
             local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, pr, acc, price, own
             world.hazards[] += 1
@@ -680,63 +734,66 @@ function run_m3c(p::M3cParams; seed)
                         world.shocks[] += 1
                     end
                     s.u .+= act.du; s.h .+= act.dh
-                    measured = plan_value(observed_plan(hrng, act, p.marker_σ), t)
-                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
-                    st, pm = classify_sig(sig), parent_mem(sig)
-                    credit!(step, sig, st, measured, pm, price_shares(st), [(g, max(measured, 0.0), min(measured, 0.0))])
                     world.prevention_records[] += 1
-                    if !scoring_only && !blind[]
-                        balance[g, :] .+= split_signed(st, measured)[1]
-                        world.prevention_measured[] += measured
+                    measure!(l, g) do σ
+                        measured = plan_value(observed_plan(hrng, act, σ), t)
+                        sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                        st, pm = classify_sig(sig), parent_mem(sig)
+                        credit!(step, sig, st, measured, pm, price_shares(st), [(g, max(measured, 0.0), min(measured, 0.0))])
+                        if !scoring_only
+                            balance[g, :] .+= split_signed(st, measured)[1]
+                            world.prevention_measured[] += measured
+                        end
                     end
                 end
             elseif any(hit)
                 s.u .+= harm.du; s.h .+= harm.dh
-                measured = plan_value(observed_plan(hrng, harm, p.marker_σ), t)
-                if g == 0
-                    world.unattributed[] += -measured
-                    # No contributor: the administration insures it through the commons, to its
-                    # capability (author rulings 8.22, 8.26; L119 Liability ranks it before beings).
-                    # The commons is funded by resource accounting: the resource costs paid for work
-                    # (L83); escrow is not pooled in this world. Repair is work, paid its resource
-                    # cost, not the value of the harm.
-                    # Repair is a transaction priced like any other (L86; 8.26): resource cost less
-                    # the predicted good its qualified currencies credit (`transaction_price`). That
-                    # funds part of it; the commons pays the rest and banks no surplus, so the insurer
-                    # never profits from unassigned harm. [P] the prediction is the measured harm.
-                    if p.repair_efficiency > 0 && !blind[]
-                        need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
-                        sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
-                        st = classify_sig(sig)
-                        pr = price_shares(st)
-                        acc = sum((pr[c] * (c <= lmax ? leaf_acc(c) : parent_acc(c - lmax)) for c in 1:(root - 1) if pr[c] > 0); init = 0.0)
-                        price = transaction_price(need, p.repair_efficiency * -measured, acc)
-                        own = need - max(price, 0.0)
-                        spend = min(sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[], max(price, 0.0))
-                        f = p.repair_efficiency * min(own + spend, need) / need
-                        if f > 0
-                            push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
-                            world.commons_spent[] += spend
-                            world.self_funded[] += min(own, need)
-                            world.repair_cost[] += need
-                            world.insured[] += p.repair_efficiency * min(own + spend, need)
+                measure!(l, g) do σ
+                    measured = plan_value(observed_plan(hrng, harm, σ), t)
+                    if g == 0
+                        world.unattributed[] += -measured
+                        # No contributor: the administration insures it through the commons, to its
+                        # capability (author rulings 8.22, 8.26; L119 Liability ranks it before beings).
+                        # The commons is funded by resource accounting: the resource costs paid for work
+                        # (L83); escrow is not pooled in this world. Repair is work, paid its resource
+                        # cost, not the value of the harm.
+                        # Repair is a transaction priced like any other (L86; 8.26): resource cost less
+                        # the predicted good its qualified currencies credit (`transaction_price`). That
+                        # funds part of it; the commons pays the rest and banks no surplus, so the insurer
+                        # never profits from unassigned harm. [P] the prediction is the measured harm.
+                        if p.repair_efficiency > 0
+                            need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
+                            sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                            st = classify_sig(sig)
+                            pr = price_shares(st)
+                            acc = sum((pr[c] * (c <= lmax ? leaf_acc(c) : parent_acc(c - lmax)) for c in 1:(root - 1) if pr[c] > 0); init = 0.0)
+                            price = transaction_price(need, p.repair_efficiency * -measured, acc)
+                            own = need - max(price, 0.0)
+                            spend = min(sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[], max(price, 0.0))
+                            f = p.repair_efficiency * min(own + spend, need) / need
+                            if f > 0
+                                push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
+                                world.commons_spent[] += spend
+                                world.self_funded[] += min(own, need)
+                                world.repair_cost[] += need
+                                world.insured[] += p.repair_efficiency * min(own + spend, need)
+                            end
                         end
-                    end
-                else
-                    is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
-                    sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
-                    st, pm = classify_sig(sig), parent_mem(sig)
-                    φ = measured  # its one contributor's whole share, assessed against the committed action
-                    credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
-                    blind[] && return  # unmeasured: no penalty, so nothing funds repair
-                    world.hazard_penalties[] += -φ
-                    if !scoring_only
-                        balance[g, :] .+= split_signed(st, φ)[1]
-                        world.hazard_debits[] += -φ
-                    end
-                    if p.repair_efficiency > 0
-                        push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
-                        world.repaired[] += p.repair_efficiency * -φ
+                    else
+                        is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                        sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                        st, pm = classify_sig(sig), parent_mem(sig)
+                        φ = measured  # its one contributor's whole share, assessed against the committed action
+                        credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
+                        world.hazard_penalties[] += -φ
+                        if !scoring_only
+                            balance[g, :] .+= split_signed(st, φ)[1]
+                            world.hazard_debits[] += -φ
+                        end
+                        if p.repair_efficiency > 0
+                            push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
+                            world.repaired[] += p.repair_efficiency * -φ
+                        end
                     end
                 end
             end

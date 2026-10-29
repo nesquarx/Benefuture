@@ -297,7 +297,8 @@ means over 5 seeds of 500 steps.
   simulation's commons holds the resource costs paid)
   ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
 - Black swans, each with a native fallback: through a measurement outage work continues, paid by
-  prediction and logged unmeasured, and floor growth holds; a catastrophe takes 30–40 steps to
+  prediction and logged unmeasured, then re-measured (with extra noise, through the same confidence
+  gate) and settled when markers return, so an outage that ends hides nothing; floor growth holds; a catastrophe takes 30–40 steps to
   recover from alone and one step when repaired through the commons; a captured
   metric model loses eligibility while captured and its parent prices its work, then it requalifies;
   a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
