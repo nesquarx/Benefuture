@@ -3,34 +3,36 @@
 # finding, screened and reported, not patched.
 # - Overpromising: an agent whose plans fool every metric model upward (`deceit`, a world
 #   property). Escrow (L86) pays upfront only accuracy × prediction and settles against the measured
-#   outcome, so the deceit is clawed back; the fooled models score worse and lose accuracy.
+#   outcome, so the deceit is clawed back; models price each actor's actions by its track record
+#   (author ruling 8.29), and mistakes decay slower than wins.
 # - Relay farming: agents who add nothing and carry others' outputs to collect accolades. The drain
 #   is bounded by the governed accolade rate; ruling 8.26.2 (held) removes it where the carrying
 #   would have happened anyway.
 
-six(; skill = 0.3, deceit = Float64[], steps = 300, λneg = 0.05, kw...) =
+six(; skill = 0.3, deceit = Float64[], steps = 300, λneg = 0.02, kw...) =
     M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([skill, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
-              [1, 1, 2, 2], trues(4); λpos = 0.02, λneg, transactions = true, causal_distribution = true, deceit, kw...)
+              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg, transactions = true, causal_distribution = true, deceit, kw...)
 fooled = [0, 0, 0, 0, 0, 1.0]
 
 @testset "M6 overpromising: acceptance" begin
-    honest = run_m3c(six(); seed = 1)
-    liar = run_m3c(six(deceit = fooled); seed = 1)
-    # Escrow pays the liar more upfront than its outcomes were worth (an honest agent's falls short),
-    # and settlement takes the excess back; the models it fools score worse and lose accuracy.
-    @test liar.upfront[6] > liar.settled_value[6] && honest.upfront[6] < honest.settled_value[6]
-    @test liar.leaf_accuracy[1] < honest.leaf_accuracy[1]
-    @test sum(liar.balance) - liar.endowed ≈ sum(liar.valued_measured) - sum(liar.costs) - sum(liar.lane_costs) - sum(liar.reinvested)
-    # FINDING (BACKPROPAGATION 8.28), a requirement not yet met: deceit should not pay. With losses
-    # decaying faster than gains (λ₋ > λ₊), the liar's churn leaves it net relevance, which raises
-    # its overflow threshold: it ends richer than honestly and than its peers.
-    @test_broken sum(liar.balance[6, :]) <= sum(honest.balance[6, :])
-    @test_broken sum(liar.balance[6, :]) <= mean(sum(liar.balance[k, :]) for k in 1:5)
-    # With symmetric decay it ends below its peers, but still above its honest self: fooled prices
-    # get more of its (genuinely positive) work through.
-    sym_h, sym_l = run_m3c(six(λneg = 0.02); seed = 1), run_m3c(six(λneg = 0.02, deceit = fooled); seed = 1)
-    @test sum(sym_l.balance[6, :]) <= mean(sum(sym_l.balance[k, :]) for k in 1:5)
-    @test_broken sum(sym_l.balance[6, :]) <= sum(sym_h.balance[6, :])
+    # Deceit does not pay (BACKPROPAGATION 8.28, 8.29). Models price each actor by its track record,
+    # so the liar's prices return to honest levels: it acts about as often as honestly, collects about
+    # what its outcomes are worth upfront, and ends no richer on average; its peers' prices are not
+    # touched. Mistakes decaying slower than wins leave its churn no reputation to bank.
+    seeds = 1:6
+    honest = [run_m3c(six(); seed) for seed in seeds]
+    liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
+    acts(tr) = count(==(6), tr.chosen_agent)
+    @test mean(sum(l.balance[6, :]) for l in liar) <= 1.05 * mean(sum(h.balance[6, :]) for h in honest)
+    @test mean(acts.(liar)) <= 1.2 * mean(acts.(honest))
+    @test all(l.upfront[6] < l.settled_value[6] for l in liar)
+    @test mean(sum(l.upfront[1:5]) for l in liar) ≈ mean(sum(h.upfront[1:5]) for h in honest) rtol = 0.1
+    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) for l in liar)
+    # Without the track record the liar acts twice as often and is paid upfront far beyond its
+    # outcomes, which escrow claws back; the fooled models lose accuracy for everyone.
+    blind_models = run_m3c(six(deceit = fooled, track_window = 0); seed = 1)
+    @test acts(blind_models) > 1.8 * acts(honest[1]) && blind_models.upfront[6] > 5 * blind_models.settled_value[6]
+    @test blind_models.leaf_accuracy[1] < liar[1].leaf_accuracy[1] - 0.05
 end
 
 @testset "M6 overpromising: adversarial and edge cases" begin
@@ -38,13 +40,14 @@ end
     @test_throws ArgumentError six(deceit = [0, 0, 0, 0, 0])
     @test_throws ArgumentError six(deceit = [0, 0, 0, 0, 0, NaN])
     @test run_m3c(six(deceit = zeros(6)); seed = 1) == run_m3c(six(); seed = 1)
+    @test_throws ArgumentError six(track_window = -1)
 end
 
 @testset "M6 relay farming" begin
     makers = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
     relays = [DomainAgent([0.0, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
     p(rate) = M3cParams(ToyParams(n = 80, steps = 200, plans = 10, spread = 0.05), [makers; relays], [1, 1, 2, 2], trues(4);
-                        λpos = 0.02, λneg = 0.05, transactions = true, causal_distribution = true, p_upstream = 1.0, accolade_rate = rate)
+                        λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, p_upstream = 1.0, accolade_rate = rate)
     tr = run_m3c(p(0.05); seed = 1)
     # The drain is bounded by the governed accolade rate on what the makers' outputs carried.
     @test tr.accolade_credit <= 0.05 * (sum(tr.upstream_pos) + tr.accolade_credit) + 1e-6
@@ -58,7 +61,7 @@ end
     world(n_per) = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                                      [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / max(n_per - 1, 1) : 0.0 for l in 1:4],
                                                   [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:n_per],
-                                     [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+                                     [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     w = world(25)
     top(frac) = unique(vcat([sortperm(w.relevance_leaf[:, d]; rev = true)[1:round(Int, frac * 25)] for d in 1:4]...))
     honest = run_m5(M5Params(w, 1:4; decisions = 400); seed = 1)

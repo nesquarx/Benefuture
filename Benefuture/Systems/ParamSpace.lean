@@ -89,6 +89,8 @@ structure Admissible (pv : ParamVector) : Prop where
   -- L101
   lambda_plus_pos    : 0 < pv.lambda_plus
   lambda_minus_pos   : 0 < pv.lambda_minus
+  -- Mistakes decay slower than wins (author ruling, BACKPROPAGATION 8.29: ledger asymmetry)
+  lambda_minus_lt    : pv.lambda_minus < pv.lambda_plus
   -- L25, L155
   th_sig_pos         : 0 < pv.th_sig
   th_gov_pos         : 0 < pv.th_gov
@@ -120,7 +122,7 @@ noncomputable def bootstrapParams : ParamVector :=
     kappa := 1, q_plus := 1.1, q_minus := 1.5, lambda := 0.5,
     kappa_value := 2, kappa_harm := 0.5, q_harm := 1.5,
     nu := 1, h_param := 1,
-    lambda_plus := 0.05, lambda_minus := 0.05,
+    lambda_plus := 0.05, lambda_minus := 0.02,
     th_sig := 0.5, th_gov := 0.7,
     fr_thConf := 0.9, fr_thHigh := 1,
     sev_irreparable := 1000, sev_irreversible := 100, sev_longterm := 10,

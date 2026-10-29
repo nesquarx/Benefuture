@@ -304,10 +304,11 @@ means over 5 seeds of 500 steps.
   a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
   diversity–novelty balance not yet tested ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
   [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
-- Gaming (M6, a finding, not a guarantee): an agent whose plans fool every metric model is paid
-  upfront far more than its outcomes are worth, and escrow takes the excess back, but it still ends
-  richer than honestly (and than its peers when losses decay faster than gains, through the
-  balance-overflow threshold); recorded for the author as unmet requirements. A colluding bloc of the most reputable fifth of
+- Gaming (M6, toy world, 6–8 seeds): an agent whose plans fool every metric model gains nothing
+  beyond noise once models price actors by their track record and mistakes decay slower than wins
+  (author ruling 8.29); without the track record it acts twice as often and is paid upfront several
+  times what its outcomes were worth, which escrow claws back, and before the decay ruling it ended
+  richer than honest agents. A colluding bloc of the most reputable fifth of
   experts lowers decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's
   capture (30% of experts: 70% with delegation, 85% without)
   ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).

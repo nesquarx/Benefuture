@@ -89,7 +89,7 @@ noncomputable def defaultGovParams : GovParams := {
   h_h_param_pos := by norm_num
 
   lambda_plus  := 0.05
-  lambda_minus := 0.05
+  lambda_minus := 0.02  -- mistakes decay slower than wins (BACKPROPAGATION 8.29)
   h_lambda_plus_pos  := by norm_num
   h_lambda_minus_pos := by norm_num
 

@@ -26,11 +26,12 @@ end
 @testset "M5: acceptance" begin
     m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                            [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
-                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     # Expertise weighting decides better than one agent, one vote, when reputation tracks skill.
-    eq = run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400); seed = 1)
-    bf = run_m5(M5Params(m3, 1:4; decisions = 400); seed = 1)
-    @test bf.correct > eq.correct
+    # (Over seeds: the difference is a few decisions in four hundred.)
+    eq = mean(run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400); seed).correct for seed in 1:4)
+    bf = mean(run_m5(M5Params(m3, 1:4; decisions = 400); seed).correct for seed in 1:4)
+    @test bf > eq
     # Delegation under the cap: no delegate ever holds more than the cap plus one delegator's weight.
     dl = run_m5(M5Params(m3, 1:4; decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
     @test all(dl.max_share .<= 0.1 .+ dl.max_single .+ 1e-12)
@@ -47,7 +48,7 @@ end
     world(n_per) = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                                      [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / max(n_per - 1, 1) : 0.0 for l in 1:4],
                                                   [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:n_per],
-                                     [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+                                     [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     small = run_m5(M5Params(world(2), 1:4; decisions = 400, expertise_weight = 5.0); seed = 1)   # 8 agents
     large = run_m5(M5Params(world(25), 1:4; decisions = 400, expertise_weight = 5.0); seed = 1)  # 100 agents
     @test small.correct > 0.9 && large.correct > 0.9
@@ -58,7 +59,7 @@ end
     # Specialists in each domain; the others, unaffected by a domain's decisions, may delegate to them.
     m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                            [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
-                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     # Without a cap, delegation concentrates weight; the cap prevents it.
     uncapped = run_m5(M5Params(m3, 1:4; decisions = 100, p_delegate = 1.0, cap = 1.0); seed = 1)
     capped = run_m5(M5Params(m3, 1:4; decisions = 100, p_delegate = 1.0, cap = 0.2); seed = 1)

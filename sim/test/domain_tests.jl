@@ -9,9 +9,9 @@
     @test pos ≈ [4.0, 4.0, 0.0]
     @test neg ≈ [0.8, 0.8, 0.0]
     # Relevance: gains and losses decay at their own rates; the sign picks the rate.
-    @test decay_rate_for(3.0; λpos = 0.01, λneg = 0.05) == 0.01
-    @test decay_rate_for(-3.0; λpos = 0.01, λneg = 0.05) == 0.05
-    @test decay_rate_for(0.0; λpos = 0.01, λneg = 0.05) == 0.01
+    @test decay_rate_for(3.0; λpos = 0.05, λneg = 0.01) == 0.05
+    @test decay_rate_for(-3.0; λpos = 0.05, λneg = 0.01) == 0.01
+    @test decay_rate_for(0.0; λpos = 0.05, λneg = 0.01) == 0.05
 end
 
 @testset "Domain rules: adversarial and edge cases" begin

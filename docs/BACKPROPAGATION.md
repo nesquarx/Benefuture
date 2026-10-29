@@ -756,3 +756,22 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    [P] model L114's bulk audit and retraction: delegators audit delegates' votes against measured
    outcomes and retract, a native defence to test next.
 
+
+**8.29 Author rulings on 8.28.**
+1. Mistakes decay slower than wins: that is what ledger asymmetry means (λ₋ < λ₊). Candidate homes:
+   L101, Reputation (ledger asymmetry), `Systems.ParamSpace` (an admissibility constraint).
+2. Models estimate from track record: the same action is valued by who takes it and in what state
+   (a diabetic pays more for a pastry than an athlete; anyone pays more for a fifth pastry in a
+   day). A deceiver's record of overpromising is part of what models use to price its next action.
+   Candidate homes: L84 (P(As(V, A, t0) > 0)), L86 (MM_Pr(V ← A)), Measurement, Benefuture currency.
+3. Delegation is audited and retractable (L114). Colluding experts whose votes prove suboptimal
+   lose reputation, though suboptimality is not always apparent; diversity at scale captures data
+   on other options locally (discovered through the diversity–novelty balance); deliberation
+   helps. Not a fully solved problem: the final hope is that collusion's suboptimal results are
+   aired by adversarial adaptation (AdvAp, L160) or anti-corruption (L159). Candidate homes: L114,
+   Government, Anti-Corruption.
+   Status: (1) `Admissible` gains λ₋ < λ₊ in `Systems.ParamSpace` and the reference (bootstrap λ₊
+   0.05, λ₋ 0.02); the simulation refuses losses decaying faster than gains (equal rates only as the
+   reduction to M2). (2) Models correct each actor's estimates by its recent errors
+   (`track_window`, 20, governed). Together they end 8.28's finding: over 8 seeds the liar acts and
+   is paid as an honest agent and ends no richer beyond noise. (3) Next: audit and retraction.

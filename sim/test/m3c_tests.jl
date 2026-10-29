@@ -15,7 +15,7 @@ function m3c(; hidden = Int[], work = [1], n_agents = 6, skill = 0.6, steps = 20
     agents = [DomainAgent([l in work ? skill : 0.0 for l in 1:nl], [l in work ? 1 / length(work) : 0.0 for l in 1:nl], 0.0)
               for _ in 1:n_agents]
     M3cParams(ToyParams(n = 80, steps = steps, plans = 10), agents, leaf_parent, [trues(4); falses(length(hidden))];
-              λpos = 0.02, λneg = 0.05, kw...)
+              λpos = 0.05, λneg = 0.02, kw...)
 end
 
 @testset "M3c: acceptance" begin
@@ -58,7 +58,7 @@ end
 @testset "M3c: adversarial and edge cases" begin
     # A rarely used leaf keeps its place: its work is still classified to it, and no duplicate forms.
     agents = [DomainAgent([0.6, 0.6, 0.0, 0.0], [0.97, 0.03, 0.0, 0.0], 0.0) for _ in 1:6]
-    tr = run_m3c(M3cParams(ToyParams(n = 80, steps = 400, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05); seed = 5)
+    tr = run_m3c(M3cParams(ToyParams(n = 80, steps = 400, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02); seed = 5)
     @test size(tr.μ, 2) == 4 && isempty(tr.formations) && tr.μ[1, 2] > 0.9
     @test all(tr.stop_leaf[tr.true_leaf .== 2] .== 2)
     # Without formation, work in the hidden leaf earns its parent's reputation, never a leaf's.
@@ -91,8 +91,10 @@ end
     @test tr == run_m3c(noisy; seed = 4)
     @test_throws ArgumentError m3c(memory_loss = 1.5)
     @test_throws ArgumentError m3c(parent_threshold = 0.0)
-    @test_throws ArgumentError M3cParams(T3c, [DomainAgent([0.6], [1.0], 0.0)], [1, 1], trues(2); λpos = 0.02, λneg = 0.05)
+    @test_throws ArgumentError M3cParams(T3c, [DomainAgent([0.6], [1.0], 0.0)], [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
     @test_throws ArgumentError m3c(form_count = 0)
+    # Mistakes decay slower than wins (author ruling 8.29).
+    @test_throws ArgumentError M3cParams(T3c, [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0)], [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05)
     @test_throws ArgumentError m3c(overlaps = [(9, 1, 0.3)])
 end
 
@@ -101,7 +103,7 @@ end
     nl = length(leaf_parent)
     agents = [DomainAgent([l == k ? 0.6 : 0.0 for l in 1:nl], [l == k ? 1.0 : 0.0 for l in 1:nl], 0.5) for k in 1:nl for _ in 1:3]
     p = M3cParams(ToyParams(n = 200, steps = 300, plans = 20), agents, leaf_parent, [trues(12); falses(2)];
-                  λpos = 0.02, λneg = 0.05, marker_σ = 0.1, overlaps = [(4, 2, 0.3), (8, 3, 0.3)])
+                  λpos = 0.05, λneg = 0.02, marker_σ = 0.1, overlaps = [(4, 2, 0.3), (8, 3, 0.3)])
     run_m3c(m3c(); seed = 1)
     @test (@elapsed run_m3c(p; seed = 1)) < 90
 end

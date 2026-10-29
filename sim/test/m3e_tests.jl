@@ -7,7 +7,7 @@
 # hazards as side effects: direct harm, a crime if foreseen, an accident if not, repaired either way.
 
 hz(guardians; agents = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4], kw...) =
-    M3cParams(ToyParams(n = 80, steps = 150, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05,
+    M3cParams(ToyParams(n = 80, steps = 150, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_hazard = 0.5, guardians, kw...)
 
 @testset "Crime rule (Lean reference)" begin

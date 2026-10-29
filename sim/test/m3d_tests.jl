@@ -26,7 +26,7 @@ end
 @testset "M3d: adversarial and edge cases" begin
     # A harmful agent's transactions are screened out, however many it proposes.
     agents = [DomainAgent([-0.8, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], 0.0) for _ in 1:4]
-    tr = run_m3c(M3cParams(T3c, agents, [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 4)
+    tr = run_m3c(M3cParams(T3c, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 4)
     @test count(>(50), tr.chosen_step) <= 2  # after the 50-step score-only start
 end
 
@@ -41,7 +41,7 @@ end
 const Tsmooth = ToyParams(n = 80, steps = 200, plans = 10, spread = 0.05)
 makers() = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
 passers() = [DomainAgent([0.0, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
-cdp(agents; kw...) = M3cParams(Tsmooth, agents, [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true,
+cdp(agents; kw...) = M3cParams(Tsmooth, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
                                causal_distribution = true, p_upstream = 1.0, kw...)
 
 @testset "Causal distribution: acceptance" begin

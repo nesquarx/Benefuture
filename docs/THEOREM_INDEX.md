@@ -435,16 +435,16 @@ proves. The reviewed claims, with their assumptions, are in [README.md](../READM
 
 ## Benefuture/Systems/ParamSpace.lean
 
-- [`bootstrap_admissible`](../Benefuture/Systems/ParamSpace.lean#L132): THEOREM: The bootstrap point is admissible.
-- [`gov_step_preserves`](../Benefuture/Systems/ParamSpace.lean#L178): (no docstring)
-- [`gov_run_preserves`](../Benefuture/Systems/ParamSpace.lean#L190): (no docstring)
-- [`governed_params_admissible`](../Benefuture/Systems/ParamSpace.lean#L199): THEOREM: Every parameter vector reachable from bootstrap by SigThGv is admissible, so every theorem stated for admissible parameters holds throughout governance.
-- [`perturb_step_preserves`](../Benefuture/Systems/ParamSpace.lean#L212): (no docstring)
-- [`perturb_step_close`](../Benefuture/Systems/ParamSpace.lean#L219): (no docstring)
-- [`perturb_run_preserves`](../Benefuture/Systems/ParamSpace.lean#L233): (no docstring)
-- [`perturb_run_drift`](../Benefuture/Systems/ParamSpace.lean#L245): THEOREM: Bounded drift. After n perturbation steps every governed field has moved by at most n·δ: evolutionary perturbation cannot jump a parameter; large moves need debate (LqdBfDm).
-- [`admissible_loss_aversion`](../Benefuture/Systems/ParamSpace.lean#L265): THEOREM: Loss aversion holds for every significant input at every admissible point (L13, L25, L48; `significant_assessment_preserves_loss_aversion`).
-- [`admissible_forgiveness_bias`](../Benefuture/Systems/ParamSpace.lean#L276): THEOREM: At every admissible point EHR is biased toward forgiveness: with equal accumulated reputation on both ledgers (below the cap), forgiveness is strictly more likely than overreaction, because δ < α in the L11 priority order.
+- [`bootstrap_admissible`](../Benefuture/Systems/ParamSpace.lean#L134): THEOREM: The bootstrap point is admissible.
+- [`gov_step_preserves`](../Benefuture/Systems/ParamSpace.lean#L180): (no docstring)
+- [`gov_run_preserves`](../Benefuture/Systems/ParamSpace.lean#L192): (no docstring)
+- [`governed_params_admissible`](../Benefuture/Systems/ParamSpace.lean#L201): THEOREM: Every parameter vector reachable from bootstrap by SigThGv is admissible, so every theorem stated for admissible parameters holds throughout governance.
+- [`perturb_step_preserves`](../Benefuture/Systems/ParamSpace.lean#L214): (no docstring)
+- [`perturb_step_close`](../Benefuture/Systems/ParamSpace.lean#L221): (no docstring)
+- [`perturb_run_preserves`](../Benefuture/Systems/ParamSpace.lean#L235): (no docstring)
+- [`perturb_run_drift`](../Benefuture/Systems/ParamSpace.lean#L247): THEOREM: Bounded drift. After n perturbation steps every governed field has moved by at most n·δ: evolutionary perturbation cannot jump a parameter; large moves need debate (LqdBfDm).
+- [`admissible_loss_aversion`](../Benefuture/Systems/ParamSpace.lean#L267): THEOREM: Loss aversion holds for every significant input at every admissible point (L13, L25, L48; `significant_assessment_preserves_loss_aversion`).
+- [`admissible_forgiveness_bias`](../Benefuture/Systems/ParamSpace.lean#L278): THEOREM: At every admissible point EHR is biased toward forgiveness: with equal accumulated reputation on both ledgers (below the cap), forgiveness is strictly more likely than overreaction, because δ < α in the L11 priority order.
 
 ## Benefuture/Systems/Pipeline.lean
 

@@ -10,7 +10,7 @@
 
 base(; steps = 300, kw...) = M3cParams(ToyParams(n = 80, steps = steps, plans = 10),
                                        [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.0) for _ in 1:6],
-                                       [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true,
+                                       [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
                                        causal_distribution = true, kw...)
 balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) -
                                                sum(tr.reinvested) - tr.hazard_debits + tr.prevention_measured

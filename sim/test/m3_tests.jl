@@ -32,7 +32,7 @@ end
     @test tr.h_pos[2, 1] == 0 && tr.relevance[2, 1] == 0 && tr.balance[2, 1] == 0
     # A harmful specialist, when chosen through prediction noise, accrues negative history in its domain only.
     noisy = M1Params(ToyParams(n = 80, steps = 300, plans = 6), [MetricModel(0.0, 1.5)], 0.0, 10)
-    tr = run_m3(M3Params(noisy, [DomainAgent([-0.8, 0.0], [1.0, 0.0], 0.0), DomainAgent([0.0, 0.5], [0.0, 1.0], 0.0)], 0.02, 0.05); seed = 3)
+    tr = run_m3(M3Params(noisy, [DomainAgent([-0.8, 0.0], [1.0, 0.0], 0.0), DomainAgent([0.0, 0.5], [0.0, 1.0], 0.0)], 0.05, 0.02); seed = 3)
     @test tr.h_neg[1, 1] > 0 && tr.h_neg[1, 2] == 0
     @test_throws ArgumentError DomainAgent([0.1, 0.2], [0.7, 0.7], 0.0)
     @test_throws ArgumentError DomainAgent([0.1], [0.5, 0.5], 0.0)
@@ -43,7 +43,7 @@ end
 @testset "M3: runs fast enough to iterate" begin
     D = 5
     agents = [specialist(d, D; sloppiness = 0.5) for d in 1:D for _ in 1:10]
-    p = M3Params(M1Params(ToyParams(n = 200, steps = 300, plans = 20), [MetricModel(0.0, 0.5), MetricModel(0.0, 0.2)], 0.1, 10), agents, 0.02, 0.05)
+    p = M3Params(M1Params(ToyParams(n = 200, steps = 300, plans = 20), [MetricModel(0.0, 0.5), MetricModel(0.0, 0.2)], 0.1, 10), agents, 0.05, 0.02)
     run_m3(M3Params(W3, agents[1:2], 0.02, 0.02); seed = 1)
     @test (@elapsed run_m3(p; seed = 1)) < 90
 end

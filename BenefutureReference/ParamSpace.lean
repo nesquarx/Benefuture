@@ -15,7 +15,7 @@ def paramFields : List String :=
 
 /-- The bootstrap point (`bootstrapParams`). -/
 def bootstrap_params_ref : Array Float :=
-  #[0.8, 0.6, 0.4, 0.2, 1, 1.1, 1.5, 0.5, 2, 0.5, 1.5, 1, 1, 0.05, 0.05, 0.5, 0.7, 0.9, 1,
+  #[0.8, 0.6, 0.4, 0.2, 1, 1.1, 1.5, 0.5, 2, 0.5, 1.5, 1, 1, 0.05, 0.02, 0.5, 0.7, 0.9, 1,
     1000, 100, 10, 1, 0.5, 10, 0.05, 0.25, 1]
 
 /-- Admissibility (`Admissible`): the ranges and joint constraints the proved theorems rely on. -/
@@ -28,6 +28,8 @@ def admissible_ref (v : Array Float) : Bool :=
   0 ≤ f 4 && 1 < f 5 && f 5 ≤ f 6 && 0 ≤ f 7 && f 7 ≤ 1 && 0 ≤ f 8 && 0 ≤ f 9 && 1 < f 10 &&
   -- L14, L101, L25, L155
   0 < f 11 && 0 < f 12 && 0 < f 13 && 0 < f 14 && 0 < f 15 && 0 < f 16 &&
+  -- L101, ruling 8.29: mistakes decay slower than wins
+  f 14 < f 13 &&
   -- L135: confidence in (0, 1], positive ceiling, severities positive and ordered
   0 < f 17 && f 17 ≤ 1 && 0 < f 18 && 0 < f 23 && f 23 ≤ f 22 && f 22 ≤ f 21 && f 21 ≤ f 20 &&
     f 20 ≤ f 19 &&

@@ -31,6 +31,8 @@ end
     bad = copy(pv); bad[2] = pv[1] + 0.01                  # β above α breaks L11's order
     @test !admissible(bad) && perturb(pv, bad, [2]; δ = 1.0) == pv
     @test !admissible(setindex!(copy(pv), 0.9, 6))         # q₊ must exceed 1 (L13: depth over breadth)
+    # Mistakes decay slower than wins (author ruling 8.29: ledger asymmetry): λ₋ < λ₊.
+    @test pv[15] < pv[14] && !admissible(setindex!(copy(pv), pv[14], 15))
     # Bounded drift, numerically: n perturbation steps move each field by at most n·δ.
     r = Xoshiro(1); cur = copy(pv)
     for _ in 1:200
@@ -42,7 +44,7 @@ end
 end
 
 gov(; steps = 300, kw...) = M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
-                         [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true, govern = true, kw...)
+                         [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, govern = true, kw...)
 
 @testset "M4: acceptance" begin
     tr = run_m3c(gov(adapt = false); seed = 1)

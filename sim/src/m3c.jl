@@ -113,6 +113,7 @@ struct M3cParams
     participation::Float64 # chance an asked expert takes part in co-funding
     remeasure_σ::Float64   # extra marker error when measuring late, after an outage
     deceit::Vector{Float64} # per agent, how far its plans fool every metric model upward (M6; world)
+    track_window::Int       # past actions of an actor its track record spans, for models' estimates (governed; 8.29)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -145,7 +146,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, deceit = Float64[], events = Shock[])
+                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -175,8 +176,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
     check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
     check(isempty(deceit) || (length(deceit) == length(agents) && all(isfinite, deceit)), "one finite deceit per agent")
+    check(track_window >= 0, "track record window non-negative")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
+    check(λneg <= λpos, "losses must decay no faster than gains (author ruling 8.29)")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
@@ -188,7 +191,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
               bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
-              isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), collect(Shock, events))
+              isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -219,9 +222,28 @@ function run_m3c(p::M3cParams; seed)
     # World events (catastrophes and black swans): which are live at the current step.
     cur, blind = Ref(0), Ref(false)
     deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
-    # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world property).
-    fooled(pred, a, plan) = p.deceit[a] == 0 ? pred :
-        ToyPlan(pred.du .+ p.deceit[a] .* touched(plan), pred.dh .+ p.deceit[a] .* touched(plan))
+    # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world
+    # property). Models estimate from track record (author ruling 8.29): each actor's recent
+    # prediction errors, per being touched, correct its next estimates. Records reach the models at
+    # the end of each step.
+    pending_track = Tuple{Int,Float64,Float64}[]
+    function correction(a)
+        r = @view track[a][max(1, end - p.track_window + 1):end]
+        (p.track_window == 0 || isempty(r)) ? (0.0, 0.0) : (mean(first, r), mean(last, r))
+    end
+    function fooled(pred, a, plan)
+        cu, ch = correction(a)
+        m = touched(plan)
+        (p.deceit[a] == 0 && cu == 0 && ch == 0) ? pred :
+            ToyPlan(pred.du .+ (p.deceit[a] - cu) .* m, pred.dh .+ (p.deceit[a] - ch) .* m)
+    end
+    # The raw error of an estimate (before the correction applied to it), for the actor's record.
+    function learn!(a, plan, pred, seen)
+        m = touched(plan)
+        any(m) || return
+        cu, ch = correction(a)
+        push!(pending_track, (a, mean(pred.du[m]) + cu - mean(seen.du[m]), mean(pred.dh[m]) + ch - mean(seen.dh[m])))
+    end
     live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
     skill(a, l) = p.agents[a].skills[l] + sum((e.size for e in live(:breakthrough) if e.target == a); init = 0.0)
     with_params(t, v) = ToyParams(n = t.n, steps = t.steps, plans = t.plans, q = t.q, th = t.th, touch = t.touch,
@@ -253,6 +275,7 @@ function run_m3c(p::M3cParams; seed)
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
+    track = [Tuple{Float64,Float64}[] for _ in 1:na]  # each actor's past estimate errors (8.29)
     ntop = count(==(0), p.leaf_parent)
     dims = np + ntop + ntrue
     axis(i) = Float64.((1:dims) .== i)
@@ -600,6 +623,7 @@ function run_m3c(p::M3cParams; seed)
                         end
                     end
                     tr.valued_measured[idx] += delta
+                    learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen_late)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]))
                     credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
                 end)
@@ -615,6 +639,7 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
             end
+            blind[] || learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen)
             push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
@@ -633,6 +658,7 @@ function run_m3c(p::M3cParams; seed)
                 a, plan, l = proposers[j], plans[j], leaves[j]
                 done, seen, measured = perform!(j, a)
                 score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]))
+                learn!(a, plan, offers[j][1][3], seen)
                 credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured))
                 lane.init_executed[] += 1
                 available -= count(touched(plan))
@@ -691,6 +717,7 @@ function run_m3c(p::M3cParams; seed)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred))
+            blind[] || learn!(a, plan, pred, seen)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
                     blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
             if blind[]
@@ -855,6 +882,10 @@ function run_m3c(p::M3cParams; seed)
                 reinvested[c] += excess
             end
         end
+        for (a, ru, rh) in pending_track
+            push!(track[a], (ru, rh))
+        end
+        empty!(pending_track)
         blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
         # SigThGv's perturbation branch (L157). Without adaptation, a random walk: each epoch a

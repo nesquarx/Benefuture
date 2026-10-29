@@ -36,6 +36,8 @@ struct M3Params
         check(!isempty(agents), "there must be at least one agent")
         check(allequal(length(a.skills) for a in agents), "all agents must share the same domains")
         check(all(isfinite, (λpos, λneg)) && λpos >= 0 && λneg >= 0, "decay rates must be non-negative")
+        # Mistakes decay slower than wins (author ruling 8.29); equal rates only as the reduction to M2.
+        check(λneg <= λpos, "losses must decay no faster than gains")
         new(world, collect(DomainAgent, agents), λpos, λneg)
     end
 end

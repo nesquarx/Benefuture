@@ -86,6 +86,13 @@ so the slow settling of growth rates is mostly warm-up. Guidance: discard a burn
 steps; measure rates over at least 500 steps after it, and rare events such as floor falls over
 1,000; use ten seeds. Spread falls roughly with the square root of steps times seeds.
 
+## A note on earlier readings
+
+Readings in the M3b–M5 sections and the black-swan table were taken with losses decaying faster
+than gains (λ₊ 0.02, λ₋ 0.05) and without models' track records, before the author's ruling 8.29.
+The tests now run with λ₊ 0.05, λ₋ 0.02 and track records and still pass; the readings themselves
+have not been re-run and may shift. The M6 readings below are current.
+
 ## M0 observations
 
 1,000 beings, 100 steps, 20 random plans a step, seed 1 (about 8 s):
@@ -327,8 +334,11 @@ record is fully distributed and that late outcomes differ.
 ## M6 observations
 
 Exploits are tested against the native mechanisms before any defence is built; a failure is a
-finding (BACKPROPAGATION 8.28), kept as a `@test_broken` requirement. Six equal agents (skill 0.3)
-in one domain, 300 steps; one overpromises (`deceit` 1.0: its plans fool every model upward).
+finding, screened and reported (BACKPROPAGATION 8.28), and the author's ruling decides the fix.
+Six equal agents (skill 0.3) in one domain, 300 steps; one overpromises (`deceit` 1.0: its plans
+fool every model upward).
+
+First reading (λ₊ 0.02, λ₋ 0.05, no track record), seed 1:
 
 | Reading | Honest | Liar |
 |---|---|---|
@@ -336,13 +346,21 @@ in one domain, 300 steps; one overpromises (`deceit` 1.0: its plans fool every m
 | Upfront received / value settled | 1,416 / 1,852 | 12,233 / 1,872 |
 | Accuracy of the fooled leaf model | 0.78 | 0.63 |
 | Final balance (peers' mean in the liar's run) | 1,072 | 1,434 (1,118) |
-| Same, losses decaying as fast as gains | 936 | 961 (969) |
-| Same, no overflow | 1,762 | 1,631 (1,807) |
 
-Escrow claws back the excess, but deceit still pays: the liar's churn leaves it net relevance when
-losses decay faster than gains, raising its overflow threshold; with symmetric decay it ends below
-its peers yet above its honest self, since fooled prices get more of its work through. Relay
-farming is bounded by the accolade rate.
+Escrow clawed back the excess, but deceit paid: the liar's churn left it net relevance because
+losses decayed faster than gains, raising its overflow threshold; and fooled prices got twice its
+work through. After ruling 8.29 (mistakes decay slower than wins; models price each actor by its
+track record), 8 seeds:
+
+| Reading (mean) | Honest | Liar | Liar, models without track record |
+|---|---|---|---|
+| Actions taken | 179 | 178 | 387 |
+| Upfront received, seed 1 | 1,416 | 1,325 (settled 1,833) | 12,233 |
+| Final balance | 555 | 562 (above honest in 4 of 8 seeds) | 564 |
+
+Deceit no longer pays beyond noise: the liar acts and is paid as an honest agent, its peers'
+prices untouched. The track record also makes reputation follow skill more closely (rank
+correlation 0.85 against 0.73 in the M5 world). Relay farming is bounded by the accolade rate.
 
 Colluding voters (M5 world, 100 agents, 400 decisions): a bloc voting one side whatever its signal,
 taken in the worst case as the most reputable experts of each domain.
@@ -483,7 +501,8 @@ ratified.
 | Balance overflow | `overflow_base`, `overflow_factor` | 500, 1.0 | L100; 8.7 |
 | Expert co-funding share | `expert_share` | 0.5 | 8.8 |
 | Resource cost and regeneration | `cost_per_touch`, `capacity`, `regen` | 0.05, 10⁴, 0.02 | L83 |
-| Reputation decay | `λpos`, `λneg` | 0.02, 0.05 | L101 |
+| Reputation decay (mistakes decay slower than wins) | `λpos`, `λneg` | 0.05, 0.02 | L101; 8.29 |
+| Track record models estimate from (past actions per actor) | `track_window` | 20 | L84, L86; 8.29 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
 | Metric-model scoring window | `window` | 10 | L82 |
