@@ -79,6 +79,14 @@ end
     tr = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0); seed = 1)
     @test isempty(tr.chosen_step) && tr.lane_executed > 0 && tr.cofunded > 0
     @test all(tr.balance[:, end] .>= -1e-9)
+    # Co-funding is a judgement (author ruling 8.31): an expert pledges only if its own estimate of
+    # the work's value, the screened prediction plus its choice noise (a personal ceiling per domain,
+    # inverse to skill on average), is positive. Wildly noisy experts pledge less often; the work
+    # still goes ahead where the rest of the funding can be found.
+    sharp = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0, choice_σ = 0.1); seed = 1)
+    blunt = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0, choice_σ = 1000.0); seed = 1)
+    @test blunt.declined > sharp.declined && sharp.cofunded > 0
+    @test_throws ArgumentError m3c(choice_σ = -1.0)
     # Scarcity: a small resource capacity raises the cost per touched being.
     cheap = run_m3c(m3c(work = [1], capacity = 1e6); seed = 1)
     dear = run_m3c(m3c(work = [1], capacity = 400.0); seed = 1)

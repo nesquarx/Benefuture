@@ -859,3 +859,5 @@ family, forking gains nothing; with a base vote per identity, 50 copies cut deci
 power a fork divides, and a copy earns its own only as its novelty N (L122) separates it into a
 distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `fork_rule`, default
 `:divided` (the proposal), `:per_identity` measured.
+8.31 status (economy): co-funding is a judgement: an expert pledges only if the screened prediction plus its choice noise (personal ceiling per domain, inverse to skill on average) is positive.
+

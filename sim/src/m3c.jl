@@ -117,6 +117,9 @@ struct M3cParams
     p_trace::Float64        # chance examining harm of no apparent cause traces it to its cause (8.30.1; world)
     launder::Vector{Float64} # per agent, chance an action dumps harm outside what it measurably touches (M6; world)
     launder_saving::Float64 # resource cost a laundering agent saves by it, as a share (world)
+    choice_σ::Float64       # base ceiling of agents' choice noise, before skill (8.31; world)
+    choice_gain::Float64    # how fast skill lowers that ceiling (8.31; world)
+    ability_spread::Float64 # scatter of persons' ceilings around the skill trend (8.31; world)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -149,7 +152,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, events = Shock[])
+                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, choice_σ::Real = 0.5, choice_gain::Real = 5.0,
+                   ability_spread::Real = 0.5, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -182,6 +186,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(track_window >= 0 && 0 <= p_trace <= 1, "track record window non-negative, trace chance in [0, 1]")
     check((isempty(launder) || (length(launder) == length(agents) && all(x -> 0 <= x <= 1, launder))) && 0 <= launder_saving <= 1,
           "one laundering chance in [0, 1] per agent; saving in [0, 1]")
+    check(all(x -> isfinite(x) && x >= 0, (choice_σ, choice_gain, ability_spread)), "choice noise, gain and spread non-negative")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -198,7 +203,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
               bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
               isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace,
-              isempty(launder) ? zeros(length(agents)) : collect(Float64, launder), launder_saving, collect(Shock, events))
+              isempty(launder) ? zeros(length(agents)) : collect(Float64, launder), launder_saving, choice_σ, choice_gain,
+              ability_spread, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -362,7 +368,12 @@ function run_m3c(p::M3cParams; seed)
     # Blocked proposals, logged as classification evidence (L88, L145).
     evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
     available = p.capacity
-    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0))
+    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
+    # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
+    # there on average; its choices draw noise on their own stream.
+    xrng = Xoshiro(hash((seed, :choice)))
+    choice_caps = ability_caps(xrng, [max(p.agents[a].skills[l], 0.0) for a in 1:na, l in 1:ntrue];
+                               base = p.choice_σ, gain = p.choice_gain, spread = p.ability_spread)
     tr = (floor_u = Float64[], floor_h = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
           stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[],
           lane_costs = Float64[], lane_measured = Float64[])
@@ -720,6 +731,12 @@ function run_m3c(p::M3cParams; seed)
                 self_pay + sum(last, pledges; init = 0.0) >= need && break
                 r > 0 || break
                 rand(nrng) < p.participation || continue
+                # A judgement, not a reflex (8.31): the expert pledges only if its own estimate of the
+                # work's value, the screened prediction plus its choice noise, is positive.
+                if plan_value(pred, t) + choice_noise(xrng, choice_caps[e, l]) <= 0
+                    lane.declined[] += 1
+                    continue
+                end
                 give = min(need - self_pay - sum(last, pledges; init = 0.0), p.expert_share * max(balance[e, root], 0.0))
                 give > 0 && push!(pledges, (e, give))
             end
@@ -1003,7 +1020,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[],
+               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
