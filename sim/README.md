@@ -751,7 +751,21 @@ right in the last third:
 | Models alone (→ 0.5) | 86.2% | 0.76 → 0.95 |
 
 Models take over prediction as they improve, and a captured model loses all its weight. But
-shared sources correlate the votes, and the decision tends to their own accuracy: finding 8.43,
+shared sources correlate the votes, and the decision tends to their own accuracy (8.43). By the
+author's ruling (8.44) understanding trickles down and across only: a voter weighs a source whose
+record is at least its own, a weaker one rarely for novel input (`p_novel`), and the social network's
+information handling (L133 IH, `info_handling`) surfaces the domain's most reputable sources:
+
+| Voters hear (understanding trickling down) | Right |
+|---|---|
+| Only themselves | 92.8% |
+| Five random contacts | 91.4% |
+| IH's five most reputable | 85.9% |
+| IH and models improving to noise 0.5 | 88.9% |
+| IH and models improving to noise 0.2 | 92.1% |
+
+Each layman echoing a source casts that source's information again with a full base vote (the toy's
+decisions are purely factual), so a few sources' information is counted many times: finding 8.45,
 awaiting the author. Deliberation is off by default.
 
 ## Parsimony audit
@@ -870,6 +884,7 @@ rare but present).
 | A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
+| A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
 | Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |

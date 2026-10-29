@@ -1054,6 +1054,30 @@ experts voting on their own judgement (the Government article's "experts are exp
 their own judgment"); (c) leave deliberation free and rely on Di_N (L158) to keep alternatives
 alive. Candidate homes: Government (clean deliberation), L113–L114, L158.
 
+**8.44 Author ruling on 8.43.** Deliberation trickles understanding down from higher reputation and
+across between peers; it rarely influences a higher reputation from a lower one. An expert has no
+reason to listen to a layman, except for the rare novel input that raises understanding for both.
+Simulation: a voter weighs a source (person or model) only if the source's record is at least as good
+as its own, or, rarely (`p_novel`), when the source brings novel input. Candidate homes: Government
+(clean deliberation), Education (understanding shared, not moved), L113.
+
+**8.45 Finding on 8.44: echoes count information many times (needs the author).** Deliberation now
+trickles down and across only (a voter weighs a source whose record is at least its own, rarely a
+weaker one for novel input), and the social network's information handling (L133 IH: SourceVerify by
+Re(Dn)) surfaces the domain's most reputable sources. 100 voters, hard factual decisions, 3 seeds,
+right in the last third: alone 92.8%; five random contacts 91.4%; IH's top five 85.9%; IH and models
+improving to noise 0.5 88.9%, to 0.2 92.1%. Screened: no defect found; the mechanism is that in this
+toy every decision is purely factual and every voter carries a full base vote (L113), so each layman
+who echoes an expert or model casts that source's information again with its own weight; a few
+sources' information is counted many times and outweighs the middle ranks' independent readings
+(laymen alone cancel out as noise). Real decisions mix values (impact, preferences), where an echo
+double-counts nothing. Options: (a) count information once: the share of a voter's reading that came
+from sources it heard passes to them as fractional delegation (L114, capped), the voter keeping the
+share that is its own; (b) separate a decision's factual part (weighed by expertise, informed by
+deliberation and models) from its value part (base and impact weights, one person one share); (c)
+make the base vote optional where a voter's reading is mostly borrowed (L113's optional threshold).
+Candidate homes: L113, L114, Government, IH (L133).
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

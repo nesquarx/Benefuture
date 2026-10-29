@@ -361,7 +361,9 @@ means over 5 seeds of 500 steps.
   improving models' published readings by the rolling net of their records hand prediction to the
   models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
   entirely; but shared sources make votes dependent and decisions fall towards the sources' own
-  accuracy (92.8% alone, 85–86% with models), a finding awaiting the author (BACKPROPAGATION 8.43)
+  accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43); with understanding trickling down
+  only (8.44) through the network's information handling, each layman's echo still recasts its
+  source's information with a full base vote, a finding awaiting the author (8.45)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
