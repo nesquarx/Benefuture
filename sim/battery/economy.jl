@@ -1,11 +1,12 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
 # Severity 0 is the least realistic noise and no attack; 1 the realistic top of each range (sim/README.md, Noise);
-# rays run to 2. Convergence (an evaluation criterion, not a rule): by the seeds' vote (three, or
-# five where the three disagree),
-# floor growth on understanding after the score-only start is at least `GROWTH` of the clean
-# world's, and deceit and laundering (when present) do not pay: the attackers' wealth relative to
-# the honest agents' rises by no more than `GAIN` over the same world and seed with the attackers
-# honest. (Against one honest agent alone, honest agents' own ±10% spread failed near-clean worlds.)
+# rays run to 2. Convergence (an evaluation criterion, not a rule): floor growth on understanding
+# after the score-only start is at least `GROWTH` of the clean world's, by the seeds' vote, and
+# deceit and laundering (when present) do not pay. An attack pays when the attackers' wealth
+# relative to the honest agents, over the same world and seed with the attackers honest, averages
+# above `GAIN` across the seeds and its lower bound (mean less two standard errors) is above 1.
+# Three seeds, five where the vote splits or the attack test is ambiguous. (Per-seed tests against
+# one honest agent failed near-clean worlds: one agent's wealth spreads about ±10% across seeds.)
 using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, MORE, GROWTH, GAIN = 300, 1:3, 4:5, 0.25, 1.1
@@ -50,22 +51,25 @@ end
 gain(tr) = tr.floor_u[end] - tr.floor_u[51]
 const CLEAN = mean(gain(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS)
 function converges(sev)
-    # Three seeds; where they disagree (near the boundary), two more, and the majority of five.
+    attacks = [(10, 7:8), (14, 6:6)]  # (factor, attacking agents)
+    # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
+    # between the two runs).
+    rel(t, k) = mean(sum(t.balance[i, :]) for i in k) / mean(sum(t.balance[i, :]) for i in 1:5)
     one(seed) = begin
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
-        attacked = sev[10] > 0 || sev[14] > 0
-        honest = attacked ? run_m3c(world(clamp.([sev[1:9]; 0; sev[11:13]; 0], 0, Inf)); seed) : tr
-        # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
-        # between the two runs).
-        rel(t, k) = mean(sum(t.balance[i, :]) for i in k) / mean(sum(t.balance[i, :]) for i in 1:5)
-        pays(k) = rel(tr, k) > GAIN * rel(honest, k)
-        honest_enough = (sev[10] <= 0 || !pays(7:8)) && (sev[14] <= 0 || !pays(6:6))
-        gain(tr) >= GROWTH * CLEAN && honest_enough
+        hs = copy(sev); for (f, _) in attacks; hs[f] = 0; end
+        honest = any(sev[f] > 0 for (f, _) in attacks) ? run_m3c(world(clamp.(hs, 0, Inf)); seed) : tr
+        (grows = gain(tr) >= GROWTH * CLEAN, ratios = [rel(tr, k) / rel(honest, k) for (_, k) in attacks])
     end
-    votes = [one(seed) for seed in SEEDS]
-    (all(votes) || !any(votes)) && return all(votes)
-    append!(votes, [one(seed) for seed in MORE])
-    count(votes) > length(votes) / 2
+    pays(r) = mean(r) > GAIN && mean(r) - 2std(r) / sqrt(length(r)) > 1
+    unsure(r) = (mean(r) > GAIN) != (mean(r) - 2std(r) / sqrt(length(r)) > 1)
+    out = [one(seed) for seed in SEEDS]
+    ratios(j) = [o.ratios[j] for o in out]
+    split = !(all(o.grows for o in out) || !any(o.grows for o in out))
+    if split || any(sev[f] > 0 && unsure(ratios(j)) for (j, (f, _)) in enumerate(attacks))
+        append!(out, [one(seed) for seed in MORE])
+    end
+    count(o.grows for o in out) > length(out) / 2 && !any(sev[f] > 0 && pays(ratios(j)) for (j, (f, _)) in enumerate(attacks))
 end
 
 rng = Xoshiro(20261029)
