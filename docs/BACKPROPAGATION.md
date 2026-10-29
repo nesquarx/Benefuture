@@ -312,6 +312,7 @@ predict outcomes and charges only resource cost, by availability. Net-new scenar
 are marked for adjudication; many blockages at one branch call for a new subdomain. Candidate
 homes: Domain (Aspects: causal grounding, nested structure; anti-gerrymandering's orphan
 detection), Benefuture currency (StandCoin entry), and pseudocode L22 or L86 (all three copies).
+Propagated to Domain, Benefuture currency (StandCoin) (articles).
 
 **8.4 Author clarifications on domains and pricing (ratified in discussion; not yet in the
 sources).**
@@ -328,6 +329,7 @@ sources).**
   rules need fine tuning for nodes with several parents and for overlap zones (Domain: overlap
   zones, mandatory competition).
 - Thresholds may be set approximately for simulation and handed to governance later.
+Propagated to Domain (sub-domain reputation), Benefuture currency (StandCoin) (articles).
 
 **8.5 Withdrawn (author ruling, 8.8): models wait for accuracy thresholds before backing currencies.** Was: a newly formed domain prices from formation (surfaced by M3c). If a new
 domain's currency had to earn eligibility from scored records before pricing anything, a new
@@ -369,6 +371,7 @@ say so.
   the model is solid.
 - Plan to move from proposals chosen by G to the transaction model, establishing the behavioural
   transaction substrate (L145; System Design: Behavioral Transaction Substrate).
+Propagated to Benefuture currency (StandCoin), Domain (novelty) (articles).
 
 **8.9 Findings from the domain network (M3c, `sim/README.md`).**
 - Memory recovers domain overlap degrees almost exactly (error 0.005), supporting relations
@@ -403,6 +406,7 @@ leaf keeps its consortium membership until memory overrules it. Recorded in
 - Experts who co-fund StandCoin work are credited through causal distribution (L94) once the
   outcome is measured.
 - 8.10 is settled by 8.12.
+Propagated to Domain (novelty), Benefuture currency (StandCoin), Measurement (usable stage) (articles).
 
 **8.12 Author ruling: domains do not fade; overlaps are long-term rolling averages.** Domains are
 living classifications whose history memory keeps. A domain never fades from disuse; its overlaps
@@ -418,6 +422,7 @@ first half; add that overlaps are rolling averages of members' memberships), L22
   the score-only start should be long enough for the network to settle.
 - Requirement (author): the simulations' outcome is a system of rules ready for implementation,
   with no toy assumptions and robust to messy reality.
+Propagated to Domain (weighted membership) (articles).
 
 **8.13 Resolved by 8.14. Causal contribution along a transaction tree: range versus conservation.** L93 gives
 CC a range of [0, 1], and `Systems.Substrate` computes it as clamped value added
@@ -540,6 +545,7 @@ the transaction substrate (L95). Outlined in the sources, never specified. Propo
 Candidate homes: L48 (committed counterfactual), L76 and L121 (duty from contracts and
 communicated laws), L94–98 (outcome events, Shapley CC, minting and destruction by sign), L115 and
 Crime.txt (intent; repair regardless), Justice.txt (reparation by the outcome's nature).
+Propagated to Benefuture currency (Causal Distribution), Law (duties), Crime (hazards) (articles).
 
 **8.18 [P] Coalition values for Shapley shares (simulation decision, open to the author).** Shapley
 shares depend on what a coalition's value means. If an outcome happened only when its actor acted,
@@ -641,6 +647,7 @@ reality is the open empirical question.
    changes, not standard errors, and its bootstrap 0.5 made adaptation chase noise. Gaming check: a faction able to time its
    activity to a candidate's epochs could bias the trial; randomised order hides which candidate is
    live, so do not publish the schedule ahead of time.
+Propagated to Government (1), Threshold of significance (3), Administration and Benefuture currency (4) (articles).
 
 **8.23 Author ruling on degradation and enhancement (extending 8.22.4).** System Design and
 Progressive complexity apply: any lack or corruption of capability, process, data or inputs is
@@ -653,6 +660,7 @@ when the capability returns; a positive shock (a breakthrough) is tested for bei
 without crowding out the pre-N sample. Candidate homes: Progressive complexity, System Design,
 Antifragility, L142. Native: L154 Progressive (Cx↓ → Maintain, Degraded, Fallback; Cx↑ → Leverage),
 and L151 Rc_Innovation.
+Propagated to Progressive complexity (articles).
 
 **8.24 Author ruling on parsimony, duties and gaming.**
 1. Parsimony: add no mechanism unless sure the existing ones do not handle the case; ideally the
@@ -667,6 +675,7 @@ and L151 Rc_Innovation.
    braking would reward near misses with pedestrians.
 5. Every modifier, gate and coefficient gets threshold treatment.
 Candidate homes: Freedom, Law, Contract, AdvAp (L160), the article on causal distribution.
+Propagated to Law (duties), Freedom (articles).
 
 **8.25 Corpus simplifications from the parsimony audit ([R], ratified 8.26.4; applied to the three
 pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime and Accolade articles).**
@@ -714,6 +723,7 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
 8. The framework is the insurer; insurance cannot be a business, or it becomes a mechanism of
    arbitrage. Simulation: the commons banks no surplus from a self-funding repair. Candidate homes:
    Administration, Benefuture currency, Anti-Corruption.
+Propagated to Threshold of significance (3), Administration and Benefuture currency (4, 8), Measurement (5) (articles).
 
 
 **8.27 Author clarification on resource accounting and scarcity.**
@@ -726,6 +736,7 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
 3. Held open: how the balance sets the commons' share (8.26.7), and whether the debatable escape is
    demonstrated on a threshold with a measurable effect (overflow against inequality, or the
    causal-assessment confidence), since the value parameters show none at current scales.
+Propagated to Benefuture currency, Critique addressal (articles).
 
 **8.28 M6 finding: overpromising pays (screened; needs the author).** An agent whose plans fool
 every metric model upward (`deceit` 1.0, a world property) in a toy domain of six equal agents,
@@ -781,6 +792,7 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    not become apparent keeps most of its expertise (0.80 → 0.51) and lowers accuracy on hidden
    decisions to 69% (99% on apparent ones); the diversity at scale, deliberation, AdvAp and anti-corruption
    the author names are the remaining defences, not yet modelled.
+Propagated to Reputation (1), Measurement (2), Government (3) (articles).
 
 **8.30 Author rulings on outages and collusion defences.**
 1. A sabotaged outage is examined as an outcome: the lost measurement is its harm, and causal
@@ -797,6 +809,7 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    when its estimate plus the novelty bonus favours it; the share trying it is chosen, not set. A
    significant trial makes the outcome apparent, and an alternative proved better is adopted.
    An earlier version imposed a fixed share; withdrawn.
+Propagated to Measurement (1), Diversity (3) (articles).
 
 **8.31 Author ruling on imperfect agents and friction.** Agents are not perfectly rational: their
 choices carry a noise gate with a random maximum per person per domain (a general reflection of
@@ -865,6 +878,7 @@ distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `
 **8.34 ruling (for now).** Yes: a fork divides the base vote with the rest of its social power, and
 a copy earns its own only as its novelty separates it into a distinct identity. More nuance later.
 The simulation's default (`fork_rule = :divided`) stands.
+Propagated to Being (articles).
 
 **8.35 Author rulings on 8.32 (model accuracy and currency status) and on forks.**
 1. Options (a) and (b) together: accuracy as skill, and escrow scaling trust continuously.
@@ -887,6 +901,7 @@ The simulation's default (`fork_rule = :divided`) stands.
    time personhood suffices for a relevant vote, enough novel identity and reputation has accrued
    for a fresh base vote. A base vote follows novelty and personhood, not identity count.
 Candidate homes: L82, L84, Measurement (accuracy), Being, L113, L122–123.
+Propagated to Measurement (2, 4), Being (5) (articles).
 
 **8.36 Author rulings: credence and accuracy (settling 8.35's proposal).**
 1. Start simple: a model's credence that an action's assessed value is positive (L84). The goal is
@@ -908,6 +923,7 @@ of a functional domain (accuracy about 0.75). Measured: with every noise at its 
 pricing thins but floors still rise (about 14% of clean growth; 9% after the scoring correction in 8.38's status); far beyond, no currency qualifies.
 The author's point on noise adjustment (it would rule out models that turn noise into mechanics) is
 kept: accuracy is not adjusted for noise.
+Propagated to Measurement, Benefuture currency (escrow) (articles).
 
 **8.37 Finding: under status thresholds a deceiver can take a domain's currency down (screened;
 needs the author).** M6 world (six agents of moderate skill, 0.3): the leaf model's accuracy hovers
@@ -956,6 +972,7 @@ Candidate homes: L160, L113–L114, Government, Adversarial adaptation.
 [P] Exploit gain in the reward: in an economy with probabilistic escrow, deceit's gain is what
 settlement could not claw back (nothing, here); the reward then rests on the harm prevented.
 Candidate homes: L160, Adversarial adaptation (reward structure), L86.
+Propagated to Adversarial adaptation and Justice (1), Threshold of significance (2) (articles).
 
 **8.39 Finding: a liar can raise a marginal domain's activity (screened; for the author's
 attention).** Six agents of skill 0.3, the leaf model's accuracy near 0.9: in 3 seeds of 6, a liar
@@ -1004,6 +1021,7 @@ reading: governance, anti-corruption and adversarial adaptation are now native i
 anti-corruption needs no mechanism of its own, since Lean's `good_strictly_easier_than_bad` is
 carried by restorative friction (causal-distribution penalties, AdvAp liability) and distributed
 power (delegation cap, overflow). Candidate homes: L82, L157, Measurement, Anti-Corruption.
+Propagated to Measurement (articles).
 
 **8.42 Author guidance on 8.39, on better models, and on monoculture.**
 1. The more overstatements are uncovered, the more scrutiny they should bring: thresholds ratchet
@@ -1033,6 +1051,7 @@ model is overtaken (73% against 0% during capture); floors grow about as much.
 Simulation reading of 2 in governance: models do not vote (delegation goes to experts, and full
 delegation is not permitted); they inform votes, as expert commentary does, and voters weigh each
 source by its audited record, which is the truth-level tagging of clean deliberation (Government).
+Propagated to Benefuture currency (1), Adversarial adaptation (1, 4), Diversity (3), Reputation (4) (articles).
 
 **8.43 Finding: deliberation over shared sources makes votes dependent (screened; needs the author).**
 Clean deliberation simulated (M5, 100 voters, hard decisions, 1,200 decisions, 3 seeds): before voting
@@ -1060,6 +1079,7 @@ reason to listen to a layman, except for the rare novel input that raises unders
 Simulation: a voter weighs a source (person or model) only if the source's record is at least as good
 as its own, or, rarely (`p_novel`), when the source brings novel input. Candidate homes: Government
 (clean deliberation), Education (understanding shared, not moved), L113.
+Propagated to Government (articles).
 
 **8.45 Finding on 8.44: echoes count information many times (needs the author).** Deliberation now
 trickles down and across only (a voter weighs a source whose record is at least its own, rarely a

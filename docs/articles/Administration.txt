@@ -10,6 +10,8 @@ An administration is an [[entity]] in a [[society]] that [[Government|creates, m
 ===Reducing abstraction of goals===
 * As an administration becomes complex, abstractions are used to encompass sub-goals and sub-sub-goals that lead towards the [[benefuture goals]], but the abstractions can often bring in aspects which don't maximize the goals. It is a necessary function of the administration to repeatedly unravel abstractions and check if they still maximize understanding and then happiness better than any competing abstraction or the lack of one.
 
+===Insuring the unassigned===
+* The administration repairs harm with no assignable contributor through the commons, as insurer against every unassigned hazard, to the extent of its capability. The commons is funded by [[Benefuture currency#Aspects|resource accounting]] and escrows. Insurance is never a business, or it becomes a mechanism of arbitrage.
 ===Preventing Corruption===
 * All aspects of an administration, policymaking, enforcement, adjudication, have the exercise of power and influence in its functions, all functions are prone to corruption or drifting away from the goals, as any concentration of power can get. Hence it need to prevent that by design and execution. It should fall under the same scrutiny as other [[Power|powerful]] entities and [[Anti-Corruption]] measures should be applied. As a key system of  [[benefuture]] [[civilization]], [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
 
