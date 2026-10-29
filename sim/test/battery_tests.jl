@@ -30,6 +30,10 @@
     far(s) = sum(s) < 0.3
     sc = battery(far, ["a", "b", "c", "d", "e"]; rng, rays = 12, screen_n = 200, tmax = 2.0, tol = 1e-2).screening
     @test 0.2 < sc.fail_rate < 0.8
+    # Interactions are found however the sample is scaled: split at each factor's median.
+    both(s) = !(s[1] > 0.1 && s[2] > 0.1)
+    r = screen(both, 0.3 .* latin_hypercube(rng, 400, 3))
+    @test r.pairs[(1, 2)] > 0.3 && abs(r.pairs[(1, 3)]) < 0.15
 end
 
 @testset "Battery: adversarial and edge cases" begin

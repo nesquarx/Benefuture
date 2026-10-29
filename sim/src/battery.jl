@@ -47,7 +47,7 @@ end
 
 Evaluate `oracle` on the rows of `X`. A factor's importance is how much higher its severity runs
 in failing worlds than in converging ones; a pair's interaction is the failure rate where both are
-high beyond what each alone adds.
+high (above their medians) beyond what each alone adds.
 """
 function screen(oracle, X::AbstractMatrix)
     n, k = size(X)
@@ -55,9 +55,10 @@ function screen(oracle, X::AbstractMatrix)
     rate(m) = any(m) ? mean(fails[m]) : NaN
     importance = [any(fails) && !all(fails) ? mean(X[fails, j]) - mean(X[.!fails, j]) : 0.0 for j in 1:k]
     pairs = Dict{Tuple{Int,Int},Float64}()
+    hi = [X[:, j] .> median(X[:, j]) for j in 1:k]  # split at each factor's median, whatever the scale
     for a in 1:k, b in (a + 1):k
-        hh = rate((X[:, a] .> 0.5) .& (X[:, b] .> 0.5)); hl = rate((X[:, a] .> 0.5) .& (X[:, b] .<= 0.5))
-        lh = rate((X[:, a] .<= 0.5) .& (X[:, b] .> 0.5)); ll = rate((X[:, a] .<= 0.5) .& (X[:, b] .<= 0.5))
+        hh = rate(hi[a] .& hi[b]); hl = rate(hi[a] .& .!hi[b])
+        lh = rate(.!hi[a] .& hi[b]); ll = rate(.!hi[a] .& .!hi[b])
         pairs[(a, b)] = any(isnan, (hh, hl, lh, ll)) ? 0.0 : hh - hl - lh + ll
     end
     (fails = fails, fail_rate = mean(fails), importance = importance, pairs = pairs)
