@@ -52,7 +52,7 @@ function converges(sev)
         # Deceit is judged only where present, against honest agents in the same position (5 and 6:
         # not guardians, so not penalised for hazards).
         rich(k) = sum(tr.balance[k, :])
-        honest_enough = (sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(mean(rich.(5), 1e-9))) &&
+        honest_enough = (sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(rich(5), 1e-9)) &&
                         (sev[14] <= 0 || rich(6) <= GAIN * max(rich(5), 1e-9))
         gain(tr) >= GROWTH * CLEAN && honest_enough
     end
