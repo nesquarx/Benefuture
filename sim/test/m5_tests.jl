@@ -36,7 +36,7 @@ end
     # Delegation under the cap: no delegate ever holds more than the cap plus one delegator's weight.
     dl = run_m5(M5Params(m3, 1:4; decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
     @test all(dl.max_share .<= 0.1 .+ dl.max_single .+ 1e-12)
-    @test run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3) == run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3)
+    @test isequal(run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3), run_m5(M5Params(m3, 1:4; decisions = 50); seed = 3))
     # Relative expertise keeps expertise from concentrating weight: no voter holds most of it.
     rel = run_m5(M5Params(m3, 1:4; decisions = 200); seed = 1)
     raw = run_m5(M5Params(m3, 1:4; decisions = 200, relative_expertise = false); seed = 1)
@@ -88,4 +88,39 @@ end
     capped = run_m5(M5Params(m3, 1:4; decisions = 100, p_delegate = 1.0, cap = 0.2); seed = 1)
     @test maximum(uncapped.max_share) > maximum(capped.max_share)
     @test_throws ArgumentError M5Params(m3, 1:4; cap = 0.0)
+end
+
+# Clean deliberation (Government: proposals carry truth-level tagging and source tracking; author
+# guidance 8.42.2: models take over prediction in governance). Before voting each voter hears its own
+# reading, a few contacts' (`n_contacts`, a social network) and the domain's models' published
+# predictions, and weighs each source by its audited record (votes and published predictions on
+# decisions whose outcome became apparent: source tracking scores what each source published, a
+# person's own reading), by log-odds of its record's accuracy (Nitzan and Paroush, 1982: the optimal
+# weights for independent binary judges). Models do not vote; new ones are assumed to keep arriving,
+# better on average (as in the economy, 8.42.2).
+@testset "M5 clean deliberation and better models" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    hard(; kw...) = M5Params(m3, 1:4; decisions = 1200, signal_σ = 20.0, kw...)  # hard decisions (8.31)
+    seeds = 1:3
+    alone = [run_m5(hard(); seed) for seed in seeds]
+    talk = [run_m5(hard(deliberation = true); seed) for seed in seeds]
+    models = [run_m5(hard(deliberation = true, p_new_model = 0.02); seed) for seed in seeds]
+    late(r) = mean(r.correct_trace[801:end])
+    # Better models take over prediction: their share of the weight in voters' readings grows.
+    @test all(mean(r.model_weight[801:end]) > mean(r.model_weight[1:400]) for r in models)
+    # Finding 8.43: the votes stop being independent. Every voter weighs the same shared sources,
+    # so errors correlate and the decision tends to those sources' own accuracy; a crowd of
+    # independent experts aggregates better than any source weaker than its aggregate. Hearing
+    # contacts costs a little, hearing models weaker than the crowd costs more.
+    @test mean(late.(talk)) < mean(late.(alone)) && mean(late.(models)) < mean(late.(talk))
+    # A model that slips loses its weight: a capture making the best model of domain 1 publish one
+    # side costs it its record.
+    slip = [run_m5(hard(deliberation = true, p_new_model = 0.02, model_capture = (decision = 600, duration = 300, domain = 1)); seed) for seed in seeds]
+    @test mean(r.captured_weight_start for r in slip) > 0.2 && all(r.captured_weight_end < 0.05 for r in slip)
+    # No deliberation, nothing changes; guards.
+    @test isequal(run_m5(hard(deliberation = false, p_new_model = 0.0); seed = 1), run_m5(hard(); seed = 1))
+    @test_throws ArgumentError hard(deliberation = true, n_contacts = -1)
+    @test_throws ArgumentError hard(deliberation = true, p_new_model = 2.0)
 end

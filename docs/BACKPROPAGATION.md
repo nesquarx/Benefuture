@@ -1034,6 +1034,26 @@ Simulation reading of 2 in governance: models do not vote (delegation goes to ex
 delegation is not permitted); they inform votes, as expert commentary does, and voters weigh each
 source by its audited record, which is the truth-level tagging of clean deliberation (Government).
 
+**8.43 Finding: deliberation over shared sources makes votes dependent (screened; needs the author).**
+Clean deliberation simulated (M5, 100 voters, hard decisions, 1,200 decisions, 3 seeds): before voting
+each voter hears its own reading, five contacts' and the domain's models' published predictions,
+each weighed by the rolling net of its audited record of published readings (log-odds of accuracy,
+the optimal weights for independent binary judges: Nitzan and Paroush, 1982). Decisions right in the
+last third: alone 92.8%; with contacts 91.2%; with models (noise 5 → 0.5, assumed improving) 85–86%;
+with models alone 72–86%. As models improve their share of the weight in readings rises to 0.7–0.95
+(they take over prediction), and a captured model loses its weight entirely. But every voter weighing
+the same sources correlates the votes, and the decision tends to those sources' own accuracy: a
+crowd of independent experts aggregates better than any source weaker than its aggregate (a model
+right 85% of the time pulls the decision from 93% to 85%). Herding by shared information is a
+known result (Lorenz et al. 2011, PNAS: social influence undermines the wisdom of crowds; Ladha 1992:
+correlated votes weaken Condorcet's theorem), and the monoculture of 8.42.3 at the level of votes.
+Options: (a) votes stay on voters' own readings, and shared sources enter the decision once, weighed
+by their records (a published input to the tally beside L113's person weights; a new rule); (b)
+deliberation informs only voters without expertise in the domain (those whose own record is weak),
+experts voting on their own judgement (the Government article's "experts are expected to exercise
+their own judgment"); (c) leave deliberation free and rely on Di_N (L158) to keep alternatives
+alive. Candidate homes: Government (clean deliberation), L113–L114, L158.
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

@@ -1265,8 +1265,11 @@ function run_m3c(p::M3cParams; seed)
                     # The overstatement repaired is estimated from all the actor's records, so each
                     # further audit sharpens it rather than repairing by a few records' noise.
                     allrec = audit_log[b]
-                    du = mean(ru - (haskey(base, c) ? mu(c, first) : mean(first, peers_of(c); init = 0.0)) for (c, ru, _) in allrec)
-                    dh = mean(rh - (haskey(base, c) ? mu(c, last) : mean(last, peers_of(c); init = 0.0)) for (c, _, rh) in allrec)
+                    for c in unique(first.(allrec))
+                        haskey(base, c) || (base[c] = peers_of(c))
+                    end
+                    du = mean(ru - mu(c, first) for (c, ru, _) in allrec)
+                    dh = mean(rh - mu(c, last) for (c, _, rh) in allrec)
                     prevented = repair_records!(b, du, dh)
                     # What deceit gained the actor: nothing settlement has not already clawed back
                     # (escrow pays upfront by credence and settles on the measured outcome, L86).

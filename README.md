@@ -357,6 +357,12 @@ means over 5 seeds of 500 steps.
   priced by its own currency 100% against 70%), a captured model is overtaken (73% of its work
   still priced by the domain's own currency against none), and floors grow about as much (toy world,
   1–3 seeds) ([sim/test/models_tests.jl](sim/test/models_tests.jl), [sim/README.md, better models](sim/README.md#better-models-over-time-8422)).
+- Clean deliberation in governance (toy decision world, 3 seeds): voters weighing contacts' and
+  improving models' published readings by the rolling net of their records hand prediction to the
+  models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
+  entirely; but shared sources make votes dependent and decisions fall towards the sources' own
+  accuracy (92.8% alone, 85–86% with models), a finding awaiting the author (BACKPROPAGATION 8.43)
+  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
   by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status

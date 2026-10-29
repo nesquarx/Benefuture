@@ -95,6 +95,13 @@ end
     @test sum(noisy.balance[1, :]) < sum(calm.balance[1, :])
     # Examination that never traces a cause establishes nothing: the track record is left to work alone.
     @test run_m3c(six(skill = 0.6, deceit = fooled, advap = true, p_trace = 0.0); seed = 1).advap_established == 0
+    # Two domains, two deceivers and a capture shifting pricing between leaf and parent models: audits
+    # reach records under models absent from the records since the last audit (a regression found by
+    # the failure-boundary battery).
+    two = M3cParams(ToyParams(n = 80, steps = 200, plans = 10), [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8],
+                    [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, p_upstream = 0.5,
+                    deceit = [0, 0, 0, 0, 0, 0, 1.0, 1.0], advap = true, events = [shock(:capture; step = 80, duration = 60, size = 3.0, target = 1)])
+    @test run_m3c(two; seed = 1).advap_established > 0
     @test_throws ArgumentError six(advap = true, vigilance = 1.5)
     @test_throws ArgumentError six(advap = true, adv_z = -1.0)
     @test_throws ArgumentError six(advap = true, p_false_trace = 2.0)
@@ -194,7 +201,7 @@ end
     @test all(r.advap_rewards > r.advap_gain_forgone && r.advap_liability >= r.advap_rewards for r in revealed)
     # Adversarial and edge cases. No bloc, nothing to reveal; AdvAp off changes nothing.
     @test run_m5(M5Params(w, 1:4; decisions = 400, p_delegate = 0.8, advap = true); seed = 1).advap_established == 0
-    @test run_m5(cfg(advap = false); seed = 1) == run_m5(cfg(); seed = 1)
+    @test isequal(run_m5(cfg(advap = false); seed = 1), run_m5(cfg(); seed = 1))
     # Loyalty above the reward keeps members quiet (up to their judgement's noise); evidence that never
     # establishes the collusion changes nothing.
     loyal = run_m5(cfg(advap = true, loyalty = 1e6); seed = 1)

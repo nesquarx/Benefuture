@@ -463,8 +463,9 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 
 - **Latest readings.** Economy (code 0e08fc3, realistic ranges, AdvAp on): alone, only execution
   (1.40) and side harm (1.31) fail within twice their realistic tops (capture no longer does); no
-  screened world fails. Governance (code d470737, AdvAp on): no factor fails alone within 2 and no
-  screened world fails, down from 12% without AdvAp.
+  screened world fails. Governance (code 4d2338b, AdvAp on): no factor fails alone within 2 and no
+  screened world fails, down from 12% without AdvAp. The economy run on 4d2338b crashed on an audit
+  path the tests had missed (fixed, with a regression test).
 
 Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
 `julia --project=sim sim/battery/governance.jl` (about ten minutes).
@@ -732,6 +733,27 @@ Balance overflow trades reinvestment against spread of wealth (strict-tree versi
 | 500, 1.0 (default) | 34% | 0.45 |
 | 1,000, 1.0 | 11% | 0.53 |
 
+### Clean deliberation and better models in governance (8.42.2, 8.43)
+
+Before voting each voter hears its own reading, `n_contacts` contacts' (a fixed social network) and
+the domain's models' published predictions, weighing each by the rolling net of its audited record of
+published readings (source tracking; decayed with `record_λpos`, `record_λneg`, mistakes slower; the
+entries kept whole), by log-odds of accuracy. Models do not vote; new ones arrive as in the economy
+(an assumption). 100 voters, hard decisions (`signal_σ` 20), 1,200 decisions, 3 seeds, decisions
+right in the last third:
+
+| Voters hear | Right | Models' share of the weight (early → late) |
+|---|---|---|
+| Only themselves | 92.8% | – |
+| Five contacts | 91.2% | – |
+| Five contacts and improving models (noise 5 → about 3) | 85.0% | 0.17 → 0.32 |
+| Five contacts and fast-improving models (→ 0.5) | 86.3% | 0.52 → 0.89 |
+| Models alone (→ 0.5) | 86.2% | 0.76 → 0.95 |
+
+Models take over prediction as they improve, and a captured model loses all its weight. But
+shared sources correlate the votes, and the decision tends to their own accuracy: finding 8.43,
+awaiting the author. Deliberation is off by default.
+
 ## Parsimony audit
 
 What the simulation does beyond the Lean and the pseudocode (CLAUDE.md, Parsimony). Native: a
@@ -781,6 +803,7 @@ ratified.
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
+| Decay of a source's record in the rolling net its weight reads (rights, wrongs) | `record_λpos`, `record_λneg` | 0.05, 0.02 | L101; 8.29, 8.42 |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
@@ -846,6 +869,7 @@ rare but present).
 | New models arriving: chance per step and domain; improvement on average (log error ratio); its scatter; least error relative to the bootstrap model's (world assumptions) | `p_new_model`, `improve_drift`, `improve_σ`, `scale_min` | 0, −0.1, 0.3, 0.1 | 0–0.1, −0.3–0.1, 0.1–0.5, 0.05–0.3 |
 | A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
+| Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
 | Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |

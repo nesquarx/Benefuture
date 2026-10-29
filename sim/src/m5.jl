@@ -52,6 +52,17 @@ struct M5Params
     adv_floor::Float64         # least reward (governed)
     audit_cost::Float64        # cost of examining a revelation (world)
     p_trace::Float64           # chance the examination establishes the collusion (world)
+    # Clean deliberation (Government; 8.42.2): sources weighed by their audited records.
+    deliberation::Bool         # voters hear contacts and models before voting
+    n_contacts::Int            # persons each voter hears (world: a social network)
+    model_σ0::Float64          # the bootstrap model's noise in each domain (world)
+    p_new_model::Float64       # chance per decision a new model arrives in its domain (world assumption)
+    improve_drift::Float64     # its noise relative to the best model's, on average, in logs (world assumption)
+    improve_σ::Float64         # scatter of that (world assumption)
+    scale_min::Float64         # no model is perfect: least noise relative to the bootstrap model's (world; 8.33)
+    model_capture::Any         # nothing, or (decision, duration, domain): the best model there publishes one side (world event)
+    record_λpos::Float64       # decay of a source's rights in the rolling net its weight reads (governed; L101)
+    record_λneg::Float64       # and of its wrongs, no faster (8.29)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -63,7 +74,10 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   outcome_σ::Real = 1.0, trial_z::Real = 2.0, ability_spread::Real = 0.5,
                   reputation = nothing, fork_copies::Integer = 0, fork_rule::Symbol = :divided,
                   advap::Bool = false, p_weigh::Real = 0.05, collusion_gain::Real = 1.0, loyalty::Real = 0.0,
-                  adv_share::Real = 0.1, adv_floor::Real = 1.0, audit_cost::Real = 1.0, p_trace::Real = 0.5)
+                  adv_share::Real = 0.1, adv_floor::Real = 1.0, audit_cost::Real = 1.0, p_trace::Real = 0.5,
+                  deliberation::Bool = false, n_contacts::Integer = 5, model_σ0::Real = 5.0, p_new_model::Real = 0.0,
+                  improve_drift::Real = -0.1, improve_σ::Real = 0.3, scale_min::Real = 0.1, model_capture = nothing,
+                  record_λpos::Real = 0.05, record_λneg::Real = 0.02)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -80,13 +94,20 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     reputation === nothing || check(size(reputation) == size(m3.relevance_leaf), "one reputation per agent and domain")
     check(fork_copies >= 0 && fork_rule in (:divided, :per_identity), "fork copies non-negative; rule :divided or :per_identity")
     check(0 <= p_weigh <= 1 && 0 <= p_trace <= 1, "chances in [0, 1]")
+    check(n_contacts >= 0 && isfinite(model_σ0) && model_σ0 > 0 && 0 <= p_new_model <= 1 && isfinite(improve_drift) &&
+          isfinite(improve_σ) && improve_σ >= 0 && 0 < scale_min <= 1, "contacts non-negative, model noise positive, chance in [0, 1], least scale in (0, 1]")
+    check(0 <= record_λneg <= record_λpos && isfinite(record_λpos), "record decay: wrongs no faster than rights (8.29)")
+    check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
+          "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
           "gain, loyalty, share, floor and audit cost non-negative")
     M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
              p_apparent, vote_value, audit_window, audit_threshold, stealth,
              diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread,
-             fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace)
+             fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace,
+             deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
+             record_λpos, record_λneg)
 end
 
 """
@@ -127,6 +148,24 @@ function run_m5(p::M5Params; seed)
         push!(record[i, k], right)
         length(record[i, k]) > max(p.audit_window, 1) && popfirst!(record[i, k])
     end
+    # Clean deliberation: each voter's contacts (a fixed social network), each domain's models, and
+    # every source's full record of published readings on apparent decisions (right, total).
+    nrng = Xoshiro(hash((seed, :deliberation)))
+    contacts = [p.deliberation ? [j for j in randperm(nrng, na)[1:min(p.n_contacts + 1, na)] if j != i][1:min(p.n_contacts, na - 1)] : Int[] for i in 1:na]
+    nd = size(p.reputation, 2)
+    mods = [[(id = k, σ = p.model_σ0, rec = [0.0, 0.0])] for k in 1:nd]
+    person_rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
+    # The weight of a source reads the rolling net of its record (rights and wrongs, decayed, mistakes
+    # slower than wins: L101, 8.29; the entries themselves are kept whole): log-odds of its accuracy,
+    # smoothed (Nitzan and Paroush, 1982); a source no better than chance carries none.
+    rate_right, rate_wrong = decay_rate_for(1.0; λpos = p.record_λpos, λneg = p.record_λneg), decay_rate_for(-1.0; λpos = p.record_λpos, λneg = p.record_λneg)
+    lo(r) = (q = (r[1] + 1) / (r[1] + r[2] + 2); max(0.0, log(q / (1 - q))))
+    function note!(r, right)
+        r[1] = reputation_decay(r[1], 1.0; rate = rate_right) + right
+        r[2] = reputation_decay(r[2], 1.0; rate = rate_wrong) + !right
+    end
+    model_weight, cap_trace, cap_id = Float64[], Float64[], Ref(0)
+    own_pub = zeros(na)
     for n in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
@@ -159,6 +198,37 @@ function run_m5(p::M5Params; seed)
         end
         signal = [truth + choice_noise(crng, caps[i, k]) for i in 1:na]
         defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
+        if p.deliberation
+            # Better models arrive (an assumption, 8.42.2); the best model of a captured domain
+            # publishes one side while captured.
+            if p.p_new_model > 0 && rand(nrng) < p.p_new_model
+                best = minimum(m.σ for m in mods[k])
+                push!(mods[k], (id = 1000 * k + length(mods[k]) + n, σ = max(p.scale_min * p.model_σ0, best * exp(p.improve_drift + p.improve_σ * randn(nrng))), rec = [0.0, 0.0]))
+                length(mods[k]) > 4 && deleteat!(mods[k], argmin([lo(m.rec) + (m.σ == best ? Inf : 0.0) for m in mods[k]]))
+            end
+            mc = p.model_capture
+            live_cap = mc !== nothing && k == mc.domain && mc.decision <= n < mc.decision + mc.duration
+            if mc !== nothing && n == mc.decision
+                cap_id[] = mods[mc.domain][argmax([lo(m.rec) for m in mods[mc.domain]])].id
+            end
+            published = [(live_cap && m.id == cap_id[]) ? 1.0 : sign(truth + m.σ * randn(nrng)) for m in mods[k]]
+            pub(j) = (j in p.colluders && defect) ? 1.0 : sign(signal[j])  # what a person publishes
+            wm = [lo(m.rec) for m in mods[k]]
+            reading = zeros(na); wsum, wmod = 0.0, 0.0
+            for i in 1:na
+                own = max(lo(person_rec[i, k]), 0.1)  # one's own reading counts, at least a little
+                wc = [lo(person_rec[j, k]) for j in contacts[i]]
+                reading[i] = own * sign(signal[i]) + sum(wc .* pub.(contacts[i]); init = 0.0) + sum(wm .* published)
+                wsum += own + sum(wc) + sum(wm); wmod += sum(wm)
+            end
+            push!(model_weight, wsum > 0 ? wmod / wsum : 0.0)
+            if mc !== nothing && cap_id[] > 0 && k == mc.domain  # the captured model's share of the models' weight (0 once dropped)
+                c = findfirst(m -> m.id == cap_id[], mods[k])
+                push!(cap_trace, c === nothing ? 0.0 : wm[c] / max(sum(wm), 1e-12))
+            end
+            own_pub = pub.(1:na)
+            signal = reading
+        end
         vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
         tally = sum(held[i] * vote(i) for i in 1:na if !delegated[i])
         correct += sign(tally) == sign(truth)
@@ -199,6 +269,14 @@ function run_m5(p::M5Params; seed)
             for i in 1:na
                 delegated[i] && continue
                 record_vote!(i, k, vote(i) == sign(truth), held[i], total)
+            end
+            if p.deliberation
+                for i in 1:na  # source tracking: what each person published, its own reading
+                    note!(person_rec[i, k], own_pub[i] == sign(truth))
+                end
+                for (m, x) in zip(mods[k], published)
+                    note!(m.rec, x == sign(truth))
+                end
             end
         end
         # AdvAp (L160): where the bloc defected unseen, each member may weigh revealing it. The
@@ -241,5 +319,8 @@ function run_m5(p::M5Params; seed)
      chosen_share = chosen_share, correct_trace = correct_trace, share_when_right = share_when_right, share_when_wrong = share_when_wrong,
      correct_after_hidden = after_hidden / max(tally_hidden[2], 1),
      advap_established = adv.established[], advap_rewards = adv.rewards[], advap_liability = adv.liability[],
-     advap_gain_forgone = adv.gain_forgone[], advap_recounted = adv.recounted[], final_trace = right_now)
+     advap_gain_forgone = adv.gain_forgone[], advap_recounted = adv.recounted[], final_trace = right_now,
+     model_weight = model_weight, best_model_σ = [minimum(m.σ for m in mods[k]) for k in 1:nd],
+     captured_weight_start = isempty(cap_trace) ? NaN : mean(cap_trace[1:min(10, end)]),
+     captured_weight_end = isempty(cap_trace) ? NaN : mean(cap_trace[max(1, end - 9):end]))
 end
