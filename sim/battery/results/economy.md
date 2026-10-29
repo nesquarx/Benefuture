@@ -1,9 +1,11 @@
 # Failure-boundary battery: economy
 
-Build: commit 60aedf0 (with any uncommitted changes at the time).
+Build: commit cda8d93 (with any uncommitted changes at the time).
+
+Caveats (this run): 7 of 16 rays non-monotone and interactions of ±0.5 from small quadrant counts point to a noisy oracle near the boundary (a majority of two seeds) and a small screen; read the single-factor limits as the firmer result. More seeds near the boundary would sharpen it.
 
 Clean world's floor growth: 252.9. 
-Run time 28.7 minutes; 16 random rays; 64 screened worlds (severities up to 0.39), 70% failing.
+Run time 35.1 minutes; 16 random rays; 64 screened worlds (severities up to 0.14), 34% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
@@ -22,49 +24,51 @@ Run time 28.7 minutes; 16 random rays; 64 screened worlds (severities up to 0.39
 | outage | not within 2 |
 | capture | not within 2 |
 | side harm | not within 2 |
+| laundering | not within 2 |
 
 ## Importance in screening (mean severity in failing worlds less in converging ones)
 
 | Factor | Importance |
 |---|---|
-| model error | 0.152 |
-| execution | 0.103 |
-| side harm | 0.077 |
-| accounting | 0.040 |
-| markers | 0.028 |
-| capture | 0.016 |
-| attribution | 0.011 |
-| hazards | -0.007 |
-| memory loss | -0.009 |
-| model bias | -0.023 |
-| outage | -0.029 |
-| deceit | -0.033 |
-| classification | -0.064 |
+| model error | 0.014 |
+| execution | 0.013 |
+| capture | 0.013 |
+| classification | 0.007 |
+| attribution | 0.003 |
+| hazards | 0.002 |
+| markers | -0.001 |
+| memory loss | -0.002 |
+| side harm | -0.002 |
+| model bias | -0.006 |
+| laundering | -0.010 |
+| deceit | -0.010 |
+| outage | -0.011 |
+| accounting | -0.023 |
 
 ## Strongest interactions (failure rate when both are high, beyond each alone)
 
 | Pair | Interaction |
 |---|---|
-| markers × outage | +0.000 |
-| model error × accounting | +0.000 |
-| execution × outage | +0.000 |
-| memory loss × attribution | +0.000 |
-| markers × deceit | +0.000 |
-| model error × execution | +0.000 |
-| accounting × capture | +0.000 |
-| deceit × capture | +0.000 |
+| deceit × side harm | -0.541 |
+| model error × side harm | +0.541 |
+| markers × execution | -0.463 |
+| execution × capture | +0.429 |
+| attribution × deceit | +0.429 |
+| attribution × laundering | +0.397 |
+| memory loss × attribution | -0.375 |
+| execution × laundering | +0.375 |
 
 ## Nearest failures on random rays (severity per factor at the boundary)
 
-| t | markers | model error | model bias | classification | execution | accounting | memory loss | attribution | hazards | deceit | outage | capture | side harm | monotone |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0.44 | 0.02 | 0.26 | 0.13 | 0.03 | 0.06 | 0.06 | 0.04 | 0.05 | 0.14 | 0.17 | 0.08 | 0.12 | 0.15 | true |
-| 0.48 | 0.11 | 0.08 | 0.19 | 0.20 | 0.30 | 0.09 | 0.00 | 0.01 | 0.11 | 0.05 | 0.15 | 0.00 | 0.05 | true |
-| 0.52 | 0.02 | 0.24 | 0.17 | 0.24 | 0.12 | 0.11 | 0.03 | 0.01 | 0.22 | 0.03 | 0.06 | 0.19 | 0.04 | true |
-| 0.60 | 0.10 | 0.21 | 0.08 | 0.02 | 0.21 | 0.13 | 0.10 | 0.12 | 0.23 | 0.27 | 0.28 | 0.13 | 0.03 | true |
-| 0.65 | 0.22 | 0.05 | 0.06 | 0.26 | 0.07 | 0.21 | 0.08 | 0.29 | 0.05 | 0.16 | 0.29 | 0.17 | 0.13 | false |
-| 0.73 | 0.27 | 0.08 | 0.26 | 0.02 | 0.27 | 0.37 | 0.02 | 0.04 | 0.06 | 0.29 | 0.14 | 0.01 | 0.24 | true |
-| 0.81 | 0.33 | 0.01 | 0.00 | 0.19 | 0.33 | 0.04 | 0.21 | 0.09 | 0.17 | 0.33 | 0.37 | 0.27 | 0.10 | true |
-| 0.81 | 0.62 | 0.07 | 0.09 | 0.07 | 0.29 | 0.05 | 0.09 | 0.18 | 0.10 | 0.09 | 0.32 | 0.05 | 0.12 | true |
+| t | markers | model error | model bias | classification | execution | accounting | memory loss | attribution | hazards | deceit | outage | capture | side harm | laundering | monotone |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0.10 | 0.00 | 0.00 | 0.01 | 0.01 | 0.00 | 0.02 | 0.01 | 0.01 | 0.04 | 0.05 | 0.07 | 0.00 | 0.00 | 0.02 | false |
+| 0.15 | 0.02 | 0.02 | 0.01 | 0.06 | 0.02 | 0.02 | 0.00 | 0.02 | 0.02 | 0.04 | 0.07 | 0.04 | 0.06 | 0.06 | false |
+| 0.23 | 0.03 | 0.01 | 0.05 | 0.05 | 0.09 | 0.06 | 0.01 | 0.07 | 0.08 | 0.07 | 0.11 | 0.06 | 0.07 | 0.01 | false |
+| 0.23 | 0.06 | 0.07 | 0.08 | 0.12 | 0.05 | 0.00 | 0.09 | 0.00 | 0.02 | 0.02 | 0.04 | 0.07 | 0.04 | 0.06 | true |
+| 0.23 | 0.01 | 0.04 | 0.03 | 0.00 | 0.06 | 0.01 | 0.05 | 0.03 | 0.09 | 0.13 | 0.13 | 0.00 | 0.05 | 0.03 | false |
+| 0.31 | 0.07 | 0.09 | 0.14 | 0.02 | 0.08 | 0.09 | 0.03 | 0.11 | 0.03 | 0.05 | 0.02 | 0.06 | 0.12 | 0.12 | true |
+| 0.31 | 0.06 | 0.02 | 0.12 | 0.08 | 0.01 | 0.13 | 0.00 | 0.16 | 0.00 | 0.09 | 0.02 | 0.14 | 0.00 | 0.07 | false |
+| 0.31 | 0.05 | 0.19 | 0.05 | 0.10 | 0.01 | 0.07 | 0.04 | 0.13 | 0.03 | 0.10 | 0.07 | 0.08 | 0.03 | 0.05 | true |
 
-Non-monotone rays (converging again beyond the boundary): 1 of 16.
+Non-monotone rays (converging again beyond the boundary): 7 of 16.
