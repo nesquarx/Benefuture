@@ -421,8 +421,12 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   to 2.
 - **Oracle.** A world converges if a majority of seeds meet the criterion stated at the top of each
   battery: in the economy, floor growth after the score-only start at least a quarter of the clean
-  world's and deceivers no richer than 1.1 × honest agents; in governance, at least 75% of the last
-  half of decisions right. The criteria are evaluation choices, not rules.
+  world's, and no attack paying (attackers' wealth relative to honest agents, over the same world
+  and seed with the attackers honest, above 1.1 on average across seeds and above 1 by two standard
+  errors); in governance, at least 75% of the last half of decisions right. The criteria are
+  evaluation choices, not rules. Comparing attackers with one honest agent, seed by seed, measured
+  honest agents' own spread (about ±10%) and failed near-clean worlds; the oracle's noise floor
+  still shows as an occasional non-monotone ray near the clean world.
 - **Screening.** A Latin hypercube of worlds ranks factors by how much higher their severity runs in
   failing worlds, and pairs by their interaction (failure when both are high, beyond each alone).
 - **Honing.** Rays from the clean world, one per factor and others in random directions, are
@@ -432,7 +436,11 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
   tolerances are fixed in each script, so runs repeat exactly.
 
-Run: `julia --project=sim sim/battery/economy.jl` (about half an hour) and
+- **Latest economy reading** (code de5d305, realistic ranges): alone, only execution (1.44),
+  capture (1.48) and side harm (1.23) fail within twice their realistic tops; 13 of 16 random rays
+  converge to 2; 2% of screened worlds fail, led by classification, side harm and outage.
+
+Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
 `julia --project=sim sim/battery/governance.jl` (about ten minutes).
 
 ## M6 observations
