@@ -23,3 +23,20 @@ end
     @test_throws ArgumentError split_trial(r, [0.0, 1.0], [0.5]; units = 10, σ = 1.0, z = 2.0)
     @test_throws ArgumentError split_trial(r, [0.0, 1.0], [0.5, 0.5]; units = 10, σ = -1.0, z = 2.0)
 end
+
+# The debatable escape (L157 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2): a
+# proposal beyond the freedom range is tried on a share of the scope for a limited time, and
+# adopted only if it beats the incumbent by the significance rule, its gains exceed its harms, and
+# it caused no irreparable harm (Lean `escape_accept_ref`).
+@testset "Debatable escape: acceptance rule" begin
+    better = (means = [1.0, 2.0], ses = [0.1, 0.1])
+    @test escape_accept(better.means, better.ses; gains = 10.0, harms = 3.0, irreparable = 0, z = 2.0)
+    # Gains not above harms, any irreparable harm, or no significant improvement: rejected.
+    @test !escape_accept(better.means, better.ses; gains = 3.0, harms = 3.0, irreparable = 0, z = 2.0)
+    @test !escape_accept(better.means, better.ses; gains = 10.0, harms = 3.0, irreparable = 1, z = 2.0)
+    @test !escape_accept([1.0, 1.1], [0.1, 0.1]; gains = 10.0, harms = 3.0, irreparable = 0, z = 2.0)
+    @test !escape_accept([1.0, 0.5], [0.1, 0.1]; gains = 10.0, harms = 3.0, irreparable = 0, z = 2.0)
+    @test_throws ArgumentError escape_accept([1.0], [0.1]; gains = 1.0, harms = 0.0, irreparable = 0, z = 2.0)
+    @test_throws ArgumentError escape_accept(better.means, better.ses; gains = -1.0, harms = 0.0, irreparable = 0, z = 2.0)
+    @test_throws ArgumentError escape_accept(better.means, better.ses; gains = 1.0, harms = 0.0, irreparable = -1, z = 2.0)
+end

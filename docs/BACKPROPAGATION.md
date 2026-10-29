@@ -967,6 +967,27 @@ so honest marginal work is often screened out. Not a defect of deceit's accounti
 pay); a sign that marginal domains under-act. Candidate native levers: the diversity–novelty
 balance (L158) trying screened-out work, and the status thresholds' governance (L157).
 
+**8.40 Finding: which threshold the debatable escape is demonstrated on (needs the author).** The
+escape's acceptance is built (Lean `escape_accept_ref`: adopt only if the proposal beats the
+incumbent by the significance rule, its gains exceed its harms where tried, and it caused no
+irreparable harm; 8.38.2). For the demonstration, a threshold with a measurable effect is needed
+(8.27.3: the value parameters show none at current scales). The established-leaf status threshold
+has one, in one direction: eight leaves, 16 agents, 3 seeds, the bar set world-wide:
+
+| Skill | Bar 0.95 | 0.9 | 0.8 | 0.7 | 0.6 |
+|---|---|---|---|---|---|
+| 0.3: floor growth (losses) | 65.9 (−95) | 67.5 (−100) | 67.3 (−48) | 68.4 (−42) | 68.5 (−38) |
+| 0.15: floor growth (losses) | 7.7 (−177) | 9.4 (−233) | 7.2 (−13) | 15.1 (−34) | 19.6 (−34) |
+
+Where no leaf model reaches 0.9, work falls to the coarse parent model or to StandCoin, which price
+worse than the leaf model would; lowering the bar admits fewer harmful actions, not more. An escape
+proposing a lower bar in a low-skill domain would likely be adopted, against the spirit of 8.35
+("permissiveness is a race to the bottom"). Options: (a) demonstrate on the status bar anyway,
+the escape deciding locally and temporarily; (b) choose another threshold (the causal-assessment
+confidence, overflow, the delegation cap); (c) read the result as a sign that the bar should be
+relative to the alternatives a domain has (a leaf model at 0.7 against a parent at 0.75 with coarser
+errors), a refinement of 8.35. Candidate homes: L82, L157, Measurement.
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

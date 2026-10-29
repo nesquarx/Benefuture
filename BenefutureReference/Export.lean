@@ -172,6 +172,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_select_candidate] def selectCandidate (means ses : FloatArray) (z : Float) : USize :=
   (select_candidate_ref means.data ses.data z).toUSize
 
+@[export bf_escape_accept] def escapeAccept (means ses : FloatArray) (gains harms irreparable z : Float) : UInt8 :=
+  if escape_accept_ref means.data ses.data gains harms irreparable.toUInt64.toNat z then 1 else 0
+
 @[export bf_gauge_radius] def gaugeRadius (δ : Float) (harmed : UInt8) (factor : Float) : Float :=
   gauge_radius_ref δ (harmed != 0) factor
 

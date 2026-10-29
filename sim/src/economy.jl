@@ -204,3 +204,18 @@ function report_penalty(unfounded::Integer, threshold::Real; audit_cost::Real)
     check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
     ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
 end
+
+"""
+    escape_accept(means, ses; gains, harms, irreparable, z) -> Bool
+
+The debatable escape's acceptance (Lean `escape_accept_ref`; L157; author rulings 8.26.3, 8.38.2):
+the proposal (index 2; the incumbent first) beats the incumbent by `z` standard errors, its gains
+exceed its harms where tried, and it caused no irreparable harm.
+"""
+function escape_accept(means, ses; gains::Real, harms::Real, irreparable::Integer, z::Real)
+    check(length(means) == length(ses) == 2 && all(isfinite, means) && all(s -> isfinite(s) && s >= 0, ses), "incumbent and proposal: finite means, standard errors")
+    check(isfinite(gains) && gains >= 0 && isfinite(harms) && harms >= 0 && irreparable >= 0, "gains, harms and irreparable count non-negative")
+    check(isfinite(z) && z >= 0, "z non-negative")
+    ccall(sym(:bf_escape_accept), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+          floatarray(Float64.(means)), floatarray(Float64.(ses)), gains, harms, irreparable, z) == 1
+end

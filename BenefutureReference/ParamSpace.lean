@@ -57,4 +57,11 @@ def select_candidate_ref (means ses : Array Float) (z : Float) : Nat := Id.run d
 def gauge_radius_ref (δ : Float) (harmed : Bool) (factor : Float) : Float :=
   if harmed then δ / factor else δ * factor
 
+/-- The debatable escape (L157: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2): a proposal
+    beyond the freedom range, tried on a share of the scope for a limited time, is adopted only if
+    it beats the incumbent by `z` standard errors (`select_candidate_ref`), its gains exceed its
+    harms where tried, and it caused no irreparable harm. -/
+def escape_accept_ref (means ses : Array Float) (gains harms : Float) (irreparable : Nat) (z : Float) : Bool :=
+  select_candidate_ref means ses z != 0 && gains > harms && irreparable == 0
+
 end BenefutureReference

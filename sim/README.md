@@ -689,7 +689,7 @@ for removal.
 | Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
-| Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
+| Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape's acceptance `escape_accept_ref` (8.38.2), its demonstration awaiting the author (8.40) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
