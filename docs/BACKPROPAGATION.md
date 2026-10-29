@@ -781,3 +781,19 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    not become apparent keeps most of its expertise (0.80 → 0.51) and lowers accuracy on hidden
    decisions to 69% (99% on apparent ones); the diversity at scale, deliberation, AdvAp and anti-corruption
    the author names are the remaining defences, not yet modelled.
+
+**8.30 Author rulings on outages and collusion defences.**
+1. A sabotaged outage is examined as an outcome: the lost measurement is its harm, and causal
+   assessment and justice find its contributors, so a saboteur is penalised through causal
+   distribution.
+2. AdvAp is a whole global mechanism, deliberation needs social networks, and diversity is an
+   axiom at global scale; build diversity or AdvAp first, as a mechanism reusable elsewhere.
+   Simulation: diversity first, as a split trial (alternatives tried side by side on shares of the
+   scope, compared by `select_candidate_ref`), reusable for the debatable escape (8.26.3), M4's
+   experiments in space rather than time, and the diversity–novelty balance's pre-N sample (L158 Di_N_Balance).
+3. (Author, on the split trial) By the diversity–novelty axiom the alternative is never forced on
+   anyone: it is subsidised elsewhere, by novelty bonuses, until some local body chooses it.
+   Simulation: each locale judges the options by its own noisy reading and takes the alternative
+   when its estimate plus the novelty bonus favours it; the share trying it is chosen, not set. A
+   significant trial makes the outcome apparent, and an alternative proved better is adopted.
+   An earlier version imposed a fixed share; withdrawn.

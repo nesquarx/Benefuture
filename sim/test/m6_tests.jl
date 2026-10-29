@@ -86,9 +86,26 @@ end
     # in advance). Vote reputation cannot see it: the bloc keeps its expertise and the damage falls on
     # hidden decisions. An open problem by the author's account (8.29.3); diversity at scale,
     # deliberation, AdvAp and anti-corruption are the defences still to model.
-    stealth = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true); seed = 1)
+    stealth = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true, diversity = false); seed = 1)
     @test stealth.bloc_expertise[end] > stealth.bloc_expertise[1] / 2
     @test stealth.correct_apparent > 0.95 && stealth.correct_hidden < stealth.correct_apparent - 0.2
+    # Diversity (8.30; L158): the option not chosen stays available, subsidised by a novelty bonus,
+    # and locales take it up by their own reading; no one is assigned to it. When the split trial
+    # settles the comparison the decision's optimality becomes apparent, which the bloc cannot
+    # foresee, and an alternative proved better is adopted (the stochastic escape).
+    # The bloc's expertise falls, though it keeps earning where it votes honestly; hidden decisions
+    # are mostly corrected, at the cost of the share trying the worse option meanwhile.
+    diverse = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true); seed = 1)
+    @test diverse.bloc_expertise[end] < stealth.bloc_expertise[end] - 0.05
+    @test diverse.correct_after_hidden > stealth.correct_hidden + 0.1 && diverse.correct_after > diverse.correct
+    @test stealth.correct_after == stealth.correct  # no trial, nothing corrected
+    # Locales choose: few depart from a right decision, many from a wrong one.
+    @test 0 < mean(diverse.chosen_share) < 0.5 && diverse.novelty_paid > 0
+    @test mean(diverse.share_when_wrong) > 3 * mean(diverse.share_when_right)
+    # Without a bloc, keeping the alternative available misleads no one.
+    calm = run_m5(M5Params(w, 1:4; decisions = 800, p_delegate = 0.8); seed = 1)
+    @test calm.correct_after >= calm.correct - 0.01
+    @test_throws ArgumentError M5Params(w, 1:4; novelty_bonus = -0.5)
     @test_throws ArgumentError M5Params(w, 1:4; p_apparent = 1.5)
     @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
 end

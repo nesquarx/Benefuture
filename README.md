@@ -313,7 +313,9 @@ means over 5 seeds of 500 steps.
   capture (30% of experts: 66% with delegation, 86% without) until votes earn or cost reputation
   and delegations are audited (L114), when the bloc's expertise share collapses and accuracy
   returns to 96% (toy decision world; outcomes apparent 70% of the time); a bloc that defects only
-  where outcomes stay hidden escapes this (69% correct on hidden decisions), an open problem
+  where outcomes stay hidden escapes this (69% correct on hidden decisions), an open problem;
+  keeping the option not chosen available to locales by a novelty bonus (diversity, L158) corrects
+  most of that damage (hidden decisions 89% after trials) at about a point of welfare
   ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)

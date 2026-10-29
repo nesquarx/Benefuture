@@ -393,8 +393,28 @@ Audited delegation turns from the amplifier into the cure; without delegation ba
 weight still carry the bloc's votes. A stealthy bloc (top 30%, defecting only where the outcome
 will not become apparent, with foresight: the worst case) keeps most of its expertise (0.80 → 0.51)
 and does its damage unseen: 99% correct where outcomes become apparent, 69% where they do not, 90%
-overall. An open problem by the author's account (8.29.3); diversity at scale, deliberation,
-adversarial adaptation and anti-corruption are the defences still to model. Not yet: sabotaged outages
+overall. An open problem by the author's account (8.29.3).
+
+Diversity (8.30; L158), built as a reusable split trial (`split_trial`: options tried side by side
+on shares of a scope, compared by the Lean significance rule): the option not chosen stays
+available, subsidised by a novelty bonus, and a locale departs to it when its own reading opposes
+the decision by more than its conviction margin, which the bonus lowers. No one is assigned to it.
+A significant trial makes the outcome apparent; an alternative proved better is adopted. A first
+version imposed a fixed share and was withdrawn by the author's ruling; a second let locales act
+on their own noisy reading alone, which had a quarter of them depart even from right decisions
+(screened as a modelling artefact: locales know the decision). Stealthy bloc of the top 30%, 800
+decisions, 50 locales:
+
+| Novelty bonus | Correct after trials (hidden decisions) | Welfare | Locales departing, decision right / wrong | Bloc's expertise share |
+|---|---|---|---|---|
+| No diversity | 89.9% (69.2%) | 89.9% | – | 0.51 |
+| 0 | 94.6% (87.1%) | 90.4% | 2.2% / 15.9% | 0.45 |
+| 0.5 | 95.8% (89.2%) | 88.6% | 5.8% / 27.9% | 0.43 |
+| 1.0 | 95.9% (89.2%) | 83.6% | 12.8% / 46.1% | 0.44 |
+
+Without a bloc, keeping the alternative available changes accuracy by at most 0.4 points. Diversity
+corrects what the bloc does rather than unmasking the bloc: its expertise falls only modestly.
+Deliberation (needs social networks) and AdvAp (a global mechanism) remain. Not yet: sabotaged outages
 (examined by cause), harm passed off as unassigned, identity forks.
 
 ## M4 observations
@@ -493,6 +513,7 @@ for removal.
 | Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4, 8.26; priced as a transaction (L86); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
 | Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
+| Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
@@ -512,6 +533,7 @@ ratified.
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
+| Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
@@ -556,6 +578,7 @@ guesses at reality, to be swept once the model is solid.
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
+| A locale's own reading of the options; its conviction margin; outcome measurement (M5) | `local_σ`, `conviction`, `outcome_σ` | 1, 1.5, 1 | 0.5–3, 0.5–3, 0.5–3 |
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |
 
