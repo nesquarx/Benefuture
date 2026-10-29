@@ -1126,6 +1126,15 @@ with the irreparable tier weighted (Ha_wt, L61) it would weigh far more. [P] the
 sacrifice-blocking to floors (conjecture A36; Benefuture goals) should name Freedom's irreparable gate
 first, floors second. Candidate homes: Benefuture goals, Freedom, L74, L135.
 
+**8.48 Author ruling on normalisation.** Normalising reputation must not reduce anyone's net
+reputation when someone surpasses them: only vote weights are normalised, because they scale
+oddly; "I have not done less if someone else has done more, yet they may have more to say."
+Status: the simulation normalises only at the vote (M5's expertise weights; L113's Re/ΣRe; Lean
+`relative_expertise`); ledgers and the rolling net stay absolute. A right vote earns reputation in
+proportion to the weight share it cast (its causal contribution to the decision), so as others grow
+each vote earns less, while the record already earned stays whole. Propagated to Government (articles).
+Candidate homes: L113, Reputation, Government.
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

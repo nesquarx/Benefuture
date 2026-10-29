@@ -142,7 +142,8 @@ def DecisionContext.mkSimple (id : String) (dom : Domain) : DecisionContext :=
 
 /--
   [R] Domain-relative expertise (author ruling 8.22.1, settling 8.21; L113: Re(Dn_i)/ΣRe(Dn_i)):
-  a voter's expertise enters as its share of the domain's total reputation.
+  a voter's expertise enters as its share of the domain's total reputation. Only the vote weight is
+  normalised; reputation itself stays absolute (ruling 8.48).
 -/
 noncomputable def relative_expertise {ι : Type*} (voters : Finset ι) (rep : ι → ℝ) (i : ι) : ℝ :=
   rep i / ∑ j ∈ voters, rep j
