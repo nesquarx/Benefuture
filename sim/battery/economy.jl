@@ -66,6 +66,6 @@ end
 
 rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "16")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "64")))
-t0 = time()
+t0, commit = time(), current_commit()  # the code this run tests
 bt = battery(converges, names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.06, grid = 6)
-write_results("economy", bt, names; clean = CLEAN, minutes = (time() - t0) / 60)
+write_results("economy", bt, names; clean = CLEAN, minutes = (time() - t0) / 60, commit)

@@ -88,21 +88,25 @@ function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integ
      screening = screen_n > 0 ? screen(oracle, scale .* latin_hypercube(rng, screen_n, k)) : nothing)
 end
 
+"The commit checked out now; batteries read it when they start, so results name the code they ran."
+function current_commit()
+    try
+        readchomp(`git -C $(@__DIR__) rev-parse --short HEAD`)
+    catch
+        "unknown"
+    end
+end
+
 """
-    write_results(label, bt, names; clean, minutes)
+    write_results(label, bt, names; clean, minutes, commit)
 
 Write a battery's results to `sim/battery/results/<label>.csv` (one row per ray: kind, direction,
 boundary severity, monotone) and `<label>.md` (limits, failure rate, factor importance, the
 strongest interactions, and the boundary points nearest the clean world).
 """
-function write_results(label, bt, names; clean, minutes)
+function write_results(label, bt, names; clean, minutes, commit = current_commit())
     dir = joinpath(@__DIR__, "..", "battery", "results")
     mkpath(dir)
-    commit = try
-        readchomp(`git -C $(@__DIR__) rev-parse --short HEAD`)
-    catch
-        "unknown"
-    end
     open(joinpath(dir, label * ".csv"), "w") do io
         println(io, "# commit ", commit)
         println(io, join(["kind"; names; "t"; "monotone"], ","))
