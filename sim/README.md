@@ -365,6 +365,31 @@ at σ 2 and execution noise at 2 each stop convergence (about 2). All the robust
 once (BACKPROPAGATION 8.32: the eligibility threshold is a cliff, and absolute accuracy blames models
 for noise no model could predict).
 
+## Failure-boundary battery
+
+A randomized battery hones in on the combinations of noise and attack beyond which the framework
+stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
+`sim/test/battery_tests.jl`; batteries in `sim/battery/`, results in `sim/battery/results/`).
+
+- **Factor space.** Each noise source or attack is a factor with a severity: 0 is the clean world,
+  1 the top of its explored range (the Noise table; attacks sized likewise), and the search runs
+  to 2.
+- **Oracle.** A world converges if a majority of seeds meet the criterion stated at the top of each
+  battery: in the economy, floor growth after the score-only start at least a quarter of the clean
+  world's and deceivers no richer than 1.1 × honest agents; in governance, at least 75% of the last
+  half of decisions right. The criteria are evaluation choices, not rules.
+- **Screening.** A Latin hypercube of worlds ranks factors by how much higher their severity runs in
+  failing worlds, and pairs by their interaction (failure when both are high, beyond each alone).
+- **Honing.** Rays from the clean world, one per factor and others in random directions, are
+  bracketed on a grid and bisected to the severity where convergence fails: per-factor limits and
+  points on the failure surface. Rays that converge again beyond their boundary are flagged
+  non-monotone rather than hidden.
+- **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
+  tolerances are fixed in each script, so runs repeat exactly.
+
+Run: `julia --project=sim sim/battery/economy.jl` (about half an hour) and
+`julia --project=sim sim/battery/governance.jl` (about ten minutes).
+
 ## M6 observations
 
 Exploits are tested against the native mechanisms before any defence is built; a failure is a

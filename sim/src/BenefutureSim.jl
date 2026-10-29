@@ -19,7 +19,7 @@ export profile_valid, attribute, decay_rate_for, classify, accumulation_threshol
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood
 export membership_rolling, accuracy, currency_eligible, scarcity_cost
 export voting_weight, accumulate_capped, relative_reputation, M5Params, run_m5
-export split_trial, ability_caps, choice_noise
+export split_trial, ability_caps, choice_noise, latin_hypercube, ray_boundary, screen, battery, write_results
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
 
 include("lean.jl")
@@ -38,6 +38,7 @@ include("m3b.jl")
 include("m3c.jl")
 include("governance.jl")
 include("friction.jl")
+include("battery.jl")
 include("diversity.jl")
 include("m5.jl")
 
