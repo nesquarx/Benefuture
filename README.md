@@ -241,6 +241,13 @@ metric models are non-circular given the empirical-marker requirement
 
 ### Demonstrated in simulation
 
+Every claim below is a toy-world reading, never certain (truth levels do not reach 1, author ruling
+8.33). Readings for the transaction, hazard, governance and threshold rungs were taken before the
+rulings that mistakes decay slower than wins, that models use track records (8.29) and that world
+defaults are mildly imperfect (8.33); their tests still pass under those rulings, but the numbers
+quoted have not been re-run unless the claim says so. The failure-boundary batteries
+(`sim/battery/results/`) run continuously on the latest build.
+
 Common toy assumptions, still to be removed (see `sim/README.md`, model ladder): beings and plans
 in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's skill);
 causal signatures as points near unit axes; model and measurement error as Gaussian noise of fixed
