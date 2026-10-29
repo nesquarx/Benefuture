@@ -832,3 +832,9 @@ threshold, with escrow holding by its low accuracy, the threshold then ranking c
 than switching them off; (c) the threshold governed down by SigThGv under friction, within its
 freedom range (novel leaves never below 0.5). Candidate homes: L82, L84, L154, Measurement.
 Kept as a `@test_broken` requirement in `sim/test/friction_m3c_tests.jl`.
+8.30.1 status: an outage harms the beings who lose its services and is examined when markers
+return; traced to a saboteur (`p_trace`) it is a crime of informed volition penalised through
+causal distribution, else its harm is insured through the commons. Repair's predicted good now comes
+from the domain's best model with its error, not the measured harm; with mildly inaccurate models
+(the realistic case, per the author) repair still funds itself.
+

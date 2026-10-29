@@ -52,6 +52,28 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
     @test mine(150:300) > mine(51:149) + 1
 end
 
+@testset "Sabotaged outages (author ruling 8.30.1)" begin
+    # An outage harms the beings who lose its services, and is examined as an outcome when markers
+    # return: traced to a saboteur, it is a crime (informed volition) penalised through causal
+    # distribution; untraced or natural, its harm is unassigned and insured through the commons.
+    out(target; kw...) = base(; events = [shock(:outage; step = 100, duration = 30, size = 2.0, share = 0.3, target)], kw...)
+    natural = run_m3c(out(0); seed = 1)
+    @test natural.outage_harm > 0 && natural.sabotage_traced == 0 && natural.unattributed >= natural.outage_harm - 1e-9
+    traced = run_m3c(out(3; p_trace = 1.0); seed = 1)
+    @test traced.sabotage_traced == 1 && traced.crimes >= 1 && traced.credit_neg[3] < natural.credit_neg[3]
+    @test traced.hazard_penalties ≈ traced.outage_harm
+    untraced = run_m3c(out(3; p_trace = 0.0); seed = 1)
+    @test untraced.sabotage_traced == 0 && untraced.credit_neg[3] ≈ natural.credit_neg[3]
+    # The examination happens when markers return: an outage that never ends is never examined.
+    endless = run_m3c(base(events = [shock(:outage; step = 100, duration = 1000, size = 2.0, share = 0.3, target = 3)], p_trace = 1.0); seed = 1)
+    @test endless.sabotage_traced == 0
+    for tr in (natural, traced, untraced)
+        @test balanced(tr)
+    end
+    @test_throws ArgumentError base(p_trace = 1.5)
+    @test_throws ArgumentError base(events = [shock(:outage; step = 10, target = 99)])
+end
+
 @testset "Black swans: adversarial and edge cases" begin
     # An outage for the whole run after the start: nothing crashes, nothing is credited, the books balance.
     tr = run_m3c(base(events = [shock(:outage; step = 51, duration = 250)]); seed = 2)

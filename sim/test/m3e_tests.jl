@@ -59,6 +59,10 @@ end
     # predicted good its qualified currencies credit. That pays for part of it; the commons pays
     # only the rest, and banks no surplus (an insurer must not profit from unassigned harm).
     @test rich.self_funded > 0 && rich.commons_spent < rich.repair_cost
+    # The realistic case (author): mildly inaccurate models. Repair's predicted good still covers its
+    # resource cost, so the commons is barely touched.
+    mild = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, σ_leaf = 0.75, σ_branch = 0.9, σ_coarse = 1.0, bias_σ = 0.3); seed = 3)
+    @test mild.self_funded > 0.9 * mild.repair_cost && mild.commons_spent < 0.1 * mild.repair_cost
     blind_models = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, threshold = 0.99, novel_threshold = 0.99); seed = 3)
     # With no qualified model, nothing is self-funded: all that is repaired, the commons paid for.
     @test blind_models.self_funded < 1e-9 && blind_models.insured ≈ blind_models.commons_spent > 0

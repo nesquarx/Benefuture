@@ -323,6 +323,24 @@ native. Same world as the tests (6 agents in leaves 1 and 3, transactions, causa
 | Metric capture: leaf 1's model biased by 3, steps 100–249 | Scoring costs it eligibility (L82); its work is priced by its parent (fallback by μ) | Leaf 1 prices its own work 100% before, 0% during, 100% after |
 | Breakthrough: agent 1's skill up by 1 from step 150 | Put to use through ordinary transactions | Floor growth over steps 150–300: 157.5 against 115.2 |
 
+Sabotaged outages (8.30.1): an outage harms the beings who lose its services (`size`, `share`)
+and is examined as an outcome when markers return. Traced to a saboteur (`p_trace`, a world
+chance), it is a crime of informed volition, penalised through causal distribution to fund repair;
+untraced or natural, its harm is unassigned and insured through the commons. An outage that never
+ends is never examined.
+
+Insurance across model quality (5 seeds, unguarded hazards, full repair efficiency; the repair's
+good is predicted by the domain's best model, with its error):
+
+| Models | Accuracy | Floor growth | Repair cost | Self-funded | From the commons |
+|---|---|---|---|---|---|
+| Default | 0.77 | 66.8 | 30.8 | 30.8 | 0 |
+| Mildly inaccurate (the realistic case) | 0.57 | 54.8 | 30.6 | 30.5 | 0 |
+| Poor (below eligibility) | 0.46 | 2.8 | 24.8 | 0 | 18.8 |
+
+Restoring harm is worth far more than its resource cost, so any qualified model funds repair; the
+commons pays only below eligibility, the cliff of 8.32.
+
 Not yet: rogue agents (M6), infohazards, technology degradation of models short of capture, and
 the diversity–novelty balance under a breakthrough (8.23: enhancement used without crowding out the
 pre-N sample). Screening the re-measurement found a closure fault: deferred measurements shared the step's
@@ -570,6 +588,7 @@ for removal.
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
 | Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4, 8.26; priced as a transaction (L86); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
+| Outage examined as an outcome; saboteur traced or harm insured | Native | 8.30.1; causal assessment, L115, L119 |
 | Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
 | Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
@@ -631,6 +650,7 @@ guesses at reality, to be swept once the model is solid.
 | Experts joining co-funding | `participation` | 1 | 0.3–1 |
 | Separating an upstream output's part | `attribution_σ` | 0 | 0–0.5 |
 | Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–1 |
+| Examining an outage tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
 | Hazard harm | `hazard_σ` | 0.2 | 0–1 |
 | A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
 | A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |
