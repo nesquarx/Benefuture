@@ -684,8 +684,9 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
 1. Catastrophic repair prices recovery and prevention efforts by their predicted good, which is
    great enough to fund them (the corpus has this: TP_Gen, L86, prices a transaction by cost less
    predicted value). Repair and prevention are ordinary transactions, not a separate insurance
-   price. Held for future fixing: the simulation's repair is still a direct restoration funded at
-   resource cost.
+   price. Simulation: repair from the commons is priced by `transaction_price` (resource cost less
+   accuracy × predicted good); the commons pays only a positive remainder. Still held: repair is a
+   direct restoration rather than a repairer's recorded action.
 2. Communicating an output needs no reward when it is contracted: the contract was worth more than
    the counterfactual of not taking it, since someone else would. If no one would have done it
    unprompted, it is a merit (an accolade). Held for future fixing: the simulation pays a carrying
@@ -700,4 +701,13 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
    which would uncover sabotage, outages are examined too. Candidate homes: L145 Mem, L146
    Tx → Trigger(MM_Me), L154 Progressive, Antifragility.
 6. 8.25 ratified.
+7. Resource accounting must eke out the commons by balancing resources, commons and gains; the act
+   of reparation carries its own pricing, which can partly pay for it. [OPEN] the balance: the
+   corpus has a resource-accounting contribution taken from credits that funds sophont baseline
+   and shared infrastructure ("Life in Benefuture"), and supply tracks good less resource
+   consumption less harm (Benefuture currency), but no rule for the share. The simulation's stage:
+   the commons holds the resource costs paid for work, less what it has spent.
+8. The framework is the insurer; insurance cannot be a business, or it becomes a mechanism of
+   arbitrage. Simulation: the commons banks no surplus from a self-funding repair. Candidate homes:
+   Administration, Benefuture currency, Anti-Corruption.
 

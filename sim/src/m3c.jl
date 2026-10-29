@@ -313,7 +313,7 @@ function run_m3c(p::M3cParams; seed)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
              prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0), commons_spent = Ref(0.0),
-             insured = Ref(0.0))
+             insured = Ref(0.0), self_funded = Ref(0.0), repair_cost = Ref(0.0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
@@ -658,7 +658,7 @@ function run_m3c(p::M3cParams; seed)
         # no change), so the harm is its contribution: a crime if it was informed, an accident if
         # not, penalised either way to fund repair. An unguarded hazard has no contributor.
         function hazard!(share, sz)
-            local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ
+            local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, pr, acc, price, own
             world.hazards[] += 1
             l = rand(hrng, 1:ntrue)
             hit = rand(hrng, t.n) .< share
@@ -696,16 +696,31 @@ function run_m3c(p::M3cParams; seed)
                 if g == 0
                     world.unattributed[] += -measured
                     # No contributor: the administration insures it through the commons, to its
-                    # capability (author ruling 8.22; L119 Liability ranks it before beings). [P] the
-                    # commons is what balance overflow reinvested; repair is work, paid its resource
-                    # cost (L83), not the value of the harm.
-                    need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
-                    spend = min(sum(reinvested) - world.commons_spent[], need)
-                    if p.repair_efficiency > 0 && spend > 0 && !blind[]
-                        f = p.repair_efficiency * spend / need
-                        push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
-                        world.commons_spent[] += spend
-                        world.insured[] += p.repair_efficiency * spend
+                    # capability (author rulings 8.22, 8.26; L119 Liability ranks it before beings).
+                    # The commons is funded by resource accounting: the resource costs paid for work
+                    # (L83); escrow is not pooled in this world. Repair is work, paid its resource
+                    # cost, not the value of the harm.
+                    # Repair is a transaction priced like any other (L86; 8.26): resource cost less
+                    # the predicted good its qualified currencies credit (`transaction_price`). That
+                    # funds part of it; the commons pays the rest and banks no surplus, so the insurer
+                    # never profits from unassigned harm. [P] the prediction is the measured harm.
+                    if p.repair_efficiency > 0 && !blind[]
+                        need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
+                        sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                        st = classify_sig(sig)
+                        pr = price_shares(st)
+                        acc = sum((pr[c] * (c <= lmax ? leaf_acc(c) : parent_acc(c - lmax)) for c in 1:(root - 1) if pr[c] > 0); init = 0.0)
+                        price = transaction_price(need, p.repair_efficiency * -measured, acc)
+                        own = need - max(price, 0.0)
+                        spend = min(sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[], max(price, 0.0))
+                        f = p.repair_efficiency * min(own + spend, need) / need
+                        if f > 0
+                            push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
+                            world.commons_spent[] += spend
+                            world.self_funded[] += min(own, need)
+                            world.repair_cost[] += need
+                            world.insured[] += p.repair_efficiency * min(own + spend, need)
+                        end
                     end
                 else
                     is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
@@ -825,7 +840,8 @@ function run_m3c(p::M3cParams; seed)
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
                prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
-               commons_spent = world.commons_spent[], insured = world.insured[],
+               commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
+               repair_cost = world.repair_cost[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

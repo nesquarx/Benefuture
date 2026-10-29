@@ -48,12 +48,20 @@ end
     tr = run_m3c(hz(zeros(Int, 4)); seed = 3)
     @test tr.unattributed > 0 && tr.crimes == 0 && tr.accidents == 0 && tr.hazard_penalties == 0
     # The administration insures unassigned harm through the commons, to its capability (author
-    # ruling 8.22; L119 Liability ranks it before beings): repair drawn from what overflow put in
-    # the commons, never more; with an empty commons nothing is repaired.
-    rich = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = 5.0, overflow_factor = 0.0); seed = 3)
-    @test rich.insured > 0 && rich.commons_spent <= sum(rich.reinvested) + 1e-9
-    poor = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf); seed = 3)
-    @test poor.insured == 0 && sum(poor.reinvested) == 0
+    # rulings 8.22, 8.26; L119 Liability ranks it before beings). The commons is funded by resource
+    # accounting: the resource costs paid for work. Repair never draws more than it holds; with no
+    # resource costs it holds nothing and nothing is repaired; balance overflow does not feed it.
+    rich = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf); seed = 3)
+    @test rich.insured > 0 && sum(rich.reinvested) == 0 && rich.commons_spent <= sum(rich.costs) + sum(rich.lane_costs) + 1e-9
+    poor = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, cost_per_touch = 0.0, overflow_base = 5.0, overflow_factor = 0.0); seed = 3)
+    @test poor.insured == 0 && sum(poor.reinvested) > 0
+    # Repair is a transaction priced like any other (L86; author ruling 8.26): resource cost less the
+    # predicted good its qualified currencies credit. That pays for part of it; the commons pays
+    # only the rest, and banks no surplus (an insurer must not profit from unassigned harm).
+    @test rich.self_funded > 0 && rich.commons_spent < rich.repair_cost
+    blind_models = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, threshold = 0.99, novel_threshold = 0.99); seed = 3)
+    # With no qualified model, nothing is self-funded: all that is repaired, the commons paid for.
+    @test blind_models.self_funded < 1e-9 && blind_models.insured ≈ blind_models.commons_spent > 0
     @test sum(rich.balance) - rich.endowed ≈ sum(rich.valued_measured) - sum(rich.costs) - sum(rich.lane_costs) -
                                              sum(rich.reinvested) - rich.hazard_debits + rich.prevention_measured atol = 1e-6
     # The books balance: penalties for hazards are destroyed (or fund repair), nothing else moves.
