@@ -342,8 +342,24 @@ in one domain, 300 steps; one overpromises (`deceit` 1.0: its plans fool every m
 Escrow claws back the excess, but deceit still pays: the liar's churn leaves it net relevance when
 losses decay faster than gains, raising its overflow threshold; with symmetric decay it ends below
 its peers yet above its honest self, since fooled prices get more of its work through. Relay
-farming is bounded by the accolade rate. Not yet: sabotaged outages (examined by cause), harm
-passed off as unassigned, colluding voters, identity forks.
+farming is bounded by the accolade rate.
+
+Colluding voters (M5 world, 100 agents, 400 decisions): a bloc voting one side whatever its signal,
+taken in the worst case as the most reputable experts of each domain.
+
+| Bloc | Correct, no delegation | Correct, delegation 0.8 |
+|---|---|---|
+| None | 97% | 98% |
+| Top 10% | 98% | 97% |
+| Top 20% | 93% | 94% |
+| Top 30% | 85% | 70% |
+| Top 40% | 74% | 52% |
+
+Normalised expertise holds a bloc of up to a fifth of the experts; delegation amplifies capture of
+the top, since low-impact voters delegate to the most reputable. The cap holds per delegate (largest
+share 5.7%), but the bloc collects across many. L114's audit and retraction of delegations
+(bulkAudited, retractable) is the native defence, not yet modelled. Not yet: sabotaged outages
+(examined by cause), harm passed off as unassigned, identity forks.
 
 ## M4 observations
 

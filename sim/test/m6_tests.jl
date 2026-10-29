@@ -50,3 +50,22 @@ end
     @test tr.accolade_credit <= 0.05 * (sum(tr.upstream_pos) + tr.accolade_credit) + 1e-6
     @test run_m3c(p(0.0); seed = 1).accolade_credit == 0
 end
+
+# Colluding voters (M5 world): a bloc that votes one fixed side whatever its signal, chosen in the
+# worst case as the most reputable experts of each domain. Normalised expertise, impact weight and
+# the delegation cap should keep a minority bloc from capturing decisions at any scale.
+@testset "M6 colluding voters" begin
+    world(n_per) = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / max(n_per - 1, 1) : 0.0 for l in 1:4],
+                                                  [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:n_per],
+                                     [1, 1, 2, 2], trues(4); λpos = 0.02, λneg = 0.05, transactions = true); seed = 1)
+    w = world(25)
+    top(frac) = unique(vcat([sortperm(w.relevance_leaf[:, d]; rev = true)[1:round(Int, frac * 25)] for d in 1:4]...))
+    honest = run_m5(M5Params(w, 1:4; decisions = 400); seed = 1)
+    bloc = run_m5(M5Params(w, 1:4; decisions = 400, colluders = top(0.2)); seed = 1)
+    @test bloc.correct > 0.8 && bloc.correct < honest.correct
+    # With delegation, the bloc gathers no more than the cap allows.
+    deleg = run_m5(M5Params(w, 1:4; decisions = 400, colluders = top(0.2), p_delegate = 0.8); seed = 1)
+    @test deleg.correct > 0.8 && maximum(deleg.max_share) <= 0.05 + maximum(deleg.max_single) + 1e-9
+    @test_throws ArgumentError M5Params(w, 1:4; colluders = [999])
+end

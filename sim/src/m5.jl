@@ -27,22 +27,24 @@ struct M5Params
     cap::Float64
     impact_threshold::Float64
     relative_expertise::Bool   # expertise as shares of the domain's reputation (author ruling 8.22)
+    colluders::Vector{Int}     # agents voting one fixed side whatever their signal (M6; world)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
                   optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = 1.0, skill_gain::Real = 5.0,
                   p_delegate::Real = 0.0, cap::Real = 0.05, impact_threshold::Real = 0.5,
-                  relative_expertise::Bool = true)
+                  relative_expertise::Bool = true, colluders = Int[])
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
     check(all(x -> isfinite(x) && x >= 0, (base, expertise_weight, impact_weight, optional_below, signal_σ, skill_gain, impact_threshold)),
           "weights and noise non-negative")
     agents = m3.agents
+    check(all(c -> 1 <= c <= length(agents), colluders), "colluders are agents of the run")
     skills = [a.skills[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     focus = [a.focus[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     M5Params(Float64.(m3.relevance_leaf), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
-             decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise)
+             decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders))
 end
 
 """
@@ -78,7 +80,8 @@ function run_m5(p::M5Params; seed)
             end
         end
         signal = [truth + p.signal_σ * exp(-p.skill_gain * max(p.skills[i, k], 0.0)) * randn(rng) for i in 1:na]
-        tally = sum(held[i] * sign(signal[i]) for i in 1:na if !delegated[i])
+        vote(i) = i in p.colluders ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
+        tally = sum(held[i] * vote(i) for i in 1:na if !delegated[i])
         correct += sign(tally) == sign(truth)
         push!(max_share, maximum(held) / total); push!(max_single, maximum(w) / total)
     end
