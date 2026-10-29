@@ -126,6 +126,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_accuracy] def accuracy (score : Float) : Float := accuracy_ref score
 
+@[export bf_credence] def credence (predicted uncertainty cap : Float) : Float := credence_ref predicted uncertainty cap
+@[export bf_credence_accuracy] def credenceAccuracy (credences outcomes : FloatArray) : Float :=
+  credence_accuracy_ref credences.data outcomes.data
+
 @[export bf_currency_eligible] def currencyEligible (acc records minRecords : Float) (novel : UInt8)
     (threshold novelThreshold : Float) : UInt8 :=
   if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold then 1 else 0

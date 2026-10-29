@@ -89,6 +89,16 @@ const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
     @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
     @test !currency_eligible(0.7, 5; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
     @test currency_eligible(0.57, 10; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
+    # Credence and accuracy (author rulings 8.35, 8.36): a model's credence that an action's
+    # assessed value is positive, from its prediction and its own uncertainty; accuracy is the
+    # quality of credences, 1 − Brier / Brier of random guessing (0.25): 0 is random, 1 perfect.
+    @test credence(0.0, 1.0) ≈ 0.5 && isapprox(credence(2.0, 1.0), 0.97725; atol = 1e-4)
+    # Truth levels never reach 1 (8.33): credence is capped by the governed `cap`.
+    @test credence(1.0, 0.0; cap = 0.99) == 0.99 && credence(-1.0, 0.0; cap = 0.99) ≈ 0.01 && credence(9.0, 1.0; cap = 0.99) == 0.99
+    @test isapprox(credence(-2.0, 1.0), 0.02275; atol = 1e-4) && credence(1.0, Inf) ≈ 0.5
+    @test credence_accuracy([1.0, 1.0, 0.0], [1.0, 1.0, 0.0]) ≈ 1.0
+    @test credence_accuracy([0.5, 0.5], [1.0, 0.0]) ≈ 0.0
+    @test credence_accuracy([0.75, 0.25], [1.0, 0.0]) ≈ 0.75
     @test scarcity_cost(2.0, 100.0, 100.0) ≈ 2.0
     @test scarcity_cost(2.0, 50.0, 100.0) ≈ 4.0
 end
@@ -100,8 +110,14 @@ end
         @test profile_valid(s)
         @test profile_valid(fallback_network(MU, [false, true, false], [true, false], s))
     end
-    # A novel domain's threshold never drops below 0.5, however it is set.
-    @test !currency_eligible(0.45, 100; novel = true, threshold = 0.6, novel_threshold = 0.3, min_records = 10)
+    # A novel domain's threshold never drops below 0.55, however it is set (8.35: that floor is for
+    # discovering what has no precedent).
+    @test !currency_eligible(0.54, 100; novel = true, threshold = 0.9, novel_threshold = 0.3, min_records = 10)
+    # Worse than random guessing scores 0, not below; no record, no accuracy.
+    @test credence_accuracy([0.0], [1.0]) == 0.0 && credence_accuracy(Float64[], Float64[]) == 0.0
+    @test_throws ArgumentError credence_accuracy([1.2], [1.0])
+    @test_throws ArgumentError credence(1.0, -1.0)
+    @test_throws ArgumentError credence(1.0, 1.0; cap = 0.4)
     # Membership is clamped to [0, 1]; a leaf with no new action keeps its degree (domains do not fade),
     # and one action moves a degree by at most the rate.
     @test projection_membership([-1.0, 0.0], [1.0, 0.0]) == 0 && projection_membership([3.0, 0.0], [1.0, 0.0]) == 1

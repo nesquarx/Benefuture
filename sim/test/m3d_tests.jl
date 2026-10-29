@@ -74,7 +74,7 @@ end
     # (Attribution is imperfect by default, so a sliver of credit can stray its way; losses dominate.)
     @test tr.upstream_neg[5] < 0 && tr.upstream_pos[5] < 0.01 * abs(tr.upstream_neg[5])
     # Co-funders whose money was needed share the credit of StandCoin work.
-    tr = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0, transactions = true,
+    tr = run_m3c(m3c(work = [1], threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0, endowment = 2.0, transactions = true,
                      causal_distribution = true); seed = 1)
     @test tr.cofunder_credit > 0
     # Attribution noise leaves the books balanced.

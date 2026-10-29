@@ -19,6 +19,39 @@ function latin_hypercube(rng::AbstractRNG, n::Integer, k::Integer)
 end
 
 """
+    normal_quantile(p) -> z
+
+The standard normal quantile by Acklam's rational approximation (relative error about 1e-9): fast,
+for stratified Gaussian sampling. Evaluation tooling, not a rule.
+"""
+function normal_quantile(p::Real)
+    check(0 < p < 1, "probability in (0, 1)")
+    a = (-3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2, 1.383577518672690e2, -3.066479806614716e1, 2.506628277459239)
+    b = (-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1, -1.328068155288572e1)
+    c = (-7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783)
+    d = (7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416)
+    p == 0.5 && return 0.0
+    if p < 0.02425
+        q = sqrt(-2log(p))
+        return (((((c[1]q + c[2])q + c[3])q + c[4])q + c[5])q + c[6]) / ((((d[1]q + d[2])q + d[3])q + d[4])q + 1)
+    elseif p > 1 - 0.02425
+        q = sqrt(-2log(1 - p))
+        return -(((((c[1]q + c[2])q + c[3])q + c[4])q + c[5])q + c[6]) / ((((d[1]q + d[2])q + d[3])q + d[4])q + 1)
+    end
+    q = p - 0.5; r = q^2
+    (((((a[1]r + a[2])r + a[3])r + a[4])r + a[5])r + a[6])q / (((((b[1]r + b[2])r + b[3])r + b[4])r + b[5])r + 1)
+end
+
+"""
+    gaussian_hypercube(rng, n, k; μ, σ) -> n × k severities
+
+Stratified Gaussian sampling: a Latin hypercube pushed through `normal_quantile`, centred on `μ` with
+spread `σ`, floored at 0. Typical worlds dominate; extremes stay rare but present.
+"""
+gaussian_hypercube(rng::AbstractRNG, n::Integer, k::Integer; μ::Real, σ::Real) =
+    max.(0.0, μ .+ σ .* normal_quantile.(latin_hypercube(rng, n, k)))
+
+"""
     ray_boundary(oracle, direction; tmax, tol, grid = 8) -> (t, monotone)
 
 The severity `t` along `direction` (points `t × direction`) where `oracle` first fails: a coarse
@@ -80,12 +113,12 @@ function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integ
         b = ray_boundary(oracle, d; tmax, tol, grid)
         (direction = d, t = b.t, point = isfinite(b.t) ? b.t .* d : fill(Inf, k), monotone = b.monotone)
     end
-    # Screen where the boundary lies: scale the hypercube so its typical point (norm √(k/3)) sits at
-    # the median boundary the rays found, so the sample straddles it.
+    # Screen where the boundary lies, Gaussian-ish: severities centred on the scale that puts a typical
+    # point (norm about √(k/3)) at the median boundary the rays found, so the sample straddles it.
     ts = [b.t for b in boundary if isfinite(b.t)]
     scale = isempty(ts) ? 1.0 : clamp(median(ts) / sqrt(k / 3), 0.01, 1.0)
     (limits = limits, boundary = boundary, screen_scale = scale,
-     screening = screen_n > 0 ? screen(oracle, scale .* latin_hypercube(rng, screen_n, k)) : nothing)
+     screening = screen_n > 0 ? screen(oracle, scale .* gaussian_hypercube(rng, screen_n, k; μ = 0.5, σ = 0.25)) : nothing)
 end
 
 "The commit checked out now; batteries read it when they start, so results name the code they ran."

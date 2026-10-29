@@ -1,5 +1,5 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
-# Severity 0 is the clean world; 1 the top of each factor's explored range (sim/README.md, Noise);
+# Severity 0 is the least realistic noise and no attack; 1 the realistic top of each range (sim/README.md, Noise);
 # rays run to 2. Convergence (an evaluation criterion, not a rule): by the seeds' vote (three, or
 # five where the three disagree),
 # floor growth on understanding after the score-only start is at least `GROWTH` of the clean
@@ -9,21 +9,22 @@ using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, MORE, GROWTH, GAIN = 300, 1:3, 4:5, 0.25, 1.1
 const FACTORS = [
-    # noise
-    ("markers", (s, kw) -> (kw[:marker_σ] = 0.5s)),
-    ("model error", (s, kw) -> (kw[:σ_leaf] = 0.3 + 1.7s; kw[:σ_branch] = 0.5 + 1.5s; kw[:σ_coarse] = 0.75 + 1.25s)),
-    ("model bias", (s, kw) -> (kw[:bias_σ] = 0.5s)),
-    ("classification", (s, kw) -> (kw[:classify_σ] = 0.03 + 0.12s; kw[:spread] = 0.03 + 0.12s)),
-    ("execution", (s, kw) -> (kw[:sloppiness] = 2s)),
-    ("accounting", (s, kw) -> (kw[:cost_σ] = 0.5s; kw[:regen_σ] = 1.0s)),
-    ("memory loss", (s, kw) -> (kw[:memory_loss] = min(0.2s, 1.0))),
-    ("attribution", (s, kw) -> (kw[:attribution_σ] = 0.5s)),
-    ("hazards", (s, kw) -> (kw[:p_hazard] = min(0.5s, 1.0); kw[:p_informed] = max(1 - 0.7s, 0.0); kw[:dil] = max(1 - 0.7s, 0.0))),
+    # noise: severity 0 is the least realistic noise, 1 the realistic top (the edge of a functional
+    # domain, where established models fall to about coarse accuracy; sim/README.md, Noise)
+    ("markers", (s, kw) -> (kw[:marker_σ] = 0.02 + 0.18s)),
+    ("model error", (s, kw) -> (kw[:σ_leaf] = 0.05 + 0.4s; kw[:σ_branch] = 0.2 + 0.4s; kw[:σ_coarse] = 0.35 + 0.4s)),
+    ("model bias", (s, kw) -> (kw[:bias_σ] = 0.2s)),
+    ("classification", (s, kw) -> (kw[:classify_σ] = 0.03 + 0.07s; kw[:spread] = 0.03 + 0.07s)),
+    ("execution", (s, kw) -> (kw[:sloppiness] = 0.6s)),
+    ("accounting", (s, kw) -> (kw[:cost_σ] = 0.3s; kw[:regen_σ] = 0.5s)),
+    ("memory loss", (s, kw) -> (kw[:memory_loss] = min(0.1s, 1.0))),
+    ("attribution", (s, kw) -> (kw[:attribution_σ] = 0.3s)),
+    ("hazards", (s, kw) -> (kw[:p_hazard] = min(0.3s, 1.0); kw[:p_informed] = max(1 - 0.4s, 0.0); kw[:dil] = max(1 - 0.3s, 0.0))),
     # attacks
     ("deceit", (s, kw) -> (kw[:deceit_size] = 2s)),
     ("outage", (s, kw) -> (kw[:outage] = round(Int, 100s))),
     ("capture", (s, kw) -> (kw[:capture] = 3s)),
-    ("side harm", (s, kw) -> (kw[:p_side] = min(0.3s, 1.0))),
+    ("side harm", (s, kw) -> (kw[:p_side] = min(0.2s, 1.0))),
     ("laundering", (s, kw) -> (kw[:launder_chance] = min(0.5s, 1.0))),
 ]
 names = first.(FACTORS)

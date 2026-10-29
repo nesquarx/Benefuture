@@ -640,7 +640,8 @@ ratified.
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
-| Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
+| Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
+| Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
 | Formation of novel domains | `form_count`, `form_radius` | 20, 0.5 | 8.6 |
@@ -652,7 +653,7 @@ ratified.
 | Track record models estimate from (past actions per actor) | `track_window` | 20 | L84, L86; 8.29 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
-| Metric-model scoring window | `window` | 10 | L82 |
+| Metric-model scoring window (accuracy and uncertainty) | `window` | 100 | L82; 8.36 |
 | Steps between reclassifications of memory | `μ_every` | 25 | 8.12 |
 | Accolade for carrying an output outside contract (share of the maker's positive share) | `accolade_rate` | 0.05 | L95, L121; 8.22 |
 
@@ -661,28 +662,32 @@ ratified.
 Every step that can go wrong in reality has a noise parameter, drawn from its own random stream
 so that turning one off changes nothing else. Nothing is perfect (author ruling 8.33): defaults sit
 at the low end of each range, and exact worlds appear only as limiting cases in tests. The ranges
-are first guesses at reality; the failure-boundary batteries sweep them.
+are first guesses at reality; the top of each is the edge of a functional domain (where established
+models fall to about coarse accuracy, 0.75), not beyond: far worse is the regime of astrology, not of
+a working society (author). Model error is relative to the domain's natural spread of outcomes. The
+failure-boundary batteries sweep these ranges, Gaussian-ish (typical worlds dominate, extremes are
+rare but present).
 
 | Step | Parameter | Default | Range to explore |
 |---|---|---|---|
 | A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 |
-| Carrying a plan out | agent `sloppiness` | 0–0.3 | 0–2 |
-| Markers measuring levels and outcomes | `marker_σ` | 0.05 | 0.05–0.5 |
-| Metric model predictions | `σ_leaf`, `σ_branch`, `σ_coarse`, `MetricModel.σ` | 0.3, 0.5, 0.75 | 0.2–2 |
-| Systematic model bias | `bias_σ`, `MetricModel.bias` | 0.1 | 0–0.5 |
-| An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.03, 0.03 | 0.03–0.15 |
+| Carrying a plan out | agent `sloppiness` | 0 | 0–0.6 |
+| Markers measuring levels and outcomes | `marker_σ` | 0.05 | 0.02–0.2 |
+| Metric model predictions, relative to the domain's spread (leaf, parent, coarse) | `σ_leaf`, `σ_branch`, `σ_coarse` | 0.15, 0.3, 0.45 | 0.05–0.45, 0.2–0.6, 0.35–0.75 |
+| Systematic model bias, relative | `bias_σ` | 0.1 | 0–0.2 |
+| An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.03, 0.03 | 0.03–0.1 |
 | Bootstrap classification (what it misses) | overlaps unknown to it | all | all to none |
-| Resource accounting | `cost_σ` | 0.1 | 0–0.5 |
-| Resource regeneration | `regen_σ` | 0.1 | 0–1 |
-| Records reaching memory | `memory_loss` | 0.02 | 0–0.2 |
-| Experts joining co-funding | `participation` | 0.9 | 0.3–1 |
-| Separating an upstream output's part | `attribution_σ` | 0.1 | 0–0.5 |
-| Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–1 |
+| Resource accounting | `cost_σ` | 0.1 | 0–0.3 |
+| Resource regeneration | `regen_σ` | 0.1 | 0–0.5 |
+| Records reaching memory | `memory_loss` | 0.02 | 0–0.1 |
+| Experts joining co-funding | `participation` | 0.9 | 0.6–1 |
+| Separating an upstream output's part | `attribution_σ` | 0.1 | 0–0.3 |
+| Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–0.5 |
 | Examining harm of no apparent cause tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
 | An agent laundering harm (adversary); the cost it saves | `launder`, `launder_saving` | 0, 0.5 | 0–1, 0.2–0.8 |
 | Hazard harm | `hazard_σ` | 0.2 | 0–1 |
-| A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
-| A guardian acting on a known duty | `diligence` | 0.95 | 0.3–1 |
+| A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.6–1 |
+| A guardian acting on a known duty | `diligence` | 0.95 | 0.7–1 |
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |

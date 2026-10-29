@@ -16,9 +16,9 @@ fooled = [0, 0, 0, 0, 0, 1.0]
 
 @testset "M6 overpromising: acceptance" begin
     # Deceit does not pay (BACKPROPAGATION 8.28, 8.29). Models price each actor by its track record,
-    # so the liar's prices return to honest levels: it acts about as often as honestly, collects about
-    # what its outcomes are worth upfront, and ends no richer on average; its peers' prices are not
-    # touched. Mistakes decaying slower than wins leave its churn no reputation to bank.
+    # so the liar's prices return to honest levels: it acts no more than honestly, collects no more
+    # upfront than its outcomes are worth, and ends no richer on average. Mistakes decaying slower
+    # than wins leave its churn no reputation to bank.
     seeds = 1:6
     honest = [run_m3c(six(); seed) for seed in seeds]
     liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
@@ -26,13 +26,18 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     @test mean(sum(l.balance[6, :]) for l in liar) <= 1.05 * mean(sum(h.balance[6, :]) for h in honest)
     @test mean(acts.(liar)) <= 1.2 * mean(acts.(honest))
     @test all(l.upfront[6] < l.settled_value[6] for l in liar)
-    @test mean(sum(l.upfront[1:5]) for l in liar) ≈ mean(sum(h.upfront[1:5]) for h in honest) rtol = 0.1
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) for l in liar)
-    # Without the track record the liar acts twice as often and is paid upfront far beyond its
-    # outcomes, which escrow claws back; the fooled models lose accuracy for everyone.
-    blind_models = run_m3c(six(deceit = fooled, track_window = 0); seed = 1)
-    @test acts(blind_models) > 1.8 * acts(honest[1]) && blind_models.upfront[6] > 5 * blind_models.settled_value[6]
-    @test blind_models.leaf_accuracy[1] < liar[1].leaf_accuracy[1] - 0.05
+    # Under status thresholds (8.35) a deceiver degrades the shared model's accuracy, and with it
+    # the domain's currency status (BACKPROPAGATION 8.37). With the track record the domain mostly
+    # keeps status; peers lose part of their activity, not all of it.
+    peers(tr) = sum(count(==(k), tr.chosen_agent) for k in 1:5)
+    @test mean(peers.(liar)) > 0.5 * mean(peers.(honest))
+    # Without the track record the deceiver cannot profit (it barely acts), but it takes the domain's
+    # status down with it: a denial of service on everyone, an open finding.
+    untracked = [run_m3c(six(deceit = fooled, track_window = 0); seed) for seed in 1:3]
+    @test mean(acts.(untracked)) < 0.2 * mean(acts.(honest[1:3]))
+    @test mean(peers.(untracked)) < 0.1 * mean(peers.(honest[1:3]))
+    @test mean(u.leaf_accuracy[1] for u in untracked) < mean(l.leaf_accuracy[1] for l in liar[1:3]) - 0.3
 end
 
 @testset "M6 overpromising: adversarial and edge cases" begin

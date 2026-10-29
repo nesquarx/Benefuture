@@ -54,6 +54,8 @@ struct M3cParams
     n_learn::Float64
     threshold::Float64
     novel_threshold::Float64
+    coarse_threshold::Float64  # status a parent (coarse) model needs (8.35; governed)
+    max_credence::Float64      # the greatest credence any model may state (8.33: truth levels never reach 1; governed)
     min_records::Int
     μ_rate::Float64
     μ_every::Int
@@ -138,10 +140,10 @@ function shock(kind::Symbol; step::Integer, duration::Integer = 1, size::Real = 
 end
 
 function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λneg::Real, overlaps = Tuple{Int,Int,Float64}[],
-                   marker_σ::Real = 0.05, window::Integer = 10, spread::Real = 0.03, classify_σ::Real = 0.03,
+                   marker_σ::Real = 0.05, window::Integer = 100, spread::Real = 0.03, classify_σ::Real = 0.03,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
-                   σ_leaf::Real = 0.3, σ_branch::Real = 0.5, σ_coarse::Real = 0.75, n_learn::Real = 20,
-                   threshold::Real = 0.55, novel_threshold::Real = 0.52, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   σ_leaf::Real = 0.15, σ_branch::Real = 0.3, σ_coarse::Real = 0.45, n_learn::Real = 20,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -162,7 +164,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1, "shares and thresholds in (0, 1]")
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1,
+          "shares and thresholds in (0, 1]; credence cap in [0.5, 1)")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
           "rates, noises, thresholds and costs must be non-negative")
@@ -195,7 +198,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -241,6 +244,7 @@ function run_m3c(p::M3cParams; seed)
     # prediction errors, per being touched, correct its next estimates. Records reach the models at
     # the end of each step.
     pending_track = Tuple{Int,Float64,Float64}[]
+    pending_err = Tuple{Int,Float64}[]  # value errors of estimates for each actor, for its credences
     function correction(a)
         r = @view track[a][max(1, end - p.track_window + 1):end]
         (p.track_window == 0 || isempty(r)) ? (0.0, 0.0) : (mean(first, r), mean(last, r))
@@ -257,6 +261,7 @@ function run_m3c(p::M3cParams; seed)
         any(m) || return
         cu, ch = correction(a)
         push!(pending_track, (a, mean(pred.du[m]) + cu - mean(seen.du[m]), mean(pred.dh[m]) + ch - mean(seen.dh[m])))
+        push!(pending_err, (a, plan_value(pred, t) - plan_value(seen, t)))
     end
     live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
     skill(a, l) = p.agents[a].skills[l] + sum((e.size for e in live(:breakthrough) if e.target == a); init = 0.0)
@@ -290,6 +295,7 @@ function run_m3c(p::M3cParams; seed)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
     track = [Tuple{Float64,Float64}[] for _ in 1:na]  # each actor's past estimate errors (8.29)
+    actor_err = [Float64[] for _ in 1:na]               # and the value errors of its corrected estimates
     ntop = count(==(0), p.leaf_parent)
     dims = np + ntop + ntrue
     axis(i) = Float64.((1:dims) .== i)
@@ -317,20 +323,37 @@ function run_m3c(p::M3cParams; seed)
     root = lmax + np + 1
     ncol = root
     # Models: one per leaf and per parent; histories of scores.
-    lhist, phist = [Float64[] for _ in 1:lmax], [Float64[] for _ in 1:np]
+    # Each scored prediction's credence that the action's assessed value is positive, whether it was
+    # (1 or 0), and the error of its predicted value (author rulings 8.35, 8.36).
+    Rec = NamedTuple{(:credence, :outcome, :err),Tuple{Float64,Float64,Float64}}
+    lhist, phist = [Rec[] for _ in 1:lmax], [Rec[] for _ in 1:np]
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
-    rolling(h, prior) = isempty(h) ? -prior^2 : mean(@view h[max(1, end - p.window + 1):end])
-    leaf_prior(j) = lnovel[j] ? p.σ_coarse : p.σ_leaf
-    lb(j) = lbias[j] + sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
-    leaf_acc(j) = accuracy(rolling(lhist[j], leaf_prior(j)))
-    parent_acc(q) = accuracy(rolling(phist[q], p.σ_branch))
+    # Accuracy over the recent window is the quality of a model's credences (Lean
+    # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
+    # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
+    window_of(h) = @view h[max(1, end - p.window + 1):end]
+    acc_of(h) = isempty(h) ? 0.0 : credence_accuracy([x.credence for x in window_of(h)], [x.outcome for x in window_of(h)])
+    unc_of(h) = isempty(h) ? Inf : sqrt(mean(x.err^2 for x in window_of(h)))
+    # Model error and bias are relative to the domain's natural spread of outcomes (8.35).
+    lb(j) = lbias[j] * t.spread + sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
+    pb(q) = pbias[q] * t.spread
+    leaf_acc(j) = acc_of(lhist[j])
+    parent_acc(q) = acc_of(phist[q])
+    # A currency's credence for a prediction: from the predicted value and its model's uncertainty.
+    # Credence for an actor's action comes from the model's record on that actor (8.29: models
+    # estimate from track record), once it has a few entries; before that, from its record overall.
+    function cred(c, pred, a = 0)
+        e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
+        u = length(e) >= 5 ? sqrt(mean(abs2, e)) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
+        credence(plan_value(pred, t), u; cap = p.max_credence)
+    end
     leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = p.threshold,
                                    novel_threshold = p.novel_threshold, min_records = p.min_records)
-    parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.threshold,
+    parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                      novel_threshold = p.novel_threshold, min_records = p.min_records)
-    leaf_σ(j, l) = ltrue[j] != l ? p.σ_coarse :
-        lnovel[j] ? p.σ_leaf + (p.σ_coarse - p.σ_leaf) * exp(-length(lhist[j]) / p.n_learn) : p.σ_leaf
-    parent_σ(q, l) = knows(q, l) ? p.σ_branch : p.σ_coarse
+    leaf_σ(j, l) = t.spread * (ltrue[j] != l ? p.σ_coarse :
+        lnovel[j] ? p.σ_leaf + (p.σ_coarse - p.σ_leaf) * exp(-length(lhist[j]) / p.n_learn) : p.σ_leaf)
+    parent_σ(q, l) = t.spread * (knows(q, l) ? p.σ_branch : p.σ_coarse)
     # Shares from Lean come laid out over the current leaves; columns are fixed at lmax leaves.
     widen(x) = (L = nleaves(); [x[1:L]; zeros(lmax - L); x[(L + 1):end]])
     parent_mem(c) = [projection_membership(c, σ) for σ in parent_sig]
@@ -415,15 +438,17 @@ function run_m3c(p::M3cParams; seed)
     # Every model on the classification path is scored against the outcome.
     function score!(st, pm, l, plan, seen, quoted)
         blind[] && return  # nothing realised to score against
-        mask = touched(plan)
-        realised = [seen.du[mask]; seen.dh[mask]]
-        sc(pr) = mm_score([pr.du[mask]; pr.dh[mask]], realised)
+        measured = plan_value(seen, t)
+        function sc(c, pr)
+            v = plan_value(pr, t)
+            (credence = cred(c, pr), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured)
+        end
         for j in 1:nleaves()
-            st[j] > 0 && push!(lhist[j], sc(get(() -> predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), quoted, j)))
+            st[j] > 0 && push!(lhist[j], sc(j, get(() -> predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), quoted, j)))
         end
         for q in 1:np
             pm[q] >= p.parent_threshold &&
-                push!(phist[q], sc(get(() -> predict(mrng, MetricModel(pbias[q], parent_σ(q, l)), plan), quoted, col_parent(q))))
+                push!(phist[q], sc(col_parent(q), get(() -> predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), quoted, col_parent(q))))
         end
     end
     function reclassify!(step)
@@ -444,7 +469,7 @@ function run_m3c(p::M3cParams; seed)
     obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
     best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :
         c <= lmax ? (c, predict(mrng, MetricModel(lb(c), leaf_σ(c, l)), plan)) :
-                    (c, predict(mrng, MetricModel(pbias[c - lmax], parent_σ(c - lmax, l)), plan)))
+                    (c, predict(mrng, MetricModel(pb(c - lmax), parent_σ(c - lmax, l)), plan)))
     for step in 1:t.steps
         scoring_only = step <= p.init_steps
         cur[] = step
@@ -602,14 +627,14 @@ function run_m3c(p::M3cParams; seed)
             quotes = Tuple{Int,Float64,ToyPlan,Float64}[]
             for c in 1:(root - 1)
                 priced[j][c] > 0 || continue
-                σ, b, acc = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c), leaf_acc(c)) :
-                    (parent_σ(c - lmax, leaves[j]), pbias[c - lmax], parent_acc(c - lmax))
-                push!(quotes, (c, priced[j][c], fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j]), acc))
+                σ, b = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c)) : (parent_σ(c - lmax, leaves[j]), pb(c - lmax))
+                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j])
+                push!(quotes, (c, priced[j][c], pred, cred(c, pred, proposers[j])))  # escrow pays by credence (L84)
             end
             price = zeros(ncol)
             price[root] = priced[j][root] * costs[j]
-            for (c, sh, pr, acc) in quotes
-                price[c] = sh * transaction_price(costs[j], plan_value(pr, t), acc)
+            for (c, sh, pr, cr) in quotes
+                price[c] = sh * transaction_price(costs[j], plan_value(pr, t), cr)
             end
             all(price[c] <= 0 || price[c] <= balance[proposers[j], c] for c in 1:ncol) || continue
             push!(menu, j); push!(menu_preds, quotes[argmax([q[2] for q in quotes])][3]); offers[j] = quotes
@@ -632,8 +657,8 @@ function run_m3c(p::M3cParams; seed)
                 # Measurement outage (L154 Progressive: degrade, fall back): paid by prediction
                 # alone, escrow's upfront (L86), with no settlement.
                 credits = [(a, 0.0, 0.0)]
-                for (c, sh, pr, acc) in offers[j]
-                    upfront = sh * acc * plan_value(pr, t)
+                for (c, sh, pr, cr) in offers[j]
+                    upfront = sh * cr * plan_value(pr, t)
                     balance[a, c] += upfront - sh * costs[j]
                     minted += upfront
                     agent_upfront[a] += upfront
@@ -644,8 +669,8 @@ function run_m3c(p::M3cParams; seed)
                     measured_late = plan_value(seen_late, t)
                     late = credits_for(j, a, seen_late, measured_late; late_σ = p.remeasure_σ)
                     delta = 0.0
-                    for (c, sh, pr, acc) in offers[j]
-                        upfront = sh * acc * plan_value(pr, t)
+                    for (c, sh, pr, cr) in offers[j]
+                        upfront = sh * cr * plan_value(pr, t)
                         x = settlement(sh * (late[1][2] + late[1][3]), upfront)
                         agent_settled[a] += sh * (late[1][2] + late[1][3])
                         balance[a, c] += x; delta += x
@@ -660,8 +685,8 @@ function run_m3c(p::M3cParams; seed)
                 end)
             else
                 credits = credits_for(j, a, seen, measured)
-                for (c, sh, pr, acc) in offers[j]
-                    upfront = sh * acc * plan_value(pr, t)
+                for (c, sh, pr, cr) in offers[j]
+                    upfront = sh * cr * plan_value(pr, t)
                     actor_value = credits[1][2] + credits[1][3]
                     balance[a, c] += upfront - sh * costs[j] + settlement(sh * actor_value, upfront)
                     agent_upfront[a] += upfront; agent_settled[a] += sh * actor_value
@@ -801,10 +826,9 @@ function run_m3c(p::M3cParams; seed)
             need = scarcity_cost(p.cost_per_touch, available, p.capacity) * count(hit)
             sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
             st = classify_sig(sig)
-            pr = price_shares(st)
-            acc = sum((pr[c] * (c <= lmax ? leaf_acc(c) : parent_acc(c - lmax)) for c in 1:(root - 1) if pr[c] > 0); init = 0.0)
-            bp = best_prediction(st, l, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
-            price = transaction_price(need, bp === nothing ? 0.0 : plan_value(bp[2], t), acc)
+            # Only a qualified currency prices the repair (8.35.4); with none, it costs its full resource cost.
+            bp = best_prediction(price_shares(st), l, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
+            price = bp === nothing ? need : transaction_price(need, plan_value(bp[2], t), cred(bp[1], bp[2]))
             own = clamp(need - max(price, 0.0), 0.0, need)
             spend = min(sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[], clamp(price, 0.0, need))
             f = p.repair_efficiency * min(own + spend, need) / need
@@ -842,7 +866,7 @@ function run_m3c(p::M3cParams; seed)
             (measured = measured, traced = traced)
         end
         function hazard!(share, sz)
-            local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, pr, acc, price, own
+            local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, price, own
             world.hazards[] += 1
             l = rand(hrng, 1:ntrue)
             hit = rand(hrng, t.n) .< share
@@ -971,7 +995,10 @@ function run_m3c(p::M3cParams; seed)
         for (a, ru, rh) in pending_track
             push!(track[a], (ru, rh))
         end
-        empty!(pending_track)
+        for (a, e) in pending_err
+            push!(actor_err[a], e)
+        end
+        empty!(pending_track); empty!(pending_err)
         blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
         # SigThGv's perturbation branch (L157). Without adaptation, a random walk: each epoch a

@@ -887,3 +887,40 @@ The simulation's default (`fork_rule = :divided`) stands.
    time personhood suffices for a relevant vote, enough novel identity and reputation has accrued
    for a fresh base vote. A base vote follows novelty and personhood, not identity count.
 Candidate homes: L82, L84, Measurement (accuracy), Being, L113, L122–123.
+
+**8.36 Author rulings: credence and accuracy (settling 8.35's proposal).**
+1. Start simple: a model's credence that an action's assessed value is positive (L84). The goal is
+   a model predicting a U/H/N marker from other marker inputs, history included, and stating a
+   single credence for that outcome; it may hold a full distribution for a transaction, but only a
+   single credence is reducible to currency (it feeds probabilistic escrow).
+2. Accuracy 1 is perfect prediction, generally unattainable: accuracy = 1 − Brier_model /
+   Brier_random (random guessing, credence 0.5, scores 0.25), so no ceiling adjustment.
+3. The status thresholds (0.9 established, 0.75 new or coarse, 0.55 for the unprecedented) apply on
+   that scale: 0.5 is halfway from random guessing to perfect.
+Candidate homes: L82, L84, Measurement (accuracy as credence quality).
+8.36 status: credences (`credence_ref`: predicted value over the model's uncertainty, through the
+normal distribution function, capped at `max_credence` 0.99 since truth levels never reach 1) feed
+probabilistic escrow; a model's uncertainty is its own track record, per actor once there are a few
+records (8.29); accuracy is `credence_accuracy_ref` over a window of 100. Status thresholds 0.9
+(established leaf), 0.75 (novel leaf, coarse parent), never below 0.55; below them, StandCoin. Model
+error is now relative to the domain's natural spread, and realistic noise ranges top out at the edge
+of a functional domain (accuracy about 0.75). Measured: with every noise at its realistic top,
+pricing thins but floors still rise (about 14% of clean growth); far beyond, no currency qualifies.
+The author's point on noise adjustment (it would rule out models that turn noise into mechanics) is
+kept: accuracy is not adjusted for noise.
+
+**8.37 Finding: under status thresholds a deceiver can take a domain's currency down (screened;
+needs the author).** M6 world (six agents of moderate skill, 0.3): the leaf model's accuracy hovers
+near the 0.9 bar even without a liar (0.83–0.88; marginal work makes the sign of outcomes uncertain).
+A liar fooling every model lowers it further (to 0.74–0.86 with track records), so the domain loses
+status more often and everyone's work falls (peers' actions about 20–40% lower); deceit itself does
+not pay. Without track records the liar drives accuracy to 0.16–0.37 and the domain loses status
+outright: peers act 0–19 times against 210–929 in an honest world, a denial of service, while the
+liar itself barely acts. Candidate native defences: accuracy computed per actor as well as per model,
+so one actor's record cannot disqualify a model for everyone; and the track record (8.29), which
+already limits it. Candidate homes: L82, L84, Measurement.
+
+Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
+an evolutionary search towards minimum-description-length models, more informative than
+random-number noise.
+

@@ -91,6 +91,31 @@ function projection_membership(sig, parent)
 end
 
 """
+    credence(predicted, uncertainty) -> probability
+
+A model's credence that an action's assessed value is positive (Lean `credence_ref`; L84): its
+predicted value over its own uncertainty, through the normal distribution function, within
+[1 − `cap`, `cap`] (truth levels never reach 1; `cap` is a governed threshold).
+"""
+function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
+    check(isfinite(predicted) && !isnan(uncertainty) && uncertainty >= 0, "finite prediction, non-negative uncertainty")
+    check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
+    ccall(sym(:bf_credence), Float64, (Float64, Float64, Float64), predicted, uncertainty, cap)
+end
+
+"""
+    credence_accuracy(credences, outcomes) -> accuracy in [0, 1]
+
+Accuracy as the quality of credences (Lean `credence_accuracy_ref`): 1 − Brier / 0.25; 0 is random
+guessing, 1 perfect; outcomes are 1 (assessed value positive) or 0.
+"""
+function credence_accuracy(credences, outcomes)
+    check(length(credences) == length(outcomes) && all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes),
+          "one credence in [0, 1] per outcome of 0 or 1")
+    ccall(sym(:bf_credence_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(credences), floatarray(outcomes))
+end
+
+"""
     classify_network(parent_mem, leaf_dists, μ; parent_threshold, μ_min, leaf_threshold, temperature)
 
 An action's shares by descent: matched parents (membership ≥ `parent_threshold`), their member

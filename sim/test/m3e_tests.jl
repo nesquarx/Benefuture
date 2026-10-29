@@ -59,11 +59,15 @@ end
     # predicted good its qualified currencies credit. That pays for part of it; the commons pays
     # only the rest, and banks no surplus (an insurer must not profit from unassigned harm).
     @test rich.self_funded > 0 && rich.commons_spent < rich.repair_cost
-    # The realistic case (author): mildly inaccurate models. Repair's predicted good still covers its
-    # resource cost, so the commons is barely touched.
-    mild = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, σ_leaf = 0.75, σ_branch = 0.9, σ_coarse = 1.0, bias_σ = 0.3); seed = 3)
+    # The realistic case (author): mildly inaccurate models (twice the default error and bias), with
+    # work, and so models with a record, in every domain. Repair's predicted good still covers its
+    # resource cost, so the commons is barely touched. (Where a domain has no qualified model, the
+    # commons pays: below.)
+    all4 = [DomainAgent(fill(0.6, 4), fill(0.25, 4), 0.0) for _ in 1:8]
+    mild = run_m3c(hz(zeros(Int, 4); agents = all4, repair_efficiency = 1.0, overflow_base = Inf, σ_leaf = 0.3, σ_branch = 0.45,
+                      σ_coarse = 0.6, bias_σ = 0.15); seed = 3)
     @test mild.self_funded > 0.9 * mild.repair_cost && mild.commons_spent < 0.1 * mild.repair_cost
-    blind_models = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, threshold = 0.99, novel_threshold = 0.99); seed = 3)
+    blind_models = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0); seed = 3)
     # With no qualified model, nothing is self-funded: all that is repaired, the commons paid for.
     @test blind_models.self_funded < 1e-9 && blind_models.insured ≈ blind_models.commons_spent > 0
     @test sum(rich.balance) - rich.endowed ≈ sum(rich.valued_measured) - sum(rich.costs) - sum(rich.lane_costs) -

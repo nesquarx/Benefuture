@@ -331,9 +331,11 @@ means over 5 seeds of 500 steps.
   (per-person ceilings, inverse to expertise only on average), outcomes apparent 40% of the time,
   starting from inverted reputations, converge within a few hundred decisions to the accuracy that
   true reputations give; the effect is small (expertise is worth about two points there). In the
-  economy, every noise source alone but two leaves floors rising, and the robust ones together slow
-  growth to about 40%; moderate model or execution noise on top stops all pricing at once, a
-  finding recorded for the author (the eligibility threshold as a cliff)
+  economy, with accuracy as the quality of models' credences and thresholds as currency status
+  (author rulings 8.35–8.36), every noise source at the top of its realistic range at once thins
+  pricing but floors still rise (about 14% of clean growth); far beyond a functional domain, no
+  currency qualifies and work goes to StandCoin. Under status thresholds a deceiver can degrade a
+  domain's currency status for everyone, a finding recorded for the author (8.37)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)

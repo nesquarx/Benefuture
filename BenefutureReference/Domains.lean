@@ -140,12 +140,44 @@ def membership_rolling_ref (mu mLeaf mParent rate : Float) : Float :=
     also the confidence that splits escrow. -/
 def accuracy_ref (score : Float) : Float := 1.0 / (1.0 + Float.sqrt (max (-score) 0.0))
 
+/-- The standard normal distribution function, by Abramowitz and Stegun 7.1.26 for erf (absolute
+    error below 1.5e-7). -/
+def normal_cdf_ref (x : Float) : Float :=
+  let z := x.abs / Float.sqrt 2.0
+  let t := 1.0 / (1.0 + 0.3275911 * z)
+  let poly := t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
+  let erf := 1.0 - poly * Float.exp (-(z * z))
+  if x ≥ 0.0 then 0.5 * (1.0 + erf) else 0.5 * (1.0 - erf)
+
+/-- A model's credence that an action's assessed value is positive (L84: P(As(V, A, t0) > 0);
+    author rulings 8.35, 8.36): its predicted value over its own uncertainty, through the normal
+    distribution function. No uncertainty is the greatest credence allowed in the predicted sign;
+    infinite uncertainty is a coin toss. Truth levels never reach 1 (author ruling 8.33): credence
+    stays within [1 − cap, cap]. -/
+def credence_ref (predicted uncertainty cap : Float) : Float :=
+  let c := if uncertainty == 0.0 then (if predicted > 0.0 then 1.0 else if predicted < 0.0 then 0.0 else 0.5)
+           else normal_cdf_ref (predicted / uncertainty)
+  max (1.0 - cap) (min cap c)
+
+/-- Accuracy as the quality of credences (author rulings 8.35, 8.36): 1 − Brier / 0.25, the Brier
+    score of random guessing (credence 0.5); 0 is random, 1 perfect (generally unattainable); worse
+    than random scores 0; no record, no accuracy. -/
+def credence_accuracy_ref (credences outcomes : Array Float) : Float := Id.run do
+  let n := min credences.size outcomes.size
+  if n == 0 then return 0.0
+  let mut b := 0.0
+  for i in [0:n] do
+    let e := credences[i]! - outcomes[i]!
+    b := b + e * e
+  return max 0.0 (1.0 - (b / n.toFloat) / 0.25)
+
 /-- Currency eligibility (L82, author ruling): an established domain's model qualifies at
     `threshold`; a novel domain's, after its score-only phase of `minRecords` scored predictions,
-    at `novelThreshold`, never below 0.5. -/
+    at `novelThreshold`, never below 0.55 (author ruling 8.35: that floor is for discovering what has
+    no precedent; established sub-domains need 0.9 or more, new or coarse ones 0.75 or more). -/
 def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
     (threshold novelThreshold : Float) : Bool :=
-  if novel then records ≥ minRecords && accuracy ≥ max novelThreshold 0.5 else accuracy ≥ threshold
+  if novel then records ≥ minRecords && accuracy ≥ max novelThreshold 0.55 else accuracy ≥ threshold
 
 /--
   Resource cost by availability (L83, StandCoin: charges resource cost as per availability): the

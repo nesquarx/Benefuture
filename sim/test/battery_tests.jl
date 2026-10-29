@@ -36,6 +36,18 @@
     @test r.pairs[(1, 2)] > 0.3 && abs(r.pairs[(1, 3)]) < 0.15
 end
 
+@testset "Battery: Gaussian-ish sampling" begin
+    # A fast inverse normal (Acklam's rational approximation) turns stratified uniforms into
+    # stratified normals: typical worlds dominate, extremes stay rare but present.
+    @test isapprox(normal_quantile(0.975), 1.959964; atol = 1e-6) && normal_quantile(0.5) == 0.0
+    @test isapprox(normal_quantile(1e-6), -4.753424; atol = 1e-5)
+    rng = Xoshiro(3)
+    G = gaussian_hypercube(rng, 2000, 3; μ = 0.5, σ = 0.25)
+    @test all(G .>= 0) && isapprox(mean(G[:, 1]), 0.5; atol = 0.02) && isapprox(std(G[:, 1]), 0.25; atol = 0.03)
+    @test mean(G[:, 2] .> 1.0) < 0.05
+    @test_throws ArgumentError normal_quantile(1.0)
+end
+
 @testset "Battery: adversarial and edge cases" begin
     rng = Xoshiro(2)
     # A non-monotone ray (fails, then converges again further out) is flagged, not hidden.
