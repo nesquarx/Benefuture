@@ -304,6 +304,11 @@ means over 5 seeds of 500 steps.
   a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
   diversity–novelty balance not yet tested ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
   [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
+- Gaming (M6, a finding, not a guarantee): an agent whose plans fool every metric model is paid
+  upfront far more than its outcomes are worth, and escrow takes the excess back, but it still ends
+  richer than honestly (and than its peers when losses decay faster than gains, through the
+  balance-overflow threshold); recorded for the author as unmet requirements
+  ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters

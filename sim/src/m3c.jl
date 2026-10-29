@@ -112,6 +112,7 @@ struct M3cParams
     memory_loss::Float64   # chance a record never reaches memory
     participation::Float64 # chance an asked expert takes part in co-funding
     remeasure_σ::Float64   # extra marker error when measuring late, after an outage
+    deceit::Vector{Float64} # per agent, how far its plans fool every metric model upward (M6; world)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -144,7 +145,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, events = Shock[])
+                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, deceit = Float64[], events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -173,6 +174,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
     check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
+    check(isempty(deceit) || (length(deceit) == length(agents) && all(isfinite, deceit)), "one finite deceit per agent")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
@@ -185,7 +187,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
-              bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ, collect(Shock, events))
+              bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
+              isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -216,6 +219,9 @@ function run_m3c(p::M3cParams; seed)
     # World events (catastrophes and black swans): which are live at the current step.
     cur, blind = Ref(0), Ref(false)
     deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
+    # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world property).
+    fooled(pred, a, plan) = p.deceit[a] == 0 ? pred :
+        ToyPlan(pred.du .+ p.deceit[a] .* touched(plan), pred.dh .+ p.deceit[a] .* touched(plan))
     live(kind) = (e for e in p.events if e.kind == kind && e.step <= cur[] < e.step + e.duration)
     skill(a, l) = p.agents[a].skills[l] + sum((e.size for e in live(:breakthrough) if e.target == a); init = 0.0)
     with_params(t, v) = ToyParams(n = t.n, steps = t.steps, plans = t.plans, q = t.q, th = t.th, touch = t.touch,
@@ -246,6 +252,7 @@ function run_m3c(p::M3cParams; seed)
     end
     s = toy_state(t, rng)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
+    agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
     ntop = count(==(0), p.leaf_parent)
     dims = np + ntop + ntrue
     axis(i) = Float64.((1:dims) .== i)
@@ -530,6 +537,7 @@ function run_m3c(p::M3cParams; seed)
             if scoring_only
                 bp = best_prediction(stops[j], leaves[j], plans[j])
                 bp === nothing && continue
+                bp = (bp[1], fooled(bp[2], proposers[j], plans[j]))
                 push!(menu, j); push!(menu_preds, bp[2]); offers[j] = [(bp[1], 0.0, bp[2], 0.0)]
                 continue
             end
@@ -542,7 +550,7 @@ function run_m3c(p::M3cParams; seed)
                 priced[j][c] > 0 || continue
                 σ, b, acc = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c), leaf_acc(c)) :
                     (parent_σ(c - lmax, leaves[j]), pbias[c - lmax], parent_acc(c - lmax))
-                push!(quotes, (c, priced[j][c], predict(mrng, MetricModel(b, σ), plans[j]), acc))
+                push!(quotes, (c, priced[j][c], fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j]), acc))
             end
             price = zeros(ncol)
             price[root] = priced[j][root] * costs[j]
@@ -574,6 +582,7 @@ function run_m3c(p::M3cParams; seed)
                     upfront = sh * acc * plan_value(pr, t)
                     balance[a, c] += upfront - sh * costs[j]
                     minted += upfront
+                    agent_upfront[a] += upfront
                 end
                 idx = length(tr.valued_measured) + 1
                 push!(deferred, function ()
@@ -584,6 +593,7 @@ function run_m3c(p::M3cParams; seed)
                     for (c, sh, pr, acc) in offers[j]
                         upfront = sh * acc * plan_value(pr, t)
                         x = settlement(sh * (late[1][2] + late[1][3]), upfront)
+                        agent_settled[a] += sh * (late[1][2] + late[1][3])
                         balance[a, c] += x; delta += x
                         for (e, pp, nn) in late[2:end]
                             balance[e, c] += sh * (pp + nn); delta += sh * (pp + nn)
@@ -599,6 +609,7 @@ function run_m3c(p::M3cParams; seed)
                     upfront = sh * acc * plan_value(pr, t)
                     actor_value = credits[1][2] + credits[1][3]
                     balance[a, c] += upfront - sh * costs[j] + settlement(sh * actor_value, upfront)
+                    agent_upfront[a] += upfront; agent_settled[a] += sh * actor_value
                     for (e, pp, nn) in credits[2:end]
                         balance[e, c] += sh * (pp + nn)  # other contributors: causal distribution, nothing upfront
                     end
@@ -650,7 +661,7 @@ function run_m3c(p::M3cParams; seed)
                 lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
                 continue
             end
-            c, pred = bp
+            c, pred = bp[1], fooled(bp[2], a, plan)
             if choose(screened(), [pred], t) == 1
                 lane.screened_out[] += 1
                 continue
@@ -898,7 +909,8 @@ function run_m3c(p::M3cParams; seed)
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
                prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
                commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
-               repair_cost = world.repair_cost[],
+               repair_cost = world.repair_cost[], upfront = agent_upfront, settled_value = agent_settled,
+               leaf_accuracy = [leaf_acc(k) for k in 1:L],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

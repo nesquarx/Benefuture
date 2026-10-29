@@ -324,6 +324,27 @@ carried the last action's outcome and credits stopped summing to outcomes (12,79
 credited). Declaring the action's variables local fixed it; a test now checks that each late
 record is fully distributed and that late outcomes differ.
 
+## M6 observations
+
+Exploits are tested against the native mechanisms before any defence is built; a failure is a
+finding (BACKPROPAGATION 8.28), kept as a `@test_broken` requirement. Six equal agents (skill 0.3)
+in one domain, 300 steps; one overpromises (`deceit` 1.0: its plans fool every model upward).
+
+| Reading | Honest | Liar |
+|---|---|---|
+| Actions taken | 189 | 393 |
+| Upfront received / value settled | 1,416 / 1,852 | 12,233 / 1,872 |
+| Accuracy of the fooled leaf model | 0.78 | 0.63 |
+| Final balance (peers' mean in the liar's run) | 1,072 | 1,434 (1,118) |
+| Same, losses decaying as fast as gains | 936 | 961 (969) |
+| Same, no overflow | 1,762 | 1,631 (1,807) |
+
+Escrow claws back the excess, but deceit still pays: the liar's churn leaves it net relevance when
+losses decay faster than gains, raising its overflow threshold; with symmetric decay it ends below
+its peers yet above its honest self, since fooled prices get more of its work through. Relay
+farming is bounded by the accolade rate. Not yet: sabotaged outages (examined by cause), harm
+passed off as unassigned, colluding voters, identity forks.
+
 ## M4 observations
 
 The value parameters (α, β, γ, q₊, q₋, λ) start at the Lean bootstrap point and are governed by
@@ -479,6 +500,7 @@ guesses at reality, to be swept once the model is solid.
 | A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
+| An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |
 

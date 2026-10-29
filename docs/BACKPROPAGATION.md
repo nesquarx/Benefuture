@@ -726,3 +726,27 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
 3. Held open: how the balance sets the commons' share (8.26.7), and whether the debatable escape is
    demonstrated on a threshold with a measurable effect (overflow against inequality, or the
    causal-assessment confidence), since the value parameters show none at current scales.
+
+**8.28 M6 finding: overpromising pays (screened; needs the author).** An agent whose plans fool
+every metric model upward (`deceit` 1.0, a world property) in a toy domain of six equal agents,
+300 steps:
+1. Escrow works as written: the liar received 12,233 upfront on outcomes settled at 1,872, and
+   settlement (`measured − upfront`) took the excess back. The models it fooled lost accuracy
+   (0.77 → 0.63), for every agent in the domain.
+2. Yet it ends richer: by 34% over its honest self and 28% over its peers. Screening (overflow off;
+   decay rates varied) traced this to balance overflow, whose threshold rises with net relevance.
+   With losses decaying faster than gains (λ₋ 0.05 > λ₊ 0.02, the simulation's default, not
+   ratified; the Lean bootstrap has both at 0.05), the liar's doubled churn leaves net relevance
+   (851 against 542), so overflow takes less from it. This contradicts the ledger asymmetry of the
+   Reputation article (positive and negative reputation are summed separately and do not cancel),
+   since L103's AccumThresh(Re_E, ...) is applied to the net. [P] key AccumThresh to the positive
+   ledger discounted by the negative one weighted for loss aversion, or decay losses no faster
+   than gains. Candidate homes: L101, L103, Reputation.
+3. With symmetric decay it ends below its peers but still 3–9% above its honest self: fooled
+   prices get more of its (genuinely positive) work through. [P] native defence: probabilistic
+   escrow conditioned on the actor's own record (L84: Pay_t0 by P(As(V, A, t0) > 0); Benefuture
+   currency: "overestimating models face ratcheting escrow requirements"), so a deceiver's upfront
+   collapses without lowering its peers' prices. Candidate homes: L84, Benefuture currency.
+4. Relay farming is bounded by the governed accolade rate (5% of the carried outputs' positive
+   shares in the test world); ruling 8.26.2 (held) removes it where carrying was not needed.
+Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
