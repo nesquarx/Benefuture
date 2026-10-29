@@ -25,6 +25,11 @@
     bt = battery(oracle, ["a", "b", "c"]; rng, rays = 20, screen_n = 200, tmax = 2.0, tol = 1e-2)
     @test isapprox(bt.limits["a"], 1.0; atol = 0.02) && bt.limits["c"] == Inf
     @test length(bt.boundary) == 20 && all(p -> !oracle(p.point .* 1.02), filter(p -> isfinite(p.t), bt.boundary))
+    # Screening is scaled to where the rays found the boundary, so it straddles it rather than
+    # landing wholly beyond (or short of) it.
+    far(s) = sum(s) < 0.3
+    sc = battery(far, ["a", "b", "c", "d", "e"]; rng, rays = 12, screen_n = 200, tmax = 2.0, tol = 1e-2).screening
+    @test 0.2 < sc.fail_rate < 0.8
 end
 
 @testset "Battery: adversarial and edge cases" begin

@@ -2,7 +2,8 @@
 # Severity 0 is the clean world; 1 the top of each factor's explored range (sim/README.md, Noise);
 # rays run to 2. Convergence (an evaluation criterion, not a rule): over the seeds' majority,
 # floor growth on understanding after the score-only start is at least `GROWTH` of the clean
-# world's, and deceivers end no richer than `GAIN` × honest agents' mean.
+# world's, and deceivers (when present) end no richer than `GAIN` × honest agents' mean in the same
+# position (not guardians).
 using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, GROWTH, GAIN = 300, 1:2, 0.25, 1.1
@@ -46,8 +47,11 @@ const CLEAN = mean(gain(run_m3c(world(zeros(length(FACTORS))); seed)) for seed i
 function converges(sev)
     ok = map(SEEDS) do seed
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
+        # Deceit is judged only where present, against honest agents in the same position (5 and 6:
+        # not guardians, so not penalised for hazards).
         rich(k) = sum(tr.balance[k, :])
-        gain(tr) >= GROWTH * CLEAN && mean(rich.(7:8)) <= GAIN * max(mean(rich.(1:6)), 1e-9)
+        honest_enough = sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(mean(rich.(5:6)), 1e-9)
+        gain(tr) >= GROWTH * CLEAN && honest_enough
     end
     count(ok) > length(SEEDS) / 2
 end

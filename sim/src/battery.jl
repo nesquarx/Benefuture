@@ -68,7 +68,7 @@ end
 
 Per-factor limits (`limits[name]`: the severity along that axis alone where convergence fails),
 `rays` boundary points in random directions of the positive orthant, and a screening of `screen_n`
-Latin-hypercube worlds.
+Latin-hypercube worlds, scaled (`screen_scale`) to straddle the boundary the rays found.
 """
 function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integer, tmax::Real, tol::Real, grid::Integer = 8)
     k = length(names)
@@ -79,7 +79,12 @@ function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integ
         b = ray_boundary(oracle, d; tmax, tol, grid)
         (direction = d, t = b.t, point = isfinite(b.t) ? b.t .* d : fill(Inf, k), monotone = b.monotone)
     end
-    (limits = limits, boundary = boundary, screening = screen_n > 0 ? screen(oracle, latin_hypercube(rng, screen_n, k)) : nothing)
+    # Screen where the boundary lies: scale the hypercube so its typical point (norm √(k/3)) sits at
+    # the median boundary the rays found, so the sample straddles it.
+    ts = [b.t for b in boundary if isfinite(b.t)]
+    scale = isempty(ts) ? 1.0 : clamp(median(ts) / sqrt(k / 3), 0.01, 1.0)
+    (limits = limits, boundary = boundary, screen_scale = scale,
+     screening = screen_n > 0 ? screen(oracle, scale .* latin_hypercube(rng, screen_n, k)) : nothing)
 end
 
 """
@@ -115,8 +120,8 @@ function write_results(label, bt, names; clean, minutes)
         println(io, "# Failure-boundary battery: ", label, "\n")
         println(io, "Build: commit ", commit, " (with any uncommitted changes at the time).\n")
         isnan(clean) || println(io, @sprintf("Clean world's floor growth: %.1f. ", clean))
-        println(io, @sprintf("Run time %.1f minutes; %d random rays; %d screened worlds, %.0f%% failing.\n",
-                             minutes, length(bt.boundary), length(sc.fails), 100 * sc.fail_rate))
+        println(io, @sprintf("Run time %.1f minutes; %d random rays; %d screened worlds (severities up to %.2f), %.0f%% failing.\n",
+                             minutes, length(bt.boundary), length(sc.fails), bt.screen_scale, 100 * sc.fail_rate))
         println(io, "## Limits along one factor (severity 1 = top of the explored range)\n")
         println(io, "| Factor | Fails beyond |\n|---|---|")
         for n in names

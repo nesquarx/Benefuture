@@ -1,8 +1,8 @@
 # Failure-boundary battery: governance
 
-Build: commit 4ffb053 (started before results were tagged by commit).
+Build: commit 3ac870a (with any uncommitted changes at the time).
 
-Run time 8.1 minutes; 24 random rays; 128 screened worlds, 10% failing.
+Run time 8.2 minutes; 24 random rays; 128 screened worlds, 10% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
