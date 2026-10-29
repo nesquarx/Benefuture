@@ -777,6 +777,7 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    is paid as an honest agent and ends no richer beyond noise. (3) M5: votes earn or cost
    reputation by the weight cast once outcomes are apparent, and delegations are audited and
    retracted; against a bloc of the top 30% with delegation, accuracy 65.5% → 96.1% and the bloc's
-   expertise share 0.80 → 0.03. Gaming check: a bloc defecting only where outcomes will not become
-   apparent keeps its reputation; the diversity at scale, deliberation, AdvAp and anti-corruption
+   expertise share 0.80 → 0.03. Gaming check, measured: a bloc defecting only where outcomes will
+   not become apparent keeps most of its expertise (0.80 → 0.51) and lowers accuracy on hidden
+   decisions to 69% (99% on apparent ones); the diversity at scale, deliberation, AdvAp and anti-corruption
    the author names are the remaining defences, not yet modelled.

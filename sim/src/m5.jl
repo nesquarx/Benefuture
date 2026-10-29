@@ -32,13 +32,14 @@ struct M5Params
     vote_value::Float64        # reputation a vote earns or costs, per share of weight cast, in units of the domain's (governed)
     audit_window::Int          # a delegate's recent apparent votes a delegator audits (L114; governed)
     audit_threshold::Float64   # share of them right below which delegations are retracted (L114; governed)
+    stealth::Bool              # colluders defect only where the outcome will not become apparent (M6; world)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
                   optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = 1.0, skill_gain::Real = 5.0,
                   p_delegate::Real = 0.0, cap::Real = 0.05, impact_threshold::Real = 0.5,
                   relative_expertise::Bool = true, colluders = Int[], p_apparent::Real = 0.7, vote_value::Real = 0.5,
-                  audit_window::Integer = 20, audit_threshold::Real = 0.6)
+                  audit_window::Integer = 20, audit_threshold::Real = 0.6, stealth::Bool = false)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -52,7 +53,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     focus = [a.focus[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     M5Params(Float64.(m3.relevance_leaf), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
-             p_apparent, vote_value, audit_window, audit_threshold)
+             p_apparent, vote_value, audit_window, audit_threshold, stealth)
 end
 
 """
@@ -66,6 +67,7 @@ function run_m5(p::M5Params; seed)
     rng = Xoshiro(seed)
     na = size(p.skills, 1)
     correct, max_share, max_single, bloc_expertise = 0, Float64[], Float64[], Float64[]
+    tally_apparent, tally_hidden = [0, 0], [0, 0]  # (correct, decided)
     # Votes are outputs (author ruling 8.29): reputation moves with each apparent decision, and
     # each agent's recent apparent votes per domain are its audited record (L114).
     reputation = copy(p.reputation)
@@ -75,6 +77,7 @@ function run_m5(p::M5Params; seed)
     for _ in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
+        apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
         rep = max.(reputation[:, k], 0.0)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
         w = [voting_weight(p.base, p.expertise_weight, [1.0], [expertise[i]], p.impact_weight, p.focus[i, k];
@@ -94,14 +97,17 @@ function run_m5(p::M5Params; seed)
             end
         end
         signal = [truth + p.signal_σ * exp(-p.skill_gain * max(p.skills[i, k], 0.0)) * randn(rng) for i in 1:na]
-        vote(i) = i in p.colluders ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
+        defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
+        vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
         tally = sum(held[i] * vote(i) for i in 1:na if !delegated[i])
         correct += sign(tally) == sign(truth)
+        t = apparent ? tally_apparent : tally_hidden
+        t[1] += sign(tally) == sign(truth); t[2] += 1
         push!(max_share, maximum(held) / total); push!(max_single, maximum(w) / total)
         isempty(p.colluders) || push!(bloc_expertise, sum(relative_reputation(rep)[p.colluders]))
         # Afterwards, the decision's optimality may become apparent: each vote is then credited or
         # debited by the weight it cast, and enters its voter's audited record.
-        if rand(rng) < p.p_apparent
+        if apparent
             for i in 1:na
                 delegated[i] && continue
                 right = vote(i) == sign(truth)
@@ -111,5 +117,6 @@ function run_m5(p::M5Params; seed)
             end
         end
     end
-    (correct = correct / p.decisions, max_share = max_share, max_single = max_single, bloc_expertise = bloc_expertise)
+    (correct = correct / p.decisions, max_share = max_share, max_single = max_single, bloc_expertise = bloc_expertise,
+     correct_apparent = tally_apparent[1] / max(tally_apparent[2], 1), correct_hidden = tally_hidden[1] / max(tally_hidden[2], 1))
 end

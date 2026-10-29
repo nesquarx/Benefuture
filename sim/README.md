@@ -390,8 +390,11 @@ below the audit threshold (L114). 800 decisions:
 | Top 40% | 74.0% | 77.6% | 52.5% | 94.1% | 0.90 → 0.04 |
 
 Audited delegation turns from the amplifier into the cure; without delegation base and impact
-weight still carry the bloc's votes. Gaming check, an M6 test to come: a bloc that defects only
-where the outcome will not become apparent keeps its reputation. Not yet: sabotaged outages
+weight still carry the bloc's votes. A stealthy bloc (top 30%, defecting only where the outcome
+will not become apparent, with foresight: the worst case) keeps most of its expertise (0.80 → 0.51)
+and does its damage unseen: 99% correct where outcomes become apparent, 69% where they do not, 90%
+overall. An open problem by the author's account (8.29.3); diversity at scale, deliberation,
+adversarial adaptation and anti-corruption are the defences still to model. Not yet: sabotaged outages
 (examined by cause), harm passed off as unassigned, identity forks.
 
 ## M4 observations

@@ -82,6 +82,13 @@ end
     @test live.bloc_expertise[end] < live.bloc_expertise[1] / 2
     # Honest experts lose nothing by it: without a bloc, accuracy holds.
     @test run_m5(M5Params(w, 1:4; decisions = 800, p_delegate = 0.8); seed = 1).correct > 0.95
+    # A stealthy bloc defects only where the outcome will not become apparent (worst case: it knows
+    # in advance). Vote reputation cannot see it: the bloc keeps its expertise and the damage falls on
+    # hidden decisions. An open problem by the author's account (8.29.3); diversity at scale,
+    # deliberation, AdvAp and anti-corruption are the defences still to model.
+    stealth = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true); seed = 1)
+    @test stealth.bloc_expertise[end] > stealth.bloc_expertise[1] / 2
+    @test stealth.correct_apparent > 0.95 && stealth.correct_hidden < stealth.correct_apparent - 0.2
     @test_throws ArgumentError M5Params(w, 1:4; p_apparent = 1.5)
     @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
 end
