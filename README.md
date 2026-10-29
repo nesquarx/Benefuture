@@ -440,6 +440,12 @@ Governance and thresholds
   significant harm and widening otherwise; where nothing matters it widens across seeds until
   admissibility rejects the candidates ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
   [sim/README.md, M4](sim/README.md#m4-observations)).
+- Deaths (M7, first rung; toy population of 50, 20 trials): G's floors over the decision-time
+  population, the dead at the bottom, do not stop a plan that removes the two worst-off and lifts
+  everyone else (the 10% quantile still rises; only the literal minimum would not); Freedom does,
+  since a death is irreparable harm (Lean `fr_permissible_ref`), a finding for the corpus's account of
+  sacrificial trade-offs (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
+  [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
   by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status

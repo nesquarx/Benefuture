@@ -88,9 +88,18 @@ end
 
 G over inaction and `plans`: 1 for inaction, k + 1 for `plans[k]`.
 """
-function choose(s::ToyState, plans, p::ToyParams)
+function choose(s::ToyState, plans, p::ToyParams; harms = nothing)
     for plan in plans
         check(length(plan.du) == length(s.u) && length(plan.dh) == length(s.h), "plan must cover every being")
+    end
+    # Freedom first (L135): with each plan's predicted harm by kind, (irreparable, irreversible,
+    # long-term, passing, time loss, confidence), an impermissible plan never reaches G.
+    if harms !== nothing
+        check(length(harms) == length(plans), "one harm classification per plan")
+        ok = [fr_permissible(h[1:5]...; confidence = h[6]) for h in harms]
+        keep = findall(ok)
+        i = choose(s, plans[keep], p)
+        return i == 1 ? 1 : keep[i - 1] + 1
     end
     fu, fh, pu = floor_quantile(s.u, p.q), floor_quantile(s.h, p.q), maximum(s.u)
     values = [0.0; [plan_value(plan, p) for plan in plans]]

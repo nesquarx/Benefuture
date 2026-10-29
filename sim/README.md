@@ -790,6 +790,16 @@ On contested questions, hearing both sides weighed by their records, with trials
 outcomes, finds the performant option far more often; deliberation alone hones in slowly. On
 uncontested questions the echo cost of 8.45 remains.
 
+## M7 observations: deaths (first rung)
+
+G's floors are taken over the decision-time population, a life a plan would end keeping its place at
+the bottom. Against a plan that removes the two worst-off of 50 beings and lifts everyone else by 3,
+the 10% quantile floor still rises (20 trials of 20) and G alone chooses it; the literal minimum
+would not rise. Freedom screens plans before G (`choose(...; harms)`, Lean `fr_permissible_ref`): a
+death is irreparable harm, and with it predicted, at any confidence down to 0.1, the plan is
+impermissible. Finding 8.47. Births await the author: how G's floors treat a newborn's low initial
+understanding, and the birth escrow (Government, Birth).
+
 ## Parsimony audit
 
 What the simulation does beyond the Lean and the pseudocode (CLAUDE.md, Parsimony). Native: a
@@ -819,6 +829,7 @@ for removal.
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
+| Freedom screening plans before G (deaths as irreparable harm) | Native | L135; Lean `fr_permissible_ref`; M7 |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |

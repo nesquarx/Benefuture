@@ -1112,6 +1112,20 @@ duties become recommendations is itself a governed threshold. This settles the G
 list of duties against 8.24.3 (duties stay minimal, not absent). Candidate homes: Law (Duties,
 Responsibilities), Government, L113 (mandatory voting threshold), L157. Propagated to Law (articles).
 
+**8.47 Finding: G's quantile floor does not block sacrificial trade-offs; Freedom does.** M7 (deaths):
+G's floors are taken over the decision-time population, a life a plan would end keeping its place at
+the bottom (Lean `removal_cannot_raise_floor`, and for the quantile `removal_cannot_raise_quantile_floor`).
+That bound covers lowering levels with no one else gaining. A plan that removes fewer beings than the
+quantile's rank and lifts everyone else raises the thresholded quantile floor (L74: min := Th_quantile):
+with 50 beings, removing the two worst-off and giving the rest a large gain raised the 10% quantile in
+20 trials of 20, and G chose it; only the literal minimum stays down. What blocks it is Freedom (L135;
+Lean `fr_permissible_ref`, `irreversible_harm_strictly_impermissible`): a death is irreparable harm,
+and established irreparable harm, or any whose confidence times severity is too high, is impermissible.
+The toy's valuation counts every loss as passing harm, so the value term alone favoured the sacrifice;
+with the irreparable tier weighted (Ha_wt, L61) it would weigh far more. [P] the corpus's attribution of
+sacrifice-blocking to floors (conjecture A36; Benefuture goals) should name Freedom's irreparable gate
+first, floors second. Candidate homes: Benefuture goals, Freedom, L74, L135.
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

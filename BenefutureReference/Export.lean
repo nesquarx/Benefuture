@@ -169,6 +169,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_ratchet_credence] def ratchetCredence (credence negShare : Float) : Float :=
   ratchet_credence_ref credence negShare
 
+@[export bf_fr_permissible] def frPermissible (irreparable irreversible longterm passing timeLoss confidence : Float) : UInt8 :=
+  if fr_permissible_ref irreparable irreversible longterm passing timeLoss confidence then 1 else 0
+
 @[export bf_param_count] def paramCount (_ : Unit) : USize := paramFields.length.toUSize
 @[export bf_bootstrap_params] def bootstrapParams (_ : Unit) : FloatArray := ⟨bootstrap_params_ref⟩
 @[export bf_admissible] def admissible (v : FloatArray) : UInt8 := if admissible_ref v.data then 1 else 0

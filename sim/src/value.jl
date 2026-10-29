@@ -72,3 +72,17 @@ function value_on_being(u::Real, h::Real, n::Real; harm_wt::Real,
           (Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           u, h, n, α, β, γ, harm_wt, λ, qp, qm)
 end
+
+"""
+    fr_permissible(irreparable, irreversible, longterm, passing, time_loss; confidence) -> Bool
+
+The freedom gate on an action's predicted harm by kind (L135; Lean `fr_permissible_ref`): established
+harm (predicted with confidence 0.9 or more, long-term or worse) is impermissible, and so is harm
+whose confidence times severity is too high.
+"""
+function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, passing::Real, time_loss::Real; confidence::Real)
+    check(all(x -> isfinite(x) && x >= 0, (irreparable, irreversible, longterm, passing, time_loss)) && 0 <= confidence <= 1,
+          "harm amounts non-negative, confidence in [0, 1]")
+    ccall(sym(:bf_fr_permissible), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
+          irreparable, irreversible, longterm, passing, time_loss, confidence) == 1
+end

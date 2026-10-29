@@ -66,7 +66,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | A33 | Floors rise: median and floor of U and H increase | Benefuture goals (Goals 1–2) | min/median trajectories | `Conj_FloorsRise` |
 | A34 | Wireheading is prevented | Introduction; Benefuture goals | share of value from peak-H strategies | Lean (tier weights); sim (dynamics) |
 | A35 | The Repugnant Conclusion is blocked | Benefuture goals | mean H under population growth | `Conj_NoRepugnantDrift` |
-| A36 | Convex harm prevents sacrificial (organ-harvest) trade-offs | Benefuture goals | such actions never chosen | Lean (`dominated_plan_not_chosen`, `removal_cannot_raise_floor`); sim (how often uplift dominates) |
+| A36 | Convex harm prevents sacrificial (organ-harvest) trade-offs | Benefuture goals | such actions never chosen | Lean (`dominated_plan_not_chosen`, `removal_cannot_raise_floor`, `removal_cannot_raise_quantile_floor`); sim M7: G's quantile floor alone does not block it, Freedom's irreparable gate does (BACKPROPAGATION 8.47) |
 | A37 | Quantile floors and saturation neutralise utility monsters | Benefuture goals | share captured by high-capacity agents | new |
 | A38 | Diversity axiom prevents monoculture and stagnation | L158; Culture | cultural/model diversity; novelty injection after stagnation | new |
 | A39 | Harm-propagating cultures die out; harmless ones persist | Critique addressal (imperialism) | survival by culture type | new |
