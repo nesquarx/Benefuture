@@ -320,7 +320,10 @@ means over 5 seeds of 500 steps.
 - Convergence under heavy friction (8.31; toy decision world, 16 seeds): voters with noisy choices
   (per-person ceilings, inverse to expertise only on average), outcomes apparent 40% of the time,
   starting from inverted reputations, converge within a few hundred decisions to the accuracy that
-  true reputations give; the effect is small (expertise is worth about two points there)
+  true reputations give; the effect is small (expertise is worth about two points there). In the
+  economy, every noise source alone but two leaves floors rising, and the robust ones together slow
+  growth to about 40%; moderate model or execution noise on top stops all pricing at once, a
+  finding recorded for the author (the eligibility threshold as a cliff)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)

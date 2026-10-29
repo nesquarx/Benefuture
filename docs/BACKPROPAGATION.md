@@ -810,3 +810,25 @@ decisions left every rule near perfect, so comparisons of voting rules now use h
 Next: the same ceilings for agents' choices in M3c (co-funding, guardians) and an M3c run with every
 noise source at the top of its range.
 
+
+**8.32 Finding: the currency-eligibility threshold is a cliff under heavy friction (screened; needs
+the author).** M3c world, 8 agents, 300 steps, 3 seeds. Each noise source at the top of its range,
+one at a time: markers, model bias, classification, cost, regeneration, memory loss,
+participation, attribution and hazards with weak guardians leave convergence intact (floor growth
+145–185 against 182 clean). Two break it: model error at σ 2 (accuracy 0.35) and agents' execution
+noise at 2 (accuracy 0.55), floor growth about 2. All the robust sources together still converge
+(70.5), but with accuracy at 0.56, on the threshold's edge; adding moderate model error (σ 1) or
+execution noise (1) stops every currency pricing at once (floor growth about 0; only the StandCoin
+lane runs, about 67 actions in 300 steps).
+Two causes:
+1. Accuracy (`1/(1+√MSE)`) is absolute: it blames models for outcomes no model could predict (an
+   agent's execution noise), so friction that is nobody's error disqualifies every model alike.
+2. The eligibility gate (L82, Acc > Th) duplicates what probabilistic escrow already does by degree
+   (L84, L86: upfront is accuracy × predicted value, the rest held), and turns a gradual loss of
+   confidence into a cliff, against Progressive (L154: degrade, fall back).
+[P] candidates: (a) accuracy relative to what is achievable, a skill score against a naive
+baseline, so aleatoric noise does not disqualify; (b) let the best available model price below the
+threshold, with escrow holding by its low accuracy, the threshold then ranking currencies rather
+than switching them off; (c) the threshold governed down by SigThGv under friction, within its
+freedom range (novel leaves never below 0.5). Candidate homes: L82, L84, L154, Measurement.
+Kept as a `@test_broken` requirement in `sim/test/friction_m3c_tests.jl`.

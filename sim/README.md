@@ -354,6 +354,17 @@ this world expertise is worth about two points over equal votes; with easy decis
 every rule is near perfect and nothing separates them, which is why the earlier M5 comparisons now
 use harder decisions.
 
+### In the economy (M3c)
+
+Each noise source at the top of its range, one at a time (3 seeds, 300 steps; floor growth on
+understanding after the score-only start, 182 clean): markers 185, model bias 145, classification
+175, hazards with weak guardians 155; cost, regeneration, memory loss, participation and attribution
+change nothing in this world (no scarcity binds, no co-funding or upstream is needed). Model error
+at σ 2 and execution noise at 2 each stop convergence (about 2). All the robust sources together:
+70.5, accuracy 0.56; add moderate model error or execution noise and every currency stops pricing at
+once (BACKPROPAGATION 8.32: the eligibility threshold is a cliff, and absolute accuracy blames models
+for noise no model could predict).
+
 ## M6 observations
 
 Exploits are tested against the native mechanisms before any defence is built; a failure is a
