@@ -354,7 +354,7 @@ track record), 8 seeds:
 
 | Reading (mean) | Honest | Liar | Liar, models without track record |
 |---|---|---|---|
-| Actions taken | 179 | 178 | 387 |
+| Actions taken | 180 | 178 | 387 |
 | Upfront received, seed 1 | 1,416 | 1,325 (settled 1,833) | 12,233 |
 | Final balance | 555 | 562 (above honest in 4 of 8 seeds) | 564 |
 
