@@ -304,7 +304,8 @@ means over 5 seeds of 500 steps.
   a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
   diversity–novelty balance not yet tested; sabotaged outages are penalised when examination traces
   them (a world chance), else insured; harm passed off as unassigned pays only when practically
-  untraceable (a tracing rate of 0.1 already makes it a loss) ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
+  untraceable (a tracing rate of 0.1 already makes it a loss); identity forks capture votes only if
+  each fork gets its own base vote, an open question for the author ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
   [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
 - Gaming (M6, toy world, 6–8 seeds): an agent whose plans fool every metric model gains nothing
   beyond noise once models price actors by their track record and mistakes decay slower than wins

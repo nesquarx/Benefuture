@@ -849,3 +849,13 @@ no apparent cause, as outages are; it pays only when practically untraceable (+2
 of 0; a loss from 0.1). The tracing rate is the frontier to defend: anti-corruption (L159) and AdvAp
 (L160), which reward exposure, are its native levers.
 
+
+**8.34 [OPEN] Does a fork divide the base vote?** L122 has a fork split social power (SoPo: C, Re,
+...); the Being article treats near-identical patterns as a domain pattern, not identities; L113
+gives every voter a base weight. If each identity gets its own base vote, forking is a sybil attack
+on voting. M5 world, 100 voters, one forker voting one side: with the base vote divided among a fork
+family, forking gains nothing; with a base vote per identity, 50 copies cut decision accuracy from
+99.5% to 92.8%, 100 to 74.5%, and 200 capture every decision. [P] the base vote is part of the social
+power a fork divides, and a copy earns its own only as its novelty N (L122) separates it into a
+distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `fork_rule`, default
+`:divided` (the proposal), `:per_identity` measured.

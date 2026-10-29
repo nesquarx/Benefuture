@@ -135,3 +135,22 @@ end
     @test_throws ArgumentError eight(launder = [0.5])
     @test_throws ArgumentError eight(launder = [zeros(7); 1.5])
 end
+
+# Identity forks (L122: Fork splits social power; Being: near-identical patterns are a domain
+# pattern, not identities). A forker that votes one side splits into copies voting alike. If the
+# base vote weight is part of the social power a fork divides, forking gains nothing; if each
+# identity gets its own base vote, copies multiply it (a sybil attack). [OPEN] which the corpus
+# means; both are measured.
+@testset "M6 identity forks" begin
+    w = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                          [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                           for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    forker = 1
+    divided = run_m5(M5Params(w, 1:4; decisions = 400, colluders = [forker], fork_copies = 200, fork_rule = :divided); seed = 1)
+    plain = run_m5(M5Params(w, 1:4; decisions = 400, colluders = [forker]); seed = 1)
+    sybil = run_m5(M5Params(w, 1:4; decisions = 400, colluders = [forker], fork_copies = 200, fork_rule = :per_identity); seed = 1)
+    @test divided.correct ≈ plain.correct atol = 0.01           # dividing social power: forking gains nothing
+    @test sybil.correct < plain.correct - 0.1                   # a base vote per identity: copies capture
+    @test_throws ArgumentError M5Params(w, 1:4; fork_rule = :maybe)
+    @test_throws ArgumentError M5Params(w, 1:4; fork_copies = -1)
+end

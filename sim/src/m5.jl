@@ -41,6 +41,8 @@ struct M5Params
     outcome_σ::Float64         # noise in a locale's measured outcome (world)
     trial_z::Float64           # standard errors that settle a split trial (governed)
     ability_spread::Float64    # scatter of persons' noise ceilings around the expertise trend (8.31; world)
+    fork_copies::Int           # copies each colluder forks into, voting alike (M6; world)
+    fork_rule::Symbol          # :divided (forks share the social power, base vote included) or :per_identity ([OPEN])
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -50,7 +52,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   audit_window::Integer = 20, audit_threshold::Real = 0.6, stealth::Bool = false,
                   diversity::Bool = true, novelty_bonus::Real = 0.5, trial_units::Integer = 50, local_σ::Real = 1.0, conviction::Real = 1.5,
                   outcome_σ::Real = 1.0, trial_z::Real = 2.0, ability_spread::Real = 0.5,
-                  reputation = nothing)
+                  reputation = nothing, fork_copies::Integer = 0, fork_rule::Symbol = :divided)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -65,10 +67,12 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     skills = [a.skills[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     focus = [a.focus[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     reputation === nothing || check(size(reputation) == size(m3.relevance_leaf), "one reputation per agent and domain")
+    check(fork_copies >= 0 && fork_rule in (:divided, :per_identity), "fork copies non-negative; rule :divided or :per_identity")
     M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
              p_apparent, vote_value, audit_window, audit_threshold, stealth,
-             diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread)
+             diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread,
+             fork_copies, fork_rule)
 end
 
 """
@@ -107,6 +111,14 @@ function run_m5(p::M5Params; seed)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
         w = [voting_weight(p.base, p.expertise_weight, [1.0], [expertise[i]], p.impact_weight, p.focus[i, k];
                            optional_below = p.optional_below)[1] for i in 1:na]
+        # Forks (L122): with a base vote per identity, each copy adds its base and impact weight and
+        # votes with its origin; divided, the family holds the origin's single share.
+        if p.fork_rule == :per_identity && p.fork_copies > 0
+            for i in p.colluders
+                w[i] += p.fork_copies * voting_weight(p.base, p.expertise_weight, [1.0], [0.0], p.impact_weight, p.focus[i, k];
+                                                      optional_below = p.optional_below)[1]
+            end
+        end
         total = sum(w)
         held = copy(w)
         delegated, received = falses(na), falses(na)
