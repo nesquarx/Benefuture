@@ -9,5 +9,5 @@ In [[benefuture]] terms, '''good''' [[Output|outputs]] and [[Outcome|outcomes]] 
 
 * Goodness or badness are subjective to the entity, hence any mention of good or bad does need the context of the subject for whom it is good or bad.
 * Generally, a notion of objective or universal good or bad is meaningless without the context, in the context of benefuture, the subject is all known beings and the goals are the [[benefuture goals]].
-* To speak of a theoretical quantitative process, the calculated value of good for an output or outcome as measured against it not being performed or observed, is the numerical outcome the utility function of V discussed in the goals.
+* To speak of a theoretical quantitative process, the calculated value of good for an output or outcome as measured against it not being performed or observed, is the numerical outcome the utility function of Value discussed in the goals.
 ----<small>AI Disclaimer: This article is 100% human written.</small>

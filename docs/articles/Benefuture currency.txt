@@ -5,7 +5,7 @@ The '''[[Benefuture]] Currency''' system is a decentralized ecosystem of competi
 ==Principles==
 '''The currency life cycle:'''
 
-* '''[[Good]] happens''' (U or H increases): Currency generated, distributed via [[#Causal Distribution|causal contribution]].
+* '''[[Good]] happens''' (understanding or happiness increases): Currency generated, distributed via [[#Causal Distribution|causal contribution]].
 * '''[[Harm]] happens''': Currency destroyed; reparation systems engage.
 * '''Transaction occurs''': Currency moves between [[Entity|entities]].
 * '''Resource/time consumed''': Currency paid to [[Reality]] (removed from circulation).
@@ -20,7 +20,7 @@ For [[Sophont|participants/users]]:
 
 ==Aspects==
 
-* '''Competing Currencies''': Multiple currencies based on different [[Measurement|metric model]] sets compete on resource efficiency as Value (U/H/N) generated per physical resource unit.<ref>Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs.</ref>
+* '''Competing Currencies''': Multiple currencies based on different [[Measurement|metric model]] sets compete on resource efficiency as Value (understanding/happiness/novelty) generated per physical resource unit.<ref>Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs.</ref>
 
 * '''No Direct Exchange''': Currencies convert only through real cross-domain actions, not trading. This prevents arbitrage, speculation, and emergence of a meta-currency that would reintroduce centralization.<ref name="Hanson2013">Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178.</ref>
 
@@ -30,17 +30,17 @@ For [[Sophont|participants/users]]:
 
 * '''[[Diversity|Novelty]] Bonus''': New actions/currencies receive temporary front-loaded boost. Semantic analysis detects superficial variation exploits.
 
-* '''Resource Accounting''': All transactions record resource consumption as physical vectors — quantities in native units (litres, joules, hours, grams) including [[Technology Network|network]] and compute usage (which penalizes overly complex models). Each currency network's [[Measurement|metric models]] independently value these physical resources as domain-specific opportunity costs: what U/H those resources could have generated in their best alternative use within that domain. The same physical resources carry different opportunity costs in different currencies. Non-renewable and polluting resources carry higher opportunity costs across all domains. Time is valued at foregone U/H potential, varying by skills and [[Reputation]]. Model compute and network use are resources of the transaction like any other: there is no protocol fee, and a model needing more compute for the same value makes its currency less competitive. Resource accounting is a universal balance sheet: it calculates resource efficiency and adjusts thresholds to maintain the commons and baseline rates, funding both freedom (the sophont baseline) and insurance.
+* '''Resource Accounting''': All transactions record resource consumption as physical vectors — quantities in native units (litres, joules, hours, grams) including [[Technology Network|network]] and compute usage (which penalizes overly complex models). Each currency network's [[Measurement|metric models]] independently value these physical resources as domain-specific opportunity costs: what understanding/happiness those resources could have generated in their best alternative use within that domain. The same physical resources carry different opportunity costs in different currencies. Non-renewable and polluting resources carry higher opportunity costs across all domains. Time is valued at foregone understanding/happiness potential, varying by skills and [[Reputation]]. Model compute and network use are resources of the transaction like any other: there is no protocol fee, and a model needing more compute for the same value makes its currency less competitive. Resource accounting is a universal balance sheet: it calculates resource efficiency and adjusts thresholds to maintain the commons and baseline rates, funding both freedom (the sophont baseline) and insurance.
 * '''The commons and insurance''': The commons is funded by resource accounting and escrows. The framework is the insurer: the [[Administration]] repairs harm no contributor can be found for, from the commons, to the extent of its capability. Insurance cannot be a business, or it becomes a mechanism of arbitrage.
 * '''Behavioural transactions''': see [[System Design#Behavioral Transaction Substrate|System design]].
 
-* '''Embodied U/H''': Goods embody upstream value (a book embodies author's understanding); price reflects this plus physical resources, while reader's U gain often covers cost.
+* '''Embodied understanding/happiness''': Goods embody upstream value (a book embodies author's understanding); price reflects this plus physical resources, while reader's understanding gain often covers cost.
 
 ===Transaction Mechanics===
 
-* '''Pricing''': Each currency network prices every transaction independently through its own top ranked [[Measurement|metric model]] with proven predictions: the network's [[Measurement#Assessment|assessed]] opportunity cost of resources consumed (compared to what those resources could have generated in their best alternative use ''within that network's [[domain]],'' hence suboptimal uses cost more), minus the predicted [[Benefuture currency#Causal Distribution|causal distribution]] credit to the consumer for the given transaction (zero if it can't model that transaction), plus [[Benefuture currency#Aspects|escrow]] hold proportional to prediction uncertainty (full hold, if it can't model the transaction). The same action therefore carries different prices across different currency networks — reflecting each model's competence in evaluating the action's U/H impact within its domain. When predicted value exceeds resource cost, the consumer's effective price is negative — the system pays them to transact. Baseline goods are priced at zero or negative for all [[person]]s whose use of them is within their freedom, and resource accounting is what guarantees that floor. Networks with weak domain coverage of a transaction type will price it high (resource cost dominates when the model cannot confidently predict value), which correctly signals that a different currency is more appropriate for that transaction.
-* '''Cross-Domain Transaction Proposals:''' When a [[Sophont]] acts or a significant event is recorded, ''every'' currency network covering a relevant overlapping [[Domain]] independently generates a [[Benefuture currency#Transaction Mechanics|Transaction Proposal]] (TP) for that action. Transactors may compose their proposal from any subset of the offered currency proposals, but escrow settlement always accounts against measurement from the union of all concerned currencies for the action's domains — a composed proposal is a price quote, not a waiver of measured consequences. A physicist buying a meal receives TPs from PhysicsCoin, NutritionCoin, HealthCoin, and any other network whose [[Measurement|metric model]] claims [[domain]] coverage for the action's inputs or outputs. Each network prices the transaction through its own model: NutritionCoin prices the meal cheaply (its model understands nutrition and sees high U/H per resource unit for feeding a hungry person), while PhysicsCoin prices the same meal expensively (its model has minimal domain overlap with food and cannot accurately assess the nutritional value, so the resource cost dominates).
-* '''Tentative''': Before action execution, currency networks provide proactive offers—sophonts evaluate predicted U/H consequences as credits, debits or escrow before committing.
+* '''Pricing''': Each currency network prices every transaction independently through its own top ranked [[Measurement|metric model]] with proven predictions: the network's [[Measurement#Assessment|assessed]] opportunity cost of resources consumed (compared to what those resources could have generated in their best alternative use ''within that network's [[domain]],'' hence suboptimal uses cost more), minus the predicted [[Benefuture currency#Causal Distribution|causal distribution]] credit to the consumer for the given transaction (zero if it can't model that transaction), plus [[Benefuture currency#Aspects|escrow]] hold proportional to prediction uncertainty (full hold, if it can't model the transaction). The same action therefore carries different prices across different currency networks — reflecting each model's competence in evaluating the action's understanding/happiness impact within its domain. When predicted value exceeds resource cost, the consumer's effective price is negative — the system pays them to transact. Baseline goods are priced at zero or negative for all [[person]]s whose use of them is within their freedom, and resource accounting is what guarantees that floor. Networks with weak domain coverage of a transaction type will price it high (resource cost dominates when the model cannot confidently predict value), which correctly signals that a different currency is more appropriate for that transaction.
+* '''Cross-Domain Transaction Proposals:''' When a [[Sophont]] acts or a significant event is recorded, ''every'' currency network covering a relevant overlapping [[Domain]] independently generates a [[Benefuture currency#Transaction Mechanics|Transaction Proposal]] (TP) for that action. Transactors may compose their proposal from any subset of the offered currency proposals, but escrow settlement always accounts against measurement from the union of all concerned currencies for the action's domains — a composed proposal is a price quote, not a waiver of measured consequences. A physicist buying a meal receives TPs from PhysicsCoin, NutritionCoin, HealthCoin, and any other network whose [[Measurement|metric model]] claims [[domain]] coverage for the action's inputs or outputs. Each network prices the transaction through its own model: NutritionCoin prices the meal cheaply (its model understands nutrition and sees high understanding/happiness per resource unit for feeding a hungry person), while PhysicsCoin prices the same meal expensively (its model has minimal domain overlap with food and cannot accurately assess the nutritional value, so the resource cost dominates).
+* '''Tentative''': Before action execution, currency networks provide proactive offers—sophonts evaluate predicted understanding/happiness consequences as credits, debits or escrow before committing.
 * '''Completed''': After irreversible action, networks provide reactive offers. Sophont accepts, partially accepts, or disputes. Default: user's established preferences or top-performing network's offer.
 * '''Approximate''': When the system faces [[Progressive complexity|imprecise data]], it approximates the transaction with the closest statistical estimates that fit the higher resolution data surrounding it, with a lower predictive confidence reducing the front load of the probabilistic escrow on that transaction.
 * '''Disputes''': Wrongful assessment claims trigger review via [[Justice]] system.
@@ -51,7 +51,7 @@ Rewards and penalties flow via causal attribution. An outcome is an event; a met
 
 '''Causal Contribution (CC)''': A [0,1] score quantifying an entity's role in outcomes. Metric models trace the [[System Design#Behavioral Transaction Substrate|transaction tree]] backwards, attributing credit weighted by degree of separation and [[Domain]] relevance, and netting what each entity paid onward against what it received, so that along a chain each link is credited for the value it added and not for the volume passing through it - which approximates shapley-esque mechanisms <ref>Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press.</ref> Where causal explanation unavailable, fallback to statistical traversal.
 
-'''Causal Distribution (CD)''': Converts CC into currency flows and [[Reputation]] changes, proportional to contribution plus contribution type novelty bonus. Distribution is net adjustment over front-loaded probabilistic escrow payments, preventing double-counting between predicted and measured value. Disputes resolved via [[Justice]].
+'''Causal Distribution (CD)''': Converts causal contribution into currency flows and [[Reputation]] changes, proportional to contribution plus contribution type novelty bonus. Distribution is net adjustment over front-loaded probabilistic escrow payments, preventing double-counting between predicted and measured value. Disputes resolved via [[Justice]].
 
 This allows indirect, infrastructural, and temporally distant contributions, which are invisible in conventional systems, to receive appropriate credit and incentive.
 
@@ -59,7 +59,7 @@ This allows indirect, infrastructural, and temporally distant contributions, whi
 The system incorporates [[Adversarial adaptation]] and [[Anti-Corruption]] principles in its [[System Design]]:
 
 * '''Resource costs''': Every transaction costs resources (paid to Reality), preventing costless cycling.
-* '''Escrow''': Low/negative real U/H transactions face escrow requirements exceeding potential gain.
+* '''Escrow''': Low/negative real understanding/happiness transactions face escrow requirements exceeding potential gain.
 * '''Novelty decay''': Repetitive/artificial transactions lose bonus rapidly.
 * '''Anomaly detection''': [[Technology Network]] flags suspicious patterns.
 * '''Reputation penalties''': Gaming attempts risk reputation damage exceeding potential currency gain.
@@ -72,7 +72,7 @@ Lossy conversion through repeated exchanges remains theoretically possible but p
 
 A sophont learns a programming language. Competing offers:
 
-* ''EduCoin'': 50 units front-loaded; 100 on course completion; 1/month for year if skill generates U/H.
+* ''EduCoin'': 50 units front-loaded; 100 on course completion; 1/month for year if skill generates understanding/happiness.
 * ''InnoCur'': 80 front-loaded (novelty bonus); 20 on completion.
 * ''ResiCoin'': 20 front-loaded; 5/month for five years if demonstrable long-term impact.
 
@@ -89,8 +89,8 @@ Sophont chooses mix based on risk preference and time horizon.
 **   If Fo gets sick from contaminated bread, HealthCoin is involved:
 ***   Fo: Experiences temporary illness (-10 HealthCoin) and recovery (+10 HealthCoin).
 ***   Ba: Debited HealthCoin (responsibility).
-***   Me (Medical Experts): Credited HealthCoin (front-loaded for treatment, back-loaded for successful outcome AND for data collection, generating U).
-*   [[Administration]]: May be debited HealthCoin (systemic failure). The U gain from medical data partially offsets treatment costs.
+***   Me (Medical Experts): Credited HealthCoin (front-loaded for treatment, back-loaded for successful outcome AND for data collection, generating understanding).
+*   [[Administration]]: May be debited HealthCoin (systemic failure). The understanding gain from medical data partially offsets treatment costs.
 
 '''Harmful Action:'''
 

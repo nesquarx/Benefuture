@@ -17,7 +17,7 @@ Why this ordering?
 * '''Measurability''': Predictive accuracy provides external validation. Happiness measurement relies on self-report.
 * '''Enablement''': Understanding reliably increases the capacity for happiness. The reverse is also true but less consistent.
 
-This doesn't dismiss happiness — it sequences it. The [[Benefuture goals|goal]] is synergistic U/H first, where both reinforce each other. When forced to choose, U takes priority unless H would be ''significantly'' reduced.
+This doesn't dismiss happiness — it sequences it. The [[Benefuture goals|goal]] is synergistic understanding/happiness first, where both reinforce each other. When forced to choose, understanding takes priority unless happiness would be ''significantly'' reduced.
 
 == Priority Structure ==
 
@@ -38,7 +38,7 @@ The framework specifies explicit priorities when trade-offs arise:
 
 '''Key asymmetry''': For Understanding, peak matters (invest in breakthroughs). For Happiness, floor matters (eliminate suffering before maximizing pleasure). Peak happiness is ''lowest'' priority — the framework structurally prevents wireheading and hedonic maximization at civilization's expense.
 
-'''Synergy''': In both U and H stacks, synergy comes first. Actions which increase ''both'' understanding and happiness, and are novel, score more than the sum of their parts, and the more of these move together the larger the bonus. The trade-offs are continuous throughout, with understanding ahead through a larger weight.
+'''Synergy''': In both understanding and happiness stacks, synergy comes first. Actions which increase ''both'' understanding and happiness, and are novel, score more than the sum of their parts, and the more of these move together the larger the bonus. The trade-offs are continuous throughout, with understanding ahead through a larger weight.
 
 == Core Ontology ==
 
@@ -60,9 +60,9 @@ In one line: ''Walzer's spheres, operated by Hanson's markets, toward Deutsch's 
 |-
 ! Compared To !! Key Difference
 |-
-| '''Classical Utilitarianism''' || U before H; synergy prioritized; structural anti-wireheading
+| '''Classical Utilitarianism''' || Understanding before happiness; synergy prioritized; structural anti-wireheading
 |-
-| '''Capitalism''' || [[Benefuture currency|Currency]] tracks U/H generation per resource, not scarcity or speculation; no direct currency trading
+| '''Capitalism''' || [[Benefuture currency|Currency]] tracks understanding/happiness generation per resource, not scarcity or speculation; no direct currency trading
 |-
 | '''Representative Democracy''' || [[Government|Expertise + impact weighted]] direct democracy; votes weighted by demonstrated competence and stake
 |-
@@ -75,12 +75,12 @@ In one line: ''Walzer's spheres, operated by Hanson's markets, toward Deutsch's 
 
 == The Economic Engine ==
 
-The '''[[Benefuture currency]]''' [[Economy|economic]] system aligns individual actions with societal goals through competing digital currencies, each tied to a [[Measurement|metric model's]] demonstrated success in fostering U/H ''per unit of resource and time consumed''.
+The '''[[Benefuture currency]]''' [[Economy|economic]] system aligns individual actions with societal goals through competing digital currencies, each tied to a [[Measurement|metric model's]] demonstrated success in fostering understanding/happiness ''per unit of resource and time consumed''.
 
-* '''Competing Metrics''': Multiple models propose how to measure U/H. They compete on how much better they predict than the model already in use, correlation with established markers, causal explanation, and novelty. No single definition dominates.
+* '''Competing Metrics''': Multiple models propose how to measure understanding/happiness. They compete on how much better they predict than the model already in use, correlation with established markers, causal explanation, and novelty. No single definition dominates.
 * '''Front-loaded / Back-loaded''': Currency is partly paid on predicted value (front-loaded), partly on measured outcomes (back-loaded). Predictions that fail lose value; accurate predictions gain.
 * '''[[Benefuture currency#Aspects|Probabilistic Escrow]]''': Networks hold reserves proportional to prediction uncertainty. Consistent overestimation increases escrow requirements. Payment is settled against how things turn out compared to not having acted.
-* '''No Arbitrage''': Direct currency-to-currency trading is prohibited. Value transfers through real U/H-generating actions only.
+* '''No Arbitrage''': Direct currency-to-currency trading is prohibited. Value transfers through real understanding/happiness-generating actions only.
 * '''Causal Distribution''': Rewards flow to contributors based on [[Benefuture currency#Causal Distribution|causal attribution]] from transaction records, not proximity to transaction.
 
 == Governance ==
@@ -97,7 +97,7 @@ The '''[[Benefuture currency]]''' [[Economy|economic]] system aligns individual 
 
 == Handling Harm ==
 
-[[Harm]] is any reduction in U or H for [[Being|Beings]]. The framework grades harm by severity and reversibility:
+[[Harm]] is any reduction in understanding or happiness for [[Being|Beings]]. The framework grades harm by severity and reversibility:
 
 # '''Irreparable harm''' (death, permanent damage) receives highest weight in all calculations.
 # '''Irreversible harm''' (trauma, capacity loss) ranks next.
@@ -134,7 +134,7 @@ Design priorities: data integrity, privacy, security, decentralization, adaptabi
 
 == Culture and Education ==
 
-[[Culture]] is treated as a memetic vehicle — carrying both beneficial and harmful patterns. Benefuture continuously evaluates cultural practices against U/H outcomes, encouraging beneficial ones and transforming harmful ones through [[Education|education]] rather than suppression.
+[[Culture]] is treated as a memetic vehicle — carrying both beneficial and harmful patterns. Benefuture continuously evaluates cultural practices against understanding/happiness outcomes, encouraging beneficial ones and transforming harmful ones through [[Education|education]] rather than suppression.
 
 [[Education]] prioritizes ''capacity'' over content:
 * '''Meta-learning first''': Learn how to learn before specific knowledge

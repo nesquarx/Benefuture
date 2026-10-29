@@ -7,12 +7,12 @@ A highly antifragile way to measure is via a decentralized market of competing m
 
 ==Aspects==
 
-* '''Competing Metric Models:''' The system's core is a market of independent U/H metric models. Each model is an algorithm proposing:
+* '''Competing Metric Models:''' The system's core is a market of independent understanding/happiness metric models. Each model is an algorithm proposing:
 ** Which markers to measure.
 ** How to measure those markers.
 ** Expected correlations with other known markers which don't correlate as much with each other.
 ** Predictions of future correlations and trends.
-** Tentative U/H values consistent with at least one U/H mathematical metric exchange rate in its relevant [[Domain|Domains]].
+** Tentative understanding/happiness values consistent with at least one understanding/happiness mathematical metric exchange rate in its relevant [[Domain|Domains]].
 ** Calibration methods based on measured outcomes.
 ** Causal Explanations.
 ** The range of conditions it claims to hold in, and the confounding markers it declares.
@@ -106,9 +106,9 @@ Measurement is mostly used to assess actions: to say how much better or worse [[
 * '''Example competition metric:'''  synergy-contingent aggregation, using the [[Benefuture goals#Mathematical approach|synergy operator]] on the [[#Assessment|assessed]] factors in order of priority: <math>f = Sy\left(\operatorname{As}\left[(\text{skill over the incumbent model}, \alpha), (\text{correlation score}, \beta), (\text{causal explanation}, \gamma), (\text{novelty}, \delta)\right]\right)</math> Where the weights follow 1 > α > β > γ > δ. Factors that rise together score more than the sum of their parts, a factor alone scores on its weight, and negative factors count against the model.
 
 ==Discussion==
-All historical and contemporary policymaking is evaluable as U/H measurement approximations; most effective policies can be shown to have relatively better measurement loops for their era; and modern policy is converging on explicit welfare-capability instruments.
+All historical and contemporary policymaking is evaluable as understanding/happiness measurement approximations; most effective policies can be shown to have relatively better measurement loops for their era; and modern policy is converging on explicit welfare-capability instruments.
 
-The [[Benefuture]] measurement system addresses the inherent difficulty of quantifying subjective experiences (U/H) by creating a decentralized, competitive market of models. In most ways this mimics modern experimental design applied to discovery and measurement of otherwise plural and incommensurable causes and signifiers of Value, with explicit design towards continuous improvement. This approach aims to promote innovation, adaptability, and robustness, mitigating the risks of bias and Goodhart's Law<ref>Strathern, M. (1997). "Improving ratings": audit in the British university system. ''European Review'', 5(3), 305–321</ref>. Goodhart's law has several variants and the design meets them in different places: novel markers for the regressional one, causal explanation and joint correlation within a declared range for the causal and extremal ones, and [[Adversarial adaptation]] for the adversarial one.<ref>Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585.</ref>
+The [[Benefuture]] measurement system addresses the inherent difficulty of quantifying subjective experiences (understanding/happiness) by creating a decentralized, competitive market of models. In most ways this mimics modern experimental design applied to discovery and measurement of otherwise plural and incommensurable causes and signifiers of Value, with explicit design towards continuous improvement. This approach aims to promote innovation, adaptability, and robustness, mitigating the risks of bias and Goodhart's Law<ref>Strathern, M. (1997). "Improving ratings": audit in the British university system. ''European Review'', 5(3), 305–321</ref>. Goodhart's law has several variants and the design meets them in different places: novel markers for the regressional one, causal explanation and joint correlation within a declared range for the causal and extremal ones, and [[Adversarial adaptation]] for the adversarial one.<ref>Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585.</ref>
 
 '''Primacy of Established Markers:''' Pre-established markers, as derived from extensive scientific research and expert consensus of the present day act as an objective anchors to seed the system, preventing circular reinforcement among models and ensuring that the system remains grounded in [[Reality]]. The initial selection and ongoing refinement of these markers are vital, requiring constant vigilance and diverse input.  All markers are treated as raw physical vectors and pure measurement without attempting input valuation, the output valuation is speculated and needs established predictive accuracy, post which natural value and exchange estimates would arise from the use of [[Benefuture currency|currencies]] and their resource accounting. Models may borrow each other's markers, methods and causal models; what they cannot do is count the same pattern of agreement with the established markers twice (see [[System Design#Circularity Detection|circularity detection]]).
 
@@ -116,7 +116,7 @@ The [[Benefuture]] measurement system addresses the inherent difficulty of quant
 
 '''Complexity and Transparency:''' The system's complexity necessitates transparency. While the underlying algorithms may be sophisticated, the principles, methodologies, and performance data of all models are publicly accessible and presented in a user-friendly manner.
 
-'''Continuous Evolution:''' The dynamic nature of the market, with its constant influx of new models and data, ensures that [[Benefuture]]'s understanding of U/H is always evolving. The "sunset clause" maintains system efficiency by removing outdated models. This continuous search for better metrics reflects the [[Benefuture]] principle of maximizing [[Understanding]].
+'''Continuous Evolution:''' The dynamic nature of the market, with its constant influx of new models and data, ensures that [[Benefuture]]'s understanding of understanding/happiness is always evolving. The "sunset clause" maintains system efficiency by removing outdated models. This continuous search for better metrics reflects the [[Benefuture]] principle of maximizing [[Understanding]].
 
 === References ===
 <references />
