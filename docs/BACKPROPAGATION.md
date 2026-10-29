@@ -1103,6 +1103,12 @@ sources on each side; with two expert camps of equal standing, one leaning by an
 contested decisions end right 86.7% with deliberation and split trials, against 80.7% with trials
 alone and 75.8% with neither (`sim/README.md`, M5).
 
+**8.46 Author ruling on duties.** Contribution and participation at some level is a duty: voting is
+mandatory above a threshold, and so is taking care not to harm others in obvious ways. The line where
+duties become recommendations is itself a governed threshold. This settles the Government article's
+list of duties against 8.24.3 (duties stay minimal, not absent). Candidate homes: Law (Duties,
+Responsibilities), Government, L113 (mandatory voting threshold), L157. Propagated to Law (articles).
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.
