@@ -17,6 +17,9 @@
     # Good-faith reports that prove unfounded cost nothing; past a pattern, each is charged its audit.
     @test report_penalty(5, 5; audit_cost = 2.0) == 0
     @test report_penalty(6, 5; audit_cost = 2.0) == 2.0
+    # The reputation ledgers carry patterns of mistakes and deception as well as of success (L101;
+    # 8.42.1): escrow's credence is pulled towards a coin toss by the negative share.
+    @test ratchet_credence(0.9, 0.0) ≈ 0.9 && ratchet_credence(0.9, 0.5) ≈ 0.7 && ratchet_credence(0.9, 1.0) ≈ 0.5
 end
 
 @testset "AdvAp rules: adversarial and edge cases" begin
@@ -29,4 +32,5 @@ end
     @test_throws ArgumentError advap_liability(1.0; audit_cost = -1.0)
     @test_throws ArgumentError report_penalty(-1, 5; audit_cost = 1.0)
     @test_throws ArgumentError report_penalty(1, 5; audit_cost = Inf)
+    @test_throws ArgumentError ratchet_credence(0.9, 1.5)
 end

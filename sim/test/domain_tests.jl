@@ -89,6 +89,12 @@ const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
     @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
     @test !currency_eligible(0.7, 5; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
     @test currency_eligible(0.57, 10; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
+    # The status bar relative to the alternative (author ruling 8.41): a leaf model must match the
+    # accuracy of the qualified currency its work would otherwise fall to, up to the established bar,
+    # never below the coarse bar.
+    @test relative_bar(0.9, 0.75, 0.8) ≈ 0.8 && relative_bar(0.9, 0.75, 0.95) ≈ 0.9 && relative_bar(0.9, 0.75, 0.6) ≈ 0.75
+    @test_throws ArgumentError relative_bar(0.9, 0.95, 0.8)
+    @test_throws ArgumentError relative_bar(0.9, 0.75, NaN)
     # Credence and accuracy (author rulings 8.35, 8.36): a model's credence that an action's
     # assessed value is positive, from its prediction and its own uncertainty; accuracy is the
     # quality of credences, 1 − Brier / Brier of random guessing (0.25): 0 is random, 1 perfect.

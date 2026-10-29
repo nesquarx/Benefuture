@@ -135,6 +135,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (threshold novelThreshold : Float) : UInt8 :=
   if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold then 1 else 0
 
+@[export bf_relative_bar] def relativeBar (established coarse alternative : Float) : Float :=
+  relative_bar_ref established coarse alternative
+
 @[export bf_cc_share] def ccShare (part sideTotal : Float) : Float := cc_share_ref part sideTotal
 
 @[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=
@@ -162,6 +165,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_report_penalty] def reportPenalty (unfounded threshold auditCost : Float) : Float :=
   report_penalty_ref unfounded threshold auditCost
+
+@[export bf_ratchet_credence] def ratchetCredence (credence negShare : Float) : Float :=
+  ratchet_credence_ref credence negShare
 
 @[export bf_param_count] def paramCount (_ : Unit) : USize := paramFields.length.toUSize
 @[export bf_bootstrap_params] def bootstrapParams (_ : Unit) : FloatArray := ⟨bootstrap_params_ref⟩

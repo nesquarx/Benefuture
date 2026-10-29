@@ -988,6 +988,47 @@ confidence, overflow, the delegation cap); (c) read the result as a sign that th
 relative to the alternatives a domain has (a leaf model at 0.7 against a parent at 0.75 with coarser
 errors), a refinement of 8.35. Candidate homes: L82, L157, Measurement.
 
+**8.41 Author ruling on 8.40.** Option (c): the status bar is relative to the alternatives a domain
+has, and a local trial is still needed to demonstrate it. Simulation: Lean `relative_bar_ref`
+(a leaf model backs its currency if it matches the accuracy of the qualified currency its work would
+otherwise fall to, up to the established bar 0.9, never below the coarse bar 0.75, which stands when
+the alternative is StandCoin), proposed as a debatable escape and tried on half the domains for 100
+steps, compared by domain and epoch and accepted by `escape_accept_ref`. Eight leaves, 16 agents:
+in low-skill domains (0.15) the trial adopts it in 2 seeds of 4 (trial arm 39.6 and 31.5 per domain
+and epoch against 20.4 and 6.2; harms 7 and 3 against gains 799 and 632) and finds no improvement in
+the other two; in capable domains (0.3, 0.6) it is rejected as no better. With the bar set
+world-wide, losses fall by half at skill 0.3 and by an order of magnitude at 0.15. The toy's losses
+are all passing harm, so irreparable harm is a world classification (`irreparable_loss`, none by
+default); where much smaller losses count as irreparable, the same proposal is rejected. Process
+reading: governance, anti-corruption and adversarial adaptation are now native in the simulation;
+anti-corruption needs no mechanism of its own, since Lean's `good_strictly_easier_than_bad` is
+carried by restorative friction (causal-distribution penalties, AdvAp liability) and distributed
+power (delegation cap, overflow). Candidate homes: L82, L157, Measurement, Anti-Corruption.
+
+**8.42 Author guidance on 8.39, on better models, and on monoculture.**
+1. The more overstatements are uncovered, the more scrutiny they should bring: thresholds ratchet
+   with each one (Benefuture currency: "overestimating models face ratcheting escrow requirements").
+   AdvAp should work overtime in marginal domains, to solidify them.
+2. Every domain should get more accurate models as Benefuture progresses. Causal discovery is hard
+   to simulate; the simulation may state openly that it assumes better models keep being produced
+   (a safe bet given the framework: L82 competition, L49 adoption) and show that those models take
+   over measurement and prediction in the economy and in governance, and are overtaken when they slip.
+3. Monoculture (L158 Di_N_Balance) is any paradigm homogeneity: model proliferation, vote decisions,
+   technology or process uptake, cultural progression. Candidate homes: L158, Diversity, Progressive.
+4. (Author) All decisions access full records; the reputation ledgers exist to detect patterns of
+   mistakes or deception as well as of success, honesty and excellence; their entries never decay,
+   only the rolling net does. AdvAp working overtime means arranging the environment so it does,
+   not forcing it.
+Status of 1 and 4: escrow's credence is pulled towards a coin toss by the negative share of the
+actor's ledgers (Lean `ratchet_credence_ref`); readers' attention, a world property, follows
+negative patterns and their own stake in a marginal domain. Over 24 seeds of the marginal liar world,
+AdvAp cuts blocked domains from 9 to 3 and attention following the ledgers triples the deceptions
+uncovered (4.2 → 14.2); activity moves within the bistable spread. In this toy the escrow ratchet is
+inert where settlement follows within the step (balances move by measured value less cost).
+Simulation reading of 2 in governance: models do not vote (delegation goes to experts, and full
+delegation is not permitted); they inform votes, as expert commentary does, and voters weigh each
+source by its audited record, which is the truth-level tagging of clean deliberation (Government).
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

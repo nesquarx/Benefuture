@@ -30,8 +30,10 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     # fooled in full (BACKPROPAGATION 8.37). Here it happens in seeds 4 and 5, never honestly.
     peers(tr) = count(<(6), tr.chosen_agent)
     @test peers(liar[4]) == 0 && peers(liar[5]) == 0 && all(peers(h) > 0 for h in honest)
-    # Uncovered and repaired (8.38), the domain qualifies again.
-    @test peers(run_m3c(six(deceit = fooled, advap = true); seed = 4)) > 0.5 * peers(honest[4])
+    # Uncovered and repaired (8.38), with readers' attention drawn by the negative pattern in the liar's
+    # ledgers and in the marginal domain (8.42.1), the domain is blocked far less often.
+    blocked(kw) = count(seed -> peers(run_m3c(six(; deceit = fooled, kw...); seed)) < 50, 1:12)
+    @test blocked((advap = true,)) <= blocked((;)) - 2
     # Without the track record the liar takes the domain down in every seed.
     untracked = [run_m3c(six(deceit = fooled, track_window = 0); seed) for seed in 1:3]
     @test mean(peers.(untracked)) < 0.1 * mean(peers.(honest[1:3]))

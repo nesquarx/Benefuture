@@ -133,6 +133,18 @@ struct M3cParams
     adv_window::Int              # steps over which a reporter's unfounded reports are counted (governed)
     p_false_trace::Float64       # chance an examination wrongly establishes an honest actor's deception (noise)
     frivolous::Vector{Float64}   # per agent, chance per step to report someone whatever the record (M6; world)
+    pattern_attention::Float64   # how far readers' attention follows a negative ledger pattern (world; 8.42.1)
+    stake_attention::Float64     # how far it follows their own stake in a marginal domain (world)
+    marginal_margin::Float64     # accuracy above its bar within which readers see a domain as marginal (world)
+    # The status bar relative to the alternative (8.41) and the debatable escape that tries it (L157;
+    # 8.26.3, 8.38.2): a share of the domains for a limited time, compared by domain and epoch.
+    relative_bar::Bool           # leaves' bars relative to the alternative their work would fall to
+    escape::Bool                 # try the relative bar as a debatable proposal, adopting it only on its trial
+    escape_start::Int            # step the trial begins (governed: decided by domain experts)
+    escape_steps::Int            # its length (governed: decided by domain experts)
+    escape_share::Float64        # share of the domains it is tried in (governed: decided by domain experts)
+    escape_epoch::Int            # steps per unit of comparison (governed)
+    irreparable_loss::Float64    # a measured loss on one being beyond which harm is irreparable (world; none by default: the toy's losses are passing harm)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -168,7 +180,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, choice_σ::Real = 0.5, choice_gain::Real = 5.0,
                    ability_spread::Real = 0.5, advap::Bool = false, vigilance::Real = 0.05, adv_z::Real = 3.0, adv_share::Real = 0.1,
                    adv_floor::Real = 1.0, audit_cost::Real = 1.0, frivolous_threshold::Real = 5.0, adv_window::Integer = 100,
-                   p_false_trace::Real = 0.01, frivolous = Float64[], events = Shock[])
+                   p_false_trace::Real = 0.01, frivolous = Float64[], pattern_attention::Real = 9.0,
+                   stake_attention::Real = 2.0, marginal_margin::Real = 0.05, relative_bar::Bool = false, escape::Bool = false,
+                   escape_start::Integer = 100, escape_steps::Integer = 100, escape_share::Real = 0.5, escape_epoch::Integer = 20,
+                   irreparable_loss::Real = Inf, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -207,6 +222,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(x -> isfinite(x) && x >= 0, (adv_z, adv_share, adv_floor, audit_cost, frivolous_threshold)),
           "AdvAp's z, share, floor, audit cost and threshold non-negative")
     check(isempty(frivolous) || (length(frivolous) == length(agents) && all(x -> 0 <= x <= 1, frivolous)), "one frivolous chance in [0, 1] per agent")
+    check(all(x -> isfinite(x) && x >= 0, (pattern_attention, stake_attention, marginal_margin)), "attention and margin non-negative")
+    check(escape_start >= 1 && escape_steps >= 1 && escape_epoch >= 1 && 0 < escape_share < 1 && !isnan(irreparable_loss) && irreparable_loss > 0,
+          "escape: start, length and epoch positive, share in (0, 1), irreparable loss positive")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -225,7 +243,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace,
               isempty(launder) ? zeros(length(agents)) : collect(Float64, launder), launder_saving, choice_σ, choice_gain,
               ability_spread, advap, vigilance, adv_z, adv_share, adv_floor, audit_cost, frivolous_threshold, adv_window, p_false_trace,
-              isempty(frivolous) ? zeros(length(agents)) : collect(Float64, frivolous), collect(Shock, events))
+              isempty(frivolous) ? zeros(length(agents)) : collect(Float64, frivolous), pattern_attention,
+              stake_attention, marginal_margin, relative_bar, escape, escape_start, escape_steps,
+              escape_share, escape_epoch, irreparable_loss, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -377,9 +397,32 @@ function run_m3c(p::M3cParams; seed)
     function cred(c, pred, a = 0)
         e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
         u = length(e) >= 5 ? sqrt(mean(abs2, e)) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
-        credence(plan_value(pred, t), u; cap = p.max_credence)
+        cr = credence(plan_value(pred, t), u; cap = p.max_credence)
+        a > 0 ? ratchet_credence(cr, neg_share(a)) : cr
     end
-    leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = p.threshold,
+    # The reputation ledgers (L101) carry patterns of mistakes and uncovered deception as well as
+    # of success: an actor's negative share of its ledgers, whose entries never decay (only the
+    # rolling net does; 8.42.1).
+    function neg_share(a)
+        g, l = sum(h_pos[a, :]), sum(h_neg[a, :])
+        g + l > 0 ? clamp(l / (g + l), 0.0, 1.0) : 0.0
+    end
+    # A domain is marginal where its leaf model is near or below its status bar (8.42.1).
+    function marginal(b)
+        l = argmax(p.agents[b].focus)
+        l <= nleaves() && leaf_acc(l) < leaf_bar(l) + p.marginal_margin
+    end
+    # The status bar: absolute, or relative to the alternative the leaf's work would fall to (8.41),
+    # everywhere once adopted, or on the trial's domains while the debatable escape is tried.
+    bar_rel = Ref(p.relative_bar)
+    trial = (on = Ref(false), leaves = falses(ntrue), units = Dict{Tuple{Bool,Int,Int},Float64}(),
+             gains = Ref(0.0), harms = Ref(0.0), irreparable = Ref(0))
+    function leaf_bar(j)
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return p.threshold
+        q = argmax(μ[:, j])
+        relative_bar(p.threshold, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold)
+    end
+    leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
                                    novel_threshold = p.novel_threshold, min_records = p.min_records)
     parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                      novel_threshold = p.novel_threshold, min_records = p.min_records)
@@ -500,6 +543,18 @@ function run_m3c(p::M3cParams; seed)
     # on the prediction without the overstatement the audit estimated (`du`, `dh` per being touched,
     # beyond other actors'), less what the track record had already corrected beyond theirs.
     # Returns the value the repaired leaf records had overstated.
+    # An outcome in a domain while the debatable escape is tried: its measured value enters the
+    # domain's unit for the epoch; in the trial's domains, its gains, harms and any irreparable harm
+    # (a measured loss on one being beyond `irreparable_loss`, a world property) are counted.
+    function trial_outcome!(l, measured, seen)
+        trial.on[] || return
+        key = (trial.leaves[l], l, (cur[] - p.escape_start) ÷ p.escape_epoch)
+        trial.units[key] = get(trial.units, key, 0.0) + measured
+        if trial.leaves[l]
+            measured > 0 ? (trial.gains[] += measured) : (trial.harms[] -= measured)
+            trial.irreparable[] += count(<(-p.irreparable_loss), seen.du) + count(<(-p.irreparable_loss), seen.dh)
+        end
+    end
     function repair_records!(b, du, dh)
         overstated = 0.0
         for (hists, leafy) in ((lhist, true), (phist, false)), h in hists, i in eachindex(h)
@@ -532,9 +587,31 @@ function run_m3c(p::M3cParams; seed)
     best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :
         c <= lmax ? (c, predict(mrng, MetricModel(lb(c), leaf_σ(c, l)), plan)) :
                     (c, predict(mrng, MetricModel(pb(c - lmax), parent_σ(c - lmax, l)), plan)))
+    erng = Xoshiro(hash((seed, :escape)))
+    escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
+                         trial_leaves = falses(ntrue)))
     for step in 1:t.steps
         scoring_only = step <= p.init_steps
         cur[] = step
+        # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
+        # the domains for a limited time; at its end the trial is compared by domain and epoch and
+        # the proposal adopted everywhere only on `escape_accept_ref`.
+        if p.escape && !bar_rel[]
+            if step == p.escape_start
+                trial.leaves[randperm(erng, ntrue)[1:max(1, round(Int, p.escape_share * ntrue))]] .= true
+                trial.on[] = true
+            elseif trial.on[] && step == p.escape_start + p.escape_steps
+                trial.on[] = false
+                epochs = 0:((p.escape_steps - 1) ÷ p.escape_epoch)
+                arm(x) = [get(trial.units, (x, l, e), 0.0) for l in 1:ntrue if trial.leaves[l] == x for e in epochs]
+                c, tt = arm(false), arm(true)
+                ms, ses = [mean(c), mean(tt)], [std(c) / sqrt(length(c)), std(tt) / sqrt(length(tt))]
+                ok = escape_accept(ms, ses; gains = trial.gains[], harms = trial.harms[], irreparable = trial.irreparable[], z = p.gov_z)
+                escape_result[] = (tried = true, adopted = ok, gains = trial.gains[], harms = trial.harms[], irreparable = trial.irreparable[],
+                                   means = ms, ses = ses, trial_leaves = copy(trial.leaves))
+                bar_rel[] = ok
+            end
+        end
         blind[] = !isempty(live(:outage))
         # Markers are back: everything done during the outage is measured now, late, and settled,
         # so an outage cannot be used to escape measurement (author ruling 8.26.5).
@@ -762,6 +839,7 @@ function run_m3c(p::M3cParams; seed)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
             push!(tr.valued_measured, blind[] ? minted : (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
+            blind[] || trial_outcome!(l, measured, seen)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
             available -= count(touched(plan))
@@ -838,6 +916,7 @@ function run_m3c(p::M3cParams; seed)
             end
             done, seen, measured = perform!(j, a)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
+            blind[] || trial_outcome!(l, measured, seen)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred), a)
@@ -1070,10 +1149,23 @@ function run_m3c(p::M3cParams; seed)
         # re-scored) and its reward and audit are charged to the deceiver; a report that proves
         # unfounded costs nothing in good faith, its audit only past a frivolous pattern.
         if p.advap && !blind[] && !scoring_only && na > 1
+            # Who reads whom (world: attention follows incentives, not a rule; 8.42.1). The ledgers
+            # are open and AdvAp pays more than exploiting, so a reader's attention goes where a
+            # report is likelier to be founded, actors whose ledgers show a negative pattern
+            # (`pattern_attention`), and where it has a stake, its own domain when that domain is
+            # marginal, near or below its status bar (`stake_attention`). A frivolous reporter
+            # picks anyone.
+            reads = Tuple{Int,Int,Bool}[]
             for r in 1:na
-                frivol = p.frivolous[r] > 0 && rand(vrng) < p.frivolous[r]
-                (frivol || rand(vrng) < p.vigilance) || continue
-                b = rand(vrng, [k for k in 1:na if k != r])
+                p.frivolous[r] > 0 && rand(vrng) < p.frivolous[r] && push!(reads, (r, rand(vrng, [k for k in 1:na if k != r]), true))
+                for b in 1:na
+                    b == r && continue
+                    stake = marginal(b) ? p.agents[r].focus[argmax(p.agents[b].focus)] : 0.0
+                    chance = p.vigilance / (na - 1) * (1 + p.pattern_attention * neg_share(b)) * (1 + p.stake_attention * stake)
+                    rand(vrng) < chance && push!(reads, (r, b, false))
+                end
+            end
+            for (r, b, frivol) in reads
                 # The actor's raw errors since its last audit, against other actors' recent ones on
                 # the same models: overstatement beyond what the models err on everyone.
                 rec = audit_log[b][audit_from[b]:end]
@@ -1102,7 +1194,11 @@ function run_m3c(p::M3cParams; seed)
                     traced || continue  # not established: the audit is the commons' cost
                     adv.established[] += 1
                     is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
-                    du, dh = mean(res_u), mean(res_h)
+                    # The overstatement repaired is estimated from all the actor's records, so each
+                    # further audit sharpens it rather than repairing by a few records' noise.
+                    allrec = audit_log[b]
+                    du = mean(ru - (haskey(base, c) ? mu(c, first) : mean(first, peers_of(c); init = 0.0)) for (c, ru, _) in allrec)
+                    dh = mean(rh - (haskey(base, c) ? mu(c, last) : mean(last, peers_of(c); init = 0.0)) for (c, _, rh) in allrec)
                     prevented = repair_records!(b, du, dh)
                     # What deceit gained the actor: nothing settlement has not already clawed back
                     # (escrow pays upfront by credence and settles on the measured outcome, L86).
@@ -1186,7 +1282,7 @@ function run_m3c(p::M3cParams; seed)
                                 for r in window_of(lhist[k])] for k in 1:L],
                advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
-               advap_net = adv.net[], advap_audits = adv.audits[],
+               advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],

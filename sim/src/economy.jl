@@ -219,3 +219,14 @@ function escape_accept(means, ses; gains::Real, harms::Real, irreparable::Intege
     ccall(sym(:bf_escape_accept), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           floatarray(Float64.(means)), floatarray(Float64.(ses)), gains, harms, irreparable, z) == 1
 end
+
+"""
+    ratchet_credence(credence, neg_share) -> credence
+
+Escrow credence for an actor whose reputation ledgers (L101) show a negative share `neg_share`:
+pulled towards a coin toss in proportion (Lean `ratchet_credence_ref`; L84; 8.42.1).
+"""
+function ratchet_credence(credence::Real, neg_share::Real)
+    check(0 <= credence <= 1 && 0 <= neg_share <= 1, "credence and negative share in [0, 1]")
+    ccall(sym(:bf_ratchet_credence), Float64, (Float64, Float64), credence, neg_share)
+end

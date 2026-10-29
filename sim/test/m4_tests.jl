@@ -75,3 +75,37 @@ end
     @test_throws ArgumentError gov(gov_trials = 1)
     @test_throws ArgumentError gov(gov_gauge = 0.5)
 end
+
+# The debatable escape (L157 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2, 8.41). The
+# proposal: each leaf's status bar relative to the alternative its work would fall to (a qualified
+# parent's accuracy, up to the established bar, never below the coarse bar), against the absolute
+# bar. It is tried on a share of the domains for a limited time and compared by leaf and epoch;
+# adopted everywhere only if it beats the incumbent by the significance rule, its gains exceed its
+# harms where tried, and it caused no irreparable harm (Lean `escape_accept_ref`).
+@testset "M4 debatable escape: a local trial" begin
+    lp = [1, 1, 2, 2, 3, 3, 4, 4]
+    ag(sk) = [DomainAgent([l in (k, mod1(k + 4, 8)) ? sk : 0.0 for l in 1:8], [l in (k, mod1(k + 4, 8)) ? 0.5 : 0.0 for l in 1:8], 0.0)
+              for k in 1:8 for _ in 1:2]
+    eightfold(; sk = 0.15, kw...) = M3cParams(ToyParams(n = 120, steps = 300, plans = 12), ag(sk), lp, trues(8); λpos = 0.05, λneg = 0.02,
+                                             transactions = true, causal_distribution = true, kw...)
+    # Low-skill domains, where no leaf model reaches the established bar: the trial finds the
+    # relative bar better, with gains above harms and nothing irreparable, and it is adopted.
+    tr = run_m3c(eightfold(escape = true); seed = 1)
+    e = tr.escape
+    @test e.tried && e.adopted && e.gains > e.harms && e.irreparable == 0 && e.means[2] > e.means[1]
+    @test count(e.trial_leaves) == 4
+    # Before the trial and on the other leaves meanwhile, the incumbent bar holds.
+    @test tr == run_m3c(eightfold(escape = true); seed = 1)
+    # Adversarial and edge cases. The same proposal is rejected where it causes irreparable harm
+    # (a world in which much smaller losses are irreparable), or where it is no better (capable
+    # domains, where every leaf model clears the established bar anyway).
+    strict = run_m3c(eightfold(escape = true, irreparable_loss = 0.2); seed = 1).escape
+    @test strict.tried && strict.irreparable > 0 && !strict.adopted
+    able = run_m3c(eightfold(sk = 0.6, escape = true); seed = 1).escape
+    @test able.tried && !able.adopted
+    # No escape changes nothing; the relative bar can also be set outright.
+    @test run_m3c(eightfold(escape = false); seed = 1) == run_m3c(eightfold(); seed = 1)
+    @test run_m3c(eightfold(relative_bar = true); seed = 1).escape.tried == false
+    @test_throws ArgumentError eightfold(escape = true, escape_share = 1.5)
+    @test_throws ArgumentError eightfold(escape = true, escape_steps = 0)
+end

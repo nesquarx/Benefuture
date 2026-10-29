@@ -569,6 +569,28 @@ the audit's cost, since the liability covers the reward (Lean `anti_cobra_effect
 a frivolous reporter is charged past the pattern threshold and ends poorer (tested); harassing an
 honest actor fails the significance test unless the examination errs (`p_false_trace`).
 
+Scrutiny follows the ledgers, by incentive rather than by rule (8.42.1). The reputation ledgers
+carry patterns of mistakes and uncovered deception as well as of success, and their entries never
+decay (only the rolling net does). Escrow pays an actor's work by a credence pulled towards a coin
+toss by its ledgers' negative share (Lean `ratchet_credence_ref`: the corpus's "ratcheting escrow
+requirements"); in this toy settlement follows within the step, so the ratchet changes balances only
+where prices bind. Readers' attention is the world's: with the ledgers open and AdvAp paying more
+than exploiting, attention goes where a report is likelier to be founded (a negative pattern,
+`pattern_attention`) and where readers have a stake (their own marginal domain, `stake_attention`).
+Audits estimate an overstatement from the actor's whole record (all decisions access full records).
+Liar in the marginal world, 24 seeds:
+
+| World | Peers' actions (95% CI) | Domain blocked | Deceptions established | Liar's balance against peers |
+|---|---|---|---|---|
+| Honest | 471 ± 125 | 1 of 24 | – | 1.03 |
+| Liar, no AdvAp | 393 ± 148 | 9 of 24 | – | 0.97 |
+| Liar, AdvAp, attention uniform | 425 ± 128 | 3 of 24 | 4.2 | 0.94 |
+| Liar, AdvAp, attention following ledgers and stakes | 374 ± 127 | 3 of 24 | 14.2 | 0.91 |
+
+AdvAp lifts most blockades; attention drawn by patterns and stakes uncovers the liar three times as
+often, without moving activity beyond the marginal domain's bistable spread. Solidifying a marginal
+domain is the work of better models (8.42.2).
+
 In governance (M5) AdvAp is the manufactured prisoner's dilemma: after each hidden defection a bloc
 member weighs revealing the bloc (`p_weigh`), and reveals when the reward (more than its share of
 the bloc's gain, `collusion_gain` per falsified decision) beats that share and its `loyalty`, by its
@@ -625,6 +647,28 @@ that large the value parameters' candidates mostly break L11's order and are rej
 parameters did not move. Still to do: targets other than the floors for thresholds that aim at
 other outcomes, and the debatable escape (a proposal beyond the harm zone voted by domain experts
 and tried at a chosen scale).
+
+### The debatable escape (8.26.3, 8.38.2, 8.41)
+
+A proposal beyond the freedom range is tried on a share of the domains for a limited time
+(`escape_share`, `escape_steps`, decided by domain experts; the experts' vote to try it is assumed),
+compared by domain and epoch (`escape_epoch`), and adopted everywhere only if it beats the incumbent
+by the significance rule, its gains exceed its harms where tried and it caused no irreparable harm
+(Lean `escape_accept_ref`). The proposal tried: each leaf's status bar relative to the alternative
+its work would fall to (`relative_bar_ref`; 8.41). Eight leaves under four parents, 16 agents
+working two leaves each, trial over steps 100–199 on four leaves, 4 seeds:
+
+| Skill | Adopted | Trial arm against control, per domain and epoch |
+|---|---|---|
+| 0.15 | 2 of 4 | 39.6 vs 20.4, 31.5 vs 6.2 (adopted); 36.6 vs 47.7, 40.5 vs 39.2 (not better) |
+| 0.3 | 0 of 4 | within a standard error |
+| 0.6 | 0 of 4 | within a standard error |
+
+Set world-wide (3 seeds), the relative bar halves losses at skill 0.3 (−52 against −100) and cuts
+them by an order of magnitude at 0.15 (−20 against −233), with floor growth a little higher. Screened
+on the way: with irreparable harm read as any measured loss beyond 3 per being, ordinary outcome
+noise produced a few in every world and the gate rejected everything; the toy's losses are passing
+harm, so irreparable harm is now a world classification, none by default.
 
 ## M5 observations
 
@@ -689,8 +733,9 @@ for removal.
 | Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
-| Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape's acceptance `escape_accept_ref` (8.38.2), its demonstration awaiting the author (8.40) |
+| Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
+| Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
 
@@ -709,6 +754,8 @@ ratified.
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
+| Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
+| Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
@@ -763,7 +810,9 @@ rare but present).
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
+| Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
 | An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |
+| What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |
 | An agent reporting whatever the record (adversary) | `frivolous` | 0 | 0–1 |
 | A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |

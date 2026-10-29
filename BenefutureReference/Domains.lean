@@ -179,6 +179,13 @@ def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
     (threshold novelThreshold : Float) : Bool :=
   if novel then records ≥ minRecords && accuracy ≥ max novelThreshold 0.55 else accuracy ≥ threshold
 
+/-- The status bar relative to the alternative (author ruling 8.41, refining 8.35): a leaf model
+    backs its currency if it is at least as accurate as the qualified currency its work would
+    otherwise fall to (`alternative`; the coarse bar when none, StandCoin pricing no value), up to
+    the established bar, and never below the coarse bar. -/
+def relative_bar_ref (established coarse alternative : Float) : Float :=
+  max coarse (min established alternative)
+
 /--
   Resource cost by availability (L83, StandCoin: charges resource cost as per availability): the
   base rate scaled by capacity over what remains, with what remains floored at a thousandth of

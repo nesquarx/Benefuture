@@ -325,7 +325,9 @@ means over 5 seeds of 500 steps.
   deception's falsified records are re-scored while the reporter's reward and the audit are charged
   to the deceiver. Repair restores a blocked marginal domain (one seed: no actions to 772; another
   stays blocked, too little work for a report) and a third or more of peers' work without track
-  records; honest worlds draw almost no reports, and a frivolous reporter pays for its audits.
+  records; honest worlds draw almost no reports, and a frivolous reporter pays for its audits. Over 24 seeds of
+  a marginal domain, AdvAp cuts blocked domains from 9 to 3, and readers' attention drawn by a
+  negative pattern in the open ledgers triples the deceptions uncovered (8.42).
   A colluding bloc of the most reputable fifth of experts lowers decision accuracy only from 97% to
   93%; delegation amplifies a larger bloc's capture (30% of experts: 66% with delegation, 86%
   without) until votes earn or cost reputation and delegations are audited (L114), when the bloc's
@@ -348,6 +350,13 @@ means over 5 seeds of 500 steps.
   currency qualifies and work goes to StandCoin. Under status thresholds a deceiver can degrade a
   domain's currency status for everyone, (8.37), which uncovering and repairing the deception largely restores (AdvAp, 8.38; Gaming below)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
+- The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
+  range is tried on half the domains for a limited time and adopted only if it beats the incumbent
+  by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status
+  bar relative to the alternative a domain has is adopted in 2 of 4 low-skill seeds and rejected as
+  no better in capable domains; set world-wide it halves losses at skill 0.3 and cuts them tenfold
+  at 0.15 (toy world, 3–4 seeds; irreparable harm is a world classification, none by default)
+  ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters

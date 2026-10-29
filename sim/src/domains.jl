@@ -179,3 +179,15 @@ function scarcity_cost(base::Real, available::Real, capacity::Real)
           "base and availability must be non-negative, capacity positive")
     ccall(sym(:bf_scarcity_cost), Float64, (Float64, Float64, Float64), base, available, capacity)
 end
+
+"""
+    relative_bar(established, coarse, alternative) -> bar
+
+A leaf model's status bar relative to the alternative its work would fall to (Lean
+`relative_bar_ref`; author ruling 8.41): the alternative's accuracy, up to the established bar,
+never below the coarse bar.
+"""
+function relative_bar(established::Real, coarse::Real, alternative::Real)
+    check(all(isfinite, (established, coarse, alternative)) && 0 < coarse <= established <= 1, "bars finite, 0 < coarse ≤ established ≤ 1")
+    ccall(sym(:bf_relative_bar), Float64, (Float64, Float64, Float64), established, coarse, alternative)
+end

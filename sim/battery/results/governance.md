@@ -1,8 +1,8 @@
 # Failure-boundary battery: governance
 
-Build: commit 732fe43 (with any uncommitted changes at the time).
+Build: commit 0e08fc3 (with any uncommitted changes at the time).
 
-Run time 8.3 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 12% failing.
+Run time 8.6 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 0% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
@@ -14,40 +14,36 @@ Run time 8.3 minutes; 24 random rays; 128 screened worlds (severities up to 1.00
 | local noise | not within 2 |
 | collusion | not within 2 |
 | delegation | not within 2 |
+| loyalty | not within 2 |
 
 ## Importance in screening (mean severity in failing worlds less in converging ones)
 
 | Factor | Importance |
 |---|---|
-| collusion | 0.332 |
-| hidden outcomes | 0.193 |
-| signal noise | 0.102 |
-| ability scatter | -0.054 |
-| local noise | -0.139 |
-| delegation | -0.186 |
+| signal noise | 0.000 |
+| ability scatter | 0.000 |
+| hidden outcomes | 0.000 |
+| local noise | 0.000 |
+| collusion | 0.000 |
+| delegation | 0.000 |
+| loyalty | 0.000 |
 
 ## Strongest interactions (failure rate when both are high, beyond each alone)
 
 | Pair | Interaction |
 |---|---|
-| collusion × delegation | -0.253 |
-| signal noise × local noise | -0.176 |
-| local noise × collusion | -0.149 |
-| hidden outcomes × collusion | +0.139 |
-| hidden outcomes × delegation | -0.127 |
-| signal noise × hidden outcomes | -0.127 |
-| signal noise × collusion | +0.124 |
-| ability scatter × hidden outcomes | -0.113 |
+| ability scatter × delegation | +0.000 |
+| signal noise × delegation | +0.000 |
+| ability scatter × collusion | +0.000 |
+| hidden outcomes × delegation | +0.000 |
+| local noise × delegation | +0.000 |
+| signal noise × ability scatter | +0.000 |
+| signal noise × hidden outcomes | +0.000 |
+| hidden outcomes × local noise | +0.000 |
 
 ## Nearest failures on random rays (severity per factor at the boundary)
 
-| t | signal noise | ability scatter | hidden outcomes | local noise | collusion | delegation | monotone |
-|---|---|---|---|---|---|---|---|
-| 1.38 | 0.14 | 0.28 | 0.39 | 0.35 | 1.22 | 0.20 | true |
-| 1.46 | 0.58 | 0.22 | 1.18 | 0.29 | 0.48 | 0.24 | true |
-| 1.49 | 0.98 | 0.12 | 0.78 | 0.15 | 0.52 | 0.58 | true |
-| 1.55 | 0.76 | 0.47 | 0.70 | 0.82 | 0.60 | 0.32 | true |
-| 1.76 | 0.48 | 0.67 | 0.93 | 0.09 | 0.98 | 0.76 | true |
-| 1.77 | 0.90 | 0.10 | 0.41 | 0.07 | 0.64 | 1.32 | true |
+| t | signal noise | ability scatter | hidden outcomes | local noise | collusion | delegation | loyalty | monotone |
+|---|---|---|---|---|---|---|---|---|
 
 Non-monotone rays (converging again beyond the boundary): 0 of 24.
