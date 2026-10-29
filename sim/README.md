@@ -384,6 +384,25 @@ at σ 2 and execution noise at 2 each stop convergence (about 2). All the robust
 once (BACKPROPAGATION 8.32: the eligibility threshold is a cliff, and absolute accuracy blames models
 for noise no model could predict).
 
+### Laundering (harm passed off as unassigned)
+
+A launderer's actions save resource cost (`launder_saving`, half) by dumping harm on beings outside
+what the action measurably touches (`launder`: chance per action). The harm surfaces with no
+apparent cause and is examined like an outage: traced (`p_trace`), a crime penalised through causal
+distribution; untraced, insured through the commons. 8 agents, one laundering half its actions, 4
+seeds (after ruling 8.33):
+
+| Tracing rate | Launderer's balance against honest | Floor at the end (66.1 without a launderer) |
+|---|---|---|
+| 0 | +2% | 57.9 |
+| 0.1 | −14% | 57.4 |
+| 0.25 | −126% | 59.5 |
+| 0.5 | −432% | 59.4 |
+| 1.0 | −1,046% | 56.6 |
+
+Laundering pays only when practically untraceable: the penalty is the harm's assessed value, far
+beyond the saving. The harm costs everyone regardless, since repair restores half.
+
 ## Failure-boundary battery
 
 A randomized battery hones in on the combinations of noise and attack beyond which the framework
@@ -652,7 +671,8 @@ are first guesses at reality; the failure-boundary batteries sweep them.
 | Experts joining co-funding | `participation` | 0.9 | 0.3–1 |
 | Separating an upstream output's part | `attribution_σ` | 0.1 | 0–0.5 |
 | Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–1 |
-| Examining an outage tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
+| Examining harm of no apparent cause tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
+| An agent laundering harm (adversary); the cost it saves | `launder`, `launder_saving` | 0, 0.5 | 0–1, 0.2–0.8 |
 | Hazard harm | `hazard_σ` | 0.2 | 0–1 |
 | A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
 | A guardian acting on a known duty | `diligence` | 0.95 | 0.3–1 |

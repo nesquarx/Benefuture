@@ -844,3 +844,8 @@ model perfect models, perfect people or perfect processes: all are impossible. B
 applies to the work itself: truth levels cannot reach 1. Simulation: every world default is mildly
 imperfect (the low end of each realistic noise range), exact worlds appear only as limiting cases
 in tests, and claims are stated with their confidence and assumptions.
+Laundering (M6): harm dumped outside what an action measurably touches is examined as an outcome of
+no apparent cause, as outages are; it pays only when practically untraceable (+2% at a tracing rate
+of 0; a loss from 0.1). The tracing rate is the frontier to defend: anti-corruption (L159) and AdvAp
+(L160), which reward exposure, are its native levers.
+

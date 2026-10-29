@@ -111,3 +111,27 @@ end
     @test_throws ArgumentError M5Params(w, 1:4; p_apparent = 1.5)
     @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
 end
+
+# Harm passed off as unassigned: a launderer's actions save resource cost by dumping harm on beings
+# outside what the action measurably touches (`launder`, a world property). The harm surfaces with
+# no apparent cause and is examined like an outage (8.30.1): traced (`p_trace`), a crime penalised
+# through causal distribution; untraced, insured through the commons.
+@testset "M6 laundering" begin
+    eight(; launder = Float64[], kw...) =
+        M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent([0.3, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:8],
+                  [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                  repair_efficiency = 0.5, launder, kw...)
+    dirty = [zeros(7); 0.5]
+    honest = run_m3c(eight(); seed = 1)
+    traced = run_m3c(eight(launder = dirty, p_trace = 1.0); seed = 1)
+    @test traced.laundered > 0 && traced.laundered_traced == traced.laundered
+    @test sum(traced.balance[8, :]) < sum(honest.balance[8, :]) && traced.credit_neg[8] < honest.credit_neg[8]
+    untraced = run_m3c(eight(launder = dirty, p_trace = 0.0); seed = 1)
+    @test untraced.laundered_traced == 0 && untraced.unattributed > 0
+    for tr in (traced, untraced)
+        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) -
+                                            sum(tr.reinvested) - tr.hazard_debits + tr.prevention_measured
+    end
+    @test_throws ArgumentError eight(launder = [0.5])
+    @test_throws ArgumentError eight(launder = [zeros(7); 1.5])
+end

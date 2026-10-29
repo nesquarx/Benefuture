@@ -114,7 +114,9 @@ struct M3cParams
     remeasure_σ::Float64   # extra marker error when measuring late, after an outage
     deceit::Vector{Float64} # per agent, how far its plans fool every metric model upward (M6; world)
     track_window::Int       # past actions of an actor its track record spans, for models' estimates (governed; 8.29)
-    p_trace::Float64        # chance examining an outage traces it to its cause (8.30.1; world)
+    p_trace::Float64        # chance examining harm of no apparent cause traces it to its cause (8.30.1; world)
+    launder::Vector{Float64} # per agent, chance an action dumps harm outside what it measurably touches (M6; world)
+    launder_saving::Float64 # resource cost a laundering agent saves by it, as a share (world)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -147,7 +149,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, events = Shock[])
+                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -178,6 +180,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
     check(isempty(deceit) || (length(deceit) == length(agents) && all(isfinite, deceit)), "one finite deceit per agent")
     check(track_window >= 0 && 0 <= p_trace <= 1, "track record window non-negative, trace chance in [0, 1]")
+    check((isempty(launder) || (length(launder) == length(agents) && all(x -> 0 <= x <= 1, launder))) && 0 <= launder_saving <= 1,
+          "one laundering chance in [0, 1] per agent; saving in [0, 1]")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -193,7 +197,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(diligence) ? fill(0.95, length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
               bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
-              isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace, collect(Shock, events))
+              isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace,
+              isempty(launder) ? zeros(length(agents)) : collect(Float64, launder), launder_saving, collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -224,6 +229,7 @@ function run_m3c(p::M3cParams; seed)
     # World events (catastrophes and black swans): which are live at the current step.
     cur, blind = Ref(0), Ref(false)
     deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
+    pending_launder = Tuple{ToyPlan,BitVector,Int,Int}[]  # harm of no apparent cause, to examine this step
     # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world
     # property). Models estimate from track record (author ruling 8.29): each actor's recent
     # prediction errors, per being touched, correct its next estimates. Records reach the models at
@@ -348,7 +354,8 @@ function run_m3c(p::M3cParams; seed)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
              prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0), commons_spent = Ref(0.0),
-             insured = Ref(0.0), self_funded = Ref(0.0), repair_cost = Ref(0.0), outage_harm = Ref(0.0), sabotage_traced = Ref(0))
+             insured = Ref(0.0), self_funded = Ref(0.0), repair_cost = Ref(0.0), outage_harm = Ref(0.0), sabotage_traced = Ref(0),
+             laundered = Ref(0), laundered_traced = Ref(0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
@@ -473,6 +480,16 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
             end
+            # Laundering (M6): harm dumped on beings outside what the action measurably touches; it
+            # surfaces with no apparent cause, to be examined (`examine!`).
+            if p.launder[a] > 0 && rand(srng) < p.launder[a]
+                dump = (rand(srng, t.n) .< p.side_share) .& .!touched(own_plans[j])
+                if any(dump)
+                    s.u .-= p.side_size .* dump; s.h .-= p.side_size .* dump
+                    push!(pending_launder, (ToyPlan(-p.side_size .* dump, -p.side_size .* dump), dump, a, leaves[j]))
+                    world.laundered[] += 1
+                end
+            end
             done = ups[j] === nothing ? own_done : ToyPlan(own_done.du .+ ups[j][2].du, own_done.dh .+ ups[j][2].dh)
             seen = observed_plan(mrng, done, p.marker_σ)
             m = touched(own_plans[j])
@@ -549,7 +566,8 @@ function run_m3c(p::M3cParams; seed)
         stops = [classify_sig(c) for c in sigs]
         priced = [price_shares(st) for st in stops]
         unit_cost = scarcity_cost(p.cost_per_touch, available, p.capacity)
-        costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) for plan in plans]
+        costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
+                 for (j, plan) in enumerate(plans)]
         menu, menu_preds, offers, lane_queue = Int[], ToyPlan[], Dict{Int,Vector{Tuple{Int,Float64,ToyPlan,Float64}}}(), Int[]
         for j in eachindex(plans)
             k = argmax(stops[j])
@@ -781,6 +799,31 @@ function run_m3c(p::M3cParams; seed)
                 world.insured[] += p.repair_efficiency * min(own + spend, need)
             end
         end
+        # Harm of no apparent cause is examined as an outcome (author ruling 8.30.1): traced to its
+        # cause (`p_trace`), a crime of informed volition, penalised through causal distribution to
+        # fund repair; untraced or natural, unassigned and insured through the commons.
+        function examine!(harm, hit, cause, l, σ)
+            measured = plan_value(observed_plan(hrng, harm, σ), t)
+            traced = cause > 0 && rand(hrng) < p.p_trace
+            if traced
+                is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
+                st, pm = classify_sig(sig), parent_mem(sig)
+                credit!(cur[], sig, st, measured, pm, price_shares(st), [(cause, 0.0, measured)])
+                world.hazard_penalties[] += -measured
+                if cur[] > p.init_steps
+                    balance[cause, :] .+= split_signed(st, measured)[1]
+                    world.hazard_debits[] += -measured
+                end
+                if p.repair_efficiency > 0
+                    push!(repairs, ToyPlan(p.repair_efficiency .* -harm.du, p.repair_efficiency .* -harm.dh))
+                    world.repaired[] += p.repair_efficiency * -measured
+                end
+            else
+                insure!(harm, hit, measured, l)
+            end
+            (measured = measured, traced = traced)
+        end
         function hazard!(share, sz)
             local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, pr, acc, price, own
             world.hazards[] += 1
@@ -854,28 +897,18 @@ function run_m3c(p::M3cParams; seed)
                 s.u .+= harm.du; s.h .+= harm.dh
                 saboteur = e.target
                 push!(deferred, function ()
-                    measured = plan_value(observed_plan(hrng, harm, p.marker_σ + p.remeasure_σ), t)
-                    world.outage_harm[] += -measured
-                    l = saboteur > 0 ? argmax(p.agents[saboteur].focus) : 1
-                    if saboteur > 0 && rand(hrng) < p.p_trace
-                        world.sabotage_traced[] += 1
-                        is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
-                        sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
-                        st, pm = classify_sig(sig), parent_mem(sig)
-                        credit!(cur[], sig, st, measured, pm, price_shares(st), [(saboteur, 0.0, measured)])
-                        world.hazard_penalties[] += -measured
-                        balance[saboteur, :] .+= split_signed(st, measured)[1]
-                        world.hazard_debits[] += -measured
-                        if p.repair_efficiency > 0
-                            push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
-                            world.repaired[] += p.repair_efficiency * -measured
-                        end
-                    else
-                        insure!(harm, hit, measured, l)
-                    end
+                    r = examine!(harm, hit, saboteur, saboteur > 0 ? argmax(p.agents[saboteur].focus) : 1, p.marker_σ + p.remeasure_σ)
+                    world.outage_harm[] += -r.measured
+                    world.sabotage_traced[] += r.traced
                 end)
             end
         end
+        # Laundered harm surfaces with no apparent cause and is examined (now, or when markers return).
+        for (harm, dump, a, l) in pending_launder
+            settle = σ -> (world.laundered_traced[] += examine!(harm, dump, a, l, σ).traced)
+            blind[] ? push!(deferred, () -> settle(p.marker_σ + p.remeasure_σ)) : settle(p.marker_σ)
+        end
+        empty!(pending_launder)
         for rep in repairs
             s.u .+= rep.du; s.h .+= rep.dh
         end
@@ -976,7 +1009,8 @@ function run_m3c(p::M3cParams; seed)
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
                prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
                commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
-               repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[], upfront = agent_upfront, settled_value = agent_settled,
+               repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
+               laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
                leaf_accuracy = [leaf_acc(k) for k in 1:L],
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
