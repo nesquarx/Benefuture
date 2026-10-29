@@ -375,8 +375,23 @@ taken in the worst case as the most reputable experts of each domain.
 
 Normalised expertise holds a bloc of up to a fifth of the experts; delegation amplifies capture of
 the top, since low-impact voters delegate to the most reputable. The cap holds per delegate (largest
-share 5.7%), but the bloc collects across many. L114's audit and retraction of delegations
-(bulkAudited, retractable) is the native defence, not yet modelled. Not yet: sabotaged outages
+share 5.7%), but the bloc collects across many.
+
+Votes are outputs (author ruling 8.29): once a decision's optimality becomes apparent (`p_apparent`,
+0.7), each vote earns or costs reputation in its domain by the weight it cast (`vote_value`), and
+enters its voter's audited record; delegators pass over delegates whose recent apparent votes fall
+below the audit threshold (L114). 800 decisions:
+
+| Bloc | Static, no delegation | Live, no delegation | Static, delegation | Live, delegation | Bloc's expertise share, live |
+|---|---|---|---|---|---|
+| None | 98.6% | 98.6% | 98.6% | 98.6% | – |
+| Top 20% | 94.4% | 94.8% | 95.0% | 98.1% | 0.60 → 0.02 |
+| Top 30% | 86.1% | 88.4% | 65.5% | 96.1% | 0.80 → 0.03 |
+| Top 40% | 74.0% | 77.6% | 52.5% | 94.1% | 0.90 → 0.04 |
+
+Audited delegation turns from the amplifier into the cure; without delegation base and impact
+weight still carry the bloc's votes. Gaming check, an M6 test to come: a bloc that defects only
+where the outcome will not become apparent keeps its reputation. Not yet: sabotaged outages
 (examined by cause), harm passed off as unassigned, identity forks.
 
 ## M4 observations
@@ -493,6 +508,7 @@ ratified.
 | Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L157; 8.22 |
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
+| Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Currency eligibility (established, novel; novel never below 0.5) | `threshold`, `novel_threshold`, `min_records` | 0.55, 0.52, 10 | L82; 8.8 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
@@ -536,6 +552,7 @@ guesses at reality, to be swept once the model is solid.
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
+| A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |
 

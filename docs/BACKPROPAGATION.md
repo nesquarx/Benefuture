@@ -774,4 +774,9 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    0.05, λ₋ 0.02); the simulation refuses losses decaying faster than gains (equal rates only as the
    reduction to M2). (2) Models correct each actor's estimates by its recent errors
    (`track_window`, 20, governed). Together they end 8.28's finding: over 8 seeds the liar acts and
-   is paid as an honest agent and ends no richer beyond noise. (3) Next: audit and retraction.
+   is paid as an honest agent and ends no richer beyond noise. (3) M5: votes earn or cost
+   reputation by the weight cast once outcomes are apparent, and delegations are audited and
+   retracted; against a bloc of the top 30% with delegation, accuracy 65.5% → 96.1% and the bloc's
+   expertise share 0.80 → 0.03. Gaming check: a bloc defecting only where outcomes will not become
+   apparent keeps its reputation; the diversity at scale, deliberation, AdvAp and anti-corruption
+   the author names are the remaining defences, not yet modelled.

@@ -71,4 +71,17 @@ end
     deleg = run_m5(M5Params(w, 1:4; decisions = 400, colluders = top(0.2), p_delegate = 0.8); seed = 1)
     @test deleg.correct > 0.8 && maximum(deleg.max_share) <= 0.05 + maximum(deleg.max_single) + 1e-9
     @test_throws ArgumentError M5Params(w, 1:4; colluders = [999])
+    # Votes are outputs (author ruling 8.29): once a decision's outcome becomes apparent, each vote
+    # earns or costs reputation in its domain by the weight it cast; delegations are audited and
+    # retracted from delegates whose recent apparent votes fall short (L114). Against a bloc of the
+    # top 30% with delegation, accuracy recovers and the bloc's share of expertise falls.
+    bloc30 = top(0.3)
+    static = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, vote_value = 0.0, audit_window = 0); seed = 1)
+    live = run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8); seed = 1)
+    @test live.correct > static.correct + 0.1
+    @test live.bloc_expertise[end] < live.bloc_expertise[1] / 2
+    # Honest experts lose nothing by it: without a bloc, accuracy holds.
+    @test run_m5(M5Params(w, 1:4; decisions = 800, p_delegate = 0.8); seed = 1).correct > 0.95
+    @test_throws ArgumentError M5Params(w, 1:4; p_apparent = 1.5)
+    @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
 end

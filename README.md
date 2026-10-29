@@ -310,7 +310,9 @@ means over 5 seeds of 500 steps.
   times what its outcomes were worth, which escrow claws back, and before the decay ruling it ended
   richer than honest agents. A colluding bloc of the most reputable fifth of
   experts lowers decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's
-  capture (30% of experts: 70% with delegation, 85% without)
+  capture (30% of experts: 66% with delegation, 86% without) until votes earn or cost reputation
+  and delegations are audited (L114), when the bloc's expertise share collapses and accuracy
+  returns to 96% (toy decision world; outcomes apparent 70% of the time)
   ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
