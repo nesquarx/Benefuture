@@ -40,6 +40,7 @@ struct M5Params
     conviction::Float64        # how strongly a locale's reading must oppose the decision before it departs (world)
     outcome_σ::Float64         # noise in a locale's measured outcome (world)
     trial_z::Float64           # standard errors that settle a split trial (governed)
+    ability_spread::Float64    # scatter of persons' noise ceilings around the expertise trend (8.31; world)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -48,7 +49,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   relative_expertise::Bool = true, colluders = Int[], p_apparent::Real = 0.7, vote_value::Real = 0.5,
                   audit_window::Integer = 20, audit_threshold::Real = 0.6, stealth::Bool = false,
                   diversity::Bool = true, novelty_bonus::Real = 0.5, trial_units::Integer = 50, local_σ::Real = 1.0, conviction::Real = 1.5,
-                  outcome_σ::Real = 1.0, trial_z::Real = 2.0)
+                  outcome_σ::Real = 1.0, trial_z::Real = 2.0, ability_spread::Real = 0.5,
+                  reputation = nothing)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -58,14 +60,15 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     check(all(c -> 1 <= c <= length(agents), colluders), "colluders are agents of the run")
     check(0 <= p_apparent <= 1 && isfinite(vote_value) && vote_value >= 0 && audit_window >= 0 && 0 <= audit_threshold <= 1,
           "chance and audit threshold in [0, 1], vote value and window non-negative")
-    check(isfinite(novelty_bonus) && novelty_bonus >= 0 && trial_units >= 1 && all(x -> isfinite(x) && x >= 0, (local_σ, conviction, outcome_σ, trial_z)),
+    check(isfinite(novelty_bonus) && novelty_bonus >= 0 && trial_units >= 1 && all(x -> isfinite(x) && x >= 0, (local_σ, conviction, outcome_σ, trial_z, ability_spread)),
           "novelty bonus, noises and z non-negative, units positive")
     skills = [a.skills[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
     focus = [a.focus[d] for a in agents, d in 1:size(m3.relevance_leaf, 2)]
-    M5Params(Float64.(m3.relevance_leaf), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
+    reputation === nothing || check(size(reputation) == size(m3.relevance_leaf), "one reputation per agent and domain")
+    M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
              p_apparent, vote_value, audit_window, audit_threshold, stealth,
-             diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z)
+             diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread)
 end
 
 """
@@ -78,6 +81,12 @@ largest share of total weight one voter held (`max_share`) and the largest singl
 function run_m5(p::M5Params; seed)
     rng = Xoshiro(seed)
     trng = Xoshiro(hash((seed, :split_trial)))  # its own stream: diversity changes no other draw
+    # Imperfect agents (8.31): each voter's noise ceiling per domain, inverse to its skill there on
+    # average; each locale's ceiling; choices draw noise on their own stream.
+    arng, crng = Xoshiro(hash((seed, :ability))), Xoshiro(hash((seed, :choice)))
+    caps = ability_caps(arng, max.(p.skills, 0.0); base = p.signal_σ, gain = p.skill_gain, spread = p.ability_spread)
+    local_caps = vec(ability_caps(arng, zeros(p.trial_units, 1); base = p.local_σ, gain = 0.0, spread = p.ability_spread))
+    correct_trace = Bool[]
     welfare, novelty_paid, chosen_share = 0.0, 0.0, Float64[]
     share_when_right, share_when_wrong = Float64[], Float64[]
     na = size(p.skills, 1)
@@ -112,11 +121,12 @@ function run_m5(p::M5Params; seed)
                 end
             end
         end
-        signal = [truth + p.signal_σ * exp(-p.skill_gain * max(p.skills[i, k], 0.0)) * randn(rng) for i in 1:na]
+        signal = [truth + choice_noise(crng, caps[i, k]) for i in 1:na]
         defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
         vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
         tally = sum(held[i] * vote(i) for i in 1:na if !delegated[i])
         correct += sign(tally) == sign(truth)
+        push!(correct_trace, sign(tally) == sign(truth))
         t = apparent ? tally_apparent : tally_hidden
         t[1] += sign(tally) == sign(truth); t[2] += 1
         # Diversity: a share of locales tries the option not chosen; when the split trial settles
@@ -128,7 +138,7 @@ function run_m5(p::M5Params; seed)
         # No one is assigned to the alternative.
         share = 0.0
         if p.diversity
-            reading = truth .+ p.local_σ .* randn(trng, p.trial_units)
+            reading = [truth + choice_noise(crng, local_caps[u]) for u in 1:p.trial_units]
             share = count(r -> decided * r < p.novelty_bonus - p.conviction, reading) / p.trial_units
             novelty_paid += p.novelty_bonus * share * p.trial_units
             push!(chosen_share, share)
@@ -163,6 +173,6 @@ function run_m5(p::M5Params; seed)
     (correct = correct / p.decisions, max_share = max_share, max_single = max_single, bloc_expertise = bloc_expertise,
      correct_apparent = tally_apparent[1] / max(tally_apparent[2], 1), correct_hidden = tally_hidden[1] / max(tally_hidden[2], 1),
      welfare = welfare / p.decisions, correct_after = after_all / p.decisions, novelty_paid = novelty_paid,
-     chosen_share = chosen_share, share_when_right = share_when_right, share_when_wrong = share_when_wrong,
+     chosen_share = chosen_share, correct_trace = correct_trace, share_when_right = share_when_right, share_when_wrong = share_when_wrong,
      correct_after_hidden = after_hidden / max(tally_hidden[2], 1))
 end

@@ -331,6 +331,29 @@ carried the last action's outcome and credits stopped summing to outcomes (12,79
 credited). Declaring the action's variables local fixed it; a test now checks that each late
 record is fully distributed and that late outcomes differ.
 
+## Imperfect agents and convergence under friction (8.31)
+
+Agents are not perfectly rational: each person's choices in a domain carry noise up to a ceiling
+drawn once per person and domain, `signal_σ` × exp(−`skill_gain` × skill), scattered log-normally
+by `ability_spread` (a general reflection of personal abilities, inverse to expertise only on
+average); each choice draws its noise up to that ceiling (`ability_caps`, `choice_noise`, reusable
+world functions). Locales' readings carry their own ceilings.
+
+Convergence under heavy friction (signal noise 40, ceilings scattered by a factor of e, outcomes
+apparent 40% of the time), M5 world of 20 voters, 16 seeds, from wrong priors (in each domain the
+least skilled hold the most reputation):
+
+| Decisions | 1–100 | 101–200 | 401–500 | 1,901–2,000 |
+|---|---|---|---|---|
+| True priors | 80.5% | 82.8% | 83.3% | 81.7% |
+| Inverted priors | 79.0% | 81.6% | 82.6% | 81.4% |
+| Inverted, votes worth a tenth | 78.7% | 79.6% | 80.7% | 80.4% |
+
+Vote reputation re-sorts the voters within a few hundred decisions. The effect is small because in
+this world expertise is worth about two points over equal votes; with easy decisions (unit noise)
+every rule is near perfect and nothing separates them, which is why the earlier M5 comparisons now
+use harder decisions.
+
 ## M6 observations
 
 Exploits are tested against the native mechanisms before any defence is built; a failure is a
@@ -514,6 +537,7 @@ for removal.
 | Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
 | Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
+| Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape still to come |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
@@ -578,6 +602,7 @@ guesses at reality, to be swept once the model is solid.
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
+| Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
 | A locale's own reading of the options; its conviction margin; outcome measurement (M5) | `local_σ`, `conviction`, `outcome_σ` | 1, 1.5, 1 | 0.5–3, 0.5–3, 0.5–3 |
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |

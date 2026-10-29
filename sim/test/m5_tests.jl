@@ -28,9 +28,10 @@ end
                            [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
                             for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     # Expertise weighting decides better than one agent, one vote, when reputation tracks skill.
-    # (Over seeds: the difference is a few decisions in four hundred.)
-    eq = mean(run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400); seed).correct for seed in 1:4)
-    bf = mean(run_m5(M5Params(m3, 1:4; decisions = 400); seed).correct for seed in 1:4)
+    # (Over seeds, where judgement is hard enough to separate them: with easy signals both are near
+    # perfect.)
+    eq = mean(run_m5(M5Params(m3, 1:4; expertise_weight = 0.0, decisions = 400, signal_σ = 6.0); seed).correct for seed in 1:4)
+    bf = mean(run_m5(M5Params(m3, 1:4; decisions = 400, signal_σ = 6.0); seed).correct for seed in 1:4)
     @test bf > eq
     # Delegation under the cap: no delegate ever holds more than the cap plus one delegator's weight.
     dl = run_m5(M5Params(m3, 1:4; decisions = 200, p_delegate = 0.8, cap = 0.1); seed = 2)
@@ -53,6 +54,28 @@ end
     large = run_m5(M5Params(world(25), 1:4; decisions = 400, expertise_weight = 5.0); seed = 1)  # 100 agents
     @test small.correct > 0.9 && large.correct > 0.9
     @test mean(large.max_share) < 0.5 && mean(small.max_share) < 0.6
+end
+
+@testset "M5: convergence under heavy friction (author ruling 8.31)" begin
+    # Epistemic antifragility: start from wrong priors (in each domain the least skilled hold the
+    # most reputation) under heavy friction (signal noise 40, each voter's ceiling scattered by a
+    # factor of e around the expertise trend, outcomes apparent only 40% of the time). Vote
+    # reputation re-sorts the voters: decisions start worse and converge to where true priors stand.
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.1 * r : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:5], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    inverted = copy(m3.relevance_leaf)
+    for d in 1:4
+        idx = [5(d - 1) + r for r in 1:5]
+        inverted[idx, d] = reverse(sort(inverted[idx, d]))
+    end
+    heavy(rep, seed) = run_m5(M5Params(m3, 1:4; decisions = 2000, signal_σ = 40.0, ability_spread = 1.0, p_apparent = 0.4,
+                                       diversity = false, reputation = rep); seed)
+    truth_runs = [heavy(nothing, seed) for seed in 1:16]
+    wrong_runs = [heavy(inverted, seed) for seed in 1:16]
+    window(runs, r) = mean(mean(tr.correct_trace[r]) for tr in runs)
+    @test window(wrong_runs, 1:100) < window(wrong_runs, 1601:2000) - 0.01
+    @test window(wrong_runs, 1601:2000) > window(truth_runs, 1601:2000) - 0.01
 end
 
 @testset "M5: adversarial and edge cases" begin

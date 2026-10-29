@@ -797,3 +797,16 @@ Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
    when its estimate plus the novelty bonus favours it; the share trying it is chosen, not set. A
    significant trial makes the outcome apparent, and an alternative proved better is adopted.
    An earlier version imposed a fixed share; withdrawn.
+
+**8.31 Author ruling on imperfect agents and friction.** Agents are not perfectly rational: their
+choices carry a noise gate with a random maximum per person per domain (a general reflection of
+personal abilities), noisily inverse to expertise. Following epistemic antifragility, the
+simulation should demonstrate convergence under heavy friction. Candidate homes: Being, Measurement
+(noise), Antifragility, Progressive complexity.
+Simulation status: per-person, per-domain ceilings on choice noise (`ability_caps`, `choice_noise`)
+for voters and locales in M5; from inverted reputations under heavy friction, decisions converge
+to the accuracy true reputations give within a few hundred decisions. Screened on the way: easy
+decisions left every rule near perfect, so comparisons of voting rules now use hard decisions.
+Next: the same ceilings for agents' choices in M3c (co-funding, guardians) and an M3c run with every
+noise source at the top of its range.
+
