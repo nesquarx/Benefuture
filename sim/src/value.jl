@@ -32,8 +32,8 @@ Sy over signed items `(x, w₊, w₋)`: gains enter Φ₊ with w₊, losses ente
 """
 function signed_synergy(items; λ::Real, κ::Real, qp::Real, qm::Real)
     for (x, wp, wn) in items
-        check(all(isfinite, (x, wp, wn)), "item ($x, $wp, $wn) must be finite")
-        check(wp >= 0 && wn >= 0, "item ($x, $wp, $wn) must have non-negative weights")
+        all(isfinite, (x, wp, wn)) || throw(ArgumentError("item ($x, $wp, $wn) must be finite"))
+        wp >= 0 && wn >= 0 || throw(ArgumentError("item ($x, $wp, $wn) must have non-negative weights"))
     end
     check(all(isfinite, (λ, κ, qp, qm)), "parameters must be finite")
     check(λ >= 0 && κ >= 0 && qp > 0 && qm > 0, "λ, κ non-negative and exponents positive")

@@ -3,12 +3,13 @@
 # The guards here are the bridge's input contract, not rules: invalid inputs throw rather than
 # reach the reference, which would return a plausible-looking but meaningless value.
 
+# Guards whose message interpolates values throw directly, so the message is built only on failure.
 check(cond, msg) = cond || throw(ArgumentError(msg))
 
 function check_items(items)
     for (a, w) in items
-        check(isfinite(a) && isfinite(w), "item ($a, $w) must be finite")
-        check(a >= 0 && w >= 0, "item ($a, $w) must have non-negative magnitude and weight")
+        isfinite(a) && isfinite(w) || throw(ArgumentError("item ($a, $w) must be finite"))
+        a >= 0 && w >= 0 || throw(ArgumentError("item ($a, $w) must have non-negative magnitude and weight"))
     end
 end
 
