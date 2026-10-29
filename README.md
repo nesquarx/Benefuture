@@ -307,7 +307,9 @@ means over 5 seeds of 500 steps.
 - Gaming (M6, a finding, not a guarantee): an agent whose plans fool every metric model is paid
   upfront far more than its outcomes are worth, and escrow takes the excess back, but it still ends
   richer than honestly (and than its peers when losses decay faster than gains, through the
-  balance-overflow threshold); recorded for the author as unmet requirements
+  balance-overflow threshold); recorded for the author as unmet requirements. A colluding bloc of the most reputable fifth of
+  experts lowers decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's
+  capture (30% of experts: 70% with delegation, 85% without)
   ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)

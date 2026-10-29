@@ -750,3 +750,9 @@ every metric model upward (`deceit` 1.0, a world property) in a toy domain of si
 4. Relay farming is bounded by the governed accolade rate (5% of the carried outputs' positive
    shares in the test world); ruling 8.26.2 (held) removes it where carrying was not needed.
 Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
+5. Colluding voters (M5 world): normalised expertise holds a bloc of the most reputable fifth of
+   experts (accuracy 97% → 93%); delegation amplifies a larger bloc's capture (30%: 85% without
+   delegation, 70% with), since delegations flow to the most reputable. The cap holds per delegate.
+   [P] model L114's bulk audit and retraction: delegators audit delegates' votes against measured
+   outcomes and retract, a native defence to test next.
+
