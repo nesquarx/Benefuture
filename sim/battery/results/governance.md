@@ -1,8 +1,8 @@
 # Failure-boundary battery: governance
 
-Build: commit 3ac870a (with any uncommitted changes at the time).
+Build: commit e250532 (with any uncommitted changes at the time).
 
-Run time 8.2 minutes; 24 random rays; 128 screened worlds, 10% failing.
+Run time 8.0 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 14% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
@@ -19,35 +19,35 @@ Run time 8.2 minutes; 24 random rays; 128 screened worlds, 10% failing.
 
 | Factor | Importance |
 |---|---|
-| collusion | 0.360 |
-| hidden outcomes | 0.210 |
-| signal noise | 0.186 |
-| ability scatter | -0.122 |
-| local noise | -0.198 |
-| delegation | -0.206 |
+| collusion | 0.357 |
+| hidden outcomes | 0.206 |
+| signal noise | 0.165 |
+| ability scatter | -0.061 |
+| delegation | -0.141 |
+| local noise | -0.191 |
 
 ## Strongest interactions (failure rate when both are high, beyond each alone)
 
 | Pair | Interaction |
 |---|---|
-| local noise × collusion | -0.223 |
-| collusion × delegation | -0.194 |
-| signal noise × collusion | +0.182 |
-| ability scatter × delegation | +0.156 |
-| hidden outcomes × collusion | +0.133 |
-| hidden outcomes × delegation | -0.131 |
-| signal noise × hidden outcomes | -0.131 |
-| local noise × delegation | +0.120 |
+| hidden outcomes × collusion | +0.242 |
+| local noise × collusion | -0.230 |
+| signal noise × collusion | +0.224 |
+| ability scatter × delegation | +0.188 |
+| signal noise × hidden outcomes | -0.153 |
+| collusion × delegation | -0.153 |
+| ability scatter × hidden outcomes | -0.136 |
+| local noise × delegation | +0.098 |
 
 ## Nearest failures on random rays (severity per factor at the boundary)
 
 | t | signal noise | ability scatter | hidden outcomes | local noise | collusion | delegation | monotone |
 |---|---|---|---|---|---|---|---|
-| 1.37 | 0.54 | 0.20 | 1.10 | 0.27 | 0.45 | 0.22 | true |
+| 1.34 | 0.53 | 0.20 | 1.08 | 0.26 | 0.44 | 0.22 | true |
+| 1.38 | 0.68 | 0.42 | 0.62 | 0.73 | 0.53 | 0.29 | true |
 | 1.38 | 0.14 | 0.28 | 0.39 | 0.35 | 1.22 | 0.20 | true |
-| 1.49 | 0.98 | 0.12 | 0.78 | 0.15 | 0.52 | 0.58 | true |
-| 1.55 | 0.76 | 0.47 | 0.70 | 0.82 | 0.60 | 0.32 | true |
-| 1.80 | 0.92 | 0.10 | 0.41 | 0.07 | 0.65 | 1.34 | true |
-| 1.95 | 0.53 | 0.74 | 1.03 | 0.10 | 1.08 | 0.84 | true |
+| 1.46 | 0.96 | 0.12 | 0.77 | 0.15 | 0.51 | 0.57 | true |
+| 1.65 | 0.45 | 0.63 | 0.87 | 0.08 | 0.92 | 0.71 | true |
+| 1.74 | 0.88 | 0.10 | 0.40 | 0.07 | 0.63 | 1.30 | true |
 
 Non-monotone rays (converging again beyond the boundary): 0 of 24.
