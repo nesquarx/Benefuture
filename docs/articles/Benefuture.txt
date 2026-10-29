@@ -108,7 +108,7 @@ Benefuture«Bf» {
     CausalDistribution«CD» := (Reward«Rw», Penalize) ∝ CC + N_CCtype - PE_paid | DisputeResolution(Justice«J»);
     Cycle(C_i) :: CD(Gd) → ⊕Bal(E) ∧ ⊕Supply;
     Tx(A, TP) ↔ ΔBal(E);
-    {J(Ha) ∨ RA(Rc, t) ∨ CD(Bd)} → ⊖Bal(E) ∧ ⊖Supply;
+    {CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha);
     Reputation«Re»(t, CD, Dn) := Σ(CC(U(Dn), H(Dn)) + N(Dn)),
       Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;
 
@@ -124,13 +124,13 @@ Benefuture«Bf» {
     Imp(A, t) := ΔV : ∫MM_Me(Δℝ | A) dt;
     BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
     LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;
-    Crime«Cr» := Ha | Informed(Volition ∨ Inaction);
+    Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract));
     J := Repair(Ha) ∧ Prevent(Cr), Restorative;
     ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * ΣRe_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * ΣRe_-ve_j(Dn(Ha_i))) * P(Overreact) | (ContextAware ∧ Transparent);
 
     Liability«Lia» := (S > Pe) > Ad > (B, E) > T;
     Enforcement«En» := Inf(Pe, G), Proportional, DueProcess, Decentralized;
-    Accolade«Aco» := Acknowledge(Gd > Duty);
+    Accolade«Aco» := N_CCtype(Acknowledge(Gd > Duty)), Merit iff ¬Counterfactual(Gd);
     Fork(Id(E_i))→(Split_Dn(SoPo_i:C,Re,...)→New(Ids[i,j]),LiabilityOverflow←CD,N=|i-j|,ΣRA);
     Merge(Ids[])→(Σ(SoPo_i,N)→EstNew(Id));
     Cu := Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd ⊆ Cu)), J(↓Bd ⊆ Cu);
@@ -151,7 +151,7 @@ Benefuture«Bf» {
 
     Implementation«Im» := PhasedRollout, DataCollection{OptOut, Basic, Active, Deep}, Phase1(ScoreOnly(!(TP, C)), M_Estd, MM_Ap), Phase2(parallel, learn, Ap, update), InformedConsent;
     SophontOversight«SO»(Sys_i) := SafetyNet, Intervention(Intv), Correction, viaS_Sig_Re(Dn_i + SysSec + Ethics);
-    Af := RiskMitigation←(PE + MM + SO + TN(IH)) + Redundancy + FailSafes + Axioms + EHR;
+    Af := RiskMitigation←(PE + MM + SO + TN(IH)) + Prog(Redundancy, FailSafes) + Axioms + EHR;
     S_BaselnIncm«SB»(C_i) := ∀Pe : ensure(maslow123) ← price_c(A → maslow123 | Fr) ≲ 0 ∨ Sig∃(C_i) via(RA);
 
     Mem := Immutable {State(t), A(t), O(t), SigRlvCx(t)[], ...}, ∀x ∈ {Exec(A) ∪ O} : Sys → Log(Tx(x)) → BehavioralTxnSubstrate«BTS»;

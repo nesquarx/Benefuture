@@ -668,7 +668,8 @@ and L151 Rc_Innovation.
 5. Every modifier, gate and coefficient gets threshold treatment.
 Candidate homes: Freedom, Law, Contract, AdvAp (L160), the article on causal distribution.
 
-**8.25 Corpus simplifications proposed (from the parsimony audit, [P]).**
+**8.25 Corpus simplifications from the parsimony audit ([R], ratified 8.26.4; applied to the three
+pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime and Accolade articles).**
 1. L99 `{J(Ha) ∨ RA ∨ CD(Bd)} → ⊖Bal`: a harm can be destroyed both through causal distribution of
    a bad outcome and through justice. L96 already routes disputes from causal distribution to
    justice; say that one harm is debited once, by causal distribution unless disputed.
@@ -678,3 +679,25 @@ Candidate homes: Freedom, Law, Contract, AdvAp (L160), the article on causal dis
    say so, so no free-standing duty to act is read into it (8.24.3).
 4. L142 Af's Redundancy and FailSafes and L154 Progressive's Fallback name one idea; Af could cite
    Progressive for degradation.
+
+**8.26 Author rulings on repair pricing, carrying, scale, the commons and outages.**
+1. Catastrophic repair prices recovery and prevention efforts by their predicted good, which is
+   great enough to fund them (the corpus has this: TP_Gen, L86, prices a transaction by cost less
+   predicted value). Repair and prevention are ordinary transactions, not a separate insurance
+   price. Held for future fixing: the simulation's repair is still a direct restoration funded at
+   resource cost.
+2. Communicating an output needs no reward when it is contracted: the contract was worth more than
+   the counterfactual of not taking it, since someone else would. If no one would have done it
+   unprompted, it is a merit (an accolade). Held for future fixing: the simulation pays a carrying
+   fee on every uncontracted carry (`carry_fee_ref`); it should pay only where the causal
+   assessment finds the carrying would not otherwise have happened.
+3. The debatable escape's scale is both a share of the population or domains and a limited time,
+   decided by domain experts (L157 Debatable → LqdBfDm).
+4. The commons fund is provided by resource accounting and escrows in general. Candidate homes:
+   Administration (L106), L83 (resource cost), L86 (escrow), Benefuture currency.
+5. Actions taken during a measurement outage are re-measured once markers return where possible:
+   an attempt must be made, else outages can be gamed. As catastrophe prevention examines causes,
+   which would uncover sabotage, outages are examined too. Candidate homes: L145 Mem, L146
+   Tx → Trigger(MM_Me), L154 Progressive, Antifragility.
+6. 8.25 ratified.
+

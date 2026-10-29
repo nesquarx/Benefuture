@@ -2,7 +2,8 @@
 An accolade is acknowledgement of a [[sophont]] behaving in a way that advances the [[goals]] of the [[society]] outside of their [[duty|duties]].
 
 ==Aspects==
-* An accolade can be a reward.
+* An accolade can be a reward: in [[Benefuture currency#Causal Distribution|causal distribution]] it is the weight given to the type of a contribution.
+* It is a merit only when no one would have done the same unprompted; work done under contract is paid by the contract, which was worth more than not taking it.
 * Accolades are designed in a way to promote more accolade worthy behaviour without gaming the system.
 
 ==Examples==

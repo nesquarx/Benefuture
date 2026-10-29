@@ -6,7 +6,7 @@
   "C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i), compete(ΔV / (ΔResource«Rc» + Δt));"
   "RcAccounting«RA»(Transaction«Tx») := ↓Cost / Δ↑(U, H) - Audit ∧ ↓Usage{Rc, t};"
   "TP_Gen(A) :: … price_c = (MM_Me((Rc[], t[]) → A | RA) - MM_Pr(V ← A) + PE_hold);"
-  "{J(Ha) ∨ RA(Rc, t) ∨ CD(Bd)} → ⊖Bal(E) ∧ ⊖Supply;"
+  "{CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha);"
 
   Infrastructure cost (MM compute, Technology Network bandwidth) is not a protocol fee. It is part of
   the resources an action consumes, priced at opportunity cost by the network's top MM, paid in the

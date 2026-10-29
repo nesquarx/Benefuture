@@ -2,7 +2,7 @@
   Benefuture.Subgoals.Justice
   Formalization of Crime (Cr ∈ T), Restorative Justice (J), and Reparations.
   Corresponds to: Bf_Pseudocode.txt L115-117, L119, and Justice.txt / Crime.txt
-  "Crime«Cr» := Ha | Informed(Volition ∨ Inaction);"
+  "Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract));"
   "J := Repair(Ha) ∧ Prevent(Cr), Restorative;"
 -/
 

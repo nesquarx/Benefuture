@@ -155,7 +155,7 @@ theorem ontological_liability_ordering (s : Sophont) (p : Person) (b : Being) (t
 
 /-- 
   Accolade (Aco ∈ T):
-  Accolade«Aco» := Acknowledge(Gd > Duty).
+  Accolade«Aco» := N_CCtype(Acknowledge(Gd > Duty)), Merit iff ¬Counterfactual(Gd).
   Corresponds to: Bf_Pseudocode.txt L121.
   Public recognition awarded when an entity generates positive value beyond mandatory duty.
 -/

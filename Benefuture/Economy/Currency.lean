@@ -224,7 +224,7 @@ theorem zero_confidence_escrow_blackout (nominal : Int) (pe : ProbabilisticEscro
 /-- 
   Currency Supply State (BTS Cycle, extends Thing):
   Cycle(C_i) :: CD(Gd) → ⊕Bal(E) ∧ ⊕Supply;
-  {J(Ha) ∨ RA(Rc, t) ∨ CD(Bd)} → ⊖Bal(E) ∧ ⊖Supply.
+  {CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha).
   Corresponds to: Bf_Pseudocode.txt L97-99.
 -/
 structure CurrencySupplyState extends Thing where
