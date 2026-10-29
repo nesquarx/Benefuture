@@ -1,68 +1,104 @@
 # Benefuture
 
-> **A Formal Specification for Antifragile, Post-Scarcity Civilizational Flourishing**  
-> *A type-checked specification of the Benefuture pseudocode, with invariants and sanity lemmas; behavioural claims (convergence, gaming resistance) are conjectures for simulation.*
+A thought experiment in civilizational design, written as wiki articles and pseudocode, partly
+formalised in Lean 4 and partly simulated in Julia. This repository holds all four and states what
+each establishes.
 
 [![Lean Action CI](https://github.com/nesquarx/Benefuture/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/nesquarx/Benefuture/actions/workflows/lean_action_ci.yml)
+[![Julia Sim CI](https://github.com/nesquarx/Benefuture/actions/workflows/julia_sim_ci.yml/badge.svg)](https://github.com/nesquarx/Benefuture/actions/workflows/julia_sim_ci.yml)
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.29.0-blue.svg)](https://leanprover.github.io/)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-green.svg)](LICENSE)
 
 ---
 
-## Overview
+## What Benefuture attempts
 
-**Benefuture** is a mathematical, epistemic, and economic framework designed to guide long-term civilizational trajectory away from catastrophic failure modes (such as wireheading loops, extractive financialization, systemic fragility, and cognitive monoculture) and toward open-ended, reality-grounded flourishing.
+Benefuture is a consequentialist philosophy of civilization by Nesquarx. It claims no natural or
+preordained purpose; it chooses one: raise universal understanding, then happiness, with extra
+weight where the two reinforce each other, while weighing harm and keeping diversity
+([Benefuture](docs/articles/Benefuture.txt), [Benefuture goals](docs/articles/Benefuture%20goals.txt)).
+Understanding (accurate, parsimonious prediction and explanation) is ranked over happiness by a
+larger weight, not lexically ([Philosophy](docs/articles/Philosophy.txt)); the reasons offered are
+that understanding compounds, is shared without being lost to the one who shares it, and is
+measurable by prediction ([Introduction](docs/articles/Introduction.txt)). That ranking is a
+premise, not a derivation, and the corpus answers its critics on that footing
+([Critique addressal](docs/articles/Critique%20addressal.txt)).
 
-This repository hosts the **type-checked specification in Lean 4**. In this architecture:
-- **Lean 4 holds the specification**: types, invariants, definitions, structural properties, and mathematical sanity lemmas.
-- **Assumptions and requirements** are stated explicitly as hypotheses, structure fields, and design requirements rather than tautological theorems.
-- **Behavioural and empirical claims** (such as convergence under adversarial agents, gaming resistance, and stability of metric-model competition) are formulated as conjectures (`Conj_*` in `Benefuture.Systems.Conjectures`) over a `SimTrace` of simulation observables: definitions only, neither assumed nor proved, intended for empirical validation in simulation (e.g. in Julia).
+By the author's own description it is not a solution to the problems of civilization but "a rough
+process outline of how we might discover those problems, find the solutions, implement them, and
+keep improving on the process", with gaps to be filled from reality
+([Benefuture, Critical Evaluation](docs/articles/Benefuture.txt)). It is not a post-scarcity
+framework: it is a framework to discover and diminish scarcities
+([BACKPROPAGATION 8.27](docs/BACKPROPAGATION.md)).
 
----
+The mechanisms proposed to that end, each with its own article:
 
-## Foundational Ontological Architecture
+- **Measurement.** Competing metric models predict outcomes and are scored against established
+  empirical markers; none is protected, and a dominated one is retired
+  ([Measurement](docs/articles/Measurement.txt)).
+- **Domains.** Value, currency and reputation are kept per domain, so success in one cannot buy
+  standing in another ([Domain](docs/articles/Domain.txt)).
+- **Currency.** Each domain's currency is backed by a qualified metric model; work is paid partly
+  on prediction and partly on measured outcome, held in escrow against uncertainty, and credited to
+  contributors by causal distribution; currencies are not traded against one another
+  ([Benefuture currency](docs/articles/Benefuture%20currency.txt)).
+- **Governance.** Direct democracy weighted by domain expertise and by impact, with capped,
+  audited, retractable delegation ([Government](docs/articles/Government.txt)); laws refined by
+  measured outcomes, justice by reparation first ([Law](docs/articles/Law.txt),
+  [Justice](docs/articles/Justice.txt)).
+- **Self-correction.** Finding a flaw pays more than exploiting it
+  ([Adversarial adaptation](docs/articles/Adversarial%20adaptation.txt)); systems degrade to
+  simpler fallbacks rather than failing ([Progressive complexity](docs/articles/Progressive%20complexity.txt));
+  and the diversity axiom applies to Benefuture itself, which yields to a better goal structure if
+  one is found and shown.
+- **Rollout.** A score-only first phase, in parallel with existing systems, before any currency
+  ([Implementation prototype](docs/articles/Implementation%20prototype.txt)).
 
-Benefuture organizes all phenomena in the Universe ($\mathbb{U}$) into a strict concentric ontology grounded in physical Reality ($\mathbb{R}$):
+The epistemic stance the rest follows from:
 
-$$\text{Sophonts } (S) \subseteq \text{Persons } (Pe) \subseteq \text{Beings } (B) \subseteq \text{Entities } (E) \subseteq \text{Things } (T) \subseteq \text{Reality } (\mathbb{R}) \subseteq \text{Universe } (\mathbb{U})$$
+- **Outputs only.** Beliefs and preferences are not directly accessible, so definitions,
+  enforcement and alignment are stated over outputs; only empirical test confers public authority
+  ([Philosophy, Positioning in One Line](docs/articles/Philosophy.txt)).
+- **Truth comes in levels and never reaches 1** ([Truth](docs/articles/Truth.txt)). This applies
+  to the work here too (author ruling, [BACKPROPAGATION 8.33](docs/BACKPROPAGATION.md)): every claim
+  below carries its confidence, hypotheses and assumptions.
+- **Correctable, not correct.** The bootstrap is not guaranteed to be right, only to be correctable
+  ([Critique addressal](docs/articles/Critique%20addressal.txt)). Reality as it is, not an ideal,
+  is the benchmark. Critiques of internal coherence stand on their own and are welcome.
 
-Every operational primitive in the system inherits physical and informational standing as a subtype of `Thing`:
-- **Society / Civilization** ($So, Cv \subseteq E \subseteq T$)
-- **Empirical Markers** ($M \in T$)
-- **Currencies & Resource Accounting** ($C, RA \in T$)
-- **Interactions, Actions, Outcomes, & Decisions** ($I, A, O, D \in T$)
-- **Laws, Contracts, Accolades, & Crimes** ($Lw, Ct, Aco, Cr \in T$)
-- **Memetic Cultures & Artworks** ($Cu, Art \in T$)
+The author's one-line positioning: *Walzer's spheres, operated by Hanson's markets of Lakatos'
+programmes under Strevens' iron rule, toward Deutsch's understanding, even over Bentham's
+happiness* ([Philosophy](docs/articles/Philosophy.txt)).
 
-### The Core Universal Goal ($G$)
+## What exists, and what it shows
 
-$$\text{Goal } G(t) := \operatorname{argmax}_{A(t)} \left[ \sum_{b \in B(t)} V(A, b(t)) \right] \land \uparrow \mathbb{R}$$
+Nothing here shows that Benefuture would work in the world. No deployment exists. What exists:
 
-Benefuture defines the civilizational goal as the joint maximization of sentient value **and** the non-decreasing or expanding scope of physical Reality ($\uparrow \mathbb{R}$). Actions that seek to maximize subjective pleasure by blinding sensors, shrinking capability, or collapsing into solipsistic simulation fail the reality condition.
+| Layer | Where | What it establishes |
+|---|---|---|
+| Articles | [`docs/articles/`](docs/articles) | The framework in prose: MediaWiki source of the [Benefuture wiki](https://benefuture.miraheze.org), synced by `tools/wiki_sync/`. Most articles end with a note of how much of them is AI-written. |
+| Pseudocode | [`spec/Bf_Pseudocode.txt`](spec/Bf_Pseudocode.txt) | The framework as compact symbolic definitions (not machine-checked), cited by line (L74 is Goal G). Copies, kept identical: [`Bf_Pseudocode.txt`](Bf_Pseudocode.txt) and the block embedded in [Benefuture](docs/articles/Benefuture.txt). |
+| Lean specification | [`Benefuture/`](Benefuture) | Type-checked definitions over ℝ (Mathlib), with theorems about them. A proof holds for the definitions as written under the hypotheses listed; it says nothing about whether they describe the world. Proposed designs live in `Benefuture/Proposed/` (status [P]); behavioural claims are stated, unproved, as `Conj_*` in `Benefuture/Systems/Conjectures.lean`. |
+| Lean reference | [`BenefutureReference/`](BenefutureReference) | Mathlib-free Float versions of the rules, exported to C. Generates the test vectors in [`spec/vectors/`](spec/vectors). Its correspondence to the ℝ specification is not proved. |
+| Simulation | [`sim/`](sim) ([`sim/README.md`](sim/README.md)) | A Julia agent-based model in toy worlds that calls the Lean reference for every rule. Shows behaviour under stated toy assumptions, a few seeds at a time; not proof, not significance-tested. |
 
-### Canonical Notation & Symbol Disambiguation
+Records that keep the layers honest with each other:
 
-To ensure mathematical precision and prevent conflation across foundational concepts:
-| Symbol | Canonical Concept | Mathematical Meaning & Formula | Disambiguation Rule |
-| :--- | :--- | :--- | :--- |
-| **$\mathbb{U}$ / `𝕌`** | **Universe** | Total state space of all logically possible patterns | **Total ontological pattern space** ($\mathbb{R} \subseteq \mathbb{U}$). Never write as plain ASCII $U$. |
-| **$\mathbb{R}$ / `ℝ`** | **Reality** | $(\text{Perceivable} \cup \text{Changeable}) \subseteq \mathbb{U}$ | Physical, empirical interactivity domain. |
-| **$U$** | **Understanding** | $\text{PrAcc}(\text{Ml}) + \text{CE}(I(\text{Ml})) - (\text{Cy}(\text{Ml}) \mid \text{PrAcc})$ | **Strictly Epistemic Understanding**. Must **never** be interpreted as "utility". |
-| **$V$** | **Value** | Generalized flourishing payoff $V(A, b)$ | Represents the true "utility" / value function of an action over $U, H, N$. |
-| **$G$** | **Goal** | Civilizational trajectory function $\operatorname{argmax} \sum V \land \uparrow \mathbb{R}$ | Global macro objective. |
-| **$H$** | **Happiness** | Internal affective flourishing | Tier $\beta$ in the priority hierarchy ($U > H > N$). |
-| **$N$** | **Novelty** | Inverse empirical frequency: $N(x) := 1 / \text{Frequency}(x \mid \mathbb{R})$ | Tier $\gamma$ in the priority hierarchy ($U > H > N$). An operational input and means toward diversity. |
-| **$\text{Di}$** | **Diversity** | $\text{Balance}(\text{order}, \text{chaos}) \to \text{Variety}(\text{Sys}) \to \text{Resilience} + \text{Innovation}$ | Emergent macro outcome & civilizational subgoal (`SubG.Diversity`), NOT a scalar priority weight. Novelty injection is one means to maintain diversity balance. |
+- [`docs/BACKPROPAGATION.md`](docs/BACKPROPAGATION.md): what formalisation and simulation found that
+  the sources miss, with proposed edits, and the author's rulings on them.
+- [`docs/SPEC_DIVERGENCES.md`](docs/SPEC_DIVERGENCES.md): every place the Lean chooses between
+  readings of, or departs from, the pseudocode and articles.
+- [`docs/SIM_CONJECTURES.md`](docs/SIM_CONJECTURES.md): behavioural claims in the sources, in
+  measurable form, with what Lean already settles.
+- [`docs/THEOREM_INDEX.md`](docs/THEOREM_INDEX.md): every theorem with its docstring (generated;
+  docstrings unreviewed, so some overstate; the reviewed claims are below).
+- [`docs/PLAN.md`](docs/PLAN.md): direction and history; [`docs/CODING_STYLE.md`](docs/CODING_STYLE.md)
+  and [`CLAUDE.md`](CLAUDE.md): method.
 
----
-
-## Invariants, Design Requirements, and Conjectures
-
-Rather than asserting ungrounded real-world guarantees, the specification distinguishes:
-- **Sanity Lemmas**: Proven mathematical properties of the operators (e.g. strict monotonicity, odd symmetry, loss penalty sign).
-- **Invariants**: Structural invariants on state transitions (e.g. append-only memory, identity injectivity, escrow conservation, balance overflow redirection).
-- **Design Requirements**: Parameter conditions required for system properties (e.g. restorative friction $> 0$ for anti-corruption, clawback $\ge$ bounty for anti-cobra).
-- **Conjectures**: Behavioural dynamics left to simulation (e.g. convergence under adversarial agents, Goodhart error reduction via metric competition).
+Status tags across the corpus: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved,
+`[CONJ]` simulation conjecture. Where to start reading: [Introduction](docs/articles/Introduction.txt),
+then the reading order in [Benefuture](docs/articles/Benefuture.txt);
+[Critique addressal](docs/articles/Critique%20addressal.txt) for the objections.
 
 ---
 
@@ -72,20 +108,19 @@ What this repository establishes, in plain words, with links to the proof or the
 results. Three kinds of evidence, never to be read as more than they are:
 
 - **Proved** (Lean 4 with Mathlib, over ℝ unless noted; checked by CI, no `sorry`, `admit`, custom
-  axioms or `native_decide`). A proof establishes the statement *for the definitions as written,
-  under the hypotheses listed*; it says nothing about whether the definitions describe the world.
+  axioms or `native_decide`). True of the definitions as written, under the hypotheses listed;
+  silent on whether the definitions describe the world.
 - **By construction**: the theorem confirms that a rule is encoded as intended (the property is a
   structure field or follows directly from a definition). These check the encoding; they are not
   discoveries.
-- **Demonstrated in simulation**: observed in the Julia agent-based simulation (`sim/`) under the
-  stated toy assumptions, as tests that pass on every CI run or as readings averaged over a few
-  seeds. Not proofs, and not significance-tested.
+- **Demonstrated in simulation**: observed in `sim/` under the stated toy assumptions, as tests that
+  pass on every CI run or as readings averaged over a few seeds. Not proofs, and not
+  significance-tested.
 
-The simulation does not run the ℝ specification: it calls the Float reference library
-(`BenefutureReference`, Mathlib-free) through C exports. The reference reproduces the spec's test
-vectors (`spec/vectors/`), but correspondence between `Benefuture` and `BenefutureReference` is not
-proved. Every theorem with its docstring: [docs/THEOREM_INDEX.md](docs/THEOREM_INDEX.md)
-(generated, docstrings unreviewed).
+The simulation does not run the ℝ specification: it calls the Float reference (`BenefutureReference`)
+through C exports. The reference reproduces the spec's test vectors, but correspondence between the
+two is not proved. `python3 tools/check_readme_claims.py` checks that every theorem named here exists
+in the file linked.
 
 ### Proved
 
@@ -114,7 +149,7 @@ Synergy and value
   score ([`kind_tiers_partition_happiness`](Benefuture/Axiology/Priorities.lean)).
 
 Goal G and distribution (`Benefuture.Proposed.PopulationDirection`, status [P])
-- Some plan is always chosen when one is admissible, and inaction always is
+- Inaction is always admissible, so some plan is always chosen
   ([`inaction_admissible`](Benefuture/Proposed/PopulationDirection.lean), [`goal_G_some`](Benefuture/Proposed/PopulationDirection.lean)). The chosen plan never contracts reality, never lowers the
   maximum or minimum understanding or the minimum happiness against not acting, and maximises the
   objective over admissible plans ([`goal_G_sound`](Benefuture/Proposed/PopulationDirection.lean)).
@@ -126,10 +161,10 @@ Goal G and distribution (`Benefuture.Proposed.PopulationDirection`, status [P])
 - The floor is taken over the decision-time population: removing a being cannot raise it
   ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean)), whereas over survivors only it would ([`survivor_floor_rises_on_removal`](Benefuture/Proposed/PopulationDirection.lean)).
 - The distribution term D ignores the order of beings ([`level_gain_perm`](Benefuture/Proposed/PopulationDirection.lean)) and beings absent at
-  decision time ([`dist_score_ignores_absent`](Benefuture/Proposed/PopulationDirection.lean)); levelling down never helps and uplift never hurts,
-  for monotone shapes ([`levelling_down_never_helps`](Benefuture/Proposed/PopulationDirection.lean), [`uplift_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean)). Moving happiness from a
-  better-off to a worse-off being without reversing their order never lowers D, for every concave
-  shape, and any sequence of such moves likewise ([`pigou_dalton_h`](Benefuture/Proposed/PopulationDirection.lean), [`pd_run_raises`](Benefuture/Proposed/PopulationDirection.lean)). Sharing
+  decision time ([`dist_score_ignores_absent`](Benefuture/Proposed/PopulationDirection.lean)); for monotone shapes, levelling down never helps and
+  uplift never hurts ([`levelling_down_never_helps`](Benefuture/Proposed/PopulationDirection.lean), [`uplift_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean)). For every concave shape,
+  moving happiness from a better-off to a worse-off being without reversing their order never lowers
+  D, nor does any sequence of such moves ([`pigou_dalton_h`](Benefuture/Proposed/PopulationDirection.lean), [`pd_run_raises`](Benefuture/Proposed/PopulationDirection.lean)). Sharing
   understanding (the learner rises, the teacher keeps their level) never lowers D
   ([`u_sharing_gain_nonneg`](Benefuture/Proposed/PopulationDirection.lean)).
 - Population: any number of net-negative tallies never outweighs a non-empty set of positive ones
@@ -169,8 +204,8 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   ([`breached_duty_assessed_negative`](Benefuture/Proposed/OutcomeDistribution.lean)); without a committed action, not acting assesses at
   zero ([`inaction_without_duty_assessed_zero`](Benefuture/Proposed/OutcomeDistribution.lean)).
 - A contributor whose presence changes no coalition's assessed outcome receives no Shapley share
-  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the shares sum to the outcome (efficiency) is not proved here; it
-  is checked numerically on random games ([sim/test/shapley_tests.jl](sim/test/shapley_tests.jl)).
+  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the shares sum to the outcome (efficiency) is not proved; it is
+  checked numerically on random games ([sim/test/shapley_tests.jl](sim/test/shapley_tests.jl)).
 - Paying positive shares and penalising negative ones distributes exactly the sum of the shares
   ([`sides_sum`](Benefuture/Proposed/OutcomeDistribution.lean)), and each paid contributor's share of its side lies in [0, 1]
   ([`paid_share_in_unit`](Benefuture/Proposed/OutcomeDistribution.lean)).
@@ -183,8 +218,7 @@ Governance and incentives
 - The Brier score is strictly proper: reporting one's belief uniquely minimises expected loss
   ([`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean)).
 - With the delegation cap, no delegate ever exceeds the cap plus one delegator's maximum weight,
-  however many delegate to it ([`accumulate_capped_bound`](Benefuture/Governance/Incentives.lean)); without a cap a star topology hands one
-  node all the weight ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
+  however many delegate to it ([`accumulate_capped_bound`](Benefuture/Governance/Incentives.lean)).
 - Planting flaws to farm bounties is unprofitable in expectation when the clawback covers bounty
   plus damage and detection is likelier than bounty ÷ clawback ([`bounty_incentive_compatible`](Benefuture/Governance/Incentives.lean)).
 - External harm response: forgiveness and overreaction probabilities form a valid split
@@ -220,6 +254,10 @@ defining conditions ([`harm_growth_activates_intervention`](Benefuture/Axioms/An
 metric models are non-circular given the empirical-marker requirement
 ([`metric_models_are_non_circular`](Benefuture/Measurement/MetricModel.lean)).
 
+In the simulation, rules are defined once by construction: every simulated rule is a Lean reference
+function called through C exports, and the shared library rebuilds only when the Lean sources change
+([sim/src/lean.jl](sim/src/lean.jl)).
+
 ### Negative and open results
 
 - A positive floor moves the repugnant conclusion rather than resolving it: under additive
@@ -230,7 +268,8 @@ metric models are non-circular given the empirical-marker requirement
 - Skew direction alone admits plans that lower the minimum ([`skew_direction_alone_permits_min_decline`](Benefuture/Proposed/PopulationDirection.lean)).
 - Freedom excludes irreversible harm even when it is necessary harm with positive net gain
   ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean)); the tension is open.
-- Without a delegation cap, power concentrates ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
+- Without a delegation cap, a star topology hands one node all the weight
+  ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
 - Causal contribution as specified (clamped value added, L93's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
@@ -241,27 +280,27 @@ metric models are non-circular given the empirical-marker requirement
 
 ### Demonstrated in simulation
 
-Every claim below is a toy-world reading, never certain (truth levels do not reach 1, author ruling
-8.33). Readings for the transaction, hazard, governance and threshold rungs were taken before the
-rulings that mistakes decay slower than wins, that models use track records (8.29) and that world
-defaults are mildly imperfect (8.33); their tests still pass under those rulings, but the numbers
-quoted have not been re-run unless the claim says so. The failure-boundary batteries
-(`sim/battery/results/`) run continuously on the latest build.
+Every claim below is a toy-world reading, never certain (author ruling 8.33). Readings for the
+transaction, hazard, governance and threshold rungs were taken before the rulings that mistakes
+decay slower than wins, that models use track records (8.29) and that world defaults are mildly
+imperfect (8.33); their tests still pass under those rulings, but the numbers quoted have not been
+re-run unless the claim says so. Failure-boundary batteries (`sim/battery/results/`) run continuously
+on the latest build.
 
-Common toy assumptions, still to be removed (see `sim/README.md`, model ladder): beings and plans
-in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's skill);
-causal signatures as points near unit axes; model and measurement error as Gaussian noise of fixed
-size; G chooses one plan a step from a menu of proposals, or screens transactions (M3d); fixed agents
-and skills; one measured value per plan, with every loss counted as passing harm. Readings are
-means over 5 seeds of 500 steps.
+Toy assumptions common to all, still to be removed (`sim/README.md`, model ladder): beings and
+plans in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's
+skill); causal signatures as points near unit axes; model and measurement error as Gaussian noise
+of fixed size; G chooses one plan a step from a menu of proposals, or screens transactions (M3d);
+fixed agents and skills; one measured value per plan, with every loss counted as passing harm.
+Readings are means over 5 seeds of 500 steps unless a claim says otherwise. Which Lean modules the
+simulation covers, and which not yet: [sim/README.md, coverage](sim/README.md#coverage-of-the-specification).
 
-- Rules are defined once: every simulated rule is a Lean reference function called through C
-  exports; the shared library rebuilds only when the Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
+Measurement, agents and domains
 - With perfect measurement, the floors of understanding and happiness never fall, and the peak of
-  understanding never falls ([sim/test/m0_tests.jl](sim/test/m0_tests.jl)).
-  With noise, the floors' guarantee is only as good as measurement: noise on current levels alone
-  lets the true floor fall in 9% of steps, and heavy prediction noise freezes G (G acts in 7% of
-  steps) ([sim/README.md, M1](sim/README.md#m1-observations)).
+  understanding never falls ([sim/test/m0_tests.jl](sim/test/m0_tests.jl)). With noise, the floors'
+  guarantee is only as good as measurement: noise on current levels alone lets the true floor fall
+  in 9% of steps, and heavy prediction noise freezes G (G acts in 7% of steps)
+  ([sim/README.md, M1](sim/README.md#m1-observations)).
 - Metric model competition settles on the most accurate model, and a precise but biased model
   loses to an unbiased one of equal noise ([sim/test/m1_tests.jl](sim/test/m1_tests.jl)).
 - Reputation tracks agents' skill (Spearman 0.98) when they are careful; with heavy execution noise
@@ -278,6 +317,18 @@ means over 5 seeds of 500 steps.
   harmful agent's passes in 2 of 2,000 plans, both measured beneficial) and halts when unfunded;
   the books balance under every noise source at once ([sim/test/m3c_tests.jl](sim/test/m3c_tests.jl),
   [sim/README.md, M3c](sim/README.md#m3c-observations)).
+- Balance overflow trades reinvestment against concentration: raising the threshold moves the
+  share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
+  ([sim/README.md, M3c](sim/README.md#m3c-observations)).
+- Better models over time (author guidance 8.42.2; an assumption stated, not derived: new models
+  keep arriving in each domain, better on average, never perfect): every model is scored on the open
+  log and a challenger takes over a domain's currency when its credences beat the incumbent's by the
+  significance rule; better models take over the domain's own pricing from coarser fallbacks (leaf
+  priced by its own currency 100% against 70%), a captured model is overtaken (73% of its work
+  still priced by the domain's own currency against none), and floors grow about as much (toy world,
+  1–3 seeds) ([sim/test/models_tests.jl](sim/test/models_tests.jl), [sim/README.md, better models](sim/README.md#better-models-over-time-8422)).
+
+Transactions and causal distribution
 - Transactions instead of a single choice by G: about four actions a step instead of one, roughly
   three times the floor growth, and more mediocre and harmful work admitted (9% of executed actions
   measured harmful, against 2%; 27% under model bias); with exact models, screening each step's
@@ -287,84 +338,100 @@ means over 5 seeds of 500 steps.
   traversal fallback when the causal assessment is not confident; intermediaries who add nothing
   to what they pass on earn almost nothing while the makers upstream are paid; a bad output is
   penalised through the losses it carries downstream; co-funders whose money was needed are
-  credited; every outcome is fully distributed and the books balance (coalition values as in
-  BACKPROPAGATION 8.18, a decision open to the author) ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl), [sim/README.md, M3d](sim/README.md#m3d-observations)).
+  credited; every outcome is fully distributed and the books balance. Coalition values follow
+  BACKPROPAGATION 8.18, a decision open to the author ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
+  [sim/README.md, M3d](sim/README.md#m3d-observations)).
 - Contribution types (author ruling 8.22): carrying another's output outside contract earns an
   accolade, under contract the contracted share, both out of the maker's positive share and never
   out of a loss (the fee's basis is a proposal, [P]). A prevention is the guardian's ordinary
   recorded action: its measured outputs mint or destroy currency, and what it earns does not depend
   on the size of the harm averted; the books still balance ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
   [sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, contribution types](sim/README.md#contribution-types-and-preventions-822-824)).
+
+Hazards and black swans
 - A world that moves on its own: unguarded hazards cut floor growth by a sixth and double the
   steps the floor falls; guardians bound by contract recover most of it; what they miss for lack of
-  notice is accident, negligence is crime, and penalties fund repair either way; harm with no
+  notice is accident, negligence is crime, and penalties fund repair either way. Harm with no
   contributor is repaired through the commons, the repair priced as any transaction (resource cost
   less predicted good), so it largely pays for itself and the commons covers only the rest, never
-  beyond what it holds and banking no surplus (how resource accounting funds the commons is open; the
-  simulation's commons holds the resource costs paid)
+  beyond what it holds and banking no surplus. How resource accounting funds the commons is open;
+  the simulation's commons holds the resource costs paid
   ([sim/test/m3e_tests.jl](sim/test/m3e_tests.jl), [sim/README.md, M3e](sim/README.md#m3e-observations)).
-- Black swans, each with a native fallback: through a measurement outage work continues, paid by
-  prediction and logged unmeasured, then re-measured (with extra noise, through the same confidence
-  gate) and settled when markers return, so an outage that ends hides nothing; floor growth holds; a catastrophe takes 30–40 steps to
-  recover from alone and one step when repaired through the commons; a captured
-  metric model loses eligibility while captured and its parent prices its work, then it requalifies;
-  a breakthrough raises floor growth by a third. Toy world, five seeds; rogue agents and the
-  diversity–novelty balance not yet tested; sabotaged outages are penalised when examination traces
-  them (a world chance), else insured; harm passed off as unassigned pays only when practically
-  untraceable (a tracing rate of 0.1 already makes it a loss); identity forks capture votes only if
-  each fork gets its own base vote; by the author's ruling for now, forks divide it ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
-  [sim/README.md, black swans](sim/README.md#black-swans-822-823)).
-- Gaming (M6, toy world, 3–6 seeds): an agent whose plans fool every metric model gains nothing
-  relative to its peers once each model prices each actor by its record on it (8.29) and escrow
-  settles on measured outcomes. Its harm falls on the domain: a model with no record of it is fooled
-  in full, so in a marginal domain (accuracy near its status bar) it can keep the domain from ever
-  qualifying (2 seeds of 6), and without track records it takes the domain's currency down in every
-  seed (BACKPROPAGATION 8.37). Adversarial adaptation (AdvAp, L160; author ruling 8.38) uncovers and
-  repairs it: agents reading the open log report an actor whose estimates run significantly above
-  other actors' on the same models, an audit tests and examines the report, and an established
-  deception's falsified records are re-scored while the reporter's reward and the audit are charged
-  to the deceiver. Repair restores a blocked marginal domain (one seed: no actions to 772; another
-  stays blocked, too little work for a report) and a third or more of peers' work without track
-  records; honest worlds draw almost no reports, and a frivolous reporter pays for its audits. Over 24 seeds of
-  a marginal domain, AdvAp cuts blocked domains from 9 to 3, and readers' attention drawn by a
-  negative pattern in the open ledgers triples the deceptions uncovered (8.42).
-  A colluding bloc of the most reputable fifth of experts lowers decision accuracy only from 97% to
-  93%; delegation amplifies a larger bloc's capture (30% of experts: 66% with delegation, 86%
-  without) until votes earn or cost reputation and delegations are audited (L114), when the bloc's
-  expertise share collapses and accuracy returns to 96% (toy decision world; outcomes apparent 70% of
-  the time; readings before the scoring correction of 8.38's status). A bloc that defects only where
-  outcomes stay hidden escapes this (79% correct on hidden decisions in the current build); keeping
-  the option not chosen available to locales by a novelty bonus (diversity, L158) corrects part of
-  that damage (89%), and AdvAp's manufactured prisoner's dilemma, a member revealing the bloc for a
-  reward above its share of the bloc's gain, with the bloc's falsified votes struck and the hidden
-  decisions recounted, restores them to 99.7% while the bloc's expertise share falls from 0.74 to
-  0.15 (4 seeds; each member weighs revealing with chance 0.05 after a hidden defection)
-  ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
+- Black swans, each with a native fallback (toy world, five seeds). Through a measurement outage
+  work continues, paid by prediction and logged unmeasured, then re-measured (with extra noise,
+  through the same confidence gate) and settled when markers return, so an outage that ends hides
+  nothing; floor growth holds. A catastrophe takes 30–40 steps to recover from alone and one step
+  when repaired through the commons. A captured metric model loses eligibility while captured and
+  its parent prices its work, then it requalifies. A breakthrough raises floor growth by a third.
+  Sabotaged outages are penalised when examination traces them (a world chance), else insured; harm
+  passed off as unassigned pays only when practically untraceable (a tracing rate of 0.1 already
+  makes it a loss); identity forks capture votes only if each fork gets its own base vote, and by
+  the author's ruling for now, forks divide it. Not yet tested: rogue agents and the
+  diversity–novelty balance ([sim/test/m3f_tests.jl](sim/test/m3f_tests.jl),
+  [sim/README.md, black swans](sim/README.md#black-swans-8224-823)).
+
+Gaming (M6, toy world, 3–6 seeds)
+- An agent whose plans fool every metric model gains nothing relative to its peers once each model
+  prices each actor by its record on it (8.29) and escrow settles on measured outcomes. Its harm
+  falls on the domain: a model with no record of it is fooled in full, so in a marginal domain
+  (accuracy near its status bar) it can keep the domain from ever qualifying (2 seeds of 6), and
+  without track records it takes the domain's currency down in every seed (BACKPROPAGATION 8.37).
+- Adversarial adaptation (AdvAp, L160; author ruling 8.38) uncovers and repairs it: agents reading
+  the open log report an actor whose estimates run significantly above other actors' on the same
+  models; an audit tests and examines the report; an established deception's falsified records are
+  re-scored, and the reporter's reward and the audit are charged to the deceiver. Repair restores a
+  blocked marginal domain (one seed: no actions to 772; another stays blocked, too little work for a
+  report) and a third or more of peers' work without track records; honest worlds draw almost no
+  reports, and a frivolous reporter pays for its audits. Over 24 seeds of a marginal domain, AdvAp
+  cuts blocked domains from 9 to 3, and readers' attention drawn by a negative pattern in the open
+  ledgers triples the deceptions uncovered (8.42).
+- Colluding voters (toy decision world; outcomes apparent 70% of the time; readings before the
+  scoring correction of 8.38's status): a bloc of the most reputable fifth of experts lowers
+  decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's capture (30% of
+  experts: 66% with delegation, 86% without) until votes earn or cost reputation and delegations are
+  audited (L114), when the bloc's expertise share collapses and accuracy returns to 96%.
+- A bloc that defects only where outcomes stay hidden escapes this (79% correct on hidden decisions
+  in the current build). Keeping the option not chosen available to locales by a novelty bonus
+  (diversity, L158) corrects part of the damage (89%); AdvAp's manufactured prisoner's dilemma (a
+  member revealing the bloc for a reward above its share of the bloc's gain, the bloc's falsified
+  votes struck and the hidden decisions recounted) restores them to 99.7% while the bloc's expertise
+  share falls from 0.74 to 0.15 (4 seeds; each member weighs revealing with chance 0.05 after a
+  hidden defection) ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
+
+Governance and thresholds
+- Expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in a toy
+  where skill sharpens judgement), but raw reputation concentrates a third of the weight in one
+  voter; domain-relative expertise (the default, by the author's ruling) keeps nearly all the
+  accuracy with far less concentration, from a household of eight to a polity of a hundred; the
+  delegation cap holds (no delegate exceeds the cap plus one delegator's weight)
+  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, M5](sim/README.md#m5-observations)).
 - Convergence under heavy friction (8.31; toy decision world, 16 seeds): voters with noisy choices
   (per-person ceilings, inverse to expertise only on average), outcomes apparent 40% of the time,
   starting from inverted reputations, converge within a few hundred decisions to the accuracy that
   true reputations give; the effect is small (expertise is worth about two points there). In the
   economy, with accuracy as the quality of models' credences and thresholds as currency status
   (author rulings 8.35–8.36), every noise source at the top of its realistic range at once thins
-  pricing but floors still rise (about 9% of clean growth, 14% before the scoring correction of 8.38's status); far beyond a functional domain, no
-  currency qualifies and work goes to StandCoin. Under status thresholds a deceiver can degrade a
-  domain's currency status for everyone, (8.37), which uncovering and repairing the deception largely restores (AdvAp, 8.38; Gaming below)
+  pricing but floors still rise (about 9% of clean growth, 14% before the scoring correction of
+  8.38's status); far beyond a functional domain, no currency qualifies and work goes to StandCoin.
+  Under status thresholds a deceiver can degrade a domain's currency status for everyone (8.37),
+  which AdvAp largely restores (8.38; Gaming above)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
-- Better models over time (author guidance 8.42.2; an assumption stated, not derived: new models
-  keep arriving in each domain, better on average, never perfect): every model is scored on the open
-  log and a challenger takes over a domain's currency when its credences beat the incumbent's by the
-  significance rule; better models take over the domain's own pricing from coarser fallbacks (leaf
-  priced by its own currency 100% against 70%), a captured model is overtaken (73% of its work
-  still priced by the domain's own currency against none), and floors grow about as much (toy world,
-  1–3 seeds) ([sim/test/models_tests.jl](sim/test/models_tests.jl), [sim/README.md, better models](sim/README.md#better-models-over-time-8422)).
 - Clean deliberation in governance (toy decision world, 3 seeds): voters weighing contacts' and
   improving models' published readings by the rolling net of their records hand prediction to the
   models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
-  entirely; but shared sources make votes dependent and decisions fall towards the sources' own
-  accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43); with understanding trickling down
-  only (8.44) through the network's information handling, each layman's echo still recasts its
+  entirely. But shared sources make votes dependent, and decisions fall towards the sources' own
+  accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43). With understanding trickling
+  down only (8.44) through the network's information handling, each layman's echo still recasts its
   source's information with a full base vote, a finding awaiting the author (8.45)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
+- Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
+  epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
+  tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
+  make no difference it shifted once in eight rounds, against every round with a fixed order (floor
+  movement trends over time). The freedom radius is gauged in the same rounds, shrinking on
+  significant harm and widening otherwise; where nothing matters it widens across seeds until
+  admissibility rejects the candidates ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
+  [sim/README.md, M4](sim/README.md#m4-observations)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
   by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status
@@ -372,110 +439,89 @@ means over 5 seeds of 500 steps.
   no better in capable domains; set world-wide it halves losses at skill 0.3 and cuts them tenfold
   at 0.15 (toy world, 3–4 seeds; irreparable harm is a world classification, none by default)
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
-- Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
-  epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
-  tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
-  make no difference it shifted once in eight rounds, against every round with a fixed order (floor
-  movement trends over time). The freedom radius is gauged in the same rounds, shrinking on
-  significant harm and widening otherwise; where nothing matters it widens across seeds until
-  admissibility rejects the candidates. Not yet: the debatable escape
-  ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, M4](sim/README.md#m4-observations)).
-- Governance: expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in
-  a toy where skill sharpens judgement), but raw reputation concentrates a third of the weight in one
-  voter; domain-relative expertise (now the default, by the author's ruling) keeps nearly all the
-  accuracy with far less concentration, from a household of eight to a polity of a hundred; the
-  delegation cap holds (no delegate exceeds the cap plus one delegator's weight)
-  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, M5](sim/README.md#m5-observations)).
-- Balance overflow trades reinvestment against concentration: raising the threshold moves the
-  share reinvested from 84% to 11% while the Gini of balances rises from 0.18 to 0.53
-  ([sim/README.md, M3c](sim/README.md#m3c-observations)).
+
+What is not yet demonstrated at all: the `Conj_*` conjectures over a `SimTrace` (convergence,
+gaming resistance, parameter stability in general), population change (M7), and networks and
+propagation (M8); see [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) and
+[docs/PLAN.md](docs/PLAN.md).
 
 ---
 
-## Repository Structure
+## Notation
+
+The pseudocode's symbols, as used in the Lean and the simulation (articles spell them out):
+
+| Symbol | Concept | Pseudocode |
+| :--- | :--- | :--- |
+| `𝕌` | Universe | ℝ ⊆ 𝕌 (L16) |
+| `ℝ` | Reality | (Perceivable ∪ Changeable) ⊆ 𝕌 (L16) |
+| `T`, `E`, `B`, `Pe`, `S` | Things, entities, beings, persons, sophonts | S ⊆ Pe ⊆ B ⊆ E ⊆ T; society, markers, currencies, actions, outcomes, decisions and interactions are things |
+| `U` | Understanding, never utility | PrAcc(Ml) + CE(I(Ml)) − (Cy(Ml) \| PrAcc): predictive accuracy plus causal explanation, less complexity |
+| `H` | Happiness | Affective satisfaction, weighted below U |
+| `N` | Novelty | Inverse frequency; a means toward diversity |
+| `Di` | Diversity | A subgoal and emergent outcome, not a priority weight |
+| `Sy`, `Ŝy` | Synergy, squashed synergy | Rewards gains moving together beyond the sum of the parts (L13–14) |
+| `V` | Value of an action on a being | Over U, H and N, assessed against not acting |
+| `G` | Goal | argmax over actions of Σ_b Sy(V(A, b), As(pushDistr)) ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min)) (L74) |
+
+---
+
+## Repository layout
 
 ```
 Benefuture/
-├── .github/workflows/
-│   └── lean_action_ci.yml         # Automated GitHub Actions Lean 4 CI
-├── lakefile.toml                  # Lake package configuration
-├── lean-toolchain                 # Lean 4 toolchain pin (v4.29.0)
-├── lake-manifest.json             # Manifest dependencies
-├── Benefuture.lean                # Primary library umbrella import
-├── Main.lean                      # Executable specification / test harness
-├── Bf_Pseudocode.txt              # Foundational formal pseudocode specification
-│
-├── Benefuture/                    # Specification modules
-│   ├── Math/                      # Parameters, schedules, synergy & saturation
-│   ├── Ontology/                  # Concentric ontology & entity definitions
-│   ├── Measurement/               # Metric models, empirical markers & thresholds
-│   ├── Epistemology/              # Truth correspondence, proper scoring, & info handling
-│   ├── Axiology/                  # Priority schedules, value functions & repugnant conclusion
-│   ├── Subgoals/                  # Freedom, Morality, Justice, Diversity, Art, & Continuity
-│   ├── Governance/                # Liquid democracy, anti-halo isolation, & adversarial adaptation
-│   ├── Economy/                   # Backed currencies, resource accounting, & probabilistic escrow
-│   ├── Systems/                   # Ledger, memory, pipeline settlement, & technology network
-│   └── Axioms/                    # Antifragility axioms and operational requirements
-│
-├── spec/
-│   ├── Bf_Pseudocode.txt          # Primary formal specification source of truth
-│   └── extracted/                 # Extracted definitions & abbreviations datasets
 ├── docs/
-│   ├── SPEC_DIVERGENCES.md        # Explicit log of divergences between Lean and sources
-│   ├── pseudocode_lean_coherence_audit.md # Historical audit matrix
-│   └── articles/                  # Foundational Knowledge Base Articles
-└── tools/                         # Maintenance, sync, extraction, and visualization tools
-    ├── wiki_sync/                 # Live MediaWiki page fetcher & patch applier
-    ├── extraction/                # Pseudocode extraction & semantic audit tools
-    └── bf-graph/                  # Concept graph visualizer
+│   ├── articles/                  # Wiki articles (MediaWiki source) and _manifest.json
+│   ├── BACKPROPAGATION.md         # Findings and author rulings flowing back to the sources
+│   ├── SPEC_DIVERGENCES.md        # Where the Lean departs from or chooses between readings
+│   ├── SIM_CONJECTURES.md         # Behavioural claims in measurable form
+│   ├── THEOREM_INDEX.md           # Every theorem with its docstring (generated)
+│   ├── PLAN.md, CODING_STYLE.md   # Direction, history and method
+│   └── pseudocode_lean_coherence_audit.md
+├── spec/
+│   ├── Bf_Pseudocode.txt          # Pseudocode, source of truth (copied at the root and in Benefuture.txt)
+│   ├── vectors/                   # JSON test vectors generated by the Lean reference
+│   └── extracted/                 # Extracted definitions and abbreviations
+├── Benefuture/                    # Lean specification over ℝ (Mathlib)
+│   ├── Math/ Ontology/ Measurement/ Epistemology/ Axiology/
+│   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
+│   └── Proposed/                  # [P] designs: population direction, outcome distribution, domain hierarchy
+├── BenefutureReference/           # Mathlib-free Float reference; Export.lean holds the C exports
+├── Main.lean                      # `lake exe benefuture`: regenerates spec/vectors
+├── sim/                           # Julia package BenefutureSim: src/, test/, battery/, README.md
+└── tools/                         # setup/, wiki_sync/, extraction/, bf-graph/, README and index checks
 ```
 
 ---
 
-## Quickstart & Verification
-
-### Prerequisites
-
-Install Lean 4 using the official `elan` toolchain manager:
+## Building and verifying
 
 ```bash
-curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh
-source $HOME/.elan/env
+tools/setup/toolchains.sh                         # Lean and Julia (idempotent)
+lake exe cache get && lake build                  # Lean specification and reference
+julia --project=sim -e 'using Pkg; Pkg.test()'    # simulation tests
+python3 tools/check_readme_claims.py              # every theorem named here exists
+python3 tools/theorem_index.py                    # regenerate docs/THEOREM_INDEX.md
+lake exe benefuture                               # regenerate spec/vectors (Mathlib-free)
 ```
 
-### Build the Full Specification
-
-Clone the repository and compile:
-
-```bash
-git clone https://github.com/nesquarx/Benefuture.git
-cd Benefuture
-lake build
-```
+CI runs the Lean build ("Lean Action CI") and the simulation tests ("Julia Sim CI") on every push.
 
 ---
 
-## For Implementers
+## For implementers
 
-This repository maintains a two-tier formalization architecture:
-1. **The Formal Specification (`Benefuture`, over $\mathbb{R}$)**:
-   - Formulated over real numbers ($\mathbb{R}$) using Mathlib.
-   - States foundational definitions, structural theorems, state transition semantics (`Step`), and exact conservation invariants (append-only memory, identity injectivity, escrow soundness, and supply balance identities).
-   - Serves as the mathematical source of truth.
-2. **The Computable Reference Library (`BenefutureReference`, over `Float`)**:
-   - Zero Mathlib dependencies; completely decoupled from the spec library.
-   - Implements computable, Float-based versions of core mathematical operators ($Sy, \hat{Sy}, As, V$, escrow splitting, lazy continuous decay, parent domain aggregation, and voting weights).
-   - Generates deterministic JSON test vectors to `spec/vectors/*.json`.
-
-### Working with Simulations (Julia, `sim/`)
-- Spec ↔ reference correspondence is **not** proved in Lean (which uses classical reals).
-- The agent-based simulation (`sim/`, Julia package `BenefutureSim`) defines no rule itself: every
-  rule is a function of the Lean reference library, exported through
+- The ℝ specification (`Benefuture`) is the mathematical statement: definitions, structural
+  theorems, state transition semantics (`Step`) and conservation invariants (append-only memory,
+  identity injectivity, escrow soundness, supply balance identities).
+- The Float reference (`BenefutureReference`) implements the core operators computably (Sy, Ŝy,
+  As, V, escrow splitting, lazy continuous decay, parent domain aggregation, voting weights, and the
+  rules the simulation calls). Correspondence with the ℝ specification is **not** proved.
+- The simulation defines no rule itself: every rule is a reference function exported through
   `BenefutureReference/Export.lean` and called by `ccall`; Julia holds the world model and input
-  guards. Loading the package rebuilds the shared library only when the Lean sources change.
-  Ladder of models, run lengths, noise ranges and readings: [sim/README.md](sim/README.md).
-- Each simulation increment starts with acceptance tests (against `spec/vectors/*.json` where they
-  apply) and an adversarial suite, run red before implementing.
+  guards. Each increment starts with acceptance tests (against `spec/vectors/` where they apply) and
+  an adversarial suite, run red before implementing. Ladder, run lengths, noise ranges, governed
+  thresholds and the parsimony audit: [sim/README.md](sim/README.md).
 - Vector files and the spec definitions they match:
   - `synergy.json`: `net_synergy`, `squashed_synergy` (L13-14).
   - `assessment.json`: `dynamic_assessment_real`, `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx` (L48).
@@ -488,13 +534,19 @@ This repository maintains a two-tier formalization architecture:
   - `harm.json`: `h_harm` (below rolling average), `u_harm` (below running maximum), `happiness_score` with graded MM bias claims (L54, L37).
   - `freedom.json`: `fr_permissible` with longtermist defaults, `experiential_variety` (L135, L37).
   - `population.json`: `skew_key`, `population_novelty_hist`, `effective_types`, `pareto_front`, `accumulate_capped` (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Governance.Incentives`).
-- Runtime checks that follow from proved theorems: chosen plans never contract ℝ and never lower max U, min U or min H against not acting (`goal_G_sound`), and are never dominated by another admissible plan (`dominated_plan_not_chosen`); Fr is reported per plan as a subgoal, not enforced on G; no delegate exceeds Th_k + max single weight (`accumulate_capped_bound`); summed novelty never exceeds the number of distinct types (`population_novelty_hist_le`).
-- Parameter space: `Benefuture.Systems.ParamSpace` defines every governed parameter (`ParamVector`), the admissible region (`Admissible`), bootstrap defaults (`bootstrapParams`) and SigThGv steps. Sweep parameters only inside `Admissible`; every structural theorem holds there (`governed_params_admissible`, `admissible_dominated_plan_not_chosen`).
+- Runtime checks that follow from proved theorems: chosen plans never contract ℝ and never lower max
+  U, min U or min H against not acting (`goal_G_sound`), and are never dominated by another
+  admissible plan (`dominated_plan_not_chosen`); Fr is reported per plan as a subgoal, not enforced
+  on G; no delegate exceeds Th_k + max single weight (`accumulate_capped_bound`); summed novelty
+  never exceeds the number of distinct types (`population_novelty_hist_le`).
+- Parameter space: `Benefuture.Systems.ParamSpace` defines every governed parameter
+  (`ParamVector`), the admissible region (`Admissible`), bootstrap defaults (`bootstrapParams`) and
+  SigThGv steps. Sweep parameters only inside `Admissible`; every structural theorem holds there
+  (`governed_params_admissible`, `admissible_dominated_plan_not_chosen`).
 - Conjectures to test: implement `SimTrace` and check each `Conj_*` on simulated runs.
-- Regenerate vectors with `lake exe benefuture` (Mathlib-free; builds in seconds).
 
 ---
 
 ## License
 
-This project is licensed under the **GNU Lesser General Public License v2.1** (LGPL-2.1). See the [LICENSE](LICENSE) file for complete terms.
+GNU Lesser General Public License v2.1 (LGPL-2.1). See [LICENSE](LICENSE).
