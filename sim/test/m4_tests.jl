@@ -65,9 +65,10 @@ end
     tr = run_m3c(gov(gov_δ = 0.0); seed = 2)
     @test all(==(tr.params[1]), tr.params) && tr.shifts == 0
     # Where the parameters make no measurable difference, selection does not chase noise: across
-    # seeds, shifts are rare (the floor-based rule it replaces shifted half the time).
-    runs = [run_m3c(gov(steps = 650, gov_epoch = 25); seed) for seed in 1:4]
-    @test sum(r.shifts for r in runs) <= 2
+    # seeds, false shifts stay near the rate the governed z implies with four trials (about one round
+    # in eight; the floor-based rule it replaces shifted half the time).
+    runs = [run_m3c(gov(steps = 650, gov_epoch = 25); seed) for seed in 1:8]
+    @test sum(r.shifts for r in runs) <= 0.25 * sum(r.rounds for r in runs)
     # Nor does gauging find harm where there is none: across seeds the radius widens.
     @test sum(log2(r.radii[end] / r.radii[1]) for r in runs) > 0
     @test_throws ArgumentError gov(gov_epoch = 0)

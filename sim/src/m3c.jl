@@ -133,7 +133,7 @@ function shock(kind::Symbol; step::Integer, duration::Integer = 1, size::Real = 
 end
 
 function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λneg::Real, overlaps = Tuple{Int,Int,Float64}[],
-                   marker_σ::Real = 0.0, window::Integer = 10, spread::Real = 0.03, classify_σ::Real = 0.03,
+                   marker_σ::Real = 0.05, window::Integer = 10, spread::Real = 0.03, classify_σ::Real = 0.03,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = 0.3, σ_branch::Real = 0.5, σ_coarse::Real = 0.75, n_learn::Real = 20,
                    threshold::Real = 0.55, novel_threshold::Real = 0.52, min_records::Integer = 10, μ_rate::Real = 0.02,
@@ -141,13 +141,13 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
                    causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
-                   attribution_σ::Real = 0.0, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
+                   attribution_σ::Real = 0.1, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
                    p_contracted::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
                    hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.0, cost_σ::Real = 0.0, regen_σ::Real = 0.0, memory_loss::Real = 0.0, participation::Real = 1.0, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, events = Shock[])
+                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -190,7 +190,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
-              isempty(diligence) ? ones(length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
+              isempty(diligence) ? fill(0.95, length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
               bias_σ, cost_σ, regen_σ, memory_loss, participation, remeasure_σ,
               isempty(deceit) ? zeros(length(agents)) : collect(Float64, deceit), track_window, p_trace, collect(Shock, events))

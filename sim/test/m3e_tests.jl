@@ -16,16 +16,16 @@ hz(guardians; agents = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ i
 end
 
 @testset "M3e: acceptance" begin
-    # A diligent, informed guardian prevents every hazard in its domains.
-    tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0); seed = 1)
+    # Limiting case: a perfectly diligent, always-informed guardian prevents every hazard.
+    tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = ones(4)); seed = 1)
     @test tr.hazards > 0 && tr.prevented == tr.hazards && tr.crimes == 0 && tr.accidents == 0
     # A prevention is no special payment (author rulings 8.22, 8.24): it is the guardian's action,
     # recorded with its measured outputs, which mint currency as any outcome does. Assessed against
     # the committed action, the averted harm is no output: a skilled guardian earns from its skill
     # alone, an unskilled one nothing, and a shock to those it protects is its own negative output.
     @test 0 < tr.prevention_records <= tr.prevented && tr.prevention_measured > 0
-    @test run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, hazard_size = 5.0); seed = 1).prevention_measured == tr.prevention_measured
-    shocked = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, p_shock = 1.0, shock_size = 0.2); seed = 1)
+    @test run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = ones(4), hazard_size = 5.0); seed = 1).prevention_measured == tr.prevention_measured
+    shocked = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = ones(4), p_shock = 1.0, shock_size = 0.2); seed = 1)
     @test shocked.shocks > 0 && shocked.prevention_measured < tr.prevention_measured
     # An informed guardian who does not act commits a crime each time, and is penalised.
     tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = [0.0, 1, 1, 1]); seed = 1)

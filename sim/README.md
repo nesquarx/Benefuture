@@ -90,8 +90,9 @@ steps; measure rates over at least 500 steps after it, and rare events such as f
 
 Readings in the M3b–M5 sections and the black-swan table were taken with losses decaying faster
 than gains (λ₊ 0.02, λ₋ 0.05) and without models' track records, before the author's ruling 8.29.
-The tests now run with λ₊ 0.05, λ₋ 0.02 and track records and still pass; the readings themselves
-have not been re-run and may shift. The M6 readings below are current.
+The tests now run with λ₊ 0.05, λ₋ 0.02, track records and mildly imperfect defaults (8.33) and
+still pass; the readings themselves have not been re-run and may shift. Readings taken after ruling
+8.33 say so.
 
 ## M0 observations
 
@@ -632,28 +633,29 @@ ratified.
 ## Noise
 
 Every step that can go wrong in reality has a noise parameter, drawn from its own random stream
-so that turning one off changes nothing else. Defaults are toy-level; the ranges are first
-guesses at reality, to be swept once the model is solid.
+so that turning one off changes nothing else. Nothing is perfect (author ruling 8.33): defaults sit
+at the low end of each range, and exact worlds appear only as limiting cases in tests. The ranges
+are first guesses at reality; the failure-boundary batteries sweep them.
 
 | Step | Parameter | Default | Range to explore |
 |---|---|---|---|
 | A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 |
 | Carrying a plan out | agent `sloppiness` | 0–0.3 | 0–2 |
-| Markers measuring levels and outcomes | `marker_σ` | 0–0.05 | 0.05–0.5 |
+| Markers measuring levels and outcomes | `marker_σ` | 0.05 | 0.05–0.5 |
 | Metric model predictions | `σ_leaf`, `σ_branch`, `σ_coarse`, `MetricModel.σ` | 0.3, 0.5, 0.75 | 0.2–2 |
-| Systematic model bias | `bias_σ`, `MetricModel.bias` | 0 | 0–0.5 |
+| Systematic model bias | `bias_σ`, `MetricModel.bias` | 0.1 | 0–0.5 |
 | An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.03, 0.03 | 0.03–0.15 |
 | Bootstrap classification (what it misses) | overlaps unknown to it | all | all to none |
-| Resource accounting | `cost_σ` | 0 | 0–0.5 |
-| Resource regeneration | `regen_σ` | 0 | 0–1 |
-| Records reaching memory | `memory_loss` | 0 | 0–0.2 |
-| Experts joining co-funding | `participation` | 1 | 0.3–1 |
-| Separating an upstream output's part | `attribution_σ` | 0 | 0–0.5 |
+| Resource accounting | `cost_σ` | 0.1 | 0–0.5 |
+| Resource regeneration | `regen_σ` | 0.1 | 0–1 |
+| Records reaching memory | `memory_loss` | 0.02 | 0–0.2 |
+| Experts joining co-funding | `participation` | 0.9 | 0.3–1 |
+| Separating an upstream output's part | `attribution_σ` | 0.1 | 0–0.5 |
 | Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–1 |
 | Examining an outage tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
 | Hazard harm | `hazard_σ` | 0.2 | 0–1 |
 | A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.3–1 |
-| A guardian acting on a known duty | `diligence` | 1 | 0.3–1 |
+| A guardian acting on a known duty | `diligence` | 0.95 | 0.3–1 |
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |

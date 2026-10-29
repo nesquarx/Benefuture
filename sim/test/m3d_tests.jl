@@ -11,13 +11,19 @@ m3d(; work = [1, 3], kw...) = m3c(; work, transactions = true, kw...)
     g = run_m3c(m3c(work = [1, 3]); seed = 1)
     per_step = [count(==(s), tr.chosen_step) for s in unique(tr.chosen_step)]
     @test maximum(per_step) > 1 && length(tr.chosen_step) > 2 * length(g.chosen_step)
-    # With exact models and markers, sequential screening keeps every floor from falling.
-    exact = m3d(σ_leaf = 0.0, σ_branch = 0.0, σ_coarse = 0.0)
+    # Limiting case (8.33: no real world is exact): with exact models, markers and accounting,
+    # sequential screening keeps every floor from falling.
+    exact = m3d(σ_leaf = 0.0, σ_branch = 0.0, σ_coarse = 0.0, marker_σ = 0.0, bias_σ = 0.0, cost_σ = 0.0, regen_σ = 0.0,
+                attribution_σ = 0.0)
     tr = run_m3c(exact; seed = 2)
     @test floors_rise(tr) && length(tr.chosen_step) > 0
-    # Every executed transaction is logged with the quotes composed for it, a partition of unity.
-    tr = run_m3c(m3d(); seed = 3)
+    # Every executed transaction is logged with the quotes composed for it, a partition of unity;
+    # with records lost on the way (2% by default), memory holds the rest.
+    tr = run_m3c(m3d(memory_loss = 0.0); seed = 3)
     @test length(tr.memory) == length(tr.chosen_step) + tr.lane_executed + tr.init_executed
+    lossy = run_m3c(m3d(); seed = 3)
+    @test 0.9 * (length(lossy.chosen_step) + lossy.lane_executed + lossy.init_executed) < length(lossy.memory) <
+          length(lossy.chosen_step) + lossy.lane_executed + lossy.init_executed
     @test all(m -> profile_valid(m.priced), tr.memory)
     # Without transactions M3c is unchanged.
     @test run_m3c(m3c(work = [1, 3], transactions = false); seed = 1) == g
@@ -65,7 +71,8 @@ end
     # A bad output is penalised downstream: good agents building on it carry its losses back to it.
     bad = [DomainAgent([-0.3, 0, 0, 0], [1.0, 0, 0, 0], 0.0)]
     tr = run_m3c(cdp([makers(); makers()[1:1]; bad]); seed = 2)
-    @test tr.upstream_neg[5] < 0 && tr.upstream_pos[5] == 0
+    # (Attribution is imperfect by default, so a sliver of credit can stray its way; losses dominate.)
+    @test tr.upstream_neg[5] < 0 && tr.upstream_pos[5] < 0.01 * abs(tr.upstream_neg[5])
     # Co-funders whose money was needed share the credit of StandCoin work.
     tr = run_m3c(m3c(work = [1], threshold = 0.99, novel_threshold = 0.99, endowment = 2.0, transactions = true,
                      causal_distribution = true); seed = 1)
@@ -84,7 +91,10 @@ end
 @testset "Contribution types: acceptance" begin
     free = run_m3c(cdp([makers(); passers()]; accolade_rate = 0.05, p_contracted = 0.0); seed = 1)
     @test free.accolade_credit > 0 && free.contract_credit == 0
-    @test sum(free.credit_pos[4:6]) ≈ free.accolade_credit rtol = 0.2
+    # Carriers' net credit is about their accolades (noise in measurement and attribution moves
+    # credit both ways), far below what the makers earn.
+    net = sum(free.credit_pos[4:6] .+ free.credit_neg[4:6])
+    @test isapprox(net, free.accolade_credit; rtol = 0.4) && net < 0.1 * sum(free.upstream_pos[1:3])
     hired = run_m3c(cdp([makers(); passers()]; contract_share = 0.2, p_contracted = 1.0); seed = 1)
     @test hired.contract_credit > 0 && hired.accolade_credit == 0
     @test sum(hired.credit_pos[4:6]) > sum(free.credit_pos[4:6])

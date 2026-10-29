@@ -19,7 +19,7 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
     # Measurement outage: work goes on, paid by prediction; nothing is measured, credited or
     # scored while it lasts. When markers return, everything done during it is re-measured and
     # settled (author ruling 8.26.5: else outages can be gamed); the unmeasured record stays.
-    tr = run_m3c(base(events = [shock(:outage; step = 100, duration = 50)], p_hazard = 0.3, guardians = [1, 2, 3, 4],
+    tr = run_m3c(base(events = [shock(:outage; step = 100, duration = 50)], p_hazard = 0.3, guardians = [1, 2, 3, 4], memory_loss = 0.0,
                       p_informed = 0.5); seed = 1)
     unmeasured = [m for m in tr.memory if isnan(m.measured)]
     remeasured = [m for m in tr.memory if 100 <= m.step < 150 && !isnan(m.measured)]

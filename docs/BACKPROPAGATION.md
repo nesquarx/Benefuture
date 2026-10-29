@@ -838,3 +838,9 @@ causal distribution, else its harm is insured through the commons. Repair's pred
 from the domain's best model with its error, not the measured harm; with mildly inaccurate models
 (the realistic case, per the author) repair still funds itself.
 
+
+**8.33 Author ruling: nothing is perfect, in the world or in the work.** The simulation need not
+model perfect models, perfect people or perfect processes: all are impossible. Benefuture's logic
+applies to the work itself: truth levels cannot reach 1. Simulation: every world default is mildly
+imperfect (the low end of each realistic noise range), exact worlds appear only as limiting cases
+in tests, and claims are stated with their confidence and assumptions.
