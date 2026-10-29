@@ -500,7 +500,8 @@ function run_m3c(p::M3cParams; seed)
     xrng = Xoshiro(hash((seed, :choice)))
     choice_caps = ability_caps(xrng, [max(p.agents[a].skills[l], 0.0) for a in 1:na, l in 1:ntrue];
                                base = p.choice_σ, gain = p.choice_gain, spread = p.ability_spread)
-    tr = (floor_u = Float64[], floor_h = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
+    tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
+          worst_drop = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
           stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[],
           lane_costs = Float64[], lane_measured = Float64[])
     top_leaf(st) = (k = argmax(st); k <= lmax ? k : 0)
@@ -617,7 +618,16 @@ function run_m3c(p::M3cParams; seed)
             apply_credit!(a, m.profile, pos, neg; dt = step - m.step)
         end
     end
-    record!() = (push!(tr.floor_u, floor_quantile(s.u, t.q)); push!(tr.floor_h, floor_quantile(s.h, t.q)))
+    # The Goal's success pattern (L74): floors of U and H, their medians (the distribution pushed),
+    # the peak of U, and the deepest single-being drop in either since the last record (harm's peak).
+    last_state = Ref((copy(s.u), copy(s.h)))
+    function record!()
+        push!(tr.floor_u, floor_quantile(s.u, t.q)); push!(tr.floor_h, floor_quantile(s.h, t.q))
+        push!(tr.median_u, median(s.u)); push!(tr.median_h, median(s.h)); push!(tr.peak_u, maximum(s.u))
+        pu, ph = last_state[]
+        push!(tr.worst_drop, max(0.0, maximum(pu .- s.u), maximum(ph .- s.h)))
+        last_state[] = (copy(s.u), copy(s.h))
+    end
     record!()
     obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ))
     best_prediction(st, l, plan) = (c = argmax(st[1:(root - 1)]); st[c] <= 0 ? nothing :

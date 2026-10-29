@@ -65,6 +65,7 @@ struct M5Params
     record_λneg::Float64       # and of its wrongs, no faster (8.29)
     p_novel::Float64           # chance a source with a weaker record brings input novel to the listener (world; 8.44)
     info_handling::Bool        # the social network surfaces the domain's most reputable sources (L133 IH; 8.44)
+    camp_bias::Vector{Float64} # per agent, an honest paradigm's systematic lean (world: contention among experts)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -79,7 +80,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   adv_share::Real = 0.1, adv_floor::Real = 1.0, audit_cost::Real = 1.0, p_trace::Real = 0.5,
                   deliberation::Bool = false, n_contacts::Integer = 5, model_σ0::Real = 5.0, p_new_model::Real = 0.0,
                   improve_drift::Real = -0.1, improve_σ::Real = 0.3, scale_min::Real = 0.1, model_capture = nothing,
-                  record_λpos::Real = 0.05, record_λneg::Real = 0.02, p_novel::Real = 0.05, info_handling::Bool = true)
+                  record_λpos::Real = 0.05, record_λneg::Real = 0.02, p_novel::Real = 0.05, info_handling::Bool = true,
+                  camp_bias = Float64[])
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -100,6 +102,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           isfinite(improve_σ) && improve_σ >= 0 && 0 < scale_min <= 1, "contacts non-negative, model noise positive, chance in [0, 1], least scale in (0, 1]")
     check(0 <= record_λneg <= record_λpos && isfinite(record_λpos), "record decay: wrongs no faster than rights (8.29)")
     check(0 <= p_novel <= 1, "novel-input chance in [0, 1]")
+    check(isempty(camp_bias) || (length(camp_bias) == length(m3.agents) && all(isfinite, camp_bias)), "one finite paradigm lean per agent")
     check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
@@ -110,7 +113,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread,
              fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace,
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
-             record_λpos, record_λneg, p_novel, info_handling)
+             record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias))
 end
 
 """
@@ -168,10 +171,12 @@ function run_m5(p::M5Params; seed)
         r[2] = reputation_decay(r[2], 1.0; rate = rate_wrong) + !right
     end
     model_weight, cap_trace, cap_id = Float64[], Float64[], Ref(0)
+    truth_trace = Float64[]
     own_pub = zeros(na)
     for n in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
+        push!(truth_trace, truth)
         apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
         rep = max.(reputation[:, k], 0.0)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
@@ -199,7 +204,7 @@ function run_m5(p::M5Params; seed)
                 end
             end
         end
-        signal = [truth + choice_noise(crng, caps[i, k]) for i in 1:na]
+        signal = [truth + p.camp_bias[i] + choice_noise(crng, caps[i, k]) for i in 1:na]
         defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
         if p.deliberation
             # Better models arrive (an assumption, 8.42.2); the best model of a captured domain
@@ -218,6 +223,9 @@ function run_m5(p::M5Params; seed)
             pub(j) = (j in p.colluders && defect) ? 1.0 : sign(signal[j])  # what a person publishes
             wm0 = [lo(m.rec) for m in mods[k]]
             ranked = sortperm(reputation[:, k]; rev = true)
+            sides = (filter(j -> pub(j) > 0, ranked), filter(j -> pub(j) <= 0, ranked))
+            half = cld(p.n_contacts, 2)
+            contention_map(i) = vcat([filter(!=(i), side)[1:min(half, length(side) - (i in side))] for side in sides]...)
             reading = zeros(na); wsum, wmod = 0.0, 0.0
             for i in 1:na
                 # Understanding trickles down and across (8.44): a voter weighs a source only if its
@@ -225,9 +233,10 @@ function run_m5(p::M5Params; seed)
                 mine = lo(person_rec[i, k])
                 heard(w) = (w >= mine || rand(nrng) < p.p_novel) ? w : 0.0
                 own = max(mine, 0.1)  # one's own reading counts, at least a little
-                # The social network's information handling (L133 IH: SourceVerify by Re(Dn))
-                # surfaces the domain's most reputable sources; without it, a voter hears its contacts.
-                srcs = p.info_handling ? [j for j in ranked if j != i][1:min(p.n_contacts, na - 1)] : contacts[i]
+                # The social network's information handling (L133 IH: SourceVerify by Re(Dn), and a
+                # ContentionMap) surfaces the domain's most reputable sources on each side of the
+                # question; without it, a voter hears its contacts.
+                srcs = p.info_handling ? contention_map(i) : contacts[i]
                 wc = [heard(lo(person_rec[j, k])) for j in srcs]
                 wm = heard.(wm0)
                 reading[i] = own * sign(signal[i]) + sum(wc .* pub.(srcs); init = 0.0) + sum(wm .* published)
@@ -332,7 +341,7 @@ function run_m5(p::M5Params; seed)
      chosen_share = chosen_share, correct_trace = correct_trace, share_when_right = share_when_right, share_when_wrong = share_when_wrong,
      correct_after_hidden = after_hidden / max(tally_hidden[2], 1),
      advap_established = adv.established[], advap_rewards = adv.rewards[], advap_liability = adv.liability[],
-     advap_gain_forgone = adv.gain_forgone[], advap_recounted = adv.recounted[], final_trace = right_now,
+     advap_gain_forgone = adv.gain_forgone[], advap_recounted = adv.recounted[], final_trace = right_now, truth_trace = truth_trace,
      model_weight = model_weight, best_model_σ = [minimum(m.σ for m in mods[k]) for k in 1:nd],
      captured_weight_start = isempty(cap_trace) ? NaN : mean(cap_trace[1:min(10, end)]),
      captured_weight_end = isempty(cap_trace) ? NaN : mean(cap_trace[max(1, end - 9):end]))

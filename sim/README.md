@@ -445,8 +445,10 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   1 the top of its explored range (the Noise table; attacks sized likewise), and the search runs
   to 2.
 - **Oracle.** A world converges if a majority of seeds meet the criterion stated at the top of each
-  battery: in the economy, floor growth after the score-only start at least a quarter of the clean
-  world's, and no attack paying (attackers' wealth relative to honest agents, over the same world
+  battery: in the economy, the Goal's success pattern after the score-only start (L74: floors and
+  medians of understanding and happiness each growing at least a quarter as much as the clean
+  world's, the peak of understanding ending no lower, harm's peak within three times the clean
+  world's), and no attack paying (attackers' wealth relative to honest agents, over the same world
   and seed with the attackers honest, above 1.1 on average across seeds and above 1 by two standard
   errors); in governance, at least 75% of the last half of decisions right. The criteria are
   evaluation choices, not rules. Comparing attackers with one honest agent, seed by seed, measured
@@ -461,11 +463,11 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
   tolerances are fixed in each script, so runs repeat exactly.
 
-- **Latest readings.** Economy (code 0e08fc3, realistic ranges, AdvAp on): alone, only execution
-  (1.40) and side harm (1.31) fail within twice their realistic tops (capture no longer does); no
-  screened world fails. Governance (code 4d2338b, AdvAp on): no factor fails alone within 2 and no
-  screened world fails, down from 12% without AdvAp. The economy run on 4d2338b crashed on an audit
-  path the tests had missed (fixed, with a regression test).
+- **Latest readings** (code 2a3d742, realistic ranges, AdvAp on). Economy: alone, only execution
+  (1.40) and side harm (1.31) fail within twice their realistic tops (capture no longer does); 2% of
+  screened worlds fail. Governance: no factor fails alone within 2 and no screened world fails, down
+  from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
+  regression test).
 
 Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
 `julia --project=sim sim/battery/governance.jl` (about ten minutes).
@@ -754,19 +756,38 @@ Models take over prediction as they improve, and a captured model loses all its 
 shared sources correlate the votes, and the decision tends to their own accuracy (8.43). By the
 author's ruling (8.44) understanding trickles down and across only: a voter weighs a source whose
 record is at least its own, a weaker one rarely for novel input (`p_novel`), and the social network's
-information handling (L133 IH, `info_handling`) surfaces the domain's most reputable sources:
+information handling (L133 IH, `info_handling`) surfaces the domain's most reputable sources on each
+side of the question (its ContentionMap):
 
 | Voters hear (understanding trickling down) | Right |
 |---|---|
 | Only themselves | 92.8% |
 | Five random contacts | 91.4% |
-| IH's five most reputable | 85.9% |
-| IH and models improving to noise 0.5 | 88.9% |
-| IH and models improving to noise 0.2 | 92.1% |
+| IH's ContentionMap: the most reputable on each side | 83.5% |
+| IH and models improving to noise 0.5 | 89.0% |
+| IH and models improving to noise 0.3 | 89.6% |
 
 Each layman echoing a source casts that source's information again with a full base vote (the toy's
 decisions are purely factual), so a few sources' information is counted many times: finding 8.45,
 awaiting the author. Deliberation is off by default.
+
+The real test is contention (author, on 8.44): experts divided, voters hearing all sides and judging
+by the network's information handling and their own limited expertise, with diversity trying the
+option not chosen. The network's ContentionMap (L133) surfaces the most reputable sources on each
+side of a question. The top 40% of each domain's experts split, alternating by rank, into two camps of
+equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest systematic bias of
+1), so on contested questions (true value between 0 and 1) they disagree. 1,600 decisions, 4 seeds:
+
+| Voters | Contested decisions right (first 400, last 400) | All decisions right |
+|---|---|---|
+| Neither deliberation nor diversity | 75.8%, 73.7% | 89.8% |
+| Diversity (split trials) | 80.7%, 81.1% | 92.0% |
+| Deliberation through information handling | 74.4%, 78.6% | 78.9% |
+| Both | 86.7%, 86.6% | 89.5% |
+
+On contested questions, hearing both sides weighed by their records, with trials revealing
+outcomes, finds the performant option far more often; deliberation alone hones in slowly. On
+uncontested questions the echo cost of 8.45 remains.
 
 ## Parsimony audit
 
@@ -885,6 +906,7 @@ rare but present).
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
 | A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |
+| An expert's honest paradigm lean, contention among experts (M5, world) | `camp_bias` | 0 | 0–2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
 | Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |

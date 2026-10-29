@@ -108,13 +108,14 @@ end
     talk = [run_m5(hard(deliberation = true); seed) for seed in seeds]
     models = [run_m5(hard(deliberation = true, p_new_model = 0.02); seed) for seed in seeds]
     late(r) = mean(r.correct_trace[801:end])
-    # Better models take over prediction: their share of the weight in voters' readings grows.
-    @test all(mean(r.model_weight[801:end]) > mean(r.model_weight[1:400]) for r in models)
-    # Finding 8.43: the votes stop being independent. Every voter weighs the same shared sources,
-    # so errors correlate and the decision tends to those sources' own accuracy; a crowd of
-    # independent experts aggregates better than any source weaker than its aggregate. Hearing
-    # contacts costs a little, hearing models weaker than the crowd costs more.
-    @test mean(late.(talk)) < mean(late.(alone)) && mean(late.(models)) < mean(late.(talk))
+    # Better models take over prediction: their share of the weight in voters' readings grows, slowly
+    # where they must first outdo the experts the network surfaces.
+    @test mean(mean(r.model_weight[801:end]) for r in models) > mean(mean(r.model_weight[1:400]) for r in models)
+    # Findings 8.43, 8.45: the votes stop being independent. Each layman echoing the sources it heard
+    # recasts their information with a full base vote, so a few sources are counted many times and
+    # outweigh the middle ranks' independent readings; deliberation costs accuracy on these purely
+    # factual decisions.
+    @test mean(late.(talk)) < mean(late.(alone)) && mean(late.(models)) < mean(late.(alone))
     # A model that slips loses its weight: a capture making the best model of domain 1 publish one
     # side costs it its record.
     slip = [run_m5(hard(deliberation = true, p_new_model = 0.02, model_capture = (decision = 600, duration = 300, domain = 1)); seed) for seed in seeds]
@@ -123,4 +124,26 @@ end
     @test isequal(run_m5(hard(deliberation = false, p_new_model = 0.0); seed = 1), run_m5(hard(); seed = 1))
     @test_throws ArgumentError hard(deliberation = true, n_contacts = -1)
     @test_throws ArgumentError hard(deliberation = true, p_new_model = 2.0)
+end
+
+# Contention (author, on 8.44): experts divided, the voters listening to all and judging through the
+# network's information handling (its ContentionMap surfaces the most reputable sources on each side,
+# L133) and their own limited expertise, with diversity (L158) trying the option not chosen. The top
+# experts of each domain split into two camps of equal standing; one camp's paradigm leans to one
+# option (an honest systematic bias), so on contested questions they disagree.
+@testset "M5 contention among experts" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    c, bias = 1.0, zeros(100)
+    for d in 1:4, (r, a) in enumerate(sortperm(m3.relevance_leaf[:, d]; rev = true)[1:10])
+        iseven(r) && (bias[a] = -c)
+    end
+    contested(r) = mean(r.final_trace[i] for i in eachindex(r.truth_trace) if 0 < r.truth_trace[i] < c)
+    run(; kw...) = [run_m5(M5Params(m3, 1:4; decisions = 1600, signal_σ = 20.0, camp_bias = bias, kw...); seed) for seed in 1:4]
+    neither, trials, both = run(diversity = false), run(), run(deliberation = true)
+    # Hearing both sides weighed by their records, with trials revealing outcomes, finds the
+    # performant option on contested questions far more often than trials alone or neither.
+    @test mean(contested.(both)) > mean(contested.(trials)) + 0.03 && mean(contested.(trials)) > mean(contested.(neither)) + 0.03
+    @test_throws ArgumentError M5Params(m3, 1:4; camp_bias = [1.0])
 end

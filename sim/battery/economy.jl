@@ -1,8 +1,10 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
 # Severity 0 is the least realistic noise and no attack; 1 the realistic top of each range (sim/README.md, Noise);
 # AdvAp (L160) is on, its frictions factors;
-# rays run to 2. Convergence (an evaluation criterion, not a rule): floor growth on understanding
-# after the score-only start is at least `GROWTH` of the clean world's, by the seeds' vote, and
+# rays run to 2. Convergence (an evaluation criterion, not a rule): the Goal's success pattern (L74)
+# after the score-only start, by the seeds' vote: the floors and medians of understanding and
+# happiness each grow by at least `GROWTH` of the clean world's, the peak of understanding ends no
+# lower than it began, and the deepest single-being drop stays within `HARM` × the clean world's; and
 # deceit and laundering (when present) do not pay. An attack pays when the attackers' wealth
 # relative to the honest agents, over the same world and seed with the attackers honest, averages
 # above `GAIN` across the seeds and its lower bound (mean less two standard errors) is above 1.
@@ -10,7 +12,7 @@
 # one honest agent failed near-clean worlds: one agent's wealth spreads about ±10% across seeds.)
 using BenefutureSim, Statistics, Random, Printf
 
-const STEPS, SEEDS, MORE, GROWTH, GAIN = 300, 1:3, 4:5, 0.25, 1.1
+const STEPS, SEEDS, MORE, GROWTH, GAIN, HARM = 300, 1:3, 4:5, 0.25, 1.1, 3.0
 const FACTORS = [
     # noise: severity 0 is the least realistic noise, 1 the realistic top (the edge of a functional
     # domain, where established models fall to about coarse accuracy; sim/README.md, Noise)
@@ -53,8 +55,15 @@ function world(sev)
               advap = true,
               events, kw...)
 end
-gain(tr) = tr.floor_u[end] - tr.floor_u[51]
-const CLEAN = mean(gain(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS)
+pattern(tr) = success_pattern(tr; from = 51)
+const CLEAN = let ps = [pattern(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS]
+    (; (f => mean(getfield(p, f) for p in ps) for f in (:floor_u, :floor_h, :median_u, :median_h, :worst_drop))...)
+end
+function grows(tr)
+    sp = pattern(tr)
+    all(getfield(sp, f) >= GROWTH * getfield(CLEAN, f) for f in (:floor_u, :floor_h, :median_u, :median_h)) &&
+        sp.peak_u >= 0 && sp.worst_drop <= HARM * CLEAN.worst_drop
+end
 function converges(sev)
     attacks = [(10, 7:8), (14, 6:6)]  # (factor, attacking agents)
     # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
@@ -64,7 +73,7 @@ function converges(sev)
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
         hs = copy(sev); for (f, _) in attacks; hs[f] = 0; end
         honest = any(sev[f] > 0 for (f, _) in attacks) ? run_m3c(world(clamp.(hs, 0, Inf)); seed) : tr
-        (grows = gain(tr) >= GROWTH * CLEAN, ratios = [rel(tr, k) / rel(honest, k) for (_, k) in attacks])
+        (grows = grows(tr), ratios = [rel(tr, k) / rel(honest, k) for (_, k) in attacks])
     end
     pays(r) = mean(r) > GAIN && mean(r) - 2std(r) / sqrt(length(r)) > 1
     unsure(r) = (mean(r) > GAIN) != (mean(r) - 2std(r) / sqrt(length(r)) > 1)
@@ -81,4 +90,4 @@ rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "16")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "64")))
 t0, commit = time(), current_commit()  # the code this run tests
 bt = battery(converges, names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.06, grid = 6)
-write_results("economy", bt, names; clean = CLEAN, minutes = (time() - t0) / 60, commit)
+write_results("economy", bt, names; clean = CLEAN.floor_u, minutes = (time() - t0) / 60, commit)

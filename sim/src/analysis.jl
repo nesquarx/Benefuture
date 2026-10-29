@@ -38,3 +38,20 @@ function spearman(x, y)
     check(length(x) == length(y) >= 2, "two series of equal length, at least two, are needed")
     cor(ranks(x), ranks(y))
 end
+
+"""
+    success_pattern(tr; from = 1) -> NamedTuple
+
+The Goal's success pattern over a run from step `from` (L74: Σ V with its distribution pushed,
+¬↓(U max, U min, H min)): growth of the floors, medians and peak of understanding and happiness;
+the share of steps in which the peak or a floor fell; the deepest single-being drop (harm's peak).
+"""
+function success_pattern(tr; from::Integer = 1)
+    check(1 <= from < length(tr.floor_u), "a start within the run")
+    r = from:length(tr.floor_u)
+    g(x) = x[end] - x[from]
+    falls(x) = mean(diff(x[r]) .< -1e-12)
+    (floor_u = g(tr.floor_u), floor_h = g(tr.floor_h), median_u = g(tr.median_u), median_h = g(tr.median_h),
+     peak_u = g(tr.peak_u), peak_u_falls = falls(tr.peak_u), floor_u_falls = falls(tr.floor_u), floor_h_falls = falls(tr.floor_h),
+     worst_drop = maximum(tr.worst_drop[r]))
+end

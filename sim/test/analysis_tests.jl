@@ -27,3 +27,14 @@ end
     # A final mean of zero needs an absolute tolerance to settle before the end.
     @test settling_step([1.0, -1.0, 0.0, 0.0]; tol = 0.1, atol = 0.6) == 2
 end
+
+@testset "Goal success pattern (L74)" begin
+    # Floors and medians of U and H, the peak of U, how often each fell, and harm's peak.
+    tr = (floor_u = [0.0, 1.0, 0.5, 2.0], floor_h = [0.0, 1.0, 2.0, 3.0], median_u = [1.0, 2.0, 3.0, 4.0],
+          median_h = [1.0, 1.0, 1.0, 2.0], peak_u = [5.0, 6.0, 5.5, 7.0], worst_drop = [0.0, 0.5, 2.0, 0.1])
+    sp = success_pattern(tr)
+    @test sp.floor_u == 2.0 && sp.median_h == 1.0 && sp.peak_u == 2.0 && sp.worst_drop == 2.0
+    @test sp.peak_u_falls ≈ 1 / 3 && sp.floor_u_falls ≈ 1 / 3 && sp.floor_h_falls == 0.0
+    @test success_pattern(tr; from = 3).floor_u == 1.5
+    @test_throws ArgumentError success_pattern(tr; from = 4)
+end

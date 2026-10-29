@@ -20,6 +20,12 @@ fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
     # Every source but model error at the top of its realistic range: floors still rise, more slowly.
     heavy = [run_m3c(fr(; FRICTION...); seed) for seed in 1:3]
     @test mean(fr_gain.(heavy)) > 0.2 * clean && all(tr -> length(tr.chosen_step) > 0, heavy)
+    # The whole success pattern (L74), not the floor alone: medians and the peak of understanding
+    # rise as well, and harm's peak (the deepest single-being drop) stays bounded.
+    for tr in heavy
+        sp = success_pattern(tr; from = 51)
+        @test sp.median_u > 0 && sp.median_h > 0 && sp.floor_h > 0 && sp.peak_u > 0
+    end
     # Everything at its top, model error and execution noise included: degraded, not collapsed.
     # Accuracy is the quality of credences, not adjusted for noise (8.36), so it falls to about the
     # coarse level and pricing thins out rather than stopping (about 9% of clean growth since every

@@ -1065,8 +1065,8 @@ as its own, or, rarely (`p_novel`), when the source brings novel input. Candidat
 trickles down and across only (a voter weighs a source whose record is at least its own, rarely a
 weaker one for novel input), and the social network's information handling (L133 IH: SourceVerify by
 Re(Dn)) surfaces the domain's most reputable sources. 100 voters, hard factual decisions, 3 seeds,
-right in the last third: alone 92.8%; five random contacts 91.4%; IH's top five 85.9%; IH and models
-improving to noise 0.5 88.9%, to 0.2 92.1%. Screened: no defect found; the mechanism is that in this
+right in the last third: alone 92.8%; five random contacts 91.4%; IH's ContentionMap (the most
+reputable on each side) 83.5%; IH and models improving to noise 0.5 89.0%, to 0.3 89.6%. Screened: no defect found; the mechanism is that in this
 toy every decision is purely factual and every voter carries a full base vote (L113), so each layman
 who echoes an expert or model casts that source's information again with its own weight; a few
 sources' information is counted many times and outweighs the middle ranks' independent readings
@@ -1077,6 +1077,11 @@ share that is its own; (b) separate a decision's factual part (weighed by expert
 deliberation and models) from its value part (base and impact weights, one person one share); (c)
 make the base vote optional where a voter's reading is mostly borrowed (L113's optional threshold).
 Candidate homes: L113, L114, Government, IH (L133).
+Contention (author: the real test is experts divided, voters listening to all and judging by IH,
+diversity and their own limited expertise): the network's ContentionMap surfaces the most reputable
+sources on each side; with two expert camps of equal standing, one leaning by an honest bias,
+contested decisions end right 86.7% with deliberation and split trials, against 80.7% with trials
+alone and 75.8% with neither (`sim/README.md`, M5).
 
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than

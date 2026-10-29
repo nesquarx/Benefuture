@@ -363,7 +363,10 @@ means over 5 seeds of 500 steps.
   entirely; but shared sources make votes dependent and decisions fall towards the sources' own
   accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43); with understanding trickling down
   only (8.44) through the network's information handling, each layman's echo still recasts its
-  source's information with a full base vote, a finding awaiting the author (8.45)
+  source's information with a full base vote, a finding awaiting the author (8.45). Where experts are
+  divided between two camps, one leaning by an honest bias, hearing both sides with diversity's trials
+  finds the performant option on contested questions 86.7% of the time, against 80.7% with trials
+  alone and 75.8% with neither
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
