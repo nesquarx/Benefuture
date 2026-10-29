@@ -715,3 +715,14 @@ pseudocode copies, the quoted Lean docstrings, the coherence audit and the Crime
    arbitrage. Simulation: the commons banks no surplus from a self-funding repair. Candidate homes:
    Administration, Benefuture currency, Anti-Corruption.
 
+
+**8.27 Author clarification on resource accounting and scarcity.**
+1. Resource accounting is a universal balance sheet: it calculates resource efficiency and adjusts
+   thresholds to maintain the commons and baseline rates, funding both freedom (the sophont
+   baseline) and insurance. Candidate homes: L83 RcAccounting, L143 S_BaselnIncm, Benefuture
+   currency (Resource Accounting), Administration.
+2. Benefuture is not a post-scarcity framework: it is a framework to discover and diminish
+   scarcities. Candidate homes: Benefuture (introduction), Benefuture currency, L151 Rc_Innovation.
+3. Held open: how the balance sets the commons' share (8.26.7), and whether the debatable escape is
+   demonstrated on a threshold with a measurable effect (overflow against inequality, or the
+   causal-assessment confidence), since the value parameters show none at current scales.
