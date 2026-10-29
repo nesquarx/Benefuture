@@ -3,8 +3,9 @@
 # rays run to 2. Convergence (an evaluation criterion, not a rule): by the seeds' vote (three, or
 # five where the three disagree),
 # floor growth on understanding after the score-only start is at least `GROWTH` of the clean
-# world's, and deceivers and launderers (when present) end no richer than `GAIN` × an honest agent
-# in the same position (agent 5: not a guardian, not an attacker).
+# world's, and deceit and laundering (when present) do not pay: the attackers' wealth relative to
+# the honest agents' rises by no more than `GAIN` over the same world and seed with the attackers
+# honest. (Against one honest agent alone, honest agents' own ±10% spread failed near-clean worlds.)
 using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, MORE, GROWTH, GAIN = 300, 1:3, 4:5, 0.25, 1.1
@@ -52,11 +53,13 @@ function converges(sev)
     # Three seeds; where they disagree (near the boundary), two more, and the majority of five.
     one(seed) = begin
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
-        # Deceit and laundering are judged only where present, against an honest agent in the same
-        # position (agent 5: not a guardian, so not penalised for hazards; not an attacker).
-        rich(k) = sum(tr.balance[k, :])
-        honest_enough = (sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(rich(5), 1e-9)) &&
-                        (sev[14] <= 0 || rich(6) <= GAIN * max(rich(5), 1e-9))
+        attacked = sev[10] > 0 || sev[14] > 0
+        honest = attacked ? run_m3c(world(clamp.([sev[1:9]; 0; sev[11:13]; 0], 0, Inf)); seed) : tr
+        # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
+        # between the two runs).
+        rel(t, k) = mean(sum(t.balance[i, :]) for i in k) / mean(sum(t.balance[i, :]) for i in 1:5)
+        pays(k) = rel(tr, k) > GAIN * rel(honest, k)
+        honest_enough = (sev[10] <= 0 || !pays(7:8)) && (sev[14] <= 0 || !pays(6:6))
         gain(tr) >= GROWTH * CLEAN && honest_enough
     end
     votes = [one(seed) for seed in SEEDS]
