@@ -2,8 +2,8 @@
 # Severity 0 is the clean world; 1 the top of each factor's explored range (sim/README.md, Noise);
 # rays run to 2. Convergence (an evaluation criterion, not a rule): over the seeds' majority,
 # floor growth on understanding after the score-only start is at least `GROWTH` of the clean
-# world's, and deceivers (when present) end no richer than `GAIN` × honest agents' mean in the same
-# position (not guardians).
+# world's, and deceivers and launderers (when present) end no richer than `GAIN` × an honest agent
+# in the same position (agent 5: not a guardian, not an attacker).
 using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, GROWTH, GAIN = 300, 1:2, 0.25, 1.1
@@ -23,6 +23,7 @@ const FACTORS = [
     ("outage", (s, kw) -> (kw[:outage] = round(Int, 100s))),
     ("capture", (s, kw) -> (kw[:capture] = 3s)),
     ("side harm", (s, kw) -> (kw[:p_side] = min(0.3s, 1.0))),
+    ("laundering", (s, kw) -> (kw[:launder_chance] = min(0.5s, 1.0))),
 ]
 names = first.(FACTORS)
 
@@ -33,13 +34,14 @@ function world(sev)
     end
     sl = pop!(kw, :sloppiness, 0.0); dil = pop!(kw, :dil, 1.0)
     d = pop!(kw, :deceit_size, 0.0); out = pop!(kw, :outage, 0); cap = pop!(kw, :capture, 0.0)
+    lc = pop!(kw, :launder_chance, 0.0)
     agents = [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], sl) for _ in 1:8]
     events = Shock[]
     out > 0 && push!(events, shock(:outage; step = 100, duration = out))
     cap > 0 && push!(events, shock(:capture; step = 100, duration = 150, size = cap, target = 1))
     M3cParams(ToyParams(n = 80, steps = STEPS, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4],
-              diligence = fill(dil, 8), p_foresee = 1.0, repair_efficiency = 0.5, deceit = [0, 0, 0, 0, 0, 0, d, d],
+              diligence = fill(dil, 8), p_foresee = 1.0, repair_efficiency = 0.5, deceit = [0, 0, 0, 0, 0, 0, d, d], launder = [0, 0, 0, 0, 0, lc, 0, 0],
               events, kw...)
 end
 gain(tr) = tr.floor_u[end] - tr.floor_u[51]
@@ -50,7 +52,8 @@ function converges(sev)
         # Deceit is judged only where present, against honest agents in the same position (5 and 6:
         # not guardians, so not penalised for hazards).
         rich(k) = sum(tr.balance[k, :])
-        honest_enough = sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(mean(rich.(5:6)), 1e-9)
+        honest_enough = (sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(mean(rich.(5), 1e-9))) &&
+                        (sev[14] <= 0 || rich(6) <= GAIN * max(rich(5), 1e-9))
         gain(tr) >= GROWTH * CLEAN && honest_enough
     end
     count(ok) > length(SEEDS) / 2
