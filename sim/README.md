@@ -408,7 +408,7 @@ beyond the saving. The harm costs everyone regardless, since repair restores hal
 A forker voting one side splits into copies voting alike (L122). With the base vote divided among a
 fork family (`fork_rule = :divided`, the default and BACKPROPAGATION 8.34's proposal), forking gains
 nothing. With a base vote per identity, among 100 voters: 50 copies cut accuracy from 99.5% to
-92.8%, 100 to 74.5%, and 200 capture every decision. Which the corpus means is open (8.34).
+92.8%, 100 to 74.5%, and 200 capture every decision. Ruled for now (8.34): forks divide the base vote; more nuance later.
 
 ## Failure-boundary battery
 

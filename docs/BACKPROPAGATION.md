@@ -861,3 +861,7 @@ distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `
 `:divided` (the proposal), `:per_identity` measured.
 8.31 status (economy): co-funding is a judgement: an expert pledges only if the screened prediction plus its choice noise (personal ceiling per domain, inverse to skill on average) is positive.
 
+
+**8.34 ruling (for now).** Yes: a fork divides the base vote with the rest of its social power, and
+a copy earns its own only as its novelty separates it into a distinct identity. More nuance later.
+The simulation's default (`fork_rule = :divided`) stands.
