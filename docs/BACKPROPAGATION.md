@@ -599,6 +599,9 @@ reality is the open empirical question.
    experts with meaningful reputation, one of whom holds 30% of the expertise weight when optional
    voters abstain; impact weight should still mitigate that. LqdBfDm should be scalable: a
    household decision works as well as global policy. Candidate homes: L113, Government.
+   Status: L113's expertise term is Re(Dn_i)/ΣRe(Dn_i) in all three pseudocode copies; Lean
+   `relative_expertise`, `relative_expertise_sum_one`, `relative_expertise_le_one`
+   (`Governance.Democracy`).
 2. Contribution types (L95: CD ∝ CC + N_CCtype): passing an output on outside any contract or duty
    is still a communicative contribution to the behavioural transaction substrate and earns an
    accolade, a minor share but a share; passing it under contract or duty is paid as completion of

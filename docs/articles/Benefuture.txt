@@ -122,7 +122,7 @@ Benefuture«Bf» {
     Power«Po» := Capacity(→Δ);
     Influence«Inf» := Control(Ou(Others));
     Imp(A, t) := ΔV : ∫MM_Me(Δℝ | A) dt;
-    BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
+    BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i)/ΣRe(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
     LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;
     Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract));
     J := Repair(Ha) ∧ Prevent(Cr), Restorative;

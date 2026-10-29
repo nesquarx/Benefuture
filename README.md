@@ -248,7 +248,9 @@ proposals ([`phase1_score_only_forbids_currency_proposals`](Benefuture/Systems/T
 ([`crime_and_accident_mutually_exclusive`](Benefuture/Subgoals/Justice.lean)); the freedom rules block irreversible, irreparable and
 established severe harm ([`irreversible_harm_strictly_impermissible`](Benefuture/Subgoals/Freedom.lean), [`established_severe_blocks`](Benefuture/Subgoals/Freedom.lean));
 anti-halo isolation: no relevance in a decision's domains, no expert weight
-([`anti_halo_domain_isolation`](Benefuture/Governance/Democracy.lean)); harm to a coupled part of the extended self is positive harm to
+([`anti_halo_domain_isolation`](Benefuture/Governance/Democracy.lean)); domain-relative expertise (L113, ruling 8.22.1) sums to one across a
+domain's voters and gives no voter more than the expertise weight, however large its raw reputation
+([`relative_expertise_sum_one`](Benefuture/Governance/Democracy.lean), [`relative_expertise_le_one`](Benefuture/Governance/Democracy.lean)); harm to a coupled part of the extended self is positive harm to
 the being ([`defection_harms_extended_self`](Benefuture/Subgoals/Morality.lean): damage × positive coupling); completing the required
 education zeroes an infohazard's modelled risk ([`education_inoculates_infohazard`](Benefuture/Epistemology/InfoHandling.lean)); reporting an
 exploit pays more than exploiting it, because the bounty is defined above the gain

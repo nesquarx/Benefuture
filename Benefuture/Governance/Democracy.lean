@@ -140,6 +140,33 @@ def DecisionContext.mkSimple (id : String) (dom : Domain) : DecisionContext :=
   { toThing := Thing.mkSimple id s!"decision_ctx_{id}" dom.name 0,
     targetDomain := dom }
 
+/--
+  [R] Domain-relative expertise (author ruling 8.22.1, settling 8.21; L113: Re(Dn_i)/ΣRe(Dn_i)):
+  a voter's expertise enters as its share of the domain's total reputation.
+-/
+noncomputable def relative_expertise {ι : Type*} (voters : Finset ι) (rep : ι → ℝ) (i : ι) : ℝ :=
+  rep i / ∑ j ∈ voters, rep j
+
+/-- THEOREM: Domain-relative expertise shares sum to one across a domain's voters. -/
+theorem relative_expertise_sum_one {ι : Type*} (voters : Finset ι) (rep : ι → ℝ)
+    (hpos : 0 < ∑ j ∈ voters, rep j) : ∑ i ∈ voters, relative_expertise voters rep i = 1 := by
+  unfold relative_expertise
+  simp only [div_eq_mul_inv]
+  rw [← Finset.sum_mul, mul_inv_cancel₀ (ne_of_gt hpos)]
+
+/--
+  THEOREM: No voter's relative expertise exceeds one, however large its raw reputation: the
+  expertise term cannot concentrate weight beyond the expertise weight itself (8.21).
+-/
+theorem relative_expertise_le_one {ι : Type*} (voters : Finset ι) (rep : ι → ℝ) (i : ι)
+    (hnn : ∀ j ∈ voters, 0 ≤ rep j) (hi : i ∈ voters) : relative_expertise voters rep i ≤ 1 := by
+  unfold relative_expertise
+  by_cases h : ∑ j ∈ voters, rep j = 0
+  · simp [h]
+  · have hpos : 0 < ∑ j ∈ voters, rep j := lt_of_le_of_ne (Finset.sum_nonneg hnn) (Ne.symm h)
+    rw [div_le_one hpos]
+    exact Finset.single_le_sum hnn hi
+
 /-- 
   Weighted Direct Democracy Voting Weight formula:
   VW = BaseWeight + (ExpertiseWeight * DomainReputation) + (ImpactWeight * ImpactScore).
