@@ -350,6 +350,13 @@ means over 5 seeds of 500 steps.
   currency qualifies and work goes to StandCoin. Under status thresholds a deceiver can degrade a
   domain's currency status for everyone, (8.37), which uncovering and repairing the deception largely restores (AdvAp, 8.38; Gaming below)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
+- Better models over time (author guidance 8.42.2; an assumption stated, not derived: new models
+  keep arriving in each domain, better on average, never perfect): every model is scored on the open
+  log and a challenger takes over a domain's currency when its credences beat the incumbent's by the
+  significance rule; better models take over the domain's own pricing from coarser fallbacks (leaf
+  priced by its own currency 100% against 70%), a captured model is overtaken (73% of its work
+  still priced by the domain's own currency against none), and floors grow about as much (toy world,
+  1–3 seeds) ([sim/test/models_tests.jl](sim/test/models_tests.jl), [sim/README.md, better models](sim/README.md#better-models-over-time-8422)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
   by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status

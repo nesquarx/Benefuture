@@ -350,6 +350,31 @@ carried the last action's outcome and credits stopped summing to outcomes (12,79
 credited). Declaring the action's variables local fixed it; a test now checks that each late
 record is fully distributed and that late outcomes differ.
 
+## Better models over time (8.42.2)
+
+Causal discovery is not simulated; the simulation assumes, openly, that new models keep arriving in
+each domain (`p_new_model`), better on average (`improve_drift`) but scattered (`improve_σ`) and never
+perfect (`scale_min`), a safe bet given the framework (L82: currencies backed by the top models whose
+accuracy clears the bar, competing). Every model in a domain's pool is scored on every logged action
+there, so a challenger builds its record from the open log without being deployed (which also keeps
+the pool diverse with no subsidy; L158's novelty bonus is needed only where trying a model costs).
+Each model states credences from its own record; a challenger takes over a domain's currency when its
+credences beat the incumbent's by the significance rule (`select_candidate_ref`, `model_z`). Eight
+agents in two leaves, model error at the realistic top, 400 steps, new models at 0.05 per step:
+
+| World | Takeovers | Leaf 1 priced by its own currency (steps 51–149, 200–349, 350–400) | Floor growth |
+|---|---|---|---|
+| Bootstrap models only | 0 | 29%, 70%, 0% | 251 |
+| Better models arriving | 2 | 50%, 100%, 96% | 257 |
+| Leaf 1's model captured (steps 150–349), bootstrap only | 0 | 29%, 0%, 0% | 255 |
+| Captured, better models arriving | 3 | 50%, 73%, 77% | 261 |
+
+Better models take over measurement and prediction (the domain's own currency prices its work rather
+than the coarse parent's), and a captured model is overtaken; floors grow about as much, since the
+work done barely changes. Where new models arrive worse on average, only a rare better one takes over.
+Screened on the way: challengers first stated credences from the incumbent's record, so a captured
+incumbent's errors collapsed every challenger's credence and none could overtake it.
+
 ## Imperfect agents and convergence under friction (8.31)
 
 Agents are not perfectly rational: each person's choices in a domain carry noise up to a ceiling
@@ -436,9 +461,10 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
   tolerances are fixed in each script, so runs repeat exactly.
 
-- **Latest economy reading** (code de5d305, realistic ranges): alone, only execution (1.44),
-  capture (1.48) and side harm (1.23) fail within twice their realistic tops; 13 of 16 random rays
-  converge to 2; 2% of screened worlds fail, led by classification, side harm and outage.
+- **Latest readings.** Economy (code 0e08fc3, realistic ranges, AdvAp on): alone, only execution
+  (1.40) and side harm (1.31) fail within twice their realistic tops (capture no longer does); no
+  screened world fails. Governance (code d470737, AdvAp on): no factor fails alone within 2 and no
+  screened world fails, down from 12% without AdvAp.
 
 Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
 `julia --project=sim sim/battery/governance.jl` (about ten minutes).
@@ -736,6 +762,8 @@ for removal.
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
+| Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
+| Model pool bound (`pool_max`) | Introduced | array bound only |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together; a reading of L74 over the state, to confirm |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
 
@@ -756,6 +784,7 @@ ratified.
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
+| Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
@@ -814,6 +843,7 @@ rare but present).
 | An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |
 | What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |
 | An agent reporting whatever the record (adversary) | `frivolous` | 0 | 0–1 |
+| New models arriving: chance per step and domain; improvement on average (log error ratio); its scatter; least error relative to the bootstrap model's (world assumptions) | `p_new_model`, `improve_drift`, `improve_σ`, `scale_min` | 0, −0.1, 0.3, 0.1 | 0–0.1, −0.3–0.1, 0.1–0.5, 0.05–0.3 |
 | A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |

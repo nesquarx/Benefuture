@@ -1025,6 +1025,11 @@ negative patterns and their own stake in a marginal domain. Over 24 seeds of the
 AdvAp cuts blocked domains from 9 to 3 and attention following the ledgers triples the deceptions
 uncovered (4.2 → 14.2); activity moves within the bistable spread. In this toy the escrow ratchet is
 inert where settlement follows within the step (balances move by measured value less cost).
+Status of 2 (economy): a pool of competing models per domain, new ones arriving as a stated
+assumption; each scored on the open log, each stating credences from its own record, a challenger
+taking over when it beats the incumbent by the significance rule. Better models take over the
+domain's own pricing (leaf 1 priced by its own currency 100% against 70% mid-run) and a captured
+model is overtaken (73% against 0% during capture); floors grow about as much.
 Simulation reading of 2 in governance: models do not vote (delegation goes to experts, and full
 delegation is not permitted); they inform votes, as expert commentary does, and voters weigh each
 source by its audited record, which is the truth-level tagging of clean deliberation (Government).

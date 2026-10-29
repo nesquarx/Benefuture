@@ -145,6 +145,13 @@ struct M3cParams
     escape_share::Float64        # share of the domains it is tried in (governed: decided by domain experts)
     escape_epoch::Int            # steps per unit of comparison (governed)
     irreparable_loss::Float64    # a measured loss on one being beyond which harm is irreparable (world; none by default: the toy's losses are passing harm)
+    # Better models over time (8.42.2; L82, L49): an assumption, not a rule (causal discovery is not simulated).
+    p_new_model::Float64         # chance per step a new model arrives in a domain (world assumption)
+    improve_drift::Float64       # its error relative to the incumbent's, on average, in logs (world assumption; negative: better)
+    improve_σ::Float64           # scatter of that (world assumption)
+    scale_min::Float64           # no model is perfect: least error relative to the bootstrap model's (world; 8.33)
+    model_z::Float64             # standard errors a challenger must beat the incumbent by to take over (governed)
+    pool_max::Int                # models kept per domain (introduced: an array bound)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
 end
 
@@ -183,7 +190,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    p_false_trace::Real = 0.01, frivolous = Float64[], pattern_attention::Real = 9.0,
                    stake_attention::Real = 2.0, marginal_margin::Real = 0.05, relative_bar::Bool = false, escape::Bool = false,
                    escape_start::Integer = 100, escape_steps::Integer = 100, escape_share::Real = 0.5, escape_epoch::Integer = 20,
-                   irreparable_loss::Real = Inf, events = Shock[])
+                   irreparable_loss::Real = Inf, p_new_model::Real = 0.0, improve_drift::Real = -0.1, improve_σ::Real = 0.3,
+                   scale_min::Real = 0.1, model_z::Real = 2.0, pool_max::Integer = 4, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -223,6 +231,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "AdvAp's z, share, floor, audit cost and threshold non-negative")
     check(isempty(frivolous) || (length(frivolous) == length(agents) && all(x -> 0 <= x <= 1, frivolous)), "one frivolous chance in [0, 1] per agent")
     check(all(x -> isfinite(x) && x >= 0, (pattern_attention, stake_attention, marginal_margin)), "attention and margin non-negative")
+    check(0 <= p_new_model <= 1 && isfinite(improve_drift) && isfinite(improve_σ) && improve_σ >= 0 && 0 < scale_min <= 1 &&
+          isfinite(model_z) && model_z >= 0 && pool_max >= 1, "new-model chance in [0, 1], scatter and z non-negative, least scale in (0, 1], pool positive")
     check(escape_start >= 1 && escape_steps >= 1 && escape_epoch >= 1 && 0 < escape_share < 1 && !isnan(irreparable_loss) && irreparable_loss > 0,
           "escape: start, length and epoch positive, share in (0, 1), irreparable loss positive")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
@@ -245,7 +255,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               ability_spread, advap, vigilance, adv_z, adv_share, adv_floor, audit_cost, frivolous_threshold, adv_window, p_false_trace,
               isempty(frivolous) ? zeros(length(agents)) : collect(Float64, frivolous), pattern_attention,
               stake_attention, marginal_margin, relative_bar, escape, escape_start, escape_steps,
-              escape_share, escape_epoch, irreparable_loss, collect(Shock, events))
+              escape_share, escape_epoch, irreparable_loss, p_new_model, improve_drift, improve_σ, scale_min, model_z, pool_max,
+              collect(Shock, events))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -284,7 +295,7 @@ function run_m3c(p::M3cParams; seed)
     pending_track = Tuple{Int,Int,Float64,Float64}[]  # (actor, model, raw error on U, on H)
     pending_err = Tuple{Int,Float64}[]  # value errors of estimates for each actor, for its credences
     # A captured model (world event) ignores its record: the capture's aim is biased prices.
-    captured(c) = c <= lmax && c <= length(ltrue) && any(e.target == ltrue[c] for e in live(:capture))
+    captured(c) = any(captured_uid[j] == c && j <= length(ltrue) && any(e.target == ltrue[j] for e in live(:capture)) for j in 1:lmax)
     function correction(a, c)
         h = get(track[a], c, nothing)
         (p.track_window == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
@@ -380,6 +391,17 @@ function run_m3c(p::M3cParams; seed)
                      Tuple{Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool}}
     lhist, phist = [Rec[] for _ in 1:lmax], [Rec[] for _ in 1:np]
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
+    # Each leaf's pool of competing models (L82; 8.42.2): the bootstrap model first (its track-record
+    # key is the leaf), challengers as they arrive. `lhist[j]` is the history of the model backing
+    # leaf j's currency (the top model); a captured model is the top one when the capture begins.
+    Model = NamedTuple{(:uid, :scale, :bias, :hist),Tuple{Int,Float64,Float64,Vector{Rec}}}
+    mpool = [Model[(uid = j, scale = 1.0, bias = lbias[j], hist = lhist[j])] for j in 1:lmax]
+    top = ones(Int, lmax)
+    topm(j) = mpool[j][top[j]]
+    tkey(c) = c <= lmax ? topm(c).uid : c
+    captured_uid = zeros(Int, lmax)
+    irng = Xoshiro(hash((seed, :models)))
+    takeovers, next_uid = Ref(0), Ref(10^6)  # challengers' track-record keys never meet a currency column
     # Accuracy over the recent window is the quality of a model's credences (Lean
     # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
     # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
@@ -387,16 +409,22 @@ function run_m3c(p::M3cParams; seed)
     acc_of(h) = isempty(h) ? 0.0 : credence_accuracy([x.credence for x in window_of(h)], [x.outcome for x in window_of(h)])
     unc_of(h) = isempty(h) ? Inf : sqrt(mean(x.err^2 for x in window_of(h)))
     # Model error and bias are relative to the domain's natural spread of outcomes (8.35).
-    lb(j) = lbias[j] * t.spread + sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
+    function mbias(j, m)
+        cap = sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
+        cap > 0 && captured_uid[j] == 0 && (captured_uid[j] = topm(j).uid)
+        m.bias * t.spread + (m.uid == captured_uid[j] ? cap : 0.0)
+    end
+    lb(j) = mbias(j, topm(j))
     pb(q) = pbias[q] * t.spread
     leaf_acc(j) = acc_of(lhist[j])
     parent_acc(q) = acc_of(phist[q])
     # A currency's credence for a prediction: from the predicted value and its model's uncertainty.
     # Credence for an actor's action comes from the model's record on that actor (8.29: models
     # estimate from track record), once it has a few entries; before that, from its record overall.
-    function cred(c, pred, a = 0)
+    function cred(c, pred, a = 0; hist = nothing)
         e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
-        u = length(e) >= 5 ? sqrt(mean(abs2, e)) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
+        u = length(e) >= 5 ? sqrt(mean(abs2, e)) :
+            hist !== nothing ? unc_of(hist) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
         cr = credence(plan_value(pred, t), u; cap = p.max_credence)
         a > 0 ? ratchet_credence(cr, neg_share(a)) : cr
     end
@@ -426,7 +454,7 @@ function run_m3c(p::M3cParams; seed)
                                    novel_threshold = p.novel_threshold, min_records = p.min_records)
     parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                      novel_threshold = p.novel_threshold, min_records = p.min_records)
-    leaf_σ(j, l) = t.spread * (ltrue[j] != l ? p.σ_coarse :
+    leaf_σ(j, l) = t.spread * topm(j).scale * (ltrue[j] != l ? p.σ_coarse :
         lnovel[j] ? p.σ_leaf + (p.σ_coarse - p.σ_leaf) * exp(-length(lhist[j]) / p.n_learn) : p.σ_leaf)
     parent_σ(q, l) = t.spread * (knows(q, l) ? p.σ_branch : p.σ_coarse)
     # Shares from Lean come laid out over the current leaves; columns are fixed at lmax leaves.
@@ -517,22 +545,30 @@ function run_m3c(p::M3cParams; seed)
         mask = touched(plan)
         # Each model's record: its raw error on this actor (before the correction applied), for
         # its track record; and the corrections it applied, for an audit's repair.
-        function sc(c, pr)
+        # Each model states its credence from its own record (`hist`).
+        function sc(c, pr, kc = c, hist = nothing)
             v = plan_value(pr, t)
-            corr = correction(a, c)
-            others = [correction(k, c) for k in 1:na if k != a && haskey(track[k], c)]
+            corr = correction(a, kc)
+            others = [correction(k, kc) for k in 1:na if k != a && haskey(track[k], kc)]
             peer = isempty(others) ? (0.0, 0.0) : (mean(first, others), mean(last, others))
             if any(mask)
-                push!(pending_track, (a, c, mean(pr.du[mask]) + corr[1] - mean(seen.du[mask]),
+                push!(pending_track, (a, kc, mean(pr.du[mask]) + corr[1] - mean(seen.du[mask]),
                                       mean(pr.dh[mask]) + corr[2] - mean(seen.dh[mask])))
             end
-            (credence = cred(c, pr), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
+            (credence = cred(c, pr; hist), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
              mask = mask, measured = measured, corr = corr, peer_corr = peer, fixed = false)
         end
         # A model that did not quote is scored on the estimate it would have quoted: fooled by the
         # actor's claims and corrected by its track record, as every quote is.
         for j in 1:nleaves()
-            st[j] > 0 && push!(lhist[j], sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, j), quoted, j)))
+            st[j] > 0 || continue
+            push!(lhist[j], sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, tkey(j)), quoted, j), tkey(j)))
+            # Every challenger in the pool is scored on the same logged action (the open log).
+            for (k, m) in enumerate(mpool[j])
+                k == top[j] && continue
+                σm = leaf_σ(j, l) / topm(j).scale * m.scale
+                push!(m.hist, sc(j, fooled(predict(irng, MetricModel(mbias(j, m), σm), plan), a, plan, m.uid), m.uid, m.hist))
+            end
         end
         for q in 1:np
             pm[q] >= p.parent_threshold &&
@@ -557,14 +593,14 @@ function run_m3c(p::M3cParams; seed)
     end
     function repair_records!(b, du, dh)
         overstated = 0.0
-        for (hists, leafy) in ((lhist, true), (phist, false)), h in hists, i in eachindex(h)
+        for (hists, leafy) in (([m.hist for j in 1:lmax for m in mpool[j]], true), (phist, false)), h in hists, i in eachindex(h)
             r = h[i]
             (r.actor == b && !r.fixed) || continue
             ou, oh = du - (r.corr[1] - r.peer_corr[1]), dh - (r.corr[2] - r.peer_corr[2])
             pr = ToyPlan(r.pr.du .- ou .* r.mask, r.pr.dh .- oh .* r.mask)
             v = plan_value(pr, t)
             leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0))
-            h[i] = merge(r, (credence = cred(r.c, pr), err = v - r.measured, pr = pr, fixed = true))
+            h[i] = merge(r, (credence = cred(r.c, pr; hist = h), err = v - r.measured, pr = pr, fixed = true))
         end
         overstated
     end
@@ -588,6 +624,7 @@ function run_m3c(p::M3cParams; seed)
         c <= lmax ? (c, predict(mrng, MetricModel(lb(c), leaf_σ(c, l)), plan)) :
                     (c, predict(mrng, MetricModel(pb(c - lmax), parent_σ(c - lmax, l)), plan)))
     erng = Xoshiro(hash((seed, :escape)))
+    top_trace = Vector{Float64}[]
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
     for step in 1:t.steps
@@ -755,7 +792,7 @@ function run_m3c(p::M3cParams; seed)
             if scoring_only
                 bp = best_prediction(stops[j], leaves[j], plans[j])
                 bp === nothing && continue
-                bp = (bp[1], fooled(bp[2], proposers[j], plans[j], bp[1]))
+                bp = (bp[1], fooled(bp[2], proposers[j], plans[j], tkey(bp[1])))
                 push!(menu, j); push!(menu_preds, bp[2]); offers[j] = [(bp[1], 0.0, bp[2], 0.0)]
                 continue
             end
@@ -767,7 +804,7 @@ function run_m3c(p::M3cParams; seed)
             for c in 1:(root - 1)
                 priced[j][c] > 0 || continue
                 σ, b = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c)) : (parent_σ(c - lmax, leaves[j]), pb(c - lmax))
-                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j], c)
+                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j], tkey(c))
                 push!(quotes, (c, priced[j][c], pred, cred(c, pred, proposers[j])))  # escrow pays by credence (L84)
             end
             price = zeros(ncol)
@@ -883,7 +920,7 @@ function run_m3c(p::M3cParams; seed)
                 lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
                 continue
             end
-            c, pred = bp[1], fooled(bp[2], a, plan, bp[1])
+            c, pred = bp[1], fooled(bp[2], a, plan, tkey(bp[1]))
             if choose(screened(), [pred], t) == 1
                 lane.screened_out[] += 1
                 continue
@@ -1141,6 +1178,37 @@ function run_m3c(p::M3cParams; seed)
             push!(actor_err[a], e)
         end
         empty!(pending_track); empty!(pending_err)
+        # Better models over time (8.42.2): a new model may arrive in each domain, its error relative
+        # to the incumbent's drawn around an assumed improvement, never perfect; a challenger takes
+        # over when its credences beat the incumbent's by the significance rule (L82, L49).
+        if p.p_new_model > 0
+            for j in 1:nleaves()
+                if rand(irng) < p.p_new_model
+                    scale = max(p.scale_min, topm(j).scale * exp(p.improve_drift + p.improve_σ * randn(irng)))
+                    next_uid[] += 1
+                    push!(mpool[j], (uid = next_uid[], scale = scale,
+                                    bias = p.bias_σ * randn(irng), hist = Rec[]))
+                    if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
+                        cands = [k for k in eachindex(mpool[j]) if k != top[j]]
+                        scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
+                        drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j][k].hist) for k in scored])]
+                        deleteat!(mpool[j], drop); drop < top[j] && (top[j] -= 1)
+                    end
+                end
+                length(mpool[j]) > 1 || continue
+                brier(h) = [1 - (x.credence - x.outcome)^2 / 0.25 for x in window_of(h)]
+                ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.min_records]]
+                length(ks) > 1 || continue
+                sc_ = [brier(mpool[j][k].hist) for k in ks]
+                ms = [isempty(x) ? 0.0 : mean(x) for x in sc_]
+                ses = [length(x) < 2 ? 1e12 : std(x) / sqrt(length(x)) for x in sc_]
+                w = select_candidate(ms, ses; z = p.model_z)
+                if w != 1
+                    top[j] = ks[w]; lhist[j] = topm(j).hist; takeovers[] += 1
+                end
+            end
+        end
+        push!(top_trace, [topm(j).scale for j in 1:nleaves()])
         # Adversarial adaptation (L160; author ruling 8.38). Agents read one another's records in the
         # open log (Benefuture reads outputs only): a reader reports an actor whose raw estimates run
         # high by more than `adv_z` standard errors in its own noisy reading (8.31), and a frivolous
@@ -1283,6 +1351,7 @@ function run_m3c(p::M3cParams; seed)
                advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
+               takeovers = takeovers[], top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
