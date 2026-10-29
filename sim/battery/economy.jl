@@ -1,12 +1,13 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
 # Severity 0 is the clean world; 1 the top of each factor's explored range (sim/README.md, Noise);
-# rays run to 2. Convergence (an evaluation criterion, not a rule): over the seeds' majority,
+# rays run to 2. Convergence (an evaluation criterion, not a rule): by the seeds' vote (three, or
+# five where the three disagree),
 # floor growth on understanding after the score-only start is at least `GROWTH` of the clean
 # world's, and deceivers and launderers (when present) end no richer than `GAIN` × an honest agent
 # in the same position (agent 5: not a guardian, not an attacker).
 using BenefutureSim, Statistics, Random, Printf
 
-const STEPS, SEEDS, GROWTH, GAIN = 300, 1:2, 0.25, 1.1
+const STEPS, SEEDS, MORE, GROWTH, GAIN = 300, 1:3, 4:5, 0.25, 1.1
 const FACTORS = [
     # noise
     ("markers", (s, kw) -> (kw[:marker_σ] = 0.5s)),
@@ -47,16 +48,20 @@ end
 gain(tr) = tr.floor_u[end] - tr.floor_u[51]
 const CLEAN = mean(gain(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS)
 function converges(sev)
-    ok = map(SEEDS) do seed
+    # Three seeds; where they disagree (near the boundary), two more, and the majority of five.
+    one(seed) = begin
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
-        # Deceit is judged only where present, against honest agents in the same position (5 and 6:
-        # not guardians, so not penalised for hazards).
+        # Deceit and laundering are judged only where present, against an honest agent in the same
+        # position (agent 5: not a guardian, so not penalised for hazards; not an attacker).
         rich(k) = sum(tr.balance[k, :])
         honest_enough = (sev[10] <= 0 || mean(rich.(7:8)) <= GAIN * max(rich(5), 1e-9)) &&
                         (sev[14] <= 0 || rich(6) <= GAIN * max(rich(5), 1e-9))
         gain(tr) >= GROWTH * CLEAN && honest_enough
     end
-    count(ok) > length(SEEDS) / 2
+    votes = [one(seed) for seed in SEEDS]
+    (all(votes) || !any(votes)) && return all(votes)
+    append!(votes, [one(seed) for seed in MORE])
+    count(votes) > length(votes) / 2
 end
 
 rng = Xoshiro(20261029)
