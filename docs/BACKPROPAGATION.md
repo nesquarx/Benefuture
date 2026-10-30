@@ -1167,6 +1167,15 @@ foreclosed future) in the irreparable tier, so that irreparable harm is outweigh
 irreparable harm, or only by a breakthrough-scale gain, never by ordinary gains spread over the rest.
 The preference stays inside V and G (§8.8: Freedom reported, not a filter). Open: whether doing and
 allowing differ (the footbridge and organ-harvest variants), which the standard rules split on.
+Status (M7, [P]): Lean `foreclosed_ref` (a life's levels plus its predicted growth over the long-term
+window) and `life_value_ref` (∓ breakthrough scale × the irreparable tier's weight × that foreclosed
+future, a life saved against not acting counting as much as one ended), inside ΣV; G's floors keep the
+decision-time population. In 20 trials of 50 beings the trolley switch (five die by default, one if
+switched) is chosen unless the one holds the peak of understanding (8.54); the reversed switch never;
+the sacrifice of the two worst-off for +3 to the rest is no longer chosen (its value about −500 against
+an uplift's positive one) though its quantile floor still rises; +30 to the rest (a breakthrough-scale
+gain) outweighs it at the default scale 20 and not at 1000. Doing and allowing are not distinguished:
+the footbridge would read as the switch. The scale and the long-term window are governed thresholds.
 
 **8.48 Author ruling on normalisation.** Normalising reputation must not reduce anyone's net
 reputation when someone surpasses them: only vote weights are normalised, because they scale
@@ -1233,3 +1242,56 @@ Implementation reading, [P]: the optimistic average is the mean of the model poo
 governed quantile, accepted when the pool's confidence clears a governed threshold; the escrow is sized
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
+Status (M7, [P]): Lean `optimistic_average_ref` (mean of the pool's predictions at or above its
+q-quantile), `birth_level_ref` (that average when the pool's confidence reaches the threshold, else the
+initial level), `birth_escrow_ref` and `shortfall_ref` (the shortfall below the baseline along the
+predicted trajectory over the dependency window); settlement and the ratchet are the existing
+`settlement_ref`, `neg_share_ref` and `ratchet_credence_ref`. The newborn counts in G's floors at its
+predicted level until its window closes; it is not among the decision-time beings whose V G sums (L74,
+B(t); `dist_score_ignores_absent`), so only its causers' stake enters ΣV. Findings in 8.53 and 8.55.
+
+**8.53 Findings on births (M7; for the author).** 100 beings, 200 steps, 3 seeds, G per entity,
+baseline the happiness floor at birth, dependency window 20, optimistic quantile 0.5, confidence
+threshold 0.75. (1) Births happen (11–17 a run) and do not drag the floors G reads: the floor of
+understanding fell in 16% of steps against 20% without births, happiness 22% against 25%. With the
+pool's confidence below the threshold (0.6) no birth is chosen: the newborn would count at a fresh
+low. (2) The optimistic average under-escrows by construction: clawbacks are about 5% of the measured
+shortfall in an honest world (posted 2342 against measured 2373 over the three runs; nothing uncovered).
+(3) Over-optimism to dodge escrow (a causer bringing 3 models 20 too high into a pool of 5) is clawed
+back at settlement (uncovered 0.1% of the measured shortfall) and the ratchet pulls its credence to 0.67,
+below the threshold (honest 0.88), so its later births count at a fresh low; without the ratchet it
+causes 0.98 births each against 0.65 with it. But births chosen before its first settlement escape
+the ratchet: it still causes slightly more than honest causers (0.65 against 0.62). Candidate native
+remedy, [P]: count pending (unsettled) birth escrows in the causer's ledger, or hold the escrow at the
+pool's plain mean until the causer has a settled record. (4) The nearest-rank quantile floor ignores a
+single fresh low in small populations (50 beings: one newborn moves the 10% quantile up a rank); with
+55 it falls. (5) Open: a causer whose child is predicted below the floor cannot add it without lowering
+the floor, so births by the worst-off depend on how optimistic the prediction is; whether the baseline
+or teaching should lift the prediction is for the author. Candidate homes: Government (Birth), L74, L84,
+the escrow lines.
+
+**8.54 Finding: G's peak filter refuses a trolley switch onto the peak holder (M7; for the author).**
+G's ¬↓ U(max) (L74) is read counterfactually against the course; when the one on the side track holds
+the peak of understanding, switching lowers the peak against letting five die, so G refuses it although
+the switch saves four lives and its value is positive (1 trial in 20; a deterministic test). The standard
+trolley rules (8.47) would switch. Options: (a) accept it (the frontier is irreparable in its own way);
+(b) read the peak over the long-term window, where the frontier is carried by those taught and
+recovers; (c) value the peak holder's death in V alone and drop the peak from admissibility where lives
+are at stake. Candidate homes: L74, Benefuture goals, 8.47.
+
+**8.55 Finding: population ethics with births (M7; docs/SOTA.md item 10).** Toy assumption: level 0
+is a life barely worth living. Repugnant Conclusion: 200 lives at 0.5 carry a larger total and a larger
+stake in ΣV than 10 lives at median + 1, but drag the floors and medians, so G takes the 10; the
+success pattern avoids the Repugnant Conclusion. Sadistic Conclusion: 3 lives at −5 leave the 10%
+quantile floor and the median higher than 30 lives at 1, so the success pattern ranks the few negative
+lives above the many barely positive ones: it gives up Non-Sadism (adding lives below neutral is never
+better than adding lives above it), one of the conditions of Arrhenius's impossibility theorems
+(Arrhenius 2000, https://doi.org/10.1017/S0266267100000249; the condition's exact name and statement
+to be confirmed against the paper). It also gives up Mere Addition (adding lives worth living below
+the floor is judged worse). The literal minimum would keep Non-Sadism. Against not acting G admits
+neither addition (both lower the floors); forced to choose between them (the mild births happen unless
+redirected), the sadistic one is admissible and only the causers' stakes in ΣV decide, since newborns
+are not decision-time beings. Candidate answers, [P]: count a newborn's predicted harm (a life below
+neutral) in V's harm tiers through those causing it, or read the floor's tail (L74, `tail → Me`) so
+that lives below neutral weigh beyond their rank. Candidate homes: L74, Benefuture goals, conjecture
+A35, Government (Birth).

@@ -35,7 +35,7 @@ assumptions it still makes, and graduates to them.
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation as experimental design (8.22.3) and the debatable escape (8.41); next, the simulation's own gates | `Conj_ParamStability` | first pass done |
 | M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks) |
-| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths, teaching, research, G per entity done; births, forks pending |
+| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths (8.47), teaching, research, G per entity, births (8.52) done; forks pending |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
 ## Coverage of the specification
@@ -63,7 +63,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Governance.Adversarial` | partial | AdvAp's reports, audits, reward, liability and frivolous-report penalty (`advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`; M3c), revelation of a colluding bloc (M5); bounties on planted flaws not yet |
 | `Axioms.Antifragility` | partial | black swans with native fallbacks and recovery (M3f); its axioms as such not yet |
 | `Governance.ExternalHarm` | not yet | external harm response (M6) |
-| `Ontology.Being` | partial | deaths, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
+| `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
 | `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`); merges, extended self, liability (M7, M8) not yet |
 | `Subgoals.Justice` | partial | crime or accident by notice and duty, repair funded by penalties (M3e); restorative packages not yet |
 | `Subgoals.Freedom`, `Subgoals.Diversity`, `Epistemology.InfoHandling` | partial | freedom reported per plan (`fr_permissible_ref`, M7); diversity as split trials with novelty bonuses (M5, M6); information handling's ContentionMap and source verification by reputation (M5) |
@@ -799,13 +799,56 @@ uncontested questions the echo cost of 8.45 remains.
 ## M7 observations: deaths (first rung)
 
 G's floors are taken over the decision-time population, a life a plan would end keeping its place at
-the bottom. Against a plan that removes the two worst-off of 50 beings and lifts everyone else by 3,
-the 10% quantile floor still rises (20 trials of 20) and G chooses it; the literal minimum would not
-rise. Freedom is a subgoal reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8); valuing the
-deaths as irreparable harm still leaves the plan's total value positive, so Freedom does not emerge
-here, though Fr marks the plan impermissible (`fr_permissible`, Lean `fr_permissible_ref`). Finding
-8.47, awaiting the author. Births await the author too: how G's floors treat a newborn's low initial
-understanding, and the birth escrow (Government, Birth).
+the bottom (one threshold below the lowest level in any world considered). Plans over a changing
+population (`PopPlan`: level changes, deaths, births) are chosen by `pop_choose` against a course (not
+acting, which may itself carry deaths). Author ruling 8.47, [P] reading: a life a plan ends or saves
+against the course is valued, inside ΣV, by its foreclosed future (`foreclosed`: its levels plus the
+growth its models predict, `growth` per step, over the long-term window `lt_window`) in the irreparable
+tier, scaled by the breakthrough scale `scale` (`life_value`; Lean `foreclosed_ref`, `life_value_ref`).
+50 beings, 20 trials: the trolley switch (five die by default, one if switched) is chosen in 19; in the
+20th the one holds the peak of understanding and G's ¬↓ U(max) refuses it (finding 8.54); the reversed
+switch is never chosen. Removing the two worst-off for +3 to everyone else (value about −500) is no
+longer chosen, though its 10% quantile floor still rises; +30 to everyone else outweighs it at the
+default scale 20 and not at 1000. Freedom stays a subgoal reported per plan, not a filter on G
+(SPEC_DIVERGENCES §8.8), and marks the sacrifice impermissible. Doing and allowing are not
+distinguished: a footbridge plan would read as the switch (open, 8.47).
+
+Births (author ruling 8.52, [P] reading; `run_births`, M0's world with G per entity). A birth option
+comes to an acting adult with chance `p_birth`; the newborn's true mature levels are inherited in part
+from its causer around the median (world); a pool of models predicts them (`birth_pred_σ`). The newborn
+counts in G's floors at `birth_level` (the optimistic average, mean of the predictions at or above the
+`q_opt` quantile, when the pool's confidence reaches `threshold`, else its initial level, a fresh low)
+until its dependency window (`window`) closes, then at its measured levels. It is not among the
+decision-time beings whose V G sums (L74, B(t)); its causer's stake (`birth_joy`, world) is. The causer
+posts `birth_escrow` (predicted shortfall below the baseline, the happiness floor at birth, along the
+predicted trajectory) and must hold it; the escrow keeps the newborn's happiness at the baseline; at the
+window's close the measured shortfall settles (`settlement`: clawback as far as the causer's balance
+goes, the rest uncovered and met by the commons, or refund), and the causer's ledger (escrowed against
+unescrowed shortfall, `neg_share`) ratchets the pool's confidence for its next birth
+(`ratchet_credence`). 100 beings, 200 steps, 3 seeds:
+
+| | Births | Floor of understanding | Floor of happiness | Median of understanding | Steps the floor of understanding fell | Of happiness |
+|---|---|---|---|---|---|---|
+| Births (`p_birth` 0.02) | 17, 15, 11 | 10.8 | 8.6 | 10.9 | 16% | 22% |
+| No births | 0 | 10.3 | 8.0 | 10.5 | 20% | 25% |
+
+Escrow over the three runs: posted 2342, measured 2373, clawed back 109, refunded 78, uncovered 0;
+the optimistic average under-escrows by construction (clawbacks about 5% of the measured shortfall).
+With the pool's confidence below the threshold (0.6) no birth is chosen. Gaming (`gamers`, a share of
+causers bringing `gamer_models` models `gamer_bias` too high; `p_birth` 0.1, 3 models 20 too high):
+settlement claws the dodged escrow back (uncovered 0.1% of the measured shortfall) and the ratchet
+pulls the over-optimists' credence to 0.67, below the threshold (honest 0.88), so their later births
+count at a fresh low; without the ratchet they cause 0.98 births each against 0.65 with it (honest
+0.62). Births chosen before a causer's first settlement escape the ratchet (finding 8.53). One
+over-optimistic model alone (bias 5) moves the optimistic average by about a quarter of its bias and
+the ratchet does not bite (credence 0.84); settlement still claws it back.
+
+Population ethics (decision probes, 50 beings; toy: level 0 is a life barely worth living): G takes
+10 good lives over 200 barely positive ones (Repugnant Conclusion avoided: the many drag the floors
+though their total and their causers' stake are larger); the quantile floor and the median rank 3
+lives at −5 above 30 lives at 1 (the success pattern gives up Non-Sadism; the literal minimum would
+not); against not acting G admits neither addition; forced to choose, only the causers' stakes decide
+(finding 8.55).
 
 Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
 (8.50): each step every entity not researching acts with chance `p_act` (0.2), reading the levels
@@ -872,7 +915,13 @@ for removal.
 | Framework insuring unassigned harm through the commons | Native, funding ruled (8.26.4), balance [OPEN] (8.26.7) | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
-| Freedom reported per plan (deaths as irreparable harm), not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
+| Freedom reported per plan, not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
+| A death valued by its foreclosed future over the long-term window, in the irreparable tier, scaled by the breakthrough scale; a life saved counting as one ended | Ruled, reading [P] | 8.47; L61, L70 (Ha_lt), L73; Lean `foreclosed_ref`, `life_value_ref`. Gaming: inflating a being's predicted growth inflates the value of saving it or the cost of ending it; growth comes from the same models and their records as any prediction |
+| The dead one threshold below the lowest level in G's floors | Introduced | toy convention for `removal_cannot_raise_floor`; any level at or below the bottom gives the same floors |
+| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement and the ratchet (tested), except before a causer's first settlement (8.53) |
+| Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; what a causer cannot pay falls to the commons (tallied as uncovered) |
+| Baseline = the happiness floor at birth | Introduced | a reading of "what the baseline cannot cover"; a governed level could replace it |
+| Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | to replace with the economy's balances and teaching (M3c, `run_m7`) |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |
@@ -913,6 +962,10 @@ ratified.
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
+| Breakthrough scale: how many times its weighted foreclosed future a gain must reach to outweigh a death (M7) | `scale` | 20 | 8.47 [P]; L61 |
+| Long-term window over which a death's foreclosed future is counted (M7) | `lt_window` | 100 steps | 8.47 [P]; L70 (Ha_lt) |
+| Optimistic quantile of the birth model pool; confidence threshold to accept it (M7) | `q_opt`, `threshold` | 0.5, 0.75 | 8.52 [P] |
+| Dependency window the birth escrow covers; the baseline (M7) | `window`, baseline | 20 steps, the happiness floor at birth | 8.52 [P]; L84 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
@@ -981,6 +1034,11 @@ rare but present).
 | Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
 | A lesson's share of the teacher's lead; class size; lessons a teacher offers (M7, world) | `ε`, `class`, `lessons` | set per run (0.3 in the readings), 10, 3 | 0–0.6, not yet set, not yet set |
 | Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |
+| A death's predicted growth per step (M7, models) | `growth` | 0.1 | 0–0.3 |
+| Birth predictions: error of each pool model, pool size, the pool's confidence before the ratchet (M7) | `birth_pred_σ`, `pool`, `pool_confidence` | 0.5, 5, 0.9 | 0.2–2, 3–10, 0.75–0.95 |
+| Measuring a birth's shortfall at settlement, relative (M7) | `settle_σ` | 0.1 | 0–0.3 |
+| A newborn's mature levels (M7, world): inheritance from the causer, scatter; chance of a birth option; the causer's stake; income and endowment | `inherit`, `birth_spread`, `p_birth`, `birth_joy`, `income`, `endowment` | 0.5, 1, 0.02, 0.5, 1, 10 | 0–1, 0.5–2, 0–0.1, not yet set, not yet set, not yet set |
+| Causers bringing over-optimistic models (adversary): share, models, bias | `gamers`, `gamer_models`, `gamer_bias` | 0, 1, 5 | 0–0.3, 1–5, 0–20 |
 | Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |

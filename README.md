@@ -451,12 +451,32 @@ Governance and thresholds
   significant harm and widening otherwise; where nothing matters it widens across seeds until
   admissibility rejects the candidates ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
   [sim/README.md, M4](sim/README.md#m4-observations)).
-- Deaths (M7, first rung; toy population of 50, 20 trials): G's floors over the decision-time
-  population, the dead at the bottom, do not stop a plan that removes the two worst-off and lifts
-  everyone else (the 10% quantile still rises; only the literal minimum would not), and valuing the
-  deaths as irreparable harm still leaves its value positive; Freedom, a subgoal reported per plan and
-  not a filter on G, marks it impermissible. What should block it is open (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
-  [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Deaths (M7; toy population of 50, 20 trials; author ruling 8.47, [P] reading): a life a plan ends
+  or saves against not acting is valued by its foreclosed future over the long-term window (its levels
+  plus predicted growth) in the irreparable tier, scaled by a governed breakthrough scale (Lean
+  `foreclosed_ref`, `life_value_ref` in [BenefutureReference/Population.lean](BenefutureReference/Population.lean)),
+  inside ΣV; Freedom stays a reported subgoal. The trolley switch (five die by default, one if
+  switched) is chosen, except when the one holds the peak of understanding, where G's ¬↓ U(max)
+  refuses it (finding 8.54); the reversed switch is not; removing the two worst-off for +3 to everyone
+  else is no longer chosen although its quantile floor still rises; +30 to everyone else outweighs it
+  at the default scale (20) and not at 1000. Doing and allowing are not distinguished (open)
+  ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Births (M7; toy population of 100, 200 steps, 3 seeds, G per entity; author ruling 8.52, [P]
+  reading): a newborn counts in G's floors at the optimistic average of its model pool's predictions
+  when the pool is confident enough, else at its initial level; its causer posts an escrow for the
+  predicted shortfall below the baseline over the dependency window, settled against the measured
+  shortfall (Lean `optimistic_average_ref`, `birth_level_ref`, `birth_escrow_ref`, `shortfall_ref`).
+  Births happen and the floors G reads fall no more often than without them (understanding 16% of
+  steps against 20%); with the pool below the confidence threshold none is chosen. A causer bringing
+  over-optimistic models is clawed back at settlement and ratcheted below the threshold, though
+  births before its first settlement escape (finding 8.53). Toy assumptions: linear growth to mature
+  levels, dependents untouched by ordinary plans, one currency balance per being
+  ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Population ethics (M7 decision probes; toy: level 0 is a life barely worth living): G takes 10
+  good lives over 200 barely positive ones (the many drag the floors though their total is larger),
+  avoiding the Repugnant Conclusion; the success pattern's quantile floor and median rank 3 lives at
+  −5 above 30 at 1, giving up Non-Sadism, one of the conditions of Arrhenius's impossibility theorems
+  (finding 8.55) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl)).
 - Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
   reception varying, leave the teacher's understanding intact; research is spending (beings' time and
   the commons' resources, a very noisy chance of success, gains teachable or tacit) and alone extends
@@ -474,7 +494,7 @@ Governance and thresholds
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
 
 What is not yet demonstrated at all: the `Conj_*` conjectures over a `SimTrace` (convergence,
-gaming resistance, parameter stability in general), births, forks and graded personhood (M7), and networks and
+gaming resistance, parameter stability in general), forks and graded personhood (M7), and networks and
 propagation (M8); see [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) and
 [docs/PLAN.md](docs/PLAN.md).
 

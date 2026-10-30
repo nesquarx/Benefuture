@@ -21,6 +21,7 @@ export membership_rolling, accuracy, credence, credence_accuracy, currency_eligi
 export voting_weight, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, neg_share, credence_score, M5Params, run_m5
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit
 export run_m7, teaching_plan
+export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth_escrow, Newborn, PopPlan, pop_value, pop_choose, run_births
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
 
 include("lean.jl")
