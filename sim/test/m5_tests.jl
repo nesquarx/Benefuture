@@ -251,8 +251,9 @@ end
 end
 
 # Weight on advice (author note 8.63; docs/CALIBRATION.md): hearing an expert does not always change a
-# mind. Per person and domain a weight w on what was heard: about 30% stay put (w = 0), 20% average,
-# 5% defer, the rest Beta(2, 3) between; mean about a third (Soll and Larrick 2009; Bailey et al.).
+# mind. Per person and domain a weight w on what was heard: with sources' records visible (IH), about 20%
+# stay put (w = 0), 20% average, 5% defer, the rest Beta(2, 3) between; mean about 0.37 (Soll and
+# Larrick 2009; Bailey et al.; docs/CALIBRATION.md 1.4).
 @testset "M5 weight on advice (8.63): acceptance" begin
     m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                            [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
@@ -261,7 +262,7 @@ end
     r = run_m5(talk(); seed = 1)
     w = r.advice_weight
     @test size(w) == (100, 4) && all(0 .<= w .<= 1)
-    @test 0.25 <= mean(w .== 0) <= 0.35 && 0.28 <= mean(w) <= 0.38
+    @test 0.15 <= mean(w .== 0) <= 0.25 && 0.32 <= mean(w) <= 0.42
     # Nobody listening, deliberation changes no mind; everyone deferring changes the most.
     stay = run_m5(talk(advice_stay = 1.0, advice_avg = 0.0, advice_defer = 0.0); seed = 1)
     defer = run_m5(talk(advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0); seed = 1)

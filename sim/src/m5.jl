@@ -77,7 +77,9 @@ struct M5Params
     echo_min::Int              # outputs an echo audit needs (governed)
     # Weight on advice (author note 8.63; docs/CALIBRATION.md): hearing a source does not always change a
     # mind. Per person and domain, a weight w on what was heard: w = 0 (stays put), 1/2 (averages), 1
-    # (defers) or Beta(α, β) between (Soll & Larrick 2009; Bailey et al. meta-analysis, mean about 0.3-0.4).
+    # (defers) or Beta(α, β) between (Soll & Larrick 2009; Bailey et al. meta-analysis). Default: the
+    # visible-record condition (audited records and truth-level tags in IH), 20% stay put, mean about 0.37;
+    # the plain lab mixture (30% stay put) is a limiting case, the politicised one (45%) the status quo.
     advice_stay::Float64       # share who keep their own position (world)
     advice_avg::Float64        # share who average with what they heard (world)
     advice_defer::Float64      # share who defer to it (world)
@@ -100,7 +102,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   record_λpos::Real = 0.05, record_λneg::Real = 0.02, p_novel::Real = 0.05, info_handling::Bool = true,
                   camp_bias = Float64[], source_tags::Bool = false, rounds::Integer = 1,
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
-                  echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.30, advice_avg::Real = 0.20,
+                  echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.20, advice_avg::Real = 0.20,
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
