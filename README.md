@@ -510,6 +510,8 @@ Benefuture/
 │   ├── SIM_CONJECTURES.md         # Behavioural claims in measurable form
 │   ├── THEOREM_INDEX.md           # Every theorem with its docstring (generated)
 │   ├── PLAN.md, CODING_STYLE.md   # Direction, history and method
+│   ├── SOTA.md, DATA.md           # State of the art; real-world data for calibration and validation
+│   ├── ODD.md, OSTROM.md          # ODD description per rung; audit against Ostrom's principles
 │   └── pseudocode_lean_coherence_audit.md
 ├── spec/
 │   ├── Bf_Pseudocode.txt          # Pseudocode, source of truth (copied at the root and in Benefuture.txt)
