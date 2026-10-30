@@ -1474,3 +1474,63 @@ theorem it is not sybilproof; identity binding (Technology Network) is what must
 whitewashers, and in the toy it does (whitewashing attempts linked, leaf accuracy 0.995 against 0.941
 unbound). Candidate homes: Technology Network (identity binding as a stated prerequisite of causal
 distribution), Benefuture currency (Causal Distribution), L94–L96.
+
+**8.59 Status of the 8.45 ruling: source tags in M5.** Each reading carries its
+origins' tags (persons by identity, models by identity); a listener counts each origin once, an echo
+of itself not at all (Lean `count_once_ref`, `tagged_reading_ref`), and the borrowed share of its vote
+passes to the origins as fractional delegation under L114's cap, cast on each origin's logged output,
+the voter keeping its own share and any share the cap blocks (`borrowed_shares_ref`, with the
+existing `accumulate_capped_ref`; reading [P]). 100 voters, hard factual decisions, 3 seeds, right in
+the last third, untagged → tagged: alone 92.8%; five random contacts 91.4% → 92.7%; IH's
+ContentionMap 83.8% → 93.1%; with three rounds of passing readings on, contacts 91.2% → 93.1% and the
+ContentionMap 80.2% → 92.9% (untagged, echoes compound across rounds; tagged, they do not). About a
+seventh of the total weight passes on, bounded by the cap on the few sources the ContentionMap
+surfaces. Contention (two expert camps, one leaning by an honest bias; 1,600 decisions, 4 seeds):
+with deliberation and split trials, all decisions 89.5% → 91.8%, deliberation alone 78.9% → 88.2%
+(the echo cost on uncontested questions removed), but contested questions 86.7% → 79.6% in the first
+400 and 86.6% → 85.1% in the last 400: with the camps' shares capped, laymen no longer amplify the
+camp whose record is better, and the trials take longer to settle the question. The persuasion-bias benchmark (DeMarzo, Vayanos and Zwiebel 2003) holds exactly: untagged
+weights are walk counts, tagged ones each reachable origin once. Candidate homes: L133 (IH: source
+tags as part of SourceVerify), L113, L114, Government (clean deliberation).
+
+**8.60 [OPEN] Do models take their borrowed share?.** Models do not vote (8.42.2:
+they inform votes, as expert commentary does). With tags, a voter's share borrowed from models
+therefore stays with the voter, cast on its own reading informed by the models, and every voter who
+hears a model recasts it: the echo of 8.45 remains through models (IH and models improving towards
+noise 0.5: 84.4% untagged, 82.3% tagged). If instead each model takes its borrowed share as capped
+fractional delegation, cast on its published prediction (the same cap as a person: L114), the
+decision counts each model once: 92.6%. Options: (a) models take their share, capped like persons
+(models then cast weight, against the letter of 8.42.2, though no model holds a vote of its own);
+(b) the model share passes to the model's operators or to the experts whose record the model's record
+draws on; (c) models' published predictions enter the tally once, weighed by their records (8.43
+option (a), a new rule). The simulation keeps 8.42.2 by default (`model_share = :voter`) and reports
+(a) beside it. Candidate homes: L114, L133, Government (models in deliberation), 8.42.2.
+
+**8.61 Gaming source tags.** Tags are outputs, auditable by AdvAp against the
+open log (L160). (1) Misattribution (claiming a reputable source backs one's side, or slandering it):
+inert under 8.59's reading, since a borrowed share passes to the origin's logged output whatever was
+claimed and records read the log; in M5 with twenty liars, unaudited, the tally and every record are
+identical to an honest run, and audited, every falsified tag is caught and debited to its maker as a
+falsified output (`tags_falsified_ref`). Untagged, the same liars cost decisions. (2) Laundering by
+omission (republishing what one heard as one's own, claiming independence, and voting it with full
+weight): unaudited it pays (the launderers' records rise from 40% to 57% right, listeners borrow from
+them, decisions fall 91.9% → 90.2%); an echo audit flags an output whose agreement with what its maker
+heard exceeds what two independent judges of those accuracies would show by a governed margin
+(`undisclosed_echo_ref`; margin 0.1, 3 standard errors, 20 outputs), flags at least three in four
+launderers and under one in twenty honest voters, and splits a flagged voter's readings like anyone's.
+Residual: a launderer copying only part of the time stays under the margin, bounding what it gains;
+honest experts sharing a paradigm (8.45 contention) agree beyond independence and could be flagged,
+which the margin is meant to absorb (untested). Candidate homes: L160, L133, Adversarial adaptation.
+
+**8.62 Finding: liquid-democracy pathologies against direct voting (SOTA #3).** One
+domain, 101 voters, 400 decisions, 6 seeds, direct voting 98.7% right. Bad delegation (Kahng,
+Mackenzie and Procaccia 2021: all delegate to one somewhat better voter): uncapped 85.6%, capped at
+5% 96.8%. Misleading reputation (Caragiannis and Micha 2019: the least competent most reputable):
+uncapped and unaudited 77.6%, capped and audited 95.9%. Bribery of the three most reputable
+(Alouf-Heffetz et al. 2024): uncapped 65.2% (vote reputation alone lowers the bought super-voter in
+time), capped and audited 96.3% against 98.7% for direct voting with the same bribes. Super-voters
+(Kling et al. 2015): uncapped, one voter holds most of the weight; capped, none above the cap plus one
+voter's own. Cycles cannot form (delegation only to strictly higher reputation, delegates never
+pass weight on) and no weight is lost. In these worlds the cap and audit bound delegation's losses to
+about two points but do not make delegation beat direct voting; where delegation helps (Berinsky et
+al. 2025) is not yet simulated. Candidate homes: L114, Government (liquid democracy).

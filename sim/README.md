@@ -932,7 +932,7 @@ side of the question (its ContentionMap):
 
 Each layman echoing a source casts that source's information again with a full base vote (the toy's
 decisions are purely factual), so a few sources' information is counted many times: finding 8.45,
-awaiting the author. Deliberation is off by default.
+ruled by the author (source tags, below). Deliberation is off by default.
 
 The real test is contention (author, on 8.44): experts divided, voters hearing all sides and judging
 by the network's information handling and their own limited expertise, with diversity trying the
@@ -949,8 +949,67 @@ equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest 
 | Both | 86.7%, 86.6% | 89.5% |
 
 On contested questions, hearing both sides weighed by their records, with trials revealing
-outcomes, finds the performant option far more often; deliberation alone hones in slowly. On
-uncontested questions the echo cost of 8.45 remains.
+outcomes, finds the performant option far more often; deliberation alone hones in slowly.
+
+### Source tags: echoes counted once (author ruling on 8.45)
+
+Each reading carries its origins' tags (`source_tags`); a listener counts each origin once and an
+echo of itself not at all (Lean `count_once_ref`, `tagged_reading_ref`). The borrowed share of a vote
+passes to its origins as fractional delegation under L114's cap, cast on each origin's logged output;
+the voter keeps its own share and whatever the cap blocks (`borrowed_shares_ref`,
+`accumulate_capped_ref`; reading [P]). Readings may pass on for several `rounds`: untagged, a voter
+hears its sources' latest readings as their own; tagged, each source re-emits its tags. Models do not
+vote (8.42.2), so by default their borrowed share stays with the voter (`model_share = :voter`);
+`:model` lets each model take its share, capped (BACKPROPAGATION 8.60, open). Same world as above,
+right in the last third, 3 seeds:
+
+| Voters hear | Untagged | Tagged | Three rounds, untagged | Three rounds, tagged |
+|---|---|---|---|---|
+| Only themselves | 92.8% | – | – | – |
+| Five random contacts | 91.4% | 92.7% | 91.2% | 93.1% |
+| IH's ContentionMap | 83.8% | 93.1% | 80.2% | 92.9% |
+| IH and models improving (`p_new_model` 0.02, `improve_drift` −0.3, to noise 0.5) | 84.4% | 82.3% (`:model`: 92.6%) | 82.8% | 83.9% |
+
+(The models row uses these settings; the earlier table's model readings used others.) About a seventh
+of the weight passes on, bounded by the cap on the few sources the ContentionMap surfaces. Untagged,
+echoes compound across rounds; tagged, they do not. With models keeping their share with voters, the
+echo returns through the models: the open question of 8.60.
+
+Contention, tagged (same world as above, 4 seeds): all decisions 89.5% → 91.8% with deliberation and
+trials, 78.9% → 88.2% with deliberation alone; contested questions 86.7% → 79.6% (first 400) and
+86.6% → 85.1% (last 400): with each camp's share capped, laymen no longer amplify the camp with the
+better record, and the trials take longer to settle the question.
+
+Persuasion bias (DeMarzo, Vayanos and Zwiebel 2003; `echo_influence`): untagged, a listener's weight
+on an origin after T rounds is the number of walks of length at most T to it, so a hub outweighs an
+equally precise peer; tagged, each reachable origin once, and the estimate's error falls (test).
+
+Gaming (tests; BACKPROPAGATION 8.61). Misattribution is inert under tags: with twenty liars claiming
+every origin they heard backs their side, the unaudited tally and every record equal an honest run's
+(the borrowed share goes to the origin's logged output; records read the log); audited, every falsified
+tag is caught (`tags_falsified_ref`) and debited to its maker. Untagged, the same liars cost decisions.
+Laundering by omission (republishing what one heard as one's own and voting it with full weight) pays
+unaudited (the launderers' records 40% → 57% right, decisions 91.9% → 90.2%); the echo audit
+(`undisclosed_echo_ref`: agreement with what one heard beyond two independent judges' plus `echo_margin`,
+by `echo_z` standard errors, after `echo_min` outputs) flags at least three in four launderers and
+under one in twenty honest voters. Residual: partial copying under the margin; honest camps sharing a
+paradigm could be flagged (untested).
+
+### Liquid-democracy pathologies against direct voting (SOTA #3)
+
+One domain, 101 voters focused elsewhere (free to delegate), 400 decisions, 6 seeds; direct voting
+right 98.7%:
+
+| Pathology | Uncapped, unaudited | Capped (5%), audited |
+|---|---|---|
+| Bad delegation: all delegate to one somewhat better voter (Kahng, Mackenzie and Procaccia 2021) | 85.6% | 96.8% |
+| Misleading reputation: the least competent most reputable (Caragiannis and Micha 2019) | 77.6% | 95.9% |
+| Bribery of the three most reputable (Alouf-Heffetz et al. 2024; direct with the same bribes 98.7%) | 65.2% | 96.3% |
+| Super-voters (Kling et al. 2015) | one voter holds most of the weight | none above the cap plus one voter's own |
+| Cycles | cannot form: delegation only to strictly higher reputation, delegates never pass weight on; no weight lost | same |
+
+The cap and the audit bound delegation's losses to about two points here; they do not make delegation
+beat direct voting, and worlds where delegation helps (Berinsky et al. 2025) are not yet simulated.
 
 ## M7 observations: deaths (first rung)
 
@@ -1102,6 +1161,9 @@ for removal.
 | Record a challenger needs before taking over (`takeover_records`) | Introduced | 8.58-b; against best-of-several picks on few records (Witkowski et al.); the significance rule (`select_candidate_ref`) is native |
 | Identity binding admitting identities by cluster quorum | Native | Technology Network (thresholded cross-cluster binding); Lean `binding_admits_ref`. Gaming: a whitewasher needs a quorum of clusters to miss it; the toy lumps methods into a miss chance |
 | On-off deceit, extremising models, whitewashing, slandering | World | adversaries for M6 tests, not rules |
+| Source tags: count once by origin, borrowed shares passed on as capped fractional delegation | Ruled ([P] reading); rules in the Lean reference (`count_once_ref`, `tagged_reading_ref`, `borrowed_shares_ref`; cap `accumulate_capped_ref`) | 8.45; L133 IH source tracking, L114; no new cap |
+| AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L160 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
+| Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
 
 ## Governed thresholds
 
@@ -1118,6 +1180,8 @@ ratified.
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Decay of a source's record in the rolling net its weight reads (rights, wrongs) | `record_λpos`, `record_λneg` | 0.05, 0.02 | L101; 8.29, 8.42 |
+| Source tags: borrowed shares pass to their origins under the delegation cap (`cap`, above) | `source_tags`, `model_share` | off, `:voter` | L133, L114; 8.45 [P]; whether models take a share is open (8.60) |
+| Echo audit: agreement beyond independence tolerated, standard errors beyond it that flag, outputs it needs | `echo_margin`, `echo_z`, `echo_min` | 0.1, 3, 20 | L160; 8.45 (gaming) |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
@@ -1221,6 +1285,8 @@ rare but present).
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
 | A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |
+| Times readings pass on before a vote (M5, world) | `rounds` | 1 | 1–5 |
+| Persons gaming source tags, and how (M5, M6; world) | `tag_liars`, `tag_lie` | none, `:misattribute` | 0–30% of voters; `:misattribute`, `:omit` |
 | An expert's honest paradigm lean, contention among experts (M5, world) | `camp_bias` | 0 | 0–2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Agents delegating when unaffected enough; how much skill sharpens a voter's signal; locales a decision applies to (M5, world; delegation a battery factor) | `p_delegate`, `skill_gain`, `trial_units` | 0, 5, 50 | 0–1, not yet set, not yet set |

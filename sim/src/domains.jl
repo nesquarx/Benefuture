@@ -73,7 +73,7 @@ end
 "An array returned by Lean, read (each read consumes a reference, taken first) and released."
 function lean_floats(a::Ptr{Cvoid})
     n = ccall(sym(:bf_fa_size), Csize_t, (Ptr{Cvoid},), lean_inc!(a))
-    xs = [ccall(sym(:bf_fa_get), Float64, (Ptr{Cvoid}, Csize_t), lean_inc!(a), i) for i in 0:(n - 1)]
+    xs = [ccall(sym(:bf_fa_get), Float64, (Ptr{Cvoid}, Csize_t), lean_inc!(a), i) for i in 0:(Int(n) - 1)]
     ccall(sym(:bf_fa_drop), UInt8, (Ptr{Cvoid},), a)
     xs
 end

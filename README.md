@@ -501,12 +501,32 @@ Governance and thresholds
   models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
   entirely. But shared sources make votes dependent, and decisions fall towards the sources' own
   accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43). With understanding trickling
-  down only (8.44) through the network's information handling, each layman's echo still recasts its
-  source's information with a full base vote, a finding awaiting the author (8.45). Where experts are
+  down only (8.44) through the network's information handling, each layman's echo recast its source's
+  information with a full base vote (8.45). By the author's ruling, readings now carry source tags:
+  each origin is counted once and the borrowed share of a vote passes to its origins as capped
+  fractional delegation (a [P] reading); deliberation through the network's ContentionMap then
+  decides 93.1% right against 83.8% untagged and 92.8% alone (3 seeds), and stays there when readings
+  pass on for three rounds (untagged falls to 80.2%). Two limits: models do not vote, so with their
+  share kept by voters the echo returns through them (82.3%; 92.6% if models take their share capped,
+  an open question, BACKPROPAGATION 8.60); and on contested questions, tagged deliberation with
+  trials settles more slowly (79.6% against 86.7% in the first 400 decisions, 85.1% against 86.6% in
+  the last 400), while all decisions rise from 89.5% to 91.8%. The untagged variant reproduces
+  DeMarzo–Vayanos–Zwiebel persuasion bias exactly (walk-count weights), which tags remove. Tags are
+  outputs audited against the open log: misattribution is inert (tally and records unchanged) and
+  every falsified tag is caught; laundering by omission is flagged by an echo audit in at least three
+  of four launderers and under one in twenty honest voters. Where experts are
   divided between two camps, one leaning by an honest bias, hearing both sides with diversity's
   trials finds the performant option on contested questions 86.7% of the time, against 80.7% with
   trials alone and 75.8% with neither
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
+- Liquid-democracy pathologies against direct voting (toy, one domain, 101 voters, 6 seeds; direct
+  98.7% right): each pathology is reproduced with uncapped, unaudited delegation (bad delegation
+  85.6%, misleading reputation 77.6%, bribery of the three most reputable 65.2%, one super-voter
+  holding most of the weight) and bounded by the capped, audited, expertise-weighted delegation
+  (96.8%, 95.9%, 96.3%; no voter above the cap plus one voter's own). Delegation cycles cannot form
+  by construction and no weight is lost. The cap bounds delegation's losses; it does not make
+  delegation beat direct voting here
+  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, pathologies](sim/README.md#liquid-democracy-pathologies-against-direct-voting-sota-3)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
