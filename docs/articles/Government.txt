@@ -82,7 +82,7 @@ Benefuture society recognizes a clear distinction:
 
 === Economic Implications of Life, Death, and Birth ===
 
-*   '''Living Persons:''' Baseline needs are priced at or below zero in every transaction that meets them ([[Benesophont#Aspects|sophont baseline]]), guaranteed by [[Benefuture currency#Resource Accounting|resource accounting]].
+*   '''Living Persons:''' Baseline needs are priced at or below zero in every transaction that meets them ([[Benesophont#Aspects|sophont baseline]]), guaranteed by [[Benefuture currency#Aspects|resource accounting]].
 *   '''Death:''' Accumulated un-redistributed currency is depleted; the losses of understanding and happiness the death causes to those close to the deceased are mapped like any [[harm]], through [[Benefuture currency#Causal Distribution|causal distribution]] and escrow settlement; there is no levy. No property inheritance; causal and ideological inheritance continue through causal distribution and the [[Benefuture goals#Vision|Unbroken Memory]].
 *   '''Birth:''' A newborn's needs are baseline: transactions that meet them, made by caregivers on the newborn's behalf, are priced at or below zero. Above baseline, [[Benefuture currency|probabilistic escrow]] on predicted contributions and the satisfaction of caregivers funds upkeep until the new person matures and contributes measurable understanding and happiness.
 

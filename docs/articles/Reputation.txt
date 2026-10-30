@@ -34,7 +34,7 @@ The system incorporates several mechanisms to prevent manipulation of reputation
 *   '''Decentralized Assessment:''' The [[Technology Network]] relies on a distributed network of nodes for assessment, reducing the risk of centralized bias.
 *   '''Auditing and Oversight:''' The reputation system is subject to ongoing auditing and oversight to detect and address any attempts at manipulation.
 * '''Time Discounting''': Older activities contribute lesser to the synthesized score.
-* '''Recounted, not stored:''' Reputation is recounted from [[Technology Network#Unbroken Memory|memory]] frequently rather than held as a balance, so it stays auditable and cannot drift.
+* '''Recounted, not stored:''' Reputation is recounted from [[Technology Network#Aspects|memory]] frequently rather than held as a balance, so it stays auditable and cannot drift.
 
 == Examples ==
 * A scientist consistently publishing high-impact research in a specific field will have a high reputation within that field. Their votes on matters related to that field will carry more weight.

@@ -70,7 +70,7 @@ In one line: ''Walzer's spheres, operated by Hanson's markets, toward Deutsch's 
 |-
 | '''Technocracy''' || Expertise is domain-specific (no halo effects); impact weighting balances expertise; liquid delegation is capped
 |-
-| '''Libertarianism''' || Explicit [[Benefuture goals|goal]] structure; baseline guarantees as rights; [[Harm]] includes inaction
+| '''Libertarianism''' || Explicit [[Benefuture goals|goal]] structure; baseline guarantees as rights; [[Crime]] includes informed inaction against a [[law]]'s mandate or a [[contract]]
 |}
 
 == The Economic Engine ==
