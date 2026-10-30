@@ -15,6 +15,7 @@ import BenefutureReference.Economy
 import BenefutureReference.Domains
 import BenefutureReference.Justice
 import BenefutureReference.Adversarial
+import BenefutureReference.Records
 import BenefutureReference.ParamSpace
 
 namespace BenefutureReference.Export
@@ -171,6 +172,20 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_fr_permissible] def frPermissible (irreparable irreversible longterm passing timeLoss confidence : Float) : UInt8 :=
   if fr_permissible_ref irreparable irreversible longterm passing timeLoss confidence then 1 else 0
+
+@[export bf_vote_reputation] def voteReputation (right : UInt8) (value scale voters held total : Float) : Float :=
+  vote_reputation_ref (right != 0) value scale voters held total
+
+@[export bf_audited_out] def auditedOut (rights records minRecords threshold : Float) : UInt8 :=
+  if audited_out_ref rights records minRecords threshold then 1 else 0
+
+@[export bf_source_weight] def sourceWeight (rights wrongs : Float) : Float := source_weight_ref rights wrongs
+
+@[export bf_heard] def heard (source own : Float) (novel : UInt8) : Float := heard_ref source own (novel != 0)
+
+@[export bf_neg_share] def negShare (gains losses : Float) : Float := neg_share_ref gains losses
+
+@[export bf_credence_score] def credenceScore (credence outcome : Float) : Float := credence_score_ref credence outcome
 
 @[export bf_param_count] def paramCount (_ : Unit) : USize := paramFields.length.toUSize
 @[export bf_bootstrap_params] def bootstrapParams (_ : Unit) : FloatArray := ⟨bootstrap_params_ref⟩

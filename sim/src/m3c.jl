@@ -426,15 +426,12 @@ function run_m3c(p::M3cParams; seed)
         u = length(e) >= 5 ? sqrt(mean(abs2, e)) :
             hist !== nothing ? unc_of(hist) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
         cr = credence(plan_value(pred, t), u; cap = p.max_credence)
-        a > 0 ? ratchet_credence(cr, neg_share(a)) : cr
+        a > 0 ? ratchet_credence(cr, ledger_neg_share(a)) : cr
     end
     # The reputation ledgers (L101) carry patterns of mistakes and uncovered deception as well as
     # of success: an actor's negative share of its ledgers, whose entries never decay (only the
     # rolling net does; 8.42.1).
-    function neg_share(a)
-        g, l = sum(h_pos[a, :]), sum(h_neg[a, :])
-        g + l > 0 ? clamp(l / (g + l), 0.0, 1.0) : 0.0
-    end
+    ledger_neg_share(a) = neg_share(sum(h_pos[a, :]), sum(h_neg[a, :]))  # Lean `neg_share_ref`
     # A domain is marginal where its leaf model is near or below its status bar (8.42.1).
     function marginal(b)
         l = argmax(p.agents[b].focus)
@@ -1206,7 +1203,7 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
                 length(mpool[j]) > 1 || continue
-                brier(h) = [1 - (x.credence - x.outcome)^2 / 0.25 for x in window_of(h)]
+                brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]  # Lean `credence_score_ref`
                 ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.min_records]]
                 length(ks) > 1 || continue
                 sc_ = [brier(mpool[j][k].hist) for k in ks]
@@ -1239,7 +1236,7 @@ function run_m3c(p::M3cParams; seed)
                 for b in 1:na
                     b == r && continue
                     stake = marginal(b) ? p.agents[r].focus[argmax(p.agents[b].focus)] : 0.0
-                    chance = p.vigilance / (na - 1) * (1 + p.pattern_attention * neg_share(b)) * (1 + p.stake_attention * stake)
+                    chance = p.vigilance / (na - 1) * (1 + p.pattern_attention * ledger_neg_share(b)) * (1 + p.stake_attention * stake)
                     rand(vrng) < chance && push!(reads, (r, b, false))
                 end
             end

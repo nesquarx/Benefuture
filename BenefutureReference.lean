@@ -11,5 +11,6 @@ import BenefutureReference.Economy
 import BenefutureReference.Domains
 import BenefutureReference.Justice
 import BenefutureReference.Adversarial
+import BenefutureReference.Records
 import BenefutureReference.ParamSpace
 import BenefutureReference.Export

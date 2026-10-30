@@ -34,3 +34,21 @@ end
     @test_throws ArgumentError report_penalty(1, 5; audit_cost = Inf)
     @test_throws ArgumentError ratchet_credence(0.9, 1.5)
 end
+
+# Rules moved from Julia into the Lean reference (CLAUDE.md: rules live once): the reputation a vote
+# earns (8.29, 8.48), the delegate audit (L114), a source's weight from its record's rolling net
+# (log-odds, smoothed; 8.43), the trickle-down rule (8.44), the ledgers' negative share (8.42.1) and
+# one record's credence score (8.36).
+@testset "Governance and ledger rules (Lean reference)" begin
+    @test vote_reputation(true, 0.5, 2.0, 100, 3.0, 300.0) ≈ 1.0 && vote_reputation(false, 0.5, 2.0, 100, 3.0, 300.0) ≈ -1.0
+    @test audited_out(1, 4; min_records = 3, threshold = 0.6) && !audited_out(1, 2; min_records = 3, threshold = 0.6)
+    @test !audited_out(3, 4; min_records = 3, threshold = 0.6)
+    @test source_weight(0.0, 0.0) == 0.0 && source_weight(8.0, 0.0) ≈ log(9 / 1) && source_weight(0.0, 8.0) == 0.0
+    @test heard(2.0, 1.0, false) == 2.0 && heard(0.5, 1.0, false) == 0.0 && heard(0.5, 1.0, true) == 0.5
+    @test neg_share(3.0, 1.0) ≈ 0.25 && neg_share(0.0, 0.0) == 0.0
+    @test credence_score(0.9, 1.0) ≈ 1 - 0.01 / 0.25 && credence_score(0.5, 0.0) ≈ 0.0 && credence_score(1.0, 0.0) ≈ -3.0
+    @test_throws ArgumentError audited_out(5, 4; min_records = 3, threshold = 0.6)
+    @test_throws ArgumentError source_weight(-1.0, 0.0)
+    @test_throws ArgumentError neg_share(-1.0, 0.0)
+    @test_throws ArgumentError credence_score(1.5, 1.0)
+end

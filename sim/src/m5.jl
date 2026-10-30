@@ -142,7 +142,8 @@ function run_m5(p::M5Params; seed)
     reputation = copy(p.reputation)
     scale = [sum(max.(p.reputation[:, k], 0.0)) / size(p.reputation, 1) for k in axes(p.reputation, 2)]
     record = [Bool[] for _ in 1:na, _ in axes(p.reputation, 2)]
-    audited_out(j, k) = p.audit_window > 0 && length(record[j, k]) >= 3 && mean(record[j, k]) < p.audit_threshold
+    # The delegate audit (L114; Lean `audited_out_ref`), over a delegate's recent apparent votes.
+    out_of_audit(j, k) = p.audit_window > 0 && audited_out(count(record[j, k]), length(record[j, k]); min_records = 3, threshold = p.audit_threshold)
     # AdvAp: hidden decisions the bloc falsified since the last revelation, kept for repair, and
     # whether each decision ends right (a repaired decision may change).
     vrng = Xoshiro(hash((seed, :advap)))
@@ -150,7 +151,7 @@ function run_m5(p::M5Params; seed)
     right_now, hidden_flag = Bool[], Bool[]
     adv = (established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0), gain_forgone = Ref(0.0), recounted = Ref(0))
     function record_vote!(i, k, right, held_i, total)
-        reputation[i, k] += (right ? 1 : -1) * p.vote_value * scale[k] * na * held_i / total
+        reputation[i, k] += vote_reputation(right, p.vote_value, scale[k], na, held_i, total)  # Lean `vote_reputation_ref`
         push!(record[i, k], right)
         length(record[i, k]) > max(p.audit_window, 1) && popfirst!(record[i, k])
     end
@@ -165,7 +166,7 @@ function run_m5(p::M5Params; seed)
     # slower than wins: L101, 8.29; the entries themselves are kept whole): log-odds of its accuracy,
     # smoothed (Nitzan and Paroush, 1982); a source no better than chance carries none.
     rate_right, rate_wrong = decay_rate_for(1.0; λpos = p.record_λpos, λneg = p.record_λneg), decay_rate_for(-1.0; λpos = p.record_λpos, λneg = p.record_λneg)
-    lo(r) = (q = (r[1] + 1) / (r[1] + r[2] + 2); max(0.0, log(q / (1 - q))))
+    lo(r) = source_weight(r[1], r[2])  # Lean `source_weight_ref`
     function note!(r, right)
         r[1] = reputation_decay(r[1], 1.0; rate = rate_right) + right
         r[2] = reputation_decay(r[2], 1.0; rate = rate_wrong) + !right
@@ -196,7 +197,7 @@ function run_m5(p::M5Params; seed)
         for i in randperm(rng, na)
             (received[i] || p.focus[i, k] >= p.impact_threshold || rand(rng) >= p.p_delegate) && continue
             for j in sortperm(rep; rev = true)
-                (j == i || delegated[j] || rep[j] <= rep[i] || audited_out(j, k)) && continue
+                (j == i || delegated[j] || rep[j] <= rep[i] || out_of_audit(j, k)) && continue
                 after = accumulate_capped(p.cap * total, held[j], [w[i]])
                 if after > held[j]
                     held[j] = after; held[i] -= w[i]; delegated[i] = true; received[j] = true
@@ -231,14 +232,14 @@ function run_m5(p::M5Params; seed)
                 # Understanding trickles down and across (8.44): a voter weighs a source only if its
                 # record is at least as good as the voter's own, or, rarely, for novel input.
                 mine = lo(person_rec[i, k])
-                heard(w) = (w >= mine || rand(nrng) < p.p_novel) ? w : 0.0
+                hear(w) = heard(w, mine, w >= mine ? false : rand(nrng) < p.p_novel)  # Lean `heard_ref`
                 own = max(mine, 0.1)  # one's own reading counts, at least a little
                 # The social network's information handling (L133 IH: SourceVerify by Re(Dn), and a
                 # ContentionMap) surfaces the domain's most reputable sources on each side of the
                 # question; without it, a voter hears its contacts.
                 srcs = p.info_handling ? contention_map(i) : contacts[i]
-                wc = [heard(lo(person_rec[j, k])) for j in srcs]
-                wm = heard.(wm0)
+                wc = [hear(lo(person_rec[j, k])) for j in srcs]
+                wm = hear.(wm0)
                 reading[i] = own * sign(signal[i]) + sum(wc .* pub.(srcs); init = 0.0) + sum(wm .* published)
                 wsum += own + sum(wc) + sum(wm); wmod += sum(wm)
             end
