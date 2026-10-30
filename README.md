@@ -116,6 +116,8 @@ results. Three kinds of evidence, never to be read as more than they are:
 - **Demonstrated in simulation**: observed in `sim/` under the stated toy assumptions, as tests that
   pass on every CI run or as readings averaged over a few seeds. Not proofs, and not
   significance-tested.
+  Testing the simulation against the Lean vectors is verification (the code does what the rules
+  say), not validation: no simulation result has been checked against data from the world.
 
 The simulation does not run the ℝ specification: it calls the Float reference (`BenefutureReference`)
 through C exports. The reference reproduces the spec's test vectors, but correspondence between the
