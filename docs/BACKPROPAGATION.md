@@ -1559,3 +1559,13 @@ noise, skill dispersion, partial advice taking) carry over; figures produced by 
 (vigilance, deception and audit rates, whistleblowing, R&D share, delegation behaviour) are a
 status-quo baseline or a sweep, since in Benefuture they should emerge from its incentives; each
 figure is converted to the simulation's unit, step and population before use.
+
+**8.64 Author ruling on horizons.** The economy should handle 10 years and governance 20; batteries
+sometimes run century-long simulations of both working together, with dashes of catastrophe and
+breakthrough at roughly realistic frequencies. Readings, [P]: an economy step is a month (a 10-year
+run is 120 steps), governance takes 60 decisions a year (1,200 over 20 years), a population step is a
+year; the century run needs the stages composed (economy, governance and population in one world, G
+per entity) and draws catastrophes (M3f black swans) and breakthroughs (M7 research) at rates
+converted from realistic frequencies (`docs/CALIBRATION.md`). Candidate homes: Implementation (phases
+and horizons), the batteries.
+

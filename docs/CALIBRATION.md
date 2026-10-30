@@ -81,13 +81,17 @@ The simulation's units are abstract values. Its populations are tens to hundreds
 (M5 worlds of 20 to 100 voters; M3 to M7 worlds of 6 to 42 agents with 200 to 1,000 beings).
 A **step** is one round in which a batch of plans is proposed, screened, executed and measured
 (economy, AdvAp), a **decision** is one M5 vote (a step of its own), and M7 adds births, deaths and
-teaching per step. The real-time length of a step is not fixed (**[OPEN]**, author). Conversions
-below use three working mappings, each stated where used, so the choice can be changed in one place:
+teaching per step. Horizons (author ruling 8.64): the economy should handle 10 years, governance 20
+years, and batteries sometimes run a century of both together with catastrophes and breakthroughs at
+roughly realistic frequencies. Conversions below use three mappings, each stated where used, so the
+choice can be changed in one place:
 
 - **n_y**, steps per year. Annual figures convert as p_step = 1 - (1 - p_year)^(1/n_y). Working
   values: n_y = 1 (1 step = 1 year) for M7 population, teaching and research, where demography wants
   it; n_y = 12 (1 step = 1 month) for the economy and AdvAp, so that `window` = 100 steps is about
-  8 years, close to the 7 years credit reports keep negative items.
+  8 years, close to the 7 years credit reports keep negative items; a 10-year economy run is 120
+  steps. Governance: 1,200 decisions over 20 years, 60 decisions a year ([P] reading of 8.64). A
+  century joint run is 1,200 economy steps, 6,000 decisions and 100 population years.
 - **Per decision**: lab judgements (advice weights, update fractions) and M5 rates are per voter per
   decision and need no clock.
 - **Share of agents or of value**: counts and top-quantile shares (top 0.1% wealth, top 1% output)
