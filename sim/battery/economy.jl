@@ -57,7 +57,7 @@ function world(sev)
 end
 pattern(tr) = success_pattern(tr; from = 51)
 const CLEAN = let ps = [pattern(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS]
-    (; (f => mean(getfield(p, f) for p in ps) for f in (:floor_u, :floor_h, :median_u, :median_h, :worst_drop))...)
+    (; (f => mean(getfield(p, f) for p in ps) for f in (:floor_u, :floor_h, :median_u, :median_h, :peak_u, :worst_drop))...)
 end
 function grows(tr)
     sp = pattern(tr)
