@@ -467,9 +467,9 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
   tolerances are fixed in each script, so runs repeat exactly.
 
-- **Latest readings** (realistic ranges, AdvAp on; both batteries on code 9ceed47, the economy judged
-  by the Goal's whole success pattern and repeating its 98a12ee readings; fresh runs are due on the
-  current build, since the simulation and the Lean reference have changed since). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
+- **Latest readings** (realistic ranges, AdvAp on; economy on code 9ceed47, judged by the Goal's whole
+  success pattern and repeating its 98a12ee readings, with a fresh run under way on be16e9f; governance
+  on be16e9f, repeating its 9ceed47 readings). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
