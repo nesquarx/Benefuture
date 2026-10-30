@@ -536,9 +536,7 @@ function tagged_deliberation(p, na, k, total, held, delegated, signal, published
             end
             (ids, sides, ws)
         end
-        mixed(i) = take_advice(advw[i], tagged_reading(i, own[i], 1.0, lists[i][1], ones(length(lists[i][1])), lists[i][3]),
-                           sign(signal[i]), tagged_reading(i, own[i], sign(signal[i]), lists[i]...))
-    rd = [mixed(i) for i in 1:na]
+        rd = [mixed(i) for i in 1:na]
     end
     for j in 1:na
         launders(j) && (said[j] = sign(rd[j]))
