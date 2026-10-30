@@ -277,7 +277,7 @@ end
 @testset "M5 weight on advice (8.63): adversarial and edge cases" begin
     m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 50, plans = 10),
                            [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
-                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4)); seed = 1)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02); seed = 1)
     @test_throws ArgumentError M5Params(m3, [1]; advice_stay = 0.6, advice_avg = 0.5)
     @test_throws ArgumentError M5Params(m3, [1]; advice_defer = -0.1)
     @test_throws ArgumentError M5Params(m3, [1]; advice_α = 0.0)

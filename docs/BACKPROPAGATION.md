@@ -1492,6 +1492,11 @@ with deliberation and split trials, all decisions 89.5% → 91.8%, deliberation 
 camp whose record is better, and the trials take longer to settle the question. The persuasion-bias benchmark (DeMarzo, Vayanos and Zwiebel 2003) holds exactly: untagged
 weights are walk counts, tagged ones each reachable origin once. Candidate homes: L133 (IH: source
 tags as part of SourceVerify), L113, L114, Government (clean deliberation).
+*Status after 8.60 and the full ContentionMap:* the borrowed-share delegation and the readings above
+that depend on it are withdrawn. With every source exposed and realistic advice taking (8.63),
+deliberation decides as well as voters alone (92.8% both, about one vote in twenty changed); where
+everyone defers, 90.8%, and over three untagged rounds 86.6%, restored to 90.8% by tags
+(`sim/README.md`, source tags). Most of the first echo cost (83.8%) came from the narrow map.
 
 **8.60 Do models take their borrowed share? (ruled below).** Models do not vote (8.42.2:
 they inform votes, as expert commentary does). With tags, a voter's share borrowed from models

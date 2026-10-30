@@ -502,24 +502,22 @@ Governance and thresholds
   Under status thresholds a deceiver can degrade a domain's currency status for everyone (8.37),
   which AdvAp largely restores (8.38; Gaming above)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
-- Clean deliberation in governance (toy decision world, 3 seeds): voters weighing contacts' and
+- Clean deliberation in governance (toy decision world, 3 seeds): voters weighing others' and
   improving models' published readings by the rolling net of their records hand prediction to the
-  models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
-  entirely. But shared sources make votes dependent, and decisions fall towards the sources' own
-  accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43). With understanding trickling
-  down only (8.44) through the network's information handling, each layman's echo recast its source's
-  information with a full base vote (8.45). By the author's ruling, readings now carry source tags:
-  each origin is counted once and the borrowed share of a vote passes to its origins as capped
-  fractional delegation (a [P] reading); deliberation through the network's ContentionMap then
-  decides 93.1% right against 83.8% untagged and 92.8% alone (3 seeds), and stays there when readings
-  pass on for three rounds (untagged falls to 80.2%). Two limits: models do not vote, so with their
-  share kept by voters the echo returns through them (82.3%; 92.6% if models take their share capped,
-  an open question, BACKPROPAGATION 8.60); and on contested questions, tagged deliberation with
-  trials settles more slowly (79.6% against 86.7% in the first 400 decisions, 85.1% against 86.6% in
-  the last 400), while all decisions rise from 89.5% to 91.8%. The untagged variant reproduces
+  models as they improve and drop a captured model entirely. Information handling's ContentionMap
+  exposes every source in the domain, each weighed by its record (author, on 8.45), and people take
+  advice at realistic rates (8.63: with records visible, about a fifth keep their own position, the
+  rest move part of the way, mean weight on advice about 0.37; `docs/CALIBRATION.md`); every voter
+  casts its full weight, sources being credited through their records, never through vote shares,
+  and models never vote (8.60). Deliberation then decides as well as voters alone on these purely
+  factual decisions (92.8% both; 93.2% with improving models), changing about one vote in twenty. The
+  echo cost of 8.45 appears only in the limiting case where everyone defers (90.8%, 40% of votes
+  changed) and, with readings passed on for three rounds, grows (86.6%) unless readings carry source
+  tags, which count each origin once (90.8%). Most of the cost first measured (83.8%) came from a map
+  that showed every layman the same six sources. The untagged variant reproduces
   DeMarzo–Vayanos–Zwiebel persuasion bias exactly (walk-count weights), which tags remove. Tags are
-  outputs audited against the open log: misattribution is inert (tally and records unchanged) and
-  every falsified tag is caught; laundering by omission is flagged by an echo audit in at least three
+  outputs audited against the open log: every falsified tag is caught and debited to its maker;
+  laundering by omission is flagged by an echo audit in at least three
   of four launderers and under one in twenty honest voters. Where experts are
   divided between two camps, one leaning by an honest bias, hearing both sides with diversity's
   trials finds the performant option on contested questions 86.7% of the time, against 80.7% with
