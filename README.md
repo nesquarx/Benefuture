@@ -245,14 +245,19 @@ harm's base weight ([`understanding_dominates_happiness`](Benefuture/Math/Order.
 ([`escrow_conservation`](Benefuture/Economy/Currency.lean)); conservation under forks and merges ([`fork_conserves_per_domain_currency`](Benefuture/Ontology/Entity.lean),
 [`merge_conserves_per_domain_currency`](Benefuture/Ontology/Entity.lean)); overflow conservation and its ceiling
 ([`balance_overflow_conservation_law`](Benefuture/Systems/Economy.lean), [`auto_spill_enforces_ceiling`](Benefuture/Systems/State.lean)); Phase 1 issues no currency
-proposals ([`phase1_score_only_forbids_currency_proposals`](Benefuture/Systems/TechnologyNetwork.lean)); a currency needs a qualified model
-([`currency_requires_qualified_model`](Benefuture/Economy/Currency.lean)); crime needs information and volition, otherwise accident
-([`crime_and_accident_mutually_exclusive`](Benefuture/Subgoals/Justice.lean)); the freedom rules block irreversible, irreparable and
-established severe harm ([`irreversible_harm_strictly_impermissible`](Benefuture/Subgoals/Freedom.lean), [`established_severe_blocks`](Benefuture/Subgoals/Freedom.lean));
+proposals ([`phase1_score_only_forbids_currency_proposals`](Benefuture/Systems/TechnologyNetwork.lean)); a currency needs a model whose accuracy
+clears both the discovery floor and its domain's status bar, and qualification depends on accuracy alone
+([`currency_requires_qualified_model`](Benefuture/Economy/Currency.lean), [`qualification_depends_on_accuracy_only`](Benefuture/Measurement/MetricModel.lean)); crime needs information and either
+volition or a breached law or contract, otherwise accident
+([`crime_and_accident_mutually_exclusive`](Benefuture/Subgoals/Justice.lean)); the legacy certain-harm check blocks irreversible and
+irreparable harm, and the truth-level freedom rule blocks established severe harm
+([`irreversible_harm_strictly_impermissible`](Benefuture/Subgoals/Freedom.lean), [`established_severe_blocks`](Benefuture/Subgoals/Freedom.lean)); Freedom is reported per plan, not
+a filter on G (SPEC_DIVERGENCES §8.8);
 anti-halo isolation: no relevance in a decision's domains, no expert weight
 ([`anti_halo_domain_isolation`](Benefuture/Governance/Democracy.lean)); domain-relative expertise (L113, ruling 8.22.1) sums to one across a
-domain's voters and gives no voter more than the expertise weight, however large its raw reputation
-([`relative_expertise_sum_one`](Benefuture/Governance/Democracy.lean), [`relative_expertise_le_one`](Benefuture/Governance/Democracy.lean)); harm to a coupled part of the extended self is positive harm to
+domain's voters, and the expertise term of a vote weight never exceeds the expertise weight, however large
+the raw reputation ([`relative_expertise_sum_one`](Benefuture/Governance/Democracy.lean), [`relative_expertise_le_one`](Benefuture/Governance/Democracy.lean),
+[`bfdm_expertise_term_le_weight`](Benefuture/Governance/Democracy.lean)); harm to a coupled part of the extended self is positive harm to
 the being ([`defection_harms_extended_self`](Benefuture/Subgoals/Morality.lean): damage × positive coupling); completing the required
 education zeroes an infohazard's modelled risk ([`education_inoculates_infohazard`](Benefuture/Epistemology/InfoHandling.lean)); reporting an
 exploit pays more than exploiting it, because the bounty is defined above the gain
@@ -261,9 +266,10 @@ defining conditions ([`harm_growth_activates_intervention`](Benefuture/Axioms/An
 metric models are non-circular given the empirical-marker requirement
 ([`metric_models_are_non_circular`](Benefuture/Measurement/MetricModel.lean)).
 
-In the simulation, rules are defined once by construction: every simulated rule is a Lean reference
-function called through C exports, and the shared library rebuilds only when the Lean sources change
-([sim/src/lean.jl](sim/src/lean.jl)).
+In the simulation, rules are defined once: every simulated rule but two is a Lean reference function
+called through C exports (the contention map and AdvAp's recount in governance are still computed in
+Julia; [parsimony audit](sim/README.md#parsimony-audit)), and the shared library rebuilds only when the
+Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
 
 ### Negative and open results
 
