@@ -515,10 +515,11 @@ def calculate_external_defense (incomingHarm : Int) (forgiveness : Int) : (Int �
   let prof := calculate_defensive_action incomingHarm forgiveness
   (prof.deterrentMagnitude, prof.irreparableDamage ≤ 0 ∧ prof.irreversibleDamage ≤ 0)
 
-/-- 
-  THEOREM: Defensive Proportionality and Repairability Invariant.
-  Any civilizational response to external harm is strictly guaranteed to have
-  non-positive irreparable and irreversible damage, preventing catastrophic escalation.
+/--
+  THEOREM: `calculate_defensive_action` returns zero irreparable and irreversible damage. True by
+  construction: the function hard-codes both fields to 0. It proves nothing about real responses
+  to external harm (EHR, L117: TitForTat via reparable harm); it records the design requirement
+  that the response be confined to reparable harm, not that any response meets it.
 -/
 theorem external_defense_guarantees_repairability (incoming forgiveness : Int) :
     let prof := calculate_defensive_action incoming forgiveness

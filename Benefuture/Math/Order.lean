@@ -47,11 +47,14 @@ structure GovParams where
   h_nu_pos           : 0 < nu
   h_h_param_pos      : 0 < h_param
 
-  -- Decay rates for reputation (L101 / Phase 3)
+  -- Decay rates for reputation's rolling net (L101; ledger entries never decay, ruling 8.42.4)
   lambda_plus        : ℝ
   lambda_minus       : ℝ
   h_lambda_plus_pos  : 0 < lambda_plus
   h_lambda_minus_pos : 0 < lambda_minus
+  -- Ledger asymmetry: mistakes decay no faster than wins (ruling 8.29.1). Non-strict here so that
+  -- equal rates (the reduction to M2) stay representable; `Systems.ParamSpace.Admissible` is strict.
+  h_lambda_minus_le_plus : lambda_minus ≤ lambda_plus
 
   -- Significance and governance thresholds (L25, L155)
   th_sig             : ℝ
@@ -92,6 +95,7 @@ noncomputable def defaultGovParams : GovParams := {
   lambda_minus := 0.02  -- mistakes decay slower than wins (BACKPROPAGATION 8.29)
   h_lambda_plus_pos  := by norm_num
   h_lambda_minus_pos := by norm_num
+  h_lambda_minus_le_plus := by norm_num
 
   th_sig := 0.5
   th_gov := 0.7
@@ -115,7 +119,11 @@ theorem happiness_dominates_novelty (p : GovParams) : p.beta > p.gamma :=
 theorem understanding_dominates_novelty (p : GovParams) : p.alpha > p.gamma :=
   lt_trans p.h_gamma_lt_beta p.h_beta_lt_alpha
 
-/-- Theorem: Understanding strictly dominates Harm base weight by transitivity. -/
+/--
+  Theorem: α exceeds δ, the fourth parameter of L11's order, by transitivity. δ is not harm's
+  weight: harm enters V as the loss weight Ha_wt = 1 + Sy(...) ≥ 1 (L61, L73), above α, and L62
+  ranks U > Ha > H. The name is historical; this proves only α > δ.
+-/
 theorem understanding_dominates_harm_base (p : GovParams) : p.alpha > p.delta :=
   lt_trans p.h_delta_lt_gamma (lt_trans p.h_gamma_lt_beta p.h_beta_lt_alpha)
 

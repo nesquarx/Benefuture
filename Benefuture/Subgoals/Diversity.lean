@@ -86,17 +86,20 @@ theorem positive_frequency_strictly_diminishes_novelty (freq : Nat) (h_pos : fre
   omega
 
 /-- 
-  Anti-Monoculture Trigger (Di_N_Balance Axiom):
-  If the marginal value spread of the dominant paradigm falls below threshold Th,
-  the system mandates an injection of chaos/novelty (even if the dominant paradigm is Benefuture itself!).
+  Anti-Monoculture Trigger (Di_N_Balance Axiom, L158):
+  If the marginal value spread of the dominant paradigm falls below threshold Th, alternatives
+  are to be tried (even if the dominant paradigm is Benefuture itself). The trigger only flags the
+  stagnation: by ruling 8.30.3 alternatives are subsidised (novelty bonuses) until some local body
+  chooses them, never forced on anyone.
 -/
 def needs_diversity_injection (marginal_delta_v : Int) (threshold : Int) : Bool :=
   marginal_delta_v < threshold
 
 /-- 
   THEOREM: Anti-Monoculture Diversity Axiom Theorem.
-  When marginal improvement stagnates (marginal_delta_v < threshold),
-  the system triggers mandatory novelty injection, preventing civilizational lock-in.
+  When marginal improvement stagnates (marginal_delta_v < threshold), the trigger flags it
+  (`needs_diversity_injection` is true). That is all this proves; the response is subsidised
+  alternatives, never forced ones (ruling 8.30.3), and lock-in prevention is not proved here.
 -/
 theorem monoculture_stagnation_triggers_diversity 
     (marginal_v : Int) (threshold : Int) (h_stag : marginal_v < threshold) :

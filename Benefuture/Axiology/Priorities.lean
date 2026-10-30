@@ -2,13 +2,14 @@
   Benefuture.Axiology.Priorities
   Formalization of internal tiered priorities for Understanding (U), Happiness (H),
   Novelty (N), and Harm Weight (Ha_wt) using Sy over ℝ and ParamSchedule.
-  Corresponds to: Bf_Pseudocode.txt L55, L57-63.
+  Corresponds to: Bf_Pseudocode.txt L55, L57-63 (U L58, H L59, N L60, Ha_wt L61, pushDistr L62).
   
   "Priorities: {
      U:     Sy(peak > teachable > meta^x > median > floor > undirected),
      H:     Sy(eudaimonic > shareable > satisficing > baseline > median > peak),
      N:     Sy(paradigm > PoV > chaotic > incremental > perilous > trivial ≈ 0),
-     Ha_wt: 1 + Sy_{½,1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture_offence ≈ 0 > NHa_Estd = 0)
+     Ha_wt: 1 + Sy_{κ=½,q₊=1.5}(Irreparable > Irreversible > longterm > passing > t_loss > NHa_Pr > Culture«Cu»_offence ≈ 0 > NHa_Estd = 0),
+     pushDistr(Σ_{b ∈ B(t)} ΔW((U, convex), (H, concave), (Ha(¬NHa), convex))_lt | U > Ha > H, (N, norm(—^—)))
    }"
 -/
 
@@ -25,10 +26,10 @@ namespace Benefuture.Axiology
 
 open Benefuture.Math
 
-/- --- 1. Understanding Priority Tiers (L57) --- -/
+/- --- 1. Understanding Priority Tiers (L58) --- -/
 
 /-- 
-  [R] Tiers of Understanding in strict priority order (L57):
+  [R] Tiers of Understanding in strict priority order (L58):
   Peak (breakthroughs) > Teachable (multipliers) > Meta (learning how to learn) >
   Median (population mean) > Floor (universal comprehension) > Undirected (idle)
 -/
@@ -48,10 +49,10 @@ noncomputable def synthesize_understanding (u : UnderstandingTiers) (sched : Par
   let items := zip_priority_weights [u.peak, u.teachable, u.metaLearning, u.median, u.floor, u.undirected] sched
   net_synergy items p
 
-/- --- 2. Happiness Priority Tiers (L58) --- -/
+/- --- 2. Happiness Priority Tiers (L59) --- -/
 
 /-- 
-  [R] Tiers of Happiness in strict priority order (L58):
+  [R] Tiers of Happiness in strict priority order (L59):
   Eudaimonic (flourishing) > Shareable (contagious/networked) > Satisficing (contentment) >
   Baseline (Rawlsian quantile floor) > Median (average hedonic) > Peak (maximum hedonic intensity - ranked lowest!)
 -/
@@ -71,10 +72,10 @@ noncomputable def synthesize_happiness (h : HappinessTiers) (sched : ParamSchedu
   let items := zip_priority_weights [h.eudaimonic, h.shareable, h.satisficing, h.baseline, h.median, h.peak] sched
   net_synergy items p
 
-/- --- 3. Novelty Priority Tiers (L59) --- -/
+/- --- 3. Novelty Priority Tiers (L60) --- -/
 
 /-- 
-  [R] Tiers of Novelty in strict priority order (L59):
+  [R] Tiers of Novelty in strict priority order (L60):
   Paradigm > Perspective > Chaotic > Incremental > Perilous > Trivial (~0)
 -/
 structure NoveltyTiers where
@@ -90,10 +91,10 @@ noncomputable def synthesize_novelty (n : NoveltyTiers) (sched : ParamSchedule) 
   let items := zip_priority_weights [n.paradigm, n.perspective, n.chaotic, n.incremental, n.perilous, n.trivial] sched
   net_synergy items p
 
-/- --- 4. Distributional Push (pushDistr, L60) --- -/
+/- --- 4. Distributional Push (pushDistr, L62) --- -/
 
 /--
-  [OPEN] Distributional Push: pushDistr(median, quantile_spread) ⇄ Sy(...) (L60).
+  [OPEN] Distributional Push: pushDistr(median, quantile_spread) ⇄ Sy(...) (L62).
   Represents distribution-wide optimization prioritizing the raising of the floor and lower quantiles
   over the unbounded elevation of top percentiles.
   Marked [OPEN] and unformalized in the core spec; requires detailed population distribution semantics
@@ -106,8 +107,9 @@ def pushDistr_unformalized_spec_note : String :=
 
 /--
   [P] Experiential variety of a being's experience stream: distinct experiences / total.
-  Reading of Di in L37 `H(t) := ∫Positive(Se) + BiasMitigation + Di` as variety within one
-  life (a counter to hedonic adaptation), distinct from N, which scores outcomes against ℝ.
+  Reading of the last term of L37 `H(t) := ∫Positive(Se(St(t))) dSt + BiasMitigation + N(Se)`
+  (written Di in earlier drafts) as variety within one life, the novelty of the being's own
+  experience (a counter to hedonic adaptation), distinct from N over outcomes against ℝ.
 -/
 noncomputable def experiential_variety {τ : Type*} [DecidableEq τ] (stream : List τ) : ℝ :=
   if stream = [] then 0 else (stream.toFinset.card : ℝ) / stream.length
