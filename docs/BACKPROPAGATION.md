@@ -1553,3 +1553,9 @@ generally, every gate and distribution the simulation uses is to be adapted to r
 far as possible (`docs/CALIBRATION.md`); governed thresholds keep governed defaults, with institutional
 analogues as reference points. Candidate homes: L133 (IH), Government (clean deliberation), the
 Implementation article's calibration of Phase 1.
+*Author, on 8.63:* realistic figures are adapted to the scale of what they mean, and figures that would
+work very differently in a Benefuture society are not used as defaults. Invariant figures (perception
+noise, skill dispersion, partial advice taking) carry over; figures produced by today's institutions
+(vigilance, deception and audit rates, whistleblowing, R&D share, delegation behaviour) are a
+status-quo baseline or a sweep, since in Benefuture they should emerge from its incentives; each
+figure is converted to the simulation's unit, step and population before use.
