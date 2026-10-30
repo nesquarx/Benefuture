@@ -1545,3 +1545,11 @@ voter's own. Cycles cannot form (delegation only to strictly higher reputation, 
 pass weight on) and no weight is lost. In these worlds the cap and audit bound delegation's losses to
 about two points but do not make delegation beat direct voting; where delegation helps (Berinsky et
 al. 2025) is not yet simulated. Candidate homes: L114, Government (liquid democracy).
+
+**8.63 Author note: deliberation does not always change minds.** A non-expert may hear an expert and
+keep its own position; the rate at which people take advice, and how far, should be drawn from
+realistic sources (advice taking, field persuasion rates, deliberative polling), not assumed. More
+generally, every gate and distribution the simulation uses is to be adapted to realistic source data as
+far as possible (`docs/CALIBRATION.md`); governed thresholds keep governed defaults, with institutional
+analogues as reference points. Candidate homes: L133 (IH), Government (clean deliberation), the
+Implementation article's calibration of Phase 1.
