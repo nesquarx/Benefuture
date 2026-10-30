@@ -1493,7 +1493,7 @@ camp whose record is better, and the trials take longer to settle the question. 
 weights are walk counts, tagged ones each reachable origin once. Candidate homes: L133 (IH: source
 tags as part of SourceVerify), L113, L114, Government (clean deliberation).
 
-**8.60 [OPEN] Do models take their borrowed share?.** Models do not vote (8.42.2:
+**8.60 Do models take their borrowed share? (ruled below).** Models do not vote (8.42.2:
 they inform votes, as expert commentary does). With tags, a voter's share borrowed from models
 therefore stays with the voter, cast on its own reading informed by the models, and every voter who
 hears a model recasts it: the echo of 8.45 remains through models (IH and models improving towards
@@ -1505,6 +1505,17 @@ decision counts each model once: 92.6%. Options: (a) models take their share, ca
 draws on; (c) models' published predictions enter the tally once, weighed by their records (8.43
 option (a), a new rule). The simulation keeps 8.42.2 by default (`model_share = :voter`) and reports
 (a) beside it. Candidate homes: L114, L133, Government (models in deliberation), 8.42.2.
+*Author ruling (8.60):* models do not vote. Agents have access to all kinds of information whose
+sources can be credited as experts, but credit never passes as vote shares: each agent votes, or
+delegates (L114), with its full domain expertise and impact weight. Influence is inevitable; IH is
+there to inform about sources and estimated truth levels, not to redistribute voting power. So 8.59's
+[P] reading (the borrowed share passing to its origins as capped fractional delegation) is withdrawn,
+with `borrowed_shares_ref`, its export and wrapper, and `model_share`; tags count each origin once in a
+voter's reading, and the voter casts its full weight on that reading. *Author, on the ContentionMap:*
+IH's ContentionMap exposes all expert sources, not a few; the simulation's map had surfaced only the
+three most reputable on each side, so every layman heard the same six sources and recast their noise
+together, which is the echo cost 8.45 measured. The map now exposes every source in the domain, each
+weighed by its record (trickle-down, 8.44, still drops sources below the listener's own record).
 
 **8.61 Gaming source tags.** Tags are outputs, auditable by AdvAp against the
 open log (L160). (1) Misattribution (claiming a reputable source backs one's side, or slandering it):

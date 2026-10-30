@@ -259,9 +259,6 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_tagged_reading] def taggedReading (self own ownSide : Float) (ids sides ws : FloatArray) : Float :=
   tagged_reading_ref self own ownSide ids.data sides.data ws.data
 
-@[export bf_borrowed_shares] def borrowedShares (self own : Float) (ids ws : FloatArray) : FloatArray :=
-  ⟨borrowed_shares_ref self own ids.data ws.data⟩
-
 @[export bf_tags_falsified] def tagsFalsified (claimed logged : FloatArray) : USize :=
   (tags_falsified_ref claimed.data logged.data).toUSize
 

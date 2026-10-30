@@ -2,9 +2,9 @@
   BenefutureReference.Sources
   Source tags in information handling (L133 IH; author ruling on 8.45): a reading carries the tags
   of the sources it came from, so an echo never passes for a source. A listener hearing several
-  contacts that repeat one origin hears it once, and an echo of the listener itself is not a source;
-  the borrowed share of a reading passes to its origins as fractional delegation (capped by L114,
-  `accumulate_capped_ref`), the listener keeping its own share. Tags are outputs: AdvAp audits them
+  contacts that repeat one origin hears it once, and an echo of the listener itself is not a source.
+  Tags inform; they move no voting weight (author ruling 8.60: every voter votes or delegates with its
+  full expertise and impact weight, sources are credited through their records). Tags are outputs: AdvAp audits them
   against the origins' logged outputs (misattribution) and audits outputs presented as one's own
   against what was heard (laundering by omission).
 -/
@@ -25,14 +25,6 @@ def count_once_ref (ids ws : Array Float) : Array Float := count_once_from #[] i
     an origin equal to the listener (`self`) is its own echo and adds nothing. -/
 def tagged_reading_ref (self own ownSide : Float) (ids sides ws : Array Float) : Float :=
   own * ownSide + ((count_once_from #[self] ids ws).zip sides).foldl (fun s p => s + p.1 * p.2) 0.0
-
-/-- Borrowed shares (8.45, reading [P]): each distinct origin's weight over own weight plus all
-    distinct origins' weights; repeats and self-echoes take none. The listener keeps one minus
-    their sum; each share passes to its origin as fractional delegation, capped (L114). -/
-def borrowed_shares_ref (self own : Float) (ids ws : Array Float) : Array Float :=
-  let c := count_once_from #[self] ids ws
-  let total := own + c.foldl (· + ·) 0.0
-  if total > 0.0 then c.map (· / total) else c.map fun _ => 0.0
 
 /-- Falsified tags (8.45; L160): how many claimed sides differ from the origins' logged outputs. -/
 def tags_falsified_ref (claimed logged : Array Float) : Nat :=

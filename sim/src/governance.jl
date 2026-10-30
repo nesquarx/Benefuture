@@ -90,13 +90,6 @@ function tagged_reading(self::Real, own::Real, own_side::Real, ids, sides, ws)
           self, own, own_side, floatarray(ids), floatarray(sides), floatarray(ws))
 end
 
-"Borrowed shares of a vote (Lean `borrowed_shares_ref`; 8.45 [P]): each distinct origin's share; the voter keeps one minus their sum."
-function borrowed_shares(self::Real, own::Real, ids, ws)
-    check_tags(ids, ws)
-    check(isfinite(self) && isfinite(own) && own >= 0, "finite self id, non-negative own weight")
-    lean_floats(ccall(sym(:bf_borrowed_shares), Ptr{Cvoid}, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}), self, own, floatarray(ids), floatarray(ws)))
-end
-
 "Tags whose claimed side differs from the origin's logged output (Lean `tags_falsified_ref`; L160)."
 function tags_falsified(claimed, logged)
     check(length(claimed) == length(logged) && all(side_ok, claimed) && all(side_ok, logged), "one logged side per claimed side, each -1, 0 or 1")

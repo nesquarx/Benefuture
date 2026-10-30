@@ -64,12 +64,11 @@ struct M5Params
     record_λpos::Float64       # decay of a source's rights in the rolling net its weight reads (governed; L101)
     record_λneg::Float64       # and of its wrongs, no faster (8.29)
     p_novel::Float64           # chance a source with a weaker record brings input novel to the listener (world; 8.44)
-    info_handling::Bool        # the social network surfaces the domain's most reputable sources (L133 IH; 8.44)
+    info_handling::Bool        # the social network exposes every source in the domain, weighed by record (L133 IH; 8.44)
     camp_bias::Vector{Float64} # per agent, an honest paradigm's systematic lean (world: contention among experts)
-    # Source tags (L133 IH; author ruling on 8.45): echoes counted once, borrowed shares passed on.
-    source_tags::Bool          # readings carry their origins' tags; the borrowed share passes to them (8.45, [P])
+    # Source tags (L133 IH; author rulings 8.45, 8.60): readings count each origin once; votes keep full weight.
+    source_tags::Bool          # readings carry their origins' tags and count each once (8.45); no weight passes on (8.60)
     rounds::Int                # times readings pass on before the vote (world)
-    model_share::Symbol        # :voter (models inform, do not vote: 8.42.2) or :model (a model takes its borrowed share, capped; [OPEN])
     tag_liars::Vector{Int}     # agents gaming the tags (M6; world)
     tag_lie::Symbol            # :misattribute (claim every origin backs one side) or :omit (republish what was heard as one's own)
     tag_audit::Bool            # AdvAp reads tags against the log and audits outputs for undisclosed echoes (L160)
@@ -91,7 +90,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   deliberation::Bool = false, n_contacts::Integer = 5, model_σ0::Real = 5.0, p_new_model::Real = 0.0,
                   improve_drift::Real = -0.1, improve_σ::Real = 0.3, scale_min::Real = 0.1, model_capture = nothing,
                   record_λpos::Real = 0.05, record_λneg::Real = 0.02, p_novel::Real = 0.05, info_handling::Bool = true,
-                  camp_bias = Float64[], source_tags::Bool = false, rounds::Integer = 1, model_share::Symbol = :voter,
+                  camp_bias = Float64[], source_tags::Bool = false, rounds::Integer = 1,
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
                   echo_z::Real = 3.0, echo_min::Integer = 20)
     domains = collect(Int, domains)
@@ -115,7 +114,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     check(0 <= record_λneg <= record_λpos && isfinite(record_λpos), "record decay: wrongs no faster than rights (8.29)")
     check(0 <= p_novel <= 1, "novel-input chance in [0, 1]")
     check(isempty(camp_bias) || (length(camp_bias) == length(m3.agents) && all(isfinite, camp_bias)), "one finite paradigm lean per agent")
-    check(rounds >= 1 && model_share in (:voter, :model), "at least one round; model share :voter or :model")
+    check(rounds >= 1, "at least one round")
     check(!source_tags || deliberation, "source tags tag deliberation's readings")
     check(isempty(tag_liars) || deliberation, "tags are gamed only where readings pass on")
     check(all(c -> 1 <= c <= length(agents), tag_liars) && tag_lie in (:misattribute, :omit), "tag liars are agents; lie :misattribute or :omit")
@@ -131,7 +130,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace,
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
-             source_tags, rounds, model_share, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min)
+             source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min)
 end
 
 """
@@ -201,7 +200,7 @@ function run_m5(p::M5Params; seed)
     agree, n_out = zeros(na), zeros(na)
     out_rec, brw_rec = [[0.0, 0.0] for _ in 1:na], [[0.0, 0.0] for _ in 1:na]
     audit_b, flagged = zeros(na), falses(na)
-    borrowed_trace, weight_gap = Float64[], Ref(0.0)
+    weight_gap = Ref(0.0)
     heard_srcs, heard_wc, heard_wm = [Int[] for _ in 1:na], [Float64[] for _ in 1:na], [Float64[] for _ in 1:na]
     heard_own, heard_mine = zeros(na), zeros(na)
     launders(j) = liar[j] && p.tag_lie == :omit && !flagged[j]
@@ -258,9 +257,9 @@ function run_m5(p::M5Params; seed)
             pub(j) = (j in p.colluders && defect) ? 1.0 : sign(signal[j])  # what a person publishes
             wm0 = [lo(m.rec) for m in mods[k]]
             ranked = sortperm(reputation[:, k]; rev = true)
-            sides = (filter(j -> pub(j) > 0, ranked), filter(j -> pub(j) <= 0, ranked))
-            half = cld(p.n_contacts, 2)
-            contention_map(i) = vcat([filter(!=(i), side)[1:min(half, length(side) - (i in side))] for side in sides]...)
+            # IH's ContentionMap exposes every source in the domain on both sides, each weighed by its
+            # record (author, on 8.45: all expert sources, not the few most reputable).
+            contention_map(i) = filter(!=(i), ranked)
             reading = zeros(na); wsum, wmod = 0.0, 0.0
             for i in 1:na
                 # Understanding trickles down and across (8.44): a voter weighs a source only if its
@@ -269,8 +268,8 @@ function run_m5(p::M5Params; seed)
                 hear(w) = heard(w, mine, w >= mine ? false : rand(nrng) < p.p_novel)  # Lean `heard_ref`
                 own = max(mine, 0.1)  # one's own reading counts, at least a little
                 # The social network's information handling (L133 IH: SourceVerify by Re(Dn), and a
-                # ContentionMap) surfaces the domain's most reputable sources on each side of the
-                # question; without it, a voter hears its contacts.
+                # ContentionMap) exposes every source on each side of the question, weighed by its
+                # record; without it, a voter hears its contacts.
                 srcs = p.info_handling ? contention_map(i) : contacts[i]
                 wc = [hear(lo(person_rec[j, k])) for j in srcs]
                 wm = hear.(wm0)
@@ -293,7 +292,6 @@ function run_m5(p::M5Params; seed)
                     reading = [heard_own[i] * sign(signal[i]) + sum(heard_wc[i] .* said[heard_srcs[i]]; init = 0.0) +
                                sum(heard_wm[i] .* published) for i in 1:na]
                 end
-                push!(borrowed_trace, 0.0)
                 own_pub = pub.(1:na)
                 signal = reading
             else
@@ -305,11 +303,9 @@ function run_m5(p::M5Params; seed)
                     tags_caught[] += tagged.falsified
                     caught_now .= tagged.falsifiers
                 end
-                tag_tally, cast, audit_b = tagged.tally, tagged.cast, tagged.borrowed_side
-                push!(borrowed_trace, tagged.passed / total)
-                weight_gap[] = max(weight_gap[], tagged.gap)
+                tag_tally, audit_b = tagged.tally, tagged.borrowed_side
                 own_pub = tagged.said
-                signal = tagged.kept_reading
+                signal = tagged.reading
             end
         end
         vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
@@ -429,7 +425,7 @@ function run_m5(p::M5Params; seed)
      model_weight = model_weight, best_model_σ = [minimum(m.σ for m in mods[k]) for k in 1:nd],
      captured_weight_start = isempty(cap_trace) ? NaN : mean(cap_trace[1:min(10, end)]),
      captured_weight_end = isempty(cap_trace) ? NaN : mean(cap_trace[max(1, end - 9):end]),
-     weight_gap = weight_gap[], borrowed_share = borrowed_trace, tags_falsified = tags_false[], tags_detected = tags_caught[],
+     weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
      records = person_rec)
 end
@@ -446,14 +442,11 @@ needs direct contact) and reading each origin's side from the log (`p.tag_audit`
 Readings count each origin once (`tagged_reading`). A launderer re-emits no tags and presents what
 it heard as its own output; a liar claims every origin it heard backs its side.
 
-The vote: each voter's borrowed shares (`borrowed_shares`) pass to their origins as fractional
-delegation under L114's cap (`accumulate_capped`) and are cast on the origin's logged output; a share
-the cap blocks stays with the voter. With `model_share = :voter` the models' shares stay too: models
-inform, they do not vote (8.42.2). The voter casts what it keeps on its kept reading (its own and,
-with `:voter`, the models'). A launderer, claiming independence, keeps everything and casts its whole
-reading. Returns the tally, the weight each person ends up casting (`cast`), the side each voter's
-sources gave it (`borrowed_side`, for the echo audit), the weight passed on, the conservation gap,
-each person's output as logged (`said`), the kept readings, and the falsified tags with their makers.
+The vote (author ruling 8.60): each voter casts its full weight (expertise and impact, or what it
+delegated explicitly under L114) on its reading; tags inform about sources, they pass on no weight,
+and models never vote (8.42.2). Returns the tally, the side each voter's sources gave it
+(`borrowed_side`, for the echo audit), each person's output as logged (`said`), the readings, and the
+falsified tags with their makers.
 """
 function tagged_deliberation(p, na, k, total, held, delegated, signal, published, pub, wm0, person_w, srcs, wc, wm,
                              own, mine, launders, misattributes, bloc, rng)
@@ -492,46 +485,12 @@ function tagged_deliberation(p, na, k, total, held, delegated, signal, published
     for j in 1:na
         launders(j) && (said[j] = sign(rd[j]))
     end
-    cast, mheld = copy(held), zeros(nm)
-    kept_reading, borrowed_side = zeros(na), zeros(na)
-    tally, passed, kept_total = 0.0, 0.0, 0.0
-    for i in randperm(rng, na)
-        ids, sides, ws = lists[i]
-        borrowed_side[i] = sign(tagged_reading(i, 0.0, 0.0, ids, sides, ws))
-        delegated[i] && continue
-        if launders(i)
-            kept_reading[i] = rd[i]
-            keep = held[i]
-        else
-            sh = borrowed_shares(i, own[i], ids, ws)
-            keep = held[i] * max(1 - sum(sh; init = 0.0), 0.0)
-            for (q, s) in enumerate(sh)
-                s > 0 || continue
-                amount, o = s * held[i], ids[q]
-                if o > na && p.model_share == :voter
-                    keep += amount
-                    continue
-                end
-                holder, at = o > na ? (mheld, Int(o) - na) : (cast, Int(o))
-                after = accumulate_capped(p.cap * total, holder[at], [amount])
-                if after > holder[at]
-                    holder[at] = after
-                    tally += amount * logged(o)
-                    passed += amount
-                else
-                    keep += amount
-                end
-            end
-            m = findall(>(na), ids)
-            kept_reading[i] = p.model_share == :voter ? tagged_reading(i, own[i], sign(signal[i]), ids[m], sides[m], ws[m]) :
-                              own[i] * sign(signal[i])
-        end
-        tally += keep * (bloc(i) ? 1.0 : sign(kept_reading[i]))
-        kept_total += keep
-    end
-    gap = abs(passed + kept_total - sum(held[i] for i in 1:na if !delegated[i])) / total
-    (tally = tally, cast = cast, borrowed_side = borrowed_side, passed = passed, gap = gap, said = said,
-     kept_reading = kept_reading, falsified = falsified, falsifiers = falsifiers)
+    # The vote (author ruling 8.60): tags inform, they redistribute nothing. Each voter casts its full
+    # weight on its own reading, every origin in it counted once; sources are credited as experts
+    # through their records, never through vote shares, and models never vote.
+    borrowed_side = [sign(tagged_reading(i, 0.0, 0.0, lists[i]...)) for i in 1:na]
+    tally = sum((held[i] * (bloc(i) ? 1.0 : sign(rd[i])) for i in 1:na if !delegated[i]); init = 0.0)
+    (tally = tally, borrowed_side = borrowed_side, said = said, reading = rd, falsified = falsified, falsifiers = falsifiers)
 end
 
 """

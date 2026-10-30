@@ -150,16 +150,14 @@ end
 
 # Source tags (author ruling on 8.45; L133 IH): echoes must not count information many times. Each
 # reading carries the tags of the sources it came from; a listener hearing several contacts that
-# repeat one source hears it once, and an echo of the listener itself is not a source; the borrowed
-# share of a voter's reading is not counted again as an independent source but passes to the tagged
-# source as fractional delegation, capped by L114 (reading [P]), the voter keeping its own share.
+# repeat one source hears it once, and an echo of the listener itself is not a source. Tags inform;
+# they move no weight (author ruling 8.60): every voter votes or delegates with its full expertise and
+# impact weight, sources are credited as experts through their records, and models never vote.
 @testset "Source tags (Lean reference): acceptance" begin
     # Count once by origin: a repeated origin carries weight only at its first occurrence.
     @test count_once([1.0, 2.0, 1.0, 3.0, 2.0], [0.5, 1.0, 0.5, 2.0, 1.0]) == [0.5, 1.0, 0.0, 2.0, 0.0]
     # A reading: own weight × own side + each distinct origin's weight × its side.
     @test tagged_reading(0.0, 1.0, 1.0, [7.0, 7.0, 8.0], [-1.0, -1.0, 1.0], [2.0, 2.0, 1.0]) ≈ 1.0 - 2.0 + 1.0
-    # Shares of a vote: own 1 of 4, origin 7 half (once), origin 8 a quarter.
-    @test borrowed_shares(0.0, 1.0, [7.0, 7.0, 8.0], [2.0, 2.0, 1.0]) ≈ [0.5, 0.0, 0.25]
     # A tag is audited against the source's logged output (AdvAp reads the open log).
     @test tags_falsified([1.0, -1.0, 1.0], [1.0, 1.0, 1.0]) == 1 && tags_falsified([1.0], [1.0]) == 0
     # Undisclosed echo: agreement with what one heard far above what two independent judges of
@@ -170,21 +168,16 @@ end
 
 @testset "Source tags (Lean reference): adversarial and edge cases" begin
     # However often a source is repeated, it is heard once: a thousand echoes of one source weigh as one.
-    @test borrowed_shares(0.0, 1.0, fill(5.0, 1000), fill(1.0, 1000)) ≈ [0.5; zeros(999)]
     @test tagged_reading(0.0, 1.0, 1.0, fill(5.0, 1000), fill(-1.0, 1000), fill(3.0, 1000)) ≈ 1.0 - 3.0
-    # An echo of the listener itself is not a source: its own share is its own weight alone.
-    @test borrowed_shares(9.0, 1.0, [9.0, 4.0], [5.0, 1.0]) ≈ [0.0, 0.5]
+    # An echo of the listener itself is not a source.
     @test tagged_reading(9.0, 1.0, 1.0, [9.0], [1.0], [5.0]) ≈ 1.0
-    # Shares never exceed one and are never negative.
-    s = borrowed_shares(0.0, 0.5, [1.0, 2.0, 3.0, 1.0], [1.0, 2.0, 3.0, 4.0])
-    @test all(>=(0), s) && sum(s) < 1
-    # No sources, no borrowing; a voter with no own weight and no sources borrows nothing.
-    @test isempty(borrowed_shares(0.0, 1.0, Float64[], Float64[])) && borrowed_shares(0.0, 0.0, [1.0], [0.0]) == [0.0]
+    # No sources, the reading is one's own.
+    @test tagged_reading(0.0, 1.0, -1.0, Float64[], Float64[], Float64[]) == -1.0
     # Malformed inputs are rejected.
     @test_throws ArgumentError count_once([1.0, 2.0], [1.0])
     @test_throws ArgumentError count_once([1.0], [-1.0])
     @test_throws ArgumentError count_once([NaN], [1.0])
-    @test_throws ArgumentError borrowed_shares(0.0, -1.0, [1.0], [1.0])
+    @test_throws ArgumentError tagged_reading(0.0, -1.0, 1.0, [1.0], [1.0], [1.0])
     @test_throws ArgumentError tagged_reading(0.0, 1.0, 2.0, [1.0], [1.0], [1.0])  # sides are ±1 or 0
     @test_throws ArgumentError tags_falsified([1.0], [1.0, 1.0])
     @test_throws ArgumentError undisclosed_echo(5, 4, 0.9, 0.9; margin = 0.1, z = 3.0)
@@ -237,18 +230,23 @@ end
     alone = mean(late(run_m5(hard(); seed)) for seed in seeds)
     ih = mean(late(run_m5(hard(deliberation = true); seed)) for seed in seeds)
     ih_tags = [run_m5(hard(deliberation = true, source_tags = true); seed) for seed in seeds]
-    # Counting each source once removes 8.45's echo cost: deliberation through the network's
-    # ContentionMap decides at least as well as voters alone, and better than untagged.
-    @test mean(late.(ih_tags)) > ih + 0.03
-    @test mean(late.(ih_tags)) >= alone - 0.01
-    # The borrowed share passes on, capped: no voter ends up holding more than the cap plus one voter's weight.
-    @test all(all(r.max_share .<= 0.05 .+ r.max_single .+ 1e-9) for r in ih_tags)
-    @test all(r.weight_gap < 1e-9 for r in ih_tags)  # every weight is cast once: kept or passed on
-    @test all(mean(r.borrowed_share) > 0.1 for r in ih_tags)  # bounded by the cap on the few sources heard
+    three = mean(late(run_m5(hard(deliberation = true, rounds = 3); seed)) for seed in seeds)
+    three_tags = mean(late(run_m5(hard(deliberation = true, rounds = 3, source_tags = true); seed)) for seed in seeds)
+    # Counting each origin once stops echoes compounding as readings pass on round after round
+    # (persuasion bias): over three rounds the tagged network decides better than the untagged.
+    @test three_tags > three + 0.03
+    # Tags move no weight (8.60): every voter casts its full weight, the largest share cast is the
+    # same as untagged, and no weight is lost.
+    @test all(r.max_share == run_m5(hard(deliberation = true); seed = s).max_share for (s, r) in zip(seeds, ih_tags))
+    @test all(r.weight_gap < 1e-9 for r in ih_tags)
+    # Influence is inevitable (8.60): in one round tags change nothing, and laymen voting what the
+    # ContentionMap's few sources said still recast those sources' information with full weight, so
+    # the echo cost of 8.45 stays in the tally (finding 8.59).
+    @test abs(mean(late.(ih_tags)) - ih) < 0.01
+    @test mean(late.(ih_tags)) < alone - 0.03
     # Off, nothing changes.
     @test isequal(run_m5(hard(deliberation = true, source_tags = false); seed = 1), run_m5(hard(deliberation = true); seed = 1))
     @test_throws ArgumentError hard(deliberation = true, rounds = 0)
-    @test_throws ArgumentError hard(deliberation = true, model_share = :elsewhere)
     @test_throws ArgumentError hard(source_tags = true)  # tags tag deliberation's readings
 end
 
@@ -266,16 +264,16 @@ end
     plain = mean(run_m5(talk(); seed).correct for seed in seeds)
     plain_lies = mean(run_m5(talk(tag_liars = liars, tag_lie = :misattribute); seed).correct for seed in seeds)
     @test plain_lies < plain - 0.01
-    # Tagged, a misattributed value never moves the tally, even unaudited: the borrowed share passes
-    # to the source's logged output, and records read the log, so slander touches no record.
-    honest = run_m5(talk(source_tags = true, tag_audit = false); seed = 1)
-    lying = run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :misattribute); seed = 1)
-    @test lying.correct_trace == honest.correct_trace && lying.records == honest.records
-    @test lying.tags_falsified > 0 && lying.tags_detected == 0
-    # Audited, every falsified tag is caught (the claim differs from the log) and debited to its maker.
-    audited = run_m5(talk(source_tags = true, tag_liars = liars, tag_lie = :misattribute); seed = 1)
-    @test audited.tags_detected == audited.tags_falsified > 0
-    @test audited.correct >= honest.correct - 0.02
+    # Tagged but unaudited, a listener takes a claimed side at its word, so the lie still costs
+    # decisions; audited, the claim is read against the log, every falsified tag is caught and
+    # debited to its maker, and the cost is mostly gone.
+    honest = run_m5(talk(source_tags = true); seed = 1)
+    unaudited_lies = mean(run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :misattribute); seed).correct for seed in seeds)
+    audited_lies = [run_m5(talk(source_tags = true, tag_liars = liars, tag_lie = :misattribute); seed) for seed in seeds]
+    @test unaudited_lies < mean(run_m5(talk(source_tags = true); seed).correct for seed in seeds) - 0.01
+    @test all(r.tags_detected == r.tags_falsified > 0 for r in audited_lies)
+    @test mean(r.correct for r in audited_lies) > unaudited_lies
+    @test audited_lies[1].correct >= honest.correct - 0.02
     # Laundering by omission: a launderer republishes what it heard as its own and votes it with its
     # full weight. AdvAp's echo audit flags most launderers (agreement with what they heard far above
     # independence) and few honest voters; flagged, their readings are split like anyone's.
@@ -284,8 +282,8 @@ end
     @test mean(r.honest_flagged for r in launder) <= 0.05 * (100 - length(liars))
     unaudited = [run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :omit); seed) for seed in seeds]
     @test all(isempty(r.launderers_flagged) for r in unaudited)
-    # Unaudited, laundering pays: echoed outputs build the launderers good records, listeners borrow
-    # from them, and decisions suffer; the audit removes both.
+    # Unaudited, laundering pays: echoed outputs build the launderers good records, listeners weigh
+    # them, and decisions suffer; the audit removes both.
     liar_acc(rs) = mean(mean(r.records[j, d][1] / sum(r.records[j, d]) for j in liars, d in 1:4) for r in rs)
     @test liar_acc(unaudited) > liar_acc(launder) + 0.1
     @test mean(r.correct for r in launder) > mean(r.correct for r in unaudited) + 0.01
