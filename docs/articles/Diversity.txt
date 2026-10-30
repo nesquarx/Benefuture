@@ -1,5 +1,5 @@
 [[category:Benefuture]][[category:WorldBuilding]]
-Diversity is the presence of a [[significant]] amount of chaos / randomization / variety / inhomogeneity in a system or [[society]] that makes it self evolve to better fit [[goals]]. <ref>'''Packard, N. H. (1988).''' "Adaptation Toward the Edge of Chaos," in ''Complexity: The Emerging Science at the Edge of Order and Chaos'' (p. 138), edited by G. Gell-Mann & M. Mitchell</ref> 
+Diversity is a balance of order and chaos in a system or [[society]], giving a [[significant]] amount of variety / inhomogeneity that makes it resilient and self evolve to better fit [[goals]]. <ref>'''Packard, N. H. (1988).''' "Adaptation Toward the Edge of Chaos," in ''Complexity: The Emerging Science at the Edge of Order and Chaos'' (p. 138), edited by G. Gell-Mann & M. Mitchell</ref> 
 
 Diversity is achieved by encouraging differences of circumstance, understanding, opinion, origin, etc. of [[Thing|things]] in a system. It is one of the markers of a resilient system. In [[benefuture]], diversity is built into the '''Novelty factor''' of [[benefuture goals]]. Novelty being the nontrivial<ref>J. Schmidhuber, "Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010)," in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interestingness), Sept. 2010, doi: 10.1109/TAMD.2010.2056368.</ref> uniqueness of a thing.
 
@@ -13,7 +13,7 @@ Diversity is achieved by encouraging differences of circumstance, understanding,
 * Summed over a population, novelty counts its distinct kinds; duplicates add nothing.
 * Monoculture is any paradigm homogeneity: of models, vote decisions, technology or process uptake, or cultural progression.
 * An alternative is never forced on anyone: it is subsidised by [[Benefuture currency#Aspects|novelty bonuses]] until some local body chooses it.
-* Diversity's main [[measurement]] is Novelty, the simple rarity (inverse of frequency of previous encounter) or surprise factor  (inverse log of probability <ref>'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). </ref> ) of any element compared to others in the relevant [[Domain|domains]].
+* Diversity's main [[measurement]] is Novelty, the simple rarity (inverse of frequency of previous encounter) or surprise factor  (negative log of probability <ref>'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). </ref> ) of any element compared to others in the relevant [[Domain|domains]].
 
 === Research ===
 
