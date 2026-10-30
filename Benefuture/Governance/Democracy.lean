@@ -403,30 +403,10 @@ theorem reputation_ledger_non_cancellation
   dsimp
   exact ⟨rfl, h_neg⟩
 
-/--
-  Balance Overflow to Reputation Conversion (Benefuture currency.txt L19):
-  When wealth accumulation exceeds the needs threshold, the excess is redirected
-  to domain reinvestment and converts to domain reputation points.
-  [OPEN] contested: see BACKPROPAGATION 8.51. Reputation cannot be purchased (L100: reputation is
-  causal contribution to U and H plus novelty; L103: overflow is directed auto-investment, with no
-  reputation term).
--/
-def overflow_to_reputation_gain (excessBalance : Int) : Nat :=
-  if excessBalance > 0 then (excessBalance / 100).toNat else 0
-
-/--
-  THEOREM: Wealth Overflow Reinvestment Invariant ([OPEN] contested: see BACKPROPAGATION 8.51).
-  Significant private balance overflow (excess ≥ 100) converted into domain reinvestment 
-  guarantees a strictly positive reputation award in that domain.
--/
-theorem overflow_awards_strictly_positive_reputation 
-    (excess : Int) (h_excess : excess ≥ 100) :
-    overflow_to_reputation_gain excess > 0 := by
-  unfold overflow_to_reputation_gain
-  have h_pos : excess > 0 := by omega
-  simp [h_pos]
-  have h_div : excess / 100 ≥ 1 := by omega
-  omega
+/- Balance overflow confers no reputation directly (author ruling 8.51): the excess is directed
+   auto-investment (L103), and the reinvestment earns reputation only through the ordinary channels
+   once its outcomes are measured (L100: causal contribution to U and H, plus novelty). Reputation
+   cannot be purchased. -/
 
 abbrev VW := calculate_grounded_voting_weight
 abbrev Dm := GroundedVoterProfile

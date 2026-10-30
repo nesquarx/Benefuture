@@ -1108,7 +1108,7 @@ as its own, or, rarely (`p_novel`), when the source brings novel input. Candidat
 (clean deliberation), Education (understanding shared, not moved), L113.
 Propagated to Government (articles).
 
-**8.45 Finding on 8.44: echoes count information many times (needs the author).** Deliberation now
+**8.45 Finding on 8.44: echoes count information many times (ruled below).** Deliberation now
 trickles down and across only (a voter weighs a source whose record is at least its own, rarely a
 weaker one for novel input), and the social network's information handling (L133 IH: SourceVerify by
 Re(Dn)) surfaces the domain's most reputable sources. 100 voters, hard factual decisions, 3 seeds,
@@ -1129,6 +1129,12 @@ diversity and their own limited expertise): the network's ContentionMap surfaces
 sources on each side; with two expert camps of equal standing, one leaning by an honest bias,
 contested decisions end right 86.7% with deliberation and split trials, against 80.7% with trials
 alone and 75.8% with neither (`sim/README.md`, M5).
+*Author ruling (8.45 resolved):* echoes must not count information many times. Information handling's
+source tags (L133 IH) must not let an echo pass for a source: a reading carries the tags of the sources
+it came from, a voter hearing several contacts that repeat one source hears that source once, and the
+borrowed share of a voter's reading is not counted again as an independent source. Implementation
+reading, [P]: the borrowed share passes to the tagged source as fractional delegation, capped (option
+(a), L114), the voter keeping its own share. Candidate homes: L133 (IH), L113, L114.
 
 **8.46 Author ruling on duties.** Contribution and participation at some level is a duty: voting is
 mandatory above a threshold, and so is taking care not to harm others in obvious ways. The line where
@@ -1136,7 +1142,7 @@ duties become recommendations is itself a governed threshold. This settles the G
 list of duties against 8.24.3 (duties stay minimal, not absent). Candidate homes: Law (Duties,
 Responsibilities), Government, L113 (mandatory voting threshold), L157. Propagated to Law (articles).
 
-**8.47 Finding: nothing in G blocks a small sacrificial trade-off in the toy (needs the author).** M7
+**8.47 Finding: nothing in G blocks a small sacrificial trade-off in the toy (ruled below).** M7
 (deaths): G's floors are taken over the decision-time population, a life a plan would end keeping its
 place at the bottom (Lean `removal_cannot_raise_floor`, and for the quantile
 `removal_cannot_raise_quantile_floor`). That bound covers lowering levels with no one else gaining. A
@@ -1154,6 +1160,13 @@ value a death over Ha_lt (its foreclosed future), (b) take G's floor as the lite
 are at stake, (c) accept that Fr's emergence needs dominance (`dominated_plan_not_chosen`) and that
 organ-harvest cases are left to law and contract. Candidate homes: Benefuture goals, Freedom, Harm, L61,
 L74, L135; conjecture A36.
+*Author ruling (8.47 resolved):* generally the standard trolley rules (redirecting harm so that fewer
+are harmed is acceptable), but prefer to avoid irreparable harm traded against non-breakthrough gains.
+Implementation reading, [P]: option (a), a death valued over the long-term window (Ha_lt, its
+foreclosed future) in the irreparable tier, so that irreparable harm is outweighed by preventing more
+irreparable harm, or only by a breakthrough-scale gain, never by ordinary gains spread over the rest.
+The preference stays inside V and G (§8.8: Freedom reported, not a filter). Open: whether doing and
+allowing differ (the footbridge and organ-harvest variants), which the standard rules split on.
 
 **8.48 Author ruling on normalisation.** Normalising reputation must not reduce anyone's net
 reputation when someone surpasses them: only vote weights are normalised, because they scale
@@ -1195,7 +1208,7 @@ an evolutionary search towards minimum-description-length models, more informati
 random-number noise.
 
 
-**8.51 [OPEN] Does balance overflow boost reputation? (needs the author).** Benefuture currency
+**8.51 Does balance overflow boost reputation? (ruled below).** Benefuture currency
 (Aspects) says accumulation beyond the needs threshold "boosts Domain-specific Reputation and is
 redirected into reinvestment in that domain"; Reputation says reputation is earned, and "cannot be
 purchased, traded, or transferred". If overflowed balance raises reputation, money above the threshold
@@ -1206,3 +1219,17 @@ reputation the reinvestment earns once its outcomes are measured, through ordina
 distribution (then the currency article should say so); (b) overflow itself confers no reputation (drop
 the clause); (c) a direct boost (Reputation and L100 would need an exception). Candidate homes: L100,
 L103, Reputation, Benefuture currency.
+*Author ruling (8.51 resolved, reading (a)):* the currency article was wrong. Overflow is reinvested
+(L103); if the reinvestment does good, it earns reputation through the standard channels (L100). The
+article is corrected, and the Lean definition `overflow_to_reputation_gain` with its theorem
+`overflow_awards_strictly_positive_reputation` is removed (Democracy.lean keeps a note).
+
+**8.52 Author ruling on births.** Models predict a birth's outcomes as an optimistic average, at
+sufficient confidence that the birth escrow pays for what the baseline cannot cover. So a newborn's low
+initial understanding does not drag G's floors as a fresh low: the plan that includes a birth is valued
+by the models' predicted trajectory for the newborn, and the escrow (posted by those causing the birth)
+covers the gap between the newborn's needs and the baseline until the prediction is borne out.
+Implementation reading, [P]: the optimistic average is the mean of the model pool's predictions above a
+governed quantile, accepted when the pool's confidence clears a governed threshold; the escrow is sized
+to the predicted shortfall below the baseline over the dependency window, and settles against measured
+outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.

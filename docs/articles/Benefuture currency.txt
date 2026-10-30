@@ -16,7 +16,7 @@ For [[Sophont|participants/users]]:
 * Meeting baseline needs → priced at or below zero ([[Benesophont#Aspects|sophont baseline]]).
 * Outputs causing harm → currency deducted (also from [[Administration]] if systemic failure).
 * Experiencing harm → reparation from responsible parties.
-* Accumulation beyond needs threshold → excess boosts [[Domain]]-specific [[Reputation]] and is redirected into reinvestment in that domain.
+* Accumulation beyond needs threshold → excess is redirected into reinvestment in that [[Domain]]; the reinvestment earns [[Reputation]] only through the ordinary channels, if its measured outcomes do good. Overflow itself confers no reputation.
 
 ==Aspects==
 
