@@ -1234,7 +1234,7 @@ governed quantile, accepted when the pool's confidence clears a governed thresho
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
 
-**8.53-Lean-a Finding: forks game Shapley shares (false-name manipulation; to renumber).** Aziz,
+**8.57-a Finding: forks game Shapley shares (false-name manipulation).** Aziz,
 Bachrach, Elkind & Paterson (2011, *JAIR*, https://doi.org/10.1613/jair.3166) show that splitting one
 player into several identities can raise Shapley-type shares. Tested in the funding game that causal
 distribution uses (an actor's effect counts only when the coalition can fund the action;
@@ -1250,7 +1250,7 @@ pledges within the funding side rather than as separate Shapley players. Either 
 ideological inheritance and grants no claim from the fork itself. Candidate homes: L93–L95, L122,
 Benefuture currency (causal distribution), `Proposed.OutcomeDistribution`.
 
-**8.53-Lean-b Proposal [P]: asymmetric or causal Shapley for causal distribution (to renumber).**
+**8.57-b Proposal [P]: asymmetric or causal Shapley for causal distribution.**
 Causal distribution runs over transaction trees, where contributions have an order (a maker's output
 exists before the carrier carries it). Symmetric Shapley ignores that order. Asymmetric Shapley (Frye,
 Rowat & Feige 2020, NeurIPS) restricts the orderings averaged to those consistent with a causal order;
@@ -1261,7 +1261,7 @@ graph and the substrate's degree of separation) better than symmetric shares, an
 No implementation; for the author with 8.18 (coalition values). Candidate homes: L94, L95,
 `Proposed.OutcomeDistribution`.
 
-**8.53-Lean-c Note: reusing Holliday–Norman–Pacuit's voting formalisation (to renumber).** Their
+**8.57-c Note: reusing Holliday–Norman–Pacuit's voting formalisation.** Their
 formalisation (LORI 2021, https://doi.org/10.1007/978-3-030-88708-7_9; repository
 github.com/chasenorman/Formalized-Voting) is Lean 3 (`leanpkg.toml`), shows no licence on its repository
 page, and is built on ordinal profiles (each voter's strict preference over candidates) with social

@@ -331,7 +331,7 @@ Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
   causal distribution, a funder whose pledge is indispensable, split into k indispensable
   identities, takes k/(k+1) of the outcome instead of 1/2; diminishing returns also reward forking,
   increasing returns penalise it, additive effects are neutral, and the forks never take more than
-  the whole outcome ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl); BACKPROPAGATION 8.53-Lean-a, open).
+  the whole outcome ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl); BACKPROPAGATION 8.57-a, open).
 - Causal contribution as specified (clamped value added, L94's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).

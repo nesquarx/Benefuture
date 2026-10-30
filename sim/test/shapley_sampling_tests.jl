@@ -135,7 +135,7 @@ end
         fk = shapley_shares(funding(fill(0.6 / k, k); need = 0.8), k + 1; rng = Xoshiro(1))
         @test sum(fk[2:end]) ≈ k / (k + 1)
         @test sum(fk[2:end]) <= 1.0                 # the bound that holds: never more than the whole
-        @test sum(fk[2:end]) > one[2]               # the bound that fails: forking pays (8.53-Lean-a)
+        @test sum(fk[2:end]) > one[2]               # the bound that fails: forking pays (8.57-a)
     end
     # Diminishing returns (a concave valuation of summed effects) also reward forking, mildly.
     conc(es) = mask -> sqrt(add(es)(mask))

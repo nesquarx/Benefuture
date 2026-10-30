@@ -442,7 +442,7 @@ Forks also game causal distribution (false-name manipulation, Aziz et al. 2011;
 `sim/test/shapley_sampling_tests.jl`): a funder whose pledge is indispensable, split into k
 indispensable identities, takes k/(k+1) of the outcome alongside the actor instead of 1/2.
 Diminishing returns reward forking mildly, increasing returns penalise it, additive effects are
-neutral, and forks never take more than the whole outcome. Open (BACKPROPAGATION 8.53-Lean-a):
+neutral, and forks never take more than the whole outcome. Open (BACKPROPAGATION 8.57-a):
 the remedy proposed there is the one 8.34 applies to votes, sharing among bound identities.
 
 ## Failure-boundary battery
@@ -897,7 +897,7 @@ for removal.
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
-| Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.53-Lean-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
+| Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.57-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
 | Outcomes with more than 62 contributors fall to traversal | Introduced (bound) | coalitions are 62-bit masks in `shapley_shares` |
 | M5 model pool bound (4 per domain, the weakest by record dropped) | Introduced | array bound; hardcoded in `sim/src/m5.jl` |
 
