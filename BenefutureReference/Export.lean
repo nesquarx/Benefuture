@@ -17,6 +17,7 @@ import BenefutureReference.Justice
 import BenefutureReference.Adversarial
 import BenefutureReference.Records
 import BenefutureReference.ParamSpace
+import BenefutureReference.Population
 
 namespace BenefutureReference.Export
 
@@ -217,5 +218,24 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
+
+-- M7 births and deaths
+@[export bf_foreclosed] def foreclosed (u h growthU growthH window : Float) : Float :=
+  foreclosed_ref u h growthU growthH window
+
+@[export bf_life_value] def lifeValue (foreclosed tierWeight scale : Float) (saved : UInt8) : Float :=
+  life_value_ref foreclosed tierWeight scale (saved != 0)
+
+@[export bf_optimistic_average] def optimisticAverage (preds : FloatArray) (q : Float) : Float :=
+  optimistic_average_ref preds.data q
+
+@[export bf_birth_level] def birthLevel (preds : FloatArray) (q confidence threshold initial : Float) : Float :=
+  birth_level_ref preds.data q confidence threshold initial
+
+@[export bf_shortfall] def shortfall (levels : FloatArray) (baseline : Float) : Float :=
+  shortfall_ref levels.data baseline
+
+@[export bf_birth_escrow] def birthEscrow (initial predicted : Float) (window : USize) (baseline : Float) : Float :=
+  birth_escrow_ref initial predicted window.toNat baseline
 
 end BenefutureReference.Export
