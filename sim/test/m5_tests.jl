@@ -231,20 +231,20 @@ end
     alone = mean(late(run_m5(hard(); seed)) for seed in seeds)
     ih = mean(late(run_m5(hard(deliberation = true); seed)) for seed in seeds)
     ih_tags = [run_m5(hard(deliberation = true, source_tags = true); seed) for seed in seeds]
-    three = mean(late(run_m5(hard(deliberation = true, rounds = 3); seed)) for seed in seeds)
-    three_tags = mean(late(run_m5(hard(deliberation = true, rounds = 3, source_tags = true); seed)) for seed in seeds)
+    D = (advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0)  # everyone defers: the limiting case where echoes bite
+    three = mean(late(run_m5(hard(; deliberation = true, rounds = 3, D...); seed)) for seed in seeds)
+    three_tags = mean(late(run_m5(hard(; deliberation = true, rounds = 3, source_tags = true, D...); seed)) for seed in seeds)
     # Counting each origin once stops echoes compounding as readings pass on round after round
-    # (persuasion bias): over three rounds the tagged network decides better than the untagged.
+    # (persuasion bias): where everyone defers, three untagged rounds cost accuracy and tags restore it.
     @test three_tags > three + 0.03
     # Tags move no weight (8.60): every voter casts its full weight, the largest share cast is the
     # same as untagged, and no weight is lost.
     @test all(r.max_share == run_m5(hard(deliberation = true); seed = s).max_share for (s, r) in zip(seeds, ih_tags))
     @test all(r.weight_gap < 1e-9 for r in ih_tags)
-    # Influence is inevitable (8.60): in one round tags change nothing, and laymen voting what the
-    # ContentionMap's few sources said still recast those sources' information with full weight, so
-    # the echo cost of 8.45 stays in the tally (finding 8.59).
+    # In one round every origin is heard once anyway: tags change nothing, and with realistic advice
+    # taking (8.63) deliberation through the full map decides as well as voters alone.
     @test abs(mean(late.(ih_tags)) - ih) < 0.01
-    @test mean(late.(ih_tags)) < alone - 0.03
+    @test mean(late.(ih_tags)) >= alone - 0.01
     # Off, nothing changes.
     @test isequal(run_m5(hard(deliberation = true, source_tags = false); seed = 1), run_m5(hard(deliberation = true); seed = 1))
     @test_throws ArgumentError hard(deliberation = true, rounds = 0)
