@@ -14,7 +14,7 @@ export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, ass
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth, success_pattern, pattern_margin
 export prim, prim_boxes, in_box, describe_box, sobol_indices, active_boundary, random_boundary, seeds_until_stable, cross_entropy_search
-export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, carry_fee, cause_settlement, shapley, shapley_sampled, shapley_sample_count, shapley_shares, cc_assessed, traversal_shares, is_crime, advap_reward, advap_liability, report_penalty, ratchet_credence, PARAM_FIELDS, bootstrap_params, admissible, perturb, select_candidate, gauge_radius, escape_accept
+export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, carry_fee, cause_settlement, shapley, shapley_sampled, shapley_sample_count, shapley_shares, cc_assessed, traversal_shares, is_crime, advap_reward, advap_liability, report_penalty, ratchet_credence, PARAM_FIELDS, bootstrap_params, admissible, perturb, select_candidate, gauge_radius, escape_accept, explore_pick, binding_admits
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood

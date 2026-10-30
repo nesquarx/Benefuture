@@ -219,6 +219,32 @@ function select_candidate(means, ses; z::Real)
     Int(ccall(sym(:bf_select_candidate), Csize_t, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(means), floatarray(ses), z)) + 1
 end
 
+"""
+    explore_pick(u, share, n) -> index
+
+Full support where predictions are scored (Lean `explore_pick_ref`; Chen, Kash, Ruberry & Shnayder
+2014): given a uniform draw `u`, the exploration share and the `n` proposals not carried out, the
+1-based index of the one carried out anyway, or 0; each has chance `share / n`.
+"""
+function explore_pick(u::Real, share::Real, n::Integer)
+    check(isfinite(u) && 0 <= u <= 1 && isfinite(share) && 0 <= share <= 1, "draw and share in [0, 1]")
+    check(n >= 0, "count non-negative")
+    Int(ccall(sym(:bf_explore_pick), Csize_t, (Float64, Float64, Csize_t), u, share, n))
+end
+
+"""
+    binding_admits(confidences, threshold; quorum) -> Bool
+
+Identity binding (Lean `binding_admits_ref`; Technology Network): an identity is admitted as bound to
+a distinct entity only when at least `quorum` clusters' confidences reach `threshold`.
+"""
+function binding_admits(confidences, threshold::Real; quorum::Integer)
+    check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && isfinite(threshold) && 0 <= threshold <= 1,
+          "confidences and threshold in [0, 1]")
+    check(quorum >= 0, "quorum non-negative")
+    ccall(sym(:bf_binding_admits), UInt8, (Ptr{Cvoid}, Float64, Csize_t), floatarray(confidences), threshold, quorum) == 1
+end
+
 "Gauging the freedom range (Lean `gauge_radius_ref`): harm within the radius shrinks it by `factor`, none widens it."
 function gauge_radius(δ::Real, harmed::Bool; factor::Real)
     check(isfinite(δ) && δ > 0 && isfinite(factor) && factor > 1, "radius positive, factor above 1")
