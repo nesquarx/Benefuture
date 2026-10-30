@@ -111,11 +111,12 @@ end
     # Better models take over prediction: their share of the weight in voters' readings grows, slowly
     # where they must first outdo the experts the network surfaces.
     @test mean(mean(r.model_weight[801:end]) for r in models) > mean(mean(r.model_weight[1:400]) for r in models)
-    # Findings 8.43, 8.45: the votes stop being independent. Each layman echoing the sources it heard
-    # recasts their information with a full base vote, so a few sources are counted many times and
-    # outweigh the middle ranks' independent readings; deliberation costs accuracy on these purely
-    # factual decisions.
-    @test mean(late.(talk)) < mean(late.(alone)) && mean(late.(models)) < mean(late.(alone))
+    # With IH's full ContentionMap and realistic advice taking (8.63: most people move little), deliberation
+    # costs nothing on these purely factual decisions; 8.45's echo cost returns only in the limiting case
+    # where everyone defers, each layman recasting what it heard with a full vote (findings 8.43, 8.45).
+    @test abs(mean(late.(talk)) - mean(late.(alone))) < 0.01 && mean(late.(models)) >= mean(late.(alone)) - 0.01
+    defer = [run_m5(hard(deliberation = true, advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0); seed) for seed in seeds]
+    @test mean(late.(defer)) < mean(late.(alone)) - 0.01
     # A model that slips loses its weight: a capture making the best model of domain 1 publish one
     # side costs it its record.
     slip = [run_m5(hard(deliberation = true, p_new_model = 0.02, model_capture = (decision = 600, duration = 300, domain = 1)); seed) for seed in seeds]
