@@ -27,7 +27,7 @@
         s = toy_state(p, rng)
         none = zeros(p.n)
         # Trolley switch: by default five die; the switch redirects the harm to one. Chosen, unless the one
-        # holds the peak of understanding: G's ¬↓ U(max) then refuses it (finding 8.54).
+        # holds the peak of understanding: G's ¬↓ U(max) then refuses it (finding 8.55).
         five, one = randperm(rng, p.n)[1:6] |> v -> (v[1:5], v[6])
         course = PopPlan(none, none; deaths = five)
         switch = PopPlan(none, none; deaths = [one])
@@ -62,7 +62,7 @@
     worst = argmin(s.u)
     du = fill(3.0, p.n); du[worst] = minimum(s.u) - p.th - s.u[worst]
     @test minimum(s.u .+ du) < minimum(s.u)
-    # The peak holder on the side track: the switch saves four more lives and is still refused (8.54).
+    # The peak holder on the side track: the switch saves four more lives and is still refused (8.55).
     s = toy_state(p, Xoshiro(4))
     top, rest = argmax(s.u), setdiff(1:p.n, argmax(s.u))
     @test pop_choose(s, [PopPlan(zeros(p.n), zeros(p.n); deaths = [top])], p; course = PopPlan(zeros(p.n), zeros(p.n); deaths = rest[1:5])) == 1
@@ -219,7 +219,7 @@ end
     # too little. Settlement claws the shortfall back (what no one covers stays under 1% of the measured
     # shortfall), and its ledger's negative share ratchets its credence towards a coin toss, below the
     # threshold, so its later births count at a fresh low; honest causers stay above it. Births chosen
-    # within the first dependency window, before any settlement, escape the ratchet (finding 8.53).
+    # within the first dependency window, before any settlement, escape the ratchet (finding 8.54).
     initial = 1:p.n
     gamed = [run_births(p; seed, p_birth = 0.1, gamers = 0.2, gamer_bias = 20.0, gamer_models = 3) for seed in seeds]
     loose = [run_births(p; seed, p_birth = 0.1, gamers = 0.2, gamer_bias = 20.0, gamer_models = 3, ratchet = false) for seed in seeds]

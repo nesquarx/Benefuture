@@ -806,7 +806,7 @@ against the course is valued, inside ΣV, by its foreclosed future (`foreclosed`
 growth its models predict, `growth` per step, over the long-term window `lt_window`) in the irreparable
 tier, scaled by the breakthrough scale `scale` (`life_value`; Lean `foreclosed_ref`, `life_value_ref`).
 50 beings, 20 trials: the trolley switch (five die by default, one if switched) is chosen in 19; in the
-20th the one holds the peak of understanding and G's ¬↓ U(max) refuses it (finding 8.54); the reversed
+20th the one holds the peak of understanding and G's ¬↓ U(max) refuses it (finding 8.55); the reversed
 switch is never chosen. Removing the two worst-off for +3 to everyone else (value about −500) is no
 longer chosen, though its 10% quantile floor still rises; +30 to everyone else outweighs it at the
 default scale 20 and not at 1000. Freedom stays a subgoal reported per plan, not a filter on G
@@ -839,7 +839,7 @@ causers bringing `gamer_models` models `gamer_bias` too high; `p_birth` 0.1, 3 m
 settlement claws the dodged escrow back (uncovered 0.1% of the measured shortfall) and the ratchet
 pulls the over-optimists' credence to 0.67, below the threshold (honest 0.88), so their later births
 count at a fresh low; without the ratchet they cause 0.98 births each against 0.65 with it (honest
-0.62). Births chosen before a causer's first settlement escape the ratchet (finding 8.53). One
+0.62). Births chosen before a causer's first settlement escape the ratchet (finding 8.54). One
 over-optimistic model alone (bias 5) moves the optimistic average by about a quarter of its bias and
 the ratchet does not bite (credence 0.84); settlement still claws it back.
 
@@ -848,7 +848,7 @@ Population ethics (decision probes, 50 beings; toy: level 0 is a life barely wor
 though their total and their causers' stake are larger); the quantile floor and the median rank 3
 lives at −5 above 30 lives at 1 (the success pattern gives up Non-Sadism; the literal minimum would
 not); against not acting G admits neither addition; forced to choose, only the causers' stakes decide
-(finding 8.55).
+(finding 8.56).
 
 Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
 (8.50): each step every entity not researching acts with chance `p_act` (0.2), reading the levels
@@ -918,7 +918,7 @@ for removal.
 | Freedom reported per plan, not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
 | A death valued by its foreclosed future over the long-term window, in the irreparable tier, scaled by the breakthrough scale; a life saved counting as one ended | Ruled, reading [P] | 8.47; L61, L70 (Ha_lt), L73; Lean `foreclosed_ref`, `life_value_ref`. Gaming: inflating a being's predicted growth inflates the value of saving it or the cost of ending it; growth comes from the same models and their records as any prediction |
 | The dead one threshold below the lowest level in G's floors | Introduced | toy convention for `removal_cannot_raise_floor`; any level at or below the bottom gives the same floors |
-| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement and the ratchet (tested), except before a causer's first settlement (8.53) |
+| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement and the ratchet (tested), except before a causer's first settlement (8.54) |
 | Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; what a causer cannot pay falls to the commons (tallied as uncovered) |
 | Baseline = the happiness floor at birth | Introduced | a reading of "what the baseline cannot cover"; a governed level could replace it |
 | Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | to replace with the economy's balances and teaching (M3c, `run_m7`) |

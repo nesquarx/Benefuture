@@ -1171,7 +1171,7 @@ Status (M7, [P]): Lean `foreclosed_ref` (a life's levels plus its predicted grow
 window) and `life_value_ref` (∓ breakthrough scale × the irreparable tier's weight × that foreclosed
 future, a life saved against not acting counting as much as one ended), inside ΣV; G's floors keep the
 decision-time population. In 20 trials of 50 beings the trolley switch (five die by default, one if
-switched) is chosen unless the one holds the peak of understanding (8.54); the reversed switch never;
+switched) is chosen unless the one holds the peak of understanding (8.55); the reversed switch never;
 the sacrifice of the two worst-off for +3 to the rest is no longer chosen (its value about −500 against
 an uplift's positive one) though its quantile floor still rises; +30 to the rest (a breakthrough-scale
 gain) outweighs it at the default scale 20 and not at 1000. Doing and allowing are not distinguished:
@@ -1248,9 +1248,9 @@ initial level), `birth_escrow_ref` and `shortfall_ref` (the shortfall below the 
 predicted trajectory over the dependency window); settlement and the ratchet are the existing
 `settlement_ref`, `neg_share_ref` and `ratchet_credence_ref`. The newborn counts in G's floors at its
 predicted level until its window closes; it is not among the decision-time beings whose V G sums (L74,
-B(t); `dist_score_ignores_absent`), so only its causers' stake enters ΣV. Findings in 8.53 and 8.55.
+B(t); `dist_score_ignores_absent`), so only its causers' stake enters ΣV. Findings in 8.54 and 8.56.
 
-**8.53 Findings on births (M7; for the author).** 100 beings, 200 steps, 3 seeds, G per entity,
+**8.54 Findings on births (M7; for the author).** 100 beings, 200 steps, 3 seeds, G per entity,
 baseline the happiness floor at birth, dependency window 20, optimistic quantile 0.5, confidence
 threshold 0.75. (1) Births happen (11–17 a run) and do not drag the floors G reads: the floor of
 understanding fell in 16% of steps against 20% without births, happiness 22% against 25%. With the
@@ -1270,7 +1270,7 @@ the floor, so births by the worst-off depend on how optimistic the prediction is
 or teaching should lift the prediction is for the author. Candidate homes: Government (Birth), L74, L84,
 the escrow lines.
 
-**8.54 Finding: G's peak filter refuses a trolley switch onto the peak holder (M7; for the author).**
+**8.55 Finding: G's peak filter refuses a trolley switch onto the peak holder (M7; for the author).**
 G's ¬↓ U(max) (L74) is read counterfactually against the course; when the one on the side track holds
 the peak of understanding, switching lowers the peak against letting five die, so G refuses it although
 the switch saves four lives and its value is positive (1 trial in 20; a deterministic test). The standard
@@ -1279,7 +1279,7 @@ trolley rules (8.47) would switch. Options: (a) accept it (the frontier is irrep
 recovers; (c) value the peak holder's death in V alone and drop the peak from admissibility where lives
 are at stake. Candidate homes: L74, Benefuture goals, 8.47.
 
-**8.55 Finding: population ethics with births (M7; docs/SOTA.md item 10).** Toy assumption: level 0
+**8.56 Finding: population ethics with births (M7; docs/SOTA.md item 10).** Toy assumption: level 0
 is a life barely worth living. Repugnant Conclusion: 200 lives at 0.5 carry a larger total and a larger
 stake in ΣV than 10 lives at median + 1, but drag the floors and medians, so G takes the 10; the
 success pattern avoids the Repugnant Conclusion. Sadistic Conclusion: 3 lives at −5 leave the 10%

@@ -457,7 +457,7 @@ Governance and thresholds
   `foreclosed_ref`, `life_value_ref` in [BenefutureReference/Population.lean](BenefutureReference/Population.lean)),
   inside ΣV; Freedom stays a reported subgoal. The trolley switch (five die by default, one if
   switched) is chosen, except when the one holds the peak of understanding, where G's ¬↓ U(max)
-  refuses it (finding 8.54); the reversed switch is not; removing the two worst-off for +3 to everyone
+  refuses it (finding 8.55); the reversed switch is not; removing the two worst-off for +3 to everyone
   else is no longer chosen although its quantile floor still rises; +30 to everyone else outweighs it
   at the default scale (20) and not at 1000. Doing and allowing are not distinguished (open)
   ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
@@ -469,14 +469,14 @@ Governance and thresholds
   Births happen and the floors G reads fall no more often than without them (understanding 16% of
   steps against 20%); with the pool below the confidence threshold none is chosen. A causer bringing
   over-optimistic models is clawed back at settlement and ratcheted below the threshold, though
-  births before its first settlement escape (finding 8.53). Toy assumptions: linear growth to mature
+  births before its first settlement escape (finding 8.54). Toy assumptions: linear growth to mature
   levels, dependents untouched by ordinary plans, one currency balance per being
   ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
 - Population ethics (M7 decision probes; toy: level 0 is a life barely worth living): G takes 10
   good lives over 200 barely positive ones (the many drag the floors though their total is larger),
   avoiding the Repugnant Conclusion; the success pattern's quantile floor and median rank 3 lives at
   −5 above 30 at 1, giving up Non-Sadism, one of the conditions of Arrhenius's impossibility theorems
-  (finding 8.55) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl)).
+  (finding 8.56) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl)).
 - Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
   reception varying, leave the teacher's understanding intact; research is spending (beings' time and
   the commons' resources, a very noisy chance of success, gains teachable or tacit) and alone extends
