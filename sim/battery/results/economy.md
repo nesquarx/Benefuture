@@ -1,9 +1,9 @@
 # Failure-boundary battery: economy
 
-Build: commit 9ceed47 (with any uncommitted changes at the time).
+Build: commit 26b55f8 (with any uncommitted changes at the time).
 
 Clean world's floor growth: 252.6. 
-Run time 86.8 minutes; 16 random rays; 64 screened worlds (severities up to 0.73), 2% failing.
+Run time 90.9 minutes; 16 random rays; 64 screened worlds (severities up to 0.73), 2% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
