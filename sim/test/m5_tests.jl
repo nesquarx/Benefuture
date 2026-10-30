@@ -294,7 +294,10 @@ end
                            [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
                             for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     liars = collect(1:5:100)  # twenty voters across the ranks
-    talk(; kw...) = M5Params(m3, 1:4; decisions = 800, signal_σ = 20.0, deliberation = true, info_handling = false, rounds = 2, kw...)
+    # Mechanism tests of the audit, run where the attack bites: everyone defers to what it hears (the
+    # limiting case of 8.63). With realistic advice taking the same lies and launderers move few votes.
+    talk(; kw...) = M5Params(m3, 1:4; decisions = 800, signal_σ = 20.0, deliberation = true, info_handling = false, rounds = 2,
+                             advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0, kw...)
     seeds = 1:3
     # Untagged, a liar's republished reading carries its claim, and the decisions suffer.
     plain = mean(run_m5(talk(); seed).correct for seed in seeds)
