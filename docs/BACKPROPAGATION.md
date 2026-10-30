@@ -1233,3 +1233,64 @@ Implementation reading, [P]: the optimistic average is the mean of the model poo
 governed quantile, accepted when the pool's confidence clears a governed threshold; the escrow is sized
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
+
+**8.53-M3a [P] Full support where predictions are scored (M6; `sim/README.md`, attacks).** Metric
+models are scored only on what is carried out, and their own predictions select what is carried out:
+the decision-market setting of Chen, Kash, Ruberry & Shnayder (2014), where honest reporting needs
+every action taken with positive probability. SigThGv's randomised blocks (8.22.3) give full support
+over threshold candidates, not over plans. A misreport against a proposer (every model understating
+its plans) is never scored: in the toy its plans are never carried out and no model holds a record on
+it. Proposal: with a governed chance a step (`explore_share`), one proposal not carried out, each
+with equal chance, is carried out anyway, paid at full resource cost by its proposer and scored,
+credited and logged like any action (Lean `explore_pick_ref`). At 0.05 the misreport is caught in
+every seed and the track record corrects it; the whole success pattern barely moves in an honest
+world. Open for the author: whether to adopt it and at what share (it trades real outcomes for
+scoring coverage; off by default), whether explored work should be restricted (for example to plans
+models disagree on, or within the freedom harm boundary), and whether scores should be weighted by
+the inverse of the chance a plan was carried out (Chen et al.'s condition for strict properness when
+reports move the selection). Gaming: a proposer of harmful work hoping to be explored pays its cost
+and owns its measured harm. Candidate homes: L82, L84, Measurement, Threshold of significance.
+
+**8.53-M3b Finding: best-of-several model takeover on few records rewards extremised credences
+(fixed natively).** Witkowski et al. (2023): rank-based rewards make forecasters exaggerate, proper
+scores or not. With the best of eight equal challengers taking over by the significance rule (z 2) on
+the proper per-record score, one stating half its uncertainty took over 16.4% of contests on 10
+records against 7.1% for each honest equal; on 50 records 2.2% against 1.9%. A challenger now
+competes only once its record spans `takeover_records` (governed, default the scoring window, 100),
+comparing like with like. Retirement by rank (the least accurate challenger dropped) retires
+extremisers more often, so it rewards nothing. Candidate homes: L82 (competition of models), L49.
+
+**8.53-M3c Finding: honest credences are underconfident where outcomes are mostly positive.**
+`credence_ref` reads a model's credence from its predicted value over its record's RMS error, with no
+prior over outcomes. In a capable domain (outcomes mostly positive) credences of 0.7–0.9 come true
+100% of the time, so a model stating half its uncertainty is better calibrated, and the proper score
+rightly lets it take over (every takeover in the extremist world was an extremist's; no honest equal
+took over). Not a gaming success but a miscalibration of the honest rule. Candidate fix for the
+author: credence from the model's calibrated record (for example the outcome rate among its past
+predictions of similar value, or a posterior including the domain's outcome distribution).
+Candidate homes: L84, 8.36, Measurement.
+
+**8.53-M3d Finding: on-off deceit defeats the track record and takes a capable domain's currency
+down (screened; needs the author).** An agent alternating 25-step phases of honest good work and
+harmful work passed off by deceit fools the models afresh in each bad phase (the 20-action track
+record has forgotten), the leaf model falls below its status bar, and the domain's currency goes down
+for everyone: peers' selected actions 59 against 324 with constant deceit (which the track record
+learns) and 330 honest. The ledgers keep the pattern (negative share 0.39–0.49 against peers' ≤ 0.17;
+entries never decay, 8.42.4), but the pattern reaches only escrow's credence and readers' attention,
+not the prediction G screens on; AdvAp establishes the deception but its repair, estimated over all
+the actor's records, honest phases included, understates it and does not restore the domain. Lines
+the author may choose between: the ledger's negative pattern widening an actor's predicted
+uncertainty (a ratchet on screening, not only on escrow); repair estimated per deceptive episode
+(since the last audit, or by change point) rather than over the whole record; the track record keyed
+to the worst recent phase. Candidate homes: L84, L86, L101, L160, Reputation, Adversarial adaptation.
+
+**8.53-M3e Finding: Shapley shares are not false-name-proof where an outcome mixes gains and harms.**
+Aziz et al. (2011) on false-name manipulation. With superadditive assessed value, splitting one's
+gain across identities lowers one's share (it does not pay), but splitting a harm of 2 beside a
+co-contributor's gain of 1.5 lightens the splitter's penalty by 11% and shrinks the co-contributor's
+positive share. A sybil adding nothing earns nothing (null player) and totals are conserved
+(efficiency). The reputation recount is symmetric in Cheng and Friedman's (2005) sense, so by their
+theorem it is not sybilproof; identity binding (Technology Network) is what must stop sybils and
+whitewashers, and in the toy it does (whitewashing attempts linked, leaf accuracy 0.995 against 0.941
+unbound). Candidate homes: Technology Network (identity binding as a stated prerequisite of causal
+distribution), Benefuture currency (Causal Distribution), L94–L96.

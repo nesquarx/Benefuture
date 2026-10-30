@@ -218,4 +218,11 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
 
+-- M3c decision market and attacks
+@[export bf_explore_pick] def explorePick (u share : Float) (n : USize) : USize :=
+  (explore_pick_ref u share n.toNat).toUSize
+
+@[export bf_binding_admits] def bindingAdmits (confidences : FloatArray) (threshold : Float) (quorum : USize) : UInt8 :=
+  if binding_admits_ref confidences.data threshold quorum.toNat then 1 else 0
+
 end BenefutureReference.Export

@@ -39,4 +39,19 @@ def neg_share_ref (gains losses : Float) : Float :=
 def credence_score_ref (credence outcome : Float) : Float :=
   1.0 - (credence - outcome) ^ 2 / 0.25
 
+/-- Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.53-M3a): when
+    predictions select which plans are carried out and only what is carried out is scored, a model
+    can misreport unseen on the plans its predictions keep out. Given a uniform draw `u` in [0, 1),
+    the governed exploration share and the `n` proposals not carried out, returns the 1-based index of
+    the one carried out anyway, or 0 for none: each is explored with chance share / n. -/
+def explore_pick_ref (u share : Float) (n : Nat) : Nat :=
+  if n == 0 || !(u < share) then 0
+  else min n ((u / share * n.toFloat).floor.toUInt64.toNat + 1)
+
+/-- Identity binding (Technology Network): an identity is admitted as bound one-to-one to a distinct
+    entity only when at least `quorum` clusters' binding confidences reach the governed threshold
+    (methods from at least two clusters); a quorum of zero admits every identity (no binding). -/
+def binding_admits_ref (confidences : Array Float) (threshold : Float) (quorum : Nat) : Bool :=
+  (confidences.filter (fun c => c ≥ threshold)).size ≥ quorum
+
 end BenefutureReference

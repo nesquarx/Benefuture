@@ -473,6 +473,34 @@ Governance and thresholds
   at 0.15 (toy world, 3–4 seeds; irreparable harm is a world classification, none by default)
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
 
+- Attacks from the state of the art (M6; toy world, six or eight agents, 300–400 steps, 3 seeds;
+  [sim/test/m6_attacks_tests.jl](sim/test/m6_attacks_tests.jl),
+  [sim/README.md, attacks](sim/README.md#attacks-from-the-state-of-the-art-docssotamd-items-5-7-10-backpropagation-853-m3ae)).
+  *Decision market* (Chen, Kash, Ruberry & Shnayder 2014): models are scored only on what their
+  predictions select, so a misreport against a proposer's plans is never scored (its plans are never
+  carried out); full-support exploration (Lean `explore_pick_ref`, a proposed rule, off by default;
+  BACKPROPAGATION 8.53-M3a) catches it in every seed at a share of 0.05, and the track record then
+  corrects it; scores are not inverse-propensity weighted, so honest reporting is made costlier to
+  abandon, not proved strictly optimal. *Extremised forecasts* (Witkowski et al. 2023): at rule level a
+  best-of-eight takeover on 10 records rewards a model stating half its uncertainty (16.4% against
+  7.1% per honest equal) and stops doing so on full windows; challengers now compete only on a full
+  window (8.53-M3b). In the economy every takeover by an equal-skill challenger is an extremist's
+  because honest credences are underconfident there (8.53-M3c, open). *Reputation attacks* (Hoffman,
+  Zage & Nita-Rotaru 2009): identity binding (Lean `binding_admits_ref`) links every whitewashing
+  attempt and keeps the domain's model as without (accuracy 0.995 against 0.941 unbound); slandering
+  convicts no one and charges the slanderer; on-off deceit defeats the track record and takes a
+  capable domain's currency down (peers' actions 59 against 324 under constant deceit), which AdvAp's
+  repair does not undo (8.53-M3d, open). The reputation recount is symmetric in Cheng and Friedman's
+  (2005) sense and so, by their theorem, not sybilproof; credit minted only from measured outcomes and
+  shared by Shapley value gives sybil contributors nothing by existing, but splitting a harm across
+  identities lightens its penalty (8.53-M3e), so identity binding, not the recount, is what stops
+  sybils. Sybil beings are not simulated (the toy's beings are fixed). *Goodhart* (Gao, Schulman &
+  Hilton 2023): with G picking the best predicted of n proposals and two agents passing off harmful
+  work, the gap between the proxy and the true value grows from 16.6 to 20.5 as n goes from 2 to 32
+  without the track record, and what is chosen gets worse; with the track record it stays within half
+  a unit and pressure buys true value. Competing models add nothing against deceit that fools every
+  model alike.
+
 What is not yet demonstrated at all: the `Conj_*` conjectures over a `SimTrace` (convergence,
 gaming resistance, parameter stability in general), births, forks and graded personhood (M7), and networks and
 propagation (M8); see [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) and

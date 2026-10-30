@@ -34,7 +34,7 @@ assumptions it still makes, and graduates to them.
 | M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation as experimental design (8.22.3) and the debatable escape (8.41); next, the simulation's own gates | `Conj_ParamStability` | first pass done |
 | M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
-| M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks) |
+| M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks; decision-market gap, extremised forecasts, whitewashing, on-off, slandering, sybils, Goodhart curve) |
 | M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths, teaching, research, G per entity done; births, forks pending |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
@@ -56,7 +56,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
 | `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
 | `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
-| `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding, privacy tiers not yet |
+| `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding against whitewashing (M6, `binding_admits_ref`); privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters, experimental design and the debatable escape (`select_candidate_ref`, `gauge_radius_ref`, `escape_accept_ref`; M4); the simulation's own gates not yet |
 | `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | partial | voting weight, capped delegation, decisions in domains (M5); Brier incentives, cyclic review attenuation, oversight not yet |
@@ -361,8 +361,8 @@ perfect (`scale_min`), a safe bet given the framework (L82: currencies backed by
 accuracy clears the bar, competing). Every model in a domain's pool is scored on every logged action
 there, so a challenger builds its record from the open log without being deployed (which also keeps
 the pool diverse with no subsidy; L158's novelty bonus is needed only where trying a model costs).
-Each model states credences from its own record; a challenger takes over a domain's currency when its
-credences beat the incumbent's by the significance rule (`select_candidate_ref`, `model_z`). Eight
+Each model states credences from its own record; a challenger whose record spans `takeover_records`
+takes over a domain's currency when its credences beat the incumbent's by the significance rule (`select_candidate_ref`, `model_z`). Eight
 agents in two leaves, model error at the realistic top, 400 steps, new models at 0.05 per step:
 
 | World | Takeovers | Leaf 1 priced by its own currency (steps 51–149, 200–349, 350–400) | Floor growth |
@@ -647,6 +647,95 @@ Loyalty matters little because the reward's premium grows with the falsified gai
 ring rotating revealers to farm rewards pays each reward and audit through the rest of the ring
 (liability at least the reward); a false revelation needs evidence the examination establishes.
 
+### Attacks from the state of the art (docs/SOTA.md items 5, 7, 10; BACKPROPAGATION 8.53-M3a–e)
+
+`sim/test/m6_attacks_tests.jl`. Each attack runs against the native mechanisms first; what they do
+not cover is a finding.
+
+**The decision-market gap** (Chen, Kash, Ruberry & Shnayder 2014: when predictions select actions,
+honest reporting needs every action taken with positive probability). Metric models are scored only
+on what is carried out, and what is carried out is selected by their predictions. SigThGv's
+randomised blocks (8.22.3) give full support over threshold candidates, but nothing gives it over
+plans: a plan G's screen rejects is never scored. Six agents at skill 0.6, 300 steps; every model
+understates agent 6's (good) plans by 2 per being touched (a negative `deceit`: a misreport against
+it). Without exploration agent 6 never acts and no model holds a record on it (3 of 3 seeds). With
+`explore_share` 0.05 (Lean `explore_pick_ref`: with that chance a step, one proposal not carried out,
+each with chance share/n, is carried out anyway, paid at full resource cost by its proposer as
+StandCoin-lane work is, and scored, credited and logged), 4–10 explorations per run put agent 6 in
+the record, the track record (8.29) learns the understatement, and G then selects 267, 18 and 14 of
+its plans (peers 334, 59, 141). At an understatement of 1 per being the domain's own noise gets one
+plan through around step 100 and the track record does the rest: noise is accidental exploration,
+too slow and too chancy to rely on. Explored work costs the Goal little where nothing is misreported
+(whole success pattern: floor growth 184.8 against 186.8, median 202.9 against 205.3, harm's peak
+4.19 against 4.70, 9–19 explorations per run). Gaming: proposing harmful work in the hope it is explored does not
+pay, since the proposer pays its resource cost and its measured harm is the proposer's (tested).
+Scores are not weighted by the inverse of the chance a plan was carried out, which Chen et al. need
+for strict properness when a model's reports move the selection; full support makes misreporting on
+rejected plans costly, not strictly unprofitable ([P], 8.53-M3a). Off by default: exploring trades
+real outcomes for scoring coverage, an author decision.
+
+**Extremised forecasts under rank-based selection** (Witkowski et al. 2023). Rule level, equal-skill
+models scored by the proper per-record score (`credence_score_ref`), the best of eight challengers
+taking over by `select_candidate_ref` (z 2): one stating half its uncertainty takes over 16.4% of
+contests on 10 records against 7.1% for each honest equal, 2.2% against 1.9% on 50, 0.8% against
+0.7% on 100. Proper scoring does not survive a best-of-several pick on few records. Retirement by
+rank (the least accurate scored challenger dropped when the pool is full) retires the extremiser
+more often than its share, so it does not reward it. A challenger now competes only once its record
+spans `takeover_records` (100, the scoring window, rather than `min_records`, 10); the better-models
+readings above (seed 1) are unchanged by it, and seed 3 gains one takeover. In the economy
+(`ext_world`: models of the incumbent's exact skill, half of arrivals extremising) challengers clear
+the window before any wins, so the bar changes nothing there (takeovers 2, 2, 0 either way); no
+honest equal ever takes over, and every takeover is an extremist's. That is a calibration finding,
+not the rank rule (8.53-M3c): honest credences (`credence_ref`, predicted value over the record's RMS
+error, no prior) are underconfident in a domain whose outcomes are mostly positive (credences 0.7–0.9
+come true 100% of the time, 0.3–0.7 in 67–100%), so a model stating half its uncertainty is better
+calibrated and the proper score rightly prefers it.
+
+**Reputation attacks** (Hoffman, Zage & Nita-Rotaru 2009; Cheng & Friedman 2005). Six agents at
+skill 0.6, 300 steps, 3 seeds.
+
+| Attack | Defence | Reading |
+|---|---|---|
+| Whitewashing: a liar (deceit 1) takes a new identity with chance 0.05 a step, shedding track record, ledgers and audit record | Identity binding (Lean `binding_admits_ref`: admitted only if `bind_quorum` 2 of 3 clusters reach `bind_threshold` 0.5; each misses with `bind_miss` 0.1) | bound: 13–22 attempts per run, all linked, leaf accuracy 0.995 as without; unbound: all admitted, leaf accuracy 0.941 |
+| On-off: honest good work and harmful work passed off by deceit in alternate 25-step phases (`on_off`) | Track record, ledgers whose entries never decay (8.42.4), λ₋ < λ₊, AdvAp | the attacker's negative share 0.39–0.49 against peers' ≤ 0.17; but each bad phase fools the models afresh and the domain's currency goes down for everyone: peers' selected actions 59 against 324 with constant deceit (learnt by the track record) and 330 honest, floor growth 23 against 165 and 187. AdvAp establishes 2–3 deceptions but its repair, estimated over all the actor's records, honest phases included, does not restore it (peers 61). Finding 8.53-M3d |
+| Slandering: agent 1 reports agent 2 every step whatever the record | AdvAp's audit tests the record, not the report; the frivolous-pattern charge | 250 reports, none founded; the victim's balance 975 against 974 without; the slanderer charged 245 (balance 944 against 1,007). Without the pattern charge the 250 audits fall on the commons |
+| Sybils: one contributor split into identities | Causal distribution by Shapley value (efficiency, null player); identity binding | a sybil adding nothing earns nothing; splitting a gain of 2 beside a co-contributor of 1.5 lowers the splitter's share (3.71 against 3.77), but splitting a harm of 2 lightens its penalty by 11% (−2.24 against −2.51) at the co-contributor's expense (1.89 against 2.16). Finding 8.53-M3e |
+
+On-off with symmetric decay leaves the attacker's rolling net where good phases restore it; with
+λ₋ < λ₊ alternating equal gains and losses nets negative (rule level, tested). In the economy the
+domain's collapse swamps the comparison.
+
+*Is the recount sybilproof?* The reputation recount (L101: Re ← recount(Mem)) is symmetric in Cheng
+and Friedman's sense: it depends only on the log's structure (who did what to whom, and the
+measured outcomes), not on agents' names, so relabelling agents relabels reputations. By their
+theorem no symmetric reputation function is sybilproof, and the recount is not: an entity that could
+mint identities as beings could raise them and be credited. What blocks it is outside the function:
+credit is minted only from measured outcomes on beings and shared by Shapley value, so sybil
+contributors gain nothing by existing; and identity binding (Technology Network: identities bound
+one to one, graded by confidence, transactions requiring thresholded binding from at least two
+clusters) keeps sybils and whitewashers out. The toy's beings are fixed, so sybil beings are not
+simulated; the M5 fork test measures sybil votes (8.34).
+
+**Goodhart overoptimisation** (Gao, Schulman & Hilton 2023; Manheim & Garrabrant 2018). One domain:
+four honest agents (skill 0.3) and two whose harmful work (skill −0.2) is passed off by deceit 0.8; G
+picks the best predicted of n proposals a step (best-of-n, the menu rung), so pressure on the proxy
+rises with n. Gap: the proxy (predicted value of what G selected) less its true value (the realised
+change's assessed value), steps 51–300, 3 seeds.
+
+| World | n = 2: gap, true value | n = 8 | n = 32 | Floor growth at n = 32 |
+|---|---|---|---|---|
+| One model, no track record, no AdvAp | 16.6, −2.1 | 20.2, −4.4 | 20.5, −4.7 | 0.5 |
+| Competing models only | 16.6, −2.1 | 20.2, −4.4 | 20.5, −4.7 | 0.5 |
+| AdvAp only | 12.2, 2.0 | 11.6, 2.0 | 13.1, 1.1 | 17.1 |
+| Track record only | −0.2, 7.7 | 0.0, 7.8 | −0.1, 21.6 | 28.0 |
+| Track record, competing models, AdvAp | −0.1, 8.6 | 0.1, 9.5 | 0.4, 21.1 | 25.9 |
+
+Without the native defences the gap grows with pressure and what is chosen gets worse
+(overoptimisation); with them the gap stays within half a unit and pressure buys true value. The
+track record carries it: competing models do nothing against deceit that fools every model alike,
+and AdvAp alone halves the damage. The regressional part (the winner's curse on model noise) is
+small here, under half a unit.
+
 ## M4 observations
 
 The value parameters (α, β, γ, q₊, q₋, λ) start at the Lean bootstrap point and are governed by
@@ -892,6 +981,10 @@ for removal.
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, else traversal | Introduced (bound) | 2ⁿ coalitions; larger outcomes fall to the L95 traversal |
 | M5 model pool bound (4 per domain, the weakest by record dropped) | Introduced | array bound; hardcoded in `sim/src/m5.jl` |
+| Full-support exploration of proposals not carried out | Introduced [P] | 8.53-M3a; Lean `explore_pick_ref`; off by default. Gaming: harmful proposals hoping to be explored pay their resource cost and own their measured harm (tested); a faction flooding the menu raises its plans' share of explorations, bounded by the share |
+| Record a challenger needs before taking over (`takeover_records`) | Introduced | 8.53-M3b; against best-of-several picks on few records (Witkowski et al.); the significance rule (`select_candidate_ref`) is native |
+| Identity binding admitting identities by cluster quorum | Native | Technology Network (thresholded cross-cluster binding); Lean `binding_admits_ref`. Gaming: a whitewasher needs a quorum of clusters to miss it; the toy lumps methods into a miss chance |
+| On-off deceit, extremising models, whitewashing, slandering | World | adversaries for M6 tests, not rules |
 
 ## Governed thresholds
 
@@ -912,6 +1005,9 @@ ratified.
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
+| Records a challenger needs before it may take over | `takeover_records` | 100 | L82; 8.53-M3b (Witkowski et al. 2023) |
+| Chance per step one proposal not carried out is carried out anyway (full support) | `explore_share` | 0 (0.05 in the tests) | 8.53-M3a (Chen, Kash, Ruberry & Shnayder 2014) |
+| Identity binding: confidence a cluster must reach; clusters that must reach it | `bind_threshold`, `bind_quorum` | 0.5, 2 | Technology Network (methods from at least two clusters) |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
@@ -986,7 +1082,11 @@ rare but present).
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
 | An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |
 | What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |
-| An agent reporting whatever the record (adversary) | `frivolous` | 0 | 0–1 |
+| An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |
+| A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |
+| An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |
+| Deceit only in alternate phases of this length (adversary) | `on_off` | 0 (always) | 5–50 |
+| New models extremising their credences; the share of uncertainty they state (world) | `p_extremist`, `extremise` | 0, 0.5 | 0–0.5, 0.3–0.9 |
 | New models arriving: chance per step and domain; improvement on average (log error ratio); its scatter; least error relative to the bootstrap model's (world assumptions) | `p_new_model`, `improve_drift`, `improve_σ`, `scale_min` | 0, −0.1, 0.3, 0.1 | 0–0.1, −0.3–0.1, 0.1–0.5, 0.05–0.3 |
 | A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
@@ -1006,6 +1106,6 @@ The batteries' severity scales do not all match this table: laundering runs to 0
 `local_σ` from 1 to 4 (table 0.5–3); the hazard and side-harm ranges above come from the economy
 battery. Ranges "not yet set" are world parameters still to be given one.
 
-Still without noise, to add as their rungs arrive: identity binding (M6), threshold estimates (M4),
+Still without noise, to add as their rungs arrive: threshold estimates (M4),
 transaction logging and composition (M3d). Votes and delegation carry noise since M5 (`signal_σ`,
 `ability_spread`, `p_apparent`, `p_delegate`).
