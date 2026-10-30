@@ -1151,6 +1151,16 @@ level; diverted time first cost nothing. [P] research share is a governed thresh
 diversity–novelty balance (L158) its trigger when spreading's marginal value stalls. Candidate homes:
 L151 Rc_Innovation, L158, Education, conjecture B17.
 
+**8.50 Author ruling: G is not a global bottleneck.** Every entity runs its own messy approximation of
+G, messy because its inputs approximate reality messily. Simulation: each acting entity reads the
+world through its own noisy view, predicts its options' effects with its own error, and chooses by the
+Lean rules (`choose`) among its own options; many entities act each step, concurrently. A single global
+G choosing one plan a step (M0, the first M7 rungs) is a limiting case, kept for tests. Candidate
+homes: L74 (Goal), Benefuture goals, Decision, Being.
+Status (M7): with G per entity, about 17 of 100 entities act each step; uplift peaks near a fifth of
+time on research (floor 50) rather than a tenth, and the floor grows more than under one global G
+(49 against 30); exact inputs never let the floor fall, messy ones (σ 1) in 1.7% of steps. Concurrent
+lessons first summed past their teachers; capped at the best teacher a learner met.
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

@@ -449,9 +449,10 @@ Governance and thresholds
 - Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
   reception varying, leave the teacher's understanding intact; research is spending (beings' time and
   the commons' resources, a very noisy chance of success, gains teachable or tacit) and alone extends
-  the frontier. Uplift of floor and median peaks near a tenth of time on research and falls beyond a
-  fifth while the peak keeps rising and concentrating; teaching and research are complements (more
-  beings near the frontier, more breakthroughs) (BACKPROPAGATION 8.49) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
+  the frontier. With G per entity (each entity choosing on its own noisy view, many acting each step;
+  author ruling 8.50), uplift of floor and median peaks near a fifth of time on research and falls
+  beyond while the peak keeps rising and concentrating; teaching and research are complements (more
+  beings near the frontier, more breakthroughs) (BACKPROPAGATION 8.49, 8.50) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
   [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent

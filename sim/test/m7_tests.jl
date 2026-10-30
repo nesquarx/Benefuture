@@ -81,3 +81,21 @@ end
     @test all(t.research_spent > 0 for t in runs[0.1]) && all(t.research_spent == 0 for t in runs[0.0])
     @test_throws ArgumentError run_m7(p; seed = 1, ε = 0.3, research_share = 1.5)
 end
+
+# G per entity (author ruling 8.50): every entity runs its own messy approximation of G. Each acting
+# entity reads the world through its own noisy view (`view_σ`), predicts its options with its own
+# error (`pred_σ`) and chooses among them by the Lean rules; many act each step, concurrently. A single
+# global G choosing one plan a step is the limiting case (`central = true`).
+@testset "M7 G per entity" begin
+    p = ToyParams(n = 100, steps = 300, plans = 10)
+    tr = run_m7(p; seed = 1, ε = 0.3)
+    @test mean(tr.actions) > 1  # many entities act each step
+    @test isequal(run_m7(p; seed = 1, ε = 0.3), tr)
+    central = run_m7(p; seed = 1, ε = 0.3, central = true)
+    @test all(==(1), central.actions .<= 1)
+    # Messy inputs: with views and predictions exact, floors fall less often than with messy ones.
+    exact = [run_m7(p; seed, ε = 0.3, view_σ = 0.0, pred_σ = 0.0) for seed in 1:3]
+    messy = [run_m7(p; seed, ε = 0.3, view_σ = 1.0, pred_σ = 1.0) for seed in 1:3]
+    @test mean(success_pattern(t).floor_u_falls for t in messy) > mean(success_pattern(t).floor_u_falls for t in exact)
+    @test_throws ArgumentError run_m7(p; seed = 1, ε = 0.3, p_act = 1.5)
+end

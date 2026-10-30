@@ -800,35 +800,41 @@ death is irreparable harm, and with it predicted, at any confidence down to 0.1,
 impermissible. Finding 8.47. Births await the author: how G's floors treat a newborn's low initial
 understanding, and the birth escrow (Government, Birth).
 
-Teaching and research (second and third rungs; understanding shared, not moved). Teaching is one to
-many and happens at any level: each step's lessons come from teachers anywhere, each to a class of ten
-below it, each learner gaining ε × its own reception (log-normal, `reception_σ` 0.5) of the gap to the
-teacher's teachable understanding; the teacher keeps all of its own. Research is spending (author): a
-governed share `research_share` of beings' time goes to it each step, taking those beings from work and
-lessons (the work done scales with the time left) and costing the commons; an attempt succeeds with a
-very noisy chance rising with the researcher's understanding relative to the frontier and its novelty
-(a per-being trait), raises it by a log-normal gain (new understanding where it passes the peak), and
-is teachable with chance `p_teachable` (0.5), else tacit. Ordinary work carries no one past the peak,
-except rare in-job innovation near the top (`p_innovate`). 100 beings, 300 steps, 4 seeds, ε 0.3:
+Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
+(8.50): each step every entity not researching acts with chance `p_act` (0.2), reading the levels
+through its own noisy view (`view_σ`), predicting its options with its own error (`pred_σ`) and
+choosing among them by the Lean rules; about 17 act each step, concurrently, each action a share
+(`action_scale`) of a plan's effect. Its options: ordinary work, which carries no one past the peak
+except by rare in-job innovation near the top (`p_innovate`), and a lesson it could teach (one to many,
+to a class of ten below its teachable level, each learner gaining ε × its own reception, log-normal
+with `reception_σ`; concurrent lessons never lift a learner above the best teacher it met; the teacher
+keeps all of its own). Research is spending (author): a governed share `research_share` of beings' time
+each step, taking them from work and costing the commons; an attempt succeeds with a very noisy chance
+rising with the researcher's understanding relative to the frontier and its novelty, raises it by a
+log-normal gain (new understanding where it passes the peak), teachable with chance `p_teachable`, else
+tacit. 100 beings, 300 steps, 4 seeds, ε 0.3:
 
-| Research share | Floor of understanding | Median | Peak | Top decile's share |
-|---|---|---|---|---|
-| 0 | 4.2 | 2.7 | 0.5 | 10% |
-| 0.02 | 21.1 | 21.2 | 21.0 | 15% |
-| 0.05 | 27.5 | 28.5 | 31.0 | 17% |
-| 0.1 | 30.0 | 31.4 | 34.6 | 18% |
-| 0.2 | 25.4 | 26.8 | 32.5 | 19% |
-| 0.4 | 18.3 | 19.2 | 33.8 | 27% |
-| 0.8 | 4.2 | 4.2 | 50.4 | 48% |
+| Research share | Floor of understanding | Median | Peak | Top decile's share | Steps the floor fell |
+|---|---|---|---|---|---|
+| 0 | 2.5 | 1.0 | −1.1 | 15% | 52% |
+| 0.05 | 37.7 | 36.5 | 37.0 | 24% | 2.4% |
+| 0.1 | 42.9 | 41.7 | 42.8 | 31% | 0.5% |
+| 0.2 | 49.9 | 48.9 | 51.2 | 29% | 0.6% |
+| 0.4 | 43.6 | 43.1 | 49.6 | 34% | 1.8% |
+| 0.8 | 27.6 | 27.3 | 60.7 | 41% | 4.9% |
 
-Uplift peaks near a tenth of time on research; beyond about a fifth, research spending harms the
-floor and median while the peak keeps rising and concentrating. At a tenth, teaching raises floor,
-median and peak together (ε 0, 0.3, 0.6: floor 16, 30, 38; peak 29, 35, 42): more beings near the
-frontier make research succeed more often. Screened on the way (BACKPROPAGATION 8.49): with research
-as one menu option among lessons, lessons crowded it out and the frontier stalled; with ordinary plans
-level-independent, they carried the peak and teaching looked like progress; a breakthrough first
-landed a researcher at the peak whatever its level; and diverted time cost nothing while one plan ran
-a step.
+Uplift peaks near a fifth of time on research; beyond it, research spending harms the floor and
+median while the peak keeps rising and concentrating. With no research the frontier is frozen,
+ordinary work's gains are capped while its losses still land, and noisy predictions take it anyway:
+a degenerate case. At a tenth on research, teaching raises floor, median and peak together (ε 0, 0.3,
+0.6: floor 14, 43, 62; peak 20, 43, 62). Against a single global G (the limiting case, `central`),
+G per entity grows the floor more (49 against 30 at the same settings); with exact views the floor
+never fell, with messy ones (σ 1) in 1.7% of steps.
+
+Screened on the way (BACKPROPAGATION 8.49): research as one menu option crowded out by lessons;
+level-independent ordinary plans carrying the peak; breakthroughs landing at the peak whatever the
+researcher's level; diverted time costing nothing under one plan a step; and, under G per entity,
+concurrent lessons summing past their teachers (an explosion), now capped at the best teacher.
 
 ## Parsimony audit
 
@@ -940,6 +946,7 @@ rare but present).
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
+| Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |
 | Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
