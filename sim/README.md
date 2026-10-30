@@ -800,6 +800,25 @@ death is irreparable harm, and with it predicted, at any confidence down to 0.1,
 impermissible. Finding 8.47. Births await the author: how G's floors treat a newborn's low initial
 understanding, and the birth escrow (Government, Birth).
 
+Teaching (second rung; understanding shared, not moved): teaching is one to many and happens at any
+level. Each step's options include one research plan (a top-decile being +2), three lessons (each from
+a teacher anywhere to a class of ten below it, each learner gaining ε × its own reception, log-normal
+around 1 with `reception_σ` 0.5, of the gap, never passing the teacher, who keeps all of its own) and
+ordinary plans, which apply and spread understanding but carry no one past the frontier: only
+research extends it. 100 beings, 300 steps, 4 seeds:
+
+| ε | Floor of understanding | Median | Peak (all from research) | Top decile's share | Lessons chosen | Research chosen |
+|---|---|---|---|---|---|---|
+| 0 | 20.4 | 26.8 | 36.6 | 16.4% | – | 16% |
+| 0.1 | 21.0 | 23.0 | 23.9 | 14.7% | 21% | 6% |
+| 0.3 | 19.1 | 19.0 | 17.4 | 12.9% | 41% | 4% |
+| 0.6 | 23.6 | 22.9 | 21.9 | 15.6% | 50% | 7% |
+
+Lessons outvalue research under one choice per step, so the frontier stalls and understanding
+converges towards a stagnant ceiling (BACKPROPAGATION 8.49). Screened: a first version let ordinary
+plans raise anyone at random, level-independently, so a denser top let them carry the peak past
+the frontier; teaching appeared to push the frontier (the author's question exposed it).
+
 ## Parsimony audit
 
 What the simulation does beyond the Lean and the pseudocode (CLAUDE.md, Parsimony). Native: a
@@ -908,6 +927,7 @@ rare but present).
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
+| Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
 | An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |

@@ -1135,6 +1135,21 @@ proportion to the weight share it cast (its causal contribution to the decision)
 each vote earns less, while the record already earned stays whole. Propagated to Government (articles).
 Candidate homes: L113, Reputation, Government.
 
+**8.49 Finding: teaching starves the frontier under a single-choice G (B17; Di_N's case).** M7, 100
+beings. Teaching is one to many and happens at any level downstream, reception varying (author):
+three lessons a step, each from a teacher anywhere to ten learners below it, each learner gaining ε ×
+its own reception of the gap, the teacher keeping all of its own; one research plan a step (a frontier
+being +2); ordinary plans apply and spread understanding but carry no one past the frontier, which
+only research extends. Lessons outvalue one frontier gain, so research's share of choices falls (16% →
+4–7%), the peak grows 17–24 against 37, and understanding converges towards a stagnant ceiling: the
+floor barely moves (20 → 19–24) and the median falls (27 → 19–23). Screened (on the author's
+question how teaching could push the frontier): a first version let ordinary plans raise anyone at
+random, level-independently, which with a denser top carried the peak past the frontier and made
+teaching look like progress. This is L158's case, Di_N_Balance: when the marginal value of spreading
+existing good falls below a threshold, novelty is needed; Lean states the axiom (Antifragility) but no
+reference rule implements it yet. Also possible: one choice per step is the cause (with transactions,
+research and lessons both proceed). Candidate homes: L158, Education, conjecture B17.
+
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.

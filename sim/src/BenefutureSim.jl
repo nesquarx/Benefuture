@@ -20,6 +20,7 @@ export projection_membership, classify_network, fallback_network, aggregate_at_p
 export membership_rolling, accuracy, credence, credence_accuracy, currency_eligible, relative_bar, scarcity_cost
 export voting_weight, accumulate_capped, relative_reputation, M5Params, run_m5
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit
+export run_m7, teaching_plan
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
 
 include("lean.jl")
@@ -41,6 +42,7 @@ include("friction.jl")
 include("battery.jl")
 include("diversity.jl")
 include("m5.jl")
+include("m7.jl")
 
 function __init__()
     load_lean_lib()
