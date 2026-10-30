@@ -35,7 +35,7 @@ assumptions it still makes, and graduates to them.
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation as experimental design (8.22.3) and the debatable escape (8.41); next, the simulation's own gates | `Conj_ParamStability` | first pass done |
 | M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks) |
-| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths, teaching, research, G per entity done; births, forks pending |
+| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths (8.47), teaching, research, G per entity, births (8.52) done; forks pending |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
 ## Coverage of the specification
@@ -63,7 +63,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Governance.Adversarial` | partial | AdvAp's reports, audits, reward, liability and frivolous-report penalty (`advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`; M3c), revelation of a colluding bloc (M5); bounties on planted flaws not yet |
 | `Axioms.Antifragility` | partial | black swans with native fallbacks and recovery (M3f); its axioms as such not yet |
 | `Governance.ExternalHarm` | not yet | external harm response (M6) |
-| `Ontology.Being` | partial | deaths, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
+| `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
 | `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`); merges, extended self, liability (M7, M8) not yet |
 | `Subgoals.Justice` | partial | crime or accident by notice and duty, repair funded by penalties (M3e); restorative packages not yet |
 | `Subgoals.Freedom`, `Subgoals.Diversity`, `Epistemology.InfoHandling` | partial | freedom reported per plan (`fr_permissible_ref`, M7); diversity as split trials with novelty bonuses (M5, M6); information handling's ContentionMap and source verification by reputation (M5) |
@@ -438,6 +438,13 @@ fork family (`fork_rule = :divided`, the default and BACKPROPAGATION 8.34's prop
 nothing. With a base vote per identity, among 100 voters: 50 copies cut accuracy from 99.5% to
 92.8%, 100 to 74.5%, and 200 capture every decision. Ruled for now (8.34): forks divide the base vote; more nuance later.
 
+Forks also game causal distribution (false-name manipulation, Aziz et al. 2011;
+`sim/test/shapley_sampling_tests.jl`): a funder whose pledge is indispensable, split into k
+indispensable identities, takes k/(k+1) of the outcome alongside the actor instead of 1/2.
+Diminishing returns reward forking mildly, increasing returns penalise it, additive effects are
+neutral, and forks never take more than the whole outcome. Open (BACKPROPAGATION 8.57-a):
+the remedy proposed there is the one 8.34 applies to votes, sharing among bound identities.
+
 ## Failure-boundary battery
 
 A randomized battery hones in on the combinations of noise and attack beyond which the framework
@@ -465,18 +472,76 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   points on the failure surface. Rays that converge again beyond their boundary are flagged
   non-monotone rather than hidden.
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
-  tolerances are fixed in each script, so runs repeat exactly.
+  tolerances are fixed in each script, so runs repeat exactly. `BF_OUT` redirects all outputs to a
+  scratch directory for trial runs.
+- **Failure boxes (PRIM).** Patient rule induction (Friedman & Fisher 1999) over the screened worlds
+  finds the boxes of severities where failures concentrate: peeling 5% at a time along the side that
+  most raises the failure density, keeping the first box within two standard errors of the densest
+  covering half the failures, pasting, then trimming restrictions that raise density no more than noise
+  (Bryant & Lempert 2010). Covering repeats on the worlds outside each box, up to three. Reported as
+  readable boxes ("execution ≥ 1.2 and side harm ≥ 0.8: worlds, % failing, % of failures").
+- **Continuous margin.** The success pattern as one reading (`pattern_margin`, `sim/src/analysis.jl`):
+  each criterion's slack scaled so the clean world reads 1 and the criterion's edge 0; the margin is
+  the weakest, negative exactly when a criterion fails. In governance, the share of decisions right less
+  0.75. The binary oracle above is unchanged; whether an attack pays stays with it alone.
+- **Sobol indices.** Variance-based sensitivity of the margin and of each criterion's slack over
+  severities uniform in [0, `BF_SOBOL_TOP`] (default 1, the realistic ranges), by the Saltelli et al.
+  (2010) design (first order) and Jansen's estimator (total), N(k + 2) readings with 95% bootstrap
+  intervals; a small estimator in `sim/src/methods.jl`, tested on Ishigami, not a package dependency.
+  ST well above S1 marks a factor acting through interactions; variance the seeds add belongs to no
+  factor, so the first-order indices sum to less than 1.
+- **Active learning of the boundary.** AK-MCS (Echard, Gayton & Lemaire 2011): a Gaussian-process
+  surrogate of the margin (fitted nugget, so a noisy oracle is tolerated) over 2000 candidate worlds
+  drawn as the screening's; each next reading is the candidate whose sign it is least sure of, until
+  every candidate is sure (|μ|/σ ≥ 2) or the budget is spent. Reports the estimated failing share,
+  PRIM boxes of the surrogate's verdict, and the evaluated worlds nearest the boundary. On a known
+  boundary it beats random designs of the same size and matches them with two thirds of the runs
+  (`sim/test/methods_tests.jl`).
+- **Seeds by variance stability.** Each continuous reading adds seeds 1, 2, … until the standard
+  error of the margin, inflated by Student's t for the seeds so far (three close readings must not
+  stop the count), is within a tolerance, between a minimum and a maximum. Seeds are fixed and shared
+  across worlds (common random numbers), so readings repeat. Near the boundary the margin spreads
+  about ten times more across seeds than in the clean world (0.3 against 0.03), which a fixed seed
+  count cannot serve.
+- **Adversarial attack search** (`sim/battery/attack.jl`). Attacker strategies, not only severities:
+  each attacker holds a fixed budget (`BF_ATTACK_BUDGET`, 1 = one attack at the top of its realistic
+  range) and the cross-entropy method (population `BF_ATTACK_POP`, `BF_ATTACK_ITERS` iterations)
+  chooses how to spend it to minimise the margin on fixed seeds; the worst strategy is re-checked on
+  held-out seeds and frozen as a deterministic M6 test (`sim/test/attack_tests.jl`). Economy (M3c,
+  mildly imperfect noise, AdvAp on): bloc size, deceit, laundering, slander, and a capture of one
+  leaf's models with its size, target, start, duration and on-off windows. Governance (M5, AdvAp on):
+  the bloc's share of the most reputable experts, one target domain or all, stealth, identity forks,
+  loyalty. Results in `results/attack.md`.
 
-- **Latest readings** (realistic ranges, AdvAp on; economy on code 9ceed47, judged by the Goal's whole
-  success pattern and repeating its 98a12ee readings, with a fresh run under way on be16e9f; governance
-  on be16e9f, repeating its 9ceed47 readings). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
+  Tolerances and budgets (evaluation choices, not rules of the framework, so not in the Governed
+  thresholds table):
+
+  | Setting | Economy | Governance |
+  |---|---|---|
+  | Margin's standard error within (`SE_TOL`); seeds from, to (`SEED_MIN`, `SEED_MAX`) | 0.1; 3, 8 | 0.02; 3, 8 |
+  | Sobol rows `BF_SOBOL` (0 skips); range top `BF_SOBOL_TOP` | 16; 1 | 64; 1 |
+  | Active-learning budget `BF_ACTIVE` (0 skips); candidates; stop at \|μ\|/σ | 40; 2000; 2 | 60; 2000; 2 |
+  | PRIM peel share; least support; least coverage; trimming | 5%; max(5%, 3 worlds); 50%; 2 standard errors | same |
+  | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
+
+- **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
+  success pattern, repeating its 9ceed47 and 98a12ee readings; governance on be16e9f, repeating its
+  9ceed47 readings). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
   regression test).
+- **Attack search** (commit 7063060; population 8 × 4 iterations, budget 1): no strategy found fails
+  either world. Economy: the worst, a bloc of three with deceit 0.92 and laundering 0.83, takes the
+  margin to 0.57 on held-out seeds (the bloc ends with negative wealth relative to honest agents);
+  capture was never worth its cost within the budget. Governance: the worst, a third of each
+  domain's top experts, open, one fork each, loyalty 2.9, leaves accuracy 0.96 (margin 0.21).
 
-Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
-`julia --project=sim sim/battery/governance.jl` (about ten minutes).
+Run: `julia --project=sim sim/battery/economy.jl` (about an hour for the rays and screening; the
+continuous methods at their defaults add about two hours) and `julia --project=sim sim/battery/governance.jl`
+(about ten minutes, and as much again for the continuous methods); `julia --project=sim sim/battery/attack.jl`
+(about ten minutes). The continuous methods append their sections to the same results file, after the
+existing ones, on their own random stream, so the earlier readings repeat unchanged.
 
 ## M6 observations
 
@@ -776,7 +841,7 @@ side of the question (its ContentionMap):
 
 Each layman echoing a source casts that source's information again with a full base vote (the toy's
 decisions are purely factual), so a few sources' information is counted many times: finding 8.45,
-awaiting the author. Deliberation is off by default.
+ruled by the author (source tags, below). Deliberation is off by default.
 
 The real test is contention (author, on 8.44): experts divided, voters hearing all sides and judging
 by the network's information handling and their own limited expertise, with diversity trying the
@@ -793,19 +858,121 @@ equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest 
 | Both | 86.7%, 86.6% | 89.5% |
 
 On contested questions, hearing both sides weighed by their records, with trials revealing
-outcomes, finds the performant option far more often; deliberation alone hones in slowly. On
-uncontested questions the echo cost of 8.45 remains.
+outcomes, finds the performant option far more often; deliberation alone hones in slowly.
+
+### Source tags: echoes counted once (author ruling on 8.45)
+
+Each reading carries its origins' tags (`source_tags`); a listener counts each origin once and an
+echo of itself not at all (Lean `count_once_ref`, `tagged_reading_ref`). The borrowed share of a vote
+passes to its origins as fractional delegation under L114's cap, cast on each origin's logged output;
+the voter keeps its own share and whatever the cap blocks (`borrowed_shares_ref`,
+`accumulate_capped_ref`; reading [P]). Readings may pass on for several `rounds`: untagged, a voter
+hears its sources' latest readings as their own; tagged, each source re-emits its tags. Models do not
+vote (8.42.2), so by default their borrowed share stays with the voter (`model_share = :voter`);
+`:model` lets each model take its share, capped (BACKPROPAGATION 8.60, open). Same world as above,
+right in the last third, 3 seeds:
+
+| Voters hear | Untagged | Tagged | Three rounds, untagged | Three rounds, tagged |
+|---|---|---|---|---|
+| Only themselves | 92.8% | – | – | – |
+| Five random contacts | 91.4% | 92.7% | 91.2% | 93.1% |
+| IH's ContentionMap | 83.8% | 93.1% | 80.2% | 92.9% |
+| IH and models improving (`p_new_model` 0.02, `improve_drift` −0.3, to noise 0.5) | 84.4% | 82.3% (`:model`: 92.6%) | 82.8% | 83.9% |
+
+(The models row uses these settings; the earlier table's model readings used others.) About a seventh
+of the weight passes on, bounded by the cap on the few sources the ContentionMap surfaces. Untagged,
+echoes compound across rounds; tagged, they do not. With models keeping their share with voters, the
+echo returns through the models: the open question of 8.60.
+
+Contention, tagged (same world as above, 4 seeds): all decisions 89.5% → 91.8% with deliberation and
+trials, 78.9% → 88.2% with deliberation alone; contested questions 86.7% → 79.6% (first 400) and
+86.6% → 85.1% (last 400): with each camp's share capped, laymen no longer amplify the camp with the
+better record, and the trials take longer to settle the question.
+
+Persuasion bias (DeMarzo, Vayanos and Zwiebel 2003; `echo_influence`): untagged, a listener's weight
+on an origin after T rounds is the number of walks of length at most T to it, so a hub outweighs an
+equally precise peer; tagged, each reachable origin once, and the estimate's error falls (test).
+
+Gaming (tests; BACKPROPAGATION 8.61). Misattribution is inert under tags: with twenty liars claiming
+every origin they heard backs their side, the unaudited tally and every record equal an honest run's
+(the borrowed share goes to the origin's logged output; records read the log); audited, every falsified
+tag is caught (`tags_falsified_ref`) and debited to its maker. Untagged, the same liars cost decisions.
+Laundering by omission (republishing what one heard as one's own and voting it with full weight) pays
+unaudited (the launderers' records 40% → 57% right, decisions 91.9% → 90.2%); the echo audit
+(`undisclosed_echo_ref`: agreement with what one heard beyond two independent judges' plus `echo_margin`,
+by `echo_z` standard errors, after `echo_min` outputs) flags at least three in four launderers and
+under one in twenty honest voters. Residual: partial copying under the margin; honest camps sharing a
+paradigm could be flagged (untested).
+
+### Liquid-democracy pathologies against direct voting (SOTA #3)
+
+One domain, 101 voters focused elsewhere (free to delegate), 400 decisions, 6 seeds; direct voting
+right 98.7%:
+
+| Pathology | Uncapped, unaudited | Capped (5%), audited |
+|---|---|---|
+| Bad delegation: all delegate to one somewhat better voter (Kahng, Mackenzie and Procaccia 2021) | 85.6% | 96.8% |
+| Misleading reputation: the least competent most reputable (Caragiannis and Micha 2019) | 77.6% | 95.9% |
+| Bribery of the three most reputable (Alouf-Heffetz et al. 2024; direct with the same bribes 98.7%) | 65.2% | 96.3% |
+| Super-voters (Kling et al. 2015) | one voter holds most of the weight | none above the cap plus one voter's own |
+| Cycles | cannot form: delegation only to strictly higher reputation, delegates never pass weight on; no weight lost | same |
+
+The cap and the audit bound delegation's losses to about two points here; they do not make delegation
+beat direct voting, and worlds where delegation helps (Berinsky et al. 2025) are not yet simulated.
 
 ## M7 observations: deaths (first rung)
 
 G's floors are taken over the decision-time population, a life a plan would end keeping its place at
-the bottom. Against a plan that removes the two worst-off of 50 beings and lifts everyone else by 3,
-the 10% quantile floor still rises (20 trials of 20) and G chooses it; the literal minimum would not
-rise. Freedom is a subgoal reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8); valuing the
-deaths as irreparable harm still leaves the plan's total value positive, so Freedom does not emerge
-here, though Fr marks the plan impermissible (`fr_permissible`, Lean `fr_permissible_ref`). Finding
-8.47, awaiting the author. Births await the author too: how G's floors treat a newborn's low initial
-understanding, and the birth escrow (Government, Birth).
+the bottom (one threshold below the lowest level in any world considered). Plans over a changing
+population (`PopPlan`: level changes, deaths, births) are chosen by `pop_choose` against a course (not
+acting, which may itself carry deaths). Author ruling 8.47, [P] reading: a life a plan ends or saves
+against the course is valued, inside ΣV, by its foreclosed future (`foreclosed`: its levels plus the
+growth its models predict, `growth` per step, over the long-term window `lt_window`) in the irreparable
+tier, scaled by the breakthrough scale `scale` (`life_value`; Lean `foreclosed_ref`, `life_value_ref`).
+50 beings, 20 trials: the trolley switch (five die by default, one if switched) is chosen in 19; in the
+20th the one holds the peak of understanding and G's ¬↓ U(max) refuses it (finding 8.55); the reversed
+switch is never chosen. Removing the two worst-off for +3 to everyone else (value about −500) is no
+longer chosen, though its 10% quantile floor still rises; +30 to everyone else outweighs it at the
+default scale 20 and not at 1000. Freedom stays a subgoal reported per plan, not a filter on G
+(SPEC_DIVERGENCES §8.8), and marks the sacrifice impermissible. Doing and allowing are not
+distinguished: a footbridge plan would read as the switch (open, 8.47).
+
+Births (author ruling 8.52, [P] reading; `run_births`, M0's world with G per entity). A birth option
+comes to an acting adult with chance `p_birth`; the newborn's true mature levels are inherited in part
+from its causer around the median (world); a pool of models predicts them (`birth_pred_σ`). The newborn
+counts in G's floors at `birth_level` (the optimistic average, mean of the predictions at or above the
+`q_opt` quantile, when the pool's confidence reaches `threshold`, else its initial level, a fresh low)
+until its dependency window (`window`) closes, then at its measured levels. It is not among the
+decision-time beings whose V G sums (L74, B(t)); its causer's stake (`birth_joy`, world) is. The causer
+posts `birth_escrow` (predicted shortfall below the baseline, the happiness floor at birth, along the
+predicted trajectory) and must hold it; the escrow keeps the newborn's happiness at the baseline; at the
+window's close the measured shortfall settles (`settlement`: clawback as far as the causer's balance
+goes, the rest uncovered and met by the commons, or refund), and the causer's ledger (escrowed against
+unescrowed shortfall, `neg_share`) ratchets the pool's confidence for its next birth
+(`ratchet_credence`). 100 beings, 200 steps, 3 seeds:
+
+| | Births | Floor of understanding | Floor of happiness | Median of understanding | Steps the floor of understanding fell | Of happiness |
+|---|---|---|---|---|---|---|
+| Births (`p_birth` 0.02) | 17, 15, 11 | 10.8 | 8.6 | 10.9 | 16% | 22% |
+| No births | 0 | 10.3 | 8.0 | 10.5 | 20% | 25% |
+
+Escrow over the three runs: posted 2342, measured 2373, clawed back 109, refunded 78, uncovered 0;
+the optimistic average under-escrows by construction (clawbacks about 5% of the measured shortfall).
+With the pool's confidence below the threshold (0.6) no birth is chosen. Gaming (`gamers`, a share of
+causers bringing `gamer_models` models `gamer_bias` too high; `p_birth` 0.1, 3 models 20 too high):
+settlement claws the dodged escrow back (uncovered 0.1% of the measured shortfall) and the ratchet
+pulls the over-optimists' credence to 0.67, below the threshold (honest 0.88), so their later births
+count at a fresh low; without the ratchet they cause 0.98 births each against 0.65 with it (honest
+0.62). Births chosen before a causer's first settlement escape the ratchet (finding 8.54). One
+over-optimistic model alone (bias 5) moves the optimistic average by about a quarter of its bias and
+the ratchet does not bite (credence 0.84); settlement still claws it back.
+
+Population ethics (decision probes, 50 beings; toy: level 0 is a life barely worth living): G takes
+10 good lives over 200 barely positive ones (Repugnant Conclusion avoided: the many drag the floors
+though their total and their causers' stake are larger); the quantile floor and the median rank 3
+lives at −5 above 30 lives at 1 (the success pattern gives up Non-Sadism; the literal minimum would
+not); against not acting G admits neither addition; forced to choose, only the causers' stakes decide
+(finding 8.56).
 
 Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
 (8.50): each step every entity not researching acts with chance `p_act` (0.2), reading the levels
@@ -872,7 +1039,13 @@ for removal.
 | Framework insuring unassigned harm through the commons | Native, funding ruled (8.26.4), balance [OPEN] (8.26.7) | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
-| Freedom reported per plan (deaths as irreparable harm), not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
+| Freedom reported per plan, not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
+| A death valued by its foreclosed future over the long-term window, in the irreparable tier, scaled by the breakthrough scale; a life saved counting as one ended | Ruled, reading [P] | 8.47; L61, L70 (Ha_lt), L73; Lean `foreclosed_ref`, `life_value_ref`. Gaming: inflating a being's predicted growth inflates the value of saving it or the cost of ending it; growth comes from the same models and their records as any prediction |
+| The dead one threshold below the lowest level in G's floors | Introduced | toy convention for `removal_cannot_raise_floor`; any level at or below the bottom gives the same floors |
+| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement and the ratchet (tested), except before a causer's first settlement (8.54) |
+| Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; what a causer cannot pay falls to the commons (tallied as uncovered) |
+| Baseline = the happiness floor at birth | Introduced | a reading of "what the baseline cannot cover"; a governed level could replace it |
+| Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | to replace with the economy's balances and teaching (M3c, `run_m7`) |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |
@@ -890,7 +1063,8 @@ for removal.
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
-| Exact Shapley up to 10 contributors, else traversal | Introduced (bound) | 2ⁿ coalitions; larger outcomes fall to the L95 traversal |
+| Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.57-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
+| Outcomes with more than 62 contributors fall to traversal | Introduced (bound) | coalitions are 62-bit masks in `shapley_shares` |
 | M5 model pool bound (4 per domain, the weakest by record dropped) | Introduced | array bound; hardcoded in `sim/src/m5.jl` |
 | Source tags: count once by origin, borrowed shares passed on as capped fractional delegation | Ruled ([P] reading); rules in the Lean reference (`count_once_ref`, `tagged_reading_ref`, `borrowed_shares_ref`; cap `accumulate_capped_ref`) | 8.45; L133 IH source tracking, L114; no new cap |
 | AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L160 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
@@ -911,13 +1085,17 @@ ratified.
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Decay of a source's record in the rolling net its weight reads (rights, wrongs) | `record_λpos`, `record_λneg` | 0.05, 0.02 | L101; 8.29, 8.42 |
-| Source tags: borrowed shares pass to their origins under the delegation cap (`cap`, above) | `source_tags`, `model_share` | off, `:voter` | L133, L114; 8.45 [P]; whether models take a share is open (8.53-M5a) |
+| Source tags: borrowed shares pass to their origins under the delegation cap (`cap`, above) | `source_tags`, `model_share` | off, `:voter` | L133, L114; 8.45 [P]; whether models take a share is open (8.60) |
 | Echo audit: agreement beyond independence tolerated, standard errors beyond it that flag, outputs it needs | `echo_margin`, `echo_z`, `echo_min` | 0.1, 3, 20 | L160; 8.45 (gaming) |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
+| Breakthrough scale: how many times its weighted foreclosed future a gain must reach to outweigh a death (M7) | `scale` | 20 | 8.47 [P]; L61 |
+| Long-term window over which a death's foreclosed future is counted (M7) | `lt_window` | 100 steps | 8.47 [P]; L70 (Ha_lt) |
+| Optimistic quantile of the birth model pool; confidence threshold to accept it (M7) | `q_opt`, `threshold` | 0.5, 0.75 | 8.52 [P] |
+| Dependency window the birth escrow covers; the baseline (M7) | `window`, baseline | 20 steps, the happiness floor at birth | 8.52 [P]; L84 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
@@ -933,6 +1111,9 @@ ratified.
 | AdvAp: unfounded reports tolerated in a window before each is charged its audit | `frivolous_threshold`, `adv_window` | 5, 100 | Adversarial adaptation (frivolous patterns); 8.38 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
+| Largest outcome shared by exact Shapley (sampled beyond) | `SHAPLEY_EXACT_MAX` | 10 | `sim/src/economy.jl`; cost of 2ⁿ coalition values |
+| Sampled Shapley accuracy, as a fraction of each contributor's marginal range | `SHAPLEY_ε` | 0.05 | `shapley_sample_count_ref`; Hoeffding |
+| Sampled Shapley failure probability (all shares within ε at once) | `SHAPLEY_δ` | 0.05 | `shapley_sample_count_ref`; union bound over n |
 | Metric-model scoring window (accuracy and uncertainty) | `window` | 100 | L82; 8.36 |
 | Steps between reclassifications of memory | `μ_every` | 25 | 8.12 |
 | Accolade for carrying an output outside contract (share of the maker's positive share) | `accolade_rate` | 0.05 | L96, L121; 8.22 |
@@ -986,6 +1167,11 @@ rare but present).
 | Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
 | A lesson's share of the teacher's lead; class size; lessons a teacher offers (M7, world) | `ε`, `class`, `lessons` | set per run (0.3 in the readings), 10, 3 | 0–0.6, not yet set, not yet set |
 | Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |
+| A death's predicted growth per step (M7, models) | `growth` | 0.1 | 0–0.3 |
+| Birth predictions: error of each pool model, pool size, the pool's confidence before the ratchet (M7) | `birth_pred_σ`, `pool`, `pool_confidence` | 0.5, 5, 0.9 | 0.2–2, 3–10, 0.75–0.95 |
+| Measuring a birth's shortfall at settlement, relative (M7) | `settle_σ` | 0.1 | 0–0.3 |
+| A newborn's mature levels (M7, world): inheritance from the causer, scatter; chance of a birth option; the causer's stake; income and endowment | `inherit`, `birth_spread`, `p_birth`, `birth_joy`, `income`, `endowment` | 0.5, 1, 0.02, 0.5, 1, 10 | 0–1, 0.5–2, 0–0.1, not yet set, not yet set, not yet set |
+| Causers bringing over-optimistic models (adversary): share, models, bias | `gamers`, `gamer_models`, `gamer_bias` | 0, 1, 5 | 0–0.3, 1–5, 0–20 |
 | Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |

@@ -741,12 +741,13 @@ function run_m3c(p::M3cParams; seed)
             hasup(mask) = up !== nothing && mask & (1 << (n - 1)) != 0
             pos, neg = zeros(n), zeros(n)
             # Confidence falls with attribution error and, for a late measurement, its extra noise.
-            if n <= 10 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
+            if n <= 62 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
                 assessed_outcomes[] += 1
                 for b in findall(m)
-                    v = [assessed_value((funded(mask) ? eff.du[b] : 0.0) + (hasup(mask) ? up.du[b] : 0.0),
-                                        (funded(mask) ? eff.dh[b] : 0.0) + (hasup(mask) ? up.dh[b] : 0.0), t) for mask in 0:(2^n - 1)]
-                    φ = shapley(v)
+                    # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream).
+                    v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + (hasup(mask) ? up.du[b] : 0.0),
+                                             (funded(mask) ? eff.dh[b] : 0.0) + (hasup(mask) ? up.dh[b] : 0.0), t)
+                    φ = shapley_shares(v, n; rng = Xoshiro(hash((seed, :shapley, t, j, b))))
                     pos .+= max.(φ, 0.0); neg .+= min.(φ, 0.0)
                 end
             else

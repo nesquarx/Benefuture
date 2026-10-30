@@ -1167,6 +1167,15 @@ foreclosed future) in the irreparable tier, so that irreparable harm is outweigh
 irreparable harm, or only by a breakthrough-scale gain, never by ordinary gains spread over the rest.
 The preference stays inside V and G (§8.8: Freedom reported, not a filter). Open: whether doing and
 allowing differ (the footbridge and organ-harvest variants), which the standard rules split on.
+Status (M7, [P]): Lean `foreclosed_ref` (a life's levels plus its predicted growth over the long-term
+window) and `life_value_ref` (∓ breakthrough scale × the irreparable tier's weight × that foreclosed
+future, a life saved against not acting counting as much as one ended), inside ΣV; G's floors keep the
+decision-time population. In 20 trials of 50 beings the trolley switch (five die by default, one if
+switched) is chosen unless the one holds the peak of understanding (8.55); the reversed switch never;
+the sacrifice of the two worst-off for +3 to the rest is no longer chosen (its value about −500 against
+an uplift's positive one) though its quantile floor still rises; +30 to the rest (a breakthrough-scale
+gain) outweighs it at the default scale 20 and not at 1000. Doing and allowing are not distinguished:
+the footbridge would read as the switch. The scale and the long-term window are governed thresholds.
 
 **8.48 Author ruling on normalisation.** Normalising reputation must not reduce anyone's net
 reputation when someone surpasses them: only vote weights are normalised, because they scale
@@ -1233,3 +1242,233 @@ Implementation reading, [P]: the optimistic average is the mean of the model poo
 governed quantile, accepted when the pool's confidence clears a governed threshold; the escrow is sized
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
+Status (M7, [P]): Lean `optimistic_average_ref` (mean of the pool's predictions at or above its
+q-quantile), `birth_level_ref` (that average when the pool's confidence reaches the threshold, else the
+initial level), `birth_escrow_ref` and `shortfall_ref` (the shortfall below the baseline along the
+predicted trajectory over the dependency window); settlement and the ratchet are the existing
+`settlement_ref`, `neg_share_ref` and `ratchet_credence_ref`. The newborn counts in G's floors at its
+predicted level until its window closes; it is not among the decision-time beings whose V G sums (L74,
+B(t); `dist_score_ignores_absent`), so only its causers' stake enters ΣV. Findings in 8.54 and 8.56.
+
+
+**8.53 Proposals from the audit against Ostrom's design principles ([P]).**
+From `docs/OSTROM.md` (Ostrom 1990; Cox, Arnold & Villamayor Tomás 2010). Each rides on existing
+mechanisms; none adds a rule set.
+
+**8.53-a [P] A floor on the impacted's share of decision weight (principle 3).** L113 weights
+expertise and impact, and the simulation's default expertise weight (5) exceeds impact weight (1), so
+experts far from a decision's effects can outvote those who bear them. Proposal: a governed threshold,
+the least share of a decision's total weight held by voters with predicted impact above Th_b; below
+it, impact weights are scaled up for that decision. The share is reported as an output of every
+decision (and in M5). Gaming: inflating predicted impact to gain weight is a prediction, scored like
+any (L82). Candidate homes: L113, Government (Aspects, "Expertise and Impact-Distance Weighting").
+
+**8.53-b [P] Provision priced as negative usage (principle 2b).** Appropriation pays its resource
+cost directly (L83, L86), but restoring or regenerating a resource earns only through the
+understanding and happiness outcomes it eventually causes, often below the causal-assessment gate.
+Proposal: resource accounting reads a measured increase in an accounted resource as negative usage,
+credited at the price depletion would pay. Gaming: depleting to be paid for restoring nets the
+accounting's error only, since depletion is charged at the same price; deliberate deplete-and-restore
+cycles become AdvAp patterns. Candidate homes: L83 (RA), Economy, Benefuture currency (Aspects);
+relates to 8.26.7.
+
+**8.53-c [P] Graduated sanctions stated where the rules live (principle 5).** Escalation by
+repetition exists only in the Justice article (rehabilitation: reparation, education, restraint "if
+... significant or repeated") and in side levers (ratcheting escrow, ledgers keeping every entry,
+mistakes decaying slower, frivolous-report patterns). Causal distribution charges a first,
+non-informed harm its full assessed value (L96, L99). Proposal: (i) L116 reads `J := Repair(Ha) ∧
+Prevent(Cr), Restorative, Rehabilitate(Escalate ← pattern(Re_-ve(Dn)))`; (ii) what a non-informed
+harm (an accident, L115) costs its contributor is bounded by capacity, the administration carrying the
+rest as Justice (Reparation) already says, stated in L119 or L96; (iii) Implementation prototype's
+"graduated sanctions (reputation penalties, escrow mechanisms)" is corrected: escrow ratcheting is
+graduated, reputation penalties are proportional. Gaming: a capacity bound invites actors to hold no
+capacity (shell identities); identity binding (L132) and liability overflow on forks (L122) are the
+defence, an M6 test. Candidate homes: L116, L119, Justice, Implementation prototype.
+
+**8.53-d [P] Name the sources of deterrence (principle 5).** A sanction equal to the harm deters
+only if the chance of being traced times the penalty exceeds the gain. Benefuture's deterrence comes
+from V's convexity (the assessed harm, loss-averse, exceeds the saving: laundering at full tracing
+left the launderer 1,046% below honest agents) and from AdvAp raising detection; below a tracing rate
+near 0.1 laundering paid (+2% at zero). Proposal: the Justice discussion states that reparation-first
+deters through assessed harm and detection, not through punishment, and the simulation adds an M6
+sweep of detection against gain with V's convexity removed (q₋ = q₊) to show which carries it.
+Candidate homes: Justice (Discussion), Critique addressal.
+
+**8.53-e [P] Disputes as priced transactions (principle 6).** Dispute resolution is named (L96,
+L99) but its cost and speed are not, and the simulation has no disputes. Proposal: a dispute is a
+transaction priced like any other (L86: resource cost less predicted good, so a likely-founded dispute
+is cheap); re-assessment is done by a different model of the domain's pool, or by a weighted panel
+(Government, Examples, "Dispute Resolution") above a governed significance; frivolous disputes are
+charged past a pattern as AdvAp reports are (`report_penalty_ref`). Gaming: disputing every penalty to
+delay it is the frivolous pattern; collusion with a panel is AdvAp's. Candidate homes: L96, Justice
+(Deliberation), Benefuture currency ("Disputes").
+
+**8.53-f [P] Scoped thresholds and the recognition boundary (principles 2a, 7).** The corpus does
+not say whether a governed threshold may settle at different values in different scopes, nor when a
+scope's own rules need no wider approval. Proposal: governed thresholds carry a scope (domain ×
+locality); a scope's own rules and threshold values within the freedom range (L135) and the admissible
+region need no wider approval; a wider scope intervenes only beyond the freedom harm boundary or where
+effects fall on beings outside the scope. Gaming: a scope drawn to exclude those it harms is caught by
+the spill-over test of 8.53-g. Candidate homes: L157 (SigThGv), L135, Government ("Fractal
+Scope"), Freedom.
+
+**8.53-g [P] Subsidiarity by impact (principle 8).** FractalScope (L113) does not say which scope
+decides, nor how nested scopes' conflicting decisions are reconciled. Proposal: a decision is taken at
+the narrowest scope whose members bear at least a governed share of its predicted impact (Pr_Imp in
+L113); the same test settles conflicts between scopes. Gaming: understating spill-overs to keep a
+decision local is a prediction, scored like any. Candidate homes: L113, Government ("Fractal Scope").
+Simulation: nested decision scopes in M8.
+
+**8.53-h [P] Resource systems as accounted units (principles 1b, 4b).** Domains are fuzzy by
+design (L22), and the simulation has one resource stock and one commons. Proposal: resources and the
+commons are accounted per resource system, a domain at the granularity of the resource's causal
+structure, with the system's condition measured as an output like any other; use, regeneration and
+insurance of unassigned harm are then bounded where the resource is. Candidate homes: L83 (RA),
+Administration ("Insuring the unassigned"), Domain; relates to 8.26.7.
+
+**8.54 Findings on births (M7; for the author).** 100 beings, 200 steps, 3 seeds, G per entity,
+baseline the happiness floor at birth, dependency window 20, optimistic quantile 0.5, confidence
+threshold 0.75. (1) Births happen (11–17 a run) and do not drag the floors G reads: the floor of
+understanding fell in 16% of steps against 20% without births, happiness 22% against 25%. With the
+pool's confidence below the threshold (0.6) no birth is chosen: the newborn would count at a fresh
+low. (2) The optimistic average under-escrows by construction: clawbacks are about 5% of the measured
+shortfall in an honest world (posted 2342 against measured 2373 over the three runs; nothing uncovered).
+(3) Over-optimism to dodge escrow (a causer bringing 3 models 20 too high into a pool of 5) is clawed
+back at settlement (uncovered 0.1% of the measured shortfall) and the ratchet pulls its credence to 0.67,
+below the threshold (honest 0.88), so its later births count at a fresh low; without the ratchet it
+causes 0.98 births each against 0.65 with it. But births chosen before its first settlement escape
+the ratchet: it still causes slightly more than honest causers (0.65 against 0.62). Candidate native
+remedy, [P]: count pending (unsettled) birth escrows in the causer's ledger, or hold the escrow at the
+pool's plain mean until the causer has a settled record. (4) The nearest-rank quantile floor ignores a
+single fresh low in small populations (50 beings: one newborn moves the 10% quantile up a rank); with
+55 it falls. (5) Open: a causer whose child is predicted below the floor cannot add it without lowering
+the floor, so births by the worst-off depend on how optimistic the prediction is; whether the baseline
+or teaching should lift the prediction is for the author. Candidate homes: Government (Birth), L74, L84,
+the escrow lines.
+
+**8.55 Finding: G's peak filter refuses a trolley switch onto the peak holder (M7; for the author).**
+G's ¬↓ U(max) (L74) is read counterfactually against the course; when the one on the side track holds
+the peak of understanding, switching lowers the peak against letting five die, so G refuses it although
+the switch saves four lives and its value is positive (1 trial in 20; a deterministic test). The standard
+trolley rules (8.47) would switch. Options: (a) accept it (the frontier is irreparable in its own way);
+(b) read the peak over the long-term window, where the frontier is carried by those taught and
+recovers; (c) value the peak holder's death in V alone and drop the peak from admissibility where lives
+are at stake. Candidate homes: L74, Benefuture goals, 8.47.
+
+**8.56 Finding: population ethics with births (M7; docs/SOTA.md item 10).** Toy assumption: level 0
+is a life barely worth living. Repugnant Conclusion: 200 lives at 0.5 carry a larger total and a larger
+stake in ΣV than 10 lives at median + 1, but drag the floors and medians, so G takes the 10; the
+success pattern avoids the Repugnant Conclusion. Sadistic Conclusion: 3 lives at −5 leave the 10%
+quantile floor and the median higher than 30 lives at 1, so the success pattern ranks the few negative
+lives above the many barely positive ones: it gives up Non-Sadism (adding lives below neutral is never
+better than adding lives above it), one of the conditions of Arrhenius's impossibility theorems
+(Arrhenius 2000, https://doi.org/10.1017/S0266267100000249; the condition's exact name and statement
+to be confirmed against the paper). It also gives up Mere Addition (adding lives worth living below
+the floor is judged worse). The literal minimum would keep Non-Sadism. Against not acting G admits
+neither addition (both lower the floors); forced to choose between them (the mild births happen unless
+redirected), the sadistic one is admissible and only the causers' stakes in ΣV decide, since newborns
+are not decision-time beings. Candidate answers, [P]: count a newborn's predicted harm (a life below
+neutral) in V's harm tiers through those causing it, or read the floor's tail (L74, `tail → Me`) so
+that lives below neutral weigh beyond their rank. Candidate homes: L74, Benefuture goals, conjecture
+A35, Government (Birth).
+
+
+**8.57-a Finding: forks game Shapley shares (false-name manipulation).** Aziz,
+Bachrach, Elkind & Paterson (2011, *JAIR*, https://doi.org/10.1613/jair.3166) show that splitting one
+player into several identities can raise Shapley-type shares. Tested in the funding game that causal
+distribution uses (an actor's effect counts only when the coalition can fund the action;
+`sim/test/shapley_sampling_tests.jl`, "False names"): a funder whose pledge is indispensable, split into
+k indispensable identities, takes k/(k+1) of the outcome alongside the actor instead of 1/2 (k = 4:
+0.8). Diminishing returns in the assessed value (a concave valuation of summed effects) also reward
+forking (by up to about 17% of the forker's share in random small games); increasing returns penalise
+it; additive effects are neutral. What holds: the forks never take more than the whole outcome. The
+no-gain bound fails, exactly or sampled. Candidate remedy, [P]: share among bound identities, as 8.34
+does for the base vote: a fork family (identity binding, L122) is one player in the coalition game,
+its share then divided among its members; alternatively, funders are credited in proportion to their
+pledges within the funding side rather than as separate Shapley players. Either keeps causal and
+ideological inheritance and grants no claim from the fork itself. Candidate homes: L93–L95, L122,
+Benefuture currency (causal distribution), `Proposed.OutcomeDistribution`.
+
+**8.57-b Proposal [P]: asymmetric or causal Shapley for causal distribution.**
+Causal distribution runs over transaction trees, where contributions have an order (a maker's output
+exists before the carrier carries it). Symmetric Shapley ignores that order. Asymmetric Shapley (Frye,
+Rowat & Feige 2020, NeurIPS) restricts the orderings averaged to those consistent with a causal order;
+causal Shapley (Heskes, Sijben, Bucur & Claassen 2020, NeurIPS) values coalitions by interventions on a
+causal graph, splitting direct from indirect effects. Both fit L94–L95 (the causal-explanation model's
+graph and the substrate's degree of separation) better than symmetric shares, and the sampling estimator
+(`shapley_sampled_ref`) carries over to asymmetric Shapley unchanged (sample only consistent orderings).
+No implementation; for the author with 8.18 (coalition values). Candidate homes: L94, L95,
+`Proposed.OutcomeDistribution`.
+
+**8.57-c Note: reusing Holliday–Norman–Pacuit's voting formalisation.** Their
+formalisation (LORI 2021, https://doi.org/10.1007/978-3-030-88708-7_9; repository
+github.com/chasenorman/Formalized-Voting) is Lean 3 (`leanpkg.toml`), shows no licence on its repository
+page, and is built on ordinal profiles (each voter's strict preference over candidates) with social
+choice correspondences and Split Cycle. Benefuture's governance (L113–L114) is cardinal and weighted:
+binary or few-option decisions decided by an expertise- and impact-weighted tally with capped
+delegation. Findings: nothing ports directly (Lean 3 to Lean 4 is a rewrite, and an unlicensed source
+cannot be copied); the ordinal machinery matters only if Benefuture adopts ranked multi-option
+decisions, in which case the minimal definitions (profile, margin, Condorcet winner, an axiom such as
+positive involvement) would be written afresh in Lean 4 over weighted voters. Its value now is as a
+checklist of axioms against which weighted voting with a cap could be tested (anonymity fails by
+design: weights differ; neutrality and monotonicity should hold). Nothing to change in the sources.
+
+**8.59 Status of the 8.45 ruling: source tags in M5 (renumber at merge).** Each reading carries its
+origins' tags (persons by identity, models by identity); a listener counts each origin once, an echo
+of itself not at all (Lean `count_once_ref`, `tagged_reading_ref`), and the borrowed share of its vote
+passes to the origins as fractional delegation under L114's cap, cast on each origin's logged output,
+the voter keeping its own share and any share the cap blocks (`borrowed_shares_ref`, with the
+existing `accumulate_capped_ref`; reading [P]). 100 voters, hard factual decisions, 3 seeds, right in
+the last third, untagged → tagged: alone 92.8%; five random contacts 91.4% → 92.7%; IH's
+ContentionMap 83.8% → 93.1%; with three rounds of passing readings on, contacts 91.2% → 93.1% and the
+ContentionMap 80.2% → 92.9% (untagged, echoes compound across rounds; tagged, they do not). About a
+seventh of the total weight passes on, bounded by the cap on the few sources the ContentionMap
+surfaces. Contention (two expert camps, one leaning by an honest bias; 1,600 decisions, 4 seeds):
+with deliberation and split trials, all decisions 89.5% → 91.8%, deliberation alone 78.9% → 88.2%
+(the echo cost on uncontested questions removed), but contested questions 86.7% → 79.6% in the first
+400 and 86.6% → 85.1% in the last 400: with the camps' shares capped, laymen no longer amplify the
+camp whose record is better, and the trials take longer to settle the question. The persuasion-bias benchmark (DeMarzo, Vayanos and Zwiebel 2003) holds exactly: untagged
+weights are walk counts, tagged ones each reachable origin once. Candidate homes: L133 (IH: source
+tags as part of SourceVerify), L113, L114, Government (clean deliberation).
+
+**8.60 [OPEN] Do models take their borrowed share? (renumber at merge).** Models do not vote (8.42.2:
+they inform votes, as expert commentary does). With tags, a voter's share borrowed from models
+therefore stays with the voter, cast on its own reading informed by the models, and every voter who
+hears a model recasts it: the echo of 8.45 remains through models (IH and models improving towards
+noise 0.5: 84.4% untagged, 82.3% tagged). If instead each model takes its borrowed share as capped
+fractional delegation, cast on its published prediction (the same cap as a person: L114), the
+decision counts each model once: 92.6%. Options: (a) models take their share, capped like persons
+(models then cast weight, against the letter of 8.42.2, though no model holds a vote of its own);
+(b) the model share passes to the model's operators or to the experts whose record the model's record
+draws on; (c) models' published predictions enter the tally once, weighed by their records (8.43
+option (a), a new rule). The simulation keeps 8.42.2 by default (`model_share = :voter`) and reports
+(a) beside it. Candidate homes: L114, L133, Government (models in deliberation), 8.42.2.
+
+**8.61 Gaming source tags (renumber at merge).** Tags are outputs, auditable by AdvAp against the
+open log (L160). (1) Misattribution (claiming a reputable source backs one's side, or slandering it):
+inert under 8.59's reading, since a borrowed share passes to the origin's logged output whatever was
+claimed and records read the log; in M5 with twenty liars, unaudited, the tally and every record are
+identical to an honest run, and audited, every falsified tag is caught and debited to its maker as a
+falsified output (`tags_falsified_ref`). Untagged, the same liars cost decisions. (2) Laundering by
+omission (republishing what one heard as one's own, claiming independence, and voting it with full
+weight): unaudited it pays (the launderers' records rise from 40% to 57% right, listeners borrow from
+them, decisions fall 91.9% → 90.2%); an echo audit flags an output whose agreement with what its maker
+heard exceeds what two independent judges of those accuracies would show by a governed margin
+(`undisclosed_echo_ref`; margin 0.1, 3 standard errors, 20 outputs), flags at least three in four
+launderers and under one in twenty honest voters, and splits a flagged voter's readings like anyone's.
+Residual: a launderer copying only part of the time stays under the margin, bounding what it gains;
+honest experts sharing a paradigm (8.45 contention) agree beyond independence and could be flagged,
+which the margin is meant to absorb (untested). Candidate homes: L160, L133, Adversarial adaptation.
+
+**8.62 Finding: liquid-democracy pathologies against direct voting (SOTA #3; renumber at merge).** One
+domain, 101 voters, 400 decisions, 6 seeds, direct voting 98.7% right. Bad delegation (Kahng,
+Mackenzie and Procaccia 2021: all delegate to one somewhat better voter): uncapped 85.6%, capped at
+5% 96.8%. Misleading reputation (Caragiannis and Micha 2019: the least competent most reputable):
+uncapped and unaudited 77.6%, capped and audited 95.9%. Bribery of the three most reputable
+(Alouf-Heffetz et al. 2024): uncapped 65.2% (vote reputation alone lowers the bought super-voter in
+time), capped and audited 96.3% against 98.7% for direct voting with the same bribes. Super-voters
+(Kling et al. 2015): uncapped, one voter holds most of the weight; capped, none above the cap plus one
+voter's own. Cycles cannot form (delegation only to strictly higher reputation, delegates never
+pass weight on) and no weight is lost. In these worlds the cap and audit bound delegation's losses to
+about two points but do not make delegation beat direct voting; where delegation helps (Berinsky et
+al. 2025) is not yet simulated. Candidate homes: L114, Government (liquid democracy).

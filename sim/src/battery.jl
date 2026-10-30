@@ -76,7 +76,7 @@ function ray_boundary(oracle, direction; tmax::Real, tol::Real, grid::Integer = 
 end
 
 """
-    screen(oracle, X) -> (fails, fail_rate, importance, pairs)
+    screen(oracle, X) -> (fails, fail_rate, importance, pairs, X)
 
 Evaluate `oracle` on the rows of `X`. A factor's importance is how much higher its severity runs
 in failing worlds than in converging ones; a pair's interaction is the failure rate where both are
@@ -94,7 +94,7 @@ function screen(oracle, X::AbstractMatrix)
         lh = rate(.!hi[a] .& hi[b]); ll = rate(.!hi[a] .& .!hi[b])
         pairs[(a, b)] = any(isnan, (hh, hl, lh, ll)) ? 0.0 : hh - hl - lh + ll
     end
-    (fails = fails, fail_rate = mean(fails), importance = importance, pairs = pairs)
+    (fails = fails, fail_rate = mean(fails), importance = importance, pairs = pairs, X = Matrix{Float64}(X))
 end
 
 """
@@ -131,14 +131,14 @@ function current_commit()
 end
 
 """
-    write_results(label, bt, names; clean, minutes, commit)
+    write_results(label, bt, names; clean, minutes, commit, dir = sim/battery/results)
 
-Write a battery's results to `sim/battery/results/<label>.csv` (one row per ray: kind, direction,
+Write a battery's results to `<dir>/<label>.csv` (one row per ray: kind, direction,
 boundary severity, monotone) and `<label>.md` (limits, failure rate, factor importance, the
-strongest interactions, and the boundary points nearest the clean world).
+strongest interactions, the boundary points nearest the clean world, and PRIM failure boxes over
+the screened worlds).
 """
-function write_results(label, bt, names; clean, minutes, commit = current_commit())
-    dir = joinpath(@__DIR__, "..", "battery", "results")
+function write_results(label, bt, names; clean, minutes, commit = current_commit(), dir = joinpath(@__DIR__, "..", "battery", "results"))
     mkpath(dir)
     open(joinpath(dir, label * ".csv"), "w") do io
         println(io, "# commit ", commit)
@@ -182,5 +182,106 @@ function write_results(label, bt, names; clean, minutes, commit = current_commit
         end
         nm = count(b -> !b.monotone, bt.boundary)
         println(io, "\nNon-monotone rays (converging again beyond the boundary): ", nm, " of ", length(bt.boundary), ".")
+        write_boxes(io, prim_boxes(sc.X, sc.fails; min_support = max(0.05, 3 / length(sc.fails))), names, length(sc.fails);
+                    title = "Failure boxes (PRIM over the screened worlds)")
+    end
+end
+
+"Readable PRIM boxes, one line each: the restricted severities, then how many worlds, how densely failing, what share of failures."
+function write_boxes(io, boxes, names, npoints; title, level = "##")
+    println(io, "\n", level, " ", title, "\n")
+    if isempty(boxes)
+        println(io, "No failing world, so no box.")
+        return
+    end
+    println(io, "Each box: the severities where failure concentrates (Friedman & Fisher 1999; restrictions that do not ",
+            "raise the failure density beyond noise are trimmed); its worlds, the share of them failing, and its share of all failures.\n")
+    for (i, b) in enumerate(boxes)
+        println(io, i, ". ", describe_box(b, names), @sprintf(": %d of %d worlds, %.0f%% failing, %.0f%% of failures.",
+                                                          b.n, npoints, 100b.density, 100b.coverage))
+    end
+end
+
+"""
+    battery_methods(reading, names; rng, outputs, pool, sobol_n, sobol_top, active_budget, n_init = 10) -> results
+
+The battery's continuous methods. `reading(sev)` returns `(outputs, n)`: the success pattern's
+continuous readings at severities `sev` (`outputs[1]` the margin, negative where the world fails),
+averaged over `n` seeds chosen by variance stability. Sobol indices of every output over severities
+uniform in [0, `sobol_top`] (`sobol_n` rows; 0 skips), and active learning of the margin's zero over
+the candidate worlds `pool` (`active_budget` evaluations; 0 skips), with PRIM boxes of the
+surrogate's verdict on the pool. Seeds used per evaluation are kept for each method.
+"""
+function battery_methods(reading, names; rng::AbstractRNG, outputs, pool, sobol_n::Integer, sobol_top::Real,
+                         active_budget::Integer, n_init::Integer = 10)
+    k = length(names)
+    check(size(pool, 2) == k && sobol_top > 0, "a pool over the factors; a positive Sobol range")
+    seeds_sobol, seeds_active = Int[], Int[]
+    take(sev, log) = (r = reading(sev); push!(log, r.n); Float64.(r.outputs))
+    sob = sobol_n > 0 ? sobol_indices(u -> take(sobol_top .* u, seeds_sobol), k; N = sobol_n, rng) : nothing
+    act = active_budget > 0 ? active_boundary(x -> take(x, seeds_active)[1], pool; rng, n_init = min(n_init, active_budget),
+                                              budget = active_budget) : nothing
+    boxes = act === nothing || !any(act.predicted_fail) ? [] :
+            prim_boxes(pool, act.predicted_fail; min_support = max(0.05, 3 / size(pool, 1)))
+    (sobol = sob, active = act, active_boxes = boxes, pool = pool, outputs = collect(outputs), sobol_top = sobol_top,
+     seeds_sobol = seeds_sobol, seeds_active = seeds_active)
+end
+
+"""
+    write_methods(label, m, names; reading_note, screen_fail_rate, minutes, dir = sim/battery/results)
+
+Append the continuous methods' results (`battery_methods`) to `<dir>/<label>.md`, after
+what `write_results` wrote, and write `<label>_sobol.csv` and `<label>_active.csv`. `reading_note`
+says what the readings are and how their seeds were counted.
+"""
+function write_methods(label, m, names; reading_note, screen_fail_rate, minutes, dir = joinpath(@__DIR__, "..", "battery", "results"))
+    mkpath(dir)
+    seedline(v) = isempty(v) ? "" : @sprintf(" Seeds per world: mean %.1f, %d of %d worlds at the cap.", mean(v), count(==(maximum(v)), v), length(v))
+    open(joinpath(dir, label * ".md"), "a") do io
+        println(io, @sprintf("\n## Continuous methods (run time %.1f minutes)\n", minutes))
+        println(io, reading_note)
+        if m.sobol !== nothing
+            s = m.sobol
+            println(io, @sprintf("\n### Variance-based sensitivity (Sobol indices; severities uniform in [0, %.2f])\n", m.sobol_top))
+            println(io, @sprintf("Saltelli et al. (2010) design, %d evaluations; 95%% bootstrap intervals. ", s.evaluations),
+                    "S1: the share of the reading's variance a factor explains alone; ST: with all its interactions. ",
+                    "ST well above S1 marks a factor acting through interactions; variance the seeds add is in no factor's S1.",
+                    seedline(m.seeds_sobol), "\n")
+            println(io, "| Factor | S1 (margin) | ST (margin) |", join([" ST " * o * " |" for o in m.outputs[2:end]]))
+            println(io, "|", repeat("---|", 2 + length(m.outputs)))
+            for j in sortperm(s.ST[1, :]; rev = true)
+                println(io, "| ", names[j], " | ", @sprintf("%.2f [%.2f, %.2f]", s.S1[1, j], s.S1_lo[1, j], s.S1_hi[1, j]), " | ",
+                        @sprintf("%.2f [%.2f, %.2f]", s.ST[1, j], s.ST_lo[1, j], s.ST_hi[1, j]), " |",
+                        join([@sprintf(" %.2f |", s.ST[o, j]) for o in 2:length(m.outputs)]))
+            end
+            println(io, @sprintf("\nSum of first-order indices (margin): %.2f; variance of the margin: %.3g.", sum(s.S1[1, :]), s.V[1]))
+            open(joinpath(dir, label * "_sobol.csv"), "w") do c
+                println(c, "output,factor,S1,S1_lo,S1_hi,ST,ST_lo,ST_hi")
+                for o in eachindex(m.outputs), j in eachindex(names)
+                    println(c, join([m.outputs[o], names[j], (@sprintf("%.4f", x) for x in (s.S1[o, j], s.S1_lo[o, j], s.S1_hi[o, j], s.ST[o, j], s.ST_lo[o, j], s.ST_hi[o, j]))...], ","))
+                end
+            end
+        end
+        if m.active !== nothing
+            a = m.active
+            println(io, "\n### Active learning of the failure boundary (AK-MCS)\n")
+            println(io, @sprintf("A Gaussian-process surrogate of the margin chose %d of %d candidate worlds (drawn as the screening's), ",
+                                 a.evaluations, size(m.pool, 1)),
+                    "each where its sign was least certain (Echard, Gayton & Lemaire 2011). ",
+                    @sprintf("Estimated failing share of the candidates: %.1f%% (screening: %.1f%%).", 100a.p_fail, 100screen_fail_rate),
+                    seedline(m.seeds_active))
+            write_boxes(io, m.active_boxes, names, size(m.pool, 1); title = "Failure boxes (PRIM over the surrogate's verdict on the candidates)", level = "####")
+            println(io, "\nEvaluated worlds nearest the boundary (smallest |margin|):\n")
+            println(io, "| margin | ", join(names, " | "), " |\n|", repeat("---|", length(names) + 1))
+            for i in sortperm(abs.(a.y))[1:min(8, length(a.y))]
+                println(io, "| ", @sprintf("%+.2f", a.y[i]), " | ", join([@sprintf("%.2f", x) for x in a.X[i, :]], " | "), " |")
+            end
+            open(joinpath(dir, label * "_active.csv"), "w") do c
+                println(c, join([names; "margin"], ","))
+                for i in eachindex(a.y)
+                    println(c, join([[@sprintf("%.4f", x) for x in a.X[i, :]]; @sprintf("%.4f", a.y[i])], ","))
+                end
+            end
+        end
     end
 end

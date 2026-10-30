@@ -1,6 +1,6 @@
 name = "Benefuture"
 version = "0.1.0"
-defaultTargets = ["Benefuture", "BenefutureReference", "benefuture"]
+defaultTargets = ["Benefuture", "BenefutureReference", "benefuture", "BenefutureTest"]
 
 [[lean_lib]]
 name = "Benefuture"
@@ -8,6 +8,11 @@ globs = ["Benefuture", "Benefuture.+"]
 
 [[lean_lib]]
 name = "BenefutureReference"
+
+# Build-time differential tests of the Float reference against the Mathlib specification
+# (Mathlib allowed here; never imported by BenefutureReference or Main).
+[[lean_lib]]
+name = "BenefutureTest"
 
 [[lean_exe]]
 name = "benefuture"

@@ -12,16 +12,18 @@ export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_pe
 export floor_quantile, g_choose
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
-export running_mean, settling_step, ci_halfwidth, success_pattern
-export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, carry_fee, cause_settlement, shapley, cc_assessed, traversal_shares, is_crime, advap_reward, advap_liability, report_penalty, ratchet_credence, PARAM_FIELDS, bootstrap_params, admissible, perturb, select_candidate, gauge_radius, escape_accept
+export running_mean, settling_step, ci_halfwidth, success_pattern, pattern_margin
+export prim, prim_boxes, in_box, describe_box, sobol_indices, active_boundary, random_boundary, seeds_until_stable, cross_entropy_search
+export escrow_split, reputation_decay, resource_cost, transaction_price, supply_delta, competition_efficiency, settlement, cc_share, carry_fee, cause_settlement, shapley, shapley_sampled, shapley_sample_count, shapley_shares, cc_assessed, traversal_shares, is_crime, advap_reward, advap_liability, report_penalty, ratchet_credence, PARAM_FIELDS, bootstrap_params, admissible, perturb, select_candidate, gauge_radius, escape_accept
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood
 export membership_rolling, accuracy, credence, credence_accuracy, currency_eligible, relative_bar, scarcity_cost
 export voting_weight, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, neg_share, credence_score, M5Params, run_m5
 export count_once, tagged_reading, borrowed_shares, tags_falsified, undisclosed_echo, echo_influence
-export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit
+export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit, battery_methods, write_methods
 export run_m7, teaching_plan
+export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth_escrow, Newborn, PopPlan, pop_value, pop_choose, run_births
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
 
 include("lean.jl")
@@ -41,6 +43,7 @@ include("m3c.jl")
 include("governance.jl")
 include("friction.jl")
 include("battery.jl")
+include("methods.jl")
 include("diversity.jl")
 include("m5.jl")
 include("m7.jl")

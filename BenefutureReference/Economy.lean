@@ -41,6 +41,34 @@ def shapley_ref (n : Nat) (v : Array Float) : Array Float :=
         let w := fact_ref s * fact_ref (n - s - 1) / fact_ref n
         acc + w * (v.getD (m ||| (1 <<< i)) 0.0 - v.getD m 0.0)) 0.0
 
+/--
+  Shapley shares by permutation sampling (Castro, Gómez & Tejada 2009; `Proposed.ShapleySampling`,
+  `shapley_sampled`). `perms` holds m orderings of the n contributors (0-based indices, ordering k
+  at entries k·n … k·n + n − 1); `vals` holds, for each ordering, the n + 1 coalition values along
+  it (the empty coalition, then each prefix; ordering k at entries k·(n+1) …). A contributor's
+  share is the mean over orderings of its marginal contribution to those before it. Shares sum to
+  v(all) − v(none) on every sample, so sampling error moves currency between contributors and
+  never mints or destroys it. With no ordering, nothing is shared.
+-/
+def shapley_sampled_ref (n m : Nat) (perms vals : Array Float) : Array Float :=
+  if m = 0 then Array.replicate n 0.0 else
+  let sums := (List.range m).foldl (fun acc k =>
+    (List.range n).foldl (fun acc p =>
+      let i := (perms.getD (k * n + p) 0.0).toUInt64.toNat
+      let d := vals.getD (k * (n + 1) + p + 1) 0.0 - vals.getD (k * (n + 1) + p) 0.0
+      if i < n then acc.modify i (· + d) else acc) acc) (Array.replicate n 0.0)
+  sums.map (· / m.toFloat)
+
+/--
+  Orderings to sample for Shapley shares among n contributors (governed: ε, δ): ⌈ln(2n/δ) / (2ε²)⌉.
+  By Hoeffding's inequality and a union bound over the n contributors, every sampled share then
+  lies within ε · rᵢ of the exact share with probability at least 1 − δ, where rᵢ is the range of
+  contributor i's marginal contributions (`hoeffding_count_suffices` proves the arithmetic; the
+  inequality itself is cited, not proved).
+-/
+def shapley_sample_count_ref (n : Nat) (eps delta : Float) : Nat :=
+  (Float.ceil (Float.log (2.0 * n.toFloat / delta) / (2.0 * eps * eps))).toUInt64.toNat
+
 /-- The switch of L94: contributions come from the causal assessment (MM_CE) when its confidence
     reaches the threshold, else from traversing the transaction substrate (L95). -/
 def cc_assessed_ref (confidence threshold : Float) : Bool := confidence ≥ threshold

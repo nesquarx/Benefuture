@@ -121,7 +121,20 @@ results. Three kinds of evidence, never to be read as more than they are:
 
 The simulation does not run the ℝ specification: it calls the Float reference (`BenefutureReference`)
 through C exports. The reference reproduces the spec's test vectors, but correspondence between the
-two is not proved. `python3 tools/check_readme_claims.py` checks that every theorem named here exists
+two is not proved. What links them, precisely: for nine rules (`supply_delta`,
+`competition_efficiency`, `rolling_average`, `accumulate_capped`, `p_forgive`, `p_overreact`,
+`severity_score` at the default parameters, exact and sampled Shapley) a ℚ oracle is **proved**
+equal to the ℝ specification after casting (`*_spec` in
+[`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)), and the Float reference is
+**tested** against that oracle on generated dyadic inputs (within 1e-9 relative) every time
+`lake build` runs; two computable ℤ specifications (`bounty_reward`, `upfront_payment`) are tested
+directly against their Float counterparts (equal up to the spec's flooring). The remaining rules
+(those using exp, log, sqrt or real powers, or with no ℝ counterpart) are listed in that file and
+rest on `spec/vectors` alone. There is no refinement proof from ℝ to Float: Float rounding error is
+sampled, never bounded, and an input outside the generated range is untested. Between the Lean
+exports and the Julia input guards, property-based differential tests check that each guard accepts
+exactly the rule's documented domain and that every accepted input agrees with an independent test
+oracle ([sim/test/differential_tests.jl](sim/test/differential_tests.jl)). `python3 tools/check_readme_claims.py` checks that every theorem named here exists
 in the file linked.
 
 ### Proved
@@ -209,8 +222,19 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   ([`breached_duty_assessed_negative`](Benefuture/Proposed/OutcomeDistribution.lean)); without a committed action, not acting assesses at
   zero ([`inaction_without_duty_assessed_zero`](Benefuture/Proposed/OutcomeDistribution.lean)).
 - A contributor whose presence changes no coalition's assessed outcome receives no Shapley share
-  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the shares sum to the outcome (efficiency) is not proved; it is
+  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the exact shares sum to the outcome (efficiency) is not proved; it is
   checked numerically on random games ([sim/test/shapley_tests.jl](sim/test/shapley_tests.jl)).
+- Shapley by permutation sampling (`Benefuture.Proposed.ShapleySampling`, [P]; Castro, Gómez &
+  Tejada 2009), used beyond 10 contributors: on every sample, not only on average, the sampled
+  shares sum to v(all) − v(none), so sampling error moves currency between contributors and never
+  mints or destroys it ([`shapley_sampled_efficient`](Benefuture/Proposed/ShapleySampling.lean)), and a null contributor gets nothing
+  ([`shapley_sampled_null`](Benefuture/Proposed/ShapleySampling.lean)); a single ordering is not exact
+  ([`shapley_sampled_single_order_inexact`](Benefuture/Proposed/ShapleySampling.lean)). The governed count ⌈ln(2n/δ)/(2ε²)⌉ makes the
+  union bound 2n·exp(−2mε²) at most δ ([`hoeffding_count_suffices`](Benefuture/Proposed/ShapleySampling.lean); one ordering never
+  suffices: [`hoeffding_one_sample_insufficient`](Benefuture/Proposed/ShapleySampling.lean)). Cited, not proved: Hoeffding's inequality
+  itself (so "each share within ε × its marginal range with probability 1 − δ" rests on it), and
+  that the mean over all n! orderings equals the subset form, which is checked exactly over ℚ for
+  n ≤ 5 at build time ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
 - Paying positive shares and penalising negative ones distributes exactly the sum of the shares
   ([`sides_sum`](Benefuture/Proposed/OutcomeDistribution.lean)), and each paid contributor's share of its side lies in [0, 1]
   ([`paid_share_in_unit`](Benefuture/Proposed/OutcomeDistribution.lean)).
@@ -224,6 +248,26 @@ Governance and incentives
   ([`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean)).
 - With the delegation cap, no delegate ever exceeds the cap plus one delegator's maximum weight,
   however many delegate to it ([`accumulate_capped_bound`](Benefuture/Governance/Incentives.lean)).
+- Delegation cap and Golub–Jackson's wisdom condition (`Benefuture.Proposed.DelegationWisdom`,
+  [P]), for one round with independent signals: every delegate stays below cap + M and every
+  influence share below capShare + M/total ([`round_weight_lt`](Benefuture/Proposed/DelegationWisdom.lean), [`round_share_lt`](Benefuture/Proposed/DelegationWisdom.lean)); under
+  the stricter rule (accept only within the cap) the largest weight is at most the cap
+  ([`accumulate_capped_strict_le`](Benefuture/Proposed/DelegationWisdom.lean)), while the ratified L114 rule can overshoot it
+  ([`accumulate_capped_overshoots`](Benefuture/Proposed/DelegationWisdom.lean)); if the cap share and the largest weight's share vanish as
+  the society grows, so does the largest influence share ([`capped_influence_vanishes`](Benefuture/Proposed/DelegationWisdom.lean)), and the
+  variance of an influence-weighted mean of independent equal-variance signals is at most the
+  largest share times their variance ([`weighted_signal_variance_bound`](Benefuture/Proposed/DelegationWisdom.lean)); without a cap a star
+  keeps it at a single signal's ([`uncapped_star_no_wisdom`](Benefuture/Proposed/DelegationWisdom.lean)). Repeated rounds, reputation-chosen
+  delegates and correlated signals are a conjecture (`GolubJacksonWisdomConjecture`;
+  [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) B26), not proved.
+- Revealing a flaw strictly dominates exploiting it, for every profile of the others' strategies
+  (`Benefuture.Proposed.RevelationGame`, [P]; a relational statement after Barthe et al. 2015),
+  in a game where reporters split the bounty and an exploiter is fully clawed back plus restitution
+  once anyone else reports, with an arbitrary non-negative (possibly zero) penalty otherwise
+  ([`revelation_dominant`](Benefuture/Proposed/RevelationGame.lean), [`revelation_weakly_dominant`](Benefuture/Proposed/RevelationGame.lean)); everyone reporting is a Nash
+  equilibrium ([`all_report_nash`](Benefuture/Proposed/RevelationGame.lean)) and the only one ([`exploit_not_equilibrium`](Benefuture/Proposed/RevelationGame.lean)). The clawback
+  on disclosure is load-bearing: without it, three simultaneous reporters of a gain-10 flaw get 3
+  each against 10 for exploiting ([`revelation_needs_clawback`](Benefuture/Proposed/RevelationGame.lean)).
 - Planting flaws to farm bounties is unprofitable in expectation when the clawback covers bounty
   plus damage and detection is likelier than bounty ÷ clawback ([`bounty_incentive_compatible`](Benefuture/Governance/Incentives.lean)).
 - External harm response: forgiveness and overreaction probabilities form a valid split
@@ -283,6 +327,11 @@ Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
   ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean)); the tension is open.
 - Without a delegation cap, a star topology hands one node all the weight
   ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
+- Shapley shares invite false-name manipulation (Aziz et al. 2011): in the funding game of
+  causal distribution, a funder whose pledge is indispensable, split into k indispensable
+  identities, takes k/(k+1) of the outcome instead of 1/2; diminishing returns also reward forking,
+  increasing returns penalise it, additive effects are neutral, and the forks never take more than
+  the whole outcome ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl); BACKPROPAGATION 8.57-a, open).
 - Causal contribution as specified (clamped value added, L94's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
@@ -356,6 +405,12 @@ Transactions and causal distribution
   credited; every outcome is fully distributed and the books balance. Coalition values follow
   BACKPROPAGATION 8.18, a decision open to the author ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
   [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- Shapley shares beyond 10 contributors are sampled (Lean `shapley_sampled_ref`; 2ⁿ coalition
+  values become ⌈ln(2n/δ)/(2ε²)⌉ orderings): on random games small enough to enumerate, every
+  sampled share lies within ε × its marginal range of the exact one; at 20 contributors with
+  pairwise interactions, shares match the closed form within the bound
+  ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl)). Outcomes with more than 10 contributors are now
+  assessed rather than sent to the traversal fallback.
 - Contribution types (author ruling 8.22): carrying another's output outside contract earns an
   accolade, under contract the contracted share, both out of the maker's positive share and never
   out of a loss (the fee's basis is a proposal, [P]). A prevention is the guardian's ordinary
@@ -413,6 +468,15 @@ Gaming (M6, toy world, 3–6 seeds)
   votes struck and the hidden decisions recounted) restores them to 99.7% while the bloc's expertise
   share falls from 0.74 to 0.15 (4 seeds; each member weighs revealing with chance 0.05 after a
   hidden defection) ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
+- Optimised attacks (a small search: the cross-entropy method over 32 strategies per world, each
+  attacker's budget one attack at the top of its realistic range, mildly imperfect worlds, AdvAp on)
+  found no strategy that breaks the success pattern. The worst in the economy (a bloc of three
+  deceiving and laundering, spending nothing on capturing models) pulls the pattern's margin from 1 to
+  0.57 on held-out seeds and leaves the bloc poorer than not attacking; the worst in governance (a
+  third of every domain's most reputable experts colluding openly, one identity fork each) leaves 96%
+  of decisions right. A search this small is weak evidence that no breaking strategy exists; both worst
+  cases are frozen as deterministic tests ([sim/test/attack_tests.jl](sim/test/attack_tests.jl),
+  [sim/battery/results/attack.md](sim/battery/results/attack.md)).
 
 Governance and thresholds
 - Expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in a toy
@@ -437,12 +501,32 @@ Governance and thresholds
   models as they improve (their share of the weight rising to 0.7–0.95) and drop a captured model
   entirely. But shared sources make votes dependent, and decisions fall towards the sources' own
   accuracy (92.8% alone, 85–86% with models; BACKPROPAGATION 8.43). With understanding trickling
-  down only (8.44) through the network's information handling, each layman's echo still recasts its
-  source's information with a full base vote, a finding awaiting the author (8.45). Where experts are
+  down only (8.44) through the network's information handling, each layman's echo recast its source's
+  information with a full base vote (8.45). By the author's ruling, readings now carry source tags:
+  each origin is counted once and the borrowed share of a vote passes to its origins as capped
+  fractional delegation (a [P] reading); deliberation through the network's ContentionMap then
+  decides 93.1% right against 83.8% untagged and 92.8% alone (3 seeds), and stays there when readings
+  pass on for three rounds (untagged falls to 80.2%). Two limits: models do not vote, so with their
+  share kept by voters the echo returns through them (82.3%; 92.6% if models take their share capped,
+  an open question, BACKPROPAGATION 8.60); and on contested questions, tagged deliberation with
+  trials settles more slowly (79.6% against 86.7% in the first 400 decisions, 85.1% against 86.6% in
+  the last 400), while all decisions rise from 89.5% to 91.8%. The untagged variant reproduces
+  DeMarzo–Vayanos–Zwiebel persuasion bias exactly (walk-count weights), which tags remove. Tags are
+  outputs audited against the open log: misattribution is inert (tally and records unchanged) and
+  every falsified tag is caught; laundering by omission is flagged by an echo audit in at least three
+  of four launderers and under one in twenty honest voters. Where experts are
   divided between two camps, one leaning by an honest bias, hearing both sides with diversity's
   trials finds the performant option on contested questions 86.7% of the time, against 80.7% with
   trials alone and 75.8% with neither
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
+- Liquid-democracy pathologies against direct voting (toy, one domain, 101 voters, 6 seeds; direct
+  98.7% right): each pathology is reproduced with uncapped, unaudited delegation (bad delegation
+  85.6%, misleading reputation 77.6%, bribery of the three most reputable 65.2%, one super-voter
+  holding most of the weight) and bounded by the capped, audited, expertise-weighted delegation
+  (96.8%, 95.9%, 96.3%; no voter above the cap plus one voter's own). Delegation cycles cannot form
+  by construction and no weight is lost. The cap bounds delegation's losses; it does not make
+  delegation beat direct voting here
+  ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, pathologies](sim/README.md#liquid-democracy-pathologies-against-direct-voting-sota-3)).
 - Governed value parameters stay admissible under SigThGv's perturbation, and within ±0.02 per
   epoch the outcomes do not depend on them. Adaptation as experimental design (author ruling 8.22)
   tries candidates in randomised blocks and shifts only on a significant gain; where the parameters
@@ -451,12 +535,32 @@ Governance and thresholds
   significant harm and widening otherwise; where nothing matters it widens across seeds until
   admissibility rejects the candidates ([sim/test/m4_tests.jl](sim/test/m4_tests.jl),
   [sim/README.md, M4](sim/README.md#m4-observations)).
-- Deaths (M7, first rung; toy population of 50, 20 trials): G's floors over the decision-time
-  population, the dead at the bottom, do not stop a plan that removes the two worst-off and lifts
-  everyone else (the 10% quantile still rises; only the literal minimum would not), and valuing the
-  deaths as irreparable harm still leaves its value positive; Freedom, a subgoal reported per plan and
-  not a filter on G, marks it impermissible. What should block it is open (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
-  [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Deaths (M7; toy population of 50, 20 trials; author ruling 8.47, [P] reading): a life a plan ends
+  or saves against not acting is valued by its foreclosed future over the long-term window (its levels
+  plus predicted growth) in the irreparable tier, scaled by a governed breakthrough scale (Lean
+  `foreclosed_ref`, `life_value_ref` in [BenefutureReference/Population.lean](BenefutureReference/Population.lean)),
+  inside ΣV; Freedom stays a reported subgoal. The trolley switch (five die by default, one if
+  switched) is chosen, except when the one holds the peak of understanding, where G's ¬↓ U(max)
+  refuses it (finding 8.55); the reversed switch is not; removing the two worst-off for +3 to everyone
+  else is no longer chosen although its quantile floor still rises; +30 to everyone else outweighs it
+  at the default scale (20) and not at 1000. Doing and allowing are not distinguished (open)
+  ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Births (M7; toy population of 100, 200 steps, 3 seeds, G per entity; author ruling 8.52, [P]
+  reading): a newborn counts in G's floors at the optimistic average of its model pool's predictions
+  when the pool is confident enough, else at its initial level; its causer posts an escrow for the
+  predicted shortfall below the baseline over the dependency window, settled against the measured
+  shortfall (Lean `optimistic_average_ref`, `birth_level_ref`, `birth_escrow_ref`, `shortfall_ref`).
+  Births happen and the floors G reads fall no more often than without them (understanding 16% of
+  steps against 20%); with the pool below the confidence threshold none is chosen. A causer bringing
+  over-optimistic models is clawed back at settlement and ratcheted below the threshold, though
+  births before its first settlement escape (finding 8.54). Toy assumptions: linear growth to mature
+  levels, dependents untouched by ordinary plans, one currency balance per being
+  ([sim/test/m7_tests.jl](sim/test/m7_tests.jl), [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
+- Population ethics (M7 decision probes; toy: level 0 is a life barely worth living): G takes 10
+  good lives over 200 barely positive ones (the many drag the floors though their total is larger),
+  avoiding the Repugnant Conclusion; the success pattern's quantile floor and median rank 3 lives at
+  −5 above 30 at 1, giving up Non-Sadism, one of the conditions of Arrhenius's impossibility theorems
+  (finding 8.56) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl)).
 - Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
   reception varying, leave the teacher's understanding intact; research is spending (beings' time and
   the commons' resources, a very noisy chance of success, gains teachable or tacit) and alone extends
@@ -474,7 +578,7 @@ Governance and thresholds
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
 
 What is not yet demonstrated at all: the `Conj_*` conjectures over a `SimTrace` (convergence,
-gaming resistance, parameter stability in general), births, forks and graded personhood (M7), and networks and
+gaming resistance, parameter stability in general), forks and graded personhood (M7), and networks and
 propagation (M8); see [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) and
 [docs/PLAN.md](docs/PLAN.md).
 
@@ -510,6 +614,8 @@ Benefuture/
 │   ├── SIM_CONJECTURES.md         # Behavioural claims in measurable form
 │   ├── THEOREM_INDEX.md           # Every theorem with its docstring (generated)
 │   ├── PLAN.md, CODING_STYLE.md   # Direction, history and method
+│   ├── SOTA.md, DATA.md           # State of the art; real-world data for calibration and validation
+│   ├── ODD.md, OSTROM.md          # ODD description per rung; audit against Ostrom's principles
 │   └── pseudocode_lean_coherence_audit.md
 ├── spec/
 │   ├── Bf_Pseudocode.txt          # Pseudocode, source of truth (copied at the root and in Benefuture.txt)
@@ -520,6 +626,7 @@ Benefuture/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                  # [P] designs: population direction, outcome distribution, domain hierarchy
 ├── BenefutureReference/           # Mathlib-free Float reference; Export.lean holds the C exports
+├── BenefutureTest/                # build-time differential checks: ℚ oracles (proved = spec) vs Float
 ├── Main.lean                      # `lake exe benefuture`: regenerates spec/vectors
 ├── sim/                           # Julia package BenefutureSim: src/, test/, battery/, README.md
 └── tools/                         # setup/, wiki_sync/, extraction/, bf-graph/, README and index checks
@@ -534,6 +641,7 @@ tools/setup/toolchains.sh                         # Lean and Julia (idempotent)
 lake exe cache get && lake build                  # Lean specification and reference
 julia --project=sim -e 'using Pkg; Pkg.test()'    # simulation tests
 python3 tools/check_readme_claims.py              # every theorem named here exists
+                                                  # (lake build also runs BenefutureTest's differential checks)
 python3 tools/theorem_index.py                    # regenerate docs/THEOREM_INDEX.md
 lake exe benefuture                               # regenerate spec/vectors (Mathlib-free)
 ```
