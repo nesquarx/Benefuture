@@ -16,6 +16,7 @@ import BenefutureReference.Domains
 import BenefutureReference.Justice
 import BenefutureReference.Adversarial
 import BenefutureReference.Records
+import BenefutureReference.Sources
 import BenefutureReference.ParamSpace
 
 namespace BenefutureReference.Export
@@ -217,5 +218,20 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
+
+-- M5 source tags
+@[export bf_count_once] def countOnce (ids ws : FloatArray) : FloatArray := ⟨count_once_ref ids.data ws.data⟩
+
+@[export bf_tagged_reading] def taggedReading (self own ownSide : Float) (ids sides ws : FloatArray) : Float :=
+  tagged_reading_ref self own ownSide ids.data sides.data ws.data
+
+@[export bf_borrowed_shares] def borrowedShares (self own : Float) (ids ws : FloatArray) : FloatArray :=
+  ⟨borrowed_shares_ref self own ids.data ws.data⟩
+
+@[export bf_tags_falsified] def tagsFalsified (claimed logged : FloatArray) : USize :=
+  (tags_falsified_ref claimed.data logged.data).toUSize
+
+@[export bf_undisclosed_echo] def undisclosedEcho (agree n aSelf aSrc margin z : Float) : UInt8 :=
+  if undisclosed_echo_ref agree n aSelf aSrc margin z then 1 else 0
 
 end BenefutureReference.Export

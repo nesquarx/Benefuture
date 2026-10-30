@@ -100,8 +100,8 @@ knowledge, so finer claims are to be confirmed before they enter `README.md` (Cl
 ## Prioritised actions
 1. Upgrade the failure-boundary battery: PRIM failure boxes, Sobol indices on the continuous success pattern, active learning of the boundary, seed counts sized by variance stability.
 2. Search for attacks adversarially (optimised attacker strategies), using LLM agents only to discover exploits that then become deterministic M6 tests.
-3. A liquid-democracy pathology suite for M5 (concentration, bad delegation, bribery, cycles), against direct voting; a Lean conjecture tying the delegation cap to Golub–Jackson's condition.
-4. Name 8.45 after DeMarzo–Vayanos–Zwiebel persuasion bias and use their model as the deliberation benchmark.
+3. A liquid-democracy pathology suite for M5 (concentration, bad delegation, bribery, cycles), against direct voting; a Lean conjecture tying the delegation cap to Golub–Jackson's condition. *Suite done* (`sim/test/m5_tests.jl`, "SOTA #3"; `sim/README.md`, M5): each pathology reproduced uncapped and unaudited, bounded by the capped, audited, expertise-weighted delegation; the Golub–Jackson conjecture is still open.
+4. Name 8.45 after DeMarzo–Vayanos–Zwiebel persuasion bias and use their model as the deliberation benchmark. *Done* (`sim/test/m5_tests.jl`, "SOTA #4"): untagged updating reproduces the DVZ walk-count weights; source tags (author ruling on 8.45) hear each origin once.
 5. Close the decision-market gap: full-support randomisation where predictions are scored; test whether rank-based model retirement rewards extremised forecasts.
 6. Shapley: a sampling estimator with a governed error bound; asymmetric or causal Shapley as candidates for causal distribution; false-name tests for forks.
 7. A reputation-attack suite (whitewashing, on-off, slandering, sybils); state the recount's symmetry.

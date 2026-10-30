@@ -147,3 +147,197 @@ end
     @test mean(contested.(both)) > mean(contested.(trials)) + 0.03 && mean(contested.(trials)) > mean(contested.(neither)) + 0.03
     @test_throws ArgumentError M5Params(m3, 1:4; camp_bias = [1.0])
 end
+
+# Source tags (author ruling on 8.45; L133 IH): echoes must not count information many times. Each
+# reading carries the tags of the sources it came from; a listener hearing several contacts that
+# repeat one source hears it once, and an echo of the listener itself is not a source; the borrowed
+# share of a voter's reading is not counted again as an independent source but passes to the tagged
+# source as fractional delegation, capped by L114 (reading [P]), the voter keeping its own share.
+@testset "Source tags (Lean reference): acceptance" begin
+    # Count once by origin: a repeated origin carries weight only at its first occurrence.
+    @test count_once([1.0, 2.0, 1.0, 3.0, 2.0], [0.5, 1.0, 0.5, 2.0, 1.0]) == [0.5, 1.0, 0.0, 2.0, 0.0]
+    # A reading: own weight × own side + each distinct origin's weight × its side.
+    @test tagged_reading(0.0, 1.0, 1.0, [7.0, 7.0, 8.0], [-1.0, -1.0, 1.0], [2.0, 2.0, 1.0]) ≈ 1.0 - 2.0 + 1.0
+    # Shares of a vote: own 1 of 4, origin 7 half (once), origin 8 a quarter.
+    @test borrowed_shares(0.0, 1.0, [7.0, 7.0, 8.0], [2.0, 2.0, 1.0]) ≈ [0.5, 0.0, 0.25]
+    # A tag is audited against the source's logged output (AdvAp reads the open log).
+    @test tags_falsified([1.0, -1.0, 1.0], [1.0, 1.0, 1.0]) == 1 && tags_falsified([1.0], [1.0]) == 0
+    # Undisclosed echo: agreement with what one heard far above what two independent judges of
+    # those accuracies would show, beyond the governed margin.
+    @test undisclosed_echo(100, 100, 0.85, 0.85; margin = 0.1, z = 3.0)
+    @test !undisclosed_echo(78, 100, 0.9, 0.85; margin = 0.1, z = 3.0)
+end
+
+@testset "Source tags (Lean reference): adversarial and edge cases" begin
+    # However often a source is repeated, it is heard once: a thousand echoes of one source weigh as one.
+    @test borrowed_shares(0.0, 1.0, fill(5.0, 1000), fill(1.0, 1000)) ≈ [0.5; zeros(999)]
+    @test tagged_reading(0.0, 1.0, 1.0, fill(5.0, 1000), fill(-1.0, 1000), fill(3.0, 1000)) ≈ 1.0 - 3.0
+    # An echo of the listener itself is not a source: its own share is its own weight alone.
+    @test borrowed_shares(9.0, 1.0, [9.0, 4.0], [5.0, 1.0]) ≈ [0.0, 0.5]
+    @test tagged_reading(9.0, 1.0, 1.0, [9.0], [1.0], [5.0]) ≈ 1.0
+    # Shares never exceed one and are never negative.
+    s = borrowed_shares(0.0, 0.5, [1.0, 2.0, 3.0, 1.0], [1.0, 2.0, 3.0, 4.0])
+    @test all(>=(0), s) && sum(s) < 1
+    # No sources, no borrowing; a voter with no own weight and no sources borrows nothing.
+    @test isempty(borrowed_shares(0.0, 1.0, Float64[], Float64[])) && borrowed_shares(0.0, 0.0, [1.0], [0.0]) == [0.0]
+    # Malformed inputs are rejected.
+    @test_throws ArgumentError count_once([1.0, 2.0], [1.0])
+    @test_throws ArgumentError count_once([1.0], [-1.0])
+    @test_throws ArgumentError count_once([NaN], [1.0])
+    @test_throws ArgumentError borrowed_shares(0.0, -1.0, [1.0], [1.0])
+    @test_throws ArgumentError tagged_reading(0.0, 1.0, 2.0, [1.0], [1.0], [1.0])  # sides are ±1 or 0
+    @test_throws ArgumentError tags_falsified([1.0], [1.0, 1.0])
+    @test_throws ArgumentError undisclosed_echo(5, 4, 0.9, 0.9; margin = 0.1, z = 3.0)
+    @test_throws ArgumentError undisclosed_echo(5, 10, 1.2, 0.9; margin = 0.1, z = 3.0)
+    # Nothing heard, nothing flagged; a coin-toss agreement is no echo.
+    @test !undisclosed_echo(0, 0, 0.9, 0.9; margin = 0.1, z = 3.0) && !undisclosed_echo(50, 100, 0.5, 0.5; margin = 0.1, z = 3.0)
+end
+
+# DeMarzo, Vayanos and Zwiebel (2003, QJE, https://doi.org/10.1162/00335530360698469): persuasion bias.
+# Listeners who cannot tell what their contacts' readings already contain count information heard
+# along many paths many times; after T rounds of untagged updating a listener's weight on an origin
+# is the number of walks of length at most T to it, so influence follows network position, not
+# precision. Source tags remove the bias: each reachable origin is heard once.
+@testset "SOTA #4: persuasion bias (DeMarzo–Vayanos–Zwiebel) and its removal by tags" begin
+    n = 20  # agent 1 is a hub everyone hears; the rest hear the hub and their two ring neighbours
+    listens = [i == 1 ? [2] : [1, mod1(i - 1, n), mod1(i + 1, n)] for i in 1:n]
+    listens = [filter(!=(i), unique(l)) for (i, l) in enumerate(listens)]
+    A = zeros(n, n)
+    for i in 1:n, j in listens[i]
+        A[i, j] = 1.0
+    end
+    T = 3
+    untagged = echo_influence(listens, T; tagged = false)
+    tagged = echo_influence(listens, T; tagged = true)
+    walks = sum(A^t for t in 0:T)
+    @test untagged ≈ walks  # the DVZ weights: walks of length ≤ T
+    # Bias: a peripheral listener weighs the hub far above an equally precise peer it also reaches.
+    @test untagged[5, 1] > 3 * untagged[5, 7]
+    # Tags: every reachable origin once, the unreachable not at all.
+    @test all(tagged .== (walks .> 0))
+    @test tagged[5, 1] == tagged[5, 7] == 1.0
+    # With equally precise signals, the tagged estimate is closer to the truth than the untagged.
+    rng = Xoshiro(45)
+    err(W) = mean(begin
+                     x = randn(rng, n)  # signals around a truth of zero, unit noise
+                     mean(((W * x) ./ vec(sum(W; dims = 2))) .^ 2)
+                 end for _ in 1:4000)
+    @test err(tagged) < err(untagged)
+    @test_throws ArgumentError echo_influence(listens, -1; tagged = true)
+    @test_throws ArgumentError echo_influence([[3]], 1; tagged = true)  # a listener hears only agents
+end
+
+@testset "M5 source tags: echoes counted once (8.45)" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    hard(; kw...) = M5Params(m3, 1:4; decisions = 1200, signal_σ = 20.0, kw...)
+    late(r) = mean(r.correct_trace[801:end])
+    seeds = 1:3
+    alone = mean(late(run_m5(hard(); seed)) for seed in seeds)
+    ih = mean(late(run_m5(hard(deliberation = true); seed)) for seed in seeds)
+    ih_tags = [run_m5(hard(deliberation = true, source_tags = true); seed) for seed in seeds]
+    # Counting each source once removes 8.45's echo cost: deliberation through the network's
+    # ContentionMap decides at least as well as voters alone, and better than untagged.
+    @test mean(late.(ih_tags)) > ih + 0.03
+    @test mean(late.(ih_tags)) >= alone - 0.01
+    # The borrowed share passes on, capped: no voter ends up holding more than the cap plus one voter's weight.
+    @test all(all(r.max_share .<= 0.05 .+ r.max_single .+ 1e-9) for r in ih_tags)
+    @test all(r.weight_gap < 1e-9 for r in ih_tags)  # every weight is cast once: kept or passed on
+    @test all(mean(r.borrowed_share) > 0.1 for r in ih_tags)  # bounded by the cap on the few sources heard
+    # Off, nothing changes.
+    @test isequal(run_m5(hard(deliberation = true, source_tags = false); seed = 1), run_m5(hard(deliberation = true); seed = 1))
+    @test_throws ArgumentError hard(deliberation = true, rounds = 0)
+    @test_throws ArgumentError hard(deliberation = true, model_share = :elsewhere)
+    @test_throws ArgumentError hard(source_tags = true)  # tags tag deliberation's readings
+end
+
+# Gaming check: tags are outputs, auditable by AdvAp against the open log (L160). Misattribution
+# (claiming a reputable source backs one's side, or slandering it) and laundering by omission
+# (presenting borrowed readings as one's own, claiming independence).
+@testset "M5 source tags: gaming (misattribution and laundering)" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    liars = collect(1:5:100)  # twenty voters across the ranks
+    talk(; kw...) = M5Params(m3, 1:4; decisions = 800, signal_σ = 20.0, deliberation = true, info_handling = false, rounds = 2, kw...)
+    seeds = 1:3
+    # Untagged, a liar's republished reading carries its claim, and the decisions suffer.
+    plain = mean(run_m5(talk(); seed).correct for seed in seeds)
+    plain_lies = mean(run_m5(talk(tag_liars = liars, tag_lie = :misattribute); seed).correct for seed in seeds)
+    @test plain_lies < plain - 0.01
+    # Tagged, a misattributed value never moves the tally, even unaudited: the borrowed share passes
+    # to the source's logged output, and records read the log, so slander touches no record.
+    honest = run_m5(talk(source_tags = true, tag_audit = false); seed = 1)
+    lying = run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :misattribute); seed = 1)
+    @test lying.correct_trace == honest.correct_trace && lying.records == honest.records
+    @test lying.tags_falsified > 0 && lying.tags_detected == 0
+    # Audited, every falsified tag is caught (the claim differs from the log) and debited to its maker.
+    audited = run_m5(talk(source_tags = true, tag_liars = liars, tag_lie = :misattribute); seed = 1)
+    @test audited.tags_detected == audited.tags_falsified > 0
+    @test audited.correct >= honest.correct - 0.02
+    # Laundering by omission: a launderer republishes what it heard as its own and votes it with its
+    # full weight. AdvAp's echo audit flags most launderers (agreement with what they heard far above
+    # independence) and few honest voters; flagged, their readings are split like anyone's.
+    launder = [run_m5(talk(source_tags = true, tag_liars = liars, tag_lie = :omit); seed) for seed in seeds]
+    @test mean(length(r.launderers_flagged) for r in launder) >= 0.75 * length(liars)
+    @test mean(r.honest_flagged for r in launder) <= 0.05 * (100 - length(liars))
+    unaudited = [run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :omit); seed) for seed in seeds]
+    @test all(isempty(r.launderers_flagged) for r in unaudited)
+    # Unaudited, laundering pays: echoed outputs build the launderers good records, listeners borrow
+    # from them, and decisions suffer; the audit removes both.
+    liar_acc(rs) = mean(mean(r.records[j, d][1] / sum(r.records[j, d]) for j in liars, d in 1:4) for r in rs)
+    @test liar_acc(unaudited) > liar_acc(launder) + 0.1
+    @test mean(r.correct for r in launder) > mean(r.correct for r in unaudited) + 0.01
+    @test_throws ArgumentError talk(source_tags = true, tag_liars = [101])
+    @test_throws ArgumentError talk(source_tags = true, tag_lie = :forge)
+end
+
+# SOTA #3: liquid-democracy pathologies against direct voting (`docs/SOTA.md`, Liquid democracy).
+# Worlds built directly: one domain decided in, voters focused elsewhere (so free to delegate),
+# reputation as given.
+ld_world(skills, rep) = (agents = [DomainAgent([s, 0.0], [0.0, 1.0], 0.0) for s in skills],
+                         relevance_leaf = hcat(Float64.(rep), zeros(length(rep))))
+
+@testset "SOTA #3: liquid-democracy pathology suite" begin
+    seeds = 1:6
+    acc(w; kw...) = mean(run_m5(M5Params(w, [1]; decisions = 400, signal_σ = 3.0, diversity = false, kw...); seed).correct for seed in seeds)
+    # Bad delegation (Kahng, Mackenzie and Procaccia 2021): many voters of modest competence all
+    # delegate to one voter somewhat better than each; their direct majority beats it alone.
+    n = 101
+    skills = [i == 1 ? 0.25 : 0.1 + 0.05 * (i - 2) / (n - 2) for i in 1:n]
+    kmp = ld_world(skills, skills)
+    direct = acc(kmp)
+    @test acc(kmp; p_delegate = 1.0, cap = 1.0, audit_window = 0) < direct - 0.05   # must fail: uncapped concentrates
+    @test acc(kmp; p_delegate = 1.0) >= direct - 0.03                               # must achieve: the cap spreads it
+    # Adversarial instance (Caragiannis and Micha 2019): reputation misleads (the least competent
+    # hold the most), so delegation moves weight to the worst. Uncapped and unaudited it does far
+    # worse than direct voting; capped and audited (L114), it stays near direct.
+    inverted = similar(skills)
+    inverted[sortperm(skills)] = reverse(sort(skills))
+    misled = ld_world(skills, inverted)
+    direct_m = acc(misled)
+    @test acc(misled; p_delegate = 1.0, cap = 1.0, audit_window = 0) < direct_m - 0.1
+    @test acc(misled; p_delegate = 1.0) >= direct_m - 0.05
+    # Bribery of delegates (Alouf-Heffetz et al. 2024): the three most reputable are bought and vote
+    # one side. Uncapped, buying the super-voter buys the decision until its vote reputation falls;
+    # capped and audited, the bribe controls little and decisions stay near direct voting with the
+    # same bribes.
+    top3 = sortperm(skills; rev = true)[1:3]
+    direct_b = acc(kmp; colluders = top3)
+    @test acc(kmp; colluders = top3, p_delegate = 1.0, cap = 1.0, audit_window = 0) < direct_b - 0.2
+    @test acc(kmp; colluders = top3, p_delegate = 1.0) >= direct_b - 0.03
+    # Concentration (Kling et al. 2015: super-voters): uncapped, one voter holds most of the weight;
+    # capped, none holds more than the cap plus one voter's own.
+    sup = run_m5(M5Params(kmp, [1]; decisions = 100, p_delegate = 1.0, cap = 1.0, audit_window = 0, diversity = false); seed = 1)
+    capd = run_m5(M5Params(kmp, [1]; decisions = 100, p_delegate = 1.0, diversity = false); seed = 1)
+    @test mean(sup.max_share) > 0.5
+    @test all(capd.max_share .<= 0.05 .+ capd.max_single .+ 1e-12)
+    # Cycles: delegation goes only to strictly higher reputation and delegates do not pass weight on,
+    # so no cycle forms and no vote is lost; with equal reputations (held equal: votes earn nothing
+    # here), no one delegates.
+    flat = ld_world(fill(0.2, 30), fill(1.0, 30))
+    fr = run_m5(M5Params(flat, [1]; decisions = 50, p_delegate = 1.0, cap = 1.0, diversity = false, vote_value = 0.0); seed = 1)
+    @test fr.max_share == fr.max_single && fr.weight_gap < 1e-9
+    @test capd.weight_gap < 1e-9 && sup.weight_gap < 1e-9
+end

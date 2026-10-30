@@ -62,3 +62,50 @@ function credence_score(credence::Real, outcome::Real)
     check(0 <= credence <= 1 && 0 <= outcome <= 1, "credence and outcome in [0, 1]")
     ccall(sym(:bf_credence_score), Float64, (Float64, Float64), credence, outcome)
 end
+
+# Source tags (L133 IH; author ruling on 8.45): `BenefutureReference.Sources`.
+side_ok(x) = x == -1 || x == 0 || x == 1
+function check_tags(ids, ws)
+    check(length(ids) == length(ws), "one weight per tag")
+    check(all(isfinite, ids) && all(w -> isfinite(w) && w >= 0, ws), "finite origin ids and non-negative weights")
+end
+
+"Count once by origin (Lean `count_once_ref`; 8.45): each weight at its origin's first occurrence, zero at repeats."
+function count_once(ids, ws)
+    check_tags(ids, ws)
+    lean_floats(ccall(sym(:bf_count_once), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(ids), floatarray(ws)))
+end
+
+"""
+    tagged_reading(self, own, own_side, ids, sides, ws) -> Float64
+
+A reading with source tags (Lean `tagged_reading_ref`; 8.45): own weight × own side plus each distinct
+origin's weight × its side; repeats and echoes of `self` add nothing.
+"""
+function tagged_reading(self::Real, own::Real, own_side::Real, ids, sides, ws)
+    check_tags(ids, ws)
+    check(length(sides) == length(ids) && side_ok(own_side) && all(side_ok, sides), "sides are -1, 0 or 1, one per tag")
+    check(isfinite(self) && isfinite(own) && own >= 0, "finite self id, non-negative own weight")
+    ccall(sym(:bf_tagged_reading), Float64, (Float64, Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+          self, own, own_side, floatarray(ids), floatarray(sides), floatarray(ws))
+end
+
+"Borrowed shares of a vote (Lean `borrowed_shares_ref`; 8.45 [P]): each distinct origin's share; the voter keeps one minus their sum."
+function borrowed_shares(self::Real, own::Real, ids, ws)
+    check_tags(ids, ws)
+    check(isfinite(self) && isfinite(own) && own >= 0, "finite self id, non-negative own weight")
+    lean_floats(ccall(sym(:bf_borrowed_shares), Ptr{Cvoid}, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}), self, own, floatarray(ids), floatarray(ws)))
+end
+
+"Tags whose claimed side differs from the origin's logged output (Lean `tags_falsified_ref`; L160)."
+function tags_falsified(claimed, logged)
+    check(length(claimed) == length(logged) && all(side_ok, claimed) && all(side_ok, logged), "one logged side per claimed side, each -1, 0 or 1")
+    Int(ccall(sym(:bf_tags_falsified), Csize_t, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(claimed), floatarray(logged)))
+end
+
+"Whether outputs presented as one's own echo what was heard (Lean `undisclosed_echo_ref`; L160, 8.45)."
+function undisclosed_echo(agree::Real, n::Real, a_self::Real, a_src::Real; margin::Real, z::Real)
+    check(0 <= agree <= n && isfinite(n), "agreements within outputs")
+    check(0 <= a_self <= 1 && 0 <= a_src <= 1 && 0 <= margin < 1 && isfinite(z), "accuracies in [0, 1], margin in [0, 1), finite z")
+    ccall(sym(:bf_undisclosed_echo), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64), agree, n, a_self, a_src, margin, z) == 1
+end
