@@ -51,6 +51,13 @@ end
 "A source's weight as heard by a listener (Lean `heard_ref`; 8.44): down and across, up only for novel input."
 heard(source::Real, own::Real, novel::Bool) = ccall(sym(:bf_heard), Float64, (Float64, Float64, UInt8), source, own, novel)
 
+"Heard weights over many sources at once (Lean `heard_weights_ref`; 8.44): full at or above one's own, the novelty chance below."
+function heard_weights(sources, own::Real, p_novel::Real)
+    check(all(isfinite, sources) && isfinite(own) && 0 <= p_novel <= 1, "finite weights, novelty chance in [0, 1]")
+    isempty(sources) && return Float64[]
+    lean_floats(ccall(sym(:bf_heard_weights), Ptr{Cvoid}, (Ptr{Cvoid}, Float64, Float64), floatarray(sources), own, p_novel))
+end
+
 "The ledgers' negative share (Lean `neg_share_ref`; 8.42.1)."
 function neg_share(gains::Real, losses::Real)
     check(isfinite(gains) && isfinite(losses) && gains >= 0 && losses >= 0, "gains and losses non-negative")

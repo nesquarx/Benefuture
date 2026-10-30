@@ -185,6 +185,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_heard] def heard (source own : Float) (novel : UInt8) : Float := heard_ref source own (novel != 0)
 
+@[export bf_heard_weights] def heardWeights (sources : FloatArray) (own pNovel : Float) : FloatArray :=
+  ⟨heard_weights_ref sources.data own pNovel⟩
+
 @[export bf_neg_share] def negShare (gains losses : Float) : Float := neg_share_ref gains losses
 
 @[export bf_credence_score] def credenceScore (credence outcome : Float) : Float := credence_score_ref credence outcome

@@ -29,6 +29,12 @@ def source_weight_ref (rights wrongs : Float) : Float :=
 def heard_ref (source own : Float) (novel : Bool) : Float :=
   if source ≥ own || novel then source else 0.0
 
+/-- Heard weights over many sources at once (8.44; the full ContentionMap, author on 8.45): each
+    source at or above the listener's own weight counts in full; each weaker one at the novelty
+    chance, the expected value of a rare novel input (a mean-field shortcut for a draw per source). -/
+def heard_weights_ref (sources : Array Float) (own pNovel : Float) : Array Float :=
+  sources.map fun s => if s ≥ own then s else pNovel * s
+
 /-- The ledgers' negative share (8.42.1): losses over gains plus losses, over entries that never
     decay; zero for an empty ledger. -/
 def neg_share_ref (gains losses : Float) : Float :=

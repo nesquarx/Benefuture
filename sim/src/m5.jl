@@ -276,6 +276,7 @@ function run_m5(p::M5Params; seed)
             # IH's ContentionMap exposes every source in the domain on both sides, each weighed by its
             # record (author, on 8.45: all expert sources, not the few most reputable).
             contention_map(i) = filter(!=(i), ranked)
+            pw = p.info_handling ? [lo(person_rec[j, k]) for j in 1:na] : Float64[]  # every source's weight, read once
             reading = zeros(na); wsum, wmod = 0.0, 0.0
             for i in 1:na
                 # Understanding trickles down and across (8.44): a voter weighs a source only if its
@@ -287,7 +288,9 @@ function run_m5(p::M5Params; seed)
                 # ContentionMap) exposes every source on each side of the question, weighed by its
                 # record; without it, a voter hears its contacts.
                 srcs = p.info_handling ? contention_map(i) : contacts[i]
-                wc = [hear(lo(person_rec[j, k])) for j in srcs]
+                # The full map heard in one call (Lean `heard_weights_ref`): weaker sources at the
+                # novelty chance, a mean-field shortcut; a few contacts keep a draw each.
+                wc = p.info_handling ? heard_weights(pw[srcs], mine, p.p_novel) : [hear(lo(person_rec[j, k])) for j in srcs]
                 wm = hear.(wm0)
                 heard_T[i] = own + sum(wc; init = 0.0) + sum(wm; init = 0.0)
                 reading[i] = take_advice(advw[i, k], heard_T[i], sign(signal[i]),
@@ -311,6 +314,14 @@ function run_m5(p::M5Params; seed)
                                            heard_own[i] * sign(signal[i]) + sum(heard_wc[i] .* said[heard_srcs[i]]; init = 0.0) +
                                            sum(heard_wm[i] .* published)) for i in 1:na]
                 end
+                own_pub = pub.(1:na)
+                push!(minds_trace, mean(sign(reading[i]) != sign(signal[i]) for i in 1:na))
+                signal = reading
+            elseif p.info_handling && isempty(p.tag_liars)
+                # Every voter already hears every origin directly, once: further rounds add no origin,
+                # so the tagged reading is the first round's (exact shortcut), cast with full weight.
+                tag_tally = sum((held[i] * ((i in p.colluders && defect) ? 1.0 : sign(reading[i])) for i in 1:na if !delegated[i]); init = 0.0)
+                audit_b = [sign(sum(heard_wc[i] .* pub.(heard_srcs[i]); init = 0.0) + sum(heard_wm[i] .* published)) for i in 1:na]
                 own_pub = pub.(1:na)
                 push!(minds_trace, mean(sign(reading[i]) != sign(signal[i]) for i in 1:na))
                 signal = reading
