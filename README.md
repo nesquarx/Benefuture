@@ -442,9 +442,9 @@ Governance and thresholds
   [sim/README.md, M4](sim/README.md#m4-observations)).
 - Deaths (M7, first rung; toy population of 50, 20 trials): G's floors over the decision-time
   population, the dead at the bottom, do not stop a plan that removes the two worst-off and lifts
-  everyone else (the 10% quantile still rises; only the literal minimum would not); Freedom does,
-  since a death is irreparable harm (Lean `fr_permissible_ref`), a finding for the corpus's account of
-  sacrificial trade-offs (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
+  everyone else (the 10% quantile still rises; only the literal minimum would not), and valuing the
+  deaths as irreparable harm still leaves its value positive; Freedom, a subgoal reported per plan and
+  not a filter on G, marks it impermissible. What should block it is open (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
   [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
 - Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
   reception varying, leave the teacher's understanding intact; research is spending (beings' time and

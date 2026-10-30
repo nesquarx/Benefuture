@@ -24,7 +24,7 @@ function accumulate_capped(cap::Real, current::Real, weights)
     ccall(sym(:bf_accumulate_capped), Float64, (Float64, Float64, Ptr{Cvoid}), cap, current, floatarray(weights))
 end
 
-"Domain-relative expertise ([P], Government): reputations as shares of the domain's total (summing to 1)."
+"Domain-relative expertise ([R] 8.22.1; L113): reputations as shares of the domain's total (summing to 1), for vote weights only (8.48)."
 function relative_reputation(reps)
     check(all(r -> isfinite(r) && r >= 0, reps), "reputations must be non-negative")
     lean_floats(ccall(sym(:bf_relative_reputation), Ptr{Cvoid}, (Ptr{Cvoid},), floatarray(reps)))

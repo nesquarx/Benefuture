@@ -1,9 +1,10 @@
-# Toy model M7, second rung: teaching (understanding is shared, not moved; conjecture B17).
+# Toy model M7: population, from deaths (tests) to teaching and research (this file).
 #
-# World (this file): research raises one frontier being's understanding by `research_gain`, and only
-# research extends the frontier (ordinary plans are capped at the current peak);
-# teaching raises learners towards a teacher's level by a share `ε` of the gap, the teacher keeping
-# all of its own. G chooses among research, teaching and ordinary plans by the Lean rules (`choose`).
+# World (this file): teaching is one to many, at any level, reception varying; research is spending
+# (a governed share of beings' time, a very noisy chance of success, gains teachable or tacit), and
+# only research extends the frontier, apart from rare in-job innovation near the top. Each entity
+# approximates G on its own noisy view and chooses among its own options (author ruling 8.50); a
+# single global G choosing one plan a step is the limiting case (`central`).
 
 """
     teaching_plan(u, teacher, learners, ε; reception = ones) -> ToyPlan
@@ -29,8 +30,8 @@ end
     run_m7(p; seed, ε, research_share = 0.1, ...) -> NamedTuple
 
 M0's world with teaching and research. Each step a share `research_share` of beings (governed: what
-Benefuture spends on research) research instead of working: the ordinary plans and lessons on offer
-shrink in proportion, and each attempt costs `research_cost` from the commons. An attempt by being b
+Benefuture spends on research) research instead of working, and each attempt's `research_cost` is
+tallied (`research_spent`; this world has no commons to draw it from). An attempt by being b
 succeeds with a very noisy chance, `p_research` × (u_b / peak)² × novelty_b × log-normal(`research_σ`)
 (novelty a per-being trait, world), and raises b by a log-normal `research_gain` (new understanding
 beyond the frontier only where it passes the peak); the work done by the rest scales with their
@@ -39,8 +40,14 @@ is teachable with chance `p_teachable`, else tacit (it stays with b). Lessons (`
 teachers at any level, reception varying with `reception_σ`) pass on teachers' teachable understanding.
 Ordinary work carries no one past the peak, except by in-job innovation: a chance `p_innovate` ×
 ((u_b − median) / (peak − median))⁴, near the top only. G chooses among ordinary plans and lessons by
-the Lean rules. Records the Goal's success pattern, the top decile's share, research spending and
-breakthroughs.
+the Lean rules. With G per entity (the default), each entity not researching acts with chance `p_act`,
+reading the levels through its own noisy view (`view_σ`), predicting its `options` ordinary plans
+(each an `action_scale` share of a plan) and a lesson it could teach (one entity's whole act) with
+error `pred_σ`; all act concurrently, and concurrent lessons never lift a learner above the best
+teacher it met. With `central`, one global G chooses one plan a step among `p.plans` ordinary plans
+and `lessons` lessons, the work done scaled by the time left. Records the Goal's success pattern, the
+top decile's share, research spending (tallied), successes (`breakthroughs`), in-job innovations,
+entities acting per step (`actions`) and the kind of each action taken (`kind`).
 """
 function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
                 p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
@@ -88,6 +95,7 @@ function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, resear
             end
         end
         workforce = 1 - count(researching) / p.n
+        peak = maximum(s.u)  # after this step's research: innovation is counted against it
         # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
         near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^4 : 0.0 for b in 1:p.n]
         function capped(pl)

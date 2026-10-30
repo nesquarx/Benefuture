@@ -44,7 +44,7 @@ end
 end
 
 @testset "M5: scalability (author ruling 8.22)" begin
-    # LqdBfDm works at every scale: a household of five decides about as well as a polity of a
+    # LqdBfDm works at every scale: a household of eight decides about as well as a polity of a
     # hundred, and normalised expertise keeps any one voter from dominating either.
     world(n_per) = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
                                      [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / max(n_per - 1, 1) : 0.0 for l in 1:4],

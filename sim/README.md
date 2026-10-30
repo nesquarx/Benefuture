@@ -29,7 +29,7 @@ assumptions it still makes, and graduates to them.
 | M2 | Agents propose the plans; imperfect agents (skill, sloppiness); escrow payment and settlement; reputation from contribution | B9, B20, `Conj_MinTracksPrediction` | first pass done |
 | M3 | Domains, needed by every transaction: profiles as partitions of unity; payment, currency and reputation (history and relevance) attributed per domain, never crossing | B10, anti-halo isolation | first pass done |
 | M3b | Profiles measured by currency metric models from causal signatures, not declared; prices per currency (resource cost less escrow upfront); spending only from the same currency; balance overflow into domain reinvestment | B6, B9, B10 | flat first pass done |
-| M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.5); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
+| M3c | Domain network (Ontology.Domain [R]): leaves hold shares, parents are fuzzy sets of leaves with μ learnt from memory; descent from matched parents; currencies eligible by accuracy threshold (novel leaves after a score-only phase, never below 0.55); fallback by μ; StandCoin lane at full resource cost with co-funding experts; novel leaves formed from clustered blockages; a noise parameter for every step | B6, B9, B10 | first pass done |
 | M3d | Transactions and the behavioural transaction substrate: every proposal a transaction quoted by each relevant currency (TP_Gen, L86), screened by G together with the step's accepted work, executed if paid for, logged with its quotes (L89, L145); transaction trees: actions build on others' recent outputs; outcomes split into assessed parts, positive parts paying their contributors and negative parts penalising theirs (L93–94, BACKPROPAGATION 8.14); co-funders share the actor's parts | B6, B9, `Conj_MinTracksPrediction` | first pass done |
 | M3e | A world that moves on its own: hazards in domains; guardians bound by contract (laws once communicated count) to prevent them, assessed against that committed action when they do not; crime when informed, accident when not (Lean `is_crime_ref`); hazards created as side effects of actions; penalties funding repair | B5, `Conj_FloorsRise` | first pass done |
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation by the floors' movement ([P]); next, the simulation's own gates and debatable thresholds (M5) | `Conj_ParamStability` | first pass done |
@@ -794,10 +794,11 @@ uncontested questions the echo cost of 8.45 remains.
 
 G's floors are taken over the decision-time population, a life a plan would end keeping its place at
 the bottom. Against a plan that removes the two worst-off of 50 beings and lifts everyone else by 3,
-the 10% quantile floor still rises (20 trials of 20) and G alone chooses it; the literal minimum
-would not rise. Freedom screens plans before G (`choose(...; harms)`, Lean `fr_permissible_ref`): a
-death is irreparable harm, and with it predicted, at any confidence down to 0.1, the plan is
-impermissible. Finding 8.47. Births await the author: how G's floors treat a newborn's low initial
+the 10% quantile floor still rises (20 trials of 20) and G chooses it; the literal minimum would not
+rise. Freedom is a subgoal reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8); valuing the
+deaths as irreparable harm still leaves the plan's total value positive, so Freedom does not emerge
+here, though Fr marks the plan impermissible (`fr_permissible`, Lean `fr_permissible_ref`). Finding
+8.47, awaiting the author. Births await the author too: how G's floors treat a newborn's low initial
 understanding, and the birth escrow (Government, Birth).
 
 Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
@@ -865,7 +866,7 @@ for removal.
 | Framework insuring unassigned harm through the commons | Native, funding [OPEN] | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
 | AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
-| Freedom screening plans before G (deaths as irreparable harm) | Native | L135; Lean `fr_permissible_ref`; M7 |
+| Freedom reported per plan (deaths as irreparable harm), not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |

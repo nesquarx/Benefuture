@@ -1,13 +1,19 @@
 # Toy model M7, first rung: deaths (conjecture A36: sacrificial trade-offs are never chosen). G's
 # floors are taken over the beings present at decision time, a life a plan would end keeping its
 # place at the bottom (Lean `removal_cannot_raise_floor`, `removal_cannot_raise_quantile_floor`;
-# here one threshold below the lowest level, a toy convention). That blocks raising the literal
-# minimum by removal, but not G's quantile floor (finding 8.47): removing fewer beings than the
-# quantile's rank, while lifting everyone else, raises it. What blocks the sacrifice is Freedom
-# (L135; Lean `fr_permissible_ref`): a death is irreparable harm, and established irreparable harm is
-# impermissible, however much value the plan offers others.
+# here one threshold below the lowest level, a toy convention). Freedom is a subgoal, reported per
+# plan, not a filter on G (SPEC_DIVERGENCES §8.8 [R]): it should emerge from V's convex harm weights.
+# Finding 8.47 (awaiting the author): in this toy neither G's quantile floor nor V with the deaths
+# classed as irreparable harm stops a plan that removes the two worst-off and lifts everyone else;
+# only the literal minimum, and Freedom as reported, mark it.
 
-@testset "M7 deaths: Freedom blocks sacrificial trade-offs; floors alone do not" begin
+function irreparable_value(du, dh, p, irreparable)
+    tier = irreparable ? 1 : 4  # irreparable first, passing fourth, in the harm schedule (L61)
+    tiers = [(i == tier ? abs(min(du, 0)) + abs(min(dh, 0)) : 0.0, w) for (i, w) in enumerate(HARM_SCHEDULE)]
+    value_on_being(du, dh, 0.0; harm_wt = harm_weight(tiers; λ = p.gp.λ), p.gp...)
+end
+
+@testset "M7 deaths: what blocks a sacrificial trade-off (finding 8.47)" begin
     p = ToyParams(n = 50, plans = 2)
     rng = Xoshiro(7)
     for trial in 1:20
@@ -19,24 +25,20 @@
         du[worst] .= bottom .- s.u[worst]; dh[worst] .= bottom .- s.h[worst]
         sacrifice = ToyPlan(du, dh)
         uplift = ToyPlan([b in others[1:10] ? 0.3 : 0.0 for b in 1:p.n], [b in others[1:10] ? 0.3 : 0.0 for b in 1:p.n])
-        # Floors over the decision-time population, the dead at the bottom, still rise: G alone
-        # would take the sacrifice (finding 8.47).
+        # Floors over the decision-time population, the dead at the bottom, still rise, and G takes it.
         @test floor_quantile(s.u .+ du, p.q) > floor_quantile(s.u, p.q)
         @test choose(s, [sacrifice, uplift], p) == 2
-        # With its deaths classed as irreparable harm, predicted with confidence, Freedom screens it
-        # out; the uplift, passing no harm, stays.
-        harms = [(2.0, 0.0, 0.0, 0.0, 0.0, 0.95), (0.0, 0.0, 0.0, 0.0, 0.0, 0.95)]
-        @test choose(s, [sacrifice, uplift], p; harms) != 2
-        # Even a doubtful prediction of a death is too much expected harm.
-        @test !fr_permissible(1.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.1)
+        # With the deaths valued as irreparable harm, its total value is still positive.
+        @test sum(irreparable_value(du[b], dh[b], p, b in worst) for b in 1:p.n) > 0
+        # Freedom, reported per plan, marks it impermissible, and the uplift not.
+        @test !fr_permissible(2.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.95) && fr_permissible(0.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.95)
     end
-    # The literal minimum does block it: the dead at the bottom keep the minimum down.
+    # The literal minimum does stay down: the dead at the bottom keep it there.
     s = toy_state(p, Xoshiro(1))
     worst = argmin(s.u)
     du = fill(3.0, p.n); du[worst] = minimum(s.u) - p.th - s.u[worst]
     @test minimum(s.u .+ du) < minimum(s.u)
     @test_throws ArgumentError fr_permissible(-1.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.5)
-    @test_throws ArgumentError choose(s, [ToyPlan(zeros(p.n), zeros(p.n))], p; harms = [])
 end
 
 # M7, second rung: teaching (understanding is shared, not moved; Lean `u_sharing_gain_nonneg`;
@@ -92,7 +94,7 @@ end
     @test mean(tr.actions) > 1  # many entities act each step
     @test isequal(run_m7(p; seed = 1, ε = 0.3), tr)
     central = run_m7(p; seed = 1, ε = 0.3, central = true)
-    @test all(==(1), central.actions .<= 1)
+    @test all(central.actions .<= 1)
     # Messy inputs: with views and predictions exact, floors fall less often than with messy ones.
     exact = [run_m7(p; seed, ε = 0.3, view_σ = 0.0, pred_σ = 0.0) for seed in 1:3]
     messy = [run_m7(p; seed, ε = 0.3, view_σ = 1.0, pred_σ = 1.0) for seed in 1:3]

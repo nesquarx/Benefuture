@@ -10,7 +10,7 @@
 # `μ_min`); what no leaf takes is stuck at the parents, or at the root. A currency is eligible
 # while its model's accuracy (expected accuracy before records, for established models) reaches
 # `threshold`; a novel leaf's after `min_records` scored predictions, at `novel_threshold`, never
-# below 0.5 (Lean). Ineligible leaves' shares fall back to eligible parents by μ, else to StandCoin.
+# below 0.55 (Lean). Ineligible leaves' shares fall back to eligible parents by μ, else to StandCoin.
 # A plan mostly at StandCoin cannot be valued by a qualified currency, so it is not in G's menu:
 # it is priced at its full resource cost, screened by G on the best available model (qualified or
 # not), and goes ahead if the proposer, with experts (agents with reputation in the parents it
@@ -107,7 +107,7 @@ struct M3cParams
     gov_trials::Int              # epochs each candidate is tried per round (governed)
     gov_z::Float64               # standard errors a difference must exceed to count (governed)
     gov_gauge::Float64           # factor by which the gauged radius shrinks on harm, widens without (governed)
-    # Noise in steps not covered above (zero by default; see `sim/README.md` for realistic ranges).
+    # Noise in steps not covered above (defaults mildly imperfect, 8.33; see `sim/README.md` for realistic ranges).
     bias_σ::Float64        # each metric model's systematic bias, drawn once per model
     cost_σ::Float64        # resource accounting error, multiplicative (log-normal)
     regen_σ::Float64       # variability of resource regeneration, relative

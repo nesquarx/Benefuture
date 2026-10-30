@@ -4,7 +4,7 @@
 # leaves; pricing falls back from ineligible currencies to eligible parents by μ, else to StandCoin,
 # which predicts no value: work only it would take is priced at full resource cost and goes ahead
 # if the proposer, with co-funding experts, can pay. Clustered blockages form novel leaves, which
-# price only after a score-only phase at their (lower, never below 0.5) threshold.
+# price only after a score-only phase at their (lower, never below 0.55) threshold.
 
 const T3c = ToyParams(n = 80, steps = 200, plans = 10)
 # Two parents of two known leaves each; `hidden` adds true leaves missing from the network (their

@@ -1112,19 +1112,24 @@ duties become recommendations is itself a governed threshold. This settles the G
 list of duties against 8.24.3 (duties stay minimal, not absent). Candidate homes: Law (Duties,
 Responsibilities), Government, L113 (mandatory voting threshold), L157. Propagated to Law (articles).
 
-**8.47 Finding: G's quantile floor does not block sacrificial trade-offs; Freedom does.** M7 (deaths):
-G's floors are taken over the decision-time population, a life a plan would end keeping its place at
-the bottom (Lean `removal_cannot_raise_floor`, and for the quantile `removal_cannot_raise_quantile_floor`).
-That bound covers lowering levels with no one else gaining. A plan that removes fewer beings than the
-quantile's rank and lifts everyone else raises the thresholded quantile floor (L74: min := Th_quantile):
-with 50 beings, removing the two worst-off and giving the rest a large gain raised the 10% quantile in
-20 trials of 20, and G chose it; only the literal minimum stays down. What blocks it is Freedom (L135;
-Lean `fr_permissible_ref`, `irreversible_harm_strictly_impermissible`): a death is irreparable harm,
-and established irreparable harm, or any whose confidence times severity is too high, is impermissible.
-The toy's valuation counts every loss as passing harm, so the value term alone favoured the sacrifice;
-with the irreparable tier weighted (Ha_wt, L61) it would weigh far more. [P] the corpus's attribution of
-sacrifice-blocking to floors (conjecture A36; Benefuture goals) should name Freedom's irreparable gate
-first, floors second. Candidate homes: Benefuture goals, Freedom, L74, L135.
+**8.47 Finding: nothing in G blocks a small sacrificial trade-off in the toy (needs the author).** M7
+(deaths): G's floors are taken over the decision-time population, a life a plan would end keeping its
+place at the bottom (Lean `removal_cannot_raise_floor`, and for the quantile
+`removal_cannot_raise_quantile_floor`). That bound covers lowering levels with no one else gaining. A
+plan that removes fewer beings than the quantile's rank and lifts everyone else raises the thresholded
+quantile floor (L74: min := Th_quantile): with 50 beings, removing the two worst-off and giving the
+rest +3 raised the 10% quantile in 20 trials of 20, and G chose it; only the literal minimum stays
+down. Freedom is a subgoal reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8 [R]: a filter
+fails tragic choices), and should emerge from V's convex harm weights; but valuing the deaths in the
+irreparable tier (Ha_wt, L61) still leaves the plan's total value positive (143–336 against the deaths'
+−55 to −168 each), so Freedom does not emerge here, though Fr, reported, marks the plan impermissible.
+(A first version of the simulation filtered G by Fr, against §8.8; withdrawn.) Candidate native
+answer: harm over the long-term window (Ha_lt): a death forecloses all of a being's future
+understanding and happiness, which the toy's one-step drop to the bottom undercounts. Options: (a)
+value a death over Ha_lt (its foreclosed future), (b) take G's floor as the literal minimum where lives
+are at stake, (c) accept that Fr's emergence needs dominance (`dominated_plan_not_chosen`) and that
+organ-harvest cases are left to law and contract. Candidate homes: Benefuture goals, Freedom, Harm, L61,
+L74, L135; conjecture A36.
 
 **8.48 Author ruling on normalisation.** Normalising reputation must not reduce anyone's net
 reputation when someone surpasses them: only vote weights are normalised, because they scale
