@@ -40,27 +40,44 @@
 end
 
 # M7, second rung: teaching (understanding is shared, not moved; Lean `u_sharing_gain_nonneg`;
-# conjecture B17, frontier compounding). Research raises a frontier being's understanding; teaching is
-# one to many and happens at any level: a teacher anywhere raises a class below it towards its level,
-# each learner by `ε` × its own reception (varying), the teacher keeping all of its own. G chooses
-# among research, lessons and ordinary plans as in M0.
-@testset "M7 teaching: lessons spread understanding; only research moves the frontier" begin
+# conjecture B17, frontier compounding). Teaching is one to many and happens at any level: a teacher
+# anywhere raises a class below it towards its teachable level, each learner by `ε` × its own
+# reception (varying), the teacher keeping all of its own. G chooses among lessons and ordinary
+# plans as in M0; research is spending (third rung).
+@testset "M7 teaching: lessons spread understanding and feed research" begin
     p = ToyParams(n = 100, steps = 300, plans = 10)
     seeds = 1:4
-    none = [run_m7(p; seed, ε = 0.0) for seed in seeds]
-    taught = [run_m7(p; seed, ε = 0.3) for seed in seeds]
+    none = [run_m7(p; seed, ε = 0.0, research_share = 0.1) for seed in seeds]
+    taught = [run_m7(p; seed, ε = 0.3, research_share = 0.1) for seed in seeds]
     # A lesson, one to many: it never lowers the teacher, raises no learner above the teacher, and
     # reception varies by learner.
     lesson = teaching_plan([0.0, 2.0, 5.0], 3, [1, 2], 0.5)
     @test lesson.du == [2.5, 1.5, 0.0] && all(lesson.du .>= 0)
     @test teaching_plan([0.0, 2.0, 5.0], 3, [1, 2], 0.5; reception = [0.2, 5.0]).du == [0.5, 3.0, 0.0]
-    # Only research extends the frontier: lessons and ordinary work never raise the peak.
-    peak_gain(r, k) = sum((r.peak_u[t + 1] - r.peak_u[t] for t in eachindex(r.kind) if r.kind[t] == k); init = 0.0)
-    @test all(peak_gain(t, :lesson) == 0 && peak_gain(t, :ordinary) <= 1e-9 for t in taught)
-    # Teaching compresses understanding (the top decile's share falls) but, under one choice per
-    # step, lessons outvalue research and the frontier stalls (finding 8.49): the peak grows less.
-    @test mean(t.top_share[end] for t in taught) < mean(t.top_share[end] for t in none)
-    @test mean(success_pattern(t).peak_u for t in taught) < mean(success_pattern(t).peak_u for t in none)
-    @test mean(mean(t.kind .== :research) for t in taught) < mean(mean(t.kind .== :research) for t in none)
+    # With research as spending (a tenth of time), teaching raises the floor and median of
+    # understanding and the peak too: more beings near the frontier make research succeed more often.
+    sp(ts, f) = mean(getfield(success_pattern(t), f) for t in ts)
+    @test sp(taught, :floor_u) > sp(none, :floor_u) && sp(taught, :median_u) > sp(none, :median_u)
+    @test sp(taught, :peak_u) > sp(none, :peak_u)
     @test_throws ArgumentError run_m7(p; seed = 1, ε = 1.5)
+end
+
+# M7, third rung: research as spending (author). A governed share `research_share` of beings' time
+# goes to research each step, taking those beings from ordinary work and lessons and drawing on the
+# commons; each attempt succeeds with a very noisy chance rising with the researcher's understanding
+# (relative to the frontier) and its novelty, and a success lands beyond the peak, teachable or tacit
+# (`p_teachable`). Ordinary work may pass the peak by in-job innovation, rarely, near the top only.
+@testset "M7 research as spending" begin
+    p = ToyParams(n = 100, steps = 300, plans = 10)
+    # A teacher passes on only its teachable understanding; tacit gains stay with it.
+    @test teaching_plan([0.0, 2.0, 5.0], 3, [1, 2], 1.0; tacit = 2.0).du == [3.0, 1.0, 0.0]
+    shares = (0.0, 0.1, 0.8)
+    runs = Dict(r => [run_m7(p; seed, ε = 0.3, research_share = r) for seed in 1:4] for r in shares)
+    peak(r) = mean(success_pattern(t).peak_u for t in runs[r])
+    floor(r) = mean(success_pattern(t).floor_u for t in runs[r])
+    # Research moves the frontier; too much of it takes from uplift.
+    @test peak(0.1) > peak(0.0)
+    @test floor(0.8) < floor(0.1)
+    @test all(t.research_spent > 0 for t in runs[0.1]) && all(t.research_spent == 0 for t in runs[0.0])
+    @test_throws ArgumentError run_m7(p; seed = 1, ε = 0.3, research_share = 1.5)
 end

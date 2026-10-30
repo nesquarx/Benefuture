@@ -800,24 +800,35 @@ death is irreparable harm, and with it predicted, at any confidence down to 0.1,
 impermissible. Finding 8.47. Births await the author: how G's floors treat a newborn's low initial
 understanding, and the birth escrow (Government, Birth).
 
-Teaching (second rung; understanding shared, not moved): teaching is one to many and happens at any
-level. Each step's options include one research plan (a top-decile being +2), three lessons (each from
-a teacher anywhere to a class of ten below it, each learner gaining ε × its own reception, log-normal
-around 1 with `reception_σ` 0.5, of the gap, never passing the teacher, who keeps all of its own) and
-ordinary plans, which apply and spread understanding but carry no one past the frontier: only
-research extends it. 100 beings, 300 steps, 4 seeds:
+Teaching and research (second and third rungs; understanding shared, not moved). Teaching is one to
+many and happens at any level: each step's lessons come from teachers anywhere, each to a class of ten
+below it, each learner gaining ε × its own reception (log-normal, `reception_σ` 0.5) of the gap to the
+teacher's teachable understanding; the teacher keeps all of its own. Research is spending (author): a
+governed share `research_share` of beings' time goes to it each step, taking those beings from work and
+lessons (the work done scales with the time left) and costing the commons; an attempt succeeds with a
+very noisy chance rising with the researcher's understanding relative to the frontier and its novelty
+(a per-being trait), raises it by a log-normal gain (new understanding where it passes the peak), and
+is teachable with chance `p_teachable` (0.5), else tacit. Ordinary work carries no one past the peak,
+except rare in-job innovation near the top (`p_innovate`). 100 beings, 300 steps, 4 seeds, ε 0.3:
 
-| ε | Floor of understanding | Median | Peak (all from research) | Top decile's share | Lessons chosen | Research chosen |
-|---|---|---|---|---|---|---|
-| 0 | 20.4 | 26.8 | 36.6 | 16.4% | – | 16% |
-| 0.1 | 21.0 | 23.0 | 23.9 | 14.7% | 21% | 6% |
-| 0.3 | 19.1 | 19.0 | 17.4 | 12.9% | 41% | 4% |
-| 0.6 | 23.6 | 22.9 | 21.9 | 15.6% | 50% | 7% |
+| Research share | Floor of understanding | Median | Peak | Top decile's share |
+|---|---|---|---|---|
+| 0 | 4.2 | 2.7 | 0.5 | 10% |
+| 0.02 | 21.1 | 21.2 | 21.0 | 15% |
+| 0.05 | 27.5 | 28.5 | 31.0 | 17% |
+| 0.1 | 30.0 | 31.4 | 34.6 | 18% |
+| 0.2 | 25.4 | 26.8 | 32.5 | 19% |
+| 0.4 | 18.3 | 19.2 | 33.8 | 27% |
+| 0.8 | 4.2 | 4.2 | 50.4 | 48% |
 
-Lessons outvalue research under one choice per step, so the frontier stalls and understanding
-converges towards a stagnant ceiling (BACKPROPAGATION 8.49). Screened: a first version let ordinary
-plans raise anyone at random, level-independently, so a denser top let them carry the peak past
-the frontier; teaching appeared to push the frontier (the author's question exposed it).
+Uplift peaks near a tenth of time on research; beyond about a fifth, research spending harms the
+floor and median while the peak keeps rising and concentrating. At a tenth, teaching raises floor,
+median and peak together (ε 0, 0.3, 0.6: floor 16, 30, 38; peak 29, 35, 42): more beings near the
+frontier make research succeed more often. Screened on the way (BACKPROPAGATION 8.49): with research
+as one menu option among lessons, lessons crowded it out and the frontier stalled; with ordinary plans
+level-independent, they carried the peak and teaching looked like progress; a breakthrough first
+landed a researcher at the peak whatever its level; and diverted time cost nothing while one plan ran
+a step.
 
 ## Parsimony audit
 
@@ -874,6 +885,7 @@ ratified.
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
+| Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
@@ -928,6 +940,7 @@ rare but present).
 | Repair restoring harm | `repair_efficiency` | 0 (off) | 0.2–1 |
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
 | Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
+| Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |
 | Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
 | Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
 | An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |

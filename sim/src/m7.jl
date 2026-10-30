@@ -9,39 +9,53 @@
     teaching_plan(u, teacher, learners, ε; reception = ones) -> ToyPlan
 
 A lesson, one to many: each learner below the teacher gains `ε` × its own `reception` of the gap to
-the teacher's understanding, never passing the teacher; the teacher and everyone else are unchanged
-(understanding is shared, not moved).
+the teacher's teachable understanding (its level less its `tacit` part), never passing it; the
+teacher and everyone else are unchanged (understanding is shared, not moved).
 """
-function teaching_plan(u::AbstractVector, teacher::Integer, learners, ε::Real; reception = ones(length(learners)))
+function teaching_plan(u::AbstractVector, teacher::Integer, learners, ε::Real; reception = ones(length(learners)), tacit::Real = 0.0)
     check(0 <= ε <= 1 && 1 <= teacher <= length(u) && all(l -> 1 <= l <= length(u), learners), "ε in [0, 1], beings in range")
     check(length(reception) == length(learners) && all(r -> isfinite(r) && r >= 0, reception), "one non-negative reception per learner")
+    check(isfinite(tacit) && tacit >= 0, "tacit understanding non-negative")
     du = zeros(length(u))
     for (l, r) in zip(learners, reception)
         l == teacher && continue
-        gap = max(0.0, u[teacher] - u[l])
+        gap = max(0.0, u[teacher] - tacit - u[l])  # only the teacher's teachable understanding passes on
         du[l] = min(gap, ε * r * gap)
     end
     ToyPlan(du, zeros(length(u)))
 end
 
 """
-    run_m7(p; seed, ε, research_gain = 2.0, class = 10, lessons = 3, reception_σ = 0.5) -> NamedTuple
+    run_m7(p; seed, ε, research_share = 0.1, ...) -> NamedTuple
 
-M0's world with research and teaching among each step's options: one research plan (a top-decile
-being gains `research_gain`) and `lessons` lessons, each from a teacher at any level to a class of
-up to `class` beings below it, each learner's reception drawn log-normally around 1 with scatter
-`reception_σ` (world noise, its own stream). Records the Goal's success pattern and the top decile's
-share of understanding (`top_share`).
+M0's world with teaching and research. Each step a share `research_share` of beings (governed: what
+Benefuture spends on research) research instead of working: the ordinary plans and lessons on offer
+shrink in proportion, and each attempt costs `research_cost` from the commons. An attempt by being b
+succeeds with a very noisy chance, `p_research` × (u_b / peak)² × novelty_b × log-normal(`research_σ`)
+(novelty a per-being trait, world), and raises b by a log-normal `research_gain` (new understanding
+beyond the frontier only where it passes the peak); the work done by the rest scales with their
+share of time; the gain
+is teachable with chance `p_teachable`, else tacit (it stays with b). Lessons (`lessons`, one to many,
+teachers at any level, reception varying with `reception_σ`) pass on teachers' teachable understanding.
+Ordinary work carries no one past the peak, except by in-job innovation: a chance `p_innovate` ×
+((u_b − median) / (peak − median))⁴, near the top only. G chooses among ordinary plans and lessons by
+the Lean rules. Records the Goal's success pattern, the top decile's share, research spending and
+breakthroughs.
 """
-function run_m7(p::ToyParams; seed, ε::Real, research_gain::Real = 2.0, class::Integer = 10, lessons::Integer = 3,
-                reception_σ::Real = 0.5)
-    check(0 <= ε <= 1 && isfinite(research_gain) && research_gain >= 0 && class >= 1 && lessons >= 0 &&
-          isfinite(reception_σ) && reception_σ >= 0, "ε in [0, 1], gain and scatter non-negative, class positive")
+function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
+                p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
+                class::Integer = 10, lessons::Integer = 3, reception_σ::Real = 0.5)
+    check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ)) &&
+          0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0,
+          "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive")
     rng = Xoshiro(seed)
-    trng = Xoshiro(hash((seed, :reception)))
+    trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     s = toy_state(p, rng)
+    novelty = 0.2 .+ 0.8 .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
+    tacit = zeros(p.n)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
-          worst_drop = Float64[], top_share = Float64[], chosen = Int[], kind = Symbol[])
+          worst_drop = Float64[], top_share = Float64[], chosen = Int[], kind = Symbol[], breakthroughs = Ref(0),
+          innovations = Ref(0), spent = Ref(0.0))
     prev = Ref((copy(s.u), copy(s.h)))
     function record!()
         push!(tr.floor_u, floor_quantile(s.u, p.q)); push!(tr.floor_h, floor_quantile(s.h, p.q))
@@ -55,32 +69,51 @@ function run_m7(p::ToyParams; seed, ε::Real, research_gain::Real = 2.0, class::
     end
     record!()
     for _ in 1:p.steps
-        order = sortperm(s.u; rev = true)
-        r = order[rand(rng, 1:max(1, p.n ÷ 10))]
-        research = ToyPlan([b == r ? research_gain : 0.0 for b in 1:p.n], zeros(p.n))
+        peak, med = maximum(s.u), median(s.u)
+        # Research: a share of beings spend this step on it.
+        researching = [rand(rrng) < research_share for _ in 1:p.n]
+        for b in findall(researching)
+            tr.spent[] += research_cost
+            rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
+            chance = clamp(p_research * rel^2 * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+            if rand(rrng) < chance
+                gain = research_gain * exp(0.5 * randn(rrng))
+                new = s.u[b] + gain  # beyond the frontier only if it passes the peak
+                rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
+                s.u[b] = new
+                tr.breakthroughs[] += 1
+            end
+        end
+        workforce = 1 - count(researching) / p.n
+        # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
+        nplans, nlessons = max(1, round(Int, p.plans * workforce)), round(Int, lessons * workforce)
+        ordinary = map(1:nplans) do _
+            pl = random_plan(rng, p)
+            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^4 : 0.0 for b in 1:p.n]
+            free = [rand(rrng) < p_innovate * near[b] for b in 1:p.n]
+            cap = [free[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
+            ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
+        end
         taught = ToyPlan[]
-        for _ in 1:lessons
+        for _ in 1:nlessons
             teacher = rand(rng, 1:p.n)  # any level
-            below = [b for b in 1:p.n if s.u[b] < s.u[teacher]]
+            below = [b for b in 1:p.n if s.u[b] < s.u[teacher] - tacit[teacher]]
             isempty(below) && continue
             learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-            push!(taught, teaching_plan(s.u, teacher, learners, ε; reception = exp.(reception_σ .* randn(trng, length(learners)))))
+            push!(taught, teaching_plan(s.u, teacher, learners, ε; reception = exp.(reception_σ .* randn(trng, length(learners))),
+                                        tacit = tacit[teacher]))
         end
-        # Ordinary work applies and spreads understanding but carries no one past the frontier:
-        # only research extends it (a toy convention; M0's plans are level-independent).
-        peak = maximum(s.u)
-        ordinary = map(1:p.plans) do _
-            pl = random_plan(rng, p)
-            ToyPlan(min.(pl.du, max.(0.0, peak .- s.u)) .* (pl.du .> 0) .+ min.(pl.du, 0.0), pl.dh)
-        end
-        plans = [ordinary; research; taught]
+        plans = [ordinary; taught]
         i = choose(s, plans, p)
         push!(tr.chosen, i)
-        push!(tr.kind, i == 1 ? :none : i <= p.plans + 1 ? :ordinary : i == p.plans + 2 ? :research : :lesson)
+        push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
         if i > 1
-            s.u .+= plans[i - 1].du; s.h .+= plans[i - 1].dh
+            # The work done scales with the time left for it (`workforce`).
+            du, dh = workforce .* plans[i - 1].du, workforce .* plans[i - 1].dh
+            i <= nplans + 1 && maximum(s.u .+ du) > peak + 1e-12 && (tr.innovations[] += 1)
+            s.u .+= du; s.h .+= dh
         end
         record!()
     end
-    tr
+    merge(tr, (breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[]))
 end

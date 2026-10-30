@@ -1135,20 +1135,21 @@ proportion to the weight share it cast (its causal contribution to the decision)
 each vote earns less, while the record already earned stays whole. Propagated to Government (articles).
 Candidate homes: L113, Reputation, Government.
 
-**8.49 Finding: teaching starves the frontier under a single-choice G (B17; Di_N's case).** M7, 100
-beings. Teaching is one to many and happens at any level downstream, reception varying (author):
-three lessons a step, each from a teacher anywhere to ten learners below it, each learner gaining ε ×
-its own reception of the gap, the teacher keeping all of its own; one research plan a step (a frontier
-being +2); ordinary plans apply and spread understanding but carry no one past the frontier, which
-only research extends. Lessons outvalue one frontier gain, so research's share of choices falls (16% →
-4–7%), the peak grows 17–24 against 37, and understanding converges towards a stagnant ceiling: the
-floor barely moves (20 → 19–24) and the median falls (27 → 19–23). Screened (on the author's
-question how teaching could push the frontier): a first version let ordinary plans raise anyone at
-random, level-independently, which with a denser top carried the peak past the frontier and made
-teaching look like progress. This is L158's case, Di_N_Balance: when the marginal value of spreading
-existing good falls below a threshold, novelty is needed; Lean states the axiom (Antifragility) but no
-reference rule implements it yet. Also possible: one choice per step is the cause (with transactions,
-research and lessons both proceed). Candidate homes: L158, Education, conjecture B17.
+**8.49 Finding: research as spending has an uplift optimum; teaching and research are complements.**
+M7, 100 beings. Teaching is one to many, at any level downstream, reception varying; only research
+extends the frontier, apart from rare in-job innovation near the top (author). Research is spending
+(author): a share of beings' time and the commons' resources, a very noisy chance of success rising
+with the researcher's understanding and novelty, gains teachable or tacit. Uplift (floor and median of
+understanding) peaks near a tenth of time on research (floor 30 against 4 with none and 4 at 80%);
+beyond about a fifth, research spending harms uplift while the peak keeps rising and concentrating
+(top decile 18% → 48%). At a tenth, teaching raises floor, median and peak together (floor 16 → 38,
+peak 29 → 42 for ε 0 → 0.6): more beings near the frontier make research succeed more often.
+Screened: with research as one option in G's single choice, lessons outvalued it and the frontier
+stalled (an artefact of the menu, withdrawn); level-independent ordinary plans had carried the peak
+(the author's question exposed it); a breakthrough first landed a researcher at the peak whatever its
+level; diverted time first cost nothing. [P] research share is a governed threshold (L157), the
+diversity–novelty balance (L158) its trigger when spreading's marginal value stalls. Candidate homes:
+L151 Rc_Innovation, L158, Education, conjecture B17.
 
 Later (author): simulate noise as hidden convolving factors and let models evolve to capture them,
 an evolutionary search towards minimum-description-length models, more informative than

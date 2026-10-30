@@ -446,11 +446,13 @@ Governance and thresholds
   since a death is irreparable harm (Lean `fr_permissible_ref`), a finding for the corpus's account of
   sacrificial trade-offs (BACKPROPAGATION 8.47) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
   [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
-- Teaching (M7; toy population of 100, 4 seeds): lessons one to many, at any level, reception
-  varying, raise learners towards a teacher's level and leave the teacher's intact; only research
-  extends the frontier. Under one choice per step lessons outvalue research, the frontier stalls (peak
-  17–24 against 37) and understanding converges towards a stagnant ceiling, the case of the
-  diversity–novelty balance (BACKPROPAGATION 8.49) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl)).
+- Teaching and research (M7; toy population of 100, 4 seeds): lessons one to many, at any level,
+  reception varying, leave the teacher's understanding intact; research is spending (beings' time and
+  the commons' resources, a very noisy chance of success, gains teachable or tacit) and alone extends
+  the frontier. Uplift of floor and median peaks near a tenth of time on research and falls beyond a
+  fifth while the peak keeps rising and concentrating; teaching and research are complements (more
+  beings near the frontier, more breakthroughs) (BACKPROPAGATION 8.49) ([sim/test/m7_tests.jl](sim/test/m7_tests.jl),
+  [sim/README.md, M7](sim/README.md#m7-observations-deaths-first-rung)).
 - The debatable escape (L157; author rulings 8.26.3, 8.38.2, 8.41): a proposal beyond the freedom
   range is tried on half the domains for a limited time and adopted only if it beats the incumbent
   by the significance rule, its gains exceed its harms and it caused no irreparable harm. The status
