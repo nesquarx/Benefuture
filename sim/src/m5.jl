@@ -75,6 +75,14 @@ struct M5Params
     echo_margin::Float64       # agreement beyond independence an echo audit tolerates (governed)
     echo_z::Float64            # standard errors beyond it that flag an undisclosed echo (governed)
     echo_min::Int              # outputs an echo audit needs (governed)
+    # Weight on advice (author note 8.63; docs/CALIBRATION.md): hearing a source does not always change a
+    # mind. Per person and domain, a weight w on what was heard: w = 0 (stays put), 1/2 (averages), 1
+    # (defers) or Beta(α, β) between (Soll & Larrick 2009; Bailey et al. meta-analysis, mean about 0.3-0.4).
+    advice_stay::Float64       # share who keep their own position (world)
+    advice_avg::Float64        # share who average with what they heard (world)
+    advice_defer::Float64      # share who defer to it (world)
+    advice_α::Float64          # the rest: w ~ Beta(α, β) (world)
+    advice_β::Float64
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -92,7 +100,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   record_λpos::Real = 0.05, record_λneg::Real = 0.02, p_novel::Real = 0.05, info_handling::Bool = true,
                   camp_bias = Float64[], source_tags::Bool = false, rounds::Integer = 1,
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
-                  echo_z::Real = 3.0, echo_min::Integer = 20)
+                  echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.30, advice_avg::Real = 0.20,
+                  advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -119,6 +128,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     check(isempty(tag_liars) || deliberation, "tags are gamed only where readings pass on")
     check(all(c -> 1 <= c <= length(agents), tag_liars) && tag_lie in (:misattribute, :omit), "tag liars are agents; lie :misattribute or :omit")
     check(0 <= echo_margin < 1 && isfinite(echo_z) && echo_z >= 0 && echo_min >= 1, "echo margin in [0, 1), z non-negative, minimum positive")
+    check(all(x -> 0 <= x <= 1, (advice_stay, advice_avg, advice_defer)) && advice_stay + advice_avg + advice_defer <= 1 + 1e-12 &&
+          isfinite(advice_α) && isfinite(advice_β) && advice_α > 0 && advice_β > 0, "advice shares in [0, 1] summing to at most 1; Beta shapes positive")
     check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
@@ -130,7 +141,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace,
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
-             source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min)
+             source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
+             advice_stay, advice_avg, advice_defer, advice_α, advice_β)
 end
 
 """
@@ -177,6 +189,8 @@ function run_m5(p::M5Params; seed)
     nrng = Xoshiro(hash((seed, :deliberation)))
     contacts = [p.deliberation ? [j for j in randperm(nrng, na)[1:min(p.n_contacts + 1, na)] if j != i][1:min(p.n_contacts, na - 1)] : Int[] for i in 1:na]
     nd = size(p.reputation, 2)
+    advw = advice_weights(p, na, nd, Xoshiro(hash((seed, :advice))))  # weight on advice per person and domain (8.63)
+    minds_trace = Float64[]
     mods = [[(id = k, σ = p.model_σ0, rec = [0.0, 0.0])] for k in 1:nd]
     person_rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
     # The weight of a source reads the rolling net of its record (rights and wrongs, decayed, mistakes
@@ -202,7 +216,7 @@ function run_m5(p::M5Params; seed)
     audit_b, flagged = zeros(na), falses(na)
     weight_gap = Ref(0.0)
     heard_srcs, heard_wc, heard_wm = [Int[] for _ in 1:na], [Float64[] for _ in 1:na], [Float64[] for _ in 1:na]
-    heard_own, heard_mine = zeros(na), zeros(na)
+    heard_own, heard_mine, heard_T = zeros(na), zeros(na), zeros(na)
     launders(j) = liar[j] && p.tag_lie == :omit && !flagged[j]
     misattributes(j) = liar[j] && p.tag_lie == :misattribute
     for n in 1:p.decisions
@@ -273,7 +287,9 @@ function run_m5(p::M5Params; seed)
                 srcs = p.info_handling ? contention_map(i) : contacts[i]
                 wc = [hear(lo(person_rec[j, k])) for j in srcs]
                 wm = hear.(wm0)
-                reading[i] = own * sign(signal[i]) + sum(wc .* pub.(srcs); init = 0.0) + sum(wm .* published)
+                heard_T[i] = own + sum(wc; init = 0.0) + sum(wm; init = 0.0)
+                reading[i] = take_advice(advw[i, k], heard_T[i], sign(signal[i]),
+                                         own * sign(signal[i]) + sum(wc .* pub.(srcs); init = 0.0) + sum(wm .* published))
                 wsum += own + sum(wc) + sum(wm); wmod += sum(wm)
                 heard_srcs[i], heard_wc[i], heard_wm[i], heard_own[i], heard_mine[i] = srcs, wc, wm, own, mine
             end
@@ -289,15 +305,17 @@ function run_m5(p::M5Params; seed)
                 # (persuasion bias: DeMarzo, Vayanos and Zwiebel, 2003). A liar republishes its side.
                 for _ in 2:p.rounds
                     said = [(misattributes(j) || (j in p.colluders && defect)) ? 1.0 : sign(reading[j]) for j in 1:na]
-                    reading = [heard_own[i] * sign(signal[i]) + sum(heard_wc[i] .* said[heard_srcs[i]]; init = 0.0) +
-                               sum(heard_wm[i] .* published) for i in 1:na]
+                    reading = [take_advice(advw[i, k], heard_T[i], sign(signal[i]),
+                                           heard_own[i] * sign(signal[i]) + sum(heard_wc[i] .* said[heard_srcs[i]]; init = 0.0) +
+                                           sum(heard_wm[i] .* published)) for i in 1:na]
                 end
                 own_pub = pub.(1:na)
+                push!(minds_trace, mean(sign(reading[i]) != sign(signal[i]) for i in 1:na))
                 signal = reading
             else
                 tagged = tagged_deliberation(p, na, k, total, held, delegated, signal, published, pub, wm0,
                                              [lo(person_rec[o, k]) for o in 1:na], heard_srcs, heard_wc, heard_wm,
-                                             heard_own, heard_mine, launders, misattributes, j -> j in p.colluders && defect, grng)
+                                             heard_own, heard_mine, launders, misattributes, j -> j in p.colluders && defect, advw[:, k])
                 tags_false[] += tagged.falsified
                 if p.tag_audit
                     tags_caught[] += tagged.falsified
@@ -305,6 +323,7 @@ function run_m5(p::M5Params; seed)
                 end
                 tag_tally, audit_b = tagged.tally, tagged.borrowed_side
                 own_pub = tagged.said
+                push!(minds_trace, mean(sign(tagged.reading[i]) != sign(signal[i]) for i in 1:na))
                 signal = tagged.reading
             end
         end
@@ -425,10 +444,45 @@ function run_m5(p::M5Params; seed)
      model_weight = model_weight, best_model_σ = [minimum(m.σ for m in mods[k]) for k in 1:nd],
      captured_weight_start = isempty(cap_trace) ? NaN : mean(cap_trace[1:min(10, end)]),
      captured_weight_end = isempty(cap_trace) ? NaN : mean(cap_trace[max(1, end - 9):end]),
+     minds_changed = minds_trace, advice_weight = advw,
      weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
      records = person_rec)
 end
+
+"""
+    take_advice(w, total, own_side, heard) -> Float64
+
+A voter's position after deliberation (author note 8.63): weight `w` on the reading informed by what it
+heard (`heard`, its own reading plus its sources', of total weight `total`), the rest on its own side.
+w = 0 keeps its position, w = 1 defers to the record-weighted reading. World behaviour, not a rule.
+"""
+take_advice(w, total, own_side, heard) = (1 - w) * total * own_side + w * heard
+
+"Weight on advice per person and domain (8.63; docs/CALIBRATION.md): a mixture of stay, average, defer and Beta."
+function advice_weights(p, na, nd, rng)
+    rest = 1 - p.advice_stay - p.advice_avg - p.advice_defer
+    draw() = begin
+        u = rand(rng)
+        u < p.advice_stay ? 0.0 :
+        u < p.advice_stay + p.advice_avg ? 0.5 :
+        u < p.advice_stay + p.advice_avg + p.advice_defer ? 1.0 :
+        rest > 0 ? beta_draw(rng, p.advice_α, p.advice_β) : 1.0
+    end
+    [draw() for _ in 1:na, _ in 1:nd]
+end
+
+"Gamma(a, 1) by Marsaglia and Tsang (2000), boosted for a < 1; Beta as a ratio of gammas."
+function gamma_draw(rng, a)
+    a < 1 && return gamma_draw(rng, a + 1) * rand(rng)^(1 / a)
+    d = a - 1 / 3; c = 1 / sqrt(9d)
+    while true
+        x = randn(rng); v = (1 + c * x)^3
+        v <= 0 && continue
+        log(rand(rng)) < x^2 / 2 + d - d * v + d * log(v) && return d * v
+    end
+end
+beta_draw(rng, a, b) = (x = gamma_draw(rng, a); x / (x + gamma_draw(rng, b)))
 
 """
     tagged_deliberation(p, na, k, total, held, delegated, signal, published, pub, wm0, person_w, srcs, wc, wm,
@@ -449,7 +503,7 @@ and models never vote (8.42.2). Returns the tally, the side each voter's sources
 falsified tags with their makers.
 """
 function tagged_deliberation(p, na, k, total, held, delegated, signal, published, pub, wm0, person_w, srcs, wc, wm,
-                             own, mine, launders, misattributes, bloc, rng)
+                             own, mine, launders, misattributes, bloc, advw)
     nm = length(published)
     model_ids = Float64.(na .+ (1:nm))
     said = pub.(1:na)  # each person's latest output, as logged
@@ -457,7 +511,9 @@ function tagged_deliberation(p, na, k, total, held, delegated, signal, published
     weigh(i, o) = heard(o > na ? wm0[Int(o) - na] : person_w[Int(o)], mine[i], false)
     direct(i) = (vcat(Float64.(srcs[i]), model_ids), vcat(said[srcs[i]], published), vcat(wc[i], wm[i]))
     lists = [direct(i) for i in 1:na]
-    rd = [tagged_reading(i, own[i], sign(signal[i]), lists[i]...) for i in 1:na]
+    mixed(i) = take_advice(advw[i], tagged_reading(i, own[i], 1.0, lists[i][1], ones(length(lists[i][1])), lists[i][3]),
+                           sign(signal[i]), tagged_reading(i, own[i], sign(signal[i]), lists[i]...))
+    rd = [mixed(i) for i in 1:na]
     falsified, falsifiers = 0, falses(na)
     for _ in 2:p.rounds
         for j in 1:na
@@ -480,7 +536,9 @@ function tagged_deliberation(p, na, k, total, held, delegated, signal, published
             end
             (ids, sides, ws)
         end
-        rd = [tagged_reading(i, own[i], sign(signal[i]), lists[i]...) for i in 1:na]
+        mixed(i) = take_advice(advw[i], tagged_reading(i, own[i], 1.0, lists[i][1], ones(length(lists[i][1])), lists[i][3]),
+                           sign(signal[i]), tagged_reading(i, own[i], sign(signal[i]), lists[i]...))
+    rd = [mixed(i) for i in 1:na]
     end
     for j in 1:na
         launders(j) && (said[j] = sign(rd[j]))

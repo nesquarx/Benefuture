@@ -250,6 +250,40 @@ end
     @test_throws ArgumentError hard(source_tags = true)  # tags tag deliberation's readings
 end
 
+# Weight on advice (author note 8.63; docs/CALIBRATION.md): hearing an expert does not always change a
+# mind. Per person and domain a weight w on what was heard: about 30% stay put (w = 0), 20% average,
+# 5% defer, the rest Beta(2, 3) between; mean about a third (Soll and Larrick 2009; Bailey et al.).
+@testset "M5 weight on advice (8.63): acceptance" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    talk(; kw...) = M5Params(m3, 1:4; decisions = 300, signal_σ = 20.0, deliberation = true, kw...)
+    r = run_m5(talk(); seed = 1)
+    w = r.advice_weight
+    @test size(w) == (100, 4) && all(0 .<= w .<= 1)
+    @test 0.25 <= mean(w .== 0) <= 0.35 && 0.28 <= mean(w) <= 0.38
+    # Nobody listening, deliberation changes no mind; everyone deferring changes the most.
+    stay = run_m5(talk(advice_stay = 1.0, advice_avg = 0.0, advice_defer = 0.0); seed = 1)
+    defer = run_m5(talk(advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0); seed = 1)
+    @test all(==(0.0), stay.minds_changed)
+    @test mean(defer.minds_changed) > mean(r.minds_changed) > 0
+    # The same holds with source tags.
+    stay_t = run_m5(talk(source_tags = true, advice_stay = 1.0, advice_avg = 0.0, advice_defer = 0.0); seed = 1)
+    @test all(==(0.0), stay_t.minds_changed)
+end
+
+@testset "M5 weight on advice (8.63): adversarial and edge cases" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 50, plans = 10),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4)); seed = 1)
+    @test_throws ArgumentError M5Params(m3, [1]; advice_stay = 0.6, advice_avg = 0.5)
+    @test_throws ArgumentError M5Params(m3, [1]; advice_defer = -0.1)
+    @test_throws ArgumentError M5Params(m3, [1]; advice_α = 0.0)
+    # A Beta-only population (no point masses) stays within [0, 1] with the Beta mean.
+    p = M5Params(m3, [1]; advice_stay = 0.0, advice_avg = 0.0, advice_defer = 0.0, deliberation = true, decisions = 5)
+    @test abs(mean(BenefutureSim.advice_weights(p, 4000, 1, Xoshiro(3))) - 0.4) < 0.02
+end
+
 # Gaming check: tags are outputs, auditable by AdvAp against the open log (L160). Misattribution
 # (claiming a reputable source backs one's side, or slandering it) and laundering by omission
 # (presenting borrowed readings as one's own, claiming independence).
