@@ -988,7 +988,9 @@ Persuasion bias (DeMarzo, Vayanos and Zwiebel 2003; `echo_influence`): untagged,
 on an origin after T rounds is the number of walks of length at most T to it, so a hub outweighs an
 equally precise peer; tagged, each reachable origin once, and the estimate's error falls (test).
 
-Gaming (tests; BACKPROPAGATION 8.61). Misattribution: unaudited, a listener takes a claimed side at
+Gaming (tests; BACKPROPAGATION 8.61), measured where the attack bites, everyone deferring to what it
+hears; with realistic advice taking the same twenty liars or launderers move few votes (decisions
+92.9% with lies against 92.1% without, unaudited). Misattribution: unaudited, a listener takes a claimed side at
 its word and the lie costs decisions, tagged or not; audited, every falsified tag is caught
 (`tags_falsified_ref`), debited to its maker, and the cost mostly goes.
 Laundering by omission (republishing what one heard as one's own and voting it with full weight) pays
