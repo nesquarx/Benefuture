@@ -4,6 +4,7 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 
 ## Part 2: Direction and next steps
 
+- **Calibration.** `docs/CALIBRATION.md` maps every world parameter and noise range to empirical sources with proposed defaults (documentation only); the M5 weight-on-advice mixture (section 1.4) and the top-ten default changes (section 6) are candidates for the next increments.
 - **Ratify §7 of `docs/BACKPROPAGATION.md`.** Coherence edits applied to articles and pseudocode as [P].
 - **Abbreviation sweep.** Articles spell out Benefuture's own abbreviations and symbols (common parlance and names are fine); earlier text still contains some (for example U/H, MM). Edited lines comply.
 - **Process.** The working rules (dual suites red first, rules once in the Lean reference, governed thresholds, noise, parsimony and gaming checks, batteries, the success pattern, nothing perfect, what to do when blocked, the records to keep) live in `CLAUDE.md` (Verification, Working, Records); this plan sets direction and does not restate them.
