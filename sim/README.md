@@ -892,6 +892,9 @@ for removal.
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, else traversal | Introduced (bound) | 2ⁿ coalitions; larger outcomes fall to the L95 traversal |
 | M5 model pool bound (4 per domain, the weakest by record dropped) | Introduced | array bound; hardcoded in `sim/src/m5.jl` |
+| Source tags: count once by origin, borrowed shares passed on as capped fractional delegation | Ruled ([P] reading); rules in the Lean reference (`count_once_ref`, `tagged_reading_ref`, `borrowed_shares_ref`; cap `accumulate_capped_ref`) | 8.45; L133 IH source tracking, L114; no new cap |
+| AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L160 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
+| Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
 
 ## Governed thresholds
 
@@ -908,6 +911,8 @@ ratified.
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Decay of a source's record in the rolling net its weight reads (rights, wrongs) | `record_λpos`, `record_λneg` | 0.05, 0.02 | L101; 8.29, 8.42 |
+| Source tags: borrowed shares pass to their origins under the delegation cap (`cap`, above) | `source_tags`, `model_share` | off, `:voter` | L133, L114; 8.45 [P]; whether models take a share is open (8.53-M5a) |
+| Echo audit: agreement beyond independence tolerated, standard errors beyond it that flag, outputs it needs | `echo_margin`, `echo_z`, `echo_min` | 0.1, 3, 20 | L160; 8.45 (gaming) |
 | Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
@@ -992,6 +997,8 @@ rare but present).
 | Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
 | Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
 | A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |
+| Times readings pass on before a vote (M5, world) | `rounds` | 1 | 1–5 |
+| Persons gaming source tags, and how (M5, M6; world) | `tag_liars`, `tag_lie` | none, `:misattribute` | 0–30% of voters; `:misattribute`, `:omit` |
 | An expert's honest paradigm lean, contention among experts (M5, world) | `camp_bias` | 0 | 0–2 |
 | A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
 | Agents delegating when unaffected enough; how much skill sharpens a voter's signal; locales a decision applies to (M5, world; delegation a battery factor) | `p_delegate`, `skill_gain`, `trial_units` | 0, 5, 50 | 0–1, not yet set, not yet set |
