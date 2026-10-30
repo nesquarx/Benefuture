@@ -1234,7 +1234,7 @@ governed quantile, accepted when the pool's confidence clears a governed thresho
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
 
-**8.53 Proposals from the audit against Ostrom's design principles ([P]; to renumber at merge).**
+**8.53 Proposals from the audit against Ostrom's design principles ([P]).**
 From `docs/OSTROM.md` (Ostrom 1990; Cox, Arnold & Villamayor Tomás 2010). Each rides on existing
 mechanisms; none adds a rule set.
 
