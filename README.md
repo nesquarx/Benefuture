@@ -121,7 +121,20 @@ results. Three kinds of evidence, never to be read as more than they are:
 
 The simulation does not run the ℝ specification: it calls the Float reference (`BenefutureReference`)
 through C exports. The reference reproduces the spec's test vectors, but correspondence between the
-two is not proved. `python3 tools/check_readme_claims.py` checks that every theorem named here exists
+two is not proved. What links them, precisely: for nine rules (`supply_delta`,
+`competition_efficiency`, `rolling_average`, `accumulate_capped`, `p_forgive`, `p_overreact`,
+`severity_score` at the default parameters, exact and sampled Shapley) a ℚ oracle is **proved**
+equal to the ℝ specification after casting (`*_spec` in
+[`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)), and the Float reference is
+**tested** against that oracle on generated dyadic inputs (within 1e-9 relative) every time
+`lake build` runs; two computable ℤ specifications (`bounty_reward`, `upfront_payment`) are tested
+directly against their Float counterparts (equal up to the spec's flooring). The remaining rules
+(those using exp, log, sqrt or real powers, or with no ℝ counterpart) are listed in that file and
+rest on `spec/vectors` alone. There is no refinement proof from ℝ to Float: Float rounding error is
+sampled, never bounded, and an input outside the generated range is untested. Between the Lean
+exports and the Julia input guards, property-based differential tests check that each guard accepts
+exactly the rule's documented domain and that every accepted input agrees with an independent test
+oracle ([sim/test/differential_tests.jl](sim/test/differential_tests.jl)). `python3 tools/check_readme_claims.py` checks that every theorem named here exists
 in the file linked.
 
 ### Proved
@@ -209,8 +222,19 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   ([`breached_duty_assessed_negative`](Benefuture/Proposed/OutcomeDistribution.lean)); without a committed action, not acting assesses at
   zero ([`inaction_without_duty_assessed_zero`](Benefuture/Proposed/OutcomeDistribution.lean)).
 - A contributor whose presence changes no coalition's assessed outcome receives no Shapley share
-  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the shares sum to the outcome (efficiency) is not proved; it is
+  ([`shapley_null`](Benefuture/Proposed/OutcomeDistribution.lean)). That the exact shares sum to the outcome (efficiency) is not proved; it is
   checked numerically on random games ([sim/test/shapley_tests.jl](sim/test/shapley_tests.jl)).
+- Shapley by permutation sampling (`Benefuture.Proposed.ShapleySampling`, [P]; Castro, Gómez &
+  Tejada 2009), used beyond 10 contributors: on every sample, not only on average, the sampled
+  shares sum to v(all) − v(none), so sampling error moves currency between contributors and never
+  mints or destroys it ([`shapley_sampled_efficient`](Benefuture/Proposed/ShapleySampling.lean)), and a null contributor gets nothing
+  ([`shapley_sampled_null`](Benefuture/Proposed/ShapleySampling.lean)); a single ordering is not exact
+  ([`shapley_sampled_single_order_inexact`](Benefuture/Proposed/ShapleySampling.lean)). The governed count ⌈ln(2n/δ)/(2ε²)⌉ makes the
+  union bound 2n·exp(−2mε²) at most δ ([`hoeffding_count_suffices`](Benefuture/Proposed/ShapleySampling.lean); one ordering never
+  suffices: [`hoeffding_one_sample_insufficient`](Benefuture/Proposed/ShapleySampling.lean)). Cited, not proved: Hoeffding's inequality
+  itself (so "each share within ε × its marginal range with probability 1 − δ" rests on it), and
+  that the mean over all n! orderings equals the subset form, which is checked exactly over ℚ for
+  n ≤ 5 at build time ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
 - Paying positive shares and penalising negative ones distributes exactly the sum of the shares
   ([`sides_sum`](Benefuture/Proposed/OutcomeDistribution.lean)), and each paid contributor's share of its side lies in [0, 1]
   ([`paid_share_in_unit`](Benefuture/Proposed/OutcomeDistribution.lean)).
@@ -224,6 +248,26 @@ Governance and incentives
   ([`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean)).
 - With the delegation cap, no delegate ever exceeds the cap plus one delegator's maximum weight,
   however many delegate to it ([`accumulate_capped_bound`](Benefuture/Governance/Incentives.lean)).
+- Delegation cap and Golub–Jackson's wisdom condition (`Benefuture.Proposed.DelegationWisdom`,
+  [P]), for one round with independent signals: every delegate stays below cap + M and every
+  influence share below capShare + M/total ([`round_weight_lt`](Benefuture/Proposed/DelegationWisdom.lean), [`round_share_lt`](Benefuture/Proposed/DelegationWisdom.lean)); under
+  the stricter rule (accept only within the cap) the largest weight is at most the cap
+  ([`accumulate_capped_strict_le`](Benefuture/Proposed/DelegationWisdom.lean)), while the ratified L114 rule can overshoot it
+  ([`accumulate_capped_overshoots`](Benefuture/Proposed/DelegationWisdom.lean)); if the cap share and the largest weight's share vanish as
+  the society grows, so does the largest influence share ([`capped_influence_vanishes`](Benefuture/Proposed/DelegationWisdom.lean)), and the
+  variance of an influence-weighted mean of independent equal-variance signals is at most the
+  largest share times their variance ([`weighted_signal_variance_bound`](Benefuture/Proposed/DelegationWisdom.lean)); without a cap a star
+  keeps it at a single signal's ([`uncapped_star_no_wisdom`](Benefuture/Proposed/DelegationWisdom.lean)). Repeated rounds, reputation-chosen
+  delegates and correlated signals are a conjecture (`GolubJacksonWisdomConjecture`;
+  [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) B26), not proved.
+- Revealing a flaw strictly dominates exploiting it, for every profile of the others' strategies
+  (`Benefuture.Proposed.RevelationGame`, [P]; a relational statement after Barthe et al. 2015),
+  in a game where reporters split the bounty and an exploiter is fully clawed back plus restitution
+  once anyone else reports, with an arbitrary non-negative (possibly zero) penalty otherwise
+  ([`revelation_dominant`](Benefuture/Proposed/RevelationGame.lean), [`revelation_weakly_dominant`](Benefuture/Proposed/RevelationGame.lean)); everyone reporting is a Nash
+  equilibrium ([`all_report_nash`](Benefuture/Proposed/RevelationGame.lean)) and the only one ([`exploit_not_equilibrium`](Benefuture/Proposed/RevelationGame.lean)). The clawback
+  on disclosure is load-bearing: without it, three simultaneous reporters of a gain-10 flaw get 3
+  each against 10 for exploiting ([`revelation_needs_clawback`](Benefuture/Proposed/RevelationGame.lean)).
 - Planting flaws to farm bounties is unprofitable in expectation when the clawback covers bounty
   plus damage and detection is likelier than bounty ÷ clawback ([`bounty_incentive_compatible`](Benefuture/Governance/Incentives.lean)).
 - External harm response: forgiveness and overreaction probabilities form a valid split
@@ -283,6 +327,11 @@ Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
   ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean)); the tension is open.
 - Without a delegation cap, a star topology hands one node all the weight
   ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
+- Shapley shares invite false-name manipulation (Aziz et al. 2011): in the funding game of
+  causal distribution, a funder whose pledge is indispensable, split into k indispensable
+  identities, takes k/(k+1) of the outcome instead of 1/2; diminishing returns also reward forking,
+  increasing returns penalise it, additive effects are neutral, and the forks never take more than
+  the whole outcome ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl); BACKPROPAGATION 8.57-a, open).
 - Causal contribution as specified (clamped value added, L94's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
@@ -356,6 +405,12 @@ Transactions and causal distribution
   credited; every outcome is fully distributed and the books balance. Coalition values follow
   BACKPROPAGATION 8.18, a decision open to the author ([sim/test/m3d_tests.jl](sim/test/m3d_tests.jl),
   [sim/README.md, M3d](sim/README.md#m3d-observations)).
+- Shapley shares beyond 10 contributors are sampled (Lean `shapley_sampled_ref`; 2ⁿ coalition
+  values become ⌈ln(2n/δ)/(2ε²)⌉ orderings): on random games small enough to enumerate, every
+  sampled share lies within ε × its marginal range of the exact one; at 20 contributors with
+  pairwise interactions, shares match the closed form within the bound
+  ([sim/test/shapley_sampling_tests.jl](sim/test/shapley_sampling_tests.jl)). Outcomes with more than 10 contributors are now
+  assessed rather than sent to the traversal fallback.
 - Contribution types (author ruling 8.22): carrying another's output outside contract earns an
   accolade, under contract the contracted share, both out of the maker's positive share and never
   out of a loss (the fee's basis is a proposal, [P]). A prevention is the guardian's ordinary
@@ -542,6 +597,7 @@ Benefuture/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                  # [P] designs: population direction, outcome distribution, domain hierarchy
 ├── BenefutureReference/           # Mathlib-free Float reference; Export.lean holds the C exports
+├── BenefutureTest/                # build-time differential checks: ℚ oracles (proved = spec) vs Float
 ├── Main.lean                      # `lake exe benefuture`: regenerates spec/vectors
 ├── sim/                           # Julia package BenefutureSim: src/, test/, battery/, README.md
 └── tools/                         # setup/, wiki_sync/, extraction/, bf-graph/, README and index checks
@@ -556,6 +612,7 @@ tools/setup/toolchains.sh                         # Lean and Julia (idempotent)
 lake exe cache get && lake build                  # Lean specification and reference
 julia --project=sim -e 'using Pkg; Pkg.test()'    # simulation tests
 python3 tools/check_readme_claims.py              # every theorem named here exists
+                                                  # (lake build also runs BenefutureTest's differential checks)
 python3 tools/theorem_index.py                    # regenerate docs/THEOREM_INDEX.md
 lake exe benefuture                               # regenerate spec/vectors (Mathlib-free)
 ```

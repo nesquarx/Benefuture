@@ -2,6 +2,8 @@
 # the Lean reference (`Escrow_split_ref`, `Rep_decay_ref`, `resource_cost_ref`,
 # `transaction_price_ref`, `supply_delta_ref`, `competition_efficiency_ref`).
 
+using Random
+
 probability(p) = check(isfinite(p) && 0 <= p <= 1, "probability must lie in [0, 1]")
 
 """
@@ -109,6 +111,62 @@ function shapley(v)
     check(length(v) >= 1 && 2^n == length(v) && all(isfinite, v), "one finite value per coalition (2^n of them)")
     n == 0 && return Float64[]
     lean_floats(ccall(sym(:bf_shapley), Ptr{Cvoid}, (Csize_t, Ptr{Cvoid}), n, floatarray(v)))
+end
+
+# Governed thresholds for Shapley shares (sim/README.md, Governed thresholds): exact up to
+# `SHAPLEY_EXACT_MAX` contributors (2^n coalition values), sampled beyond, with orderings enough
+# that every share lies within `SHAPLEY_ε` × its marginal range of the exact share with
+# probability at least 1 − `SHAPLEY_δ`.
+const SHAPLEY_EXACT_MAX = 10
+const SHAPLEY_ε = 0.05
+const SHAPLEY_δ = 0.05
+
+"""
+    shapley_sampled(perms, vals) -> shares
+
+Shapley shares by permutation sampling (Lean `shapley_sampled_ref`): `perms` is n × m, each column
+an ordering of 1:n; `vals` is (n + 1) × m, the coalition values along each ordering (the empty
+coalition first). Shares sum to v(all) − v(none) on every sample.
+"""
+function shapley_sampled(perms::AbstractMatrix{<:Integer}, vals::AbstractMatrix{<:Real})
+    n, m = size(perms)
+    check(m >= 1 && size(vals) == (n + 1, m) && all(isfinite, vals), "at least one ordering and n + 1 finite values along each")
+    check(all(k -> sort(perms[:, k]) == 1:n, 1:m), "each column an ordering of 1:n")
+    n == 0 && return Float64[]
+    lean_floats(ccall(sym(:bf_shapley_sampled), Ptr{Cvoid}, (Csize_t, Csize_t, Ptr{Cvoid}, Ptr{Cvoid}),
+                      n, m, floatarray(vec(perms) .- 1), floatarray(vec(vals))))
+end
+
+"Orderings to sample for Shapley shares among n contributors (Lean `shapley_sample_count_ref`): ⌈ln(2n/δ) / (2ε²)⌉."
+function shapley_sample_count(n::Integer; ε::Real, δ::Real)
+    check(n >= 1 && isfinite(ε) && 0 < ε < 1 && isfinite(δ) && 0 < δ < 1, "n positive, ε and δ in (0, 1)")
+    Int(ccall(sym(:bf_shapley_sample_count), Csize_t, (Csize_t, Float64, Float64), n, ε, δ))
+end
+
+"""
+    shapley_shares(val, n; rng, exact_max, ε, δ) -> shares
+
+Shapley shares among n contributors from a coalition-value oracle `val(mask)` (bit i − 1 of
+`mask` set when contributor i acts): exact (`shapley`) up to `exact_max` contributors, sampled
+(`shapley_sampled`, orderings drawn from `rng`) beyond.
+"""
+function shapley_shares(val, n::Integer; rng::AbstractRNG, exact_max::Integer = SHAPLEY_EXACT_MAX,
+                        ε::Real = SHAPLEY_ε, δ::Real = SHAPLEY_δ)
+    check(0 <= n <= 62, "at most 62 contributors (coalitions are 62-bit masks)")
+    n == 0 && return Float64[]
+    n <= exact_max && return shapley([val(mask) for mask in 0:(2^n - 1)])
+    m = shapley_sample_count(n; ε, δ)
+    perms = reduce(hcat, [randperm(rng, n) for _ in 1:m])
+    vals = zeros(n + 1, m)
+    for k in 1:m
+        mask = 0
+        vals[1, k] = val(0)
+        for p in 1:n
+            mask |= 1 << (perms[p, k] - 1)
+            vals[p + 1, k] = val(mask)
+        end
+    end
+    shapley_sampled(perms, vals)
 end
 
 "Whether contributions come from the causal assessment (confident enough) rather than traversal (L94)."
