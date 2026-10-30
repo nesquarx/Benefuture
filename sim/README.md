@@ -472,7 +472,57 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   points on the failure surface. Rays that converge again beyond their boundary are flagged
   non-monotone rather than hidden.
 - **Budgets.** `BF_RAYS` and `BF_SCREEN` set the number of random rays and screened worlds; seeds and
-  tolerances are fixed in each script, so runs repeat exactly.
+  tolerances are fixed in each script, so runs repeat exactly. `BF_OUT` redirects all outputs to a
+  scratch directory for trial runs.
+- **Failure boxes (PRIM).** Patient rule induction (Friedman & Fisher 1999) over the screened worlds
+  finds the boxes of severities where failures concentrate: peeling 5% at a time along the side that
+  most raises the failure density, keeping the first box within two standard errors of the densest
+  covering half the failures, pasting, then trimming restrictions that raise density no more than noise
+  (Bryant & Lempert 2010). Covering repeats on the worlds outside each box, up to three. Reported as
+  readable boxes ("execution ≥ 1.2 and side harm ≥ 0.8: worlds, % failing, % of failures").
+- **Continuous margin.** The success pattern as one reading (`pattern_margin`, `sim/src/analysis.jl`):
+  each criterion's slack scaled so the clean world reads 1 and the criterion's edge 0; the margin is
+  the weakest, negative exactly when a criterion fails. In governance, the share of decisions right less
+  0.75. The binary oracle above is unchanged; whether an attack pays stays with it alone.
+- **Sobol indices.** Variance-based sensitivity of the margin and of each criterion's slack over
+  severities uniform in [0, `BF_SOBOL_TOP`] (default 1, the realistic ranges), by the Saltelli et al.
+  (2010) design (first order) and Jansen's estimator (total), N(k + 2) readings with 95% bootstrap
+  intervals; a small estimator in `sim/src/methods.jl`, tested on Ishigami, not a package dependency.
+  ST well above S1 marks a factor acting through interactions; variance the seeds add belongs to no
+  factor, so the first-order indices sum to less than 1.
+- **Active learning of the boundary.** AK-MCS (Echard, Gayton & Lemaire 2011): a Gaussian-process
+  surrogate of the margin (fitted nugget, so a noisy oracle is tolerated) over 2000 candidate worlds
+  drawn as the screening's; each next reading is the candidate whose sign it is least sure of, until
+  every candidate is sure (|μ|/σ ≥ 2) or the budget is spent. Reports the estimated failing share,
+  PRIM boxes of the surrogate's verdict, and the evaluated worlds nearest the boundary. On a known
+  boundary it beats random designs of the same size and matches them with two thirds of the runs
+  (`sim/test/methods_tests.jl`).
+- **Seeds by variance stability.** Each continuous reading adds seeds 1, 2, … until the standard
+  error of the margin, inflated by Student's t for the seeds so far (three close readings must not
+  stop the count), is within a tolerance, between a minimum and a maximum. Seeds are fixed and shared
+  across worlds (common random numbers), so readings repeat. Near the boundary the margin spreads
+  about ten times more across seeds than in the clean world (0.3 against 0.03), which a fixed seed
+  count cannot serve.
+- **Adversarial attack search** (`sim/battery/attack.jl`). Attacker strategies, not only severities:
+  each attacker holds a fixed budget (`BF_ATTACK_BUDGET`, 1 = one attack at the top of its realistic
+  range) and the cross-entropy method (population `BF_ATTACK_POP`, `BF_ATTACK_ITERS` iterations)
+  chooses how to spend it to minimise the margin on fixed seeds; the worst strategy is re-checked on
+  held-out seeds and frozen as a deterministic M6 test (`sim/test/attack_tests.jl`). Economy (M3c,
+  mildly imperfect noise, AdvAp on): bloc size, deceit, laundering, slander, and a capture of one
+  leaf's models with its size, target, start, duration and on-off windows. Governance (M5, AdvAp on):
+  the bloc's share of the most reputable experts, one target domain or all, stealth, identity forks,
+  loyalty. Results in `results/attack.md`.
+
+  Tolerances and budgets (evaluation choices, not rules of the framework, so not in the Governed
+  thresholds table):
+
+  | Setting | Economy | Governance |
+  |---|---|---|
+  | Margin's standard error within (`SE_TOL`); seeds from, to (`SEED_MIN`, `SEED_MAX`) | 0.1; 3, 8 | 0.02; 3, 8 |
+  | Sobol rows `BF_SOBOL` (0 skips); range top `BF_SOBOL_TOP` | 16; 1 | 64; 1 |
+  | Active-learning budget `BF_ACTIVE` (0 skips); candidates; stop at \|μ\|/σ | 40; 2000; 2 | 60; 2000; 2 |
+  | PRIM peel share; least support; least coverage; trimming | 5%; max(5%, 3 worlds); 50%; 2 standard errors | same |
+  | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
 
 - **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
   success pattern, repeating its 9ceed47 and 98a12ee readings; governance on be16e9f, repeating its
@@ -481,9 +531,17 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
   regression test).
+- **Attack search** (commit 7063060; population 8 × 4 iterations, budget 1): no strategy found fails
+  either world. Economy: the worst, a bloc of three with deceit 0.92 and laundering 0.83, takes the
+  margin to 0.57 on held-out seeds (the bloc ends with negative wealth relative to honest agents);
+  capture was never worth its cost within the budget. Governance: the worst, a third of each
+  domain's top experts, open, one fork each, loyalty 2.9, leaves accuracy 0.96 (margin 0.21).
 
-Run: `julia --project=sim sim/battery/economy.jl` (about an hour) and
-`julia --project=sim sim/battery/governance.jl` (about ten minutes).
+Run: `julia --project=sim sim/battery/economy.jl` (about an hour for the rays and screening; the
+continuous methods at their defaults add about two hours) and `julia --project=sim sim/battery/governance.jl`
+(about ten minutes, and as much again for the continuous methods); `julia --project=sim sim/battery/attack.jl`
+(about ten minutes). The continuous methods append their sections to the same results file, after the
+existing ones, on their own random stream, so the earlier readings repeat unchanged.
 
 ## M6 observations
 
