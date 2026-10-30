@@ -413,6 +413,15 @@ Gaming (M6, toy world, 3–6 seeds)
   votes struck and the hidden decisions recounted) restores them to 99.7% while the bloc's expertise
   share falls from 0.74 to 0.15 (4 seeds; each member weighs revealing with chance 0.05 after a
   hidden defection) ([sim/test/m6_tests.jl](sim/test/m6_tests.jl), [sim/README.md, M6](sim/README.md#m6-observations)).
+- Optimised attacks (a small search: the cross-entropy method over 32 strategies per world, each
+  attacker's budget one attack at the top of its realistic range, mildly imperfect worlds, AdvAp on)
+  found no strategy that breaks the success pattern. The worst in the economy (a bloc of three
+  deceiving and laundering, spending nothing on capturing models) pulls the pattern's margin from 1 to
+  0.57 on held-out seeds and leaves the bloc poorer than not attacking; the worst in governance (a
+  third of every domain's most reputable experts colluding openly, one identity fork each) leaves 96%
+  of decisions right. A search this small is weak evidence that no breaking strategy exists; both worst
+  cases are frozen as deterministic tests ([sim/test/attack_tests.jl](sim/test/attack_tests.jl),
+  [sim/battery/results/attack.md](sim/battery/results/attack.md)).
 
 Governance and thresholds
 - Expertise-weighted votes decide better than one agent, one vote (98.5% against 94.8% in a toy

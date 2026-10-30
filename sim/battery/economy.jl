@@ -116,6 +116,6 @@ if mbudget.sobol > 0 || mbudget.active > 0
     pool = bt.screen_scale .* gaussian_hypercube(mrng, 2000, length(names); μ = 0.5, σ = 0.25)
     m = battery_methods(reading, names; rng = mrng, outputs = OUTPUTS, pool, sobol_n = mbudget.sobol, sobol_top = mbudget.top,
                         active_budget = mbudget.active)
-    write_methods("economy", m, names; seed_rule = "the margin's standard error (Student-t inflated) is within $SE_TOL ($SEED_MIN to $SEED_MAX seeds)",
+    write_methods("economy", m, names; reading_note = "Readings: the success pattern's continuous margin (each criterion scaled so the clean world reads 1 and the criterion's edge 0; the margin is the weakest) and each criterion's slack, averaged over seeds 1, 2, … until the margin's standard error (Student-t inflated) is within $SE_TOL ($SEED_MIN to $SEED_MAX seeds).",
                   screen_fail_rate = bt.screening.fail_rate, minutes = (time() - t1) / 60, dir = OUT)
 end

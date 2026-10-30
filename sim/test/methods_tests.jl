@@ -199,7 +199,7 @@ end
     @test size(bt.screening.X) == (60, 3)
     dir = mktempdir()
     write_results("synthetic", bt, names; clean = NaN, minutes = 0.0, commit = "test", dir)
-    write_methods("synthetic", m, names; seed_rule = "test", screen_fail_rate = bt.screening.fail_rate, minutes = 0.0, dir)
+    write_methods("synthetic", m, names; reading_note = "test readings", screen_fail_rate = bt.screening.fail_rate, minutes = 0.0, dir)
     md = read(joinpath(dir, "synthetic.md"), String)
     for h in ("## Limits along one factor", "## Failure boxes (PRIM over the screened worlds)", "### Variance-based sensitivity",
               "### Active learning of the failure boundary", "Failure boxes (PRIM over the surrogate's verdict")

@@ -188,8 +188,8 @@ function write_results(label, bt, names; clean, minutes, commit = current_commit
 end
 
 "Readable PRIM boxes, one line each: the restricted severities, then how many worlds, how densely failing, what share of failures."
-function write_boxes(io, boxes, names, npoints; title)
-    println(io, "\n## ", title, "\n")
+function write_boxes(io, boxes, names, npoints; title, level = "##")
+    println(io, "\n", level, " ", title, "\n")
     if isempty(boxes)
         println(io, "No failing world, so no box.")
         return
@@ -228,18 +228,18 @@ function battery_methods(reading, names; rng::AbstractRNG, outputs, pool, sobol_
 end
 
 """
-    write_methods(label, m, names; seed_rule, screen_fail_rate, minutes, dir = sim/battery/results)
+    write_methods(label, m, names; reading_note, screen_fail_rate, minutes, dir = sim/battery/results)
 
 Append the continuous methods' results (`battery_methods`) to `<dir>/<label>.md`, after
-what `write_results` wrote, and write `<label>_sobol.csv` and `<label>_active.csv`.
+what `write_results` wrote, and write `<label>_sobol.csv` and `<label>_active.csv`. `reading_note`
+says what the readings are and how their seeds were counted.
 """
-function write_methods(label, m, names; seed_rule, screen_fail_rate, minutes, dir = joinpath(@__DIR__, "..", "battery", "results"))
+function write_methods(label, m, names; reading_note, screen_fail_rate, minutes, dir = joinpath(@__DIR__, "..", "battery", "results"))
     mkpath(dir)
     seedline(v) = isempty(v) ? "" : @sprintf(" Seeds per world: mean %.1f, %d of %d worlds at the cap.", mean(v), count(==(maximum(v)), v), length(v))
     open(joinpath(dir, label * ".md"), "a") do io
         println(io, @sprintf("\n## Continuous methods (run time %.1f minutes)\n", minutes))
-        println(io, "Readings are the success pattern's continuous margin (each criterion scaled so the clean world ",
-                "reads 1 and the criterion's edge 0; the margin is the weakest), averaged over seeds 1, 2, … until ", seed_rule, ".")
+        println(io, reading_note)
         if m.sobol !== nothing
             s = m.sobol
             println(io, @sprintf("\n### Variance-based sensitivity (Sobol indices; severities uniform in [0, %.2f])\n", m.sobol_top))
@@ -247,12 +247,12 @@ function write_methods(label, m, names; seed_rule, screen_fail_rate, minutes, di
                     "S1: the share of the reading's variance a factor explains alone; ST: with all its interactions. ",
                     "ST well above S1 marks a factor acting through interactions; variance the seeds add is in no factor's S1.",
                     seedline(m.seeds_sobol), "\n")
-            println(io, "| Factor | S1 (margin) | ST (margin) | ", join(["ST " * o for o in m.outputs[2:end]], " | "), " |")
-            println(io, "|", repeat("---|", 3 + length(m.outputs) - 1))
+            println(io, "| Factor | S1 (margin) | ST (margin) |", join([" ST " * o * " |" for o in m.outputs[2:end]]))
+            println(io, "|", repeat("---|", 2 + length(m.outputs)))
             for j in sortperm(s.ST[1, :]; rev = true)
                 println(io, "| ", names[j], " | ", @sprintf("%.2f [%.2f, %.2f]", s.S1[1, j], s.S1_lo[1, j], s.S1_hi[1, j]), " | ",
-                        @sprintf("%.2f [%.2f, %.2f]", s.ST[1, j], s.ST_lo[1, j], s.ST_hi[1, j]), " | ",
-                        join([@sprintf("%.2f", s.ST[o, j]) for o in 2:length(m.outputs)], " | "), " |")
+                        @sprintf("%.2f [%.2f, %.2f]", s.ST[1, j], s.ST_lo[1, j], s.ST_hi[1, j]), " |",
+                        join([@sprintf(" %.2f |", s.ST[o, j]) for o in 2:length(m.outputs)]))
             end
             println(io, @sprintf("\nSum of first-order indices (margin): %.2f; variance of the margin: %.3g.", sum(s.S1[1, :]), s.V[1]))
             open(joinpath(dir, label * "_sobol.csv"), "w") do c
@@ -270,7 +270,7 @@ function write_methods(label, m, names; seed_rule, screen_fail_rate, minutes, di
                     "each where its sign was least certain (Echard, Gayton & Lemaire 2011). ",
                     @sprintf("Estimated failing share of the candidates: %.1f%% (screening: %.1f%%).", 100a.p_fail, 100screen_fail_rate),
                     seedline(m.seeds_active))
-            write_boxes(io, m.active_boxes, names, size(m.pool, 1); title = "Failure boxes (PRIM over the surrogate's verdict on the candidates)")
+            write_boxes(io, m.active_boxes, names, size(m.pool, 1); title = "Failure boxes (PRIM over the surrogate's verdict on the candidates)", level = "####")
             println(io, "\nEvaluated worlds nearest the boundary (smallest |margin|):\n")
             println(io, "| margin | ", join(names, " | "), " |\n|", repeat("---|", length(names) + 1))
             for i in sortperm(abs.(a.y))[1:min(8, length(a.y))]
