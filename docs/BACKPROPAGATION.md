@@ -1234,11 +1234,11 @@ governed quantile, accepted when the pool's confidence clears a governed thresho
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
 
-**8.53-Data Proposals from the audit against Ostrom's design principles ([P]; to renumber at merge).**
+**8.53 Proposals from the audit against Ostrom's design principles ([P]; to renumber at merge).**
 From `docs/OSTROM.md` (Ostrom 1990; Cox, Arnold & Villamayor Tomás 2010). Each rides on existing
 mechanisms; none adds a rule set.
 
-**8.53-Data-a [P] A floor on the impacted's share of decision weight (principle 3).** L113 weights
+**8.53-a [P] A floor on the impacted's share of decision weight (principle 3).** L113 weights
 expertise and impact, and the simulation's default expertise weight (5) exceeds impact weight (1), so
 experts far from a decision's effects can outvote those who bear them. Proposal: a governed threshold,
 the least share of a decision's total weight held by voters with predicted impact above Th_b; below
@@ -1246,7 +1246,7 @@ it, impact weights are scaled up for that decision. The share is reported as an 
 decision (and in M5). Gaming: inflating predicted impact to gain weight is a prediction, scored like
 any (L82). Candidate homes: L113, Government (Aspects, "Expertise and Impact-Distance Weighting").
 
-**8.53-Data-b [P] Provision priced as negative usage (principle 2b).** Appropriation pays its resource
+**8.53-b [P] Provision priced as negative usage (principle 2b).** Appropriation pays its resource
 cost directly (L83, L86), but restoring or regenerating a resource earns only through the
 understanding and happiness outcomes it eventually causes, often below the causal-assessment gate.
 Proposal: resource accounting reads a measured increase in an accounted resource as negative usage,
@@ -1255,7 +1255,7 @@ accounting's error only, since depletion is charged at the same price; deliberat
 cycles become AdvAp patterns. Candidate homes: L83 (RA), Economy, Benefuture currency (Aspects);
 relates to 8.26.7.
 
-**8.53-Data-c [P] Graduated sanctions stated where the rules live (principle 5).** Escalation by
+**8.53-c [P] Graduated sanctions stated where the rules live (principle 5).** Escalation by
 repetition exists only in the Justice article (rehabilitation: reparation, education, restraint "if
 ... significant or repeated") and in side levers (ratcheting escrow, ledgers keeping every entry,
 mistakes decaying slower, frivolous-report patterns). Causal distribution charges a first,
@@ -1268,7 +1268,7 @@ graduated, reputation penalties are proportional. Gaming: a capacity bound invit
 capacity (shell identities); identity binding (L132) and liability overflow on forks (L122) are the
 defence, an M6 test. Candidate homes: L116, L119, Justice, Implementation prototype.
 
-**8.53-Data-d [P] Name the sources of deterrence (principle 5).** A sanction equal to the harm deters
+**8.53-d [P] Name the sources of deterrence (principle 5).** A sanction equal to the harm deters
 only if the chance of being traced times the penalty exceeds the gain. Benefuture's deterrence comes
 from V's convexity (the assessed harm, loss-averse, exceeds the saving: laundering at full tracing
 left the launderer 1,046% below honest agents) and from AdvAp raising detection; below a tracing rate
@@ -1277,7 +1277,7 @@ deters through assessed harm and detection, not through punishment, and the simu
 sweep of detection against gain with V's convexity removed (q₋ = q₊) to show which carries it.
 Candidate homes: Justice (Discussion), Critique addressal.
 
-**8.53-Data-e [P] Disputes as priced transactions (principle 6).** Dispute resolution is named (L96,
+**8.53-e [P] Disputes as priced transactions (principle 6).** Dispute resolution is named (L96,
 L99) but its cost and speed are not, and the simulation has no disputes. Proposal: a dispute is a
 transaction priced like any other (L86: resource cost less predicted good, so a likely-founded dispute
 is cheap); re-assessment is done by a different model of the domain's pool, or by a weighted panel
@@ -1286,23 +1286,23 @@ charged past a pattern as AdvAp reports are (`report_penalty_ref`). Gaming: disp
 delay it is the frivolous pattern; collusion with a panel is AdvAp's. Candidate homes: L96, Justice
 (Deliberation), Benefuture currency ("Disputes").
 
-**8.53-Data-f [P] Scoped thresholds and the recognition boundary (principles 2a, 7).** The corpus does
+**8.53-f [P] Scoped thresholds and the recognition boundary (principles 2a, 7).** The corpus does
 not say whether a governed threshold may settle at different values in different scopes, nor when a
 scope's own rules need no wider approval. Proposal: governed thresholds carry a scope (domain ×
 locality); a scope's own rules and threshold values within the freedom range (L135) and the admissible
 region need no wider approval; a wider scope intervenes only beyond the freedom harm boundary or where
 effects fall on beings outside the scope. Gaming: a scope drawn to exclude those it harms is caught by
-the spill-over test of 8.53-Data-g. Candidate homes: L157 (SigThGv), L135, Government ("Fractal
+the spill-over test of 8.53-g. Candidate homes: L157 (SigThGv), L135, Government ("Fractal
 Scope"), Freedom.
 
-**8.53-Data-g [P] Subsidiarity by impact (principle 8).** FractalScope (L113) does not say which scope
+**8.53-g [P] Subsidiarity by impact (principle 8).** FractalScope (L113) does not say which scope
 decides, nor how nested scopes' conflicting decisions are reconciled. Proposal: a decision is taken at
 the narrowest scope whose members bear at least a governed share of its predicted impact (Pr_Imp in
 L113); the same test settles conflicts between scopes. Gaming: understating spill-overs to keep a
 decision local is a prediction, scored like any. Candidate homes: L113, Government ("Fractal Scope").
 Simulation: nested decision scopes in M8.
 
-**8.53-Data-h [P] Resource systems as accounted units (principles 1b, 4b).** Domains are fuzzy by
+**8.53-h [P] Resource systems as accounted units (principles 1b, 4b).** Domains are fuzzy by
 design (L22), and the simulation has one resource stock and one commons. Proposal: resources and the
 commons are accounted per resource system, a domain at the granularity of the resource's causal
 structure, with the system's condition measured as an output like any other; use, regeneration and

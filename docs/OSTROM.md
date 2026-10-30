@@ -18,23 +18,23 @@ are understanding, happiness, resources, the open log and the decision process i
 Line numbers (Lnn) are lines of `spec/Bf_Pseudocode.txt`. The articles already claim alignment with
 the principles (Implementation prototype, introduction; Anti-Corruption, Discussion); this audit
 checks the claim principle by principle. Proposals go to `docs/BACKPROPAGATION.md` as
-**8.53-Data-a** to **8.53-Data-h** (to renumber at merge), all [P].
+**8.53-a** to **8.53-h**, all [P].
 
 ## Summary
 
 | Principle (Cox et al. 2010) | Benefuture | Gap | Proposal |
 |---|---|---|---|
 | 1a User boundaries | Strong: identity binding, ontology of who counts and votes | Fork and Sybil handling partly simulated | – |
-| 1b Resource boundaries | Partial: domains bound claims; resource accounting tracks use | One resource stock and one commons in the simulation; domains are fuzzy by design | 8.53-Data-h |
-| 2a Congruence with local conditions | Strong in design: competing models, SigThGv, fractal scope, local trials | Thresholds are global by default | 8.53-Data-f |
-| 2b Benefits proportional to costs | Strong for appropriation: causal distribution, resource pricing | Provision of a resource earns only through distant outcomes | 8.53-Data-b |
-| 3 Collective-choice arrangements | Strong: impact-weighted democracy, laws as agreements | Expertise weight can outvote those affected | 8.53-Data-a |
+| 1b Resource boundaries | Partial: domains bound claims; resource accounting tracks use | One resource stock and one commons in the simulation; domains are fuzzy by design | 8.53-h |
+| 2a Congruence with local conditions | Strong in design: competing models, SigThGv, fractal scope, local trials | Thresholds are global by default | 8.53-f |
+| 2b Benefits proportional to costs | Strong for appropriation: causal distribution, resource pricing | Provision of a resource earns only through distant outcomes | 8.53-b |
+| 3 Collective-choice arrangements | Strong: impact-weighted democracy, laws as agreements | Expertise weight can outvote those affected | 8.53-a |
 | 4a Monitoring users | Strong: open immutable log, AdvAp by users, monitors scrutinised | Cost of false accusations on participation unmodelled | (test) |
-| 4b Monitoring the resource | Partial: metric models, markers, resource accounting, Harm_Intv | Resource state monitored only through cost | 8.53-Data-h |
-| 5 Graduated sanctions | Mixed: proportional to harm and contribution, escalation by pattern only through side levers | Strict liability for first harms; escalation not in the pseudocode; deterrence implicit | 8.53-Data-c, 8.53-Data-d |
-| 6 Conflict resolution | Present: dispute resolution in causal distribution and Justice | Cost and speed unspecified; not simulated | 8.53-Data-e |
-| 7 Recognised rights to organise | Present: fractal scope, diversity, phased rollout beside legacy institutions | When a sub-scope's own rules need no higher approval is unstated | 8.53-Data-f |
-| 8 Nested enterprises | Strong in design: nested domains, fractal governance, holographic progressive strategies | Which scope decides is unstated; governance in the simulation is flat | 8.53-Data-g |
+| 4b Monitoring the resource | Partial: metric models, markers, resource accounting, Harm_Intv | Resource state monitored only through cost | 8.53-h |
+| 5 Graduated sanctions | Mixed: proportional to harm and contribution, escalation by pattern only through side levers | Strict liability for first harms; escalation not in the pseudocode; deterrence implicit | 8.53-c, 8.53-d |
+| 6 Conflict resolution | Present: dispute resolution in causal distribution and Justice | Cost and speed unspecified; not simulated | 8.53-e |
+| 7 Recognised rights to organise | Present: fractal scope, diversity, phased rollout beside legacy institutions | When a sub-scope's own rules need no higher approval is unstated | 8.53-f |
+| 8 Nested enterprises | Strong in design: nested domains, fractal governance, holographic progressive strategies | Which scope decides is unstated; governance in the simulation is flat | 8.53-g |
 
 ---
 
@@ -69,7 +69,7 @@ resource. The simulation has one resource stock (`capacity`, `regen`) and one co
 economy (`sim/src/m3c.jl`; `docs/ODD.md` §6.2), so local depletion and local regeneration cannot
 occur. How the commons balances resources against gains is open (8.26.7).
 
-**Proposal.** 8.53-Data-h: resource stocks and the commons accounted per resource system (a domain
+**Proposal.** 8.53-h: resource stocks and the commons accounted per resource system (a domain
 at whatever granularity the resource's causal structure has), so use, regeneration and insurance
 are bounded where the resource is.
 
@@ -90,7 +90,7 @@ domains before adopting it everywhere (`escape_accept_ref`, M4), and split trial
 thresholds); only the escape's trial is local, and an adopted proposal applies everywhere. The corpus
 does not say whether a threshold may settle at different values in different scopes.
 
-**Proposal.** 8.53-Data-f (with principle 7): governed thresholds carry a scope, and a scope may hold
+**Proposal.** 8.53-f (with principle 7): governed thresholds carry a scope, and a scope may hold
 its own value within the freedom range.
 
 ## 2b. Congruence between appropriation and provision; benefits proportional to costs
@@ -111,7 +111,7 @@ eventually causes, which may be far downstream and below the causal-assessment g
 the traversal fallback. Restoring a resource is thus paid less reliably than depleting it is
 charged. In the simulation, regeneration is exogenous: no agent provides.
 
-**Proposal.** 8.53-Data-b: resource accounting reads provision as negative usage, so restoring a
+**Proposal.** 8.53-b: resource accounting reads provision as negative usage, so restoring a
 resource earns what depleting it would cost.
 
 ## 3. Collective-choice arrangements
@@ -130,7 +130,7 @@ expertise term is domain-relative but not local: experts far from a decision's e
 those who bear them. Ostrom's principle is about the affected modifying the rules; the corpus states
 the weighting but no guarantee that the impacted, together, hold a meaningful share.
 
-**Proposal.** 8.53-Data-a: a governed floor on the share of decision weight held by the impacted, and
+**Proposal.** 8.53-a: a governed floor on the share of decision weight held by the impacted, and
 the share reported as a decision's output.
 
 ## 4a. Monitoring of users
@@ -166,7 +166,7 @@ Rc_Innovation).
 condition (and its regeneration) is not a measured output of its own. In the simulation the stock is
 known exactly to the rules and noisy only in accounting (`cost_σ`, `regen_σ`).
 
-**Proposal.** Covered by 8.53-Data-h (resource systems as accounted units, with their condition
+**Proposal.** Covered by 8.53-h (resource systems as accounted units, with their condition
 measured like any output).
 
 ## 5. Graduated sanctions
@@ -231,8 +231,8 @@ administration carrying the rest (the Justice article says this; L96 and L119 do
 escalation by pattern stated where the rules live. Both can ride on existing mechanisms; neither
 needs a new one.
 
-**Proposals.** 8.53-Data-c (escalation by pattern through rehabilitation, stated in L116, and
-first non-informed harms capped at capacity with the administration's support); 8.53-Data-d (name the
+**Proposals.** 8.53-c (escalation by pattern through rehabilitation, stated in L116, and
+first non-informed harms capped at capacity with the administration's support); 8.53-d (name the
 sources of deterrence and test them).
 
 ## 6. Conflict-resolution mechanisms
@@ -250,7 +250,7 @@ small conflicts. The simulation has no disputes: assessments are final except by
 (`p_false_trace` is the only proxy for wrongful outcomes). Medical malpractice data (Studdert et al.
 2006, https://doi.org/10.1056/NEJMsa054479; `docs/DATA.md` §9) show what dispute systems get wrong.
 
-**Proposal.** 8.53-Data-e: a dispute is a transaction priced like any other, its re-assessment done by
+**Proposal.** 8.53-e: a dispute is a transaction priced like any other, its re-assessment done by
 a different model of the pool (or a weighted panel above a significance), frivolous disputes charged
 past a pattern as AdvAp reports are.
 
@@ -270,7 +270,7 @@ literally, every rule at every scale is subject to the same Goal and the same go
 which leaves a sub-community's self-organisation at the wider scope's discretion. The freedom article
 gives the natural boundary: outputs beyond the freedom harm boundary are excluded; others are free.
 
-**Proposal.** 8.53-Data-f: a scope's own rules and threshold values within the freedom range (L135)
+**Proposal.** 8.53-f: a scope's own rules and threshold values within the freedom range (L135)
 and the admissible region need no wider approval; a wider scope intervenes only beyond the freedom
 harm boundary or where effects fall on beings outside the scope.
 
@@ -290,7 +290,7 @@ states", *AER*, https://doi.org/10.1257/aer.100.3.641).
 reconciled, is unstated. In the simulation governance is flat (decisions in leaf domains, M5); only
 measurement and pricing nest (M3c).
 
-**Proposal.** 8.53-Data-g: subsidiarity by impact: a decision is taken at the narrowest scope whose
+**Proposal.** 8.53-g: subsidiarity by impact: a decision is taken at the narrowest scope whose
 members bear nearly all of its predicted impact (L113 `Pr_Imp`), with the spill-over share a governed
 threshold; the same test settles conflicts between scopes. For the simulation, nested decision scopes
 belong to M8 (`docs/PLAN.md`).
@@ -301,7 +301,7 @@ belong to M8 (`docs/PLAN.md`).
 
 - Agents exiting in response to wrongful penalties and harsh first sanctions (principles 4a, 5): the
   simulation cannot see a chilling effect while agents never leave.
-- A detection sweep for deterrence without V's convexity (principle 5; 8.53-Data-d).
+- A detection sweep for deterrence without V's convexity (principle 5; 8.53-d).
 - Local threshold values and nested decision scopes (principles 2a, 7, 8) with M8.
 - Resource systems per domain with provision by agents (principles 1b, 2b, 4b) once 8.26.7 is ruled.
 - Pitt, Schaumeier & Artikis (2012), https://doi.org/10.1145/2382570.2382575, axiomatise the
