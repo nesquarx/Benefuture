@@ -1,8 +1,8 @@
 /-
   Benefuture.Governance.Democracy
   Formalization of Expertise and Impact-Weighted Democracy (BfDm) and Anti-Halo Isolation.
-  Corresponds to: Bf_Pseudocode.txt L113-114, and Government.txt
-  "BfDm(D(Dn_i, j, k...)) := Expert(Re(Dn_i, j, k...))VW + Impacted(Pr_Imp → Voter)VW..."
+  Corresponds to: Bf_Pseudocode.txt L100-101, L113-114, and Government.txt
+  "BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i)/ΣRe(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;"
 -/
 
 import Benefuture.Economy.Currency
@@ -19,7 +19,7 @@ open Benefuture.Ontology
 /-- 
   Reputation record of an entity strictly partitioned by Domain (extends Thing).
   Corresponds to: Bf_Pseudocode.txt L100-101:
-  "Re(E, Dn) := [ΣRe_+ve, ΣRe_-ve, Re_net - Decay]_Dn, !halo, !horn, !transfer;"
+  "Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;"
   Asymmetric ledger: positive contributions and negative infractions are logged separately.
 -/
 structure DomainReputation extends Thing where
@@ -33,7 +33,14 @@ instance : Coe DomainReputation Thing where
   coe r := r.toThing
 
 
-/-- Synthesized reputation score with negativity dominance and decay. -/
+/--
+  [Legacy] Summary score: positives less twice the negatives less a decay figure, floored at 0.
+  This is NOT the ruled asymmetry. The sources define ledger asymmetry as mistakes decaying slower
+  than wins (λ₋ < λ₊, ruling 8.29.1; `GovParams.h_lambda_minus_le_plus`,
+  `Systems.ParamSpace.Admissible`), with ledger entries never decaying and only the rolling net
+  decaying (ruling 8.42.4). The ×2 weighting and the floor are this summary's own choices, kept for
+  the Int voting weights below.
+-/
 def DomainReputation.score (r : DomainReputation) : Int :=
   let weightedNeg := (r.negativeScore * 2 : Int)
   let pos := (r.positiveScore : Int)
@@ -168,20 +175,118 @@ theorem relative_expertise_le_one {ι : Type*} (voters : Finset ι) (rep : ι �
     rw [div_le_one hpos]
     exact Finset.single_le_sum hnn hi
 
-/-- 
-  Weighted Direct Democracy Voting Weight formula:
-  VW = BaseWeight + (ExpertiseWeight * DomainReputation) + (ImpactWeight * ImpactScore).
-  Base weight ensures democratic enfranchisement for all sophonts.
+/-- THEOREM: Relative expertise is non-negative when reputations are. -/
+theorem relative_expertise_nonneg {ι : Type*} (voters : Finset ι) (rep : ι → ℝ) (i : ι)
+    (hnn : ∀ j ∈ voters, 0 ≤ rep j) (hi : i ∈ voters) : 0 ≤ relative_expertise voters rep i := by
+  unfold relative_expertise
+  exact div_nonneg (hnn i hi) (Finset.sum_nonneg hnn)
+
+/--
+  [R] The expertise share of L113: Σŵ_l · Re(Dn_l)/ΣRe(Dn_l) over the decision's domains `leaves`,
+  with decision weights ŵ summing to one; `rep l` is each voter's reputation in domain l.
+-/
+noncomputable def expertise_share {ι κ : Type*} (leaves : Finset κ) (w : κ → ℝ)
+    (voters : Finset ι) (rep : κ → ι → ℝ) (i : ι) : ℝ :=
+  ∑ l ∈ leaves, w l * relative_expertise voters (rep l) i
+
+/-- THEOREM: The expertise share is at most one (from `relative_expertise_le_one`, Σŵ = 1). -/
+theorem expertise_share_le_one {ι κ : Type*} (leaves : Finset κ) (w : κ → ℝ)
+    (voters : Finset ι) (rep : κ → ι → ℝ) (i : ι)
+    (hw : ∀ l ∈ leaves, 0 ≤ w l) (hsum : ∑ l ∈ leaves, w l = 1)
+    (hnn : ∀ l ∈ leaves, ∀ j ∈ voters, 0 ≤ rep l j) (hi : i ∈ voters) :
+    expertise_share leaves w voters rep i ≤ 1 := by
+  unfold expertise_share
+  calc ∑ l ∈ leaves, w l * relative_expertise voters (rep l) i
+      ≤ ∑ l ∈ leaves, w l * 1 :=
+        Finset.sum_le_sum (fun l hl => mul_le_mul_of_nonneg_left
+          (relative_expertise_le_one voters (rep l) i (hnn l hl) hi) (hw l hl))
+    _ = 1 := by simp [hsum]
+
+/-- THEOREM: The expertise share is non-negative when weights and reputations are. -/
+theorem expertise_share_nonneg {ι κ : Type*} (leaves : Finset κ) (w : κ → ℝ)
+    (voters : Finset ι) (rep : κ → ι → ℝ) (i : ι)
+    (hw : ∀ l ∈ leaves, 0 ≤ w l) (hnn : ∀ l ∈ leaves, ∀ j ∈ voters, 0 ≤ rep l j)
+    (hi : i ∈ voters) : 0 ≤ expertise_share leaves w voters rep i := by
+  unfold expertise_share
+  exact Finset.sum_nonneg (fun l hl =>
+    mul_nonneg (hw l hl) (relative_expertise_nonneg voters (rep l) i (hnn l hl) hi))
+
+/--
+  THEOREM (anti-halo, L101 !halo): a voter with no reputation in any of the decision's domains has
+  expertise share zero, whatever it holds elsewhere.
+-/
+theorem expertise_share_zero_of_no_reputation {ι κ : Type*} (leaves : Finset κ) (w : κ → ℝ)
+    (voters : Finset ι) (rep : κ → ι → ℝ) (i : ι) (h0 : ∀ l ∈ leaves, rep l i = 0) :
+    expertise_share leaves w voters rep i = 0 := by
+  unfold expertise_share relative_expertise
+  exact Finset.sum_eq_zero (fun l hl => by rw [h0 l hl, zero_div, mul_zero])
+
+/--
+  [P] Governed coefficients of BfDm's vote weight (L113): base, expertise and impact weights.
+  Thresholds to be governed (SigThGv, L157), not constants of the rule.
+-/
+structure VoteWeightParams where
+  base_weight        : ℝ
+  expertise_weight   : ℝ
+  impact_weight      : ℝ
+  h_base_pos         : 0 < base_weight
+  h_expertise_nonneg : 0 ≤ expertise_weight
+  h_impact_nonneg    : 0 ≤ impact_weight
+
+/--
+  [R] BfDm vote weight (L113; rulings 8.22.1, 8.48):
+  VW_i = Base_VW + expertise_weight · Σŵ_l·Re_i(Dn_l)/ΣRe(Dn_l) + impact_weight · Impacted_i.
+  The expertise term is normalised at the vote only; reputations stay absolute (8.48).
+-/
+noncomputable def bfdm_vote_weight {ι κ : Type*} (vp : VoteWeightParams) (leaves : Finset κ)
+    (w : κ → ℝ) (voters : Finset ι) (rep : κ → ι → ℝ) (impact : ι → ℝ) (i : ι) : ℝ :=
+  vp.base_weight + vp.expertise_weight * expertise_share leaves w voters rep i +
+    vp.impact_weight * impact i
+
+/--
+  THEOREM: The expertise term of the BfDm vote weight is at most the expertise weight, however
+  large a voter's raw reputation (`relative_expertise_le_one`): expertise cannot concentrate vote
+  weight beyond its governed coefficient (8.21, 8.22.1).
+-/
+theorem bfdm_expertise_term_le_weight {ι κ : Type*} (vp : VoteWeightParams) (leaves : Finset κ)
+    (w : κ → ℝ) (voters : Finset ι) (rep : κ → ι → ℝ) (i : ι)
+    (hw : ∀ l ∈ leaves, 0 ≤ w l) (hsum : ∑ l ∈ leaves, w l = 1)
+    (hnn : ∀ l ∈ leaves, ∀ j ∈ voters, 0 ≤ rep l j) (hi : i ∈ voters) :
+    vp.expertise_weight * expertise_share leaves w voters rep i ≤ vp.expertise_weight :=
+  mul_le_of_le_one_right vp.h_expertise_nonneg
+    (expertise_share_le_one leaves w voters rep i hw hsum hnn hi)
+
+/--
+  THEOREM: Bounds on the BfDm vote weight: at least the base weight, and at most base plus the
+  expertise weight plus the voter's impact term.
+-/
+theorem bfdm_vote_weight_bounds {ι κ : Type*} (vp : VoteWeightParams) (leaves : Finset κ)
+    (w : κ → ℝ) (voters : Finset ι) (rep : κ → ι → ℝ) (impact : ι → ℝ) (i : ι)
+    (hw : ∀ l ∈ leaves, 0 ≤ w l) (hsum : ∑ l ∈ leaves, w l = 1)
+    (hnn : ∀ l ∈ leaves, ∀ j ∈ voters, 0 ≤ rep l j) (hi : i ∈ voters) (himp : 0 ≤ impact i) :
+    vp.base_weight ≤ bfdm_vote_weight vp leaves w voters rep impact i ∧
+      bfdm_vote_weight vp leaves w voters rep impact i ≤
+        vp.base_weight + vp.expertise_weight + vp.impact_weight * impact i := by
+  unfold bfdm_vote_weight
+  have h1 := bfdm_expertise_term_le_weight vp leaves w voters rep i hw hsum hnn hi
+  have h2 := mul_nonneg vp.h_expertise_nonneg (expertise_share_nonneg leaves w voters rep i hw hnn hi)
+  have h3 := mul_nonneg vp.h_impact_nonneg himp
+  constructor <;> linarith
+
+/--
+  [Legacy] Int voting weight: VW = 1000 + raw domain reputation + impact score. Not L113: the
+  expertise term is the raw `DomainReputation.score`, not normalised, and the coefficients are
+  fixed. Superseded by `bfdm_vote_weight`.
 -/
 def calculate_voting_weight (vp : GroundedVoterProfile) (ctx : DecisionContext) (impact_score : Int) : Int :=
   let base_weight := 1000
   let expertise   := get_domain_reputation vp ctx.targetDomain
   base_weight + expertise + impact_score
 
-/-- 
-  Grounded Voting Weight Formula (BfDm):
-  VW = BaseWeight + DomainReputation(Dn) + DomainImpact(Dn).
-  Entirely grounded in the voter's verified reputation portfolio and real stakeholder impact.
+/--
+  [Legacy] Grounded Int voting weight: VW = 1000 + raw DomainReputation(Dn) + DomainImpact(Dn).
+  Not L113: raw reputation, not normalised (rulings 8.22.1, 8.48), fixed coefficients.
+  Superseded by `bfdm_vote_weight`.
 -/
 def calculate_grounded_voting_weight (gvp : GroundedVoterProfile) (ctx : DecisionContext) : Int :=
   let base_weight := 1000
@@ -238,17 +343,17 @@ theorem anti_halo_grounded_isolation (vp : GroundedVoterProfile) (domainA domain
     exact h_distinct h_eq
   rw [h_find]
 
-/-- 
-  THEOREM: Moral Standing vs Political Enfranchisement Invariant (Social Choice / Philosophy).
-  All democratic voters in BfDm are Sophonts, guaranteeing they inherit sentient moral standing
-  (voter.toBeing is in Being), but political voting weight (VW ≥ base_weight > 0) is reserved
-  for reflective cognitive agents, preventing sybil dilution via non-sentient or unreflective proxies.
+/--
+  THEOREM: Every voter in a BfDm profile is a Sophont, and so a Being with positive sentience
+  (moral standing). That is all this proves: it says nothing about sybil resistance, which rests on
+  identity binding (L132) and on base votes following novelty and personhood rather than identity
+  count (ruling 8.35.5), neither formalised here.
 -/
 theorem voter_inherits_sentient_moral_standing (vp : GroundedVoterProfile) :
     0 < (vp.voter : Being).sentience.experienceLevel :=
   (vp.voter : Being).sentience.h_pos
 
-/-- THEOREM: Every enfranchised voter profile achieves at least the baseline democratic weight. -/
+/-- THEOREM: The legacy Int voting weight is at least its base 1000 (see `bfdm_vote_weight_bounds`). -/
 theorem voter_weight_strictly_positive (vp : GroundedVoterProfile) (ctx : DecisionContext) 
     (impact_score : Int) (h_imp : 0 ≤ impact_score) :
     calculate_voting_weight vp ctx impact_score ≥ 1000 := by
@@ -277,11 +382,10 @@ theorem scientist_multi_domain_voting_invariants
   · exact anti_halo_grounded_isolation gvp sciDomain musicDomain h_sci_distinct_music h_only_sci_rep
   · exact anti_halo_grounded_isolation gvp sciDomain foodDomain h_sci_distinct_food h_only_sci_rep
 
-/-- 
-  Synthesized Reputation Score:
-  Synthesized score applies negativity dominance (Rozin & Royzman 2001):
-  Negative infractions carry double the weight of positive achievements in general usage,
-  while both underlying sums remain transparently logged on the BTS.
+/--
+  [Legacy] Synthesized reputation score: `DomainReputation.score` (negatives ×2, floored at 0). Not
+  the ruled asymmetry, which is slower decay of mistakes than of wins (λ₋ < λ₊, ruling 8.29.1) on
+  ledgers whose entries never decay (ruling 8.42.4). Both underlying sums stay logged.
 -/
 def synthesize_reputation (r : DomainReputation) : Int :=
   r.score
@@ -299,16 +403,19 @@ theorem reputation_ledger_non_cancellation
   dsimp
   exact ⟨rfl, h_neg⟩
 
-/-- 
+/--
   Balance Overflow to Reputation Conversion (Benefuture currency.txt L19):
-  When wealth accumulation exceeds the needs threshold, the excess is redirected 
+  When wealth accumulation exceeds the needs threshold, the excess is redirected
   to domain reinvestment and converts to domain reputation points.
+  [OPEN] contested: see BACKPROPAGATION 8.51. Reputation cannot be purchased (L100: reputation is
+  causal contribution to U and H plus novelty; L103: overflow is directed auto-investment, with no
+  reputation term).
 -/
 def overflow_to_reputation_gain (excessBalance : Int) : Nat :=
   if excessBalance > 0 then (excessBalance / 100).toNat else 0
 
-/-- 
-  THEOREM: Wealth Overflow Reinvestment Invariant.
+/--
+  THEOREM: Wealth Overflow Reinvestment Invariant ([OPEN] contested: see BACKPROPAGATION 8.51).
   Significant private balance overflow (excess ≥ 100) converted into domain reinvestment 
   guarantees a strictly positive reputation award in that domain.
 -/

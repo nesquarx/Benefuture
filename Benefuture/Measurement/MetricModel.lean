@@ -1,12 +1,13 @@
 /-
   Benefuture.Measurement.MetricModel
   Formalization of Markers (M ∈ T), Assessment (As ∈ T), Metric Models (MM ∈ T), Domain (Dn ∈ T), and Model Competition.
-  Corresponds to: Bf_Pseudocode.txt L22, L46-53, L82-86, and Measurement.txt
+  Corresponds to: Bf_Pseudocode.txt L22, L46-52, L82-86, and Measurement.txt
 
-  "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt∈[0,1])]|CausalStructure,NaturalOverlap;"
+  "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;"
   "M := PerceivableProxies(U, H, ...) ∈ ℝ, Estd, Novel;"
-  "Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx);"
+  "Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx), ¬A := ∄Ou(actor);"
   "MetricMl«MM» := {Ml_i, m[] ⊆ M, Dn[]} ⇄ Compete(max Sy(As(PrAcc(Ml_i), adopt, t) > CorrSc(m) > CE(m) > N(m)))..."
+  "MM:(Pr, Me, reason, adapt«Ap»), m≠Ou←MM_any;" (L52)
   "C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i)..."
 -/
 
@@ -40,8 +41,8 @@ def MarkerOrigin.isEmpirical : MarkerOrigin → Bool
 /-- 
   Perceivable Marker (M ∈ T): An empirical proxy in reality.
   Crucial Rule (Anti-Circularity): A marker cannot be the output of another Metric Model.
-  Corresponds to: Bf_Pseudocode.txt L46:
-  "M := PerceivableProxies(U, H, ...) ∈ ℝ, Estd, Novel, m ≠ Ou ← MM_any;"
+  Corresponds to: Bf_Pseudocode.txt L46 ("M := PerceivableProxies(U, H, ...) ∈ ℝ, Estd, Novel;")
+  and L52 ("MM:(Pr, Me, reason, adapt«Ap»), m≠Ou←MM_any;").
 -/
 structure Marker extends Thing where
   name         : String
@@ -66,8 +67,12 @@ def Marker.mkSimple (id name : String) (dom : Domain) (novel : Bool := false) : 
     is_novel := novel, is_model_out := false,
     h_empirical := rfl, h_non_circ := rfl }
 
-/-- 
-  Prediction Accuracy (Brier score or equivalent accuracy metric in micro-units).
+/--
+  Prediction Accuracy in micro-units [0, SCALE]: the quality of the model's credences (author
+  rulings 8.35, 8.36): accuracy = 1 − Brier_model / Brier_random, where random guessing (credence
+  0.5) scores Brier 0.25. 0 is no better than random guessing; SCALE is perfect prediction,
+  generally unattainable (truth levels never reach 1, L42). The Mathlib-free reference computes it
+  as `credence_accuracy_ref`.
 -/
 structure PredictionAccuracy where
   brier_accuracy : Int  -- Scaled in [0, SCALE]
@@ -105,29 +110,128 @@ def MetricModel.mkSimple (id : String) (dom : Domain) (m : List Marker) (acc : P
     correlationScore := corr, hasCausalTheory := hasCE,
     noveltyScore := novelty, h_markers_exist := hm }
 
-/-- 
-  Competition Score for Metric Models:
-  Sy(PrAcc > CorrSc > CE > N).
-  Weights accuracy highest (50%), then correlation with established markers (30%),
-  causal explanation (20%), and novelty bonus (20%).
+/- --- Competition ranking (L49) --- -/
+
+/-- Ranking weight on prediction accuracy (PrAcc, first in L49's order). -/
+def W_PR_ACC : Int := 40
+/-- Ranking weight on correlation with established markers (CorrSc, second). -/
+def W_CORR : Int := 30
+/-- Ranking weight on causal explanation (CE, third). -/
+def W_CE : Int := 20
+/-- Ranking weight on novelty of the proposed proxies (N, fourth). -/
+def W_NOV : Int := 10
+
+/--
+  [P] Competition score for ranking Metric Models (L49):
+  Compete(max Sy(As(PrAcc(Ml_i), adopt, t) > CorrSc(m) > CE(m) > N(m))).
+  A linear stand-in for L49's Sy over a strict priority order: weights 40 > 30 > 20 > 10
+  (`model_score_weights_strictly_ordered`), so each criterion outranks the next, as L11–12 require of
+  a priority list. It ranks competing models only; it does not decide which models may back a
+  currency (that is `is_qualified_top_model`, accuracy against the status bar, L82).
 -/
 def compute_model_score (mm : MetricModel) : Int :=
-  let pr_weight   := 50 * mm.predictionAcc.brier_accuracy / SCALE
-  let corr_weight := 30 * mm.correlationScore / SCALE
-  let ce_bonus    := if mm.hasCausalTheory then 20 else 0
-  let nov_weight  := 20 * mm.noveltyScore / SCALE
+  let pr_weight   := W_PR_ACC * mm.predictionAcc.brier_accuracy / SCALE
+  let corr_weight := W_CORR * mm.correlationScore / SCALE
+  let ce_bonus    := if mm.hasCausalTheory then W_CE else 0
+  let nov_weight  := W_NOV * mm.noveltyScore / SCALE
   pr_weight + corr_weight + ce_bonus + nov_weight
 
-/-- Qualification threshold to back a currency: must score at least 80 (e.g., 80% competency). -/
-def MM_QUALIFICATION_THRESHOLD : Int := 80
+/-- THEOREM: The ranking weights follow L49's strict order PrAcc > CorrSc > CE > N. -/
+theorem model_score_weights_strictly_ordered :
+    W_PR_ACC > W_CORR ∧ W_CORR > W_CE ∧ W_CE > W_NOV ∧ W_NOV > 0 := by
+  unfold W_PR_ACC W_CORR W_CE W_NOV
+  decide
 
-/-- Predicate: A Metric Model qualifies for the TopModels set if its score exceeds threshold. -/
-def is_qualified_top_model (mm : MetricModel) : Prop :=
-  compute_model_score mm ≥ MM_QUALIFICATION_THRESHOLD
+/- --- Currency status (L82; author rulings 8.35, 8.36, 8.41) --- -/
 
-instance (mm : MetricModel) : Decidable (is_qualified_top_model mm) := by
+/-- [R] Status bar for an established sub-domain: accuracy at least 0.9 (ruling 8.35.2). Governed. -/
+def ESTABLISHED_BAR : Int := 900000
+/-- [R] Status bar for a new or very coarse domain: accuracy at least 0.75 (ruling 8.35.2). Governed. -/
+def COARSE_BAR : Int := 750000
+/--
+  [R] Floor under every status bar: 0.55, only for discovering what has no precedent
+  (ruling 8.35.2). No model below it backs a currency; its work goes to StandCoin (8.35.4).
+-/
+def DISCOVERY_FLOOR : Int := 550000
+
+/-- Status of the domain a model would back a currency in (ruling 8.35.2). -/
+inductive DomainStatus where
+  | established    -- established sub-domain
+  | novelOrCoarse  -- new or very coarse domain
+  | unprecedented  -- discovering something with no precedent
+  deriving Repr, DecidableEq
+
+/-- [R] The status bar a domain's status sets (ruling 8.35.2, on the scale of ruling 8.36.3). -/
+def status_bar : DomainStatus → Int
+  | .established   => ESTABLISHED_BAR
+  | .novelOrCoarse => COARSE_BAR
+  | .unprecedented => DISCOVERY_FLOOR
+
+/--
+  [P] The status bar relative to the alternative (ruling 8.41, refining 8.35; a local trial is still
+  needed to demonstrate it): a leaf model backs its currency if it is at least as accurate as the
+  qualified currency its work would otherwise fall to (`alternative`), capped at the established
+  bar and never below the coarse bar, which stands when the alternative is StandCoin (`none`).
+  Mirrors `relative_bar_ref` in the reference.
+-/
+def relative_status_bar (alternative : Option Int) : Int :=
+  match alternative with
+  | none   => COARSE_BAR
+  | some a => max COARSE_BAR (min ESTABLISHED_BAR a)
+
+/-- THEOREM: The relative bar lies between the coarse and the established bars. -/
+theorem relative_status_bar_bounds (alternative : Option Int) :
+    COARSE_BAR ≤ relative_status_bar alternative ∧ relative_status_bar alternative ≤ ESTABLISHED_BAR := by
+  cases alternative with
+  | none => simp [relative_status_bar, COARSE_BAR, ESTABLISHED_BAR]
+  | some a =>
+    simp only [relative_status_bar, COARSE_BAR, ESTABLISHED_BAR]
+    constructor <;> omega
+
+/-- THEOREM: Every status bar is at least the discovery floor. -/
+theorem status_bar_ge_floor (s : DomainStatus) : DISCOVERY_FLOOR ≤ status_bar s := by
+  cases s <;> decide
+
+/--
+  [R] TopModels membership (L82: C_i ↔ MM_j ∈ TopModels(MM_Acc > Th, Dn_i)): a model qualifies to
+  back a currency at status bar `bar` iff its accuracy (credence quality, rulings 8.35, 8.36)
+  reaches the bar, and never below the discovery floor (`max DISCOVERY_FLOOR bar`), whatever bar is
+  passed. Accuracy alone decides: correlation, causal explanation and novelty rank models
+  (`compute_model_score`) but cannot qualify an inaccurate one
+  (`inaccurate_model_never_qualifies`).
+  SPEC-CHOICE: L82 writes MM_Acc > Th; ruling 8.35.2 states the bars as "at least", read as ≥.
+-/
+def is_qualified_top_model (bar : Int) (mm : MetricModel) : Prop :=
+  max DISCOVERY_FLOOR bar ≤ mm.predictionAcc.brier_accuracy
+
+instance (bar : Int) (mm : MetricModel) : Decidable (is_qualified_top_model bar mm) := by
   unfold is_qualified_top_model
   infer_instance
+
+/-- THEOREM: A qualified model's accuracy reaches both its status bar and the discovery floor. -/
+theorem qualified_accuracy_bounds (bar : Int) (mm : MetricModel)
+    (h : is_qualified_top_model bar mm) :
+    DISCOVERY_FLOOR ≤ mm.predictionAcc.brier_accuracy ∧ bar ≤ mm.predictionAcc.brier_accuracy := by
+  unfold is_qualified_top_model at h
+  exact ⟨le_trans (le_max_left _ _) h, le_trans (le_max_right _ _) h⟩
+
+/--
+  THEOREM (counterexample): A model below the discovery floor never qualifies, at any bar,
+  however high its correlation, causal explanation or novelty: those rank, they do not qualify.
+-/
+theorem inaccurate_model_never_qualifies (bar : Int) (mm : MetricModel)
+    (h : mm.predictionAcc.brier_accuracy < DISCOVERY_FLOOR) :
+    ¬ is_qualified_top_model bar mm := by
+  intro hq
+  have := (qualified_accuracy_bounds bar mm hq).1
+  omega
+
+/-- THEOREM: Qualification depends on accuracy alone: models of equal accuracy qualify alike. -/
+theorem qualification_depends_on_accuracy_only (bar : Int) (mm₁ mm₂ : MetricModel)
+    (h : mm₁.predictionAcc.brier_accuracy = mm₂.predictionAcc.brier_accuracy) :
+    is_qualified_top_model bar mm₁ ↔ is_qualified_top_model bar mm₂ := by
+  unfold is_qualified_top_model
+  rw [h]
 
 /-- 
   Dynamic Temporal Assessment Formula:
@@ -273,7 +377,8 @@ theorem metric_models_are_non_circular (_mm : MetricModel) (m : Marker) (_hm : m
 abbrev MM := MetricModel
 abbrev M := Marker
 abbrev As := Assessment
-abbrev CorrSc := compute_model_score
+/-- Correlation score with established markers (CorrSc in L49–50), the model's stated value. -/
+abbrev CorrSc (mm : MetricModel) : Int := mm.correlationScore
 
 end Benefuture.Measurement
 

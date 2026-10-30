@@ -899,7 +899,7 @@ noncomputable def goal_value (gp : GParams) (pop : List ℕ) (c : Plan) : ℝ :=
   (pop.map (fun b => being_term gp (c.value b) (dist_score gp pop c))).sum
 
 /--
-  [R] ¬↓(U(max, min), H(min)) (L62): counterfactual, trajectory-level min U, min H and max U do
+  [R] ¬↓(U(max, min), H(min)) (L74): counterfactual, trajectory-level min U, min H and max U do
   not fall. Max H has no hard limit: happiness peaks are unstable (author).
 -/
 noncomputable def min_nondecreasing (c : Plan) : Bool :=

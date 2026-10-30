@@ -1,9 +1,11 @@
 /-
   Benefuture.Axiology.Value
   Formalization of the Benefuture Value function V(A, b) and Goal function G over ℝ.
-  Corresponds to: Bf_Pseudocode.txt L73-75, L79-81
-  "V(A, b ∈ B) := Sy_{2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));"
-  "Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} V(A, b(t))] ∧ ↑ℝ;"
+  Corresponds to: Bf_Pseudocode.txt L73-74, L79-80
+  "V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));"
+  "Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min)) | min := Th_quantile, tail → Me;"
+  This file holds V and the ↑ℝ eligibility check; the Goal G itself is
+  `Proposed.PopulationDirection.goal_G`.
 -/
 
 import Mathlib.Data.Real.Basic
@@ -23,12 +25,12 @@ open Benefuture.Ontology
 
 /-- 
   [R] Evaluates Value V(A, b) on Being b (L73):
-  V(A, b ∈ B) := Sy_{2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t)).
-  
-  Evaluates outer synergy over assessed dimensions:
-  1. Understanding (U) with weight α · Ha_wt
-  2. Happiness (H) with weight β · α · Ha_wt
-  3. Novelty (N) with weight γ
+  V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t)).
+
+  Evaluates outer synergy over assessed dimensions, each item (x, w₊, w₋) per L13:
+  1. Understanding (U): gains weighted α, losses weighted Ha_wt
+  2. Happiness (H): gains weighted β, losses weighted α · Ha_wt
+  3. Novelty (N): γ both ways
   
   NOTE: The ad hoc δ penalty and experienceLevel multiplier from early drafts are removed.
   [R] No sentience multiplier (decision 6b): L73 has none. Capacity enters through magnitudes:
@@ -63,7 +65,7 @@ noncomputable def aggregate_sentient_value
     (sched : ParamSchedule) (p : GovParams) : ℝ :=
   (population.map (fun b => value_on_being b (asmt_fn b) sched p)).sum
 
-/- --- Complete Benefuture Goal G(t) (L74) --- -/
+/- --- ↑ℝ eligibility (L74); the Goal G itself is `Proposed.PopulationDirection.goal_G` --- -/
 
 -- SPEC-CHOICE: On ↑ℝ (L74):
 -- We specify that ↑ℝ requires non-decreasing reality scope (delta ≥ 0).
@@ -86,7 +88,11 @@ structure ActionEvaluation where
 def is_eligible_action (eval : ActionEvaluation) : Bool :=
   reality_enhancement_delta eval.scopeBefore eval.scopeAfter ≥ 0
 
-/-- Predicate: An evaluated action satisfies Goal G iff it generates positive value and preserves/enhances reality. -/
+/--
+  [Legacy] Positive aggregate value and ↑ℝ. Not the Goal G (L74), which is an argmax over
+  admissible plans (`Proposed.PopulationDirection.goal_G`) and admits inaction, whose value is zero
+  (`inaction_admissible`); requiring value > 0 here conflicts with that. Kept for the ↑ℝ theorem below.
+-/
 def satisfies_goal_G (eval : ActionEvaluation) : Prop :=
   eval.aggregateValue > 0 ∧ reality_enhancement_delta eval.scopeBefore eval.scopeAfter ≥ 0
 
@@ -95,9 +101,9 @@ def eligible_actions (evals : List ActionEvaluation) : List ActionEvaluation :=
   evals.filter is_eligible_action
 
 /-- 
-  MASTER THEOREM: Anti-Inward-Collapse Invariant (L74).
-  A civilization that turns inward, shrinking its perceptual scope or collapsing its causal capability
-  in the Universe (delta < 0), is disqualified from Goal G.
+  THEOREM: Anti-Inward-Collapse Invariant (L74 ↑ℝ).
+  An action that shrinks reality scope (delta < 0) fails the legacy `satisfies_goal_G`; in G proper
+  it fails `is_eligible_action` (`contracting_action_is_ineligible`), part of `plan_admissible_G`.
 -/
 theorem inward_shrinkage_violates_goal (eval : ActionEvaluation) 
     (h_shrink : reality_enhancement_delta eval.scopeBefore eval.scopeAfter < 0) :

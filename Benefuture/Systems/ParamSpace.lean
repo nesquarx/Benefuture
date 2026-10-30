@@ -148,6 +148,7 @@ noncomputable def ParamVector.toGovParams (pv : ParamVector) (h : Admissible pv)
     nu := pv.nu, h_param := pv.h_param, h_nu_pos := h.nu_pos, h_h_param_pos := h.h_param_pos,
     lambda_plus := pv.lambda_plus, lambda_minus := pv.lambda_minus,
     h_lambda_plus_pos := h.lambda_plus_pos, h_lambda_minus_pos := h.lambda_minus_pos,
+    h_lambda_minus_le_plus := le_of_lt h.lambda_minus_lt,
     th_sig := pv.th_sig, th_gov := pv.th_gov,
     h_th_sig_pos := h.th_sig_pos, h_th_gov_pos := h.th_gov_pos }
 

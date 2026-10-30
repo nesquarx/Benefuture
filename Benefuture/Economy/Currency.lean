@@ -23,10 +23,14 @@ open Benefuture.Measurement
   A currency is NOT fiat and NOT arbitrary.
   A currency MUST be backed by a qualified Metric Model in TopModels.
   C_i ↔ MM_j ∈ TopModels(MM_Acc > Th, Dn_i).
+  `statusBar` is the bar the domain sets (`status_bar` by the domain's status, ruling 8.35, or
+  `relative_status_bar` against the alternative, ruling 8.41); qualification never falls below the
+  discovery floor whatever bar is recorded.
 -/
 structure Currency extends Thing where
   backingModel : MetricModel
-  h_qualified  : is_qualified_top_model backingModel
+  statusBar    : Int
+  h_qualified  : is_qualified_top_model statusBar backingModel
 
 /-- Coercion: Every Currency is canonically a Thing in Reality. -/
 instance : Coe Currency Thing where
@@ -34,9 +38,10 @@ instance : Coe Currency Thing where
 
 
 /-- Helper constructor for a Currency backed by a qualified Metric Model. -/
-def Currency.mkSimple (id : String) (mm : MetricModel) (h : is_qualified_top_model mm) : Currency :=
+def Currency.mkSimple (id : String) (mm : MetricModel) (bar : Int)
+    (h : is_qualified_top_model bar mm) : Currency :=
   { toThing := Thing.mkSimple id s!"currency_{mm.domain.name}" mm.domain.name 0,
-    backingModel := mm, h_qualified := h }
+    backingModel := mm, statusBar := bar, h_qualified := h }
 
 /-- The domain of a currency is the domain of its underlying Metric Model. -/
 def currency_domain (c : Currency) : Domain :=
@@ -314,14 +319,16 @@ theorem competing_currency_pricing_disparity
   · rw [h_out_price, h_in_price, h_same_rc]
     omega
   · rw [h_out_price, h_same_rc]
-/-- 
-  THEOREM: Currency Epistemic Grounding Theorem.
-  It is impossible to create a conforming Currency without a backing Metric Model 
-  exceeding the qualification threshold MM_QUALIFICATION_THRESHOLD.
+/--
+  THEOREM: Currency Epistemic Grounding Theorem (L82; rulings 8.35, 8.36, 8.41).
+  A conforming Currency's backing Metric Model has accuracy (credence quality) at least its
+  domain's status bar and at least the discovery floor 0.55; the composite ranking score plays no
+  part in qualification.
 -/
 theorem currency_requires_qualified_model (c : Currency) :
-    compute_model_score c.backingModel ≥ MM_QUALIFICATION_THRESHOLD :=
-  c.h_qualified
+    DISCOVERY_FLOOR ≤ c.backingModel.predictionAcc.brier_accuracy ∧
+      c.statusBar ≤ c.backingModel.predictionAcc.brier_accuracy :=
+  qualified_accuracy_bounds c.statusBar c.backingModel c.h_qualified
 
 /-- 
   Resource Accounting (RA ∈ T):

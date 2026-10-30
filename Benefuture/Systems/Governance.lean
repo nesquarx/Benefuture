@@ -3,7 +3,7 @@
   Formalization of Bounded Liquid Democracy (LqdBfDm) and External Harm Response (EHR).
   Corresponds to: Bf_Pseudocode.txt L114, L117, and Government.txt
   "LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b)..."
-  "ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * Re_+ve_j) * P(Forgive)..."
+  "ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * ΣRe_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * ΣRe_-ve_j(Dn(Ha_i))) * P(Overreact) | (ContextAware ∧ Transparent);"
 -/
 
 import Benefuture.Governance.Democracy

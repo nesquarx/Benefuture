@@ -15,7 +15,7 @@ open Benefuture.Ontology
 
 /-- 
   Crime (Cr ∈ T): Harm caused through informed volition or culpable inaction:
-  Cr := Ha | Informed(Volition ∨ Inaction).
+  Cr := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract)).
 -/
 structure Crime extends Thing where
   perpetrator  : Person
@@ -138,10 +138,11 @@ theorem accident_requires_pure_restitution_without_punitive_friction (acc : Acci
   omega
 
 /-- 
-  Ontological Classification of a Harmful Action:
-  A harmful event constitutes a Crime (Cr) iff it was committed with both
-  verified epistemic awareness (isInformed = true) and intentional volition (hasVolition = true).
-  Otherwise, it is an Accident.
+  Ontological Classification of a Harmful Action (L115: Cr := Ha | Informed(Volition ∨
+  Inaction(Lw_mandate ∨ Contract))):
+  A harmful event constitutes a Crime (Cr) iff it was committed with verified epistemic awareness
+  (isInformed = true) and either intentional volition (hasVolition = true) or inaction against a
+  law's mandate or a contract (breachedDuty = true). Otherwise, it is an Accident.
   Corresponds to: Bf_Pseudocode.txt L115 & Crime.txt L9.
 -/
 def is_crime_classification (isInformed : Bool) (hasVolition : Bool) (breachedDuty : Bool := false) : Bool :=
@@ -149,20 +150,14 @@ def is_crime_classification (isInformed : Bool) (hasVolition : Bool) (breachedDu
 
 /-- 
   THEOREM: Crime and Accident Invariants are Mutually Exclusive.
-  No harmful event can simultaneously satisfy the condition for Crime 
-  (informed volition: isInformed = true ∧ hasVolition = true) and Accident 
-  (uninformed or involuntary: isInformed = false ∨ hasVolition = false).
+  No harmful event is both classified a Crime (informed, and volition or breach of a law's
+  mandate or contract, L115) and meets the Accident condition (uninformed, or neither volition
+  nor breached duty).
 -/
-theorem crime_and_accident_mutually_exclusive (isInformed hasVolition : Bool) :
-    ¬ ((isInformed = true ∧ hasVolition = true) ∧ (isInformed = false ∨ hasVolition = false)) := by
-  intro ⟨⟨h_inf, h_vol⟩, h_acc⟩
-  cases h_acc with
-  | inl h_not_inf =>
-    rw [h_inf] at h_not_inf
-    contradiction
-  | inr h_not_vol =>
-    rw [h_vol] at h_not_vol
-    contradiction
+theorem crime_and_accident_mutually_exclusive (isInformed hasVolition breachedDuty : Bool) :
+    ¬ (is_crime_classification isInformed hasVolition breachedDuty = true ∧
+        (isInformed = false ∨ (hasVolition = false ∧ breachedDuty = false))) := by
+  cases isInformed <;> cases hasVolition <;> cases breachedDuty <;> simp [is_crime_classification]
 
 /-- 
   THEOREM: Culpability Classification Invariant (Informed Volition).
@@ -183,8 +178,8 @@ theorem uninformed_action_is_accident (vol : Bool) :
   cases vol <;> rfl
 
 /-- 
-  THEOREM: Involuntary Action is an Accident.
-  An actor operating without volition (hasVolition = false) 
+  THEOREM: Involuntary Action without breached duty is an Accident.
+  An actor operating without volition (hasVolition = false) and with no breached duty (the default)
   cannot be classified as a Crime, regardless of information state.
 -/
 theorem involuntary_action_is_accident (inf : Bool) :

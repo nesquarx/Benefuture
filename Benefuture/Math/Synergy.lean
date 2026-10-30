@@ -9,7 +9,7 @@
      Φ_s := Σ_i w_{s,i} a_{s,i}^{q_s} + κ √(Σ_{i<j} w_{s,i} w_{s,j} (a_{s,i} a_{s,j})^{q_s});
      Sy  := Φ₊ − Φ₋ − λ Φ₊Φ₋/(Φ₊+Φ₋)   (0 when Φ₊+Φ₋ = 0)."
   
-  "Ŝy(s) := sgn(s)·|s|^ν / (|s|^ν + h^ν) | (ν = 1, h) ∈ SigThGv."
+  "Ŝy(x[]) := sgn(s)·|s|^ν / (|s|^ν + h^ν) | s := Sy(x[]), (ν = 1, h) ∈ SigThGv;"
 -/
 
 import Mathlib.Data.Real.Basic

@@ -55,7 +55,7 @@ abbrev St := Sentience
 /-- 
   Physical Substrate Component of a Being (extends Thing).
   Used to formalize the Hair Razor (distinguishing minimal Body from external parts).
-  Corresponds to: Bf_Pseudocode.txt L68 ("Body : (∃min(T ∈ ℝ) : Ha(Body) = Ha_immediate(B))").
+  Corresponds to: Bf_Pseudocode.txt L69 ("Body : (∃min(T ∈ ℝ) : Ha(Body) = Ha_immediate(B), Id(B):=Id(Body))").
 -/
 structure SubstrateComponent extends Thing where
   name       : String
@@ -75,7 +75,8 @@ def SubstrateComponent.mkSimple (id name : String) (vital : Bool) : SubstrateCom
   Couples an external Thing or Being to this Being with sensitivity factor L ∈ (0, SCALE].
   L = 1.0 (Total coupling: e.g. symbiotic life support).
   L ~ 0.1-0.5 (Habitat, tool, community, reputation).
-  Corresponds to: Bf_Pseudocode.txt L70 ("Self«Sl» : ∃fuzzy(max(T ∈ ℝ))").
+  Corresponds to: Bf_Pseudocode.txt L70 ("Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))"):
+  the self is causal, over the long-term window.
 -/
 structure InterdependenceLink extends Thing where
   targetId       : String
