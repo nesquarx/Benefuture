@@ -3,7 +3,10 @@
 Formalising Benefuture in Lean forced decisions the pseudocode and articles leave implicit, and proved
 some properties that only hold under conditions the sources do not state. This document lists each
 such nuance with its evidence and a proposed edit to the sources. Sections 1–6 are proposals the
-author decides; section 7 lists edits applied to the sources as [P], awaiting ratification.
+author decides; section 7 lists edits applied to the sources as [P], awaiting ratification; section 8
+holds simulation findings and the author's rulings on them, each with a status line where the
+simulation, the Lean or the sources have followed. Items are never deleted: settled, superseded or
+withdrawn ones are marked.
 
 Classes:
 - **A — Author's ruling, not yet in the sources.** Decided in discussion; the sources should say it.
@@ -164,6 +167,8 @@ Proposed edit: L114 note `⇒ CumulativeVoteWeight ≤ Th_k + max VW_i`.
 Government.txt has VoteWeight = BaseWeight + ExpertiseWeight·Expertise + ImpactWeight·Impact;
 L113 has no base term.
 Proposed edit: L113 `BfDm := (Base + Expert(Σŵ·Re)·VW + Impacted·VW) …`.
+Status: resolved. L113 now opens with `Base_VW` and carries the domain-relative expertise term
+`Re(Dn_i)/ΣRe(Dn_i)` (8.22.1).
 
 **5.4 SigThGv must reject inadmissible proposals (B).**
 Theorems hold everywhere in the admissible region; governance must not leave it. Perturbation drift
@@ -177,13 +182,14 @@ harm − α·Re₊. A generous tit-for-tat reading (forgiveness probability risi
 with Re₋) is plausible but unratified.
 
 **5.6 Reputation decay form and partition of unity (C).**
-Exponential vs subtractive decay (§4.3 of SPEC_DIVERGENCES) and one vs per-RelType partitions of
-unity (§3.2) remain open in the sources.
+Exponential vs subtractive decay (§3.4 of SPEC_DIVERGENCES; the Lean's lazy decay in §4.3 is
+exponential) and one vs per-RelType partitions of unity (§3.2) remain open in the sources.
 
 ## 6. Process
 
-**6.1 Two pseudocode copies diverged.** The root copy predated recorded decisions; it is now synced.
-Keep one source (spec/), or generate the other.
+**6.1 Three pseudocode copies diverged.** The root copy predated recorded decisions; it is now synced.
+The third copy is the block embedded in `docs/articles/Benefuture.txt` (CLAUDE.md: edit all three or
+none). Keep one source (spec/), or generate the others.
 
 **6.2 Encodings.** About 25 modules use fixed-point integers; they are within one micro-unit of the
 ℝ definitions (`Systems.FixedPoint`). Not a source issue, but the sources could state SCALE
@@ -240,6 +246,8 @@ comparative ones and welcome.
 
 **7.11 Open.** End-of-horizon conduct under no inheritance (B25). Expertise normalised within
 domain is proposed in Government but not yet in L113 or `Governance.Democracy`.
+Status: the expertise half is resolved by 8.22.1 (L113's Re/ΣRe term; Lean `relative_expertise` in
+`Governance.Democracy`); end-of-horizon conduct (B25) stays open.
 
 **7.12 Self, lifespan and inheritance.** The self's harm horizon is the long-term window:
 `Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self
@@ -424,10 +432,10 @@ first half; add that overlaps are rolling averages of members' memberships), L22
   with no toy assumptions and robust to messy reality.
 Propagated to Domain (weighted membership) (articles).
 
-**8.13 Resolved by 8.14. Causal contribution along a transaction tree: range versus conservation.** L93 gives
+**8.13 Resolved by 8.14. Causal contribution along a transaction tree: range versus conservation.** L94 gives
 CC a range of [0, 1], and `Systems.Substrate` computes it as clamped value added
 (`causal_contribution_ratio`: (produced − received) / outcome, zero when either is non-positive);
-L94 distributes rewards and penalties in proportion to CC, net of escrow paid. Along a chain with a
+L96 distributes rewards and penalties in proportion to CC, net of escrow paid. Along a chain with a
 loss this over-distributes and leaves the loss with no one: links adding 10 and 5 followed by one
 destroying 10 (outcome 5) receive 15, and the destroyer is not penalised (proved:
 `cc_clamped_overdistributes`). Signed value added, each link credited with what it produced less
@@ -438,7 +446,7 @@ with CC's range widened, or [0, 1] kept for a separate positive-part score; (b) 
 normalising positive and negative value added separately, rewards ∝ positive parts and penalties ∝
 negative parts, each summing to its side of the outcome; (c) something else. The same rule settles
 how co-funders of StandCoin work share the outcome (8.11): as links that produced the resources they
-paid onward. Candidate homes: L93–94, Benefuture currency (Causal Distribution), `Systems.Substrate`.
+paid onward. Candidate homes: L94–96, Benefuture currency (Causal Distribution), `Systems.Substrate`.
 - Finding (M3d, transactions): admitting every transaction that beats inaction, rather than G's
   single best choice, roughly triples floor growth and raises the share of executed work measured
   harmful from 2% to 9% (27% under model bias); settlement claws it back. Whether the screen should
@@ -449,8 +457,8 @@ paid onward. Candidate homes: L93–94, Benefuture currency (Causal Distribution
 contributors and a negative outcome penalises its contributors; a mixed outcome is split into its
 constituent parts by domain and by understanding and happiness impact. A part's side is decided by
 its assessment against not acting (As, L48), not by the raw sign of a change. Each contributor's
-share of a side is its part over the side's total, in [0, 1] as L93 states, so the chain of 8.13
-pays A 10 and B 5 and penalises C 10. Candidate homes: L93–94 and Benefuture currency (Causal
+share of a side is its part over the side's total, in [0, 1] as L94 states, so the chain of 8.13
+pays A 10 and B 5 and penalises C 10. Candidate homes: L94–96 and Benefuture currency (Causal
 Distribution): "rewards ∝ CC on the positive parts of an assessed outcome, penalties ∝ CC on its
 negative parts".
 - Superseded by 8.16–8.18 (outcome-first distribution; nothing is left undistributed). Were the
@@ -466,7 +474,8 @@ negative parts".
   10% of credit flows to upstream contributors; agents who add nothing to what they pass on earn
   almost nothing; a bad output is penalised through the losses it carries downstream.
 
-**8.15 [OPEN] Harm through inaction when action was expected (a driver who does not brake).**
+**8.15 [OPEN] Harm through inaction when action was expected (a driver who does not brake).** Answered
+in parts by 8.17.3, 8.22.2, 8.25.3 and 8.46 (status below).
 - Sources: inaction is ¬A := ∄Ou(actor), the actor producing no output (L48); assessment compares
   an action with that counterfactual, so not acting has zero assessed value by construction, and
   braking is assessed at the harm it prevents. Crime is harm by informed volition or informed
@@ -489,11 +498,16 @@ negative parts".
 - Questions: is not braking an inaction (no output) or part of driving? What makes an action
   "expected": a contract, law, role, or the actor's own prior outputs? Does informed inaction by a
   bystander who did not create the hazard count as crime, given L115's wording?
+- Status: answered by 8.17.3 (laws are contracts once communicated; a hazard one creates is direct
+  harm), 8.22.2 (the braking driver), 8.25.3 (inaction is culpable only against a mandate) and 8.46
+  (duties minimal but real). Lean gap fixed: `Subgoals.Justice.Crime`'s `h_culpable` admits
+  `breachedDuty` (`informed_inaction_under_duty_is_crime`, `uninformed_breach_is_accident`).
+  Simulation gap closed by M3e (hazards, guardians bound by contract).
 
 **8.16 [P] Outcome-first causal distribution (author's outline; specification proposed).**
 The author's model: there are no mixed outcomes. A measurement records an outcome, positive or
-negative; a positive outcome generates currency (L96), a negative one requires destruction or
-reparation (L98, Justice: Repair(Ha)). Metric models then assess each contributing action (and
+negative; a positive outcome generates currency (L97), a negative one requires destruction or
+reparation (L99, Justice: Repair(Ha)). Metric models then assess each contributing action (and
 downstream actions) against its counterfactual: inaction (¬A, L48), or, where a contract or duty
 commits the actor, the committed action. Those assessments give CC (L94: CC(O_i, E_j) ↔
 MM_CE(TxLog)); without a confident enough assessment, CC falls back to domain-specific traversal of
@@ -543,7 +557,7 @@ the transaction substrate (L95). Outlined in the sources, never specified. Propo
 5. Reparation depends on the outcome's nature: harm destroys at the being level; harm to a commons
    affects every being using it; contributors' penalties fund the repair.
 Candidate homes: L48 (committed counterfactual), L76 and L121 (duty from contracts and
-communicated laws), L94–98 (outcome events, Shapley CC, minting and destruction by sign), L115 and
+communicated laws), L94–99 (outcome events, Shapley CC, minting and destruction by sign), L115 and
 Crime.txt (intent; repair regardless), Justice.txt (reparation by the outcome's nature).
 Propagated to Benefuture currency (Causal Distribution), Law (duties), Crime (hazards) (articles).
 
@@ -570,7 +584,7 @@ fulfilled costs and earns nothing (contract payments are not modelled; L121 acco
 beyond duty neither); natural hazards with no guardian are not repaired (the sources do not say who
 repairs harm with no contributor: the commons, insurance, or no one).
 
-**8.20 [OPEN] What SigThGv's adaptation measures.** SigThGv := Ap(Th ∈ Debatable? LqdBfDm :
+**8.20 Resolved by 8.22.3 (was [OPEN]). What SigThGv's adaptation measures.** SigThGv := Ap(Th ∈ Debatable? LqdBfDm :
 Perturb(Th ± δ ∈ Fr)) (L157), with Ap the adaptation of L52 (`adapt«Ap»`). `Systems.ParamSpace`
 gives the perturbation step ([R]: adopt a candidate within δ if admissible) but no selection, so
 without adaptation the parameters walk at random inside the admissible region. The simulation
@@ -583,8 +597,11 @@ against what comparison (the previous epoch, or a paired counterfactual from rec
 thresholds are debatable? Also: the simulation's own gates (currency eligibility, classification,
 formation, overflow, the causal-assessment confidence) are not in `ParamVector`; adding them, with
 their admissible ranges, would let SigThGv govern them.
+Status: adaptation is experimental design (8.22.3; M4, `select_candidate_ref`, `gauge_radius_ref`);
+the simulation's gates are listed in `sim/README.md` (Governed thresholds) but are not yet in
+`ParamVector`.
 
-**8.21 Finding: raw reputation concentrates voting weight; the domain-relative term does not (M5).**
+**8.21 Settled by 8.22.1. Finding: raw reputation concentrates voting weight; the domain-relative term does not (M5).**
 L113 adds expertise as Σŵ·Re in raw units to a base weight; with reputations in the hundreds, the
 top expert in a domain holds about a third of all weight with no delegation at all, beyond the
 reach of L114's delegation cap. The domain-relative term in Government's discussion (reputation as
@@ -602,14 +619,14 @@ reality is the open empirical question.
    Status: L113's expertise term is Re(Dn_i)/ΣRe(Dn_i) in all three pseudocode copies; Lean
    `relative_expertise`, `relative_expertise_sum_one`, `relative_expertise_le_one`
    (`Governance.Democracy`).
-2. Contribution types (L95: CD ∝ CC + N_CCtype): passing an output on outside any contract or duty
+2. Contribution types (L96: CD ∝ CC + N_CCtype): passing an output on outside any contract or duty
    is still a communicative contribution to the behavioural transaction substrate and earns an
    accolade, a minor share but a share; passing it under contract or duty is paid as completion of
    the contract or duty, not as contribution. The researcher who told a colleague of a new
    development that led to a project's completion gets an accolade share; the delivery driver of a
    rocket part gets the contracted share. A driver who brakes and saves a pedestrian gets the
    substrate's payment for using driving skill well and nothing else, and may face a clawback for
-   the pedestrian's shock. Candidate homes: L94–95, L121 (Accolade), Benefuture currency (Causal
+   the pedestrian's shock. Candidate homes: L96, L121 (Accolade), Benefuture currency (Causal
    Distribution), Contract.
 3. Threshold adaptation (SigThGv, settling 8.20) is experimental design or gradient descent: gauge
    the threshold's freedom range, beyond which it is easily harmful; choose the outcomes the
@@ -630,7 +647,8 @@ reality is the open empirical question.
    accolades drain the maker's share; the accolade should require that the carrying was needed
    (the output would not otherwise have reached), which the causal assessment can judge. An M6 test.
    (4) M3e: the administration repairs unassigned harm from the commons, to what the commons holds.
-   [OPEN] how the administration is funded: the pseudocode defines it (L106, CRUD of laws and
+   ~~[OPEN]~~ how the administration is funded (ruled 8.26.4: resource accounting and escrows; the
+   balance stays open, 8.26.7): the pseudocode defines it (L106, CRUD of laws and
    infrastructure) and ranks its liability (L119) but names no fund; the simulation uses the pool
    balance overflow reinvests (L103), whose DirectedAutoInvest is directed by the entity, not the
    administration. Gaming check: harm passed off as unassigned escapes its contributor at the
@@ -641,7 +659,8 @@ reality is the open empirical question.
    (f) Black swans: outage, catastrophe, capture and breakthrough tested with native fallbacks.
    [P] during a measurement outage, payment falls back to escrow's prediction-based upfront and the
    actions stay unmeasured; candidate home L154 (Progressive) or the article on measurement.
-   [OPEN] whether actions taken during an outage are re-measured once markers return.
+   ~~[OPEN]~~ whether actions taken during an outage are re-measured once markers return (ruled
+   8.26.5: yes, where possible).
    (3) M4: experimental design in randomised blocks (a fixed order was confounded by the trend in
    floor movement), shifting only on a gain of `gov_z` standard errors (Lean `select_candidate_ref`);
    the freedom radius gauged in the same rounds (`gauge_radius_ref`). [P] randomised blocks,
@@ -739,6 +758,8 @@ Propagated to Threshold of significance (3), Administration and Benefuture curre
 3. Held open: how the balance sets the commons' share (8.26.7), and whether the debatable escape is
    demonstrated on a threshold with a measurable effect (overflow against inequality, or the
    causal-assessment confidence), since the value parameters show none at current scales.
+   Status: the second half is settled by 8.41 (demonstrated on the status bar relative to the
+   alternative); 8.26.7 stays open.
 Propagated to Benefuture currency, Critique addressal (articles).
 
 **8.28 M6 finding: overpromising pays (screened; needs the author).** An agent whose plans fool
@@ -763,7 +784,8 @@ every metric model upward (`deceit` 1.0, a world property) in a toy domain of si
    collapses without lowering its peers' prices. Candidate homes: L84, Benefuture currency.
 4. Relay farming is bounded by the governed accolade rate (5% of the carried outputs' positive
    shares in the test world); ruling 8.26.2 (held) removes it where carrying was not needed.
-Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on.
+Kept as `@test_broken` requirements in `sim/test/m6_tests.jl` until ruled on. Status: ruled by 8.29;
+they are ordinary passing tests now (no `@test_broken` remains in `sim/test`).
 5. Colluding voters (M5 world): normalised expertise holds a bloc of the most reputable fifth of
    experts (accuracy 97% → 93%); delegation amplifies a larger bloc's capture (30%: 85% without
    delegation, 70% with), since delegations flow to the most reputable. The cap holds per delegate.
@@ -812,6 +834,11 @@ Propagated to Reputation (1), Measurement (2), Government (3) (articles).
    when its estimate plus the novelty bonus favours it; the share trying it is chosen, not set. A
    significant trial makes the outcome apparent, and an alternative proved better is adopted.
    An earlier version imposed a fixed share; withdrawn.
+8.30.1 status: an outage harms the beings who lose its services and is examined when markers
+return; traced to a saboteur (`p_trace`) it is a crime of informed volition penalised through
+causal distribution, else its harm is insured through the commons. Repair's predicted good now comes
+from the domain's best model with its error, not the measured harm; with mildly inaccurate models
+(the realistic case, per the author) repair still funds itself.
 Propagated to Measurement (1), Diversity (3) (articles).
 
 **8.31 Author ruling on imperfect agents and friction.** Agents are not perfectly rational: their
@@ -825,6 +852,7 @@ to the accuracy true reputations give within a few hundred decisions. Screened o
 decisions left every rule near perfect, so comparisons of voting rules now use hard decisions.
 Next: the same ceilings for agents' choices in M3c (co-funding, guardians) and an M3c run with every
 noise source at the top of its range.
+8.31 status (economy): co-funding is a judgement: an expert pledges only if the screened prediction plus its choice noise (personal ceiling per domain, inverse to skill on average) is positive.
 
 
 **8.32 Finding: the currency-eligibility threshold is a cliff under heavy friction (screened; needs
@@ -847,12 +875,8 @@ baseline, so aleatoric noise does not disqualify; (b) let the best available mod
 threshold, with escrow holding by its low accuracy, the threshold then ranking currencies rather
 than switching them off; (c) the threshold governed down by SigThGv under friction, within its
 freedom range (novel leaves never below 0.5). Candidate homes: L82, L84, L154, Measurement.
-Kept as a `@test_broken` requirement in `sim/test/friction_m3c_tests.jl`.
-8.30.1 status: an outage harms the beings who lose its services and is examined when markers
-return; traced to a saboteur (`p_trace`) it is a crime of informed volition penalised through
-causal distribution, else its harm is insured through the commons. Repair's predicted good now comes
-from the domain's best model with its error, not the measured harm; with mildly inaccurate models
-(the realistic case, per the author) repair still funds itself.
+Kept as a `@test_broken` requirement in `sim/test/friction_m3c_tests.jl`. Status: ruled by 8.35–8.36;
+it is an ordinary passing test now (no `@test_broken` remains in `sim/test`).
 
 
 **8.33 Author ruling: nothing is perfect, in the world or in the work.** The simulation need not
@@ -866,7 +890,7 @@ of 0; a loss from 0.1). The tracing rate is the frontier to defend: anti-corrupt
 (L160), which reward exposure, are its native levers.
 
 
-**8.34 [OPEN] Does a fork divide the base vote?** L122 has a fork split social power (SoPo: C, Re,
+**8.34 Ruled for now (below; was [OPEN]). Does a fork divide the base vote?** L122 has a fork split social power (SoPo: C, Re,
 ...); the Being article treats near-identical patterns as a domain pattern, not identities; L113
 gives every voter a base weight. If each identity gets its own base vote, forking is a sybil attack
 on voting. M5 world, 100 voters, one forker voting one side: with the base vote divided among a fork
@@ -875,7 +899,6 @@ family, forking gains nothing; with a base vote per identity, 50 copies cut deci
 power a fork divides, and a copy earns its own only as its novelty N (L122) separates it into a
 distinct identity. Candidate homes: L113, L122, Being, Government. Simulation: `fork_rule`, default
 `:divided` (the proposal), `:per_identity` measured.
-8.31 status (economy): co-funding is a judgement: an expert pledges only if the screened prediction plus its choice noise (personal ceiling per domain, inverse to skill on average) is positive.
 
 
 **8.34 ruling (for now).** Yes: a fork divides the base vote with the rest of its social power, and
@@ -897,6 +920,7 @@ Propagated to Being (articles).
    P(As(V, A, t0) > 0)). [P] accuracy = (B_random − B_model) / (B_random − B_ideal) on the Brier
    score of credences that an action's assessed value is positive, B_ideal the best attainable given
    the convolving noise; escrow's upfront = credence × predicted value. Awaiting confirmation.
+   Superseded by 8.36 (accuracy = 1 − Brier_model / Brier_random, not adjusted for noise).
 4. Below the threshold, work goes to StandCoin: permissiveness is a race to the bottom; today's
    coarsest models already exceed 0.75 in probabilistic accuracy, so nothing worse should back a
    currency.
@@ -1170,3 +1194,15 @@ Later (author): simulate noise as hidden convolving factors and let models evolv
 an evolutionary search towards minimum-description-length models, more informative than
 random-number noise.
 
+
+**8.51 [OPEN] Does balance overflow boost reputation? (needs the author).** Benefuture currency
+(Aspects) says accumulation beyond the needs threshold "boosts Domain-specific Reputation and is
+redirected into reinvestment in that domain"; Reputation says reputation is earned, and "cannot be
+purchased, traded, or transferred". If overflowed balance raises reputation, money above the threshold
+buys standing, against the second. The pseudocode is silent: L103 (BalOvflw) only redirects the excess
+(DirectedAutoInvest) and L100 builds reputation from causal contribution and novelty. The simulation
+follows L103: overflow reinvests and leaves reputation untouched. Readings: (a) the boost is the
+reputation the reinvestment earns once its outcomes are measured, through ordinary causal
+distribution (then the currency article should say so); (b) overflow itself confers no reputation (drop
+the clause); (c) a direct boost (Reputation and L100 would need an exception). Candidate homes: L100,
+L103, Reputation, Benefuture currency.

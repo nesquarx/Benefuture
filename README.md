@@ -80,7 +80,7 @@ Nothing here shows that Benefuture would work in the world. No deployment exists
 | Pseudocode | [`spec/Bf_Pseudocode.txt`](spec/Bf_Pseudocode.txt) | The framework as compact symbolic definitions (not machine-checked), cited by line (L74 is Goal G). Copies, kept identical: [`Bf_Pseudocode.txt`](Bf_Pseudocode.txt) and the block embedded in [Benefuture](docs/articles/Benefuture.txt). |
 | Lean specification | [`Benefuture/`](Benefuture) | Type-checked definitions over ℝ (Mathlib), with theorems about them. A proof holds for the definitions as written under the hypotheses listed; it says nothing about whether they describe the world. Proposed designs live in `Benefuture/Proposed/` (status [P]); behavioural claims are stated, unproved, as `Conj_*` in `Benefuture/Systems/Conjectures.lean`. |
 | Lean reference | [`BenefutureReference/`](BenefutureReference) | Mathlib-free Float versions of the rules, exported to C. Generates the test vectors in [`spec/vectors/`](spec/vectors). Its correspondence to the ℝ specification is not proved. |
-| Simulation | [`sim/`](sim) ([`sim/README.md`](sim/README.md)) | A Julia agent-based model in toy worlds that calls the Lean reference for every rule. Shows behaviour under stated toy assumptions, a few seeds at a time; not proof, not significance-tested. |
+| Simulation | [`sim/`](sim) ([`sim/README.md`](sim/README.md)) | A Julia agent-based model in toy worlds that calls the Lean reference for most rules (the exceptions, still computed in Julia, are listed in the [parsimony audit](sim/README.md#parsimony-audit)). Shows behaviour under stated toy assumptions, a few seeds at a time; not proof, not significance-tested. |
 
 Records that keep the layers honest with each other:
 
@@ -275,13 +275,13 @@ function called through C exports, and the shared library rebuilds only when the
   ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean)); the tension is open.
 - Without a delegation cap, a star topology hands one node all the weight
   ([`star_topology_power_concentration`](Benefuture/Governance/Incentives.lean)).
-- Causal contribution as specified (clamped value added, L93's range [0, 1]) over-distributes along
+- Causal contribution as specified (clamped value added, L94's range [0, 1]) over-distributes along
   a chain with a loss: links adding 10 and 5 followed by one destroying 10 receive 15 for an outcome
   of 5, and the loss is distributed to no one ([`cc_clamped_overdistributes`](Benefuture/Systems/Substrate.lean)).
   Resolved by the author's ruling: credit follows an outcome's assessed parts (BACKPROPAGATION 8.14).
 - Harm through inaction under a duty is simulated with hazards and guardians (M3e); whether "not
   braking" is inaction or part of driving, and duty from hazards of one's own making, follow the
-  author's rulings (BACKPROPAGATION 8.15, 8.17).
+  author's rulings (BACKPROPAGATION 8.17, 8.22.2, 8.25.3; the question was raised in 8.15).
 
 ### Demonstrated in simulation
 
@@ -295,7 +295,9 @@ on the latest build.
 Toy assumptions common to all, still to be removed (`sim/README.md`, model ladder): beings and
 plans in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's
 skill); causal signatures as points near unit axes; model and measurement error as Gaussian noise
-of fixed size; G chooses one plan a step from a menu of proposals, or screens transactions (M3d);
+of fixed size; G chooses one plan a step from a menu of proposals, or screens transactions (M3d),
+except in M7, where every entity runs its own G on its own noisy view (8.50), one global G being a
+limiting case;
 fixed agents and skills; one measured value per plan, with every loss counted as passing harm.
 Readings are means over 5 seeds of 500 steps unless a claim says otherwise. Which Lean modules the
 simulation covers, and which not yet: [sim/README.md, coverage](sim/README.md#coverage-of-the-specification).
@@ -392,8 +394,9 @@ Gaming (M6, toy world, 3–6 seeds)
   ledgers triples the deceptions uncovered (8.42).
 - Colluding voters (toy decision world; outcomes apparent 70% of the time; readings before the
   scoring correction of 8.38's status): a bloc of the most reputable fifth of experts lowers
-  decision accuracy only from 97% to 93%; delegation amplifies a larger bloc's capture (30% of
-  experts: 66% with delegation, 86% without) until votes earn or cost reputation and delegations are
+  decision accuracy only from 97% to 93% (400 decisions); delegation amplifies a larger bloc's
+  capture (30% of experts: 66% with delegation, 86% without, over 800 decisions; the 400-decision
+  run in BACKPROPAGATION 8.28.5 read 70% and 85%) until votes earn or cost reputation and delegations are
   audited (L114), when the bloc's expertise share collapses and accuracy returns to 96%.
 - A bloc that defects only where outcomes stay hidden escapes this (79% correct on hidden decisions
   in the current build). Keeping the option not chosen available to locales by a novelty bonus
@@ -463,7 +466,7 @@ Governance and thresholds
   ([sim/test/m4_tests.jl](sim/test/m4_tests.jl), [sim/README.md, debatable escape](sim/README.md#the-debatable-escape-8263-8382-841)).
 
 What is not yet demonstrated at all: the `Conj_*` conjectures over a `SimTrace` (convergence,
-gaming resistance, parameter stability in general), population change (M7), and networks and
+gaming resistance, parameter stability in general), births, forks and graded personhood (M7), and networks and
 propagation (M8); see [docs/SIM_CONJECTURES.md](docs/SIM_CONJECTURES.md) and
 [docs/PLAN.md](docs/PLAN.md).
 
@@ -539,9 +542,11 @@ CI runs the Lean build ("Lean Action CI") and the simulation tests ("Julia Sim C
 - The Float reference (`BenefutureReference`) implements the core operators computably (Sy, Ŝy,
   As, V, escrow splitting, lazy continuous decay, parent domain aggregation, voting weights, and the
   rules the simulation calls). Correspondence with the ℝ specification is **not** proved.
-- The simulation defines no rule itself: every rule is a reference function exported through
-  `BenefutureReference/Export.lean` and called by `ccall`; Julia holds the world model and input
-  guards. Each increment starts with acceptance tests (against `spec/vectors/` where they apply) and
+- The simulation is meant to define no rule itself: rules are reference functions exported through
+  `BenefutureReference/Export.lean` and called by `ccall`, and Julia holds the world model and input
+  guards. Most rules already are; the exceptions still computed in Julia (the contention map in
+  deliberation and AdvAp's recount in governance) are listed in the
+  [parsimony audit](sim/README.md#parsimony-audit) as candidates to move to the Lean reference. Each increment starts with acceptance tests (against `spec/vectors/` where they apply) and
   an adversarial suite, run red before implementing. Ladder, run lengths, noise ranges, governed
   thresholds and the parsimony audit: [sim/README.md](sim/README.md).
 - Vector files and the spec definitions they match:

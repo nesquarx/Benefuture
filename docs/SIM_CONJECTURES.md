@@ -22,12 +22,12 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 
 | # | Claim | Source | Measurable form | Status |
 |---|---|---|---|---|
-| A7 | Revealing flaws pays more than exploiting them, so exploitation falls | Introduction; System Design; L160 | exploit rate and payoff gap over time | `Conj_GamingResistance` |
+| A7 | Revealing flaws pays more than exploiting them, so exploitation falls | Introduction; System Design; L160 | exploit rate and payoff gap over time | `Conj_GamingResistance`; sim (toy, M3c and M5): AdvAp pays revealing above exploiting; uncovered deceptions are repaired, blocked marginal domains fall from 9 to 3 of 24, a stealthy bloc's hidden decisions return from 79% to 99.7% right (BACKPROPAGATION 8.38, 8.42; [sim/README.md, AdvAp](../sim/README.md#adversarial-adaptation-advap-l160-838)) |
 | A8 | Bounty farming is deterred | Adversarial adaptation; L160 | farming payoff < 0 at realistic detection p | Lean (conditional on p > B/C); sim estimates p |
 | A9 | Systems strengthen under attack | System Design (Antifragility) | post-attack performance > pre-attack | new |
 | A10 | Harm_Intv: non-falling harm triggers intervention, so harm trends down | L150 | harm trend after interventions | Lean (trigger); sim (trend) |
 | A11 | Rc_Innovation: non-falling resource use triggers innovation, so resource use per value falls | L151 | RA(t) trend | new |
-| A12 | Graceful degradation: under degraded context, goal performance degrades smoothly, not catastrophically | L154–156; Progressive complexity | G vs. context-degradation curve | new |
+| A12 | Graceful degradation: under degraded context, goal performance degrades smoothly, not catastrophically | L154–156; Progressive complexity | G vs. context-degradation curve | sim (toy, black swans): each fallback engages (prediction-based payment through an outage, the parent model during capture, repair through the commons after a catastrophe) and floors recover (BACKPROPAGATION 8.23; [sim/README.md, black swans](../sim/README.md#black-swans-8224-823)) |
 | A13 | Required trust decreases layer by layer | L161 | required trust per layer | new |
 
 ### Economy
@@ -39,10 +39,10 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | A16 | Endogenous supply removes inflation/deflation mechanisms | Benefuture currency (Supply Stability) | price-level variance vs. fiat baseline | Lean (accounting identity); sim (stability) |
 | A17 | Resource costs prevent costless cycling | Benefuture currency | net gain of transaction cycles < 0 | Lean (`resource_use_without_good_burns`) |
 | A18 | Prosocial currencies win; weak ones fade | Implementation prototype | currency share vs. measured U/H per resource | new |
-| A19 | Escrow calibrates: over-estimators face rising escrow | Introduction; Benefuture currency | escrow ratio vs. calibration error | new |
+| A19 | Escrow calibrates: over-estimators face rising escrow | Introduction; Benefuture currency | escrow ratio vs. calibration error | sim (toy, M6): models price each actor by its track record, so an overpromiser is paid as an honest agent and gains nothing (BACKPROPAGATION 8.29); the ledger ratchet (`ratchet_credence_ref`, 8.42) is built but inert in the toy, where settlement follows within the step ([sim/README.md, M6](../sim/README.md#m6-observations)) |
 | A20 | Balance overflow does not kill excellence incentives | Critique addressal (overflow) | output of top producers with/without overflow | new |
-| A21 | Causal distribution credits indirect contributions, approximating Shapley values | Critique addressal (causal attribution) | CD vs. Shapley on small games | new |
-| A22 | Fork factories gain nothing | Critique addressal (forks) | payoff of fork-heavy strategies ≤ baseline | new |
+| A21 | Causal distribution credits indirect contributions, approximating Shapley values | Critique addressal (causal attribution) | CD vs. Shapley on small games | by construction: CD is Shapley over assessed coalition values (`shapley_ref`; BACKPROPAGATION 8.17–8.18); sim (toy, M3d): intermediaries earn almost nothing, co-funders are credited, every outcome is fully distributed ([sim/README.md, M3d](../sim/README.md#m3d-observations)) |
+| A22 | Fork factories gain nothing | Critique addressal (forks) | payoff of fork-heavy strategies ≤ baseline | Lean (fork conserves reputation and currency, `fork_conserves_per_domain_*`); sim (toy, M5): with the base vote divided among a fork family forks gain nothing; with a base vote per identity, 50 copies cut accuracy from 99.5% to 92.8% (BACKPROPAGATION 8.34, ruled for now; [sim/README.md, forks](../sim/README.md#identity-forks)) |
 | A23 | Domain-locking prevents wealth → power conversion | Critique addressal | correlation of balance with influence | new |
 | A24 | Compute-heavy models lose currency competition | Benefuture currency; L82 | share of heavy-model currencies | Lean (`heavier_model_less_efficient`); sim (dynamics) |
 
@@ -51,8 +51,8 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | # | Claim | Source | Measurable form | Status |
 |---|---|---|---|---|
 | A25 | Delegation stays dispersed under the cap | L114; Government | max delegate share | Lean (bound); `Conj_DelegationDispersed` |
-| A26 | Expertise-and-impact weighting decides better than one-person-one-vote or technocracy | Government; Critique addressal (epistocracy) | decision quality vs. baselines | new |
-| A27 | Anti-corruption: making good easier than bad, with distributed power, reduces corruption | L159; Anti-Corruption | corruption rate | new |
+| A26 | Expertise-and-impact weighting decides better than one-person-one-vote or technocracy | Government; Critique addressal (epistocracy) | decision quality vs. baselines | sim (toy, M5, skill sharpening judgement): expertise-weighted 98.5% against 94.8% for one agent, one vote; domain-relative 98.0–98.6% ([sim/README.md, M5](../sim/README.md#m5-observations)); technocracy baseline not yet run |
+| A27 | Anti-corruption: making good easier than bad, with distributed power, reduces corruption | L159; Anti-Corruption | corruption rate | native, no mechanism of its own (BACKPROPAGATION 8.41): carried by restorative friction (causal-distribution penalties, AdvAp liability) and distributed power (delegation cap, overflow); no separate corruption rate measured |
 | A28 | SigThGv settles thresholds without oscillation | L157 | parameter variance over time | Lean (drift bound); `Conj_ParamStability` |
 | A29 | Domain-locked reputation (no halo/horn) allocates trust better | Domain; Reputation | trust-allocation accuracy vs. global reputation | new |
 | A30 | Decay prevents coasting without cliff-edge punishment of sabbaticals | Critique addressal (decay) | reputation paths of active vs. paused agents | new |
@@ -68,7 +68,7 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | A35 | The Repugnant Conclusion is blocked | Benefuture goals | mean H under population growth | `Conj_NoRepugnantDrift` |
 | A36 | Convex harm prevents sacrificial (organ-harvest) trade-offs | Benefuture goals | such actions never chosen | Lean (`dominated_plan_not_chosen`, `removal_cannot_raise_floor`, `removal_cannot_raise_quantile_floor`); sim M7: neither G's quantile floor nor V with deaths as irreparable harm blocks a small sacrifice that lifts everyone else; Fr, reported, marks it (BACKPROPAGATION 8.47, awaiting the author) |
 | A37 | Quantile floors and saturation neutralise utility monsters | Benefuture goals | share captured by high-capacity agents | new |
-| A38 | Diversity axiom prevents monoculture and stagnation | L158; Culture | cultural/model diversity; novelty injection after stagnation | new |
+| A38 | Diversity axiom prevents monoculture and stagnation | L158; Culture | cultural/model diversity; novelty injection after stagnation | sim (toy, M5): the split trial with novelty bonuses corrects a stealthy bloc's damage (hidden decisions 69% → 89%; BACKPROPAGATION 8.30), and on contested questions trials lift 75.8% to 80.7%, 86.7% with deliberation (8.45) ([sim/README.md, M6](../sim/README.md#m6-observations), [M5](../sim/README.md#m5-observations)); cultural diversity not yet |
 | A39 | Harm-propagating cultures die out; harmless ones persist | Critique addressal (imperialism) | survival by culture type | new |
 | A40 | Understanding adapts away less than happiness | Introduction (Stability) | adaptation rates (agent-model assumption) | assumption, not testable in sim alone |
 | A41 | Synergy selects actions that raise U and H together | Philosophy; Benefuture goals (Synergy Override) | share of chosen actions with joint gains | Lean (cross term); sim (frequency) |
@@ -101,8 +101,8 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 | B12 | **Novelty farming:** manufactured trivial novelty earns about zero | N's trivial tier is ≈ 0; within-life variety N(Se) could reward churn. |
 | B13 | **Partial adoption:** Bf mechanisms keep their properties when coexisting with a fiat economy | Transition is where most frameworks fail (Critique addressal, transition). |
 | B14 | **Noise robustness:** G's choices degrade smoothly as MM noise grows | Links measurement quality to decision quality directly. M1: the true floor falls in about 9% of steps from marker noise alone; heavy model noise freezes G (BACKPROPAGATION 8.1). |
-| B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal; the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. |
-| B17 | **Frontier compounding:** frontier U gains are shared through teachable tiers and compound, so convex W_U does not leave the floor behind | U is shared, not moved (`u_sharing_gain_nonneg`); measure how frontier gains reach later floor gains and the top-decile share as ε grows; peak ranks above teachable, so untransmissible peak gains are the case to watch; refines A37. |
+| B16 | **Fr emergence:** Fr-violating plans are rarely chosen although Fr does not filter G | Fr is a subgoal (SPEC_DIVERGENCES §8.8); the claim is that priorities produce it. Measure the share of chosen plans failing `fr_permissible`, and whether each is a tragic choice. Sim M7: a small sacrifice that lifts everyone else is chosen and Fr, reported, marks it (BACKPROPAGATION 8.47, awaiting the author). |
+| B17 | **Frontier compounding:** frontier U gains are shared through teachable tiers and compound, so convex W_U does not leave the floor behind | U is shared, not moved (`u_sharing_gain_nonneg`); measure how frontier gains reach later floor gains and the top-decile share as ε grows; peak ranks above teachable, so untransmissible peak gains are the case to watch; refines A37. Sim M7 (BACKPROPAGATION 8.49, 8.50): teaching and research are complements (floor, median and peak rise together with ε); uplift peaks at a share of time on research (near a fifth with G per entity), beyond which the peak keeps rising and concentrating ([sim/README.md, M7](../sim/README.md#m7-observations-deaths-first-rung)). |
 | B18 | **NHa relabelling:** harm relabelled as NHa to escape Ha_max does not pay | `ha_lt` excludes closing NHa dips; the incentive to label is new. |
 | B19 | **Diversity flip point:** where γ·Σ N lets a large diverse population outweigh a small homogeneous one | Depends on γ, q and headcount; the opening Parfit case. |
 | B20 | **Counterfactual inflation:** a model biased toward pessimism about ¬A is detected | The escrow ratchet sees over-estimation only on the measured leg; cohort records discipline ¬A. Measure detection lag for novel actions without cohort records. |

@@ -18,12 +18,12 @@ Per the Ground Rules:
 - **Lean Spec Choice**: Removed `FLOURISHING_BASELINE_FLOOR` and the dissolution claims. Added an `[OPEN]` note and formal lemma `floor_shifts_repugnant_conclusion`: for any non-zero floor $f > 0$, a sufficiently large population $n$ at wellbeing $f$ exceeds any fixed finite flourishing population. The floor relocates the threshold rather than solving the paradox.
 
 ### 1.2 Anti-Corruption Choice Architecture (AC) ([P])
-- **Source**: `Bf_Pseudocode.txt` L156: `AntiCorruption := ChoiceArchitecture(Effort(Good) < Effort(Bad));`.
+- **Source**: `Bf_Pseudocode.txt` L159 (worded then `AntiCorruption := ChoiceArchitecture(Effort(Good) < Effort(Bad));`, now `AntiCorruption«AC» := (Easier(Gd) > Easier(Bd), DistributedPo) -> ↓Cr(Po_e ⊆ E);`).
 - **Divergence**: Previously framed as a mathematical theorem that $a < a + b + c$ from definition.
 - **Lean Spec Choice**: Recast as `AntiCorruptionDesignRequirement`: a design parameter assumption requiring restorative friction to be strictly positive (`ac_friction_pos_assumption : 0 < restorativeFriction`).
 
 ### 1.3 Anti-Cobra Vulnerability Clawbacks (AdvAp) ([P])
-- **Source**: `Bf_Pseudocode.txt` L157; `Adversarial adaptation.txt` §Nuance 1.
+- **Source**: `Bf_Pseudocode.txt` L160; `Adversarial adaptation.txt` §Nuance 1.
 - **Divergence**: Previously claimed a theorem eliminating bounty farming.
 - **Lean Spec Choice**: Recast as `AntiCobraDesignRequirement`: clawback $\ge$ bounty is guaranteed by construction in the reward formula (`creator_liability := bounty + overhead`), but preventing bounty farming critically assumes that causal attribution successfully detects who planted the flaw (`flaw_planter_attribution_assumption`).
 
@@ -50,7 +50,7 @@ Per the Ground Rules:
 ## 2. Phase 2 Divergences (Faithful Core Mathematics)
 
 ### 2.1 Unified Parameter Governance (GovParams & ParamSchedule) ([R], [P])
-- **Source**: `Bf_Pseudocode.txt` L11-14, L25, L101, L155.
+- **Source**: `Bf_Pseudocode.txt` L11-14, L25, L101, L157.
 - **Specification**: All governed parameters ($\alpha, \beta, \gamma, \delta, \kappa, q_+, q_-, \lambda, \nu, h, \lambda_+, \lambda_-, Th_{sig}, Th_{gov}$) are unified into one record `GovParams` subject to Significant Threshold Governance (`SigThGv`).
 - **Priority Schedule**: Instead of hardcoding ad-hoc integer multipliers (100, 60, 40), tiered priorities take weights from a general strictly decreasing `ParamSchedule` over $\mathbb{R}$.
 
@@ -80,10 +80,11 @@ Per the Ground Rules:
   - Under a lexical reading (`LexicalHarmLt`), `no_finite_exchange_rate_lexical` proves $\forall n : \mathbb{N}, (0, n) <_{lex} (1, 0)$ (no quantity of minor harms compensates one catastrophic harm).
 - **Spec Implication**: Left unresolved as an open ethical parameterization choice between utilitarian optimization and deontological thresholds.
 
-### 2.5 Freedom vs Necessary Harm Tension (Fr vs NHa) ([OPEN] → resolved in §6.1, [P])
+### 2.5 Freedom vs Necessary Harm Tension (Fr vs NHa) ([OPEN] → resolved in §6.1, [P]; §6.1's filter removed in §8.8)
 - **Source**: `Bf_Pseudocode.txt` L55 ($NHa := Ha : Ha \to \uparrow V > Ha$) vs L135 ($Fr := f_{max}(\dots) \mid \neg Ha_{irreversible}$).
 - **Finding**: Theorem `freedom_excludes_irreversible_necessary_harm` constructs an action causing irreversible harm where value yield exceeds harm ($\Delta V > Ha$). It satisfies $NHa$ (value-positive) but is categorically rejected by $Fr$ (deontological non-harm constraint).
 - **Spec Implication**: Fundamental structural tension between global optimization and rights constraints; tagged `[OPEN]`.
+- **Status**: §6.1 resolved it lexically (Fr filtering G's candidates); §8.8 removed that filter (Fr is a subgoal reported per plan, and a filter fails tragic choices), so the tension now rests on whether V's convex harm weights produce Fr (`dominated_plan_not_chosen`; BACKPROPAGATION 8.47).
 
 ### 2.6 Dynamic Assessment $As$ (L48) ([R])
 - **Source**: `Bf_Pseudocode.txt` L48.
@@ -95,7 +96,7 @@ Per the Ground Rules:
 - **Goal G Contracting Action Bugfix**: Previously, `goal_G` assigned value 0 to contracting actions, allowing an illegal contracting action (value 0) to outrank an eligible expanding action with negative value (e.g. -5).
   - Fixed by defining `is_eligible_action` and `eligible_actions` filtering candidates by reality enhancement.
   - **SPEC-CHOICE**: Adopted non-decreasing reality scope ($\Delta \ge 0$) as the eligibility baseline for $\uparrow \mathbb{R}$. A strictly positive requirement ($\Delta > 0$) would disqualify routine flourishing-preserving maintenance actions.
-- **Distributional Push (`pushDistr`, L60)**: Marked `[OPEN]` and left unformalized in the core spec; requires formal population quantile distribution mechanics deferred to simulation.
+- **Distributional Push (`pushDistr`, L62)**: Marked `[OPEN]` and left unformalized in the core spec; requires formal population quantile distribution mechanics deferred to simulation.
 
 ---
 
@@ -129,7 +130,7 @@ Per the Ground Rules:
   - `Re`: Transparent query view synthesizing history, relevance, and retracted items.
 - **Anti-Halo Domain Isolation**: Proved theorem `anti_halo_domain_isolation` on `DecisionProfile` and `VW_expert`: a voter with zero relevance across a decision's leaf domain support receives exactly 0 expert voting weight, preventing cross-domain halo/horn leakage.
 - **Fork / Merge Conservation**: In `Benefuture/Ontology/Entity.lean`, proved `fork_conserves_per_domain_*` and `merge_conserves_per_domain_*`, ensuring splitting or merging entities cannot manufacture or destroy reputation history or currency.
-- **Exponential vs Subtractive Decay ([OPEN])**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision.
+- **Exponential vs Subtractive Decay ([OPEN])**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision. The lazy cache of §4.3 ([R]) and the reference and simulation (`Rep_decay_ref`) use the exponential form; the sources still name neither (BACKPROPAGATION 5.6).
 
 ---
 
@@ -142,7 +143,7 @@ Per the Ground Rules:
 - **Goodhart Resistance**: Incentives must strictly reward latent improvement, not purely observed proxies (`GoodhartResistantIncentive`).
 
 ### 4.2 Operational Semantics (State, Event, Step) ([R])
-- **Source**: `Bf_Pseudocode.txt` L25, L26, L101, L113, L132, L155, L157.
+- **Source**: `Bf_Pseudocode.txt` L25, L26, L101, L113, L132, L157, L160.
 - **Specification**: Small-step transition semantics `Step : State → Event → State → Prop` over 12 operational events (`mint`, `spend`, `escrow_lock`, `escrow_release`, `escrow_forfeit`, `bounty_post`, `bounty_claim`, `bounty_clawback`, `vote_cast`, `entity_fork`, `entity_merge`, `time_advance`).
 
 ### 4.3 RepCache & Lazy Continuous Decay ([R])
@@ -155,7 +156,7 @@ Per the Ground Rules:
 - **Recount Triggers**: Formalized predicate `RecountNeeded` triggered by elapsed time $\Delta t > \Delta t_{\max}$, uncheckpointed events $N > N_{\max}$, or formal dispute.
 
 ### 4.4 System Invariant Preservation ([R])
-- **Source**: `Bf_Pseudocode.txt` L26, L132, L155.
+- **Source**: `Bf_Pseudocode.txt` L26, L132, L157.
 - **Theorems Proved over `Step`**:
   - `step_preserves_mem`: Append-only memory ledger. Past records are immutable (`Invariant_Mem`).
   - `step_preserves_id`: Active identity injectivity / uniqueness (`Invariant_Id`).
@@ -164,7 +165,7 @@ Per the Ground Rules:
   - `auto_spill_enforces_ceiling`: Automatic balance spill to community treasury enforces $balance(E) \le Th_{bal}$ (`Invariant_BalOvflw`).
 
 ### 4.5 Governance & Incentives ([R], [P], [OPEN])
-- **Source**: `Bf_Pseudocode.txt` L34, L114, L117, L157.
+- **Source**: `Bf_Pseudocode.txt` L34, L114, L117, L160.
 - **Liquid Democracy Acyclicity**: Defined `DelegationGraph` with well-founded acyclicity condition. Proved `delegation_no_trivial_cycles`.
 - **Delegation Cap & Power Concentration ([OPEN] → resolved in §7.4, [R])**: Theorem `star_topology_power_concentration` proves that without a cap, a star delegation graph allows a single entity to concentrate 100% of voting weight. Proposed `SatisfiesDelegationCap` (e.g. 5% max weight).
 - **Strict Propriety of Brier Score**: In `Benefuture.Governance.Incentives`, proved `brier_score_strictly_proper` via algebraic decomposition $\mathbb{E}[L(p)] = (p - q)^2 + q(1-q)$. Reporting truth $p = q$ is the unique global minimizer.
@@ -250,7 +251,7 @@ Per the Ground Rules:
 - `As_ref` returned the raw measurement ex post and never normalised. Now `((t > t₀ ? Me : Pr) − Pr_counter) / Th_Cx`, matching `dynamic_assessment_real`.
 - Added `Sy_signed_ref`, `HaWt_ref`, and population operators matching `Benefuture.Proposed.PopulationDirection`: `skew_key_ref`, `population_novelty_ref`, `effective_types_ref`, `pareto_front_ref`, `accumulate_capped_ref`.
 - `Escrow_split_ref` took a protocol overhead that L84 does not specify; removed (upfront = nominal·P, hold = nominal·(1 − P)).
-- `Voting_weight_ref` now takes the decision profile (Σŵ·Re, L113), the Government.txt coefficients (base, expertise, impact weights) and returns whether the vote is optional (VW < Th, L113). The base weight comes from Government.txt; L113 is silent on it.
+- `Voting_weight_ref` now takes the decision profile (Σŵ·Re, L113), the Government.txt coefficients (base, expertise, impact weights) and returns whether the vote is optional (VW < Th, L113). The base weight came from Government.txt, L113 then being silent on it; L113 now carries `Base_VW` and the domain-relative expertise term Re/ΣRe (BACKPROPAGATION 5.3, 8.22.1; `relative_reputation_ref`).
 - `EHR_attenuate_ref` was misnamed: it implements cyclic-review attenuation (`attenuate_cyclic_reviews`), not EHR (L117). Renamed `cyclic_review_attenuate_ref`.
 - Vectors: `assessment.json` and `value.json` regenerated with `defaultGovParams`; new `population.json`. Values agree with the Lean theorems (e.g. skew key −81/128 → −1.0646; novelty of 5 copies = 1).
 
@@ -287,7 +288,7 @@ Per the Ground Rules:
 - **Consequence**: λ ≤ 1 is a structural requirement, recorded in `Admissible` (§8.2). Above 1, a mixed gain/loss profile could rank below a dominated one.
 
 ### 8.2 Parameter Space and SigThGv ([R] structure, [P] bootstrap values)
-- **Source**: L11, L13–14, L25, L54, L61, L73, L101, L114, L135, L155, L157.
+- **Source**: L11, L13–14, L25, L54, L61, L73, L101, L114, L135, L157.
 - **Lean Spec Choice** (`Benefuture.Systems.ParamSpace`): `ParamVector` (every governed parameter), `Admissible` (ranges and joint constraints: L11 order; q₊ > 1; q₋ ≥ q₊; 0 ≤ λ ≤ 1; Fr confidence in (0, 1]; ordered severities; window ≥ 1; delegation cap in (0, 1]), `bootstrapParams`, `toGovParams`, `toFrParams`, `GovMode`, `gov_step`/`gov_run` (proposals adopted only if admissible), `perturb_step`/`perturb_run` (controlled perturbation within δ).
 - **Proved**: `bootstrap_admissible`, `governed_params_admissible` (every point SigThGv can reach is admissible), `perturb_run_drift` (n perturbation steps move each field by at most n·δ; large moves need debate), `admissible_loss_aversion`, `admissible_dominated_plan_not_chosen` (§8.8). `dist_weight` (w_D, bootstrap 1, admissible > 0) is G's distribution weight.
 
@@ -322,13 +323,20 @@ Per the Ground Rules:
 - **Proved**: `inaction_admissible` (so G always chooses, `goal_G_some`), `goal_G_sound`, `goal_value_strict_mono`, `dominated_plan_not_chosen` (trolley; Fr emergence when V's convex harm weights make the Fr-compliant plan better for every being), `admissible_dominated_plan_not_chosen`, `level_gain_perm` (anonymity), `levelling_down_never_helps`, `uplift_gain_nonneg`, `higher_u_gain_valued_more`, `lower_h_gain_valued_more`, `higher_harm_reduction_valued_more`, `inaction_dist_zero`, `dim_priority_order`, `sy_score_single`, `pushDistr_not_redundant` (V and D differ: the same H unit scores differently in D by level), `pigou_dalton_h`, `pd_run_raises` (any Pigou–Dalton sequence raises Σ W_H for every concave-shaped W_H: the "if" direction of Hardy–Littlewood–Pólya/Karamata), `u_sharing_gain_nonneg` (U is shared, not moved: teaching raises the learner and leaves the teacher's level intact, so U has no Pigou–Dalton dual), `dist_score_ignores_absent` (new beings cannot buy D), `uplift_beats_inaction`, `removal_cannot_raise_floor`, `survivor_floor_rises_on_removal`.
 - **Removed**: `choose_action`, `chosen_action_fr_sound`, `removal_never_chosen`, `plan_admissible`, `choose_plan`, `choose_plan_sound`, `choose_plan_sy_sound`, `governed_choose_plan_sy_sound`, `plan_front`.
 - **Open**: the W family (e.g. x^{1+ε} for U, satisficing-saturating for H) is a parameter for SigThGv and sim; robustness across whole families (second-order dominance for concave W, increasing convex order for convex W) is a candidate proof.
+- **Simulation**: follows this section. Freedom is reported per plan (`fr_permissible_ref`), never a filter on G; in M7 a small sacrifice that lifts everyone else is chosen and Fr, reported, marks it impermissible (BACKPROPAGATION 8.47). G runs per entity, each on its own noisy view (BACKPROPAGATION 8.50).
 
 ### 8.9 Domain Overlaps as Long-Term Rolling Averages ([R] ruling, [P] formalization; simulation)
 - **Source**: L22 (`Rel ← Mem !declared`); Domain.txt (weights do not decay temporally; initial structure bootstrapped from established classifications); author ruling BACKPROPAGATION 8.12; `Benefuture.Proposed.DomainHierarchy` (`S_with_confidence` = S·n/(n+k)).
 - **Lean Spec Choice** (`BenefutureReference.Domains`): `membership_rolling_ref` μ ← μ + r·(min(m_leaf, m_p) − m_leaf·μ), clamped to [0, 1], applied per logged action (executed or blocked). Its long-run average is the subsethood S(leaf, p); an action outside the leaf leaves μ unchanged, so domains never fade. Diverges from `S_with_confidence`, whose damping toward zero would fade sparsely used leaves.
-- **Also**: `classify_network_ref` (descent from parents matched by signature membership to their member leaves, μ ≥ μ_min; remainder stuck at parents or the root), `fallback_network_ref` (ineligible leaves to eligible parents by μ, else StandCoin), `currency_eligible_ref` (novel threshold floored at 0.5, after a score-only phase), `accuracy_ref` (1 / (1 + RMSE); also the escrow confidence).
+- **Also**: `classify_network_ref` (descent from parents matched by signature membership to their member leaves, μ ≥ μ_min; remainder stuck at parents or the root), `fallback_network_ref` (ineligible leaves to eligible parents by μ, else StandCoin), `currency_eligible_ref` (novel threshold floored at 0.55, after a score-only phase; BACKPROPAGATION 8.35), `accuracy_ref` (1 / (1 + RMSE); no longer the escrow confidence).
+- **Credence and accuracy ([R] 8.36, [P] formalization)**: `credence_ref` (a model's credence that an action's assessed value is positive: predicted value over the model's uncertainty through the normal distribution function, capped at `max_credence`; it feeds escrow, L84) and `credence_accuracy_ref` (1 − Brier / 0.25, random guessing 0). Status thresholds 0.9 established, 0.75 novel or coarse, never below 0.55 (L82; 8.35–8.36).
+- **Relative status bar ([R] 8.41, [P] formalization)**: `relative_bar_ref`: a leaf model backs its currency if it matches the accuracy of the qualified currency its work would otherwise fall to, capped at the established bar and floored at the coarse bar (L82).
+- **Debatable escape ([R] 8.26.3, 8.38.2, [P] formalization)**: `escape_accept_ref`: a proposal tried locally is adopted only if it beats the incumbent by the significance rule, its gains exceed its harms and it caused no irreparable harm (L157); with `select_candidate_ref` and `gauge_radius_ref` (8.22.3).
+- **Adversarial adaptation ([R] 8.38, 8.42, [P] formalization)**: `advap_reward_ref` (a share of the overstatement repaired, at least a floor), `advap_liability_ref` (reward plus audit, charged to the deceiver), `report_penalty_ref` (audits charged past a frivolous pattern), `ratchet_credence_ref` (escrow credence pulled towards a coin toss by the negative share of the actor's ledgers) (L160, L84).
+- **Freedom**: `fr_permissible_ref` exports §7.8's `Fr` with its defaults; reported per plan, not a filter on G (§8.8).
 
 ### 8.10 Causal Distribution by Assessed Parts ([R] ruling, [P] formalization; simulation)
-- **Source**: L93–94; author ruling BACKPROPAGATION 8.14; `Benefuture.Systems.Substrate` (`causal_contribution_ratio`, `causal_distribution_settlement`; counterexample `cc_clamped_overdistributes`).
+- **Source**: L94–96; author ruling BACKPROPAGATION 8.14; `Benefuture.Systems.Substrate` (`causal_contribution_ratio`, `causal_distribution_settlement`; counterexample `cc_clamped_overdistributes`).
 - **Lean Spec Choice** (`BenefutureReference.Economy`): `cc_share_ref` (a part over its side's total, clamped to [0, 1]) and `cause_settlement_ref` (contribution × side total − escrow paid). The simulation splits an outcome into parts per being and contributor (gains valued together, losses together; side by assessment, `As_ref`), pays positive parts and penalises negative parts. The spec's clamped value-added ratio over the net outcome is not used.
-- **Open**: the undistributed remainder of mixed outcomes; deeper chains with degree of separation (L94 fallback).
+- **Open** (when written): the undistributed remainder of mixed outcomes; deeper chains with degree of separation (L95 fallback).
+- **Superseded** by outcome-first distribution (BACKPROPAGATION 8.16–8.18): Shapley shares over each outcome (`shapley_ref`, exact up to 10 contributors in the simulation), gated by the causal assessment's confidence (`cc_assessed_ref`), else the L95 traversal by degree of separation (`traversal_shares_ref`); nothing is left undistributed. Lean: `Benefuture.Proposed.OutcomeDistribution` (`shapley_null`, `sides_sum`, `paid_share_in_unit`, `breached_duty_assessed_negative`, `inaction_without_duty_assessed_zero`). Deeper chains remain one link deep in the simulation.
