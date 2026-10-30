@@ -1233,3 +1233,43 @@ Implementation reading, [P]: the optimistic average is the mean of the model poo
 governed quantile, accepted when the pool's confidence clears a governed threshold; the escrow is sized
 to the predicted shortfall below the baseline over the dependency window, and settles against measured
 outcomes like any escrow. Candidate homes: Government (Birth), L68, L74, the escrow lines.
+
+**8.53-Lean-a Finding: forks game Shapley shares (false-name manipulation; to renumber).** Aziz,
+Bachrach, Elkind & Paterson (2011, *JAIR*, https://doi.org/10.1613/jair.3166) show that splitting one
+player into several identities can raise Shapley-type shares. Tested in the funding game that causal
+distribution uses (an actor's effect counts only when the coalition can fund the action;
+`sim/test/shapley_sampling_tests.jl`, "False names"): a funder whose pledge is indispensable, split into
+k indispensable identities, takes k/(k+1) of the outcome alongside the actor instead of 1/2 (k = 4:
+0.8). Diminishing returns in the assessed value (a concave valuation of summed effects) also reward
+forking (by up to about 17% of the forker's share in random small games); increasing returns penalise
+it; additive effects are neutral. What holds: the forks never take more than the whole outcome. The
+no-gain bound fails, exactly or sampled. Candidate remedy, [P]: share among bound identities, as 8.34
+does for the base vote: a fork family (identity binding, L122) is one player in the coalition game,
+its share then divided among its members; alternatively, funders are credited in proportion to their
+pledges within the funding side rather than as separate Shapley players. Either keeps causal and
+ideological inheritance and grants no claim from the fork itself. Candidate homes: L93–L95, L122,
+Benefuture currency (causal distribution), `Proposed.OutcomeDistribution`.
+
+**8.53-Lean-b Proposal [P]: asymmetric or causal Shapley for causal distribution (to renumber).**
+Causal distribution runs over transaction trees, where contributions have an order (a maker's output
+exists before the carrier carries it). Symmetric Shapley ignores that order. Asymmetric Shapley (Frye,
+Rowat & Feige 2020, NeurIPS) restricts the orderings averaged to those consistent with a causal order;
+causal Shapley (Heskes, Sijben, Bucur & Claassen 2020, NeurIPS) values coalitions by interventions on a
+causal graph, splitting direct from indirect effects. Both fit L94–L95 (the causal-explanation model's
+graph and the substrate's degree of separation) better than symmetric shares, and the sampling estimator
+(`shapley_sampled_ref`) carries over to asymmetric Shapley unchanged (sample only consistent orderings).
+No implementation; for the author with 8.18 (coalition values). Candidate homes: L94, L95,
+`Proposed.OutcomeDistribution`.
+
+**8.53-Lean-c Note: reusing Holliday–Norman–Pacuit's voting formalisation (to renumber).** Their
+formalisation (LORI 2021, https://doi.org/10.1007/978-3-030-88708-7_9; repository
+github.com/chasenorman/Formalized-Voting) is Lean 3 (`leanpkg.toml`), shows no licence on its repository
+page, and is built on ordinal profiles (each voter's strict preference over candidates) with social
+choice correspondences and Split Cycle. Benefuture's governance (L113–L114) is cardinal and weighted:
+binary or few-option decisions decided by an expertise- and impact-weighted tally with capped
+delegation. Findings: nothing ports directly (Lean 3 to Lean 4 is a rewrite, and an unlicensed source
+cannot be copied); the ordinal machinery matters only if Benefuture adopts ranked multi-option
+decisions, in which case the minimal definitions (profile, margin, Condorcet winner, an axiom such as
+positive involvement) would be written afresh in Lean 4 over weighted voters. Its value now is as a
+checklist of axioms against which weighted voting with a cap could be tested (anonymity fails by
+design: weights differ; neutrality and monotonicity should hold). Nothing to change in the sources.

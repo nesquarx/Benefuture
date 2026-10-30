@@ -218,4 +218,11 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
   scarcity_cost_ref base available capacity
 
+-- Shapley sampling
+@[export bf_shapley_sampled] def shapleySampled (n m : USize) (perms vals : FloatArray) : FloatArray :=
+  ⟨shapley_sampled_ref n.toNat m.toNat perms.data vals.data⟩
+
+@[export bf_shapley_sample_count] def shapleySampleCount (n : USize) (eps delta : Float) : USize :=
+  (shapley_sample_count_ref n.toNat eps delta).toUSize
+
 end BenefutureReference.Export
