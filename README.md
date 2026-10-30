@@ -115,9 +115,13 @@ results. Three kinds of evidence, never to be read as more than they are:
   discoveries.
 - **Demonstrated in simulation**: observed in `sim/` under the stated toy assumptions, as tests that
   pass on every CI run or as readings averaged over a few seeds. Not proofs, and not
-  significance-tested.
-  Testing the simulation against the Lean vectors is verification (the code does what the rules
-  say), not validation: no simulation result has been checked against data from the world.
+  significance-tested. The numbers predict nothing about the world; what they do show is how the
+  framework behaves under imperfection and adversity at levels adapted from empirical sources
+  (noisy models and measurements, partial advice taking, deceivers, colluders, attackers that
+  search for the worst strategy, catastrophes; `docs/CALIBRATION.md`), and where it fails
+  (failure-boundary batteries). Testing the simulation against the Lean vectors is verification (the
+  code does what the rules say), not validation: no simulation result has been checked against data
+  from the world.
 
 The simulation does not run the ℝ specification: it calls the Float reference (`BenefutureReference`)
 through C exports. The reference reproduces the spec's test vectors, but correspondence between the
@@ -342,7 +346,9 @@ Lean sources change ([sim/src/lean.jl](sim/src/lean.jl)).
 
 ### Demonstrated in simulation
 
-Every claim below is a toy-world reading, never certain (author ruling 8.33). Readings for the
+Every claim below is a toy-world reading, never certain (author ruling 8.33): a statement of how the
+rules behave when the world is noisy, people are imperfect and some actors are hostile, not a
+forecast. Readings for the
 transaction, hazard, governance and threshold rungs were taken before the rulings that mistakes
 decay slower than wins, that models use track records (8.29) and that world defaults are mildly
 imperfect (8.33); their tests still pass under those rulings, but the numbers quoted have not been
