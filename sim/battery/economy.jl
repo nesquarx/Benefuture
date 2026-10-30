@@ -90,4 +90,32 @@ rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "16")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "64")))
 t0, commit = time(), current_commit()  # the code this run tests
 bt = battery(converges, names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.06, grid = 6)
-write_results("economy", bt, names; clean = CLEAN.floor_u, minutes = (time() - t0) / 60, commit)
+const OUT = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))  # a scratch directory for trial runs
+write_results("economy", bt, names; clean = CLEAN.floor_u, minutes = (time() - t0) / 60, commit, dir = OUT)
+
+# Continuous methods (sim/src/methods.jl), on their own random stream after the outputs above, so
+# those repeat exactly. Readings: the success pattern's margin and its criteria's slacks, averaged
+# over seeds until the margin's standard error is within SE_TOL (between SEED_MIN and SEED_MAX seeds).
+# The margin covers the success pattern only; whether an attack pays stays with the binary oracle.
+const SE_TOL, SEED_MIN, SEED_MAX = 0.1, 3, 8
+const OUTPUTS = ["margin", "floor_u", "floor_h", "median_u", "median_h", "peak_u", "worst_drop"]
+function reading(sev)
+    per = Dict{Int,Vector{Float64}}()
+    r = seeds_until_stable(; tol = SE_TOL, min_seeds = SEED_MIN, max_seeds = SEED_MAX) do seed
+        m = pattern_margin(pattern(run_m3c(world(clamp.(sev, 0, Inf)); seed)), CLEAN; growth = GROWTH, harm = HARM)
+        per[seed] = [m.margin; collect(values(m.slacks))]
+        m.margin
+    end
+    (outputs = vec(mean(reduce(hcat, [per[s] for s in r.seeds]); dims = 2)), n = r.n)
+end
+mrng = Xoshiro(20261030)
+mbudget = (sobol = parse(Int, get(ENV, "BF_SOBOL", "16")), active = parse(Int, get(ENV, "BF_ACTIVE", "40")),
+           top = parse(Float64, get(ENV, "BF_SOBOL_TOP", "1.0")))
+if mbudget.sobol > 0 || mbudget.active > 0
+    t1 = time()
+    pool = bt.screen_scale .* gaussian_hypercube(mrng, 2000, length(names); μ = 0.5, σ = 0.25)
+    m = battery_methods(reading, names; rng = mrng, outputs = OUTPUTS, pool, sobol_n = mbudget.sobol, sobol_top = mbudget.top,
+                        active_budget = mbudget.active)
+    write_methods("economy", m, names; seed_rule = "the margin's standard error (Student-t inflated) is within $SE_TOL ($SEED_MIN to $SEED_MAX seeds)",
+                  screen_fail_rate = bt.screening.fail_rate, minutes = (time() - t1) / 60, dir = OUT)
+end

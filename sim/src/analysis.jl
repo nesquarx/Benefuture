@@ -55,3 +55,23 @@ function success_pattern(tr; from::Integer = 1)
      peak_u = g(tr.peak_u), peak_u_falls = falls(tr.peak_u), floor_u_falls = falls(tr.floor_u), floor_h_falls = falls(tr.floor_h),
      worst_drop = maximum(tr.worst_drop[r]))
 end
+
+"""
+    pattern_margin(sp, clean; growth, harm) -> (margin, slacks)
+
+The success pattern as one continuous reading against the battery's criterion: each criterion's
+slack scaled so the clean world reads 1 and the criterion's edge 0. Floors and medians of
+understanding and happiness: (growth / clean growth − `growth`) / (1 − `growth`); the peak of
+understanding: its growth over the clean world's (the criterion is no fall); harm's peak:
+(`harm` − drop / clean drop) / (`harm` − 1). The margin is the weakest slack, negative exactly when
+some criterion fails. Evaluation tooling, not a rule.
+"""
+function pattern_margin(sp, clean; growth::Real, harm::Real)
+    check(0 <= growth < 1 && harm > 1, "growth share in [0, 1), harm factor above 1")
+    fs = (:floor_u, :floor_h, :median_u, :median_h)
+    check(all(getfield(clean, f) > 0 for f in (fs..., :peak_u, :worst_drop)), "the clean world must grow and harm a little")
+    gr(f) = (getfield(sp, f) / getfield(clean, f) - growth) / (1 - growth)
+    slacks = (floor_u = gr(:floor_u), floor_h = gr(:floor_h), median_u = gr(:median_u), median_h = gr(:median_h),
+              peak_u = sp.peak_u / clean.peak_u, worst_drop = (harm - sp.worst_drop / clean.worst_drop) / (harm - 1))
+    (margin = minimum(values(slacks)), slacks = slacks)
+end
