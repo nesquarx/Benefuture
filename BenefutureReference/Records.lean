@@ -39,7 +39,7 @@ def neg_share_ref (gains losses : Float) : Float :=
 def credence_score_ref (credence outcome : Float) : Float :=
   1.0 - (credence - outcome) ^ 2 / 0.25
 
-/-- Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.53-M3a): when
+/-- Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.58-a): when
     predictions select which plans are carried out and only what is carried out is scored, a model
     can misreport unseen on the plans its predictions keep out. Given a uniform draw `u` in [0, 1),
     the governed exploration share and the `n` proposals not carried out, returns the 1-based index of

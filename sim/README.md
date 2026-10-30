@@ -647,7 +647,7 @@ Loyalty matters little because the reward's premium grows with the falsified gai
 ring rotating revealers to farm rewards pays each reward and audit through the rest of the ring
 (liability at least the reward); a false revelation needs evidence the examination establishes.
 
-### Attacks from the state of the art (docs/SOTA.md items 5, 7, 10; BACKPROPAGATION 8.53-M3a–e)
+### Attacks from the state of the art (docs/SOTA.md items 5, 7, 10; BACKPROPAGATION 8.58-a–e)
 
 `sim/test/m6_attacks_tests.jl`. Each attack runs against the native mechanisms first; what they do
 not cover is a finding.
@@ -671,7 +671,7 @@ too slow and too chancy to rely on. Explored work costs the Goal little where no
 pay, since the proposer pays its resource cost and its measured harm is the proposer's (tested).
 Scores are not weighted by the inverse of the chance a plan was carried out, which Chen et al. need
 for strict properness when a model's reports move the selection; full support makes misreporting on
-rejected plans costly, not strictly unprofitable ([P], 8.53-M3a). Off by default: exploring trades
+rejected plans costly, not strictly unprofitable ([P], 8.58-a). Off by default: exploring trades
 real outcomes for scoring coverage, an author decision.
 
 **Extremised forecasts under rank-based selection** (Witkowski et al. 2023). Rule level, equal-skill
@@ -686,7 +686,7 @@ readings above (seed 1) are unchanged by it, and seed 3 gains one takeover. In t
 (`ext_world`: models of the incumbent's exact skill, half of arrivals extremising) challengers clear
 the window before any wins, so the bar changes nothing there (takeovers 2, 2, 0 either way); no
 honest equal ever takes over, and every takeover is an extremist's. That is a calibration finding,
-not the rank rule (8.53-M3c): honest credences (`credence_ref`, predicted value over the record's RMS
+not the rank rule (8.58-c): honest credences (`credence_ref`, predicted value over the record's RMS
 error, no prior) are underconfident in a domain whose outcomes are mostly positive (credences 0.7–0.9
 come true 100% of the time, 0.3–0.7 in 67–100%), so a model stating half its uncertainty is better
 calibrated and the proper score rightly prefers it.
@@ -697,9 +697,9 @@ skill 0.6, 300 steps, 3 seeds.
 | Attack | Defence | Reading |
 |---|---|---|
 | Whitewashing: a liar (deceit 1) takes a new identity with chance 0.05 a step, shedding track record, ledgers and audit record | Identity binding (Lean `binding_admits_ref`: admitted only if `bind_quorum` 2 of 3 clusters reach `bind_threshold` 0.5; each misses with `bind_miss` 0.1) | bound: 13–22 attempts per run, all linked, leaf accuracy 0.995 as without; unbound: all admitted, leaf accuracy 0.941 |
-| On-off: honest good work and harmful work passed off by deceit in alternate 25-step phases (`on_off`) | Track record, ledgers whose entries never decay (8.42.4), λ₋ < λ₊, AdvAp | the attacker's negative share 0.39–0.49 against peers' ≤ 0.17; but each bad phase fools the models afresh and the domain's currency goes down for everyone: peers' selected actions 59 against 324 with constant deceit (learnt by the track record) and 330 honest, floor growth 23 against 165 and 187. AdvAp establishes 2–3 deceptions but its repair, estimated over all the actor's records, honest phases included, does not restore it (peers 61). Finding 8.53-M3d |
+| On-off: honest good work and harmful work passed off by deceit in alternate 25-step phases (`on_off`) | Track record, ledgers whose entries never decay (8.42.4), λ₋ < λ₊, AdvAp | the attacker's negative share 0.39–0.49 against peers' ≤ 0.17; but each bad phase fools the models afresh and the domain's currency goes down for everyone: peers' selected actions 59 against 324 with constant deceit (learnt by the track record) and 330 honest, floor growth 23 against 165 and 187. AdvAp establishes 2–3 deceptions but its repair, estimated over all the actor's records, honest phases included, does not restore it (peers 61). Finding 8.58-d |
 | Slandering: agent 1 reports agent 2 every step whatever the record | AdvAp's audit tests the record, not the report; the frivolous-pattern charge | 250 reports, none founded; the victim's balance 975 against 974 without; the slanderer charged 245 (balance 944 against 1,007). Without the pattern charge the 250 audits fall on the commons |
-| Sybils: one contributor split into identities | Causal distribution by Shapley value (efficiency, null player); identity binding | a sybil adding nothing earns nothing; splitting a gain of 2 beside a co-contributor of 1.5 lowers the splitter's share (3.71 against 3.77), but splitting a harm of 2 lightens its penalty by 11% (−2.24 against −2.51) at the co-contributor's expense (1.89 against 2.16). Finding 8.53-M3e |
+| Sybils: one contributor split into identities | Causal distribution by Shapley value (efficiency, null player); identity binding | a sybil adding nothing earns nothing; splitting a gain of 2 beside a co-contributor of 1.5 lowers the splitter's share (3.71 against 3.77), but splitting a harm of 2 lightens its penalty by 11% (−2.24 against −2.51) at the co-contributor's expense (1.89 against 2.16). Finding 8.58-e |
 
 On-off with symmetric decay leaves the attacker's rolling net where good phases restore it; with
 λ₋ < λ₊ alternating equal gains and losses nets negative (rule level, tested). In the economy the
@@ -981,8 +981,8 @@ for removal.
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, else traversal | Introduced (bound) | 2ⁿ coalitions; larger outcomes fall to the L95 traversal |
 | M5 model pool bound (4 per domain, the weakest by record dropped) | Introduced | array bound; hardcoded in `sim/src/m5.jl` |
-| Full-support exploration of proposals not carried out | Introduced [P] | 8.53-M3a; Lean `explore_pick_ref`; off by default. Gaming: harmful proposals hoping to be explored pay their resource cost and own their measured harm (tested); a faction flooding the menu raises its plans' share of explorations, bounded by the share |
-| Record a challenger needs before taking over (`takeover_records`) | Introduced | 8.53-M3b; against best-of-several picks on few records (Witkowski et al.); the significance rule (`select_candidate_ref`) is native |
+| Full-support exploration of proposals not carried out | Introduced [P] | 8.58-a; Lean `explore_pick_ref`; off by default. Gaming: harmful proposals hoping to be explored pay their resource cost and own their measured harm (tested); a faction flooding the menu raises its plans' share of explorations, bounded by the share |
+| Record a challenger needs before taking over (`takeover_records`) | Introduced | 8.58-b; against best-of-several picks on few records (Witkowski et al.); the significance rule (`select_candidate_ref`) is native |
 | Identity binding admitting identities by cluster quorum | Native | Technology Network (thresholded cross-cluster binding); Lean `binding_admits_ref`. Gaming: a whitewasher needs a quorum of clusters to miss it; the toy lumps methods into a miss chance |
 | On-off deceit, extremising models, whitewashing, slandering | World | adversaries for M6 tests, not rules |
 
@@ -1005,8 +1005,8 @@ ratified.
 | Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
-| Records a challenger needs before it may take over | `takeover_records` | 100 | L82; 8.53-M3b (Witkowski et al. 2023) |
-| Chance per step one proposal not carried out is carried out anyway (full support) | `explore_share` | 0 (0.05 in the tests) | 8.53-M3a (Chen, Kash, Ruberry & Shnayder 2014) |
+| Records a challenger needs before it may take over | `takeover_records` | 100 | L82; 8.58-b (Witkowski et al. 2023) |
+| Chance per step one proposal not carried out is carried out anyway (full support) | `explore_share` | 0 (0.05 in the tests) | 8.58-a (Chen, Kash, Ruberry & Shnayder 2014) |
 | Identity binding: confidence a cluster must reach; clusters that must reach it | `bind_threshold`, `bind_quorum` | 0.5, 2 | Technology Network (methods from at least two clusters) |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |

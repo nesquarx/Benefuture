@@ -479,21 +479,21 @@ Governance and thresholds
   *Decision market* (Chen, Kash, Ruberry & Shnayder 2014): models are scored only on what their
   predictions select, so a misreport against a proposer's plans is never scored (its plans are never
   carried out); full-support exploration (Lean `explore_pick_ref`, a proposed rule, off by default;
-  BACKPROPAGATION 8.53-M3a) catches it in every seed at a share of 0.05, and the track record then
+  BACKPROPAGATION 8.58-a) catches it in every seed at a share of 0.05, and the track record then
   corrects it; scores are not inverse-propensity weighted, so honest reporting is made costlier to
   abandon, not proved strictly optimal. *Extremised forecasts* (Witkowski et al. 2023): at rule level a
   best-of-eight takeover on 10 records rewards a model stating half its uncertainty (16.4% against
   7.1% per honest equal) and stops doing so on full windows; challengers now compete only on a full
-  window (8.53-M3b). In the economy every takeover by an equal-skill challenger is an extremist's
-  because honest credences are underconfident there (8.53-M3c, open). *Reputation attacks* (Hoffman,
+  window (8.58-b). In the economy every takeover by an equal-skill challenger is an extremist's
+  because honest credences are underconfident there (8.58-c, open). *Reputation attacks* (Hoffman,
   Zage & Nita-Rotaru 2009): identity binding (Lean `binding_admits_ref`) links every whitewashing
   attempt and keeps the domain's model as without (accuracy 0.995 against 0.941 unbound); slandering
   convicts no one and charges the slanderer; on-off deceit defeats the track record and takes a
   capable domain's currency down (peers' actions 59 against 324 under constant deceit), which AdvAp's
-  repair does not undo (8.53-M3d, open). The reputation recount is symmetric in Cheng and Friedman's
+  repair does not undo (8.58-d, open). The reputation recount is symmetric in Cheng and Friedman's
   (2005) sense and so, by their theorem, not sybilproof; credit minted only from measured outcomes and
   shared by Shapley value gives sybil contributors nothing by existing, but splitting a harm across
-  identities lightens its penalty (8.53-M3e), so identity binding, not the recount, is what stops
+  identities lightens its penalty (8.58-e), so identity binding, not the recount, is what stops
   sybils. Sybil beings are not simulated (the toy's beings are fixed). *Goodhart* (Gao, Schulman &
   Hilton 2023): with G picking the best predicted of n proposals and two agents passing off harmful
   work, the gap between the proxy and the true value grows from 16.6 to 20.5 as n goes from 2 to 32

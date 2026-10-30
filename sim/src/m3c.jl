@@ -152,7 +152,7 @@ struct M3cParams
     scale_min::Float64           # no model is perfect: least error relative to the bootstrap model's (world; 8.33)
     model_z::Float64             # standard errors a challenger must beat the incumbent by to take over (governed)
     pool_max::Int                # models kept per domain (introduced: an array bound)
-    # Decision market and attacks (M6; docs/SOTA.md; BACKPROPAGATION 8.53-M3a onwards).
+    # Decision market and attacks (M6; docs/SOTA.md; BACKPROPAGATION 8.58-a onwards).
     explore_share::Float64       # chance per step one proposal not carried out is carried out anyway (governed; full support)
     takeover_records::Int        # records a challenger needs before it may take over (governed; against extremised forecasts)
     p_extremist::Float64         # chance an arriving model extremises its credences (world, adversary)
@@ -1051,7 +1051,7 @@ function run_m3c(p::M3cParams; seed)
             s.u .+= done.du
             s.h .+= done.dh
         end
-        # Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.53-M3a).
+        # Full support where predictions are scored (Chen, Kash, Ruberry & Shnayder 2014; 8.58-a).
         # Predictions select what is carried out and only what is carried out is scored, so a model
         # could misreport unseen on the plans its predictions keep out. With chance `explore_share`
         # a step, one proposal not carried out (each with chance share/n, `explore_pick_ref`) is
@@ -1308,7 +1308,7 @@ function run_m3c(p::M3cParams; seed)
                 end
                 length(mpool[j]) > 1 || continue
                 brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]  # Lean `credence_score_ref`
-                # A challenger competes once its record spans `takeover_records` (8.53-M3b): picking the
+                # A challenger competes once its record spans `takeover_records` (8.58-b): picking the
                 # best of several on a few records rewards extremised credences (Witkowski et al. 2023).
                 ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records]]
                 length(ks) > 1 || continue

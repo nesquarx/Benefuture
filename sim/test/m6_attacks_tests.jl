@@ -1,6 +1,6 @@
 # M6 attacks from the state of the art (docs/SOTA.md items 5, 7 and 10's Goodhart probe). Each is
 # tested against the native mechanisms first; what they do not cover is a finding (BACKPROPAGATION
-# 8.53-M3a onwards), and a fix is a Lean reference rule with a governed threshold.
+# 8.58-a onwards), and a fix is a Lean reference rule with a governed threshold.
 # - The decision-market gap (Chen, Kash, Ruberry & Shnayder 2014): when predictions select which
 #   plans are carried out and only what is carried out is scored, a model can misreport on the plans
 #   its predictions keep out, unseen. Full support (`explore_share`, Lean `explore_pick_ref`) closes it.
@@ -117,7 +117,7 @@ ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     # takeover-record bar changes nothing, and no honest equal ever takes over.
     @test [tr.takeovers for tr in native] == [tr.takeovers for tr in short]
     @test sum(tr.takeovers - tr.takeovers_extreme for tr in native) == 0
-    # Finding (8.53-M3c): the takeovers there are, are extremists'. Not the rank rule: honest credences
+    # Finding (8.58-c): the takeovers there are, are extremists'. Not the rank rule: honest credences
     # (`credence_ref`, predicted value over the record's RMS error, no prior) are underconfident in a
     # domain whose outcomes are mostly positive, so a model stating half its uncertainty is better
     # calibrated and the proper score rightly prefers it.
@@ -211,7 +211,7 @@ onoff(; kw...) = ww(; events = onoff_events, on_off = 25, kw...)
     # Constant deceit is learnt by the track record (8.29): the bad phases' harm is predicted honestly
     # and rejected, and the peers work as in an honest world.
     @test mean(peers.(constant)) > 0.9 * mean(peers.(honest))
-    # Finding (8.53-M3d): deceiving only in alternate phases defeats the 20-action track record. Each
+    # Finding (8.58-d): deceiving only in alternate phases defeats the 20-action track record. Each
     # bad phase fools the models afresh, the leaf model falls below its status bar and the domain's
     # currency goes down for everyone (8.37's mechanism, now in a capable domain).
     harm(tr) = [sum(min(x, 0.0) for (i, x) in enumerate(tr.exec_true) if tr.exec_agent[i] == 6 && s <= tr.exec_step[i] < s + 25; init = 0.0)
@@ -258,7 +258,7 @@ end
     # 2 across two identities lowers the splitter's share: it does not pay.
     cluster(effs) = (φ = shapley(game(effs)); φ[1] + φ[2])
     @test cluster([1.0, 1.0, 1.5]) < shapley(game([2.0, 1.5]))[1]
-    # Finding (8.53-M3e): splitting a harm of 2 the same way lightens the splitter's penalty (about
+    # Finding (8.58-e): splitting a harm of 2 the same way lightens the splitter's penalty (about
     # 11%) and shrinks the co-contributor's positive share: Shapley shares are not false-name-proof
     # where an outcome mixes gains and harms, so identity binding, not the share rule, must stop it.
     @test cluster([-1.0, -1.0, 1.5]) > 1.05 * shapley(game([-2.0, 1.5]))[1]
