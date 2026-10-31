@@ -167,8 +167,8 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 - **Task B1: Prediction Skill Probe & Lane Harm Currency Burn (8.67, 8.69)**
   - **Goal**: Implement `choice_skill_ref` in Lean reference and Julia; burn lane harm currency; red tests on outcomes.
   - **Primary Files**: `BenefutureReference/Domains.lean`, `sim/src/domains.jl`, `sim/src/m3c.jl`, `sim/test/probe_tests.jl`.
-  - **Collision Risk**: High — **CLAIMED by `origin/claude/amazing-knuth-ihbgmy`**.
-  - **Status**: `IN PROGRESS`
+  - **Collision Risk**: High — merged in `e2a03e2`.
+  - **Status**: `COMPLETED`
 
 - **Task B2: Technology Network (TN) Cluster Attestation & 1:1 Identity Binding**
   - **Goal**: TN clusters as independent attesters with noisy confidence; 1:1 binding at governed threshold (0.75 from ≥2 independent clusters, L18); compromised cluster attacks. Probe first in `sim/test/probe_tests.jl`.
