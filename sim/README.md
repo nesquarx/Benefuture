@@ -537,10 +537,12 @@ stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
   | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
 
 - **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
-  success pattern, repeating its 9ceed47 and 98a12ee readings; governance on 1ecded6, repeating its
-  9ceed47 readings; its first continuous run puts nearly all the margin's variance on signal noise
-  (total-order index 1.00 [0.75, 1.34], next ability scatter 0.22), first-order intervals too wide to
-  read at 64 rows, no world within 0.17 of the boundary). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
+  success pattern, repeating its 9ceed47 and 98a12ee readings; governance on 72179c2 under the calibrated
+  ranges (signal noise 2–6, ability scatter 0.5–1.5, hidden outcomes 0.7–0.1, delegation 0–0.4): no
+  factor fails alone within twice its realistic top and no screened world fails; total-order indices
+  ability scatter 0.71, signal noise 0.49, collusion 0.36, local noise 0.26, delegation 0.21, hidden
+  outcomes 0.17, loyalty 0.06 (first-order intervals too wide to read at 64 rows). The economy's run
+  on the calibrated build is under way). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
