@@ -246,6 +246,19 @@ function binding_admits(confidences, threshold::Real; quorum::Integer)
 end
 
 """
+    class_balanced_skill(credences, outcomes) -> skill
+
+Attestation skill read on each side (Lean `class_balanced_skill_ref`; [P], B2): skill against a coin
+toss over real entities and over false identities separately, the worse side kept.
+"""
+function class_balanced_skill(credences, outcomes)
+    check(length(credences) == length(outcomes), "one credence per outcome")
+    check(all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes), "credences in [0, 1], outcomes 0 or 1")
+    ccall(sym(:bf_class_balanced_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+          floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
+end
+
+"""
     binding_admits_weighted(confidences, weights, threshold, quorum_weight) -> Bool
 
 Identity binding weighted by attestation record (Lean `binding_admits_weighted_ref`; [P], B2): each

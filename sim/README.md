@@ -1235,6 +1235,7 @@ ratified.
 | Chance per step one proposal not carried out is carried out anyway (full support) | `explore_share` | 0 (0.05 in the tests) | 8.58-a (Chen, Kash, Ruberry & Shnayder 2014) |
 | Identity binding: confidence a cluster must reach; clusters that must reach it | `bind_threshold`, `bind_quorum` | 0.5, 2 | Technology Network (methods from at least two clusters) |
 | Weighted binding (8.70, [P], `bind_weighted`): attestation records a cluster needs before its skill weighs; the credence attestations are scored against | (in `run_m3c`) | 5, 0.5 | 8.69 minimum record; a coin toss as the domain's model |
+| Weighted binding quorum, in units of attestation skill | `bind_quorum_weight` | 1.0 | two clusters at skill 0.5; trades sybils admitted against real entities refused (8.70) |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
 | Breakthrough scale: how many times its weighted foreclosed future a gain must reach to outweigh a death (M7) | `scale` | 20 | 8.47 [P]; L61 |
 | Long-term window over which a death's foreclosed future is counted (M7) | `lt_window` | 100 steps | 8.47 [P]; L70 (Ha_lt) |
@@ -1346,6 +1347,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |  |
 | A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |  |
 | Clusters colluding with whitewashers (adversary); chance a step an admitted false identity is revealed (world) | `bind_compromised`, `p_reveal` | none, 0 | up to all but one, 0.01–0.2 |  |
+| Real new entities seeking binding, chance a step (world) | `p_newcomer` | 0 | 0.1–0.9 (R2) |  |
 | An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |  |
 | Deceit only in alternate phases of this length (adversary) | `on_off` | 0 (always) | 5–50 |  |
 | New models extremising their credences; the share of uncertainty they state (world) | `p_extremist`, `extremise` | 0, 0.5 | 0–0.5, 0.3–0.9 |  |

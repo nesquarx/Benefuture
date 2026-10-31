@@ -110,3 +110,21 @@ end
     @test !any(binding_admits_weighted(s, skill, th, quorum * 0.5) for s in sybils)
     @test count(binding_admits_weighted(r, skill, th, quorum * 0.5) for r in reals) >= 45
 end
+
+# Binding with honest newcomers (B2 step 2): attestations are scored on both sides. Real newcomers
+# outnumber sybils ten to one. A colluding cluster vouches for everyone (0.99): right on the many
+# real newcomers, wrong on the few sybils. An honest cluster misses one identity in ten either way.
+@testset "Probe: a colluder cannot buy its say by being right about the easy majority" begin
+    n_real, n_syb = 200, 20
+    out = [ones(n_real); zeros(n_syb)]
+    colluder = fill(0.99, n_real + n_syb)
+    honest = [i % 10 == 0 ? (o == 1 ? 0.1 : 0.9) : (o == 1 ? 0.9 : 0.1) for (i, o) in enumerate(out)]
+    pooled(c) = choice_skill(c, fill(0.5, length(c)), out)
+    # Counterexample: pooled skill against a coin toss rewards the colluder for the easy majority.
+    @test pooled(colluder) > 0.5
+    # Acceptance: skill read on each side (real, sybil) and the worse side kept: the colluder fails on
+    # sybils and loses its say; the honest cluster keeps it.
+    @test class_balanced_skill(colluder, out) < 0 && class_balanced_skill(honest, out) > 0.5
+    @test class_balanced_skill(fill(0.9, 10), ones(10)) > 0      # one side only: that side's skill
+    @test_throws ArgumentError class_balanced_skill([0.9], [1.0, 0.0])
+end

@@ -276,4 +276,7 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_binding_admits_weighted] def bindingAdmitsWeighted (confidences weights : FloatArray) (threshold quorumWeight : Float) : UInt8 :=
   if binding_admits_weighted_ref confidences.data weights.data threshold quorumWeight then 1 else 0
 
+@[export bf_class_balanced_skill] def classBalancedSkill (credences outcomes : FloatArray) : Float :=
+  class_balanced_skill_ref credences.data outcomes.data
+
 end BenefutureReference.Export

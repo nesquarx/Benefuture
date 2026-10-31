@@ -1,3 +1,5 @@
+import BenefutureReference.Domains
+
 /-
   BenefutureReference.Records
   Computable reference for rules that read or write records: the reputation a vote earns, the
@@ -71,5 +73,29 @@ def binding_admits_weighted_ref (confidences weights : Array Float) (threshold q
   for i in [0:n] do
     if confidences[i]! ≥ threshold then w := w + max 0.0 (min 1.0 weights[i]!)
   return w ≥ quorumWeight
+
+/-- Attestation skill read on each side ([P], B2): skill against a coin toss (`choice_skill_ref`
+    with model credence 1/2) over the attestations of real entities and, separately, over those of
+    false identities; the worse side counts. Pooled skill lets a cluster that vouches for everyone
+    buy its say by being right about the easy majority while wrong on every sybil; read by side, it
+    fails on the sybils. One side only: that side's skill. No attestations: 0. -/
+def class_balanced_skill_ref (credences outcomes : Array Float) : Float := Id.run do
+  let n := min credences.size outcomes.size
+  let mut cp : Array Float := #[]
+  let mut op : Array Float := #[]
+  let mut cn : Array Float := #[]
+  let mut on : Array Float := #[]
+  for i in [0:n] do
+    if outcomes[i]! == 1.0 then
+      cp := cp.push credences[i]!; op := op.push 1.0
+    else
+      cn := cn.push credences[i]!; on := on.push 0.0
+  let half (k : Nat) : Array Float := Array.mk (List.replicate k 0.5)
+  let sp := choice_skill_ref cp (half cp.size) op
+  let sn := choice_skill_ref cn (half cn.size) on
+  if cp.size == 0 && cn.size == 0 then return 0.0
+  if cp.size == 0 then return sn
+  if cn.size == 0 then return sp
+  return min sp sn
 
 end BenefutureReference

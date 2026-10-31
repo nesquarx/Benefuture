@@ -315,3 +315,26 @@ truth(tr) = (k = [i for i in eachindex(tr.exec_pred) if tr.exec_step[i] > 50]; m
     sp(n) = mean(success_pattern(tr; from = 51).floor_u for tr in native[n])
     @test sp(32) >= sp(2) - 1e-9
 end
+
+# Honest newcomers (B2 step 2): real entities seek binding ten times as often as the whitewasher
+# tries, so attestations are scored on both sides. Five clusters, two colluding (with only one honest
+# cluster no quorum of two independent clusters could form, L18). Weighted quorum 1 (two clusters at
+# skill 0.5). Pooled skill lets the pair, right about every newcomer, keep its say and pass the
+# whitewasher's identities; read on each side it cannot.
+@testset "Whitewashing amid honest newcomers: class-balanced attestation skill" begin
+    seeds = 1:3
+    worlds(pooled) = [run_m3c(ww(whitewash = whitewasher, bind_clusters = 5, bind_compromised = [1, 2], p_reveal = 0.05,
+                                 bind_weighted = true, p_newcomer = 0.5, attest_pooled = pooled); seed) for seed in seeds]
+    pooled, balanced = worlds(true), worlds(false)
+    # Counterexample: pooled skill keeps the pair's say; the whitewasher's identities keep passing.
+    @test all(tr.attestation_skill[1] > 0 for tr in pooled)
+    @test mean(tr.identities_admitted for tr in pooled) > 2 * mean(tr.identities_admitted for tr in balanced)
+    # Acceptance: read on each side, the pair fails on the sybils; most real newcomers are still bound.
+    @test all(tr.attestation_skill[1] < 0 && all(tr.attestation_skill[3:5] .> 0) for tr in balanced)
+    @test all(tr.newcomers_refused < 0.5 * tr.newcomers for tr in balanced)
+    # The cost (8.70): with the pair silenced, honest clusters whose short records sample low skill
+    # (0.16, 0.23 against an expected 0.64) do not reach the quorum weight together, so 30-35% of real
+    # newcomers are refused in two seeds of three (1% in the third), against almost none under pooled
+    # skill. The quorum weight trades sybils admitted against real entities refused (governed).
+    @test mean(tr.newcomers_refused for tr in balanced) > mean(tr.newcomers_refused for tr in pooled)
+end

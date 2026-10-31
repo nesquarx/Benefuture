@@ -1737,3 +1737,32 @@ disqualified domain's lane halts for want of funds, earns no new records and can
 against the progressive-degradation rule that a coarser mechanism substitutes without stalling;
 candidate remedies for the author: hysteresis at the status bar, or scoring score-only predictions
 while the lane is halted so a domain can requalify.
+8.66 cross-platform confirmation (local agent, macOS ARM64, same 20 seeds): record credence 0 of 20
+stalled, transactions 1,020 to 1,117, mean 1,074 (Linux 1,037 to 1,120); the seed that stalled on macOS
+under the normal credence ran 1,069 transactions with no halts. The fragility is removed on both
+platforms.
+8.70 amendment (B2 step 2, honest newcomers): attestations scored on both sides expose pooled skill
+as gameable. A cluster vouching for everyone is right about the many real newcomers and keeps a
+pooled skill of 0.5 to 0.9 while passing every sybil. Read on each side and keeping the worse side
+(Lean `class_balanced_skill_ref`), the colluding pair falls to −2.9: 1 to 2 false identities admitted
+against 6 to 14 pooled (five clusters, two colluding, newcomers ten times as frequent, 3 seeds). The
+weighted quorum is a governed threshold in units of skill (`bind_quorum_weight`, default 1: two
+clusters at skill 0.5); with only one honest cluster no quorum of two independent clusters can form
+(L18), so refusing then is the cost of compromise. The cost under class-balanced weighting: honest
+clusters whose short records sample low skill fail to reach the quorum together, refusing 30–35% of
+real newcomers in two seeds of three (1% in the third), against almost none pooled; the quorum
+weight trades sybils admitted against real entities refused, and the minimum record (R4) sets how
+noisy the weights are.
+
+**8.71 Author rulings on 8.66 and the stall.** (1) The record credence is adopted as the rule (L84,
+8.36) [R]: a model's credence is the share of its recent errors below its prediction. (2) A stall
+must not be absorbing, read economically: a stall is a society that overpromised and cannot shrink
+back to take the hit, so resource accounting (RA, L83) must shrink baseline pricing, the commons and
+overall resource spending to absorb it. StandCoin, like fiat, only prices resources; any model-free
+transaction is a major flag, a call to build domains, models and predictability for that work, and
+needs scrutiny and restraint. Work in an unheard-of novel domain is rare in a mature metric-model
+framework. Simulation note for the author: in the stalls measured, the lane carried work in known
+domains whose model had dipped below its status bar (0.891 against 0.90), not novel work; a mature
+framework would price that work through the domain's parent or coarser model, or at a lower credence,
+before falling to model-free StandCoin. Candidate homes: L82–L86 (fallback order), L83 (RA
+contraction), Benefuture currency (StandCoin entry).
