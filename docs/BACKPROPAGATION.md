@@ -1674,3 +1674,16 @@ weighting needs. Proposal [P]: L113's expertise term reads a per-choice record (
 share of a person's choices in the domain that came out well, or the calibration of their stated
 credences), with L100 reputation kept for what it measures (contribution, and the right to price
 and be paid); or, if one quantity must serve both, L100 normalised per action and per unit at stake.
+
+**8.69 Author proposal (under discussion): prediction accuracy as reputation's fourth component.**
+Re(E, d) = [hPos, hNeg, rel, PrAcc]_d, PrAcc scored over every choice transaction in the domain, not
+votes alone: proposing an action, funding or pledging, delegating, voting, accepting or declining a
+quote each carry an implicit prediction that the outcome is good, scored against the measured
+outcome by the same rule as a model's accuracy (`credence_accuracy_ref`, 8.36). Later, credence-
+weighted for agents as for models, with a coarse credence scale for biological agents (0.5 random,
+0.6 quite unsure, 0.8 sure, 0.9 quite sure, 0.99 almost certain, with a spread of certainty), read
+through each person's own record (8.66) since stated credence and hit rate differ. Points for the
+discussion: score skill over the domain's model (a choice the model already called with high credence
+earns little), so safe, trivial choices do not inflate PrAcc; choices not taken are unscored (the
+8.58-a gap); each choice is its own prediction, so PrAcc is never split by causal distribution and
+capital buys none of it. Candidate homes: L100, L101, L113, Ontology.Reputation.
