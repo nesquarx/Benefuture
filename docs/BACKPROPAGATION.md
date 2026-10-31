@@ -1642,3 +1642,35 @@ burns no currency, while L99 burns harm wherever it is measured. Question for th
 work's harm burn currency (charged to its proposer and pledging experts, as a priced action's harm
 is charged to its contributors), or does "charges only resource cost" cover harm too?
 Candidate homes: L99, Benefuture currency (StandCoin entry).
+8.67 ruling (author): (a). Harm done by lane work burns currency like any measured harm, charged
+to its proposer and pledging experts by their contributions; harm no one can be ascribed (natural,
+or untraced) is lifted by the commons, ultimately backed by resource accounting (RA, L83).
+
+**8.68 Author clarification on expertise weighting (B26, L113).** Reputation is the record of
+winning choices in a domain and stands for domain expertise. The diversity worth counting among
+experts is that of high-expertise experts from related domains (domain overlap brings diverse expert
+viewpoints), alongside diverse lay viewpoints; it is not headcount: twenty pieces of the same 1x
+knowledge are not one piece of 20x knowledge, which the subdomain division exists to prevent.
+Proposal [P] for the tally: weight each voter's expertise by the log-odds of its record (Nitzan and
+Paroush 1982, the optimal weights for independent voters of unequal competence; `source_weight_ref`
+already reads records so in deliberation); count correlated knowledge once, with clusters seeded by
+the subdomain network and its overlaps μ and refined from outputs (errors that coincide in the
+record), within-cluster weight scaled by the effective count n / (1 + (n − 1)ρ) (Ladha 1992); sum
+across clusters, so related-domain experts add as diverse viewpoints; leave the base vote and the
+impact term untouched (8.60). B26 is then restated over effective weight: the tally's error vanishes
+as independent clusters grow, not as headcount does. Sybil and fork attacks on the tally wait for
+identity binding and Technology Network clustering (author). Candidate homes: L113, L114, B26,
+Governance (expertise weighting).
+8.68 coherence note (open, for the author): as specified, reputation is not a record of winning
+choices. L100 sums causal contributions to understanding and happiness in the domain plus novelty,
+Σ(CC(U, H) + N): a record of value caused, scaled by stakes and by volume of activity, shared with
+funders and carriers by causal distribution, and read from realised outcomes. It correlates with
+winning choices but departs from them in four ways: magnitude (one large lucky outcome outweighs
+many small correct calls), volume (more actions accumulate more, whatever their hit rate), capital
+(funding earns Shapley shares, so wealth buys reputation where it buys outcomes) and luck (outcomes,
+not decisions, are credited). The record of winning choices exists separately in governance (the
+per-decision record of votes and predictions, 8.29; `person_rec` in M5), which is what accuracy
+weighting needs. Proposal [P]: L113's expertise term reads a per-choice record (the log-odds of the
+share of a person's choices in the domain that came out well, or the calibration of their stated
+credences), with L100 reputation kept for what it measures (contribution, and the right to price
+and be paid); or, if one quantity must serve both, L100 normalised per action and per unit at stake.

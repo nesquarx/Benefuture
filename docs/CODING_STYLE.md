@@ -18,6 +18,7 @@ The core architecture of this workflow is centered on **Full-Circle Testing**, o
 - Before drafting or modifying any application code, the AI operates under a **Red QA Persona** to author two distinct test suites:
   1. **Functional Acceptance Suite (What Must Work):** Captures the expected target behavior, functional user paths, and valid input contracts that the system must satisfy.
   2. **Adversarial & Negative Edge-Case Suite (What Must Break / Fail Gracefully):** An exhaustive suite specifically designed to attack and break the system across the full spectrum of inputs. Tests what must not work, verifying rejection of malformed payloads, out-of-bounds parameters, type violations, null/undefined states, race conditions, and boundary exceptions.
+- **Red on the Outcome, Not the Feature:** A red test asserts the outcome the feature exists to provide, never the feature's presence. A test that fails only because a function, field or flag does not yet exist proves nothing about behaviour: it turns green the moment a stub appears. The failing baseline must show the undesired outcome itself (the stall, the wrong total, the accepted malformed input) on the current code, so that green means the outcome was achieved.
 - **Verified Failing State:** Prior to initiating any implementation code, the first test suite must be executed against the current codebase to verify that new assertions fail as expected. Implementation is strictly prohibited until this failing baseline is confirmed.
 
 ## 4. Incremental Build & Selective Regression Loops

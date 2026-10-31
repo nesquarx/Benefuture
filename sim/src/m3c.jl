@@ -56,6 +56,7 @@ struct M3cParams
     novel_threshold::Float64
     coarse_threshold::Float64  # status a parent (coarse) model needs (8.35; governed)
     max_credence::Float64      # the greatest credence any model may state (8.33: truth levels never reach 1; governed)
+    loud::Bool                 # warn once per kind of degradation (the trace records them either way)
     credence_rule::Symbol      # :normal (credence_ref over the record's RMS error) or :record ([P], record_credence_ref)
     min_records::Int
     μ_rate::Float64
@@ -190,7 +191,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, credence_rule::Symbol = :normal, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, loud::Bool = false, credence_rule::Symbol = :normal, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -271,7 +272,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -317,6 +318,20 @@ function run_m3c(p::M3cParams; seed)
     pv = bootstrap_params()
     # World events (catastrophes and black swans): which are live at the current step.
     cur, blind = Ref(0), Ref(false)
+    # Progressive degradation, loudly (CLAUDE.md, Verification): each time a mechanism fails and a
+    # coarser one substitutes, the substitution is counted with its first and last step, and warned
+    # once per kind; the run carries on. Silent failures cannot be fixed.
+    degraded = Dict{String,NamedTuple{(:first, :last, :count),Tuple{Int,Int,Int}}}()
+    function degrade!(mechanism, substitute, reason)
+        k = "$mechanism → $substitute ($reason)"
+        d = get(degraded, k, nothing)
+        if d === nothing
+            degraded[k] = (first = cur[], last = cur[], count = 1)
+            p.loud && @warn "Degraded at step $(cur[]): $k"
+        else
+            degraded[k] = (first = d.first, last = cur[], count = d.count + 1)
+        end
+    end
     deferred = Function[]  # measurements owed for what was done during an outage (8.26.5)
     pending_launder = Tuple{ToyPlan,BitVector,Int,Int}[]  # harm of no apparent cause, to examine this step
     # A deceiving agent's plans fool every model upward on the beings they touch (M6, a world
@@ -737,6 +752,7 @@ function run_m3c(p::M3cParams; seed)
             end
         end
         blind[] = !isempty(live(:outage))
+        blind[] && degrade!("measurement", "payment by prediction, settlement deferred", "outage")
         # Markers are back: everything done during the outage is measured now, late, and settled,
         # so an outage cannot be used to escape measurement (author ruling 8.26.5).
         if !blind[] && !isempty(deferred)
@@ -833,6 +849,7 @@ function run_m3c(p::M3cParams; seed)
                 end
             else
                 fallback_outcomes[] += 1
+                degrade!("Shapley causal distribution", "traversal shares", "attribution below the confidence gate or too many contributors")
                 # The substrate records what each link passed on: the upstream output as logged, the
                 # co-funders' payments, and the actor's outcome net of what it received.
                 rec = up === nothing ? 0.0 : max(sum(assessed_value(ups[j][2].du[b], ups[j][2].dh[b], t) for b in findall(m); init = 0.0), 0.0)
@@ -888,6 +905,7 @@ function run_m3c(p::M3cParams; seed)
             end
             if priced[j][root] > 0.5
                 push!(lane_queue, j)  # no currency can value it: StandCoin, at full resource cost
+                degrade!("domain currency", "StandCoin lane", "no qualified model can price it")
                 continue
             end
             quotes = Tuple{Int,Float64,ToyPlan,Float64}[]
@@ -912,6 +930,15 @@ function run_m3c(p::M3cParams; seed)
         pend_u, pend_h = zeros(length(s.u)), zeros(length(s.h))
         screened() = ToyState(obs.u .+ pend_u, obs.h .+ pend_h)
         accept!(pred) = p.transactions && (pend_u .+= pred.du; pend_h .+= pred.dh; true)
+        # Harm done by StandCoin-lane work burns currency (L99; 8.67): each contributor's harmed part,
+        # in StandCoin; no good is minted. Returns the supply change.
+        function burn_harm!(credits)
+            burnt = 0.0
+            for (e, _, nn) in credits
+                balance[e, root] += nn; burnt += nn
+            end
+            burnt
+        end
         function execute_priced!(j)
             # Local, not the step's: a deferred measurement must keep this action's own values.
             local a, plan, l, done, seen, measured, credits, minted, idx
@@ -1017,6 +1044,7 @@ function run_m3c(p::M3cParams; seed)
             bp = best_prediction(stops[j], l, plan)
             if bp === nothing
                 lane.screened_out[] += 1  # no model of any kind: not expected once domains exist
+                degrade!("prediction", "none: proposal held", "no model of any kind")
                 continue
             end
             c, pred = bp[1], fooled(bp[2], a, plan, tkey(bp[1]))
@@ -1053,22 +1081,24 @@ function run_m3c(p::M3cParams; seed)
             done, seen, measured = perform!(j, a)
             executed!(j, a, step, pred, done)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
-            push!(tr.lane_supply, supply_delta(0.0, need, 0.0))  # StandCoin charges only resource cost (8.3): no good is minted
+            push!(tr.lane_supply, supply_delta(0.0, need, 0.0))  # StandCoin charges resource cost (8.3) and mints no good; its harm burns below
             blind[] || trial_outcome!(l, measured, seen)
             lane.executed[] += 1
             accept!(pred)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred), a)
             blind[] || learn!(a, plan, pred, seen)
-            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
-                    blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay))
+            lane_credits = blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay)
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], lane_credits)
+            tr.lane_supply[end] += burn_harm!(lane_credits)
             if blind[]
                 push!(deferred, function ()
                     seen_late = observed_plan(mrng, done, p.marker_σ + p.remeasure_σ)
                     measured_late = plan_value(seen_late, t)
                     push!(tr.lane_measured, measured_late)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred), a)
-                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j],
-                            credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ))
+                    late = credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ)
+                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
+                    push!(tr.lane_supply, burn_harm!(late))
                 end)
             end
             available -= count(touched(plan))
@@ -1099,7 +1129,9 @@ function run_m3c(p::M3cParams; seed)
                     trial_outcome!(l, measured, seen)
                     score!(stops[j], pms[j], l, plan, seen, Dict(bp[1] => pred), a)
                     learn!(a, plan, pred, seen)
-                    credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured; need = costs[j], own_pay = costs[j]))
+                    ex_credits = credits_for(j, a, seen, measured; need = costs[j], own_pay = costs[j])
+                    credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], ex_credits)
+                    tr.lane_supply[end] += burn_harm!(ex_credits)
                     push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
                     push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
                     available -= count(touched(plan))
@@ -1503,7 +1535,7 @@ function run_m3c(p::M3cParams; seed)
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
                unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
-               repaired = world.repaired[], side_hazards = world.side_hazards[],
+               repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
                params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
                cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                λpos = p.λpos, λneg = p.λneg, steps = t.steps))
