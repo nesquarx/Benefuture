@@ -140,7 +140,8 @@ neither agent spends tokens on chatter.
   - `python3 tools/check_readme_claims.py`: **PASS** (all named theorems found).
   - `sim/test/probes.jl`: **PASS** (all 7 mechanism probes passed cleanly).
   - `sim/test/m3d_tests.jl`: acceptance passes under updated seed-robust assertions.
-  - Ready for your switch to `credence_rule = :record` default.
+  - **Track E3 Battery Execution**: Adapted `tools/battery/run.sh` and `tools/battery/hook.sh` for macOS Darwin process inspection. Launched `economy` failure-boundary battery locally on Apple M1 (PID 99638, commit `8ce8130`). Governance battery will follow sequentially once economy finishes to prevent core contention.
+
 
 
 ## 2b. Benchmarks

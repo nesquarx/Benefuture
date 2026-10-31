@@ -8,7 +8,14 @@ cat > /dev/null  # the hook's JSON input is not needed
 cd "$(dirname "$0")/../.." || exit 0
 # A battery is alive when its recorded pid is a julia process running its file (a shell wrapper
 # whose command line mentions the file does not count).
-alive() { [[ -n $1 && $(cat /proc/$1/comm 2>/dev/null) == julia ]] && grep -qa "sim/battery/$2.jl" /proc/$1/cmdline; }
+alive() {
+  [[ -z $1 ]] && return 1
+  if [[ -d /proc ]]; then
+    [[ $(cat /proc/$1/comm 2>/dev/null) == julia ]] && grep -qa "sim/battery/$2.jl" /proc/$1/cmdline
+  else
+    ps -p "$1" -o command= 2>/dev/null | grep -q "sim/battery/$2\.jl"
+  fi
+}
 state=sim/battery/state
 [[ -d $state ]] || exit 0
 mode=$1; lines=(); finished=()
