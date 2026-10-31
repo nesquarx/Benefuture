@@ -1720,3 +1720,9 @@ their skill falls below zero and none of 50 sybils is admitted, while honest clu
 builds a clean record and then defects passes sybils until they are revealed (on-off, 8.58-d), so
 revelation speed (AdvAp on identities) bounds the damage; correlated clusters should count once
 (8.68's effective count) before the quorum is met. Candidate homes: L18, Technology Network.
+8.70 in the economy (M3c whitewashing world, `bind_weighted`): two of three clusters colluding with a
+whitewasher admit 13–15 false identities and link none under the count rule; weighted, 5–7 pass and
+4–13 attempts are linked (3 seeds, 300 steps, revelation chance 0.05 a step). The first five pass
+before any cluster has the five scored records its weight needs, so the minimum record is the window
+an on-off cluster exploits. In this world every new identity is false, so attestations are scored
+on one side only; honest newcomers (B2 step 2) will score the other.

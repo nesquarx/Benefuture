@@ -164,6 +164,9 @@ struct M3cParams
     bind_clusters::Int           # clusters whose binding methods examine a new identity (world)
     bind_threshold::Float64      # binding confidence a cluster must reach (governed)
     bind_quorum::Int             # clusters that must reach it to admit an identity (governed)
+    bind_compromised::Vector{Int}  # clusters colluding with whitewashers: they attest every new identity distinct (world, adversary)
+    p_reveal::Float64            # chance per step an admitted false identity is revealed (world)
+    bind_weighted::Bool          # [P] 8.70: each cluster's say is its attestation skill (`binding_admits_weighted_ref`)
     slander::Vector{Int}         # per agent, whom its frivolous reports target (0: anyone; world, adversary)
     on_off::Int                  # deceit on only in alternate phases this long, off first (0: always on; world, adversary)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
@@ -212,6 +215,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    scale_min::Real = 0.1, model_z::Real = 2.0, pool_max::Integer = 4, explore_share::Real = 0.0,
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
+                   bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false,
                    slander = Int[], on_off::Integer = 0, events = Shock[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
@@ -261,6 +265,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(whitewash) || (length(whitewash) == length(agents) && all(x -> 0 <= x <= 1, whitewash)), "one whitewashing chance in [0, 1] per agent")
     check(0 <= bind_miss <= 1 && bind_clusters >= 0 && 0 <= bind_threshold <= 1 && bind_quorum >= 0,
           "binding miss and threshold in [0, 1], clusters and quorum non-negative")
+    check(all(c -> 1 <= c <= bind_clusters, bind_compromised) && 0 <= p_reveal <= 1, "compromised clusters among the clusters; reveal chance in [0, 1]")
     check(isempty(slander) || (length(slander) == length(agents) && all(r -> 0 <= slander[r] <= length(agents) && slander[r] != r, eachindex(slander))),
           "one slander target per agent: another agent, or 0")
     check(on_off >= 0, "on-off period non-negative")
@@ -286,7 +291,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               stake_attention, marginal_margin, relative_bar, escape, escape_start, escape_steps,
               escape_share, escape_epoch, irreparable_loss, p_new_model, improve_drift, improve_σ, scale_min, model_z, pool_max,
               explore_share, takeover_records, p_extremist, extremise,
-              isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum,
+              isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, bind_weighted,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap)
 end
@@ -577,7 +582,14 @@ function run_m3c(p::M3cParams; seed)
     # Identities (Technology Network): when each agent's current identity began; its earlier records
     # belong to an identity it abandoned.
     id_since = ones(Int, na)
-    ids = (admitted = Ref(0), linked = Ref(0))
+    ids = (admitted = Ref(0), linked = Ref(0), revealed = Ref(0))
+    # Attestation records (8.70): each cluster's stated confidences that an identity is a distinct
+    # entity, scored once the truth is known (a link at once; an admitted false identity when revealed).
+    attest_cred = [Float64[] for _ in 1:max(p.bind_clusters, 1)]
+    attest_out = [Float64[] for _ in 1:max(p.bind_clusters, 1)]
+    unrevealed = Vector{Vector{Float64}}()    # the confidences behind each admitted false identity
+    score_attest!(confs, outcome) = for c in eachindex(confs); push!(attest_cred[c], confs[c]); push!(attest_out[c], outcome); end
+    attest_skill(c) = length(attest_out[c]) < 5 ? 1.0 : choice_skill(attest_cred[c], fill(0.5, length(attest_out[c])), attest_out[c])
     top_leaf(st) = (k = argmax(st); k <= lmax ? k : 0)
     function relevance_parents(a)
         mine = rel_gain[a, :] .+ rel_loss[a, :]
@@ -741,14 +753,25 @@ function run_m3c(p::M3cParams; seed)
         # ledgers, track records and audit record (its balance moves with it); linked, nothing changes.
         for a in 1:na
             p.whitewash[a] > 0 && rand(wrng) < p.whitewash[a] || continue
-            confs = [rand(wrng) < p.bind_miss ? 0.9 : 0.1 for _ in 1:p.bind_clusters]
-            if binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
+            confs = [c in p.bind_compromised ? 0.99 : rand(wrng) < p.bind_miss ? 0.9 : 0.1 for c in 1:p.bind_clusters]
+            admit = p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum) :
+                    binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
+            if admit
+                push!(unrevealed, confs)
                 ids.admitted[] += 1
                 id_since[a] = step
                 empty!(track[a]); empty!(actor_err[a]); empty!(audit_log[a]); audit_from[a] = 1; empty!(unfounded[a])
                 h_pos[a, :] .= 0; h_neg[a, :] .= 0; rel_gain[a, :] .= 0; rel_loss[a, :] .= 0
             else
                 ids.linked[] += 1
+                score_attest!(confs, 0.0)  # linked: the identity was the same entity
+            end
+        end
+        # Revelation: an admitted false identity comes to light, and the clusters that vouched for it are scored.
+        if p.p_reveal > 0
+            for i in reverse(eachindex(unrevealed))
+                rand(wrng) < p.p_reveal || continue
+                score_attest!(unrevealed[i], 0.0); deleteat!(unrevealed, i); ids.revealed[] += 1
             end
         end
         blind[] = !isempty(live(:outage))
@@ -1534,7 +1557,8 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], identities_admitted = ids.admitted[], identities_linked = ids.linked[], id_since = id_since,
+               explored = explored[], identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[],
+               attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],

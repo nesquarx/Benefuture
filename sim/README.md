@@ -791,6 +791,7 @@ skill 0.6, 300 steps, 3 seeds.
 | Attack | Defence | Reading |
 |---|---|---|
 | Whitewashing: a liar (deceit 1) takes a new identity with chance 0.05 a step, shedding track record, ledgers and audit record | Identity binding (Lean `binding_admits_ref`: admitted only if `bind_quorum` 2 of 3 clusters reach `bind_threshold` 0.5; each misses with `bind_miss` 0.1) | bound: 13–22 attempts per run, all linked, leaf accuracy 0.995 as without; unbound: all admitted, leaf accuracy 0.941 |
+| Whitewashing through compromised clusters: two of three clusters vouch for every new identity of a whitewasher; admitted false identities revealed with chance 0.05 a step | Count rule: the pair makes a quorum every time (13–15 identities admitted, none linked, 3 seeds). Weighted by attestation skill (8.70, `binding_admits_weighted_ref`): once revealed, the pair's skill falls below zero and later attempts are linked (5–7 admitted, 4–13 linked); the first five pass before any cluster has the records its weight needs | `sim/test/m6_attacks_tests.jl` |
 | On-off: honest good work and harmful work passed off by deceit in alternate 25-step phases (`on_off`) | Track record, ledgers whose entries never decay (8.42.4), λ₋ < λ₊, AdvAp | the attacker's negative share 0.39–0.49 against peers' ≤ 0.17; but each bad phase fools the models afresh and the domain's currency goes down for everyone: peers' selected actions 59 against 324 with constant deceit (learnt by the track record) and 330 honest, floor growth 23 against 165 and 187. AdvAp establishes 2–3 deceptions but its repair, estimated over all the actor's records, honest phases included, does not restore it (peers 61). Finding 8.58-d |
 | Slandering: agent 1 reports agent 2 every step whatever the record | AdvAp's audit tests the record, not the report; the frivolous-pattern charge | 250 reports, none founded; the victim's balance 975 against 974 without; the slanderer charged 245 (balance 944 against 1,007). Without the pattern charge the 250 audits fall on the commons |
 | Sybils: one contributor split into identities | Causal distribution by Shapley value (efficiency, null player); identity binding | a sybil adding nothing earns nothing; splitting a gain of 2 beside a co-contributor of 1.5 lowers the splitter's share (3.71 against 3.77), but splitting a harm of 2 lightens its penalty by 11% (−2.24 against −2.51) at the co-contributor's expense (1.89 against 2.16). Finding 8.58-e |
@@ -1233,6 +1234,7 @@ ratified.
 | Records a challenger needs before it may take over | `takeover_records` | 100 | L82; 8.58-b (Witkowski et al. 2023) |
 | Chance per step one proposal not carried out is carried out anyway (full support) | `explore_share` | 0 (0.05 in the tests) | 8.58-a (Chen, Kash, Ruberry & Shnayder 2014) |
 | Identity binding: confidence a cluster must reach; clusters that must reach it | `bind_threshold`, `bind_quorum` | 0.5, 2 | Technology Network (methods from at least two clusters) |
+| Weighted binding (8.70, [P], `bind_weighted`): attestation records a cluster needs before its skill weighs; the credence attestations are scored against | (in `run_m3c`) | 5, 0.5 | 8.69 minimum record; a coin toss as the domain's model |
 | Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
 | Breakthrough scale: how many times its weighted foreclosed future a gain must reach to outweigh a death (M7) | `scale` | 20 | 8.47 [P]; L61 |
 | Long-term window over which a death's foreclosed future is counted (M7) | `lt_window` | 100 steps | 8.47 [P]; L70 (Ha_lt) |
@@ -1343,6 +1345,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |  |
 | An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |  |
 | A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |  |
+| Clusters colluding with whitewashers (adversary); chance a step an admitted false identity is revealed (world) | `bind_compromised`, `p_reveal` | none, 0 | up to all but one, 0.01–0.2 |  |
 | An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |  |
 | Deceit only in alternate phases of this length (adversary) | `on_off` | 0 (always) | 5–50 |  |
 | New models extremising their credences; the share of uncertainty they state (world) | `p_extremist`, `extremise` | 0, 0.5 | 0–0.5, 0.3–0.9 |  |

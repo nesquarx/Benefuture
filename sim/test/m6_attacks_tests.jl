@@ -179,6 +179,26 @@ whitewasher = [0, 0, 0, 0, 0, 0.05]
     @test_throws ArgumentError ww(on_off = -1)
 end
 
+# Compromised Technology Network clusters (B2, 8.70): two of three clusters collude with the
+# whitewasher and vouch for every new identity; admitted false identities come to light with chance
+# 0.05 a step. Under the count rule the pair makes a quorum every time; weighted by attestation
+# skill, the pair loses its say once its first false identities are revealed.
+@testset "Whitewashing through compromised clusters: weighted binding (8.70)" begin
+    seeds = 1:3
+    worlds(w) = [run_m3c(ww(whitewash = whitewasher, bind_compromised = [1, 2], p_reveal = 0.05, bind_weighted = w); seed) for seed in seeds]
+    counted, weighted = worlds(false), worlds(true)
+    # Counterexample: the colluding pair admits every attempt.
+    @test all(tr.identities_linked == 0 && tr.identities_admitted > 5 for tr in counted)
+    # Acceptance: revealed, the pair's skill falls below zero and later attempts are linked.
+    # (the honest cluster misses one identity in ten, so its skill varies by seed but stays positive)
+    @test all(tr.attestation_skill[1] < 0 && tr.attestation_skill[2] < 0 && tr.attestation_skill[3] > 0 for tr in weighted)
+    # The first identities pass before any cluster has the five scored records its weight needs: the
+    # minimum record is the window an on-off cluster can exploit (8.70, gaming).
+    @test all(tr.identities_linked > 0 for tr in weighted)
+    @test mean(tr.identities_admitted for tr in weighted) < 0.5 * mean(tr.identities_admitted for tr in counted)
+    @test_throws ArgumentError ww(bind_compromised = [4])
+end
+
 @testset "On-off oscillation: ledger asymmetry (rules)" begin
     # A record alternating equal gains and losses: with losses decaying slower than gains (λ₋ < λ₊,
     # 8.29) the rolling net after the cycles is negative; with equal rates the good phase restores it.
