@@ -225,17 +225,22 @@ and `lessons` lessons, the work done scaled by the time left. Records the Goal's
 top decile's share, research spending (tallied), successes (`breakthroughs`), in-job innovations,
 entities acting per step (`actions`) and the kind of each action taken (`kind`).
 """
-function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
+function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
                 p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
-                class::Integer = 10, lessons::Integer = 3, reception_σ::Real = 0.5, central::Bool = false,
+                class::Integer = 10, lessons::Integer = 3, reception_σ::Real = CALIBRATED.reception_σ, teacher_cv::Real = CALIBRATED.teacher_cv, central::Bool = false,
                 p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3)
-    check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ)) &&
+    check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
           0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ)) && options >= 1,
           "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive")
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
+    # Teachers differ (3.7): each being's lessons carry a persistent log-normal multiplier of mean 1 on ε
+    # (`teacher_cv`; 0 is the limiting case of identical teachers), on its own stream.
+    quality = lognormal_mean1(Xoshiro(hash((seed, :teachers))), teacher_cv, p.n)
+    # A learner's reception is log-normal of mean 1 (a few learn a lot; 3.7), so ε stays the mean share of the gap.
+    receive(n) = exp.(reception_σ .* randn(trng, n) .- reception_σ^2 / 2)
     s = toy_state(p, rng)
     novelty = 0.2 .+ 0.8 .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
     tacit = zeros(p.n)
@@ -295,7 +300,7 @@ function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, resear
                 below = [b for b in 1:p.n if view.u[b] < view.u[e] - tacit[e]]
                 if !isempty(below)
                     learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-                    push!(opts, teaching_plan(s.u, e, learners, ε; reception = exp.(reception_σ .* randn(trng, length(learners))),
+                    push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = receive(length(learners)),
                                               tacit = tacit[e]))
                 end
                 predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
@@ -332,7 +337,7 @@ function run_m7(p::ToyParams; seed, ε::Real, research_share::Real = 0.1, resear
             below = [b for b in 1:p.n if s.u[b] < s.u[teacher] - tacit[teacher]]
             isempty(below) && continue
             learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-            push!(taught, teaching_plan(s.u, teacher, learners, ε; reception = exp.(reception_σ .* randn(trng, length(learners))),
+            push!(taught, teaching_plan(s.u, teacher, learners, min(1.0, ε * quality[teacher]); reception = receive(length(learners)),
                                         tacit = tacit[teacher]))
         end
         plans = [ordinary; taught]
