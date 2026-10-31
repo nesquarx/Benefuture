@@ -56,7 +56,8 @@ To minimize git merge conflicts:
 
 | Task ID | Track | Branch Name | Agent / Session Identifier | Claimed Focus / Scope | Primary Files Touched | Status | Last Active |
 |---|---|---|---|---|---|---|---|
-| **B1** | Identity & Reputation | `origin/claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.69 Prediction accuracy reputation component (`choice_skill_ref`), lane harm burns currency (8.67), TN identity binding pre-work | `BenefutureReference/Domains.lean`, `sim/src/m3c.jl`, `sim/test/probe_tests.jl` | **IN PROGRESS** | 2026-10-31 |
+| **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe; merges to `main` once the full Julia suite passes | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*` (balance identities), `sim/battery/economy.jl` | **VERIFYING** | 2026-10-31 |
+| **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding, probe first (next after B1) | `sim/src/identity.jl` (new), `BenefutureReference/Adversarial.lean`, `sim/test/probe_tests.jl` (append) | **CLAIMED (next)** | 2026-10-31 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 
 *(Add new claims to the table above before beginning work)*
@@ -181,7 +182,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Goal**: Execute background runs (`sim/battery/economy.jl`, `sim/battery/governance.jl`, `sim/battery/attack.jl`) on latest build; record outputs in `sim/battery/results/` tagged by commit SHA.
   - **Primary Files**: `sim/battery/results/*`.
   - **Collision Risk**: Low (do not run concurrently with another battery on the same machine).
-  - **Status**: `CONTINUOUS` (Background)
+  - **Status**: `CONTINUOUS` (Background). Suited to a long-running local agent: container restarts kill batteries in the Claude cloud session (they resume from `sim/battery/cache/` when relaunched with `tools/battery/run.sh`, but only on the same code hash). If a local agent claims E3, the cloud session stops launching batteries; record results tagged by the commit they ran on.
 
 ---
 
