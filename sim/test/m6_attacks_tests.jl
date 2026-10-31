@@ -336,5 +336,7 @@ end
     # (0.16, 0.23 against an expected 0.64) do not reach the quorum weight together, so 30-35% of real
     # newcomers are refused in two seeds of three (1% in the third), against almost none under pooled
     # skill. The quorum weight trades sybils admitted against real entities refused (governed).
+    # Newcomers here appear anywhere; in Benefuture they enter at binding points with a preliminary
+    # identity that gains confidence over time (8.72), which removes most of this cost (next step).
     @test mean(tr.newcomers_refused for tr in balanced) > mean(tr.newcomers_refused for tr in pooled)
 end

@@ -1766,3 +1766,15 @@ domains whose model had dipped below its status bar (0.891 against 0.90), not no
 framework would price that work through the domain's parent or coarser model, or at a lower credence,
 before falling to model-free StandCoin. Candidate homes: L82–L86 (fallback order), L83 (RA
 contraction), Benefuture currency (StandCoin entry).
+
+**8.72 Author clarification: newcomers enter at binding points.** As in any polity, a newcomer
+appearing without an identity binding is itself an issue. Newcomers are expected only at certain
+locations (birth, entry points) that bind them to a preliminary identity, which then gains
+confidence across clusters over time. Consequences for the simulation: a new identity seeking
+binding outside an entry point is a flag in itself (a sybil or whitewashing attempt), not a
+newcomer; a real newcomer is not refused but holds a preliminary identity whose binding confidence
+grows as independent clusters attest it, so 8.70's false-rejection cost (30–35% of real newcomers
+refused when they appeared anywhere) belongs to a world without entry points. Open for the author:
+what a preliminary identity may do before full binding (transact, vote, receive the base vote), and
+how fast confidence must grow (governed). Candidate homes: L18, Technology Network (identity
+binding), Implementation.
