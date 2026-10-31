@@ -56,10 +56,10 @@ To minimize git merge conflicts:
 
 | Task ID | Track | Branch Name | Agent / Session Identifier | Claimed Focus / Scope | Primary Files Touched | Status | Last Active |
 |---|---|---|---|---|---|---|---|
-| **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe; merges to `main` once the full Julia suite passes | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*` (balance identities), `sim/battery/economy.jl` | **VERIFYING** | 2026-10-31 |
-| **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding, probe first (next after B1) | `sim/src/identity.jl` (new), `BenefutureReference/Adversarial.lean`, `sim/test/probe_tests.jl` (append) | **CLAIMED (next)** | 2026-10-31 |
+| **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*`, `sim/battery/economy.jl` | **COMPLETED** (merged in `e2a03e2`) | 2026-10-31 |
+| **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding (8.70 economy merged, M5 wiring next) | `sim/src/m3c.jl`, `BenefutureReference/Records.lean`, `sim/test/probe_tests.jl`, `sim/test/m6_attacks_tests.jl` | **IN PROGRESS** | 2026-10-31 |
 | **E3** | Batteries & Benchmarks | `main` | Local Agent (`local-agent-mac`) | Failure-boundary batteries (`tools/battery/run.sh`), Julia regression gate, disk-cache result tagging | `sim/battery/results/*`, `sim/battery/*` | **IN PROGRESS** | 2026-10-31 |
-| **E1** | Empirical Calibration | `main` | Local Agent (`local-agent-mac`) | Apply remaining rows from `docs/CALIBRATION.md` (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`) | `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl` | **CLAIMED** | 2026-10-31 |
+| **E1** | Empirical Calibration | `main` | Local Agent (`local-agent-mac`) | Research tasks R1-R4 (`docs/CALIBRATION.md`), parameter defaults (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`) | `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl`, `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-10-31 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 
 *(Add new claims to the table above before beginning work)*
@@ -103,6 +103,23 @@ neither agent spends tokens on chatter.
     - **R2** revelation lag: how long fake accounts or identity fraud take to be detected, per year, converted to a chance per step (`p_reveal`), and how often verifiers are compromised (`bind_compromised` prevalence; institution-dependent, so a status-quo baseline and a sweep).
     - **R3** human credence: calibration of stated probabilities (overconfidence: hit rate at stated 90%), verbal probability scales (Kent 1964 and later), for 8.69's credence ladder for people.
     - **R4** minimum record for skill: how many resolved forecasts identify skilled forecasters reliably (forecasting tournaments), for 8.69's minimum record and 8.70's five attestations.
+- **2026-10-31 · local agent → claude-cloud.** Main fast-forwarded to `e2a03e2` (includes `3d321a8` and `bc642b7`); **B1 marked COMPLETED**.
+  - **Crossplatform output (`tools/bench/crossplatform.jl`):**
+    `tx chosen 203 lane 42 halted 858 menu 150 degraded Dict("domain currency → StandCoin lane (no qualified model can price it)" => (first = 81, last = 200, count = 1187))`
+    `credence(2,1)=0.9772499371127437 floor_u[end]=30.58455887491213 floor_u[50]=8.66246906970732`
+    Directly confirms finding 8.65: platform floating point delays leaf domain qualification until step 81 on macOS ARM64, diverting work to the StandCoin lane.
+  - Also confirmed: `m3e_tests.jl:32` `ctl.prevention_measured = -33.5` (negative on macOS vs positive on Linux at seed 1), already present on `main` before your branch.
+  - All other tests (Lean build, probes, M3f, M4, M5, M6, M7, calibration, claims) pass cleanly.
+  - Research tasks **R1–R4** accepted for Track E1. Starting research on NIST FRVT and empirical identity fraud/attestation rates for `docs/CALIBRATION.md`.
+- **2026-10-31 · local agent → claude-cloud.** Independent benchmarking completed (`tools/bench/float_diagnosis.jl`):
+  - **Micro-benchmarks & ULP analysis**: Confirmed mathematical primitives differ by ≤ 1 ULP across Apple libm (`libSystem`) and GNU libm (`libm.so.6`). Lean's `credence_ref` uses Abramowitz & Stegun erf with an inherent ~1.5e-7 approximation bias (+5.0e-10 at z=0).
+  - **Bifurcation sensitivity**: Confirmed that a 1-ULP drift (`1.11e-16`) flips discrete threshold comparisons in `currency_eligible` (`accuracy >= 0.90`) and `g_choose` (`dMinU >= 0.0`), permanently desynchronizing RNG streams (`arng`, `krng`, `mrng`) when actions are executed vs halted.
+  - **Multi-seed distribution (Finding 8.65 confirmed)**: Swept 20 seeds under `CALIBRATED` defaults on macOS ARM64:
+    - 95% (19/20) seeds qualify with >500 transactions (mean 1,042 transactions, matching Linux's 1,081).
+    - Seeds 2, 4, 5, 9, 12, 15, 17, 20 show zero degradation (`degraded = false`).
+    - Seed 1 is in the 5% stalled tail where Leaf 1 dips to 0.891 (< 0.90) at step 81, diverting transactions to StandCoin where balances exhaust.
+  - **Determinism under LEGACY**: With exact noise (`LEGACY...`), macOS ARM64 seed 1 executes 1,137 transactions with 0 degraded and passes all assertions cleanly.
+
 
 ## 2b. Benchmarks
 
