@@ -79,9 +79,10 @@ end
     tr = run_m3c(m3c(work = [1], threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0, endowment = 2.0, p_side = 0.0); seed = 1)
     @test isempty(tr.chosen_step) && tr.lane_executed > 0 && tr.cofunded > 0
     @test all(tr.balance[:, end] .>= -1e-9)  # resource cost never overdraws: the lane pays only what is held
-    # Harm done by lane work burns currency (8.67), so harm, unlike cost, can leave a balance below zero.
+    # Harm done by lane work burns currency in its domains (8.67), so harm, unlike cost, can leave a
+    # domain balance below zero; StandCoin, which pays resource costs, is never overdrawn.
     tr = run_m3c(m3c(work = [1], threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0, endowment = 2.0, p_side = 1.0, side_share = 1.0); seed = 1)
-    @test tr.lane_executed > 0 && minimum(tr.balance[:, end]) < 0
+    @test tr.lane_executed > 0 && minimum(tr.balance[:, 1:(end - 1)]) < 0 && all(tr.balance[:, end] .>= -1e-9)  # burnt in its domains, StandCoin untouched
     # Co-funding is a judgement (author ruling 8.31): an expert pledges only if its own estimate of
     # the work's value, the screened prediction plus its choice noise (a personal ceiling per domain,
     # inverse to skill on average), is positive. Wildly noisy experts pledge less often; the work
