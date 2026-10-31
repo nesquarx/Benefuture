@@ -1,5 +1,7 @@
 # Failure-boundary battery for governance (M5 world). Run: julia --project=sim sim/battery/governance.jl
-# Severity 0 is the clean world; 1 the top of each factor's explored range; rays run to 2.
+# Ranges follow docs/CALIBRATION.md section 7. Severity 0 is a mildly imperfect realistic world (the low
+# end of an invariant factor's range, the Benefuture-plausible value of an institution-dependent one);
+# 1 the realistic bad end (the status quo for institution-dependent factors); rays run to 2.
 # Convergence (an evaluation criterion, not a rule): over the seeds' majority, the share of the last
 # half of decisions right in the end (after split trials and AdvAp's recounts) is at least
 # `ACCURACY`. Colluders are the most reputable experts of each domain, stealthy (defecting only where
@@ -7,17 +9,20 @@
 using BenefutureSim, Statistics, Random, Printf
 
 const SEEDS, ACCURACY, DECISIONS = 1:3, 0.75, 800
+# Experts' skills follow the calibrated shape: a log-normal ladder (log-SD 0.4 around 0.25, about 0.1 to 0.55
+# over the 25 of a domain), executing with the calibrated intention-behaviour gap.
+ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / 25))
 m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
-                       [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                       [DomainAgent([k == l ? ladder(r) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4])
                         for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
 top(f) = unique(vcat([sortperm(m3.relevance_leaf[:, d]; rev = true)[1:round(Int, f * 25)] for d in 1:4]...))
 const FACTORS = [
-    ("signal noise", (s, kw) -> (kw[:signal_σ] = 1 + 39s)),
-    ("ability scatter", (s, kw) -> (kw[:ability_spread] = 1.5s)),
-    ("hidden outcomes", (s, kw) -> (kw[:p_apparent] = clamp(0.9 - 0.8s, 0.0, 1.0))),
+    ("signal noise", (s, kw) -> (kw[:signal_σ] = 2 + 4s)),       # mixed: laypeople 2 to 6 (p 0.69 to 0.57); 40 is a stress ray
+    ("ability scatter", (s, kw) -> (kw[:ability_spread] = 0.5 + s)),  # invariant: 0.5 to 1.5
+    ("hidden outcomes", (s, kw) -> (kw[:p_apparent] = clamp(0.7 - 0.6s, 0.0, 1.0))),  # mixed: 0.7 to 0.1
     ("local noise", (s, kw) -> (kw[:local_σ] = 1 + 3s)),
     ("collusion", (s, kw) -> (kw[:colluders] = top(clamp(0.5s, 0.0, 1.0)))),
-    ("delegation", (s, kw) -> (kw[:p_delegate] = clamp(s, 0.0, 1.0))),
+    ("delegation", (s, kw) -> (kw[:p_delegate] = clamp(0.4s, 0.0, 1.0))),  # institution-dependent: 0 to 0.4; 1 is stress
     ("loyalty", (s, kw) -> (kw[:loyalty] = 10s)),
 ]
 names = first.(FACTORS)

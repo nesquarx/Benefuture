@@ -1,5 +1,8 @@
 # Failure-boundary battery for the economy (M3c world). Run: julia --project=sim sim/battery/economy.jl
-# Severity 0 is the least realistic noise and no attack; 1 the realistic top of each range (sim/README.md, Noise);
+# Ranges follow docs/CALIBRATION.md section 7. Severity 0 is a mildly imperfect realistic world: the
+# low end of an invariant factor's range (8.33), the Benefuture-plausible value of an institution-
+# dependent one (vigilance, diligence, accounting, audit errors); 1 the realistic bad end, or the
+# status quo for an institution-dependent factor; rays run to 2 (stress beyond the range). No attack at 0.
 # AdvAp (L160) is on, its frictions factors;
 # rays run to 2. Convergence (an evaluation criterion, not a rule): the Goal's success pattern (L74)
 # after the score-only start, by the seeds' vote: the floors and medians of understanding and
@@ -14,26 +17,29 @@ using BenefutureSim, Statistics, Random, Printf
 
 const STEPS, SEEDS, MORE, GROWTH, GAIN, HARM = 300, 1:3, 4:5, 0.25, 1.1, 3.0
 const FACTORS = [
-    # noise: severity 0 is the least realistic noise, 1 the realistic top (the edge of a functional
-    # domain, where established models fall to about coarse accuracy; sim/README.md, Noise)
-    ("markers", (s, kw) -> (kw[:marker_σ] = 0.02 + 0.18s)),
-    ("model error", (s, kw) -> (kw[:σ_leaf] = 0.05 + 0.4s; kw[:σ_branch] = 0.2 + 0.4s; kw[:σ_coarse] = 0.35 + 0.4s)),
-    ("model bias", (s, kw) -> (kw[:bias_σ] = 0.2s)),
-    ("classification", (s, kw) -> (kw[:classify_σ] = 0.03 + 0.07s; kw[:spread] = 0.03 + 0.07s)),
-    ("execution", (s, kw) -> (kw[:sloppiness] = 0.6s)),
-    ("accounting", (s, kw) -> (kw[:cost_σ] = 0.3s; kw[:regen_σ] = 0.5s)),
-    ("memory loss", (s, kw) -> (kw[:memory_loss] = min(0.1s, 1.0))),
-    ("attribution", (s, kw) -> (kw[:attribution_σ] = 0.3s)),
-    ("hazards", (s, kw) -> (kw[:p_hazard] = min(0.3s, 1.0); kw[:p_informed] = max(1 - 0.4s, 0.0); kw[:dil] = max(1 - 0.3s, 0.0))),
+    # noise (classes in sim/README.md, Noise)
+    ("markers", (s, kw) -> (kw[:marker_σ] = 0.1 + 0.5s)),          # mixed: registries 0.1 to self-reports 0.6
+    ("model error", (s, kw) -> (kw[:σ_leaf] = 0.3 + 0.6s; kw[:σ_branch] = 0.6 + 0.35s; kw[:σ_coarse] = 0.85 + 0.15s)),  # mixed: natural to social science
+    ("model bias", (s, kw) -> (kw[:bias_σ] = 0.1 + 0.2s)),         # mixed: overconfidence 0.1 to 0.3
+    ("classification", (s, kw) -> (kw[:classify_σ] = 0.05 + 0.15s; kw[:spread] = 0.05 + 0.15s)),  # invariant: coding noise
+    ("execution", (s, kw) -> (kw[:sloppiness] = 0.1 + 0.4s)),      # mixed: individuals' intention-behaviour gap
+    ("accounting", (s, kw) -> (kw[:cost_σ] = 0.05 + 0.25s)),       # institution-dependent: audited ledgers to status quo
+    ("commons", (s, kw) -> (kw[:regen_σ] = 0.3 + 0.5s)),           # invariant: recruitment variability
+    ("memory loss", (s, kw) -> (kw[:memory_loss] = min(0.1s, 1.0))),  # institution-dependent
+    ("attribution", (s, kw) -> (kw[:attribution_σ] = 0.1 + 0.3s)), # mixed
+    # invariant: hazards arise (tail shape is the world's default); institution-dependent: guardians informed and diligent
+    ("hazards", (s, kw) -> (kw[:p_hazard] = min(0.05 + 0.25s, 1.0))),
+    ("guardians", (s, kw) -> (kw[:p_informed] = clamp(0.95 - 0.35s, 0.0, 1.0); kw[:dil] = clamp(0.95 - 0.55s, 0.0, 1.0))),
     # attacks
     ("deceit", (s, kw) -> (kw[:deceit_size] = 2s)),
     ("outage", (s, kw) -> (kw[:outage] = round(Int, 100s))),
     ("capture", (s, kw) -> (kw[:capture] = 3s)),
-    ("side harm", (s, kw) -> (kw[:p_side] = min(0.2s, 1.0))),
+    ("side harm", (s, kw) -> (kw[:p_side] = min(0.01 + 0.09s, 1.0))),  # mixed: simple to complex domains
     ("laundering", (s, kw) -> (kw[:launder_chance] = min(0.5s, 1.0))),
-    # AdvAp's frictions: readers who seldom read the log, examinations that convict the innocent
-    ("inattention", (s, kw) -> (kw[:vigilance] = max(0.3 - 0.29s, 0.0))),
-    ("audit errors", (s, kw) -> (kw[:p_false_trace] = min(0.1s, 1.0))),
+    # AdvAp's frictions: readers who seldom read the log (institution-dependent: 0.1 plausible, 0.001 passive status quo),
+    # examinations that convict the innocent (mixed)
+    ("inattention", (s, kw) -> (kw[:vigilance] = max(0.1 - 0.099s, 0.0))),
+    ("audit errors", (s, kw) -> (kw[:p_false_trace] = min(0.005 + 0.045s, 1.0))),
 ]
 names = first.(FACTORS)
 
@@ -42,10 +48,12 @@ function world(sev)
     for ((_, set!), s) in zip(FACTORS, sev)
         set!(s, kw)
     end
-    sl = pop!(kw, :sloppiness, 0.0); dil = pop!(kw, :dil, 1.0)
+    sl = pop!(kw, :sloppiness, CALIBRATED.sloppiness); dil = pop!(kw, :dil, 0.95)
     d = pop!(kw, :deceit_size, 0.0); out = pop!(kw, :outage, 0); cap = pop!(kw, :capture, 0.0)
     lc = pop!(kw, :launder_chance, 0.0)
-    agents = [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], sl) for _ in 1:8]
+    # skills log-normal around 0.6 in the two worked domains (calibrated shape, a fixed population: the same eight people in every world)
+    skills = draw_skills(Xoshiro(20261031), 8, 4, [1, 3]; median = 0.6)
+    agents = [DomainAgent(skills[a, :], [0.5, 0, 0.5, 0], sl) for a in 1:8]
     events = Shock[]
     out > 0 && push!(events, shock(:outage; step = 100, duration = out))
     cap > 0 && push!(events, shock(:capture; step = 100, duration = 150, size = cap, target = 1))
@@ -65,7 +73,7 @@ function grows(tr)
         sp.peak_u >= 0 && sp.worst_drop <= HARM * CLEAN.worst_drop
 end
 function converges(sev)
-    attacks = [(10, 7:8), (14, 6:6)]  # (factor, attacking agents)
+    attacks = [(findfirst(==("deceit"), names), 7:8), (findfirst(==("laundering"), names), 6:6)]  # (factor, attacking agents)
     # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
     # between the two runs).
     rel(t, k) = mean(sum(t.balance[i, :]) for i in k) / mean(sum(t.balance[i, :]) for i in 1:5)
