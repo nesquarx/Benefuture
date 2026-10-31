@@ -352,8 +352,13 @@ forecast. Readings for the
 transaction, hazard, governance and threshold rungs were taken before the rulings that mistakes
 decay slower than wins, that models use track records (8.29) and that world defaults are mildly
 imperfect (8.33); their tests still pass under those rulings, but the numbers quoted have not been
-re-run unless the claim says so. Failure-boundary batteries (`sim/battery/results/`) run continuously
-on the latest build.
+re-run unless the claim says so. The world's defaults are now calibrated to empirical sources
+(`docs/CALIBRATION.md`; `sim/README.md`, Noise): invariant figures sit at the mildly imperfect end of
+their realistic range and institution-dependent ones are swept, never defaults. Readings taken before
+that (markers 0.05, models 0.15/0.3/0.45, no execution noise, no side harm, thin hazards) say so or
+have not been re-run; tests that pin a designed scenario to the old values say so (`LEGACY`).
+Failure-boundary batteries (`sim/battery/results/`) run continuously on the latest build; their ranges
+follow the calibration, so earlier results predate it.
 
 Toy assumptions common to all, still to be removed (`sim/README.md`, model ladder): beings and
 plans in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's
@@ -366,6 +371,15 @@ Readings are means over 5 seeds of 500 steps unless a claim says otherwise. Whic
 simulation covers, and which not yet: [sim/README.md, coverage](sim/README.md#coverage-of-the-specification).
 
 Measurement, agents and domains
+- Calibrated world (toy, 80 beings; the defaults of `docs/CALIBRATION.md`: markers 0.3, models 0.3 /
+  0.6 / 0.85, execution noise 0.25, side harm 0.01, Pareto hazards): the economy still converges but
+  unevenly. Floors grow in every seed (a 250-step clean world: 31, 176 and 117 over three seeds;
+  whether a leaf's own model qualifies is seed-dependent), floors fall in all six seeds measured where
+  the exact world's never do, and heavy-tailed hazards make harm's peak about four times deeper than
+  Gaussian ones of the same median (17.5 against 4.3, six seeds). With every noise source at its
+  realistic bad end the floors still rise, at about a twelfth to a fifth of the clean growth
+  (BACKPROPAGATION 8.65) ([sim/test/calibrated_tests.jl](sim/test/calibrated_tests.jl),
+  [sim/test/friction_m3c_tests.jl](sim/test/friction_m3c_tests.jl), [sim/README.md, Noise](sim/README.md#noise)).
 - With perfect measurement, the floors of understanding and happiness never fall, and the peak of
   understanding never falls ([sim/test/m0_tests.jl](sim/test/m0_tests.jl)). With noise, the floors'
   guarantee is only as good as measurement: noise on current levels alone lets the true floor fall
@@ -496,9 +510,10 @@ Governance and thresholds
   starting from inverted reputations, converge within a few hundred decisions to the accuracy that
   true reputations give; the effect is small (expertise is worth about two points there). In the
   economy, with accuracy as the quality of models' credences and thresholds as currency status
-  (author rulings 8.35–8.36), every noise source at the top of its realistic range at once thins
-  pricing but floors still rise (about 9% of clean growth, 14% before the scoring correction of
-  8.38's status); far beyond a functional domain, no currency qualifies and work goes to StandCoin.
+  (author rulings 8.35–8.36), every noise source at the realistic bad end of its range at once (the calibrated ends: self-report
+  markers 0.6, models 0.9, guardians' diligence 0.4, execution 0.5) thins pricing but floors still rise
+  (about 8% of the clean world's growth; about 20% with models and execution at their calibrated defaults;
+  3 seeds); far beyond a functional domain, no currency qualifies and work goes to StandCoin.
   Under status thresholds a deceiver can degrade a domain's currency status for everyone (8.37),
   which AdvAp largely restores (8.38; Gaming above)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, friction](sim/README.md#imperfect-agents-and-convergence-under-friction-831)).
@@ -510,7 +525,7 @@ Governance and thresholds
   rest move part of the way, mean weight on advice about 0.37; `docs/CALIBRATION.md`); every voter
   casts its full weight, sources being credited through their records, never through vote shares,
   and models never vote (8.60). Deliberation then decides as well as voters alone on these purely
-  factual decisions (92.8% both; 93.2% with improving models), changing about one vote in twenty. The
+  factual decisions (92.8% alone, 92.7% with the map; 93.1% with improving models), changing about one vote in twenty. The
   echo cost of 8.45 appears only in the limiting case where everyone defers (90.8%, 40% of votes
   changed) and, with readings passed on for three rounds, grows (86.6%) unless readings carry source
   tags, which count each origin once (90.8%). Most of the cost first measured (83.8%) came from a map
@@ -520,8 +535,8 @@ Governance and thresholds
   laundering by omission is flagged by an echo audit in at least three
   of four launderers and under one in twenty honest voters. Where experts are
   divided between two camps, one leaning by an honest bias, hearing both sides with diversity's
-  trials finds the performant option on contested questions 85.7% of the time, against 81.0% with
-  trials alone and 74.8% with neither
+  trials finds the performant option on contested questions 84.4% of the time, against 80.8% with
+  trials alone and 73.8% with neither (re-measured under the calibrated defaults; 85.7%, 81.0% and 74.8% before)
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - Liquid-democracy pathologies against direct voting (toy, one domain, 101 voters, 6 seeds; direct
   98.7% right): each pathology is reproduced with uncapped, unaudited delegation (bad delegation

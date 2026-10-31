@@ -1576,3 +1576,28 @@ per entity) and draws catastrophes (M3f black swans) and breakthroughs (M7 resea
 converted from realistic frequencies (`docs/CALIBRATION.md`). Candidate homes: Implementation (phases
 and horizons), the batteries.
 
+
+**8.65 Finding: under the calibrated defaults the economy converges, but unevenly across seeds, and
+the exact world's guarantees are limiting cases.** With the calibrated noise of `docs/CALIBRATION.md`
+(markers 0.3, leaf, parent and coarse models 0.3, 0.6 and 0.85, execution 0.25, side harm 0.01),
+three readings differ from the exact-ish worlds the earlier tests used (`sim/test/calibrated_tests.jl`,
+`sim/test/m3f_tests.jl` "Capture under realistic noise"):
+(a) whether a domain's own leaf model ever qualifies is seed-dependent. In the capture world the
+share of leaf 1's work priced by its own currency before the capture is 0.09, 0.98 and 0.91 over
+three seeds (0.40, 1.00, 0.61 with only the model noise set back), and floor growth over 250 steps in a
+clean eight-agent world is 31, 176 and 117 (actions 271, 1,799, 1,206): early records decide whether the currency regime
+takes hold, so a few seeds sit in the thin-pricing regime for the whole run. The single-seed
+tests that assumed a qualifying leaf (capture, whether deceit blocks a marginal domain, the decision
+market's misreport) are pinned to the old model noise (`LEGACY`) as designed scenarios; their
+mechanisms are not in question, but their frequency under realistic noise is unmeasured;
+(b) "no floor ever falls" holds with exact models, markers and accounting and no side harm, and fails
+in all six seeds measured under the calibrated defaults (a counterexample test, not a regression):
+with noisy markers, side harm and imperfect execution floors do fall, and G's guarantee is stated over
+measured outputs, so it is a limiting case, not the default;
+(c) heavy-tailed hazards (Pareto size, median 1, cap 20) make harm's peak (the deepest single-being
+drop) about four times deeper than Gaussian hazards of the same median (mean 17.5 against 4.3, six seeds,
+rate 0.2, no guardians): the success pattern's harm criterion is only meaningful relative to a clean world
+that has the same tail.
+Candidate homes: Implementation (Phase 1: records a leaf needs before its model backs a currency, and what
+happens to domains that never qualify), the success pattern (harm's peak against a reference with the
+same hazards).

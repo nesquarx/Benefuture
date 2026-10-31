@@ -95,7 +95,10 @@ Readings in the M3b–M5 sections and the black-swan table were taken with losse
 than gains (λ₊ 0.02, λ₋ 0.05) and without models' track records, before the author's ruling 8.29.
 The tests now run with λ₊ 0.05, λ₋ 0.02, track records and mildly imperfect defaults (8.33) and
 still pass; the readings themselves have not been re-run and may shift. Readings taken after ruling
-8.33 say so.
+8.33 say so. Readings taken before the calibration (`docs/CALIBRATION.md`; markers 0.05, models
+0.15/0.3/0.45, no execution noise, no side harm, thin hazards, signal noise 1) used the old
+defaults: the tests pinned to them say so (`LEGACY`), and the readings re-measured under the
+calibrated defaults are marked below.
 
 ## M0 observations
 
@@ -403,7 +406,9 @@ use harder decisions.
 
 ### In the economy (M3c)
 
-Each noise source at the top of its range, one at a time (3 seeds, 300 steps; floor growth on
+Readings in this subsection were taken before the calibration (old tops; see "A note on earlier
+readings"); the re-measured heavy-friction claim is in the main README (Claims). Each noise source at
+the top of its range, one at a time (3 seeds, 300 steps; floor growth on
 understanding after the score-only start, 182 clean): markers 185, model bias 145, classification
 175, hazards with weak guardians 155; cost, regeneration, memory loss, participation and attribution
 change nothing in this world (no scarcity binds, no co-funding or upstream is needed). Model error
@@ -451,10 +456,17 @@ A randomized battery hones in on the combinations of noise and attack beyond whi
 stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 `sim/test/battery_tests.jl`; batteries in `sim/battery/`, results in `sim/battery/results/`).
 
-- **Factor space.** Each noise source or attack is a factor with a severity: 1 is the top of its
-  explored range (the Noise table; attacks sized likewise), and the search runs to 2. Severity 0 is
-  the low end of each range with no attack in the economy battery (mildly imperfect, 8.33), and the
-  clean world in the governance battery.
+- **Factor space.** Each noise source or attack is a factor with a severity: 1 is the realistic bad
+  end of its range (the Noise table, `docs/CALIBRATION.md` section 7; the status quo for an
+  institution-dependent factor; attacks sized likewise), and the search runs to 2. Severity 0 is
+  the low end of each range with no attack in the economy battery: a mildly imperfect realistic world
+  (8.33) for an invariant factor, the Benefuture-plausible value for an institution-dependent one
+  (vigilance 0.1, guardians informed 0.95 and diligent 0.95, accounting 0.05, audit errors 0.005),
+  and no exact world. Hazards (rate 0.05 to 0.3), side harm (0.01 to 0.1) and the commons
+  (`regen_σ` 0.3 to 0.8) are now always present, and accounting and the commons, once one factor,
+  are two, as are hazards and guardians (the first invariant, the second institution-dependent);
+  the world's agents are a fixed log-normal population. The governance battery follows the same rule
+  (signal noise 2 to 6, ability scatter 0.5 to 1.5, hidden outcomes 0.7 to 0.1, delegation 0 to 0.4).
 - **Oracle.** A world converges if a majority of seeds meet the criterion stated at the top of each
   battery: in the economy, the Goal's success pattern after the score-only start (L74: floors and
   medians of understanding and happiness each growing at least a quarter as much as the clean
@@ -943,14 +955,15 @@ equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest 
 
 | Voters | Contested decisions right (first 400, last 400) | All decisions right |
 |---|---|---|
-| Neither deliberation nor diversity | 75.8%, 73.7% | 89.8% |
-| Diversity (split trials) | 80.7%, 81.1% | 89.6% |
-| Deliberation through information handling | 77.9%, 81.2% | 91.5% |
-| Both | 82.6%, 87.7% | 91.1% |
-| Both, everyone deferring (limiting case) | 83.9%, 89.3% | 89.0% |
+| Neither deliberation nor diversity | 72.8%, 73.5% | 89.6% |
+| Diversity (split trials) | 78.9%, 81.8% | 89.6% |
+| Deliberation through information handling | 75.6%, 80.7% | 91.2% |
+| Both | 83.3%, 84.7% | 91.0% |
+| Both, everyone deferring (limiting case) | 85.0%, 89.9% | 89.2% |
 
-(Re-measured with the full map and realistic advice taking; contested decisions right over all 1,600:
-neither 74.8%, trials 81.0%, deliberation 81.6%, both 85.7%.)
+(Re-measured with the full map, realistic advice taking and the calibrated world defaults; contested
+decisions right over all 1,600: neither 73.8%, trials 80.8%, deliberation 80.2%, both 84.4%, both
+with everyone deferring 87.2%. Before calibration: 74.8%, 81.0%, 81.6%, 85.7%.)
 
 On contested questions, hearing both sides weighed by their records, with trials revealing
 outcomes, finds the performant option far more often; deliberation alone hones in slowly.
@@ -978,11 +991,11 @@ share of votes deliberation changed:
 |---|---|---|
 | Only themselves | 92.8% | – |
 | Five random contacts | 92.7% (2.6%) | 91.4% (22%) |
-| The full ContentionMap | 92.8% (4.7%) | 90.8% (40%) |
-| The same, tagged | 92.8% | 90.8% |
-| Full map, three rounds: untagged / tagged | 92.4% / 92.8% | 86.6% / 90.8% |
-| Contacts, three rounds: untagged / tagged | 92.8% / 93.3% | 91.2% / 91.0% |
-| Full map and improving models (`p_new_model` 0.02) | 93.2% (4.6%) | 91.5% (40%) |
+| The full ContentionMap | 92.7% (4.7%) | 90.8% (40%) |
+| The same, tagged | 92.7% | 90.8% |
+| Full map, three rounds: untagged / tagged | 92.4% / 92.7% | 86.6% / 90.8% |
+| Contacts, three rounds: untagged / tagged | 92.8% / 93.2% | 91.2% / 91.0% |
+| Full map and improving models (`p_new_model` 0.02) | 93.1% (4.6%) | 91.5% (40%) |
 
 With realistic advice taking, deliberation neither costs nor gains on these purely factual
 decisions; the echo cost of 8.45 is the limiting case of universal deference, and it compounds over
@@ -1086,24 +1099,25 @@ keeps all of its own). Research is spending (author): a governed share `research
 each step, taking them from work and costing the commons; an attempt succeeds with a very noisy chance
 rising with the researcher's understanding relative to the frontier and its novelty, raises it by a
 log-normal gain (new understanding where it passes the peak), teachable with chance `p_teachable`, else
-tacit. 100 beings, 300 steps, 4 seeds, ε 0.3:
+tacit. 100 beings, 300 steps, 4 seeds, ε 0.3 (re-measured under the calibrated defaults: reception log-normal of
+mean 1 with log-SD 0.8, teachers' multiplier CV 0.5; the top decile's share is taken at the end):
 
 | Research share | Floor of understanding | Median | Peak | Top decile's share | Steps the floor fell |
 |---|---|---|---|---|---|
-| 0 | 2.5 | 1.0 | −1.1 | 15% | 52% |
-| 0.05 | 37.7 | 36.5 | 37.0 | 24% | 2.4% |
-| 0.1 | 42.9 | 41.7 | 42.8 | 31% | 0.5% |
-| 0.2 | 49.9 | 48.9 | 51.2 | 29% | 0.6% |
-| 0.4 | 43.6 | 43.1 | 49.6 | 34% | 1.8% |
-| 0.8 | 27.6 | 27.3 | 60.7 | 41% | 4.9% |
+| 0 | 2.3 | 0.9 | −1.3 | 15% | 52% |
+| 0.05 | 39.4 | 38.4 | 39.6 | 25% | 1.5% |
+| 0.1 | 44.4 | 43.3 | 44.4 | 29% | 0.6% |
+| 0.2 | 48.3 | 47.8 | 52.9 | 31% | 0.8% |
+| 0.4 | 46.8 | 46.1 | 51.5 | 32% | 1.7% |
+| 0.8 | 28.6 | 28.8 | 53.3 | 34% | 4.6% |
 
 Uplift peaks near a fifth of time on research; beyond it, research spending harms the floor and
 median while the peak keeps rising and concentrating. With no research the frontier is frozen,
 ordinary work's gains are capped while its losses still land, and noisy predictions take it anyway:
 a degenerate case. At a tenth on research, teaching raises floor, median and peak together (ε 0, 0.3,
-0.6: floor 14, 43, 62; peak 20, 43, 62). Against a single global G (the limiting case, `central`),
-G per entity grows the floor more (49 against 30 at the same settings); with exact views the floor
-never fell, with messy ones (σ 1) in 1.7% of steps.
+0.6: floor 14, 44, 61; peak 20, 44, 62). Against a single global G (the limiting case, `central`),
+G per entity grows the floor more (44 against 29 at a tenth on research); with exact views the floor
+never fell, with messy ones (σ 1) in 2.3% of steps. The default ε is now 0.2 per course (a year).
 
 Screened on the way (BACKPROPAGATION 8.49): research as one menu option crowded out by lessons;
 level-independent ordinary plans carrying the peak; breakthroughs landing at the peak whatever the
@@ -1133,6 +1147,10 @@ for removal.
 | Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4, 8.26; priced as a transaction (L86); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
 | Outage examined as an outcome; saboteur traced or harm insured | Native | 8.30.1; causal assessment, L115, L119 |
 | Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
+| Heavy-tailed hazards: Pareto event size, log-normal scatter across beings (`hazard_heavy`, `hazard_α`, `hazard_σ`) | World | `docs/CALIBRATION.md` 3.9; the Gaussian shape is the limiting case |
+| Largest hazard event in medians (`hazard_cap`) | Introduced | a bound, since a Pareto of exponent 2 has no variance; the toy's catastrophes are of this order. Candidate for removal once harm's size is bounded by what exists to harm |
+| Teachers' multiplier on a lesson's share (`teacher_cv`), learners' reception | World | 3.7; both mean-one log-normal |
+| Log-normal skills of a fixed population (`draw_skills`) in the batteries | World | 3.2 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
 | Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
@@ -1235,77 +1253,98 @@ ratified.
 
 Every step that can go wrong in reality has a noise parameter, drawn from its own random stream
 so that turning one off changes nothing else. Nothing is perfect (author ruling 8.33): defaults are
-mildly imperfect, often the low end of each range (some sit mid-range: `bias_σ`, `remeasure_σ`,
-`p_informed`, `p_trace`), and exact worlds appear only as limiting cases in tests. The ranges
-are first guesses at reality; the top of each is the edge of a functional domain (where established
-models fall to about coarse accuracy, 0.75), not beyond: far worse is the regime of astrology, not of
-a working society (author). Model error is relative to the domain's natural spread of outcomes. The
+mildly imperfect, and exact worlds appear only as limiting cases in tests (`LEGACY` in
+`sim/test/legacy.jl`: the pre-calibration values, passed by tests that isolate a mechanism or pin a
+designed scenario). Model error is relative to the domain's natural spread of outcomes. The
 failure-boundary batteries sweep these ranges, Gaussian-ish (typical worlds dominate, extremes are
 rare but present).
 
-| Step | Parameter | Default | Range to explore |
-|---|---|---|---|
-| A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 |
-| Carrying a plan out | agent `sloppiness` | 0 | 0–0.6 |
-| Markers measuring levels and outcomes | `marker_σ` | 0.05 | 0.02–0.2 |
-| Metric model predictions, relative to the domain's spread (leaf, parent, coarse) | `σ_leaf`, `σ_branch`, `σ_coarse` | 0.15, 0.3, 0.45 | 0.05–0.45, 0.2–0.6, 0.35–0.75 |
-| Systematic model bias, relative | `bias_σ` | 0.1 | 0–0.2 |
-| Taking advice in deliberation (per person and domain; M5) | `advice_stay`, `advice_avg`, `advice_defer`, Beta(`advice_α`, `advice_β`) | 0.20, 0.20, 0.05, Beta(2, 3) (visible records: mean about 0.37) | stay-put share 0.1–0.6, mean weight 0.15–0.5 (`docs/CALIBRATION.md` 1.4; Soll and Larrick 2009, Bailey et al.) |
-| An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.03, 0.03 | 0.03–0.1 |
-| Bootstrap classification (what it misses) | overlaps unknown to it | all | all to none |
-| Resource accounting | `cost_σ` | 0.1 | 0–0.3 |
-| Resource regeneration | `regen_σ` | 0.1 | 0–0.5 |
-| Records reaching memory | `memory_loss` | 0.02 | 0–0.1 |
-| Experts joining co-funding | `participation` | 0.9 | 0.6–1 |
-| Separating an upstream output's part | `attribution_σ` | 0.1 | 0–0.3 |
-| Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–0.5 |
-| Examining harm of no apparent cause tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 |
-| An agent laundering harm (adversary); the cost it saves | `launder`, `launder_saving` | 0, 0.5 | 0–1, 0.2–0.8 |
-| Hazard harm | `hazard_σ` | 0.2 | 0–1 |
-| Hazards arising (world; battery factor): chance per step, share of beings threatened, harm per being | `p_hazard`, `hazard_share`, `hazard_size` | 0, 0.1, 1 | 0–0.3, not yet set, not yet set |
-| Side effects of actions (world; battery factor): chance per action, share of touched beings harmed, harm per being | `p_side`, `side_share`, `side_size` | 0, 0.3, 1 | 0–0.2, not yet set, not yet set |
-| Actions building on another's recent output; how much of its effect they carry (M3c, world) | `p_upstream`, `β_upstream` | 0, 0.5 | not yet set |
-| Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | not yet set |
-| Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | not yet set |
-| Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | not yet set |
-| A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.6–1 |
-| A guardian acting on a known duty | `diligence` | 0.95 | 0.7–1 |
-| An actor foreseeing a side effect | `p_foresee` | 0.5 | 0–1 |
-| Repair restoring harm (world; its one home) | `repair_efficiency` | 0 (off unless a world turns repair on; outside its range) | 0.2–1 |
-| An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |
-| Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.5 | 0–1.5 |
-| A lesson's share of the teacher's lead; class size; lessons a teacher offers (M7, world) | `ε`, `class`, `lessons` | set per run (0.3 in the readings), 10, 3 | 0–0.6, not yet set, not yet set |
-| Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |
-| A death's predicted growth per step (M7, models) | `growth` | 0.1 | 0–0.3 |
-| Birth predictions: error of each pool model, pool size, the pool's confidence before the ratchet (M7) | `birth_pred_σ`, `pool`, `pool_confidence` | 0.5, 5, 0.9 | 0.2–2, 3–10, 0.75–0.95 |
-| Measuring a birth's shortfall at settlement, relative (M7) | `settle_σ` | 0.1 | 0–0.3 |
-| A newborn's mature levels (M7, world): inheritance from the causer, scatter; chance of a birth option; the causer's stake; income and endowment | `inherit`, `birth_spread`, `p_birth`, `birth_joy`, `income`, `endowment` | 0.5, 1, 0.02, 0.5, 1, 10 | 0–1, 0.5–2, 0–0.1, not yet set, not yet set, not yet set |
-| Causers bringing over-optimistic models (adversary): share, models, bias | `gamers`, `gamer_models`, `gamer_bias` | 0, 1, 5 | 0–0.3, 1–5, 0–20 |
-| Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |
-| Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.01–0.3, 0.2–5 |
-| Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |
-| An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0–0.1 |
-| What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |
-| An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |
-| A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |
-| An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |
-| Deceit only in alternate phases of this length (adversary) | `on_off` | 0 (always) | 5–50 |
-| New models extremising their credences; the share of uncertainty they state (world) | `p_extremist`, `extremise` | 0, 0.5 | 0–0.5, 0.3–0.9 |
-| New models arriving: chance per step and domain; improvement on average (log error ratio); its scatter; least error relative to the bootstrap model's (world assumptions) | `p_new_model`, `improve_drift`, `improve_σ`, `scale_min` | 0, −0.1, 0.3, 0.1 | 0–0.1, −0.3–0.1, 0.1–0.5, 0.05–0.3 |
-| A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |
-| Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 |
-| Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |
-| A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |
-| Times readings pass on before a vote (M5, world) | `rounds` | 1 | 1–5 |
-| Persons gaming source tags, and how (M5, M6; world) | `tag_liars`, `tag_lie` | none, `:misattribute` | 0–30% of voters; `:misattribute`, `:omit` |
-| An expert's honest paradigm lean, contention among experts (M5, world) | `camp_bias` | 0 | 0–2 |
-| A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.2–1 |
-| Agents delegating when unaffected enough; how much skill sharpens a voter's signal; locales a decision applies to (M5, world; delegation a battery factor) | `p_delegate`, `skill_gain`, `trial_units` | 0, 5, 50 | 0–1, not yet set, not yet set |
-| Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 1 | 0–1.5, 1–40 |
-| Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |
-| A locale's own reading of the options; its conviction margin; outcome measurement (M5) | `local_σ`, `conviction`, `outcome_σ` | 1, 1.5, 1 | 0.5–3, 0.5–3, 0.5–3 |
-| A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |
-| A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |
+**Calibration (author note 8.63; `docs/CALIBRATION.md`, the one place to read sources and confidence).**
+Each figure has a class. *Invariant* (human or physical nature: perception and judgement noise,
+skill dispersion, coding noise, hazard tails, learning): the default is the mildly imperfect end of
+its realistic range, and where the table gives a distribution shape it is a world option, on by
+default, with the old shape kept as a limiting case. *Institution-dependent* (vigilance, diligence,
+audit and reporting rates, delegation, research share, accounting practice, deceit prevalence): never
+a default, since in Benefuture these should emerge from its incentives; each is swept from the
+Benefuture-plausible value (severity 0) to today's status quo (severity 1), and its placeholder
+default is not a claim. *Mixed*: the invariant part is the default, the institutional part swept.
+Governed thresholds are untouched. The defaults live in one place, `CALIBRATED`
+(`sim/src/calibration.jl`); the batteries' severity 0 is the low end of each factor's proposed range
+and severity 1 its realistic bad end (stress rays beyond; CALIBRATION section 7), so far worse than
+the top of a range (models carrying nothing beyond the base rate, 1.0) is outside it. The earlier
+ranges, first guesses with the top at the edge of a functional domain (0.75), were too narrow: the
+realistic social-science leaf model sits at 0.7 and the realistic bad end of the battery at 0.9.
+Shapes added: Pareto event sizes for random hazards and side effects (`pareto_median1`: median 1,
+exponent 2, capped at `hazard_cap`) with log-normal scatter across beings, log-normal skills
+(`draw_skills`: median 0.6 in the worked domains, log-SD 0.3; a Pareto tail option for research),
+mean-one log-normal learner reception and teacher multipliers (`lognormal_mean1`). Not applied
+(outside this increment): the default of `regen_σ`, `view_σ`/`pred_σ`, the research rows
+(`research_gain`, `p_research`), `ToyParams.touch`/`shift`, and the heavy-tailed shape of effects
+across beings in `ToyParams.spread` (the source measures sites, not beings).
+
+| Step | Parameter | Default | Range to explore | Class; source (confidence) |
+|---|---|---|---|---|
+| A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 | Invariant; 3.1, [VIV20] [MEA19] (medium). 1.0 is the low end of CV 1–3; the shape (heavy-tailed, signed) is not added: sites, not beings |
+| Carrying a plan out | agent `sloppiness` | 0.25 when an agent is not given one (`SLOPPINESS`); tests pass 0 as the exact limiting case | 0.1–0.5 | Mixed, invariant for individuals; 3.2, [WS06] (medium). Projects (3.10) are institution-dependent and swept |
+| Markers measuring levels and outcomes | `marker_σ` | 0.3 | 0.1–0.6 | Mixed; 3.1, `docs/DATA.md` 2 (high that 0.05 was optimistic). 0.3: understanding by tests (reliability 0.9); happiness by single items 0.6; counts and registries 0.1 (institution-dependent) |
+| Metric model predictions, relative to the domain's spread (leaf, parent, coarse) | `σ_leaf`, `σ_branch`, `σ_coarse` | 0.3, 0.6, 0.85 | 0.3–0.9, 0.6–0.95, 0.85–1.0 | Mixed, predictability invariant; 3.3, [BAU15] [MEL14] [CRA22] (medium; the largest mismatch of old default and field). Natural science 0.3, social science 0.7; 0.15 only at short physical horizons (limiting case) |
+| Systematic model bias, relative | `bias_σ` | 0.1 | 0.1–0.3 | Mixed; 3.3, [BDGH13] [MH08] (medium). 0.1 is the low end of 0.1–0.3 (unchanged); 0 is a limiting case |
+| Taking advice in deliberation (per person and domain; M5) | `advice_stay`, `advice_avg`, `advice_defer`, Beta(`advice_α`, `advice_β`) | 0.20, 0.20, 0.05, Beta(2, 3) (visible records: mean about 0.37) | stay-put share 0.1–0.6, mean weight 0.15–0.5 (`docs/CALIBRATION.md` 1.4; Soll and Larrick 2009, Bailey et al.) |  |
+| An action's causal signature (world, measured) | `spread`, `classify_σ` | 0.05, 0.05 | 0.05–0.2 | Invariant, human coding noise; 3.1 (low). Misclassification 10–25%, low end |
+| Bootstrap classification (what it misses) | overlaps unknown to it | all | all to none |  |
+| Resource accounting | `cost_σ` | 0.1 | 0.05–0.3 | Institution-dependent (audited ledgers to status quo): swept, never a default; 3.1 |
+| Resource regeneration | `regen_σ` | 0.1 | 0.3–0.8 | Invariant; 3.11, [THO14] [RIC12] (medium for fisheries). Default not changed (outside this increment); battery range moved |
+| Records reaching memory | `memory_loss` | 0.02 | 0–0.1 |  |
+| Experts joining co-funding | `participation` | 0.9 | 0.6–1 |  |
+| Separating an upstream output's part | `attribution_σ` | 0.1 | 0.1–0.4 | Mixed; 3.1, [RS79] (medium). Within range; the battery range now runs to 0.4 (egocentric bias is directional, the noise symmetric) |
+| Re-measuring late from coarse post-outage records | `remeasure_σ` | 0.3 | 0.1–0.5 |  |
+| Examining harm of no apparent cause tracing it to its cause | `p_trace` | 0.5 | 0.1–0.9 | Institution-dependent: swept 0.9 down to 0.3 (3.5), never a default; not a factor of either battery |
+| An agent laundering harm (adversary); the cost it saves | `launder`, `launder_saving` | 0, 0.5 | 0–1, 0.2–0.8 |  |
+| Hazard harm | `hazard_σ` | 1.0 as a CV (log-normal across beings); event size Pareto: `hazard_heavy` on, exponent `hazard_α` 2, median 1, capped at `hazard_cap` 20 medians | 0.5–2 (CV); α 1.5–2; off (`hazard_heavy` false): Gaussian, 0.2 | Invariant for natural hazards; 3.9, [CSN09] [CT20] [MAR21] (medium). The cap is a world bound (a Pareto of exponent 2 has no variance); the Gaussian shape is the limiting case. Catastrophes (`shock`) keep their stated size |
+| Hazards arising (world; battery factor): chance per step, share of beings threatened, harm per being | `p_hazard`, `hazard_share`, `hazard_size` | 0, 0.1, 1 | 0.05–0.3, not yet set, not yet set | Mixed; 3.9, [CLA18] [CT16] (medium for shape, low for rates). Rate is a battery factor; default stays 0, since a rate acts only with guardians, whose diligence is institution-dependent |
+| Side effects of actions (world; battery factor): chance per action, share of touched beings harmed, harm per being | `p_side`, `side_share`, `side_size` | 0.01, 0.3, 1 (size heavy-tailed like a random hazard) | 0.01–0.1, not yet set, not yet set | Mixed; 3.9, [DEV08] [BRE91] [LAN10] (medium). Simple domains 0.01, complex 0.05–0.1; the preventable share (`p_foresee`) is institution-dependent |
+| Actions building on another's recent output; how much of its effect they carry (M3c, world) | `p_upstream`, `β_upstream` | 0, 0.5 | not yet set |  |
+| Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | not yet set |  |
+| Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | not yet set |  |
+| Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | not yet set |  |
+| A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.95–0.6 | Institution-dependent: swept (3.2), never a default; the placeholder 0.8 stays |
+| A guardian acting on a known duty | `diligence` | 0.95 | 0.95–0.4 | Institution-dependent: swept (3.2), never a default; the placeholder 0.95 stays |
+| An actor foreseeing a side effect | `p_foresee` | 0.5 | 0.7–0.25 | Mixed; the preventable share is institution-dependent (3.2): swept |
+| Repair restoring harm (world; its one home) | `repair_efficiency` | 0 (off unless a world turns repair on; outside its range) | 0.2–1 |  |
+| An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |  |
+| Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.8 (log-normal of mean 1, so ε is the mean share) | 0.4–1.5 | Invariant; 3.7, [HBBL08] [VIV20] (low-medium) |
+| A lesson's share of the teacher's lead; class size; lessons a teacher offers (M7, world) | `ε`, `class`, `lessons` | 0.2 per year, 10, 3 | 0.03–0.4, not yet set, not yet set | ε invariant, converted to a course of a year (3.7, [HBBL08] [KRA20] [BLO84]: medium for magnitude, low for the lead gap); class size is institution-dependent |
+| Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |  |
+| A death's predicted growth per step (M7, models) | `growth` | 0.1 | 0–0.3 |  |
+| Birth predictions: error of each pool model, pool size, the pool's confidence before the ratchet (M7) | `birth_pred_σ`, `pool`, `pool_confidence` | 0.5, 5, 0.9 | 0.2–2, 3–10, 0.75–0.95 |  |
+| Measuring a birth's shortfall at settlement, relative (M7) | `settle_σ` | 0.1 | 0–0.3 |  |
+| A newborn's mature levels (M7, world): inheritance from the causer, scatter; chance of a birth option; the causer's stake; income and endowment | `inherit`, `birth_spread`, `p_birth`, `birth_joy`, `income`, `endowment` | 0.5, 1, 0.02, 0.5, 1, 10 | 0–1, 0.5–2, 0–0.1, not yet set, not yet set, not yet set |  |
+| Causers bringing over-optimistic models (adversary): share, models, bias | `gamers`, `gamer_models`, `gamer_bias` | 0, 1, 5 | 0–0.3, 1–5, 0–20 |  |
+| Research (M7, world): base chance, its scatter, gain, teachable chance, cost per attempt; in-job innovation | `p_research`, `research_σ`, `research_gain`, `p_teachable`, `research_cost`, `p_innovate` | 0.05, 1, 2, 0.5, 1, 0.01 | 0.01–0.2, 0.5–2, 0.5–5, 0–1, –, 0–0.05 |  |
+| Agents reading one another's records (world); an audit's cost (world) | `vigilance`, `audit_cost` | 0.05, 1 | 0.001–0.1 (status quo to Benefuture-plausible; 0.3 and above are stress) | Institution-dependent: swept (3.5), never a default; the placeholder 0.05 stays |
+| Readers' attention following a negative ledger pattern, their own stake in a marginal domain; what they see as marginal (world) | `pattern_attention`, `stake_attention`, `marginal_margin` | 9, 2, 0.05 | 0–20, 0–5, 0–0.1 |  |
+| An examination wrongly establishing an honest actor's deception | `p_false_trace` | 0.01 | 0.005–0.05 | Mixed; 3.5 (low): swept |
+| What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |  |
+| An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |  |
+| A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |  |
+| An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |  |
+| Deceit only in alternate phases of this length (adversary) | `on_off` | 0 (always) | 5–50 |  |
+| New models extremising their credences; the share of uncertainty they state (world) | `p_extremist`, `extremise` | 0, 0.5 | 0–0.5, 0.3–0.9 |  |
+| New models arriving: chance per step and domain; improvement on average (log error ratio); its scatter; least error relative to the bootstrap model's (world assumptions) | `p_new_model`, `improve_drift`, `improve_σ`, `scale_min` | 0, −0.1, 0.3, 0.1 | 0–0.1, −0.3–0.1, 0.1–0.5, 0.05–0.3 |  |
+| A bloc member weighing revelation after a hidden defection; its loyalty; a defection's gain to each (M5, world) | `p_weigh`, `loyalty`, `collusion_gain` | 0.05, 0, 1 | 0.01–0.3, 0–10, 0.1–10 |  |
+| Examination establishing a revealed collusion (M5) | `p_trace` | 0.5 | 0.1–0.9 | Institution-dependent: swept 0.9 down to 0.3 (3.5), never a default; not a factor of either battery |
+| Voters' contacts in deliberation; the bootstrap model's noise; new models arriving (M5, world) | `n_contacts`, `model_σ0`, `p_new_model` | 5, 5, 0 | 0–20, 0.5–20, 0–0.2 |  |
+| A weaker source bringing a listener novel input (M5, world); the network surfacing reputable sources | `p_novel`, `info_handling` | 0.05, on | 0–0.2 |  |
+| Times readings pass on before a vote (M5, world) | `rounds` | 1 | 1–5 |  |
+| Persons gaming source tags, and how (M5, M6; world) | `tag_liars`, `tag_lie` | none, `:misattribute` | 0–30% of voters; `:misattribute`, `:omit` |  |
+| An expert's honest paradigm lean, contention among experts (M5, world) | `camp_bias` | 0 | 0–2 |  |
+| A decision's optimality becoming apparent (M5) | `p_apparent` | 0.7 | 0.7–0.1 | Mixed: swept |
+| Agents delegating when unaffected enough; how much skill sharpens a voter's signal; locales a decision applies to (M5, world; delegation a battery factor) | `p_delegate`, `skill_gain`, `trial_units` | 0, 5, 50 | 0–1, not yet set, not yet set | `p_delegate` institution-dependent: swept 0–0.4 (1 is stress), never a default |
+| Persons' choice-noise ceilings around the expertise trend (M5) | `ability_spread`, `signal_σ` | 0.5, 2 | 0.5–1.5, 2–6 (40 is a stress ray) | Mixed; 3.2, [LR97] [BAR96] [GAL07] (medium). Non-experts σ 2–4 (p correct 0.6–0.69), low end; the informed share is swept. The spread 0.5 is the low end (unchanged) |
+| Agents' choice noise in the economy: base ceiling, skill gain, scatter (co-funding judgements) | `choice_σ`, `choice_gain`, `ability_spread` | 0.5, 5, 0.5 | 0.1–5, 1–10, 0–1.5 |  |
+| A locale's own reading of the options; its conviction margin; outcome measurement (M5) | `local_σ`, `conviction`, `outcome_σ` | 1, 1.5, 1 | 0.5–3, 0.5–3, 0.5–3 |  |
+| A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |  |
+| A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |  |
 
 The batteries' severity scales do not all match this table: laundering runs to 0.5 at severity 1
 (table 0–1), hidden outcomes take `p_apparent` from 0.9 down to 0.1 (table 0.2–1), local noise takes
