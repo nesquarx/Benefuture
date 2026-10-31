@@ -1687,3 +1687,12 @@ discussion: score skill over the domain's model (a choice the model already call
 earns little), so safe, trivial choices do not inflate PrAcc; choices not taken are unscored (the
 8.58-a gap); each choice is its own prediction, so PrAcc is never split by causal distribution and
 capital buys none of it. Candidate homes: L100, L101, L113, Ontology.Reputation.
+8.69 amendment (author): funding or delegating to a winning expert earns little prediction accuracy
+in the expert's domain (actuarial) but earns it in that domain's expert selection (actuarial expert
+selection), and some in expert selection in general. No new mechanism: a selection choice is
+classified by its causal signature like any action, into a selection leaf overlapping its subject
+domain, and the overlaps μ spread its score (mostly to the selection leaf, some to its general parent,
+little to the subject domain). Scored as skill: picking the expert the domain's record already ranks
+first earns little, picking a rising one early earns more. The selected expert's own accuracy comes
+from its own choices, so nothing is split or counted twice; delegation chains (selecting selectors)
+decay by degree of separation (L95).
