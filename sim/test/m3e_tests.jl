@@ -76,11 +76,11 @@ end
     blind_models = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf, threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0); seed = 3)
     # With no qualified model, nothing is self-funded: all that is repaired, the commons paid for.
     @test blind_models.self_funded < 1e-9 && blind_models.insured ≈ blind_models.commons_spent > 0
-    @test sum(rich.balance) - rich.endowed ≈ sum(rich.valued_measured) - sum(rich.costs) - sum(rich.lane_costs) -
+    @test sum(rich.balance) - rich.endowed ≈ sum(rich.valued_measured) - sum(rich.costs) + sum(rich.lane_supply; init = 0.0) -
                                              sum(rich.reinvested) - rich.hazard_debits + rich.prevention_measured atol = 1e-6
     # The books balance: penalties for hazards are destroyed (or fund repair), nothing else moves.
     tr = run_m3c(hz([1, 2, 3, 4]; p_informed = 0.5, diligence = [0.5, 0.5, 0.5, 0.5]); seed = 4)
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) -
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) -
                                        sum(tr.reinvested) - tr.hazard_debits + tr.prevention_measured
     @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
     @test_throws ArgumentError hz([1, 1]; p_informed = 1.0)

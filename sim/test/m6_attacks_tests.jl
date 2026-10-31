@@ -77,7 +77,7 @@ end
     @test tr.explored > 0 && tr.credit_neg[6] < 0
     @test sum(tr.balance[6, :]) < minimum(sum(tr.balance[a, :]) for a in 1:5)
     # The books balance with explored work paid at resource cost.
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
 end
 
 # A rule-level contest of equal-skill models, honest or extremising (stating a fraction `k` of its

@@ -133,6 +133,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_credence] def credence (predicted uncertainty cap : Float) : Float := credence_ref predicted uncertainty cap
 @[export bf_record_credence] def recordCredence (predicted : Float) (errors : FloatArray) (cap : Float) : Float :=
   record_credence_ref predicted errors.data cap
+@[export bf_choice_skill] def choiceSkill (credences modelCredences outcomes : FloatArray) : Float :=
+  choice_skill_ref credences.data modelCredences.data outcomes.data
 @[export bf_credence_accuracy] def credenceAccuracy (credences outcomes : FloatArray) : Float :=
   credence_accuracy_ref credences.data outcomes.data
 

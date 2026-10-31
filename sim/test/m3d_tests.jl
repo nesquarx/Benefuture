@@ -61,7 +61,7 @@ cdp(agents; kw...) = M3cParams(Tsmooth, agents, [1, 1, 2, 2], trues(4); λpos = 
     # Every outcome is fully distributed: the shares sum to the measured value, with nothing left over.
     @test abs(tr.interaction) < 1e-6 * sum(abs, [m.measured for m in tr.memory])
     # Conservation and recount, as before.
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
     @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
     @test tr == run_m3c(cdp([makers(); passers()]); seed = 1)
     # Without confidence in the causal assessment, the traversal fallback shares the outcomes.
@@ -81,7 +81,7 @@ end
     @test tr.cofunder_credit > 0
     # Attribution noise leaves the books balanced.
     tr = run_m3c(cdp([makers(); bad]; p_upstream = 0.5, attribution_σ = 0.3); seed = 3)
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
     @test_throws ArgumentError m3c(p_upstream = 1.5)
     @test_throws ArgumentError m3c(cc_threshold = 1.5)
 end
@@ -102,7 +102,7 @@ end
     @test hired.contract_credit > 0 && hired.accolade_credit == 0
     @test sum(hired.credit_pos[4:6]) > sum(free.credit_pos[4:6])
     for tr in (free, hired)
-        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
     end
 end
 

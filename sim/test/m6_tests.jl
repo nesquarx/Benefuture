@@ -26,7 +26,7 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     rel(tr) = sum(tr.balance[6, :]) / mean(sum(tr.balance[k, :]) for k in 1:5)
     @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
-    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) for l in liar)
+    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) for l in liar)
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
     # every model can keep the domain from ever qualifying: models it has no record with yet are
     # fooled in full (BACKPROPAGATION 8.37). Here it happens in seeds 4 and 5, never honestly.
@@ -70,7 +70,7 @@ end
     @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
     @test mean(peers.(liar)) > 0.9 * mean(peers.(honest))
     # The books balance with AdvAp's flows.
-    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) - sum(l.lane_costs) - sum(l.reinvested) + l.advap_net
+    @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) + l.advap_net
               for l in liar)
     # Without the track record a liar takes the domain's currency down for everyone (8.37); repair
     # of the uncovered deception (8.38) restores much of the peers' work.
@@ -230,7 +230,7 @@ end
     untraced = run_m3c(eight(launder = dirty, p_trace = 0.0); seed = 1)
     @test untraced.laundered_traced == 0 && untraced.unattributed > 0
     for tr in (traced, untraced)
-        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) -
+        @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) -
                                             sum(tr.reinvested) - tr.hazard_debits + tr.prevention_measured
     end
     @test_throws ArgumentError eight(launder = [0.5])

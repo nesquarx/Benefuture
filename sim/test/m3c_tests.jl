@@ -30,7 +30,7 @@ end
     end
     # Incremental reputation equals a recount from memory; currency is conserved.
     @test all(recount(tr) .≈ (tr.h_pos_own, tr.h_neg_own, tr.relevance_own))
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
     @test tr == run_m3c(m3c(work = [1, 3]); seed = 1)
     # The score-only start: no currency moves, but work is chosen, executed, scored and logged.
     tr = run_m3c(m3c(work = [1, 3], steps = 40, init_steps = 40); seed = 1)
@@ -98,7 +98,7 @@ end
     noisy = m3c(hidden = [1], work = [1, 5], marker_σ = 0.2, classify_σ = 0.08, bias_σ = 0.3, cost_σ = 0.3, regen_σ = 0.5,
                 memory_loss = 0.1, participation = 0.5)
     tr = run_m3c(noisy; seed = 4)
-    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) - sum(tr.lane_costs) - sum(tr.reinvested)
+    @test sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr.costs) + sum(tr.lane_supply; init = 0.0) - sum(tr.reinvested)  # lane supply: its cost and harm burnt (8.67)
     @test tr == run_m3c(noisy; seed = 4)
     @test_throws ArgumentError m3c(memory_loss = 1.5)
     @test_throws ArgumentError m3c(parent_threshold = 0.0)

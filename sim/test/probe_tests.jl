@@ -60,3 +60,30 @@ end
     @test length(tr.floor_u) >= 60 && tr.lane_executed > 0                                    # carries on: no stall
     @test isempty([k for k in keys(run_m3c(world(Shock[]); seed = 1).degraded) if startswith(k, "measurement")])
 end
+
+# Prediction accuracy as reputation's fourth component (8.69, [P]): each choice is a prediction that
+# its outcome is good, scored as skill over the domain's model (Brier skill: 1 − the chooser's Brier
+# score over the model's on the same choices). A high-volume mediocre doer, a low-volume accurate one
+# and a funder backing actions at random, against the summed value L100 records.
+@testset "Probe: prediction accuracy ranks judgement where summed reputation ranks volume and capital" begin
+    model = 0.6                                                          # the domain model's credence on every choice
+    # exact hit rates: twenty choices drawn at 0.9 can come out at 0.75 and read as no skill, so a
+    # record needs a minimum length before its skill means anything (as a model's does)
+    draw(n, p) = Float64.((1:n) .<= round(Int, p * n))
+    mediocre, accurate, funded = draw(200, 0.55), draw(20, 0.9), draw(100, 0.6)
+    summed(o, share = 1.0) = share * sum(2 .* o .- 1)                    # L100: value caused, gains less losses
+    # Counterexample, the current rule: summed value ranks volume over judgement and pays capital.
+    @test summed(mediocre) > summed(accurate) && summed(funded, 0.5) > 0
+    # Acceptance: skill over the model ranks the accurate chooser first and gives the random funder
+    # nothing in the subject domain (a choice that follows the model earns no skill).
+    skill(o, cred) = choice_skill(fill(cred, length(o)), fill(model, length(o)), o)
+    @test skill(accurate, 0.9) > skill(mediocre, 0.8) && skill(accurate, 0.9) > 0.3
+    @test abs(skill(funded, model)) < 1e-12
+    # A selector backing an expert who wins: its choice is classified into expert selection, and the
+    # domain overlaps spread the score (8.69 amendment): most to the selection leaf, little to the subject.
+    picks = draw(30, 0.85)
+    shares = [0.7, 0.2, 0.1]                                             # selection leaf, its parent, the subject domain
+    credit = skill(picks, 0.85) .* shares
+    @test credit[1] > credit[2] > credit[3] > 0 && credit[3] < 0.2 * credit[1]
+    @test_throws ArgumentError choice_skill([0.9], [0.6, 0.6], [1.0])
+end

@@ -173,6 +173,26 @@ def record_credence_ref (predicted : Float) (errors : Array Float) (cap : Float)
     else if e == predicted then below := below + 0.5
   return max (1.0 - cap) (min cap (below / errors.size.toFloat))
 
+/-- A chooser's prediction skill over the domain's model ([P], 8.69): every choice (proposing,
+    funding, delegating, voting, accepting a quote) is a prediction that its outcome is good, with
+    the chooser's credence beside the model's credence on the same choice. Skill is
+    1 − Brier(chooser) / Brier(model): 0 where the chooser only follows the model (so safe choices
+    the model already called earn nothing), positive where it beats it, negative where it does
+    worse, never above 1. A model that scored perfectly leaves nothing to beat: skill 0. No choices:
+    no skill. -/
+def choice_skill_ref (credences modelCredences outcomes : Array Float) : Float := Id.run do
+  let n := min credences.size (min modelCredences.size outcomes.size)
+  if n == 0 then return 0.0
+  let mut bc := 0.0
+  let mut bm := 0.0
+  for i in [0:n] do
+    let ec := credences[i]! - outcomes[i]!
+    let em := modelCredences[i]! - outcomes[i]!
+    bc := bc + ec * ec
+    bm := bm + em * em
+  if bm == 0.0 then return 0.0
+  return 1.0 - bc / bm
+
 /-- Accuracy as the quality of credences (author rulings 8.35, 8.36): 1 − Brier / 0.25, the Brier
     score of random guessing (credence 0.5); 0 is random, 1 perfect (generally unattainable); worse
     than random scores 0; no record, no accuracy. -/

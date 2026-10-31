@@ -1696,3 +1696,10 @@ little to the subject domain). Scored as skill: picking the expert the domain's 
 first earns little, picking a rising one early earns more. The selected expert's own accuracy comes
 from its own choices, so nothing is split or counted twice; delegation chains (selecting selectors)
 decay by degree of separation (L95).
+8.69 probe (`sim/test/probe_tests.jl`; Lean `choice_skill_ref`, [P]): skill over the model,
+1 − Brier(chooser) / Brier(model), ranks a low-volume accurate chooser (0.9 hit rate) above a
+high-volume mediocre one (0.55) where summed value ranks them the other way; a funder backing at the
+model's own credence earns exactly zero skill; a selector's skill spreads by its choice's domain
+shares. Finding: a short record is noisy (twenty choices drawn at 0.9 came out at 0.75 and read as no
+skill), so prediction accuracy needs a minimum record before it weighs, as a model's accuracy does
+(`min_records`), a governed threshold.

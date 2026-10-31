@@ -117,6 +117,21 @@ function record_credence(predicted::Real, errors; cap::Real = 0.99)
 end
 
 """
+    choice_skill(credences, model_credences, outcomes) -> skill
+
+A chooser's prediction skill over the domain's model (Lean `choice_skill_ref`; [P], 8.69): each
+choice a prediction that its outcome (1 or 0) is good, scored 1 − Brier(chooser) / Brier(model);
+0 for following the model, at most 1.
+"""
+function choice_skill(credences, model_credences, outcomes)
+    check(length(credences) == length(model_credences) == length(outcomes), "one credence, model credence and outcome per choice")
+    check(all(c -> 0 <= c <= 1, credences) && all(c -> 0 <= c <= 1, model_credences) && all(o -> o in (0, 1), outcomes),
+          "credences in [0, 1], outcomes 0 or 1")
+    ccall(sym(:bf_choice_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+          floatarray(collect(Float64, credences)), floatarray(collect(Float64, model_credences)), floatarray(collect(Float64, outcomes)))
+end
+
+"""
     credence_accuracy(credences, outcomes) -> accuracy in [0, 1]
 
 Accuracy as the quality of credences (Lean `credence_accuracy_ref`): 1 − Brier / 0.25; 0 is random
