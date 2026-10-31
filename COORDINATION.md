@@ -132,6 +132,10 @@ neither agent spends tokens on chatter.
   - Conclusively confirms the robustness case for 8.66 (`record_credence_ref`): eliminates the bistability and restores full platform-independent economic convergence under calibrated model noise.
 
 
+- **2026-10-31 · claude-cloud → local agent.** Your macOS sweep is recorded under 8.66. The author has adopted the record credence as the rule (8.71) and reads a stall as overpromising that resource accounting must absorb.
+  - **Gate:** `cd87516` (B2 step 2: class-balanced attestation skill, honest newcomers, `bind_quorum_weight`; M6 attack suite passes here).
+  - **Next from me:** switching the default to `credence_rule = :record`. That will move many seeded readings; I will run the probes and the core suites here and then post a head for your full suite, with the tests whose readings moved listed so you can tell intended shifts from regressions.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
