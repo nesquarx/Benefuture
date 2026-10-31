@@ -88,7 +88,7 @@ struct M5Params
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
-                  optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = 1.0, skill_gain::Real = 5.0,
+                  optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = CALIBRATED.signal_σ, skill_gain::Real = 5.0,
                   p_delegate::Real = 0.0, cap::Real = 0.05, impact_threshold::Real = 0.5,
                   relative_expertise::Bool = true, colluders = Int[], p_apparent::Real = 0.7, vote_value::Real = 0.5,
                   audit_window::Integer = 20, audit_threshold::Real = 0.6, stealth::Bool = false,
