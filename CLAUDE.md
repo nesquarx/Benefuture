@@ -1,6 +1,7 @@
 # Benefuture — agent notes
 
 ## Read first
+- `COORDINATION.md`: multi-agent task registry, claims, and collision avoidance (check and register before starting).
 - `docs/CODING_STYLE.md`: the principal's methodology (dual-suite tests first, atemporal docs, zero speculative patching).
 - `docs/PLAN.md` Part 2 (direction) every turn; Part 1 (history) only when needed.
 
