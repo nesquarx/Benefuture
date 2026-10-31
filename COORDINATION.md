@@ -1,0 +1,224 @@
+# Benefuture — Multi-Agent Coordination & Task Registry
+
+This document coordinates concurrent remote agents (Claude sessions, Copilot, human contributors, and CI bots) working on the Benefuture codebase.
+
+To avoid duplicate work, merge conflicts, and regressions across Lean 4, the Julia simulation engine, and documentation, **all agents must follow the protocol below and register active work here.**
+
+---
+
+## 1. Multi-Agent Coordination Protocol
+
+### Step 1: Sync from `main`
+Before starting any task:
+```bash
+git fetch origin
+git checkout main
+git merge --ff-only origin/main
+```
+Never branch from an outdated local commit.
+
+### Step 2: Check & Claim in `COORDINATION.md`
+1. Review the **Active Agent Registry** below to ensure no agent is currently working on your intended task or conflicting files.
+2. Select an unassigned task from **Available Task Packages** (or define a new subtask).
+3. Update this file on `main` (or in your initial commit) to mark the task as **`IN PROGRESS`** with your branch name, agent identifier, and touched files.
+4. If you have direct push rights to `main`, push the claim immediately so other remote agents see it; otherwise include it in your branch pull request.
+
+### Step 3: Branch Naming Convention
+Create a branch identifying your agent/session and the task:
+- `claude/<task-id>-<short-description>` (e.g. `claude/b2-tn-identity-binding`)
+- `agent/<task-id>-<short-description>`
+
+### Step 4: Development Rules
+- **Probe first** (`CLAUDE.md`): New mechanisms must first be isolated in a standalone probe (`sim/test/probe_tests.jl`, runnable via `julia --project=sim sim/test/probes.jl`) before being wired into full rungs or swept by batteries.
+- **Dual suites red first**: Acceptance cases and counterexamples must be run red before implementing.
+- **Reference library isolation**: `BenefutureReference/` and `Main.lean` must never import Mathlib or `Benefuture.*`.
+- **Exports**: Rules live once in Lean reference; export via `BenefutureReference/Export.lean`, call via `ccall` in Julia.
+
+### Step 5: Hot File & Collision Avoidance Rules
+To minimize git merge conflicts:
+- **`BenefutureReference/Export.lean`**: Append new exports cleanly at the end of the file; do not reformat existing exports.
+- **`sim/test/probe_tests.jl`**: Append your new probe test at the bottom inside its own testset.
+- **`docs/PLAN.md` & `docs/BACKPROPAGATION.md`**: Append findings and updates to designated sections. Do not refactor earlier entries.
+- **`spec/Bf_Pseudocode.txt`**: Must stay byte-for-byte identical to root `Bf_Pseudocode.txt` and the block in `docs/articles/Benefuture.txt`. Either update all three in the same commit, or none.
+- **`sim/battery/results/`**: Battery result files (`*.csv`, `*.md`) are written by background runs tagged by commit hash. Do not manually overwrite another agent's battery run.
+
+### Step 6: Completion & Merge
+1. Run local verification:
+   - `lake build` (Lean)
+   - `julia --project=sim -e 'using Pkg; Pkg.test()'` (Julia)
+   - `python3 tools/check_readme_claims.py`
+2. Update `COORDINATION.md`: mark task as **`COMPLETED`**, note commit hash / PR.
+3. Merge cleanly to `main` and push.
+
+---
+
+## 2. Active Agent Registry
+
+| Task ID | Track | Branch Name | Agent / Session Identifier | Claimed Focus / Scope | Primary Files Touched | Status | Last Active |
+|---|---|---|---|---|---|---|---|
+| **B1** | Identity & Reputation | `origin/claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.69 Prediction accuracy reputation component (`choice_skill_ref`), lane harm burns currency (8.67), TN identity binding pre-work | `BenefutureReference/Domains.lean`, `sim/src/m3c.jl`, `sim/test/probe_tests.jl` | **IN PROGRESS** | 2026-10-31 |
+| **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
+
+*(Add new claims to the table above before beginning work)*
+
+---
+
+## 3. Task Splitting & Parallel Work Packages
+
+The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CALIBRATION.md` is partitioned into distinct tracks with clear file boundaries so multiple agents can work concurrently without conflict.
+
+### Track A: Lean Formalisation & Theory
+*Scope: Pure Lean 4 mathematical proofs in `Benefuture/` and reference layer.*
+
+- **Task A1: B26 Golub–Jackson Vanishing Influence Proof**
+  - **Goal**: Complete formalisation of conjecture B26 in Lean (influence bounds and vanishing influence under capped liquid delegation).
+  - **Prerequisites**: Existing `Benefuture/Systems/Conjectures.lean` and `Benefuture/Proposed/DelegationWisdom.lean`.
+  - **Primary Files**: `Benefuture/Systems/Conjectures.lean`, `Benefuture/Proposed/DelegationWisdom.lean`.
+  - **Collision Risk**: Low (pure Lean).
+  - **Status**: `AVAILABLE`
+
+- **Task A2: Relational Revelation Dominance Theorems**
+  - **Goal**: Complete proofs that revealing dominates exploiting for every profile of others (`Proposed.RevelationGame`).
+  - **Primary Files**: `Benefuture/Proposed/RevelationGame.lean`.
+  - **Collision Risk**: Low (isolated module).
+  - **Status**: `AVAILABLE`
+
+- **Task A3: Differential ℚ Oracles for Nonlinear Functions**
+  - **Goal**: Differential coverage for rules without exact ℚ oracles (functions using `exp`, `log`, `sqrt`); prove interval bounds and test against Float reference.
+  - **Primary Files**: `BenefutureTest/Differential.lean`, `BenefutureTest.lean`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+---
+
+### Track B: Identity, Technology Network (TN) & Adversarial Suite (M6)
+*Scope: Identity binding, sybils, forks, and gaming tests.*
+
+- **Task B1: Prediction Skill Probe & Lane Harm Currency Burn (8.67, 8.69)**
+  - **Goal**: Implement `choice_skill_ref` in Lean reference and Julia; burn lane harm currency; red tests on outcomes.
+  - **Primary Files**: `BenefutureReference/Domains.lean`, `sim/src/domains.jl`, `sim/src/m3c.jl`, `sim/test/probe_tests.jl`.
+  - **Collision Risk**: High — **CLAIMED by `origin/claude/amazing-knuth-ihbgmy`**.
+  - **Status**: `IN PROGRESS`
+
+- **Task B2: Technology Network (TN) Cluster Attestation & 1:1 Identity Binding**
+  - **Goal**: TN clusters as independent attesters with noisy confidence; 1:1 binding at governed threshold (0.75 from ≥2 independent clusters, L18); compromised cluster attacks. Probe first in `sim/test/probe_tests.jl`.
+  - **Prerequisites**: Task B1.
+  - **Primary Files**: `sim/src/governance.jl` or `sim/src/identity.jl`, `BenefutureReference/Adversarial.lean`, `sim/test/probe_tests.jl`.
+  - **Collision Risk**: Medium (coordinate with B1 branch).
+  - **Status**: `PLANNED` (Follows B1)
+
+- **Task B3: Sybil and Fork-Family Attacks (M6)**
+  - **Goal**: Sybil and fork attacks against tally, Shapley shares, and selection; identity forks dividing base vote (8.34); false-name remediation (8.57-a).
+  - **Prerequisites**: Task B2.
+  - **Primary Files**: `sim/test/m6_attacks_tests.jl`, `sim/src/methods.jl`.
+  - **Collision Risk**: Medium.
+  - **Status**: `PLANNED`
+
+- **Task B4: Model Collusion and Profile Gaming under Competing Models**
+  - **Goal**: Adversarial collusion between metric models; gaming profile signatures; simpler fallbacks per 8.23.
+  - **Primary Files**: `sim/test/m6_attacks_tests.jl`, `sim/src/m3c.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+---
+
+### Track C: Economic Mechanics & Causal Distribution (M3d, M3e)
+*Scope: Causal attribution, transaction trees, ledger.*
+
+- **Task C1: Deep Transaction Trees with Degree of Separation (L95)**
+  - **Goal**: Extend transaction trees beyond depth 1; causal distribution with degree of separation attenuation; traversal fallback.
+  - **Primary Files**: `sim/src/economy.jl`, `sim/test/m3d_tests.jl`, `BenefutureReference/Economy.lean`.
+  - **Collision Risk**: Medium (touches `sim/src/economy.jl`).
+  - **Status**: `AVAILABLE`
+
+- **Task C2: Step (5) Open Log as Universal Source of Truth**
+  - **Goal**: Derive reputation recount, μ, model scoring, and CC directly from the logged transaction trace; ensure auditability.
+  - **Primary Files**: `sim/src/economy.jl`, `sim/src/m3d.jl`, `sim/test/m3d_tests.jl`.
+  - **Collision Risk**: Low to Medium.
+  - **Status**: `AVAILABLE`
+
+---
+
+### Track D: Governance, Population & Life Dynamics (M7)
+*Scope: Personhood, births, deaths, G per entity.*
+
+- **Task D1: Retire Central Chooser — Full G Per Entity Across Menu Rungs**
+  - **Goal**: Move remaining menu rungs (M0–M3c) to G-per-entity (author ruling 8.50), retiring central single-plan chooser as limiting case.
+  - **Primary Files**: `sim/src/goal.jl`, `sim/src/m0.jl`, `sim/src/m1.jl`, `sim/src/m2.jl`, `sim/test/goal_tests.jl`.
+  - **Collision Risk**: Medium.
+  - **Status**: `AVAILABLE`
+
+- **Task D2: Graded Personhood, Population Forks and Merges**
+  - **Goal**: Implement beings with graded personhood along dimensions (L66–L68 `Pe := B + Fuzzy(...)`, `gradedLvls`); base vote scaling with personhood (8.35.5); non-sophont beings with happiness/harm but no vote.
+  - **Primary Files**: `BenefutureReference/Population.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+- **Task D3: Birth Escrow, Ratchet & Composed Population Ethics**
+  - **Goal**: Birth escrow settled against measured shortfall (8.52); findings 8.54–8.56 (births before first settlement); composed world test with teaching and research.
+  - **Primary Files**: `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `spec/vectors/births.json`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+---
+
+### Track E: Empirical Calibration & Background Batteries
+*Scope: Real-world data, parameter adaptation, battery runs.*
+
+- **Task E1: Apply Remaining Empirical Calibration Defaults**
+  - **Goal**: Apply remaining rows from `docs/CALIBRATION.md` (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`). Keep institution-dependent values as baseline sweeps.
+  - **Primary Files**: `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl`, `docs/CALIBRATION.md`.
+  - **Collision Risk**: Low (isolated to calibration config).
+  - **Status**: `AVAILABLE`
+
+- **Task E2: Real-World Dataset Adapters (`docs/DATA.md`)**
+  - **Goal**: Ingest empirical distributions from real sources (Forecast-hub pools, Stack Exchange domain dump, Wikipedia revert rates) to retire toy σ distributions.
+  - **Primary Files**: `sim/src/calibration.jl`, `docs/DATA.md`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+- **Task E3: Background Failure-Boundary Battery Runs**
+  - **Goal**: Execute background runs (`sim/battery/economy.jl`, `sim/battery/governance.jl`, `sim/battery/attack.jl`) on latest build; record outputs in `sim/battery/results/` tagged by commit SHA.
+  - **Primary Files**: `sim/battery/results/*`.
+  - **Collision Risk**: Low (do not run concurrently with another battery on the same machine).
+  - **Status**: `CONTINUOUS` (Background)
+
+---
+
+### Track F: Documentation, Article Coherence & Manifest
+*Scope: MediaWiki articles, abbreviations, citations, back-propagation.*
+
+- **Task F1: Whole-Corpus Abbreviation Sweep**
+  - **Goal**: Scan `docs/articles/*.txt` and spell out Benefuture's internal abbreviations (e.g. U → understanding, H → happiness, MM → metric model, Fr → freedom, NHa → non-harm) in prose. Common parlance (AI, GDP, PNAS) remains.
+  - **Primary Files**: `docs/articles/*.txt`.
+  - **Collision Risk**: Low (coordinate to not overlap on specific `.txt` files).
+  - **Status**: `AVAILABLE`
+
+- **Task F2: Ratify §7 of `docs/BACKPROPAGATION.md`**
+  - **Goal**: Review and ratify pending proposed edits to pseudocode and articles from §7.
+  - **Primary Files**: `docs/BACKPROPAGATION.md`, `spec/Bf_Pseudocode.txt`, `Bf_Pseudocode.txt`, `docs/articles/Benefuture.txt`.
+  - **Collision Risk**: High (touches pseudocode — must edit all 3 copies in lockstep).
+  - **Status**: `AVAILABLE`
+
+- **Task F3: Wiki Preparation (Morality, Art, Freedom)**
+  - **Goal**: Prepare manual wiki uploads for Morality, Art, and Freedom pages; update `docs/articles/_manifest.json`.
+  - **Primary Files**: `docs/articles/_manifest.json`.
+  - **Collision Risk**: Low.
+  - **Status**: `AVAILABLE`
+
+---
+
+## 4. Completed Historical Branches
+
+For reference, the following remote branches have completed their tasks and have been merged into `main`:
+- `claude/calibrated-defaults`: Noise table calibration, finding 8.65.
+- `claude/battery-upgrade`: PRIM boxes, Sobol indices, active learning, cross-entropy attack search.
+- `claude/m5-sources`: M5 source tags, DeMarzo-Vayanos-Zwiebel persuasion bias test.
+- `claude/lean-sota`: Shapley by sampling, Golub-Jackson bounds, revelation dominance.
+- `claude/m7-births`: M7 deaths (8.47 trolley), births (8.52 escrow/ratchet).
+- `claude/data-odd`: Real-world data plan (`docs/DATA.md`), ODD description (`docs/ODD.md`), Ostrom audit (`docs/OSTROM.md`).
+- `claude/m3c-attacks`: M6 attack models from state of the art.
+- `claude/calibration`: Empirical calibration initial pass (`docs/CALIBRATION.md`).
+- `claude/article-fixes`: Articles alignment with L74, L115, L135.
+- `claude/backprop-articles`: Back-propagation rulings 8.3–8.44.
+- `claude/readme-refactor`: Whole-corpus map, tightened claims.
