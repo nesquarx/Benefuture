@@ -360,6 +360,27 @@ have not been re-run; tests that pin a designed scenario to the old values say s
 Failure-boundary batteries (`sim/battery/results/`) run continuously on the latest build; their ranges
 follow the calibration, so earlier results predate it.
 
+Adapted sources for the world's defaults (full table, conversions and source keys in
+`docs/CALIBRATION.md`; every figure converted to the simulation's scale, and only figures that would
+hold in a Benefuture society used as defaults):
+
+| What | Default | Class | Sources | Confidence |
+|---|---|---|---|---|
+| Advice taking in deliberation | 20% keep their position; mean weight on advice 0.37 | Invariant (lab mixture) with Benefuture's visible records as the condition | Soll and Larrick 2009; Bailey et al. 2023 (meta-analysis of weight on advice) | Medium |
+| Measurement of levels and outcomes | marker noise 0.3 (reliability about 0.9) | Mixed | test and survey reliability (`docs/DATA.md` 2) | Medium |
+| Model prediction error (leaf, parent, coarse) | 0.3, 0.6, 0.85 of a domain's spread | Mixed: predictability is invariant | Bauer, Thorpe and Brunet 2015 (weather forecasting); Mellers et al. 2014 (forecasting tournaments); Cramer et al. 2022 | Medium |
+| Carrying out a plan | sloppiness 0.25 | Invariant for individuals | Webb and Sheeran 2006 (intention–behaviour gap) | Medium |
+| Hazards | Pareto event sizes (exponent 2), log-normal spread across beings | Invariant for natural hazards | Clauset, Shalizi and Newman 2009; Clauset 2018 | Medium (shape), low (rates) |
+| Side effects of actions | 1% of actions in simple domains | Mixed | de Vries et al. 2008; Brennan et al. 1991 (adverse events) | Medium |
+| Voters' judgement | noise 2 (60–69% right for non-experts) | Mixed | Lau and Redlawsk 1997; Bartels 1996; Galton 1907 | Medium |
+| Skills | log-normal, log-SD 0.3 | Invariant | O'Boyle and Aguinis 2012; Hunter et al. 1990; Syverson 2011 | Medium |
+| Teaching | a course closes 20% of the lead; reception log-normal, scatter 0.8 | Invariant | Hill et al. 2008; Kraft 2020; Bloom 1984 | Low–medium |
+
+Vigilance, diligence, audit and detection rates, whistleblowing, delegation, research share and
+deceit prevalence are produced by today's institutions; they are swept between a Benefuture-plausible
+value and today's baseline, never defaults. Sources without a reachable original are marked
+[unverified] in the table.
+
 Toy assumptions common to all, still to be removed (`sim/README.md`, model ladder): beings and
 plans in a small abstract world (80–200 beings; a plan's effect is Gaussian around its proposer's
 skill); causal signatures as points near unit axes; model and measurement error as Gaussian noise
