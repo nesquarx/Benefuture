@@ -245,6 +245,21 @@ function binding_admits(confidences, threshold::Real; quorum::Integer)
     ccall(sym(:bf_binding_admits), UInt8, (Ptr{Cvoid}, Float64, Csize_t), floatarray(confidences), threshold, quorum) == 1
 end
 
+"""
+    binding_admits_weighted(confidences, weights, threshold, quorum_weight) -> Bool
+
+Identity binding weighted by attestation record (Lean `binding_admits_weighted_ref`; [P], B2): each
+cluster's say is its attestation skill clipped to [0, 1]; admitted when the clusters reaching
+`threshold` weigh at least `quorum_weight`.
+"""
+function binding_admits_weighted(confidences, weights, threshold::Real, quorum_weight::Real)
+    check(length(confidences) == length(weights), "one weight per cluster")
+    check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && all(isfinite, weights) && 0 <= threshold <= 1 && quorum_weight >= 0,
+          "confidences and threshold in [0, 1], finite weights, quorum weight non-negative")
+    ccall(sym(:bf_binding_admits_weighted), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+          floatarray(collect(Float64, confidences)), floatarray(collect(Float64, weights)), threshold, quorum_weight) == 1
+end
+
 "Gauging the freedom range (Lean `gauge_radius_ref`): harm within the radius shrinks it by `factor`, none widens it."
 function gauge_radius(δ::Real, harmed::Bool; factor::Real)
     check(isfinite(δ) && δ > 0 && isfinite(factor) && factor > 1, "radius positive, factor above 1")

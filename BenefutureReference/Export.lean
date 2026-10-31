@@ -272,4 +272,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_undisclosed_echo] def undisclosedEcho (agree n aSelf aSrc margin z : Float) : UInt8 :=
   if undisclosed_echo_ref agree n aSelf aSrc margin z then 1 else 0
 
+-- B2 identity binding weighted by attestation record
+@[export bf_binding_admits_weighted] def bindingAdmitsWeighted (confidences weights : FloatArray) (threshold quorumWeight : Float) : UInt8 :=
+  if binding_admits_weighted_ref confidences.data weights.data threshold quorumWeight then 1 else 0
+
 end BenefutureReference.Export

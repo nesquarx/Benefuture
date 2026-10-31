@@ -1709,3 +1709,14 @@ every resource cost: root balances went below zero, payment gates closed, lane w
 to 10 actions a run and priced work stopped in two seeds of six (diagnosed with the burn switched off).
 Balance ratios (the M6 tests, the economy battery's attack test) mean nothing once balances can be
 negative; they are now differences of balance gaps against the attack-free world, in endowments.
+
+**8.70 [P] Identity binding weighted by attestation record (B2, L18; probe).** An attestation by a
+Technology Network cluster is a choice, scored like any other (8.69), so each cluster's say in the
+binding quorum is its attestation skill (Lean `binding_admits_weighted_ref`; the count rule
+`binding_admits_ref` is the case of equal weights). Probe: two colluding clusters attesting sybils at
+0.99 make a quorum under the count rule every time; once earlier sybils from the pair are revealed
+their skill falls below zero and none of 50 sybils is admitted, while honest clusters (skill about
+0.87) still bind at least 45 of 50 real entities through attestation noise. Gaming: a cluster that
+builds a clean record and then defects passes sybils until they are revealed (on-off, 8.58-d), so
+revelation speed (AdvAp on identities) bounds the damage; correlated clusters should count once
+(8.68's effective count) before the quorum is met. Candidate homes: L18, Technology Network.

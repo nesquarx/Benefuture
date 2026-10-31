@@ -60,4 +60,16 @@ def explore_pick_ref (u share : Float) (n : Nat) : Nat :=
 def binding_admits_ref (confidences : Array Float) (threshold : Float) (quorum : Nat) : Bool :=
   (confidences.filter (fun c => c ≥ threshold)).size ≥ quorum
 
+/-- Identity binding weighted by attestation record ([P], B2): an attestation is a choice scored
+    like any other (8.69), so each cluster's say in the quorum is its attestation skill, clipped to
+    [0, 1]: a cluster whose attested identities were revealed as sybils scores below its domain's
+    model and loses its say. Admitted when the weights of the clusters reaching the threshold sum
+    to `quorumWeight`. With every weight 1 it is `binding_admits_ref` at quorum `quorumWeight`. -/
+def binding_admits_weighted_ref (confidences weights : Array Float) (threshold quorumWeight : Float) : Bool := Id.run do
+  let n := min confidences.size weights.size
+  let mut w := 0.0
+  for i in [0:n] do
+    if confidences[i]! ≥ threshold then w := w + max 0.0 (min 1.0 weights[i]!)
+  return w ≥ quorumWeight
+
 end BenefutureReference

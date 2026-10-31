@@ -87,3 +87,26 @@ end
     @test credit[1] > credit[2] > credit[3] > 0 && credit[3] < 0.2 * credit[1]
     @test_throws ArgumentError choice_skill([0.9], [0.6, 0.6], [1.0])
 end
+
+# Identity binding by Technology Network clusters (B2; L18): an attestation is a choice, scored like
+# any other (8.69), so a cluster's say in the quorum follows its attestation record. Five clusters;
+# two collude and attest sybils at 0.99; honest clusters attest real entities near 0.85 and sybils
+# near 0.2. Earlier sybils from the pair were revealed, so their records show it.
+@testset "Probe: colluding clusters lose their say once their sybils are revealed" begin
+    rng = Xoshiro(11)
+    th, quorum = 0.75, 2
+    honest = [3, 4, 5]; colluders = [1, 2]
+    attest(real) = [c in colluders ? (real ? 0.85 : 0.99) : clamp((real ? 0.85 : 0.2) + 0.08 * randn(rng), 0, 1) for c in 1:5]
+    # Records: 40 past attestations each, scored against what later turned out (1 real, 0 sybil).
+    outcomes = Float64.(rand(rng, 40) .< 0.7)
+    rec(c) = [c in colluders ? (o == 1 ? 0.85 : 0.99) : (o == 1 ? 0.85 : 0.2) for o in outcomes]
+    skill = [choice_skill(rec(c), fill(0.7, 40), outcomes) for c in 1:5]
+    sybils = [attest(false) for _ in 1:50]; reals = [attest(true) for _ in 1:50]
+    # Counterexample, the count rule: the colluding pair alone makes a quorum, revealed or not.
+    @test all(binding_admits(s, th; quorum) for s in sybils)
+    # Acceptance: weighted by attestation skill, sybils from the pair are refused and real entities
+    # still bound by the honest clusters.
+    @test skill[1] < 0 && all(skill[honest] .> 0.3)
+    @test !any(binding_admits_weighted(s, skill, th, quorum * 0.5) for s in sybils)
+    @test count(binding_admits_weighted(r, skill, th, quorum * 0.5) for r in reals) >= 45
+end
