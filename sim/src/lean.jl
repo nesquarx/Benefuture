@@ -6,7 +6,8 @@
 using Libdl, SHA
 
 const REPO = normpath(joinpath(@__DIR__, "..", ".."))
-const LIBFILE = joinpath(REPO, ".lake", "build", "lib", "libBenefuture_BenefutureReference.so")
+const SO_EXT = Sys.isapple() ? ".dylib" : ".so"
+const LIBFILE = joinpath(REPO, ".lake", "build", "lib", "libBenefuture_BenefutureReference" * SO_EXT)
 const STAMP = LIBFILE * ".sha256"
 const LIB = Ref{Ptr{Cvoid}}(C_NULL)
 const SYMS = Dict{Symbol,Ptr{Cvoid}}()
@@ -53,8 +54,11 @@ function load_lean_lib()
     ensure_lean_lib()
     prefix = strip(read(Cmd(`$(tool("lean")) --print-prefix`; dir = REPO), String))
     runtime = joinpath(prefix, "lib", "lean")
-    leanshared = Libdl.dlopen(joinpath(runtime, "libleanshared.so"), Libdl.RTLD_GLOBAL)
-    Libdl.dlopen(joinpath(runtime, "libInit_shared.so"), Libdl.RTLD_GLOBAL)
+    for name in ("libleanshared_2", "libleanshared_1", "libleanshared", "libInit_shared", "libLake_shared")
+        p = joinpath(runtime, name * SO_EXT)
+        isfile(p) && Libdl.dlopen(p, Libdl.RTLD_GLOBAL)
+    end
+    leanshared = Libdl.dlopen(joinpath(runtime, "libleanshared" * SO_EXT), Libdl.RTLD_GLOBAL)
     ccall(Libdl.dlsym(leanshared, :lean_initialize_runtime_module), Cvoid, ())
     LIB[] = Libdl.dlopen(LIBFILE, Libdl.RTLD_GLOBAL)
     # Second argument is Lean's IO world token, the boxed unit.
