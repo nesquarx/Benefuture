@@ -12,6 +12,8 @@
 #   slandering against AdvAp's audit, sybils against causal distribution's conservation.
 # - Goodhart overoptimisation (Gao, Schulman & Hilton 2023; Manheim & Garrabrant 2018): the gap
 #   between the proxy G optimises (predicted value) and the true value as optimisation pressure rises.
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 # One domain of six agents at skill 0.6 (the leaf model qualifies); agent 6's plans are good, but
 # every model understates them by 2 per being touched (negative `deceit`: a misreport against it).
@@ -19,7 +21,7 @@
 # and the track record then corrects the misreport: noise is accidental exploration.)
 dm(; deceit = [0, 0, 0, 0, 0, -2.0], steps = 300, kw...) =
     M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
-              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, deceit, kw...)
+              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, deceit, LEGACY..., kw...)
 acted(tr, a) = count(==(a), tr.chosen_agent)      # carried out, explored or selected
 selected(tr, a) = count(==(a), tr.exec_agent)     # selected by G
 
@@ -70,7 +72,7 @@ end
     # skill -0.5, predicted honestly).
     bad = M3cParams(ToyParams(n = 80, steps = 300, plans = 10),
                     [[DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:5]; DomainAgent([-0.5, 0, 0, 0], [1.0, 0, 0, 0], 0.0)],
-                    [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, explore_share = 0.2)
+                    [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, explore_share = 0.2, LEGACY...)
     tr = run_m3c(bad; seed = 1)
     @test tr.explored > 0 && tr.credit_neg[6] < 0
     @test sum(tr.balance[6, :]) < minimum(sum(tr.balance[a, :]) for a in 1:5)
@@ -106,7 +108,7 @@ end
 # skill exactly (no drift, no scatter), half of them extremising.
 ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8], [1, 1, 2, 2], trues(4);
-    λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75,
+    λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75,
     p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
 
 @testset "Extremised forecasts: in the economy" begin
@@ -149,7 +151,7 @@ end
 # ledgers and its audit record.
 ww(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
                         [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-                        deceit = [0, 0, 0, 0, 0, 1.0], kw...)
+                        deceit = [0, 0, 0, 0, 0, 1.0], LEGACY..., kw...)
 whitewasher = [0, 0, 0, 0, 0, 0.05]
 
 @testset "Whitewashing against identity binding" begin

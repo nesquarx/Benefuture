@@ -22,6 +22,8 @@ struct DomainAgent
         new(Float64.(skills), Float64.(focus), sloppiness)
     end
 end
+# Without a stated execution noise an agent carries a plan out as individuals do (the intention-behaviour gap; calibrated default).
+DomainAgent(skills, focus) = DomainAgent(skills, focus, SLOPPINESS)
 
 Base.:(==)(a::DomainAgent, b::DomainAgent) = a.skills == b.skills && a.focus == b.focus && a.sloppiness == b.sloppiness
 Base.hash(a::DomainAgent, h::UInt) = hash((a.skills, a.focus, a.sloppiness), h)

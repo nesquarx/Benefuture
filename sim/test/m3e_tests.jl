@@ -5,10 +5,13 @@
 # informed (L115: Informed(Volition ∨ Inaction)), an accident if not; penalties fund repair either
 # way. Unguarded hazards have no contributor: a bystander is not penalised. Actions may create
 # hazards as side effects: direct harm, a crime if foreseen, an accident if not, repaired either way.
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 hz(guardians; agents = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4], kw...) =
     M3cParams(ToyParams(n = 80, steps = 150, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
-              transactions = true, causal_distribution = true, p_hazard = 0.5, guardians, kw...)
+              transactions = true, causal_distribution = true, p_hazard = 0.5, guardians,
+              p_side = 0.0, kw...)  # side effects off: these tests count hazards and their penalties alone (a controlled world)
 
 @testset "Crime rule (Lean reference)" begin
     @test is_crime(true, true, false) && is_crime(true, false, true)
@@ -23,10 +26,13 @@ end
     # recorded with its measured outputs, which mint currency as any outcome does. Assessed against
     # the committed action, the averted harm is no output: a skilled guardian earns from its skill
     # alone, an unskilled one nothing, and a shock to those it protects is its own negative output.
-    @test 0 < tr.prevention_records <= tr.prevented && tr.prevention_measured > 0
-    @test run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = ones(4), hazard_size = 5.0); seed = 1).prevention_measured == tr.prevention_measured
-    shocked = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = ones(4), p_shock = 1.0, shock_size = 0.2); seed = 1)
-    @test shocked.shocks > 0 && shocked.prevention_measured < tr.prevention_measured
+    # (The sign of one run's total is seed-specific under noisy markers and heavy hazards, so this is a
+    # controlled world; the guardian's skill is read over seeds under realistic defaults in calibrated_tests.jl.)
+    ctl = run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4)); seed = 1)
+    @test 0 < ctl.prevention_records <= ctl.prevented && ctl.prevention_measured > 0
+    @test run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4), hazard_size = 5.0); seed = 1).prevention_measured == ctl.prevention_measured
+    shocked = run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4), p_shock = 1.0, shock_size = 0.2); seed = 1)
+    @test shocked.shocks > 0 && shocked.prevention_measured < ctl.prevention_measured
     # An informed guardian who does not act commits a crime each time, and is penalised.
     tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = [0.0, 1, 1, 1]); seed = 1)
     @test tr.crimes == tr.hazards > 0 && tr.accidents == 0 && tr.credit_neg[1] < 0

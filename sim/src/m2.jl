@@ -18,6 +18,7 @@ struct Agent
         new(skill, sloppiness)
     end
 end
+Agent(skill::Real) = Agent(skill, SLOPPINESS)  # the calibrated intention-behaviour gap
 
 "M2 parameters: the M1 world, the agents, and the rate at which reputation decays."
 struct M2Params

@@ -5,6 +5,8 @@
 # perturbed candidates within the freedom range, interleaved over epochs, observes the outcome they
 # aim to improve (the floors' movement), and shifts to the best only if it beats the incumbent by
 # `gov_z` standard errors (Lean `select_candidate_ref`).
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 @testset "Candidate selection (Lean reference)" begin
     @test select_candidate([1.0, 3.0], [0.1, 0.1]; z = 1.0) == 2
@@ -87,7 +89,7 @@ end
     ag(sk) = [DomainAgent([l in (k, mod1(k + 4, 8)) ? sk : 0.0 for l in 1:8], [l in (k, mod1(k + 4, 8)) ? 0.5 : 0.0 for l in 1:8], 0.0)
               for k in 1:8 for _ in 1:2]
     eightfold(; sk = 0.15, kw...) = M3cParams(ToyParams(n = 120, steps = 300, plans = 12), ag(sk), lp, trues(8); λpos = 0.05, λneg = 0.02,
-                                             transactions = true, causal_distribution = true, kw...)
+                                             transactions = true, causal_distribution = true, LEGACY..., kw...)
     # Low-skill domains, where no leaf model reaches the established bar: the trial finds the
     # relative bar better, with gains above harms and nothing irreparable, and it is adopted.
     tr = run_m3c(eightfold(escape = true); seed = 1)

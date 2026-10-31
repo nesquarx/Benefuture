@@ -8,10 +8,12 @@
 # - Relay farming: agents who add nothing and carry others' outputs to collect accolades. The drain
 #   is bounded by the governed accolade rate; ruling 8.26.2 (held) removes it where the carrying
 #   would have happened anyway.
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 six(; skill = 0.3, deceit = Float64[], steps = 300, λneg = 0.02, kw...) =
     M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([skill, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
-              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg, transactions = true, causal_distribution = true, deceit, kw...)
+              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg, transactions = true, causal_distribution = true, deceit, LEGACY..., kw...)
 fooled = [0, 0, 0, 0, 0, 1.0]
 
 @testset "M6 overpromising: acceptance" begin

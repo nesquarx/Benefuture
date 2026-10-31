@@ -42,7 +42,10 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
     @test insured.insured > 0 && insured.floor_u[152] >= insured.floor_u[150] && insured.floor_u[200] > hit.floor_u[200] + 10
     # Metric capture: leaf 1's model turns biased; it loses eligibility and its work is priced by
     # its parent; when the capture ends it qualifies again.
-    tr = run_m3c(base(steps = 400, events = [shock(:capture; step = 100, duration = 150, size = 3.0, target = 1)]); seed = 1)
+    # (A controlled world: the leaf model qualifies before the capture; under realistic noise whether
+    # it qualifies varies by seed, see "Capture under realistic noise" below.)
+    tr = run_m3c(base(steps = 400, events = [shock(:capture; step = 100, duration = 150, size = 3.0, target = 1)];
+                      σ_leaf = 0.15, σ_branch = 0.3, σ_coarse = 0.45); seed = 1)
     share_at(r) = (k = [i for i in eachindex(tr.chosen_step) if tr.true_leaf[i] == 1 && tr.chosen_step[i] in r];
                    mean(tr.priced_leaf[k] .== 1))
     @test share_at(150:249) < share_at(51:99) - 0.3 && share_at(300:400) > share_at(150:249) + 0.3
@@ -91,4 +94,15 @@ end
     @test_throws ArgumentError shock(:meteor; step = 10)
     @test_throws ArgumentError shock(:outage; step = 10, duration = 0)
     @test_throws ArgumentError base(events = [shock(:capture; step = 10, size = 1.0, target = 9)])
+end
+
+@testset "Capture under realistic noise" begin
+    # With the calibrated models (leaf 0.3, parent 0.6, coarse 0.85) whether a leaf's own model qualifies
+    # before the capture varies by seed (a few seeds, none, others most of the time), but while the
+    # model is captured its work is never priced by it, in any seed (the eligibility gate is native).
+    runs = [run_m3c(base(steps = 400, events = [shock(:capture; step = 100, duration = 150, size = 3.0, target = 1)]); seed) for seed in 1:3]
+    share(tr, r) = (k = [i for i in eachindex(tr.chosen_step) if tr.true_leaf[i] == 1 && tr.chosen_step[i] in r];
+                    isempty(k) ? NaN : mean(tr.priced_leaf[k] .== 1))
+    @test all(tr -> share(tr, 150:249) == 0.0 || isnan(share(tr, 150:249)), runs)
+    @test any(tr -> share(tr, 51:99) > 0.5, runs)
 end

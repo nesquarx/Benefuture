@@ -2,6 +2,8 @@
 # relevant currency's model quotes it (TP_Gen, L86); G screens it against the state plus the
 # predicted effects of the transactions already accepted this step; it executes if its proposer
 # can pay; the composed quotes are logged with it (L89, L145).
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 m3d(; work = [1, 3], kw...) = m3c(; work, transactions = true, kw...)
 
@@ -14,7 +16,7 @@ m3d(; work = [1, 3], kw...) = m3c(; work, transactions = true, kw...)
     # Limiting case (8.33: no real world is exact): with exact models, markers and accounting,
     # sequential screening keeps every floor from falling.
     exact = m3d(σ_leaf = 0.0, σ_branch = 0.0, σ_coarse = 0.0, marker_σ = 0.0, bias_σ = 0.0, cost_σ = 0.0, regen_σ = 0.0,
-                attribution_σ = 0.0)
+                attribution_σ = 0.0, p_side = 0.0)
     tr = run_m3c(exact; seed = 2)
     @test floors_rise(tr) && length(tr.chosen_step) > 0
     # Every executed transaction is logged with the quotes composed for it, a partition of unity;
@@ -89,13 +91,14 @@ end
 # minor share of what the output carried; under contract it is paid as the contracted share, as
 # completion of the contract, not as contribution. Losses stay with whoever caused them.
 @testset "Contribution types: acceptance" begin
-    free = run_m3c(cdp([makers(); passers()]; accolade_rate = 0.05, p_contracted = 0.0); seed = 1)
+    # (A controlled world: the claim is about the shares, with markers as exact as they were.)
+    free = run_m3c(cdp([makers(); passers()]; accolade_rate = 0.05, p_contracted = 0.0, LEGACY...); seed = 1)
     @test free.accolade_credit > 0 && free.contract_credit == 0
     # Carriers' net credit is about their accolades (noise in measurement and attribution moves
     # credit both ways), far below what the makers earn.
     net = sum(free.credit_pos[4:6] .+ free.credit_neg[4:6])
     @test isapprox(net, free.accolade_credit; rtol = 0.4) && net < 0.1 * sum(free.upstream_pos[1:3])
-    hired = run_m3c(cdp([makers(); passers()]; contract_share = 0.2, p_contracted = 1.0); seed = 1)
+    hired = run_m3c(cdp([makers(); passers()]; contract_share = 0.2, p_contracted = 1.0, LEGACY...); seed = 1)
     @test hired.contract_credit > 0 && hired.accolade_credit == 0
     @test sum(hired.credit_pos[4:6]) > sum(free.credit_pos[4:6])
     for tr in (free, hired)

@@ -6,10 +6,12 @@
 # deployment to build its record), and a challenger takes over the currency only when it beats the
 # incumbent by the significance rule (`select_candidate_ref`, `model_z`). A model that slips, a
 # captured one, is overtaken the same way.
+isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
+
 
 pool_world(; sl = 0.3, kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], sl) for _ in 1:8], [1, 1, 2, 2], trues(4);
-    λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75, kw...)
+    λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75, kw...)  # a controlled world
 growth(tr) = tr.floor_u[end] - tr.floor_u[51]
 
 @testset "Better models: acceptance" begin

@@ -165,6 +165,10 @@ struct M3cParams
     slander::Vector{Int}         # per agent, whom its frivolous reports target (0: anyone; world, adversary)
     on_off::Int                  # deceit on only in alternate phases this long, off first (0: always on; world, adversary)
     events::Vector{Shock}  # catastrophes and black swans (world events; see `shock`)
+    # Heavy hazards (3.9): an event's size is Pareto (median 1), its harm log-normal across beings; off: the old Gaussian scatter.
+    hazard_heavy::Bool
+    hazard_α::Float64      # Pareto exponent of event size
+    hazard_cap::Float64    # largest event, in medians
 end
 
 """
@@ -182,9 +186,9 @@ function shock(kind::Symbol; step::Integer, duration::Integer = 1, size::Real = 
 end
 
 function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λneg::Real, overlaps = Tuple{Int,Int,Float64}[],
-                   marker_σ::Real = 0.05, window::Integer = 100, spread::Real = 0.03, classify_σ::Real = 0.03,
+                   marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
-                   σ_leaf::Real = 0.15, σ_branch::Real = 0.3, σ_coarse::Real = 0.45, n_learn::Real = 20,
+                   σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
                    threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
@@ -192,11 +196,11 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
                    attribution_σ::Real = 0.1, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
                    p_contracted::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
-                   hazard_σ::Real = 0.2, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
-                   repair_efficiency::Real = 0.0, p_side::Real = 0.0, side_share::Real = 0.3, side_size::Real = 1.0,
+                   hazard_σ::Real = CALIBRATED.hazard_σ, hazard_heavy::Bool = true, hazard_α::Real = CALIBRATED.hazard_α, hazard_cap::Real = CALIBRATED.hazard_cap, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
+                   repair_efficiency::Real = 0.0, p_side::Real = CALIBRATED.p_side, side_share::Real = 0.3, side_size::Real = 1.0,
                    p_foresee::Real = 0.5, p_shock::Real = 0.0, shock_size::Real = 0.2, govern::Bool = false, adapt::Bool = true, gov_epoch::Integer = 50,
                    gov_δ::Real = 0.02, gov_candidates::Integer = 3, gov_trials::Integer = 4, gov_gauge::Real = 2.0, gov_z::Real = 2.0,
-                   bias_σ::Real = 0.1, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, choice_σ::Real = 0.5, choice_gain::Real = 5.0,
+                   bias_σ::Real = CALIBRATED.bias_σ, cost_σ::Real = 0.1, regen_σ::Real = 0.1, memory_loss::Real = 0.02, participation::Real = 0.9, remeasure_σ::Real = 0.3, deceit = Float64[], track_window::Integer = 20, p_trace::Real = 0.5, launder = Float64[], launder_saving::Real = 0.5, choice_σ::Real = 0.5, choice_gain::Real = 5.0,
                    ability_spread::Real = 0.5, advap::Bool = false, vigilance::Real = 0.05, adv_z::Real = 3.0, adv_share::Real = 0.1,
                    adv_floor::Real = 1.0, audit_cost::Real = 1.0, frivolous_threshold::Real = 5.0, adv_window::Integer = 100,
                    p_false_trace::Real = 0.01, frivolous = Float64[], pattern_attention::Real = 9.0,
@@ -224,7 +228,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "noise sizes non-negative, chances in [0, 1]")
     check(all(x -> 0 <= x <= 1, (p_hazard, hazard_share, p_informed, repair_efficiency, p_side, side_share, p_foresee)),
           "chances, shares and repair efficiency in [0, 1]")
-    check(all(x -> isfinite(x) && x >= 0, (hazard_size, hazard_σ, side_size)), "harm sizes non-negative")
+    check(all(x -> isfinite(x) && x >= 0, (hazard_size, hazard_σ, side_size)) && hazard_α > 0 && hazard_cap >= 1, "harm sizes non-negative, tail exponent positive, cap at least 1")
     check(isempty(guardians) || (length(guardians) == length(leaf_parent) && all(g -> 0 <= g <= length(agents), guardians)),
           "one guardian (or 0) per true domain")
     check(isempty(diligence) || (length(diligence) == length(agents) && all(d -> 0 <= d <= 1, diligence)), "one diligence per agent")
@@ -281,7 +285,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               escape_share, escape_epoch, irreparable_loss, p_new_model, improve_drift, improve_σ, scale_min, model_z, pool_max,
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum,
-              isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events))
+              isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
+              hazard_heavy, hazard_α, hazard_cap)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -755,7 +760,8 @@ function run_m3c(p::M3cParams; seed)
             if p.p_side > 0 && rand(srng) < p.p_side
                 hit = touched(own_plans[j]) .& (rand(srng, t.n) .< p.side_share)
                 if any(hit)
-                    side = ToyPlan(-p.side_size .* hit, -p.side_size .* hit)
+                    sz = p.side_size * (p.hazard_heavy ? pareto_median1(srng, p.hazard_α, p.hazard_cap) : 1.0)  # heavy-tailed severity (3.9)
+                    side = ToyPlan(-sz .* hit, -sz .* hit)
                     own_done = ToyPlan(own_done.du .+ side.du, own_done.dh .+ side.dh)
                     world.side_hazards[] += 1
                     is_crime(rand(srng) < p.p_foresee, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
@@ -1153,12 +1159,15 @@ function run_m3c(p::M3cParams; seed)
             end
             (measured = measured, traced = traced)
         end
-        function hazard!(share, sz)
+        function hazard!(share, sz; random = false)
             local l, hit, size, harm, g, informed, act, measured, sig, st, pm, need, spend, f, φ, price, own
             world.hazards[] += 1
             l = rand(hrng, 1:ntrue)
             hit = rand(hrng, t.n) .< share
-            size = sz .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
+            # Heavy hazards (3.9): a random event's size is Pareto, its harm log-normal across beings; an
+            # explicit catastrophe keeps its stated size. Off: Gaussian scatter around one size.
+            size = p.hazard_heavy ? sz * (random ? pareto_median1(hrng, p.hazard_α, p.hazard_cap) : 1.0) .* lognormal_mean1(hrng, p.hazard_σ, t.n) :
+                   sz .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
             harm = ToyPlan(-hit .* size, -hit .* size)
             g = isempty(p.guardians) ? 0 : p.guardians[l]
             informed = g > 0 && rand(hrng) < p.p_informed
@@ -1213,7 +1222,7 @@ function run_m3c(p::M3cParams; seed)
                 end
             end
         end
-        p.p_hazard > 0 && rand(hrng) < p.p_hazard && hazard!(p.hazard_share, p.hazard_size)
+        p.p_hazard > 0 && rand(hrng) < p.p_hazard && hazard!(p.hazard_share, p.hazard_size; random = true)
         for e in p.events
             e.kind == :catastrophe && e.step == step && hazard!(e.share, e.size)
             # An outage harms the beings who lose its services, and is examined as an outcome when
