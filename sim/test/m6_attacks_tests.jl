@@ -190,11 +190,13 @@ end
     # Counterexample: the colluding pair admits every attempt.
     @test all(tr.identities_linked == 0 && tr.identities_admitted > 5 for tr in counted)
     # Acceptance: revealed, the pair's skill falls below zero and later attempts are linked.
-    # (the honest cluster misses one identity in ten, so its skill varies by seed but stays positive)
+    # The honest cluster misses one identity in ten; over 9 to 18 scored records its skill is
+    # 1 − Brier / 0.25 with Brier = (0.81 k + 0.01 (n − k)) / n for k misses (seed 2: 4 of 18, skill
+    # 0.25), so it stays above 0 (fewer than 30% misses) but not above any higher bound.
     @test all(tr.attestation_skill[1] < 0 && tr.attestation_skill[2] < 0 && tr.attestation_skill[3] > 0 for tr in weighted)
-    # The first identities pass before any cluster has the five scored records its weight needs: the
-    # minimum record is the window an on-off cluster can exploit (8.70, gaming).
-    @test all(tr.identities_linked > 0 for tr in weighted)
+    # Admissions run until the fifth revelation gives the clusters a weighed record (admitted equals
+    # revealed in every seed): the minimum record is the window an on-off cluster exploits (8.70).
+    @test all(tr.identities_admitted == tr.identities_revealed && tr.identities_linked > 0 for tr in weighted)
     @test mean(tr.identities_admitted for tr in weighted) < 0.5 * mean(tr.identities_admitted for tr in counted)
     @test_throws ArgumentError ww(bind_compromised = [4])
 end
