@@ -400,6 +400,7 @@ Readings are means over 5 seeds of 500 steps unless a claim says otherwise. Whic
 simulation covers, and which not yet: [sim/README.md, coverage](sim/README.md#coverage-of-the-specification).
 
 Measurement, agents and domains
+- Currency moves only by outcomes (L99): in a world with no other flows, total balances change by exactly the sum of each priced action's `supply_delta_ref` (measured good less resource cost less harm) and the StandCoin lane's burnt resource cost, overflow counting as a transfer to reinvestment ([sim/test/probe_tests.jl](sim/test/probe_tests.jl)); harm done by StandCoin-lane work burns nothing yet (BACKPROPAGATION 8.67, open).
 - Calibrated world (toy, 80 beings; the defaults of `docs/CALIBRATION.md`: markers 0.3, models 0.3 /
   0.6 / 0.85, execution noise 0.25, side harm 0.01, Pareto hazards): the economy still converges but
   unevenly. Floors grow in every seed (a 250-step clean world: 31, 176 and 117 over three seeds;

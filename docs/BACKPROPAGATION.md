@@ -1630,3 +1630,15 @@ the domain's outcome rate), or stay absolute as 8.36 ruled?
 Gaming: a model cannot raise its credence without its errors falling below its predictions, which the
 open log scores; an extremist scaling its record (`sharp` < 1) is scored by the same Brier as before.
 Candidate homes: L84, 8.36, Measurement (credence from track record).
+
+**8.67 Finding (mechanism probe): supply follows outcomes, except harm done by StandCoin-lane work.**
+The supply probe (`sim/test/probe_tests.jl`) checks the economy's ledger against L99: in a world
+with no other flows, total balances (with overflow counted as a transfer to reinvestment) change by
+exactly the sum of each priced action's `supply_delta_ref` (its currencies' shares of the measured
+good, less resource cost, less harm) and of the StandCoin lane's burnt resource cost (8.3: StandCoin
+charges only resource cost, so lane work mints nothing). No other flow moves currency. The gap:
+harm done by lane work (and by explored proposals, 8.58-a) is measured and counted in reputation but
+burns no currency, while L99 burns harm wherever it is measured. Question for the author: does lane
+work's harm burn currency (charged to its proposer and pledging experts, as a priced action's harm
+is charged to its contributors), or does "charges only resource cost" cover harm too?
+Candidate homes: L99, Benefuture currency (StandCoin entry).

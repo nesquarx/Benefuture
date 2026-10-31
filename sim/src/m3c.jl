@@ -546,7 +546,7 @@ function run_m3c(p::M3cParams; seed)
                                base = p.choice_σ, gain = p.choice_gain, spread = p.ability_spread)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
-          stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[],
+          stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[], supply = Float64[], lane_supply = Float64[],
           lane_costs = Float64[], lane_measured = Float64[],
           exec_pred = Float64[], exec_true = Float64[], exec_agent = Int[], exec_step = Int[])
     # Each selected execution's predicted value (the proxy G optimised) and its true value (the realised
@@ -945,6 +945,7 @@ function run_m3c(p::M3cParams; seed)
                         end
                     end
                     tr.valued_measured[idx] += delta
+                    tr.supply[idx] += delta  # the settlement mints or burns what the upfront did not
                     learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen_late)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
                     credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
@@ -967,6 +968,12 @@ function run_m3c(p::M3cParams; seed)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
             push!(tr.valued_measured, blind[] ? minted : (1 - priced[j][root]) * sum(x[2] + x[3] for x in credits))
+            # Supply (L99, `supply_delta_ref`): the currencies' shares of the measured good, less the
+            # resource cost, less the harm; a measurement outage mints the upfront now, the settlement later.
+            shares = sum(sh for (_, sh, _, _) in offers[j]; init = 0.0)
+            cost_paid = (priced[j][root] + shares) * costs[j]
+            push!(tr.supply, blind[] ? minted - cost_paid :
+                  supply_delta(shares * sum(x[2] for x in credits), cost_paid, -shares * sum(x[3] for x in credits)))
             blind[] || trial_outcome!(l, measured, seen)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
@@ -1046,6 +1053,7 @@ function run_m3c(p::M3cParams; seed)
             done, seen, measured = perform!(j, a)
             executed!(j, a, step, pred, done)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
+            push!(tr.lane_supply, supply_delta(0.0, need, 0.0))  # StandCoin charges only resource cost (8.3): no good is minted
             blind[] || trial_outcome!(l, measured, seen)
             lane.executed[] += 1
             accept!(pred)
@@ -1087,6 +1095,7 @@ function run_m3c(p::M3cParams; seed)
                     done, seen, measured = perform!(j, a)
                     explored[] += 1
                     push!(tr.lane_costs, costs[j]); push!(tr.lane_measured, measured)
+                    push!(tr.lane_supply, supply_delta(0.0, costs[j], 0.0))
                     trial_outcome!(l, measured, seen)
                     score!(stops[j], pms[j], l, plan, seen, Dict(bp[1] => pred), a)
                     learn!(a, plan, pred, seen)
