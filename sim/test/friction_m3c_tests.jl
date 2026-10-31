@@ -18,9 +18,11 @@ fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
 
 @testset "M3c: convergence under heavy friction" begin
     clean = mean(fr_gain(run_m3c(fr(); seed)) for seed in 1:3)
-    # Every source but model error at the top of its realistic range: floors still rise, more slowly.
+    # Every source but model error and execution at the bad end of its realistic range: floors still rise,
+    # more slowly (re-measured at the harsher calibrated ends, markers 0.6 against 0.2 before, for one:
+    # about 20% of clean growth over 3 seeds).
     heavy = [run_m3c(fr(; FRICTION...); seed) for seed in 1:3]
-    @test mean(fr_gain.(heavy)) > 0.2 * clean && all(tr -> length(tr.chosen_step) > 0, heavy)
+    @test mean(fr_gain.(heavy)) > 0.1 * clean && all(tr -> length(tr.chosen_step) > 0, heavy)
     # The whole success pattern (L74), not the floor alone: medians and the peak of understanding
     # rise as well, and harm's peak (the deepest single-being drop) stays bounded.
     for tr in heavy
@@ -29,8 +31,8 @@ fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
     end
     # Everything at its top, model error and execution noise included: degraded, not collapsed.
     # Accuracy is the quality of credences, not adjusted for noise (8.36), so it falls to about the
-    # coarse level and pricing thins out rather than stopping (about 9% of clean growth since every
-    # scored estimate takes the quote's path, 8.38's status; 14% before).
+    # coarse level and pricing thins out rather than stopping (about 8% of clean growth at the calibrated
+    # bad ends: leaf 0.9, execution 0.5; 9% at the old tops).
     all_top = [run_m3c(fr(; FRICTION..., MODELS_TOP..., sl = 0.5); seed) for seed in 1:3]
     @test mean(fr_gain.(all_top)) > 0.05 * clean && all(tr -> length(tr.chosen_step) > 0, all_top)
     # Far beyond a functional domain, no model backs a currency and the work goes to StandCoin, as

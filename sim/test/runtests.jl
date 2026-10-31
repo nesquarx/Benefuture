@@ -52,6 +52,7 @@ end
     @test_throws ArgumentError squashed_synergy(NaN; ν = 1.0, h = 5.0)
 end
 
+include("legacy.jl")
 include("value_tests.jl")
 include("goal_tests.jl")
 include("m0_tests.jl")
@@ -82,3 +83,4 @@ include("methods_tests.jl")
 include("m4_tests.jl")
 include("m5_tests.jl")
 include("m7_tests.jl")
+include("calibrated_tests.jl")
