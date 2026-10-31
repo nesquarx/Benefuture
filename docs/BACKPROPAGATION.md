@@ -1726,3 +1726,14 @@ whitewasher admit 13–15 false identities and link none under the count rule; w
 before any cluster has the five scored records its weight needs, so the minimum record is the window
 an on-off cluster exploits. In this world every new identity is false, so attestations are scored
 on one side only; honest newcomers (B2 step 2) will score the other.
+8.66 robustness evidence (the M3d world, `sim/test/m3d_tests.jl`, 20 seeds): under the normal credence
+one seed in twenty stalls on each platform (Linux seed 4, macOS seed 1; mean transactions 1,026 and
+1,042), the platforms agreeing statistically while single seeds trade places, because a 1-ULP libm
+difference flips a status-bar comparison (0.891 against 0.90) and the stalled lane never recovers;
+under the record credence no seed stalls on Linux (0 of 20, transactions 1,037 to 1,120). A run whose
+whole outcome a 1-ULP difference can flip is fragile; the record credence removes that fragility here,
+which strengthens the case for adopting it (question (1) above). The stall is also absorbing (a
+disqualified domain's lane halts for want of funds, earns no new records and cannot requalify),
+against the progressive-degradation rule that a coarser mechanism substitutes without stalling;
+candidate remedies for the author: hysteresis at the status bar, or scoring score-only predictions
+while the lane is halted so a domain can requalify.
