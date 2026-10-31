@@ -23,8 +23,11 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     seeds = 1:6
     honest = [run_m3c(six(); seed) for seed in seeds]
     liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
-    rel(tr) = sum(tr.balance[6, :]) / mean(sum(tr.balance[k, :]) for k in 1:5)
-    @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
+    # The liar's balance less its peers' mean, against the same gap with agent 6 honest, seed by seed
+    # (a ratio of balances means nothing once harm burnt under 8.67 leaves balances below zero).
+    gap(tr) = sum(tr.balance[6, :]) - mean(sum(tr.balance[k, :]) for k in 1:5)
+    d = gap.(liar) .- gap.(honest)
+    @test mean(d) <= 2 * std(d) / sqrt(length(d))
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) for l in liar)
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
@@ -66,8 +69,9 @@ end
     # deceiver is charged, which also covers the audits; deceit does not pay.
     @test all(l.advap_established > 0 for l in liar)
     @test all(l.advap_rewards > 0 && l.advap_liability >= l.advap_rewards for l in liar)
-    rel(tr) = sum(tr.balance[6, :]) / mean(sum(tr.balance[k, :]) for k in 1:5)
-    @test mean(rel.(liar)) <= mean(rel.(honest)) + 0.05
+    gap(tr) = sum(tr.balance[6, :]) - mean(sum(tr.balance[k, :]) for k in 1:5)  # a difference: balances may be negative
+    d = gap.(liar) .- gap.(honest)
+    @test mean(d) <= 2 * std(d) / sqrt(length(d))
     @test mean(peers.(liar)) > 0.9 * mean(peers.(honest))
     # The books balance with AdvAp's flows.
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) + l.advap_net

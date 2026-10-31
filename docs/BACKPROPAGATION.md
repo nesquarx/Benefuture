@@ -1703,3 +1703,9 @@ model's own credence earns exactly zero skill; a selector's skill spreads by its
 shares. Finding: a short record is noisy (twenty choices drawn at 0.9 came out at 0.75 and read as no
 skill), so prediction accuracy needs a minimum record before it weighs, as a model's accuracy does
 (`min_records`), a governed threshold.
+8.67 implementation note: lane harm burns in the currencies of the domains the action lies in, by
+its classification shares, as hazard harm does. Burnt in StandCoin it drained the currency that pays
+every resource cost: root balances went below zero, payment gates closed, lane work fell from about 50
+to 10 actions a run and priced work stopped in two seeds of six (diagnosed with the burn switched off).
+Balance ratios (the M6 tests, the economy battery's attack test) mean nothing once balances can be
+negative; they are now differences of balance gaps against the attack-free world, in endowments.

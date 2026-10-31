@@ -931,11 +931,15 @@ function run_m3c(p::M3cParams; seed)
         screened() = ToyState(obs.u .+ pend_u, obs.h .+ pend_h)
         accept!(pred) = p.transactions && (pend_u .+= pred.du; pend_h .+= pred.dh; true)
         # Harm done by StandCoin-lane work burns currency (L99; 8.67): each contributor's harmed part,
-        # in StandCoin; no good is minted. Returns the supply change.
-        function burn_harm!(credits)
+        # in the currencies of the domains the action lies in, by its classification shares (`st`),
+        # as hazard harm is; no good is minted. StandCoin, which pays every resource cost, is left
+        # alone: burning harm there drains the means of paying for any work and stalls the economy.
+        # Returns the supply change.
+        function burn_harm!(credits, st)
             burnt = 0.0
             for (e, _, nn) in credits
-                balance[e, root] += nn; burnt += nn
+                part = split_signed(st, nn)[1]
+                balance[e, :] .+= part; burnt += sum(part)
             end
             burnt
         end
@@ -1089,7 +1093,7 @@ function run_m3c(p::M3cParams; seed)
             blind[] || learn!(a, plan, pred, seen)
             lane_credits = blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], lane_credits)
-            tr.lane_supply[end] += burn_harm!(lane_credits)
+            tr.lane_supply[end] += burn_harm!(lane_credits, stops[j])
             if blind[]
                 push!(deferred, function ()
                     seen_late = observed_plan(mrng, done, p.marker_σ + p.remeasure_σ)
@@ -1098,7 +1102,7 @@ function run_m3c(p::M3cParams; seed)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred), a)
                     late = credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ)
                     credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
-                    push!(tr.lane_supply, burn_harm!(late))
+                    push!(tr.lane_supply, burn_harm!(late, stops[j]))
                 end)
             end
             available -= count(touched(plan))
@@ -1131,7 +1135,7 @@ function run_m3c(p::M3cParams; seed)
                     learn!(a, plan, pred, seen)
                     ex_credits = credits_for(j, a, seen, measured; need = costs[j], own_pay = costs[j])
                     credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], ex_credits)
-                    tr.lane_supply[end] += burn_harm!(ex_credits)
+                    tr.lane_supply[end] += burn_harm!(ex_credits, stops[j])
                     push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
                     push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
                     available -= count(touched(plan))

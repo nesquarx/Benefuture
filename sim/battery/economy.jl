@@ -8,9 +8,9 @@
 # after the score-only start, by the seeds' vote: the floors and medians of understanding and
 # happiness each grow by at least `GROWTH` of the clean world's, the peak of understanding ends no
 # lower than it began, and the deepest single-being drop stays within `HARM` × the clean world's; and
-# deceit and laundering (when present) do not pay. An attack pays when the attackers' wealth
-# relative to the honest agents, over the same world and seed with the attackers honest, averages
-# above `GAIN` across the seeds and its lower bound (mean less two standard errors) is above 1.
+# deceit and laundering (when present) do not pay. An attack pays when the attackers' advantage
+# over the honest agents (balance gap, less the same gap with the attackers honest, in endowments)
+# averages above `GAIN` − 1 across the seeds and its lower bound (mean less two standard errors) is above 0.
 # Three seeds, five where the vote splits or the attack test is ambiguous. (Per-seed tests against
 # one honest agent failed near-clean worlds: one agent's wealth spreads about ±10% across seeds.)
 using BenefutureSim, Statistics, Random, Printf
@@ -74,17 +74,20 @@ function grows(tr)
 end
 function converges(sev)
     attacks = [(findfirst(==("deceit"), names), 7:8), (findfirst(==("laundering"), names), 6:6)]  # (factor, attacking agents)
-    # Wealth of agents `k` relative to the honest agents 1-5 (guardians' hazard costs cancel
-    # between the two runs).
-    rel(t, k) = mean(sum(t.balance[i, :]) for i in k) / mean(sum(t.balance[i, :]) for i in 1:5)
+    # Advantage of agents `k` over the honest agents 1-5: their mean balance less the honest mean, less
+    # the same gap with the attack off, in units of one agent's endowment (a difference, since harm
+    # burnt under 8.67 can leave balances below zero, where ratios mean nothing; guardians' hazard
+    # costs cancel between the two runs).
+    gap(t, k) = mean(sum(t.balance[i, :]) for i in k) - mean(sum(t.balance[i, :]) for i in 1:5)
     one(seed) = begin
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
         hs = copy(sev); for (f, _) in attacks; hs[f] = 0; end
         honest = any(sev[f] > 0 for (f, _) in attacks) ? run_m3c(world(clamp.(hs, 0, Inf)); seed) : tr
-        (grows = grows(tr), ratios = [rel(tr, k) / rel(honest, k) for (_, k) in attacks])
+        unit = tr.endowed / size(tr.balance, 1)
+        (grows = grows(tr), ratios = [(gap(tr, k) - gap(honest, k)) / unit for (_, k) in attacks])
     end
-    pays(r) = mean(r) > GAIN && mean(r) - 2std(r) / sqrt(length(r)) > 1
-    unsure(r) = (mean(r) > GAIN) != (mean(r) - 2std(r) / sqrt(length(r)) > 1)
+    pays(r) = mean(r) > GAIN - 1 && mean(r) - 2std(r) / sqrt(length(r)) > 0
+    unsure(r) = (mean(r) > GAIN - 1) != (mean(r) - 2std(r) / sqrt(length(r)) > 0)
     out = [one(seed) for seed in SEEDS]
     ratios(j) = [o.ratios[j] for o in out]
     split = !(all(o.grows for o in out) || !any(o.grows for o in out))
