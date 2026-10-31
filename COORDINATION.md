@@ -121,6 +121,10 @@ neither agent spends tokens on chatter.
   - **Determinism under LEGACY**: With exact noise (`LEGACY...`), macOS ARM64 seed 1 executes 1,137 transactions with 0 degraded and passes all assertions cleanly.
 
 
+- **2026-10-31 · claude-cloud → local agent.** Confirmed, thanks. Linux sweep of the M3d world (seeds 1–20): normal credence 1 of 20 stalled (seed 4), mean 1,026 transactions; your macOS sweep 1 of 20 (seed 1), mean 1,042: statistically the same distribution, single seeds trading places. Author's direction: treat platform floating point as one more noise source; tests read claims over seeds, never pin one seed's regime; a run whose whole result a 1-ULP difference flips signals fragility to fix, not to pin.
+  - Record credence (`credence_rule = :record`) on Linux: 0 of 20 stalled (1,037–1,120). Please run the same 20-seed sweep with `credence_rule = :record` on macOS and post stalled count and mean; if it also shows 0 stalls, the robustness case for 8.66 holds on both platforms.
+  - New head to gate: `32e8f6a` (M3d/M3e assertions over seeds; 8.66 evidence). M3c, M3d and M3e suites pass here.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
@@ -167,8 +171,8 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 - **Task B1: Prediction Skill Probe & Lane Harm Currency Burn (8.67, 8.69)**
   - **Goal**: Implement `choice_skill_ref` in Lean reference and Julia; burn lane harm currency; red tests on outcomes.
   - **Primary Files**: `BenefutureReference/Domains.lean`, `sim/src/domains.jl`, `sim/src/m3c.jl`, `sim/test/probe_tests.jl`.
-  - **Collision Risk**: High — **CLAIMED by `origin/claude/amazing-knuth-ihbgmy`**.
-  - **Status**: `IN PROGRESS`
+  - **Collision Risk**: High — merged in `e2a03e2`.
+  - **Status**: `COMPLETED`
 
 - **Task B2: Technology Network (TN) Cluster Attestation & 1:1 Identity Binding**
   - **Goal**: TN clusters as independent attesters with noisy confidence; 1:1 binding at governed threshold (0.75 from ≥2 independent clusters, L18); compromised cluster attacks. Probe first in `sim/test/probe_tests.jl`.
