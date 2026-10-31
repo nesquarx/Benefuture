@@ -455,6 +455,11 @@ the remedy proposed there is the one 8.34 applies to votes, sharing among bound 
 A randomized battery hones in on the combinations of noise and attack beyond which the framework
 stops converging (`sim/src/battery.jl`, tested on synthetic boundaries in
 `sim/test/battery_tests.jl`; batteries in `sim/battery/`, results in `sim/battery/results/`).
+Runs are launched detached by `tools/battery/run.sh`, which records their state in
+`sim/battery/state/`; each world's evaluation is cached on disk under a hash of the code it runs
+(`cached`, `code_hash`), so a run cut short by a container restart resumes when relaunched, and a
+code change starts afresh. The project hooks (`tools/battery/hook.sh`) report the runs each prompt,
+relaunch interrupted ones at session start, and flag a finished run once for recording.
 
 - **Factor space.** Each noise source or attack is a factor with a severity: 1 is the realistic bad
   end of its range (the Noise table, `docs/CALIBRATION.md` section 7; the status quo for an

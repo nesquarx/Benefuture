@@ -121,6 +121,45 @@ function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integ
      screening = screen_n > 0 ? screen(oracle, scale .* gaussian_hypercube(rng, screen_n, k; μ = 0.5, σ = 0.25)) : nothing)
 end
 
+"""
+    cached(f, label; dir = sim/battery/cache)
+
+`f` (one world's evaluation: an oracle or a reading) memoised on disk, keyed by the code it runs
+(a hash of the simulation's and the Lean reference's sources) and by the exact severities. A
+battery is deterministic given its evaluations, so a run cut short (a container restart) and
+relaunched replays what it finished and resumes where it stopped; changing the code starts a
+fresh cache. Values are written as Julia literals (`Bool`, or a named tuple of numbers).
+"""
+function cached(f, label; dir = joinpath(@__DIR__, "..", "battery", "cache"))
+    mkpath(dir)
+    path = joinpath(dir, "$label-$(code_hash()[1:12]).tsv")
+    memo = Dict{String,Any}()
+    isfile(path) && for line in eachline(path)
+        k, v = split(line, '\t'; limit = 2)
+        memo[k] = eval(Meta.parse(v))
+    end
+    io = open(path, "a")
+    function (sev)
+        k = join((string(reinterpret(UInt64, Float64(x)); base = 16) for x in sev), ",")
+        haskey(memo, k) && return memo[k]
+        v = f(sev)
+        println(io, k, '\t', repr(v)); flush(io)
+        memo[k] = v
+    end
+end
+
+"A hash of the code a battery runs: the simulation's sources, the batteries and the Lean reference."
+function code_hash()
+    ctx = SHA.SHA256_CTX()
+    sim = normpath(joinpath(@__DIR__, ".."))
+    files = [joinpath(d, f) for d in (joinpath(sim, "src"), joinpath(sim, "battery")) for f in sort(readdir(d)) if endswith(f, ".jl")]
+    append!(files, [joinpath(REPO, f) for f in lean_sources()])
+    for f in files
+        SHA.update!(ctx, read(f))
+    end
+    bytes2hex(SHA.digest!(ctx))
+end
+
 "The commit checked out now; batteries read it when they start, so results name the code they ran."
 function current_commit()
     try

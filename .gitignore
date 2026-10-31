@@ -33,3 +33,5 @@ yarn-error.log*
 .agents/
 /sim/Manifest.toml
 .claude/worktrees/
+/sim/battery/cache/
+/sim/battery/state/

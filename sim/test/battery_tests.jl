@@ -63,3 +63,20 @@ end
     @test_throws ArgumentError latin_hypercube(rng, 0, 2)
     @test_throws ArgumentError ray_boundary(oracle -> true, [0.0, 0.0]; tmax = 1.0, tol = 1e-3)
 end
+
+@testset "battery: evaluations cached on disk survive a restart" begin
+    dir = mktempdir()
+    calls = Ref(0)
+    f(sev) = (calls[] += 1; (outputs = [sum(sev), -0.0], n = 3))
+    g = cached(f, "t"; dir)
+    a = g([0.1, 0.2]); g([0.1, 0.2])
+    @test calls[] == 1                        # repeated in one run: evaluated once
+    h = cached(f, "t"; dir)                   # a relaunch on the same code
+    @test h([0.1, 0.2]) == a && calls[] == 1  # replayed from disk, exactly
+    @test signbit(h([0.1, 0.2]).outputs[2])   # bits kept, -0.0 included
+    h([0.1, 0.2 + eps(0.2)])
+    @test calls[] == 2                        # severities differing in the last bit are distinct worlds
+    b = cached(sev -> sev[1] > 0.5, "b"; dir)
+    @test b([0.7]) === true && cached(sev -> error("not replayed"), "b"; dir)([0.7]) === true
+    @test length(code_hash()) == 64 && occursin(code_hash()[1:12], only(filter(startswith("t-"), readdir(dir))))
+end

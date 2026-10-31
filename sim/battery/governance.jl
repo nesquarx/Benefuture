@@ -41,7 +41,7 @@ end
 rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "24")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "128")))
 t0, commit = time(), current_commit()  # the code this run tests
-bt = battery(converges, names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.03, grid = 8)
+bt = battery(cached(converges, "governance-oracle"), names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.03, grid = 8)
 const OUT = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))  # a scratch directory for trial runs
 write_results("governance", bt, names; clean = NaN, minutes = (time() - t0) / 60, commit, dir = OUT)
 
@@ -66,7 +66,7 @@ mbudget = (sobol = parse(Int, get(ENV, "BF_SOBOL", "64")), active = parse(Int, g
 if mbudget.sobol > 0 || mbudget.active > 0
     t1 = time()
     pool = bt.screen_scale .* gaussian_hypercube(mrng, 2000, length(names); μ = 0.5, σ = 0.25)
-    m = battery_methods(reading, names; rng = mrng, outputs = ["margin"], pool, sobol_n = mbudget.sobol, sobol_top = mbudget.top,
+    m = battery_methods(cached(reading, "governance-reading"), names; rng = mrng, outputs = ["margin"], pool, sobol_n = mbudget.sobol, sobol_top = mbudget.top,
                         active_budget = mbudget.active)
     write_methods("governance", m, names; reading_note = "Readings: the share of the last half of decisions right, less $ACCURACY (the margin), averaged over seeds 1, 2, … until its standard error (Student-t inflated) is within $SE_TOL ($SEED_MIN to $SEED_MAX seeds).",
                   screen_fail_rate = bt.screening.fail_rate, minutes = (time() - t1) / 60, dir = OUT)
