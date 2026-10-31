@@ -87,3 +87,38 @@ end
     skilled, none, harmful = guard(0.6), guard(0.0), guard(-0.3)
     @test skilled > none > harmful
 end
+
+# Credence from the record ([P], 8.58-c): heavy-tailed side effects at a complex domain's rate stall
+# the economy under the normal credence (one outlier inflates the record's RMS error, every credence
+# turns to a coin toss, the leaves lose their currencies and the StandCoin lane halts for want of
+# funds); credences read from the record keep the currencies and the growth. The economy battery's
+# world at side-harm severity 0.6 (`sim/battery/economy.jl`).
+@testset "Record credence: heavy-tailed side harm stalls the normal credence, not the record's" begin
+    skills = draw_skills(Xoshiro(20261031), 8, 4, [1, 3]; median = 0.6)
+    agents = [DomainAgent(skills[a, :], [0.5, 0, 0.5, 0], CALIBRATED.sloppiness) for a in 1:8]
+    world(rule) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                            transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4],
+                            diligence = fill(0.95, 8), p_foresee = 1.0, repair_efficiency = 0.5, advap = true,
+                            # the battery's severity-0 world, side harm at 0.6
+                            marker_σ = 0.1, bias_σ = 0.1, classify_σ = 0.05, spread = 0.05, cost_σ = 0.05, regen_σ = 0.3,
+                            attribution_σ = 0.1, p_hazard = 0.05, p_informed = 0.95, vigilance = 0.1, p_false_trace = 0.005,
+                            p_side = 0.01 + 0.09 * 0.6, credence_rule = rule)
+    normal, record = run_m3c(world(:normal); seed = 3), run_m3c(world(:record); seed = 3)
+    growth(tr) = success_pattern(tr; from = 51).floor_u
+    @test normal.lane_halted > 500 && minimum(normal.leaf_accuracy[[1, 3]]) < 0.75     # counterexample: the stall
+    @test record.lane_halted == 0 && minimum(record.leaf_accuracy[[1, 3]]) >= 0.75     # acceptance: currencies kept
+    @test growth(record) > 2 * max(growth(normal), 1.0)
+    @test_throws ArgumentError world(:median)
+end
+
+# Part of 8.65 (a), the seed-dependent leaf qualification, is the same fragility: early outliers in a
+# model's record keep its currency from ever qualifying. Measured over six seeds of the realistic
+# world (250 steps): no seed priced by its currency without halts under the normal credence, four of
+# six from the record; mean floor growth 51 against 111.
+@testset "Record credence: the currency regime takes hold in more seeds" begin
+    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:6]
+    normal, record = runs(:normal), runs(:record)
+    growth(tr) = tr.floor_u[end] - tr.floor_u[51]
+    @test count(tr -> tr.lane_halted == 0, record) >= 3 && count(tr -> tr.lane_halted == 0, normal) == 0
+    @test mean(growth, record) > 1.5 * mean(growth, normal)
+end

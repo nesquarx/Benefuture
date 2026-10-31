@@ -159,6 +159,20 @@ def credence_ref (predicted uncertainty cap : Float) : Float :=
            else normal_cdf_ref (predicted / uncertainty)
   max (1.0 - cap) (min cap c)
 
+/-- A model's credence from its record ([P], finding 8.58-c): the share of its past value errors
+    (predicted less measured) below its prediction, since the true value is the prediction less the
+    error; a tie counts half. Distribution-free, so calibrated by its own record: one heavy-tailed
+    error moves it by at most 1 / n, where the root mean square that `credence_ref` reads can turn
+    every credence into a coin toss. With normal errors it tends to `credence_ref` over their
+    spread, its limiting case. No record is a coin toss; within [1 − cap, cap] (8.33). -/
+def record_credence_ref (predicted : Float) (errors : Array Float) (cap : Float) : Float := Id.run do
+  if errors.size == 0 then return max (1.0 - cap) (min cap 0.5)
+  let mut below := 0.0
+  for e in errors do
+    if e < predicted then below := below + 1.0
+    else if e == predicted then below := below + 0.5
+  return max (1.0 - cap) (min cap (below / errors.size.toFloat))
+
 /-- Accuracy as the quality of credences (author rulings 8.35, 8.36): 1 − Brier / 0.25, the Brier
     score of random guessing (credence 0.5); 0 is random, 1 perfect (generally unattainable); worse
     than random scores 0; no record, no accuracy. -/

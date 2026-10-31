@@ -15,7 +15,7 @@
   Covered (ℝ spec ↔ Float reference): `supply_delta`, `competition_efficiency`,
   `rolling_average`, `accumulate_capped`, `p_forgive`, `p_overreact`, `severity_score` at
   `defaultFrParams`, `Proposed.shapley` ↔ `shapley_ref`, `Proposed.shapley_sampled` ↔
-  `shapley_sampled_ref`. Computable specifications compared directly: `bounty_reward` (ℤ) ↔
+  `shapley_sampled_ref`, `Proposed.recordCredence` ↔ `record_credence_ref`. Computable specifications compared directly: `bounty_reward` (ℤ) ↔
   `advap_reward_ref` at share 1/10 and floor 1 (equal where the prevented harm is a multiple of 10,
   within 1 otherwise: the spec floors harm / 10), `upfront_payment` (ℤ, parts per million) ↔
   `Escrow_split_ref` (within 1, by flooring). Exact checks over ℚ: the mean of marginals over all
@@ -43,6 +43,7 @@ import Benefuture.Subgoals.Freedom
 import Benefuture.Axiology.Priorities
 import Benefuture.Proposed.OutcomeDistribution
 import Benefuture.Proposed.ShapleySampling
+import Benefuture.Proposed.RecordCredence
 import BenefutureReference
 
 namespace BenefutureTest
@@ -128,6 +129,31 @@ theorem sampledQ_spec {n : ℕ} (v : Finset (Fin n) → ℚ) (samples : List (Li
   unfold sampledQ Benefuture.Proposed.shapley_sampled Benefuture.Proposed.marginals
   push_cast [Rat.cast_list_sum]
   simp only [List.map_map, Function.comp_def, marginalsFromQ_spec]
+
+def recordWeightQ (v e : ℚ) : ℚ := if e < v then 1 else if e = v then 1 / 2 else 0
+def recordCredenceQ (cap v : ℚ) (errs : List ℚ) : ℚ :=
+  max (1 - cap) (min cap (if errs = [] then 1 / 2 else (errs.map (recordWeightQ v)).sum / errs.length))
+theorem recordCredenceQ_spec (cap v : ℚ) (errs : List ℚ) :
+    (recordCredenceQ cap v errs : ℝ) = Benefuture.Proposed.recordCredence cap v (errs.map (↑)) := by
+  have hw : ∀ e : ℚ, ((recordWeightQ v e : ℚ) : ℝ) = Benefuture.Proposed.recordWeight v e := by
+    intro e; unfold recordWeightQ Benefuture.Proposed.recordWeight
+    by_cases h1 : e < v
+    · have h1' : (e : ℝ) < v := by exact_mod_cast h1
+      simp [h1, h1']
+    · have h1' : ¬ (e : ℝ) < v := by exact_mod_cast h1
+      by_cases h2 : e = v
+      · subst h2; simp
+      · have h2' : (e : ℝ) ≠ v := by exact_mod_cast h2
+        simp [h1, h1', h2, h2']
+  have hs : ((errs.map (recordWeightQ v)).sum : ℝ) = Benefuture.Proposed.recordScore v (errs.map (↑)) := by
+    unfold Benefuture.Proposed.recordScore
+    induction errs with
+    | nil => simp
+    | cons e rest ih => simp [List.map_cons, List.sum_cons, hw, ih]
+  unfold recordCredenceQ Benefuture.Proposed.recordCredence
+  by_cases h : errs = []
+  · subst h; simp
+  · simp [h, hs, Rat.cast_max, Rat.cast_min]
 
 /-! ## Generated inputs -/
 
@@ -267,6 +293,17 @@ def runAll : IO Unit := do
     let v : Finset (Fin n) → ℚ := fun S => vs.getD (maskOf S) 0
     let all := (List.finRange n).permutations
     ((List.finRange n).all fun i => sampledQ v all i == shapleyQ n v i, g)
+  checkAll "record_credence" 400 12 fun g => Id.run do
+    let (k, g) := g.below 9
+    let (v, g) := g.dyadic
+    let mut g := g
+    let mut errs : List ℚ := []
+    for _ in [0:k] do
+      let (q, g') := g.dyadic
+      g := g'; errs := q :: errs
+    let (tie, g2) := g.below 3
+    let es := if tie == 0 then v :: errs else errs  -- ties counted half on both sides
+    (close (record_credence_ref (ratToFloat v) (es.map ratToFloat).toArray 0.99) (recordCredenceQ (99 / 100) v es), g2)
   -- Computable ℤ specifications.
   checkAll "bounty_reward vs advap_reward_ref" 500 10 fun g =>
     let (gain, g) := g.below 100000; let (harm, g) := g.below 100000

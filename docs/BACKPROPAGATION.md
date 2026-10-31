@@ -1601,3 +1601,32 @@ that has the same tail.
 Candidate homes: Implementation (Phase 1: records a leaf needs before its model backs a currency, and what
 happens to domains that never qualify), the success pattern (harm's peak against a reference with the
 same hazards).
+
+**8.66 [P] Finding and proposal: credence from the record, not from its root mean square error.**
+The economy battery on the calibrated build (results tagged ff30b17) finds side harm the one factor
+failing inside its realistic range, at 0.31 of it (`p_side` about 0.04, a complex domain's rate).
+Diagnosed: not harm's peak but a stall. `credence_ref` reads a model's credence from its predicted
+value over the root mean square of its recent errors; one heavy-tailed side effect (an error of 300
+against a typical 2) multiplies that spread about twentyfold for the whole window, every credence
+turns to a coin toss, accuracy (1 − Brier / 0.25) falls below the status bar, the leaves lose their
+currencies, and the StandCoin lane halts for want of funds (about 1,700 halted proposals, floors
+falling). With the Gaussian tail of the same median the same rate is harmless (accuracy 0.96).
+Proposal: a model's credence is the share of its own recent errors below its prediction, a tie
+counting half (Lean `record_credence_ref`, spec `Proposed.recordCredence`, proved: within
+[1 − cap, cap], rising with the prediction, moved by at most 1 / n by any one error). It is
+distribution-free, so calibrated by the model's own record, and tends to the normal credence when
+errors are normal (that rule becomes its limiting case). It is the candidate fix 8.58-c named
+("credence from the model's calibrated record"). Measured (`credence_rule = :record`, off by default):
+the battery's world keeps its currencies and growth at side-harm severity 0.31, 0.6 and 1.0 (margin
+0.52 to 0.96, no halts; the clean world unchanged); a robust spread (median absolute error) helps
+less and halts at 1.0. It also addresses part of 8.65 (a): over six seeds of the realistic world the
+currency regime takes hold without halts in four (none under the normal credence), and mean floor
+growth doubles (51 to 111). What remains of 8.65 (a) is irreducible outcome randomness: a perfectly
+calibrated model in a domain where 4% of actions turn out badly scores about 0.85, below the 0.9 bar
+(8.36 chose no ceiling adjustment).
+For the author: (1) adopt the record credence as the rule (L84, 8.36)? (2) should status bars allow
+for irreducible outcome randomness (for example accuracy relative to the best calibrated model of
+the domain's outcome rate), or stay absolute as 8.36 ruled?
+Gaming: a model cannot raise its credence without its errors falling below its predictions, which the
+open log scores; an extremist scaling its record (`sharp` < 1) is scored by the same Brier as before.
+Candidate homes: L84, 8.36, Measurement (credence from track record).

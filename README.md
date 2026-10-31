@@ -239,6 +239,14 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   itself (so "each share within ε × its marginal range with probability 1 − δ" rests on it), and
   that the mean over all n! orderings equals the subset form, which is checked exactly over ℚ for
   n ≤ 5 at build time ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
+- Credence from the record (`Benefuture.Proposed.RecordCredence`, [P]; BACKPROPAGATION 8.66): a
+  model's credence as the share of its recent errors below its prediction, ties counting half, stays
+  within [1 − cap, cap] ([`recordCredence_bounds`](Benefuture/Proposed/RecordCredence.lean)), rises
+  with the prediction ([`recordScore_mono`](Benefuture/Proposed/RecordCredence.lean)), and is moved
+  by at most 1 / n over a record of n by any one error, however large
+  ([`recordCredence_one_error`](Benefuture/Proposed/RecordCredence.lean)); the Float reference
+  (`record_credence_ref`) is checked against its ℚ oracle at build time
+  ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
 - Paying positive shares and penalising negative ones distributes exactly the sum of the shares
   ([`sides_sum`](Benefuture/Proposed/OutcomeDistribution.lean)), and each paid contributor's share of its side lies in [0, 1]
   ([`paid_share_in_unit`](Benefuture/Proposed/OutcomeDistribution.lean)).
@@ -629,7 +637,13 @@ Governance and thresholds
   best-of-eight takeover on 10 records rewards a model stating half its uncertainty (16.4% against
   7.1% per honest equal) and stops doing so on full windows; challengers now compete only on a full
   window (8.58-b). In the economy every takeover by an equal-skill challenger is an extremist's
-  because honest credences are underconfident there (8.58-c, open). *Reputation attacks* (Hoffman,
+  because honest credences are underconfident there (8.58-c, open). *Heavy-tailed side harm*: at a
+  complex domain's rate (`p_side` about 0.04 to 0.1) the normal credence over a record's RMS error
+  turns to a coin toss after one large side effect, the domains lose their currencies and the economy
+  stalls (the economy battery's one failure inside a realistic range); credence from the record keeps
+  the currencies and the growth, and in the realistic world lets the currency regime take hold in four
+  seeds of six instead of none ([sim/test/calibrated_tests.jl](sim/test/calibrated_tests.jl); 8.66, [P],
+  off by default). *Reputation attacks* (Hoffman,
   Zage & Nita-Rotaru 2009): identity binding (Lean `binding_admits_ref`) links every whitewashing
   attempt and keeps the domain's model as without (accuracy 0.995 against 0.941 unbound); slandering
   convicts no one and charges the slanderer; on-off deceit defeats the track record and takes a

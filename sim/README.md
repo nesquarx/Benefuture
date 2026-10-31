@@ -546,8 +546,12 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   ranges (signal noise 2–6, ability scatter 0.5–1.5, hidden outcomes 0.7–0.1, delegation 0–0.4): no
   factor fails alone within twice its realistic top and no screened world fails; total-order indices
   ability scatter 0.71, signal noise 0.49, collusion 0.36, local noise 0.26, delegation 0.21, hidden
-  outcomes 0.17, loyalty 0.06 (first-order intervals too wide to read at 64 rows). The economy's run
-  on the calibrated build is under way). Economy: alone, only execution (1.40) and side harm (1.31) fail within twice their
+  outcomes 0.17, loyalty 0.06 (first-order intervals too wide to read at 64 rows). Economy on the
+  calibrated build, ff30b17, its screening and rays reproduced exactly on fd11d5a: 8% of 64 screened
+  worlds fail; alone, side harm fails at 0.31 of its realistic top, markers at 1.35, execution at
+  1.65, model error at 1.94, the rest not within 2; the side-harm boundary is a stall of the
+  currencies under the normal credence, removed by the record credence (8.66); its continuous
+  section is running on e85dc6d). Economy on 26b55f8: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
@@ -775,7 +779,11 @@ honest equal ever takes over, and every takeover is an extremist's. That is a ca
 not the rank rule (8.58-c): honest credences (`credence_ref`, predicted value over the record's RMS
 error, no prior) are underconfident in a domain whose outcomes are mostly positive (credences 0.7–0.9
 come true 100% of the time, 0.3–0.7 in 67–100%), so a model stating half its uncertainty is better
-calibrated and the proper score rightly prefers it.
+calibrated and the proper score rightly prefers it. The candidate fix, credence from the record
+(`credence_rule = :record`, [P], off by default; Lean `record_credence_ref`: the share of the model's
+recent errors below its prediction, ties counting half), is calibrated by construction and moved by
+at most 1 / n by any one error; it removes the economy's side-harm stall and half the seed
+dependence of 8.65 (a) (8.66; `sim/test/calibrated_tests.jl`).
 
 **Reputation attacks** (Hoffman, Zage & Nita-Rotaru 2009; Cheng & Friedman 2005). Six agents at
 skill 0.6, 300 steps, 3 seeds.
@@ -1187,6 +1195,7 @@ for removal.
 | Forks dividing the base vote | Ruled | 8.34 (for now); `fork_rule` |
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |
+| Credence from the record (`record_credence_ref`, `credence_rule = :record`) | Proposed [P], off by default | 8.66, 8.58-c; replaces the normal credence over the record's RMS error, its limiting case; no threshold |
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.57-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
 | Outcomes with more than 62 contributors fall to traversal | Introduced (bound) | coalitions are 62-bit masks in `shapley_shares` |

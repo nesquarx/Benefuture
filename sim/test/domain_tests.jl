@@ -136,3 +136,27 @@ end
     @test_throws ArgumentError accuracy(0.5)
     @test_throws ArgumentError scarcity_cost(1.0, 10.0, 0.0)
 end
+
+# Credence from the record ([P], finding 8.58-c and the side-harm boundary): the share of the
+# model's past value errors below its prediction (the true value is the prediction less the error),
+# ties counting half, within [1 − cap, cap]; the normal credence over the RMS error is the limiting
+# case of normal errors.
+@testset "Record credence: acceptance" begin
+    @test record_credence(0.5, [0.1, 0.2, 0.3, 0.7, 0.9]) ≈ 0.6
+    @test record_credence(0.3, [0.1, 0.3, 0.5, 0.7]) ≈ 0.375          # a tie counts half
+    @test record_credence(9.0, [0.1, 0.2]; cap = 0.99) == 0.99 && record_credence(-9.0, [0.1, 0.2]; cap = 0.99) ≈ 0.01
+    @test record_credence(1.0, Float64[]) == 0.5                        # no record: a coin toss
+    errs = 0.7 .* randn(Xoshiro(3), 20_000)                             # normal errors: the old rule's case
+    @test all(abs(record_credence(v, errs) - credence(v, 0.7)) < 0.01 for v in (-1.0, -0.3, 0.0, 0.4, 1.2))
+end
+@testset "Record credence: adversarial and edge cases" begin
+    base = collect(range(-1, 1; length = 99))
+    hit = [base; 300.0]                                                 # one heavy-tailed side effect
+    @test abs(record_credence(0.5, hit) - record_credence(0.5, base)) <= 1 / 99
+    rms(e) = sqrt(sum(abs2, e) / length(e))
+    @test credence(0.5, rms(base)) > 0.75 && credence(0.5, rms(hit)) < 0.52   # counterexample: the RMS rule collapses to a coin toss
+    @test issorted([record_credence(v, base) for v in -2:0.1:2])        # monotone in the prediction
+    @test_throws ArgumentError record_credence(NaN, base)
+    @test_throws ArgumentError record_credence(0.0, [0.1, Inf])
+    @test_throws ArgumentError record_credence(0.0, base; cap = 0.4)
+end

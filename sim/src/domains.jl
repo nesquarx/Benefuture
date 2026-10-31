@@ -104,6 +104,19 @@ function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
 end
 
 """
+    record_credence(predicted, errors; cap = 0.99) -> probability
+
+A model's credence from its record (Lean `record_credence_ref`; [P], finding 8.58-c): the share of
+its past value errors below its prediction, ties counting half, within [1 − `cap`, `cap`]; no record
+is a coin toss. The normal `credence` over the errors' spread is its limiting case.
+"""
+function record_credence(predicted::Real, errors; cap::Real = 0.99)
+    check(isfinite(predicted) && all(isfinite, errors), "a finite prediction and finite errors")
+    check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
+    ccall(sym(:bf_record_credence), Float64, (Float64, Ptr{Cvoid}, Float64), predicted, floatarray(collect(Float64, errors)), cap)
+end
+
+"""
     credence_accuracy(credences, outcomes) -> accuracy in [0, 1]
 
 Accuracy as the quality of credences (Lean `credence_accuracy_ref`): 1 − Brier / 0.25; 0 is random
