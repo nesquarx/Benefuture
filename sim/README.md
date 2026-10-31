@@ -936,17 +936,21 @@ ruled by the author (source tags, below). Deliberation is off by default.
 
 The real test is contention (author, on 8.44): experts divided, voters hearing all sides and judging
 by the network's information handling and their own limited expertise, with diversity trying the
-option not chosen. The network's ContentionMap (L133) surfaces the most reputable sources on each
-side of a question. The top 40% of each domain's experts split, alternating by rank, into two camps of
+option not chosen. The network's ContentionMap (L133) exposes every source on both sides, weighed by
+record, and people take advice at realistic rates (8.63). The top 40% of each domain's experts split, alternating by rank, into two camps of
 equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest systematic bias of
 1), so on contested questions (true value between 0 and 1) they disagree. 1,600 decisions, 4 seeds:
 
 | Voters | Contested decisions right (first 400, last 400) | All decisions right |
 |---|---|---|
 | Neither deliberation nor diversity | 75.8%, 73.7% | 89.8% |
-| Diversity (split trials) | 80.7%, 81.1% | 92.0% |
-| Deliberation through information handling | 74.4%, 78.6% | 78.9% |
-| Both | 86.7%, 86.6% | 89.5% |
+| Diversity (split trials) | 80.7%, 81.1% | 89.6% |
+| Deliberation through information handling | 77.9%, 81.2% | 91.5% |
+| Both | 82.6%, 87.7% | 91.1% |
+| Both, everyone deferring (limiting case) | 83.9%, 89.3% | 89.0% |
+
+(Re-measured with the full map and realistic advice taking; contested decisions right over all 1,600:
+neither 74.8%, trials 81.0%, deliberation 81.6%, both 85.7%.)
 
 On contested questions, hearing both sides weighed by their records, with trials revealing
 outcomes, finds the performant option far more often; deliberation alone hones in slowly.

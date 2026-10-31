@@ -520,8 +520,8 @@ Governance and thresholds
   laundering by omission is flagged by an echo audit in at least three
   of four launderers and under one in twenty honest voters. Where experts are
   divided between two camps, one leaning by an honest bias, hearing both sides with diversity's
-  trials finds the performant option on contested questions 86.7% of the time, against 80.7% with
-  trials alone and 75.8% with neither
+  trials finds the performant option on contested questions 85.7% of the time, against 81.0% with
+  trials alone and 74.8% with neither
   ([sim/test/m5_tests.jl](sim/test/m5_tests.jl), [sim/README.md, deliberation](sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - Liquid-democracy pathologies against direct voting (toy, one domain, 101 voters, 6 seeds; direct
   98.7% right): each pathology is reproduced with uncapped, unaudited delegation (bad delegation

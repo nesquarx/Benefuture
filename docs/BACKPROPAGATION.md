@@ -1497,6 +1497,8 @@ that depend on it are withdrawn. With every source exposed and realistic advice 
 deliberation decides as well as voters alone (92.8% both, about one vote in twenty changed); where
 everyone defers, 90.8%, and over three untagged rounds 86.6%, restored to 90.8% by tags
 (`sim/README.md`, source tags). Most of the first echo cost (83.8%) came from the narrow map.
+Contention re-measured likewise: contested decisions right 85.7% with deliberation and trials, 81.0%
+with trials alone, 74.8% with neither; all decisions 91.1%.
 
 **8.60 Do models take their borrowed share? (ruled below).** Models do not vote (8.42.2:
 they inform votes, as expert commentary does). With tags, a voter's share borrowed from models
