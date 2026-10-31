@@ -8,11 +8,14 @@ isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # t
 m3d(; work = [1, 3], kw...) = m3c(; work, transactions = true, kw...)
 
 @testset "M3d: acceptance" begin
-    # Many transactions a step, where G alone chose one.
-    tr = run_m3c(m3d(); seed = 1)
-    g = run_m3c(m3c(work = [1, 3]); seed = 1)
-    per_step = [count(==(s), tr.chosen_step) for s in unique(tr.chosen_step)]
-    @test maximum(per_step) > 1 && length(tr.chosen_step) > 2 * length(g.chosen_step)
+    # Many transactions a step, where G alone chose one: in every seed. How many in all depends on whether
+    # the domains' currencies qualify, which is bistable under the calibrated noise (8.65): over seeds 1-5
+    # on Linux four reach about seven times the menu's count and one (seed 4) stalls at 1.9; a 1-ULP libm
+    # difference moves single seeds between the regimes across platforms, so the count is read over seeds.
+    runs = [(run_m3c(m3d(); seed), run_m3c(m3c(work = [1, 3]); seed)) for seed in 1:5]
+    @test all(maximum(count(==(s), tr.chosen_step) for s in unique(tr.chosen_step)) > 1 for (tr, _) in runs)
+    @test count(length(tr.chosen_step) > 2 * length(g.chosen_step) for (tr, g) in runs) >= 3
+    g = runs[1][2]  # the menu rung's run at seed 1, compared below
     # Limiting case (8.33: no real world is exact): with exact models, markers and accounting,
     # sequential screening keeps every floor from falling.
     exact = m3d(σ_leaf = 0.0, σ_branch = 0.0, σ_coarse = 0.0, marker_σ = 0.0, bias_σ = 0.0, cost_σ = 0.0, regen_σ = 0.0,

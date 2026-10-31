@@ -29,7 +29,10 @@ end
     # (The sign of one run's total is seed-specific under noisy markers and heavy hazards, so this is a
     # controlled world; the guardian's skill is read over seeds under realistic defaults in calibrated_tests.jl.)
     ctl = run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4)); seed = 1)
-    @test 0 < ctl.prevention_records <= ctl.prevented && ctl.prevention_measured > 0
+    # One seed's total has no reliable sign even here (seeds 1-8 on Linux: -50 to +35, mean -1.5), and a
+    # 1-ULP difference in libm moves it across platforms; its relation to skill is read over seeds in
+    # calibrated_tests.jl. What holds per seed is paired below: the same world with a shock, or larger hazards.
+    @test 0 < ctl.prevention_records <= ctl.prevented
     @test run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4), hazard_size = 5.0); seed = 1).prevention_measured == ctl.prevention_measured
     shocked = run_m3c(hz([1, 1, 1, 1]; LEGACY..., p_informed = 1.0, diligence = ones(4), p_shock = 1.0, shock_size = 0.2); seed = 1)
     @test shocked.shocks > 0 && shocked.prevention_measured < ctl.prevention_measured
