@@ -227,7 +227,7 @@ onoff_events = [shock(:breakthrough; step = s, duration = 25, size = -1.0, targe
 onoff(; kw...) = ww(; events = onoff_events, on_off = 25, kw...)
 
 @testset "On-off oscillation in the economy" begin
-    seeds = 1:3
+    seeds = 1:6   # by precision: three seeds cannot carry the effects below (CLAUDE.md, significance testing)
     peers(tr) = mean(selected(tr, a) for a in 1:5)
     honest = [run_m3c(ww(deceit = Float64[]); seed) for seed in seeds]
     constant = [run_m3c(onoff(on_off = 0); seed) for seed in seeds]
@@ -239,22 +239,21 @@ onoff(; kw...) = ww(; events = onoff_events, on_off = 25, kw...)
     @test all(ns(tr, 6) > maximum(ns(tr, a) for a in 1:5) for tr in onoffs)
     # Constant deceit is learnt by the track record (8.29): the bad phases' harm is predicted honestly
     # and rejected, and the peers work as in an honest world.
-    @test mean(peers.(constant)) > 0.9 * mean(peers.(honest))
+    @test equivalent(peers.(constant) .- peers.(honest); margin = 0.1 * mean(peers.(honest))).equivalent
     # Finding (8.58-d): deceiving only in alternate phases defeats the 20-action track record. Each
     # bad phase fools the models afresh, the leaf model falls below its status bar and the domain's
     # currency goes down for everyone (8.37's mechanism, now in a capable domain).
     harm(tr) = [sum(min(x, 0.0) for (i, x) in enumerate(tr.exec_true) if tr.exec_agent[i] == 6 && s <= tr.exec_step[i] < s + 25; init = 0.0)
                 for s in 26:50:300]
     @test all(count(<(0), harm(tr)) >= 2 for tr in onoffs)
-    # (under the record credence, the rule, the domain goes down in two seeds of three, peers 50 and 58
-    # against about 325, and recovers in the third; under the normal credence in all three, 59 each)
-    @test count(peers(tr) < 0.3 * mean(peers.(constant)) for tr in onoffs) >= 2
+    # (an effect against constant deceit, peers lower by 228 over 6 seeds; the domain recovers in one seed)
+    @test paired_effect(peers.(onoffs) .- peers.(constant); direction = :down).significant
     # AdvAp establishes the deception, but its repair, estimated from all the actor's records, honest
     # phases included, understates the overstatement and mostly does not restore the domain. With the
-    # 8.76 clawback (liabilities 184-406 against 21-39 before) the domain recovers in one seed of three
-    # (peers 301 against 60 before) and stays down in the other two.
+    # 8.76 clawback (liabilities 184-406 against 21-39 before) the domain recovers in two seeds of six
+    # (peers about 300) and stays down in the rest: peers lower than under constant deceit by 184 (an effect).
     @test all(tr.advap_established > 0 for tr in audited)
-    @test count(peers(tr) < 0.3 * mean(peers.(constant)) for tr in audited) >= 2
+    @test paired_effect(peers.(audited) .- peers.(constant); direction = :down).significant
 end
 
 @testset "Slandering against AdvAp's audit" begin
@@ -266,10 +265,13 @@ end
                             advap = true, kw...)
     calm = run_m3c(sl(); seed = 1)
     slandered = run_m3c(sl(frivolous = [1.0, 0, 0, 0, 0, 0], slander = [2, 0, 0, 0, 0, 0]); seed = 1)
-    @test slandered.advap_reports >= 250 && slandered.advap_established == calm.advap_established == 0
-    @test abs(sum(slandered.balance[2, :]) - sum(calm.balance[2, :])) < 0.1 * abs(sum(calm.balance[2, :]))
+    # Per run (the rule): the reports are filed and the frivolous pattern is charged per report.
+    @test slandered.advap_reports >= 250
     @test slandered.advap_penalties > 0.9 * (slandered.advap_reports - calm.advap_reports - 5 * 3) * 1.0
-    @test sum(slandered.balance[1, :]) < sum(calm.balance[1, :])
+    # Over seeds (8.81, open): the victim's standing against the calm world is not shown unharmed
+    # (-347, interval -1,049 to +354 over 8 paired seeds, margin 284), false convictions occur at the
+    # false-trace rate (one seed of 8, Wilson interval 0.02-0.48), and the slanderer's loss (-526) is not
+    # significant; one seed's comparison is chaotic (the slanderer's penalties move the trajectory).
     # Counterexample: without the frivolous-pattern charge the slanderer floods audits at the
     # commons' cost and pays nothing.
     free = run_m3c(sl(frivolous = [1.0, 0, 0, 0, 0, 0], slander = [2, 0, 0, 0, 0, 0], frivolous_threshold = 1e9); seed = 1)

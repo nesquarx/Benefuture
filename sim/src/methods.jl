@@ -328,6 +328,56 @@ function seeds_until_stable(f; tol::Real, min_seeds::Integer = 3, max_seeds::Int
     (mean = mean(vals), se = se, n = n, values = vals, seeds = seeds[1:n], stable = se * t_inflation(n - 1) <= tol)
 end
 
+# --- Significance testing of claims (CLAUDE.md, Verification) -----------------------------------
+
+"""
+    paired_effect(d; z = 2, direction = :up) -> (mean, se, n, z, significant)
+
+An effect read from paired differences `d` (one arm less the other, seed by seed on shared seeds):
+significant when its mean beats `z` standard errors in `direction` (:up or :down), `z` inflated by
+Student's t for few seeds. The comparison is Benefuture's own significance rule (Lean
+`select_candidate_ref`, the effect as a candidate against an incumbent at zero).
+"""
+function paired_effect(d; z::Real = 2.0, direction::Symbol = :up)
+    n = length(d)
+    check(n >= 2 && all(isfinite, d) && z >= 0 && direction in (:up, :down), "at least two finite differences, z ≥ 0, direction :up or :down")
+    m, se = mean(d), std(d) / sqrt(n)
+    zt = z * t_inflation(n - 1)
+    sig = select_candidate([0.0, direction == :up ? m : -m], [0.0, se]; z = zt) == 2
+    (mean = m, se = se, n = n, z = zt, significant = sig)
+end
+
+"""
+    equivalent(d; margin, z = 2, side = :both) -> (mean, lo, hi, n, equivalent)
+
+A claim of no effect, shown, not assumed: the interval mean ± `z` standard errors (t-inflated) lies
+inside (−`margin`, `margin`) (two one-sided tests), or below `margin` with `side = :upper` (no gain
+beyond the margin). A noisy sample fails, since it could not have detected an effect of the margin.
+"""
+function equivalent(d; margin::Real, z::Real = 2.0, side::Symbol = :both)
+    n = length(d)
+    check(n >= 2 && all(isfinite, d) && margin > 0 && z >= 0 && side in (:both, :upper), "at least two finite differences, a positive margin, side :both or :upper")
+    m, se = mean(d), std(d) / sqrt(n)
+    zt = z * t_inflation(n - 1)
+    lo, hi = m - zt * se, m + zt * se
+    (mean = m, lo = lo, hi = hi, n = n, equivalent = side == :upper ? hi < margin : (-margin < lo && hi < margin))
+end
+
+"""
+    proportion_interval(k, n; z = 2) -> (p, lo, hi)
+
+A regime's frequency, `k` of `n` seeds, with its Wilson score interval: honest at small `n` and near 0
+or 1, so 'one seed of three' reads as the wide interval it is.
+"""
+function proportion_interval(k::Integer, n::Integer; z::Real = 2.0)
+    check(n >= 1 && 0 <= k <= n && z > 0, "0 ≤ k ≤ n, n ≥ 1, z positive")
+    p = k / n
+    c = 1 + z^2 / n
+    mid = (p + z^2 / (2n)) / c
+    half = z * sqrt(p * (1 - p) / n + z^2 / (4n^2)) / c
+    (p = p, lo = max(0.0, mid - half), hi = min(1.0, mid + half))
+end
+
 # --- Cross-entropy search ----------------------------------------------------------------------
 
 """

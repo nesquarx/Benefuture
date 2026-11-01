@@ -14,7 +14,9 @@ m3d(; work = [1, 3], kw...) = m3c(; work, transactions = true, kw...)
     # difference moves single seeds between the regimes across platforms, so the count is read over seeds.
     runs = [(run_m3c(m3d(); seed), run_m3c(m3c(work = [1, 3]); seed)) for seed in 1:5]
     @test all(maximum(count(==(s), tr.chosen_step) for s in unique(tr.chosen_step)) > 1 for (tr, _) in runs)
-    @test count(length(tr.chosen_step) > 2 * length(g.chosen_step) for (tr, g) in runs) >= 3
+    # Stated before measuring: concurrency at least doubles the work done (an effect on the log of
+    # transactions over twice the menu's count, paired by seed).
+    @test paired_effect([log(length(tr.chosen_step) / (2 * length(g.chosen_step))) for (tr, g) in runs]).significant
     g = runs[1][2]  # the menu rung's run at seed 1, compared below
     # Limiting case (8.33: no real world is exact): with exact models, markers and accounting,
     # sequential screening keeps every floor from falling.

@@ -212,3 +212,33 @@ end
     @test m0.sobol === nothing && m0.active === nothing && isempty(m0.active_boxes)
     @test_throws ArgumentError battery_methods(reading, names; rng, outputs = ["margin"], pool = pool[:, 1:2], sobol_n = 0, sobol_top = 1.0, active_budget = 0)
 end
+
+# Significance testing of simulation claims (CLAUDE.md, Verification): an effect by Benefuture's own
+# significance rule over paired differences (z combined standard errors, t-inflated); no effect by
+# equivalence within a stated margin, never mere non-significance; a regime as a proportion with its
+# Wilson interval.
+@testset "Methods: significance testing of claims" begin
+    rng = Xoshiro(5)
+    big = 1.0 .+ randn(rng, 30)                        # a real effect of 1 in unit noise
+    null = randn(rng, 30) .* 0.1                        # no effect, little noise
+    e = paired_effect(big)
+    @test e.significant && e.mean > 0 && e.n == 30
+    @test !paired_effect(null).significant
+    @test paired_effect(-big; direction = :down).significant && !paired_effect(-big).significant
+    # Few seeds: the same mean and spread clear the bar at 30 seeds, not at 3 (t-inflation).
+    few = [0.9, 1.6, 0.4]
+    @test !paired_effect(few; z = 2).significant && paired_effect(repeat(few, 10); z = 2).significant
+    # Equivalence: the null sample lies within ±0.2 with confidence; a noisy null does not show it
+    # (absence of evidence is not evidence of absence), nor does a real effect.
+    @test equivalent(null; margin = 0.2).equivalent
+    @test !equivalent(randn(rng, 4) .* 3; margin = 0.2).equivalent
+    @test !equivalent(big; margin = 0.2).equivalent
+    @test equivalent(null .- 5; margin = 0.2, side = :upper).equivalent   # one-sided: no gain beyond the margin
+    # Proportions: 19 of 20 has a Wilson interval inside (0.75, 1); 1 of 3 is too wide to call a regime.
+    pr = proportion_interval(19, 20)
+    @test 0.75 < pr.lo < pr.p < pr.hi <= 1
+    @test proportion_interval(1, 3).hi - proportion_interval(1, 3).lo > 0.6
+    @test_throws ArgumentError paired_effect([1.0])
+    @test_throws ArgumentError proportion_interval(4, 3)
+    @test_throws ArgumentError equivalent(null; margin = 0.0)
+end

@@ -23,14 +23,13 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     seeds = 1:6
     honest = [run_m3c(six(); seed) for seed in seeds]
     liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
-    # The liar's standing less its peers' mean, against the same gap with agent 6 honest, seed by seed
-    # (a ratio means nothing once harm burnt under 8.67 leaves balances below zero). Standing is the
-    # balance plus the overflow the agent directs (L103: BalOvflw ⇒ DirectedAutoInvest(S = E)); a charge
-    # on an agent at its accumulation threshold is paid out of that overflow, so balances alone hide it.
-    standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
-    gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
-    d = gap.(liar) .- gap.(honest)
-    @test mean(d) <= 2 * std(d) / sqrt(length(d))
+    # Standing is the balance plus the overflow the agent directs (L103: BalOvflw ⇒ DirectedAutoInvest(S
+    # = E)); a charge on an agent at its accumulation threshold is paid out of that overflow. Whether the
+    # liar's standing gains is not resolved in this marginal domain: +31 ± 35 over 24 seeds against a
+    # margin of 58 (5% of the peers' standing), about 160 seeds to settle either way (8.81). What the
+    # seeds show: its ledgers' negative share rises (an effect, CLAUDE.md significance testing).
+    ns(tr) = neg_share(sum(tr.h_pos_own[6, :]), sum(tr.h_neg_own[6, :]))
+    @test paired_effect(ns.(liar) .- ns.(honest)).significant
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) for l in liar)
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
@@ -78,12 +77,9 @@ end
     # deceiver is charged, which also covers the audits; deceit does not pay.
     @test all(l.advap_established > 0 for l in liar)
     @test all(l.advap_rewards > 0 && l.advap_liability >= l.advap_rewards for l in liar)
-    # Deceit does not pay: measured as standing (balance plus directed overflow, L103), not balance
-    # alone (8.74, a measurement error, corrected).
-    standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
-    gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
-    d = gap.(liar) .- gap.(honest)
-    @test mean(d) <= 2 * std(d) / sqrt(length(d))
+    # Whether deceit pays is read over 12 seeds in the clawback testset below, measured as standing
+    # (balance plus directed overflow, L103; 8.74 corrected): three seeds cannot show it either way
+    # (upper bound 1,411 against a margin of 297).
     @test mean(peers.(liar)) > 0.9 * mean(peers.(honest))
     # The books balance with AdvAp's flows.
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) + l.advap_net
@@ -274,9 +270,8 @@ end
 
 # The reporter's schedule (author ruling 8.76): a deceiver reported by someone else has every exploit
 # clawed back, on top of the reporter's reward and the audit; its reputation is charged the same, so
-# its recorded credence falls. In the capable domain of 8.74 (12 seeds, AdvAp on), deceit leaves the
-# liar's standing (balance plus directed overflow, L103) behind the same agent honest, its ledgers'
-# negative share above.
+# its recorded credence falls. In the capable domain of 8.74 (12 seeds, AdvAp on), deceit gains the
+# liar no standing (balance plus directed overflow, L103) and raises its ledgers' negative share.
 @testset "M6 deceit under the clawback schedule (8.76)" begin
     sixty(; kw...) = six(; skill = 0.6, advap = true, kw...)
     standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
@@ -285,7 +280,10 @@ end
     honest = [run_m3c(sixty(); seed) for seed in 1:12]
     liar = [run_m3c(sixty(deceit = fooled); seed) for seed in 1:12]
     d = gap.(liar) .- gap.(honest)
-    # Measured: -267 ± 174 in this capable domain (leaf accuracy 0.98); -133 ± 54 in the marginal one.
-    @test mean(d) < 0                                          # the liar ends behind
-    @test mean(ns.(liar)) > mean(ns.(honest))                  # and its record shows it
+    # Stated before measuring: no gain beyond 5% of the peers' standing (equivalence, one-sided) and a
+    # rise in the liar's negative share (effect). Measured: gain -267, upper bound 124 against a margin
+    # of 291; the liar ends behind on average, not significantly so.
+    margin = 0.05 * mean(mean(standing(tr, k) for k in 1:5) for tr in honest)
+    @test equivalent(d; margin, side = :upper).equivalent      # deceit does not pay
+    @test paired_effect(ns.(liar) .- ns.(honest)).significant   # and its record shows it
 end

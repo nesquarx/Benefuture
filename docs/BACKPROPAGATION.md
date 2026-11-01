@@ -1944,3 +1944,16 @@ accumulate alongside the others; the cash-in needs an agent that builds a record
 enters another, which the simulation cannot yet express (an agent's focus is fixed). Probe to build,
 red on the outcome first: a focus that changes at a step; the entrant's credences and upfront in the new
 domain against a newcomer's. Candidate homes: L84 (escrow by credence), Measurement, Reputation.
+
+**8.81 Findings under the significance-testing standard (open).** Claims restated by the standard
+(CLAUDE.md, Verification) that the seeds do not support: (a) in a marginal domain (skill 0.3) whether
+deceit gains standing is unresolved: +31 ± 35 over 24 paired seeds against a margin of 58 (5% of the
+peers' standing), about 160 seeds to settle either way; the liar's ledgers' negative share does rise
+(significant). In the capable domain no gain is shown (12 seeds, upper bound 124 against a margin of
+291). (b) Slander against AdvAp's audit: the victim's standing is not shown unharmed (−347, interval
+−1,049 to +354 over 8 seeds, margin 284), false convictions occur at the false-trace rate under the
+calibrated defaults (one seed of 8), and the slanderer's loss (−526) is not significant. The single-seed
+assertions that had stood for these claims were luck. Supported at 6 seeds: constant deceit leaves peers
+equivalent to an honest world; on-off deceit lowers them (−228); AdvAp under on-off still leaves them
+lower (−184). Next for (b): whether a victim's audits should cost it anything at all (a slander that
+triggers audits moves the victim's trajectory), and the false-trace rate's source (R-task).
