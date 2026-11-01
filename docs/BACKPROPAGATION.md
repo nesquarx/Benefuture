@@ -1896,3 +1896,64 @@ it is not needed. What remains true and open from 8.77: overflow is per currency
 relevance, so standing in balances is distributed across currencies and moves with recent work; whether
 directed overflow should earn reputation by its outcomes is 8.51's ruling (it earns through standard
 channels if it does good), which the simulation does not yet model.
+
+**8.78 Author clarification: deceit costs reputation in the domain of transactions itself.** Deceptive
+behaviour earns negative reputation for contracting, promises and proposals in general, not only in the
+domain where it happened: someone who has lied repeatedly in different domains already faces high
+escrow in the domain of transactions itself, wherever it next transacts. In the simulation today: an
+actor's credence is read from its own error record pooled across every domain (`actor_err`; promise
+against delivery, scored at settlement), and the escrow ratchet reads its ledgers' negative share over
+all domains (`ledger_neg_share`), so an overstatement anywhere already lowers its credence and raises its
+escrow everywhere, and an established deception (8.76's clawback, charged to the ledgers) raises it
+further. What is missing: the pooled record is a world-level shortcut, not a classified domain; in the
+corpus's terms every transaction would carry a share in a transactions (promising, contracting) domain,
+overlapping every leaf, whose prediction accuracy (8.69) is the actor's record of promises kept, and
+escrow (L84) would read it. Also untested: spillover itself, since the simulation's deceit fools every
+model at once; a deceiver confined to one domain is needed to show its escrow rising in another.
+Candidate homes: Domain (a transactions domain overlapping all), Reputation, L84 (escrow reads promise
+accuracy), Benefuture currency (ratcheting escrow).
+
+**8.79 Author clarification: prediction accuracy is per domain; guard against halos and horns.** An
+expert baker can say to the minute when the bread comes out perfect and cannot say where a frisbee
+will turn. Design that follows (with 8.69 and 8.78): split the Brier score (Murphy 1973: reliability,
+resolution, uncertainty). Resolution, telling good outcomes from bad, is skill: it stays in its domain
+and travels only through domain overlap μ. What travels across domains, into the transactions domain of
+8.78, is the honesty of claims: systematic overstatement, the mean signed gap between what was claimed
+and what was delivered, and miscalibration of stated confidence (claiming 0.99 outside one's field). A
+baker guessing at frisbees errs widely but without a lean, and stating low confidence outside its field
+costs it nothing; a deceiver's errors lean one way in every domain. Measured in the simulation today
+(an agent skilled in one leaf, poor in another, against specialists, 3 seeds): no halo or horn, its
+credence in its strong domain matching the specialists' (0.99 against 0.98 to 0.99) and lower in its weak
+one where good outcomes are rarer (0.76 to 0.97), because the pooled record holds the models' errors on
+its work, which do not depend on its skill. The risk arrives with people's own predictions (8.69): their
+skill must be scored per domain, and only the bias of their claims pooled. Candidate homes: Measurement
+(accuracy decomposed), Reputation, the transactions domain of 8.78.
+
+**8.80 Author clarification: accuracy earned in one domain must not be cashed in another.** Building
+high accuracy in one's own expertise and then cashing it in as high upfront payment in a different domain
+should not happen: a good record as a predictor in general (the domain of predictions, 8.78) helps, but
+prediction accuracy in the new domain is untested and must be treated as unknown. In the simulation an
+actor's credence is read from its error record pooled across domains once it holds five entries
+(`actor_err`), so its first credences in a new domain borrow the record it built elsewhere. Rule to
+build: an actor's credence in a domain comes from its record in that domain (each model's record on that
+actor); below the minimum record it is unknown, read from the domain model's general record; only the
+honesty of its claims (8.79: signed overstatement, calibration of stated confidence) carries across.
+Measured so far: in a world where a mixed agent works in both domains from the start, its credences in
+its weak domain are not detectably overconfident (0.05 ± 0.10, 6 seeds), because its records there
+accumulate alongside the others; the cash-in needs an agent that builds a record in one domain and then
+enters another, which the simulation cannot yet express (an agent's focus is fixed). Probe to build,
+red on the outcome first: a focus that changes at a step; the entrant's credences and upfront in the new
+domain against a newcomer's. Candidate homes: L84 (escrow by credence), Measurement, Reputation.
+
+**8.81 Findings under the significance-testing standard (open).** Claims restated by the standard
+(CLAUDE.md, Verification) that the seeds do not support: (a) in a marginal domain (skill 0.3) whether
+deceit gains standing is unresolved: +31 ± 35 over 24 paired seeds against a margin of 58 (5% of the
+peers' standing), about 160 seeds to settle either way; the liar's ledgers' negative share does rise
+(significant). In the capable domain no gain is shown (12 seeds, upper bound 124 against a margin of
+291). (b) Slander against AdvAp's audit: the victim's standing is not shown unharmed (−347, interval
+−1,049 to +354 over 8 seeds, margin 284), false convictions occur at the false-trace rate under the
+calibrated defaults (one seed of 8), and the slanderer's loss (−526) is not significant. The single-seed
+assertions that had stood for these claims were luck. Supported at 6 seeds: constant deceit leaves peers
+equivalent to an honest world; on-off deceit lowers them (−228); AdvAp under on-off still leaves them
+lower (−184). Next for (b): whether a victim's audits should cost it anything at all (a slander that
+triggers audits moves the victim's trajectory), and the false-trace rate's source (R-task).
