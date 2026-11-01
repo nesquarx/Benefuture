@@ -1816,3 +1816,16 @@ before its test was restated:
 - the supply probe's tiny world sits on the novel bar's edge (accuracy 0.65 to 0.89 under both rules),
   so whether its work is priced depends on the early record; its harm counterexample now reads the burn
   per lane action.
+
+**8.74 Finding (open): deceit pays a little in a capable domain.** With every model fooled upward by
+one agent (deceit 1, skill 0.6, AdvAp on), the liar's balance gap over its peers, against the same
+world with it honest, gains +65 ± 17 under the normal credence (12 seeds, t = 3.8) and +59 ± 27 under
+the record credence (t = 2.2), positive in 9 of 12 seeds: about 7% of its final balance, 1% of what it
+was paid over the run. Earlier three-seed tests passed by sampling. Ruled out: volume (the liar's share
+of executed actions is unchanged, 0.164 against 0.165, and its value per action slightly lower) and
+upfront payments (escrow settles each action to its measured value). Seen: every agent ends richer in
+the liar's world (peers +55, the liar +114) and less is skimmed to reinvestment (28,889 against
+29,648), so the overflow threshold, which reads reputation, is the leading suspect; per-agent overflow
+is not traced yet. Next: trace overflow per agent and test the hypothesis before any change.
+Also measured: on-off deceit (8.58-d) still takes a capable domain's currency down in two seeds of
+three under the record credence (peers 50 and 58 against about 325), recovering in the third.
