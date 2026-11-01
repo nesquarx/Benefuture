@@ -1912,3 +1912,19 @@ escrow (L84) would read it. Also untested: spillover itself, since the simulatio
 model at once; a deceiver confined to one domain is needed to show its escrow rising in another.
 Candidate homes: Domain (a transactions domain overlapping all), Reputation, L84 (escrow reads promise
 accuracy), Benefuture currency (ratcheting escrow).
+
+**8.79 Author clarification: prediction accuracy is per domain; guard against halos and horns.** An
+expert baker can say to the minute when the bread comes out perfect and cannot say where a frisbee
+will turn. Design that follows (with 8.69 and 8.78): split the Brier score (Murphy 1973: reliability,
+resolution, uncertainty). Resolution, telling good outcomes from bad, is skill: it stays in its domain
+and travels only through domain overlap μ. What travels across domains, into the transactions domain of
+8.78, is the honesty of claims: systematic overstatement, the mean signed gap between what was claimed
+and what was delivered, and miscalibration of stated confidence (claiming 0.99 outside one's field). A
+baker guessing at frisbees errs widely but without a lean, and stating low confidence outside its field
+costs it nothing; a deceiver's errors lean one way in every domain. Measured in the simulation today
+(an agent skilled in one leaf, poor in another, against specialists, 3 seeds): no halo or horn, its
+credence in its strong domain matching the specialists' (0.99 against 0.98 to 0.99) and lower in its weak
+one where good outcomes are rarer (0.76 to 0.97), because the pooled record holds the models' errors on
+its work, which do not depend on its skill. The risk arrives with people's own predictions (8.69): their
+skill must be scored per domain, and only the bias of their claims pooled. Candidate homes: Measurement
+(accuracy decomposed), Reputation, the transactions domain of 8.78.
