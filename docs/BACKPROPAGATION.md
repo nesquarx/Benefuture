@@ -1928,3 +1928,19 @@ one where good outcomes are rarer (0.76 to 0.97), because the pooled record hold
 its work, which do not depend on its skill. The risk arrives with people's own predictions (8.69): their
 skill must be scored per domain, and only the bias of their claims pooled. Candidate homes: Measurement
 (accuracy decomposed), Reputation, the transactions domain of 8.78.
+
+**8.80 Author clarification: accuracy earned in one domain must not be cashed in another.** Building
+high accuracy in one's own expertise and then cashing it in as high upfront payment in a different domain
+should not happen: a good record as a predictor in general (the domain of predictions, 8.78) helps, but
+prediction accuracy in the new domain is untested and must be treated as unknown. In the simulation an
+actor's credence is read from its error record pooled across domains once it holds five entries
+(`actor_err`), so its first credences in a new domain borrow the record it built elsewhere. Rule to
+build: an actor's credence in a domain comes from its record in that domain (each model's record on that
+actor); below the minimum record it is unknown, read from the domain model's general record; only the
+honesty of its claims (8.79: signed overstatement, calibration of stated confidence) carries across.
+Measured so far: in a world where a mixed agent works in both domains from the start, its credences in
+its weak domain are not detectably overconfident (0.05 ± 0.10, 6 seeds), because its records there
+accumulate alongside the others; the cash-in needs an agent that builds a record in one domain and then
+enters another, which the simulation cannot yet express (an agent's focus is fixed). Probe to build,
+red on the outcome first: a focus that changes at a step; the entrant's credences and upfront in the new
+domain against a newcomer's. Candidate homes: L84 (escrow by credence), Measurement, Reputation.
