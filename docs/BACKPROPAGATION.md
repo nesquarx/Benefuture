@@ -1789,3 +1789,11 @@ top model dips is priced by any other qualified model of the domain first, then 
 qualified models, then at lower credence, and only then by model-free StandCoin; every qualified
 model of a domain backs its own currency, with the quotes composed as L86 composes currencies.
 Candidate homes: L82 (`C ↔ MM_j ∈ TopModels(MM_Acc > Th, Dn_i)`, already plural), L86, Benefuture currency.
+8.72 ruling (author) on preliminary identities: a preliminary identity may make safe transactions
+and anonymous Technology Network calls (generic, differentially private queries, L132), but not
+specific ones, because its inoculation status (information-hazard gating through education, L133
+`preReq(Ed)`) is not established; it will also need to demonstrate Benefuture daily-use knowledge by
+passing tests and courses. Voting before full binding was not ruled; the simulation withholds the
+base vote until binding (the sybil-safe reading) and marks it as an assumption. "Safe transactions"
+need a governed bound (a cap on value or on harm at risk). Candidate homes: L18, L132–L133, Technology
+Network (privacy tiers, educational gating), Education.
