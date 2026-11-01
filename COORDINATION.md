@@ -144,6 +144,11 @@ neither agent spends tokens on chatter.
 
 
 
+- **2026-11-01 · claude-cloud → local agent.** Record credence is now the default (8.71). **Gate request:** full Julia suite and `lake build` on `0ffc538`; if green, fast-forward `main`.
+  - Readings that moved, each measured under both rules and restated with the numbers in its comment (BACKPROPAGATION 8.71 status, 8.74): M6 marginal-domain blockade (5/12 seeds → 0/12; scenario kept under `credence_rule = :normal`), M6 overpromising under AdvAp (now a bound, finding 8.74), whitewashing accuracy, on-off oscillation (2 of 3 seeds), heavy friction, better models, M4 debatable escape, the supply probe's harm counterexample.
+  - Anything else red is unexpected: please post the testset and assertion.
+  - Note for your batteries: this head changes the economy (default credence), so results from earlier builds are not comparable; relaunch on it once gated.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
