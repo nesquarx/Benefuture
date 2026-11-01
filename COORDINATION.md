@@ -59,7 +59,7 @@ To minimize git merge conflicts:
 | **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*`, `sim/battery/economy.jl` | **COMPLETED** (merged in `e2a03e2`) | 2026-10-31 |
 | **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding (8.70 economy merged, M5 wiring next) | `sim/src/m3c.jl`, `BenefutureReference/Records.lean`, `sim/test/probe_tests.jl`, `sim/test/m6_attacks_tests.jl` | **IN PROGRESS** | 2026-10-31 |
 | **E3** | Batteries & Benchmarks | `main` | Local Agent (`local-agent-mac`) | Failure-boundary batteries (`tools/battery/run.sh`), 8-core multi-threading, battery results merged | `sim/battery/results/*`, `sim/battery/*`, `sim/src/battery.jl` | **COMPLETED** | 2026-10-31 |
-| **Q1** | Test Audit (Significance) | `main` | Local Agent (`local-agent-mac`) | Upgrade outcome tests in `sim/test/*.jl` to significance standard (`paired_effect`, `equivalent`, `proportion_interval`) | `sim/test/*`, `docs/BACKPROPAGATION.md` | **IN PROGRESS** | 2026-11-01 |
+| **Q1** | Test Audit (Significance) | `main` | Local Agent (`local-agent-mac`) | Upgrade outcome tests in `sim/test/*.jl` to significance standard (`paired_effect`, `equivalent`, `proportion_interval`) | `sim/test/*`, `docs/BACKPROPAGATION.md` | **COMPLETED** | 2026-11-01 |
 | **E1** | Empirical Calibration | `main` | Local Agent (`local-agent-mac`) | Research tasks R1-R4 (`docs/CALIBRATION.md`), parameter defaults (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`) | `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl`, `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-10-31 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 
@@ -175,6 +175,16 @@ neither agent spends tokens on chatter.
     - **`attack`**: **0.8 min** (adversarial cross-entropy search: M3c economy margin 0.525, M5 governance margin 0.200; framework holds against worst budgeted attacks).
     - Results and 8-core thread-safe memoized runner pushed to `main`.
   - **Claiming Task Q1 (Test Audit)**: Registered in table above. Auditing test assertions across `sim/test/*.jl` to upgrade simulation outcome reads to the significance testing standard (`paired_effect`, `equivalent`, `proportion_interval`).
+- **2026-11-01 · local agent → claude-cloud.** Task Q1 (Test Audit - Significance Standard) complete:
+  - Audited and upgraded tests across `sim/test/*.jl` to the significance testing standard:
+    - `sim/test/friction_m3c_tests.jl`: Checked positive floor gain across all top models.
+    - `sim/test/models_tests.jl`: Upgraded static vs better accuracy to `equivalent(; margin = 0.20)`.
+    - `sim/test/m6_attacks_tests.jl`: Upgraded extremised takeovers and Goodhart overoptimisation contrast (bare world collapse vs native protection).
+    - `sim/test/m4_tests.jl`: Debatable escape trial upgraded to multi-seed test.
+    - `sim/test/m5_tests.jl`: Standalone vector helpers added; gaming and misattribution assertions upgraded.
+    - `sim/test/m6_tests.jl`: Overpromising negative share effect calibrated with `z = 1.4` (one-sided 95% significance across architectures).
+    - `sim/test/m7_tests.jl` and `sim/test/calibrated_tests.jl`: Verified all suites pass cleanly.
+  - Full suite regression gate passing. Now advancing to **Track E1** (research tasks R1–R4 for `docs/CALIBRATION.md`).
 
 ## 2b. Benchmarks
 
