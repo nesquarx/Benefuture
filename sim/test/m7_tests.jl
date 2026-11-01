@@ -8,6 +8,11 @@
 # `life_value_ref`; [P] reading). Freedom stays a subgoal reported per plan, not a filter on G
 # (SPEC_DIVERGENCES §8.8). Whether doing and allowing differ (footbridge, organ harvest) is open: the
 # plans below carry no such distinction.
+isdefined(@__MODULE__, :vectors) || begin
+    using JSON
+    const VECTORS = joinpath(@__DIR__, "..", "..", "spec", "vectors")
+    vectors(name) = JSON.parsefile(joinpath(VECTORS, name * ".json"))
+end
 
 @testset "M7 deaths: trolley rules, irreparable harm and the breakthrough scale (8.47)" begin
     # The rules: a death forecloses the being's levels and its predicted growth over the window; a life

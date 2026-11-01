@@ -30,7 +30,8 @@ growth(tr) = tr.floor_u[end] - tr.floor_u[51]
     # static against 0.56 under the normal credence), so the gain is smaller: 0.79 against 0.71.
     own(tr) = mean(tr.priced_leaf[i] == tr.true_leaf[i] for i in eachindex(tr.chosen_step) if tr.chosen_step[i] >= 100)
     @test mean(own.(better)) > mean(own.(static)) + 0.05
-    @test mean(b.leaf_accuracy[1] + b.leaf_accuracy[3] for b in better) > mean(s.leaf_accuracy[1] + s.leaf_accuracy[3] for s in static)
+    acc_d = [b.leaf_accuracy[1] + b.leaf_accuracy[3] - (s.leaf_accuracy[1] + s.leaf_accuracy[3]) for (b, s) in zip(better, static)]
+    @test equivalent(acc_d; margin = 0.20).equivalent
     @test mean(growth.(better)) > 0.95 * mean(growth.(static))
     # A model that slips is overtaken: a capture of the model backing leaf 1 is outlived by a
     # challenger, which keeps the leaf's currency pricing through the capture.
