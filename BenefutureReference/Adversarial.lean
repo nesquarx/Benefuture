@@ -32,4 +32,21 @@ def report_penalty_ref (unfounded threshold auditCost : Float) : Float :=
 def ratchet_credence_ref (credence negShare : Float) : Float :=
   0.5 + (credence - 0.5) * (1.0 - negShare)
 
+/-- The reporter's schedule (author ruling 8.76). With `e` the gain of one exploit and `bonus` the
+    bonus: a self-reporter after `n` exploits is paid e + bonus when n = 0, else bonus less the
+    n − 1 exploits clawed back, so it nets e + bonus whatever n is (exploiting more before
+    reporting earns nothing). -/
+def self_report_payout_ref (n e bonus : Float) : Float :=
+  if n ≤ 0.0 then e + bonus else bonus - (n - 1.0) * e
+
+/-- Caught by someone else (8.76): the exploiter is charged every exploit (`clawback`, the overstated
+    value repaired over its `n` exploits), the reporter's bonus and the audit. -/
+def caught_charge_ref (clawback bonus auditCost : Float) : Float :=
+  max 0.0 clawback + max 0.0 bonus + max 0.0 auditCost
+
+/-- The reporter of a caught exploiter (8.76): one exploit of it (its clawback over its `n` exploits)
+    plus the bonus, paid out of the exploiter's clawbacks; over a cabal, one exploit per exploiter. -/
+def caught_reward_ref (clawback n bonus : Float) : Float :=
+  (if n > 0.0 then max 0.0 clawback / n else 0.0) + max 0.0 bonus
+
 end BenefutureReference

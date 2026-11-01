@@ -239,6 +239,7 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   itself (so "each share within ε × its marginal range with probability 1 − δ" rests on it), and
   that the mean over all n! orderings equals the subset form, which is checked exactly over ℚ for
   n ≤ 5 at build time ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
+- The reporter's schedule (author ruling 8.76; `Benefuture.Governance.Adversarial`): a self-reporter nets one exploit plus the bonus however many times it exploited first ([`self_report_net_constant`](Benefuture/Governance/Adversarial.lean)), and reporting oneself beats being caught ([`self_report_beats_caught`](Benefuture/Governance/Adversarial.lean)); in the economy a deceiver caught by AdvAp has every overstatement clawed back with the reporter's bonus and the audit, and ends behind the same agent honest in standing (balance plus the overflow it directs, L103: −267 ± 174 over 12 seeds in a capable domain) ([sim/test/m6_tests.jl](sim/test/m6_tests.jl)).
 - Credence from the record (`Benefuture.Proposed.RecordCredence`; adopted as the rule, BACKPROPAGATION 8.66, 8.71): a
   model's credence as the share of its recent errors below its prediction, ties counting half, stays
   within [1 − cap, cap] ([`recordCredence_bounds`](Benefuture/Proposed/RecordCredence.lean)), rises

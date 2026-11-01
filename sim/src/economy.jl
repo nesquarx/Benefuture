@@ -246,6 +246,27 @@ function binding_admits(confidences, threshold::Real; quorum::Integer)
 end
 
 """
+    self_report_payout(n, e, bonus), caught_charge(clawback, bonus, audit_cost), caught_reward(clawback, n, bonus)
+
+The reporter's schedule (Lean `self_report_payout_ref`, `caught_charge_ref`, `caught_reward_ref`;
+author ruling 8.76): a self-reporter nets one exploit plus the bonus whatever it exploited before; an
+exploiter caught by someone else is charged every exploit, the reporter's bonus and the audit; the
+reporter is paid one exploit per exploiter plus the bonus.
+"""
+function self_report_payout(n::Real, e::Real, bonus::Real)
+    check(isfinite(n) && n >= 0 && isfinite(e) && e >= 0 && isfinite(bonus) && bonus >= 0, "exploits, gain and bonus non-negative")
+    ccall(sym(:bf_self_report_payout), Float64, (Float64, Float64, Float64), n, e, bonus)
+end
+function caught_charge(clawback::Real, bonus::Real, audit_cost::Real)
+    check(all(x -> isfinite(x) && x >= 0, (clawback, bonus, audit_cost)), "clawback, bonus and audit non-negative")
+    ccall(sym(:bf_caught_charge), Float64, (Float64, Float64, Float64), clawback, bonus, audit_cost)
+end
+function caught_reward(clawback::Real, n::Real, bonus::Real)
+    check(all(x -> isfinite(x) && x >= 0, (clawback, n, bonus)), "clawback, exploits and bonus non-negative")
+    ccall(sym(:bf_caught_reward), Float64, (Float64, Float64, Float64), clawback, n, bonus)
+end
+
+"""
     ehr_expected_response(h, re_pos, re_neg; alpha, delta, margin) -> response
 
 External harm response (Lean `ehr_expected_response_ref`; L117, `Governance.ExternalHarm` [R]): to a

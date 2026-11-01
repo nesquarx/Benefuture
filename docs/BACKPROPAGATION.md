@@ -1858,3 +1858,41 @@ exploit gain as zero (settlement claws back the direct gain: upfront never excee
 liar's residual advantage arrives indirectly, through a higher reputation relevance and so a higher
 overflow threshold (8.74; why the relevance rises is not yet verified). Candidate homes: Adversarial
 adaptation (reward and clawback schedule), L101 (ledgers), L84 (ratcheting escrow).
+8.76 schedule (author), with E the gain of one exploit, B the bonus and n the exploits before the
+report: a self-report with no exploit is paid E + B; after one exploit, B; after five, B with four
+exploits clawed back; whenever someone else reports first, every exploit is clawed back and the reporter
+is paid E + B. So a self-reporter nets E + B whatever n is (exploiting more before reporting earns
+nothing), and a caught exploiter nets nothing from its exploits. In M3c the clawback owed by a caught
+deceiver is the overstated value AdvAp's repair re-scores across all its records (`prevented`), on top
+of the liability (the reporter's reward and the audit, 8.38); the reputation charge follows the same
+amount, so the recorded credence falls.
+
+**8.77 Finding and proposal: penalties are absorbed by overflow at the cap.** Why the liar of 8.74
+stays ahead, validated causally (12 seeds, capable domain, deceit 1, AdvAp on, the 8.76 clawback in
+place): with overflow switched off the liar ends 267 ± 174 behind the same agent honest; with overflow on
+it ends 43 ± 26 ahead. The pathway: (1) **incidence at the cap**: an agent whose balance sits at its
+accumulation threshold (500 + its relevance) pays a clawback or liability out of income that overflow
+would have skimmed anyway; income refills it to the threshold and the skim shrinks by the charge, so the
+commons bears the penalty, not the deceiver; (2) **per-currency thresholds**: holdings spread across
+currency columns stay under each column's threshold (the liar held 66.7 in a parent currency, against 6.0
+honest, never skimmed); (3) **the threshold reads relevance**, which weights recent work (the liar did
+slightly more work late, 63.6 actions against 60.6 in the last 50 steps), +38 here. Proposed block,
+prototyped and measured: a charge is registered against the agent's cap, lowering its overflow threshold
+by the outstanding charge, so the penalty comes out of wealth it keeps: the liar then ends 102 ± 29 behind
+(positive in 1 seed of 12). The same incidence applies to every charge on a capped agent (harm burns,
+liability, report penalties). Also to decide: whether overflow should read total holdings across
+currencies rather than each column, and whether the threshold should read relevance. Candidate homes:
+Benefuture currency (overflow, accumulation threshold), Lean `accumulation_threshold`/`overflow` and their
+reference rules, Adversarial adaptation (liability incidence).
+8.74 and 8.77 corrected (author's question, L103): the liar's "advantage" was a measurement error.
+L103 reads `BalOvflw :: Bal(E, C_i) > AccumThresh(Re_E, Equity, G_Optim, Dn_i) ⇒ DirectedAutoInvest(S =
+E, Dn_i)`: overflow is invested in the domain as the entity directs, so it stays in the entity's sphere.
+Measured as standing (balance plus directed overflow), deceit does not pay: −267 ± 174 in the capable
+domain (leaf accuracy 0.98, models strong) and −133 ± 54 in the marginal one (0.89), the same as with
+overflow switched off, as it must be, since overflow only moves value from balance to directed
+investment. A charge on an agent at its threshold is paid out of the overflow it would have directed: the
+deceiver bears it, not the commons. **8.77's proposal (registering charges against the cap) is withdrawn**:
+it is not needed. What remains true and open from 8.77: overflow is per currency and the threshold reads
+relevance, so standing in balances is distributed across currencies and moves with recent work; whether
+directed overflow should earn reputation by its outcomes is 8.51's ruling (it earns through standard
+channels if it does good), which the simulation does not yet model.

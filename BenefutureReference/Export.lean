@@ -283,4 +283,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_ehr_expected_response] def ehrExpectedResponse (alpha delta margin h rePos reNeg : Float) : Float :=
   ehr_expected_response_ref alpha delta margin h rePos reNeg
 
+-- 8.76 the reporter's schedule
+@[export bf_self_report_payout] def selfReportPayout (n e bonus : Float) : Float := self_report_payout_ref n e bonus
+@[export bf_caught_charge] def caughtCharge (clawback bonus auditCost : Float) : Float := caught_charge_ref clawback bonus auditCost
+@[export bf_caught_reward] def caughtReward (clawback n bonus : Float) : Float := caught_reward_ref clawback n bonus
+
 end BenefutureReference.Export

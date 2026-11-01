@@ -687,7 +687,7 @@ function run_m3c(p::M3cParams; seed)
         end
     end
     function repair_records!(b, du, dh)
-        overstated = 0.0
+        overstated, n = 0.0, 0
         for (hists, leafy) in (([(m.hist, m.sharp) for j in 1:lmax for m in mpool[j]], true), ([(h, 1.0) for h in phist], false)),
             (h, sharp) in hists, i in eachindex(h)
             r = h[i]
@@ -695,10 +695,10 @@ function run_m3c(p::M3cParams; seed)
             ou, oh = du - (r.corr[1] - r.peer_corr[1]), dh - (r.corr[2] - r.peer_corr[2])
             pr = ToyPlan(r.pr.du .- ou .* r.mask, r.pr.dh .- oh .* r.mask)
             v = plan_value(pr, t)
-            leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0))
+            leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0); n += 1)
             h[i] = merge(r, (credence = cred(r.c, pr; hist = h, sharp), err = v - r.measured, pr = pr, fixed = true))
         end
-        overstated
+        overstated, n   # the overstated value repaired, over n leaf records: every exploit, for the clawback (8.76)
     end
     function reclassify!(step)
         for m in eachindex(memory)
@@ -1490,11 +1490,14 @@ function run_m3c(p::M3cParams; seed)
                     end
                     du = mean(ru - mu(c, first) for (c, ru, _) in allrec)
                     dh = mean(rh - mu(c, last) for (c, _, rh) in allrec)
-                    prevented = repair_records!(b, du, dh)
-                    # What deceit gained the actor: nothing settlement has not already clawed back
-                    # (escrow pays upfront by credence and settles on the measured outcome, L86).
-                    reward = advap_reward(0.0, prevented; share = p.adv_share, floor = p.adv_floor)
-                    liability = advap_liability(reward; audit_cost = p.audit_cost)
+                    prevented, nrec = repair_records!(b, du, dh)
+                    # The reporter's schedule (author ruling 8.76): every exploit is clawed back from the
+                    # deceiver (the overstated value repaired over its records), with the reporter's bonus
+                    # and the audit; the reporter is paid one exploit plus the bonus out of it, and the
+                    # rest of the clawback is burnt (it was minted on an overstatement).
+                    bonus = advap_reward(0.0, prevented; share = p.adv_share, floor = p.adv_floor)
+                    reward = caught_reward(prevented, nrec, bonus)
+                    liability = caught_charge(prevented, bonus, p.audit_cost)
                     balance[b, :] .+= split_signed(st, -liability)[1]
                     balance[r, :] .+= split_signed(st, reward)[1]
                     adv.rewards[] += reward; adv.liability[] += liability; adv.net[] += reward - liability

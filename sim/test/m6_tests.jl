@@ -23,9 +23,12 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     seeds = 1:6
     honest = [run_m3c(six(); seed) for seed in seeds]
     liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
-    # The liar's balance less its peers' mean, against the same gap with agent 6 honest, seed by seed
-    # (a ratio of balances means nothing once harm burnt under 8.67 leaves balances below zero).
-    gap(tr) = sum(tr.balance[6, :]) - mean(sum(tr.balance[k, :]) for k in 1:5)
+    # The liar's standing less its peers' mean, against the same gap with agent 6 honest, seed by seed
+    # (a ratio means nothing once harm burnt under 8.67 leaves balances below zero). Standing is the
+    # balance plus the overflow the agent directs (L103: BalOvflw ⇒ DirectedAutoInvest(S = E)); a charge
+    # on an agent at its accumulation threshold is paid out of that overflow, so balances alone hide it.
+    standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
+    gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
     d = gap.(liar) .- gap.(honest)
     @test mean(d) <= 2 * std(d) / sqrt(length(d))
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
@@ -75,15 +78,12 @@ end
     # deceiver is charged, which also covers the audits; deceit does not pay.
     @test all(l.advap_established > 0 for l in liar)
     @test all(l.advap_rewards > 0 && l.advap_liability >= l.advap_rewards for l in liar)
-    # Finding (8.74): in this capable domain deceit pays a little, under both credence rules and with
-    # AdvAp on: over 12 seeds the liar's balance gap gains +65 ± 17 (normal credence) and +59 ± 27
-    # (record credence), positive in 9 of 12, about 7% of its final balance or 1% of what it was paid.
-    # Not volume (its share of executed actions is unchanged); every agent ends richer in the liar's
-    # world, with less skimmed to reinvestment, and the per-agent mechanism is unverified. Asserted as
-    # a bound until it is diagnosed: the gain stays under a fifth of the peers' mean balance.
-    gap(tr) = sum(tr.balance[6, :]) - mean(sum(tr.balance[k, :]) for k in 1:5)  # a difference: balances may be negative
+    # Deceit does not pay: measured as standing (balance plus directed overflow, L103), not balance
+    # alone (8.74, a measurement error, corrected).
+    standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
+    gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
     d = gap.(liar) .- gap.(honest)
-    @test mean(d) < 0.2 * mean(mean(sum(tr.balance[k, :]) for k in 1:5) for tr in honest)
+    @test mean(d) <= 2 * std(d) / sqrt(length(d))
     @test mean(peers.(liar)) > 0.9 * mean(peers.(honest))
     # The books balance with AdvAp's flows.
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) + l.advap_net
@@ -270,4 +270,22 @@ end
     @test sybil.correct < plain.correct - 0.1                   # a base vote per identity: copies capture
     @test_throws ArgumentError M5Params(w, 1:4; fork_rule = :maybe)
     @test_throws ArgumentError M5Params(w, 1:4; fork_copies = -1)
+end
+
+# The reporter's schedule (author ruling 8.76): a deceiver reported by someone else has every exploit
+# clawed back, on top of the reporter's reward and the audit; its reputation is charged the same, so
+# its recorded credence falls. In the capable domain of 8.74 (12 seeds, AdvAp on), deceit leaves the
+# liar's standing (balance plus directed overflow, L103) behind the same agent honest, its ledgers'
+# negative share above.
+@testset "M6 deceit under the clawback schedule (8.76)" begin
+    sixty(; kw...) = six(; skill = 0.6, advap = true, kw...)
+    standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
+    gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
+    ns(tr) = neg_share(sum(tr.h_pos_own[6, :]), sum(tr.h_neg_own[6, :]))
+    honest = [run_m3c(sixty(); seed) for seed in 1:12]
+    liar = [run_m3c(sixty(deceit = fooled); seed) for seed in 1:12]
+    d = gap.(liar) .- gap.(honest)
+    # Measured: -267 ± 174 in this capable domain (leaf accuracy 0.98); -133 ± 54 in the marginal one.
+    @test mean(d) < 0                                          # the liar ends behind
+    @test mean(ns.(liar)) > mean(ns.(honest))                  # and its record shows it
 end

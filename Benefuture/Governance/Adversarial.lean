@@ -12,6 +12,8 @@
 
 import Benefuture.Math.Order
 import Benefuture.Ontology.Thing
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
 
 namespace Benefuture.Governance
 
@@ -243,6 +245,39 @@ theorem good_faith_dissent_zero_penalty (mag : Int) :
 
 abbrev Adv := ExploitVulnerability
 abbrev AdvAp := bounty_reward
+
+/-!
+  ## The reporter's schedule (author ruling 8.76)
+  With `e` the gain of one exploit, `bonus` the bonus and `n` the exploits made before the report:
+  a self-report is paid e + bonus when n = 0, otherwise bonus with n − 1 exploits clawed back; an
+  exploiter reported by someone else has every exploit clawed back and pays the reporter's bonus and
+  the audit; the reporter is paid one exploit plus the bonus per exploiter.
+-/
+
+/-- [R] What the system pays a self-reporter after `n` exploits. -/
+def self_report_payout (e bonus : ℤ) (n : ℕ) : ℤ := if n = 0 then e + bonus else bonus - (n - 1 : ℤ) * e
+
+/-- [R] A self-reporter's net: its exploits plus what the system pays it. -/
+def self_report_net (e bonus : ℤ) (n : ℕ) : ℤ := (n : ℤ) * e + self_report_payout e bonus n
+
+/-- [R] A caught exploiter's net: its exploits, all clawed back, less the reporter's bonus and the audit. -/
+def caught_net (e bonus audit : ℤ) (n : ℕ) : ℤ := (n : ℤ) * e - (n : ℤ) * e - bonus - audit
+
+/-- THEOREM: a self-reporter nets one exploit plus the bonus whatever it exploited first, so
+    exploiting more before reporting earns nothing. -/
+theorem self_report_net_constant (e bonus : ℤ) (n : ℕ) : self_report_net e bonus n = e + bonus := by
+  unfold self_report_net self_report_payout
+  split_ifs with h
+  · subst h; simp
+  · have : (1 : ℤ) ≤ n := by exact_mod_cast Nat.one_le_iff_ne_zero.mpr h
+    ring
+
+/-- THEOREM: reporting oneself beats being caught whenever the exploit, bonus and audit are
+    non-negative and one of them is positive. -/
+theorem self_report_beats_caught (e bonus audit : ℤ) (n m : ℕ) (he : 0 ≤ e) (hb : 0 ≤ bonus)
+    (ha : 0 ≤ audit) (hpos : 0 < e + bonus + audit) :
+    caught_net e bonus audit m < self_report_net e bonus n := by
+  rw [self_report_net_constant]; unfold caught_net; linarith
 
 end Benefuture.Governance
 

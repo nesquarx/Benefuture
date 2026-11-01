@@ -149,3 +149,19 @@ end
     @test r(20.0, 5.0, 5.0) ≈ 2 * r(10.0, 5.0, 5.0)             # proportional in the harm
     @test_throws ArgumentError r(-1.0, 0.0, 0.0)
 end
+
+# The reporter's schedule (author ruling 8.76; Lean `self_report_net_constant`): with e the gain of one
+# exploit and b the bonus, a self-reporter nets e + b however many times it exploited first; someone
+# caught by another nets nothing from its exploits and pays the reporter's bonus and the audit; the
+# reporter is paid one exploit plus the bonus per exploiter (a cabal of three: three exploits plus bonuses).
+@testset "Probe: the reporter's schedule leaves exploiting before reporting worthless" begin
+    e, b, audit = 10.0, 3.0, 2.0
+    net(n) = n * e + self_report_payout(n, e, b)
+    @test net(0) ≈ e + b && net(1) ≈ e + b && net(5) ≈ e + b           # report without exploit, after 1, after 5
+    @test self_report_payout(5, e, b) ≈ b - 4e                          # four exploits clawed back, bonus paid
+    caught(n) = n * e - caught_charge(n * e, b, audit)                  # all clawed back, the reporter's bonus too
+    @test caught(5) ≈ -(b + audit) && caught(5) < net(5)
+    cabal = [(4, 4e), (2, 2e), (7, 7e)]                                 # (exploits, clawback) per exploiter
+    @test sum(caught_reward(c, n, b) for (n, c) in cabal) ≈ 3 * (e + b)
+    @test_throws ArgumentError self_report_payout(-1, e, b)
+end

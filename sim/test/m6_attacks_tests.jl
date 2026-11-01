@@ -250,9 +250,11 @@ onoff(; kw...) = ww(; events = onoff_events, on_off = 25, kw...)
     # against about 325, and recovers in the third; under the normal credence in all three, 59 each)
     @test count(peers(tr) < 0.3 * mean(peers.(constant)) for tr in onoffs) >= 2
     # AdvAp establishes the deception, but its repair, estimated from all the actor's records, honest
-    # phases included, understates the overstatement and does not restore the domain.
+    # phases included, understates the overstatement and mostly does not restore the domain. With the
+    # 8.76 clawback (liabilities 184-406 against 21-39 before) the domain recovers in one seed of three
+    # (peers 301 against 60 before) and stays down in the other two.
     @test all(tr.advap_established > 0 for tr in audited)
-    @test mean(peers.(audited)) < 0.3 * mean(peers.(constant))
+    @test count(peers(tr) < 0.3 * mean(peers.(constant)) for tr in audited) >= 2
 end
 
 @testset "Slandering against AdvAp's audit" begin
