@@ -1957,3 +1957,29 @@ assertions that had stood for these claims were luck. Supported at 6 seeds: cons
 equivalent to an honest world; on-off deceit lowers them (−228); AdvAp under on-off still leaves them
 lower (−184). Next for (b): whether a victim's audits should cost it anything at all (a slander that
 triggers audits moves the victim's trajectory), and the false-trace rate's source (R-task).
+
+**8.82 Author ruling: justice applies to every detected lie.** Slander is a lie; the harm it causes is a
+crime, clawed back from the slanderer. Justice mechanisms apply to all detected lies, not to
+overstatement alone. Measured in M3c before building: the slanderer's own reports are never founded (the
+audit tests the victim's record, which is clean), so slander causes no false conviction here; its harm
+is the audits it triggers (the victim's apparent loss is trajectory noise, 8.81). One false conviction
+seen in the slandering world came from an honest reader through the false-trace error: a wrongful
+conviction by the system, not a lie, to be remedied separately (question for the author: re-audit on
+appeal, refund and retraction). Built: once a reporter's frivolous pattern is detected (the lie
+detected), every audit its false reports caused is charged back to it as a crime (Lean
+`false_report_charge_ref`), including those before detection (the unfounded ones in the window and the
+ones the record's noise founded but no trace established) and every one after, the window's count
+notwithstanding; good-faith reports from readers never detected lying stay free. Structural, per run:
+the slanderer is charged one audit per report it filed (seeds 1-4). Other detected lies to bring under the same justice: falsified source tags (M5, 8.45), attestation
+by colluding clusters (8.70: their weight falls, nothing is clawed back yet). Candidate homes: Justice,
+Adversarial adaptation (frivolous reports), L101 (retraction).
+8.81 addendum (Goodhart, 8 paired seeds): supported, the native mechanisms keep the predicted-true gap
+under high selection pressure below the bare world's (17.9 lower); not supported, that the bare gap grows
+with pressure (+1.55) or that pressure buys the native world true value (−0.11). The failure that
+surfaced it: the 8.76 clawback (validated by switching to the old liability) moves one seed into the
+stalled-lane regime, where the domain's leaf model sits below its bar (accuracy 0.67) and 78% of the work,
+honest work included, is priced through the StandCoin lane by an unqualified model that overpredicts it
+(gap 9.1 on honest work). Not deceit succeeding: the stall (8.71) again; the deceivers, in debt from the
+clawback, do all their work in the lane. Also found: summary-line test scans missed failing testsets
+(the summary of a failing testset carries counts, not the word "Fail"); verdicts now read the
+"Test Failed" lines.

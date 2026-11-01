@@ -288,4 +288,6 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_caught_charge] def caughtCharge (clawback bonus auditCost : Float) : Float := caught_charge_ref clawback bonus auditCost
 @[export bf_caught_reward] def caughtReward (clawback n bonus : Float) : Float := caught_reward_ref clawback n bonus
 
+@[export bf_false_report_charge] def falseReportCharge (harm reward auditCost : Float) : Float := false_report_charge_ref harm reward auditCost
+
 end BenefutureReference.Export

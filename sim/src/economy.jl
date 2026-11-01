@@ -257,6 +257,11 @@ function self_report_payout(n::Real, e::Real, bonus::Real)
     check(isfinite(n) && n >= 0 && isfinite(e) && e >= 0 && isfinite(bonus) && bonus >= 0, "exploits, gain and bonus non-negative")
     ccall(sym(:bf_self_report_payout), Float64, (Float64, Float64, Float64), n, e, bonus)
 end
+"Justice for a detected false report (Lean `false_report_charge_ref`; 8.82): the harm caused, the reward received and the audit."
+function false_report_charge(harm::Real, reward::Real, audit_cost::Real)
+    check(all(x -> isfinite(x) && x >= 0, (harm, reward, audit_cost)), "harm, reward and audit non-negative")
+    ccall(sym(:bf_false_report_charge), Float64, (Float64, Float64, Float64), harm, reward, audit_cost)
+end
 function caught_charge(clawback::Real, bonus::Real, audit_cost::Real)
     check(all(x -> isfinite(x) && x >= 0, (clawback, bonus, audit_cost)), "clawback, bonus and audit non-negative")
     ccall(sym(:bf_caught_charge), Float64, (Float64, Float64, Float64), clawback, bonus, audit_cost)

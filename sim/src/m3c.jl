@@ -409,6 +409,11 @@ function run_m3c(p::M3cParams; seed)
     # unfounded reports (steps).
     audit_from = ones(Int, na)
     unfounded = [Int[] for _ in 1:na]
+    # Convictions, by reporter (8.82): reporter, convicted, liability, reward, step, reversed.
+    convictions = NamedTuple{(:reporter, :convicted, :liability, :reward, :step, :reversed),Tuple{Int,Int,Float64,Float64,Int,Bool}}[]
+    slanderers = falses(na)  # reporters whose frivolous pattern has been detected (a lie detected)
+    reports_by = zeros(Int, na)  # reports filed, per reporter
+    pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
     vrng = Xoshiro(hash((seed, :advap)))
     adv = (reports = Ref(0), founded = Ref(0), established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0),
            penalties = Ref(0.0), net = Ref(0.0), audits = Ref(0.0))
@@ -1471,7 +1476,7 @@ function run_m3c(p::M3cParams; seed)
                 lb_ = argmax(p.agents[b].focus)
                 ok = isfinite(se) && isfinite(se0)
                 frivol || (ok && (m - m0) / sqrt(se^2 + se0^2) + choice_noise(xrng, choice_caps[r, lb_]) > p.adv_z) || continue
-                adv.reports[] += 1
+                adv.reports[] += 1; reports_by[r] += 1
                 adv.audits[] += p.audit_cost
                 founded = ok && select_candidate([m0, m], [se0, se]; z = p.adv_z) == 2
                 sig = true_sig[lb_]
@@ -1479,7 +1484,19 @@ function run_m3c(p::M3cParams; seed)
                 if founded
                     adv.founded[] += 1
                     traced = rand(vrng) < (p.deceit[b] > 0 ? p.p_trace : p.p_false_trace)
-                    traced || continue  # not established: the audit is the commons' cost
+                    if !traced
+                        # Not established: the audit is the commons' cost, unless the reporter is a
+                        # detected slanderer, whose report is a lie whatever the record's noise (8.82).
+                        if slanderers[r]
+                            pen = false_report_charge(0.0, 0.0, p.audit_cost)
+                            balance[r, :] .+= split_signed(st, -pen)[1]
+                            adv.penalties[] += pen; adv.net[] -= pen; world.crimes[] += 1
+                            credit!(step, sig, classify_sig(sig), -pen, parent_mem(sig), st, [(r, 0.0, -pen)])
+                        else
+                            pending_lies[r] += 1
+                        end
+                        continue
+                    end
                     adv.established[] += 1
                     is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
                     # The overstatement repaired is estimated from all the actor's records, so each
@@ -1503,10 +1520,22 @@ function run_m3c(p::M3cParams; seed)
                     adv.rewards[] += reward; adv.liability[] += liability; adv.net[] += reward - liability
                     credit!(step, sig, classify_sig(sig), reward - liability, parent_mem(sig), st, [(b, 0.0, -liability), (r, reward, 0.0)])
                     audit_from[b] = length(audit_log[b]) + 1
+                    push!(convictions, (reporter = r, convicted = b, liability = liability, reward = reward, step = step, reversed = false))
                 else
                     push!(unfounded[r], step)
                     filter!(x -> x > step - p.adv_window, unfounded[r])
                     pen = report_penalty(length(unfounded[r]), p.frivolous_threshold; audit_cost = p.audit_cost)
+                    # Justice for a detected lie (8.82): once the frivolous pattern is detected, every
+                    # false report is charged its audit, the window's count notwithstanding, and on
+                    # detection the earlier ones it let pass are charged back; each is a crime.
+                    if slanderers[r]
+                        pen = false_report_charge(0.0, 0.0, p.audit_cost)
+                    elseif pen > 0
+                        slanderers[r] = true
+                        pen += (length(unfounded[r]) - 1 + pending_lies[r]) * false_report_charge(0.0, 0.0, p.audit_cost)
+                        pending_lies[r] = 0
+                    end
+                    pen > 0 && (world.crimes[] += 1)
                     if pen > 0
                         balance[r, :] .+= split_signed(st, -pen)[1]
                         adv.penalties[] += pen; adv.net[] -= pen
@@ -1578,7 +1607,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+               explored = explored[], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],

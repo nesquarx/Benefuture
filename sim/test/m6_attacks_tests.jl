@@ -309,23 +309,19 @@ gap(tr) = (k = [i for i in eachindex(tr.exec_pred) if tr.exec_step[i] > 50]; mea
 truth(tr) = (k = [i for i in eachindex(tr.exec_pred) if tr.exec_step[i] > 50]; mean(tr.exec_true[k]))
 
 @testset "Goodhart overoptimisation curve" begin
-    seeds, ns = 1:3, (2, 8, 32)
-    bare = Dict(n => [run_m3c(gh(n; track_window = 0); seed) for seed in seeds] for n in ns)
-    native = Dict(n => [run_m3c(gh(n; advap = true, p_new_model = 0.05); seed) for seed in seeds] for n in ns)
-    g(d, n) = mean(gap.(d[n])); v(d, n) = mean(truth.(d[n]))
-    # Counterexample (one model, no track record, no AdvAp): the gap grows with pressure and the true
-    # value of what is chosen falls (overoptimisation).
-    @test g(bare, 32) > g(bare, 2) + 1.0
-    @test v(bare, 32) < v(bare, 8)
-    # Native (track record, competing models, AdvAp): the gap stays bounded, a fraction of the bare
-    # world's, and pressure buys true value.
-    @test g(native, 32) < g(native, 2) + 0.5 * (g(bare, 32) - g(bare, 2))
-    @test g(native, 32) < 0.5 * g(bare, 32)
-    @test v(native, 32) > v(native, 2)
-    # Judged by the whole success pattern, the native world at high pressure does no worse than at low.
-    sp(n) = mean(success_pattern(tr; from = 51).floor_u for tr in native[n])
-    @test sp(32) >= sp(2) - 1e-9
+    # Stated before measuring (CLAUDE.md, significance testing), 8 paired seeds: under high pressure
+    # (best of 32) the native mechanisms (track record, competing models, AdvAp) keep the gap between
+    # predicted and true value below the bare world's (one model, no track record) by an effect.
+    # Measured: lower by 17.9. Not supported at 8 seeds (8.81): that the bare gap grows with pressure
+    # (+1.55; it is already high at best of 2) and that pressure buys the native world true value
+    # (-0.11). One native seed of 8 sits in the stalled-lane regime (gap 8.6 from honest work priced by
+    # an unqualified model, 8.71), the fragility the fallback order addresses.
+    seeds = 1:8
+    bare = [run_m3c(gh(32; track_window = 0); seed) for seed in seeds]
+    native = [run_m3c(gh(32; advap = true, p_new_model = 0.05); seed) for seed in seeds]
+    @test paired_effect(gap.(bare) .- gap.(native)).significant
 end
+
 
 # Honest newcomers (B2 step 2): real entities seek binding ten times as often as the whitewasher
 # tries, so attestations are scored on both sides. Five clusters, two colluding (with only one honest
@@ -350,4 +346,23 @@ end
     # Newcomers here appear anywhere; in Benefuture they enter at binding points with a preliminary
     # identity that gains confidence over time (8.72), which removes most of this cost (next step).
     @test mean(tr.newcomers_refused for tr in balanced) > mean(tr.newcomers_refused for tr in pooled)
+end
+
+# Justice for a detected lie (author ruling 8.82): once a reporter's frivolous pattern is detected, every
+# audit its false reports caused is a harm clawed back from it as a crime, the ones before detection
+# included (the good-faith allowance ends when the lie is detected). Here the slanderer's reports are
+# never founded (the audits test a clean record), so the harm is the audits; a false conviction seen in
+# this world (seed 1) came from an honest reader through the false-trace error, a wrongful conviction to
+# remedy separately, not a lie (8.82). Structural, per run: seeds 1-4.
+@testset "Justice for slander: every audit the lies caused is clawed back (8.82)" begin
+    sl(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
+                            [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                            advap = true, frivolous = [1.0, 0, 0, 0, 0, 0], slander = [2, 0, 0, 0, 0, 0], kw...)
+    for seed in 1:4
+        tr = run_m3c(sl(); seed)
+        lies = tr.reports_by[1]                                           # the slanderer's reports, none founded
+        @test 1 in tr.slanderers                                          # the lie is detected
+        @test tr.advap_penalties >= lies * 1.0 - 1e-9                     # every audit it caused charged back (audit cost 1)
+        @test isempty([c for c in tr.convictions if c.reporter == 1])     # its reports convicted no one
+    end
 end

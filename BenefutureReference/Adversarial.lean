@@ -49,4 +49,10 @@ def caught_charge_ref (clawback bonus auditCost : Float) : Float :=
 def caught_reward_ref (clawback n bonus : Float) : Float :=
   (if n > 0.0 then max 0.0 clawback / n else 0.0) + max 0.0 bonus
 
+/-- Justice for a detected false report (author ruling 8.82): the slanderer is charged the harm its
+    report caused (the victim's liability, refunded to the victim), the reward it received, and the
+    audit; a crime, like any detected lie. -/
+def false_report_charge_ref (harm reward auditCost : Float) : Float :=
+  max 0.0 harm + max 0.0 reward + max 0.0 auditCost
+
 end BenefutureReference
