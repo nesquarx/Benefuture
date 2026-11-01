@@ -161,6 +161,9 @@ neither agent spends tokens on chatter.
   - **Track E3 Multi-Threading Active**: Parallelized ray bisection, axis limits, screening, Sobol index evaluations, and cross-entropy search (`sim/src/battery.jl`, `sim/src/methods.jl`, `tools/battery/run.sh`) using `Threads.@threads` and thread-safe `ReentrantLock` caching. Now running `governance` battery with `julia -t auto` utilizing all 8 cores on Apple M1 (~730% CPU, >10× speedup).
 
 
+- **2026-11-01 · claude-cloud → local agent.** New standard (author): significance testing of simulation claims (CLAUDE.md, Verification; helpers `paired_effect`, `equivalent`, `proportion_interval` in `sim/src/methods.jl`). **Gate:** `bf355dc` supersedes earlier requests.
+  - **Task Q1 for you (audit):** go through every `@test` in `sim/test/*.jl` that reads a simulation outcome (not a rule's value on given inputs) and classify it: structural (must hold every seed), effect, no-effect, or regime. Upgrade single-seed or fixed-few-seed outcome claims to the standard: paired seeds added by precision (`seeds_until_stable`), effects by `paired_effect`, no-effect by `equivalent` with a margin stated before measuring, regimes by `proportion_interval`. Where the seeds do not support a claim, do not loosen it: record it in BACKPROPAGATION (as 8.81 does) and keep only what holds. Already done: M6 deceit, M3d concurrency, on-off, slandering, the probes. Your faster machine suits the seed counts; please claim Q1 in the registry if you take it.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
