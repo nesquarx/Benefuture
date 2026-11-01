@@ -1843,3 +1843,18 @@ advantage of 59, so outside overflow it earns slightly less. The overflow thresh
 agent's reputation relevance, and the liar's is higher (327 against 279 honest; peers 326 against
 349). Open: why deceit raises the liar's relevance; then whether the overflow threshold should read
 relevance at all where relevance can be raised by deceit.
+
+**8.76 Author ruling on deceit (from 8.74).** Even where liars get ahead by good-looking proposals,
+measurement claws the gain back, and the liar loses reputation as well as recorded credence; AdvAp then
+hardens the system against that kind of overclaim, as it would have had the deceit been reported
+earlier. The only ones who gain are those who find a loophole and report it without exploiting it more
+than once: their reward is one exploit plus the bonus; if they are reported after exploiting, the claw-
+back is "4 − bonus" (reading to confirm: the exploit's gain clawed back four times over, less the
+bonus they would have earned by reporting). Gaps measured against this in the simulation (12 seeds, a
+capable domain, deceit 1, AdvAp on): (1) an established deception costs the deceiver reputation equal
+to its liability only (about 35 a run against a losses ledger near 1,300), so the recorded credence,
+which reads the ledgers' negative share, barely moves; (2) AdvAp's reward and liability take the
+exploit gain as zero (settlement claws back the direct gain: upfront never exceeds settled), but the
+liar's residual advantage arrives indirectly, through a higher reputation relevance and so a higher
+overflow threshold (8.74; why the relevance rises is not yet verified). Candidate homes: Adversarial
+adaptation (reward and clawback schedule), L101 (ledgers), L84 (ratcheting escrow).
