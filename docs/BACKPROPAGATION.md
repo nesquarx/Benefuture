@@ -1983,3 +1983,22 @@ honest work included, is priced through the StandCoin lane by an unqualified mod
 clawback, do all their work in the lane. Also found: summary-line test scans missed failing testsets
 (the summary of a failing testset carries counts, not the word "Fail"); verdicts now read the
 "Test Failed" lines.
+
+**8.83 Finding: the stall in a realistic domain is the status bar, and the relative bar removes it.** In
+a calibrated tiny world with no shock (4 agents at skill 0.6, the calibrated noise), the leaf qualifies
+early, its accuracy then settles at 0.72 to 0.88, under the established bar of 0.9 (8.66: a calibrated
+model in a noisy domain scores about 0.85, the bar does not allow for irreducible outcome randomness),
+the parents never qualify, and 77% of proposals halt in the StandCoin lane (8 seeds: shares 0.02 to
+0.85). Tried and withdrawn: a maintenance bar (hysteresis: a qualified model keeps its currency above
+0.75), which lowered the halted share by 0.26 on average but not significantly over 8 paired seeds
+(seed 5 worsened), so it is not adopted (parsimony). What works: the relative status bar of 8.41 (c),
+the bar read relative to what the work would otherwise fall to: halts vanish in all 4 seeds measured and
+floor growth rises (78 to 93 against 13 to 78). The native route to it, the debatable escape (governance
+trials the relative bar on a share of the leaves and adopts it on `escape_accept_ref`), adopts it in 3 of
+4 seeds (gains about 4,000 against harms under 80, nothing irreparable); in the fourth the trial half
+held only idle leaves, so it saw nothing (a toy world with one working domain). For the author: (1) make
+the relative bar the default for established domains, given that the absolute 0.9 bar is unattainable
+under realistic noise; or keep it governed through the escape, with trial leaves drawn among active ones
+(randomised blocks by activity, L157's experimental design). (2) This also bears on 8.71: with the
+relative bar the absorbing stall does not arise here, so RA contraction is needed only for lane work that
+no model can price at all. Candidate homes: L82 (status bars), 8.36, 8.41, L157.
