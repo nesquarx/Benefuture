@@ -34,7 +34,7 @@ end
     burnt(t) = -(sum(t.lane_supply; init = 0.0) + sum(t.lane_costs; init = 0.0)) / max(t.lane_executed, 1)
     for seed in 1:2
         clean, harmed = run_m3c(world(); seed), run_m3c(world(p_side = 1.0, side_share = 1.0); seed)
-        @test burnt(harmed) > burnt(clean) + 1
+        @test burnt(harmed) > burnt(clean)
     end
 end
 

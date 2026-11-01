@@ -77,8 +77,8 @@ function converges(sev)
     # Advantage of agents `k` over the honest agents 1-5: their mean balance less the honest mean, less
     # the same gap with the attack off, in units of one agent's endowment (a difference, since harm
     # burnt under 8.67 can leave balances below zero, where ratios mean nothing; guardians' hazard
-    # costs cancel between the two runs).
-    gap(t, k) = mean(sum(t.balance[i, :]) for i in k) - mean(sum(t.balance[i, :]) for i in 1:5)
+    standing(t, i) = sum(t.balance[i, :]) + t.overflow_agent[i]
+    gap(t, k) = mean(standing(t, i) for i in k) - mean(standing(t, i) for i in 1:5)
     one(seed) = begin
         tr = run_m3c(world(clamp.(sev, 0, Inf)); seed)
         hs = copy(sev); for (f, _) in attacks; hs[f] = 0; end

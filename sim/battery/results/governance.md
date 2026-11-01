@@ -1,8 +1,8 @@
 # Failure-boundary battery: governance
 
-Build: commit 72179c2 (with any uncommitted changes at the time).
+Build: commit 6af49d5 (with any uncommitted changes at the time).
 
-Run time 8.0 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 0% failing.
+Run time 1.0 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 0% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
@@ -32,14 +32,14 @@ Run time 8.0 minutes; 24 random rays; 128 screened worlds (severities up to 1.00
 
 | Pair | Interaction |
 |---|---|
-| ability scatter × delegation | +0.000 |
-| signal noise × delegation | +0.000 |
-| ability scatter × collusion | +0.000 |
-| hidden outcomes × delegation | +0.000 |
-| local noise × delegation | +0.000 |
+| local noise × collusion | +0.000 |
 | signal noise × ability scatter | +0.000 |
+| ability scatter × collusion | +0.000 |
+| hidden outcomes × loyalty | +0.000 |
 | signal noise × hidden outcomes | +0.000 |
-| hidden outcomes × local noise | +0.000 |
+| signal noise × local noise | +0.000 |
+| local noise × delegation | +0.000 |
+| ability scatter × delegation | +0.000 |
 
 ## Nearest failures on random rays (severity per factor at the boundary)
 
@@ -52,25 +52,25 @@ Non-monotone rays (converging again beyond the boundary): 0 of 24.
 
 No failing world, so no box.
 
-## Continuous methods (run time 11.9 minutes)
+## Continuous methods (run time 1.4 minutes)
 
 Readings: the share of the last half of decisions right, less 0.75 (the margin), averaged over seeds 1, 2, … until its standard error (Student-t inflated) is within 0.02 (3 to 8 seeds).
 
 ### Variance-based sensitivity (Sobol indices; severities uniform in [0, 1.00])
 
-Saltelli et al. (2010) design, 576 evaluations; 95% bootstrap intervals. S1: the share of the reading's variance a factor explains alone; ST: with all its interactions. ST well above S1 marks a factor acting through interactions; variance the seeds add is in no factor's S1. Seeds per world: mean 3.0, 1 of 576 worlds at the cap.
+Saltelli et al. (2010) design, 576 evaluations; 95% bootstrap intervals. S1: the share of the reading's variance a factor explains alone; ST: with all its interactions. ST well above S1 marks a factor acting through interactions; variance the seeds add is in no factor's S1. Seeds per world: mean 3.0, 2 of 576 worlds at the cap.
 
 | Factor | S1 (margin) | ST (margin) |
 |---|---|---|
-| ability scatter | 3.73 [-5.84, 16.78] | 0.71 [0.50, 0.90] |
-| signal noise | 3.98 [-7.62, 13.28] | 0.49 [0.30, 0.73] |
-| collusion | 5.20 [-3.06, 16.51] | 0.36 [0.25, 0.54] |
-| local noise | 3.59 [-3.45, 10.97] | 0.26 [0.16, 0.40] |
-| delegation | 3.15 [-2.98, 9.75] | 0.21 [0.13, 0.30] |
-| hidden outcomes | 5.64 [0.23, 12.63] | 0.17 [0.11, 0.25] |
-| loyalty | 0.80 [-3.03, 4.18] | 0.06 [0.04, 0.09] |
+| signal noise | -0.80 [-12.40, 8.69] | 0.62 [0.46, 0.81] |
+| collusion | 0.15 [-7.68, 6.72] | 0.33 [0.21, 0.54] |
+| ability scatter | -2.26 [-8.89, 4.44] | 0.27 [0.18, 0.36] |
+| delegation | -3.49 [-10.24, 1.93] | 0.20 [0.12, 0.33] |
+| hidden outcomes | -2.59 [-9.71, 2.50] | 0.19 [0.11, 0.31] |
+| local noise | -0.69 [-4.94, 4.64] | 0.16 [0.11, 0.23] |
+| loyalty | -0.80 [-4.24, 1.93] | 0.05 [0.03, 0.06] |
 
-Sum of first-order indices (margin): 26.09; variance of the margin: 3.06e-05.
+Sum of first-order indices (margin): -10.48; variance of the margin: 3.7e-05.
 
 ### Active learning of the failure boundary (AK-MCS)
 
@@ -84,11 +84,11 @@ Evaluated worlds nearest the boundary (smallest |margin|):
 
 | margin | signal noise | ability scatter | hidden outcomes | local noise | collusion | delegation | loyalty |
 |---|---|---|---|---|---|---|---|
-| +0.23 | 0.81 | 0.21 | 0.60 | 0.88 | 0.17 | 0.28 | 1.00 |
-| +0.23 | 0.61 | 0.41 | 0.19 | 0.42 | 0.71 | 0.92 | 0.28 |
-| +0.23 | 0.52 | 0.14 | 0.56 | 0.66 | 0.81 | 0.10 | 0.20 |
-| +0.23 | 0.59 | 0.43 | 0.19 | 0.64 | 0.54 | 0.41 | 0.18 |
-| +0.23 | 0.24 | 0.40 | 0.38 | 0.67 | 0.25 | 0.98 | 0.48 |
-| +0.23 | 0.40 | 0.55 | 0.54 | 0.23 | 0.44 | 0.61 | 0.29 |
-| +0.23 | 0.86 | 0.70 | 0.86 | 1.06 | 0.65 | 0.32 | 0.50 |
-| +0.23 | 0.30 | 0.50 | 0.25 | 0.61 | 0.27 | 0.50 | 0.81 |
+| +0.22 | 0.72 | 0.28 | 0.27 | 0.25 | 0.57 | 0.51 | 0.53 |
+| +0.23 | 0.33 | 0.35 | 0.47 | 0.57 | 0.97 | 0.55 | 0.62 |
+| +0.23 | 0.35 | 0.05 | 0.66 | 0.69 | 0.40 | 0.67 | 0.92 |
+| +0.23 | 1.02 | 0.67 | 0.99 | 0.69 | 0.78 | 0.38 | 0.23 |
+| +0.23 | 0.76 | 0.73 | 0.29 | 0.63 | 0.61 | 0.26 | 0.78 |
+| +0.24 | 0.38 | 0.77 | 0.37 | 0.25 | 0.00 | 0.51 | 0.42 |
+| +0.24 | 0.69 | 0.96 | 0.38 | 0.50 | 0.04 | 1.04 | 0.41 |
+| +0.24 | 0.12 | 0.71 | 0.27 | 0.34 | 0.46 | 0.82 | 0.44 |

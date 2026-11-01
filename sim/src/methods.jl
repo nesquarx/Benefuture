@@ -179,7 +179,26 @@ function sobol_indices(f, k::Integer; N::Integer, rng::AbstractRNG, bootstrap::I
     check(k >= 1 && N >= 2 && bootstrap >= 0, "at least one factor and two rows")
     A, B = latin_hypercube(rng, N, k), latin_hypercube(rng, N, k)
     ev(x) = (v = f(x); vv = v isa Number ? [Float64(v)] : Float64.(collect(v)); check(all(isfinite, vv), "finite outputs"); vv)
-    rows(M) = permutedims(reduce(hcat, [ev(M[i, :]) for i in 1:N]))  # N × outputs
+    function rows(M)
+        res = Vector{Vector{Float64}}(undef, N)
+        try
+            Threads.@threads for i in 1:N
+                res[i] = ev(M[i, :])
+            end
+        catch err
+            if err isa CompositeException
+                for e in err.exceptions
+                    if e isa TaskFailedException && e.task.result isa Exception
+                        throw(e.task.result)
+                    elseif e isa Exception
+                        throw(e)
+                    end
+                end
+            end
+            rethrow()
+        end
+        permutedims(reduce(hcat, res))  # N × outputs
+    end
     fA, fB = rows(A), rows(B)
     fAB = map(1:k) do j
         AB = copy(A); AB[:, j] = B[:, j]
@@ -352,10 +371,24 @@ function cross_entropy_search(f, m::Integer; rng::AbstractRNG, population::Integ
     history = NamedTuple[]
     for it in 1:iterations
         Θ = clamp.(μ .+ σ .* randn(rng, m, population), 0.0, 1.0)
-        vals = map(1:population) do p
-            v = Float64(f(Θ[:, p]))
-            check(isfinite(v), "the objective must be finite")
-            v
+        vals = Vector{Float64}(undef, population)
+        try
+            Threads.@threads for p in 1:population
+                v = Float64(f(Θ[:, p]))
+                check(isfinite(v), "the objective must be finite")
+                vals[p] = v
+            end
+        catch err
+            if err isa CompositeException
+                for e in err.exceptions
+                    if e isa TaskFailedException && e.task.result isa Exception
+                        throw(e.task.result)
+                    elseif e isa Exception
+                        throw(e)
+                    end
+                end
+            end
+            rethrow()
         end
         o = sortperm(vals)
         vals[o[1]] < best_v && ((best_v, best_θ) = (vals[o[1]], Θ[:, o[1]]))

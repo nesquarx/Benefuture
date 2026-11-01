@@ -4,7 +4,7 @@
 # short. Evaluations are cached on disk (`cached`, sim/src/battery.jl), so a relaunch resumes.
 # Usage: tools/battery/run.sh [economy|governance|attack ...]   (default: economy governance)
 cd "$(dirname "$0")/../.." || exit 1
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.elan/bin:$HOME/.local/bin:/Users/arko.sen/Desktop/BfTest/.elan/bin:$PATH"
 # A battery is alive when its recorded pid is a julia process running its file (a shell wrapper
 # whose command line mentions the file does not count).
 alive() {
@@ -25,16 +25,15 @@ for b in "${@:-economy governance}"; do
     git rev-parse --short HEAD > "$state/$name.commit"
     date -u +%FT%TZ > "$state/$name.start"
     if command -v setsid >/dev/null 2>&1; then
-      setsid nohup bash -c "julia --project=sim sim/battery/$name.jl > $state/$name.log 2>&1; echo \$? > $state/$name.exit" \
+      setsid nohup bash -c "julia -t auto --project=sim sim/battery/$name.jl > $state/$name.log 2>&1; echo \$? > $state/$name.exit" \
         > /dev/null 2>&1 < /dev/null &
     else
-      nohup bash -c "julia --project=sim sim/battery/$name.jl > $state/$name.log 2>&1; echo \$? > $state/$name.exit" \
-        > /dev/null 2>&1 < /dev/null &
+      python3 -c "import subprocess, os; subprocess.Popen(['bash', '-c', 'julia -t auto --project=sim sim/battery/$name.jl > $state/$name.log 2>&1; echo \$? > $state/$name.exit'], start_new_session=True)"
     fi
     # the julia child's pid: the cmdline check above looks for the battery file in it
     for _ in 1 2 3 4 5 6 7 8 9 10; do
       if [[ -d /proc ]]; then
-        pid=$(pgrep -f "^julia --project=sim sim/battery/$name.jl" | head -1)
+        pid=$(pgrep -f "julia .*sim/battery/$name\.jl" | head -1)
       else
         pid=$(ps -Ao pid,command | grep "julia.*sim/battery/$name\.jl" | grep -v "bash -c" | grep -v grep | awk '{print $1}' | head -1)
       fi

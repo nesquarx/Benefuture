@@ -84,7 +84,10 @@ high (above their medians) beyond what each alone adds.
 """
 function screen(oracle, X::AbstractMatrix)
     n, k = size(X)
-    fails = [!oracle(X[i, :]) for i in 1:n]
+    fails = Vector{Bool}(undef, n)
+    Threads.@threads for i in 1:n
+        fails[i] = !oracle(X[i, :])
+    end
     rate(m) = any(m) ? mean(fails[m]) : NaN
     importance = [any(fails) && !all(fails) ? mean(X[fails, j]) - mean(X[.!fails, j]) : 0.0 for j in 1:k]
     pairs = Dict{Tuple{Int,Int},Float64}()
@@ -107,11 +110,17 @@ Latin-hypercube worlds, scaled (`screen_scale`) to straddle the boundary the ray
 function battery(oracle, names; rng::AbstractRNG, rays::Integer, screen_n::Integer, tmax::Real, tol::Real, grid::Integer = 8)
     k = length(names)
     axis(j) = Float64.((1:k) .== j)
-    limits = Dict(names[j] => ray_boundary(oracle, axis(j); tmax, tol, grid).t for j in 1:k)
-    boundary = map(1:rays) do _
-        d = abs.(randn(rng, k)); d ./= sqrt(sum(abs2, d))
+    lim_vals = Vector{Float64}(undef, k)
+    Threads.@threads for j in 1:k
+        lim_vals[j] = ray_boundary(oracle, axis(j); tmax, tol, grid).t
+    end
+    limits = Dict(names[j] => lim_vals[j] for j in 1:k)
+    directions = [let d = abs.(randn(rng, k)); d ./ sqrt(sum(abs2, d)); end for _ in 1:rays]
+    boundary = Vector{Any}(undef, rays)
+    Threads.@threads for i in 1:rays
+        d = directions[i]
         b = ray_boundary(oracle, d; tmax, tol, grid)
-        (direction = d, t = b.t, point = isfinite(b.t) ? b.t .* d : fill(Inf, k), monotone = b.monotone)
+        boundary[i] = (direction = d, t = b.t, point = isfinite(b.t) ? b.t .* d : fill(Inf, k), monotone = b.monotone)
     end
     # Screen where the boundary lies, Gaussian-ish: severities centred on the scale that puts a typical
     # point (norm about √(k/3)) at the median boundary the rays found, so the sample straddles it.
@@ -138,13 +147,28 @@ function cached(f, label; dir = joinpath(@__DIR__, "..", "battery", "cache"))
         k, v = split(line, '\t'; limit = 2)
         memo[k] = eval(Meta.parse(v))
     end
+    lk = ReentrantLock()
     io = open(path, "a")
     function (sev)
         k = join((string(reinterpret(UInt64, Float64(x)); base = 16) for x in sev), ",")
-        haskey(memo, k) && return memo[k]
+        lock(lk)
+        if haskey(memo, k)
+            v = memo[k]
+            unlock(lk)
+            return v
+        end
+        unlock(lk)
         v = f(sev)
-        println(io, k, '\t', repr(v)); flush(io)
-        memo[k] = v
+        lock(lk)
+        try
+            if !haskey(memo, k)
+                println(io, k, '\t', repr(v)); flush(io)
+                memo[k] = v
+            end
+            return memo[k]
+        finally
+            unlock(lk)
+        end
     end
 end
 
@@ -256,7 +280,14 @@ function battery_methods(reading, names; rng::AbstractRNG, outputs, pool, sobol_
     k = length(names)
     check(size(pool, 2) == k && sobol_top > 0, "a pool over the factors; a positive Sobol range")
     seeds_sobol, seeds_active = Int[], Int[]
-    take(sev, log) = (r = reading(sev); push!(log, r.n); Float64.(r.outputs))
+    log_lk = ReentrantLock()
+    take(sev, log) = begin
+        r = reading(sev)
+        lock(log_lk) do
+            push!(log, r.n)
+        end
+        Float64.(r.outputs)
+    end
     sob = sobol_n > 0 ? sobol_indices(u -> take(sobol_top .* u, seeds_sobol), k; N = sobol_n, rng) : nothing
     act = active_budget > 0 ? active_boundary(x -> take(x, seeds_active)[1], pool; rng, n_init = min(n_init, active_budget),
                                               budget = active_budget) : nothing
