@@ -15,24 +15,23 @@ pool_world(; sl = 0.3, kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans =
 growth(tr) = tr.floor_u[end] - tr.floor_u[51]
 
 @testset "Better models: acceptance" begin
-    seeds = 1:3
+    seeds = 1:12
     static = [run_m3c(pool_world(); seed) for seed in seeds]
     better = [run_m3c(pool_world(p_new_model = 0.05); seed) for seed in seeds]
-    # Challengers arrive and take over; the models backing the working domains end better than the
-    # bootstrap's, and never perfect.
-    @test all(b.takeovers > 0 for b in better)
-    # (a working domain's model is overtaken in every seed, both in two of three: one takeover may suffice)
-    @test all(min(b.top_scale[1], b.top_scale[3]) < 1 && all(>=(0.1 - 1e-12), b.top_scale) for b in better)
-    # They take over measurement and prediction: the domains' own currencies price more of their work
-    # (where they fall short, coarser parent models price it); floors grow about as much, since the
-    # work done barely changes.
-    # Under the record credence (8.71) the bootstrap models already qualify more robustly (own share 0.71
-    # static against 0.56 under the normal credence), so the gain is smaller: 0.79 against 0.71.
-    own(tr) = mean(tr.priced_leaf[i] == tr.true_leaf[i] for i in eachindex(tr.chosen_step) if tr.chosen_step[i] >= 100)
-    @test mean(own.(better)) > mean(own.(static)) + 0.05
-    acc_d = [b.leaf_accuracy[1] + b.leaf_accuracy[3] - (s.leaf_accuracy[1] + s.leaf_accuracy[3]) for (b, s) in zip(better, static)]
-    @test equivalent(acc_d; margin = 0.20).equivalent
-    @test mean(growth.(better)) > 0.95 * mean(growth.(static))
+    # Challengers arrive and take over, so a working domain's backing model ends better than the
+    # bootstrap's: a regime, since a challenger must win by the significance rule (`model_z`), shown as a
+    # proportion with its interval (11 of 12 seeds; seed 12 sees no takeover in 400 steps). No model is
+    # ever perfect (structural, every seed).
+    @test proportion_interval(count(b -> b.takeovers > 0 && min(b.top_scale[1], b.top_scale[3]) < 1, better), length(better)).lo > 0.5
+    @test all(all(>=(0.1 - 1e-12), b.top_scale) for b in better)
+    # Stated before measuring (CLAUDE.md significance testing): floors lose no more than 5% of their
+    # growth (equivalence, one-sided). Holds at 8, 12 and 16 seeds.
+    @test equivalent(growth.(static) .- growth.(better); margin = 0.05 * mean(growth.(static)), side = :upper).equivalent
+    # Unsupported, so not asserted: that better models raise the working leaves' final accuracy
+    # (+0.007 ± 0.020 over 16 paired seeds) or the share their own currencies price (+0.037 ± 0.020,
+    # 1.85 standard errors against 2.17). The models' ceiling here is the world's noise (8.84: a perfect
+    # model scores well under 1), so a better model takes over with little measured accuracy to gain.
+    seeds = 1:3
     # A model that slips is overtaken: a capture of the model backing leaf 1 is outlived by a
     # challenger, which keeps the leaf's currency pricing through the capture.
     cap = [shock(:capture; step = 150, duration = 200, size = 3.0, target = 1)]
@@ -40,7 +39,8 @@ growth(tr) = tr.floor_u[end] - tr.floor_u[51]
                 isempty(k) ? 0.0 : mean(tr.priced_leaf[k] .== 1))
     captured = [run_m3c(pool_world(events = cap); seed) for seed in seeds]
     overtaken = [run_m3c(pool_world(events = cap, p_new_model = 0.05); seed) for seed in seeds]
-    @test mean(held.(overtaken)) > mean(held.(captured)) + 0.2
+    # An effect (significance rule): +0.79 ± 0.05 over 3 seeds, stable at 6 and 8 (+0.79 ± 0.04).
+    @test paired_effect(held.(overtaken) .- held.(captured)).significant
 end
 
 @testset "Better models: adversarial and edge cases" begin
