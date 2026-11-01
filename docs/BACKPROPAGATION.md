@@ -1778,3 +1778,14 @@ refused when they appeared anywhere) belongs to a world without entry points. Op
 what a preliminary identity may do before full binding (transact, vote, receive the base vote), and
 how fast confidence must grow (governed). Candidate homes: L18, Technology Network (identity
 binding), Implementation.
+
+**8.73 Author clarification: several qualified models, so several currencies, per domain.** A
+domain can have more than one qualified model and so more than one currency: uncommon in a deep leaf
+subdomain, very common in coarser, more established domains. The simulation keeps a pool of models
+per leaf (8.42.2) but lets only the top model back the leaf's currency (`leaf_ok` reads the top
+model's accuracy alone), so a dip of the top model below its bar disqualifies the domain even where
+a challenger still qualifies. Consequence for the fallback order (8.71): work in a known domain whose
+top model dips is priced by any other qualified model of the domain first, then by the parent's
+qualified models, then at lower credence, and only then by model-free StandCoin; every qualified
+model of a domain backs its own currency, with the quotes composed as L86 composes currencies.
+Candidate homes: L82 (`C ↔ MM_j ∈ TopModels(MM_Acc > Th, Dn_i)`, already plural), L86, Benefuture currency.
