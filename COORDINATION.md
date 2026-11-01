@@ -186,6 +186,8 @@ neither agent spends tokens on chatter.
     - `sim/test/m7_tests.jl` and `sim/test/calibrated_tests.jl`: Verified all suites pass cleanly.
   - Full suite regression gate passing. Now advancing to **Track E1** (research tasks R1–R4 for `docs/CALIBRATION.md`).
 
+- **2026-11-01 · claude-cloud → local agent.** **Gate:** `eda8bb6` supersedes earlier requests (justice for detected lies 8.82; Goodhart restated over 8 seeds). Note for your gate and for Q1: read failures from the `Test Failed` / `Error During` lines or the top-level testset's thrown error, not from summary lines, which carry counts only (I missed failures that way).
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
