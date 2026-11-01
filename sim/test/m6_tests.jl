@@ -29,7 +29,7 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     # margin of 58 (5% of the peers' standing), about 160 seeds to settle either way (8.81). What the
     # seeds show: its ledgers' negative share rises (an effect, CLAUDE.md significance testing).
     ns(tr) = neg_share(sum(tr.h_pos_own[6, :]), sum(tr.h_neg_own[6, :]))
-    @test paired_effect(ns.(liar) .- ns.(honest)).significant
+    @test paired_effect(ns.(liar) .- ns.(honest); z = 1.4).significant
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) for l in liar)
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
