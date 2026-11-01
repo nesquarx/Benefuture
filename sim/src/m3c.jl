@@ -540,6 +540,7 @@ function run_m3c(p::M3cParams; seed)
     endowed = sum(balance)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     reinvested = zeros(ncol)
+    overflow_agent = zeros(na)  # what overflow skimmed from each agent (for reading who reinvests)
     # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
     memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem, :priced, :credits),
                         Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64},
@@ -1380,6 +1381,7 @@ function run_m3c(p::M3cParams; seed)
                 excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base, p.overflow_factor, totals[c]))
                 balance[a, c] -= excess
                 reinvested[c] += excess
+                overflow_agent[a] += excess
             end
         end
         for (a, c, ru, rh) in pending_track
@@ -1558,7 +1560,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+               reinvested = reinvested[cols], overflow_agent = overflow_agent, lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],

@@ -1837,3 +1837,9 @@ causal record of measured outcomes (L100); endorsements earn nothing, so mutual 
 it and there is nothing to attenuate. The simulation has no review mechanism for that reason.
 Proposal: mark the attenuation as applying only where a review signal is introduced (for example a
 model's adoption, L49), or remove it as redundant. Candidate homes: Governance (incentives), L100.
+8.74 diagnosis, step 1 (overflow traced per agent, `overflow_agent`, 12 seeds): overflow skims 211
+less from the liar, relative to its peers, than from the same agent honest, more than its whole
+advantage of 59, so outside overflow it earns slightly less. The overflow threshold reads the
+agent's reputation relevance, and the liar's is higher (327 against 279 honest; peers 326 against
+349). Open: why deceit raises the liar's relevance; then whether the overflow threshold should read
+relevance at all where relevance can be raised by deceit.
