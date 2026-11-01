@@ -90,14 +90,20 @@ end
               for k in 1:8 for _ in 1:2]
     eightfold(; sk = 0.15, kw...) = M3cParams(ToyParams(n = 120, steps = 300, plans = 12), ag(sk), lp, trues(8); λpos = 0.05, λneg = 0.02,
                                              transactions = true, causal_distribution = true, LEGACY..., kw...)
-    # Low-skill domains, where no leaf model reaches the established bar: the trial finds the
-    # relative bar better, with gains above harms and nothing irreparable, and it is adopted.
-    tr = run_m3c(eightfold(escape = true); seed = 1)
+    # Low-skill domains, where no leaf model reaches the established bar: under the normal credence (the
+    # limiting case kept for the scenario) the trial finds the relative bar better, with gains above
+    # harms and nothing irreparable, and it is adopted.
+    tr = run_m3c(eightfold(escape = true, credence_rule = :normal); seed = 1)
     e = tr.escape
     @test e.tried && e.adopted && e.gains > e.harms && e.irreparable == 0 && e.means[2] > e.means[1]
     @test count(e.trial_leaves) == 4
     # Before the trial and on the other leaves meanwhile, the incumbent bar holds.
-    @test tr == run_m3c(eightfold(escape = true); seed = 1)
+    @test tr == run_m3c(eightfold(escape = true, credence_rule = :normal); seed = 1)
+    # Under the record credence, the rule (8.71), the incumbent bar prices these domains better (mean
+    # outcome 42, 32, 29 against 17, 36, 8 over seeds 1-3), so the trial is tried and harmless but never
+    # beats the incumbent by the significance rule: the escape is no longer needed here.
+    rec = [run_m3c(eightfold(escape = true); seed).escape for seed in 1:3]
+    @test all(r.tried && !r.adopted && r.gains > r.harms && r.irreparable == 0 for r in rec)
     # Adversarial and edge cases. The same proposal is rejected where it causes irreparable harm
     # (a world in which much smaller losses are irreparable), or where it is no better (capable
     # domains, where every leaf model clears the established bar anyway).

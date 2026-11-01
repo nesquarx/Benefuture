@@ -33,12 +33,18 @@ fooled = [0, 0, 0, 0, 0, 1.0]
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
     # every model can keep the domain from ever qualifying: models it has no record with yet are
     # fooled in full (BACKPROPAGATION 8.37). Here it happens in seeds 4 and 5, never honestly.
+    # The blockade arises under the normal credence (credence_ref over the record's RMS error), the
+    # limiting case kept here for the scenario: one fooled outlier turns every credence into a coin toss.
+    # Under the record credence, the rule (8.71), it does not arise at all (0 of 12 seeds against 5 of 12).
     peers(tr) = count(<(6), tr.chosen_agent)
-    @test peers(liar[4]) == 0 && peers(liar[5]) == 0 && all(peers(h) > 0 for h in honest)
-    # Uncovered and repaired (8.38), with readers' attention drawn by the negative pattern in the liar's
-    # ledgers and in the marginal domain (8.42.1), the domain is blocked far less often.
+    nliar = [run_m3c(six(deceit = fooled, credence_rule = :normal); seed) for seed in 4:5]
+    @test all(peers(l) == 0 for l in nliar) && all(peers(h) > 0 for h in honest)
     blocked(kw) = count(seed -> peers(run_m3c(six(; deceit = fooled, kw...); seed)) < 50, 1:12)
-    @test blocked((advap = true,)) <= blocked((;)) - 2
+    @test blocked((;)) == 0
+    # Uncovered and repaired (8.38), with readers' attention drawn by the negative pattern in the liar's
+    # ledgers and in the marginal domain (8.42.1), the domain is blocked far less often (normal credence:
+    # 1 of 12 against 5).
+    @test blocked((advap = true, credence_rule = :normal)) <= blocked((credence_rule = :normal,)) - 2
     # Without the track record the liar takes the domain down in every seed.
     untracked = [run_m3c(six(deceit = fooled, track_window = 0); seed) for seed in 1:3]
     @test mean(peers.(untracked)) < 0.1 * mean(peers.(honest[1:3]))

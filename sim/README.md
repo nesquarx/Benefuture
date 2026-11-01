@@ -780,7 +780,7 @@ not the rank rule (8.58-c): honest credences (`credence_ref`, predicted value ov
 error, no prior) are underconfident in a domain whose outcomes are mostly positive (credences 0.7–0.9
 come true 100% of the time, 0.3–0.7 in 67–100%), so a model stating half its uncertainty is better
 calibrated and the proper score rightly prefers it. The candidate fix, credence from the record
-(`credence_rule = :record`, [P], off by default; Lean `record_credence_ref`: the share of the model's
+(`credence_rule = :record`, the default since the author adopted it, 8.71; Lean `record_credence_ref`: the share of the model's
 recent errors below its prediction, ties counting half), is calibrated by construction and moved by
 at most 1 / n by any one error; it removes the economy's side-harm stall and half the seed
 dependence of 8.65 (a) (8.66; `sim/test/calibrated_tests.jl`).
@@ -1196,7 +1196,7 @@ for removal.
 | Forks dividing the base vote | Ruled | 8.34 (for now); `fork_rule` |
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |
-| Credence from the record (`record_credence_ref`, `credence_rule = :record`) | Proposed [P], off by default | 8.66, 8.58-c; replaces the normal credence over the record's RMS error, its limiting case; no threshold |
+| Credence from the record (`record_credence_ref`, `credence_rule = :record`) | Ruled (8.71), the default | 8.66, 8.58-c; replaces the normal credence over the record's RMS error, its limiting case; no threshold |
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.57-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
 | Outcomes with more than 62 contributors fall to traversal | Introduced (bound) | coalitions are 62-bit masks in `shapley_shares` |

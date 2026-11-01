@@ -27,9 +27,15 @@ end
         # work burns its resource cost and mints nothing (8.3)
         @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6
     end
-    # Counterexample: harm is burnt. Side harm on every action lowers supply against the same world without it.
-    clean, harmed = run_m3c(world(); seed = 1), run_m3c(world(p_side = 1.0, side_share = 1.0); seed = 1)
-    @test sum(harmed.supply) < sum(clean.supply)
+    # Counterexample: harm is burnt. With side harm on every action, more currency is burnt per lane
+    # action than its resource cost (3.5 and 67.8 against at most 0.53 without, seeds 1-2). This world
+    # sits on the novel bar's edge (accuracy 0.65-0.89), so whether its work is priced or falls to the
+    # lane depends on the early record; the burn per lane action does not.
+    burnt(t) = -(sum(t.lane_supply; init = 0.0) + sum(t.lane_costs; init = 0.0)) / max(t.lane_executed, 1)
+    for seed in 1:2
+        clean, harmed = run_m3c(world(); seed), run_m3c(world(p_side = 1.0, side_share = 1.0); seed)
+        @test burnt(harmed) > burnt(clean) + 1
+    end
 end
 
 # Harm done by StandCoin-lane work burns currency (8.67, ruled): charged to its proposer and

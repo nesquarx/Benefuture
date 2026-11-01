@@ -239,7 +239,7 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, status [P])
   itself (so "each share within ε × its marginal range with probability 1 − δ" rests on it), and
   that the mean over all n! orderings equals the subset form, which is checked exactly over ℚ for
   n ≤ 5 at build time ([`BenefutureTest/Differential.lean`](BenefutureTest/Differential.lean)).
-- Credence from the record (`Benefuture.Proposed.RecordCredence`, [P]; BACKPROPAGATION 8.66): a
+- Credence from the record (`Benefuture.Proposed.RecordCredence`; adopted as the rule, BACKPROPAGATION 8.66, 8.71): a
   model's credence as the share of its recent errors below its prediction, ties counting half, stays
   within [1 − cap, cap] ([`recordCredence_bounds`](Benefuture/Proposed/RecordCredence.lean)), rises
   with the prediction ([`recordScore_mono`](Benefuture/Proposed/RecordCredence.lean)), and is moved
@@ -644,8 +644,7 @@ Governance and thresholds
   turns to a coin toss after one large side effect, the domains lose their currencies and the economy
   stalls (the economy battery's one failure inside a realistic range); credence from the record keeps
   the currencies and the growth, and in the realistic world lets the currency regime take hold in four
-  seeds of six instead of none ([sim/test/calibrated_tests.jl](sim/test/calibrated_tests.jl); 8.66, [P],
-  off by default). *Reputation attacks* (Hoffman,
+  seeds of six instead of none ([sim/test/calibrated_tests.jl](sim/test/calibrated_tests.jl); 8.66, adopted as the rule, 8.71). *Reputation attacks* (Hoffman,
   Zage & Nita-Rotaru 2009): identity binding (Lean `binding_admits_ref`) links every whitewashing
   attempt and keeps the domain's model as without (accuracy 0.995 against 0.941 unbound); slandering
   convicts no one and charges the slanderer; on-off deceit defeats the track record and takes a

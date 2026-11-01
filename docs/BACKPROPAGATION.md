@@ -1797,3 +1797,22 @@ passing tests and courses. Voting before full binding was not ruled; the simulat
 base vote until binding (the sybil-safe reading) and marks it as an assumption. "Safe transactions"
 need a governed bound (a cap on value or on harm at risk). Candidate homes: L18, L132–L133, Technology
 Network (privacy tiers, educational gating), Education.
+8.71 status: the record credence is the default (`credence_rule = :record`); the normal credence is
+kept as the limiting case of normal errors. Readings that moved, each measured under both rules
+before its test was restated:
+- the marginal-domain blockade (8.37): a liar kept the domain from qualifying in 5 of 12 seeds under
+  the normal credence, in none under the record credence; the blockade-and-repair scenario (8.38)
+  keeps the normal credence as its limiting case;
+- whitewashing without binding no longer lowers the domain model's accuracy (mean 0.974 against 0.980
+  without whitewashing; under the normal credence it fell to 0.87 in one seed); it still costs the liar;
+- heavy friction: the all-top world degrades about as before (floor gains 8.5, 4.5, 10.9), but the
+  clean world no longer has a stalled seed (171, 182, 166 against 31, 176, 117), so the share of clean
+  growth reads about 5% instead of 8%; the test now asserts floors rise in every seed;
+- better models: the bootstrap models qualify more robustly (own-currency share 0.71 static against
+  0.56), so arriving better models add less (0.79 against 0.71);
+- the debatable escape (8.41): the incumbent bar now prices the low-skill domains better (mean outcome
+  42, 32, 29 against 17, 36, 8), so the relative-bar trial is tried and harmless but never adopted; the
+  adoption scenario keeps the normal credence;
+- the supply probe's tiny world sits on the novel bar's edge (accuracy 0.65 to 0.89 under both rules),
+  so whether its work is priced depends on the early record; its harm counterexample now reads the burn
+  per lane action.
