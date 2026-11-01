@@ -14,21 +14,22 @@
 
   Covered (ℝ spec ↔ Float reference): `supply_delta`, `competition_efficiency`,
   `rolling_average`, `accumulate_capped`, `p_forgive`, `p_overreact`, `severity_score` at
-  `defaultFrParams`, `Proposed.shapley` ↔ `shapley_ref`, `Proposed.shapley_sampled` ↔
-  `shapley_sampled_ref`, `Proposed.recordCredence` ↔ `record_credence_ref`. Computable specifications compared directly: `bounty_reward` (ℤ) ↔
-  `advap_reward_ref` at share 1/10 and floor 1 (equal where the prevented harm is a multiple of 10,
-  within 1 otherwise: the spec floors harm / 10), `upfront_payment` (ℤ, parts per million) ↔
-  `Escrow_split_ref` (within 1, by flooring). Exact checks over ℚ: the mean of marginals over all
-  n! orderings equals the subset form of Shapley for n ≤ 5 (the identity cited, not proved, in
-  `Proposed.ShapleySampling`).
+  `defaultFrParams`, `Voting_weight` ↔ `Voting_weight_ref`, `Proposed.shapley` ↔ `shapley_ref`,
+  `Proposed.shapley_sampled` ↔ `shapley_sampled_ref`, `Proposed.recordCredence` ↔
+  `record_credence_ref`. Interval-bound ℚ oracles covering rules with exp, log, sqrt:
+  `Rep_decay_ref`, `shapley_sample_count_ref`, `phi_ref` (at q = 1), `normal_cdf_ref`, `credence_ref`.
+  Computable specifications compared directly: `bounty_reward` (ℤ) ↔ `advap_reward_ref` at share
+  1/10 and floor 1 (equal where the prevented harm is a multiple of 10, within 1 otherwise: the spec
+  floors harm / 10), `upfront_payment` (ℤ, parts per million) ↔ `Escrow_split_ref` (within 1, by
+  flooring). Exact checks over ℚ: the mean of marginals over all n! orderings equals the subset form
+  of Shapley for n ≤ 5 (the identity cited, not proved, in `Proposed.ShapleySampling`).
 
-  Not covered: rules whose specification involves exp, log, sqrt or powers with real exponents
-  (`phi`, `Sy`, `HaWt`, `V`, `Rep_decay`, `accuracy`, `normal_cdf`, `credence`,
-  `shapley_sample_count_ref`, `Voting_weight`), so no exact oracle exists over ℚ; rules with no
-  ℝ counterpart in `Benefuture/` (most of `BenefutureReference.Domains`, `Records`, `Justice`,
-  `Adversarial`, `ParamSpace`, `Measurement`'s model scoring); and noncomputable choices
-  (`g_choose`, `pareto_front` over `Classical`). These rely on `spec/vectors` and the Julia suites.
-  No refinement proof links ℝ to Float: Float rounding is tested, not bounded.
+  Not covered: rules whose specification involves real exponents or noncomputable choices
+  (`Sy`, `HaWt`, `V`, `accuracy`), rules with no ℝ counterpart in `Benefuture/` (most of
+  `BenefutureReference.Domains`, `Records`, `Justice`, `Adversarial`, `ParamSpace`,
+  `Measurement`'s model scoring); and noncomputable choices (`g_choose`, `pareto_front` over
+  `Classical`). These rely on `spec/vectors` and the Julia suites. No refinement proof links ℝ to
+  Float: Float rounding is tested, not bounded.
 -/
 
 import Mathlib.Data.Rat.Cast.Order
@@ -155,6 +156,151 @@ theorem recordCredenceQ_spec (cap v : ℚ) (errs : List ℚ) :
   · subst h; simp
   · simp [h, hs, Rat.cast_max, Rat.cast_min]
 
+def votingWeightQ (base expWt : ℚ) (profile : List (ℚ × ℚ)) (impWt impact : ℚ) : ℚ :=
+  let expertise := (profile.map fun (w, r) => w * r).sum
+  base + expWt * expertise + impWt * impact
+
+theorem votingWeightQ_spec (base expWt : ℚ) (profile : List (ℚ × ℚ)) (impWt impact : ℚ) :
+    (votingWeightQ base expWt profile impWt impact : ℝ) =
+      (base : ℝ) + (expWt : ℝ) * ((profile.map fun (w, r) => (w : ℝ) * (r : ℝ)).sum) +
+        (impWt : ℝ) * (impact : ℝ) := by
+  dsimp [votingWeightQ]
+  push_cast [Rat.cast_list_sum]
+  simp only [List.map_map, Function.comp_def]
+  push_cast
+  rfl
+
+/-! ## Interval-bound oracles for nonlinear functions -/
+
+/-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
+def sqrtBoundsQ (S : ℚ) : ℚ × ℚ :=
+  if S ≤ 0 then (0, 0)
+  else
+    let nBits := S.num.natAbs.log2
+    let dBits := S.den.log2
+    let halfExp : ℤ := ((nBits : ℤ) - (dBits : ℤ)) / 2
+    let x0 : ℚ :=
+      if halfExp ≥ 0 then (2 : ℚ) ^ halfExp.toNat
+      else 1 / ((2 : ℚ) ^ (-halfExp).toNat)
+    let rec loop (x : ℚ) : Nat → ℚ
+      | 0 => x
+      | n + 1 => loop ((x + S / x) / 2) n
+    let xFinal := loop x0 5
+    let lo := min xFinal (S / xFinal)
+    let hi := max xFinal (S / xFinal)
+    (lo, hi)
+
+/-- Rational exp(-u) bounds for u ≥ 0. Returns (lo, hi) such that lo ≤ exp(-u) ≤ hi. -/
+def expNegBoundsQ (u : ℚ) : ℚ × ℚ :=
+  if u ≤ 0 then (1, 1)
+  else if u ≥ 80 then (0, 1 / (2 ^ 80 : ℚ))
+  else
+    let rec reduce (x : ℚ) (k : Nat) : Nat → ℚ × Nat
+      | 0 => (x, k)
+      | fuel + 1 =>
+        if x ≤ 1 / 2 then (x, k)
+        else reduce (x / 2) (k + 1) fuel
+    let (v, k) := reduce u 0 8
+    let rec taylor (term sum : ℚ) (i : Nat) : Nat → ℚ × ℚ
+      | 0 => (sum, sum + term * v / (i + 1))
+      | n + 1 =>
+        let term' := term * v / (i + 1)
+        let sum' := if (i + 1) % 2 == 1 then sum - term' else sum + term'
+        taylor term' sum' (i + 1) n
+    let (baseLo, baseHi) := taylor 1 1 0 15
+    let rec squareK (lo hi : ℚ) : Nat → ℚ × ℚ
+      | 0 => (lo, hi)
+      | n + 1 => squareK (lo * lo) (hi * hi) n
+    squareK (max 0 baseLo) baseHi k
+
+/-- Rational ln(x) bounds for x ≥ 1. Returns (lo, hi) such that lo ≤ ln(x) ≤ hi. -/
+def lnBoundsQ (x : ℚ) : ℚ × ℚ :=
+  if x ≤ 1 then (0, 0)
+  else
+    let ln2Lo : ℚ := 6931471805599 / 10000000000000
+    let ln2Hi : ℚ := 6931471805600 / 10000000000000
+    let rec reduce (z : ℚ) (k : Nat) : Nat → ℚ × Nat
+      | 0 => (z, k)
+      | fuel + 1 =>
+        if z < 2 then (z, k)
+        else reduce (z / 2) (k + 1) fuel
+    let (w, k) := reduce x 0 32
+    let y := (w - 1) / (w + 1)
+    let y2 := y * y
+    let rec series (term : ℚ) (sum : ℚ) (idx : Nat) : Nat → ℚ × ℚ
+      | 0 =>
+        let tailBound := if 1 - y2 = 0 then 0 else term * y2 / ((2 * idx + 1) * (1 - y2))
+        (2 * sum, 2 * (sum + tailBound))
+      | n + 1 =>
+        let term' := term * y2
+        series term' (sum + term' / (2 * (idx + 1) + 1)) (idx + 1) n
+    let (baseLo, baseHi) := series y y 0 12
+    (baseLo + k * ln2Lo, baseHi + k * ln2Hi)
+
+def repDecayBoundsQ (score dt lambda : ℚ) : ℚ × ℚ :=
+  if dt ≤ 0 then (score, score)
+  else
+    let (elo, ehi) := expNegBoundsQ (lambda * dt)
+    if score ≥ 0 then (score * elo, score * ehi)
+    else (score * ehi, score * elo)
+
+def shapleySampleCountBoundsQ (n : Nat) (eps delta : ℚ) : Nat × Nat :=
+  if eps ≤ 0 || delta ≤ 0 || n == 0 then (0, 0)
+  else
+    let x := 2 * (n : ℚ) / delta
+    let denom := 2 * eps * eps
+    let (lnLo, lnHi) := lnBoundsQ x
+    let ceilQ (q : ℚ) : Nat :=
+      if q ≤ 0 then 0
+      else (q.num + q.den - 1) / q.den |>.toNat
+    (ceilQ (lnLo / denom), ceilQ (lnHi / denom))
+
+def phiBoundsQ (items : List (ℚ × ℚ)) (kappa : ℚ) : ℚ × ℚ :=
+  let linearSum := (items.map fun (a, w) => w * a).sum
+  let pairs := BenefutureReference.crossPairs items
+  let crossSum := (pairs.map fun ((a1, w1), (a2, w2)) => w1 * w2 * (a1 * a2)).sum
+  let (sqrtLo, sqrtHi) := sqrtBoundsQ crossSum
+  if kappa ≥ 0 then
+    (linearSum + kappa * sqrtLo, linearSum + kappa * sqrtHi)
+  else
+    (linearSum + kappa * sqrtHi, linearSum + kappa * sqrtLo)
+
+def normalCdfBoundsQ (x : ℚ) : ℚ × ℚ :=
+  let xabs := |x|
+  let (sqrt2Lo, sqrt2Hi) := sqrtBoundsQ 2
+  let zLo := xabs / sqrt2Hi
+  let zHi := xabs / sqrt2Lo
+  let c0 : ℚ := 3275911 / 10000000
+  let tLo := 1 / (1 + c0 * zHi)
+  let tHi := 1 / (1 + c0 * zLo)
+  let a1 : ℚ := 254829592 / 1000000000
+  let a2 : ℚ := -284496736 / 1000000000
+  let a3 : ℚ := 1421413741 / 1000000000
+  let a4 : ℚ := -1453152027 / 1000000000
+  let a5 : ℚ := 1061405429 / 1000000000
+  let polyQ (t : ℚ) : ℚ :=
+    t * (a1 + t * (a2 + t * (a3 + t * (a4 + t * a5))))
+  let polyLo := min (polyQ tLo) (polyQ tHi)
+  let polyHi := max (polyQ tLo) (polyQ tHi)
+  let (expLo, _) := expNegBoundsQ (zHi * zHi)
+  let (_, expHi) := expNegBoundsQ (zLo * zLo)
+  let termLo := max 0 (polyLo * expLo)
+  let termHi := polyHi * expHi
+  let erfLo := 1 - termHi
+  let erfHi := 1 - termLo
+  if x ≥ 0 then
+    ((1 + erfLo) / 2, (1 + erfHi) / 2)
+  else
+    ((1 - erfHi) / 2, (1 - erfLo) / 2)
+
+def credenceBoundsQ (predicted uncertainty cap : ℚ) : ℚ × ℚ :=
+  if uncertainty = 0 then
+    let c : ℚ := if predicted > 0 then 1 else if predicted < 0 then 0 else 1 / 2
+    (max (1 - cap) (min cap c), max (1 - cap) (min cap c))
+  else
+    let (nLo, nHi) := normalCdfBoundsQ (predicted / uncertainty)
+    (max (1 - cap) (min cap nLo), max (1 - cap) (min cap nHi))
+
 /-! ## Generated inputs -/
 
 /-- A 64-bit linear congruential generator (Knuth's MMIX constants); fixed seeds, so every build
@@ -180,11 +326,27 @@ def Gen.dyadicNonneg (g : Gen) : ℚ × Gen :=
   let (q, g) := g.dyadic
   (|q|, g)
 
-def ratToFloat (q : ℚ) : Float := Float.ofInt q.num / q.den.toFloat
+def ratToFloat (q : ℚ) : Float :=
+  let nBits := q.num.natAbs.log2
+  let dBits := q.den.log2
+  let maxBits := max nBits dBits
+  if maxBits ≤ 900 then
+    Float.ofInt q.num / q.den.toFloat
+  else
+    let shift := maxBits - 900
+    let nShifted : ℤ := q.num >>> shift
+    let dShifted : Nat := max 1 (q.den >>> shift)
+    Float.ofInt nShifted / dShifted.toFloat
 
 def close (f : Float) (q : ℚ) : Bool :=
   let r := ratToFloat q
   (f - r).abs ≤ 1e-9 * (1 + r.abs)
+
+def inInterval (f : Float) (lo hi : ℚ) (tol : Float := 1e-6) : Bool :=
+  let rlo := ratToFloat lo
+  let rhi := ratToFloat hi
+  let scale := 1.0 + f.abs
+  f ≥ rlo - tol * scale && f ≤ rhi + tol * scale
 
 /-- Runs `trials` generated cases; a case returns whether the Float reference agreed. -/
 def checkAll (name : String) (trials : Nat) (seed : UInt64) (case : Gen → Bool × Gen) : IO Unit := do
@@ -320,6 +482,68 @@ def runAll : IO Unit := do
       let f := (Escrow_split_ref nom.toFloat (conf.toFloat / 1000000.0)).1
       ((f - Float.ofInt spec).abs < 1.0 + 1e-6, g)
     else (true, g)
+  -- Exact over ℚ: Voting_weight (L113)
+  checkAll "Voting_weight" 500 13 fun g => Id.run do
+    let (base, g) := g.dyadicNonneg
+    let (expWt, g) := g.dyadicNonneg
+    let (impWt, g) := g.dyadicNonneg
+    let (impact, g) := g.dyadicNonneg
+    let (th, g) := g.dyadicNonneg
+    let (k, g) := g.below 6
+    let mut g := g
+    let mut profile : List (ℚ × ℚ) := []
+    for _ in [0:k] do
+      let (w, g') := g.dyadicNonneg
+      let (r, g'') := g'.dyadicNonneg
+      g := g''; profile := (w / 16, r) :: profile
+    let q := votingWeightQ base expWt profile impWt impact
+    let f := Voting_weight_ref (ratToFloat base) (ratToFloat expWt)
+      (profile.map fun (w, r) => (ratToFloat w, ratToFloat r))
+      (ratToFloat impWt) (ratToFloat impact) (ratToFloat th)
+    (close f.1 q && f.2 == (q < th), g)
+  -- Interval-bound oracles for nonlinear functions
+  checkAll "Rep_decay" 500 14 fun g =>
+    let (score, g) := g.dyadic
+    let (dt, g) := g.dyadic
+    let (lam, g) := g.dyadicNonneg
+    let (lo, hi) := repDecayBoundsQ score dt (lam / 16)
+    let f := Rep_decay_ref (ratToFloat score) (ratToFloat dt) (ratToFloat (lam / 16))
+    (inInterval f lo hi 1e-6, g)
+  checkAll "shapley_sample_count" 400 15 fun g =>
+    let (n0, g) := g.below 20
+    let n := n0 + 1
+    let (eps0, g) := g.below 50
+    let eps : ℚ := ((eps0 : ℚ) + 1) / 100
+    let (del0, g) := g.below 50
+    let delta : ℚ := ((del0 : ℚ) + 1) / 100
+    let (lo, hi) := shapleySampleCountBoundsQ n eps delta
+    let f := shapley_sample_count_ref n (ratToFloat eps) (ratToFloat delta)
+    (f + 1 ≥ lo && f ≤ hi + 1, g)
+  checkAll "phi" 400 16 fun g => Id.run do
+    let (k, g) := g.below 5
+    let (kappa, g) := g.dyadicNonneg
+    let mut g := g
+    let mut items : List (ℚ × ℚ) := []
+    for _ in [0:k] do
+      let (a, g') := g.dyadicNonneg
+      let (w, g'') := g'.dyadicNonneg
+      g := g''; items := (a / 8, w / 8) :: items
+    let (lo, hi) := phiBoundsQ items (kappa / 8)
+    let f := phi_ref (items.map fun (a, w) => (ratToFloat a, ratToFloat w)) 1.0 (ratToFloat (kappa / 8))
+    (inInterval f lo hi 1e-6, g)
+  checkAll "normal_cdf" 500 17 fun g =>
+    let (x, g) := g.dyadic
+    let (lo, hi) := normalCdfBoundsQ (x / 4)
+    let f := normal_cdf_ref (ratToFloat (x / 4))
+    (inInterval f lo hi 1e-5, g)
+  checkAll "credence" 500 18 fun g =>
+    let (pred, g) := g.dyadic
+    let (unc, g) := g.dyadicNonneg
+    let (cap0, g) := g.below 49
+    let cap : ℚ := ((cap0 : ℚ) + 51) / 100
+    let (lo, hi) := credenceBoundsQ (pred / 4) (unc / 4) cap
+    let f := credence_ref (ratToFloat (pred / 4)) (ratToFloat (unc / 4)) (ratToFloat cap)
+    (inInterval f lo hi 1e-5, g)
 
 #eval runAll
 
