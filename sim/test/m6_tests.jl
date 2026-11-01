@@ -17,19 +17,15 @@ six(; skill = 0.3, deceit = Float64[], steps = 300, λneg = 0.02, kw...) =
 fooled = [0, 0, 0, 0, 0, 1.0]
 
 @testset "M6 overpromising: acceptance" begin
-    # Deceit does not pay (BACKPROPAGATION 8.28, 8.29). Each model prices each actor by its track
-    # record on it, and escrow settles on the measured outcome, so the liar collects no more upfront
-    # than its outcomes are worth and ends, relative to its peers, as an honest agent would.
-    seeds = 1:6
-    honest = [run_m3c(six(); seed) for seed in seeds]
-    liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
     # Standing is the balance plus the overflow the agent directs (L103: BalOvflw ⇒ DirectedAutoInvest(S
     # = E)); a charge on an agent at its accumulation threshold is paid out of that overflow. Whether the
     # liar's standing gains is not resolved in this marginal domain: +31 ± 35 over 24 seeds against a
-    # margin of 58 (5% of the peers' standing), about 160 seeds to settle either way (8.81). What the
-    # seeds show: its ledgers' negative share rises (an effect, CLAUDE.md significance testing).
-    ns(tr) = neg_share(sum(tr.h_pos_own[6, :]), sum(tr.h_neg_own[6, :]))
-    @test paired_effect(ns.(liar) .- ns.(honest); z = 1.4).significant
+    # margin of 58 (5% of the peers' standing), about 160 seeds to settle either way (8.81). A negative
+    # share rise without AdvAp is likewise unsupported across seed windows (shifts between +0.02 and
+    # -0.02 across seeds 1-32, 8.81); the effect holds when AdvAp and clawback are active (8.76, below).
+    seeds = 1:6
+    honest = [run_m3c(six(); seed) for seed in seeds]
+    liar = [run_m3c(six(deceit = fooled); seed) for seed in seeds]
     @test all(l.upfront[6] <= l.settled_value[6] for l in liar)
     @test all(sum(l.balance) - l.endowed ≈ sum(l.valued_measured) - sum(l.costs) + sum(l.lane_supply; init = 0.0) - sum(l.reinvested) for l in liar)
     # In a marginal domain (skill 0.3, the leaf model's accuracy near its 0.9 bar) a liar fooling
@@ -277,13 +273,13 @@ end
     standing(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]   # balance plus the overflow it directs (L103)
     gap(tr) = standing(tr, 6) - mean(standing(tr, k) for k in 1:5)
     ns(tr) = neg_share(sum(tr.h_pos_own[6, :]), sum(tr.h_neg_own[6, :]))
-    honest = [run_m3c(sixty(); seed) for seed in 1:12]
-    liar = [run_m3c(sixty(deceit = fooled); seed) for seed in 1:12]
+    honest = [run_m3c(sixty(); seed) for seed in 1:20]
+    liar = [run_m3c(sixty(deceit = fooled); seed) for seed in 1:20]
     d = gap.(liar) .- gap.(honest)
     # Stated before measuring: no gain beyond 5% of the peers' standing (equivalence, one-sided) and a
-    # rise in the liar's negative share (effect). Measured: gain -267, upper bound 124 against a margin
-    # of 291; the liar ends behind on average, not significantly so.
-    margin = 0.08 * mean(mean(standing(tr, k) for k in 1:5) for tr in honest)
+    # rise in the liar's negative share (effect). Stable over 20 seeds under the pre-stated 5% margin
+    # (upper bound 229 against margin 288); the liar ends behind on average (-88).
+    margin = 0.05 * mean(mean(standing(tr, k) for k in 1:5) for tr in honest)
     @test equivalent(d; margin, side = :upper).equivalent      # deceit does not pay
     @test paired_effect(ns.(liar) .- ns.(honest)).significant   # and its record shows it
 end
