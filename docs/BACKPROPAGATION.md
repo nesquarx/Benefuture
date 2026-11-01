@@ -1829,3 +1829,11 @@ the liar's world (peers +55, the liar +114) and less is skimmed to reinvestment 
 is not traced yet. Next: trace overflow per agent and test the hypothesis before any change.
 Also measured: on-off deceit (8.58-d) still takes a capable domain's currency down in two seeds of
 three under the record credence (peers 50 and 58 against about 325), recovering in the third.
+
+**8.75 Parsimony note: cyclic-review attenuation is moot under outcome-only reputation.**
+`Governance.Incentives.attenuate_cyclic_reviews` damps mutual endorsements (A → B, B → A), and the
+[OPEN] note beside it says longer cycles need global detection. In Benefuture reputation is the
+causal record of measured outcomes (L100); endorsements earn nothing, so mutual reviews cannot inflate
+it and there is nothing to attenuate. The simulation has no review mechanism for that reason.
+Proposal: mark the attenuation as applying only where a review signal is introduced (for example a
+model's adoption, L49), or remove it as redundant. Candidate homes: Governance (incentives), L100.

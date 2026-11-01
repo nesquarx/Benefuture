@@ -246,6 +246,19 @@ function binding_admits(confidences, threshold::Real; quorum::Integer)
 end
 
 """
+    ehr_expected_response(h, re_pos, re_neg; alpha, delta, margin) -> response
+
+External harm response (Lean `ehr_expected_response_ref`; L117, `Governance.ExternalHarm` [R]): to a
+harm `h` by an external aggressor, forgive with chance min(1, α·Re₊), overreact by `margin` with chance
+min(1 − p_F, δ·Re₋), otherwise respond in proportion; the expected response is
+h · (1 − p_F + margin · p_O).
+"""
+function ehr_expected_response(h::Real, re_pos::Real, re_neg::Real; alpha::Real, delta::Real, margin::Real)
+    check(all(x -> isfinite(x) && x >= 0, (h, re_pos, re_neg, alpha, delta, margin)), "harm, ledgers, weights and margin non-negative")
+    ccall(sym(:bf_ehr_expected_response), Float64, (Float64, Float64, Float64, Float64, Float64, Float64), alpha, delta, margin, h, re_pos, re_neg)
+end
+
+"""
     class_balanced_skill(credences, outcomes) -> skill
 
 Attestation skill read on each side (Lean `class_balanced_skill_ref`; [P], B2): skill against a coin

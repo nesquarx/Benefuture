@@ -279,4 +279,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_class_balanced_skill] def classBalancedSkill (credences outcomes : FloatArray) : Float :=
   class_balanced_skill_ref credences.data outcomes.data
 
+-- EHR (L117): the expected response to an external harm h
+@[export bf_ehr_expected_response] def ehrExpectedResponse (alpha delta margin h rePos reNeg : Float) : Float :=
+  ehr_expected_response_ref alpha delta margin h rePos reNeg
+
 end BenefutureReference.Export

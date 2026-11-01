@@ -134,3 +134,18 @@ end
     @test class_balanced_skill(fill(0.9, 10), ones(10)) > 0      # one side only: that side's skill
     @test_throws ArgumentError class_balanced_skill([0.9], [1.0, 0.0])
 end
+
+# External harm response (L117, `Governance.ExternalHarm` [R]; exported for M6's external aggressors):
+# the expected response to a harm h is proportional, lowered for an aggressor with a record of good
+# in the harmed domains (forgiveness, α·Re₊) and raised by at most the margin for one with a record of
+# harm (overreaction, δ·Re₋, capped so the chances sum to at most 1). α > δ (L11).
+@testset "Probe: external harm meets a proportional, record-weighted response" begin
+    r(h, rp, rn) = ehr_expected_response(h, rp, rn; alpha = 0.02, delta = 0.01, margin = 0.5)
+    @test r(10.0, 0.0, 0.0) ≈ 10.0                              # no record: in proportion
+    @test r(10.0, 20.0, 0.0) < r(10.0, 0.0, 0.0)                # a record of good earns forgiveness
+    @test r(10.0, 0.0, 30.0) > r(10.0, 0.0, 0.0)                # a record of harm raises the response
+    @test r(10.0, 0.0, 1e6) <= 10.0 * 1.5 + 1e-9                # never beyond the margin
+    @test r(10.0, 1e6, 1e6) ≈ 0.0 atol = 1e-9                   # full forgiveness leaves no room to overreact
+    @test r(20.0, 5.0, 5.0) ≈ 2 * r(10.0, 5.0, 5.0)             # proportional in the harm
+    @test_throws ArgumentError r(-1.0, 0.0, 0.0)
+end

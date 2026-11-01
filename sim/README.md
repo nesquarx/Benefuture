@@ -62,7 +62,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | partial | voting weight, capped delegation, decisions in domains (M5); Brier incentives, cyclic review attenuation, oversight not yet |
 | `Governance.Adversarial` | partial | AdvAp's reports, audits, reward, liability and frivolous-report penalty (`advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`; M3c), revelation of a colluding bloc (M5); bounties on planted flaws not yet |
 | `Axioms.Antifragility` | partial | black swans with native fallbacks and recovery (M3f); its axioms as such not yet |
-| `Governance.ExternalHarm` | not yet | external harm response (M6) |
+| `Governance.ExternalHarm` | partial | the expected response exported (`ehr_expected_response_ref`, probe); external aggressors in a world not yet (M6) |
 | `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
 | `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`); merges, extended self, liability (M7, M8) not yet |
 | `Subgoals.Justice` | partial | crime or accident by notice and duty, repair funded by penalties (M3e); restorative packages not yet |
