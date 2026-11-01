@@ -1896,3 +1896,19 @@ it is not needed. What remains true and open from 8.77: overflow is per currency
 relevance, so standing in balances is distributed across currencies and moves with recent work; whether
 directed overflow should earn reputation by its outcomes is 8.51's ruling (it earns through standard
 channels if it does good), which the simulation does not yet model.
+
+**8.78 Author clarification: deceit costs reputation in the domain of transactions itself.** Deceptive
+behaviour earns negative reputation for contracting, promises and proposals in general, not only in the
+domain where it happened: someone who has lied repeatedly in different domains already faces high
+escrow in the domain of transactions itself, wherever it next transacts. In the simulation today: an
+actor's credence is read from its own error record pooled across every domain (`actor_err`; promise
+against delivery, scored at settlement), and the escrow ratchet reads its ledgers' negative share over
+all domains (`ledger_neg_share`), so an overstatement anywhere already lowers its credence and raises its
+escrow everywhere, and an established deception (8.76's clawback, charged to the ledgers) raises it
+further. What is missing: the pooled record is a world-level shortcut, not a classified domain; in the
+corpus's terms every transaction would carry a share in a transactions (promising, contracting) domain,
+overlapping every leaf, whose prediction accuracy (8.69) is the actor's record of promises kept, and
+escrow (L84) would read it. Also untested: spillover itself, since the simulation's deceit fools every
+model at once; a deceiver confined to one domain is needed to show its escrow rising in another.
+Candidate homes: Domain (a transactions domain overlapping all), Reputation, L84 (escrow reads promise
+accuracy), Benefuture currency (ratcheting escrow).
