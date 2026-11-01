@@ -2002,3 +2002,19 @@ under realistic noise; or keep it governed through the escape, with trial leaves
 (randomised blocks by activity, L157's experimental design). (2) This also bears on 8.71: with the
 relative bar the absorbing stall does not arise here, so RA contraction is needed only for lane work that
 no model can price at all. Candidate homes: L82 (status bars), 8.36, 8.41, L157.
+
+**8.84 Why the simulated models stay under 0.9, and the author ruling against downward drift.**
+Measured (calibrated world, 3 seeds; accuracy = 1 − Brier / 0.25 on "the action's measured value is
+positive"): the calibrated models score 0.842; a perfect model (no error, no bias) in the same world
+0.871; with exact markers 0.894; with no execution sloppiness as well 0.908; with no side harm as well
+1.000. The ceiling is the world's irreducible noise (execution slips, measurement error, rare heavy-tailed
+side effects decide about 5% of outcomes), not the models. Two causes: every simulated domain carries the
+same noise, the low end of realistic ranges for hard, social-intervention-like domains, while most real
+work is routine and highly predictable (models well above 0.9); and with 95% of outcomes positive a
+constant forecaster of 0.95 already scores 0.81, so the metric credits the base rate. To do: a realistic
+distribution of domain predictability (low-noise physical and routine domains beside hard social ones;
+research task R5).
+Author ruling: the status bars (0.9, 0.75, 0.55) are thresholds, governed and adapted, but governance
+must not drift accuracy requirements downward: the bootstrap calibration may set each domain's bars to
+world-realistic values, and from there accuracy is expected to go up, not down. Candidate homes: L82,
+L157 (SigThGv), 8.36, 8.8 (a bar near 50% needs extraordinary grounds).
