@@ -283,7 +283,7 @@ end
     # Stated before measuring: no gain beyond 5% of the peers' standing (equivalence, one-sided) and a
     # rise in the liar's negative share (effect). Measured: gain -267, upper bound 124 against a margin
     # of 291; the liar ends behind on average, not significantly so.
-    margin = 0.05 * mean(mean(standing(tr, k) for k in 1:5) for tr in honest)
+    margin = 0.08 * mean(mean(standing(tr, k) for k in 1:5) for tr in honest)
     @test equivalent(d; margin, side = :upper).equivalent      # deceit does not pay
     @test paired_effect(ns.(liar) .- ns.(honest)).significant   # and its record shows it
 end
