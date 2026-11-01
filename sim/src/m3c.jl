@@ -528,7 +528,17 @@ function run_m3c(p::M3cParams; seed)
     end
     function ratchet!()
         for j in 1:nleaves()
-            accs = [acc_of(m.hist) for m in mpool[j] if length(m.hist) >= p.min_records]
+            # "Operating above" means sustained operation, judged with confidence: each model counts at its
+            # whole record's accuracy less `model_z` standard errors, over records long enough to compete
+            # (`takeover_records`, 8.58-b). The recent window would not do: models scored on the same
+            # actions swing together between windows (0.86 to 0.99), and the bar locked at a quiet stretch
+            # the whole pool then fell below (diagnosed in sim/test/models_tests.jl's world).
+            accs = Float64[]
+            for m in mpool[j]
+                length(m.hist) >= max(p.min_records, p.takeover_records) || continue
+                b = [credence_score(x.credence, x.outcome) for x in m.hist]   # per-record accuracy, Lean `credence_score_ref`
+                length(b) >= 2 && push!(accs, mean(b) - p.model_z * std(b) / sqrt(length(b)))
+            end
             lfloor[j] = ratchet_bar(accs, leaf_bar(j); k = p.ratchet_k, margin = p.ratchet_margin)
         end
     end
