@@ -104,6 +104,17 @@ function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
 end
 
 """
+    ratchet_bar(accuracies, bar; k, margin) -> bar
+
+The ratchet on a domain's status bar (Lean `ratchet_bar_ref`; author ruling 8.84): when at least `k`
+models clear the bar it rises to the `k`-th best accuracy less `margin`; it never falls.
+"""
+function ratchet_bar(accuracies, bar::Real; k::Integer, margin::Real)
+    check(all(isfinite, accuracies) && 0 <= bar <= 1 && k >= 0 && 0 <= margin <= 1, "finite accuracies, bar and margin in [0, 1], k ≥ 0")
+    ccall(sym(:bf_ratchet_bar), Float64, (Ptr{Cvoid}, Float64, Csize_t, Float64), floatarray(collect(Float64, accuracies)), bar, k, margin)
+end
+
+"""
     record_credence(predicted, errors; cap = 0.99) -> probability
 
 A model's credence from its record (Lean `record_credence_ref`; [P], finding 8.58-c): the share of

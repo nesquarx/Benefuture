@@ -290,4 +290,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_false_report_charge] def falseReportCharge (harm reward auditCost : Float) : Float := false_report_charge_ref harm reward auditCost
 
+-- 8.84 the ratchet on status bars
+@[export bf_ratchet_bar] def ratchetBar (accuracies : FloatArray) (bar : Float) (k : USize) (margin : Float) : Float :=
+  ratchet_bar_ref accuracies.data bar k.toNat margin
+
 end BenefutureReference.Export

@@ -165,3 +165,21 @@ end
     @test sum(caught_reward(c, n, b) for (n, c) in cabal) ≈ 3 * (e + b)
     @test_throws ArgumentError self_report_payout(-1, e, b)
 end
+
+# The ratchet on status bars (author ruling 8.84): when k models (governed, default 3) operate above a
+# domain's bar, the bar rises to the k-th best accuracy less a margin, so k models still clear it; it
+# never falls by this rule. A low-noise world where better challengers keep arriving (the controlled
+# world, models that can exceed the bootstrap bar of 0.9).
+@testset "Probe: the status bar ratchets up when enough models clear it, and never falls" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    w() = M3cParams(ToyParams(n = 60, steps = 300, plans = 8), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
+                    [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY...,
+                    p_new_model = 0.1, takeover_records = 30)
+    for seed in 1:2
+        tr = run_m3c(w(); seed)
+        b = tr.bar_trace                                         # leaf 1's bar, step by step
+        @test all(diff(b) .>= 0)                                  # never falls
+        @test b[end] > b[1] + 0.01                                # it rose once enough models cleared it
+        @test tr.lane_halted == 0                                 # pricing goes on
+    end
+end

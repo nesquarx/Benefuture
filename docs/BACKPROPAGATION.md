@@ -2018,3 +2018,14 @@ Author ruling: the status bars (0.9, 0.75, 0.55) are thresholds, governed and ad
 must not drift accuracy requirements downward: the bootstrap calibration may set each domain's bars to
 world-realistic values, and from there accuracy is expected to go up, not down. Candidate homes: L82,
 L157 (SigThGv), 8.36, 8.8 (a bar near 50% needs extraordinary grounds).
+8.84 ruling (author) on the ratchet: when a governed number of models operate above a domain's bar,
+the bar ratchets up. Built as: once at least k models (governed, `ratchet_k`) have accuracy at or above
+the bar, the bar rises to the k-th best accuracy less a governed margin (`ratchet_margin`), so k models
+still clear it; it never falls by this rule (lowering only through the debatable escape, 8.41). Lean
+`ratchet_bar_ref`.
+Probe (`sim/test/probe_tests.jl`): in the controlled world the bar stays at 0.9 with the ratchet off and
+rises to 0.975–0.979 with it, never falling, no halts (2 seeds). Gaming: an incumbent could field
+near-clones to lift the bar over challengers; the bar sits under the k-th best measured accuracy, so it
+rises only when k models truly clear it, but clones of one model should count once (a candidate for the
+diversity rule, 8.67; not yet built). Bootstrap bars at world-realistic values per domain remain open
+(needs R5).

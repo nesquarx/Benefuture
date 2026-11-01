@@ -1243,6 +1243,8 @@ ratified.
 | Dependency window the birth escrow covers; the baseline (M7) | `window`, baseline | 20 steps, the happiness floor at birth | 8.52 [P]; L84 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
+| Models that must clear a domain's bar before it ratchets up (the bar then sits under the k-th best accuracy; never falls by this rule) | `ratchet_k` | 3 | author ruling 8.84; Lean `ratchet_bar_ref` |
+| Margin the ratcheted bar sits under the k-th best accuracy | `ratchet_margin` | 0.02 | author ruling 8.84 |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
 | Formation of novel domains | `form_count`, `form_radius` | 20, 0.5 | 8.6 |

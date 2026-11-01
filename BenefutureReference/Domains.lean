@@ -193,6 +193,15 @@ def choice_skill_ref (credences modelCredences outcomes : Array Float) : Float :
   if bm == 0.0 then return 0.0
   return 1.0 - bc / bm
 
+/-- The ratchet on a domain's status bar (author ruling 8.84): when at least `k` models have accuracy at
+    or above the bar, it rises to the `k`-th best accuracy less `margin`, so `k` models still clear it;
+    otherwise it holds. It never falls by this rule. -/
+def ratchet_bar_ref (accuracies : Array Float) (bar : Float) (k : Nat) (margin : Float) : Float := Id.run do
+  if k == 0 then return bar
+  let above := (accuracies.filter (fun a => a ≥ bar)).qsort (fun a b => a > b)
+  if above.size < k then return bar
+  return max bar (above[k - 1]! - margin)
+
 /-- Accuracy as the quality of credences (author rulings 8.35, 8.36): 1 − Brier / 0.25, the Brier
     score of random guessing (credence 0.5); 0 is random, 1 perfect (generally unattainable); worse
     than random scores 0; no record, no accuracy. -/

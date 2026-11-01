@@ -56,6 +56,8 @@ struct M3cParams
     novel_threshold::Float64
     coarse_threshold::Float64  # status a parent (coarse) model needs (8.35; governed)
     max_credence::Float64      # the greatest credence any model may state (8.33: truth levels never reach 1; governed)
+    ratchet_k::Int             # models that must clear a domain's bar before it ratchets up (8.84; governed)
+    ratchet_margin::Float64    # the ratcheted bar sits this far under the k-th best accuracy (8.84; governed)
     loud::Bool                 # warn once per kind of degradation (the trace records them either way)
     credence_rule::Symbol      # :normal (credence_ref over the record's RMS error) or :record ([P], record_credence_ref)
     min_records::Int
@@ -197,7 +199,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -228,7 +230,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && credence_rule in (:normal, :record),
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && credence_rule in (:normal, :record),
           "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal or :record")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
@@ -280,7 +282,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -517,11 +519,20 @@ function run_m3c(p::M3cParams; seed)
     bar_rel = Ref(p.relative_bar)
     trial = (on = Ref(false), leaves = falses(ntrue), units = Dict{Tuple{Bool,Int,Int},Float64}(),
              gains = Ref(0.0), harms = Ref(0.0), irreparable = Ref(0))
+    # The ratchet (8.84): each leaf's bar never falls below what enough of its models have cleared.
+    lfloor = zeros(lmax)
     function leaf_bar(j)
-        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return p.threshold
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(p.threshold, lfloor[j])
         q = argmax(μ[:, j])
-        relative_bar(p.threshold, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold)
+        max(relative_bar(p.threshold, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
     end
+    function ratchet!()
+        for j in 1:nleaves()
+            accs = [acc_of(m.hist) for m in mpool[j] if length(m.hist) >= p.min_records]
+            lfloor[j] = ratchet_bar(accs, leaf_bar(j); k = p.ratchet_k, margin = p.ratchet_margin)
+        end
+    end
+    bar_trace = Float64[]
     leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
                                    novel_threshold = p.novel_threshold, min_records = p.min_records)
     parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
@@ -739,6 +750,7 @@ function run_m3c(p::M3cParams; seed)
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
     for step in 1:t.steps
+        ratchet!(); push!(bar_trace, leaf_bar(1))
         scoring_only = step <= p.init_steps
         cur[] = step
         # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
@@ -1607,7 +1619,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+               explored = explored[], bar_trace = bar_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
