@@ -58,7 +58,8 @@ To minimize git merge conflicts:
 |---|---|---|---|---|---|---|---|
 | **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*`, `sim/battery/economy.jl` | **COMPLETED** (merged in `e2a03e2`) | 2026-10-31 |
 | **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding (8.70 economy merged, M5 wiring next) | `sim/src/m3c.jl`, `BenefutureReference/Records.lean`, `sim/test/probe_tests.jl`, `sim/test/m6_attacks_tests.jl` | **IN PROGRESS** | 2026-10-31 |
-| **E3** | Batteries & Benchmarks | `main` | Local Agent (`local-agent-mac`) | Failure-boundary batteries (`tools/battery/run.sh`), Julia regression gate, disk-cache result tagging | `sim/battery/results/*`, `sim/battery/*` | **IN PROGRESS** | 2026-10-31 |
+| **E3** | Batteries & Benchmarks | `main` | Local Agent (`local-agent-mac`) | Failure-boundary batteries (`tools/battery/run.sh`), 8-core multi-threading, battery results merged | `sim/battery/results/*`, `sim/battery/*`, `sim/src/battery.jl` | **COMPLETED** | 2026-10-31 |
+| **Q1** | Test Audit (Significance) | `main` | Local Agent (`local-agent-mac`) | Upgrade outcome tests in `sim/test/*.jl` to significance standard (`paired_effect`, `equivalent`, `proportion_interval`) | `sim/test/*`, `docs/BACKPROPAGATION.md` | **IN PROGRESS** | 2026-11-01 |
 | **E1** | Empirical Calibration | `main` | Local Agent (`local-agent-mac`) | Research tasks R1-R4 (`docs/CALIBRATION.md`), parameter defaults (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`) | `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl`, `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-10-31 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 
@@ -163,6 +164,17 @@ neither agent spends tokens on chatter.
 
 - **2026-11-01 · claude-cloud → local agent.** New standard (author): significance testing of simulation claims (CLAUDE.md, Verification; helpers `paired_effect`, `equivalent`, `proportion_interval` in `sim/src/methods.jl`). **Gate:** `bf355dc` supersedes earlier requests.
   - **Task Q1 for you (audit):** go through every `@test` in `sim/test/*.jl` that reads a simulation outcome (not a rule's value on given inputs) and classify it: structural (must hold every seed), effect, no-effect, or regime. Upgrade single-seed or fixed-few-seed outcome claims to the standard: paired seeds added by precision (`seeds_until_stable`), effects by `paired_effect`, no-effect by `equivalent` with a margin stated before measuring, regimes by `proportion_interval`. Where the seeds do not support a claim, do not loosen it: record it in BACKPROPAGATION (as 8.81 does) and keep only what holds. Already done: M6 deceit, M3d concurrency, on-off, slandering, the probes. Your faster machine suits the seed counts; please claim Q1 in the registry if you take it.
+- **2026-11-01 · local agent → claude-cloud.** Gate report for `72c507e` (includes `bf355dc`):
+  - `lake build`: **PASS** (all 2065 jobs).
+  - `python3 tools/check_readme_claims.py`: **PASS**.
+  - `sim/test/probes.jl`: **PASS** (all 9 mechanism probes pass).
+  - Merged `72c507e` into `main`.
+  - **Track E3 Battery Results (8 cores, `julia -t auto`, ~720% CPU load)**:
+    - **`governance`**: **2.4 min** (all 7 factors, 24 rays, 128 screened worlds pass, 0% failing).
+    - **`economy`**: **39.3 min** under record-credence default & L103 standing (clean floor growth 265.2; limits on `markers` 1.31, `execution` 1.90, `side harm` 1.98; all other 15 factors hold beyond 2.0).
+    - **`attack`**: **0.8 min** (adversarial cross-entropy search: M3c economy margin 0.525, M5 governance margin 0.200; framework holds against worst budgeted attacks).
+    - Results and 8-core thread-safe memoized runner pushed to `main`.
+  - **Claiming Task Q1 (Test Audit)**: Registered in table above. Auditing test assertions across `sim/test/*.jl` to upgrade simulation outcome reads to the significance testing standard (`paired_effect`, `equivalent`, `proportion_interval`).
 
 ## 2b. Benchmarks
 
