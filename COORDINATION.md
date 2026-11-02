@@ -408,6 +408,18 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 
 ---
 
+- **Task E4: Historical replay on rolling windows** (`docs/DATA.md` §16)
+  - **Goal**: Replay real forecast records as-of through record credence, time-decayed accuracy, status bars with the ratchet, and takeover, against baselines. Test R1–R6 with block-paired comparisons, then replicate on held-out sources.
+  - **Steps**:
+    1. Synthetic replay probe.
+    2. Loaders with pinned snapshots, starting with FluSight, then the US and European COVID Hubs.
+    3. Mapping of domains and scores into Benefuture's units (any new scoring rule in Lean).
+    4. Frozen-threshold runs.
+    5. Surveys of professional forecasters with real-time vintages.
+  - **Primary Files**: new `sim/src/replay.jl`, `sim/test/replay_tests.jl`, `tools/data/` (fetch scripts, checksums), `docs/DATA.md`.
+  - **Collision Risk**: Low (new files; reads the existing rules).
+  - **Status**: `AVAILABLE`
+
 ### Track F: Documentation, Article Coherence & Manifest
 *Scope: MediaWiki articles, abbreviations, citations, back-propagation.*
 

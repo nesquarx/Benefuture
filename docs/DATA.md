@@ -616,6 +616,120 @@ fixing the simulation's units first (section 1, Proxy validity).
 
 ---
 
+## 16. Historical forecasting on rolling windows (replay)
+
+**Role.** This is a fourth role, beside calibration, validation of the world and noise ranges:
+**replaying the measurement rules themselves on real forecast records.** Historical forecasts by
+models and people who entered and left a domain are fed, as they became known, through Benefuture's
+own rules. The rules are record credence (8.71), time-decayed accuracy with a rate-adaptive half-life
+(8.85), status bars with the ratchet (8.84), challenger takeover by the significance rule
+(`select_candidate_ref`, `model_z`), and escrow by credence (L84). The replay asks whether those rules
+pick and weigh forecasters better out of sample than plain alternatives. It is the one place where
+today's data tests the rules rather than the simulated world. What it cannot test is incentives:
+historical forecasters did not face Benefuture's payments, so the replay speaks to the rules'
+statistical behaviour, not to how people would respond to them (the Lucas critique). Tournaments and
+markets, where incentives resemble Benefuture's, are the partial exception.
+
+**Hypotheses**, stated before measuring (CLAUDE.md, significance testing). Each arm runs on the same
+record stream, which serves as the common random numbers.
+- **R1 Selection.** The currency's model, chosen by takeover under the significance rule, is at
+  least as accurate out of sample as each baseline. Baselines: the first incumbent kept forever;
+  the best model on a trailing window, switched freely; the equal-weight ensemble; the source's own
+  published ensemble. This is an effect against the first two, and equivalence within a stated margin
+  against the ensembles (the Hubs found ensembles hardest to beat).
+- **R2 Horizons.** Under a regime shift (pandemic waves, influenza seasons, 2008 for macroeconomics),
+  the rate-adaptive half-life (β = 0.5) detects a forecaster's decline sooner than a fixed record
+  count (β = 1) and is steadier than a fixed time window (β = 0). The metric is the lag to
+  replacement after a shift, and the false switches between shifts.
+- **R3 Credence.** Credence from the record is calibrated on real, heavy-tailed errors (coverage and
+  PIT histograms), better than the normal credence it replaced. The adoption of 8.71 is thereby
+  tested out of sample.
+- **R4 Regimes.** Run on real records, the status bars and the ratchet (8.84) qualify a domain or
+  stall it. Qualification and stall rates are reported as proportions with intervals per domain
+  family, which are realistic bootstrap bars per domain (open since 8.84, R5).
+- **R5 Overstatement.** On binary records (Good Judgment, Metaculus), extremising forecasters win
+  takeovers at the rate 8.58-c predicts, and the full-window rule (8.58-b) reduces it.
+- **R6 Persistence.** Skill persists across windows enough for track records (8.29) to carry
+  information. The metric is the rank correlation of accuracy between consecutive windows.
+
+**Protocol**, which keeps the windows honest:
+- **As-of reconstruction, no look-ahead.** Every record carries an issue date, a target date and a
+  resolution date. A forecast enters a model's record only once its outcome has resolved, scored
+  against the data vintage known at that time (real-time vintages for macroeconomics: Croushore &
+  Stark's Real-Time Data Set, https://doi.org/10.1016/S0304-4076(01)00080-X). Final revised values are
+  a second, labelled truth.
+- **No survivorship.** Models that stopped submitting stay in the history. A missing or late
+  submission is a `degraded` entry (substitute: the model's last forecast, or its absence), never a
+  silent gap.
+- **Domains.** The target variable, location and horizon map onto leaves and parents: state within
+  nation for the Hubs, variable families for the surveys, items, stores and states for M5. This gives
+  the parent fallback and aggregation real hierarchies.
+- **Scores in Benefuture's units.**
+  - Binary records: Brier, as already used (`credence_accuracy_ref`).
+  - Point forecasts: errors relative to the domain's spread (8.35).
+  - Quantile forecasts: the weighted interval score (Bracher et al. 2021,
+    https://doi.org/10.1371/journal.pcbi.1008618, the Hubs' standard) and the sign of the error for
+    record credence. If the replay needs a scoring rule that is not yet in Lean, it is a Lean
+    reference function plus an export, never Julia.
+- **Frozen thresholds.** Thresholds sit at governed defaults, written down before the replay; nothing
+  is tuned on the test period. Sweeps of h_ref, β, `model_z` and the ratchet multiple are reported as
+  sweeps, never as picks.
+- **Paired comparisons over time.** Errors are autocorrelated, so the independent-seed standard
+  error does not apply. Comparisons use blocks (seasons, quarters, questions) as units, with the tests
+  of Diebold & Mariano (1995, https://doi.org/10.1080/07350015.1995.10524599) and of Giacomini & White
+  (2006, https://doi.org/10.1111/j.1468-0262.2006.00718.x), the latter built for rolling-window
+  forecast comparisons. The significance rule's z applies (z = 3, or replication on a second dataset,
+  for README).
+- **Replication.** Each claim is found on one source and re-tested on a held-out one: US against
+  European Hub, Philadelphia against ECB survey, Good Judgment against Metaculus.
+- **Probe first.** A synthetic record stream with a known shift is replayed first (the 8.85 probe
+  already does this). Only then is the harness pointed at real data.
+- **Data handling.** Fetch scripts, pinned snapshots with checksums, and licences recorded per
+  source; large data stays out of the repository.
+
+**Datasets**, in priority order (links checked 2026-11-02: DOIs against the handle service, GitHub
+repositories by `git ls-remote`, pages by HTTP):
+
+1. **Influenza: FluSight**, CDC collaborative forecasts since the 2013/14 season;
+   https://github.com/cdcepi/FluSight-forecasts and https://github.com/cdcepi/FluSight-forecast-hub;
+   Reich et al. (2019), *PNAS*, https://doi.org/10.1073/pnas.1812594116. Many seasons with teams
+   entering and leaving, and a regime that recurs each season, make it the best fit for R1, R2 and
+   R4.
+2. **COVID-19 Forecast Hubs, US and Europe**: https://github.com/reichlab/covid19-forecast-hub
+   (Cramer et al. 2022, https://doi.org/10.1073/pnas.2113561119) and
+   https://github.com/covid19-forecast-hub-europe/covid19-forecast-hub-europe (Sherratt et al. 2023,
+   *eLife*, https://doi.org/10.7554/eLife.81916). Weekly quantile forecasts through sharp shifts, with
+   location hierarchies. Each Hub replicates the other.
+3. **Survey of Professional Forecasters with real-time data** (Philadelphia Fed, since 1968; ECB SPF
+   since 1999 for replication):
+   https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/real-time-data-set-for-macroeconomists,
+   https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/index.en.html.
+   Individual forecaster IDs over decades suit R6 and the 10- and 20-year horizons of 8.64. The
+   Greenbook data set (released with a five-year lag) adds an institutional incumbent:
+   https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/philadelphia-fed-greenbook-data-set.
+4. **Good Judgment Project** (2011–2015; https://doi.org/10.7910/DVN/BPCDH5) and **Metaculus** (API,
+   section 7). These binary records with individual updates suit R3, R5 and R6.
+5. **M5 competition** (Walmart, hierarchical daily sales; Makridakis et al. 2022,
+   https://doi.org/10.1016/j.ijforecast.2021.11.013; methods at https://github.com/Mcompetitions/M5-methods).
+   It has a single test window, so it supports no rolling turnover, but it tests parent fallback and
+   aggregation on a real hierarchy.
+6. **ForecastBench** (https://github.com/forecastingresearch/forecastbench-datasets; section 7):
+   machine forecasters arriving over time, which gives real arrival and improvement rates for
+   `p_new_model` and `improve_drift`.
+7. **Weather (TIGGE ensemble archive**, https://apps.ecmwf.int/datasets/data/tigge/; Bougeault et al.
+   2010, https://doi.org/10.1175/2010BAMS2853.1). A highly predictable domain where the 0.9 bar should
+   qualify. It is large, so it comes after the others.
+8. **Energy forecasting competitions (GEFCom 2014**, Hong et al. 2016,
+   https://doi.org/10.1016/j.ijforecast.2016.02.001) and **prediction markets** (Iowa Electronic
+   Markets since 1988, https://iem.uiowa.edu/iem/; Kalshi and Polymarket, section 7). These add
+   rolling probabilistic records and money-weighted credences, a comparison for escrow by credence.
+
+**Retires and constrains:** the invented model-pool rates (8.42.2), the bootstrap status bars (8.84),
+the default half-life (8.85: h_ref = 7 steps at 5 records per step, which needs a real
+records-per-step scale), and the credence rule's tail behaviour (8.66, 8.71). **Does not settle:**
+whether Benefuture's incentives would change forecasters' behaviour, nor anything outside forecasting
+domains.
+
 ## Prioritised plan
 
 Each pick names its rung, its role and the toy assumption it would retire. Order is by how much a
@@ -646,6 +760,11 @@ dataset constrains what the simulation currently invents, and how directly it ma
    calibration). Age-specific death hazards and fertility for the births rung (8.52), and GBD's
    split of passing against irreparable harm for `irreparable_loss`. Retires "fixed population" and
    "every loss is passing harm".
+
+0. **Historical replay on rolling windows (section 16)**, run beside pick 1 because it shares the
+   Hub data. It tests the measurement rules themselves (R1–R6) on FluSight and the COVID Hubs first,
+   then the surveys of professional forecasters. Retires the default half-life scale and the bootstrap
+   status bars.
 
 Later: delegation (DAO graphs and LiquidFeedback, if its data can be obtained) for the M5 pathology
 suite (`docs/SOTA.md` action 3); Community Notes and Polis for contention (`camp_bias`); RAM Legacy

@@ -608,7 +608,10 @@ distributional claims are portable across platforms: floating point moves single
 domain currencies hold value, and whether score-only adoption spreads voluntarily are empirical
 questions. They belong to the phased, score-only pilots of the
 [Implementation prototype](https://benefuture.miraheze.org/wiki/Implementation_prototype), running in
-parallel with existing institutions and issuing no currency in Phase 1. Real-world data plans are in
+parallel with existing institutions and issuing no currency in Phase 1. The first planned contact with real data replays historical forecast records (FluSight, the COVID-19
+Forecast Hubs, surveys of professional forecasters) through the measurement rules on rolling windows.
+It tests how the rules pick and weigh forecasters out of sample, not how people would respond to
+them ([`docs/DATA.md` §16](docs/DATA.md)). Real-world data plans are in
 [`docs/DATA.md`](docs/DATA.md); the model description follows ODD ([`docs/ODD.md`](docs/ODD.md)).
 
 Records that keep the layers honest with each other:
