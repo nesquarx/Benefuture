@@ -2070,3 +2070,19 @@ exceed harms and nothing is irreparable in every seed. Not caused by 8.84 or 8.8
 adoption (seeds 1–5) predates changes not yet bisected, and the macOS seed 31 (z 2.02) was chosen after
 seeing it. Open: why the relative bar no longer helps there (candidate: the stalls it removed, 8.83, no
 longer arise in that world).
+
+**8.86 Author ruling on forced additions (from 8.56).** A forced addition cannot be helped. When
+beings arrive whether or not G chooses it (births G could only redirect, a suffering polity joining a
+Benefuture nation, a merger of societies at rollout), Benefuture does not judge the arrival as a
+ranking of worlds. It takes the newcomers as given and turns to uplift: it does its best to raise
+them without harming the existing population. So the Sadistic Conclusion of 8.56 arises only in the
+forced choice and is accepted there, not resolved. What carries the weight is the action that follows.
+Once present, the newcomers are decision-time beings: G's floors include them and cannot be lowered
+against not acting (`goal_G_sound`); with an admissible uplift G never idles (`uplift_beats_inaction`);
+and removing the worst-off cannot raise the floor (`removal_cannot_raise_floor`). The candidate
+answers of 8.56 (a newborn's predicted harm in V's harm tiers, reading the floor's tail) stay [P];
+this ruling does not need them. To demonstrate: a probe in which a polity well below the floors joins
+and G, over the following steps, raises the newcomers' floor and median while the existing beings'
+levels do not fall beyond their noise (acceptance), against a counterexample in which G is restricted
+to the existing population's floors and the newcomers stay down. Candidate homes: Benefuture goals
+(population), Government (birth and accession), Implementation prototype (merging polities), L74.
