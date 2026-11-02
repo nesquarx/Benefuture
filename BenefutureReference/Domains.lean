@@ -267,8 +267,8 @@ def credence_accuracy_ref (credences outcomes : Array Float) : Float := Id.run d
     at `novelThreshold`, never below 0.55 (author ruling 8.35: that floor is for discovering what has
     no precedent; established sub-domains need 0.9 or more, new or coarse ones 0.75 or more). -/
 def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
-    (threshold novelThreshold : Float) : Bool :=
-  if novel then records ≥ minRecords && accuracy ≥ max novelThreshold 0.55 else accuracy ≥ threshold
+    (threshold novelThreshold novelFloor : Float) : Bool :=
+  if novel then records ≥ minRecords && accuracy ≥ max novelThreshold novelFloor else accuracy ≥ threshold
 
 /-- The status bar relative to the alternative (author ruling 8.41, refining 8.35): a leaf model
     backs its currency if it is at least as accurate as the qualified currency its work would
@@ -282,7 +282,7 @@ def relative_bar_ref (established coarse alternative : Float) : Float :=
   base rate scaled by capacity over what remains, with what remains floored at a thousandth of
   capacity so exhaustion is dear but finite.
 -/
-def scarcity_cost_ref (base available capacity : Float) : Float :=
-  base * capacity / max available (capacity / 1000.0)
+def scarcity_cost_ref (base available capacity floorShare : Float) : Float :=
+  base * capacity / max available (capacity * floorShare)
 
 end BenefutureReference

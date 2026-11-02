@@ -86,9 +86,9 @@ const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
     @test membership_rolling(0.5, 1.0, 0.3; rate = 0.1) ≈ 0.48
     # Accuracy and eligibility; a novel domain needs its score-only records first.
     @test accuracy(-0.25) ≈ 1 / 1.5
-    @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
-    @test !currency_eligible(0.7, 5; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
-    @test currency_eligible(0.57, 10; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10)
+    @test currency_eligible(0.7, 0; novel = false, threshold = 0.6, novel_threshold = 0.55, min_records = 10, novel_floor = 0.55)
+    @test !currency_eligible(0.7, 5; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10, novel_floor = 0.55)
+    @test currency_eligible(0.57, 10; novel = true, threshold = 0.6, novel_threshold = 0.55, min_records = 10, novel_floor = 0.55)
     # The status bar relative to the alternative (author ruling 8.41): a leaf model must match the
     # accuracy of the qualified currency its work would otherwise fall to, up to the established bar,
     # never below the coarse bar.
@@ -105,8 +105,8 @@ const MU = [1.0 1.0 0.3; 0.0 0.0 1.0]
     @test credence_accuracy([1.0, 1.0, 0.0], [1.0, 1.0, 0.0]) ≈ 1.0
     @test credence_accuracy([0.5, 0.5], [1.0, 0.0]) ≈ 0.0
     @test credence_accuracy([0.75, 0.25], [1.0, 0.0]) ≈ 0.75
-    @test scarcity_cost(2.0, 100.0, 100.0) ≈ 2.0
-    @test scarcity_cost(2.0, 50.0, 100.0) ≈ 4.0
+    @test scarcity_cost(2.0, 100.0, 100.0; floor_share = 0.001) ≈ 2.0
+    @test scarcity_cost(2.0, 50.0, 100.0; floor_share = 0.001) ≈ 4.0
 end
 
 @testset "Domain network: adversarial and edge cases" begin
@@ -118,7 +118,7 @@ end
     end
     # A novel domain's threshold never drops below 0.55, however it is set (8.35: that floor is for
     # discovering what has no precedent).
-    @test !currency_eligible(0.54, 100; novel = true, threshold = 0.9, novel_threshold = 0.3, min_records = 10)
+    @test !currency_eligible(0.54, 100; novel = true, threshold = 0.9, novel_threshold = 0.3, min_records = 10, novel_floor = 0.55)
     # Worse than random guessing scores 0, not below; no record, no accuracy.
     @test credence_accuracy([0.0], [1.0]) == 0.0 && credence_accuracy(Float64[], Float64[]) == 0.0
     @test_throws ArgumentError credence_accuracy([1.2], [1.0])
@@ -129,12 +129,12 @@ end
     @test projection_membership([-1.0, 0.0], [1.0, 0.0]) == 0 && projection_membership([3.0, 0.0], [1.0, 0.0]) == 1
     @test subsethood(zeros(3), ones(3), ones(3)) == 0 && membership_rolling(0.4, 0.0, 0.9; rate = 0.1) == 0.4
     @test abs(membership_rolling(0.9, 1.0, 0.0; rate = 0.02) - 0.9) <= 0.02 && 0 <= membership_rolling(0.0, 1.0, 0.0; rate = 1.0) <= 1
-    @test isfinite(scarcity_cost(1.0, 0.0, 100.0)) && scarcity_cost(1.0, 0.0, 100.0) > 100
+    @test isfinite(scarcity_cost(1.0, 0.0, 100.0; floor_share = 0.001)) && scarcity_cost(1.0, 0.0, 100.0; floor_share = 0.001) > 100
     @test_throws ArgumentError classify_network([1.0], [0.1, 0.2], MU; parent_threshold = 0.5, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
     @test_throws ArgumentError classify_network([1.0, 0.0], [0.1, 0.2, 0.3], MU; parent_threshold = 0.0, μ_min = 0.2, leaf_threshold = 0.4, temperature = 0.01)
     @test_throws ArgumentError fallback_network(MU, [true], [true, true], zeros(6))
     @test_throws ArgumentError accuracy(0.5)
-    @test_throws ArgumentError scarcity_cost(1.0, 10.0, 0.0)
+    @test_throws ArgumentError scarcity_cost(1.0, 10.0, 0.0; floor_share = 0.001)
 end
 
 # Credence from the record ([P], finding 8.58-c and the side-harm boundary): the share of the

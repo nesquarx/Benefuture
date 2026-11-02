@@ -2053,3 +2053,8 @@ locks the noisy better-models world (own share 0.81 → 0.70), 20× leaves it as
 rarely fires within 800 steps; a model counts once observed across the horizon (a younger model's short
 record, read whole, locked the bar at its luck: own share 0.61–0.73). Candidate homes: L82 (qualified
 models' accuracy), SigThGv (horizons governed), 8.58-b.
+Measured after the change (full suite green but for this): in the better-models world the takeover
+regime is 16 of 24 seeds under time-decayed comparison (interval 0.46–0.82), against 10 of 12 under the
+fixed window; the claim "in most seeds" is recorded unsupported, not asserted; floors lose no more than
+5% of their growth (equivalence) at 12 to 24 seeds. Whether time-weighted comparison slows takeovers is
+open (a candidate for a paired test over more seeds).

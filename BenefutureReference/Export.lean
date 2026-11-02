@@ -139,8 +139,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   credence_accuracy_ref credences.data outcomes.data
 
 @[export bf_currency_eligible] def currencyEligible (acc records minRecords : Float) (novel : UInt8)
-    (threshold novelThreshold : Float) : UInt8 :=
-  if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold then 1 else 0
+    (threshold novelThreshold novelFloor : Float) : UInt8 :=
+  if currency_eligible_ref acc records minRecords (novel == 1) threshold novelThreshold novelFloor then 1 else 0
 
 @[export bf_relative_bar] def relativeBar (established coarse alternative : Float) : Float :=
   relative_bar_ref established coarse alternative
@@ -224,8 +224,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 
 @[export bf_relative_reputation] def relativeReputation (reps : FloatArray) : FloatArray := ⟨relative_reputation_ref reps.data⟩
 
-@[export bf_scarcity_cost] def scarcityCost (base available capacity : Float) : Float :=
-  scarcity_cost_ref base available capacity
+@[export bf_scarcity_cost] def scarcityCost (base available capacity floorShare : Float) : Float :=
+  scarcity_cost_ref base available capacity floorShare
 
 -- M7 births and deaths
 @[export bf_foreclosed] def foreclosed (u h growthU growthH window : Float) : Float :=

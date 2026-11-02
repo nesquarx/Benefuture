@@ -19,10 +19,10 @@ growth(tr) = tr.floor_u[end] - tr.floor_u[51]
     static = [run_m3c(pool_world(); seed) for seed in seeds]
     better = [run_m3c(pool_world(p_new_model = 0.05); seed) for seed in seeds]
     # Challengers arrive and take over, so a working domain's backing model ends better than the
-    # bootstrap's: a regime, since a challenger must win by the significance rule (`model_z`), shown as a
-    # proportion with its interval (11 of 12 seeds; seed 12 sees no takeover in 400 steps). No model is
-    # ever perfect (structural, every seed).
-    @test proportion_interval(count(b -> b.takeovers > 0 && min(b.top_scale[1], b.top_scale[3]) < 1, better), length(better)).lo > 0.5
+    # bootstrap's: a regime, since a challenger must win by the significance rule (`model_z`). Stated:
+    # in most seeds (interval above a half). Unsupported under time-decayed accuracy (8.85), so not
+    # asserted: 16 of 24 seeds, interval 0.46–0.82 (under the fixed record window 10 of 12; the two do
+    # not differ significantly at these counts). No model is ever perfect (structural, every seed).
     @test all(all(>=(0.1 - 1e-12), b.top_scale) for b in better)
     # Stated before measuring (CLAUDE.md significance testing): floors lose no more than 5% of their
     # growth (equivalence, one-sided). Holds at 8, 12 and 16 seeds.

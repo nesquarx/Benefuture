@@ -239,18 +239,18 @@ function accuracy(score::Real)
     ccall(sym(:bf_accuracy), Float64, (Float64,), score)
 end
 
-"Whether a domain's model may back its currency (novel domains: after `min_records`, never below 0.5)."
-function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::Real, novel_threshold::Real, min_records::Integer)
-    check(isfinite(acc) && 0 <= acc <= 1 && records >= 0 && min_records >= 0, "accuracy in [0, 1], counts non-negative")
-    ccall(sym(:bf_currency_eligible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64),
-          acc, records, min_records, novel, threshold, novel_threshold) == 1
+"Whether a domain's model may back its currency (novel domains: after `min_records`, never below `novel_floor`, 8.35; governed)."
+function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::Real, novel_threshold::Real, min_records::Integer, novel_floor::Real)
+    check(isfinite(acc) && 0 <= acc <= 1 && records >= 0 && min_records >= 0 && 0 <= novel_floor <= 1, "accuracy and floor in [0, 1], counts non-negative")
+    ccall(sym(:bf_currency_eligible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64),
+          acc, records, min_records, novel, threshold, novel_threshold, novel_floor) == 1
 end
 
-"Resource cost per unit by availability: `base` × capacity / available, exhaustion dear but finite."
-function scarcity_cost(base::Real, available::Real, capacity::Real)
-    check(isfinite(base) && base >= 0 && isfinite(available) && available >= 0 && isfinite(capacity) && capacity > 0,
-          "base and availability must be non-negative, capacity positive")
-    ccall(sym(:bf_scarcity_cost), Float64, (Float64, Float64, Float64), base, available, capacity)
+"Resource cost per unit by availability: `base` × capacity / available, what remains floored at `floor_share` of capacity (governed): exhaustion dear but finite."
+function scarcity_cost(base::Real, available::Real, capacity::Real; floor_share::Real)
+    check(isfinite(base) && base >= 0 && isfinite(available) && available >= 0 && isfinite(capacity) && capacity > 0 && 0 < floor_share <= 1,
+          "base and availability must be non-negative, capacity positive, floor share in (0, 1]")
+    ccall(sym(:bf_scarcity_cost), Float64, (Float64, Float64, Float64, Float64), base, available, capacity, floor_share)
 end
 
 """

@@ -1258,6 +1258,8 @@ ratified.
 | Delegate audit: apparent votes before it applies (M5) | `audit_min_records` | 3 | L114; ghost audit |
 | Models kept per domain (M5) | `pool_max` | 4 | 8.42.2; ghost audit (M3c had it named already) |
 | Least weight one's own reading keeps in deliberation (M5) | `own_floor` | 0.1 | 8.44; ghost audit |
+| Least bar a novel domain's model clears to back a currency | `novel_floor` | 0.55 | author ruling 8.35; ghost audit (was a literal in `currency_eligible_ref`) |
+| Share of capacity below which scarcity pricing stops rising (exhaustion dear but finite) | `scarcity_floor` | 0.001 | L83; ghost audit (was a literal in `scarcity_cost_ref`) |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
 | Formation of novel domains | `form_count`, `form_radius` | 20, 0.5 | 8.6 |
@@ -1306,8 +1308,7 @@ over `sim/src` and `BenefutureReference` (author ruling: an unnamed scalar is a 
 
 Pending (named in the Lean reference's parameter space but hardcoded where the simulation calls them):
 Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (M0, via `harm_weight`), Fr's confidence bar 0.9 and
-severity multipliers 1000/100/10/1/0.5 (`fr_permissible_ref`, not called in runs), the novel floor 0.55
-in `currency_eligible_ref` (8.35) and the scarcity floor 1/1000 in `scarcity_cost_ref`.
+severity multipliers 1000/100/10/1/0.5 (`fr_permissible_ref`, not called in runs).
 
 ## Noise
 
