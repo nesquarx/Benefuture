@@ -172,14 +172,28 @@ end
 # world, models that can exceed the bootstrap bar of 0.9).
 @testset "Probe: the status bar ratchets up when enough models clear it, and never falls" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
-    w() = M3cParams(ToyParams(n = 60, steps = 300, plans = 8), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
+    # The probe's world names its monitoring window (500 records over 800 steps); the default (1000) is
+    # longer than its challengers' records.
+    w(; kw...) = M3cParams(ToyParams(n = 60, steps = 800, plans = 8), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
                     [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY...,
-                    p_new_model = 0.1, takeover_records = 30)
+                    p_new_model = 0.1, takeover_records = 30, ratchet_window = 500, kw...)
     for seed in 1:2
         tr = run_m3c(w(); seed)
         b = tr.bar_trace                                         # leaf 1's bar, step by step
         @test all(diff(b) .>= 0)                                  # never falls
         @test b[end] > b[1] + 0.01                                # it rose once enough models cleared it
         @test tr.lane_halted == 0                                 # pricing goes on
+        @test run_m3c(w(ratchet_k = 0); seed).bar_trace[end] == b[1]   # red baseline: without it the bar stays
     end
+    # Counterexample: where models swing together between windows (the better-models world, high noise),
+    # a bar read over the short window locked at a quiet stretch and own-currency pricing fell from 0.79 to
+    # 0.38; over the default window it does not fire, and the run is the run without it.
+    nw(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
+        [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8], [1, 1, 2, 2], trues(4);
+        λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6,
+        σ_coarse = 0.75, p_new_model = 0.05, kw...)
+    on, off = run_m3c(nw(); seed = 1), run_m3c(nw(ratchet_k = 0); seed = 1)
+    @test on.priced_leaf == off.priced_leaf && all(on.leaf_bars .== 0.9)
+    own(tr) = mean(tr.priced_leaf[i] == tr.true_leaf[i] for i in eachindex(tr.chosen_step) if tr.chosen_step[i] >= 100)
+    @test own(run_m3c(nw(ratchet_window = 100); seed = 1)) < own(on) - 0.2   # the short window locks (0.36 against 0.84)
 end

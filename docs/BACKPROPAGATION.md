@@ -2023,15 +2023,16 @@ the bar ratchets up. Built as: once at least k models (governed, `ratchet_k`) ha
 the bar, the bar rises to the k-th best accuracy less a governed margin (`ratchet_margin`), so k models
 still clear it; it never falls by this rule (lowering only through the debatable escape, 8.41). Lean
 `ratchet_bar_ref`.
-Finding: "operating above" must mean sustained operation, judged with confidence. Read from the
-recent window's point estimates the ratchet locked bars at quiet stretches: models scored on the same
-actions swing together between windows (0.86 to 0.99 in the better-models world), the bar followed the
-peak, the whole pool fell below it, and own-currency pricing fell from 0.79 to 0.38. Built instead on
-each model's whole record, its accuracy less `model_z` standard errors, over records long enough to
-compete (`takeover_records`, 8.58-b); in that noisy world it then never fires (no three models
-sustainably clear 0.9) and results match the ratchet off. Candidate home: L82 with 8.58-b.
+Finding: "operating above" must mean sustained operation. Read over the short window that gauges
+eligibility (100 records) the ratchet locked bars at quiet stretches: models scored on the same actions
+swing together between windows (0.86 to 0.99 in the better-models world), the bar followed the peak, the
+whole pool fell below it, and own-currency pricing fell from 0.79 to 0.38. Author clarification: the
+rolling average that monitors accuracy for the ratchet must be longer. Built as a governed
+`ratchet_window` (default 1000 records, full windows only): 100 and 300 still lock (own share 0.34 and
+0.57–0.82 against 0.71–0.84), 500 nearly clears, 700 and 1000 leave that world as without the ratchet.
+Candidate home: L82 (monitoring window of qualified models), SigThGv.
 Probe (`sim/test/probe_tests.jl`): in the controlled world the bar stays at 0.9 with the ratchet off and
-rises to 0.950–0.958 with it, never falling, no halts (2 seeds). Gaming: an incumbent could field
+rises to 0.949–0.972 with it (window 500, 800 steps), never falling, no halts (2 seeds). Gaming: an incumbent could field
 near-clones to lift the bar over challengers; the bar sits under the k-th best measured accuracy, so it
 rises only when k models truly clear it, but clones of one model should count once (a candidate for the
 diversity rule, 8.67; not yet built). Bootstrap bars at world-realistic values per domain remain open
