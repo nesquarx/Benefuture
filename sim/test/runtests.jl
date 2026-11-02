@@ -53,35 +53,14 @@ end
 end
 
 include("legacy.jl")
-include("value_tests.jl")
-include("goal_tests.jl")
-include("m0_tests.jl")
-include("m1_tests.jl")
-include("analysis_tests.jl")
-include("economy_tests.jl")
-include("m2_tests.jl")
-include("domain_tests.jl")
-include("shapley_tests.jl")
-include("shapley_sampling_tests.jl")
-include("differential_tests.jl")
-include("m3_tests.jl")
-include("m3b_tests.jl")
-include("m3c_tests.jl")
-include("m3d_tests.jl")
-include("m3e_tests.jl")
-include("m3f_tests.jl")
-include("friction_tests.jl")
-include("diversity_tests.jl")
-include("advap_tests.jl")
-include("m6_tests.jl")
-include("attack_tests.jl")
-include("friction_m3c_tests.jl")
-include("models_tests.jl")
-include("m6_attacks_tests.jl")
-include("battery_tests.jl")
-include("methods_tests.jl")
-include("m4_tests.jl")
-include("m5_tests.jl")
-include("m7_tests.jl")
-include("calibrated_tests.jl")
-include("probe_tests.jl")
+# Every file runs even when an earlier one fails: a failure must never hide the files after it (author:
+# silent failures cannot be fixed). The run fails at the end, naming each failing file.
+failed = String[]
+for f in ["value_tests.jl", "goal_tests.jl", "m0_tests.jl", "m1_tests.jl", "analysis_tests.jl", "economy_tests.jl", "m2_tests.jl", "domain_tests.jl", "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "m3_tests.jl", "m3b_tests.jl", "m3c_tests.jl", "m3d_tests.jl", "m3e_tests.jl", "m3f_tests.jl", "friction_tests.jl", "diversity_tests.jl", "advap_tests.jl", "m6_tests.jl", "attack_tests.jl", "friction_m3c_tests.jl", "models_tests.jl", "m6_attacks_tests.jl", "battery_tests.jl", "methods_tests.jl", "m4_tests.jl", "m5_tests.jl", "m7_tests.jl", "calibrated_tests.jl", "probe_tests.jl"]
+    try
+        @testset "$f" begin include(f) end
+    catch
+        push!(failed, f)
+    end
+end
+isempty(failed) || error("test files failed: " * join(failed, ", "))

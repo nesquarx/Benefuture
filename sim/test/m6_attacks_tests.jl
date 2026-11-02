@@ -163,7 +163,8 @@ whitewasher = [0, 0, 0, 0, 0, 0.05]
     acc(tr) = tr.leaf_accuracy[1]
     # Bound: nearly every attempt is linked back to its entity, and the domain's model fares as without.
     @test all(tr.identities_linked > 5 * tr.identities_admitted for tr in bound)
-    @test mean(acc.(bound)) > mean(acc.(plain)) - 0.02
+    # Equivalence within 0.02 (one-sided): −0.003 ± 0.002 over 10 paired seeds; holds at these three.
+    @test equivalent(acc.(plain) .- acc.(bound); margin = 0.02, side = :upper).equivalent
     # Unbound: every attempt succeeds and each fresh identity fools the models in full again. Under the
     # normal credence (the limiting case) the domain's model is worse for it (accuracy 0.87 in one seed);
     # under the record credence, the rule (8.71), the fooled outliers barely move it (0.954-0.99 against
@@ -172,7 +173,9 @@ whitewasher = [0, 0, 0, 0, 0, 0.05]
     nb = [run_m3c(ww(whitewash = whitewasher, credence_rule = :normal); seed) for seed in seeds]
     nu = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0, credence_rule = :normal); seed) for seed in seeds]
     @test mean(acc.(nu)) < mean(acc.(nb)) - 0.01
-    @test mean(acc.(unbound)) > mean(acc.(plain)) - 0.02
+    # Unsupported under time-decayed accuracy (8.85), so not asserted: that unbound whitewashing costs the
+    # record-credence model no more than 0.02 of accuracy: −0.011 ± 0.006 over 10 paired seeds (−0.005 ±
+    # 0.008 under the fixed window), neither within the margin nor a significant loss.
     # The recount honours identities: a new identity's ledgers hold only what it did.
     hp, hn, rel = recount(unbound[1])
     @test hp ≈ unbound[1].h_pos_own && hn ≈ unbound[1].h_neg_own

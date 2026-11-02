@@ -90,13 +90,14 @@ end
               for k in 1:8 for _ in 1:2]
     eightfold(; sk = 0.15, kw...) = M3cParams(ToyParams(n = 120, steps = 300, plans = 12), ag(sk), lp, trues(8); λpos = 0.05, λneg = 0.02,
                                              transactions = true, causal_distribution = true, LEGACY..., kw...)
-    # Low-skill domains, where no leaf model reaches the established bar: under the normal credence (the
-    # limiting case kept for the scenario) the trial finds the relative bar better, with gains above
-    # harms and nothing irreparable, and it is adopted.
-    # On Linux, seeds 1-5 adopt; on macOS ARM64, trajectory drift defers significance hurdle (z > 2.0)
-    # to seed 31 (z = 2.02). Threshold is kept fixed (z = 2.0) and seeds expanded per author standard.
-    norm_runs = [run_m3c(eightfold(escape = true, credence_rule = :normal); seed) for seed in (1, 2, 3, 31)]
-    @test any(tr -> tr.escape.adopted, norm_runs)
+    # Low-skill domains, where no leaf model reaches the established bar, under the normal credence (the
+    # limiting case kept for the scenario): the trial runs on four leaves, gains exceed harms and nothing
+    # is irreparable (every seed). Stated earlier: the trial finds the relative bar better and adopts it.
+    # Unsupported now, so not asserted: 0 of 16 seeds adopt (interval 0–0.2), the relative bar against
+    # the absolute one at mean z −0.24 (−2.6 to 1.2) on seeds 1–16, with the ratchet on or off and under
+    # the fixed record window or time-decayed accuracy alike; why it no longer helps here is open. (On
+    # macOS seed 31 adopted at z 2.02; a seed chosen after seeing it is not evidence.)
+    norm_runs = [run_m3c(eightfold(escape = true, credence_rule = :normal); seed) for seed in 1:4]
     @test all(tr -> tr.escape.tried && tr.escape.gains > tr.escape.harms && tr.escape.irreparable == 0, norm_runs)
     @test count(norm_runs[1].escape.trial_leaves) == 4
     # Before the trial and on the other leaves meanwhile, the incumbent bar holds.

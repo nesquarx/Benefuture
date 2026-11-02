@@ -112,13 +112,13 @@ end
 end
 
 # Part of 8.65 (a), the seed-dependent leaf qualification, is the same fragility: early outliers in a
-# model's record keep its currency from ever qualifying. Measured over six seeds of the realistic
-# world (250 steps): no seed priced by its currency without halts under the normal credence, four of
-# six from the record; mean floor growth 51 against 111.
+# model's record keep its currency from ever qualifying. Over twelve paired seeds of the realistic world
+# (250 steps), time-decayed accuracy (8.85): runs without halts 4 of 12 from the record against 0 of 12
+# under the normal credence (6 against 0 under the fixed window); floor growth +51 ± 16 (an effect).
 @testset "Record credence: the currency regime takes hold in more seeds" begin
-    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:6]
+    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:12]
     normal, record = runs(:normal), runs(:record)
     growth(tr) = tr.floor_u[end] - tr.floor_u[51]
-    @test count(tr -> tr.lane_halted == 0, record) >= 3 && count(tr -> tr.lane_halted == 0, normal) == 0
-    @test mean(growth, record) > 1.5 * mean(growth, normal)
+    @test paired_effect(growth.(record) .- growth.(normal)).significant
+    @test paired_effect(Float64.(getfield.(record, :lane_halted) .== 0) .- Float64.(getfield.(normal, :lane_halted) .== 0)).significant
 end

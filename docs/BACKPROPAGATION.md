@@ -2058,3 +2058,15 @@ regime is 16 of 24 seeds under time-decayed comparison (interval 0.46–0.82), a
 fixed window; the claim "in most seeds" is recorded unsupported, not asserted; floors lose no more than
 5% of their growth (equivalence) at 12 to 24 seeds. Whether time-weighted comparison slows takeovers is
 open (a candidate for a paired test over more seeds).
+Further readings under 8.85, from a run of every test file in isolation (the suite stopped at its first
+failing file, hiding later ones; it now runs every file and fails at the end): (a) whitewashing with
+binding stays equivalent to none (−0.003 ± 0.002, margin 0.02, 10 seeds); without binding the cost to
+the record-credence model is −0.011 ± 0.006, neither within 0.02 nor a significant loss (unsupported).
+(b) The record credence keeps the currency regime in more seeds than the normal: runs without halts 4 of
+12 against 0 of 12 (6 against 0 under the fixed window), floor growth +51 ± 16, both effects.
+(c) The debatable escape no longer adopts the relative bar in the low-skill eightfold world: 0 of 16
+seeds, mean z −0.24, with the ratchet on or off and under either accuracy rule; the trial runs, gains
+exceed harms and nothing is irreparable in every seed. Not caused by 8.84 or 8.85; the earlier
+adoption (seeds 1–5) predates changes not yet bisected, and the macOS seed 31 (z 2.02) was chosen after
+seeing it. Open: why the relative bar no longer helps there (candidate: the stalls it removed, 8.83, no
+longer arise in that world).
