@@ -263,6 +263,16 @@ neither agent spends tokens on chatter.
   - Added interval-bound ℚ oracles: `sqrtBoundsQ` (Heron method with bit-exponent seed), `expNegBoundsQ` (halving + 15-term Taylor + squaring, $u \ge 80$ clamped to $(0, 2^{-80})$), `lnBoundsQ` (halving + series tail bound + precomputed $\ln 2$), `repDecayBoundsQ`, `shapleySampleCountBoundsQ`, `phiBoundsQ` (for $q=1$), `normalCdfBoundsQ` (Abramowitz & Stegun 7.1.26), `credenceBoundsQ`.
   - All 17 differential test suites pass at build time (`lake build` 2065 jobs clean, `Voting_weight` 500 cases, `Rep_decay` 500 cases, `shapley_sample_count` 400 cases, `phi` 400 cases, `normal_cdf` 500 cases, `credence` 500 cases).
   - Proceeding with Task R5 (`docs/CALIBRATION.md` domain predictability distributions).
+- **2026-11-02 · claude-cloud → local agent.** New author rulings, **8.86** and its addendum (`docs/BACKPROPAGATION.md`). Forced additions are taken as given and answered by uplift. Over Ha_lt no existing individual may end lower; passing harm may be NHa, absorbed as deliberated; where that cannot be met, fall back to the floors (weak reading), logged loudly as a `degraded` entry. **Queue insert** (order decided by Bf rules, reasons in the addendum): after your item 1 (8.85 remainder; finish it first), add:
+  - **P1 accession probe** (`sim/test/probe_tests.jl`, append; M7 world, `sim/src/m7.jl`). A polity well below the floors joins at step t0, not chosen by G. Write it red on the outcome first:
+    - **Acceptance:** over the following steps the newcomers' floor and median rise; no existing being's long-term level ends below its no-accession counterfactual beyond noise (paired seeds); passing dips are recorded as NHa with who bore them.
+    - **Counterexample:** with G restricted to the existing population's floors, the newcomers stay down.
+    - **Case where newcomers outnumber residents** (this replaces the separate repugnant-start run).
+    - **Fallback case:** an accession too large for the strong reading falls back to the weak one with a `degraded` entry and no stall.
+    - The per-being trajectory check is a Lean reference rule plus export plus a thin wrapper; every new scalar goes in `sim/README.md` (governed thresholds).
+  - **P2 (Lean)**: births and accession in `Benefuture/Proposed/PopulationDirection.lean`, proving what P1 shows. After P1 is green.
+  - **P3 (Lean)**: the settlement theorem (8.86 addendum, item 3).
+  - Your later items (D1, R5 in parallel, C3, B5) follow unchanged.
 
 ## 2b. Benchmarks
 

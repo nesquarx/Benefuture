@@ -2086,3 +2086,34 @@ and G, over the following steps, raises the newcomers' floor and median while th
 levels do not fall beyond their noise (acceptance), against a counterexample in which G is restricted
 to the existing population's floors and the newcomers stay down. Candidate homes: Benefuture goals
 (population), Government (birth and accession), Implementation prototype (merging polities), L74.
+
+8.86 addendum (author) on the existing population: the strong reading where it can be met, the weak
+one where it cannot. Over the long-term window (Ha_lt), an accession must not leave any existing
+individual's levels lower than they would have been without it. Passing harm on the way may be
+necessary harm (NHa); how to absorb it (who bears it, what repairs or compensates it) is deliberated
+and decided as any other decision, never assumed. If no plan can meet the strong reading, G falls back
+to the weak one (the floors over everyone, `goal_G_sound`), and the fallback is logged loudly as a
+progressive degradation, never silently. Parsimony: this is the trajectory reading of ↑min that
+already admits a dip that closes (`tunnel_admissible_but_not_stepwise`), extended from the floor to
+each existing being over Ha_lt; no new mechanism beyond that per-being check. Gaming, considered
+before building: (a) existing beings overstating their predicted loss to veto an accession, met by
+outputs only (measured levels by competing models, never claims) and AdvAp on the predictions;
+(b) a chosen addition labelled forced to slip past G's choice, met by classifying "forced" against
+not acting (forced only if no plan available to G prevents it); (c) absorption deliberated so that
+the same few always bear the passing harm, met by recording who bore it and weighing a repeated
+burden as harm (the ledger's pattern). Candidate homes: L74 (trajectory ↑min per existing being),
+Benefuture goals (population), Government (accession), Harm (NHa).
+
+Order of the work that follows, decided by Benefuture's own rules (author: "decide via Bf rules"):
+understanding first, so the step that resolves most uncertainty per cost leads; progressive
+complexity and probes first, so the smallest world goes before proofs and full runs; ¬↓ for what
+exists, so work under way is finished before new work starts (a half-converted rule is a harm);
+parsimony, so overlapping tasks merge. (1) The accession probe: it tests the newest ruling and is
+the only way to learn whether the strong reading can be met (the ruling is conditional on it); the
+repugnant-start simulation folds into it as the case where newcomers outnumber the existing
+population. (2) Lean: births and accession in `Proposed.PopulationDirection`, proving what the probe
+shows (additions that lower the floors are not admissible against not acting; with the per-being
+trajectory check, an admissible plan leaves no existing being lower over the window). (3) The
+settlement theorem (settling on measured outcomes removes the gain from overstated predictions, given
+unbiased measurement): independent and nearer to an encoding check, so it adds the least new
+understanding of the three.
