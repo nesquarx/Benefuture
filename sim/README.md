@@ -1245,7 +1245,19 @@ ratified.
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
 | Models that must clear a domain's bar before it ratchets up (the bar then sits under the k-th best; never falls by this rule) | `ratchet_k` | 3 | author ruling 8.84; Lean `ratchet_bar_ref` |
 | Margin the ratcheted bar sits under the k-th best accuracy | `ratchet_margin` | 0.02 | author ruling 8.84 |
-| Records over which the ratchet monitors a model's accuracy (longer than the eligibility window, so models swinging together between windows do not lock the bar at a quiet stretch) | `ratchet_window` | 1000 | author clarification 8.84; 100 and 300 lock in the better-models world |
+| The ratchet's averaging half-life as a multiple of the domain's accuracy half-life; models count once observed across it | `ratchet_horizon` | 20 | author 8.84, 8.85; 10 locks the better-models world, 40 rarely fires |
+| Accuracy half-life in steps at the reference transaction rate | `acc_halflife` | 7 | author 8.85; the old 100-record window's effective count at the reference rate |
+| Reference transaction rate (records per step) | `acc_rate_ref` | 5 | author 8.85; typical leaf rate of the test worlds |
+| How far the accuracy half-life follows the rate (1: a fixed record count; 0: a fixed time) | `acc_mute` | 0.5 | author 8.85 (muted: busy domains lengthen, slow ones shorten, relative to a fixed count) |
+| Half-life in steps of a domain's measured transaction rate | `rate_halflife` | 20 | 8.85 |
+| Actor errors a model needs before its credence reads its record on that actor | `actor_min_records` | 5 | 8.29; ghost audit (was a literal) |
+| Attestations before an attester's skill is read from its record | `attest_min_records` | 5 | 8.70; ghost audit |
+| An actor's records an AdvAp reader needs before reporting | `adv_min_records` | 5 | 8.38; ghost audit |
+| Fewest of an actor's recent errors an AdvAp audit compares | `adv_track_floor` | 20 | 8.38; ghost audit |
+| Classification evidence kept per domain, as a multiple of `form_count` | `form_buffer` | 4 | L49; ghost audit |
+| Delegate audit: apparent votes before it applies (M5) | `audit_min_records` | 3 | L114; ghost audit |
+| Models kept per domain (M5) | `pool_max` | 4 | 8.42.2; ghost audit (M3c had it named already) |
+| Least weight one's own reading keeps in deliberation (M5) | `own_floor` | 0.1 | 8.44; ghost audit |
 | Classification: parent match, leaf membership, leaf match | `parent_threshold`, `μ_min`, `leaf_threshold`, `temperature` | 0.5, 0.2, 0.4, 0.01 | L22; 8.3 |
 | Overlap rolling-average rate | `μ_rate` | 0.02 | 8.12 |
 | Formation of novel domains | `form_count`, `form_radius` | 20, 0.5 | 8.6 |
@@ -1262,7 +1274,7 @@ ratified.
 | Largest outcome shared by exact Shapley (sampled beyond) | `SHAPLEY_EXACT_MAX` | 10 | `sim/src/economy.jl`; cost of 2ⁿ coalition values |
 | Sampled Shapley accuracy, as a fraction of each contributor's marginal range | `SHAPLEY_ε` | 0.05 | `shapley_sample_count_ref`; Hoeffding |
 | Sampled Shapley failure probability (all shares within ε at once) | `SHAPLEY_δ` | 0.05 | `shapley_sample_count_ref`; union bound over n |
-| Metric-model scoring window (accuracy and uncertainty) | `window` | 100 | L82; 8.36 |
+| Metric-model record window for uncertainty and record credence (accuracy itself is time-decayed, 8.85; this window is its limiting case under `accuracy_rule = :window`) | `window` | 100 | L82; 8.36 |
 | Steps between reclassifications of memory | `μ_every` | 25 | 8.12 |
 | Accolade for carrying an output outside contract (share of the maker's positive share) | `accolade_rate` | 0.05 | L96, L121; 8.22 |
 | Apparent votes a delegate's audit needs (hardcoded, `sim/src/m5.jl`) | – | 3 | L114; 8.29 |
@@ -1270,6 +1282,32 @@ ratified.
 | Entries before a model prices an actor by its record on it, else its record overall (hardcoded, `sim/src/m3c.jl`) | – | 5 | L84; 8.29 |
 | Records an actor needs before an AdvAp report (hardcoded, `sim/src/m3c.jl`) | – | 5 | L160; 8.38 |
 | Window of other actors' errors an AdvAp audit compares with (hardcoded, `sim/src/m3c.jl`) | – | max(`track_window`, 20) | L160; 8.38 |
+
+### Ghost audit
+
+Every scalar a rule or world uses is named: a governed threshold (above), a world parameter or noise
+(below), or one of the constants here, which are definitions or numerics rather than choices. Audited
+over `sim/src` and `BenefutureReference` (author ruling: an unnamed scalar is a ghost in the system).
+
+| Constant | Where | Why it is not a threshold |
+|---|---|---|
+| 0.5 | coin toss, a tie counting half, an average of two | definition (no information) |
+| 0.25 | Brier normaliser in accuracy | definition (the coin toss's Brier score) |
+| +1, +2 | rights and wrongs in a record's credence | Laplace's uniform prior |
+| erf coefficients | `normal_cdf_ref` | Abramowitz and Stegun 7.1.26, numerical |
+| 1e-9, 1e-12, 1e12, 1e300, 0.999999 | comparisons, empty standard errors, clamps | numerical tolerances and sentinels |
+| 40 half-lives | records skipped by time-decayed accuracy | numerical (weights under 1e-12) |
+| 10^6, 1000k | identifiers of challengers | identifiers |
+| 62, 64 | coalition masks | integer width |
+| `passing = 4` | M0 | index of passing harm in `HARM_SCHEDULE` |
+| Marsaglia–Tsang 1/3, 9, 1/2; σ²/2 | Gamma sampler; log-normal of mean 1 | definitions of the distributions |
+| Hoeffding's 2 n / δ and 2 ε² | `shapley_sample_count_ref` | the bound itself (ε, δ are governed) |
+| 1.96 | `ci95` (analysis helper) | reporting only; claims use the significance rule's z |
+
+Pending (named in the Lean reference's parameter space but hardcoded where the simulation calls them):
+Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (M0, via `harm_weight`), Fr's confidence bar 0.9 and
+severity multipliers 1000/100/10/1/0.5 (`fr_permissible_ref`, not called in runs), the novel floor 0.55
+in `currency_eligible_ref` (8.35) and the scarcity floor 1/1000 in `scarcity_cost_ref`.
 
 ## Noise
 
@@ -1349,6 +1387,9 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | What counts as irreparable harm: a measured loss on one being beyond (world classification) | `irreparable_loss` | none | 2–∞ |  |
 | An agent reporting whatever the record (adversary); whom it targets (slander) | `frivolous`, `slander` | 0, anyone | 0–1, – |  |
 | A binding cluster missing the entity behind a new identity; clusters examining it (world) | `bind_miss`, `bind_clusters` | 0.1, 3 | 0.01–0.5, 2–5 |  |
+| Confidence a binding cluster states: compromised, affirming, denying (world) | `bind_conf_compromised`, `bind_conf_affirm`, `bind_conf_deny` | 0.99, 0.9, 0.1 | 0.9–0.999, 0.6–0.99, 0.01–0.4 | ghost audit |
+| Duty diligence when none is given; weight of a leaf's own axis in its signature (world) | `diligence_default`, `own_axis` | 0.95, 0.5 | 0.5–1, 0.2–1 | ghost audit |
+| Research (M7): least novelty of a perspective; how chance rises with a researcher's level (exponent); scatter of a breakthrough's gain; how in-job innovation concentrates near the top (exponent) | `novelty_min`, `rel_exponent`, `gain_σ`, `near_exponent` | 0.2, 2, 0.5, 4 | 0–0.5, 1–3, 0.2–1, 2–8 | ghost audit |
 | Clusters colluding with whitewashers (adversary); chance a step an admitted false identity is revealed (world) | `bind_compromised`, `p_reveal` | none, 0 | up to all but one, 0.01–0.2 |  |
 | Real new entities seeking binding, chance a step (world) | `p_newcomer` | 0 | 0.1–0.9 (R2) |  |
 | An agent trying a new identity (adversary) | `whitewash` | 0 | 0–0.1 |  |

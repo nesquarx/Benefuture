@@ -228,10 +228,12 @@ entities acting per step (`actions`) and the kind of each action taken (`kind`).
 function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
                 p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
                 class::Integer = 10, lessons::Integer = 3, reception_σ::Real = CALIBRATED.reception_σ, teacher_cv::Real = CALIBRATED.teacher_cv, central::Bool = false,
-                p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3)
+                p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3,
+                novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1)
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
-          0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ)) && options >= 1,
+          0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ, rel_exponent, gain_σ, near_exponent)) && options >= 1 &&
+          0 <= novelty_min <= 1 && 0 < top_frac <= 1,
           "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive")
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
@@ -242,7 +244,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     # A learner's reception is log-normal of mean 1 (a few learn a lot; 3.7), so ε stays the mean share of the gap.
     receive(n) = exp.(reception_σ .* randn(trng, n) .- reception_σ^2 / 2)
     s = toy_state(p, rng)
-    novelty = 0.2 .+ 0.8 .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
+    novelty = novelty_min .+ (1 - novelty_min) .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
     tacit = zeros(p.n)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], top_share = Float64[], chosen = Int[], kind = Symbol[], actions = Int[], breakthroughs = Ref(0),
@@ -255,8 +257,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
         push!(tr.worst_drop, max(0.0, maximum(pu .- s.u), maximum(ph .- s.h)))
         prev[] = (copy(s.u), copy(s.h))
         shifted = s.u .- minimum(s.u)  # share of understanding above the lowest level
-        top = sort(shifted; rev = true)[1:max(1, p.n ÷ 10)]
-        push!(tr.top_share, sum(shifted) > 0 ? sum(top) / sum(shifted) : 0.1)
+        top = sort(shifted; rev = true)[1:max(1, floor(Int, top_frac * p.n + 1e-9))]
+        push!(tr.top_share, sum(shifted) > 0 ? sum(top) / sum(shifted) : top_frac)  # all equal: the top holds its share
     end
     record!()
     for _ in 1:p.steps
@@ -266,9 +268,9 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
         for b in findall(researching)
             tr.spent[] += research_cost
             rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-            chance = clamp(p_research * rel^2 * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+            chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
             if rand(rrng) < chance
-                gain = research_gain * exp(0.5 * randn(rrng))
+                gain = research_gain * exp(gain_σ * randn(rrng))
                 new = s.u[b] + gain  # beyond the frontier only if it passes the peak
                 rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
                 s.u[b] = new
@@ -278,7 +280,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
         workforce = 1 - count(researching) / p.n
         peak = maximum(s.u)  # after this step's research: innovation is counted against it
         # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
-        near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^4 : 0.0 for b in 1:p.n]
+        near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
         function capped(pl)
             cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
             ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)

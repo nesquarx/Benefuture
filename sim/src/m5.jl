@@ -32,6 +32,9 @@ struct M5Params
     vote_value::Float64        # reputation a vote earns or costs, per share of weight cast, in units of the domain's (governed)
     audit_window::Int          # a delegate's recent apparent votes a delegator audits (L114; governed)
     audit_threshold::Float64   # share of them right below which delegations are retracted (L114; governed)
+    audit_min_records::Int     # apparent votes before the delegate audit applies (L114; governed)
+    pool_max::Int              # models kept per domain (governed)
+    own_floor::Float64         # least weight one's own reading keeps in deliberation (8.44; governed)
     stealth::Bool              # colluders defect only where the outcome will not become apparent (M6; world)
     diversity::Bool            # keep the option not chosen available to locales (L158; the axiom)
     novelty_bonus::Float64     # subsidy to a locale choosing the alternative, in outcome units (L158; governed)
@@ -91,7 +94,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   optional_below::Real = 0.0, decisions::Integer = 200, signal_σ::Real = CALIBRATED.signal_σ, skill_gain::Real = 5.0,
                   p_delegate::Real = 0.0, cap::Real = 0.05, impact_threshold::Real = 0.5,
                   relative_expertise::Bool = true, colluders = Int[], p_apparent::Real = 0.7, vote_value::Real = 0.5,
-                  audit_window::Integer = 20, audit_threshold::Real = 0.6, stealth::Bool = false,
+                  audit_window::Integer = 20, audit_threshold::Real = 0.6, audit_min_records::Integer = 3, pool_max::Integer = 4, own_floor::Real = 0.1, stealth::Bool = false,
                   diversity::Bool = true, novelty_bonus::Real = 0.5, trial_units::Integer = 50, local_σ::Real = 1.0, conviction::Real = 1.5,
                   outcome_σ::Real = 1.0, trial_z::Real = 2.0, ability_spread::Real = 0.5,
                   reputation = nothing, fork_copies::Integer = 0, fork_rule::Symbol = :divided,
@@ -111,7 +114,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           "weights and noise non-negative")
     agents = m3.agents
     check(all(c -> 1 <= c <= length(agents), colluders), "colluders are agents of the run")
-    check(0 <= p_apparent <= 1 && isfinite(vote_value) && vote_value >= 0 && audit_window >= 0 && 0 <= audit_threshold <= 1,
+    check(0 <= p_apparent <= 1 && isfinite(vote_value) && vote_value >= 0 && audit_window >= 0 && 0 <= audit_threshold <= 1 && audit_min_records >= 1 && pool_max >= 1 && 0 <= own_floor <= 1,
           "chance and audit threshold in [0, 1], vote value and window non-negative")
     check(isfinite(novelty_bonus) && novelty_bonus >= 0 && trial_units >= 1 && all(x -> isfinite(x) && x >= 0, (local_σ, conviction, outcome_σ, trial_z, ability_spread)),
           "novelty bonus, noises and z non-negative, units positive")
@@ -138,7 +141,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           "gain, loyalty, share, floor and audit cost non-negative")
     M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
-             p_apparent, vote_value, audit_window, audit_threshold, stealth,
+             p_apparent, vote_value, audit_window, audit_threshold, audit_min_records, pool_max, own_floor, stealth,
              diversity, novelty_bonus, trial_units, local_σ, conviction, outcome_σ, trial_z, ability_spread,
              fork_copies, fork_rule, advap, p_weigh, collusion_gain, loyalty, adv_share, adv_floor, audit_cost, p_trace,
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
@@ -174,7 +177,7 @@ function run_m5(p::M5Params; seed)
     scale = [sum(max.(p.reputation[:, k], 0.0)) / size(p.reputation, 1) for k in axes(p.reputation, 2)]
     record = [Bool[] for _ in 1:na, _ in axes(p.reputation, 2)]
     # The delegate audit (L114; Lean `audited_out_ref`), over a delegate's recent apparent votes.
-    out_of_audit(j, k) = p.audit_window > 0 && audited_out(count(record[j, k]), length(record[j, k]); min_records = 3, threshold = p.audit_threshold)
+    out_of_audit(j, k) = p.audit_window > 0 && audited_out(count(record[j, k]), length(record[j, k]); min_records = p.audit_min_records, threshold = p.audit_threshold)
     # AdvAp: hidden decisions the bloc falsified since the last revelation, kept for repair, and
     # whether each decision ends right (a repaired decision may change).
     vrng = Xoshiro(hash((seed, :advap)))
@@ -262,7 +265,7 @@ function run_m5(p::M5Params; seed)
             if p.p_new_model > 0 && rand(nrng) < p.p_new_model
                 best = minimum(m.σ for m in mods[k])
                 push!(mods[k], (id = 1000 * k + length(mods[k]) + n, σ = max(p.scale_min * p.model_σ0, best * exp(p.improve_drift + p.improve_σ * randn(nrng))), rec = [0.0, 0.0]))
-                length(mods[k]) > 4 && deleteat!(mods[k], argmin([lo(m.rec) + (m.σ == best ? Inf : 0.0) for m in mods[k]]))
+                length(mods[k]) > p.pool_max && deleteat!(mods[k], argmin([lo(m.rec) + (m.σ == best ? Inf : 0.0) for m in mods[k]]))
             end
             mc = p.model_capture
             live_cap = mc !== nothing && k == mc.domain && mc.decision <= n < mc.decision + mc.duration
@@ -283,7 +286,7 @@ function run_m5(p::M5Params; seed)
                 # record is at least as good as the voter's own, or, rarely, for novel input.
                 mine = lo(person_rec[i, k])
                 hear(w) = heard(w, mine, w >= mine ? false : rand(nrng) < p.p_novel)  # Lean `heard_ref`
-                own = max(mine, 0.1)  # one's own reading counts, at least a little
+                own = max(mine, p.own_floor)  # one's own reading counts, at least a little
                 # The social network's information handling (L133 IH: SourceVerify by Re(Dn), and a
                 # ContentionMap) exposes every source on each side of the question, weighed by its
                 # record; without it, a voter hears its contacts.

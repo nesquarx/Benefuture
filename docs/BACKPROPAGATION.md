@@ -2037,3 +2037,19 @@ near-clones to lift the bar over challengers; the bar sits under the k-th best m
 rises only when k models truly clear it, but clones of one model should count once (a candidate for the
 diversity rule, 8.67; not yet built). Bootstrap bars at world-realistic values per domain remain open
 (needs R5).
+8.85 ruling (author) on accuracy horizons: every accuracy measure works over a time-adjusted rolling
+weighted average suited to the domain's transaction rate, as a governed threshold, never over a fixed
+number of records; the dependence on rate is muted: extremely busy domains lengthen their horizon (less
+volatile) and extremely slow ones shorten it (they pivot faster, not sluggish), relative to a fixed
+record count. The ratchet's horizon is a governed multiple of the domain's (8.84). Built as: each
+record weighs 2^(−age / h), h = h_ref · (r_ref / r)^β per domain from its measured transaction rate r
+(itself an exponentially weighted count, half-life `rate_halflife`); β = 1 is a fixed record count, 0 a
+fixed time; defaults h_ref = 7 steps at r_ref = 5 records per step (the old 100-record window's
+effective count), β = 0.5. Challengers are compared over the effective count (Kish). Lean
+`decay_halflife_ref`, `decayed_accuracy_ref`, `decayed_mean_se_ref`. Probe on synthetic records (1 and
+40 per step, a miscalibration at step 200): the slow domain registers it sooner than over its last 100
+records, the busy one is steadier (3 of 3 seeds, structural on the rule). Ratchet horizon: 10× still
+locks the noisy better-models world (own share 0.81 → 0.70), 20× leaves it as without the ratchet, 40×
+rarely fires within 800 steps; a model counts once observed across the horizon (a younger model's short
+record, read whole, locked the bar at its luck: own share 0.61–0.73). Candidate homes: L82 (qualified
+models' accuracy), SigThGv (horizons governed), 8.58-b.
