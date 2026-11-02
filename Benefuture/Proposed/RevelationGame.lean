@@ -116,4 +116,98 @@ theorem exploit_not_equilibrium (G : RevelationGame ι) (σ : ι → Adversarial
 theorem revelation_needs_clawback :
     bounty_reward 10 10 / ((2 : Int) + 1) < 10 := by decide
 
+/-!
+  ## Multi-step reporter's schedule game (author ruling 8.76, Task A2)
+  Each agent chooses `(n, reports)` where `n : ℕ` is the number of exploits attempted before
+  reporting and `reports : Bool` is whether the agent self-reports at step `n`. If another agent
+  reports at an earlier step `< n` (or if the agent never reports while someone else does), the
+  agent is caught and receives `caught_net e bonus audit n`; otherwise a self-reporter nets
+  `self_report_net e bonus n`.
+-/
+
+/-- Strategy in the multi-step revelation game: `(exploitsBeforeReport, selfReports)`. -/
+structure TimedRevelationStrategy where
+  exploits : ℕ
+  reports  : Bool
+  deriving DecidableEq, Repr
+
+/-- Whether any agent other than `i` reports at or before step `t` under profile `τ`. -/
+def someoneElseReportsBy (τ : ι → TimedRevelationStrategy) (i : ι) (t : ℕ) : Bool :=
+  (univ.filter fun j => j ≠ i ∧ (τ j).reports = true ∧ (τ j).exploits ≤ t).Nonempty
+
+theorem someoneElseReportsBy_update (τ : ι → TimedRevelationStrategy) (i : ι)
+    (s : TimedRevelationStrategy) (t : ℕ) :
+    someoneElseReportsBy (Function.update τ i s) i t = someoneElseReportsBy τ i t := by
+  unfold someoneElseReportsBy
+  congr 1
+  congr 1
+  ext j
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+  constructor
+  · rintro ⟨hj, hr, he⟩
+    rw [Function.update_of_ne hj] at hr he
+    exact ⟨hj, hr, he⟩
+  · rintro ⟨hj, hr, he⟩
+    rw [Function.update_of_ne hj]
+    exact ⟨hj, hr, he⟩
+
+theorem someoneElseReportsBy_mono (τ : ι → TimedRevelationStrategy) (i : ι) {t₁ t₂ : ℕ}
+    (h : t₁ ≤ t₂) (h1 : someoneElseReportsBy τ i t₁ = true) :
+    someoneElseReportsBy τ i t₂ = true := by
+  unfold someoneElseReportsBy at h1 ⊢
+  simp only [decide_eq_true_eq] at h1 ⊢
+  obtain ⟨j, hj⟩ := h1
+  rw [Finset.mem_filter] at hj
+  exact ⟨j, Finset.mem_filter.mpr ⟨hj.1, hj.2.1, hj.2.2.1, le_trans hj.2.2.2 h⟩⟩
+
+/-- Payoff in the timed reporter's schedule game (8.76):
+    - If `i` reports at `n = 0`, `i` cannot be pre-empted at an earlier step and nets `self_report_net e bonus 0 = e + bonus`.
+    - If `i` delays reporting to `n > 0`, `i` is caught if someone else reports at `< n`, and otherwise nets `self_report_net e bonus n`.
+    - If `i` never reports (`reports = false`), `i` is caught if anyone else ever reports (at step `≤ bound`), and otherwise nets `caught_net` or at most `e` when audited. -/
+def timed_revelation_payoff (e bonus audit : ℤ) (τ : ι → TimedRevelationStrategy) (i : ι) : ℤ :=
+  let s := τ i
+  if s.reports then
+    if s.exploits = 0 then
+      self_report_net e bonus 0
+    else if someoneElseReportsBy τ i (s.exploits - 1) then
+      caught_net e bonus audit s.exploits
+    else
+      self_report_net e bonus s.exploits
+  else
+    caught_net e bonus audit s.exploits
+
+/-- THEOREM: Under the 8.76 reporter's schedule, immediate reporting (`exploits = 0, reports = true`)
+    weakly dominates every delayed self-report or silent exploit across all profiles `τ` of the other
+    agents, and strictly dominates whenever another agent reports before `s.exploits` (or when `s`
+    never reports). -/
+theorem immediate_revelation_dominates (e bonus audit : ℤ) (he : 0 ≤ e) (hb : 0 ≤ bonus)
+    (ha : 0 ≤ audit) (hpos : 0 < e + bonus + audit)
+    (τ : ι → TimedRevelationStrategy) (i : ι) (s : TimedRevelationStrategy) :
+    timed_revelation_payoff e bonus audit (Function.update τ i s) i ≤
+      timed_revelation_payoff e bonus audit (Function.update τ i ⟨0, true⟩) i := by
+  unfold timed_revelation_payoff
+  simp only [Function.update_self, someoneElseReportsBy_update, ↓reduceIte]
+  rw [self_report_net_constant]
+  split_ifs with hr h0 hpre
+  · exact le_rfl
+  · have := self_report_beats_caught e bonus audit 0 s.exploits he hb ha hpos
+    rw [self_report_net_constant] at this
+    exact this.le
+  · rw [self_report_net_constant]
+  · have := self_report_beats_caught e bonus audit 0 s.exploits he hb ha hpos
+    rw [self_report_net_constant] at this
+    exact this.le
+
+/-- THEOREM: Immediate reporting strictly dominates delaying (`exploits > 0`) whenever another agent
+    reports at or before `s.exploits - 1`. -/
+theorem immediate_revelation_strictly_dominates_when_preempted
+    (e bonus audit : ℤ) (he : 0 ≤ e) (hb : 0 ≤ bonus) (ha : 0 ≤ audit) (hpos : 0 < e + bonus + audit)
+    (τ : ι → TimedRevelationStrategy) (i : ι) (s : TimedRevelationStrategy)
+    (hne : s.exploits ≠ 0) (hpre : someoneElseReportsBy τ i (s.exploits - 1) = true) :
+    timed_revelation_payoff e bonus audit (Function.update τ i s) i <
+      timed_revelation_payoff e bonus audit (Function.update τ i ⟨0, true⟩) i := by
+  unfold timed_revelation_payoff
+  simp only [Function.update_self, someoneElseReportsBy_update, hne, hpre, ↓reduceIte]
+  split_ifs <;> exact self_report_beats_caught e bonus audit 0 s.exploits he hb ha hpos
+
 end Benefuture.Proposed

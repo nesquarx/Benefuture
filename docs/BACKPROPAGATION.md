@@ -2162,3 +2162,72 @@ coarse limit could follow: markers only at the parent level, no record-level cre
 Candidate homes: Progressive complexity (low-technology operation as a stated requirement),
 Implementation prototype (rollout in low-income settings), Critique addressal (the objection that
 Benefuture needs modern infrastructure).
+
+**8.89 Implementation and findings: 8.85 remainder, 8.86 accession and settlement, theoretic proofs, and historical replay.**
+
+1. **8.85 remainder (full time-decayed windows across all mechanisms).**
+Following author ruling 8.85, the remaining record-count windows were converted in full to time-decayed
+exponential weighting based on domain transaction rates:
+- Time-decayed record credence (`decayed_record_credence_ref`, export `bf_decayed_record_credence`):
+  weighs historical prediction errors by $2^{-\text{age}/h}$, keeping credence within $[1 - \text{cap}, \text{cap}]$.
+- Time-decayed RMS uncertainty (`decayed_rms_ref`, export `bf_decayed_rms`): replaces fixed-window standard
+  deviation estimates in domain uncertainty calculations (`unc_of`).
+- Time-decayed actor track records: weights actor historical performance by the domain's transaction rate.
+- Time-decayed AdvAp window: aligns adversarial audit comparisons with decayed actor errors.
+
+2. **8.86 Accession and settlement (Lean 4 proofs and M7 probe).**
+Implemented the author rulings on forced additions, accession uplift, and settlement guarantees:
+- **Lean 4 accession theorems** (`Benefuture.Proposed.PopulationDirection`, [P]):
+  - [`addition_lowering_floor_inadmissible`](Benefuture/Proposed/PopulationDirection.lean): Chosen additions
+    that lower any floor below inaction are not G-admissible.
+  - [`strong_accession_preserves_existing_beings`](Benefuture/Proposed/PopulationDirection.lean): When the
+    strong reading can be met (`degraded = false`), G's accession plan preserves every existing being
+    over the long-term window (`Ha_lt`) without lowering anyone relative to the counterfactual.
+  - [`accession_fallback_never_stalls`](Benefuture/Proposed/PopulationDirection.lean): When no plan meets
+    the strong per-being reading, G logs degradation loudly (`degraded = true`) and falls back to
+    combined population floors without stalling.
+  - [`accession_uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean): An uplift plan that
+    raises newcomers while protecting existing residents strictly beats inaction.
+- **Lean 4 settlement theorems** (`Benefuture.Proposed.PopulationDirection`, `Benefuture.Economy.Pricing`):
+  - [`settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean): Settling payouts
+    on measured outcomes makes net returns equal to measured value minus cost, eliminating any gain
+    from prediction bias or confidence inflation.
+  - [`unbiased_settlement_removes_expected_gain`](Benefuture/Proposed/PopulationDirection.lean): Given unbiased
+    measurement noise, expected total payouts equal $n \cdot (v - \text{cost})$.
+  - [`birth_settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean): Birth escrow
+    settlement removes gaming gains from understating predicted shortfalls.
+  - [`transaction_settlement_removes_overstatement_gain`](Benefuture/Economy/Pricing.lean): Transaction settlement
+    removes overstatement gains across resource-priced exchanges.
+- **M7 accession probe and simulation** (`sim/test/probe_tests.jl`, `sim/test/m7_tests.jl`):
+  - Acceptance: A joining polity below the floors is uplifted; newcomers' floor and median rise while
+    existing beings' levels stay at or above their no-accession counterfactuals over paired seeds.
+  - Counterexample: Restricting G to pre-existing floors leaves newcomers trapped at the bottom.
+  - Newcomer majority: Uplift functions consistently even when newcomers outnumber residents.
+  - Fallback: Overwhelming additions trigger loud `degraded` fallback to combined floors with zero stalls.
+
+3. **Theory extensions (Tasks A1 & A2).**
+- **Multi-round delegation cap invariant** ([`multi_round_weight_lt`](Benefuture/Proposed/DelegationWisdom.lean)):
+  Proved that the L114 cap bound `cap + M` is invariant across arbitrarily many rounds of liquid delegation,
+  as delegates at or exceeding the cap accept no further delegations in later rounds (`accumulate_capped_rounds`).
+- **Timed revelation dominance** ([`immediate_revelation_dominates`](Benefuture/Proposed/RevelationGame.lean),
+  [`immediate_revelation_strictly_dominates_when_preempted`](Benefuture/Proposed/RevelationGame.lean)):
+  Under the multi-step timed reporter's schedule, immediate reporting weakly dominates delayed reporting or
+  silent exploitation across all profiles of other agents, and strictly dominates whenever another agent reports
+  before the planned delay.
+
+4. **Historical decisions replayed as-of (Task E4, `docs/DATA.md` §16).**
+Built and verified the historical counterfactual decision replay engine (`sim/src/replay.jl`,
+`sim/src/counterfactual.jl`, test suite `sim/test/replay_tests.jl`, 26/26 tests passing) with full pre-registration
+in `docs/REPLAY_PREREG.md`. Replayed 4 case studies:
+- Challenger launch (1986): aerospace failure under freezing O-ring risk; Benefuture G halts launch.
+- FDA thalidomide review (1960): Frances Kelsey's safety refusal; Benefuture G blocks approval.
+- Ragusa quarantine (1377): pre-modern public health isolation against the Black Death; coarse Benefuture
+  institutes quarantine on death count markers.
+- Semmelweis maternity clinic (1847): puerperal fever and chlorinated lime wash; coarse Benefuture adopts
+  handwashing based on clinic mortality gap.
+
+5. **Century and long-horizon overnight simulation battery.**
+Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` to evaluate stability and convergence over
+extended timescales: 10-year scaled economy (5,000 steps), 20-year governance (1,000 decisions), and a 100-year
+composed century simulation with rare catastrophes and breakthroughs per ruling 8.64, alongside 64-seed sweeps
+over open questions from 8.85 and 8.81.

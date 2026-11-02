@@ -1,0 +1,88 @@
+# Historical Decision Case: Space Shuttle Challenger STS-51-L Launch (1986-01-28)
+# Source: Report of the Presidential Commission on the Space Shuttle Challenger Accident (Rogers Commission, 1986)
+
+id = "challenger_1986"
+title = "Space Shuttle Challenger STS-51-L Launch at 31°F"
+family = "single_technical"
+era = "1986"
+tier = "full"
+decision_date = "1986-01-28"
+decision_makers = ["NASA Marshall Space Flight Center", "Morton Thiokol Management"]
+actual_choice = "launch_at_31F"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "thiokol_teleconf_charts"
+title = "Morton Thiokol Engineering Teleconference Charts on O-Ring Thermal Distress (Boisjoly & Thompson)"
+as_of_date = "1986-01-27"
+credence_record_n = 24
+credence_accuracy = 0.88
+url = "https://history.nasa.gov/rogersrep/v1ch5.htm"
+notes = "Documented O-ring erosion/blow-by on 7 of 24 prior flights, including severe blow-by on STS-51-C at 53°F, the coldest prior launch; no test data below 53°F."
+
+[[sources]]
+id = "marshall_flight_readiness"
+title = "Marshall Space Flight Center Flight Readiness Assessment (Mulloy)"
+as_of_date = "1986-01-27"
+credence_record_n = 24
+credence_accuracy = 0.72
+url = "https://history.nasa.gov/rogersrep/v1ch5.htm"
+notes = "Argued secondary O-ring would seal despite primary erosion; ignored temperature correlation across all 24 flights."
+
+[[ groups ]]
+id = "crew"
+name = "STS-51-L Seven-Member Crew"
+population = 7
+baseline_u = 85.0
+baseline_h = 80.0
+
+[[ groups ]]
+id = "program_community"
+name = "Shuttle Scientific, Teacher-in-Space, and Engineering Community"
+population = 5000
+baseline_u = 70.0
+baseline_h = 70.0
+
+[[ options ]]
+id = "delay_until_53F"
+name = "Delay launch until ambient pad temperature reaches >= 53°F (Boisjoly recommendation)"
+known_date = "1986-01-27"
+is_inaction = true
+scope_delta = 0.0
+# Per-group predicted changes [crew, program_community]
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, -0.5]
+pred_nha = [0.0, 0.5]
+pred_irreparable = [0.0, 0.0]
+pred_confidence = 0.92
+# Long-term trajectory endpoints at lt_window [crew, program_community]
+lt_end_u = [85.0, 70.0]
+lt_end_h = [80.0, 70.0]
+
+[[ options ]]
+id = "launch_at_31F"
+name = "Proceed with launch at 31°F ambient temperature (22°F below coldest flight experience)"
+known_date = "1986-01-27"
+is_inaction = false
+scope_delta = -1.0
+# Predicted expected outcomes incorporating O-ring blow-by catastrophe risk at 31°F
+pred_du = [-25.0, -4.0]
+pred_dh = [-25.0, -6.0]
+pred_nha = [0.0, 6.0]
+pred_irreparable = [7.0, 2.0]
+pred_confidence = 0.91
+lt_end_u = [0.0, 66.0]
+lt_end_h = [0.0, 64.0]
+
+[counterfactual]
+actual_floor_u_delta = -85.0
+actual_floor_h_delta = -80.0
+actual_irreparable = 7.0
+alt_option = "delay_until_53F"
+# Competing counterfactual estimates (Rogers Commission thermal reconstruction & subsequent redesigned flights)
+methods = ["thermal_reliability_model", "subsequent_warm_launch_record"]
+est_floor_u_delta_diff = [85.0, 85.0]
+est_floor_h_delta_diff = [79.5, 80.0]
+est_irreparable_diff = [-7.0, -7.0]
+

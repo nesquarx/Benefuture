@@ -11,12 +11,12 @@
 >   happiness and tries to correct itself. It is written as wiki articles and pseudocode
 >   ([`spec/Bf_Pseudocode.txt`](spec/Bf_Pseudocode.txt)), partly formalised in Lean 4 and partly
 >   simulated in Julia. It is a thought experiment: nothing is deployed.
-> - **Proved.** [`Benefuture/`](Benefuture) holds 386 Lean theorems over ℝ, with no `sorry`, axioms
+> - **Proved.** [`Benefuture/`](Benefuture) holds 399 Lean theorems over ℝ, with no `sorry`, axioms
 >   or `native_decide`, checked in CI. They cover Goal G's soundness and non-dominance, floors that
 >   cannot be raised by removing beings, revealing a flaw dominating exploiting it (given clawbacks),
 >   delegation-cap bounds, conservation, and Shapley sampling that never mints currency. The proofs
 >   say nothing about whether the definitions describe the world.
-> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 101 C
+> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 106 C
 >   exports that the simulation calls. [`BenefutureTest/`](BenefutureTest) proves exact ℚ oracles
 >   equal to the ℝ specification (12 theorems) and tests the Float rules against them, with interval
 >   bounds for exp, log and sqrt. Float rounding is tested, not bounded.
@@ -49,11 +49,11 @@ of how we might discover those problems, find the solutions, implement them, and
 process". This repository formalises part of it and puts that part under
 adversarial test:
 
-- **Lean 4 specification over ℝ** ([`Benefuture/`](Benefuture)): **386 theorems and lemmas** in
+- **Lean 4 specification over ℝ** ([`Benefuture/`](Benefuture)): **399 theorems and lemmas** in
   52 files, every one machine-checked, with **zero `sorry`, `admit`, custom axioms or
   `native_decide`**.
 - **Executable Lean reference** ([`BenefutureReference/`](BenefutureReference)): Mathlib-free Float
-  versions of the rules in 12 files, with **101 C exports**. It generates the test vectors in
+  versions of the rules in 12 files, with **106 C exports**. It generates the test vectors in
   [`spec/vectors/`](spec/vectors) and defines the simulation's rules (two exceptions remain in Julia, listed in the [parsimony audit](sim/README.md#parsimony-audit)).
 - **Differential bridge** ([`BenefutureTest/`](BenefutureTest)): 12 proved theorems showing that
   exact ℚ oracles equal the ℝ specification, plus **interval-bound ℚ oracles** for rules that use
@@ -204,13 +204,17 @@ The author ruled that "an unnamed scalar is a ghost in the system".
   (`scarcity_floor`, 0.001, L83), the capacity share below which scarcity pricing stops rising.
 
 The result is that every coefficient a rule uses can now be governed and swept. These are governed
-parameters, not theorems. A few M0 constants (harm weight's κ and q, Freedom's severity
-multipliers) are listed as pending.
+parameters, not theorems. The pending M0 constants (harm weight's κ and q, Freedom's severity
+multipliers) were lifted into governed parameters read from `bootstrap_params()` (`HaWt_params_ref`,
+`fr_permissible_params_ref`).
 
 **Spec 8.85 restatements.** Author ruling 8.85 replaced fixed record windows with **time-decayed
 accuracy**. Each record weighs 2^(−age/h), and the half-life h follows the domain's transaction rate
 with muted dependence (β = 0.5): busy domains get steadier, slow ones react faster. Implemented as Lean
 `decay_halflife_ref`, `decayed_accuracy_ref` and `decayed_mean_se_ref`, and shown in a probe first.
+The remaining record-count windows were converted in full to time-decayed weighting: time-decayed
+record credence (`decayed_record_credence_ref`), time-decayed RMS uncertainty (`decayed_rms_ref`),
+actor track-record corrections, and AdvAp `adv_window`.
 Every affected test was then re-run, and the suite itself was hardened: `runtests.jl` used to stop at
 the first failing file, which had hidden three later failures; it now runs every file and fails at the
 end. Under the new rule:
@@ -229,6 +233,43 @@ last one changed is open; an earlier macOS pass at seed 31 was dropped because t
 after seeing it ([BACKPROPAGATION 8.85](docs/BACKPROPAGATION.md)). The project applies
 [adversarial adaptation](https://benefuture.miraheze.org/wiki/Adversarial_adaptation) to itself: a
 claim that stops holding is withdrawn in the open, not retuned until it passes.
+
+**Spec 8.86 Accession, settlement, and population ethics.** Author ruling 8.86 and its addendum address
+forced additions (births, mergers, accession of suffering polities): taken as given and answered by
+uplift. Admissibility requires that no existing being ends lower over the long-term window (`Ha_lt`)
+without loud degradation logging ([`addition_lowering_floor_inadmissible`](Benefuture/Proposed/PopulationDirection.lean),
+[`strong_accession_preserves_existing_beings`](Benefuture/Proposed/PopulationDirection.lean),
+[`accession_fallback_never_stalls`](Benefuture/Proposed/PopulationDirection.lean),
+[`accession_uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean)).
+The settlement theorems prove that settling on measured outcomes removes gains from overstated
+predictions and gaming the birth model pool ([`settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean),
+[`unbiased_settlement_removes_expected_gain`](Benefuture/Proposed/PopulationDirection.lean),
+[`birth_settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean),
+[`transaction_settlement_removes_overstatement_gain`](Benefuture/Economy/Pricing.lean)).
+A 4-part accession probe in [`sim/test/probe_tests.jl`](sim/test/probe_tests.jl) and [`sim/test/m7_tests.jl`](sim/test/m7_tests.jl)
+demonstrates newcomer uplift with resident protection, counterexample stall, newcomer majority, and loud fallback.
+
+**Theoretic extensions: timed revelation dominance and multi-round delegation (A1, A2).**
+- Multi-round liquid delegation: the single-round cap bound `cap + M` is proved invariant across
+  arbitrarily many rounds of delegation ([`multi_round_weight_lt`](Benefuture/Proposed/DelegationWisdom.lean)),
+  as delegates reaching the cap accept no further weight in subsequent rounds.
+- Multi-step timed reporter's schedule: in `Benefuture.Proposed.RevelationGame`, immediate reporting
+  weakly dominates delayed reporting or silent exploitation across all profiles, and strictly dominates
+  whenever another agent reports before the planned delay ([`immediate_revelation_dominates`](Benefuture/Proposed/RevelationGame.lean),
+  [`immediate_revelation_strictly_dominates_when_preempted`](Benefuture/Proposed/RevelationGame.lean)).
+
+**Historical decisions replayed as-of (Task E4, `docs/DATA.md` §16).**
+Pre-registered historical counterfactual evaluation engine ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md),
+[`sim/src/replay.jl`](sim/src/replay.jl), [`sim/src/counterfactual.jl`](sim/src/counterfactual.jl),
+[`sim/test/replay_tests.jl`](sim/test/replay_tests.jl), 26/26 tests passing). Replays documented decisions
+as-of the decision date across technical and low-technology cases (Challenger launch 1986, FDA thalidomide
+review 1960, Ragusa quarantine 1377, Semmelweis puerperal fever 1847) using frozen governed defaults and
+competing counterfactual estimators (synthetic control, difference-in-differences, matched controls).
+
+**Overnight long-horizon & century simulation suite** ([`sim/battery/long_horizon.jl`](sim/battery/long_horizon.jl), launcher [`tools/battery/overnight.sh`](tools/battery/overnight.sh)).
+Extended-duration battery sweeps: 10-year scaled economy (5,000 steps), 20-year governance (1,000 decisions),
+composed 100-year century simulation with rare catastrophes and breakthroughs per ruling 8.64, and 64-seed sweeps
+over open questions from 8.85 and 8.81.
 
 **Multi-threaded failure-boundary battery** ([`sim/src/battery.jl`](sim/src/battery.jl),
 [`sim/battery/`](sim/battery), launcher [`tools/battery/run.sh`](tools/battery/run.sh)).
@@ -320,11 +361,21 @@ Goal G and distribution (`Benefuture.Proposed.PopulationDirection`, status [P])
 - Checking ↑min stepwise is stricter than over a trajectory. A dip that closes is admissible over the
   trajectory but not stepwise ([`tunnel_admissible_but_not_stepwise`](Benefuture/Proposed/PopulationDirection.lean)).
   A dip still open at the horizon has triggered harm intervention at some step ([`nonclosing_tunnel_triggers_harm_intv`](Benefuture/Proposed/PopulationDirection.lean)).
+- Accession and population ethics (8.86):
+  - chosen additions lowering a floor are not G-admissible against inaction ([`addition_lowering_floor_inadmissible`](Benefuture/Proposed/PopulationDirection.lean));
+  - when the strong per-being reading can be met, G preserves every existing being over the long-term window (`Ha_lt`) without lowering anyone ([`strong_accession_preserves_existing_beings`](Benefuture/Proposed/PopulationDirection.lean));
+  - when the strong reading cannot be met, G sets `degraded = true` and falls back to combined floors without stalling ([`accession_fallback_never_stalls`](Benefuture/Proposed/PopulationDirection.lean));
+  - an uplift plan that raises newcomers while protecting existing beings strictly beats inaction ([`accession_uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean)).
+- Settlement (8.86 addendum):
+  - settling on measured outcomes removes gains from prediction overstatement for any true value, bias, or confidence ([`settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean));
+  - under unbiased noise, the expected sum of settled payouts equals `n * (v - cost)` ([`unbiased_settlement_removes_expected_gain`](Benefuture/Proposed/PopulationDirection.lean));
+  - birth escrow settlement removes gains from understating predicted shortfall or gaming model pools ([`birth_settlement_removes_overstatement_gain`](Benefuture/Proposed/PopulationDirection.lean)).
 
 Economy, reputation and domains
 - A closed cycle of transactions with zero predicted value loses exactly its resource cost ([`closed_cycle_arbitrage_negative`](Benefuture/Economy/Currency.lean)).
   An action no model can value pays its full resource cost ([`unmodelled_action_pays_resource_cost`](Benefuture/Economy/Pricing.lean)).
   Confident predicted value above cost makes the price negative ([`price_negative_when_value_exceeds_cost`](Benefuture/Economy/Pricing.lean)).
+- Settling transaction pricing on measured outcomes removes gains from prediction overstatement or confidence gaming ([`transaction_settlement_removes_overstatement_gain`](Benefuture/Economy/Pricing.lean)).
 - At a parent domain, aggregated value never exceeds the value an action carried ([`aggregate_no_double_count`](Benefuture/Ontology/Domain.lean)),
   and parents with larger degrees aggregate more ([`aggregate_monotonicity`](Benefuture/Ontology/Domain.lean)).
 - Reputation:
@@ -391,14 +442,18 @@ Governance and incentives
   - vanishing cap shares make the largest influence share vanish ([`capped_influence_vanishes`](Benefuture/Proposed/DelegationWisdom.lean));
   - the variance of an influence-weighted mean of independent equal-variance signals is at most the
     largest share times their variance ([`weighted_signal_variance_bound`](Benefuture/Proposed/DelegationWisdom.lean));
-  - without a cap, a star keeps it at a single signal's ([`uncapped_star_no_wisdom`](Benefuture/Proposed/DelegationWisdom.lean)).
+  - without a cap, a star keeps it at a single signal's ([`uncapped_star_no_wisdom`](Benefuture/Proposed/DelegationWisdom.lean));
+  - the single-round cap bound `cap + M` is invariant across arbitrarily many rounds of delegation ([`multi_round_weight_lt`](Benefuture/Proposed/DelegationWisdom.lean)), because capped delegates accept no further delegations in later rounds.
 
-  Repeated rounds and correlated signals remain a conjecture ([SIM_CONJECTURES](docs/SIM_CONJECTURES.md) B26).
+  Correlated signals remain a conjecture ([SIM_CONJECTURES](docs/SIM_CONJECTURES.md) B26).
 - Revealing a flaw strictly dominates exploiting it, for every profile of others' strategies (`Benefuture.Proposed.RevelationGame`,
   [P]). This holds in a game where reporters split the bounty and an exploiter is fully clawed back,
   plus restitution, once anyone else reports ([`revelation_dominant`](Benefuture/Proposed/RevelationGame.lean),
-  [`revelation_weakly_dominant`](Benefuture/Proposed/RevelationGame.lean)). Everyone reporting is a
-  Nash equilibrium ([`all_report_nash`](Benefuture/Proposed/RevelationGame.lean)) and the only one
+  [`revelation_weakly_dominant`](Benefuture/Proposed/RevelationGame.lean)). Under the multi-step timed
+  reporter's schedule, immediate reporting weakly dominates delayed reporting or silent exploitation
+  across all profiles of others ([`immediate_revelation_dominates`](Benefuture/Proposed/RevelationGame.lean)),
+  and strictly dominates whenever another agent reports before the planned delay ([`immediate_revelation_strictly_dominates_when_preempted`](Benefuture/Proposed/RevelationGame.lean)).
+  Everyone reporting is a Nash equilibrium ([`all_report_nash`](Benefuture/Proposed/RevelationGame.lean)) and the only one
   ([`exploit_not_equilibrium`](Benefuture/Proposed/RevelationGame.lean)). The clawback is
   load-bearing: without it, three simultaneous reporters of a gain-10 flaw get 3 each against 10 for
   exploiting ([`revelation_needs_clawback`](Benefuture/Proposed/RevelationGame.lean)). This is
@@ -584,7 +639,12 @@ Population (M7)
 - **Births.** Births are escrowed against predicted shortfall, and over-optimistic causers are
   clawed back (finding 8.54).
 - **Population ethics.** G avoids the Repugnant Conclusion in probes. It gives up Non-Sadism only in a forced addition (8.56), which by ruling 8.86 is taken as given and answered by uplift.
+- **Accession and forced additions (8.86).** A joined population well below the floors is uplifted by G without harming existing beings over their long-term counterfactual window; when a large accession cannot meet the strong per-being reading, G falls back to combined floors with loud progressive degradation logging and zero stalls ([probe_tests](sim/test/probe_tests.jl), [m7_tests](sim/test/m7_tests.jl)).
 - **Teaching and research** are complements; uplift peaks near a fifth of time on research.
+
+Historical decisions and long horizons
+- **Historical decision replay (E4).** Pre-registered as-of counterfactual replay across 4 documented cases ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md), [replay_tests](sim/test/replay_tests.jl)): Challenger launch (1986, O-ring freeze risk), FDA thalidomide refusal (1960, Kelsey's safety bar), Ragusa quarantine (1377, bubonic plague), and Semmelweis handwashing (1847, puerperal fever).
+- **Century and long-horizon battery.** Composed multi-decade and century simulations ([long_horizon](sim/battery/long_horizon.jl), launcher `tools/battery/overnight.sh`) test convergence over 5,000–20,000 steps with rare catastrophes and breakthroughs, validating stability beyond short test horizons.
 
 Not yet demonstrated: the `Conj_*` conjectures over a `SimTrace`, forks and graded personhood, and
 networks and propagation (M8) ([SIM_CONJECTURES](docs/SIM_CONJECTURES.md), [PLAN](docs/PLAN.md)).
@@ -593,7 +653,7 @@ networks and propagation (M8) ([SIM_CONJECTURES](docs/SIM_CONJECTURES.md), [PLAN
 
 ## 5. Epistemic scope: what is proved, what is simulated, what is open
 
-**(a) Deductive guarantees (Lean 4).** The 386 theorems in [`Benefuture/`](Benefuture) and the 12
+**(a) Deductive guarantees (Lean 4).** The 399 theorems in [`Benefuture/`](Benefuture) and the 12
 bridge theorems in [`BenefutureTest/`](BenefutureTest) hold for the definitions as written. Designs
 tagged [P] live in `Benefuture/Proposed/`. Behavioural claims are stated as `Conj_*` in
 [Benefuture/Systems/Conjectures.lean](Benefuture/Systems/Conjectures.lean) and are unproved. No
@@ -634,12 +694,12 @@ Status tags: `[R]` ratified, `[P]` proposed, `[OPEN]`, `[CONJ]`.
 ```
 Benefuture/
 ├── Bf_Pseudocode.txt            # pseudocode copy (identical to spec/ and the block in Benefuture.txt)
-├── Benefuture/                  # Lean spec over ℝ (Mathlib): 52 files, 386 theorems
+├── Benefuture/                  # Lean spec over ℝ (Mathlib): 52 files, 399 theorems
 │   ├── Math/ Ontology/ Measurement/ Epistemology/ Axiology/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
-├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 101 C exports
+├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 106 C exports
 ├── BenefutureTest/              # ℚ oracles proved = spec, interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/

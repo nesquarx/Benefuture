@@ -103,12 +103,17 @@ function choose(s::ToyState, plans, p::ToyParams)
 end
 
 """
-    run_m0(p; seed) -> NamedTuple
+    run_m0(p; seed, central = true, p_act = 0.25, action_scale = 0.1, view_σ = 0.0, pred_σ = 0.0) -> NamedTuple
 
 Run M0 for `p.steps` steps. Level series have `steps + 1` entries; `chosen` and `value` one per step.
+With `central = false` (Item 2 D1), G is distributed per entity: each step each entity acts with
+probability `p_act` on its own noisy view, considering scaled plans, and all chosen plans apply concurrently.
 """
-function run_m0(p::ToyParams; seed)
+function run_m0(p::ToyParams; seed, central::Bool = true, p_act::Real = 0.25, action_scale::Real = 0.1, view_σ::Real = 0.0, pred_σ::Real = 0.0)
+    check(0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ)),
+          "p_act in [0, 1] and scales non-negative")
     rng = Xoshiro(seed)
+    vrng = central ? nothing : Xoshiro(hash((seed, :views)))
     s = toy_state(p, rng)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[],
           mean_h = Float64[], peak_u = Float64[], chosen = Int[], value = Float64[])
@@ -119,13 +124,35 @@ function run_m0(p::ToyParams; seed)
     end
     record!()
     for _ in 1:p.steps
-        plans = [random_plan(rng, p) for _ in 1:p.plans]
-        i = choose(s, plans, p)
-        push!(tr.chosen, i)
-        push!(tr.value, i == 1 ? 0.0 : plan_value(plans[i - 1], p))
-        if i > 1
-            s.u .+= plans[i - 1].du
-            s.h .+= plans[i - 1].dh
+        if central
+            plans = [random_plan(rng, p) for _ in 1:p.plans]
+            i = choose(s, plans, p)
+            push!(tr.chosen, i)
+            push!(tr.value, i == 1 ? 0.0 : plan_value(plans[i - 1], p))
+            if i > 1
+                s.u .+= plans[i - 1].du
+                s.h .+= plans[i - 1].dh
+            end
+        else
+            total_du, total_dh, acted = zeros(p.n), zeros(p.n), 0
+            n_opts = max(1, p.plans ÷ 4)
+            for _ in 1:p.n
+                rand(rng) < p_act || continue
+                view = ToyState(s.u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
+                opts = [random_plan(rng, p) for _ in 1:n_opts]
+                scaled = [ToyPlan(action_scale .* pl.du, action_scale .* pl.dh) for pl in opts]
+                predicted = [ToyPlan(pl.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (pl.du .!= 0),
+                                     pl.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (pl.dh .!= 0)) for pl in scaled]
+                i = choose(view, predicted, p)
+                i == 1 && continue
+                acted += 1
+                total_du .+= scaled[i - 1].du
+                total_dh .+= scaled[i - 1].dh
+            end
+            s.u .+= total_du
+            s.h .+= total_dh
+            push!(tr.chosen, acted)
+            push!(tr.value, plan_value(ToyPlan(total_du, total_dh), p))
         end
         record!()
     end

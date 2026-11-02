@@ -47,3 +47,22 @@ end
     run_m2(M2Params(W2, agents([0.1, 0.2]), 0.02); seed = 1)
     @test (@elapsed run_m2(p; seed = 1)) < 90
 end
+
+@testset "D1 & M0 ghosts: G per entity and governed Ha_wt / Fr" begin
+    # Governed overrides
+    bp = bootstrap_params()
+    tiers = [(0.8, 1.0)]
+    @test harm_weight(tiers; λ = 0.4) == harm_weight(tiers; λ = 0.4, κ = bp[10], q = bp[11])
+    @test fr_permissible(0.0, 0.0, 0.0, 2.0, 0.0; confidence = 0.8, th_high = 4.0)
+
+    # Distributed choice (central = false): runs multiple actions per step and raises floors
+    skills = collect(range(-0.3, 0.6; length = 20))
+    p = M2Params(W2, agents(skills), 0.02)
+    m2_dist = run_m2(p; seed = 2, central = false)
+    @test any(m2_dist.chosen_agent .> 1)
+    @test m2_dist.floor_u[end] > m2_dist.floor_u[1]
+    @test m2_dist.floor_h[end] > m2_dist.floor_h[1]
+    @test sum(m2_dist.upfronts) + sum(m2_dist.settlements) ≈ sum(m2_dist.measured_values)
+    @test spearman(m2_dist.reputation, skills) > 0.5
+    @test length(m2_dist.floor_u) == p.world.toy.steps + 1
+end

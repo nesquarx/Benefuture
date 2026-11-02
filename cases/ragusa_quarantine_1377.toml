@@ -1,0 +1,90 @@
+# Historical Decision Case: Ragusa 30-Day Plague Quarantine Law (1377-07-27)
+# Source: Tognotti (2013), Emerging Infectious Diseases, https://doi.org/10.3201/eid1902.120312
+# Tier: Coarse low-technology tier (8.88) — parent-level markers (deaths, trade harvest), rules only.
+
+id = "ragusa_quarantine_1377"
+title = "Republic of Ragusa (Dubrovnik) Trentina 30-Day Quarantine Law of 1377"
+family = "low_technology"
+era = "1377"
+tier = "coarse"
+decision_date = "1377-07-27"
+decision_makers = ["Major Council of Ragusa (Vijece Umoljenih)"]
+actual_choice = "enact_30_day_isolation"
+actual_outcome_class = "good"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "ragusa_plague_chronicle_1348_1374"
+title = "Ragusa Civic Mortality and Maritime Arrival Ledger (1348, 1361, 1371, 1374 outbreaks)"
+as_of_date = "1377-07-01"
+credence_record_n = 4
+credence_accuracy = 0.78
+url = "https://doi.org/10.3201/eid1902.120312"
+notes = "Coarse civic observation: outbreaks consistently followed ships arriving from plague-stricken ports within ~2-4 weeks; isolation outside city walls on Mrkan/Cavtat permitted survival of maritime trade."
+
+[[ groups ]]
+id = "townspeople"
+name = "Ragusa Urban Population"
+population = 6000
+baseline_u = 25.0
+baseline_h = 35.0
+
+[[ groups ]]
+id = "visiting_merchants_and_sailors"
+name = "Arriving Merchants and Mariners from Endemic Ports"
+population = 300
+baseline_u = 28.0
+baseline_h = 36.0
+
+[[ options ]]
+id = "unrestricted_port_entry"
+name = "Continue unrestricted maritime entry (status quo before July 1377)"
+known_date = "1377-01-01"
+is_inaction = true
+scope_delta = -0.5
+pred_du = [-6.0, -4.0]
+pred_dh = [-12.0, -8.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [15.0, 5.0]
+pred_confidence = 0.78
+lt_end_u = [19.0, 24.0]
+lt_end_h = [23.0, 28.0]
+
+[[ options ]]
+id = "enact_30_day_isolation"
+name = "Require 30-day isolation (trentina) at Cavtat/Mrkan before entering Ragusa, preserving trade after clearance"
+known_date = "1377-07-27"
+is_inaction = false
+scope_delta = 0.2
+pred_du = [0.5, 0.0]
+pred_dh = [1.0, -1.0]
+pred_nha = [0.0, 1.0]
+pred_irreparable = [0.0, 0.0]
+pred_confidence = 0.78
+lt_end_u = [25.5, 28.0]
+lt_end_h = [36.0, 36.0]
+
+[[ options ]]
+id = "total_port_closure"
+name = "Permanent ban on all maritime trade and entry"
+known_date = "1377-07-27"
+is_inaction = false
+scope_delta = -0.2
+pred_du = [-2.0, -3.0]
+pred_dh = [-8.0, -10.0]
+pred_nha = [8.0, 10.0]
+pred_irreparable = [3.0, 1.0]
+pred_confidence = 0.78
+lt_end_u = [23.0, 25.0]
+lt_end_h = [27.0, 26.0]
+
+[counterfactual]
+actual_floor_u_delta = 0.5
+actual_floor_h_delta = 1.0
+actual_irreparable = 0.0
+alt_option = "unrestricted_port_entry"
+methods = ["adriatic_port_comparison", "pre_1377_ragusa_outbreak_baseline"]
+est_floor_u_delta_diff = [6.0, 6.5]
+est_floor_h_delta_diff = [11.5, 13.0]
+est_irreparable_diff = [-14.0, -16.0]
+

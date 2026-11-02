@@ -43,3 +43,32 @@ end
     run_m0(ToyParams(n = 20, steps = 2, plans = 2); seed = 1)  # compile
     @test (@elapsed run_m0(p; seed = 1)) < 60
 end
+
+@testset "D1 & M0 ghosts: G per entity and governed Ha_wt / Fr" begin
+    # Governed harm_weight defaults to bootstrap_params() and accepts overrides
+    bp = bootstrap_params()
+    tiers = [(1.0, 1.0), (2.0, 0.5)]
+    w_default = harm_weight(tiers; λ = 0.5)
+    @test w_default == harm_weight(tiers; λ = 0.5, κ = bp[10], q = bp[11])
+    w_override = harm_weight(tiers; λ = 0.5, κ = 1.0, q = 2.0)
+    @test w_override != w_default
+    @test w_override >= 1.0
+    @test_throws ArgumentError harm_weight(tiers; λ = 0.5, κ = -0.1)
+    @test_throws ArgumentError harm_weight(tiers; λ = 0.5, q = 0.5)
+
+    # Governed fr_permissible defaults to bootstrap_params() and accepts overrides
+    @test fr_permissible(0.0, 0.0, 0.0, 0.5, 0.1; confidence = 0.8)
+    @test !fr_permissible(0.0, 0.0, 0.0, 2.0, 0.0; confidence = 0.8)
+    @test fr_permissible(0.0, 0.0, 0.0, 2.0, 0.0; confidence = 0.8, th_high = 5.0)
+    @test_throws ArgumentError fr_permissible(0.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.5, th_conf = 0.0)
+    @test_throws ArgumentError fr_permissible(0.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.5, th_high = 0.0)
+    @test_throws ArgumentError fr_permissible(0.0, 0.0, 0.0, 0.0, 0.0; confidence = 0.5, severities = [1.0, 2.0])
+
+    # Distributed choice (central = false): runs multiple actions per step and raises floors
+    tr_dist = run_m0(P0; seed = 7, central = false)
+    @test any(tr_dist.chosen .> 1)
+    @test tr_dist.floor_u[end] > tr_dist.floor_u[1]
+    @test tr_dist.floor_h[end] > tr_dist.floor_h[1]
+    @test length(tr_dist.floor_u) == P0.steps + 1
+    @test length(tr_dist.chosen) == P0.steps
+end

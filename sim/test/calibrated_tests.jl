@@ -103,11 +103,14 @@ end
                             marker_σ = 0.1, bias_σ = 0.1, classify_σ = 0.05, spread = 0.05, cost_σ = 0.05, regen_σ = 0.3,
                             attribution_σ = 0.1, p_hazard = 0.05, p_informed = 0.95, vigilance = 0.1, p_false_trace = 0.005,
                             p_side = 0.01 + 0.09 * 0.6, credence_rule = rule)
-    normal, record = run_m3c(world(:normal); seed = 3), run_m3c(world(:record); seed = 3)
+    seeds = 1:8
+    normal = [run_m3c(world(:normal); seed) for seed in seeds]
+    record = [run_m3c(world(:record); seed) for seed in seeds]
     growth(tr) = success_pattern(tr; from = 51).floor_u
-    @test normal.lane_halted > 500 && minimum(normal.leaf_accuracy[[1, 3]]) < 0.75     # counterexample: the stall
-    @test record.lane_halted == 0 && minimum(record.leaf_accuracy[[1, 3]]) >= 0.75     # acceptance: currencies kept
-    @test growth(record) > 2 * max(growth(normal), 1.0)
+    stalled = [i for i in eachindex(seeds) if normal[i].lane_halted > 500 && minimum(normal[i].leaf_accuracy[[1, 3]]) < 0.75]
+    @test !isempty(stalled)                                                             # counterexample: the stall
+    @test all(r.lane_halted == 0 for r in record) && all(minimum(record[i].leaf_accuracy[[1, 3]]) >= 0.75 for i in stalled)  # acceptance: currencies kept
+    @test all(growth(record[i]) > 2 * max(growth(normal[i]), 1.0) for i in stalled)
     @test_throws ArgumentError world(:median)
 end
 

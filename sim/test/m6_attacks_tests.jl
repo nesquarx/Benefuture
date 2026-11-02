@@ -112,9 +112,9 @@ ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
 
 @testset "Extremised forecasts: in the economy" begin
-    native = [run_m3c(ext_world(); seed) for seed in 1:12]
+    native = [run_m3c(ext_world(); seed) for seed in 1:16]
     # Extremists dominate takeovers: a regime, the share of takeovers that are extremists' with its
-    # interval (9 of 9 over 12 seeds under time-decayed accuracy, 13 of 13 under the fixed window).
+    # interval (over 16 seeds under time-decayed accuracy, 13 of 13 under the fixed window).
     ext, all_ = sum(tr.takeovers_extreme for tr in native), sum(tr.takeovers for tr in native)
     @test proportion_interval(ext, all_).lo > 0.5
     # Unsupported, so not asserted: that the takeover-record bar (8.58-b) changes nothing here. Under
@@ -156,22 +156,22 @@ ww(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent
 whitewasher = [0, 0, 0, 0, 0, 0.05]
 
 @testset "Whitewashing against identity binding" begin
-    seeds = 1:3
+    seeds = 1:10
     plain = [run_m3c(ww(); seed) for seed in seeds]
     bound = [run_m3c(ww(whitewash = whitewasher); seed) for seed in seeds]
-    unbound = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0); seed) for seed in seeds]
+    unbound = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0); seed) for seed in 1:3]
     acc(tr) = tr.leaf_accuracy[1]
     # Bound: nearly every attempt is linked back to its entity, and the domain's model fares as without.
     @test all(tr.identities_linked > 5 * tr.identities_admitted for tr in bound)
-    # Equivalence within 0.02 (one-sided): −0.003 ± 0.002 over 10 paired seeds; holds at these three.
+    # Equivalence within 0.02 (one-sided): −0.003 ± 0.002 over 10 paired seeds.
     @test equivalent(acc.(plain) .- acc.(bound); margin = 0.02, side = :upper).equivalent
     # Unbound: every attempt succeeds and each fresh identity fools the models in full again. Under the
     # normal credence (the limiting case) the domain's model is worse for it (accuracy 0.87 in one seed);
     # under the record credence, the rule (8.71), the fooled outliers barely move it (0.954-0.99 against
     # 0.97-0.986 without whitewashing), and whitewashing costs the liar either way.
     @test all(tr.identities_admitted > 5 && tr.identities_linked == 0 for tr in unbound)
-    nb = [run_m3c(ww(whitewash = whitewasher, credence_rule = :normal); seed) for seed in seeds]
-    nu = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0, credence_rule = :normal); seed) for seed in seeds]
+    nb = [run_m3c(ww(whitewash = whitewasher, credence_rule = :normal); seed) for seed in 1:3]
+    nu = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0, credence_rule = :normal); seed) for seed in 1:3]
     @test mean(acc.(nu)) < mean(acc.(nb)) - 0.01
     # Unsupported under time-decayed accuracy (8.85), so not asserted: that unbound whitewashing costs the
     # record-credence model no more than 0.02 of accuracy: −0.011 ± 0.006 over 10 paired seeds (−0.005 ±

@@ -50,3 +50,19 @@ end
     run_m1(M1Params(ToyParams(n = 20, steps = 2, plans = 2), perfect(1), 0.0, 2); seed = 1)
     @test (@elapsed run_m1(p; seed = 1)) < 90
 end
+
+@testset "D1 & M0 ghosts: G per entity and governed Ha_wt / Fr" begin
+    # Governed overrides
+    bp = bootstrap_params()
+    tiers = [(0.5, 0.8)]
+    @test harm_weight(tiers; λ = 0.3) == harm_weight(tiers; λ = 0.3, κ = bp[10], q = bp[11])
+    @test fr_permissible(0.0, 0.0, 0.0, 1.5, 0.0; confidence = 0.8, th_high = 3.0)
+
+    # Distributed choice (central = false): runs multiple actions per step and raises floors
+    m1_dist = run_m1(M1Params(T0, perfect(2), 0.0, 5); seed = 7, central = false)
+    @test any(m1_dist.chosen .> 1)
+    @test m1_dist.floor_u[end] > m1_dist.floor_u[1]
+    @test m1_dist.floor_h[end] > m1_dist.floor_h[1]
+    @test length(m1_dist.floor_u) == length(m1_dist.obs_floor_u) == T0.steps + 1
+    @test length(m1_dist.chosen) == T0.steps
+end

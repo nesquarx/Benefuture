@@ -221,3 +221,121 @@ end
         @test std(diff([dec(busy, t, hl(40.0)) for t in 100:199])) < std(diff([win(busy, t) for t in 100:199]))
     end
 end
+
+# Time-decayed record credence, uncertainty, track and AdvAp windows (8.85).
+# Under a fixed window, when an error distribution shifts (narrow to wide), old records keep the
+# credence misleadingly high and uncertainty low; time decay weights by age so the model pivots
+# faster to the shift, and yields steadier readings across busy transaction streams.
+@testset "Probe: time-decayed record credence, uncertainty, track and AdvAp windows (8.85)" begin
+    rng = Xoshiro(42)
+    errs = [t < 100 ? 0.1 * abs(randn(rng)) : 2.0 * abs(randn(rng)) for t in 1:150]
+    ages_at(t) = Float64[t - s for s in 1:t]
+    win_errs = errs[21:120]
+    win_cred = record_credence(0.5, win_errs)
+    dec_cred = decayed_record_credence(0.5, errs[1:120], ages_at(120), 10.0)
+    @test win_cred > 0.75 && dec_cred < 0.4
+    @test dec_cred < win_cred - 0.3
+
+    win_rms = sqrt(mean(abs2, win_errs))
+    dec_u = decayed_rms(errs[1:120], ages_at(120), 10.0)
+    @test dec_u > win_rms + 0.5
+
+    stream = [(t, abs(randn(rng))) for t in 1:60 for _ in 1:10]
+    dec_series = [decayed_rms([x[2] for x in stream if x[1] <= t], Float64[t - x[1] for x in stream if x[1] <= t], 7.0) for t in 20:60]
+    win_series = [sqrt(mean(abs2, [x[2] for x in stream if x[1] <= t][max(1, end-9):end])) for t in 20:60]
+    @test std(diff(dec_series)) < std(diff(win_series)) * 0.2
+
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    w(; kw...) = M3cParams(ToyParams(n = 16, steps = 30, plans = 4),
+                           [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.1) for _ in 1:2],
+                           [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., kw...)
+    tr_dec = run_m3c(w(accuracy_rule = :decay); seed = 1)
+    tr_win = run_m3c(w(accuracy_rule = :window); seed = 1)
+    @test length(tr_dec.floor_u) == 31 && length(tr_win.floor_u) == 31
+    @test all(tr_dec.floor_u .>= 0) && all(tr_win.floor_u .>= 0)
+
+    @test_throws ArgumentError decayed_record_credence(0.5, [1.0], [1.0, 2.0], 5.0)
+    @test_throws ArgumentError decayed_rms([1.0], [1.0, 2.0], 5.0)
+    @test_throws ArgumentError decayed_rms([1.0], [1.0], -1.0)
+end
+
+# Fallback order across pool, parent, relative bar and StandCoin, and RA contraction (C3, 8.71, 8.73).
+# When an incumbent leaf model is captured, if a qualified challenger is present in the domain's pool,
+# it is promoted before pricing falls back to parent, degrading loudly and maintaining leaf pricing.
+# Scarcity cost rises steeply as available capacity contracts, remaining finite at zero availability.
+@testset "Probe: fallback order across pool, parent, relative bar and StandCoin, and RA contraction (C3, 8.71, 8.73)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    w_cap(; kw...) = M3cParams(ToyParams(n = 20, steps = 70, plans = 6),
+                              [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.1) for _ in 1:4],
+                              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                              events = [shock(:capture; step = 25, duration = 35, size = 3.0, target = 1)], LEGACY..., kw...)
+    tr_no_chall = run_m3c(w_cap(p_new_model = 0.0); seed = 1)
+    k_no = [i for i in eachindex(tr_no_chall.chosen_step) if tr_no_chall.true_leaf[i] == 1 && 30 <= tr_no_chall.chosen_step[i] <= 55]
+    p_no = isempty(k_no) ? 0.0 : mean(tr_no_chall.priced_leaf[k_no] .== 1)
+    @test p_no == 0.0
+
+    tr_chall = run_m3c(w_cap(p_new_model = 0.3, takeover_records = 5, min_records = 5); seed = 1)
+    k_ch = [i for i in eachindex(tr_chall.chosen_step) if tr_chall.true_leaf[i] == 1 && 30 <= tr_chall.chosen_step[i] <= 55]
+    p_ch = isempty(k_ch) ? 0.0 : mean(tr_chall.priced_leaf[k_ch] .== 1)
+    @test p_ch > 0.8
+    @test tr_chall.takeovers >= 1
+    @test any(startswith(k, "incumbent leaf model") for k in keys(tr_chall.degraded))
+
+    cap = 100.0
+    c_full = scarcity_cost(2.0, 100.0, cap; floor_share = 0.001)
+    c_half = scarcity_cost(2.0, 50.0, cap; floor_share = 0.001)
+    c_low = scarcity_cost(2.0, 10.0, cap; floor_share = 0.001)
+    c_zero = scarcity_cost(2.0, 0.0, cap; floor_share = 0.001)
+    @test c_full ≈ 2.0 && c_half ≈ 4.0 && c_low ≈ 20.0
+    @test c_full < c_half < c_low < c_zero
+    @test c_zero ≈ 2.0 / 0.001
+end
+
+# Entry-point binding, domain currency non-fungibility and quote honesty (B5, 8.72, 8.78, 8.80).
+# An identity refused by binding_admits_weighted at entry point cannot transact. Domain balances
+# are non-fungible across domains (wealth in leaf 1 cannot pay leaf 3 transaction price).
+# Models quoting dishonestly lose credence accuracy and are overtaken by honest candidates.
+@testset "Probe: entry-point binding, domain currency non-fungibility and quote honesty (B5, 8.72, 8.78, 8.80)" begin
+    bad_confs = [0.1, 0.2, 0.1]
+    weights = [1.0, 1.0, 1.0]
+    @test !binding_admits_weighted(bad_confs, weights, 0.75, 1.5)
+    @test !binding_admits_weighted([0.9, 0.9, 0.1], [-1.0, -1.0, 0.5], 0.75, 1.0)
+
+    cost = 10.0; val = 5.0; cr = 0.8
+    tp = transaction_price(cost, val, cr)
+    @test tp > 0.0
+    balance_leaf1 = 100.0
+    balance_leaf3 = 0.0
+    @test tp <= balance_leaf1
+    @test !(tp <= balance_leaf3)
+
+    rng = Xoshiro(999)
+    N = 300
+    outs = Float64.(rand(rng, N) .< 0.7)
+    acc_honest = credence_accuracy(fill(0.7, N), outs)
+    acc_dishonest = credence_accuracy(fill(0.99, N), outs)
+    @test acc_honest > acc_dishonest
+
+    sc_h = [credence_score(0.7, o) for o in outs]
+    sc_d = [credence_score(0.99, o) for o in outs]
+    m_h, se_h = mean(sc_h), std(sc_h) / sqrt(N)
+    m_d, se_d = mean(sc_d), std(sc_d) / sqrt(N)
+    @test select_candidate([m_d, m_h], [se_d, se_h]; z = 2.0) == 2
+end
+
+# Accession and uplift (8.86).
+# Forced additions enter the floor denominator immediately; strong accession admissibility protects
+# existing beings over the long-term window while lifting newcomers, and falls back loudly to weak
+# floor admissibility when uplift capacity is exceeded.
+@testset "Probe: accession and uplift (8.86)" begin
+    p = ToyParams(n = 100, steps = 30, plans = 10)
+    t_acc = run_m7(p; seed = 1, accession_step = 10, accession_n = 50)
+    t_stag = run_m7(p; seed = 1, accession_step = 10, accession_n = 50, existing_only_floors = true)
+    @test t_acc.newcomer_u_gain > 2.0 && t_acc.newcomer_h_gain > 2.0
+    @test isempty(t_acc.degraded) && isempty(t_acc.nha_bearers)
+    @test t_stag.newcomer_u_gain < 0.5 && t_acc.newcomer_u_gain > 5 * t_stag.newcomer_u_gain
+    t_out = run_m7(p; seed = 1, accession_step = 10, accession_n = 150)
+    @test t_out.newcomer_u_gain > 2.0 && isempty(t_out.degraded) && isempty(t_out.nha_bearers)
+    t_tight = run_m7(p; seed = 1, accession_step = 10, accession_n = 150, uplift_capacity = 20, lt_window = 2)
+    @test t_tight.newcomer_u_gain > 1.0 && !isempty(t_tight.degraded) && !isempty(t_tight.nha_bearers)
+end

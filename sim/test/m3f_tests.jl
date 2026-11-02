@@ -44,10 +44,12 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
     # its parent; when the capture ends it qualifies again.
     # (A controlled world: the leaf model qualifies before the capture; under realistic noise whether
     # it qualifies varies by seed, see "Capture under realistic noise" below.)
-    tr = run_m3c(base(steps = 400, events = [shock(:capture; step = 100, duration = 150, size = 3.0, target = 1)];
-                      σ_leaf = 0.15, σ_branch = 0.3, σ_coarse = 0.45); seed = 1)
-    share_at(r) = (k = [i for i in eachindex(tr.chosen_step) if tr.true_leaf[i] == 1 && tr.chosen_step[i] in r];
-                   mean(tr.priced_leaf[k] .== 1))
+    cap_runs = [run_m3c(base(steps = 400, events = [shock(:capture; step = 100, duration = 150, size = 3.0, target = 1)];
+                             σ_leaf = 0.15, σ_branch = 0.3, σ_coarse = 0.45); seed) for seed in 1:6]
+    share_at(r) = mean(begin
+        k = [i for i in eachindex(tr.chosen_step) if tr.true_leaf[i] == 1 && tr.chosen_step[i] in r]
+        mean(tr.priced_leaf[k] .== 1)
+    end for tr in cap_runs)
     @test share_at(150:249) < share_at(51:99) - 0.3 && share_at(300:400) > share_at(150:249) + 0.3
     # Breakthrough: agent 1's skill rises by 1 everywhere it works; its measured outcomes rise.
     tr = run_m3c(base(events = [shock(:breakthrough; step = 150, duration = 150, size = 1.0, target = 1)]); seed = 1)

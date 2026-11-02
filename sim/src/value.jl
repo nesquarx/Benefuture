@@ -44,16 +44,17 @@ function signed_synergy(items; λ::Real, κ::Real, qp::Real, qm::Real)
 end
 
 """
-    harm_weight(tiers; λ)
+    harm_weight(tiers; λ, κ = bootstrap_params()[10], q = bootstrap_params()[11])
 
-`Ha_wt = 1 + Sy_{κ=½, q=1.5}(tiers)` over `(severity, priority weight)` pairs; 1 when there is no
+`Ha_wt = 1 + Sy_{κ, q}(tiers)` over `(severity, priority weight)` pairs; 1 when there is no
 harm, rising with severity.
 """
-function harm_weight(tiers; λ::Real)
+function harm_weight(tiers; λ::Real, κ::Real = bootstrap_params()[10], q::Real = bootstrap_params()[11])
     check_items(tiers)
     check(isfinite(λ) && λ >= 0, "λ must be finite and non-negative")
-    ccall(sym(:bf_ha_wt), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
-          floatarray(mags(tiers)), floatarray(weights(tiers)), λ)
+    check(isfinite(κ) && κ >= 0 && isfinite(q) && q > 1, "κ must be non-negative and q > 1")
+    ccall(sym(:bf_ha_wt_params), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
+          floatarray(mags(tiers)), floatarray(weights(tiers)), λ, κ, q)
 end
 
 """
@@ -74,15 +75,23 @@ function value_on_being(u::Real, h::Real, n::Real; harm_wt::Real,
 end
 
 """
-    fr_permissible(irreparable, irreversible, longterm, passing, time_loss; confidence) -> Bool
+    fr_permissible(irreparable, irreversible, longterm, passing, time_loss; confidence, th_conf, th_high, severities) -> Bool
 
 The freedom gate on an action's predicted harm by kind (L135; Lean `fr_permissible_ref`): established
-harm (predicted with confidence 0.9 or more, long-term or worse) is impermissible, and so is harm
+harm (predicted with confidence at least `th_conf`, long-term or worse) is impermissible, and so is harm
 whose confidence times severity is too high.
 """
-function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, passing::Real, time_loss::Real; confidence::Real)
+function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, passing::Real, time_loss::Real;
+                        confidence::Real,
+                        th_conf::Real = bootstrap_params()[18],
+                        th_high::Real = bootstrap_params()[19],
+                        severities = bootstrap_params()[20:24])
     check(all(x -> isfinite(x) && x >= 0, (irreparable, irreversible, longterm, passing, time_loss)) && 0 <= confidence <= 1,
           "harm amounts non-negative, confidence in [0, 1]")
-    ccall(sym(:bf_fr_permissible), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
-          irreparable, irreversible, longterm, passing, time_loss, confidence) == 1
+    check(0 < th_conf <= 1 && th_high > 0 && length(severities) == 5 && all(x -> isfinite(x) && x > 0, severities),
+          "freedom gate thresholds must be positive and severities positive")
+    ccall(sym(:bf_fr_permissible_params), UInt8,
+          (Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          irreparable, irreversible, longterm, passing, time_loss, confidence,
+          th_conf, th_high, severities[1], severities[2], severities[3], severities[4], severities[5]) == 1
 end

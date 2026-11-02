@@ -94,6 +94,9 @@ def Sy_signed_ref (items : List (Float × Float × Float))
 def HaWt_ref (tiers : List (Float × Float)) (lambda : Float) : Float :=
   1.0 + Sy_ref tiers [] lambda 0.5 1.5 1.5
 
+def HaWt_params_ref (tiers : List (Float × Float)) (lambda kappa qHarm : Float) : Float :=
+  1.0 + Sy_ref tiers [] lambda kappa qHarm qHarm
+
 /--
   Reference calculation of Value V (L73):
   V := Sy_{2}(As[(U, α, Ha_wt), (H, β, α·Ha_wt), (N, γ)]), items as (x, w₊, w₋), κ = 2.
@@ -222,6 +225,11 @@ def fr_permissible_ref (irreparable irreversible longterm passing timeLoss confi
   let established := confidence ≥ 0.9 && (irreparable > 0.0 || irreversible > 0.0 || longterm > 0.0)
   let expected := confidence * severity_score_ref irreparable irreversible longterm passing timeLoss
   !established && expected ≤ 1.0
+
+def fr_permissible_params_ref (irreparable irreversible longterm passing timeLoss confidence thConf thHigh sIrr sIrv sLt sPass sTime : Float) : Bool :=
+  let established := confidence ≥ thConf && (irreparable > 0.0 || irreversible > 0.0 || longterm > 0.0)
+  let expected := confidence * (sIrr * irreparable + sIrv * irreversible + sLt * longterm + sPass * passing + sTime * timeLoss)
+  !established && expected ≤ thHigh
 
 /-- Distinct experiences / total. Matches `experiential_variety`. -/
 def experiential_variety_ref (stream : List Nat) : Float :=

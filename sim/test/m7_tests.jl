@@ -285,3 +285,43 @@ end
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan) == 2
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(3); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
 end
+
+@testset "M7 accession: forced additions and uplift (8.86)" begin
+    # Direct accession_admissible tests (Lean accession_admissible_ref)
+    @test accession_admissible(0.1, 0.1, 0.1, 0.1, [0.1, 0.0], [0.0, 0.2]) == true
+    @test accession_admissible(-0.1, 0.1, 0.1, 0.1, [0.1, 0.0], [0.0, 0.2]) == false
+    @test accession_admissible(0.1, -0.1, 0.1, 0.1, [0.1, 0.0], [0.0, 0.2]) == false
+    @test accession_admissible(0.1, 0.1, -0.1, 0.1, [0.1, 0.0], [0.0, 0.2]) == false
+    @test accession_admissible(0.1, 0.1, 0.1, -0.1, [0.1, 0.0], [0.0, 0.2]) == false
+    @test accession_admissible(0.1, 0.1, 0.1, 0.1, [-0.01, 0.0], [0.0, 0.2]) == false
+    @test accession_admissible(0.1, 0.1, 0.1, 0.1, [0.1, 0.0], [0.0, -0.01]) == false
+    @test_throws ArgumentError accession_admissible(NaN, 0.0, 0.0, 0.0, [0.0], [0.0])
+    @test_throws ArgumentError accession_admissible(0.0, 0.0, 0.0, 0.0, [0.0], [0.0, 0.0])
+
+    p = ToyParams(n = 100, steps = 30, plans = 10)
+
+    # 1. Acceptance (the rule): newcomers uplifted, no degradation of existing beings
+    t_acc = run_m7(p; seed = 1, accession_step = 10, accession_n = 50)
+    @test t_acc.newcomer_u_gain > 2.0
+    @test t_acc.newcomer_h_gain > 2.0
+    @test isempty(t_acc.degraded)
+    @test isempty(t_acc.nha_bearers)
+
+    # 2. Counterexample (existing_only_floors = true): newcomers stagnate
+    t_stag = run_m7(p; seed = 1, accession_step = 10, accession_n = 50, existing_only_floors = true)
+    @test t_stag.newcomer_u_gain < 0.5
+    @test t_acc.newcomer_u_gain > 5 * t_stag.newcomer_u_gain
+
+    # 3. Newcomers outnumbering residents (accession_n = 150 > p.n = 100)
+    t_out = run_m7(p; seed = 1, accession_step = 10, accession_n = 150)
+    @test t_out.newcomer_u_gain > 2.0
+    @test isempty(t_out.degraded)
+    @test isempty(t_out.nha_bearers)
+
+    # 4. Large accession weak-floor fallback when uplift_capacity is tight
+    t_tight = run_m7(p; seed = 1, accession_step = 10, accession_n = 150, uplift_capacity = 20, lt_window = 2)
+    @test t_tight.newcomer_u_gain > 1.0
+    @test !isempty(t_tight.degraded)
+    @test all(d.reason == :weak_accession_floor for d in t_tight.degraded)
+    @test !isempty(t_tight.nha_bearers)
+end

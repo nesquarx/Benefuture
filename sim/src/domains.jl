@@ -162,6 +162,32 @@ function record_credence(predicted::Real, errors; cap::Real = 0.99)
 end
 
 """
+    decayed_record_credence(predicted, errors, ages, h; cap = 0.99) -> probability
+
+Time-decayed record credence (Lean `decayed_record_credence_ref`; 8.85, 8.58-c): age-weighted share
+of past value errors below `predicted` under half-life `h`, within [1 − `cap`, `cap`].
+"""
+function decayed_record_credence(predicted::Real, errors, ages, h::Real; cap::Real = 0.99)
+    check(isfinite(predicted) && length(errors) == length(ages) && all(isfinite, errors) && all(isfinite, ages) && h > 0,
+          "finite prediction, matching errors and ages, positive half-life")
+    check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
+    ccall(sym(:bf_decayed_record_credence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+          predicted, floatarray(collect(Float64, errors)), floatarray(collect(Float64, ages)), h, cap)
+end
+
+"""
+    decayed_rms(errors, ages, h) -> rms
+
+Time-decayed root mean square of `errors` under half-life `h` (Lean `decayed_rms_ref`; 8.85).
+"""
+function decayed_rms(errors, ages, h::Real)
+    check(length(errors) == length(ages) && all(isfinite, errors) && all(isfinite, ages) && h > 0,
+          "matching finite errors and ages, positive half-life")
+    ccall(sym(:bf_decayed_rms), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          floatarray(collect(Float64, errors)), floatarray(collect(Float64, ages)), h)
+end
+
+"""
     choice_skill(credences, model_credences, outcomes) -> skill
 
 A chooser's prediction skill over the domain's model (Lean `choice_skill_ref`; [P], 8.69): each
@@ -263,4 +289,10 @@ never below the coarse bar.
 function relative_bar(established::Real, coarse::Real, alternative::Real)
     check(all(isfinite, (established, coarse, alternative)) && 0 < coarse <= established <= 1, "bars finite, 0 < coarse ≤ established ≤ 1")
     ccall(sym(:bf_relative_bar), Float64, (Float64, Float64, Float64), established, coarse, alternative)
+end
+
+function report_penalty(unfounded::Real, threshold::Real; audit_cost::Real)
+    check(unfounded >= 0 && isfinite(threshold) && threshold >= 0, "count and threshold non-negative")
+    check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
+    ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
 end

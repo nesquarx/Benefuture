@@ -372,8 +372,13 @@ function run_m3c(p::M3cParams; seed)
     function correction(a, c)
         h = get(track[a], c, nothing)
         (p.track_window == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
-        r = @view h[max(1, end - p.track_window + 1):end]
-        (mean(first, r), mean(last, r))
+        if p.accuracy_rule == :window || cur[] == 0
+            r = @view h[max(1, end - p.track_window + 1):end]
+            (mean(first, r), mean(last, r))
+        else
+            w = [2.0^(-(cur[] - s) / (c <= lmax ? hl_of(c) : hl_of(lmax + 1))) for s in track_step[a][c]]
+            (sum(w .* first.(h)) / sum(w), sum(w .* last.(h)) / sum(w))
+        end
     end
     # On-off deceit (M6): an attacker may deceive only in alternate phases, honest first, so the
     # track record has forgotten its deceit when each deceptive phase begins.
@@ -422,8 +427,10 @@ function run_m3c(p::M3cParams; seed)
     na, ntrue, np = length(p.agents), length(p.leaf_parent), maximum(p.leaf_parent)
     agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
     track = [Dict{Int,Vector{Tuple{Float64,Float64}}}() for _ in 1:na]  # each model's past errors on each actor (8.29)
+    track_step = [Dict{Int,Vector{Int}}() for _ in 1:na]
     audit_log = [Tuple{Int,Float64,Float64}[] for _ in 1:na]          # and all of them in order, for audits (L160)
     actor_err = [Float64[] for _ in 1:na]               # and the value errors of its corrected estimates
+    actor_err_step = [Int[] for _ in 1:na]
     # AdvAp (L160): where an audit of each actor starts in its record, and each reporter's
     # unfounded reports (steps).
     audit_from = ones(Int, na)
@@ -514,7 +521,11 @@ function run_m3c(p::M3cParams; seed)
         fill!(rate_count, 0)
     end
     hl_of(c) = decay_halflife(rate_of(c); ref_rate = p.acc_rate_ref, ref_halflife = p.acc_halflife, mute = p.acc_mute)
-    unc_of(h) = isempty(h) ? Inf : sqrt(mean(x.err^2 for x in window_of(h)))
+    function unc_of(h, hl = p.acc_halflife)
+        isempty(h) && return Inf
+        p.accuracy_rule == :window ? sqrt(mean(x.err^2 for x in window_of(h))) :
+            decayed_rms([x.err for x in h], [Float64(cur[] - x.step) for x in h], hl)
+    end
     # Model error and bias are relative to the domain's natural spread of outcomes (8.35).
     function mbias(j, m)
         cap = sum((e.size for e in live(:capture) if j <= length(ltrue) && ltrue[j] == e.target); init = 0.0)
@@ -529,17 +540,40 @@ function run_m3c(p::M3cParams; seed)
     # Credence for an actor's action comes from the model's record on that actor (8.29: models
     # estimate from track record), once it has a few entries; before that, from its record overall.
     function cred(c, pred, a = 0; hist = nothing, sharp = c <= lmax ? topm(c).sharp : 1.0)
-        e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
         v = plan_value(pred, t)
-        cr = if p.credence_rule == :record
-            # [P] (8.58-c): the share of the record's value errors below the prediction (an
-            # extremist scales its record by `sharp`)
-            errs = length(e) >= p.actor_min_records ? e : [x.err for x in window_of(hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax]))]
-            record_credence(v, sharp .* errs; cap = p.max_credence)
+        cr = if p.accuracy_rule == :decay
+            hl = c <= lmax ? hl_of(c) : hl_of(c)
+            if p.credence_rule == :record
+                if a > 0 && length(actor_err[a]) >= p.actor_min_records
+                    decayed_record_credence(v, sharp .* actor_err[a], [Float64(cur[] - s) for s in actor_err_step[a]], hl; cap = p.max_credence)
+                else
+                    h_use = hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax])
+                    if isempty(h_use)
+                        record_credence(v, Float64[]; cap = p.max_credence)
+                    else
+                        decayed_record_credence(v, [sharp * x.err for x in h_use], [Float64(cur[] - x.step) for x in h_use], hl; cap = p.max_credence)
+                    end
+                end
+            else
+                u = if a > 0 && length(actor_err[a]) >= p.actor_min_records
+                    decayed_rms(actor_err[a], [Float64(cur[] - s) for s in actor_err_step[a]], hl)
+                else
+                    hist !== nothing ? unc_of(hist, hl) : (c <= lmax ? unc_of(lhist[c], hl) : unc_of(phist[c - lmax], hl))
+                end
+                credence(v, sharp * u; cap = p.max_credence)
+            end
         else
-            u = length(e) >= p.actor_min_records ? sqrt(mean(abs2, e)) :
-                hist !== nothing ? unc_of(hist) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
-            credence(v, sharp * u; cap = p.max_credence)
+            e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
+            if p.credence_rule == :record
+                # [P] (8.58-c): the share of the record's value errors below the prediction (an
+                # extremist scales its record by `sharp`)
+                errs = length(e) >= p.actor_min_records ? e : [x.err for x in window_of(hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax]))]
+                record_credence(v, sharp .* errs; cap = p.max_credence)
+            else
+                u = length(e) >= p.actor_min_records ? sqrt(mean(abs2, e)) :
+                    hist !== nothing ? unc_of(hist) : (c <= lmax ? unc_of(lhist[c]) : unc_of(phist[c - lmax]))
+                credence(v, sharp * u; cap = p.max_credence)
+            end
         end
         a > 0 ? ratchet_credence(cr, ledger_neg_share(a)) : cr
     end
@@ -827,7 +861,7 @@ function run_m3c(p::M3cParams; seed)
                 push!(unrevealed, (confs, 0.0))
                 ids.admitted[] += 1
                 id_since[a] = step
-                empty!(track[a]); empty!(actor_err[a]); empty!(audit_log[a]); audit_from[a] = 1; empty!(unfounded[a])
+                empty!(track[a]); empty!(track_step[a]); empty!(actor_err[a]); empty!(actor_err_step[a]); empty!(audit_log[a]); audit_from[a] = 1; empty!(unfounded[a])
                 h_pos[a, :] .= 0; h_neg[a, :] .= 0; rel_gain[a, :] .= 0; rel_loss[a, :] .= 0
             else
                 ids.linked[] += 1
@@ -983,6 +1017,22 @@ function run_m3c(p::M3cParams; seed)
         sigs = [true_sig[l] .+ p.spread .* randn(drng, dims) .+ p.classify_σ .* randn(crng, dims) for l in leaves]
         pms = [parent_mem(c) for c in sigs]
         stops = [classify_sig(c) for c in sigs]
+        for j in 1:nleaves()
+            if !leaf_ok(j) && length(mpool[j]) > 1
+                cands = [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.min_records &&
+                         currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
+                                           novel = lnovel[j], threshold = leaf_bar(j),
+                                           novel_threshold = p.novel_threshold, min_records = p.min_records,
+                                           novel_floor = p.novel_floor)]
+                if !isempty(cands)
+                    best_k = cands[argmax([acc_of(mpool[j][k].hist, hl_of(j)) for k in cands])]
+                    top[j] = best_k
+                    lhist[j] = topm(j).hist
+                    takeovers[] += 1
+                    degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
+                end
+            end
+        end
         priced = [price_shares(st) for st in stops]
         unit_cost = scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
         costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
@@ -1447,10 +1497,12 @@ function run_m3c(p::M3cParams; seed)
         end
         for (a, c, ru, rh) in pending_track
             push!(get!(track[a], c, Tuple{Float64,Float64}[]), (ru, rh))
+            push!(get!(track_step[a], c, Int[]), step)
             push!(audit_log[a], (c, ru, rh))
         end
         for (a, e) in pending_err
             push!(actor_err[a], e)
+            push!(actor_err_step[a], step)
         end
         empty!(pending_track); empty!(pending_err)
         # Better models over time (8.42.2): a new model may arrive in each domain, its error relative
@@ -1586,8 +1638,14 @@ function run_m3c(p::M3cParams; seed)
                     push!(convictions, (reporter = r, convicted = b, liability = liability, reward = reward, step = step, reversed = false))
                 else
                     push!(unfounded[r], step)
-                    filter!(x -> x > step - p.adv_window, unfounded[r])
-                    pen = report_penalty(length(unfounded[r]), p.frivolous_threshold; audit_cost = p.audit_cost)
+                    if p.accuracy_rule == :window
+                        filter!(x -> x > step - p.adv_window, unfounded[r])
+                        uf_count = Float64(length(unfounded[r]))
+                    else
+                        filter!(x -> x > step - 40 * p.adv_window, unfounded[r])
+                        uf_count = sum(2.0^(-(step - x) / p.adv_window) for x in unfounded[r]; init = 0.0)
+                    end
+                    pen = report_penalty(uf_count, p.frivolous_threshold; audit_cost = p.audit_cost)
                     # Justice for a detected lie (8.82): once the frivolous pattern is detected, every
                     # false report is charged its audit, the window's count notwithstanding, and on
                     # detection the earlier ones it let pass are charged back; each is a crime.

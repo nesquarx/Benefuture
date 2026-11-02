@@ -51,14 +51,19 @@ observed_plan(rng::AbstractRNG, plan::ToyPlan, σ) =
     (m = touched(plan); ToyPlan(m .* observe(rng, plan.du, σ), m .* observe(rng, plan.dh, σ)))
 
 """
-    run_m2(p; seed) -> NamedTuple
+    run_m2(p; seed, central = true, p_act = 0.25, action_scale = 0.1, view_σ = 0.0) -> NamedTuple
 
 Run M2. Per-step series cover every step (zero when G does not act); payment series cover the
 steps a plan was chosen; `reputation` and `balance` are final, one per agent.
+With `central = false` (Item 2 D1), G is distributed per entity: each step each entity acts with
+probability `p_act` on its own noisy view, considering scaled plans proposed by agents, and all chosen plans apply concurrently.
 """
-function run_m2(p::M2Params; seed)
+function run_m2(p::M2Params; seed, central::Bool = true, p_act::Real = 0.25, action_scale::Real = 0.1, view_σ::Real = 0.0)
+    check(0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ)),
+          "p_act in [0, 1] and scales non-negative")
     w, t = p.world, p.world.toy
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
+    vrng = central ? nothing : Xoshiro(hash((seed, :views)))
     s = toy_state(t, rng)
     k, na = length(w.models), length(p.agents)
     history = [Float64[] for _ in 1:k]
@@ -73,37 +78,77 @@ function run_m2(p::M2Params; seed)
     record!()
     obs = ToyState(observe(mrng, s.u, w.marker_σ), observe(mrng, s.h, w.marker_σ))
     for _ in 1:t.steps
-        proposers = rand(rng, 1:na, t.plans)
-        plans = [agent_plan(rng, p.agents[a], t) for a in proposers]
-        preds = [[predict(mrng, m, plan) for plan in plans] for m in w.models]
-        i = choose(obs, preds[adopted], t)
         reputation .= reputation_decay.(reputation, 1.0; rate = p.rep_rate)
         floor_before = floor_quantile(s.u, t.q)
-        if i == 1
-            push!(tr.chosen_agent, 0)
-            push!(tr.predicted_floor_u_change, 0.0); push!(tr.realised_floor_u_change, 0.0)
-        else
-            a, plan, pred = proposers[i - 1], plans[i - 1], preds[adopted][i - 1]
-            push!(tr.chosen_agent, a)
-            push!(tr.predicted_floor_u_change, floor_quantile(obs.u .+ pred.du, t.q) - floor_quantile(obs.u, t.q))
-            scores = rolling()
-            confidence = accuracy(scores[adopted])
-            upfront, _ = escrow_split(plan_value(pred, t), confidence)
-            done = carried_out(rng, p.agents[a], plan)
-            seen = observed_plan(mrng, done, w.marker_σ)
-            measured = plan_value(seen, t)
-            settled = settlement(measured, upfront)
-            push!(tr.upfronts, upfront); push!(tr.settlements, settled); push!(tr.measured_values, measured)
-            balance[a] += upfront + settled
-            reputation[a] += measured
-            mask = touched(plan)
-            realised = [seen.du[mask]; seen.dh[mask]]
-            for j in 1:k
-                pj = preds[j][i - 1]
-                push!(history[j], mm_score([pj.du[mask]; pj.dh[mask]], realised))
+        if central
+            proposers = rand(rng, 1:na, t.plans)
+            plans = [agent_plan(rng, p.agents[a], t) for a in proposers]
+            preds = [[predict(mrng, m, plan) for plan in plans] for m in w.models]
+            i = choose(obs, preds[adopted], t)
+            if i == 1
+                push!(tr.chosen_agent, 0)
+                push!(tr.predicted_floor_u_change, 0.0); push!(tr.realised_floor_u_change, 0.0)
+            else
+                a, plan, pred = proposers[i - 1], plans[i - 1], preds[adopted][i - 1]
+                push!(tr.chosen_agent, a)
+                push!(tr.predicted_floor_u_change, floor_quantile(obs.u .+ pred.du, t.q) - floor_quantile(obs.u, t.q))
+                scores = rolling()
+                confidence = accuracy(scores[adopted])
+                upfront, _ = escrow_split(plan_value(pred, t), confidence)
+                done = carried_out(rng, p.agents[a], plan)
+                seen = observed_plan(mrng, done, w.marker_σ)
+                measured = plan_value(seen, t)
+                settled = settlement(measured, upfront)
+                push!(tr.upfronts, upfront); push!(tr.settlements, settled); push!(tr.measured_values, measured)
+                balance[a] += upfront + settled
+                reputation[a] += measured
+                mask = touched(plan)
+                realised = [seen.du[mask]; seen.dh[mask]]
+                for j in 1:k
+                    pj = preds[j][i - 1]
+                    push!(history[j], mm_score([pj.du[mask]; pj.dh[mask]], realised))
+                end
+                s.u .+= done.du
+                s.h .+= done.dh
+                push!(tr.realised_floor_u_change, floor_quantile(s.u, t.q) - floor_before)
             end
-            s.u .+= done.du
-            s.h .+= done.dh
+        else
+            total_du, total_dh, acted = zeros(t.n), zeros(t.n), 0
+            n_opts = max(1, t.plans ÷ 4)
+            for _ in 1:t.n
+                rand(rng) < p_act || continue
+                view = ToyState(obs.u .+ view_σ .* randn(vrng, t.n), obs.h .+ view_σ .* randn(vrng, t.n))
+                proposers = rand(rng, 1:na, n_opts)
+                raw_plans = [agent_plan(rng, p.agents[a], t) for a in proposers]
+                scaled = [ToyPlan(action_scale .* pl.du, action_scale .* pl.dh) for pl in raw_plans]
+                preds = [[predict(mrng, m, plan) for plan in scaled] for m in w.models]
+                i = choose(view, preds[adopted], t)
+                i == 1 && continue
+                acted += 1
+                a, plan, pred = proposers[i - 1], scaled[i - 1], preds[adopted][i - 1]
+                scores = rolling()
+                confidence = accuracy(scores[adopted])
+                upfront, _ = escrow_split(plan_value(pred, t), confidence)
+                done = carried_out(rng, action_scale * p.agents[a].sloppiness, plan)
+                seen = observed_plan(mrng, done, w.marker_σ)
+                measured = plan_value(seen, t)
+                settled = settlement(measured, upfront)
+                push!(tr.upfronts, upfront); push!(tr.settlements, settled); push!(tr.measured_values, measured)
+                balance[a] += upfront + settled
+                reputation[a] += measured
+                mask = touched(plan)
+                realised = [seen.du[mask]; seen.dh[mask]]
+                for j in 1:k
+                    pj = preds[j][i - 1]
+                    push!(history[j], mm_score([pj.du[mask]; pj.dh[mask]], realised))
+                end
+                total_du .+= done.du
+                total_dh .+= done.dh
+            end
+            s.u .+= total_du
+            s.h .+= total_dh
+            push!(tr.chosen_agent, acted)
+            push!(tr.predicted_floor_u_change, floor_quantile(obs.u .+ total_du, t.q) - floor_quantile(obs.u, t.q))
             push!(tr.realised_floor_u_change, floor_quantile(s.u, t.q) - floor_before)
         end
         adopted = mm_adopt(rolling())

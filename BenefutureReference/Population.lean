@@ -57,4 +57,7 @@ def birth_trajectory_ref (initial predicted : Float) (window : Nat) : Array Floa
 def birth_escrow_ref (initial predicted : Float) (window : Nat) (baseline : Float) : Float :=
   shortfall_ref (birth_trajectory_ref initial predicted window) baseline
 
+def accession_admissible_ref (dScope dMinU dMinH dMaxU : Float) (existingDeltaU existingDeltaH : Array Float) : Bool :=
+  dScope >= 0.0 && dMinU >= 0.0 && dMinH >= 0.0 && dMaxU >= 0.0 && (List.range (min existingDeltaU.size existingDeltaH.size)).all (fun i => existingDeltaU[i]! >= 0.0 && existingDeltaH[i]! >= 0.0)
+
 end BenefutureReference

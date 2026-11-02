@@ -285,4 +285,32 @@ def relative_bar_ref (established coarse alternative : Float) : Float :=
 def scarcity_cost_ref (base available capacity floorShare : Float) : Float :=
   base * capacity / max available (capacity * floorShare)
 
+/-- Time-decayed record credence (8.85, 8.58-c): age-weighted share of past value errors (`predicted - measured`)
+    below `predicted` (ties count half), under half-life `h`, clamped to `[1 - cap, cap]`. -/
+def decayed_record_credence_ref (predicted : Float) (errors ages : Array Float) (h cap : Float) : Float := Id.run do
+  let n := min errors.size ages.size
+  if n == 0 then return max (1.0 - cap) (min cap 0.5)
+  let mut below := 0.0
+  let mut sw := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    let e := errors[i]!
+    if e < predicted then below := below + w
+    else if e == predicted then below := below + 0.5 * w
+    sw := sw + w
+  if sw ≤ 0.0 then return max (1.0 - cap) (min cap 0.5)
+  return max (1.0 - cap) (min cap (below / sw))
+
+/-- Time-decayed root mean square of `errors` under half-life `h` (8.85). -/
+def decayed_rms_ref (errors ages : Array Float) (h : Float) : Float := Id.run do
+  let n := min errors.size ages.size
+  let mut wSum := 0.0
+  let mut wSq := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    wSum := wSum + w
+    wSq := wSq + w * errors[i]! * errors[i]!
+  if wSum <= 0.0 then return 0.0
+  else return Float.sqrt (wSq / wSum)
+
 end BenefutureReference

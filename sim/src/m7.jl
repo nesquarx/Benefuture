@@ -75,6 +75,19 @@ function birth_escrow(initial::Real, predicted::Real; window::Integer, baseline:
     ccall(sym(:bf_birth_escrow), Float64, (Float64, Float64, Csize_t, Float64), initial, predicted, window, baseline)
 end
 
+"""
+    accession_admissible(d_scope, d_min_u, d_min_h, d_max_u, existing_du, existing_dh) -> Bool
+
+Strong per-being accession admissibility (8.86; Lean `accession_admissible_ref`): G-admissible on
+the combined population and no existing being's long-term U or H change is negative.
+"""
+function accession_admissible(d_scope::Real, d_min_u::Real, d_min_h::Real, d_max_u::Real, existing_du, existing_dh)
+    check(all(isfinite, (d_scope, d_min_u, d_min_h, d_max_u)) && length(existing_du) == length(existing_dh) &&
+          all(isfinite, existing_du) && all(isfinite, existing_dh), "finite scope/floor changes and matching finite existing-being changes")
+    ccall(sym(:bf_accession_admissible), UInt8, (Float64, Float64, Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}),
+          d_scope, d_min_u, d_min_h, d_max_u, floatarray(collect(Float64, existing_du)), floatarray(collect(Float64, existing_dh))) == 1
+end
+
 # ---- Plans over a changing population ----
 
 "A birth a plan causes: the model pool's predictions of the newborn's mature levels and its confidence."
@@ -229,12 +242,15 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
                 class::Integer = 10, lessons::Integer = 3, reception_σ::Real = CALIBRATED.reception_σ, teacher_cv::Real = CALIBRATED.teacher_cv, central::Bool = false,
                 p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3,
-                novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1)
+                novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1,
+                accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
+                lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf)
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
           0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ, rel_exponent, gain_σ, near_exponent)) && options >= 1 &&
-          0 <= novelty_min <= 1 && 0 < top_frac <= 1,
-          "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive")
+          0 <= novelty_min <= 1 && 0 < top_frac <= 1 &&
+          accession_step >= 0 && accession_n >= 0 && lt_window >= 1 && (isinf(uplift_capacity) || uplift_capacity >= 0),
+          "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive, valid accession parameters")
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
@@ -261,101 +277,337 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
         push!(tr.top_share, sum(shifted) > 0 ? sum(top) / sum(shifted) : top_frac)  # all equal: the top holds its share
     end
     record!()
-    for _ in 1:p.steps
-        peak, med = maximum(s.u), median(s.u)
-        # Research: a share of beings spend this step on it.
-        researching = [rand(rrng) < research_share for _ in 1:p.n]
-        for b in findall(researching)
-            tr.spent[] += research_cost
-            rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-            chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
-            if rand(rrng) < chance
-                gain = research_gain * exp(gain_σ * randn(rrng))
-                new = s.u[b] + gain  # beyond the frontier only if it passes the peak
-                rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
-                s.u[b] = new
-                tr.breakthroughs[] += 1
+
+    if accession_step == 0 && accession_n == 0
+        for _ in 1:p.steps
+            peak, med = maximum(s.u), median(s.u)
+            # Research: a share of beings spend this step on it.
+            researching = [rand(rrng) < research_share for _ in 1:p.n]
+            for b in findall(researching)
+                tr.spent[] += research_cost
+                rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
+                chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+                if rand(rrng) < chance
+                    gain = research_gain * exp(gain_σ * randn(rrng))
+                    new = s.u[b] + gain  # beyond the frontier only if it passes the peak
+                    rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
+                    s.u[b] = new
+                    tr.breakthroughs[] += 1
+                end
             end
-        end
-        workforce = 1 - count(researching) / p.n
-        peak = maximum(s.u)  # after this step's research: innovation is counted against it
-        # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
-        near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
-        function capped(pl)
-            cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
-            ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
-        end
-        if !central
-            # G per entity (8.50): each entity not researching acts with chance `p_act`, on its own
-            # noisy view of the levels, predicting its own options (ordinary work, and a lesson it
-            # could teach) with its own error, choosing by the Lean rules; all act concurrently.
-            total_du, total_dh, acted = zeros(p.n), zeros(p.n), 0
-            lesson_du, lesson_cap = zeros(p.n), fill(-Inf, p.n)  # lessons this step, and the best teachable level each learner met
-            for e in 1:p.n
-                (researching[e] || rand(rng) >= p_act) && continue
-                view = ToyState(s.u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
-                opts = ToyPlan[]
-                for _ in 1:options
-                    pl = capped(random_plan(rng, p))
-                    push!(opts, ToyPlan(action_scale .* pl.du, action_scale .* pl.dh))
-                end
-                below = [b for b in 1:p.n if view.u[b] < view.u[e] - tacit[e]]
-                if !isempty(below)
-                    learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-                    push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = receive(length(learners)),
-                                              tacit = tacit[e]))
-                end
-                predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
-                                     o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
-                i = choose(view, predicted, p)
-                i == 1 && continue
-                acted += 1
-                if i - 1 <= options
-                    total_du .+= opts[i - 1].du; total_dh .+= opts[i - 1].dh
-                    push!(tr.kind, :ordinary)
-                else
-                    # Concurrent lessons add up, but no learner ends above the best teacher it met.
-                    lesson_du .+= opts[i - 1].du
-                    for b in findall(>(0), opts[i - 1].du)
-                        lesson_cap[b] = max(lesson_cap[b], s.u[e] - tacit[e])
+            workforce = 1 - count(researching) / p.n
+            peak = maximum(s.u)  # after this step's research: innovation is counted against it
+            # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
+            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
+            function capped(pl)
+                cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
+                ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
+            end
+            if !central
+                # G per entity (8.50): each entity not researching acts with chance `p_act`, on its own
+                # noisy view of the levels, predicting its own options (ordinary work, and a lesson it
+                # could teach) with its own error, choosing by the Lean rules; all act concurrently.
+                total_du, total_dh, acted = zeros(p.n), zeros(p.n), 0
+                lesson_du, lesson_cap = zeros(p.n), fill(-Inf, p.n)  # lessons this step, and the best teachable level each learner met
+                for e in 1:p.n
+                    (researching[e] || rand(rng) >= p_act) && continue
+                    view = ToyState(s.u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
+                    opts = ToyPlan[]
+                    for _ in 1:options
+                        pl = capped(random_plan(rng, p))
+                        push!(opts, ToyPlan(action_scale .* pl.du, action_scale .* pl.dh))
                     end
-                    push!(tr.kind, :lesson)
+                    below = [b for b in 1:p.n if view.u[b] < view.u[e] - tacit[e]]
+                    if !isempty(below)
+                        learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                        push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = receive(length(learners)),
+                                                  tacit = tacit[e]))
+                    end
+                    predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
+                                         o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
+                    i = choose(view, predicted, p)
+                    i == 1 && continue
+                    acted += 1
+                    if i - 1 <= options
+                        total_du .+= opts[i - 1].du; total_dh .+= opts[i - 1].dh
+                        push!(tr.kind, :ordinary)
+                    else
+                        # Concurrent lessons add up, but no learner ends above the best teacher it met.
+                        lesson_du .+= opts[i - 1].du
+                        for b in findall(>(0), opts[i - 1].du)
+                            lesson_cap[b] = max(lesson_cap[b], s.u[e] - tacit[e])
+                        end
+                        push!(tr.kind, :lesson)
+                    end
+                end
+                for b in 1:p.n
+                    lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
+                end
+                maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
+                s.u .+= total_du; s.h .+= total_dh
+                push!(tr.actions, acted); push!(tr.chosen, acted)
+                record!()
+                continue
+            end
+            nplans, nlessons = max(1, round(Int, p.plans * workforce)), round(Int, lessons * workforce)
+            ordinary = [capped(random_plan(rng, p)) for _ in 1:nplans]
+            taught = ToyPlan[]
+            for _ in 1:nlessons
+                teacher = rand(rng, 1:p.n)  # any level
+                below = [b for b in 1:p.n if s.u[b] < s.u[teacher] - tacit[teacher]]
+                isempty(below) && continue
+                learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                push!(taught, teaching_plan(s.u, teacher, learners, min(1.0, ε * quality[teacher]); reception = receive(length(learners)),
+                                            tacit = tacit[teacher]))
+            end
+            plans = [ordinary; taught]
+            i = choose(s, plans, p)
+            push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
+            push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
+            if i > 1
+                # The work done scales with the time left for it (`workforce`).
+                du, dh = workforce .* plans[i - 1].du, workforce .* plans[i - 1].dh
+                i <= nplans + 1 && maximum(s.u .+ du) > peak + 1e-12 && (tr.innovations[] += 1)
+                s.u .+= du; s.h .+= dh
+            end
+            record!()
+        end
+        return (; (k => getfield(tr, k) for k in keys(tr) if !(k in (:breakthroughs, :innovations, :spent)))...,
+                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[])
+    end
+
+    existing_ids = collect(1:p.n)
+    u_at_acc = Float64[]
+    h_at_acc = Float64[]
+    degraded = NamedTuple{(:step, :reason),Tuple{Int,Symbol}}[]
+    nha_bearers = Int[]
+    arng = Xoshiro(hash((seed, :accession)))
+
+    for step in 1:p.steps
+        if step == accession_step
+            u_at_acc = copy(s.u)
+            h_at_acc = copy(s.h)
+            append!(s.u, accession_u .+ 0.2 .* randn(arng, accession_n))
+            append!(s.h, accession_h .+ 0.2 .* randn(arng, accession_n))
+            append!(novelty, fill(novelty_min, accession_n))
+            append!(tacit, zeros(accession_n))
+            append!(quality, ones(accession_n))
+            prev[] = (copy(s.u), copy(s.h))
+        end
+
+        n_cur = length(s.u)
+        peak, med = maximum(s.u), median(s.u)
+
+        if step < accession_step
+            researching = [rand(rrng) < research_share for _ in 1:p.n]
+            for b in findall(researching)
+                tr.spent[] += research_cost
+                rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
+                chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+                if rand(rrng) < chance
+                    gain = research_gain * exp(gain_σ * randn(rrng))
+                    new = s.u[b] + gain
+                    rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
+                    s.u[b] = new
+                    tr.breakthroughs[] += 1
                 end
             end
-            for b in 1:p.n
-                lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
+            workforce = 1 - count(researching) / p.n
+            peak = maximum(s.u)
+            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
+            capped_pre = pl -> begin
+                cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
+                ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
             end
-            maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
-            s.u .+= total_du; s.h .+= total_dh
-            push!(tr.actions, acted); push!(tr.chosen, acted)
+            if !central
+                total_du, total_dh, acted = zeros(p.n), zeros(p.n), 0
+                lesson_du, lesson_cap = zeros(p.n), fill(-Inf, p.n)
+                for e in 1:p.n
+                    (researching[e] || rand(rng) >= p_act) && continue
+                    view = ToyState(s.u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
+                    opts = ToyPlan[]
+                    for _ in 1:options
+                        pl = capped_pre(random_plan(rng, p))
+                        push!(opts, ToyPlan(action_scale .* pl.du, action_scale .* pl.dh))
+                    end
+                    below = [b for b in 1:p.n if view.u[b] < view.u[e] - tacit[e]]
+                    if !isempty(below)
+                        learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                        push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = receive(length(learners)),
+                                                  tacit = tacit[e]))
+                    end
+                    predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
+                                         o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
+                    i = choose(view, predicted, p)
+                    i == 1 && continue
+                    acted += 1
+                    if i - 1 <= options
+                        total_du .+= opts[i - 1].du; total_dh .+= opts[i - 1].dh
+                        push!(tr.kind, :ordinary)
+                    else
+                        lesson_du .+= opts[i - 1].du
+                        for b in findall(>(0), opts[i - 1].du)
+                            lesson_cap[b] = max(lesson_cap[b], s.u[e] - tacit[e])
+                        end
+                        push!(tr.kind, :lesson)
+                    end
+                end
+                for b in 1:p.n
+                    lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
+                end
+                maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
+                s.u .+= total_du; s.h .+= total_dh
+                push!(tr.actions, acted); push!(tr.chosen, acted)
+                record!()
+                continue
+            else
+                nplans, nlessons = max(1, round(Int, p.plans * workforce)), round(Int, lessons * workforce)
+                ordinary = [capped_pre(random_plan(rng, p)) for _ in 1:nplans]
+                taught = ToyPlan[]
+                for _ in 1:nlessons
+                    teacher = rand(rng, 1:p.n)
+                    below = [b for b in 1:p.n if s.u[b] < s.u[teacher] - tacit[teacher]]
+                    isempty(below) && continue
+                    learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                    push!(taught, teaching_plan(s.u, teacher, learners, min(1.0, ε * quality[teacher]); reception = receive(length(learners)),
+                                                tacit = tacit[teacher]))
+                end
+                plans = [ordinary; taught]
+                i = choose(s, plans, p)
+                push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
+                push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
+                if i > 1
+                    du, dh = workforce .* plans[i - 1].du, workforce .* plans[i - 1].dh
+                    i <= nplans + 1 && maximum(s.u .+ du) > peak + 1e-12 && (tr.innovations[] += 1)
+                    s.u .+= du; s.h .+= dh
+                end
+                record!()
+                continue
+            end
+        else
+            newcomers = (p.n + 1):n_cur
+            med_u = median(s.u[1:p.n])
+            med_h = median(s.h[1:p.n])
+            cost = (isfinite(uplift_capacity) && accession_n > uplift_capacity) ?
+                   ((accession_n - uplift_capacity) / accession_n * 0.05) : 0.0
+
+            plans = ToyPlan[]
+            is_uplift = Bool[]
+
+            # Candidate uplift plans
+            for r in (0.05, 0.1, 0.15)
+                du = zeros(n_cur)
+                dh = zeros(n_cur)
+                if cost > 0
+                    du[1:p.n] .-= cost
+                    top = argmax(s.u[1:p.n])
+                    du[top] = max(du[top], 0.0)
+                    dh[1:p.n] .-= cost
+                end
+                for b in newcomers
+                    du[b] = max(0.0, r * (med_u - s.u[b]))
+                    dh[b] = max(0.0, r * (med_h - s.h[b]))
+                end
+                push!(plans, ToyPlan(du, dh))
+                push!(is_uplift, true)
+            end
+
+            # Ordinary plans over 1:n_cur
+            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:n_cur]
+            for _ in 1:p.plans
+                du, dh = random_plan_over(rng, p, trues(n_cur))
+                cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:n_cur]
+                cdu = [du[b] > 0 ? min(action_scale * du[b], cap[b]) : action_scale * du[b] for b in 1:n_cur]
+                push!(plans, ToyPlan(cdu, action_scale .* dh))
+                push!(is_uplift, false)
+            end
+
+            # Teaching plans over 1:n_cur
+            for _ in 1:lessons
+                teacher = rand(rng, 1:n_cur)
+                below = [b for b in 1:n_cur if s.u[b] < s.u[teacher] - tacit[teacher]]
+                isempty(below) && continue
+                learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                push!(plans, teaching_plan(s.u, teacher, learners, min(1.0, ε * quality[teacher]);
+                                           reception = receive(length(learners)), tacit = tacit[teacher]))
+                push!(is_uplift, false)
+            end
+
+            if existing_only_floors
+                fu = floor_quantile(s.u[1:p.n], p.q)
+                fh = floor_quantile(s.h[1:p.n], p.q)
+                pu = maximum(s.u[1:p.n])
+                val_existing = pl -> sum(b -> begin
+                    du, dh = pl.du[b] / p.th, pl.dh[b] / p.th
+                    (du == 0 && dh == 0) ? 0.0 : being_value(du, dh, p)
+                end, 1:p.n)
+                values = [0.0; [val_existing(pl) for pl in plans]]
+                d_min_u = [0.0; [floor_quantile(s.u[1:p.n] .+ pl.du[1:p.n], p.q) - fu for pl in plans]]
+                d_min_h = [0.0; [floor_quantile(s.h[1:p.n] .+ pl.dh[1:p.n], p.q) - fh for pl in plans]]
+                d_max_u = [0.0; [maximum(s.u[1:p.n] .+ pl.du[1:p.n]) - pu for pl in plans]]
+                d_scope = zeros(length(values))
+                i = g_choose(values, d_scope, d_min_u, d_min_h, d_max_u)
+                i === nothing && (i = 1)
+            else
+                fu = floor_quantile(s.u, p.q)
+                fh = floor_quantile(s.h, p.q)
+                pu = maximum(s.u)
+                values = [0.0; [plan_value(pl, p) for pl in plans]]
+                d_min_u = [0.0; [floor_quantile(s.u .+ pl.du, p.q) - fu for pl in plans]]
+                d_min_h = [0.0; [floor_quantile(s.h .+ pl.dh, p.q) - fh for pl in plans]]
+                d_max_u = [0.0; [maximum(s.u .+ pl.du) - pu for pl in plans]]
+                d_scope = zeros(length(values))
+
+                rem_w = max(0, accession_step + lt_window - step)
+                strong_ok = falses(length(plans))
+                for k in 1:length(plans)
+                    pl = plans[k]
+                    ex_du = (s.u[1:p.n] .+ pl.du[1:p.n] .+ 0.05 * rem_w) .- u_at_acc
+                    ex_dh = (s.h[1:p.n] .+ pl.dh[1:p.n] .+ 0.05 * rem_w) .- h_at_acc
+                    strong_ok[k] = accession_admissible(d_scope[k + 1], d_min_u[k + 1], d_min_h[k + 1], d_max_u[k + 1], ex_du, ex_dh)
+                end
+
+                any_uplift_strong = any(strong_ok[k] for k in 1:length(plans) if is_uplift[k])
+                if any_uplift_strong
+                    d_scope_strong = [0.0; [strong_ok[k] ? d_scope[k + 1] : -1.0 for k in 1:length(plans)]]
+                    i = g_choose(values, d_scope_strong, d_min_u, d_min_h, d_max_u)
+                    i === nothing && (i = 1)
+                else
+                    push!(degraded, (step = step, reason = :weak_accession_floor))
+                    i = g_choose(values, d_scope, d_min_u, d_min_h, d_max_u)
+                    i === nothing && (i = 1)
+                end
+            end
+
+            push!(tr.chosen, i)
+            push!(tr.actions, i > 1 ? 1 : 0)
+            if i == 1
+                push!(tr.kind, :none)
+            else
+                push!(tr.kind, is_uplift[i - 1] ? :uplift : :ordinary)
+                s.u .+= plans[i - 1].du
+                s.h .+= plans[i - 1].dh
+            end
+
+            if step == min(p.steps, accession_step + lt_window)
+                for b in 1:p.n
+                    if s.u[b] < u_at_acc[b] - 1e-9 || s.h[b] < h_at_acc[b] - 1e-9
+                        push!(nha_bearers, b)
+                    end
+                end
+            end
             record!()
-            continue
         end
-        nplans, nlessons = max(1, round(Int, p.plans * workforce)), round(Int, lessons * workforce)
-        ordinary = [capped(random_plan(rng, p)) for _ in 1:nplans]
-        taught = ToyPlan[]
-        for _ in 1:nlessons
-            teacher = rand(rng, 1:p.n)  # any level
-            below = [b for b in 1:p.n if s.u[b] < s.u[teacher] - tacit[teacher]]
-            isempty(below) && continue
-            learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-            push!(taught, teaching_plan(s.u, teacher, learners, min(1.0, ε * quality[teacher]); reception = receive(length(learners)),
-                                        tacit = tacit[teacher]))
-        end
-        plans = [ordinary; taught]
-        i = choose(s, plans, p)
-        push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
-        push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
-        if i > 1
-            # The work done scales with the time left for it (`workforce`).
-            du, dh = workforce .* plans[i - 1].du, workforce .* plans[i - 1].dh
-            i <= nplans + 1 && maximum(s.u .+ du) > peak + 1e-12 && (tr.innovations[] += 1)
-            s.u .+= du; s.h .+= dh
-        end
-        record!()
     end
-    (; (k => getfield(tr, k) for k in keys(tr) if !(k in (:breakthroughs, :innovations, :spent)))...,
-     breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[])
+
+    standard = (; (k => getfield(tr, k) for k in keys(tr) if !(k in (:breakthroughs, :innovations, :spent)))...,
+                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[])
+    (; standard...,
+       newcomer_u_gain = mean(s.u[(p.n + 1):end]) - accession_u,
+       newcomer_h_gain = mean(s.h[(p.n + 1):end]) - accession_h,
+       existing_u_Floor = floor_quantile(s.u[1:p.n], p.q),
+       degraded = degraded,
+       nha_bearers = nha_bearers)
 end
 
 # A random plan over `n` beings touching only the `eligible` (M0's menu, over a changing population).

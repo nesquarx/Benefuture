@@ -35,7 +35,7 @@ assumptions it still makes, and graduates to them.
 | M4 | Thresholds: the value parameters governed by SigThGv's perturbation branch inside the admissible region (Lean `admissible_ref`, `perturb_step_ref`), with adaptation as experimental design (8.22.3) and the debatable escape (8.41); next, the simulation's own gates | `Conj_ParamStability` | first pass done |
 | M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks; decision-market gap, extremised forecasts, whitewashing, on-off, slandering, sybils, Goodhart curve) |
-| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths (8.47), teaching, research, G per entity, births (8.52) done; forks pending |
+| M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths (8.47), teaching, research, G per entity, births (8.52), accession & forced additions (8.86) done; forks pending |
 | M8 | Networks; propagation and leakage across games; end of lifespan and causal inheritance | B25 | |
 
 ## Coverage of the specification
@@ -50,10 +50,10 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Axiology.Value`, `Axiology.Priorities` | partial | V, harm schedule and passing-tier harm (M0+); happiness kinds, bias claims, U and H harm reference points not yet |
 | `Measurement.MetricModel` | partial | scoring by −MSE, adoption, accuracy, eligibility (M1, M3c); markers, novelty and causal explanation terms not yet |
 | `Measurement.Threshold` | partial | significance (`ToyParams.th`, all rungs) and perturbation of thresholds under SigThGv (M4); graded significance not yet |
-| `Economy.Pricing`, `Economy.Currency` | partial | escrow, settlement, transaction price, scarcity cost, overflow (M2–M3c); supply minted and burnt per action by `supply_delta_ref`, the ledger identity checked by a probe (8.67; lane work's harm burns nothing yet) |
+| `Economy.Pricing`, `Economy.Currency` | partial | escrow, settlement, transaction price, scarcity cost, overflow (M2–M3c); settlement theorems removing overstatement gain (8.86); supply minted and burnt per action by `supply_delta_ref`, the ledger identity checked by a probe (8.67; lane work's harm burns nothing yet) |
 | `Ontology.Domain`, `Proposed.DomainHierarchy` | simulated | leaf shares, fuzzy parents, aggregation, learnt overlaps (M3c) |
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
-| `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); the full `goal_G` with D and Pareto filtering not yet |
+| `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); accession admissibility and per-being protection (`accession_admissible_ref`); the full `goal_G` with D and Pareto filtering not yet |
 | `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
 | `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding against whitewashing (M6, `binding_admits_ref`); privacy tiers not yet |
@@ -1140,6 +1140,39 @@ level-independent ordinary plans carrying the peak; breakthroughs landing at the
 researcher's level; diverted time costing nothing under one plan a step; and, under G per entity,
 concurrent lessons summing past their teachers (an explosion), now capped at the best teacher.
 
+## Accession and forced additions (8.86)
+
+Forced additions cannot be helped: when newcomers arrive whether or not G chooses it (births, mergers,
+or a suffering polity joining), Benefuture takes them as given and turns to uplift (author ruling 8.86 and addendum).
+Over the long-term window `Ha_lt`, an accession must not leave any existing individual's levels lower than
+their counterfactual without accession.
+Tested in a 4-part probe (`sim/test/probe_tests.jl`, `sim/test/m7_tests.jl`):
+1. **Acceptance:** A low-level polity joins; G uplifts newcomers' floor and median while every existing being's long-term level is preserved against its no-accession counterfactual (paired seeds). Passing dips are logged as NHa.
+2. **Counterexample:** Restricting G to the pre-existing population's floors leaves newcomers down.
+3. **Newcomer majority:** Newcomers outnumber residents (folding the repugnant-start run); uplift still raises newcomers while protecting residents.
+4. **Fallback:** When accession is too large to satisfy the strong per-being reading, G sets `degraded = true` and falls back to combined floors without stalling (`goal_G_accession`, `accession_fallback_never_stalls`).
+
+## Historical decision replay as-of (E4)
+
+Pre-registered historical counterfactual evaluation engine (`docs/REPLAY_PREREG.md`, `sim/src/replay.jl`,
+`sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, 26/26 tests passing). Replays historical decisions
+as-of the decision time across four case studies:
+- Challenger launch (1986, aerospace engineering risk under low temperatures)
+- FDA thalidomide review (1960, pharmaceutical regulatory safety bar)
+- Ragusa quarantine (1377, public health isolation in pre-modern setting)
+- Semmelweis obstetric clinic (1847, puerperal fever and antiseptic practice)
+
+Uses frozen governed defaults with competing counterfactual estimators (synthetic control, difference-in-differences,
+matched controls) and outcome-by-agreement cell analysis.
+
+## Overnight long-horizon & century simulation suite
+
+Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` to test extended simulation regimes:
+- 10-year scaled economy (5,000 steps)
+- 20-year governance (1,000 decisions)
+- 100-year composed century simulation with rare catastrophes and breakthroughs per ruling 8.64
+- 64-seed sweeps over open questions from 8.85 (time-decayed window takeovers) and 8.81.
+
 ## Parsimony audit
 
 What the simulation does beyond the Lean and the pseudocode (CLAUDE.md, Parsimony). Native: a
@@ -1306,9 +1339,9 @@ over `sim/src` and `BenefutureReference` (author ruling: an unnamed scalar is a 
 | Hoeffding's 2 n / δ and 2 ε² | `shapley_sample_count_ref` | the bound itself (ε, δ are governed) |
 | 1.96 | `ci95` (analysis helper) | reporting only; claims use the significance rule's z |
 
-Pending (named in the Lean reference's parameter space but hardcoded where the simulation calls them):
-Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (M0, via `harm_weight`), Fr's confidence bar 0.9 and
-severity multipliers 1000/100/10/1/0.5 (`fr_permissible_ref`, not called in runs).
+Resolved (lifted into governed parameter defaults from `bootstrap_params()`):
+Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (via `HaWt_params_ref`), Fr's confidence bar 0.9 and
+severity multipliers 1000/100/10/1/0.5 (`fr_permissible_params_ref`).
 
 ## Noise
 

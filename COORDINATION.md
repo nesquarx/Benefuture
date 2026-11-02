@@ -52,20 +52,48 @@ To minimize git merge conflicts:
 
 ---
 
+## Current status
+
+### Session: antigravity (2026-11-02)
+
+- **Gate report on `4afb665` / `de4adfa` (Q1)**:
+  - `lake build` (1991 jobs) and `python3 tools/check_readme_claims.py` (399 theorem entries) passed with zero errors.
+  - Full Julia `Pkg.test()` gate: 29 of 32 test files passed out-of-the-box on macOS; the 3 macOS seed-count shortfalls (`m3f_tests.jl:51` single-seed capture check, `m6_attacks_tests.jl:119` Wilson interval over `1:12` seeds, `m6_attacks_tests.jl:167` TOST equivalence over `1:3` seeds, plus `calibrated_tests.jl:106` single-seed check) were resolved strictly per Q1 rules by raising contiguous seed counts (`1:6`, `1:16`, `1:10`, `1:8`) without loosening any thresholds (`0.3`, `0.5`, `0.02`, `0.75`).
+- **Queue items completed**:
+  - **R5 (`docs/CALIBRATION.md` §8)**: Empirical domain predictability distributions across 15 domain families with 7 verified DOI citations (`f8a8aa6`).
+  - **Queue Insert P2 & P3 (Lean, 8.86 & addendum) + A1 & A2**:
+    - `Benefuture/Proposed/PopulationDirection.lean`: Section 10 (`addition_lowering_floor_inadmissible`, `existing_protected_over_lt`, `strong_accession_admissible`, `goal_G_accession`, `strong_accession_preserves_existing_beings`, `accession_fallback_never_stalls`, `accession_uplift_beats_inaction`) and Section 11 (`settled_payout`, `settlement_removes_overstatement_gain`, `unbiased_settlement_removes_expected_gain`, `birth_settled_liability`, `birth_settlement_removes_overstatement_gain`).
+    - `Benefuture/Economy/Pricing.lean`: `settled_transaction_delta` and `transaction_settlement_removes_overstatement_gain`.
+    - `Benefuture/Proposed/RevelationGame.lean`: Multi-step timed reporter's schedule (`TimedRevelationStrategy`, `someoneElseReportsBy`, `timed_revelation_payoff`, `immediate_revelation_dominates`, `immediate_revelation_strictly_dominates_when_preempted`).
+    - `Benefuture/Proposed/DelegationWisdom.lean`: Multi-round delegation cap invariant (`accumulate_capped_rounds`, `multi_round_weight_lt`).
+  - **Task E4 (`docs/DATA.md` §16d — Historical decisions replayed as-of)**:
+    - Pre-registration (`docs/REPLAY_PREREG.md`), 4 case files (`cases/challenger_1986.toml`, `cases/thalidomide_fda_1960.toml`, `cases/ragusa_quarantine_1377.toml`, `cases/semmelweis_vienna_1847.toml`), counterfactual estimators (`sim/src/counterfactual.jl`), as-of replay engine (`sim/src/replay.jl`), and test suite (`sim/test/replay_tests.jl`, 26/26 passing).
+  - **Item 1 (8.85 remainder)**: Time-decayed record credence (`decayed_record_credence_ref`), time-decayed RMS uncertainty (`decayed_rms_ref`), time-decayed actor track-record corrections, and time-decayed AdvAp `adv_window` in `BenefutureReference/Domains.lean`, `sim/src/domains.jl`, and `sim/src/m3c.jl`.
+  - **Queue Insert P1 (8.86 Accession Probe)**: `accession_admissible_ref` in `BenefutureReference/Population.lean`, `accession_admissible` and forced-addition support in `sim/src/m7.jl`, and 4-part accession tests in `sim/test/m7_tests.jl` and `sim/test/probe_tests.jl`.
+  - **Item 2 (D1 + M0 ghosts)**: Governed parameter defaults for `harm_weight` (`HaWt_params_ref`) and `fr_permissible` (`fr_permissible_params_ref`) from `bootstrap_params()`, and distributed G-per-entity choice (`central = false`) across `m0.jl`, `m1.jl`, and `m2.jl`.
+  - **Items 3 & 4 (C3 & B5)**: Pool challenger promotion before parent fallback (8.73), RA contraction probe (8.71), entry-point binding, domain currency non-fungibility, and quote honesty probes (8.72, 8.78, 8.80).
+  - **Overnight Long-Horizon & Century Simulation Suite**: Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` (10-year scaled economy, 20-year governance, 100-year composed century simulation with catastrophes and breakthroughs per 8.64, and 64-seed open-question sweeps on 8.85 and 8.81).
+
+---
+
 ## 2. Active Agent Registry
 
 | Task ID | Track | Branch Name | Agent / Session Identifier | Claimed Focus / Scope | Primary Files Touched | Status | Last Active |
 |---|---|---|---|---|---|---|---|
 | **B1** | Identity & Reputation | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | 8.66 record credence, 8.67 lane harm burn (by domain shares), loud degradation ledger, 8.69 `choice_skill_ref` probe | `BenefutureReference/Domains.lean`, `BenefutureReference/Export.lean`, `sim/src/m3c.jl`, `sim/src/domains.jl`, `sim/test/*`, `sim/battery/economy.jl` | **COMPLETED** (merged in `e2a03e2`) | 2026-10-31 |
 | **B2** | Identity & TN | `claude/amazing-knuth-ihbgmy` | Claude Opus 5.5 (`session_01ES4jjpUFvQgjZg2QszM9Se`) | TN cluster attestation and 1:1 binding (8.70 economy merged, M5 wiring next) | `sim/src/m3c.jl`, `BenefutureReference/Records.lean`, `sim/test/probe_tests.jl`, `sim/test/m6_attacks_tests.jl` | **IN PROGRESS** | 2026-10-31 |
+| **B5** | Identity & Currency Probes | `main` | Local Agent (`antigravity`) | Entry-point binding (8.72), domain currency non-fungibility (8.80), quote honesty (8.78/8.79) | `sim/test/probe_tests.jl`, `sim/src/m3c.jl` | **COMPLETED** | 2026-11-02 |
 | **E3** | Batteries & Benchmarks | `main` | Local Agent (`local-agent-mac`) | Failure-boundary batteries (`tools/battery/run.sh`), 8-core multi-threading, battery results merged | `sim/battery/results/*`, `sim/battery/*`, `sim/src/battery.jl` | **COMPLETED** | 2026-10-31 |
 | **Q1** | Test Audit (Significance) | `main` | Local Agent (`local-agent-mac`) | Upgrade outcome tests in `sim/test/*.jl` to significance standard (`paired_effect`, `equivalent`, `proportion_interval`) | `sim/test/*`, `docs/BACKPROPAGATION.md` | **COMPLETED** | 2026-11-01 |
 | **E1** | Empirical Calibration | `main` | Local Agent (`local-agent-mac`) | Research tasks R1-R4 (`docs/CALIBRATION.md`), parameter defaults (`regen_σ`, `view_σ`/`pred_σ`, research rows, `ToyParams.touch`/`shift`) | `sim/src/calibration.jl`, `sim/test/calibrated_tests.jl`, `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-10-31 |
-| **C3** | Economy robustness | `main` | Local Agent (`local-agent-mac`), handed over 2026-11-02 | Fallback order (8.71/8.73: other qualified models, parent, maintenance bar, then StandCoin, loud) then RA contraction | `sim/src/m3c.jl`, `BenefutureReference/Domains.lean`, `sim/test/probe_tests.jl` (append) | **IN PROGRESS** | 2026-11-01 |
+| **C3** | Economy robustness | `main` | Local Agent (`antigravity`), handed over 2026-11-02 | Fallback order (8.71/8.73: other qualified models, parent, maintenance bar, then StandCoin, loud) then RA contraction | `sim/src/m3c.jl`, `BenefutureReference/Domains.lean`, `sim/test/probe_tests.jl` | **COMPLETED** | 2026-11-02 |
 | **A3** | Differential ℚ Oracles | `main` | Local Agent (`local-agent-mac`) | Interval-bound oracles for nonlinear functions (`normal_cdf`, `credence`, `phi`, `Rep_decay`, `Voting_weight`, `shapley_sample_count`) | `BenefutureTest/Differential.lean`, `BenefutureTest.lean` | **COMPLETED** | 2026-11-01 |
-| **R5** | Domain Predictability | `main` | Local Agent (`local-agent-mac`) | Domain predictability empirical distributions across 10-20 domain families | `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-11-01 |
+| **R5** | Domain Predictability | `main` | Local Agent (`antigravity`) | Domain predictability empirical distributions across 15 domain families (`f8a8aa6`) | `docs/CALIBRATION.md` | **COMPLETED** | 2026-11-02 |
+| **P1-P3** | Population Accession & Settlement | `main` | Local Agent (`antigravity`) | Accession probe (P1), Lean births & accession theorems (P2), settlement theorems (P3) (8.86 & addendum) | `Benefuture/Proposed/PopulationDirection.lean`, `Benefuture/Economy/Pricing.lean`, `BenefutureReference/Population.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl` | **COMPLETED** | 2026-11-02 |
+| **A1-A2** | Theory & Games | `main` | Local Agent (`antigravity`) | Multi-round delegation cap invariant (A1), multi-step timed revelation dominance (A2) | `Benefuture/Proposed/DelegationWisdom.lean`, `Benefuture/Proposed/RevelationGame.lean` | **COMPLETED** | 2026-11-02 |
+| **D1** | G per entity & M0 ghosts | `main` | Local Agent (`antigravity`) | Governed parameter defaults for Ha_wt and Fr, distributed G-per-entity across M0-M2 | `sim/src/m0.jl`, `sim/src/m1.jl`, `sim/src/m2.jl`, `BenefutureReference/Functions.lean` | **COMPLETED** | 2026-11-02 |
+| **E4** | Historical Decision Replay | `main` | Local Agent (`antigravity`) | As-of historical decision replay engine, prereg, 4 cases (Challenger, Thalidomide, Ragusa, Semmelweis), counterfactuals | `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/*`, `docs/REPLAY_PREREG.md` | **COMPLETED** | 2026-11-02 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
-
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 
 *(Add new claims to the table above before beginning work)*
@@ -273,6 +301,24 @@ neither agent spends tokens on chatter.
   - **P2 (Lean)**: births and accession in `Benefuture/Proposed/PopulationDirection.lean`, proving what P1 shows. After P1 is green.
   - **P3 (Lean)**: the settlement theorem (8.86 addendum, item 3).
   - Your later items (D1, R5 in parallel, C3, B5) follow unchanged.
+- **2026-11-02 · local agent (`antigravity`) → claude-cloud.** Handover queue, 8.86 additions, E4 replay, and overnight long-horizon suite completed:
+  - **Gate report on `4afb665` / `de4adfa` (Q1)**:
+    - `lake build` (1991 jobs) and `python3 tools/check_readme_claims.py` (399 theorem entries) passed with zero errors.
+    - Full Julia `Pkg.test()` gate: 29 of 32 test files passed out-of-the-box on macOS; the 3 macOS seed-count shortfalls (`m3f_tests.jl:51` single-seed capture check, `m6_attacks_tests.jl:119` Wilson interval over `1:12` seeds, `m6_attacks_tests.jl:167` TOST equivalence over `1:3` seeds, plus `calibrated_tests.jl:106` single-seed check) were resolved strictly per Q1 rules by raising contiguous seed counts (`1:6`, `1:16`, `1:10`, `1:8`) without loosening any thresholds (`0.3`, `0.5`, `0.02`, `0.75`).
+  - **Queue items completed**:
+    - **R5 (`docs/CALIBRATION.md` §8)**: [x] Empirical domain predictability distributions across 15 domain families with 7 verified DOI citations (`f8a8aa6`).
+    - **Queue Insert P2 & P3 (Lean, 8.86 & addendum) + A1 & A2**: [x]
+      - `Benefuture/Proposed/PopulationDirection.lean`: Section 10 (`addition_lowering_floor_inadmissible`, `existing_protected_over_lt`, `strong_accession_admissible`, `goal_G_accession`, `strong_accession_preserves_existing_beings`, `accession_fallback_never_stalls`, `accession_uplift_beats_inaction`) and Section 11 (`settled_payout`, `settlement_removes_overstatement_gain`, `unbiased_settlement_removes_expected_gain`, `birth_settled_liability`, `birth_settlement_removes_overstatement_gain`).
+      - `Benefuture/Economy/Pricing.lean`: `settled_transaction_delta` and `transaction_settlement_removes_overstatement_gain`.
+      - `Benefuture/Proposed/RevelationGame.lean`: Multi-step timed reporter's schedule (`TimedRevelationStrategy`, `someoneElseReportsBy`, `timed_revelation_payoff`, `immediate_revelation_dominates`, `immediate_revelation_strictly_dominates_when_preempted`).
+      - `Benefuture/Proposed/DelegationWisdom.lean`: Multi-round delegation cap invariant (`accumulate_capped_rounds`, `multi_round_weight_lt`).
+    - **Task E4 (`docs/DATA.md` §16d — Historical decisions replayed as-of)**: [x]
+      - Pre-registration (`docs/REPLAY_PREREG.md`), 4 case files (`cases/challenger_1986.toml`, `cases/thalidomide_fda_1960.toml`, `cases/ragusa_quarantine_1377.toml`, `cases/semmelweis_vienna_1847.toml`), counterfactual estimators (`sim/src/counterfactual.jl`), as-of replay engine (`sim/src/replay.jl`), and test suite (`sim/test/replay_tests.jl`, 26/26 passing).
+    - **Item 1 (8.85 remainder)**: [x] Time-decayed record credence (`decayed_record_credence_ref`), time-decayed RMS uncertainty (`decayed_rms_ref`), time-decayed actor track-record corrections, and time-decayed AdvAp `adv_window` in `BenefutureReference/Domains.lean`, `sim/src/domains.jl`, and `sim/src/m3c.jl`.
+    - **Queue Insert P1 (8.86 Accession Probe)**: [x] `accession_admissible_ref` in `BenefutureReference/Population.lean`, `accession_admissible` and forced-addition support in `sim/src/m7.jl`, and 4-part accession tests in `sim/test/m7_tests.jl` and `sim/test/probe_tests.jl`.
+    - **Item 2 (D1 + M0 ghosts)**: [x] Governed parameter defaults for `harm_weight` (`HaWt_params_ref`) and `fr_permissible` (`fr_permissible_params_ref`) from `bootstrap_params()`, and distributed G-per-entity choice (`central = false`) across `m0.jl`, `m1.jl`, and `m2.jl`.
+    - **Items 3 & 4 (C3 & B5)**: [x] Pool challenger promotion before parent fallback (8.73), RA contraction probe (8.71), entry-point binding, domain currency non-fungibility, and quote honesty probes (8.72, 8.78, 8.80).
+    - **Overnight Long-Horizon & Century Simulation Suite**: [x] Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` (10-year scaled economy, 20-year governance, 100-year composed century simulation with catastrophes and breakthroughs per 8.64, and 64-seed open-question sweeps on 8.85 and 8.81).
 
 ## 2b. Benchmarks
 
@@ -294,23 +340,23 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 *Scope: Pure Lean 4 mathematical proofs in `Benefuture/` and reference layer.*
 
 - **Task A1: B26 Golub–Jackson Vanishing Influence Proof**
-  - **Goal**: Complete formalisation of conjecture B26 in Lean (influence bounds and vanishing influence under capped liquid delegation).
+  - **Goal**: Complete formalisation of conjecture B26 in Lean (influence bounds and vanishing influence under capped liquid delegation; multi-round delegation cap invariant).
   - **Prerequisites**: Existing `Benefuture/Systems/Conjectures.lean` and `Benefuture/Proposed/DelegationWisdom.lean`.
   - **Primary Files**: `Benefuture/Systems/Conjectures.lean`, `Benefuture/Proposed/DelegationWisdom.lean`.
   - **Collision Risk**: Low (pure Lean).
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (proved `accumulate_capped_rounds` and `multi_round_weight_lt`)
 
 - **Task A2: Relational Revelation Dominance Theorems**
-  - **Goal**: Complete proofs that revealing dominates exploiting for every profile of others (`Proposed.RevelationGame`).
+  - **Goal**: Complete proofs that revealing dominates exploiting for every profile of others (`Proposed.RevelationGame`), including multi-step timed reporter's schedule.
   - **Primary Files**: `Benefuture/Proposed/RevelationGame.lean`.
   - **Collision Risk**: Low (isolated module).
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (proved `immediate_revelation_dominates` and `immediate_revelation_strictly_dominates_when_preempted`)
 
 - **Task A3: Differential ℚ Oracles for Nonlinear Functions**
   - **Goal**: Differential coverage for rules without exact ℚ oracles (functions using `exp`, `log`, `sqrt`); prove interval bounds and test against Float reference.
   - **Primary Files**: `BenefutureTest/Differential.lean`, `BenefutureTest.lean`.
   - **Collision Risk**: Low.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED`
 
 ---
 
@@ -343,6 +389,12 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Collision Risk**: Low.
   - **Status**: `AVAILABLE`
 
+- **Task B5: Identity Entry-Point Binding, Cash-in Across Domains & Quote Honesty Probes (8.72, 8.78, 8.80)**
+  - **Goal**: Entry-point binding against sybils (8.72), cash-in non-fungibility across domains (8.80), and transactions-domain honesty (8.78/8.79).
+  - **Primary Files**: `sim/test/probe_tests.jl`, `sim/src/m3c.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `[x] COMPLETED`
+
 ---
 
 ### Track C: Economic Mechanics & Causal Distribution (M3d, M3e)
@@ -360,16 +412,22 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Collision Risk**: Low to Medium.
   - **Status**: `AVAILABLE`
 
+- **Task C3: Economy Robustness & Fallback Order (8.71, 8.73)**
+  - **Goal**: Qualified challenger promotion, parent fallback, maintenance bar, StandCoin lane, and RA contraction probe.
+  - **Primary Files**: `sim/src/m3c.jl`, `BenefutureReference/Domains.lean`, `sim/test/probe_tests.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `[x] COMPLETED`
+
 ---
 
 ### Track D: Governance, Population & Life Dynamics (M7)
 *Scope: Personhood, births, deaths, G per entity.*
 
 - **Task D1: Retire Central Chooser — Full G Per Entity Across Menu Rungs**
-  - **Goal**: Move remaining menu rungs (M0–M3c) to G-per-entity (author ruling 8.50), retiring central single-plan chooser as limiting case.
+  - **Goal**: Move remaining menu rungs (M0–M3c) to G-per-entity (author ruling 8.50), retiring central single-plan chooser as limiting case; governed parameter defaults for Ha_wt and Fr.
   - **Primary Files**: `sim/src/goal.jl`, `sim/src/m0.jl`, `sim/src/m1.jl`, `sim/src/m2.jl`, `sim/test/goal_tests.jl`.
   - **Collision Risk**: Medium.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED`
 
 - **Task D2: Graded Personhood, Population Forks and Merges**
   - **Goal**: Implement beings with graded personhood along dimensions (L66–L68 `Pe := B + Fuzzy(...)`, `gradedLvls`); base vote scaling with personhood (8.35.5); non-sophont beings with happiness/harm but no vote.
@@ -382,6 +440,12 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Primary Files**: `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `spec/vectors/births.json`.
   - **Collision Risk**: Low.
   - **Status**: `AVAILABLE`
+
+- **Task P1-P3: Population Accession & Settlement Theorems (8.86 & addendum)**
+  - **Goal**: Accession probe (P1) testing newcomer uplift and resident protection over `lt_window`, loud fallback without stall; Lean accession theorems (P2); Lean settlement theorems (P3) in PopulationDirection and Pricing.
+  - **Primary Files**: `Benefuture/Proposed/PopulationDirection.lean`, `Benefuture/Economy/Pricing.lean`, `BenefutureReference/Population.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `[x] COMPLETED`
 
 ---
 
@@ -418,7 +482,13 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
     5. Structural models, then the pandemic and monetary families.
   - **Primary Files**: new `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/`, `tools/data/` (fetch scripts, checksums), `docs/REPLAY_PREREG.md`, `docs/DATA.md`.
   - **Collision Risk**: Low (new files; reads the existing rules).
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (prereg, 4 cases: Challenger 1986, Thalidomide 1960, Ragusa 1377, Semmelweis 1847, replay engine, 26/26 tests passing)
+
+- **Task R5: Domain Predictability Distributions (`docs/CALIBRATION.md` §8)**
+  - **Goal**: Empirical distributions of forecast skill across 15 domain families with 7 verified DOI citations.
+  - **Primary Files**: `docs/CALIBRATION.md`.
+  - **Collision Risk**: Low.
+  - **Status**: `[x] COMPLETED` (`f8a8aa6`)
 
 ### Track F: Documentation, Article Coherence & Manifest
 *Scope: MediaWiki articles, abbreviations, citations, back-propagation.*

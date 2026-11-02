@@ -113,4 +113,24 @@ theorem uncapped_star_no_wisdom {V : Type*} [DecidableEq V] (S : Finset V) (d : 
 def GolubJacksonWisdomConjecture (capShare relM tallyError : ℕ → ℝ) : Prop :=
   Tendsto capShare atTop (𝓝 0) → Tendsto relM atTop (𝓝 0) → Tendsto tallyError atTop (𝓝 0)
 
+/-- [R] Repeated rounds of L114 capped delegation over a list of round-by-round incoming weight lists. -/
+noncomputable def accumulate_capped_rounds (cap : ℝ) : ℝ → List (List ℝ) → ℝ
+  | cur, [] => cur
+  | cur, ws :: rounds => accumulate_capped_rounds cap (accumulate_capped cap cur ws) rounds
+
+/-- THEOREM: The L114 cap bound `cap + M` is invariant across arbitrarily many rounds of delegation.
+    Because a delegate whose weight reaches or exceeds `cap` accepts no further delegations in later
+    rounds, repeated rounds never compound the single-round overshoot beyond `cap + M`. -/
+theorem multi_round_weight_lt (cap M : ℝ) :
+    ∀ (rounds : List (List ℝ)) (cur : ℝ),
+      cur < cap + M → (∀ ws ∈ rounds, ∀ w ∈ ws, w ≤ M) →
+      accumulate_capped_rounds cap cur rounds < cap + M
+  | [], cur, hcur, _ => hcur
+  | ws :: rest, cur, hcur, hrounds => by
+    unfold accumulate_capped_rounds
+    have h1 : accumulate_capped cap cur ws < cap + M :=
+      accumulate_capped_bound cap M ws cur hcur (fun w hw => hrounds ws List.mem_cons_self w hw)
+    exact multi_round_weight_lt cap M rest (accumulate_capped cap cur ws) h1
+      (fun ws' hws' w hw => hrounds ws' (List.mem_cons_of_mem ws hws') w hw)
+
 end Benefuture.Proposed

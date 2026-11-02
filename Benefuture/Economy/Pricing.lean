@@ -129,4 +129,29 @@ theorem heavier_model_less_efficient (dV c₁ c₂ dt : ℝ) (hV : 0 < dV) (h₁
   unfold competition_efficiency
   exact div_lt_div_of_pos_left hV h₁ (by linarith)
 
+/--
+  [R] Net transaction payout after escrow settlement (L84, L86; 8.86 addendum item 3):
+  the upfront net delta `-transaction_price r pr credit pWin` plus the settlement adjustment
+  `measured - pWin * credit`.
+-/
+noncomputable def settled_transaction_delta (r : ResourceUse) (pr : ResourcePrices)
+    (credit pWin measured : ℝ) : ℝ :=
+  -transaction_price r pr credit pWin + (measured - pWin * credit)
+
+/--
+  THEOREM (Settlement Theorem, 8.86 addendum item 3): Settling on measured outcomes removes the
+  gain from overstated predictions. For any true value `v`, prediction overstatement `bias`,
+  and upfront confidence `pWin`, the settled transaction delta equals `measured - resource_cost r pr`,
+  independent of `bias` and `pWin`.
+-/
+theorem transaction_settlement_removes_overstatement_gain (r : ResourceUse) (pr : ResourcePrices)
+    (v bias pWin measured : ℝ) :
+    settled_transaction_delta r pr (v + bias) pWin measured =
+      settled_transaction_delta r pr v pWin measured ∧
+    settled_transaction_delta r pr (v + bias) pWin measured =
+      measured - resource_cost r pr := by
+  unfold settled_transaction_delta
+  rw [transaction_price_eq, transaction_price_eq]
+  exact ⟨by ring, by ring⟩
+
 end Benefuture.Economy

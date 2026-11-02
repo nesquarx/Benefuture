@@ -1167,4 +1167,190 @@ theorem survivor_quantile_floor_rises_on_removal :
         have h5' : ¬ (5:ℝ) ≤ x := h5
         simp [Finset.filter_insert, Finset.filter_singleton, h0, h5', h7]
 
+/- --- 10. Births, forced additions, and accession (8.52, 8.86) --- -/
+
+/--
+  THEOREM: Chosen additions that lower a floor are not G-admissible (8.86).
+  When an addition is optional (not forced), not acting keeps the pre-addition floors
+  (`statsNotA`); if adding newcomers lowers `minU` or `minH` below `statsNotA`, the plan fails
+  `min_nondecreasing` and is never chosen by G.
+-/
+theorem addition_lowering_floor_inadmissible (gp : GParams) (pop : List ℕ) (cs : List Plan)
+    (c : Plan) (hlow : c.statsA.minU < c.statsNotA.minU ∨ c.statsA.minH < c.statsNotA.minH) :
+    plan_admissible_G c = false ∧ c ∉ goal_G gp pop cs := by
+  have hna : plan_admissible_G c = false := by
+    unfold plan_admissible_G min_nondecreasing Plan.prog progress
+    simp only [Bool.and_eq_false_iff, decide_eq_false_iff_not, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons]
+    right
+    rintro ⟨hu, hh, _⟩
+    rcases hlow with h | h <;> linarith
+  refine ⟨hna, fun hmem => ?_⟩
+  have hfilt := (List.mem_filter.mp (List.argmax_mem hmem)).2
+  rw [hna] at hfilt
+  contradiction
+
+/--
+  [P] Strong per-being trajectory check for forced additions / accession (8.86 addendum):
+  over the long-term horizon `lt`, no existing being ends with lower U or H than under the
+  counterfactual without the plan (`levelsNotA`). Passing dips along the way that close within
+  `lt` count zero in `ha_lt` (`ha_lt_closing_nha`).
+-/
+noncomputable def existing_protected_over_lt (existing : List ℕ) (c : Plan) : Bool :=
+  haveI := Classical.propDecidable
+    (∀ b ∈ existing, (c.levelsNotA b).u ≤ (c.levelsA b).u ∧ (c.levelsNotA b).h ≤ (c.levelsA b).h)
+  decide (∀ b ∈ existing, (c.levelsNotA b).u ≤ (c.levelsA b).u ∧ (c.levelsNotA b).h ≤ (c.levelsA b).h)
+
+/-- [P] Admissibility under the strong accession reading: G-admissible on the whole population and
+    every existing being's long-term trajectory endpoint is preserved. -/
+noncomputable def strong_accession_admissible (existing : List ℕ) (c : Plan) : Bool :=
+  plan_admissible_G c && existing_protected_over_lt existing c
+
+/--
+  [P] Goal G under forced accession (8.86 addendum): chooses the highest-value plan meeting the
+  strong per-being reading when one exists (`degraded = false`), and otherwise falls back to the
+  weak floor reading (`goal_G`) with a loud degradation flag (`degraded = true`).
+-/
+noncomputable def goal_G_accession (gp : GParams) (pop existing : List ℕ) (cs : List Plan) :
+    Option Plan × Bool :=
+  if (cs.filter (strong_accession_admissible existing)).isEmpty then
+    (goal_G gp pop cs, true)
+  else
+    ((cs.filter (strong_accession_admissible existing)).argmax (goal_value gp pop), false)
+
+/--
+  THEOREM: When the strong reading can be met (`degraded = false`), G's accession choice satisfies
+  ↑ℝ and ¬↓(min U, min H, max U) over the combined population AND leaves no existing being lower
+  in U or H over the long-term window than its counterfactual (`levelsNotA`).
+-/
+theorem strong_accession_preserves_existing_beings (gp : GParams) (pop existing : List ℕ)
+    (cs : List Plan) (c : Plan)
+    (h : goal_G_accession gp pop existing cs = (some c, false)) :
+    reality_enhancement_delta c.eval.scopeBefore c.eval.scopeAfter ≥ 0 ∧
+      0 ≤ c.prog 1 ∧ 0 ≤ c.prog 2 ∧ 0 ≤ c.prog 3 ∧
+      (∀ b ∈ existing, (c.levelsNotA b).u ≤ (c.levelsA b).u ∧ (c.levelsNotA b).h ≤ (c.levelsA b).h) ∧
+      ∀ d ∈ cs.filter (strong_accession_admissible existing), goal_value gp pop d ≤ goal_value gp pop c := by
+  unfold goal_G_accession at h
+  split_ifs at h with hemp
+  · simp at h
+  · injection h with hc _
+    have hm := (List.mem_filter.mp (List.argmax_mem hc)).2
+    simp only [strong_accession_admissible, plan_admissible_G, min_nondecreasing,
+      is_eligible_action, existing_protected_over_lt, Bool.and_eq_true, decide_eq_true_eq] at hm
+    exact ⟨hm.1.1, hm.1.2.1, hm.1.2.2.1, hm.1.2.2.2, hm.2,
+      fun d hd => List.le_of_mem_argmax (f := goal_value gp pop) hd hc⟩
+
+/--
+  THEOREM: Accession fallback never stalls and logs degradation loudly (8.86 addendum).
+  Whenever any G-admissible plan (such as inaction) is available, `goal_G_accession` returns a
+  choice; if no plan meets the strong per-being reading, it sets `degraded = true` and falls back
+  to `goal_G` over the combined population's floors.
+-/
+theorem accession_fallback_never_stalls (gp : GParams) (pop existing : List ℕ)
+    (cs : List Plan) (idle : Plan) (hi : idle ∈ cs) (ha : plan_admissible_G idle = true) :
+    (goal_G_accession gp pop existing cs).1 ≠ none ∧
+      ((cs.filter (strong_accession_admissible existing)).isEmpty →
+        goal_G_accession gp pop existing cs = (goal_G gp pop cs, true)) := by
+  refine ⟨?_, fun hemp => by simp [goal_G_accession, hemp]⟩
+  unfold goal_G_accession
+  split_ifs with hemp
+  · exact goal_G_some gp pop cs idle hi ha
+  · intro hnone
+    rw [List.argmax_eq_none] at hnone
+    simp [hnone] at hemp
+
+/--
+  THEOREM: Under accession, an uplift plan that raises newcomers while protecting every existing
+  being over `lt` strictly beats inaction (8.86).
+-/
+theorem accession_uplift_beats_inaction (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp)
+    (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (pop existing : List ℕ) (cs : List Plan) (up idle c : Plan)
+    (hup : up ∈ cs) (hupa : strong_accession_admissible existing up = true)
+    (hs : idle.statsA = idle.statsNotA) (hl : idle.levelsA = idle.levelsNotA)
+    (hle : ∀ b ∈ pop, idle.value b ≤ up.value b) (hlt : ∃ b ∈ pop, idle.value b < up.value b)
+    (hD : 0 ≤ dist_score gp pop up)
+    (hc : (goal_G_accession gp pop existing cs).1 = some c) : c ≠ idle := by
+  intro hcid
+  unfold goal_G_accession at hc
+  have hmem : up ∈ cs.filter (strong_accession_admissible existing) := List.mem_filter.mpr ⟨hup, hupa⟩
+  have hne : (cs.filter (strong_accession_admissible existing)).isEmpty = false :=
+    List.isEmpty_eq_false_iff.mpr (List.ne_nil_of_mem hmem)
+  rw [hne] at hc
+  simp only [Bool.false_eq_true, ↓reduceIte] at hc
+  have hmax := List.le_of_mem_argmax (f := goal_value gp pop) hmem hc
+  have hstrict := goal_value_strict_mono gp hw hqp hqm hk hl0 hl1 pop up idle hle hlt
+    (by rw [inaction_dist_zero gp pop idle hqp hqm hs hl]; exact hD)
+  rw [hcid] at hmax
+  linarith
+
+/- --- 11. Settlement removes the gain from overstated predictions (8.86 addendum, item 3) --- -/
+
+/--
+  [R] Total net payout after escrow settlement (L84, L86, 8.52):
+  At t₀ the actor receives the upfront share `pWin * predicted` less `cost` (with `(1 - pWin) * predicted`
+  held in escrow); at settlement the measured outcome replaces the upfront advance via the
+  settlement adjustment `measured - pWin * predicted`.
+-/
+def settled_payout (predicted pWin measured cost : ℝ) : ℝ :=
+  (pWin * predicted - cost) + (measured - pWin * predicted)
+
+/--
+  THEOREM (Settlement Theorem, 8.86 addendum): Settling on measured outcomes removes the gain from
+  overstated predictions. For any true value `v`, overstatement `bias`, upfront confidence `pWin`,
+  and measurement `measured`, the settled payout is `measured - cost`, identical to stating `v`
+  honestly.
+-/
+theorem settlement_removes_overstatement_gain (v bias pWin measured cost : ℝ) :
+    settled_payout (v + bias) pWin measured cost = settled_payout v pWin measured cost ∧
+      settled_payout (v + bias) pWin measured cost = measured - cost := by
+  unfold settled_payout
+  exact ⟨by ring, by ring⟩
+
+/--
+  THEOREM: Given unbiased measurement (noise errors across realisations sum to zero), the sum of
+  settled payouts under any prediction bias `bias` equals `n * (v - cost)`, removing any expected
+  gain from overstatement.
+-/
+theorem unbiased_settlement_removes_expected_gain (v bias pWin cost : ℝ) (errors : List ℝ)
+    (hunbiased : errors.sum = 0) :
+    (errors.map (fun e => settled_payout (v + bias) pWin (v + e) cost)).sum =
+      errors.length * (v - cost) := by
+  have h1 : errors.map (fun e => settled_payout (v + bias) pWin (v + e) cost) =
+      errors.map (fun e => (v - cost) + e) := by
+    apply List.map_congr_left
+    intro e _
+    unfold settled_payout
+    ring
+  rw [h1]
+  have hsum : ∀ l : List ℝ, (l.map (fun e => (v - cost) + e)).sum = l.length * (v - cost) + l.sum := by
+    intro l
+    induction l with
+    | nil => simp
+    | cons a t ih =>
+      simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.cast_add, Nat.cast_one]
+      rw [ih]
+      ring
+  rw [hsum errors, hunbiased, add_zero]
+
+/--
+  [R] Birth escrow settlement (8.52): a causer posts `predShortfall + (1 - conf) * floorCost` at
+  birth and receives back the hold minus the measured shortfall at maturity.
+-/
+def birth_settled_liability (predShortfall conf floorCost measuredShortfall : ℝ) : ℝ :=
+  let hold := predShortfall + (1 - conf) * floorCost
+  hold - (hold - measuredShortfall)
+
+/--
+  THEOREM: Birth escrow settlement removes any gain from understating predicted shortfall (or
+  gaming the birth model pool, 8.52): net liability after settlement equals `measuredShortfall`,
+  independent of `predShortfall` and `conf`.
+-/
+theorem birth_settlement_removes_overstatement_gain
+    (trueShortfall bias conf floorCost measuredShortfall : ℝ) :
+    birth_settled_liability (trueShortfall - bias) conf floorCost measuredShortfall =
+      measuredShortfall := by
+  unfold birth_settled_liability
+  ring
+
 end Benefuture.Proposed

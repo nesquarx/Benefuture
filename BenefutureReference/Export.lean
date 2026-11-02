@@ -302,4 +302,19 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_decayed_mean_se] def decayedMeanSe (xs ages : FloatArray) (h : Float) : FloatArray :=
   ⟨decayed_mean_se_ref xs.data ages.data h⟩
 
+@[export bf_decayed_record_credence] def decayedRecordCredence (predicted : Float) (errors ages : FloatArray) (h cap : Float) : Float :=
+  decayed_record_credence_ref predicted errors.data ages.data h cap
+
+@[export bf_decayed_rms] def decayedRms (errors ages : FloatArray) (halflife : Float) : Float :=
+  decayed_rms_ref errors.data ages.data halflife
+
+@[export bf_accession_admissible] def accessionAdmissible (dScope dMinU dMinH dMaxU : Float) (existingDeltaU existingDeltaH : FloatArray) : UInt8 :=
+  if accession_admissible_ref dScope dMinU dMinH dMaxU existingDeltaU.data existingDeltaH.data then 1 else 0
+
+@[export bf_ha_wt_params] def haWtParams (severities weights : FloatArray) (lambda kappa qHarm : Float) : Float :=
+  HaWt_params_ref (pairs severities weights) lambda kappa qHarm
+
+@[export bf_fr_permissible_params] def frPermissibleParams (irreparable irreversible longterm passing timeLoss confidence thConf thHigh sIrr sIrv sLt sPass sTime : Float) : UInt8 :=
+  if fr_permissible_params_ref irreparable irreversible longterm passing timeLoss confidence thConf thHigh sIrr sIrv sLt sPass sTime then 1 else 0
+
 end BenefutureReference.Export
