@@ -193,6 +193,54 @@ def choice_skill_ref (credences modelCredences outcomes : Array Float) : Float :
   if bm == 0.0 then return 0.0
   return 1.0 - bc / bm
 
+/-- The half-life over which a domain's accuracy is averaged (author ruling 8.85): `refHalflife` steps at
+    the reference transaction rate `refRate`, scaled by `(refRate / rate) ^ mute`. With `mute` = 1 every
+    domain averages over the same effective number of records; with 0, over the same time. Between them
+    (muted), a very busy domain keeps a longer horizon than a fixed record count would give it (less
+    volatile) and a very slow one a shorter one (it pivots faster). No transactions yet: the reference. -/
+def decay_halflife_ref (rate refRate refHalflife mute : Float) : Float :=
+  if rate ≤ 0.0 || refRate ≤ 0.0 then refHalflife else refHalflife * Float.pow (refRate / rate) mute
+
+/-- A record's weight at `age` steps under half-life `h`: 2^(−age / h). -/
+def decay_weight_ref (age h : Float) : Float := Float.pow 2.0 (-(max age 0.0) / h)
+
+/-- Accuracy as the quality of credences (`credence_accuracy_ref`), each record weighted by its age
+    under half-life `h` (author ruling 8.85): 1 − weighted Brier / 0.25, floored at 0; no record, 0. -/
+def decayed_accuracy_ref (credences outcomes ages : Array Float) (h : Float) : Float := Id.run do
+  let n := min credences.size (min outcomes.size ages.size)
+  let mut sw := 0.0
+  let mut sb := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    let e := credences[i]! - outcomes[i]!
+    sw := sw + w
+    sb := sb + w * e * e
+  if sw ≤ 0.0 then return 0.0
+  return max 0.0 (1.0 - (sb / sw) / 0.25)
+
+/-- The age-weighted mean of `xs` and its standard error over the effective number of records
+    (Σw)² / Σw² (Kish), returned as #[mean, se]; fewer than two effective records give an infinite
+    standard error. For comparing models whose records are weighted by age (8.85). -/
+def decayed_mean_se_ref (xs ages : Array Float) (h : Float) : Array Float := Id.run do
+  let n := min xs.size ages.size
+  let mut sw := 0.0
+  let mut sw2 := 0.0
+  let mut sx := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    sw := sw + w
+    sw2 := sw2 + w * w
+    sx := sx + w * xs[i]!
+  if sw ≤ 0.0 then return #[0.0, 1.0e300]
+  let m := sx / sw
+  let mut sv := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    sv := sv + w * (xs[i]! - m) ^ 2
+  let neff := sw * sw / sw2
+  if neff < 2.0 then return #[m, 1.0e300]
+  return #[m, Float.sqrt (sv / sw * neff / (neff - 1.0) / neff)]
+
 /-- The ratchet on a domain's status bar (author ruling 8.84): when at least `k` models have accuracy at
     or above the bar, it rises to the `k`-th best accuracy less `margin`, so `k` models still clear it;
     otherwise it holds. It never falls by this rule. -/

@@ -104,6 +104,40 @@ function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
 end
 
 """
+    decay_halflife(rate; ref_rate, ref_halflife, mute) -> steps
+
+The half-life over which a domain's accuracy is averaged (Lean `decay_halflife_ref`; author ruling
+8.85): `ref_halflife * (ref_rate / rate)^mute`; the reference with no transactions yet.
+"""
+function decay_halflife(rate::Real; ref_rate::Real, ref_halflife::Real, mute::Real)
+    check(isfinite(rate) && rate >= 0 && ref_rate > 0 && ref_halflife > 0 && 0 <= mute <= 1, "rate ≥ 0, positive references, mute in [0, 1]")
+    ccall(sym(:bf_decay_halflife), Float64, (Float64, Float64, Float64, Float64), rate, ref_rate, ref_halflife, mute)
+end
+
+"""
+    decayed_accuracy(credences, outcomes, ages, h) -> accuracy
+
+Accuracy as the quality of credences, each record weighted by 2^(−age/h) (Lean `decayed_accuracy_ref`; 8.85).
+"""
+function decayed_accuracy(credences, outcomes, ages, h::Real)
+    check(length(credences) == length(outcomes) == length(ages) && h > 0, "one credence, outcome and age per record; positive half-life")
+    ccall(sym(:bf_decayed_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)), floatarray(collect(Float64, ages)), h)
+end
+
+"""
+    decayed_mean_se(xs, ages, h) -> (mean, se)
+
+Age-weighted mean and its standard error over the effective number of records (Lean `decayed_mean_se_ref`; 8.85).
+"""
+function decayed_mean_se(xs, ages, h::Real)
+    check(length(xs) == length(ages) && h > 0, "one age per value; positive half-life")
+    r = lean_floats(ccall(sym(:bf_decayed_mean_se), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+                          floatarray(collect(Float64, xs)), floatarray(collect(Float64, ages)), h))
+    (r[1], r[2])
+end
+
+"""
     ratchet_bar(accuracies, bar; k, margin) -> bar
 
 The ratchet on a domain's status bar (Lean `ratchet_bar_ref`; author ruling 8.84): when at least `k`

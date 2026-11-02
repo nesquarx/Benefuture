@@ -58,7 +58,12 @@ struct M3cParams
     max_credence::Float64      # the greatest credence any model may state (8.33: truth levels never reach 1; governed)
     ratchet_k::Int             # models that must clear a domain's bar before it ratchets up (8.84; governed)
     ratchet_margin::Float64    # the ratcheted bar sits this far under the k-th best accuracy (8.84; governed)
-    ratchet_window::Int        # records over which the ratchet monitors a model's accuracy (8.84; governed)
+    ratchet_horizon::Float64   # the ratchet's half-life as a multiple of the domain's accuracy half-life (8.84, 8.85; governed)
+    accuracy_rule::Symbol      # :decay (8.85: age-weighted, half-life by transaction rate) or :window (fixed records; limiting case)
+    acc_halflife::Float64      # accuracy half-life in steps at the reference transaction rate (8.85; governed)
+    acc_rate_ref::Float64      # the reference transaction rate, records per step (8.85; governed)
+    acc_mute::Float64          # how far the half-life follows the rate: 1 a fixed record count, 0 a fixed time (8.85; governed)
+    rate_halflife::Float64     # half-life in steps of a domain's measured transaction rate (8.85; governed)
     loud::Bool                 # warn once per kind of degradation (the trace records them either way)
     credence_rule::Symbol      # :normal (credence_ref over the record's RMS error) or :record ([P], record_credence_ref)
     min_records::Int
@@ -200,7 +205,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_window::Integer = 1000, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -231,7 +236,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_window >= 1 && credence_rule in (:normal, :record),
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && credence_rule in (:normal, :record),
           "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal or :record")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
@@ -283,7 +288,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_window, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -453,8 +458,8 @@ function run_m3c(p::M3cParams; seed)
     # its value error, with what an audit needs to repair it (8.38): the actor, the currency, the
     # prediction, the beings it touched, the measured value, the track-record corrections then (the
     # actor's, and the mean of other actors'), and whether an audit has repaired it.
-    Rec = NamedTuple{(:credence, :outcome, :err, :actor, :c, :pr, :mask, :measured, :corr, :peer_corr, :fixed),
-                     Tuple{Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool}}
+    Rec = NamedTuple{(:credence, :outcome, :err, :actor, :c, :pr, :mask, :measured, :corr, :peer_corr, :fixed, :step),
+                     Tuple{Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool,Int}}
     lhist, phist = [Rec[] for _ in 1:lmax], [Rec[] for _ in 1:np]
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
     # Each leaf's pool of competing models (L82; 8.42.2): the bootstrap model first (its track-record
@@ -476,7 +481,29 @@ function run_m3c(p::M3cParams; seed)
     # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
     # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
     window_of(h) = @view h[max(1, end - p.window + 1):end]
-    acc_of(h) = isempty(h) ? 0.0 : credence_accuracy([x.credence for x in window_of(h)], [x.outcome for x in window_of(h)])
+    # Accuracy is averaged over time, each record weighted by its age (author ruling 8.85): half-life
+    # `hl` steps, set per domain from its measured transaction rate (`decay_halflife`). Records older
+    # than 40 half-lives weigh under 1e-12 and are skipped (numerical, not a threshold). `:window`, the
+    # last `window` records, is the limiting case kept for comparison.
+    now = Ref(0)
+    function acc_of(h, hl)
+        isempty(h) && return 0.0
+        p.accuracy_rule == :window && return credence_accuracy([x.credence for x in window_of(h)], [x.outcome for x in window_of(h)])
+        i0 = searchsortedfirst(h, now[] - 40hl; by = x -> x isa Real ? x : x.step)
+        r = @view h[i0:end]
+        isempty(r) ? 0.0 : decayed_accuracy([x.credence for x in r], [x.outcome for x in r], [now[] - x.step for x in r], hl)
+    end
+    # Each domain's transaction rate: records per step, an exponentially weighted average with
+    # half-life `rate_halflife`, corrected for its start; parents follow leaves in `lmax + q`.
+    rate_sum, rate_norm, rate_count = zeros(lmax + np), Ref(0.0), zeros(Int, lmax + np)
+    rate_of(c) = rate_norm[] > 0 ? rate_sum[c] / rate_norm[] : 0.0
+    function update_rates!()
+        d = 2.0^(-1 / p.rate_halflife)
+        rate_sum .= d .* rate_sum .+ (1 - d) .* rate_count
+        rate_norm[] = d * rate_norm[] + (1 - d)
+        fill!(rate_count, 0)
+    end
+    hl_of(c) = decay_halflife(rate_of(c); ref_rate = p.acc_rate_ref, ref_halflife = p.acc_halflife, mute = p.acc_mute)
     unc_of(h) = isempty(h) ? Inf : sqrt(mean(x.err^2 for x in window_of(h)))
     # Model error and bias are relative to the domain's natural spread of outcomes (8.35).
     function mbias(j, m)
@@ -486,8 +513,8 @@ function run_m3c(p::M3cParams; seed)
     end
     lb(j) = mbias(j, topm(j))
     pb(q) = pbias[q] * t.spread
-    leaf_acc(j) = acc_of(lhist[j])
-    parent_acc(q) = acc_of(phist[q])
+    leaf_acc(j) = acc_of(lhist[j], hl_of(j))
+    parent_acc(q) = acc_of(phist[q], hl_of(lmax + q))
     # A currency's credence for a prediction: from the predicted value and its model's uncertainty.
     # Credence for an actor's action comes from the model's record on that actor (8.29: models
     # estimate from track record), once it has a few entries; before that, from its record overall.
@@ -529,20 +556,16 @@ function run_m3c(p::M3cParams; seed)
     end
     function ratchet!()
         for j in 1:nleaves()
-            # "Operating above" means sustained operation (author, 8.84): accuracy over a rolling window
-            # longer than the one that gauges eligibility (`ratchet_window` records, a full window only).
-            # Over the short window, models scored on the same actions swing together (0.86 to 0.99) and
-            # the bar locked at a quiet stretch the whole pool then fell below.
-            accs = Float64[]
-            for m in mpool[j]
-                length(m.hist) >= p.ratchet_window || continue
-                h = @view m.hist[end - p.ratchet_window + 1:end]
-                push!(accs, credence_accuracy([x.credence for x in h], [x.outcome for x in h]))
-            end
+            # "Operating above" means sustained operation (author, 8.84): accuracy averaged over a horizon
+            # `ratchet_horizon` times the domain's own (8.85), from models observed across that horizon
+            # (a younger model's short record, read whole, locks the bar at its luck). Over the short horizon, models scored on the same actions swing together (0.86 to
+            # 0.99) and the bar locked at a quiet stretch the whole pool then fell below.
+            hr = p.ratchet_horizon * hl_of(j)
+            accs = [acc_of(m.hist, hr) for m in mpool[j] if length(m.hist) >= p.takeover_records && now[] - m.hist[1].step >= hr]
             lfloor[j] = ratchet_bar(accs, leaf_bar(j); k = p.ratchet_k, margin = p.ratchet_margin)
         end
     end
-    bar_trace = Float64[]
+    bar_trace = Float64[]; acc_trace = Vector{Float64}[]; rate_trace = Vector{Float64}[]
     leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
                                    novel_threshold = p.novel_threshold, min_records = p.min_records)
     parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
@@ -677,12 +700,13 @@ function run_m3c(p::M3cParams; seed)
                                       mean(pr.dh[mask]) + corr[2] - mean(seen.dh[mask])))
             end
             (credence = cred(c, pr; hist, sharp), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
-             mask = mask, measured = measured, corr = corr, peer_corr = peer, fixed = false)
+             mask = mask, measured = measured, corr = corr, peer_corr = peer, fixed = false, step = now[])
         end
         # A model that did not quote is scored on the estimate it would have quoted: fooled by the
         # actor's claims and corrected by its track record, as every quote is.
         for j in 1:nleaves()
             st[j] > 0 || continue
+            rate_count[j] += 1
             push!(lhist[j], sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, tkey(j)), quoted, j), tkey(j)))
             # Every challenger in the pool is scored on the same logged action (the open log).
             for (k, m) in enumerate(mpool[j])
@@ -692,8 +716,8 @@ function run_m3c(p::M3cParams; seed)
             end
         end
         for q in 1:np
-            pm[q] >= p.parent_threshold &&
-                push!(phist[q], sc(col_parent(q), get(() -> fooled(predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), a, plan, col_parent(q)), quoted, col_parent(q))))
+            pm[q] >= p.parent_threshold && (rate_count[lmax + q] += 1;
+                push!(phist[q], sc(col_parent(q), get(() -> fooled(predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), a, plan, col_parent(q)), quoted, col_parent(q)))))
         end
     end
     # Repair of an established deception (8.38): every unrepaired record of the actor is re-scored
@@ -760,7 +784,8 @@ function run_m3c(p::M3cParams; seed)
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
     for step in 1:t.steps
-        ratchet!(); push!(bar_trace, leaf_bar(1))
+        now[] = step; update_rates!()
+        ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
         scoring_only = step <= p.init_steps
         cur[] = step
         # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
@@ -1434,12 +1459,15 @@ function run_m3c(p::M3cParams; seed)
                     if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
                         cands = [k for k in eachindex(mpool[j]) if k != top[j]]
                         scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
-                        drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j][k].hist) for k in scored])]
+                        drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j][k].hist, hl_of(j)) for k in scored])]
                         deleteat!(mpool[j], drop); drop < top[j] && (top[j] -= 1)
                     end
                 end
                 length(mpool[j]) > 1 || continue
                 brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]  # Lean `credence_score_ref`
+                # Under 8.85 each record weighs by its age, the standard error over the effective count.
+                hlj = hl_of(j)
+                dms(h) = decayed_mean_se([credence_score(x.credence, x.outcome) for x in h], [now[] - x.step for x in h], hlj)
                 # A challenger competes once its record spans `takeover_records` (8.58-b): picking the
                 # best of several on a few records rewards extremised credences (Witkowski et al. 2023).
                 ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records]]
@@ -1447,6 +1475,10 @@ function run_m3c(p::M3cParams; seed)
                 sc_ = [brier(mpool[j][k].hist) for k in ks]
                 ms = [isempty(x) ? 0.0 : mean(x) for x in sc_]
                 ses = [length(x) < 2 ? 1e12 : std(x) / sqrt(length(x)) for x in sc_]
+                if p.accuracy_rule == :decay
+                    d_ = [dms(mpool[j][k].hist) for k in ks]
+                    ms, ses = first.(d_), last.(d_)
+                end
                 w = select_candidate(ms, ses; z = p.model_z)
                 if w != 1
                     top[j] = ks[w]; lhist[j] = topm(j).hist; takeovers[] += 1
@@ -1629,7 +1661,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], bar_trace = bar_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+               explored = explored[], bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],

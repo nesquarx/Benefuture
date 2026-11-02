@@ -172,11 +172,9 @@ end
 # world, models that can exceed the bootstrap bar of 0.9).
 @testset "Probe: the status bar ratchets up when enough models clear it, and never falls" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
-    # The probe's world names its monitoring window (500 records over 800 steps); the default (1000) is
-    # longer than its challengers' records.
     w(; kw...) = M3cParams(ToyParams(n = 60, steps = 800, plans = 8), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
                     [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY...,
-                    p_new_model = 0.1, takeover_records = 30, ratchet_window = 500, kw...)
+                    p_new_model = 0.1, takeover_records = 30, ratchet_horizon = 10.0, kw...)   # a low-noise world names a shorter horizon
     for seed in 1:2
         tr = run_m3c(w(); seed)
         b = tr.bar_trace                                         # leaf 1's bar, step by step
@@ -185,15 +183,41 @@ end
         @test tr.lane_halted == 0                                 # pricing goes on
         @test run_m3c(w(ratchet_k = 0); seed).bar_trace[end] == b[1]   # red baseline: without it the bar stays
     end
-    # Counterexample: where models swing together between windows (the better-models world, high noise),
-    # a bar read over the short window locked at a quiet stretch and own-currency pricing fell from 0.79 to
-    # 0.38; over the default window it does not fire, and the run is the run without it.
+    # Counterexample: where models swing together over short horizons (the better-models world, high
+    # noise), a bar read over the eligibility horizon locked at a quiet stretch and own-currency pricing
+    # fell from 0.79 to 0.38; over the default (twenty times longer) it leaves pricing as without it.
     nw(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
         [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8], [1, 1, 2, 2], trues(4);
         λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6,
         σ_coarse = 0.75, p_new_model = 0.05, kw...)
-    on, off = run_m3c(nw(); seed = 1), run_m3c(nw(ratchet_k = 0); seed = 1)
-    @test on.priced_leaf == off.priced_leaf && all(on.leaf_bars .== 0.9)
     own(tr) = mean(tr.priced_leaf[i] == tr.true_leaf[i] for i in eachindex(tr.chosen_step) if tr.chosen_step[i] >= 100)
-    @test own(run_m3c(nw(ratchet_window = 100); seed = 1)) < own(on) - 0.2   # the short window locks (0.36 against 0.84)
+    on, off = run_m3c(nw(); seed = 1), run_m3c(nw(ratchet_k = 0); seed = 1)
+    @test own(on) >= own(off) - 0.02 && all(on.leaf_bars .<= 0.905)
+    @test own(run_m3c(nw(ratchet_horizon = 1.0); seed = 1)) < own(on) - 0.2   # the short horizon locks
+end
+
+# Accuracy averaged over time, half-life by transaction rate, muted (author ruling 8.85). The smallest
+# world: one model's records at a slow rate (1 per step) and a busy one (40 per step), the same model
+# turning miscalibrated at step 200 (credence 0.9 throughout; outcomes true at 0.9, then at 0.5). Red on
+# the outcome under the fixed record window (the last 100 records, the limiting case): the slow domain
+# registers the change later, and the busy one's accuracy swings with every few records.
+@testset "Probe: time-decayed accuracy, half-life by transaction rate (8.85)" begin
+    using Random
+    hl(r) = decay_halflife(r; ref_rate = 5.0, ref_halflife = 7.0, mute = 0.5)
+    stream(rate, seed) = (rng = Xoshiro(seed); [(t, 0.9, rand(rng) < (t < 200 ? 0.9 : 0.5) ? 1.0 : 0.0) for t in 1:400 for _ in 1:rate])
+    win(recs, t) = (r = [x for x in recs if x[1] <= t]; r = r[max(1, end - 99):end]; credence_accuracy(getindex.(r, 2), getindex.(r, 3)))
+    dec(recs, t, h) = (r = [x for x in recs if x[1] <= t]; decayed_accuracy(getindex.(r, 2), getindex.(r, 3), [t - x[1] for x in r], h))
+    mid = (credence_accuracy([0.9], [1.0]) * 0.9 + credence_accuracy([0.9], [0.0]) * 0.1) / 2   # half the expected accuracy before
+    lag(f) = something(findfirst(t -> f(t) < mid, 200:400), 999)
+    # The rule itself: muted between a fixed record count (half-life ∝ 1 / rate) and a fixed time.
+    @test hl(1.0) < 7.0 * 5.0 / 1.0 && hl(1.0) > 7.0                # slow: shorter than a fixed count, longer than a fixed time
+    @test hl(40.0) > 7.0 * 5.0 / 40.0 && hl(40.0) < 7.0             # busy: longer than a fixed count, shorter than a fixed time
+    @test hl(0.0) == 7.0                                             # no transactions yet: the reference
+    for seed in 1:3
+        slow, busy = stream(1, seed), stream(40, seed)
+        # The slow domain pivots faster than over its last 100 records (lags in steps: 8 against 13 in seed 1).
+        @test lag(t -> dec(slow, t, hl(1.0))) < lag(t -> win(slow, t))
+        # The busy domain is steadier than over its last 100 records.
+        @test std(diff([dec(busy, t, hl(40.0)) for t in 100:199])) < std(diff([win(busy, t) for t in 100:199]))
+    end
 end

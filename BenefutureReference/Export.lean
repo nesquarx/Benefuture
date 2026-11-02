@@ -294,4 +294,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_ratchet_bar] def ratchetBar (accuracies : FloatArray) (bar : Float) (k : USize) (margin : Float) : Float :=
   ratchet_bar_ref accuracies.data bar k.toNat margin
 
+-- 8.85 time-decayed accuracy
+@[export bf_decay_halflife] def decayHalflife (rate refRate refHalflife mute : Float) : Float :=
+  decay_halflife_ref rate refRate refHalflife mute
+@[export bf_decayed_accuracy] def decayedAccuracy (credences outcomes ages : FloatArray) (h : Float) : Float :=
+  decayed_accuracy_ref credences.data outcomes.data ages.data h
+@[export bf_decayed_mean_se] def decayedMeanSe (xs ages : FloatArray) (h : Float) : FloatArray :=
+  ⟨decayed_mean_se_ref xs.data ages.data h⟩
+
 end BenefutureReference.Export
