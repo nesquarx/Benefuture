@@ -2117,3 +2117,30 @@ trajectory check, an admissible plan leaves no existing being lower over the win
 settlement theorem (settling on measured outcomes removes the gain from overstated predictions, given
 unbiased measurement): independent and nearer to an encoding check, so it adds the least new
 understanding of the three.
+
+**8.87 Author clarification: history is replayed for counterfactuals, not fitted.** Benefuture will
+not be curve-fitted to history, except where a real institution is modelled as a coarse Benefuture,
+and then only to calibrate that approximation. What history is for: what Benefuture would have
+chosen in a documented situation on the information then available, whether that differs from what
+was chosen, and how the outcome would have differed counterfactually. This is done for historically
+good and bad decisions alike. Built into `docs/DATA.md` §16a:
+- information sets as of the decision;
+- option sets without anachronism;
+- G through the Lean reference at frozen governed defaults;
+- counterfactual outcomes by competing methods with intervals;
+- judgement by the success pattern;
+- cases chosen by criteria written down beforehand, read in four cells (outcome by agreement) so
+  that a reasonable decision with bad luck is not scored as an error;
+- falsifiers stated in advance.
+
+The forecasting replay on rolling windows (§16b) becomes the measurement layer: it supplies each
+forecaster's credence on each date. Gaming of the research itself, considered before building:
+- choosing cases where Benefuture looks good, met by pre-stated selection criteria and named famous
+  failures;
+- tuning thresholds per case, met by frozen defaults and re-running every case after any rule change;
+- hindsight leaking into option or information sets, met by voiding a case whose chosen option was
+  not available and known at the time.
+
+Candidate homes: Implementation prototype (a historical-counterfactual phase before score-only
+pilots), Critique addressal (the "it would never have worked" objection), Measurement
+(counterfactual outcomes as a model competition).

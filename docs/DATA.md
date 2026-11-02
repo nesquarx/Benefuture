@@ -616,19 +616,110 @@ fixing the simulation's units first (section 1, Proxy validity).
 
 ---
 
-## 16. Historical forecasting on rolling windows (replay)
+## 16. Historical decisions replayed as-of, and forecasting on rolling windows
 
-**Role.** This is a fourth role, beside calibration, validation of the world and noise ranges:
-**replaying the measurement rules themselves on real forecast records.** Historical forecasts by
-models and people who entered and left a domain are fed, as they became known, through Benefuture's
-own rules. The rules are record credence (8.71), time-decayed accuracy with a rate-adaptive half-life
-(8.85), status bars with the ratchet (8.84), challenger takeover by the significance rule
-(`select_candidate_ref`, `model_z`), and escrow by credence (L84). The replay asks whether those rules
-pick and weigh forecasters better out of sample than plain alternatives. It is the one place where
-today's data tests the rules rather than the simulated world. What it cannot test is incentives:
-historical forecasters did not face Benefuture's payments, so the replay speaks to the rules'
-statistical behaviour, not to how people would respond to them (the Lucas critique). Tournaments and
-markets, where incentives resemble Benefuture's, are the partial exception.
+**Not curve fitting (author, 8.87).** The replay does not try to make Benefuture reproduce history.
+Fitting to history is legitimate only where a real institution is modelled as a coarse Benefuture
+(for example, a central bank's inflation-targeting rule as one metric model backing one domain's
+policy), and then only as calibration of that approximation. The question of interest is
+counterfactual:
+- what Benefuture would have chosen, given what was known at the time;
+- whether that differs from what was actually chosen;
+- how the outcome would have differed.
+
+This is asked of historically good and bad decisions alike.
+
+### 16a. Decision replay (the main question)
+
+**Steps for each case:**
+1. **Information set as-of.** Reconstruct what the decision-makers could know: the forecasts and
+   models then available, data vintages, documented warnings, minutes and transcripts. Nothing later
+   enters. Benefuture's credence in each forecaster is its record up to that date (16b), so the
+   forecasting replay is the measurement layer of the decision replay.
+2. **Option set.** The options actually considered, plus not acting, plus options documented as
+   feasible at the time. No anachronistic options.
+3. **Benefuture's choice.** G (L74) is computed through the Lean reference over the options, from
+   each option's predicted value per affected group (from the contemporary models, weighted by
+   their records), with the floors, the peak of understanding and harm weighted as specified.
+   Where the decision was collective, it is also run through expertise- and impact-weighted voting,
+   weighting experts by their records as of then. Thresholds sit at governed defaults, frozen before
+   any case is opened. No new rule is introduced for a case; a case that seems to need one is a
+   finding (BACKPROPAGATION) and is re-run on every case.
+4. **Counterfactual outcome.** Where Benefuture agrees with the actual choice, the outcome is
+   observed. Where it disagrees, the outcome of its choice is estimated by competing methods, each
+   with its interval and truth level, never a single point (this is the measurement market of
+   [Measurement](articles/Measurement.txt), applied to history):
+   - synthetic control and difference-in-differences across comparable units that chose differently
+     (Abadie, Diamond & Hainmueller 2010, https://doi.org/10.1198/jasa.2009.ap08746, who build a
+     weighted comparison unit from untreated ones);
+   - structural models of the domain (epidemic models for interventions, macroeconomic models for
+     monetary policy);
+   - conditional forecasts made at the time for the option not taken, where they exist.
+
+   The causal reading follows Pearl (2009, https://doi.org/10.1017/CBO9780511803161), who
+   formalises counterfactuals over structural causal models; where methods disagree, the spread is
+   reported, not resolved.
+5. **Judged by the success pattern,** not a total: floors and medians of the affected population,
+   the deepest single-group harm, and irreparable harm (deaths, extinctions, lost knowledge),
+   separately.
+
+**Against hindsight.** Judging decisions by their outcomes is a documented bias (Baron & Hershey 1988,
+https://doi.org/10.1037/0022-3514.54.4.569, who found the same decision rated worse when it turned out
+badly), as is believing the outcome was foreseeable (Fischhoff 1975,
+https://doi.org/10.1037/0096-1523.1.3.288). The replay guards against both:
+- **Case selection by criteria, written down before any case is opened.** All decisions of a kind in
+  a period, or matched pairs of units that chose differently, plus famous successes and failures
+  named in advance. Never cases picked because Benefuture would have done well.
+- **Ex ante quality kept apart from outcome.** Each case is classed on two axes, actual outcome
+  (good or bad) and Benefuture's agreement (agrees or differs), giving four cells. A reasonable
+  decision that met bad luck should find Benefuture agreeing, which counts in its favour, not against
+  it. A lucky bad decision should find it differing.
+- **Falsifiers, stated in advance.** Benefuture would have chosen an option that history shows
+  catastrophic on the information then available. Or it rejects decisions judged good both ex ante
+  and ex post, without a better option it could have known.
+- **Held-out cases** for every finding that changes a rule.
+
+**Case families**, chosen for rich as-of records and comparable units, with both good and bad
+decisions in each:
+1. **Pandemic interventions, 2020–2022** (strongest: many units, contemporary forecasts, measured
+   outcomes). Sources: Oxford COVID-19 Government Response Tracker (Hale et al. 2021,
+   https://doi.org/10.1038/s41562-021-01079-8; https://github.com/OxCGRT/covid-policy-tracker), the
+   COVID-19 Forecast Hubs (16b) as the information set, and excess mortality and testing from Our
+   World in Data (https://github.com/owid/covid-19-data). The cases are early against late action and
+   testing against none, including school closures, whose net effect is contested.
+2. **Monetary policy.** FOMC decisions with the Greenbook and Survey of Professional Forecasters as
+   the information set (16b; transcripts https://www.federalreserve.gov/monetarypolicy/fomc_historical.htm).
+   Cases include the 1970s inflation and its ending, and September 2008. Here a central bank is
+   also an institution to model as a coarse Benefuture, the one place fitting is allowed.
+3. **Single high-stakes technical decisions** with fully documented information sets. Bad: the
+   Challenger launch (Rogers Commission, https://history.nasa.gov/rogersrep/genindex.htm), where the
+   O-ring temperature data was available. Good: the 1960s US refusal of thalidomide. These are small
+   in number but sharp tests of whether G with harm tiers and the debatable-escape trial refuses
+   irreparable risk on thin evidence.
+4. **Environmental and health regulation over decades.** Good: the Montreal Protocol
+   (https://ozone.unep.org/). Slow: the phase-out of leaded petrol and tobacco regulation. These
+   test the long horizons (8.64) and harm to beings not yet present.
+5. **Development and rollout precedents** cited by [Implementation prototype](articles/Implementation%20prototype.txt):
+   M-Pesa, Porto Alegre, Kerala, Estonia, against failed top-down programmes. These test the phased,
+   score-only rollout.
+
+**Readings:**
+- agreement rate with actual decisions, per cell of the four (outcome by agreement);
+- for disagreements, the estimated difference in outcome by the success pattern, with intervals
+  across methods;
+- the share of disagreements where Benefuture's choice was available and known at the time (it
+  should be all; any other is a leak of hindsight and voids the case).
+
+### 16b. Forecasting on rolling windows (the measurement layer)
+
+**Role.** Historical forecasts by models and people who entered and left a domain are fed, as they
+became known, through Benefuture's own measurement rules. These rules give each forecaster the credence
+the decision replay (16a) uses on each date. They are record credence (8.71), time-decayed accuracy
+with a rate-adaptive half-life (8.85), status bars with the ratchet (8.84), challenger takeover by the
+significance rule (`select_candidate_ref`, `model_z`), and escrow by credence (L84). The comparison is
+whether they pick and weigh forecasters better out of sample than plain alternatives. Like 16a, this
+tests the rules rather than fitting them. It says nothing about incentives: historical forecasters did
+not face Benefuture's payments (the Lucas critique), with tournaments and markets a partial exception.
 
 **Hypotheses**, stated before measuring (CLAUDE.md, significance testing). Each arm runs on the same
 record stream, which serves as the common random numbers.
@@ -761,10 +852,12 @@ dataset constrains what the simulation currently invents, and how directly it ma
    split of passing against irreparable harm for `irreparable_loss`. Retires "fixed population" and
    "every loss is passing harm".
 
-0. **Historical replay on rolling windows (section 16)**, run beside pick 1 because it shares the
-   Hub data. It tests the measurement rules themselves (R1–R6) on FluSight and the COVID Hubs first,
-   then the surveys of professional forecasters. Retires the default half-life scale and the bootstrap
-   status bars.
+0. **Historical decisions replayed as-of (section 16)**: what Benefuture would have chosen in documented
+   good and bad decisions, how that differs from what was chosen, and the counterfactual outcome
+   (16a). It starts with pandemic interventions, using the COVID-19 Forecast Hubs as the information
+   set. Its measurement layer replays forecasters' records on rolling windows (16b), which shares the
+   Hub data with pick 1. This is not curve fitting, except where a real institution is modelled as a
+   coarse Benefuture.
 
 Later: delegation (DAO graphs and LiquidFeedback, if its data can be obtained) for the M5 pathology
 suite (`docs/SOTA.md` action 3); Community Notes and Polis for contention (`camp_bias`); RAM Legacy
