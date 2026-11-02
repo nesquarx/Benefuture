@@ -112,13 +112,14 @@ ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
 
 @testset "Extremised forecasts: in the economy" begin
-    seeds = 1:3
-    short = [run_m3c(ext_world(takeover_records = 10); seed) for seed in seeds]
-    native = [run_m3c(ext_world(); seed) for seed in seeds]
-    # Here challengers clear a full window before any beats the incumbent significantly: the
-    # takeover-record bar changes nothing materially, and extremists dominate takeovers.
-    @test abs(sum(tr.takeovers for tr in native) - sum(tr.takeovers for tr in short)) <= 1
-    @test sum(tr.takeovers_extreme for tr in native) > sum(tr.takeovers - tr.takeovers_extreme for tr in native)
+    native = [run_m3c(ext_world(); seed) for seed in 1:12]
+    # Extremists dominate takeovers: a regime, the share of takeovers that are extremists' with its
+    # interval (9 of 9 over 12 seeds under time-decayed accuracy, 13 of 13 under the fixed window).
+    ext, all_ = sum(tr.takeovers_extreme for tr in native), sum(tr.takeovers for tr in native)
+    @test proportion_interval(ext, all_).lo > 0.5
+    # Unsupported, so not asserted: that the takeover-record bar (8.58-b) changes nothing here. Under
+    # the fixed window short minus native takeovers was -0.08 ± 0.08 per seed; under time-decayed
+    # accuracy (8.85) +0.42 ± 0.19 (12 paired seeds), neither shown equivalent nor shown different.
     # Finding (8.58-c): the takeovers there are, are extremists'. Not the rank rule: honest credences
     # (`credence_ref`, predicted value over the record's RMS error, no prior) are underconfident in a
     # domain whose outcomes are mostly positive, so a model stating half its uncertainty is better
