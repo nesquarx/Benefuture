@@ -66,7 +66,7 @@ To minimize git merge conflicts:
 | **R5** | Domain Predictability | `main` | Local Agent (`local-agent-mac`) | Domain predictability empirical distributions across 10-20 domain families | `docs/CALIBRATION.md` | **IN PROGRESS** | 2026-11-01 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 
-| **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **IN REVIEW** (branch pushed) | 2026-11-02 |
+| **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 
 *(Add new claims to the table above before beginning work)*
 
