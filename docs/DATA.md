@@ -703,6 +703,29 @@ decisions in each:
    M-Pesa, Porto Alegre, Kerala, Estonia, against failed top-down programmes. These test the phased,
    score-only rollout.
 
+6. **Low-technology decisions, any era.** Cases need not be recent. By progressive complexity
+   (8.88), a coarse Benefuture should still choose well with coarse measurement: rules in place of
+   act-level calculation, parent and fallback models, simple markers (counts of deaths, harvests,
+   prices, literacy). The cases:
+   - **Ragusa's quarantine of 1377** (good; Tognotti 2013, https://doi.org/10.3201/eid1902.120312, a
+     history of quarantine from the plague onward).
+   - **Semmelweis's handwashing, 1847, and its rejection** (good evidence, bad institutional
+     decision; Best & Neuhauser 2004, https://doi.org/10.1136/qshc.2004.010918). His monthly maternal
+     mortality records are a classic low-tech dataset.
+   - **John Snow and the Broad Street pump, 1854** (good; Brody et al. 2000,
+     https://doi.org/10.1016/S0140-6736(00)02442-9, separating the record from the myth).
+   - **The Indian Famine Codes of the 1880s** against the Bengal famine of 1943 (good against bad;
+     Burgess & Donaldson 2010, https://doi.org/10.1257/aer.100.2.449, on how famine deaths responded
+     to weather shocks as railways spread; Sen 1981, https://doi.org/10.1093/0198284632.001.0001, on
+     famine as a failure of entitlements rather than of food supply).
+   - **Adoption of the printing press** across European cities (Dittmar 2011,
+     https://doi.org/10.1093/qje/qjr035, who found that cities adopting printing grew faster). This
+     is an understanding-raising technology with a measured outcome.
+
+   A coarse Benefuture that does worse than the actual actors on low-technology cases where they did
+   well would falsify the progressive-complexity claim. One that only works with modern measurement
+   would mean the fallbacks are decorative.
+
 **Readings:**
 - agreement rate with actual decisions, per cell of the four (outcome by agreement);
 - for disagreements, the estimated difference in outcome by the success pattern, with intervals

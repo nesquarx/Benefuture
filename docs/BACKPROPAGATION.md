@@ -2144,3 +2144,21 @@ forecaster's credence on each date. Gaming of the research itself, considered be
 Candidate homes: Implementation prototype (a historical-counterfactual phase before score-only
 pilots), Critique addressal (the "it would never have worked" objection), Measurement
 (counterfactual outcomes as a model competition).
+
+**8.88 Author clarification: historical cases need not be recent; a coarse Benefuture must work in
+low-technology settings.** Progressive complexity implies that a coarse Benefuture should still
+choose well where measurement and computation are coarse: rules in place of act-level calculation,
+parent and fallback models, simple markers (deaths, harvests, prices, literacy). So the decision replay
+(`docs/DATA.md` §16a, case family 6) includes pre-modern and early-modern decisions: Ragusa's
+quarantine (1377), Semmelweis and his rejection (1847), Snow's Broad Street pump (1854), the Indian
+Famine Codes against the Bengal famine of 1943, and the spread of printing.
+
+This is a testable claim with stated falsifiers: a coarse Benefuture doing worse than the historical
+actors on low-technology cases where they did well, or working only with modern measurement (the
+fallbacks then being decorative). In the simulation it corresponds to the worlds at the coarse end:
+the battery's high-noise severities, parent-only pricing, and the StandCoin lane. A probe at the
+coarse limit could follow: markers only at the parent level, no record-level credence, rules only.
+
+Candidate homes: Progressive complexity (low-technology operation as a stated requirement),
+Implementation prototype (rollout in low-income settings), Critique addressal (the objection that
+Benefuture needs modern infrastructure).
