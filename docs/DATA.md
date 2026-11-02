@@ -733,78 +733,6 @@ decisions in each:
 - the share of disagreements where Benefuture's choice was available and known at the time (it
   should be all; any other is a leak of hindsight and voids the case).
 
-### 16c. Understanding: historical records to forecast and to judge by
-
-Most historical outcome data measures happiness and harm (deaths, income, health). The records below
-measure understanding, always through outputs, as Benefuture requires. They serve three purposes:
-long series of levels, a field's predictive accuracy over time (understanding in its own definition,
-predictive accuracy plus causal explanation less complexity), and the understanding outcomes of
-decisions, for §16a. Links checked 2026-11-02.
-
-**Levels over long horizons** (beyond the post-2000 tests of section 1):
-- **NAEP Long-Term Trend**, US, ages 9, 13 and 17 since 1971 (https://nces.ed.gov/nationsreportcard/ltt/).
-  This is the longest consistent test series, to forecast decades ahead and to judge reforms by.
-- **Barro–Lee educational attainment**, 1950–2015, about 146 countries (Barro & Lee 2013,
-  https://doi.org/10.1016/j.jdeveco.2012.10.001; site **[unreachable]** from this session). It
-  measures schooling, an input to understanding rather than a marker of it.
-- **Numeracy from age heaping**, since about 1600 (A'Hearn, Baten & Crayen 2009,
-  https://doi.org/10.1017/S0022050709001120, who read numeracy from how often people rounded their
-  stated ages). Historical literacy and numeracy series are at Clio-Infra (https://clio-infra.eu/).
-  These are centuries of a coarse floor marker.
-- **Flynn effect**, test-score gains 1909–2013 (Pietschnig & Voracek 2015,
-  https://doi.org/10.1177/1745691615577701, a meta-analysis of about four million participants). A
-  century of a population marker, including its recent slowdown in some countries.
-- **Book production in Europe**, 6th–18th centuries (Buringh & van Zanden 2009,
-  https://doi.org/10.1017/S0022050709000837): a proxy for knowledge produced and shared.
-
-**A field's predictive accuracy over time** (understanding of a domain read directly, with breakthroughs):
-- **CASP**, the protein structure prediction assessment, every two years since 1994
-  (https://predictioncenter.org/; CASP14, Kryshtafovych et al. 2021,
-  https://doi.org/10.1002/prot.26237). Blind predictions are scored against structures solved
-  later. It includes a documented breakthrough (AlphaFold 2, 2020), so it is a natural test of
-  takeover and of breakthrough frequency.
-- **Weather forecast skill** since the 1980s, about a day of lead time gained per decade (Bauer,
-  Thorpe & Brunet 2015, https://doi.org/10.1038/nature14956; section 7). This is steady improvement in
-  a domain near the 0.9 bar.
-- **Predicting experimental results.** Experts forecast results before seeing them (DellaVigna &
-  Pope 2018, https://doi.org/10.1086/699976), on the Social Science Prediction Platform
-  (https://socialscienceprediction.org/; DellaVigna, Pope & Vivalt 2019,
-  https://doi.org/10.1126/science.aaz1704). Prediction markets forecast replications (Dreber et al.
-  2015, https://doi.org/10.1073/pnas.1516179112; Camerer et al. 2018,
-  https://doi.org/10.1038/s41562-018-0399-z), which predicted replication better than chance. The
-  replications themselves measure a field's predictive accuracy (Open Science Collaboration 2015,
-  https://doi.org/10.1126/science.aac4716, where about 36% of 100 psychology findings replicated
-  significantly). This is understanding of understanding: how well a field's members know which of
-  its claims hold.
-- **Physical constants.** Recommended values and their stated uncertainties, revised over a century
-  (Henrion & Fischhoff 1986, https://doi.org/10.1119/1.14870, who found the stated uncertainties too
-  narrow). This is a record of overconfidence in a mature science, a calibration test for credence
-  from the record.
-- **Compression records**, the Hutter Prize on Wikipedia text since 2006 (http://prize.hutter1.net/).
-  The record is a model's size plus its predictions' cost, so it scores predictive accuracy less
-  complexity in one number, the closest existing operationalisation of the understanding term.
-
-**Understanding outcomes of decisions** (for §16a):
-- **Pandemic school closures and learning loss.** A meta-analysis of 42 studies across 15 countries
-  found a loss of about 0.14 standard deviations, larger for disadvantaged children (Betthäuser,
-  Bach-Mortensen & Engzell 2023, https://doi.org/10.1038/s41562-022-01506-4). This puts the
-  understanding side, and its floor, into the first case family.
-- **Class size, Tennessee STAR.** A randomised trial (Krueger 1999,
-  https://doi.org/10.1162/003355399556052): a decision with a measured understanding effect and an
-  experimental counterfactual.
-- **Accountability reform.** No Child Left Behind, read through NAEP (Dee & Jacob 2011,
-  https://doi.org/10.1002/pam.20586, who found gains in mathematics but not reading).
-- **Expelling scientists.** Nazi Germany's dismissal of Jewish scientists. Departments that lost
-  researchers saw lasting losses in output (Waldinger 2012, https://doi.org/10.1093/restud/rdr029),
-  while US fields the émigrés entered gained about 31% in patenting (Moser, Voena & Waldinger 2014,
-  https://doi.org/10.1257/aer.104.10.3222). It is a clear historically bad decision with measured
-  understanding effects on both sides, and a test of harm to the peak of understanding.
-
-**Caveats.** Every series is a marker with its own error and linking assumptions (a metric model in
-its own right). Schooling and test scores are narrow slices of understanding. Field-level accuracy is
-measured only where blind prediction is institutionalised, which selects for mature, quantified
-domains.
-
 ### 16b. Forecasting on rolling windows (the measurement layer)
 
 **Role.** Historical forecasts by models and people who entered and left a domain are fed, as they
@@ -915,6 +843,131 @@ the default half-life (8.85: h_ref = 7 steps at 5 records per step, which needs 
 records-per-step scale), and the credence rule's tail behaviour (8.66, 8.71). **Does not settle:**
 whether Benefuture's incentives would change forecasters' behaviour, nor anything outside forecasting
 domains.
+
+### 16c. Understanding: historical records to forecast and to judge by
+
+Most historical outcome data measures happiness and harm (deaths, income, health). The records below
+measure understanding, always through outputs, as Benefuture requires. They serve three purposes:
+long series of levels, a field's predictive accuracy over time (understanding in its own definition,
+predictive accuracy plus causal explanation less complexity), and the understanding outcomes of
+decisions, for §16a. Links checked 2026-11-02.
+
+**Levels over long horizons** (beyond the post-2000 tests of section 1):
+- **NAEP Long-Term Trend**, US, ages 9, 13 and 17 since 1971 (https://nces.ed.gov/nationsreportcard/ltt/).
+  This is the longest consistent test series, to forecast decades ahead and to judge reforms by.
+- **Barro–Lee educational attainment**, 1950–2015, about 146 countries (Barro & Lee 2013,
+  https://doi.org/10.1016/j.jdeveco.2012.10.001; site **[unreachable]** from this session). It
+  measures schooling, an input to understanding rather than a marker of it.
+- **Numeracy from age heaping**, since about 1600 (A'Hearn, Baten & Crayen 2009,
+  https://doi.org/10.1017/S0022050709001120, who read numeracy from how often people rounded their
+  stated ages). Historical literacy and numeracy series are at Clio-Infra (https://clio-infra.eu/).
+  These are centuries of a coarse floor marker.
+- **Flynn effect**, test-score gains 1909–2013 (Pietschnig & Voracek 2015,
+  https://doi.org/10.1177/1745691615577701, a meta-analysis of about four million participants). A
+  century of a population marker, including its recent slowdown in some countries.
+- **Book production in Europe**, 6th–18th centuries (Buringh & van Zanden 2009,
+  https://doi.org/10.1017/S0022050709000837): a proxy for knowledge produced and shared.
+
+**A field's predictive accuracy over time** (understanding of a domain read directly, with breakthroughs):
+- **CASP**, the protein structure prediction assessment, every two years since 1994
+  (https://predictioncenter.org/; CASP14, Kryshtafovych et al. 2021,
+  https://doi.org/10.1002/prot.26237). Blind predictions are scored against structures solved
+  later. It includes a documented breakthrough (AlphaFold 2, 2020), so it is a natural test of
+  takeover and of breakthrough frequency.
+- **Weather forecast skill** since the 1980s, about a day of lead time gained per decade (Bauer,
+  Thorpe & Brunet 2015, https://doi.org/10.1038/nature14956; section 7). This is steady improvement in
+  a domain near the 0.9 bar.
+- **Predicting experimental results.** Experts forecast results before seeing them (DellaVigna &
+  Pope 2018, https://doi.org/10.1086/699976), on the Social Science Prediction Platform
+  (https://socialscienceprediction.org/; DellaVigna, Pope & Vivalt 2019,
+  https://doi.org/10.1126/science.aaz1704). Prediction markets forecast replications (Dreber et al.
+  2015, https://doi.org/10.1073/pnas.1516179112; Camerer et al. 2018,
+  https://doi.org/10.1038/s41562-018-0399-z), which predicted replication better than chance. The
+  replications themselves measure a field's predictive accuracy (Open Science Collaboration 2015,
+  https://doi.org/10.1126/science.aac4716, where about 36% of 100 psychology findings replicated
+  significantly). This is understanding of understanding: how well a field's members know which of
+  its claims hold.
+- **Physical constants.** Recommended values and their stated uncertainties, revised over a century
+  (Henrion & Fischhoff 1986, https://doi.org/10.1119/1.14870, who found the stated uncertainties too
+  narrow). This is a record of overconfidence in a mature science, a calibration test for credence
+  from the record.
+- **Compression records**, the Hutter Prize on Wikipedia text since 2006 (http://prize.hutter1.net/).
+  The record is a model's size plus its predictions' cost, so it scores predictive accuracy less
+  complexity in one number, the closest existing operationalisation of the understanding term.
+
+**Understanding outcomes of decisions** (for §16a):
+- **Pandemic school closures and learning loss.** A meta-analysis of 42 studies across 15 countries
+  found a loss of about 0.14 standard deviations, larger for disadvantaged children (Betthäuser,
+  Bach-Mortensen & Engzell 2023, https://doi.org/10.1038/s41562-022-01506-4). This puts the
+  understanding side, and its floor, into the first case family.
+- **Class size, Tennessee STAR.** A randomised trial (Krueger 1999,
+  https://doi.org/10.1162/003355399556052): a decision with a measured understanding effect and an
+  experimental counterfactual.
+- **Accountability reform.** No Child Left Behind, read through NAEP (Dee & Jacob 2011,
+  https://doi.org/10.1002/pam.20586, who found gains in mathematics but not reading).
+- **Expelling scientists.** Nazi Germany's dismissal of Jewish scientists. Departments that lost
+  researchers saw lasting losses in output (Waldinger 2012, https://doi.org/10.1093/restud/rdr029),
+  while US fields the émigrés entered gained about 31% in patenting (Moser, Voena & Waldinger 2014,
+  https://doi.org/10.1257/aer.104.10.3222). It is a clear historically bad decision with measured
+  understanding effects on both sides, and a test of harm to the peak of understanding.
+
+**Caveats.** Every series is a marker with its own error and linking assumptions (a metric model in
+its own right). Schooling and test scores are narrow slices of understanding. Field-level accuracy is
+measured only where blind prediction is institutionalised, which selects for mature, quantified
+domains.
+
+### 16d. What must be built to run most of these scenarios
+
+**Already exists** (exported from the Lean reference and wrapped in Julia):
+- **Decision rules:** G's choice (`bf_g_choose`), value and harm weight (`bf_v`, `bf_ha_wt`), the
+  quantile floor (`bf_floor_quantile`), the value of a life ended or saved (`bf_foreclosed`,
+  `bf_life_value`), the freedom report (`bf_fr_permissible`), and the debatable escape
+  (`bf_escape_accept`).
+- **Measurement rules:** record credence, time-decayed accuracy with a rate-adaptive half-life,
+  takeover (`bf_select_candidate`), status bars with the ratchet, and currency eligibility.
+- **Voting:** voting weight and capped delegation.
+- **Analysis:** the success pattern, the significance methods (`paired_effect`, `equivalent`,
+  `proportion_interval`, `seeds_until_stable`), and the loud-degradation ledger. The M7 `pop_choose`
+  wrapper already runs G over options against a course of events, which is the shape of a decision
+  replay.
+
+**To build:**
+
+| # | Component | What it does | Where | New Lean? |
+|---|---|---|---|---|
+| B1 | Pre-registration | Case-selection criteria, falsifiers and frozen thresholds, committed before any case is opened (the commit hash dates them) | `docs/REPLAY_PREREG.md` | no |
+| B2 | Case schema and store | One file per case: era, technology tier, decision date, decision-makers, information set (each source with its as-of date), options (with the date each became known), affected groups with baseline markers, actual choice, outcome series, comparison units, sources and checksums | `cases/*.toml`, loader in `sim/src/replay.jl` | no |
+| B3 | As-of record store | Time-indexed records with issue, target and resolution dates and data vintages; serves "what was known at t" and refuses later entries | `sim/src/replay.jl` | no |
+| B4 | Forecast loaders | FluSight, the COVID Hubs, the surveys of professional forecasters with real-time vintages, Good Judgment, Metaculus, CASP, each into one long format (forecaster, target, issue date, horizon, point, quantile or probability, resolution) | `tools/data/` (fetch, pin, checksum) | no |
+| B5 | Measurement replayer | Walks the records forward through the existing rules and yields each forecaster's credence and each domain's status on each date (§16b, R1–R6) | `sim/src/replay.jl` | quantile scoring (weighted interval score, PIT) as a reference rule plus export |
+| B6 | Valuation adapters | Turn an option's contemporary predictions into value per affected group: deaths into the irreparable tier (through `bf_life_value`), illness and income into passing harm and happiness, test scores and research output into understanding, with intervals from the credences. One adapter per family: epidemic, macroeconomic, famine and health, science and education, technical risk. Conversion factors are world parameters with sources (`docs/CALIBRATION.md`), not thresholds | `sim/src/replay.jl` | no |
+| B7 | Decision engine | G over the options (`pop_choose` generalised from beings to groups), with the voting path for collective decisions (experts weighted by their records as of then), the freedom report, and the escape trial for options beyond the freedom range. A **coarse tier** for low-technology cases (8.88) uses parent-level markers only, no record-level credence, and rules only, each substitution a `degraded` entry. The per-being long-term check of 8.86 (P1) is reused for existing groups | `sim/src/replay.jl` | none beyond P1's rule |
+| B8 | Counterfactual estimators | Competing methods, each with an interval: synthetic control, difference-in-differences, contemporary conditional forecasts (FOMC Bluebook alternatives and Greenbook scenarios, Hub scenario projections), and two structural models (an SEIR-type epidemic model and a small macroeconomic model). Pre-period fit is scored like any metric model and combined by credence, so the counterfactual itself is a model competition (parsimony: no new mechanism) | `sim/src/counterfactual.jl` | no (analysis tools, not rules) |
+| B9 | Evaluation | The four cells (outcome by agreement) with proportion intervals; outcome differences by the success pattern across methods; the hindsight check (every option and source dated before the decision, else the case is void); falsifier verdicts; blocked tests over time (Diebold–Mariano, Giacomini–White) | `sim/src/replay.jl` | no |
+| B10 | Probes and tests | A synthetic case with a known right answer, red first. Counterexamples: a hindsight leak voids the case; a threshold changed after opening a case is refused | `sim/test/replay_tests.jl`, `probe_tests.jl` | no |
+
+**Coverage by component:**
+
+| Scenario family | Needs | Effort is mostly |
+|---|---|---|
+| Forecasting R1–R6 (§16b) | B3–B5, B9 | loaders |
+| Single technical decisions (Challenger, thalidomide) | B1, B2, B6, B7, B9, B10 | curating the case files |
+| Low-technology cases (Ragusa, Semmelweis, Snow, Famine Codes, printing) | the same, with B7's coarse tier, and B8's difference-in-differences for natural comparisons (Snow's water companies, the famine districts) | curation |
+| Regulation over decades (Montreal Protocol, leaded petrol, tobacco) | B1, B2, B6–B9 (synthetic control across countries that acted at different dates) | data and long-horizon valuation |
+| Understanding outcomes (learning loss, STAR, NCLB, dismissed scientists) | B2, B6 (understanding adapter), B8 (the published experimental or quasi-experimental estimates enter as competing methods) | curation |
+| Pandemic interventions | everything, with the SEIR model and synthetic control across countries and states | the largest; it also exercises B4–B5 |
+| Monetary policy | everything, with the macroeconomic model and Bluebook alternatives as option sets dated at the time | data access (Greenbook five-year lag) |
+
+**Order, by Benefuture's rules** (understanding per cost, probes first):
+1. B1 and B10's synthetic probe.
+2. B2, B6, B7 and B9 on the single technical and low-technology cases. These are cheap,
+   hand-curated, and test the coarse tier and the four cells early.
+3. B3–B5 (forecasting layer, with quantile scoring in Lean).
+4. B8 with synthetic control and difference-in-differences, then regulation and understanding cases.
+5. The structural models, then the pandemic and monetary families.
+
+With steps 1–4 done, every family runs except the two that need structural models. Most of the
+labour is case curation and data, not code.
 
 ## Prioritised plan
 

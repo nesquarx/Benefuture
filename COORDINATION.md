@@ -410,13 +410,13 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 
 - **Task E4: Historical decisions replayed as-of, with forecasting on rolling windows** (`docs/DATA.md` §16, 8.87)
   - **Goal**: For documented good and bad decisions, find what Benefuture would have chosen on the information then available, how that differs from the actual choice, and the counterfactual outcome (§16a). Forecasters' records replayed on rolling windows supply the credences (§16b). No curve fitting, except an institution modelled as a coarse Benefuture.
-  - **Steps**:
-    1. Write case-selection criteria and falsifiers before opening any case.
-    2. Synthetic replay probe.
-    3. Measurement layer: FluSight, then the COVID Hubs (loaders with pinned snapshots).
-    4. First case family: pandemic interventions (OxCGRT, Hubs, excess mortality). Information and option sets as-of; G at frozen defaults through the Lean reference; counterfactuals by synthetic control, epidemic models and contemporary conditional forecasts.
-    5. Then monetary policy, and the single technical decisions (Challenger, thalidomide).
-  - **Primary Files**: new `sim/src/replay.jl`, `sim/test/replay_tests.jl`, `tools/data/` (fetch scripts, checksums), `docs/DATA.md`.
+  - **Steps**: the build list B1–B10 and its order are in `docs/DATA.md` §16d.
+    1. Pre-registration and synthetic probe.
+    2. Single technical and low-technology cases (coarse tier).
+    3. Forecasting layer with quantile scoring in Lean.
+    4. Synthetic control and difference-in-differences, then regulation and understanding cases.
+    5. Structural models, then the pandemic and monetary families.
+  - **Primary Files**: new `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/`, `tools/data/` (fetch scripts, checksums), `docs/REPLAY_PREREG.md`, `docs/DATA.md`.
   - **Collision Risk**: Low (new files; reads the existing rules).
   - **Status**: `AVAILABLE`
 
