@@ -710,6 +710,78 @@ decisions in each:
 - the share of disagreements where Benefuture's choice was available and known at the time (it
   should be all; any other is a leak of hindsight and voids the case).
 
+### 16c. Understanding: historical records to forecast and to judge by
+
+Most historical outcome data measures happiness and harm (deaths, income, health). The records below
+measure understanding, always through outputs, as Benefuture requires. They serve three purposes:
+long series of levels, a field's predictive accuracy over time (understanding in its own definition,
+predictive accuracy plus causal explanation less complexity), and the understanding outcomes of
+decisions, for §16a. Links checked 2026-11-02.
+
+**Levels over long horizons** (beyond the post-2000 tests of section 1):
+- **NAEP Long-Term Trend**, US, ages 9, 13 and 17 since 1971 (https://nces.ed.gov/nationsreportcard/ltt/).
+  This is the longest consistent test series, to forecast decades ahead and to judge reforms by.
+- **Barro–Lee educational attainment**, 1950–2015, about 146 countries (Barro & Lee 2013,
+  https://doi.org/10.1016/j.jdeveco.2012.10.001; site **[unreachable]** from this session). It
+  measures schooling, an input to understanding rather than a marker of it.
+- **Numeracy from age heaping**, since about 1600 (A'Hearn, Baten & Crayen 2009,
+  https://doi.org/10.1017/S0022050709001120, who read numeracy from how often people rounded their
+  stated ages). Historical literacy and numeracy series are at Clio-Infra (https://clio-infra.eu/).
+  These are centuries of a coarse floor marker.
+- **Flynn effect**, test-score gains 1909–2013 (Pietschnig & Voracek 2015,
+  https://doi.org/10.1177/1745691615577701, a meta-analysis of about four million participants). A
+  century of a population marker, including its recent slowdown in some countries.
+- **Book production in Europe**, 6th–18th centuries (Buringh & van Zanden 2009,
+  https://doi.org/10.1017/S0022050709000837): a proxy for knowledge produced and shared.
+
+**A field's predictive accuracy over time** (understanding of a domain read directly, with breakthroughs):
+- **CASP**, the protein structure prediction assessment, every two years since 1994
+  (https://predictioncenter.org/; CASP14, Kryshtafovych et al. 2021,
+  https://doi.org/10.1002/prot.26237). Blind predictions are scored against structures solved
+  later. It includes a documented breakthrough (AlphaFold 2, 2020), so it is a natural test of
+  takeover and of breakthrough frequency.
+- **Weather forecast skill** since the 1980s, about a day of lead time gained per decade (Bauer,
+  Thorpe & Brunet 2015, https://doi.org/10.1038/nature14956; section 7). This is steady improvement in
+  a domain near the 0.9 bar.
+- **Predicting experimental results.** Experts forecast results before seeing them (DellaVigna &
+  Pope 2018, https://doi.org/10.1086/699976), on the Social Science Prediction Platform
+  (https://socialscienceprediction.org/; DellaVigna, Pope & Vivalt 2019,
+  https://doi.org/10.1126/science.aaz1704). Prediction markets forecast replications (Dreber et al.
+  2015, https://doi.org/10.1073/pnas.1516179112; Camerer et al. 2018,
+  https://doi.org/10.1038/s41562-018-0399-z), which predicted replication better than chance. The
+  replications themselves measure a field's predictive accuracy (Open Science Collaboration 2015,
+  https://doi.org/10.1126/science.aac4716, where about 36% of 100 psychology findings replicated
+  significantly). This is understanding of understanding: how well a field's members know which of
+  its claims hold.
+- **Physical constants.** Recommended values and their stated uncertainties, revised over a century
+  (Henrion & Fischhoff 1986, https://doi.org/10.1119/1.14870, who found the stated uncertainties too
+  narrow). This is a record of overconfidence in a mature science, a calibration test for credence
+  from the record.
+- **Compression records**, the Hutter Prize on Wikipedia text since 2006 (http://prize.hutter1.net/).
+  The record is a model's size plus its predictions' cost, so it scores predictive accuracy less
+  complexity in one number, the closest existing operationalisation of the understanding term.
+
+**Understanding outcomes of decisions** (for §16a):
+- **Pandemic school closures and learning loss.** A meta-analysis of 42 studies across 15 countries
+  found a loss of about 0.14 standard deviations, larger for disadvantaged children (Betthäuser,
+  Bach-Mortensen & Engzell 2023, https://doi.org/10.1038/s41562-022-01506-4). This puts the
+  understanding side, and its floor, into the first case family.
+- **Class size, Tennessee STAR.** A randomised trial (Krueger 1999,
+  https://doi.org/10.1162/003355399556052): a decision with a measured understanding effect and an
+  experimental counterfactual.
+- **Accountability reform.** No Child Left Behind, read through NAEP (Dee & Jacob 2011,
+  https://doi.org/10.1002/pam.20586, who found gains in mathematics but not reading).
+- **Expelling scientists.** Nazi Germany's dismissal of Jewish scientists. Departments that lost
+  researchers saw lasting losses in output (Waldinger 2012, https://doi.org/10.1093/restud/rdr029),
+  while US fields the émigrés entered gained about 31% in patenting (Moser, Voena & Waldinger 2014,
+  https://doi.org/10.1257/aer.104.10.3222). It is a clear historically bad decision with measured
+  understanding effects on both sides, and a test of harm to the peak of understanding.
+
+**Caveats.** Every series is a marker with its own error and linking assumptions (a metric model in
+its own right). Schooling and test scores are narrow slices of understanding. Field-level accuracy is
+measured only where blind prediction is institutionalised, which selects for mature, quantified
+domains.
+
 ### 16b. Forecasting on rolling windows (the measurement layer)
 
 **Role.** Historical forecasts by models and people who entered and left a domain are fed, as they
