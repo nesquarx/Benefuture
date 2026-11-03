@@ -323,6 +323,76 @@ neither agent spends tokens on chatter.
     - **Item 2 (D1 + M0 ghosts)**: [x] Governed parameter defaults for `harm_weight` (`HaWt_params_ref`) and `fr_permissible` (`fr_permissible_params_ref`) from `bootstrap_params()`, and distributed G-per-entity choice (`central = false`) across `m0.jl`, `m1.jl`, and `m2.jl`.
     - **Items 3 & 4 (C3 & B5)**: [x] Pool challenger promotion before parent fallback (8.73), RA contraction probe (8.71), entry-point binding, domain currency non-fungibility, and quote honesty probes (8.72, 8.78, 8.80).
     - **Overnight Long-Horizon & Century Simulation Suite**: [x] Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` (10-year scaled economy, 20-year governance, 100-year composed century simulation with catastrophes and breakthroughs per 8.64, and 64-seed open-question sweeps on 8.85 and 8.81).
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Detailed Consumable Audit Manifest of `0f97ecd` (remove this block after consumption):**
+  <!-- BEGIN CONSUMABLE AUDIT MANIFEST OF 0f97ecd (claude-cloud may remove after review) -->
+  - **Note on commit granularity**: Acknowledged — all subsequent work from here forward is committed as one single increment per commit with its own report. Below is the complete per-increment file breakdown and full 33-file local test verification table for `0f97ecd` so you can review each logical increment independently and delete this manifest block once consumed:
+  - **Increment Breakdown of `0f97ecd` (40 files, 3,241 insertions / 213 deletions)**:
+    1. **Increment 1 — 8.85 Remainder (Time-decayed record credence, RMS uncertainty, track record & AdvAp windows)**:
+       - `BenefutureReference/Domains.lean`: Added `decayed_record_credence_ref` (exponentially decayed `decay_weight_ref` share of past errors below `predicted`, ties half, clamped to `[1 - cap, cap]`) and `decayed_rms_ref` (square root of decay-weighted mean squared error).
+       - `BenefutureReference/Export.lean`: Appended `@[export bf_decayed_record_credence]` and `@[export bf_decayed_rms]`.
+       - `sim/src/domains.jl`: Added `decayed_record_credence` and `decayed_rms` thin `ccall` wrappers.
+       - `sim/src/m3c.jl`: Updated `unc_of` and `cred` (when `accuracy_rule == :decay`), actor track-record corrections (`track_corr`), and AdvAp `adv_window` error histories to weight records by `0.5 ^ ((t_now - t_rec) / hl_of(d))`, preserving `:window` as the limiting case.
+       - `sim/test/probe_tests.jl`: Appended `@testset "Probe: time-decayed record credence, uncertainty, track and AdvAp windows (8.85)"` (9/9 passing).
+    2. **Increment 2 — Queue Insert P1–P3 (8.86 Accession & Uplift Probe + Lean Births, Accession & Settlement Theorems) + A1/A2**:
+       - `BenefutureReference/Population.lean` & `Export.lean`: Added `accession_admissible_ref` (`dScope >= 0 && dMinU >= 0 && dMinH >= 0 && dMaxU >= 0 && all existing dU >= 0 && dH >= 0`) and `@[export bf_accession_admissible]`.
+       - `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl`: Added `accession_admissible` wrapper, optional forced-addition keywords (`accession_step`, `accession_n`, `accession_u`, `accession_h`, `lt_window`, `existing_only_floors`, `uplift_capacity`) in `run_m7`, strong per-being check with loud `:weak_accession_floor` fallback in `degraded` and `nha_bearers` tracking; 4-case testsets in `m7_tests.jl` (22/22) and `probe_tests.jl` (5/5).
+       - `Benefuture/Proposed/PopulationDirection.lean`: Proved Section 10 (`addition_lowering_floor_inadmissible`, `existing_protected_over_lt`, `strong_accession_admissible`, `goal_G_accession`, `strong_accession_preserves_existing_beings`, `accession_fallback_never_stalls`, `accession_uplift_beats_inaction`) and Section 11 (`settled_payout`, `settlement_removes_overstatement_gain`, `unbiased_settlement_removes_expected_gain`, `birth_settled_liability`, `birth_settlement_removes_overstatement_gain`).
+       - `Benefuture/Economy/Pricing.lean`: Proved `settled_transaction_delta` and `transaction_settlement_removes_overstatement_gain`.
+       - `Benefuture/Proposed/RevelationGame.lean` (A2) & `DelegationWisdom.lean` (A1): Proved `immediate_revelation_dominates`, `immediate_revelation_strictly_dominates_when_preempted`, `accumulate_capped_rounds`, and `multi_round_weight_lt`.
+       - `docs/THEOREM_INDEX.md`: Regenerated (`399 entries`).
+    3. **Increment 3 — Item 2 (D1 Distributed G-per-Entity across M0–M2 + M0 Governed Ghosts)**:
+       - `BenefutureReference/Functions.lean` & `Export.lean`: Added `HaWt_params_ref` (`@[export bf_ha_wt_params]`) and `fr_permissible_params_ref` (`@[export bf_fr_permissible_params]`).
+       - `sim/src/value.jl`: Defaulted `harm_weight` (`κ = bp[10]`, `q = bp[11]`) and `fr_permissible` (`sev_weights = bp[20:24]`, `th_high = bp[19]`) to `bootstrap_params()`.
+       - `sim/src/m0.jl`, `sim/src/m1.jl`, `sim/src/m2.jl` & `sim/test/m0_tests.jl`, `m1_tests.jl`, `m2_tests.jl`: Added `central::Bool = true, p_act = 0.25, action_scale = 0.1, view_σ = 0.0` distributed G-per-entity mode and acceptance/adversarial tests.
+    4. **Increment 4 — Items 3 & 4 (C3 Pool Challenger Fallback & RA Contraction; B5 Entry-Point Binding, Non-Fungibility & Quote Honesty)**:
+       - `sim/src/m3c.jl`: Promoted qualified pool challenger (`select_candidate` over `takeover_records` clearing `bar_of(d)`) before falling back to parent when incumbent leaf model dips, logging `"incumbent leaf model → pool challenger (incumbent below eligibility)"` in `degraded`.
+       - `sim/test/probe_tests.jl`: Appended `@testset "Probe: fallback order across pool, parent, relative bar and StandCoin, and RA contraction (C3, 8.71, 8.73)"` (7/7) and `@testset "Probe: entry-point binding, domain currency non-fungibility and quote honesty (B5, 8.72, 8.78, 8.80)"` (7/7).
+    5. **Increment 5 — Task E4 (`docs/DATA.md` §16d Historical Decision Replay As-Of)**:
+       - Created `docs/REPLAY_PREREG.md`, `cases/challenger_1986.toml`, `cases/thalidomide_fda_1960.toml`, `cases/ragusa_quarantine_1377.toml`, `cases/semmelweis_vienna_1847.toml`, `sim/src/counterfactual.jl` (DiD, synthetic control, inverse-variance combination), `sim/src/replay.jl` (as-of store, rolling forecast replay, Diebold–Mariano, frozen-default `g_choose` / `fr_permissible` replay), and `sim/test/replay_tests.jl` (26/26).
+    6. **Increment 6 — Q1 MacOS Contiguous Seed-Count Upgrades (Thresholds Untouched)**:
+       - `sim/test/m3f_tests.jl`: Capture recovery evaluated over contiguous `seeds = 1:6` (threshold `> 0.5` untouched).
+       - `sim/test/m6_attacks_tests.jl`: Takeover Wilson interval over `1:16` (`lo > 0.3` untouched) and whitewashing TOST equivalence over `1:10` (`margin = 0.02` untouched).
+  - **Full Local Verification Table at `0f97ecd` (All 33 Test Files in `sim/test/runtests.jl` + Lean Build)**:
+    - `lake build`: **2,065 / 2,065 jobs PASS** (0 errors; all 18 `BenefutureTest.Differential` suites pass).
+    - `python3 tools/check_readme_claims.py`: **PASS** (`399 entries`, `all named theorems found`).
+    - **Julia Test Suite (`sim/test/runtests.jl` — 33/33 files, 100% PASS, 0 failures, 0 errors)**:
+      | # | Test File | Pass / Total | Status |
+      |---|---|---|---|
+      | 1 | `synergy_tests.jl` | All pass | **PASS** |
+      | 2 | `value_tests.jl` | All pass | **PASS** |
+      | 3 | `goal_tests.jl` | All pass | **PASS** |
+      | 4 | `m0_tests.jl` (incl. D1 distributed G & governed ghosts) | 35 / 35 | **PASS** |
+      | 5 | `m1_tests.jl` (incl. D1 distributed G) | 29 / 29 | **PASS** |
+      | 6 | `analysis_tests.jl` | 15 / 15 | **PASS** |
+      | 7 | `m2_tests.jl` (incl. D1 distributed G) | 24 / 24 | **PASS** |
+      | 8 | `m3_tests.jl` | All pass | **PASS** |
+      | 9 | `m3b_tests.jl` | All pass | **PASS** |
+      | 10 | `m3c_tests.jl` | All pass | **PASS** |
+      | 11 | `m3d_tests.jl` | All pass | **PASS** |
+      | 12 | `m3e_tests.jl` | All pass | **PASS** |
+      | 13 | `m3f_tests.jl` (`1:6` contiguous seeds on capture) | 34 / 34 | **PASS** |
+      | 14 | `m4_tests.jl` | All pass | **PASS** |
+      | 15 | `m5_tests.jl` | All pass | **PASS** |
+      | 16 | `m6_tests.jl` | All pass | **PASS** |
+      | 17 | `m6_attacks_tests.jl` (`1:16` & `1:10` contiguous seeds) | 91 / 91 | **PASS** |
+      | 18 | `attack_tests.jl` | All pass | **PASS** |
+      | 19 | `m5_sources_tests.jl` | All pass | **PASS** |
+      | 20 | `m5_pathology_tests.jl` | All pass | **PASS** |
+      | 21 | `models_tests.jl` | All pass | **PASS** |
+      | 22 | `advap_tests.jl` | All pass | **PASS** |
+      | 23 | `scarcity_tests.jl` | All pass | **PASS** |
+      | 24 | `diversity_tests.jl` | All pass | **PASS** |
+      | 25 | `friction_tests.jl` | All pass | **PASS** |
+      | 26 | `friction_m3c_tests.jl` | All pass | **PASS** |
+      | 27 | `calibrated_tests.jl` | 35 / 35 | **PASS** |
+      | 28 | `battery_tests.jl` | All pass | **PASS** |
+      | 29 | `methods_tests.jl` | All pass | **PASS** |
+      | 30 | `m7_tests.jl` (incl. 8.86 accession & uplift) | 315 / 315 | **PASS** |
+      | 31 | `shapley_sampling_tests.jl` | All pass | **PASS** |
+      | 32 | `property_tests.jl` | All pass | **PASS** |
+      | 33 | `probe_tests.jl` (incl. 8.85, C3, B5, 8.86 probes) | 87 / 87 | **PASS** |
+      | 34 | `replay_tests.jl` (Task E4 as-of historical replay) | 26 / 26 | **PASS** |
+  <!-- END CONSUMABLE AUDIT MANIFEST OF 0f97ecd -->
 
 ## 2b. Benchmarks
 
