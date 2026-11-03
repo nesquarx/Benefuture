@@ -11,6 +11,7 @@ const LIBFILE = joinpath(REPO, ".lake", "build", "lib", "libBenefuture_Benefutur
 const STAMP = LIBFILE * ".sha256"
 const LIB = Ref{Ptr{Cvoid}}(C_NULL)
 const SYMS = Dict{Symbol,Ptr{Cvoid}}()
+const SYMS_LOCK = ReentrantLock()
 
 function tool(name)
     path = Sys.which(name)
@@ -64,11 +65,15 @@ function load_lean_lib()
     # Second argument is Lean's IO world token, the boxed unit.
     ccall(Libdl.dlsym(LIB[], :initialize_Benefuture_BenefutureReference), Ptr{Cvoid},
           (UInt8, Ptr{Cvoid}), 1, Ptr{Cvoid}(1))
-    empty!(SYMS)
+    lock(SYMS_LOCK) do
+        empty!(SYMS)
+    end
     nothing
 end
 
-sym(name::Symbol) = get!(() -> Libdl.dlsym(LIB[], name), SYMS, name)
+sym(name::Symbol) = lock(SYMS_LOCK) do
+    get!(() -> Libdl.dlsym(LIB[], name), SYMS, name)
+end
 
 "Build a Lean `FloatArray`; ownership passes to the Lean call that receives it."
 function floatarray(xs)

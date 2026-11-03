@@ -107,6 +107,8 @@ nohup bash -c '
     }
 
     echo "=== Overnight Suite Started at $(date +"%Y-%m-%dT%H:%M:%S%z") (window ${START_HOUR}:00-${END_HOUR}:00 local) on commit $(git rev-parse --short HEAD) ==="
+    echo "--- Phase 0: Convergence & Population-Diversity Sizing Suite (sim/battery/convergence.jl) ---"
+    run_with_window_guard julia -t auto --project=sim sim/battery/convergence.jl
     echo "--- Phase 1: Long-Horizon & Century Composed Suite (sim/battery/long_horizon.jl) ---"
     run_with_window_guard julia -t auto --project=sim sim/battery/long_horizon.jl
     echo "--- Phase 2: Governance Failure-Boundary Battery (sim/battery/governance.jl) ---"
