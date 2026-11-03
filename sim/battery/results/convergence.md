@@ -1,7 +1,7 @@
 # Convergence & Population-Diversity Sizing Report
 
-- **Commit**: `232270e`
-- **Runtime**: `17.09` minutes (`8` threads)
+- **Commit**: `5605704`
+- **Runtime**: `12.04` minutes (`8` threads)
 - **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
 
 ## 1. M1 Metric Competition & Distributed Choice (`seeds = 1:10`)
@@ -36,13 +36,13 @@
 | `350` (`300` active) | 320.07 ± 3.52 | 2.2% | 91.1 | 3.2% |
 | `400` (`350` active) | 378.09 ± 3.50 | 1.8% | 108.1 | 2.6% |
 
-| Diverse Population (`n` beings, `n_agents` log-normal, `200` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
-|---|---|---|---|---|
-| `n = 20`, `agents = 4` | 87.56 ± 13.01 | 29.1% | 6.7 | 110 / 141 |
-| `n = 40`, `agents = 6` | 99.50 ± 1.55 | 3.1% | 64.2 | 87 / 111 |
-| `n = 80`, `agents = 8` | 103.69 ± 1.34 | 2.5% | 77.5 | 80 / 94 |
-| `n = 160`, `agents = 12` | 161.57 ± 1.20 | 1.5% | 134.8 | 69 / 117 |
-| `n = 240`, `agents = 16` | 250.97 ± 4.46 | 3.5% | 56.3 | 103 / 106 |
+| Diverse Population (`n` beings, `n_agents` log-normal, `150` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Gain / Plan | Realised Plans/b/step |
+|---|---|---|---|---|---|---|
+| `n = 20`, `agents = 4`, `plans = 10` | 250.76 ± 4.88 | 3.8% | 51.3 | 12.538 | 25.08 | 0.280 |
+| `n = 40`, `agents = 6`, `plans = 10` | 185.27 ± 3.38 | 3.6% | 54.8 | 4.632 | 18.53 | 0.175 |
+| `n = 80`, `agents = 8`, `plans = 10` | 103.69 ± 1.34 | 2.5% | 77.5 | 1.296 | 10.37 | 0.098 |
+| `n = 160`, `agents = 12`, `plans = 20` | 89.74 ± 1.28 | 2.8% | 70.2 | 0.561 | 4.49 | 0.097 |
+| `n = 240`, `agents = 16`, `plans = 30` | 109.52 ± 0.97 | 1.7% | 113.5 | 0.456 | 3.65 | 0.105 |
 
 ## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`)
 - **Accuracy running-mean settling (`tol = 3%` over 800 decisions)**: median decision **34** (worst **75**).
@@ -76,11 +76,11 @@
 | `120` | 16.40 ± 0.90 | 10.7% | 18.3 | 11.4% |
 | `150` | 20.89 ± 1.26 | 11.8% | 16.6 | 12.2% |
 
-| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
-|---|---|---|---|---|
-| `n = 20` | 5.99 ± 0.34 | 11.2% | 17.5 | 55 / 75 |
-| `n = 40` | 7.86 ± 0.17 | 4.2% | 47.2 | 48 / 62 |
-| `n = 80` | 8.80 ± 0.29 | 6.4% | 30.8 | 38 / 55 |
-| `n = 150` | 11.66 ± 0.79 | 13.3% | 14.7 | 56 / 66 |
-| `n = 300` | 17.28 ± 0.66 | 7.5% | 26.1 | 40 / 59 |
-| `n = 500` | 27.31 ± 1.47 | 10.6% | 18.6 | 38 / 71 |
+| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Realised Acts/b/step | Realised Res/b/step |
+|---|---|---|---|---|---|---|
+| `n = 20` | 6.79 ± 0.47 | 13.6% | 14.4 | 0.339 | 0.163 | 0.093 |
+| `n = 40` | 8.12 ± 0.55 | 13.3% | 14.7 | 0.203 | 0.174 | 0.099 |
+| `n = 80` | 9.73 ± 0.16 | 3.3% | 59.4 | 0.122 | 0.178 | 0.102 |
+| `n = 150` | 9.75 ± 0.32 | 6.3% | 31.0 | 0.065 | 0.179 | 0.101 |
+| `n = 300` | 10.58 ± 0.34 | 6.3% | 31.2 | 0.035 | 0.180 | 0.100 |
+| `n = 500` | 11.53 ± 0.39 | 6.7% | 29.2 | 0.023 | 0.180 | 0.101 |
