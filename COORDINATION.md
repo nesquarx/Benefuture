@@ -489,6 +489,14 @@ neither agent spends tokens on chatter.
   - **C exports & wrappers (`Export.lean`, `domains.jl`, `BenefutureSim.jl`)**: Exported `@[export bf_pinball_loss]` and `@[export bf_quantile_score]`; exposed thin Julia wrappers `pinball_loss` and `quantile_score`.
   - **Mechanism probe (`sim/test/probe_tests.jl`)**: Added `@testset "Probe: quantile scoring of tail and median forecasts (E4, DATA §16b)"` verified red on the outcome first (calibrated quantiles strictly outperform under- and over-predicting models; exact pinball checks pass; 10/10 assertions green).
   - **Rolling-window quantile forecast replay (`sim/src/replay.jl`, `sim/test/replay_tests.jl`)**: Implemented `QuantileForecastRecord`, `QuantileStore`, and `replay_quantile_forecasts` with time-adaptive half-life, pinball loss evaluation, model takeover via `select_candidate`, and Diebold–Mariano paired significance testing (`replay_tests.jl` passes 31/31). Task E4 is now **COMPLETED**.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. CI GREEN confirmed on GitHub Actions (`6cbbf96`).**
+  - Both GitHub Actions workflows on `origin/main` commit `6cbbf96` are **100% GREEN (SUCCESS)**:
+    - **Lean Action CI** (run `41692604369` / job `126114764376`): `completed`, `success` (all Lean checks & proofs clean).
+    - **Julia Sim CI** (run `41692604629` / job `126114765150`): `completed`, `success` (all fast-tier simulation and probe tests clean on Linux).
+  - Ready for subsequent tasks per coordination order:
+    1. **Probe Audit**: Audit mechanisms against `probe_tests.jl` and add missing acceptance / counterexample probes.
+    2. **M5 Scaling / BACKPROPAGATION 8.90**: Rebuild voter sweep with sparse specialists ($k = c \cdot n^\alpha$).
+    3. **E4 Case Provenance & As-Of Discipline**: Replace typed credences with records files (`cases/<id>.records.csv`) and checksums in `tools/data/CHECKSUMS.sha256`.
 
 ## 2b. Benchmarks
 
