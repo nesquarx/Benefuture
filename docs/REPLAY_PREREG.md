@@ -29,7 +29,7 @@ All governed thresholds sit at their canonical values from `BenefutureReference/
 | Harm convexity exponent | `q_harm` | `1.5` | Convexity exponent in `bf_ha_wt` |
 | Harm severity schedule | `HARM_SCHEDULE` | `(0.0, 1.0, 2.0, 5.0)` | Multipliers for none, passing, severe, irreparable harm |
 | Freedom confidence threshold | `fr_thConf` | `0.90` | Confidence threshold in freedom report (`bf_fr_permissible`) |
-| Freedom high-harm threshold | `fr_thHigh` | `0.70` | High-harm threshold in freedom report |
+| Freedom high-harm threshold | `fr_thHigh` | `1.00` | High-harm threshold in freedom report (`bootstrap_params_ref`) |
 | Freedom severity multipliers | `fr_severities` | `(0.0, 0.25, 0.5, 1.0)` | Per-tier multipliers in `bf_fr_permissible` |
 | Escape trial horizon | `escape_horizon` | `5` | Horizon steps for debatable escape trial (`bf_escape_accept`) |
 | Escape catastrophic ceiling | `escape_catastrophic` | `10.0` | Catastrophic harm bound blocking escape trials |

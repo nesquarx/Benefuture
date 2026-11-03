@@ -5,14 +5,14 @@ const Dates = Base.require(Base.PkgId(Base.UUID("ade2ca70-3891-5945-98fb-dc09943
 using .Dates
 const TOML = Base.require(Base.PkgId(Base.UUID("fa267f1f-6049-4f14-aa54-33bafae1ed76"), "TOML"))
 
-"Frozen governed thresholds from `docs/REPLAY_PREREG.md` §2. Modifying any of these in a replay is refused."
-const FROZEN_REPLAY_THRESHOLDS = (
+# Default governed thresholds from ParamSpace and M3c/M5 defaults (8.87)
+const _DEFAULT_FROZEN_THRESHOLDS = (
     q_floor = 0.10,
     epsilon_tie = 1e-9,
     kappa_harm = 0.5,
     q_harm = 1.5,
     fr_thConf = 0.90,
-    fr_thHigh = 0.70,
+    fr_thHigh = 1.00,
     escape_horizon = 5,
     escape_catastrophic = 10.0,
     acc_bar_leaf = 0.90,
@@ -29,6 +29,45 @@ const FROZEN_REPLAY_THRESHOLDS = (
     lt_window = 50
 )
 
+const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
+
+"Dynamically reads and caches governed thresholds from `bootstrap_params()` and M3c/M5 defaults."
+function get_frozen_replay_thresholds()
+    try
+        bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
+        m3c_f = M3cParams(ToyParams(n=20, steps=10, plans=2), [DomainAgent([0.5,0,0,0],[1.0,0,0,0],0.2)], [1,1,2,2], trues(4); λpos=0.05, λneg=0.02)
+        m5_f = M5Params((relevance_leaf=zeros(4,4), agents=[DomainAgent([0.5,0,0,0],[1.0,0,0,0],0.2)]), 1:4)
+        _FROZEN_REPLAY_THRESHOLDS_REF[] = (
+            q_floor = 0.10,
+            epsilon_tie = 1e-9,
+            kappa_harm = bp.kappa_harm,
+            q_harm = bp.q_harm,
+            fr_thConf = bp.fr_thConf,
+            fr_thHigh = bp.fr_thHigh,
+            escape_horizon = 5,
+            escape_catastrophic = 10.0,
+            acc_bar_leaf = m3c_f.threshold,
+            acc_bar_parent = m3c_f.coarse_threshold,
+            credence_cap = m3c_f.max_credence,
+            model_z = m3c_f.model_z,
+            ratchet_multiple = round(Int, m3c_f.ratchet_horizon),
+            h_ref = m3c_f.acc_halflife,
+            r_ref = m3c_f.acc_rate_ref,
+            decay_beta = m3c_f.acc_mute,
+            voting_cap = m5_f.cap,
+            impact_threshold = 0.50,
+            min_skill_record = 20,
+            lt_window = 50
+        )
+    catch
+        # Fall back to canonical defaults if runtime library is not yet loaded
+    end
+    return _FROZEN_REPLAY_THRESHOLDS_REF[]
+end
+
+"Frozen governed thresholds from `docs/REPLAY_PREREG.md` §2 and `bootstrap_params()`. Modifying any of these in a replay is refused."
+const FROZEN_REPLAY_THRESHOLDS = _DEFAULT_FROZEN_THRESHOLDS
+
 """
     check_frozen_thresholds(; kw...)
 
@@ -36,15 +75,16 @@ Verifies that no caller overrides any pre-registered governed threshold in `FROZ
 Throws an `ArgumentError` if any governed threshold is altered after pre-registration (`docs/DATA.md` §16d B1, B10).
 """
 function check_frozen_thresholds(; kw...)
+    th = get_frozen_replay_thresholds()
     for (k, v) in kw
-        if hasproperty(FROZEN_REPLAY_THRESHOLDS, k)
-            frozen = getproperty(FROZEN_REPLAY_THRESHOLDS, k)
+        if hasproperty(th, k)
+            frozen = getproperty(th, k)
             v == frozen || throw(ArgumentError("frozen governed threshold `$k = $frozen` cannot be modified in replay (got `$v`)"))
         else
             throw(ArgumentError("unknown threshold override `$k` in replay"))
         end
     end
-    return FROZEN_REPLAY_THRESHOLDS
+    return th
 end
 
 "A single time-indexed forecast record in the as-of record store (`docs/DATA.md` §16d B3)."
@@ -319,7 +359,19 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         dh = Float64.(opt["pred_dh"])
         nha = Float64.(opt["pred_nha"])
         irr = Float64.(opt["pred_irreparable"])
-        conf = Float64(get(opt, "pred_confidence", 0.8))
+        # Compute credence/confidence from as-of historical observation record if provided (8.87)
+        conf = if haskey(opt, "record_errors") && !isempty(opt["record_errors"])
+            errs = Float64.(opt["record_errors"])
+            ages = haskey(opt, "record_ages") ? Float64.(opt["record_ages"]) : fill(1.0, length(errs))
+            decayed_record_credence(0.0, errs, ages, th.h_ref; cap = th.credence_cap)
+        elseif haskey(opt, "past_credences") && haskey(opt, "past_outcomes") && !isempty(opt["past_credences"])
+            creds = Float64.(opt["past_credences"])
+            outs = Float64.(opt["past_outcomes"])
+            ages = haskey(opt, "past_ages") ? Float64.(opt["past_ages"]) : fill(1.0, length(creds))
+            decayed_accuracy(creds, outs, ages, th.h_ref)
+        else
+            Float64(get(opt, "pred_confidence", 0.8))
+        end
         u_after = base_u .+ du
         h_after = base_h .+ dh
         lt_u = Float64.(get(opt, "lt_end_u", u_after))

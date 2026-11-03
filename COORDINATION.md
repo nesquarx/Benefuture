@@ -446,6 +446,10 @@ neither agent spends tokens on chatter.
     - In M3c, logged gain per being and gain per plan alongside totals, confirming realised transactions per being per step (`0.098..0.105` for `n >= 80`).
   - **Fresh seeds at $z = 3.0$**: Tested M7 paired $n$-effect on fresh seeds `101:112` (`n = 150` vs `n = 20`: `+3.60 ± 0.51`, `z = 3.37 > 3.0`, `significant == true`; `n = 300` vs `n = 20`: `+4.57 ± 0.62`, `z = 3.37 > 3.0`, `significant == true`). Updated `sim/test/calibrated_tests.jl` with `paired_effect(...; z = 3.0).significant`.
   - **`long_horizon.jl` fix**: Corrected `paired_effect(a .- b; z = 2.0)` and `pi_dec.lo / pi_dec.hi` so long-horizon battery runs without MethodError.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Increment report: Governed thresholds from `bootstrap_params()`, as-of replayed credences, and `tools/data/` (`sim/src/replay.jl`, `docs/REPLAY_PREREG.md`, `tools/data/*`):**
+  - **Governed thresholds derivation**: In `sim/src/replay.jl`, `FROZEN_REPLAY_THRESHOLDS` reads dynamically from `bootstrap_params()` (`kappa_harm`, `q_harm`, `fr_thConf = 0.90`, `fr_thHigh = 1.00`), `M3cParams` defaults (`acc_bar_leaf = 0.90`, `acc_bar_parent = 0.75`, `credence_cap = 0.99`, `model_z = 2.0`, `ratchet_multiple = 20`, `h_ref = 7.0`, `r_ref = 5.0`, `decay_beta = 0.5`), and `M5Params` defaults (`voting_cap = 0.05`), eliminating divergence (`fr_thHigh` restored to governed `1.0`).
+  - **As-of historical credence replay**: Added dynamic calculation of option credence from historical observation records (`record_errors` / `record_ages` via `decayed_record_credence` and `past_credences` / `past_outcomes` / `past_ages` via `decayed_accuracy`) inside `replay_decision` (`8.87: no fitting`).
+  - **`tools/data/`**: Created `tools/data/verify_cases.py` and `tools/data/CHECKSUMS.sha256` to calculate and verify raw case SHA-256 digests. Verified `replay_tests.jl` passes 26/26.
 
 ## 2b. Benchmarks
 
