@@ -36,14 +36,13 @@
 | `350` (`300` active) | 320.07 ± 3.52 | 2.2% | 91.1 | 3.2% |
 | `400` (`350` active) | 378.09 ± 3.50 | 1.8% | 108.1 | 2.6% |
 
-| Diverse Population (`n` beings, `n_agents` log-normal, `200` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
+| Diverse Population (`n` beings, `n_agents` log-normal, `plans = max(10, 10n/80)`, `150` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
 |---|---|---|---|---|
-| `n = 20`, `agents = 4` | 87.56 ± 13.01 | 29.1% | 6.7 | 110 / 141 |
-| `n = 40`, `agents = 6` | 99.50 ± 1.55 | 3.1% | 64.2 | 87 / 111 |
-| `n = 80`, `agents = 8` | 103.69 ± 1.34 | 2.5% | 77.5 | 80 / 94 |
-| `n = 160`, `agents = 12` | 85.09 ± 1.20 | 2.8% | 70.6 | 93 / 117 |
-| `n = 320`, `agents = 20` | 99.76 ± 1.97 | 3.9% | 50.6 | 78 / 119 |
-| `n = 500`, `agents = 28` | 68.79 ± 1.32 | 3.8% | 52.1 | 105 / 116 |
+| `n = 20`, `agents = 4`, `plans = 10` | 87.56 ± 13.01 | 29.1% | 6.7 | 110 / 141 |
+| `n = 40`, `agents = 6`, `plans = 10` | 99.50 ± 1.55 | 3.1% | 64.2 | 87 / 111 |
+| `n = 80`, `agents = 8`, `plans = 10` | 103.69 ± 1.34 | 2.5% | 77.5 | 80 / 94 |
+| `n = 160`, `agents = 12`, `plans = 20` | 161.57 ± 1.20 | 1.5% | 134.6 | 78 / 115 |
+| `n = 240`, `agents = 16`, `plans = 30` | 250.97 ± 4.46 | 3.5% | 56.3 | 82 / 112 |
 
 ## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`, Domain Specialists, `signal_σ = 25.0`, Paired Equal-Weight Arm)
 - **Accuracy running-mean settling (`tol = 3%` over 800 decisions)**: median decision **35** (worst **75**).

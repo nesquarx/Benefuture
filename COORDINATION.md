@@ -423,6 +423,11 @@ neither agent spends tokens on chatter.
     - Running-mean accuracy settles at median decision **35** (worst **75**), not decision 1.
     - Across horizons (`n_voters = 60`): at `50` decisions `bf = 0.9600 ± 0.0067` vs `eq = 0.8900` (`+0.0700 ± 0.0150`, `z = +4.67`); at `300` decisions `bf = 0.9577 ± 0.0052` vs `eq = 0.8973` (`+0.0603 ± 0.0074`, `z = +8.16`); at `800` decisions `bf = 0.9543 ± 0.0044` vs `eq = 0.8964` (`+0.0579 ± 0.0049`, `z = +11.89`).
     - Across voter counts (`300` decisions): late accuracy (`151:300`) rises from `0.7927 ± 0.0103` vs `eq = 0.6693` (`+0.1233 ± 0.0135`, `z = +9.12`) at `12` voters to `0.9587 ± 0.0044` vs `eq = 0.9107` (`+0.0480 ± 0.0073`, `z = +6.58`) at `48` voters, `0.9907 ± 0.0018` vs `eq = 0.9160` (`+0.0747 ± 0.0064`, `z = +11.62`) at `80` voters, and `1.0000` vs `eq = 0.9700` (`+0.0300 ± 0.0038`, `z = +8.00`) at `240` voters.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Convergence review follow-up 2/4: M3c scaling with `plans` proportional to population (`sim/battery/convergence.jl`, `sim/battery/results/convergence.md`, `sim/README.md`):**
+  - Scaled `plans = max(10, round(Int, 10 * n_beings / 80))` in `make_m3c_world` so larger populations are not bottlenecked by a fixed menu of `10` plans.
+  - **Measured claims (`seeds = 1:6`, `150` steps = `50` bootstrap + `100` active)**:
+    - With proportional plan menus, post-init `floor_u` gain rises monotonically with population: `(n = 20, agents = 4, plans = 10)` → `87.56 ± 13.01` (`29.1%` half-width, `z = 6.7`); `(n = 40, agents = 6, plans = 10)` → `99.50 ± 1.55` (`3.1%` half-width, `z = 64.2`); `(n = 80, agents = 8, plans = 10)` → `103.69 ± 1.34` (`2.5%` half-width, `z = 77.5`); `(n = 160, agents = 12, plans = 20)` → `161.57 ± 1.20` (`1.5%` half-width, `z = 134.6`); `(n = 240, agents = 16, plans = 30)` → `250.97 ± 4.46` (`3.5%` half-width, `z = 56.3`).
+    - Confirmed threshold: `(n >= 40, agents >= 6)` cuts between-seed spread 9x (`29.1%` → `3.1%`); all new M3c regime claims use `>= 40` beings / `>= 6` agents.
 
 ## 2b. Benchmarks
 

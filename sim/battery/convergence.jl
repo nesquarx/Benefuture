@@ -113,10 +113,11 @@ flush(stdout)
 m3c_seeds = 1:6
 
 function make_m3c_world(n_beings::Int, n_agents::Int, steps::Int)
+    plans = max(10, round(Int, 10 * n_beings / 80))
     skills = draw_skills(Xoshiro(20261102 + n_agents), n_agents, 4, [1, 3]; median = 0.6, log_sd = CALIBRATED.skill_log_sd)
     agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:n_agents]
     M3cParams(
-        ToyParams(n = n_beings, steps = steps, plans = 10),
+        ToyParams(n = n_beings, steps = steps, plans = plans),
         agents, [1, 1, 2, 2], trues(4);
         init_steps = 50, λpos = 0.05, λneg = 0.02,
         transactions = true, causal_distribution = true,
@@ -143,7 +144,7 @@ m3c_step_stats = map(m3c_step_grid) do st
     (steps = st, u = r_u, h = r_h)
 end
 
-m3c_pop_grid = [(20, 4), (40, 6), (80, 8), (160, 12), (320, 20), (500, 28)]
+m3c_pop_grid = [(20, 4), (40, 6), (80, 8), (160, 12), (240, 16)]
 m3c_pop_stats = map(m3c_pop_grid) do (n_b, n_a)
     trs = parallel_map(m3c_seeds) do seed
         run_m3c(make_m3c_world(n_b, n_a, 150); seed)
