@@ -166,15 +166,30 @@ println("[3/4] Measuring M5 governance convergence across diverse voter populati
 flush(stdout)
 m5_seeds = 1:10
 
-function make_m5_pair(n_voters::Int, decisions::Int)
+function make_m5_pair(n_voters::Int, decisions::Int; alpha::Real = 0.3, c::Real = 1.5, misconception_σ::Real = 1.5)
     rng = Xoshiro(7000 + n_voters)
-    raw = draw_skills(rng, n_voters, 4, [1, 2, 3, 4]; median = 0.4, log_sd = 0.6)
-    skills = [mod1(i, 4) == d ? raw[i, d] : 0.0 for i in 1:n_voters, d in 1:4]
-    focus = [mod1(i, 4) == d ? 0.7 : 0.1 for i in 1:n_voters, d in 1:4]
-    reputation = fill(0.5, n_voters, 4) .+ 0.5 .* skills
+    # Sparse specialists per subdomain: k = c * n^α (author ruling 8.90)
+    k_spec = max(1, round(Int, c * n_voters^alpha))
+    raw = draw_skills(rng, n_voters, 4, [1, 2, 3, 4]; median = 0.8, log_sd = 0.3)
+    skills = zeros(n_voters, 4)
+    focus = fill(0.1, n_voters, 4)
+    for d in 1:4
+        for i in (k_spec * (d - 1) + 1):min(n_voters, k_spec * d)
+            skills[i, d] = raw[i, d]
+            focus[i, d] = 0.7
+        end
+    end
+    for i in 1:n_voters
+        focus[i, :] ./= sum(focus[i, :])
+    end
+    reputation = fill(0.1, n_voters, 4) .+ 5.0 .* skills
     m3_stub = (relevance_leaf = reputation, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:n_voters])
-    p_bf = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 25.0, p_delegate = 0.5, cap = 0.15, ability_spread = 0.8, vote_value = 2.0)
-    p_eq = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 25.0, expertise_weight = 0.0, impact_weight = 0.0, p_delegate = 0.0, ability_spread = 0.8, vote_value = 2.0)
+    p_bf = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 2.0, skill_gain = 5.0,
+                    p_delegate = 0.6, cap = 0.15, impact_threshold = 0.5, expertise_weight = 10.0,
+                    vote_value = 1.0, misconception_σ = misconception_σ)
+    p_eq = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 2.0, skill_gain = 5.0,
+                    expertise_weight = 0.0, impact_weight = 0.0, p_delegate = 0.0,
+                    vote_value = 0.0, misconception_σ = misconception_σ)
     (p_bf, p_eq)
 end
 

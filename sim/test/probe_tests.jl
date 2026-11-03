@@ -539,3 +539,78 @@ end
 
     @test_throws ArgumentError accumulate_capped(10.0, 0.0, [-1.0])
 end
+
+@testset "Probe: M5 sparse specialist scaling and correlated misconceptions (8.90, B26, L113-114)" begin
+    # 1. Under copy-per-voter world without misconceptions (the legacy artifact):
+    # Condorcet jury theorem drives equal-weight accuracy to saturation (>= 0.90) at nv=240,
+    # causing wisdom gain (bf - eq) to shrink (+0.13 at nv=12 down to +0.03 at nv=240).
+    function run_dense_equal(nv, decisions)
+        skills = zeros(nv, 4)
+        for i in 1:nv, d in 1:4
+            if mod1(i, 4) == d
+                skills[i, d] = 0.8
+            end
+        end
+        focus = fill(0.1, nv, 4)
+        for i in 1:nv
+            focus[i, mod1(i, 4)] = 0.7
+            focus[i, :] ./= sum(focus[i, :])
+        end
+        reputation = fill(0.1, nv, 4) .+ 5.0 .* skills
+        m3_stub = (relevance_leaf = reputation, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:nv])
+        p_bf = M5Params(m3_stub, [1]; decisions=decisions, signal_σ=20.0, skill_gain=5.0, p_delegate=0.6, cap=0.15, impact_threshold=0.5, vote_value=1.0)
+        p_eq = M5Params(m3_stub, [1]; decisions=decisions, signal_σ=20.0, skill_gain=5.0, expertise_weight=0.0, impact_weight=0.0, p_delegate=0.0, vote_value=0.0)
+        (bf = mean([run_m5(p_bf; seed=s).correct for s in 1:4]),
+         eq = mean([run_m5(p_eq; seed=s).correct for s in 1:4]))
+    end
+
+    dense_12 = run_dense_equal(12, 150)
+    dense_240 = run_dense_equal(240, 150)
+    gain_12 = dense_12.bf - dense_12.eq
+    gain_240 = dense_240.bf - dense_240.eq
+    @test dense_240.eq >= 0.90         # Equal-weight saturates near 1.0 under copy-per-voter
+    @test gain_240 < gain_12          # The artifact: wisdom gain shrinks (+0.13 -> +0.03)
+
+    # 2. Under sparse specialists (k = c * n^0.3) with correlated misconceptions (misconception_σ = 1.5):
+    # Non-specialists share correlated misconceptions, preventing Condorcet aggregation from
+    # exceeding ~0.75 accuracy. Expertise-weighting and liquid delegation allow Benefuture to maintain
+    # high accuracy (>= 0.88), so wisdom gain RISES with n.
+    function run_sparse_misconception(nv, decisions)
+        c = 1.5
+        k_spec = max(1, round(Int, c * nv^0.3))
+        skills = zeros(nv, 4)
+        focus = fill(0.1, nv, 4)
+        for i in 1:k_spec
+            skills[i, 1] = 0.8
+            focus[i, 1] = 0.7
+        end
+        for d in 2:4
+            for i in (k_spec*(d-1)+1):min(nv, k_spec*d)
+                skills[i, d] = 0.8
+                focus[i, d] = 0.7
+            end
+        end
+        for i in 1:nv
+            focus[i, :] ./= sum(focus[i, :])
+        end
+        reputation = fill(0.1, nv, 4) .+ 5.0 .* skills
+        m3_stub = (relevance_leaf = reputation, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:nv])
+        p_bf = M5Params(m3_stub, [1]; decisions=decisions, signal_σ=2.0, skill_gain=5.0,
+                        p_delegate=0.6, cap=0.15, impact_threshold=0.5, expertise_weight=10.0,
+                        vote_value=1.0, misconception_σ=1.5)
+        p_eq = M5Params(m3_stub, [1]; decisions=decisions, signal_σ=2.0, skill_gain=5.0,
+                        expertise_weight=0.0, impact_weight=0.0, p_delegate=0.0,
+                        vote_value=0.0, misconception_σ=1.5)
+        (bf = mean([run_m5(p_bf; seed=s).correct for s in 1:6]),
+         eq = mean([run_m5(p_eq; seed=s).correct for s in 1:6]))
+    end
+
+    sparse_12 = run_sparse_misconception(12, 200)
+    sparse_80 = run_sparse_misconception(80, 200)
+    gain_sp_12 = sparse_12.bf - sparse_12.eq
+    gain_sp_80 = sparse_80.bf - sparse_80.eq
+
+    @test sparse_80.eq <= 0.78         # Correlated misconceptions prevent equal-weight from saturating
+    @test sparse_80.bf >= 0.88         # Expertise-weighted voting + delegation retains high accuracy
+    @test gain_sp_80 > gain_sp_12      # Wisdom gain grows with n under sparse specialists!
+end

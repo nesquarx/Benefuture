@@ -523,6 +523,19 @@ neither agent spends tokens on chatter.
 | 18 | **Births and accession in M7** (8.86) | `probe_tests.jl:333-344` | Pre-existing: forced additions lift newcomers without degrading existing beings; strong accession protects existing; fallback to weak accession logs degradation. | **PASS** (5/5) |
 | 19 | **The debatable escape** (M4 / L157) | `m4_tests.jl` (iterated world) | Added: `escape_accept` accepts proposals that beat incumbent by $z$ standard errors with gains > harms and zero irreparable harm; rejects proposals with irreparable harm, excess harm, or insignificant advantage. | **PASS** (6/6) |
 
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. M5 Sparse Specialists Scaling & Correlated Misconceptions (`sim/src/m5.jl`, `sim/README.md`, `sim/test/probe_tests.jl`, `sim/battery/convergence.jl`):**
+  - **Root Cause Verified (8.90)**: The previous `n_voters` sweep in `convergence.jl` copied the skill distribution across all voters ($n/4$ specialists in every domain). Under independent zero-mean non-specialist noise, the Condorcet jury theorem drove equal-weight majority accuracy to $\ge 0.94$ at $n=240$, shrinking the wisdom gain $(\text{bf} - \text{eq})$ from $+0.13$ to $+0.03$.
+  - **Implementation**:
+    1. Added `misconception_σ::Float64 = 0.0` (world noise parameter) to `M5Params` struct and constructor with non-negative validation check. Documented under Noise in `sim/README.md` (range `0.5–2.0`, citing `[LOR11]`, `[BEC17]`, `[DMZ03]`, `[ENZ19]`).
+    2. In `run_m5`: added dedicated random stream `mrng = Xoshiro(hash((seed, :misconception)))` ensuring existing runs with `misconception_σ = 0.0` remain 100% bit-for-bit identical. When `misconception_σ > 0`, non-specialists receive shared misconception shocks, damped exponentially by expertise: $\exp(-\text{skill\_gain} \cdot \max(0, \text{skill})) \cdot \text{misconception}$.
+    3. Standalone Probe (`sim/test/probe_tests.jl`):
+       - *Legacy copy-per-voter artifact*: Equal-weight accuracy saturates near $1.0$ ($0.948$ at $n=240$), causing wisdom gain to shrink ($+0.133 \to +0.032$).
+       - *Sparse specialists ($k = 1.5 \cdot n^{0.3}$) with correlated misconceptions ($\sigma_M = 1.5$)*: Equal-weight accuracy plateaus ($\le 0.75$), while Benefuture liquid delegation and expertise weighting finds the sparse specialists and retains high accuracy ($\ge 0.88$), causing wisdom gain to rise with $n$ ($+0.160$ at $n=12 \to +0.278$ at $n=80$).
+    4. Rebuilt `make_m5_pair` in `sim/battery/convergence.jl` to use sparse specialists and `misconception_σ = 1.5`.
+  - **Verification**:
+    - `sim/test/m5_tests.jl`: 16/16 testsets PASS (89/89 assertions).
+    - `sim/test/probe_tests.jl`: 25/25 testsets PASS (150/150 assertions).
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
@@ -595,6 +608,12 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 - **Task B5: Identity Entry-Point Binding, Cash-in Across Domains & Quote Honesty Probes (8.72, 8.78, 8.80)**
   - **Goal**: Entry-point binding against sybils (8.72), cash-in non-fungibility across domains (8.80), and transactions-domain honesty (8.78/8.79).
   - **Primary Files**: `sim/test/probe_tests.jl`, `sim/src/m3c.jl`.
+  - **Collision Risk**: Low.
+  - **Status**: `[x] COMPLETED`
+
+- **Task B6: M5 Sparse Specialists Scaling and Correlated Misconceptions (8.90, B26, L113-114)**
+  - **Goal**: Rebuild M5 voter scaling with sparse specialists ($k = c \cdot n^\alpha$) and correlated misconceptions ($\sigma_M = 1.5$) among non-specialists; proving equal-weight majority plateaus while Benefuture liquid delegation and expertise weighting maintains accuracy, growing wisdom gain with $n$.
+  - **Primary Files**: `sim/src/m5.jl`, `sim/README.md`, `sim/test/probe_tests.jl`, `sim/battery/convergence.jl`.
   - **Collision Risk**: Low.
   - **Status**: `[x] COMPLETED`
 
@@ -685,7 +704,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
     5. Structural models, then the pandemic and monetary families.
   - **Primary Files**: new `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/`, `tools/data/` (fetch scripts, checksums), `docs/REPLAY_PREREG.md`, `docs/DATA.md`.
   - **Collision Risk**: Low (new files; reads the existing rules).
-  - **Status**: `[x] COMPLETED` (prereg, 4 cases: Challenger 1986, Thalidomide 1960, Ragusa 1377, Semmelweis 1847, replay engine, 26/26 tests passing)
+  - **Status**: `IN PROGRESS` (Steps 1, 2, 4 done; Step 3 forecasting layer and case records provenance in progress)
 
 - **Task R5: Domain Predictability Distributions (`docs/CALIBRATION.md` §8)**
   - **Goal**: Empirical distributions of forecast skill across 15 domain families with 7 verified DOI citations.

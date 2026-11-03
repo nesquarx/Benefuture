@@ -88,6 +88,7 @@ struct M5Params
     advice_defer::Float64      # share who defer to it (world)
     advice_α::Float64          # the rest: w ~ Beta(α, β) (world)
     advice_β::Float64
+    misconception_σ::Float64   # standard deviation of correlated misconception among non-specialists (8.90; world)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -106,7 +107,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   camp_bias = Float64[], source_tags::Bool = false, rounds::Integer = 1,
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
                   echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.20, advice_avg::Real = 0.20,
-                  advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0)
+                  advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
+                  misconception_σ::Real = 0.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -135,6 +137,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     check(0 <= echo_margin < 1 && isfinite(echo_z) && echo_z >= 0 && echo_min >= 1, "echo margin in [0, 1), z non-negative, minimum positive")
     check(all(x -> 0 <= x <= 1, (advice_stay, advice_avg, advice_defer)) && advice_stay + advice_avg + advice_defer <= 1 + 1e-12 &&
           isfinite(advice_α) && isfinite(advice_β) && advice_α > 0 && advice_β > 0, "advice shares in [0, 1] summing to at most 1; Beta shapes positive")
+    check(isfinite(misconception_σ) && misconception_σ >= 0, "misconception noise non-negative")
     check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
@@ -147,7 +150,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
              source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
-             advice_stay, advice_avg, advice_defer, advice_α, advice_β)
+             advice_stay, advice_avg, advice_defer, advice_α, advice_β, Float64(misconception_σ))
 end
 
 """
@@ -163,6 +166,7 @@ function run_m5(p::M5Params; seed)
     # Imperfect agents (8.31): each voter's noise ceiling per domain, inverse to its skill there on
     # average; each locale's ceiling; choices draw noise on their own stream.
     arng, crng = Xoshiro(hash((seed, :ability))), Xoshiro(hash((seed, :choice)))
+    mrng = Xoshiro(hash((seed, :misconception)))  # correlated misconception among non-specialists (8.90)
     caps = ability_caps(arng, max.(p.skills, 0.0); base = p.signal_σ, gain = p.skill_gain, spread = p.ability_spread)
     local_caps = vec(ability_caps(arng, zeros(p.trial_units, 1); base = p.local_σ, gain = 0.0, spread = p.ability_spread))
     correct_trace = Bool[]
@@ -228,6 +232,7 @@ function run_m5(p::M5Params; seed)
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
         push!(truth_trace, truth)
+        misconception = p.misconception_σ > 0 ? p.misconception_σ * randn(mrng) : 0.0
         apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
         rep = max.(reputation[:, k], 0.0)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
@@ -255,7 +260,8 @@ function run_m5(p::M5Params; seed)
                 end
             end
         end
-        signal = [truth + p.camp_bias[i] + choice_noise(crng, caps[i, k]) for i in 1:na]
+        signal = [truth + p.camp_bias[i] + choice_noise(crng, caps[i, k]) +
+                  (p.misconception_σ > 0 ? misconception * exp(-p.skill_gain * max(0.0, p.skills[i, k])) : 0.0) for i in 1:na]
         defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
         weight_gap[] = max(weight_gap[], abs(sum(held[i] for i in 1:na if !delegated[i]) - total) / total)
         tag_tally, cast, caught_now = nothing, held, falses(na)
