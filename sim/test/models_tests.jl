@@ -6,6 +6,7 @@
 # deployment to build its record), and a challenger takes over the currency only when it beats the
 # incumbent by the significance rule (`select_candidate_ref`, `model_z`). A model that slips, a
 # captured one, is overtaken the same way.
+using Statistics
 isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
 
 

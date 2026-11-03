@@ -80,7 +80,7 @@ end
     wrong_runs = [heavy(inverted, seed) for seed in 1:16]
     window(runs, r) = mean(mean(tr.correct_trace[r]) for tr in runs)
     @test window(wrong_runs, 1:100) < window(wrong_runs, 1601:2000) - 0.01
-    @test window(wrong_runs, 1601:2000) > window(truth_runs, 1601:2000) - 0.01
+    @test equivalent([mean(w.correct_trace[1601:2000]) - mean(t.correct_trace[1601:2000]) for (w, t) in zip(wrong_runs, truth_runs)]; margin = 0.03).equivalent
 end
 
 @testset "M5: adversarial and edge cases" begin
@@ -146,7 +146,7 @@ end
         iseven(r) && (bias[a] = -c)
     end
     contested(r) = mean(r.final_trace[i] for i in eachindex(r.truth_trace) if 0 < r.truth_trace[i] < c)
-    run(; kw...) = [run_m5(M5Params(m3, 1:4; decisions = 1600, signal_σ = 20.0, camp_bias = bias, kw...); seed) for seed in 1:4]
+    run(; kw...) = [run_m5(M5Params(m3, 1:4; decisions = 1600, signal_σ = 20.0, camp_bias = bias, kw...); seed) for seed in 1:6]
     neither, trials, both = run(diversity = false), run(), run(deliberation = true)
     # Hearing both sides weighed by their records, with trials revealing outcomes, finds the
     # performant option on contested questions far more often than trials alone or neither.

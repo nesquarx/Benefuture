@@ -614,6 +614,26 @@ function run_m3c(p::M3cParams; seed)
                                    novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
     parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                      novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
+    function eval_challengers(j; only_if_eligible = false)
+        ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records &&
+                       (!only_if_eligible || currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
+                                                               novel = lnovel[j], threshold = leaf_bar(j),
+                                                               novel_threshold = p.novel_threshold, min_records = p.min_records,
+                                                               novel_floor = p.novel_floor))]]
+        length(ks) > 1 || return top[j]
+        brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]
+        hlj = hl_of(j)
+        dms(h) = decayed_mean_se([credence_score(x.credence, x.outcome) for x in h], [cur[] - x.step for x in h], hlj)
+        sc_ = [brier(mpool[j][k].hist) for k in ks]
+        ms = [isempty(x) ? 0.0 : mean(x) for x in sc_]
+        ses = [length(x) < 2 ? 1e12 : std(x) / sqrt(length(x)) for x in sc_]
+        if p.accuracy_rule == :decay
+            d_ = [dms(mpool[j][k].hist) for k in ks]
+            ms, ses = first.(d_), last.(d_)
+        end
+        w = select_candidate(ms, ses; z = p.model_z)
+        ks[w]
+    end
     leaf_σ(j, l) = t.spread * topm(j).scale * (ltrue[j] != l ? p.σ_coarse :
         lnovel[j] ? p.σ_leaf + (p.σ_coarse - p.σ_leaf) * exp(-length(lhist[j]) / p.n_learn) : p.σ_leaf)
     parent_σ(q, l) = t.spread * (knows(q, l) ? p.σ_branch : p.σ_coarse)
@@ -1019,16 +1039,12 @@ function run_m3c(p::M3cParams; seed)
         stops = [classify_sig(c) for c in sigs]
         for j in 1:nleaves()
             if !leaf_ok(j) && length(mpool[j]) > 1
-                cands = [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.min_records &&
-                         currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
-                                           novel = lnovel[j], threshold = leaf_bar(j),
-                                           novel_threshold = p.novel_threshold, min_records = p.min_records,
-                                           novel_floor = p.novel_floor)]
-                if !isempty(cands)
-                    best_k = cands[argmax([acc_of(mpool[j][k].hist, hl_of(j)) for k in cands])]
+                best_k = eval_challengers(j; only_if_eligible = true)
+                if best_k != top[j]
                     top[j] = best_k
                     lhist[j] = topm(j).hist
                     takeovers[] += 1
+                    takeovers_extreme[] += topm(j).sharp != 1.0
                     degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
@@ -1525,25 +1541,12 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
                 length(mpool[j]) > 1 || continue
-                brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]  # Lean `credence_score_ref`
-                # Under 8.85 each record weighs by its age, the standard error over the effective count.
-                hlj = hl_of(j)
-                dms(h) = decayed_mean_se([credence_score(x.credence, x.outcome) for x in h], [cur[] - x.step for x in h], hlj)
-                # A challenger competes once its record spans `takeover_records` (8.58-b): picking the
-                # best of several on a few records rewards extremised credences (Witkowski et al. 2023).
-                ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records]]
-                length(ks) > 1 || continue
-                sc_ = [brier(mpool[j][k].hist) for k in ks]
-                ms = [isempty(x) ? 0.0 : mean(x) for x in sc_]
-                ses = [length(x) < 2 ? 1e12 : std(x) / sqrt(length(x)) for x in sc_]
-                if p.accuracy_rule == :decay
-                    d_ = [dms(mpool[j][k].hist) for k in ks]
-                    ms, ses = first.(d_), last.(d_)
-                end
-                w = select_candidate(ms, ses; z = p.model_z)
-                if w != 1
-                    top[j] = ks[w]; lhist[j] = topm(j).hist; takeovers[] += 1
+                old_ok = leaf_ok(j)
+                best_k = eval_challengers(j; only_if_eligible = false)
+                if best_k != top[j]
+                    top[j] = best_k; lhist[j] = topm(j).hist; takeovers[] += 1
                     takeovers_extreme[] += topm(j).sharp != 1.0
+                    !old_ok && degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
         end

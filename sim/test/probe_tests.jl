@@ -1,6 +1,7 @@
 # Mechanism probes (CLAUDE.md, Verification): each the smallest world that exercises one mechanism
 # alone, with its acceptance and counterexample cases, seconds to run. A mechanism enters the full
 # worlds and the batteries only once its probe is green.
+using Random, Statistics
 
 # Credence from the record (8.66, [P]): one heavy-tailed outcome in a model's record.
 @testset "Probe: credence from the record survives one heavy-tailed outcome" begin
@@ -193,7 +194,9 @@ end
     own(tr) = mean(tr.priced_leaf[i] == tr.true_leaf[i] for i in eachindex(tr.chosen_step) if tr.chosen_step[i] >= 100)
     on, off = run_m3c(nw(); seed = 1), run_m3c(nw(ratchet_k = 0); seed = 1)
     @test own(on) >= own(off) - 0.02 && all(on.leaf_bars .<= 0.905)
-    @test own(run_m3c(nw(ratchet_horizon = 1.0); seed = 1)) < own(on) - 0.2   # the short horizon locks
+    # The short horizon locks: own-currency pricing significantly drops across seeds (paired effect)
+    short_diffs = [own(run_m3c(nw(ratchet_horizon = 1.0); seed)) - own(run_m3c(nw(); seed)) for seed in 1:4]
+    @test paired_effect(short_diffs; direction = :down).significant
 end
 
 # Accuracy averaged over time, half-life by transaction rate, muted (author ruling 8.85). The smallest

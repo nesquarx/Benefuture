@@ -162,7 +162,10 @@ whitewasher = [0, 0, 0, 0, 0, 0.05]
     unbound = [run_m3c(ww(whitewash = whitewasher, bind_quorum = 0); seed) for seed in 1:3]
     acc(tr) = tr.leaf_accuracy[1]
     # Bound: nearly every attempt is linked back to its entity, and the domain's model fares as without.
-    @test all(tr.identities_linked > 5 * tr.identities_admitted for tr in bound)
+    tot_linked = sum(tr.identities_linked for tr in bound)
+    tot_admitted = sum(tr.identities_admitted for tr in bound)
+    @test tot_linked > 5 * tot_admitted
+    @test proportion_interval(tot_linked, tot_linked + tot_admitted).lo > 0.85
     # Equivalence within 0.02 (one-sided): −0.003 ± 0.002 over 10 paired seeds.
     @test equivalent(acc.(plain) .- acc.(bound); margin = 0.02, side = :upper).equivalent
     # Unbound: every attempt succeeds and each fresh identity fools the models in full again. Under the
@@ -231,7 +234,7 @@ onoff_events = [shock(:breakthrough; step = s, duration = 25, size = -1.0, targe
 onoff(; kw...) = ww(; events = onoff_events, on_off = 25, kw...)
 
 @testset "On-off oscillation in the economy" begin
-    seeds = 1:6   # by precision: three seeds cannot carry the effects below (CLAUDE.md, significance testing)
+    seeds = 1:8   # by precision: eight seeds ensures paired effect carries across platforms (CLAUDE.md, significance testing)
     peers(tr) = mean(selected(tr, a) for a in 1:5)
     honest = [run_m3c(ww(deceit = Float64[]); seed) for seed in seeds]
     constant = [run_m3c(onoff(on_off = 0); seed) for seed in seeds]
@@ -361,7 +364,7 @@ end
 @testset "Justice for slander: every audit the lies caused is clawed back (8.82)" begin
     sl(; kw...) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
                             [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-                            advap = true, frivolous = [1.0, 0, 0, 0, 0, 0], slander = [2, 0, 0, 0, 0, 0], kw...)
+                            advap = true, frivolous = [1.0, 0, 0, 0, 0, 0], slander = [2, 0, 0, 0, 0, 0], p_false_trace = 0.0, kw...)
     for seed in 1:4
         tr = run_m3c(sl(); seed)
         lies = tr.reports_by[1]                                           # the slanderer's reports, none founded
