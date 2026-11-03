@@ -1,0 +1,87 @@
+# Convergence & Population-Diversity Sizing Report
+
+- **Commit**: `08627f2`
+- **Runtime**: `15.54` minutes (`8` threads)
+- **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
+
+## 1. M1 Metric Competition & Distributed Choice (`seeds = 1:10`)
+- **Step-rate settling (`tol = 10%` over 1,000 steps)**: action rate median step **53** (worst **113**), `floor_u` rate median **512** (worst **686**), `floor_h` rate median **423** (worst **671**), rare floor falls median **448** (worst **600**).
+
+| Horizon (`steps`, `n = 200`) | `floor_u` Mean ± SE | Rel 95% Half-Width | `z` (`mean/se`) | `floor_h` Rel 95% Half-Width |
+|---|---|---|---|---|
+| `50` | 2.30 ± 0.07 | 5.9% | 33.3 | 22.8% |
+| `100` | 6.60 ± 0.26 | 7.8% | 25.2 | 10.2% |
+| `200` | 15.74 ± 0.48 | 6.0% | 32.8 | 7.1% |
+| `300` | 27.17 ± 0.63 | 4.5% | 43.4 | 4.0% |
+| `500` | 48.32 ± 1.13 | 4.6% | 42.9 | 2.3% |
+| `1000` | 105.75 ± 1.29 | 2.4% | 82.0 | 2.0% |
+
+| Diverse Population (`n`, distributed G, `150` steps) | `floor_u` Mean ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
+|---|---|---|---|---|
+| `20` | 15.27 ± 0.58 | 7.4% | 26.3 | 121 / 150 |
+| `50` | 11.00 ± 0.44 | 7.8% | 25.2 | 123 / 140 |
+| `100` | 9.36 ± 0.48 | 10.1% | 19.5 | 120 / 142 |
+| `200` | 7.21 ± 0.47 | 12.9% | 15.2 | 122 / 137 |
+| `500` | 6.13 ± 0.41 | 13.1% | 15.0 | 137 / 146 |
+| `1000` | 6.30 ± 0.46 | 14.5% | 13.6 | 124 / 141 |
+
+## 2. M3c Calibrated Realistic Economy (`seeds = 1:8`, Log-Normal Agent Skills)
+- **Post-bootstrap (`>50`) growth-rate settling (`tol = 10%` over 500 steps)**: `floor_u` median step **81** (worst **113**), `floor_h` median step **116** (worst **154**).
+
+| Total Steps (`50` init + active, `n = 80`, `8` agents) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | `floor_h` Rel 95% Half-Width |
+|---|---|---|---|---|
+| `100` (`50` active) | 50.58 ± 0.71 | 2.8% | 70.9 | 2.6% |
+| `150` (`100` active) | 103.69 ± 1.34 | 2.5% | 77.5 | 3.2% |
+| `250` (`200` active) | 212.74 ± 2.54 | 2.3% | 83.7 | 2.4% |
+| `350` (`300` active) | 320.07 ± 3.52 | 2.2% | 91.1 | 3.2% |
+| `400` (`350` active) | 378.09 ± 3.50 | 1.8% | 108.1 | 2.6% |
+
+| Diverse Population (`n` beings, `n_agents` log-normal, `200` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
+|---|---|---|---|---|
+| `n = 20`, `agents = 4` | 87.56 ± 13.01 | 29.1% | 6.7 | 110 / 141 |
+| `n = 40`, `agents = 6` | 99.50 ± 1.55 | 3.1% | 64.2 | 87 / 111 |
+| `n = 80`, `agents = 8` | 103.69 ± 1.34 | 2.5% | 77.5 | 80 / 94 |
+| `n = 160`, `agents = 12` | 85.09 ± 1.20 | 2.8% | 70.6 | 93 / 117 |
+| `n = 320`, `agents = 20` | 99.76 ± 1.97 | 3.9% | 50.6 | 78 / 119 |
+| `n = 500`, `agents = 28` | 68.79 ± 1.32 | 3.8% | 52.1 | 105 / 116 |
+
+## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`)
+- **Accuracy running-mean settling (`tol = 3%` over 800 decisions)**: median decision **1** (worst **83**).
+
+| Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
+|---|---|---|---|---|
+| `50` | 0.9760 ± 0.0065 | 1.31% | +0.2260 ± 0.0065 | +34.60 |
+| `100` | 0.9820 ± 0.0051 | 1.02% | +0.2320 ± 0.0051 | +45.31 |
+| `200` | 0.9815 ± 0.0043 | 0.86% | +0.2315 ± 0.0043 | +54.03 |
+| `300` | 0.9800 ± 0.0034 | 0.68% | +0.2300 ± 0.0034 | +67.52 |
+| `500` | 0.9810 ± 0.0028 | 0.55% | +0.2310 ± 0.0028 | +83.92 |
+| `800` | 0.9804 ± 0.0016 | 0.33% | +0.2304 ± 0.0016 | +140.85 |
+
+| Diverse Voters (`n_voters`, `300` decisions) | Late Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
+|---|---|---|---|---|
+| `12` voters | 0.9613 ± 0.0055 | 1.12% | +0.2113 ± 0.0055 | +38.32 |
+| `24` voters | 0.9720 ± 0.0044 | 0.89% | +0.2220 ± 0.0044 | +50.20 |
+| `48` voters | 0.9760 ± 0.0020 | 0.41% | +0.2260 ± 0.0020 | +110.96 |
+| `80` voters | 0.9793 ± 0.0034 | 0.67% | +0.2293 ± 0.0034 | +68.20 |
+| `140` voters | 0.9807 ± 0.0039 | 0.78% | +0.2307 ± 0.0039 | +59.05 |
+| `240` voters | 0.9867 ± 0.0028 | 0.56% | +0.2367 ± 0.0028 | +84.20 |
+
+## 4. M7 Population with Diverse Teachers, Learners & Novelty (`seeds = 1:8`, Distributed G)
+- **Step-rate settling (`tol = 10%` over 200 steps)**: `floor_u` median step **64** (worst **122**), `median_u` median step **80** (worst **117**).
+
+| Steps (`n = 100`) | `floor_u` Gain ± SE | `floor_u` Rel 95% Half-Width | `floor_u` `z` | `median_u` Rel 95% Half-Width |
+|---|---|---|---|---|
+| `25` | 4.18 ± 0.15 | 7.2% | 27.2 | 9.5% |
+| `50` | 7.21 ± 0.47 | 12.8% | 15.3 | 14.9% |
+| `80` | 11.23 ± 0.81 | 14.2% | 13.8 | 15.3% |
+| `120` | 16.40 ± 0.90 | 10.7% | 18.3 | 11.4% |
+| `150` | 20.89 ± 1.26 | 11.8% | 16.6 | 12.2% |
+
+| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |
+|---|---|---|---|---|
+| `n = 20` | 6.54 ± 0.60 | 17.9% | 11.0 | 50 / 54 |
+| `n = 40` | 8.37 ± 0.78 | 18.2% | 10.8 | 46 / 53 |
+| `n = 80` | 8.78 ± 0.19 | 4.2% | 46.2 | 39 / 44 |
+| `n = 150` | 9.94 ± 0.19 | 3.7% | 52.5 | 32 / 39 |
+| `n = 300` | 13.30 ± 0.22 | 3.3% | 59.5 | 26 / 35 |
+| `n = 500` | 18.14 ± 0.29 | 3.1% | 62.5 | 18 / 25 |

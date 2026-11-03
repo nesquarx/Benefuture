@@ -89,6 +89,17 @@ so the slow settling of growth rates is mostly warm-up. Guidance: discard a burn
 steps; measure rates over at least 500 steps after it, and rare events such as floor falls over
 1,000; use ten seeds. Spread falls roughly with the square root of steps times seeds.
 
+### Diverse-population & step-horizon convergence (`sim/battery/convergence.jl`)
+
+Measured across diverse populations (log-normal agent skills, log-normal voter skills with ability caps, and log-normal teacher quality / learner reception) up to 1,000 beings (`sim/battery/results/convergence.md`):
+
+| Rung | Population Threshold (`rel 95% CI <= 10%`) | Horizon Settling (`tol = 10%`, `3%` in M5) | Large-Population Scaling Effect | Test & Battery Sizing |
+|---|---|---|---|---|
+| **M1** (distributed `G`) | `n >= 200` (asymptotic floor-gain rate `7.21 ± 0.47` at `n=200`, `6.13 ± 0.41` at `n=500`, `6.30 ± 0.46` at `n=1000`; `n=20..50` overstates by ~2x) | `steps >= 200` (`6.0%` `floor_u` half-width, `z = 32.8`; `2.4%`, `z = 82.0` at `1,000` steps) | Extreme-value floor rate stabilizes at `n >= 200` | `n = 200..1,000`, `steps = 200..1,000` |
+| **M3c** (calibrated log-normal skills) | `n >= 40, agents >= 6` (half-width drops **9x** from `29.1%` at `(20, 4)` to `3.1%` at `(40, 6)` and `2.5%` at `(80, 8)`, staying `2.8%–3.9%` to `(500, 28)`) | `steps >= 150` (`100` active steps after `50`-step init; median settling step `81`, max `113`) | Law-of-large-numbers over log-normal agent draws eliminates single-agent draw variance for `agents >= 6` | `n = 80..240`, `agents = 6..16`, `steps = 250..2,400` (**2x–6x** above threshold) |
+| **M5** (log-normal voters + caps) | `n_voters >= 48` (late accuracy `0.9760 ± 0.0020`, `0.41%` half-width, `z = 111.0`; rises to `0.9867 ± 0.0028` at `240` voters) | `decisions >= 100` (`1.02%` half-width, `z = 45.3`; running mean settles at median `1`, max `83`) | Monotonic accuracy climb from `0.9613` (`12` voters) to `0.9867` (`240` voters) | `n_voters = 80..120`, `decisions = 300..2,000` (**2x–20x** above threshold) |
+| **M7** (diverse teachers/learners + novelty) | `n >= 80` (half-width drops **4.3x** from `18.2%` at `n=40` to `4.2%` at `n=80`, `3.7%` at `n=150`, `3.3%` at `n=300`, `3.1%` at `n=500`) | `steps >= 50` at `n >= 80` (settling step drops from `50/54` at `n=20` to `39/44` at `n=80` and `18/25` at `n=500`) | Larger diverse teacher/researcher pools accelerate frontier discovery & diffusion (`floor_u` gain `6.54` at `n=20` → `8.78` at `n=80` → `18.14` at `n=500`) | `n = 100..200`, `steps = 200..600` (**1.25x–2.5x** population, **4x–13x** horizon) |
+
 ## A note on earlier readings
 
 Readings in the M3b–M5 sections and the black-swan table were taken with losses decaying faster

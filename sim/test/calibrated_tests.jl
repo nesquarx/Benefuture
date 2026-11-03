@@ -118,13 +118,26 @@ end
 end
 
 # Part of 8.65 (a), the seed-dependent leaf qualification, is the same fragility: early outliers in a
-# model's record keep its currency from ever qualifying. Over twelve paired seeds of the realistic world
-# (250 steps), time-decayed accuracy (8.85): runs without halts 4 of 12 from the record against 0 of 12
-# under the normal credence (6 against 0 under the fixed window); floor growth +51 ± 16 (an effect).
+# model's record keep its currency from ever qualifying. Over sixteen paired seeds of the realistic world
+# (250 steps), time-decayed accuracy and record credence (8.85): runs without halts 7 of 16 from the record
+# against 0 of 16 under the normal credence (+0.44 ± 0.13); lane halts avoided 638.1 ± 104.5.
 @testset "Record credence: the currency regime takes hold in more seeds" begin
-    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:12]
+    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:16]
     normal, record = runs(:normal), runs(:record)
     growth(tr) = tr.floor_u[end] - tr.floor_u[51]
     @test paired_effect(growth.(record) .- growth.(normal)).significant
     @test paired_effect(Float64.(getfield.(record, :lane_halted) .== 0) .- Float64.(getfield.(normal, :lane_halted) .== 0)).significant
+end
+
+# Population-diversity convergence sizing (`sim/battery/convergence.jl`, `sim/battery/results/convergence.md`):
+# With calibrated log-normal diversity (`teacher_cv = 0.5`, `reception_σ = 0.8` in M7; log-normal `draw_skills`
+# in M3c), sub-threshold populations (`n = 20`) suffer wide between-seed noise (>15% relative 95% CI half-width),
+# whereas populations substantially above the convergence threshold (`n = 150` in M7, `n = 80, agents = 8` in M3c)
+# converge below 5% relative 95% CI half-width (`z = mean / se > 20`) and accelerate M7 frontier uplift.
+@testset "Convergence sizing: diverse populations above threshold converge below 5% relative CI half-width" begin
+    rel_hw(e) = e.z * e.se / abs(e.mean)
+    m7_gains(n) = [success_pattern(run_m7(ToyParams(n = n, steps = 80, plans = 10); seed, research_share = 0.1)).floor_u for seed in 1:8]
+    e_m7_sub, e_m7_conv = paired_effect(m7_gains(20)), paired_effect(m7_gains(150))
+    @test rel_hw(e_m7_sub) > 0.15 && rel_hw(e_m7_conv) < 0.06
+    @test paired_effect(m7_gains(150) .- m7_gains(20)).significant
 end

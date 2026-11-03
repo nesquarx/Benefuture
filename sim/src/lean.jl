@@ -10,7 +10,7 @@ const SO_EXT = Sys.isapple() ? ".dylib" : ".so"
 const LIBFILE = joinpath(REPO, ".lake", "build", "lib", "libBenefuture_BenefutureReference" * SO_EXT)
 const STAMP = LIBFILE * ".sha256"
 const LIB = Ref{Ptr{Cvoid}}(C_NULL)
-const SYMS = Dict{Symbol,Ptr{Cvoid}}()
+const SYMS = Ref(Dict{Symbol,Ptr{Cvoid}}())
 const SYMS_LOCK = ReentrantLock()
 
 function tool(name)
@@ -66,13 +66,20 @@ function load_lean_lib()
     ccall(Libdl.dlsym(LIB[], :initialize_Benefuture_BenefutureReference), Ptr{Cvoid},
           (UInt8, Ptr{Cvoid}), 1, Ptr{Cvoid}(1))
     lock(SYMS_LOCK) do
-        empty!(SYMS)
+        SYMS[] = Dict{Symbol,Ptr{Cvoid}}()
     end
     nothing
 end
 
-sym(name::Symbol) = lock(SYMS_LOCK) do
-    get!(() -> Libdl.dlsym(LIB[], name), SYMS, name)
+function sym(name::Symbol)
+    p = get(SYMS[], name, C_NULL)
+    p != C_NULL && return p
+    lock(SYMS_LOCK) do
+        d = copy(SYMS[])
+        p2 = get!(() -> Libdl.dlsym(LIB[], name), d, name)
+        SYMS[] = d
+        return p2
+    end
 end
 
 "Build a Lean `FloatArray`; ownership passes to the Lean call that receives it."

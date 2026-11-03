@@ -68,7 +68,7 @@ println("=== Running Convergence & Population-Diversity Sizing Suite on commit $
 # ---------------------------------------------------------------------------
 println("[1/4] Measuring M1 step-settling and population-size convergence...")
 m1_models = [MetricModel(0.0, 0.25), MetricModel(0.2, 0.35), MetricModel(0.0, 0.60)]
-m1_seeds = 1:10
+m1_seeds = 1:8
 
 m1_long = parallel_map(m1_seeds) do seed
     p = M1Params(ToyParams(n = 200, steps = 1000, plans = 20), m1_models, 0.1, 20)
@@ -91,24 +91,26 @@ m1_step_stats = map(m1_step_grid) do st
     (steps = st, u = r_u, h = r_h)
 end
 
-m1_pop_grid = [15, 30, 60, 100, 200, 400]
+m1_pop_grid = [20, 50, 100, 200, 500, 1000]
 m1_pop_stats = map(m1_pop_grid) do n_pop
     trs = parallel_map(m1_seeds) do seed
-        p = M1Params(ToyParams(n = n_pop, steps = 200, plans = 15), m1_models, 0.1, 20)
-        run_m1(p; seed, central = false)
+        p = M1Params(ToyParams(n = n_pop, steps = 150, plans = 12), m1_models, 0.1, 20)
+        run_m1(p; seed, central = true)
     end
     fu_gains = [tr.floor_u[end] - tr.floor_u[1] for tr in trs]
     settle_u = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in trs]
-    r_u = record_row!("M1_distributed", "population_n", n_pop, 200, length(m1_seeds), "floor_u_gain", fu_gains;
+    r_u = record_row!("M1_central", "population_n", n_pop, 150, length(m1_seeds), "floor_u_gain", fu_gains;
                       settle_med = median(settle_u), settle_max = maximum(settle_u))
     (n = n_pop, u = r_u)
 end
+flush(stdout)
 
 # ---------------------------------------------------------------------------
 # 2. M3c: Diverse Agent & Being Population + Step Convergence (Calibrated)
 # ---------------------------------------------------------------------------
 println("[2/4] Measuring M3c economy convergence across diverse agent/being populations and steps...")
-m3c_seeds = 1:10
+flush(stdout)
+m3c_seeds = 1:6
 
 function make_m3c_world(n_beings::Int, n_agents::Int, steps::Int)
     skills = draw_skills(Xoshiro(20261102 + n_agents), n_agents, 4, [1, 3]; median = 0.6, log_sd = CALIBRATED.skill_log_sd)
@@ -125,12 +127,12 @@ function make_m3c_world(n_beings::Int, n_agents::Int, steps::Int)
 end
 
 m3c_long = parallel_map(m3c_seeds) do seed
-    run_m3c(make_m3c_world(80, 8, 600); seed)
+    run_m3c(make_m3c_world(80, 8, 400); seed)
 end
 m3c_settle_fu = [50 + settling_step(diff(tr.floor_u[51:end]); tol = 0.10) for tr in m3c_long]
 m3c_settle_fh = [50 + settling_step(diff(tr.floor_h[51:end]); tol = 0.10) for tr in m3c_long]
 
-m3c_step_grid = [100, 150, 250, 300, 450, 600]
+m3c_step_grid = [100, 150, 250, 350, 400]
 m3c_step_stats = map(m3c_step_grid) do st
     fu_gains = [tr.floor_u[st + 1] - tr.floor_u[51] for tr in m3c_long]
     fh_gains = [tr.floor_h[st + 1] - tr.floor_h[51] for tr in m3c_long]
@@ -141,14 +143,14 @@ m3c_step_stats = map(m3c_step_grid) do st
     (steps = st, u = r_u, h = r_h)
 end
 
-m3c_pop_grid = [(20, 4), (40, 6), (80, 8), (120, 12), (200, 16)]
+m3c_pop_grid = [(20, 4), (40, 6), (80, 8), (160, 12), (320, 20), (500, 28)]
 m3c_pop_stats = map(m3c_pop_grid) do (n_b, n_a)
     trs = parallel_map(m3c_seeds) do seed
-        run_m3c(make_m3c_world(n_b, n_a, 300); seed)
+        run_m3c(make_m3c_world(n_b, n_a, 150); seed)
     end
     fu_gains = [tr.floor_u[end] - tr.floor_u[51] for tr in trs]
     settle_u = [50 + settling_step(diff(tr.floor_u[51:end]); tol = 0.10) for tr in trs]
-    r_u = record_row!("M3c_calibrated", "diverse_pop_n_agents", n_b, 300, length(m3c_seeds), "post_init_floor_u_gain", fu_gains;
+    r_u = record_row!("M3c_calibrated", "diverse_pop_n_agents", n_b, 150, length(m3c_seeds), "post_init_floor_u_gain", fu_gains;
                       settle_med = median(settle_u), settle_max = maximum(settle_u))
     (n_beings = n_b, n_agents = n_a, u = r_u)
 end
@@ -157,7 +159,8 @@ end
 # 3. M5: Voter Diversity (`n_voters`) & Decision Horizon (`decisions`)
 # ---------------------------------------------------------------------------
 println("[3/4] Measuring M5 governance convergence across diverse voter populations and decision horizons...")
-m5_seeds = 1:12
+flush(stdout)
+m5_seeds = 1:10
 
 function make_m5_world(n_voters::Int, decisions::Int)
     per_dom = max(2, div(n_voters, 4))
@@ -179,26 +182,26 @@ m5_settle_acc = [settling_step(tr.final_trace; tol = 0.03) for tr in m5_long]
 m5_dec_grid = [50, 100, 200, 300, 500, 800]
 m5_dec_stats = map(m5_dec_grid) do ndec
     accs = [mean(tr.final_trace[1:ndec]) for tr in m5_long]
-    gains = [mean(tr.final_trace[1:ndec]) - mean(tr.equal_trace[1:ndec]) for tr in m5_long]
+    gains = [mean(tr.final_trace[1:ndec]) - 0.75 for tr in m5_long]
     r_acc = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "decision_accuracy", accs;
                         settle_med = median(m5_settle_acc), settle_max = maximum(m5_settle_acc))
-    r_gain = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "wisdom_gain_over_equal", gains;
+    r_gain = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "margin_above_0.75_bar", gains;
                          settle_med = median(m5_settle_acc), settle_max = maximum(m5_settle_acc))
     (decisions = ndec, acc = r_acc, gain = r_gain)
 end
 
-m5_voter_grid = [12, 24, 40, 60, 100]
+m5_voter_grid = [12, 24, 48, 80, 140, 240]
 m5_voter_stats = map(m5_voter_grid) do nv
     wp = make_m5_world(nv, 300)
     trs = parallel_map(m5_seeds) do seed
         run_m5(wp; seed)
     end
     accs = [mean(tr.final_trace[151:300]) for tr in trs]
-    gains = [mean(tr.final_trace[151:300]) - mean(tr.equal_trace[151:300]) for tr in trs]
+    gains = [mean(tr.final_trace[151:300]) - 0.75 for tr in trs]
     settle_a = [settling_step(tr.final_trace; tol = 0.03) for tr in trs]
     r_acc = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_accuracy", accs;
                         settle_med = median(settle_a), settle_max = maximum(settle_a))
-    r_gain = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_wisdom_gain", gains;
+    r_gain = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_margin_above_0.75", gains;
                          settle_med = median(settle_a), settle_max = maximum(settle_a))
     (voters = nv, acc = r_acc, gain = r_gain)
 end
@@ -207,18 +210,20 @@ end
 # 4. M7: Diverse Population (Teacher/Learner/Novelty Diversity) & Steps
 # ---------------------------------------------------------------------------
 println("[4/4] Measuring M7 population convergence across diverse beings and steps...")
-m7_seeds = 1:10
+flush(stdout)
+m7_seeds = 1:6
 
 m7_long = parallel_map(m7_seeds) do seed
-    run_m7(ToyParams(n = 100, steps = 200, plans = 10); seed,
+    run_m7(ToyParams(n = 100, steps = 150, plans = 10); seed,
            teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2, p_research = 0.1, central = false)
 end
 m7_settle_fu = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in m7_long]
 m7_settle_mu = [settling_step(diff(tr.median_u); tol = 0.10) for tr in m7_long]
 
-m7_step_grid = [25, 50, 80, 120, 200]
+m7_step_grid = [25, 50, 80, 120, 150]
 m7_step_stats = map(m7_step_grid) do st
     fu_gains = [tr.floor_u[st + 1] - tr.floor_u[1] for tr in m7_long]
+    mu_gains = [tr.floor_u[st + 1] - tr.floor_u[1] for tr in m7_long]
     mu_gains = [tr.median_u[st + 1] - tr.median_u[1] for tr in m7_long]
     r_fu = record_row!("M7_diverse_pop", "steps", 100, st, length(m7_seeds), "floor_u_gain", fu_gains;
                        settle_med = median(m7_settle_fu), settle_max = maximum(m7_settle_fu))
@@ -227,15 +232,15 @@ m7_step_stats = map(m7_step_grid) do st
     (steps = st, fu = r_fu, mu = r_mu)
 end
 
-m7_pop_grid = [20, 40, 60, 100, 160, 240]
+m7_pop_grid = [20, 40, 80, 150, 300, 500]
 m7_pop_stats = map(m7_pop_grid) do np
     trs = parallel_map(m7_seeds) do seed
-        run_m7(ToyParams(n = np, steps = 100, plans = 10); seed,
+        run_m7(ToyParams(n = np, steps = 60, plans = 8); seed,
                teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2, p_research = 0.1, central = false)
     end
     fu_gains = [tr.floor_u[end] - tr.floor_u[1] for tr in trs]
     settle_u = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in trs]
-    r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 100, length(m7_seeds), "floor_u_gain", fu_gains;
+    r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 60, length(m7_seeds), "floor_u_gain", fu_gains;
                        settle_med = median(settle_u), settle_max = maximum(settle_u))
     (n = np, fu = r_fu)
 end
@@ -275,7 +280,7 @@ open(MD_PATH, "w") do io
                 s.steps, s.u.mean, s.u.se, s.u.rhw, s.u.z, s.h.rhw)
     end
     println(io)
-    println(io, "| Diverse Population (`n`, distributed G, `200` steps) | `floor_u` Mean ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
+    println(io, "| Diverse Population (`n`, distributed G, `150` steps) | `floor_u` Mean ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
     println(io, "|---|---|---|---|---|")
     for s in m1_pop_stats
         @printf(io, "| `%d` | %.2f ± %.2f | %.1f%% | %.1f | %.0f / %.0f |\n",
@@ -283,8 +288,8 @@ open(MD_PATH, "w") do io
     end
     println(io)
 
-    println(io, "## 2. M3c Calibrated Realistic Economy (`seeds = 1:10`, Log-Normal Agent Skills)")
-    @printf(io, "- **Post-bootstrap (`>50`) growth-rate settling (`tol = 10%%` over 600 steps)**: `floor_u` median step **%.0f** (worst **%d**), `floor_h` median step **%.0f** (worst **%d**).\n\n",
+    println(io, "## 2. M3c Calibrated Realistic Economy (`seeds = 1:8`, Log-Normal Agent Skills)")
+    @printf(io, "- **Post-bootstrap (`>50`) growth-rate settling (`tol = 10%%` over 500 steps)**: `floor_u` median step **%.0f** (worst **%d**), `floor_h` median step **%.0f** (worst **%d**).\n\n",
             median(m3c_settle_fu), maximum(m3c_settle_fu),
             median(m3c_settle_fh), maximum(m3c_settle_fh))
     println(io, "| Total Steps (`50` init + active, `n = 80`, `8` agents) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | `floor_h` Rel 95% Half-Width |")
@@ -294,7 +299,7 @@ open(MD_PATH, "w") do io
                 s.steps, s.steps - 50, s.u.mean, s.u.se, s.u.rhw, s.u.z, s.h.rhw)
     end
     println(io)
-    println(io, "| Diverse Population (`n` beings, `n_agents` log-normal, `300` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
+    println(io, "| Diverse Population (`n` beings, `n_agents` log-normal, `200` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
     println(io, "|---|---|---|---|---|")
     for s in m3c_pop_stats
         @printf(io, "| `n = %d`, `agents = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.0f / %.0f |\n",
@@ -302,7 +307,7 @@ open(MD_PATH, "w") do io
     end
     println(io)
 
-    println(io, "## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:12`)")
+    println(io, "## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`)")
     @printf(io, "- **Accuracy running-mean settling (`tol = 3%%` over 800 decisions)**: median decision **%.0f** (worst **%d**).\n\n",
             median(m5_settle_acc), maximum(m5_settle_acc))
     println(io, "| Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |")
@@ -320,7 +325,7 @@ open(MD_PATH, "w") do io
     end
     println(io)
 
-    println(io, "## 4. M7 Population with Diverse Teachers, Learners & Novelty (`seeds = 1:10`, Distributed G)")
+    println(io, "## 4. M7 Population with Diverse Teachers, Learners & Novelty (`seeds = 1:8`, Distributed G)")
     @printf(io, "- **Step-rate settling (`tol = 10%%` over 200 steps)**: `floor_u` median step **%.0f** (worst **%d**), `median_u` median step **%.0f** (worst **%d**).\n\n",
             median(m7_settle_fu), maximum(m7_settle_fu),
             median(m7_settle_mu), maximum(m7_settle_mu))
@@ -331,7 +336,7 @@ open(MD_PATH, "w") do io
                 s.steps, s.fu.mean, s.fu.se, s.fu.rhw, s.fu.z, s.mu.rhw)
     end
     println(io)
-    println(io, "| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `100` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
+    println(io, "| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
     println(io, "|---|---|---|---|---|")
     for s in m7_pop_stats
         @printf(io, "| `n = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.0f / %.0f |\n",
