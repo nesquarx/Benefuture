@@ -85,7 +85,7 @@ end
 # reception (varying), the teacher keeping all of its own. G chooses among lessons and ordinary
 # plans as in M0; research is spending (third rung).
 @testset "M7 teaching: lessons spread understanding and feed research" begin
-    p = ToyParams(n = 100, steps = 300, plans = 10)
+    p = ToyParams(n = 200, steps = 300, plans = 10)
     seeds = 1:4
     none = [run_m7(p; seed, ε = 0.0, research_share = 0.1) for seed in seeds]
     taught = [run_m7(p; seed, ε = 0.3, research_share = 0.1) for seed in seeds]
@@ -108,7 +108,7 @@ end
 # (relative to the frontier) and its novelty, and a success lands beyond the peak, teachable or tacit
 # (`p_teachable`). Ordinary work may pass the peak by in-job innovation, rarely, near the top only.
 @testset "M7 research as spending" begin
-    p = ToyParams(n = 100, steps = 300, plans = 10)
+    p = ToyParams(n = 200, steps = 300, plans = 10)
     # A teacher passes on only its teachable understanding; tacit gains stay with it.
     @test teaching_plan([0.0, 2.0, 5.0], 3, [1, 2], 1.0; tacit = 2.0).du == [3.0, 1.0, 0.0]
     shares = (0.0, 0.1, 0.8)
@@ -127,7 +127,7 @@ end
 # error (`pred_σ`) and chooses among them by the Lean rules; many act each step, concurrently. A single
 # global G choosing one plan a step is the limiting case (`central = true`).
 @testset "M7 G per entity" begin
-    p = ToyParams(n = 100, steps = 300, plans = 10)
+    p = ToyParams(n = 200, steps = 300, plans = 10)
     tr = run_m7(p; seed = 1, ε = 0.3)
     @test mean(tr.actions) > 1  # many entities act each step
     @test isequal(run_m7(p; seed = 1, ε = 0.3), tr)

@@ -428,6 +428,9 @@ neither agent spends tokens on chatter.
   - **Measured claims (`seeds = 1:6`, `150` steps = `50` bootstrap + `100` active)**:
     - With proportional plan menus, post-init `floor_u` gain rises monotonically with population: `(n = 20, agents = 4, plans = 10)` → `87.56 ± 13.01` (`29.1%` half-width, `z = 6.7`); `(n = 40, agents = 6, plans = 10)` → `99.50 ± 1.55` (`3.1%` half-width, `z = 64.2`); `(n = 80, agents = 8, plans = 10)` → `103.69 ± 1.34` (`2.5%` half-width, `z = 77.5`); `(n = 160, agents = 12, plans = 20)` → `161.57 ± 1.20` (`1.5%` half-width, `z = 134.6`); `(n = 240, agents = 16, plans = 30)` → `250.97 ± 4.46` (`3.5%` half-width, `z = 56.3`).
     - Confirmed threshold: `(n >= 40, agents >= 6)` cuts between-seed spread 9x (`29.1%` → `3.1%`); all new M3c regime claims use `>= 40` beings / `>= 6` agents.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Convergence review follow-up 3/4: M1/M7 floor tests sized at `n >= 200` and population stated with floor claims (`sim/test/m1_tests.jl`, `sim/test/m7_tests.jl`, `sim/README.md`):**
+  - Upgraded `T0` and floor testsets in `sim/test/m1_tests.jl` (`n = 60` → `n = 200`) and teaching/research/G-per-entity floor testsets in `sim/test/m7_tests.jl` (`n = 100` → `n = 200`) so quantile-floor assertions run in the `n >= 200` asymptotic regime rather than small-`n` rank artefacts (`n = 20` 10% quantile over 2 beings flatters `floor_u` growth `15.27 ± 0.58` vs `7.21 ± 0.47` at `n = 200` and `6.30 ± 0.46` at `n = 1,000`).
+  - Verified `m1_tests.jl` (29/29) and `m7_tests.jl` teaching/research/G-per-entity testsets pass 100%.
 
 ## 2b. Benchmarks
 

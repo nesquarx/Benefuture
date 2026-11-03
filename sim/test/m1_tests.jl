@@ -13,7 +13,7 @@
     @test_throws ArgumentError mm_adopt(Float64[])
 end
 
-const T0 = ToyParams(n = 60, steps = 40, plans = 12)
+const T0 = ToyParams(n = 200, steps = 40, plans = 12)
 perfect(k = 1) = [MetricModel(0.0, 0.0) for _ in 1:k]
 
 @testset "M1: acceptance" begin
@@ -25,7 +25,7 @@ perfect(k = 1) = [MetricModel(0.0, 0.0) for _ in 1:k]
     @test m1 == run_m1(M1Params(T0, perfect(2), 0.0, 5); seed = 7)
     # Competition settles on the most accurate model (Conj_MMCompetitionConverges).
     models = [MetricModel(0.0, 2.0), MetricModel(0.0, 1.0), MetricModel(0.0, 0.1)]
-    tr = run_m1(M1Params(ToyParams(n = 60, steps = 60, plans = 12), models, 0.05, 10); seed = 3)
+    tr = run_m1(M1Params(ToyParams(n = 200, steps = 60, plans = 12), models, 0.05, 10); seed = 3)
     @test tr.adopted[end] == 3
     @test tr.best_score[end] - tr.adopted_score[end] < 1e-12
     @test length(tr.floor_u) == length(tr.obs_floor_u) == 61 && length(tr.adopted) == 60
@@ -34,10 +34,10 @@ end
 @testset "M1: adversarial and edge cases" begin
     # A precise but biased model loses to an unbiased one of equal noise.
     models = [MetricModel(1.5, 0.3), MetricModel(0.0, 0.3)]
-    tr = run_m1(M1Params(ToyParams(n = 60, steps = 40, plans = 12), models, 0.05, 10); seed = 5)
+    tr = run_m1(M1Params(ToyParams(n = 200, steps = 40, plans = 12), models, 0.05, 10); seed = 5)
     @test tr.adopted[end] == 2
     # The floor guarantee rests on measurement: with noisy models the latent floor can fall.
-    noisy = M1Params(ToyParams(n = 60, steps = 40, plans = 12), [MetricModel(0.0, 3.0)], 0.5, 5)
+    noisy = M1Params(ToyParams(n = 200, steps = 40, plans = 12), [MetricModel(0.0, 3.0)], 0.5, 5)
     @test any(!floors_rise(run_m1(noisy; seed = s)) for s in 1:5)
     @test_throws ArgumentError MetricModel(0.0, -1.0)
     @test_throws ArgumentError M1Params(T0, MetricModel[], 0.0, 5)
