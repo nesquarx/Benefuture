@@ -259,8 +259,8 @@ m7_pop_stats = map(m7_pop_grid) do np
     settle_u = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in trs]
     r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 80, length(m7_seeds), "floor_u_gain", fu_gains;
                        settle_med = median(settle_u), settle_max = maximum(settle_u))
-    acts_b = mean(count(t -> t > 0, tr.acts) / (np * 80) for tr in trs)
-    res_b = mean(count(t -> t > 0, tr.res) / (np * 80) for tr in trs)
+    acts_b = mean(sum(tr.actions) / (np * 80) for tr in trs)
+    res_b = mean(tr.research_spent / (np * 80) for tr in trs)
     (n = np, fu = r_fu, per_being = r_fu.mean / np, acts_b = acts_b, res_b = res_b)
 end
 
