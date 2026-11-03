@@ -16,7 +16,7 @@
 >   cannot be raised by removing beings, revealing a flaw dominating exploiting it (given clawbacks),
 >   delegation-cap bounds, conservation, and Shapley sampling that never mints currency. The proofs
 >   say nothing about whether the definitions describe the world.
-> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 106 C
+> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 108 C
 >   exports that the simulation calls. [`BenefutureTest/`](BenefutureTest) proves exact ℚ oracles
 >   equal to the ℝ specification (12 theorems) and tests the Float rules against them, with interval
 >   bounds for exp, log and sqrt. Float rounding is tested, not bounded.
@@ -34,7 +34,9 @@
 >   [§7 build](#7-build-verify-simulate) · [wiki](https://benefuture.miraheze.org/) ·
 >   [`CLAUDE.md`](CLAUDE.md) for agents.
 >
-> CI: Lean and Julia gates green at `main` `c2cc169`.
+> CI: Lean gate green at `main` `5c785ee`. Julia gate **red** at `4a65b00` (7 test files fail on Linux
+> after the local agent's `0f97ecd`, which passed on macOS); the fix is the top task. Last commit with both
+> gates green: `c2cc169`.
 
 [Benefuture](https://benefuture.miraheze.org/wiki/Benefuture) is a consequentialist design for a
 civilization by [Nesquarx](https://www.nesquarx.com/). It picks its own purpose rather than claiming a
@@ -53,7 +55,7 @@ adversarial test:
   52 files, every one machine-checked, with **zero `sorry`, `admit`, custom axioms or
   `native_decide`**.
 - **Executable Lean reference** ([`BenefutureReference/`](BenefutureReference)): Mathlib-free Float
-  versions of the rules in 12 files, with **106 C exports**. It generates the test vectors in
+  versions of the rules in 12 files, with **108 C exports**. It generates the test vectors in
   [`spec/vectors/`](spec/vectors) and defines the simulation's rules (two exceptions remain in Julia, listed in the [parsimony audit](sim/README.md#parsimony-audit)).
 - **Differential bridge** ([`BenefutureTest/`](BenefutureTest)): 12 proved theorems showing that
   exact ℚ oracles equal the ℝ specification, plus **interval-bound ℚ oracles** for rules that use
@@ -62,8 +64,8 @@ adversarial test:
   colluders, optimised attackers, catastrophes and breakthroughs. Newer claims are significance-tested, and
   failure-boundary batteries run multi-threaded in the background.
 
-Both CI gates ("Lean Action CI", "Julia Sim CI") are green on `main` at `c2cc169`, the commit this
-README describes.
+This README describes `main` at `5c785ee`. Lean Action CI is green there; Julia Sim CI is red since
+`4a65b00` (seven test files fail on Linux, being fixed). Both gates were last green together at `c2cc169`.
 
 > **Scope in one line.** A proof here holds for the definitions as written, under the hypotheses
 > stated. A simulation result holds for the toy world and seeds stated. Neither shows that Benefuture
@@ -258,13 +260,19 @@ demonstrates newcomer uplift with resident protection, counterexample stall, new
   whenever another agent reports before the planned delay ([`immediate_revelation_dominates`](Benefuture/Proposed/RevelationGame.lean),
   [`immediate_revelation_strictly_dominates_when_preempted`](Benefuture/Proposed/RevelationGame.lean)).
 
-**Historical decisions replayed as-of (Task E4, `docs/DATA.md` §16).**
-Pre-registered historical counterfactual evaluation engine ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md),
-[`sim/src/replay.jl`](sim/src/replay.jl), [`sim/src/counterfactual.jl`](sim/src/counterfactual.jl),
-[`sim/test/replay_tests.jl`](sim/test/replay_tests.jl), 26/26 tests passing). Replays documented decisions
-as-of the decision date across technical and low-technology cases (Challenger launch 1986, FDA thalidomide
-review 1960, Ragusa quarantine 1377, Semmelweis puerperal fever 1847) using frozen governed defaults and
-competing counterfactual estimators (synthetic control, difference-in-differences, matched controls).
+**Historical decisions replayed as-of (Task E4, `docs/DATA.md` §16): machinery built, evidence not yet.**
+Built: a pre-registration with thresholds read from the governed point ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md)),
+the replay engine ([`sim/src/replay.jl`](sim/src/replay.jl)), counterfactual estimators (synthetic control,
+difference-in-differences, inverse-variance combination; [`sim/src/counterfactual.jl`](sim/src/counterfactual.jl)),
+a forecasting layer scored by quantile (pinball) loss in Lean (`pinball_loss_ref`, `quantile_score_ref`, with a
+probe) and a rolling-window forecast replay, tested on a synthetic case with a known right choice
+([`sim/test/replay_tests.jl`](sim/test/replay_tests.jl)). Four documented cases are encoded (Challenger 1986,
+thalidomide at the FDA 1960, the Ragusa quarantine 1377, Semmelweis 1847), and in each the replayed choice
+matches what hindsight calls right. **That is not yet evidence**: the cases were chosen with their answers known,
+and their credences are still entered by hand (for example `credence_accuracy = 0.88` for the Thiokol charts)
+rather than derived from as-of records, which the pre-registration requires (8.87: no fitting). What would
+count: source records replayed as-of, cases including ones where the right choice was unclear at the time or
+where the actual choice was good, and the pre-registered falsifiers applied.
 
 **Overnight long-horizon & century simulation suite** ([`sim/battery/long_horizon.jl`](sim/battery/long_horizon.jl), launcher [`tools/battery/overnight.sh`](tools/battery/overnight.sh)).
 Extended-duration battery sweeps: 10-year scaled economy (5,000 steps), 20-year governance (1,000 decisions),
@@ -643,7 +651,9 @@ Population (M7)
 - **Teaching and research** are complements; uplift peaks near a fifth of time on research.
 
 Historical decisions and long horizons
-- **Historical decision replay (E4).** Pre-registered as-of counterfactual replay across 4 documented cases ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md), [replay_tests](sim/test/replay_tests.jl)): Challenger launch (1986, O-ring freeze risk), FDA thalidomide refusal (1960, Kelsey's safety bar), Ragusa quarantine (1377, bubonic plague), and Semmelweis handwashing (1847, puerperal fever).
+- **Historical decision replay (E4): machinery only.** The as-of replay, counterfactual estimators and quantile-scored forecast replay work on a synthetic case with a known right choice ([replay_tests](sim/test/replay_tests.jl)). The four encoded historical cases (Challenger, thalidomide, Ragusa, Semmelweis) all match hindsight, but their credences are entered by hand and the cases were picked knowing the answer, so they demonstrate nothing yet about Benefuture's decisions ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md)).
+- **Run length and population size** ([convergence](sim/battery/results/convergence.md)). Results depend on population in ways the small test worlds hide. The q-floor in M1 shrinks from 15.3 at 20 beings to 6.3 at 1,000 (a floor over two beings flatters), so floor claims state their population. M3c economies of 20 beings and 4 agents spread 29% between seeds; from 40 beings and 6 agents, 3.5% or less. With plans scaled to population, M3c floor gain rises faster than population (104 at 80 beings, 251 at 240), and M7 understanding gain rises steeply at fixed per-being effort (6 at 20 beings, 27 at 500): candidate scale effects of shared understanding, under replication at z = 3 before they count.
+- **Expertise weighting at scale: open.** Weighting votes by domain record beats equal weight (+0.06 at 60 voters), but the current sweep copies one skill distribution per voter, so equal weight reaches certainty at 240 voters and the gain shrinks. By author clarification 8.90 specialists stay sparse in narrow subdomains as populations grow; the sweep is being rebuilt that way, with the hypothesis, stated before measuring, that the gain grows with population.
 - **Century and long-horizon battery.** Composed multi-decade and century simulations ([long_horizon](sim/battery/long_horizon.jl), launcher `tools/battery/overnight.sh`) test convergence over 5,000–20,000 steps with rare catastrophes and breakthroughs, validating stability beyond short test horizons.
 
 Not yet demonstrated: the `Conj_*` conjectures over a `SimTrace`, forks and graded personhood, and
