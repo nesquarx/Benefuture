@@ -535,6 +535,9 @@ neither agent spends tokens on chatter.
   - **Verification**:
     - `sim/test/m5_tests.jl`: 16/16 testsets PASS (89/89 assertions).
     - `sim/test/probe_tests.jl`: 25/25 testsets PASS (150/150 assertions).
+    - **Remote GitHub Actions CI on Linux (commit `f90706c`)**:
+      - `lean_action_ci.yml` (run `41723664764`): **SUCCESS / GREEN**.
+      - `julia_sim_ci.yml` (run `41723664892`): **SUCCESS / GREEN** (all 34 test files clean).
 
 ## 2b. Benchmarks
 
