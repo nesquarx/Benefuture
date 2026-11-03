@@ -34,10 +34,8 @@ if [[ -n $remote_coord_sha && $remote_coord_sha != "$(cat "$seen_file" 2>/dev/nu
 elif [[ -n $remote_coord_sha && $remote_coord_sha != "$local_coord_sha" ]]; then
   lines+=("ALERT: origin/main COORDINATION.md differs from HEAD ($(git rev-parse --short origin/main 2>/dev/null) vs $(git rev-parse --short HEAD 2>/dev/null))")
 fi
-if [[ $mode == stop && -n $remote_coord_sha && $remote_coord_sha != "$(cat "$acked_file" 2>/dev/null)" ]]; then
-  echo "$remote_coord_sha" > "$acked_file"
-  finished+=("COORDINATION.md updated on origin/main ($(git rev-parse --short origin/main 2>/dev/null))")
-fi
+# COORDINATION.md changes are reported above as a prompt line only; they never block the stop
+# (they are not battery results).
 for c in "$state"/*.commit; do
   [[ -e $c ]] || continue
   name=$(basename "$c" .commit); commit=$(cat "$c"); start=$(cat "$state/$name.start" 2>/dev/null)
