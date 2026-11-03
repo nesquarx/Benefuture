@@ -114,10 +114,11 @@ m3c_seeds = 1:6
 
 function make_m3c_world(n_beings::Int, n_agents::Int, steps::Int)
     plans = max(10, round(Int, 10 * n_beings / 80))
+    t_lo, t_hi = min(1.0, 4.0 / n_beings), min(1.0, 24.0 / n_beings)
     skills = draw_skills(Xoshiro(20261102 + n_agents), n_agents, 4, [1, 3]; median = 0.6, log_sd = CALIBRATED.skill_log_sd)
     agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:n_agents]
     M3cParams(
-        ToyParams(n = n_beings, steps = steps, plans = plans),
+        ToyParams(n = n_beings, steps = steps, plans = plans, touch = (t_lo, t_hi)),
         agents, [1, 1, 2, 2], trues(4);
         init_steps = 50, λpos = 0.05, λneg = 0.02,
         transactions = true, causal_distribution = true,
@@ -153,7 +154,9 @@ m3c_pop_stats = map(m3c_pop_grid) do (n_b, n_a)
     settle_u = [50 + settling_step(diff(tr.floor_u[51:end]); tol = 0.10) for tr in trs]
     r_u = record_row!("M3c_calibrated", "diverse_pop_n_agents", n_b, 150, length(m3c_seeds), "post_init_floor_u_gain", fu_gains;
                       settle_med = median(settle_u), settle_max = maximum(settle_u))
-    (n_beings = n_b, n_agents = n_a, u = r_u)
+    plans = max(10, round(Int, 10 * n_b / 80))
+    tx_b = mean(count(>(50), tr.chosen_step) / (n_b * 100) for tr in trs)
+    (n_beings = n_b, n_agents = n_a, plans = plans, u = r_u, per_being = r_u.mean / n_b, per_plan = r_u.mean / plans, tx_b = tx_b)
 end
 
 # ---------------------------------------------------------------------------
@@ -244,17 +247,21 @@ end
 
 m7_pop_grid = [20, 40, 80, 150, 300, 500]
 m7_pop_stats = map(m7_pop_grid) do np
+    t_lo, t_hi = min(1.0, 5.0 / np), min(1.0, 30.0 / np)
     trs = parallel_map(m7_seeds) do seed
-        run_m7(ToyParams(n = np, steps = 80, plans = 10); seed,
+        run_m7(ToyParams(n = np, steps = 80, plans = 10, touch = (t_lo, t_hi)); seed,
                teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2,
-               research_share = 0.1, action_scale = 0.05 * 100 / np,
-               class = max(2, round(Int, 10 * np / 100)), central = false)
+               research_share = 0.1, action_scale = 0.05,
+               class = 10, central = false)
     end
     fu_gains = [tr.floor_u[end] - tr.floor_u[1] for tr in trs]
+    mu_gains = [tr.median_u[end] - tr.median_u[1] for tr in trs]
     settle_u = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in trs]
     r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 80, length(m7_seeds), "floor_u_gain", fu_gains;
                        settle_med = median(settle_u), settle_max = maximum(settle_u))
-    (n = np, fu = r_fu)
+    acts_b = mean(count(t -> t > 0, tr.acts) / (np * 80) for tr in trs)
+    res_b = mean(count(t -> t > 0, tr.res) / (np * 80) for tr in trs)
+    (n = np, fu = r_fu, per_being = r_fu.mean / np, acts_b = acts_b, res_b = res_b)
 end
 
 # ---------------------------------------------------------------------------
@@ -311,11 +318,11 @@ open(MD_PATH, "w") do io
                 s.steps, s.steps - 50, s.u.mean, s.u.se, s.u.rhw, s.u.z, s.h.rhw)
     end
     println(io)
-    println(io, "| Diverse Population (`n` beings, `n_agents` log-normal, `200` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
-    println(io, "|---|---|---|---|---|")
+    println(io, "| Diverse Population (`n` beings, `n_agents` log-normal, `150` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Gain / Plan | Realised Plans/b/step |")
+    println(io, "|---|---|---|---|---|---|---|")
     for s in m3c_pop_stats
-        @printf(io, "| `n = %d`, `agents = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.0f / %.0f |\n",
-                s.n_beings, s.n_agents, s.u.mean, s.u.se, s.u.rhw, s.u.z, s.u.settle_med, s.u.settle_max)
+        @printf(io, "| `n = %d`, `agents = %d`, `plans = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.3f | %.2f | %.3f |\n",
+                s.n_beings, s.n_agents, s.plans, s.u.mean, s.u.se, s.u.rhw, s.u.z, s.per_being, s.per_plan, s.tx_b)
     end
     println(io)
 
@@ -348,11 +355,11 @@ open(MD_PATH, "w") do io
                 s.steps, s.fu.mean, s.fu.se, s.fu.rhw, s.fu.z, s.mu.rhw)
     end
     println(io)
-    println(io, "| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Settling Step (med / max) |")
-    println(io, "|---|---|---|---|---|")
+    println(io, "| Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Realised Acts/b/step | Realised Res/b/step |")
+    println(io, "|---|---|---|---|---|---|---|")
     for s in m7_pop_stats
-        @printf(io, "| `n = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.0f / %.0f |\n",
-                s.n, s.fu.mean, s.fu.se, s.fu.rhw, s.fu.z, s.fu.settle_med, s.fu.settle_max)
+        @printf(io, "| `n = %d` | %.2f ± %.2f | %.1f%% | %.1f | %.3f | %.3f | %.3f |\n",
+                s.n, s.fu.mean, s.fu.se, s.fu.rhw, s.fu.z, s.per_being, s.acts_b, s.res_b)
     end
 end
 

@@ -130,17 +130,23 @@ end
 end
 
 # Population-diversity convergence sizing (`sim/battery/convergence.jl`, `sim/battery/results/convergence.md`):
-# With calibrated log-normal diversity (`teacher_cv = 0.5`, `reception_σ = 0.8` in M7) at fixed per-being
-# research effort (`research_share = 0.1`) and fixed per-being ordinary-work effort (`action_scale = 0.05 * 100 / n`),
-# sub-threshold populations (`n = 20`) exhibit >11% relative 95% CI half-width, whereas populations above threshold
-# (`n = 150..200`) converge below 10% relative 95% CI half-width and achieve a significant paired network uplift
-# (+6.78 ± 0.69 over seeds 1:8) as non-rival frontier discoveries (`peak_u`) diffuse via teaching (`KT`).
+# With calibrated log-normal diversity (`teacher_cv = 0.5`, `reception_σ = 0.5` in M7) at fixed per-being
+# research effort (`research_share = 0.1`), constant per-being action scale (`action_scale = 0.05`),
+# local neighborhood touch `(min(1.0, 5.0/n), min(1.0, 30.0/n))`, and fixed class size (`class = 10`),
+# sub-threshold populations (`n = 20`) exhibit >10% relative 95% CI half-width, whereas populations above threshold
+# (`n = 150..300`) converge well below 10% relative 95% CI half-width and achieve a significant paired network uplift
+# at z = 3.0 over fresh seeds 101:112 (+3.60 ± 0.51, z = 3.37) as non-rival frontier discoveries (`peak_u`) diffuse via teaching (`KT`).
 @testset "Convergence sizing: M7 diverse populations above threshold converge and show paired network uplift at fixed per-being effort" begin
     rel_hw(xs) = ci_halfwidth(xs) / abs(mean(xs))
-    m7_gains(n) = [success_pattern(run_m7(ToyParams(n = n, steps = 80, plans = 10); seed,
-                                          research_share = 0.1, action_scale = 0.05 * 100 / n,
-                                          class = max(2, round(Int, 10 * n / 100)))).floor_u for seed in 1:8]
-    g20, g150 = m7_gains(20), m7_gains(150)
-    @test rel_hw(g20) > 0.11 && rel_hw(g150) < 0.10
-    @test paired_effect(g150 .- g20).significant
+    function m7_const_gains(np, seeds)
+        t_lo, t_hi = min(1.0, 5.0 / np), min(1.0, 30.0 / np)
+        [success_pattern(run_m7(ToyParams(n = np, steps = 80, plans = 10, touch = (t_lo, t_hi)); seed = s,
+                                teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2,
+                                research_share = 0.1, action_scale = 0.05, class = 10, central = false)).floor_u for s in seeds]
+    end
+    g20 = m7_const_gains(20, 101:112)
+    g150 = m7_const_gains(150, 101:112)
+    @test rel_hw(g20) > 0.10 && rel_hw(g150) < 0.10
+    ef = paired_effect(g150 .- g20; z = 3.0)
+    @test ef.significant
 end

@@ -88,10 +88,12 @@ function flush_report!(sections, rows, commit, t_start; status = "IN PROGRESS")
 end
 
 function record_comparison!(rows, suite, metric, a::AbstractVector{<:Real}, b::AbstractVector{<:Real})
-    ef2 = paired_effect(a, b; z = 2.0)
-    ef3 = paired_effect(a, b; z = 3.0)
+    ef2 = paired_effect(a .- b; z = 2.0)
+    ef3 = paired_effect(a .- b; z = 3.0)
     se = ef2.se
     zval = se > 0 ? ef2.mean / se : 0.0
+    ci_lo = ef2.mean - ef2.z * se
+    ci_hi = ef2.mean + ef2.z * se
     push!(rows, (
         suite = suite,
         metric = metric,
@@ -101,12 +103,12 @@ function record_comparison!(rows, suite, metric, a::AbstractVector{<:Real}, b::A
         diff = ef2.mean,
         se = se,
         z = zval,
-        ci_lo = ef2.low,
-        ci_hi = ef2.high,
-        sig2 = abs(zval) >= 2.0,
-        sig3 = abs(zval) >= 3.0
+        ci_lo = ci_lo,
+        ci_hi = ci_hi,
+        sig2 = ef2.significant,
+        sig3 = ef3.significant
     ))
-    return (ef2 = ef2, ef3 = ef3, z = zval, mean_a = mean(a), mean_b = mean(b))
+    return (ef2 = ef2, ef3 = ef3, z = zval, mean_a = mean(a), mean_b = mean(b), ci_lo = ci_lo, ci_hi = ci_hi)
 end
 
 println("[1/4] Running 10-Year Scaled Economy (120 monthly steps, 240 beings, 16 agents, 8 leaves, seeds 1:$N_ECON_SEEDS)...")
@@ -177,7 +179,7 @@ begin
         ("Stressed 10-yr `floor_h` gain", c_st_h)
     ]
         @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ef2.low, c.ef2.high)
+                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start)
@@ -229,7 +231,7 @@ begin
         ("Years 16–20 accuracy (`901:1200`) vs `0.75` convergence bar", c_q4)
     ]
         @printf(sec, "| %s | %.4f | %.4f | %+.4f ± %.4f | %+.2f | [%.4f, %.4f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ef2.low, c.ef2.high)
+                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start)
@@ -320,7 +322,7 @@ begin
         ("Population 100-yr `floor_h` gain", c_cent_ph)
     ]
         @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ef2.low, c.ef2.high)
+                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
     end
     @printf(sec, "\n- Mean century transactions executed: **%.1f**\n", mean(r.econ_tx for r in res_century))
     @printf(sec, "- Mean century births admitted under escrow/ratchet: **%.1f**\n", mean(r.pop_births for r in res_century))
@@ -375,9 +377,9 @@ begin
     @printf(sec, "## 4. High-Seed Sweep: Open Question 8.85 (800-step Better-Models Takeover, `1:%d` seeds, %.1f min)\n\n",
             N_SWEEP_SEEDS, (time() - t0) / 60)
     @printf(sec, "- **Takeover regime (`:decay`)**: `%d / %d` (%.1f%%, 95%% interval `[%.3f, %.3f]`)\n",
-            count(r.takeover_dec for r in res_885), N_SWEEP_SEEDS, 100 * pi_dec.p, pi_dec.low, pi_dec.high)
+            count(r.takeover_dec for r in res_885), N_SWEEP_SEEDS, 100 * pi_dec.p, pi_dec.lo, pi_dec.hi)
     @printf(sec, "- **Takeover regime (`:window`)**: `%d / %d` (%.1f%%, 95%% interval `[%.3f, %.3f]`)\n\n",
-            count(r.takeover_win for r in res_885), N_SWEEP_SEEDS, 100 * pi_win.p, pi_win.low, pi_win.high)
+            count(r.takeover_win for r in res_885), N_SWEEP_SEEDS, 100 * pi_win.p, pi_win.lo, pi_win.hi)
     println(sec, "| Metric (`1:$N_SWEEP_SEEDS` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
@@ -386,7 +388,7 @@ begin
         ("Floor understanding growth (`floor_u`)", c_885_fu)
     ]
         @printf(sec, "| %s | %.3f | %.3f | %+.3f ± %.3f | %+.2f | [%.3f, %.3f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ef2.low, c.ef2.high)
+                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start; status = "COMPLETED")
