@@ -1,9 +1,32 @@
 name: Julia Sim CI
 
+# Tiers: every code push runs the fast tier (rules, units, probes); the full suite runs nightly on
+# main and on demand (workflow_dispatch with tier = full). Docs-only pushes run nothing; a newer push
+# cancels the run it supersedes.
 on:
   push:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'COORDINATION.md'
+      - 'wiki/**'
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'COORDINATION.md'
+      - 'wiki/**'
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
+    inputs:
+      tier:
+        description: 'fast or full'
+        default: 'full'
+
+concurrency:
+  group: julia-${{ github.ref }}-${{ github.event_name == 'schedule' && 'nightly' || 'push' }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -44,4 +67,6 @@ jobs:
           version: '1.13'
 
       - name: Test BenefutureSim
+        env:
+          BF_TIER: ${{ github.event_name == 'schedule' && 'full' || (github.event_name == 'workflow_dispatch' && inputs.tier) || 'fast' }}
         run: julia --project=sim -e 'using Pkg; Pkg.instantiate(); Pkg.test()'

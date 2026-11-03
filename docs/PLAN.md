@@ -87,3 +87,5 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - Art article, with Culture's paragraph reduced to a pointer (BACKPROPAGATION 7.16).
 - Morality article, with links repointed and Philosophy §Morality trimmed to its parallels (BACKPROPAGATION 7.15).
 - Coding style imported to `docs/CODING_STYLE.md`; agent notes in `CLAUDE.md`.
+
+- Process (author, 2026-11-03): CI runs in tiers: the fast tier (rules, units, probes) on every code push, the full suite nightly on main and on demand; docs-only pushes skip CI; superseded runs are cancelled. Probe coverage of every mechanism is audited (COORDINATION, probe audit).

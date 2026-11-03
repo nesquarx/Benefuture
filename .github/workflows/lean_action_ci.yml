@@ -2,8 +2,22 @@ name: Lean Action CI
 
 on:
   push:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'COORDINATION.md'
+      - 'wiki/**'
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'COORDINATION.md'
+      - 'wiki/**'
   workflow_dispatch:
+
+concurrency:
+  group: lean-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
