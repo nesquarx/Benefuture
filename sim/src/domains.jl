@@ -298,3 +298,30 @@ function report_penalty(unfounded::Real, threshold::Real; audit_cost::Real)
     check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
     ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
 end
+
+"""
+    pinball_loss(q, predicted, outcome) -> loss
+
+Pinball loss for quantile `q` in (0, 1): `(y - y_hat) * (q - I(y < y_hat))` (Koenker & Bassett 1978; `docs/DATA.md` §16b).
+"""
+function pinball_loss(q::Real, predicted::Real, outcome::Real)
+    check(0 < q < 1, "quantile q must lie in (0, 1)")
+    check(isfinite(predicted) && isfinite(outcome), "finite prediction and outcome")
+    ccall(sym(:bf_pinball_loss), Float64, (Float64, Float64, Float64), q, predicted, outcome)
+end
+
+"""
+    quantile_score(quantiles, predictions, outcomes, scale) -> score in [0, 1]
+
+Quantile score across multiple evaluated forecasts (Lean `quantile_score_ref`; `docs/DATA.md` §16b):
+`1 / (1 + mean_pinball_loss / scale)`.
+"""
+function quantile_score(quantiles, predictions, outcomes, scale::Real)
+    n = length(quantiles)
+    check(n == length(predictions) == length(outcomes) && n > 0, "matching non-empty forecast arrays")
+    check(all(q -> 0 < q < 1, quantiles), "quantiles must lie in (0, 1)")
+    check(all(isfinite, predictions) && all(isfinite, outcomes), "finite predictions and outcomes")
+    check(isfinite(scale) && scale > 0, "positive finite scale")
+    ccall(sym(:bf_quantile_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          floatarray(collect(Float64, quantiles)), floatarray(collect(Float64, predictions)), floatarray(collect(Float64, outcomes)), scale)
+end

@@ -18,7 +18,7 @@ export escrow_split, reputation_decay, resource_cost, transaction_price, supply_
 export spearman, Agent, M2Params, run_m2
 export profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood
-export membership_rolling, accuracy, credence, credence_accuracy, record_credence, decayed_record_credence, decayed_rms, choice_skill, ratchet_bar, decay_halflife, decayed_accuracy, decayed_mean_se, currency_eligible, relative_bar, scarcity_cost
+export membership_rolling, accuracy, credence, credence_accuracy, record_credence, decayed_record_credence, decayed_rms, choice_skill, ratchet_bar, decay_halflife, decayed_accuracy, decayed_mean_se, currency_eligible, relative_bar, scarcity_cost, pinball_loss, quantile_score
 export voting_weight, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, heard_weights, neg_share, credence_score, M5Params, run_m5
 export count_once, tagged_reading, tags_falsified, undisclosed_echo, echo_influence
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit, cached, code_hash, battery_methods, write_methods
@@ -26,7 +26,7 @@ export CALIBRATED, draw_skills, lognormal_mean1, pareto_median1
 export run_m7, teaching_plan
 export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth_escrow, accession_admissible, Newborn, PopPlan, pop_value, pop_choose, run_births
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
-export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, replay_decision, evaluate_replay_suite
+export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, replay_decision, evaluate_replay_suite, QuantileForecastRecord, QuantileStore, replay_quantile_forecasts
 
 include("lean.jl")
 include("calibration.jl")

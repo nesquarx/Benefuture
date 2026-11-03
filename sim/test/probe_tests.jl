@@ -339,3 +339,45 @@ end
     t_tight = run_m7(p; seed = 1, accession_step = 10, accession_n = 150, uplift_capacity = 20, lt_window = 2)
     @test t_tight.newcomer_u_gain > 1.0 && !isempty(t_tight.degraded) && !isempty(t_tight.nha_bearers)
 end
+
+# Quantile scoring of tail and median forecasts (E4, DATA §16b).
+# Pinball loss penalises over- and under-prediction asymmetrically by quantile q;
+# calibrated quantile forecasts score higher than uncalibrated or biased forecasts.
+@testset "Probe: quantile scoring of tail and median forecasts (E4, DATA §16b)" begin
+    # Red test on the outcome: sharp calibrated quantiles vs under-predicting quantiles
+    # Let true distribution be N(10, 2^2)
+    # Quantiles [0.1, 0.5, 0.9] -> true values [10 - 1.28*2, 10, 10 + 1.28*2] = [7.44, 10.0, 12.56]
+    # Under-predicting forecaster predicts [4.0, 6.0, 8.0]
+    # Over-predicting forecaster predicts [12.0, 14.0, 16.0]
+    rng = Xoshiro(20261103)
+    outcomes = 10.0 .+ 2.0 .* randn(rng, 500)
+    qs = [0.1, 0.5, 0.9]
+
+    # Perfect quantile forecast per observation
+    calibrated_loss = mean([mean([pinball_loss(q, 10.0 + 2.0 * normal_quantile(q), y) for q in qs]) for y in outcomes])
+    under_loss = mean([mean([pinball_loss(q, 6.0 + 2.0 * normal_quantile(q), y) for q in qs]) for y in outcomes])
+    over_loss = mean([mean([pinball_loss(q, 14.0 + 2.0 * normal_quantile(q), y) for q in qs]) for y in outcomes])
+
+    @test calibrated_loss < under_loss
+    @test calibrated_loss < over_loss
+
+    # Pinball loss exact checks
+    @test pinball_loss(0.5, 10.0, 12.0) ≈ 0.5 * 2.0
+    @test pinball_loss(0.5, 10.0, 8.0) ≈ 0.5 * 2.0
+    @test pinball_loss(0.9, 10.0, 12.0) ≈ 0.9 * 2.0
+    @test pinball_loss(0.9, 10.0, 8.0) ≈ 0.1 * 2.0
+
+    # Quantile score in [0, 1]
+    scale = 2.0
+    score_cal = quantile_score(repeat(qs, length(outcomes)),
+                               vcat([fill(10.0 + 2.0 * normal_quantile(q), length(outcomes)) for q in qs]...),
+                               repeat(outcomes, 3), scale)
+    score_under = quantile_score(repeat(qs, length(outcomes)),
+                                 vcat([fill(6.0 + 2.0 * normal_quantile(q), length(outcomes)) for q in qs]...),
+                                 repeat(outcomes, 3), scale)
+    @test 0.0 < score_under < score_cal <= 1.0
+
+    @test_throws ArgumentError pinball_loss(0.0, 1.0, 2.0)
+    @test_throws ArgumentError pinball_loss(1.0, 1.0, 2.0)
+    @test_throws ArgumentError quantile_score([0.5], [1.0], [2.0], -1.0)
+end

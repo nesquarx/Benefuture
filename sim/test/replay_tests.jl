@@ -133,5 +133,33 @@ end
     comb = combine_counterfactuals([did, sc])
     @test isapprox(comb.estimate, 5.0; atol = 0.2)
     @test comb.spread_low <= comb.estimate <= comb.spread_high
+
+    # Rolling-window quantile forecast replay (DATA §16b)
+    # Forecaster A predicts sharp calibrated quantiles for N(10, 2^2)
+    # Forecaster B predicts uncalibrated wide quantiles
+    q_store = QuantileStore()
+    eval_dates = [Date(2020, 1, 1) + Day(7 * i) for i in 1:6]
+    for (i, dt) in enumerate(eval_dates)
+        # Forecaster B enters first with mediocre forecasts
+        append_record!(q_store, "m_mediocre", "macro", dt - Day(7), dt, dt, dt,
+                       [0.1, 0.5, 0.9], [4.0, 6.0, 8.0], 10.0)
+        # Forecaster A enters later at step 3 with superior calibrated forecasts
+        if i >= 3
+            append_record!(q_store, "m_superior", "macro", dt - Day(7), dt, dt, dt,
+                           [0.1, 0.5, 0.9], [7.44, 10.0, 12.56], 10.0)
+        end
+    end
+    res_q = replay_quantile_forecasts(q_store, "macro", eval_dates; scale = 5.0)
+    @test length(res_q.snapshots) == 6
+    @test res_q.snapshots[1].active_model == "m_mediocre"
+    # Superior forecaster takes over once evaluated
+    @test res_q.snapshots[end].active_model == "m_superior"
+    @test res_q.takeovers >= 1
+
+    # Diebold-Mariano test between loss series of superior vs mediocre
+    losses_sup = fill(0.4, 20)
+    losses_med = fill(1.8, 20)
+    dm = diebold_mariano(losses_sup, losses_med)
+    @test dm.mean < 0.0 && dm.sig && dm.z_stat < -3.0
 end
 

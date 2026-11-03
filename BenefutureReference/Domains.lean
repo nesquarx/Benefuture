@@ -313,4 +313,22 @@ def decayed_rms_ref (errors ages : Array Float) (h : Float) : Float := Id.run do
   if wSum <= 0.0 then return 0.0
   else return Float.sqrt (wSq / wSum)
 
+/-- Pinball loss for quantile `q` in (0, 1): (y - y_hat) * (q - I(y < y_hat)) (Koenker & Bassett 1978; DATA §16b). -/
+def pinball_loss_ref (q predicted outcome : Float) : Float :=
+  let diff := outcome - predicted
+  if diff ≥ 0.0 then q * diff else (q - 1.0) * diff
+
+/-- Quantile score across multiple evaluated forecasts: 1 / (1 + mean pinball loss / scale), in [0, 1]. -/
+def quantile_score_ref (quantiles predictions outcomes : Array Float) (scale : Float) : Float := Id.run do
+  let n := min quantiles.size (min predictions.size outcomes.size)
+  if n == 0 || scale ≤ 0.0 then return 0.0
+  let mut tot := 0.0
+  for i in [0:n] do
+    let q := quantiles[i]!
+    let p := predictions[i]!
+    let y := outcomes[i]!
+    tot := tot + pinball_loss_ref q p y
+  let mean_loss := tot / n.toFloat
+  return 1.0 / (1.0 + mean_loss / scale)
+
 end BenefutureReference

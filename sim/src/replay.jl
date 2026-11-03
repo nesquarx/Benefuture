@@ -225,11 +225,11 @@ function replay_forecasts(store::AsOfStore, domain::String, eval_dates::Abstract
             outs = [r.outcome >= 0.0 ? 1.0 : 0.0 for r in recs]
             scores = [credence_score(creds[i], outs[i]) for i in eachindex(recs)]
             acc = decayed_accuracy(creds, outs, ages, hl_days)
-            ms = decayed_mean_se(scores, ages, hl_days)
+            m_val, se_val = decayed_mean_se(scores, ages, hl_days)
             push!(f_names, f)
             push!(accs, acc)
-            push!(means, ms.mean)
-            push!(ses, ms.se)
+            push!(means, m_val)
+            push!(ses, se_val)
         end
 
         if !isempty(f_names)
@@ -262,6 +262,136 @@ function replay_forecasts(store::AsOfStore, domain::String, eval_dates::Abstract
         ))
     end
     return (snapshots = snapshots, takeovers = takeovers, bar = bar, degraded = degraded)
+end
+
+"A single time-indexed quantile forecast record (`docs/DATA.md` §16b, B4)."
+struct QuantileForecastRecord
+    forecaster::String
+    domain::String
+    issue_date::Date
+    target_date::Date
+    resolution_date::Date
+    vintage_date::Date
+    quantiles::Vector{Float64}
+    predictions::Vector{Float64}
+    outcome::Float64
+end
+
+"Time-indexed quantile forecast store that refuses look-ahead (`docs/DATA.md` §16b, §16d B3)."
+struct QuantileStore
+    records::Vector{QuantileForecastRecord}
+end
+QuantileStore() = QuantileStore(QuantileForecastRecord[])
+
+function append_record!(store::QuantileStore, rec::QuantileForecastRecord)
+    push!(store.records, rec)
+    return store
+end
+
+function append_record!(store::QuantileStore, forecaster::String, domain::String,
+                        issue_date::Date, target_date::Date, resolution_date::Date, vintage_date::Date,
+                        quantiles::AbstractVector{<:Real}, predictions::AbstractVector{<:Real}, outcome::Real)
+    rec = QuantileForecastRecord(forecaster, domain, issue_date, target_date, resolution_date, vintage_date,
+                                 Float64.(quantiles), Float64.(predictions), Float64(outcome))
+    push!(store.records, rec)
+    return store
+end
+
+function records_as_of(store::QuantileStore, as_of::Date; domain = nothing, forecaster = nothing)
+    out = QuantileForecastRecord[]
+    for r in store.records
+        r.issue_date <= as_of || continue
+        r.resolution_date <= as_of || continue
+        r.vintage_date <= as_of || continue
+        (domain === nothing || r.domain == domain) || continue
+        (forecaster === nothing || r.forecaster == forecaster) || continue
+        push!(out, r)
+    end
+    return out
+end
+
+"""
+    replay_quantile_forecasts(store::QuantileStore, domain::String, eval_dates::AbstractVector{Date};
+                              scale = 10.0, beta = FROZEN_REPLAY_THRESHOLDS.decay_beta)
+
+Walks `store` forward across `eval_dates` for `domain` evaluating continuous/quantile forecasts
+(e.g., FluSight, COVID Hub, economic surveys) using Lean reference `quantile_score_ref`
+and `pinball_loss_ref` (`docs/DATA.md` §16b, §16d B5).
+"""
+function replay_quantile_forecasts(store::QuantileStore, domain::String, eval_dates::AbstractVector{Date};
+                                   scale::Real = 10.0, beta::Real = FROZEN_REPLAY_THRESHOLDS.decay_beta)
+    th = get_frozen_replay_thresholds()
+    all_forecasters = unique([r.forecaster for r in store.records if r.domain == domain])
+    active_model = isempty(all_forecasters) ? "" : first(all_forecasters)
+    takeovers = 0
+    degraded = Dict{String,Int}()
+    snapshots = NamedTuple[]
+
+    for (step_idx, dt) in enumerate(eval_dates)
+        avail = records_as_of(store, dt; domain = domain)
+        step_days = step_idx > 1 ? max(1.0, Float64(Dates.value(dt - eval_dates[step_idx - 1]))) : 7.0
+        recent_n = count(r -> Dates.value(dt - r.resolution_date) <= step_days, avail)
+        hl_steps = decay_halflife(max(Float64(recent_n), 0.1);
+                                  ref_rate = th.r_ref, ref_halflife = th.h_ref, mute = beta)
+        hl_days = hl_steps * step_days
+
+        scores = Float64[]
+        means = Float64[]
+        ses = Float64[]
+        f_names = String[]
+
+        for f in all_forecasters
+            recs = [r for r in avail if r.forecaster == f]
+            isempty(recs) && continue
+            last_res = maximum(r.resolution_date for r in recs)
+            if Dates.value(dt - last_res) > 2 * step_days
+                degraded["missing quantile submission ($f)"] = get(degraded, "missing quantile submission ($f)", 0) + 1
+            end
+            ages = [max(0.0, Float64(Dates.value(dt - r.resolution_date))) for r in recs]
+            
+            # Per-record pinball losses
+            rec_losses = [mean([pinball_loss(r.quantiles[i], r.predictions[i], r.outcome) for i in eachindex(r.quantiles)]) for r in recs]
+            m_loss, se_loss = decayed_mean_se(rec_losses, ages, hl_days)
+            # Higher score is better: negative loss converted to [0, 1] quantile score
+            all_qs = vcat([r.quantiles for r in recs]...)
+            all_preds = vcat([r.predictions for r in recs]...)
+            all_outs = vcat([fill(r.outcome, length(r.quantiles)) for r in recs]...)
+            sc = quantile_score(all_qs, all_preds, all_outs, scale)
+
+            push!(f_names, f)
+            push!(scores, sc)
+            # select_candidate picks best by negative loss / score
+            push!(means, -m_loss)
+            push!(ses, se_loss)
+        end
+
+        if !isempty(f_names)
+            inc_idx = findfirst(==(active_model), f_names)
+            if inc_idx === nothing
+                inc_idx = 1
+                active_model = f_names[1]
+            elseif inc_idx != 1
+                perm = [inc_idx; [i for i in eachindex(f_names) if i != inc_idx]]
+                f_names = f_names[perm]
+                scores = scores[perm]
+                means = means[perm]
+                ses = ses[perm]
+            end
+            chosen_idx = select_candidate(means, ses; z = th.model_z)
+            if chosen_idx != 1
+                active_model = f_names[chosen_idx]
+                takeovers += 1
+            end
+        end
+
+        push!(snapshots, (
+            date = dt,
+            active_model = active_model,
+            takeovers = takeovers,
+            n_records = length(avail)
+        ))
+    end
+    return (snapshots = snapshots, takeovers = takeovers, degraded = degraded)
 end
 
 "Load a historical replay case from a `.toml` file (`docs/DATA.md` §16d B2)."

@@ -317,4 +317,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_fr_permissible_params] def frPermissibleParams (irreparable irreversible longterm passing timeLoss confidence thConf thHigh sIrr sIrv sLt sPass sTime : Float) : UInt8 :=
   if fr_permissible_params_ref irreparable irreversible longterm passing timeLoss confidence thConf thHigh sIrr sIrv sLt sPass sTime then 1 else 0
 
+@[export bf_pinball_loss] def pinballLoss (q predicted outcome : Float) : Float :=
+  pinball_loss_ref q predicted outcome
+
+@[export bf_quantile_score] def quantileScore (quantiles predictions outcomes : FloatArray) (scale : Float) : Float :=
+  quantile_score_ref quantiles.data predictions.data outcomes.data scale
+
 end BenefutureReference.Export
