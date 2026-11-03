@@ -2231,3 +2231,11 @@ Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` to evaluate
 extended timescales: 10-year scaled economy (5,000 steps), 20-year governance (1,000 decisions), and a 100-year
 composed century simulation with rare catastrophes and breakthroughs per ruling 8.64, alongside 64-seed sweeps
 over open questions from 8.85 and 8.81.
+8.89 author clarification (expertise sparsity at scale): in larger populations specialists emerge and
+the general populace holds very low expertise and reputation in narrow subdomains; a scaled voter pool
+must keep expertise sparse (a near-constant or sublinearly growing count of specialists per subdomain,
+the rest near chance there), not a skill distribution copied per voter. Consequence for M5: equal-weight
+majorities should not converge to certainty as voters are added (Condorcet's jury theorem needs
+competence above chance and independence; near-chance generalists with correlated errors add noise),
+so the wisdom gain of expertise weighting should grow, not shrink, with population. Candidate homes:
+L113 (domain-relative expertise), 8.22.1, B26 (diversity bonus within the expert tier).
