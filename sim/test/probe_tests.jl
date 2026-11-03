@@ -384,3 +384,158 @@ end
     @test_throws ArgumentError pinball_loss(1.0, 1.0, 2.0)
     @test_throws ArgumentError quantile_score([0.5], [1.0], [2.0], -1.0)
 end
+
+# AdvAp: revelation dominates exploitation, anti-cobra liability prevents flaw-planting, and
+# pattern threshold stops frivolous reporting (L160, 8.42.1).
+@testset "Probe: AdvAp revelation dominance, anti-cobra liability, and pattern threshold (L160)" begin
+    gain, harm, audit = 15.0, 50.0, 3.0
+    r = advap_reward(gain, harm; share = 0.2, floor = 2.0)
+    @test r > gain                                                     # dominates: reward exceeds exploit gain
+    @test r == gain + 0.2 * harm                                       # exact: gain plus share of prevented harm
+    @test report_penalty(3, 5; audit_cost = audit) == 0.0              # honest reporting: zero penalty below threshold
+
+    l = advap_liability(r; audit_cost = audit)
+    @test l - r >= audit                                               # net loss: at least audit cost
+    @test report_penalty(6, 5; audit_cost = audit) == audit            # frivolous pattern: audit penalty
+
+    @test ratchet_credence(0.9, 0.0) ≈ 0.9
+    @test ratchet_credence(0.9, 1.0) ≈ 0.5
+    @test ratchet_credence(0.9, 0.5) < 0.9 && ratchet_credence(0.9, 0.5) > 0.5
+    @test_throws ArgumentError advap_reward(NaN, 1.0; share = 0.1, floor = 1.0)
+    @test_throws ArgumentError report_penalty(-1, 5; audit_cost = audit)
+end
+
+# Model pool candidate selection: challengers compete under significance testing (select_candidate)
+# over takeover_records; an unvetted or noisy model cannot usurp the incumbent (8.73, 8.84).
+@testset "Probe: model pool candidate selection and takeover under significance testing (8.73, 8.84)" begin
+    m_inc, se_inc = 0.70, 0.02
+    m_a, se_a = 0.82, 0.02
+    m_b, se_b = 0.75, 0.08
+
+    # Acceptance: Candidate A significantly beats incumbent (z = 2.0) -> selected (index 2)
+    @test select_candidate([m_inc, m_a], [se_inc, se_a]; z = 2.0) == 2
+
+    # Counterexample: Candidate B has higher sample mean than incumbent (0.75 > 0.70)
+    # but fails significance test ((0.75 - 0.70) / sqrt(0.08^2 + 0.02^2) = 0.606 < 2.0) -> incumbent kept (index 1)
+    @test select_candidate([m_inc, m_b], [se_inc, se_b]; z = 2.0) == 1
+
+    # Incumbent with equal or higher score is always kept
+    @test select_candidate([m_inc, 0.65], [se_inc, 0.02]; z = 2.0) == 1
+
+    @test_throws ArgumentError select_candidate([0.8], [0.02, 0.02]; z = 2.0)
+end
+
+# Whitewashing resistance: an entity abandoning a degraded identity cannot rejoin with a clean slate
+# when identity binding weights clusters by their attestation track record (8.70, B2).
+@testset "Probe: whitewashing resistance through weighted binding (8.70, B2)" begin
+    whitewash_attestations = [0.95, 0.95, 0.15, 0.15, 0.15]
+    cluster_skills = [-0.4, -0.3, 0.6, 0.5, 0.7]
+    threshold = 0.70
+    quorum = 2
+
+    # Counterexample: unweighted count rule admits the whitewashed entity (2 clusters vouch > 0.70).
+    @test binding_admits(whitewash_attestations, threshold; quorum = 2)
+
+    # Acceptance: weighted binding refuses the whitewashed entity because compromised clusters lack weight.
+    @test !binding_admits_weighted(whitewash_attestations, cluster_skills, threshold, quorum * 0.5)
+
+    # Honest newcomer with endorsements from honest clusters is admitted.
+    honest_attestations = [0.20, 0.10, 0.85, 0.80, 0.90]
+    @test binding_admits_weighted(honest_attestations, cluster_skills, threshold, quorum * 0.5)
+end
+
+# Justice for slander: every audit caused by a detected liar's false reports is clawed back as a crime (8.82).
+@testset "Probe: justice for slander claws back audit costs from detected liars (8.82)" begin
+    harm_caused = 10.0
+    reward_claimed = 4.0
+    audit_cost = 2.0
+    charge = false_report_charge(harm_caused, reward_claimed, audit_cost)
+    @test charge ≈ harm_caused + reward_claimed + audit_cost
+    @test charge == 16.0
+    @test report_penalty(1, 3; audit_cost = audit_cost) == 0.0
+    @test report_penalty(4, 3; audit_cost = audit_cost) == audit_cost
+    @test_throws ArgumentError false_report_charge(-1.0, reward_claimed, audit_cost)
+end
+
+# Causal distribution: joint value is attributed by marginal contribution (Shapley), rewarding
+# genuine contributors and starving free-riders, whereas equal sharing dilutes incentives (L100).
+@testset "Probe: causal distribution rewards marginal contribution and starves free-riders (L100)" begin
+    v = [0.0, 10.0, 5.0, 20.0, 0.0, 10.0, 5.0, 20.0]
+    shares = shapley(v)
+    # Acceptance: Shapley shares reward actual causers; free-rider gets exactly 0.
+    @test shares[1] > 10.0
+    @test shares[2] > 0.0
+    @test shares[3] == 0.0
+    @test sum(shares) ≈ v[end] - v[1]
+
+    # Counterexample: equal distribution gives free-rider 1/3 of total value, diluting primary causer.
+    equal_share = v[end] / 3
+    @test equal_share > 6.0 && equal_share > shares[3]
+    @test shares[1] > equal_share
+
+    # Traversal fallback when causal assessment is unavailable (L94-95).
+    t_shares = traversal_shares([10.0, 10.0], [0, 2]; decay = 0.5)
+    @test t_shares[1] > t_shares[2]
+    @test t_shares[1] ≈ 0.8 && t_shares[2] ≈ 0.2
+end
+
+# Escrow and settlement: upfront payment split by confidence, settled against measured outcome;
+# removing the expected gain of strategic overstatement (8.86 addendum, L84).
+@testset "Probe: escrow settlement removes strategic overstatement gain (8.86 addendum, L84)" begin
+    nominal = 100.0
+    true_credence = 0.60
+    inflated_credence = 0.95
+
+    upfront_honest, hold_honest = escrow_split(nominal, true_credence)
+    upfront_inflated, hold_inflated = escrow_split(nominal, inflated_credence)
+    @test upfront_inflated > upfront_honest
+    @test upfront_inflated - upfront_honest ≈ (inflated_credence - true_credence) * nominal
+
+    # Outcome measured at 50.0: settlement adjusts net payment to exact measured outcome.
+    measured_outcome = 50.0
+    settle_honest = settlement(measured_outcome, upfront_honest)
+    settle_inflated = settlement(measured_outcome, upfront_inflated)
+
+    total_honest = upfront_honest + settle_honest
+    total_inflated = upfront_inflated + settle_inflated
+    @test total_honest ≈ measured_outcome
+    @test total_inflated ≈ measured_outcome
+    @test total_honest ≈ total_inflated
+    @test settle_inflated < 0 && settle_inflated < settle_honest
+end
+
+# The debatable escape: local trial adopted only if proposal beats incumbent significantly,
+# gains exceed harms where tried, and no irreparable harm was caused (M4, L157).
+@testset "Probe: debatable escape accepts significant harmless proposals and rejects harm (M4, L157)" begin
+    m_inc, se_inc = 1.0, 0.1
+    m_prop, se_prop = 1.5, 0.1
+    z_req = 2.0
+
+    @test escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = z_req)
+    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 1, z = z_req)
+    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 2.0, harms = 10.0, irreparable = 0, z = z_req)
+    m_weak = 1.05
+    @test !escape_accept([m_inc, m_weak], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = z_req)
+    @test_throws ArgumentError escape_accept([1.0], [0.1]; gains = 1.0, harms = 0.0, irreparable = 0, z = 1.0)
+    @test_throws ArgumentError escape_accept([1.0, 2.0], [0.1, 0.1]; gains = -1.0, harms = 0.0, irreparable = 0, z = 1.0)
+end
+
+# M5 deliberation: expertise weighting amplifies domain knowledge, and liquid delegation caps
+# prevent dictatorship accumulation (8.90, B26, L113-114).
+@testset "Probe: M5 liquid delegation cap and expertise weighting (8.90, B26, L113-114)" begin
+    cap = 10.0
+    delegators = fill(2.0, 50)
+    acc = accumulate_capped(cap, 0.0, delegators)
+    @test acc <= cap + 2.0
+    @test acc >= cap
+
+    uncapped = sum(delegators)
+    @test uncapped == 100.0 && uncapped > acc * 8
+
+    w_expert, opt_expert = voting_weight(1.0, 1.0, [0.8, 0.2], [4.0, 0.5], 1.0, 0.2; optional_below = 2.0)
+    w_bystander, opt_bystander = voting_weight(1.0, 1.0, [0.8, 0.2], [0.0, 0.0], 1.0, 0.2; optional_below = 2.0)
+    @test w_expert > w_bystander * 3
+    @test !opt_expert && opt_bystander
+
+    @test_throws ArgumentError accumulate_capped(10.0, 0.0, [-1.0])
+end

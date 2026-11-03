@@ -95,6 +95,7 @@ To minimize git merge conflicts:
 | **E4** | Historical Decision Replay | `main` | Local Agent (`antigravity`) | As-of historical decision replay engine, prereg, 4 cases (Challenger, Thalidomide, Ragusa, Semmelweis), counterfactuals, Lean quantile scoring & rolling forecast replay | `BenefutureReference/Domains.lean`, `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/*`, `tools/data/*`, `docs/REPLAY_PREREG.md` | **COMPLETED** | 2026-11-03 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
+| **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -497,6 +498,30 @@ neither agent spends tokens on chatter.
     1. **Probe Audit**: Audit mechanisms against `probe_tests.jl` and add missing acceptance / counterexample probes.
     2. **M5 Scaling / BACKPROPAGATION 8.90**: Rebuild voter sweep with sparse specialists ($k = c \cdot n^\alpha$).
     3. **E4 Case Provenance & As-Of Discipline**: Replace typed credences with records files (`cases/<id>.records.csv`) and checksums in `tools/data/CHECKSUMS.sha256`.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Probe Audit & Standalone Expansion Report (`sim/test/probe_tests.jl`):**
+  Audited all 19 core mechanisms against `sim/test/probe_tests.jl`. 11 mechanisms were already covered by standalone probes; the remaining 8 mechanisms, previously covered only by heavy iterated world tests, have each been given a dedicated standalone probe (< 0.1s execution, acceptance + counterexample, red on the outcome first, all 24 probe testsets passing 145/145 cleanly):
+
+| # | Mechanism | Prior Coverage | Standalone Probe in `probe_tests.jl` | Status |
+|---|---|---|---|---|
+| 1 | **AdvAp** (Adversarial Adaptation, L160) | `advap_tests.jl`, `m6_attacks_tests.jl` | Added: revelation reward strictly dominates exploit gain (`advap_reward(g, h) > g`), anti-cobra liability ensures net loss for flaw planting (`advap_liability(r) - r >= audit`), honest reporting under pattern allowance incurs 0 penalty (`report_penalty(3, 5) == 0.0`), frivolous pattern incurs audit penalty (`report_penalty(6, 5) == audit`), ratchet credence pulls to 0.5. | **PASS** (10/10) |
+| 2 | **Model pool and candidate selection** (8.73, 8.84) | `models_tests.jl` (6 adversarial worlds) | Added: candidate model with significant mean score advantage (`select_candidate; z = 2.0`) overtakes incumbent; noisy challenger with higher sample mean but high variance ($z < 2.0$) or equal/lower score is refused promotion. | **PASS** (4/4) |
+| 3 | **Ratchet** (status bars, 8.84) | `probe_tests.jl:174-200` | Pre-existing: bar rises monotonically when $k$ models clear it, never falls; standard horizon avoids noise-lock. | **PASS** (10/10) |
+| 4 | **Binding and whitewashing** (L18 / B2) | `m6_attacks_tests.jl:151-205` (300 steps) | Added: cluster attestation with weighted binding (`binding_admits_weighted`) refuses whitewashed identities seeking to evade past penalties, while unweighted count admits them. | **PASS** (3/3) |
+| 5 | **Slander justice** (8.82) | `m6_attacks_tests.jl:358-375` (300 steps, 80 beings) | Added: detected liar's false reports face full clawback of all audit costs and rewards (`false_report_charge`); honest reports under allowance pay 0. | **PASS** (5/5) |
+| 6 | **Reporter schedule** (8.76 / A2) | `probe_tests.jl:158-168` | Pre-existing: `self_report_payout` nets exploit + bonus regardless of prior exploits; caught charge claws back all plus bonus and audit. | **PASS** (5/5) |
+| 7 | **Lane-harm burn** (8.67) | `probe_tests.jl:45-55` | Pre-existing: harm done by StandCoin-lane work burns currency from proposers and pledging experts. | **PASS** (3/3) |
+| 8 | **Supply ledger** (L99) | `probe_tests.jl:20-40` | Pre-existing: currency minted and burnt only by measured good less cost less harm. | **PASS** (6/6) |
+| 9 | **Record credence** (8.66) | `probe_tests.jl:7-15` | Pre-existing: record credence survives heavy-tailed outlier; normal Gaussian credence collapses. | **PASS** (3/3) |
+| 10 | **Decayed accuracy** (8.85) | `probe_tests.jl:207-263` | Pre-existing: time-decayed accuracy pivots faster in slow domains, steadier in busy domains; decayed record credence and RMS uncertainty respond to variance shifts. | **PASS** (18/18) |
+| 11 | **Fallback order** (8.71 / 8.73) | `probe_tests.jl:269-286` | Pre-existing: pool challenger promoted before parent fallback during capture shock, loud degradation logged. | **PASS** (7/7) |
+| 12 | **RA contraction** (8.71) | `probe_tests.jl:287-295` | Pre-existing: scarcity cost rises smoothly as capacity contracts, remaining finite at zero availability. | **PASS** (7/7) |
+| 13 | **Entry binding** (8.72) | `probe_tests.jl:302-306` | Pre-existing: low-confidence or unweighted collusive attempts refused at entry point. | **PASS** (7/7) |
+| 14 | **Causal distribution** (L100 / Shapley) | `m3c_tests.jl`, `shapley_tests.jl` | Added: joint value distributed by marginal causal contribution (Shapley); essential causer earns primary share, null free-rider earns 0; contrast with equal sharing which rewards free-riders; traversal fallback weights degrees of separation. | **PASS** (8/8) |
+| 15 | **Escrow and settlement** (8.86 addendum, L84) | Lean proofs (`Pricing.lean`) | Added: upfront escrow split by confidence; settlement against measured outcome removes strategic overstatement gain (total net payout equals measured outcome). | **PASS** (6/6) |
+| 16 | **Scarcity pricing** (8.80) | `probe_tests.jl:287-295`, `scarcity_tests.jl` | Pre-existing in RA contraction probe; transaction price scales inversely with available capacity. | **PASS** (7/7) |
+| 17 | **Deliberation & liquid delegation cap** (8.90, B26, L113-114) | `m5_tests.jl` | Added: `accumulate_capped` ensures delegate never accumulates beyond `cap + w_max`, preventing dictator capture; expertise weighting gives informed voters > 3x weight of bystanders. | **PASS** (6/6) |
+| 18 | **Births and accession in M7** (8.86) | `probe_tests.jl:333-344` | Pre-existing: forced additions lift newcomers without degrading existing beings; strong accession protects existing; fallback to weak accession logs degradation. | **PASS** (5/5) |
+| 19 | **The debatable escape** (M4 / L157) | `m4_tests.jl` (iterated world) | Added: `escape_accept` accepts proposals that beat incumbent by $z$ standard errors with gains > harms and zero irreparable harm; rejects proposals with irreparable harm, excess harm, or insignificant advantage. | **PASS** (6/6) |
 
 ## 2b. Benchmarks
 
