@@ -128,7 +128,7 @@ begin
             init_steps = 24,
             λpos = 0.05, λneg = 0.02,
             transactions = true, causal_distribution = true,
-            p_upstream = 0.4, guardians = [1, 2, 3, 4],
+            p_upstream = 0.4, guardians = collect(1:8),
             p_hazard = stressed ? 0.15 : 0.05,
             p_side = stressed ? 0.03 : 0.01,
             repair_efficiency = 0.5,
@@ -167,7 +167,7 @@ begin
     sec = IOBuffer()
     @printf(sec, "## 1. 10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, `1:%d` seeds, %.1f min)\n\n",
             N_ECON_SEEDS, (time() - t0) / 60)
-    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | $z$ | 95% CI |")
+    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("`floor_u` (`:decay` vs `:window`)", c_fu),
@@ -221,7 +221,7 @@ begin
     sec = IOBuffer()
     @printf(sec, "## 2. 20-Year Governance (1,200 decisions, 100 voters, stealth collusion & delegation, `1:%d` seeds, %.1f min)\n\n",
             N_GOV_SEEDS, (time() - t0) / 60)
-    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | $z$ | 95% CI |")
+    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("Late-half accuracy under stealth collusion (AdvAp ON vs OFF)", c_adv),
@@ -268,7 +268,6 @@ begin
             repair_efficiency = 0.5,
             advap = true,
             p_new_model = 0.01,
-            ratchet_bar = true,
             events = century_events
         )
         tr_econ = run_m3c(p_econ; seed)
@@ -277,13 +276,9 @@ begin
         # Feed century economy reputation into 20-year governance block (1,200 decisions)
         tr_gov = run_m5(M5Params(tr_econ, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
 
-        # 100-year annual M7 population trajectory (teaching + research + births + deaths, G per entity)
-        tr_pop = run_m7(M7Params(
-            n = 100, steps = 100,
-            teaching = true, research = true,
-            p_birth = 0.03, p_research = 0.08,
-             distributed = true
-        ); seed)
+        # 100-year annual M7 population trajectory (teaching + research + births, G per entity)
+        tr_pop = run_m7(ToyParams(n = 100, steps = 100, plans = 10); seed, p_research = 0.08, central = false)
+        tr_births = run_births(ToyParams(n = 100, steps = 100, plans = 10); seed, p_birth = 0.03, central = false)
 
         (
             econ_floor_u = sp_econ.floor_u,
@@ -295,7 +290,7 @@ begin
             pop_floor_u_gain = tr_pop.floor_u[end] - tr_pop.floor_u[1],
             pop_floor_h_gain = tr_pop.floor_h[end] - tr_pop.floor_h[1],
             pop_median_u_gain = tr_pop.median_u[end] - tr_pop.median_u[1],
-            pop_births = tr_pop.births
+            pop_births = tr_births.births
         )
     end
 
@@ -315,7 +310,7 @@ begin
             N_CENTURY_SEEDS, (time() - t0) / 60)
     println(sec, "Includes 3 major catastrophes (steps 240, 660, 960), 2 measurement outages (steps 420, 840), 1 metric capture (step 540), and 3 breakthroughs (steps 300, 720, 1020), coupled with M5 governance and M7 population dynamics (teaching, research, births, G per entity).")
     println(sec)
-    println(sec, "| Century Metric | Mean | Baseline | Effect ± SE | $z$ | 95% CI |")
+    println(sec, "| Century Metric | Mean | Baseline | Effect ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("Economy 1,200-step `floor_u` growth", c_cent_eu),
@@ -338,7 +333,7 @@ begin
     t0 = time()
     # 8.85 open question: Does time-weighted comparison (:decay) vs fixed window (:window) change
     # takeover rates or own-currency share in the 800-step better-models world over 1:N_SWEEP_SEEDS?
-    function better_models_world(; steps = 800, p_new_model = 0.03, ratchet_bar = true, accuracy_rule = :decay)
+    function better_models_world(; steps = 800, p_new_model = 0.03, accuracy_rule = :decay)
         M3cParams(
             ToyParams(n = 80, steps = steps, plans = 10),
             [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.0) for _ in 1:6],
@@ -346,7 +341,7 @@ begin
             λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
             σ_leaf = 0.65, σ_branch = 0.75, σ_coarse = 0.85,
             p_new_model = p_new_model, improve_drift = -0.15,
-            ratchet_bar = ratchet_bar, accuracy_rule = accuracy_rule
+            accuracy_rule = accuracy_rule
         )
     end
     own_share(tr) = (k = [i for i in eachindex(tr.chosen_step) if tr.chosen_step[i] > 50];
@@ -356,10 +351,10 @@ begin
         tr_dec = run_m3c(better_models_world(accuracy_rule = :decay); seed)
         tr_win = run_m3c(better_models_world(accuracy_rule = :window); seed)
         (
-            takeover_dec = tr_dec.model_takeovers > 0,
-            takeover_win = tr_win.model_takeovers > 0,
-            ntake_dec = tr_dec.model_takeovers,
-            ntake_win = tr_win.model_takeovers,
+            takeover_dec = tr_dec.takeovers > 0,
+            takeover_win = tr_win.takeovers > 0,
+            ntake_dec = tr_dec.takeovers,
+            ntake_win = tr_win.takeovers,
             own_dec = own_share(tr_dec),
             own_win = own_share(tr_win),
             fu_dec = tr_dec.floor_u[end] - tr_dec.floor_u[50],
@@ -383,7 +378,7 @@ begin
             count(r.takeover_dec for r in res_885), N_SWEEP_SEEDS, 100 * pi_dec.p, pi_dec.low, pi_dec.high)
     @printf(sec, "- **Takeover regime (`:window`)**: `%d / %d` (%.1f%%, 95%% interval `[%.3f, %.3f]`)\n\n",
             count(r.takeover_win for r in res_885), N_SWEEP_SEEDS, 100 * pi_win.p, pi_win.low, pi_win.high)
-    println(sec, "| Metric (`1:$N_SWEEP_SEEDS` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | $z$ | 95% CI |")
+    println(sec, "| Metric (`1:$N_SWEEP_SEEDS` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("Takeover count per run", c_885_take),
