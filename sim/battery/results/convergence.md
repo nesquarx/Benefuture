@@ -45,26 +45,26 @@
 | `n = 320`, `agents = 20` | 99.76 ± 1.97 | 3.9% | 50.6 | 78 / 119 |
 | `n = 500`, `agents = 28` | 68.79 ± 1.32 | 3.8% | 52.1 | 105 / 116 |
 
-## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`)
-- **Accuracy running-mean settling (`tol = 3%` over 800 decisions)**: median decision **1** (worst **83**).
+## 3. M5 Governance with Diverse Voter Skills & Ability Caps (`seeds = 1:10`, Domain Specialists, `signal_σ = 25.0`, Paired Equal-Weight Arm)
+- **Accuracy running-mean settling (`tol = 3%` over 800 decisions)**: median decision **35** (worst **75**).
 
-| Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
-|---|---|---|---|---|
-| `50` | 0.9760 ± 0.0065 | 1.31% | +0.2260 ± 0.0065 | +34.60 |
-| `100` | 0.9820 ± 0.0051 | 1.02% | +0.2320 ± 0.0051 | +45.31 |
-| `200` | 0.9815 ± 0.0043 | 0.86% | +0.2315 ± 0.0043 | +54.03 |
-| `300` | 0.9800 ± 0.0034 | 0.68% | +0.2300 ± 0.0034 | +67.52 |
-| `500` | 0.9810 ± 0.0028 | 0.55% | +0.2310 ± 0.0028 | +83.92 |
-| `800` | 0.9804 ± 0.0016 | 0.33% | +0.2304 ± 0.0016 | +140.85 |
+| Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Equal-Weight Mean | Paired Wisdom Gain (`bf − eq`) ± SE | Wisdom Gain `z` |
+|---|---|---|---|---|---|
+| `50` | 0.9600 ± 0.0067 | 1.36% | 0.8900 | +0.0700 ± 0.0150 | +4.67 |
+| `100` | 0.9570 ± 0.0052 | 1.06% | 0.8900 | +0.0670 ± 0.0132 | +5.09 |
+| `200` | 0.9565 ± 0.0053 | 1.08% | 0.8995 | +0.0570 ± 0.0088 | +6.46 |
+| `300` | 0.9577 ± 0.0052 | 1.06% | 0.8973 | +0.0603 ± 0.0074 | +8.16 |
+| `500` | 0.9584 ± 0.0048 | 0.98% | 0.8998 | +0.0586 ± 0.0060 | +9.71 |
+| `800` | 0.9543 ± 0.0044 | 0.91% | 0.8964 | +0.0579 ± 0.0049 | +11.89 |
 
-| Diverse Voters (`n_voters`, `300` decisions) | Late Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
-|---|---|---|---|---|
-| `12` voters | 0.9613 ± 0.0055 | 1.12% | +0.2113 ± 0.0055 | +38.32 |
-| `24` voters | 0.9720 ± 0.0044 | 0.89% | +0.2220 ± 0.0044 | +50.20 |
-| `48` voters | 0.9760 ± 0.0020 | 0.41% | +0.2260 ± 0.0020 | +110.96 |
-| `80` voters | 0.9793 ± 0.0034 | 0.67% | +0.2293 ± 0.0034 | +68.20 |
-| `140` voters | 0.9807 ± 0.0039 | 0.78% | +0.2307 ± 0.0039 | +59.05 |
-| `240` voters | 0.9867 ± 0.0028 | 0.56% | +0.2367 ± 0.0028 | +84.20 |
+| Diverse Voters (`n_voters`, `300` decisions) | Late Accuracy Mean ± SE | Acc 95% Half-Width | Equal-Weight Mean | Paired Wisdom Gain (`bf − eq`) ± SE | Wisdom Gain `z` |
+|---|---|---|---|---|---|
+| `12` voters | 0.7927 ± 0.0103 | 2.54% | 0.6693 | +0.1233 ± 0.0135 | +9.12 |
+| `24` voters | 0.8873 ± 0.0071 | 1.56% | 0.7833 | +0.1040 ± 0.0179 | +5.81 |
+| `48` voters | 0.9587 ± 0.0044 | 0.90% | 0.9107 | +0.0480 ± 0.0073 | +6.58 |
+| `80` voters | 0.9907 ± 0.0018 | 0.35% | 0.9160 | +0.0747 ± 0.0064 | +11.62 |
+| `140` voters | 0.9980 ± 0.0014 | 0.28% | 0.9620 | +0.0360 ± 0.0025 | +14.55 |
+| `240` voters | 1.0000 ± 0.0000 | 0.00% | 0.9700 | +0.0300 ± 0.0038 | +8.00 |
 
 ## 4. M7 Population with Diverse Teachers, Learners & Novelty (`seeds = 1:8`, Distributed G)
 - **Step-rate settling (`tol = 10%` over 200 steps)**: `floor_u` median step **64** (worst **122**), `median_u` median step **80** (worst **117**).

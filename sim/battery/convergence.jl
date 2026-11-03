@@ -162,48 +162,57 @@ println("[3/4] Measuring M5 governance convergence across diverse voter populati
 flush(stdout)
 m5_seeds = 1:10
 
-function make_m5_world(n_voters::Int, decisions::Int)
-    per_dom = max(2, div(n_voters, 4))
-    ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / per_dom))
-    agents = [DomainAgent([k == l ? ladder(r) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4])
-              for k in 1:4 for r in 1:per_dom]
-    m3 = run_m3c(M3cParams(ToyParams(n = 60, steps = 120, plans = 8), agents, [1, 1, 2, 2], trues(4);
-                           λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
-    M5Params(m3, 1:4; decisions = decisions, signal_σ = 2.0, ability_spread = 0.5,
-             p_delegate = 0.2, advap = true)
+function make_m5_pair(n_voters::Int, decisions::Int)
+    rng = Xoshiro(7000 + n_voters)
+    raw = draw_skills(rng, n_voters, 4, [1, 2, 3, 4]; median = 0.4, log_sd = 0.6)
+    skills = [mod1(i, 4) == d ? raw[i, d] : 0.0 for i in 1:n_voters, d in 1:4]
+    focus = [mod1(i, 4) == d ? 0.7 : 0.1 for i in 1:n_voters, d in 1:4]
+    reputation = fill(0.5, n_voters, 4) .+ 0.5 .* skills
+    m3_stub = (relevance_leaf = reputation, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:n_voters])
+    p_bf = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 25.0, p_delegate = 0.5, cap = 0.15, ability_spread = 0.8, vote_value = 2.0)
+    p_eq = M5Params(m3_stub, 1:4; decisions = decisions, signal_σ = 25.0, expertise_weight = 0.0, impact_weight = 0.0, p_delegate = 0.0, ability_spread = 0.8, vote_value = 2.0)
+    (p_bf, p_eq)
 end
 
-m5_base_600 = make_m5_world(60, 800)
-m5_long = parallel_map(m5_seeds) do seed
-    run_m5(m5_base_600; seed)
+m5_bf_600, m5_eq_600 = make_m5_pair(60, 800)
+m5_long_bf = parallel_map(m5_seeds) do seed
+    run_m5(m5_bf_600; seed)
 end
-m5_settle_acc = [settling_step(tr.final_trace; tol = 0.03) for tr in m5_long]
+m5_long_eq = parallel_map(m5_seeds) do seed
+    run_m5(m5_eq_600; seed)
+end
+m5_settle_acc = [settling_step(Float64.(tr.correct_trace); tol = 0.03) for tr in m5_long_bf]
 
 m5_dec_grid = [50, 100, 200, 300, 500, 800]
 m5_dec_stats = map(m5_dec_grid) do ndec
-    accs = [mean(tr.final_trace[1:ndec]) for tr in m5_long]
-    gains = [mean(tr.final_trace[1:ndec]) - 0.75 for tr in m5_long]
+    accs = [mean(tr.correct_trace[1:ndec]) for tr in m5_long_bf]
+    eqs  = [mean(tr.correct_trace[1:ndec]) for tr in m5_long_eq]
+    gains = accs .- eqs
     r_acc = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "decision_accuracy", accs;
                         settle_med = median(m5_settle_acc), settle_max = maximum(m5_settle_acc))
-    r_gain = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "margin_above_0.75_bar", gains;
+    r_gain = record_row!("M5_governance", "decisions", 60, ndec, length(m5_seeds), "paired_wisdom_gain_vs_equal", gains;
                          settle_med = median(m5_settle_acc), settle_max = maximum(m5_settle_acc))
-    (decisions = ndec, acc = r_acc, gain = r_gain)
+    (decisions = ndec, acc = r_acc, eq_mean = mean(eqs), gain = r_gain)
 end
 
 m5_voter_grid = [12, 24, 48, 80, 140, 240]
 m5_voter_stats = map(m5_voter_grid) do nv
-    wp = make_m5_world(nv, 300)
-    trs = parallel_map(m5_seeds) do seed
-        run_m5(wp; seed)
+    wp_bf, wp_eq = make_m5_pair(nv, 300)
+    trs_bf = parallel_map(m5_seeds) do seed
+        run_m5(wp_bf; seed)
     end
-    accs = [mean(tr.final_trace[151:300]) for tr in trs]
-    gains = [mean(tr.final_trace[151:300]) - 0.75 for tr in trs]
-    settle_a = [settling_step(tr.final_trace; tol = 0.03) for tr in trs]
+    trs_eq = parallel_map(m5_seeds) do seed
+        run_m5(wp_eq; seed)
+    end
+    accs = [mean(tr.correct_trace[151:300]) for tr in trs_bf]
+    eqs  = [mean(tr.correct_trace[151:300]) for tr in trs_eq]
+    gains = accs .- eqs
+    settle_a = [settling_step(Float64.(tr.correct_trace); tol = 0.03) for tr in trs_bf]
     r_acc = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_accuracy", accs;
                         settle_med = median(settle_a), settle_max = maximum(settle_a))
-    r_gain = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_margin_above_0.75", gains;
+    r_gain = record_row!("M5_governance", "diverse_voters", nv, 300, length(m5_seeds), "late_paired_wisdom_gain", gains;
                          settle_med = median(settle_a), settle_max = maximum(settle_a))
-    (voters = nv, acc = r_acc, gain = r_gain)
+    (voters = nv, acc = r_acc, eq_mean = mean(eqs), gain = r_gain)
 end
 
 # ---------------------------------------------------------------------------
