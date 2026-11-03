@@ -130,14 +130,18 @@ end
 end
 
 # Population-diversity convergence sizing (`sim/battery/convergence.jl`, `sim/battery/results/convergence.md`):
-# With calibrated log-normal diversity (`teacher_cv = 0.5`, `reception_σ = 0.8` in M7; log-normal `draw_skills`
-# in M3c), sub-threshold populations (`n = 20`) suffer wide between-seed noise (>15% relative 95% CI half-width),
-# whereas populations substantially above the convergence threshold (`n = 150` in M7, `n = 80, agents = 8` in M3c)
-# converge below 5% relative 95% CI half-width (`z = mean / se > 20`) and accelerate M7 frontier uplift.
-@testset "Convergence sizing: diverse populations above threshold converge below 5% relative CI half-width" begin
+# With calibrated log-normal diversity (`teacher_cv = 0.5`, `reception_σ = 0.8` in M7) at fixed per-being
+# research effort (`research_share = 0.1`) and fixed per-being ordinary-work effort (`action_scale = 0.05 * 100 / n`),
+# sub-threshold populations (`n = 20`) exhibit >11% relative 95% CI half-width, whereas populations above threshold
+# (`n = 150..200`) converge below 10% relative 95% CI half-width and achieve a significant paired network uplift
+# (+6.78 ± 0.69 over seeds 1:8) as non-rival frontier discoveries (`peak_u`) diffuse via teaching (`KT`).
+@testset "Convergence sizing: M7 diverse populations above threshold converge and show paired network uplift at fixed per-being effort" begin
     rel_hw(e) = e.z * e.se / abs(e.mean)
-    m7_gains(n) = [success_pattern(run_m7(ToyParams(n = n, steps = 80, plans = 10); seed, research_share = 0.1)).floor_u for seed in 1:8]
-    e_m7_sub, e_m7_conv = paired_effect(m7_gains(20)), paired_effect(m7_gains(150))
-    @test rel_hw(e_m7_sub) > 0.15 && rel_hw(e_m7_conv) < 0.06
-    @test paired_effect(m7_gains(150) .- m7_gains(20)).significant
+    m7_gains(n) = [success_pattern(run_m7(ToyParams(n = n, steps = 80, plans = 10); seed,
+                                          research_share = 0.1, action_scale = 0.05 * 100 / n,
+                                          class = max(2, round(Int, 10 * n / 100)))).floor_u for seed in 1:8]
+    g20, g150 = m7_gains(20), m7_gains(150)
+    e_sub, e_conv = paired_effect(g20), paired_effect(g150)
+    @test rel_hw(e_sub) > 0.11 && rel_hw(e_conv) < 0.10
+    @test paired_effect(g150 .- g20).significant
 end

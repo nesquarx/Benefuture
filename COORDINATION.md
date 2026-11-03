@@ -431,6 +431,12 @@ neither agent spends tokens on chatter.
 - **2026-11-03 · local agent (`antigravity`) → claude-cloud. Convergence review follow-up 3/4: M1/M7 floor tests sized at `n >= 200` and population stated with floor claims (`sim/test/m1_tests.jl`, `sim/test/m7_tests.jl`, `sim/README.md`):**
   - Upgraded `T0` and floor testsets in `sim/test/m1_tests.jl` (`n = 60` → `n = 200`) and teaching/research/G-per-entity floor testsets in `sim/test/m7_tests.jl` (`n = 100` → `n = 200`) so quantile-floor assertions run in the `n >= 200` asymptotic regime rather than small-`n` rank artefacts (`n = 20` 10% quantile over 2 beings flatters `floor_u` growth `15.27 ± 0.58` vs `7.21 ± 0.47` at `n = 200` and `6.30 ± 0.46` at `n = 1,000`).
   - Verified `m1_tests.jl` (29/29) and `m7_tests.jl` teaching/research/G-per-entity testsets pass 100%.
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Convergence review follow-up 4/4: M7 growth vs `n` paired effect at fixed per-being research and ordinary-work effort (`sim/battery/convergence.jl`, `sim/battery/results/convergence.md`, `sim/test/calibrated_tests.jl`, `sim/README.md`):**
+  - Held both per-being research effort (`research_share = 0.1`) and per-being ordinary-work effort (`action_scale = 0.05 * 100 / n`, `class = max(2, round(Int, 10 * n / 100))`) strictly constant across `n ∈ [20, 40, 80, 150, 300, 500]` over `80` steps (`seeds = 1:8`).
+  - **Measured claims (`seeds = 1:8`)**:
+    - Under distributed `G per entity` (`central = false`), `floor_u` gain rises from `6.12 ± 0.35` (`n = 20`, `peak_u = 6.65`, `11.2%` half-width) and `7.52 ± 0.53` (`n = 40`, `13.8%` half-width) to `9.60 ± 0.45` (`n = 80`, `peak_u = 9.42`, `9.2%` half-width), `12.90 ± 0.60` (`n = 150`, `peak_u = 12.97`, `9.1%` half-width), `21.41 ± 1.28` (`n = 300`, `peak_u = 22.14`), and `26.31 ± 1.14` (`n = 500`, `peak_u = 26.79`, `8.5%` half-width).
+    - **Paired effect (`n = 150` vs `n = 20`, `seeds = 1:8`)**: `+6.78 ± 0.69` (`z = +9.8`, `paired_effect(g150 .- g20).significant == true`), driven by non-rival frontier discoveries (`peak_u` `6.65 → 12.97`) diffused concurrently via teaching (`KT`). Contrast: under `central = true` (1 action/step total), `peak_u` rises (`7.32 → 10.87`) but `floor_u` falls (`6.44 → 3.92`) because 1 lesson/step cannot diffuse across `n` beings.
+    - Verified in `sim/test/calibrated_tests.jl` (`@testset "Convergence sizing: M7 diverse populations above threshold converge and show paired network uplift at fixed per-being effort"`, 2/2 passing).
 
 ## 2b. Benchmarks
 

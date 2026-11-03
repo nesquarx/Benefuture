@@ -245,12 +245,14 @@ end
 m7_pop_grid = [20, 40, 80, 150, 300, 500]
 m7_pop_stats = map(m7_pop_grid) do np
     trs = parallel_map(m7_seeds) do seed
-        run_m7(ToyParams(n = np, steps = 60, plans = 8); seed,
-               teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2, p_research = 0.1, central = false)
+        run_m7(ToyParams(n = np, steps = 80, plans = 10); seed,
+               teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2,
+               research_share = 0.1, action_scale = 0.05 * 100 / np,
+               class = max(2, round(Int, 10 * np / 100)), central = false)
     end
     fu_gains = [tr.floor_u[end] - tr.floor_u[1] for tr in trs]
     settle_u = [settling_step(diff(tr.floor_u); tol = 0.10) for tr in trs]
-    r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 60, length(m7_seeds), "floor_u_gain", fu_gains;
+    r_fu = record_row!("M7_diverse_pop", "diverse_beings_n", np, 80, length(m7_seeds), "floor_u_gain", fu_gains;
                        settle_med = median(settle_u), settle_max = maximum(settle_u))
     (n = np, fu = r_fu)
 end
