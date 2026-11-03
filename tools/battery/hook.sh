@@ -17,8 +17,27 @@ alive() {
   fi
 }
 state=sim/battery/state
-[[ -d $state ]] || exit 0
+mkdir -p "$state"
 mode=$1; lines=(); finished=()
+
+# Check whether COORDINATION.md on origin/main has changed.
+git fetch origin main --quiet 2>/dev/null || true
+remote_coord_sha=$(git rev-parse origin/main:COORDINATION.md 2>/dev/null || echo "")
+local_coord_sha=$(git rev-parse HEAD:COORDINATION.md 2>/dev/null || echo "")
+seen_file="$state/coordination.seen"
+acked_file="$state/coordination.acked"
+[[ -f $seen_file ]] || echo "${remote_coord_sha:-$local_coord_sha}" > "$seen_file"
+[[ -f $acked_file ]] || echo "${remote_coord_sha:-$local_coord_sha}" > "$acked_file"
+if [[ -n $remote_coord_sha && $remote_coord_sha != "$(cat "$seen_file" 2>/dev/null)" ]]; then
+  echo "$remote_coord_sha" > "$seen_file"
+  lines+=("ALERT: COORDINATION.md changed on origin/main ($(git rev-parse --short origin/main 2>/dev/null)); sync and review §2a")
+elif [[ -n $remote_coord_sha && $remote_coord_sha != "$local_coord_sha" ]]; then
+  lines+=("ALERT: origin/main COORDINATION.md differs from HEAD ($(git rev-parse --short origin/main 2>/dev/null) vs $(git rev-parse --short HEAD 2>/dev/null))")
+fi
+if [[ $mode == stop && -n $remote_coord_sha && $remote_coord_sha != "$(cat "$acked_file" 2>/dev/null)" ]]; then
+  echo "$remote_coord_sha" > "$acked_file"
+  finished+=("COORDINATION.md updated on origin/main ($(git rev-parse --short origin/main 2>/dev/null))")
+fi
 for c in "$state"/*.commit; do
   [[ -e $c ]] || continue
   name=$(basename "$c" .commit); commit=$(cat "$c"); start=$(cat "$state/$name.start" 2>/dev/null)
