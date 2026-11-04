@@ -1,8 +1,8 @@
 # Failure-boundary battery: governance
 
-Build: commit 6af49d5 (with any uncommitted changes at the time).
+Build: commit 102474a (with any uncommitted changes at the time).
 
-Run time 1.0 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 0% failing.
+Run time 2.3 minutes; 24 random rays; 128 screened worlds (severities up to 1.00), 0% failing.
 
 ## Limits along one factor (severity 1 = top of the explored range)
 
@@ -52,7 +52,7 @@ Non-monotone rays (converging again beyond the boundary): 0 of 24.
 
 No failing world, so no box.
 
-## Continuous methods (run time 1.4 minutes)
+## Continuous methods (run time 4.1 minutes)
 
 Readings: the share of the last half of decisions right, less 0.75 (the margin), averaged over seeds 1, 2, … until its standard error (Student-t inflated) is within 0.02 (3 to 8 seeds).
 
@@ -62,15 +62,15 @@ Saltelli et al. (2010) design, 576 evaluations; 95% bootstrap intervals. S1: the
 
 | Factor | S1 (margin) | ST (margin) |
 |---|---|---|
-| signal noise | -0.80 [-12.40, 8.69] | 0.62 [0.46, 0.81] |
-| collusion | 0.15 [-7.68, 6.72] | 0.33 [0.21, 0.54] |
-| ability scatter | -2.26 [-8.89, 4.44] | 0.27 [0.18, 0.36] |
-| delegation | -3.49 [-10.24, 1.93] | 0.20 [0.12, 0.33] |
-| hidden outcomes | -2.59 [-9.71, 2.50] | 0.19 [0.11, 0.31] |
-| local noise | -0.69 [-4.94, 4.64] | 0.16 [0.11, 0.23] |
-| loyalty | -0.80 [-4.24, 1.93] | 0.05 [0.03, 0.06] |
+| signal noise | 0.19 [-8.62, 9.61] | 0.48 [0.31, 0.68] |
+| ability scatter | 0.92 [-8.06, 9.52] | 0.47 [0.32, 0.66] |
+| collusion | 1.48 [-5.88, 9.37] | 0.35 [0.22, 0.52] |
+| hidden outcomes | -3.75 [-11.09, 3.12] | 0.24 [0.14, 0.37] |
+| local noise | 0.78 [-6.11, 6.00] | 0.22 [0.14, 0.30] |
+| delegation | 0.36 [-4.98, 5.34] | 0.14 [0.09, 0.20] |
+| loyalty | 2.86 [-0.23, 6.19] | 0.05 [0.03, 0.09] |
 
-Sum of first-order indices (margin): -10.48; variance of the margin: 3.7e-05.
+Sum of first-order indices (margin): 2.85; variance of the margin: 3.39e-05.
 
 ### Active learning of the failure boundary (AK-MCS)
 
@@ -84,11 +84,11 @@ Evaluated worlds nearest the boundary (smallest |margin|):
 
 | margin | signal noise | ability scatter | hidden outcomes | local noise | collusion | delegation | loyalty |
 |---|---|---|---|---|---|---|---|
-| +0.22 | 0.72 | 0.28 | 0.27 | 0.25 | 0.57 | 0.51 | 0.53 |
+| +0.22 | 1.02 | 0.67 | 0.99 | 0.69 | 0.78 | 0.38 | 0.23 |
 | +0.23 | 0.33 | 0.35 | 0.47 | 0.57 | 0.97 | 0.55 | 0.62 |
+| +0.23 | 0.72 | 0.28 | 0.27 | 0.25 | 0.57 | 0.51 | 0.53 |
 | +0.23 | 0.35 | 0.05 | 0.66 | 0.69 | 0.40 | 0.67 | 0.92 |
-| +0.23 | 1.02 | 0.67 | 0.99 | 0.69 | 0.78 | 0.38 | 0.23 |
 | +0.23 | 0.76 | 0.73 | 0.29 | 0.63 | 0.61 | 0.26 | 0.78 |
-| +0.24 | 0.38 | 0.77 | 0.37 | 0.25 | 0.00 | 0.51 | 0.42 |
-| +0.24 | 0.69 | 0.96 | 0.38 | 0.50 | 0.04 | 1.04 | 0.41 |
+| +0.23 | 0.38 | 0.77 | 0.37 | 0.25 | 0.00 | 0.51 | 0.42 |
 | +0.24 | 0.12 | 0.71 | 0.27 | 0.34 | 0.46 | 0.82 | 0.44 |
+| +0.24 | 0.34 | 0.79 | 0.72 | 0.48 | 0.20 | 0.44 | 0.59 |

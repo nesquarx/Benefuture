@@ -557,6 +557,9 @@ neither agent spends tokens on chatter.
   - **Test Suite (`sim/test/replay_tests.jl`)**:
     - Verified dynamic credence calculation across all 4 historical cases (Challenger: 24 records each, Thalidomide: 20 & 12 records, Ragusa: 4 records, Semmelweis: 96 records).
     - Verified adversarial counterexamples: refusing non-synthetic cases without records (Counterexample 4) and catching hindsight leaks in records (Counterexample 5). All 68 assertions PASS.
+  - **Remote GitHub Actions CI on Linux (`ba3a5bb`)**:
+    - `lean_action_ci.yml` (run `41747981804`): **SUCCESS / GREEN** (all Lean 4 proofs clean).
+    - `julia_sim_ci.yml` (run `41747981887`): **SUCCESS / GREEN** (all 34 Julia test files clean in 9m 22s).
 
 ## 2b. Benchmarks
 
