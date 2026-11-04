@@ -12,6 +12,65 @@
 
 using BenefutureSim, Statistics, Random, Printf, Dates
 
+# ---- L3.1: one world, many arms ------------------------------------------------------------------
+# `world(seed; arm, stress)` returns the economy (`econ`) and a governance builder (`gov(trace)`) for
+# one seed. Everything that is the world is identical across arms: agents and skills, sloppiness
+# (CALIBRATED.sloppiness), noise, hazards, side harm, model arrivals, delegation, the event schedule,
+# and the adversaries (deceiver, on-off deceiver, 3-member colluding bloc, slanderer). Arms differ
+# only in `MECHANISM_FIELDS`. `stress` (:stressed | :unstressed) switches catastrophes, outages and
+# capture; research breakthroughs occur in both.
+const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
+const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule)
+const GOV_MECHANISM_FIELDS = (:advap,)
+const WORLD_ARMS = (:bf, :status_quo)
+
+function world_events(stress::Symbol)
+    stress in (:stressed, :unstressed) || error("stress must be :stressed or :unstressed")
+    breakthroughs = [
+        shock(:breakthrough; step = 300, duration = 900, size = 0.5, target = 1),
+        shock(:breakthrough; step = 720, duration = 480, size = 0.6, target = 2),
+        shock(:breakthrough; step = 1020, duration = 180, size = 0.5, target = 3),
+    ]
+    stress == :unstressed && return breakthroughs
+    sort!(vcat(breakthroughs, [
+        shock(:catastrophe; step = 240, share = 0.4, size = 20.0),
+        shock(:outage; step = 420, duration = 18),
+        shock(:capture; step = 540, duration = 60, size = 2.5, target = 1),
+        shock(:catastrophe; step = 660, share = 0.5, size = 25.0),
+        shock(:outage; step = 840, duration = 12),
+        shock(:catastrophe; step = 960, share = 0.35, size = 18.0),
+    ]); by = s -> s.step)
+end
+
+function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
+               n_agents::Integer = 12, decisions::Integer = 1200)
+    arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
+    bf = arm == :bf
+    skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
+    agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:n_agents]
+    deceit = zeros(n_agents); deceit[n_agents - 1] = 1.0; deceit[n_agents] = 1.0   # steady, and the on-off one
+    frivolous = zeros(n_agents); frivolous[n_agents - 2] = 0.5                      # the slanderer
+    colluders = [1, 2, 3]
+    econ = M3cParams(
+        ToyParams(n = 120, steps = steps, plans = 10),
+        agents, [1, 1, 2, 2], trues(4);
+        init_steps = 50, λpos = 0.05, λneg = 0.02,
+        transactions = true, causal_distribution = true,
+        p_upstream = 0.4, guardians = [1, 2, 3, 4],
+        p_hazard = 0.10, p_side = 0.02, repair_efficiency = 0.5,
+        deceit = deceit, on_off = 25, frivolous = frivolous, slander = zeros(Int, n_agents),
+        p_new_model = 0.01, events = world_events(stress),
+        accuracy_rule = bf ? :decay : :window,
+        advap = bf,
+        ratchet_k = bf ? 3 : 0,
+        credence_rule = bf ? :record : :normal,
+    )
+    gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
+                          loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf)
+    (econ = econ, gov = gov)
+end
+# ---------------------------------------------------------------------------------------------------
+
 function parse_cli_args(args = ARGS)
     parsed = Dict{String, Any}()
     i = 1
@@ -96,6 +155,7 @@ function parallel_map(f, xs)
     return out
 end
 
+if !WORLD_ONLY
 commit = current_commit()
 t_start = time()
 rows = NamedTuple[]
@@ -482,4 +542,4 @@ begin
 end
 
 println("Long-horizon simulation suite completed cleanly in $(round((time() - t_start)/60, digits=1)) minutes.")
-
+end  # !WORLD_ONLY
