@@ -34,9 +34,8 @@
 >   [§7 build](#7-build-verify-simulate) · [wiki](https://benefuture.miraheze.org/) ·
 >   [`CLAUDE.md`](CLAUDE.md) for agents.
 >
-> CI: Lean gate green at `main` `5c785ee`. Julia gate **red** at `4a65b00` (7 test files fail on Linux
-> after the local agent's `0f97ecd`, which passed on macOS); the fix is the top task. Last commit with both
-> gates green: `c2cc169`.
+> CI: both gates green again from `6cbbf96` (the Linux failures after `0f97ecd` fixed). CI now runs in
+> tiers: rules, units and probes on every code push; the full suite nightly on `main`.
 
 [Benefuture](https://benefuture.miraheze.org/wiki/Benefuture) is a consequentialist design for a
 civilization by [Nesquarx](https://www.nesquarx.com/). It picks its own purpose rather than claiming a
@@ -225,8 +224,9 @@ end. Under the new rule:
 - **Whitewashing with identity binding** is shown *equivalent* to no whitewashing within a stated
   margin.
 - **Extremist takeovers** are stated as a regime with its interval: 9 of 9 takeovers over 12 seeds.
-- **Better-models takeover regime:** 16 of 24 seeds (interval 0.46–0.82). Floors lose no more than 5%
-  of their growth (equivalence test).
+- **Better-models takeover regime:** over 400 steps 16 of 24 seeds (interval 0.46–0.82); over 800
+  steps 64 of 64 under either accuracy rule (interval 0.94–1.00): a short-horizon effect. Floors lose no
+  more than 5% of their growth (equivalence test).
 
 Three earlier claims did not survive and are recorded as **unsupported** rather than tuned until they
 passed: the cost of *unbound* whitewashing, the takeover-record bar's no-effect, and the debatable
@@ -582,8 +582,15 @@ Measurement, agents and domains
   - Balance overflow trades reinvestment against concentration: share reinvested 84% → 11% as the
     Gini rises 0.18 → 0.53 ([M3c](sim/README.md#m3c-observations)).
 - **Better models over time** (8.42.2, restated under 8.85). Challengers take over a domain's currency
-  only by the significance rule. The takeover regime holds in 16 of 24 seeds (interval 0.46–0.82),
-  and floors lose no more than 5% of their growth (equivalence) ([models_tests](sim/test/models_tests.jl)).
+  only by the significance rule. The takeover regime holds in 16 of 24 seeds over
+  400 steps (interval 0.46–0.82) and in 64 of 64 over 800 (0.94–1.00), and floors lose no more than 5%
+  of their growth (equivalence) ([models_tests](sim/test/models_tests.jl)). Over 800 steps time-decayed
+  accuracy (8.85) beats the fixed record window on 64 paired seeds: more takeovers (+12.3 ± 1.6, z 7.7),
+  more work priced in the domain's own currency (+0.056 ± 0.013, z 4.2) and faster floor growth
+  (+88 ± 24, z 3.6) ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`).
+- **Collusion over 20 years of governance.** With 100 voters, stealth collusion and delegation over 1,200
+  decisions, AdvAp raises late accuracy by +0.026 ± 0.002 (z 10.7, 24 paired seeds); a residual cost
+  against a collusion-free world remains (−0.003 ± 0.001, z −3.0) ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`).
 
 Transactions and causal distribution
 - **Transactions.** About four actions a step instead of one choice by G, roughly three times the
