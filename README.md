@@ -34,8 +34,9 @@
 >   [§7 build](#7-build-verify-simulate) · [wiki](https://benefuture.miraheze.org/) ·
 >   [`CLAUDE.md`](CLAUDE.md) for agents.
 >
-> CI: both gates green again from `6cbbf96` (the Linux failures after `0f97ecd` fixed). CI now runs in
-> tiers: rules, units and probes on every code push; the full suite nightly on `main`.
+> CI: fast tier green at `main` `b9ac158`. CI runs in tiers: rules, units and probes on every code push
+> to `main`; the full suite nightly as 8 parallel shards; docs-only pushes run nothing. Wide and deep
+> batteries run sharded on free GitHub runners (`.github/workflows/battery.yml`).
 
 [Benefuture](https://benefuture.miraheze.org/wiki/Benefuture) is a consequentialist design for a
 civilization by [Nesquarx](https://www.nesquarx.com/). It picks its own purpose rather than claiming a
@@ -273,6 +274,13 @@ and their credences are still entered by hand (for example `credence_accuracy = 
 rather than derived from as-of records, which the pre-registration requires (8.87: no fitting). What would
 count: source records replayed as-of, cases including ones where the right choice was unclear at the time or
 where the actual choice was good, and the pre-registered falsifiers applied.
+
+**Test and compute infrastructure.** Probes now cover every core mechanism (19 audited); the eight that
+only called a rule function were rebuilt as small-world probes with acceptance and counterexample cases.
+The full suite runs as 8 parallel CI shards; batteries shard by seed range across free runners and merge
+their results (checked: a sharded run reproduces the unsharded row count). Platform floating-point
+differences are treated as noise: assertions are distributional (paired effects, equivalence,
+proportions), never fixed offsets over a few seeds.
 
 **Overnight long-horizon & century simulation suite** ([`sim/battery/long_horizon.jl`](sim/battery/long_horizon.jl), launcher [`tools/battery/overnight.sh`](tools/battery/overnight.sh)).
 Extended-duration battery sweeps: 10-year scaled economy (5,000 steps), 20-year governance (1,000 decisions),
