@@ -1,55 +1,26 @@
-# Long-Horizon & Century Composed Simulation Report (8.64, 8.81, 8.85, 8.86)
+# Long-Horizon & Century Simulation Report
 
-- **Commit**: `5605704`
-- **Threads**: `8`
-- **Status**: `COMPLETED` (133.7 minutes elapsed)
-- **Significance Standard**: Pre-stated `z = 2.0` (`z = 3.0` for README/BACKPROPAGATION), contiguous seeds `1:N`.
+- **Commit**: `4db4a6aaf805607067374ec3864be3941f693126`
+- **Consolidation**: Sharded parallel execution merged via statistical pooling
+- **Significance Standard**: Pre-stated `z = 2.0` (`z = 3.0` for README/BACKPROPAGATION).
 
-## 1. 10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, `1:24` seeds, 25.5 min)
-
-| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |
-|---|---|---|---|---|---|
-| `floor_u` (`:decay` vs `:window`) | 136.14 | 134.28 | +1.86 ± 1.12 | +1.66 | [-0.51, 4.22] |
-| `floor_h` (`:decay` vs `:window`) | 136.39 | 134.00 | +2.38 ± 1.08 | +2.20 | [0.09, 4.67] |
-| Transactions (`:decay` vs `:window`) | 1022.88 | 1004.50 | +18.38 ± 8.25 | +2.23 | [0.95, 35.80] |
-| Stressed 10-yr `floor_u` gain (outage + catastrophe + capture + deceit) | 112.72 | 0.00 | +112.72 ± 1.67 | +67.48 | [109.19, 116.24] |
-| Stressed 10-yr `floor_h` gain | 112.60 | 0.00 | +112.60 ± 1.64 | +68.71 | [109.14, 116.06] |
-
-
-## 2. 20-Year Governance (1,200 decisions, 100 voters, stealth collusion & delegation, `1:24` seeds, 0.4 min)
-
-| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |
-|---|---|---|---|---|---|
-| Late-half accuracy under stealth collusion (AdvAp ON vs OFF) | 0.9824 | 0.9561 | +0.0262 ± 0.0024 | +10.74 | [0.0211, 0.0314] |
-| Late-half accuracy (Stealth collusion + AdvAp vs Clean) | 0.9824 | 0.9858 | -0.0034 ± 0.0011 | -2.98 | [-0.0058, -0.0010] |
-| Years 16–20 accuracy (`901:1200`) vs `0.75` convergence bar | 0.9817 | 0.7500 | +0.2317 ± 0.0015 | +151.61 | [0.2284, 0.2349] |
-
-
-## 3. 100-Year Composed Century World (1,200 economy steps + governance + 100-yr M7 population, `1:16` seeds, 39.8 min)
-
-Includes 3 major catastrophes (steps 240, 660, 960), 2 measurement outages (steps 420, 840), 1 metric capture (step 540), and 3 breakthroughs (steps 300, 720, 1020), coupled with M5 governance and M7 population dynamics (teaching, research, births, G per entity).
-
-| Century Metric | Mean | Baseline | Effect ± SE | `z` | 95% CI |
-|---|---|---|---|---|---|
-| Economy 1,200-step `floor_u` growth | 1365.21 | 0.00 | +1365.21 ± 19.61 | +69.61 | [1322.56, 1407.86] |
-| Economy 1,200-step `floor_h` growth | 1361.45 | 0.00 | +1361.45 ± 19.09 | +71.32 | [1319.94, 1402.95] |
-| Governance late-half accuracy vs `0.75` | 0.96 | 0.75 | +0.21 ± 0.00 | +68.28 | [0.21, 0.22] |
-| Population 100-yr `floor_u` gain (teaching + research + births) | 14.83 | 0.00 | +14.83 ± 0.56 | +26.29 | [13.60, 16.05] |
-| Population 100-yr `floor_h` gain | 3.05 | 0.00 | +3.05 ± 0.05 | +57.89 | [2.93, 3.16] |
-
-- Mean century transactions executed: **9431.1**
-- Mean century births admitted under escrow/ratchet: **11.4**
-
-
-## 4. High-Seed Sweep: Open Question 8.85 (800-step Better-Models Takeover, `1:64` seeds, 67.9 min)
-
-- **Takeover regime (`:decay`)**: `64 / 64` (100.0%, 95% interval `[0.941, 1.000]`)
-- **Takeover regime (`:window`)**: `64 / 64` (100.0%, 95% interval `[0.941, 1.000]`)
-
-| Metric (`1:64` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | `z` | 95% CI |
-|---|---|---|---|---|---|
-| Takeover count per run | 29.359 | 17.094 | +12.266 ± 1.600 | +7.66 | [9.065, 15.466] |
-| Own-currency pricing share | 0.802 | 0.745 | +0.056 ± 0.013 | +4.20 | [0.030, 0.083] |
-| Floor understanding growth (`floor_u`) | 437.397 | 349.743 | +87.654 ± 24.268 | +3.61 | [39.118, 136.191] |
-
-
+| Suite | Metric | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |
+|---|---|---|---|---|---|---|
+| `10yr_economy` | `floor_u_decay_vs_window` | 135.8453 | 133.0984 | +2.7469 ± 1.5321 | +1.79 | [-0.2559, 5.7498] |
+| `10yr_economy` | `floor_h_decay_vs_window` | 135.0729 | 133.3197 | +1.7532 ± 1.5197 | +1.15 | [-1.2254, 4.7319] |
+| `10yr_economy` | `tx_count_decay_vs_window` | 1015.6250 | 1004.5000 | +11.1250 ± 8.2729 | +1.34 | [-5.0899, 27.3399] |
+| `10yr_economy` | `floor_u_stressed_vs_unstressed` | 112.3066 | 135.8453 | -23.5388 ± 1.8357 | -12.82 | [-27.1367, -19.9409] |
+| `10yr_economy` | `floor_h_stressed_vs_unstressed` | 112.0909 | 135.0729 | -22.9821 ± 1.6322 | -14.08 | [-26.1811, -19.7830] |
+| `10yr_economy` | `floor_u_bf_vs_status_quo` | 112.3066 | 50.9272 | +61.3793 ± 13.7016 | +4.48 | [34.5242, 88.2344] |
+| `10yr_economy` | `floor_h_bf_vs_status_quo` | 112.0909 | 50.0049 | +62.0859 ± 13.4726 | +4.61 | [35.6797, 88.4922] |
+| `20yr_governance` | `late_half_acc_advap_vs_none` | 0.9806 | 0.9543 | +0.0264 ± 0.0020 | +13.44 | [0.0225, 0.0302] |
+| `20yr_governance` | `late_half_acc_coll_vs_clean` | 0.9806 | 0.9827 | -0.0021 ± 0.0018 | -1.16 | [-0.0056, 0.0015] |
+| `100yr_century` | `century_floor_u_stressed_vs_unstressed` | 1359.2312 | 1225.7846 | +133.4466 ± 6.8064 | +19.61 | [120.1061, 146.7871] |
+| `100yr_century` | `century_floor_h_stressed_vs_unstressed` | 1353.6171 | 1215.3350 | +138.2821 ± 5.9505 | +23.24 | [126.6191, 149.9452] |
+| `100yr_century` | `century_gov_acc_stressed_vs_unstressed` | 0.9624 | 0.9625 | -0.0001 ± 0.0003 | -0.37 | [-0.0007, 0.0005] |
+| `100yr_century` | `century_floor_u_bf_vs_status_quo` | 1359.2312 | 1365.2008 | -5.9695 ± 4.9068 | -1.22 | [-15.5869, 3.6478] |
+| `100yr_century` | `century_floor_h_bf_vs_status_quo` | 1353.6171 | 1358.7035 | -5.0864 ± 5.0875 | -1.00 | [-15.0579, 4.8851] |
+| `100yr_century` | `century_gov_acc_bf_vs_status_quo` | 0.9624 | 0.9625 | -0.0001 ± 0.0003 | -0.32 | [-0.0007, 0.0005] |
+| `open_885_better_models` | `takeover_count_decay_vs_window` | 2.5000 | 2.4375 | +0.0625 ± 0.3091 | +0.20 | [-0.5434, 0.6684] |
+| `open_885_better_models` | `own_share_decay_vs_window` | 0.5841 | 0.5856 | -0.0015 ± 0.0320 | -0.05 | [-0.0642, 0.0612] |
+| `open_885_better_models` | `floor_u_decay_vs_window` | 467.0635 | 396.6152 | +70.4483 ± 49.6037 | +1.42 | [-26.7749, 167.6716] |
