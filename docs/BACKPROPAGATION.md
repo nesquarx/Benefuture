@@ -2239,3 +2239,15 @@ majorities should not converge to certainty as voters are added (Condorcet's jur
 competence above chance and independence; near-chance generalists with correlated errors add noise),
 so the wisdom gain of expertise weighting should grow, not shrink, with population. Candidate homes:
 L113 (domain-relative expertise), 8.22.1, B26 (diversity bonus within the expert tier).
+8.91 author clarification on 8.58-d (repeated deception): records are full and deception weighs harder
+than honesty, so an actor whose error rate does not decrease meets an increasing ratchet, not a fixed
+one. Today's ratchet (`ratchet_credence_ref`) reads the ledgers' negative share, a level: steady
+alternation holds it near 0.45 and the escrow penalty per phase stays flat, and it reaches escrow but
+not the prediction G screens on. Built as two linked parts: (a) an escalating ratchet on escrow driven
+by persistence, the number of deceptive episodes (or audit intervals whose error rate did not fall)
+since the actor's record last improved, relaxing when it improves; (b) the same persistence signal
+widening the actor's predicted uncertainty in screening (8.58-d's first line), so G stops choosing the
+work rather than only charging more for it. The one-off long con (a single defection after a long
+clean record) stays uncatchable in advance by construction (outputs only); it is bounded by escrow,
+settlement clawback and liability, and is tested as such. Candidate homes: L84 (escrow), L86, L101
+(ledgers), L160 (AdvAp), Reputation.
