@@ -539,6 +539,25 @@ neither agent spends tokens on chatter.
       - `lean_action_ci.yml` (run `41723664764`): **SUCCESS / GREEN**.
       - `julia_sim_ci.yml` (run `41723664892`): **SUCCESS / GREEN** (all 34 test files clean).
 
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. E4 Case Provenance & As-Of Records Files (`cases/*.records.csv`, `cases/*.toml`, `tools/data/*`, `sim/src/replay.jl`, `sim/test/replay_tests.jl`):**
+  - **As-Of Historical Records Files**: Created verified observation records with exact historical citations and page numbers for all 4 historical cases (`cases/<id>.records.csv`), with zero records post-dating decision dates:
+    1. `cases/challenger_1986.records.csv`: 24 pre-Challenger flights (STS-1 to STS-61-C) from Rogers Commission Report (1986) Vol 1 Chapter V pp. 129–131.
+    2. `cases/thalidomide_fda_1960.records.csv`: 32 records (20 clinical neuropathy records from Florence BMJ 1960 p. 1954 and FDA NDA 12-665 medical review files, and 12 Merrell promotional trial reports).
+    3. `cases/ragusa_quarantine_1377.records.csv`: 4 civic mortality and maritime arrival records (1348, 1361, 1371, 1374) from Tognotti (2013) and Stuard (1992).
+    4. `cases/semmelweis_vienna_1847.records.csv`: 96 monthly First vs Second Clinic maternal mortality records (1841–1848) from Semmelweis (1861 Table 1) and Best & Neuhauser (2004 Table 1).
+  - **Eliminated Hardcoded Typed Credences in `.toml`**: Removed all `credence_record_n`, `credence_accuracy`, and `pred_confidence` fields from `.toml` files. Each option now declares its backing `source` (e.g. `source = "thiokol_teleconf_charts"`, `source = "marshall_flight_readiness"`).
+  - **Replay Engine Provenance Enforcement (`sim/src/replay.jl`)**:
+    - Added `HistoricalCaseRecord`, `load_case_records`, and automatic loading in `load_replay_case`.
+    - In `replay_decision`: source credences and option confidences are dynamically calculated from replayed records as-of `decision_date`.
+    - Enforced strict refusal: any non-synthetic case without historical records throws `ArgumentError("credences come from replayed records as-of, never entered by hand")`.
+    - Enforced record hindsight guard: any record with `as_of_date` or `resolution_date` > `decision_date` voids the case (`Falsifier F4`).
+  - **Verification & Checksums (`tools/data/`)**:
+    - Updated `tools/data/verify_cases.py` to verify both `.toml` and `.records.csv` files, check that no `.toml` has typed credences, check that all records satisfy $as\_of\_date \le decision\_date$, and check SHA-256 digests.
+    - Updated `tools/data/CHECKSUMS.sha256` with SHA-256 hashes for all 8 case files.
+  - **Test Suite (`sim/test/replay_tests.jl`)**:
+    - Verified dynamic credence calculation across all 4 historical cases (Challenger: 24 records each, Thalidomide: 20 & 12 records, Ragusa: 4 records, Semmelweis: 96 records).
+    - Verified adversarial counterexamples: refusing non-synthetic cases without records (Counterexample 4) and catching hindsight leaks in records (Counterexample 5). All 68 assertions PASS.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the

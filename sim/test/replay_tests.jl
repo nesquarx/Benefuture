@@ -73,6 +73,24 @@ const CASES_DIR = joinpath(@__DIR__, "..", "..", "cases")
     @test_throws ArgumentError replay_decision(synth; q_floor = 0.25)
     @test_throws ArgumentError replay_decision(synth; acc_bar_leaf = 0.80)
     @test_throws ArgumentError replay_decision(synth; unknown_param = 1.0)
+
+    # Counterexample 4 (No records / hand-typed credence): non-synthetic cases without records are refused (8.87)
+    no_records_case = deepcopy(synth)
+    no_records_case["family"] = "single_technical"
+    no_records_case["id"] = "non_synthetic_without_records"
+    @test_throws ArgumentError replay_decision(no_records_case)
+
+    # Counterexample 5 (Hindsight leak in as-of records): a record resolved after decision_date voids the case
+    rec_leak_case = deepcopy(synth)
+    rec_leak_case["family"] = "single_technical"
+    rec_leak_case["id"] = "record_leak_probe"
+    rec_leak_case["records"] = [
+        Dict("source_id" => "s1", "record_id" => "r_leak", "issue_date" => "2026-05-01",
+             "resolution_date" => "2026-06-02", "as_of_date" => "2026-06-02",
+             "predicted" => 1.0, "outcome" => 1.0, "citation_with_page" => "Test citation p. 1")
+    ]
+    res_rec_leak = replay_decision(rec_leak_case)
+    @test res_rec_leak.void && occursin("hindsight leak in record", res_rec_leak.void_reason)
 end
 
 @testset "Historical replay: single technical and low-technology cases (8.87, 8.88)" begin
@@ -85,6 +103,36 @@ end
     suite = evaluate_replay_suite(paths)
     @test suite.n_valid == 4 && suite.n_void == 0
     @test !suite.any_falsifier
+
+    # Dynamic provenance: credences and record counts replayed from .records.csv, not typed in .toml
+    for p in paths
+        c_dict = load_replay_case(p)
+        @test haskey(c_dict, "_records") && !isempty(c_dict["_records"])
+        for src in c_dict["sources"]
+            @test !haskey(src, "credence_accuracy") # not typed in TOML
+            @test !haskey(src, "credence_record_n")  # not typed in TOML
+        end
+        for opt in c_dict["options"]
+            @test !haskey(opt, "pred_confidence")   # not typed in TOML
+        end
+        # After replay_decision, credences and options are populated dynamically from records
+        replay_decision(c_dict)
+        if c_dict["id"] == "challenger_1986"
+            @test c_dict["sources"][1]["credence_record_n"] == 24
+            @test c_dict["sources"][2]["credence_record_n"] == 24
+            @test isapprox(c_dict["sources"][1]["credence_accuracy"], 22/24; atol = 1e-4)
+        elseif c_dict["id"] == "thalidomide_fda_1960"
+            @test c_dict["sources"][1]["credence_record_n"] == 20
+            @test c_dict["sources"][2]["credence_record_n"] == 12
+            @test isapprox(c_dict["sources"][1]["credence_accuracy"], 0.90; atol = 1e-4)
+        elseif c_dict["id"] == "ragusa_quarantine_1377"
+            @test c_dict["sources"][1]["credence_record_n"] == 4
+            @test isapprox(c_dict["sources"][1]["credence_accuracy"], 0.75; atol = 1e-4)
+        elseif c_dict["id"] == "semmelweis_vienna_1847"
+            @test c_dict["sources"][1]["credence_record_n"] == 96
+            @test isapprox(c_dict["sources"][1]["credence_accuracy"], 88/96; atol = 1e-4)
+        end
+    end
 
     # Two historically good decisions (Thalidomide refusal, Ragusa quarantine): Benefuture agrees -> (good, agrees)
     @test suite.cells[(:good, :agrees)] == 2

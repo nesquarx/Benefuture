@@ -16,8 +16,6 @@ primary_or_held_out = "primary"
 id = "florence_1960_neuropathy"
 title = "Florence (1960) British Medical Journal report on peripheral neuritis from thalidomide"
 as_of_date = "1960-12-31"
-credence_record_n = 20
-credence_accuracy = 0.90
 url = "https://doi.org/10.1136/bmj.2.5217.1954"
 notes = "Clinical evidence of irreversible peripheral neuropathy in long-term adult users, raising placental transfer and fetal hazard questions."
 
@@ -25,8 +23,6 @@ notes = "Clinical evidence of irreversible peripheral neuropathy in long-term ad
 id = "merrell_nda_submission"
 title = "Richardson-Merrell Kevadon NDA 12-665 Promotional Clinical Claims"
 as_of_date = "1960-09-12"
-credence_record_n = 12
-credence_accuracy = 0.58
 url = "https://www.fda.gov/about-fda/fda-history-exhibits/frances-oldham-kelsey-medical-reviewer-famous-averter-tragedy"
 notes = "Testimonial clinician reports without controlled trials or animal teratogenicity data."
 
@@ -47,6 +43,7 @@ baseline_h = 58.0
 [[ options ]]
 id = "withhold_approval_pending_safety"
 name = "Withhold NDA approval and require controlled reproductive and neuropathy safety evidence"
+source = "florence_1960_neuropathy"
 known_date = "1960-11-10"
 is_inaction = true
 scope_delta = 0.5
@@ -54,13 +51,13 @@ pred_du = [0.5, 0.2]
 pred_dh = [0.0, 0.0]
 pred_nha = [0.0, 0.0]
 pred_irreparable = [0.0, 0.0]
-pred_confidence = 0.91
 lt_end_u = [50.5, 60.2]
 lt_end_h = [65.0, 58.0]
 
 [[ options ]]
 id = "approve_kevadon_1961"
 name = "Approve Kevadon for commercial US distribution on incomplete testimonial record"
+source = "merrell_nda_submission"
 known_date = "1960-09-12"
 is_inaction = false
 scope_delta = -0.5
@@ -68,7 +65,6 @@ pred_du = [-8.0, 0.0]
 pred_dh = [-15.0, 0.5]
 pred_nha = [5.0, 2.0]
 pred_irreparable = [12.0, 1.5]
-pred_confidence = 0.90
 lt_end_u = [42.0, 60.0]
 lt_end_h = [50.0, 57.0]
 

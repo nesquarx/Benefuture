@@ -17,8 +17,6 @@ primary_or_held_out = "primary"
 id = "vienna_maternity_mortality_1841_1848"
 title = "First and Second Obstetrics Clinic Monthly Maternal Mortality Ledger (1841-1848)"
 as_of_date = "1849-01-01"
-credence_record_n = 96
-credence_accuracy = 0.91
 url = "https://doi.org/10.1136/qshc.2004.010918"
 notes = "Pre-May 1847 First Clinic maternal mortality averaged 9.9% (vs 3.4% in midwifery Second Clinic); following compulsory chlorinated-lime handwashing in May 1847, First Clinic mortality fell to 1.27% across 1848 (45 deaths in 3,556 births)."
 
@@ -39,6 +37,7 @@ baseline_h = 60.0
 [[ options ]]
 id = "retain_handwashing_protocol"
 name = "Retain compulsory chlorinated-lime handwashing between autopsy/examination and delivery"
+source = "vienna_maternity_mortality_1841_1848"
 known_date = "1847-05-15"
 is_inaction = true
 scope_delta = 0.3
@@ -46,13 +45,13 @@ pred_du = [0.5, 2.0]
 pred_dh = [0.5, -0.2]
 pred_nha = [0.0, 0.2]
 pred_irreparable = [0.0, 0.0]
-pred_confidence = 0.91
 lt_end_u = [30.5, 57.0]
 lt_end_h = [40.5, 60.0]
 
 [[ options ]]
 id = "dismiss_semmelweis_relax_handwashing"
 name = "Do not renew Semmelweis's appointment and relax cadaveric handwashing enforcement"
+source = "vienna_maternity_mortality_1841_1848"
 known_date = "1849-03-20"
 is_inaction = false
 scope_delta = -0.5
@@ -60,7 +59,6 @@ pred_du = [-5.0, -1.0]
 pred_dh = [-12.0, 0.2]
 pred_nha = [0.0, 0.0]
 pred_irreparable = [8.6, 0.0]
-pred_confidence = 0.91
 lt_end_u = [25.0, 54.0]
 lt_end_h = [28.0, 60.0]
 

@@ -1,0 +1,5 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+ragusa_plague_chronicle_1348_1374,REC-1348,1348-01-15,1348-12-31,1348-12-31,1.0,1.0,"Tognotti (2013) Emerging Infectious Diseases 19(2):1203-1205; Stuard (1992) p. 142"
+ragusa_plague_chronicle_1348_1374,REC-1361,1361-03-01,1361-12-31,1361-12-31,1.0,1.0,"Tognotti (2013) Emerging Infectious Diseases 19(2):1204; Stuard (1992) p. 144"
+ragusa_plague_chronicle_1348_1374,REC-1371,1371-04-10,1371-11-30,1371-11-30,1.0,1.0,"Tognotti (2013) Emerging Infectious Diseases 19(2):1204; Stuard (1992) p. 145"
+ragusa_plague_chronicle_1348_1374,REC-1374,1374-06-01,1374-10-15,1374-10-15,1.0,0.0,"Tognotti (2013) Emerging Infectious Diseases 19(2):1204-1205"

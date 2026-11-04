@@ -17,8 +17,6 @@ primary_or_held_out = "primary"
 id = "ragusa_plague_chronicle_1348_1374"
 title = "Ragusa Civic Mortality and Maritime Arrival Ledger (1348, 1361, 1371, 1374 outbreaks)"
 as_of_date = "1377-07-01"
-credence_record_n = 4
-credence_accuracy = 0.78
 url = "https://doi.org/10.3201/eid1902.120312"
 notes = "Coarse civic observation: outbreaks consistently followed ships arriving from plague-stricken ports within ~2-4 weeks; isolation outside city walls on Mrkan/Cavtat permitted survival of maritime trade."
 
@@ -39,6 +37,7 @@ baseline_h = 36.0
 [[ options ]]
 id = "unrestricted_port_entry"
 name = "Continue unrestricted maritime entry (status quo before July 1377)"
+source = "ragusa_plague_chronicle_1348_1374"
 known_date = "1377-01-01"
 is_inaction = true
 scope_delta = -0.5
@@ -46,13 +45,13 @@ pred_du = [-6.0, -4.0]
 pred_dh = [-12.0, -8.0]
 pred_nha = [0.0, 0.0]
 pred_irreparable = [15.0, 5.0]
-pred_confidence = 0.78
 lt_end_u = [19.0, 24.0]
 lt_end_h = [23.0, 28.0]
 
 [[ options ]]
 id = "enact_30_day_isolation"
 name = "Require 30-day isolation (trentina) at Cavtat/Mrkan before entering Ragusa, preserving trade after clearance"
+source = "ragusa_plague_chronicle_1348_1374"
 known_date = "1377-07-27"
 is_inaction = false
 scope_delta = 0.2
@@ -60,13 +59,13 @@ pred_du = [0.5, 0.0]
 pred_dh = [1.0, -1.0]
 pred_nha = [0.0, 1.0]
 pred_irreparable = [0.0, 0.0]
-pred_confidence = 0.78
 lt_end_u = [25.5, 28.0]
 lt_end_h = [36.0, 36.0]
 
 [[ options ]]
 id = "total_port_closure"
 name = "Permanent ban on all maritime trade and entry"
+source = "ragusa_plague_chronicle_1348_1374"
 known_date = "1377-07-27"
 is_inaction = false
 scope_delta = -0.2
@@ -74,7 +73,6 @@ pred_du = [-2.0, -3.0]
 pred_dh = [-8.0, -10.0]
 pred_nha = [8.0, 10.0]
 pred_irreparable = [3.0, 1.0]
-pred_confidence = 0.78
 lt_end_u = [23.0, 25.0]
 lt_end_h = [27.0, 26.0]
 

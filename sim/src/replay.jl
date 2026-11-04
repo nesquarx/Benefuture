@@ -394,16 +394,61 @@ function replay_quantile_forecasts(store::QuantileStore, domain::String, eval_da
     return (snapshots = snapshots, takeovers = takeovers, degraded = degraded)
 end
 
-"Load a historical replay case from a `.toml` file (`docs/DATA.md` §16d B2)."
-load_replay_case(path::AbstractString) = TOML.parsefile(path)
+"Single historical observation/forecast record (`docs/DATA.md` §16b, §16d B3)."
+struct HistoricalCaseRecord
+    source_id::String
+    record_id::String
+    issue_date::Date
+    resolution_date::Date
+    as_of_date::Date
+    predicted::Float64
+    outcome::Float64
+    citation::String
+end
+
+function load_case_records(csv_path::AbstractString)
+    isfile(csv_path) || return HistoricalCaseRecord[]
+    recs = HistoricalCaseRecord[]
+    lines = readlines(csv_path)
+    isempty(lines) && return recs
+    for line in lines[2:end]
+        s = strip(line)
+        isempty(s) && continue
+        parts = split(s, ",")
+        length(parts) >= 8 || continue
+        src_id = String(strip(parts[1]))
+        rec_id = String(strip(parts[2]))
+        iss_d = Date(strip(parts[3]))
+        res_d = Date(strip(parts[4]))
+        as_of_d = Date(strip(parts[5]))
+        pred = parse(Float64, strip(parts[6]))
+        outc = parse(Float64, strip(parts[7]))
+        cit = String(strip(join(parts[8:end], ","), ['"', ' ']))
+        push!(recs, HistoricalCaseRecord(src_id, rec_id, iss_d, res_d, as_of_d, pred, outc, cit))
+    end
+    return recs
+end
+
+"Load a historical replay case from a `.toml` file with companion as-of records (`docs/DATA.md` §16d B2, B3)."
+function load_replay_case(path::AbstractString)
+    d = TOML.parsefile(path)
+    d["_file_path"] = String(path)
+    rec_path = replace(path, r"\.toml$" => ".records.csv")
+    if isfile(rec_path)
+        d["_records"] = load_case_records(rec_path)
+    end
+    return d
+end
 
 """
     replay_decision(case_dict::AbstractDict; thresholds...)
 
 Executes Benefuture's decision replay (`docs/DATA.md` §16a, §16d B6, B7, B9) on `case_dict`:
 1. Verifies frozen thresholds (`check_frozen_thresholds(; thresholds...)`).
-2. Enforces the hindsight guard: every source's `as_of_date` and every option's `known_date` must be
-   `<= decision_date`; otherwise the case is marked `void = true`.
+2. Enforces provenance & hindsight guard: credences must come from replayed records as-of,
+   never entered by hand (`docs/DATA.md` §16a, finding 8.87). Every source's `as_of_date`,
+   every option's `known_date`, and every record's `as_of_date` must be `<= decision_date`;
+   otherwise the case is marked `void = true`.
 3. Evaluates every option across affected groups using the Lean reference rules (`value_on_being`,
    `harm_weight`, `floor_quantile`, `g_choose`, `fr_permissible`), checking the strong per-group
    long-term trajectory constraint over `lt` (8.86) and logging any coarse-tier or weak-reading
@@ -415,7 +460,97 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     th = check_frozen_thresholds(; thresholds...)
     dec_date = Date(case_dict["decision_date"])
     tier = get(case_dict, "tier", "full")
+    case_id = String(get(case_dict, "id", ""))
+    family = String(get(case_dict, "family", ""))
     degraded = Dict{String,Int}()
+
+    # 1. As-of record provenance & calculation (8.87: credences come from replayed records as-of, never entered by hand)
+    records = get(case_dict, "_records", nothing)
+    if records === nothing && haskey(case_dict, "records")
+        records = case_dict["records"]
+    elseif records === nothing && haskey(case_dict, "_file_path")
+        rec_path = replace(case_dict["_file_path"], r"\.toml$" => ".records.csv")
+        if isfile(rec_path)
+            records = load_case_records(rec_path)
+        end
+    elseif records === nothing && !isempty(case_id)
+        std_rec = joinpath(@__DIR__, "..", "..", "cases", "$case_id.records.csv")
+        if isfile(std_rec)
+            records = load_case_records(std_rec)
+        end
+    end
+
+    if records === nothing || isempty(records)
+        if family != "synthetic"
+            throw(ArgumentError("Case $case_id has no as-of records; credences come from replayed records as-of, never entered by hand (docs/DATA.md §16a, finding 8.87)"))
+        end
+    else
+        # 1a. Record Hindsight Guard (Falsifier F4 / B9)
+        for r in records
+            r_as_of = r isa HistoricalCaseRecord ? r.as_of_date : Date(r["as_of_date"])
+            r_res = r isa HistoricalCaseRecord ? r.resolution_date : Date(r["resolution_date"])
+            r_id = r isa HistoricalCaseRecord ? r.record_id : r["record_id"]
+            if r_as_of > dec_date || r_res > dec_date
+                return (
+                    id = case_id,
+                    title = String(get(case_dict, "title", case_id)),
+                    tier = tier,
+                    void = true,
+                    void_reason = "hindsight leak in record $r_id: as_of_date $r_as_of or resolution_date $r_res > decision_date $dec_date",
+                    chosen_option = "",
+                    actual_choice = case_dict["actual_choice"],
+                    agrees = false,
+                    outcome_class = Symbol(get(case_dict, "actual_outcome_class", "bad")),
+                    cell = (:void, :void),
+                    floor_u_diff_mean = 0.0,
+                    floor_u_diff_spread = (0.0, 0.0),
+                    floor_h_diff_mean = 0.0,
+                    floor_h_diff_spread = (0.0, 0.0),
+                    irreparable_diff_mean = 0.0,
+                    falsifiers = (F1 = false, F2 = false, F3 = false, F4 = true),
+                    degraded = degraded
+                )
+            end
+        end
+
+        # 1b. Replay source credences from available records as-of dec_date
+        sources = get(case_dict, "sources", [])
+        src_map = Dict{String,Float64}()
+        for src in sources
+            s_id = src["id"]
+            s_recs = [r for r in records if (r isa HistoricalCaseRecord ? r.source_id : r["source_id"]) == s_id && (r isa HistoricalCaseRecord ? r.as_of_date : Date(r["as_of_date"])) <= dec_date]
+            if isempty(s_recs)
+                throw(ArgumentError("Source $s_id in case $case_id has no historical records as-of $dec_date; credences come from replayed records, never entered by hand"))
+            end
+            n_rec = length(s_recs)
+            src["credence_record_n"] = n_rec
+            preds = [r isa HistoricalCaseRecord ? r.predicted : Float64(r["predicted"]) for r in s_recs]
+            outs = [r isa HistoricalCaseRecord ? r.outcome : Float64(r["outcome"]) for r in s_recs]
+            acc = count(preds .== outs) / n_rec
+            src["credence_accuracy"] = acc
+            src_map[s_id] = acc
+        end
+
+        # 1c. Replay option confidences from backing source credences
+        for opt in get(case_dict, "options", [])
+            if haskey(opt, "source")
+                s_id = opt["source"]
+                if haskey(src_map, s_id)
+                    opt["pred_confidence"] = src_map[s_id]
+                end
+            elseif haskey(opt, "sources")
+                s_ids = opt["sources"]
+                matched = [src_map[sid] for sid in s_ids if haskey(src_map, sid)]
+                if !isempty(matched)
+                    opt["pred_confidence"] = mean(matched)
+                end
+            elseif length(sources) == 1
+                opt["pred_confidence"] = first(values(src_map))
+            elseif !isempty(src_map)
+                opt["pred_confidence"] = mean(values(src_map))
+            end
+        end
+    end
 
     # 1. Hindsight Guard (Falsifier F4 / B9)
     for src in get(case_dict, "sources", [])
