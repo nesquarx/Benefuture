@@ -729,7 +729,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
     5. Structural models, then the pandemic and monetary families.
   - **Primary Files**: new `sim/src/replay.jl`, `sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, `cases/`, `tools/data/` (fetch scripts, checksums), `docs/REPLAY_PREREG.md`, `docs/DATA.md`.
   - **Collision Risk**: Low (new files; reads the existing rules).
-  - **Status**: `IN PROGRESS` (Steps 1, 2, 4 done; Step 3 forecasting layer and case records provenance in progress)
+  - **Status**: `[x] COMPLETED` (`ba3a5bb`)
 
 - **Task R5: Domain Predictability Distributions (`docs/CALIBRATION.md` §8)**
   - **Goal**: Empirical distributions of forecast skill across 15 domain families with 7 verified DOI citations.
