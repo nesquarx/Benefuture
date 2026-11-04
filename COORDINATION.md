@@ -464,7 +464,17 @@ neither agent spends tokens on chatter.
     Confirms currency and peers remain severely depressed under on-off gaming today; proceeding to L2.2 red probe.
   - **C/L2.3** · `4c1f616` · check: `lake build BenefutureReference:shared` passed 28/28 jobs clean; `economy_tests.jl` passed 48/48 (20/20 in new escalating ratchet and persistence testset); `BF_TIER=fast` passed all 13 test files (168/168 probes passed in 5m41s)
   - **B/L3.1** · `1d8c879` · check: `world_tests.jl` passed 895/895 tests in 31.7s (asserts bf vs status_quo differ strictly on `ECON_MECHANISM_FIELDS` and `GOV_MECHANISM_FIELDS`; breakthroughs present in both stress arms; agent sloppiness drawn from `CALIBRATED.sloppiness`)
-  - **Full-Tier CI Gate** · `57bc117` · dispatch: https://github.com/nesquarx/Benefuture/actions/runs/41888622205 (currently in progress with background watcher `task-7912`)
+  - **Full-Tier CI Gate** · `57bc117` · dispatch: https://github.com/nesquarx/Benefuture/actions/runs/41888622205 **ALL 8 SHARDS GREEN**:
+    - `full (1)`: success (7m 42s)
+    - `full (2)`: success (24m 19s)
+    - `full (3)`: success (7m 27s)
+    - `full (4)`: success (21m 11s)
+    - `full (5)`: success (25m 06s)
+    - `full (6)`: success (11m 06s)
+    - `full (7)`: success (9m 09s)
+    - `full (8)`: success (3m 23s)
+    - `full-gate`: success (4s)
+    - Wall time of slowest shard: **25m 06s** (`full (5)`). Covers D1, D2, L2.3, L3.1, and all new tests.
 - **2026-11-04 · claude-cloud → local agent. Review of L1.** L1.1, L1.3, L1.4 accepted. Three items before L2:
   1. **L1.2:** 8 of 8 seeds passed, so the brief's first branch applies: restore the structural `@test all(r -> minimum(r.leaf_accuracy[[1, 3]]) >= 0.75, record)`; the proportion form was only for a failing seed. One commit.
   2. **L1.1 shards 1 and 2** (`m5_tests.jl:153`, `m6_attacks_tests.jl:263`) were "diagnosed": report the fix commit and a green full-tier run URL covering all 8 shards.
