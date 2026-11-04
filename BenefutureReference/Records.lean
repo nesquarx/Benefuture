@@ -98,4 +98,24 @@ def class_balanced_skill_ref (credences outcomes : Array Float) : Float := Id.ru
   if cn.size == 0 then return sp
   return min sp sn
 
+/-- Repeated deception (author 8.91 and its addendum). `significance` holds, per audit interval
+    (oldest first), the actor's overstatement in standard errors (t-inflated): the mean of its signed
+    errors, quoted minus measured, over their standard error. An interval is deceptive only if that
+    exceeds `z`; the persistence is the number of consecutive trailing deceptive intervals, so any
+    non-deceptive interval resets it to 0. -/
+def persistence_ref (significance : Array Float) (z : Float) : Nat := Id.run do
+  let mut n := 0
+  for i in [0:significance.size] do
+    if significance[significance.size - 1 - i]! > z then n := n + 1 else break
+  return n
+
+/-- Escalating ratchet: `ratchet_credence_ref` with the distance from a coin toss shrunk by a further
+    factor `(1 + growth)` per persistent interval, persistence capped so the factor is at most
+    `cap` (`log cap / log (1 + growth)` intervals). With persistence 0 it is `ratchet_credence_ref`.
+    The credence only approaches 0.5, never crosses it, and it screens nobody out. -/
+def escalated_credence_ref (credence negShare : Float) (persistence : Nat) (growth cap : Float) : Float :=
+  let maxP := Float.log cap / Float.log (1.0 + growth)
+  let p := min persistence.toFloat maxP
+  0.5 + (credence - 0.5) * (1.0 - negShare) * (1.0 + growth) ^ (-p)
+
 end BenefutureReference

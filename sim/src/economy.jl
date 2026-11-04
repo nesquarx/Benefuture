@@ -381,3 +381,39 @@ function ratchet_credence(credence::Real, neg_share::Real)
     check(0 <= credence <= 1 && 0 <= neg_share <= 1, "credence and negative share in [0, 1]")
     ccall(sym(:bf_ratchet_credence), Float64, (Float64, Float64), credence, neg_share)
 end
+
+"""
+    persistence(significance; z) -> Int
+
+Consecutive trailing audit intervals whose overstatement significance (t-inflated standard errors,
+oldest first) exceeds `z`; a non-deceptive interval resets it (Lean `persistence_ref`; 8.91).
+"""
+function persistence(significance; z::Real = 2.0)
+    check(all(isfinite, significance) && isfinite(z), "significances and z finite")
+    Int(ccall(sym(:bf_persistence), UInt32, (Ptr{Cvoid}, Float64), floatarray(Float64.(significance)), z))
+end
+
+"""
+    overstatement_significance(errors) -> Float64
+
+One interval's signed errors (quoted minus measured): their mean over its t-inflated standard error.
+"""
+function overstatement_significance(errors)
+    n = length(errors)
+    n < 2 && return 0.0
+    m = sum(errors) / n
+    s = sqrt(sum(e -> (e - m)^2, errors) / (n - 1) / n) * t_inflation(n - 1)
+    s > 0 ? m / s : (m > 0 ? Inf : 0.0)
+end
+
+"""
+    escalated_credence(credence, neg_share, persistence; growth = 0.5, cap = 4.0) -> credence
+
+`ratchet_credence` with the distance from a coin toss further divided by `(1 + growth)^persistence`,
+the factor at most `cap` (Lean `escalated_credence_ref`; 8.91).
+"""
+function escalated_credence(credence::Real, neg_share::Real, persistence::Integer; growth::Real = 0.5, cap::Real = 4.0)
+    check(0 <= credence <= 1 && 0 <= neg_share <= 1, "credence and negative share in [0, 1]")
+    check(persistence >= 0 && isfinite(growth) && growth > 0 && isfinite(cap) && cap >= 1, "persistence non-negative, growth positive, cap at least 1")
+    ccall(sym(:bf_escalated_credence), Float64, (Float64, Float64, Float64, Float64, Float64), credence, neg_share, persistence, growth, cap)
+end

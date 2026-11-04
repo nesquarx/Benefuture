@@ -323,4 +323,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_quantile_score] def quantileScore (quantiles predictions outcomes : FloatArray) (scale : Float) : Float :=
   quantile_score_ref quantiles.data predictions.data outcomes.data scale
 
+@[export bf_persistence] def persistence (significance : FloatArray) (z : Float) : UInt32 :=
+  (persistence_ref significance.data z).toUInt32
+
+@[export bf_escalated_credence] def escalatedCredence (credence negShare persistence growth cap : Float) : Float :=
+  escalated_credence_ref credence negShare persistence.toUInt64.toNat growth cap
+
 end BenefutureReference.Export

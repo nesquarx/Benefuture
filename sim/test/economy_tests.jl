@@ -43,3 +43,30 @@ end
     @test_throws ArgumentError competition_efficiency(1.0, 0.0, 0.0)
     @test_throws ArgumentError resource_cost([(-1.0, 2.0)]; compute = 1.0, network = 1.0, time = 1.0, compute_cost = 1.0, network_cost = 1.0, time_cost = 1.0)
 end
+
+@testset "Escalating ratchet (L2.3; 8.91)" begin
+    # persistence 0 is the plain ratchet
+    for (c, n) in ((0.9, 0.0), (0.9, 0.3), (0.7, 0.5), (0.2, 0.1))
+        @test escalated_credence(c, n, 0) ≈ ratchet_credence(c, n)
+    end
+    # each extra persistence loses strictly more distance from 0.5 (until the cap)
+    d(k) = abs(escalated_credence(0.9, 0.2, k) - 0.5)
+    @test all(d(k + 1) < d(k) for k in 0:2)
+    @test escalated_credence(0.9, 0.2, 50) ≈ escalated_credence(0.9, 0.2, 4) ≈ escalated_credence(0.9, 0.2, 100)  # capped
+    @test abs(escalated_credence(0.9, 0.0, 3; growth = 0.5, cap = 4.0) - 0.5) ≈ 0.4 / 1.5^3
+    @test abs(escalated_credence(0.9, 0.0, 100) - 0.5) ≈ 0.4 / 4 atol = 1e-12
+    @test escalated_credence(0.9, 0.0, 100) > 0.5 && escalated_credence(0.1, 0.0, 100) < 0.5
+    # persistence counts trailing deceptive intervals and resets on a non-deceptive one
+    @test persistence([3.0, 3.0, 3.0]; z = 2.0) == 3
+    @test persistence([3.0, 3.0, 1.0]; z = 2.0) == 0
+    @test persistence([1.0, 3.0, 3.0]; z = 2.0) == 2
+    @test persistence([3.0, 1.0, 3.0]; z = 2.0) == 1
+    @test persistence(Float64[]; z = 2.0) == 0
+    @test persistence([-5.0, 3.0]; z = 2.0) == 1
+    # significance: consistent overstatement is deceptive; noise and isolated mistakes are not
+    @test overstatement_significance([1.0, 1.1, 0.9, 1.0, 1.05]) > 2.0
+    @test overstatement_significance([1.0, -1.0, 0.5, -0.5, 0.2, -0.2]) < 2.0
+    @test overstatement_significance([-1.0, -1.1, -0.9, -1.0]) < 0
+    @test_throws ArgumentError escalated_credence(0.9, 1.5, 1)
+    @test_throws ArgumentError escalated_credence(0.9, 0.2, 1; growth = 0.0)
+end

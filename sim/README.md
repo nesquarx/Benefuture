@@ -1287,6 +1287,7 @@ ratified.
 | Dependency window the birth escrow covers; the baseline (M7) | `window`, baseline | 20 steps, the happiness floor at birth | 8.52 [P]; L84 |
 | Currency status: established leaf, novel leaf, coarse parent (never below 0.55, the unprecedented) | `threshold`, `novel_threshold`, `coarse_threshold`, `min_records` | 0.9, 0.75, 0.75, 10 | L82; 8.8, 8.35, 8.36 |
 | Greatest credence any model may state (truth levels never reach 1) | `max_credence` | 0.99 | L84; 8.33, 8.36 |
+| Escalating ratchet (8.91): growth of escrow per persistent deceptive audit interval; audit interval; cap on the total escalation factor (screening never excludes) | `ratchet_growth`, `persistence_window`, `ratchet_cap` | 0.5, 25 steps, 4 | 8.91 and addendum; Lean `persistence_ref`, `escalated_credence_ref` |
 | Models that must clear a domain's bar before it ratchets up (the bar then sits under the k-th best; never falls by this rule) | `ratchet_k` | 3 | author ruling 8.84; Lean `ratchet_bar_ref` |
 | Margin the ratcheted bar sits under the k-th best accuracy | `ratchet_margin` | 0.02 | author ruling 8.84 |
 | The ratchet's averaging half-life as a multiple of the domain's accuracy half-life; models count once observed across it | `ratchet_horizon` | 20 | author 8.84, 8.85; 10 locks the better-models world, 40 rarely fires |
