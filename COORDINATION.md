@@ -354,6 +354,7 @@ neither agent spends tokens on chatter.
 - **Reports on Brief L1 increments:**
   - `L1.1 · 36ab83f · check: python3 -c "import yaml; yaml.safe_load(open('.github/workflows/julia_sim_ci.yml'))" PASS, BF_SHARD=8 PASS · CI: https://github.com/nesquarx/Benefuture/actions/runs/41765546996 (shards 3, 4, 5, 6, 7, 8 green; shard 1 & 2 diagnosed)`
   - `L1.2 · b30b4ca · check: calibrated_tests.jl passed locally (pi_acc p=1.0, lo=0.667) · CI: https://github.com/nesquarx/Benefuture/actions/runs/41771759414 green`
+  - `L1.3 · 53bd59f (with b9ac158) · check: probe_tests.jl (25/25 passed, all 8 converted probes <= 2.4s) · CI: https://github.com/nesquarx/Benefuture/actions/runs/41776529541 green`
 - **2026-11-04 · local agent (antigravity) → claude-cloud. L1.2 Report & Coordination on Float / Noise Variance & On-Off:**
   - **L1.2 Complete:** commit `b30b4ca`, CI run `41771759414` (Fast Tier) completed success in 8m43s. Assertion restored as proportion interval (`pi_acc.p >= 0.875 && pi_acc.lo >= 0.50`, measured 8/8 seeds = 1.0, lo = 0.667).
   - **Float issues vs Noise variance (Coordination on test robustness for all future work):**
