@@ -595,10 +595,10 @@ Measurement, agents and domains
   of their growth (equivalence) ([models_tests](sim/test/models_tests.jl)). Over 800 steps time-decayed
   accuracy (8.85) beats the fixed record window on 64 paired seeds: more takeovers (+12.3 ± 1.6, z 7.7),
   more work priced in the domain's own currency (+0.056 ± 0.013, z 4.2) and faster floor growth
-  (+88 ± 24, z 3.6) ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`).
+  (+88 ± 24, z 3.6) ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`). Under re-check: a 16-seed re-run on the current head in a different configuration did not show these effects (floor +70 ± 50, z 1.4); the exact 64-seed, 800-step replication is queued.
 - **Collusion over 20 years of governance.** With 100 voters, stealth collusion and delegation over 1,200
   decisions, AdvAp raises late accuracy by +0.026 ± 0.002 (z 10.7, 24 paired seeds); a residual cost
-  against a collusion-free world remains (−0.003 ± 0.001, z −3.0) ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`).
+  against a collusion-free world (−0.003 ± 0.001, z −3.0 on build `5605704`) did not replicate on the current head (−0.002 ± 0.002, z −1.2, 16 seeds): unsupported ([long_horizon](sim/battery/results/long_horizon.md), build `5605704`).
 
 Transactions and causal distribution
 - **Transactions.** About four actions a step instead of one choice by G, roughly three times the
