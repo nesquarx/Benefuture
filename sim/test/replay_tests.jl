@@ -211,3 +211,49 @@ end
     @test dm.mean < 0.0 && dm.sig && dm.z_stat < -3.0
 end
 
+@testset "Historical replay: D1 as-of leakage tests for all 4 cases" begin
+    case_paths = [
+        joinpath(CASES_DIR, "challenger_1986.toml"),
+        joinpath(CASES_DIR, "thalidomide_fda_1960.toml"),
+        joinpath(CASES_DIR, "ragusa_quarantine_1377.toml"),
+        joinpath(CASES_DIR, "semmelweis_vienna_1847.toml")
+    ]
+    for p in case_paths
+        # Baseline run
+        c_base = load_replay_case(p)
+        res_base = replay_decision(c_base)
+        @test !res_base.void
+        creds_base = [src["credence_accuracy"] for src in c_base["sources"]]
+        choice_base = res_base.chosen_option
+
+        # (a) Removing every record dated after decision_date leaves choice and credences bit-identical
+        c_clean = load_replay_case(p)
+        dec_date = Date(c_clean["decision_date"])
+        c_clean["_records"] = filter(r -> r.as_of_date <= dec_date && r.resolution_date <= dec_date, c_clean["_records"])
+        res_clean = replay_decision(c_clean)
+        @test !res_clean.void
+        @test res_clean.chosen_option == choice_base
+        creds_clean = [src["credence_accuracy"] for src in c_clean["sources"]]
+        @test creds_clean == creds_base
+
+        # (b) Adding one synthetic record dated after decision_date makes replay.jl refuse loudly (degraded entry, case unsupported)
+        c_leaked = load_replay_case(p)
+        first_src_id = first(c_leaked["sources"])["id"]
+        post_record = HistoricalCaseRecord(
+            first_src_id,
+            "synthetic_post_decision_leak",
+            dec_date + Dates.Day(1),
+            dec_date + Dates.Day(1),
+            dec_date + Dates.Day(1),
+            1.0, 1.0,
+            "Synthetic leak test citation p. 1"
+        )
+        push!(c_leaked["_records"], post_record)
+        res_leaked = replay_decision(c_leaked)
+        @test res_leaked.void
+        @test res_leaked.chosen_option == ""
+        @test occursin("hindsight leak in record synthetic_post_decision_leak", res_leaked.void_reason)
+        @test haskey(res_leaked.degraded, "case unsupported: hindsight leak in record synthetic_post_decision_leak")
+    end
+end
+

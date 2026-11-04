@@ -26,7 +26,7 @@ export CALIBRATED, draw_skills, lognormal_mean1, pareto_median1
 export run_m7, teaching_plan
 export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth_escrow, accession_admissible, Newborn, PopPlan, pop_value, pop_choose, run_births
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, Shock, shock
-export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, replay_decision, evaluate_replay_suite, QuantileForecastRecord, QuantileStore, replay_quantile_forecasts
+export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, load_case_records, HistoricalCaseRecord, replay_decision, evaluate_replay_suite, QuantileForecastRecord, QuantileStore, replay_quantile_forecasts
 
 include("lean.jl")
 include("calibration.jl")

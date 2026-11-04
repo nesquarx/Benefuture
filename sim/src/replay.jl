@@ -491,6 +491,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             r_res = r isa HistoricalCaseRecord ? r.resolution_date : Date(r["resolution_date"])
             r_id = r isa HistoricalCaseRecord ? r.record_id : r["record_id"]
             if r_as_of > dec_date || r_res > dec_date
+                degraded["case unsupported: hindsight leak in record $r_id"] = 1
                 return (
                     id = case_id,
                     title = String(get(case_dict, "title", case_id)),
@@ -556,6 +557,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     for src in get(case_dict, "sources", [])
         src_date = Date(src["as_of_date"])
         if src_date > dec_date
+            degraded["case unsupported: hindsight leak in source $(src["id"])"] = 1
             return (
                 id = case_dict["id"],
                 void = true,
@@ -573,6 +575,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     for opt in options
         k_date = Date(opt["known_date"])
         if k_date > dec_date
+            degraded["case unsupported: hindsight leak in option $(opt["id"])"] = 1
             return (
                 id = case_dict["id"],
                 void = true,
