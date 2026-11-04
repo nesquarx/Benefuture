@@ -5,6 +5,7 @@ name: Julia Sim CI
 # a newer push cancels the run it supersedes.
 on:
   push:
+    branches: [main]   # work branches mirror main; their pushes would re-run CI on code already tested
     paths-ignore:
       - '**.md'
       - 'docs/**'
