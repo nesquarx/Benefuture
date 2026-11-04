@@ -2262,3 +2262,14 @@ interval resets persistence, and the ledger pattern alone (negative share) keeps
 no more. Tested by counterexamples: an honest high-variance agent, an agent with isolated mistakes,
 and an improving agent show selected actions equivalent to an honest baseline (stated margin) and a
 false-escalation rate within a stated proportion interval.
+8.92 author clarification (the status-quo baseline): the comparison institution is one person, one vote
+with literally uncapped delegation (representation and party concentration), carefully built to match
+realistic boom–bust and regulatory-capture conditions; not Benefuture with features switched off. Same
+world, same people, same adversity; its own institutions, each at today's measured rates: equal-weight
+votes with uncapped delegation to representatives; a single fiat currency with procyclical credit
+(leverage rising in booms, sudden stops); regulation whose thresholds drift toward concentrated
+interests (capture) at a calibrated rate; audits, fraud detection and court remedies at today's rates
+and delays; short institutional memory. A straw man is as useless as a flattering one: the baseline is
+calibrated from data with sources and confidence (docs/CALIBRATION.md), and its own successes (it does
+recover from busts) must reproduce. Candidate homes: Implementation (comparison), L113–L114 (contrast),
+docs/CALIBRATION.md.
