@@ -257,3 +257,30 @@ end
     end
 end
 
+
+@testset "Forecast archive: D2 rolling-window as-of scoring on COVID-19 Forecast Hub sample" begin
+    # Check: unit test on the sample reproduces stored scores
+    exp_file = joinpath(CASES_DIR, "archive_sample", "expected_window_scores.csv")
+    @test isfile(exp_file)
+    expected = Dict{Tuple{Int,String},Float64}()
+    for (i, line) in enumerate(readlines(exp_file))
+        i == 1 && continue
+        isempty(strip(line)) && continue
+        parts = split(line, ',')
+        expected[(parse(Int, parts[1]), String(parts[4]))] = parse(Float64, parts[5])
+    end
+    store = load_archive_store()
+    rep = rolling_report(store, "covid19_us_inc_death_1wk"; width = 6)
+    @test length(rep.scores) == 5
+    for (win_idx, sc) in enumerate(rep.scores)
+        for (f, score) in sc
+            @test isapprox(score, expected[(win_idx, f)]; atol = 1e-6)
+        end
+    end
+    # As-of reconstruction check: records beyond window resolution are refused
+    w1_dates = rep.windows[1]
+    w1_last_res = maximum(r.resolution_date for r in store.records if r.target_date in w1_dates)
+    w1_as_of = records_as_of(store, w1_last_res; domain = "covid19_us_inc_death_1wk")
+    @test all(r -> r.resolution_date <= w1_last_res, w1_as_of)
+    @test any(r -> r.resolution_date > w1_last_res, store.records)
+end
