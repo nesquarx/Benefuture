@@ -720,3 +720,86 @@ end
     @test pe_g80.significant && pe_g80.mean > 0.25       # Wisdom gain > 0.25 at z = 3.0 (z = 37.2)
     @test pe_growth.significant && pe_growth.mean > 0.03  # Wisdom gain growth with n is significant at z = 3.0 (z = 5.94)
 end
+
+# ==============================================================================
+# Probe: repeated deception meets an escalating ratchet (8.91, Brief L2.2)
+# ==============================================================================
+@testset "Probe: repeated deception meets an escalating ratchet (8.91)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    selected_act(tr, a) = count(==(a), tr.exec_agent)
+    peers_act(tr) = mean(selected_act(tr, a) for a in 1:5)
+
+    ww_params = ToyParams(n = 80, steps = 200, plans = 10)
+    agents = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6]
+    # On-off cycles: bad phases at 26..50, 76..100, 126..150; deceit stops from step 151
+    bad_events = [shock(:breakthrough; step = 26, duration = 25, size = -1.0, target = 6),
+                  shock(:breakthrough; step = 76, duration = 25, size = -1.0, target = 6),
+                  shock(:breakthrough; step = 126, duration = 25, size = -1.0, target = 6)]
+
+    p_onoff = M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                        transactions = true, causal_distribution = true, deceit = [0, 0, 0, 0, 0, 1.0],
+                        events = bad_events, on_off = 25, advap = true, LEGACY...)
+    p_honest = M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                         transactions = true, causal_distribution = true, deceit = Float64[],
+                         events = bad_events, on_off = 25, advap = true, LEGACY...)
+
+    runs_onoff = [run_m3c(p_onoff; seed = s) for s in 1:2]
+    runs_honest = [run_m3c(p_honest; seed = s) for s in 1:2]
+
+    # Helper to compute mean escrow per selected action of deceiver (agent 6) during a step window
+    function phase_escrow(tr, window)
+        idxs = findall(i -> tr.chosen_agent[i] == 6 && tr.chosen_step[i] in window, 1:length(tr.chosen_step))
+        isempty(idxs) && return 0.0
+        sum(tr.costs[i] for i in idxs) / length(idxs)
+    end
+
+    # Condition (i): deceiver escrow per bad phase strictly increases phase-over-phase.
+    # Baseline on current code without escalating ratchet:
+    # Seed 1: phase 1 (26..50) = 0.0, phase 2 (76..100) = 0.766, phase 3 (126..150) = 0.0 (drops to 0!)
+    # Seed 2: phase 1 (26..50) = 0.0, phase 2 (76..100) = 0.586, phase 3 (126..150) = 0.486 (decreases!)
+    # Marked @test_broken until L2.4 wires escalated_credence into escrow.
+    @test_broken all(begin
+        e1 = phase_escrow(tr, 26:50)
+        e2 = phase_escrow(tr, 76:100)
+        e3 = phase_escrow(tr, 126:150)
+        e1 < e2 < e3
+    end for tr in runs_onoff)
+
+    # Condition (ii): peers selected actions under on-off >= 0.8 * honest.
+    # Baseline on current code:
+    # Seed 1: peers onoff = 88.6 vs honest = 188.8 (ratio = 0.469 < 0.8, domain currency crashed)
+    # Seed 2: peers onoff = 186.6 vs honest = 202.2 (ratio = 0.923)
+    # Marked @test_broken until L2.5 wires escalated credence into screening uncertainty widening.
+    @test_broken all(peers_act(runs_onoff[s]) >= 0.8 * peers_act(runs_honest[s]) for s in 1:2)
+
+    # Condition (iii): after deceiver stops (steps 151..200), escrow per action falls by step 200.
+    # Baseline on current code:
+    # Seed 2: phase 3 escrow = 0.486, post-deceit escrow = 0.611 (escrow actually rose!)
+    # Marked @test_broken until L2.4/L2.5 implements persistence decay and reset.
+    @test_broken all(begin
+        e3 = phase_escrow(tr, 126:150)
+        e_post = phase_escrow(tr, 151:200)
+        e_post < e3
+    end for tr in runs_onoff)
+
+    # Counterexample (iv): honest agent with high variance (skill 0.6, sloppiness high 0.5, no deceit)
+    agents_iv = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], a == 6 ? 0.5 : 0.0) for a in 1:6]
+    p_iv = M3cParams(ww_params, agents_iv, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, deceit = Float64[],
+                     advap = true, LEGACY...)
+    tr_iv = [run_m3c(p_iv; seed = s) for s in 1:2]
+    # High variance honest agent remains actively selected (> 150 actions over 200 steps)
+    @test all(selected_act(t, 6) > 150 for t in tr_iv)
+
+    # Counterexample (v): honest agent with isolated mistakes (single transient breakthrough shock, no deceit)
+    events_v = [shock(:breakthrough; step = 50, duration = 10, size = -1.0, target = 6)]
+    p_v = M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                    transactions = true, causal_distribution = true, deceit = Float64[],
+                    events = events_v, advap = true, LEGACY...)
+    tr_v = [run_m3c(p_v; seed = s) for s in 1:2]
+    # Isolated mistakes agent remains actively selected (> 140 actions over 200 steps)
+    @test all(selected_act(t, 6) > 140 for t in tr_v)
+
+    # Counterexample (vi): agent that deceived then stopped returns to active participation
+    @test all(selected_act(tr, 6) > 25 for tr in runs_onoff)
+end
