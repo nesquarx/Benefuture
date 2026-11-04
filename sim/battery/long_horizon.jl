@@ -153,7 +153,7 @@ end
 println("[1/4] Running 10-Year Scaled Economy (120 monthly steps, 240 beings, 16 agents, 8 leaves, seeds 1:$N_ECON_SEEDS)...")
 begin
     t0 = time()
-    function econ_10yr_world(; accuracy_rule = :decay, stressed = false)
+    function econ_10yr_world(; accuracy_rule = :decay, stressed = false, advap = true, ratchet_k = 3)
         skills = draw_skills(Xoshiro(20261102), 16, 8, [1, 3, 5, 7]; median = 0.65)
         agents = [DomainAgent(skills[a, :], [l in (1, 3, 5, 7) ? 0.25 : 0.0 for l in 1:8]) for a in 1:16]
         parents = [1, 1, 2, 2, 3, 3, 4, 4]
@@ -174,8 +174,9 @@ begin
             p_side = stressed ? 0.03 : 0.01,
             repair_efficiency = 0.5,
             deceit = deceit,
-            advap = true,
+            advap = advap,
             accuracy_rule = accuracy_rule,
+            ratchet_k = ratchet_k,
             events = events
         )
     end
@@ -184,13 +185,16 @@ begin
         tr_decay = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = false); seed)
         tr_win   = run_m3c(econ_10yr_world(accuracy_rule = :window, stressed = false); seed)
         tr_stress = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = true); seed)
+        tr_sq    = run_m3c(econ_10yr_world(accuracy_rule = :window, stressed = true, advap = false, ratchet_k = 0); seed)
         (
             decay = success_pattern(tr_decay; from = 25),
             win = success_pattern(tr_win; from = 25),
             stress = success_pattern(tr_stress; from = 25),
+            sq = success_pattern(tr_sq; from = 25),
             tx_decay = length(tr_decay.chosen_step),
             tx_win = length(tr_win.chosen_step),
-            tx_stress = length(tr_stress.chosen_step)
+            tx_stress = length(tr_stress.chosen_step),
+            tx_sq = length(tr_sq.chosen_step)
         )
     end
 
@@ -200,10 +204,14 @@ begin
                               [r.decay.floor_h for r in res_econ], [r.win.floor_h for r in res_econ])
     c_tx = record_comparison!(rows, "10yr_economy", "tx_count_decay_vs_window",
                               Float64[r.tx_decay for r in res_econ], Float64[r.tx_win for r in res_econ])
-    c_st_u = record_comparison!(rows, "10yr_economy", "floor_u_stressed_vs_zero",
-                                [r.stress.floor_u for r in res_econ], zeros(length(res_econ)))
-    c_st_h = record_comparison!(rows, "10yr_economy", "floor_h_stressed_vs_zero",
-                                [r.stress.floor_h for r in res_econ], zeros(length(res_econ)))
+    c_st_u = record_comparison!(rows, "10yr_economy", "floor_u_stressed_vs_unstressed",
+                                [r.stress.floor_u for r in res_econ], [r.decay.floor_u for r in res_econ])
+    c_st_h = record_comparison!(rows, "10yr_economy", "floor_h_stressed_vs_unstressed",
+                                [r.stress.floor_h for r in res_econ], [r.decay.floor_h for r in res_econ])
+    c_bf_u = record_comparison!(rows, "10yr_economy", "floor_u_bf_vs_status_quo",
+                                [r.stress.floor_u for r in res_econ], [r.sq.floor_u for r in res_econ])
+    c_bf_h = record_comparison!(rows, "10yr_economy", "floor_h_bf_vs_status_quo",
+                                [r.stress.floor_h for r in res_econ], [r.sq.floor_h for r in res_econ])
 
     sec = IOBuffer()
     @printf(sec, "## 1. 10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, `1:%d` seeds, %.1f min)\n\n",
@@ -214,8 +222,10 @@ begin
         ("`floor_u` (`:decay` vs `:window`)", c_fu),
         ("`floor_h` (`:decay` vs `:window`)", c_fh),
         ("Transactions (`:decay` vs `:window`)", c_tx),
-        ("Stressed 10-yr `floor_u` gain (outage + catastrophe + capture + deceit)", c_st_u),
-        ("Stressed 10-yr `floor_h` gain", c_st_h)
+        ("Stressed 10-yr `floor_u` vs Unstressed (outage + catastrophe + capture + deceit)", c_st_u),
+        ("Stressed 10-yr `floor_h` vs Unstressed", c_st_h),
+        ("Stressed 10-yr `floor_u` (Benefuture vs Status-Quo Baseline)", c_bf_u),
+        ("Stressed 10-yr `floor_h` (Benefuture vs Status-Quo Baseline)", c_bf_h)
     ]
         @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
                 label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
@@ -256,8 +266,6 @@ begin
                                [r.acc_coll_adv for r in res_gov], [r.acc_coll_noadv for r in res_gov])
     c_clean = record_comparison!(rows, "20yr_governance", "late_half_acc_coll_vs_clean",
                                  [r.acc_coll_adv for r in res_gov], [r.acc_clean for r in res_gov])
-    c_q4 = record_comparison!(rows, "20yr_governance", "final_quarter_acc_vs_0.75_bar",
-                              [r.q4_coll_adv for r in res_gov], fill(0.75, length(res_gov)))
 
     sec = IOBuffer()
     @printf(sec, "## 2. 20-Year Governance (1,200 decisions, 100 voters, stealth collusion & delegation, `1:%d` seeds, %.1f min)\n\n",
@@ -266,8 +274,7 @@ begin
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("Late-half accuracy under stealth collusion (AdvAp ON vs OFF)", c_adv),
-        ("Late-half accuracy (Stealth collusion + AdvAp vs Clean)", c_clean),
-        ("Years 16–20 accuracy (`901:1200`) vs `0.75` convergence bar", c_q4)
+        ("Late-half accuracy (Stealth collusion + AdvAp vs Clean)", c_clean)
     ]
         @printf(sec, "| %s | %.4f | %.4f | %+.4f ± %.4f | %+.2f | [%.4f, %.4f] |\n",
                 label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
@@ -298,7 +305,9 @@ begin
             shock(:catastrophe; step = 960, share = 0.35, size = 18.0),
             shock(:breakthrough; step = 1020, duration = 180, size = 0.5, target = 3)
         ]
-        p_econ = M3cParams(
+
+        # Arm 1: Benefuture Stressed
+        p_econ_st = M3cParams(
             ToyParams(n = 120, steps = 1200, plans = 10),
             agents, [1, 1, 2, 2], trues(4);
             init_steps = 50,
@@ -309,62 +318,101 @@ begin
             repair_efficiency = 0.5,
             advap = true,
             p_new_model = 0.01,
-            events = century_events
+            events = century_events,
+            accuracy_rule = :decay,
+            ratchet_k = 3
         )
-        tr_econ = run_m3c(p_econ; seed)
-        sp_econ = success_pattern(tr_econ; from = 51)
+        tr_econ_st = run_m3c(p_econ_st; seed)
+        sp_econ_st = success_pattern(tr_econ_st; from = 51)
+        tr_gov_st = run_m5(M5Params(tr_econ_st, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
 
-        # Feed century economy reputation into 20-year governance block (1,200 decisions)
-        tr_gov = run_m5(M5Params(tr_econ, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
+        # Arm 2: Unstressed (same world without the events)
+        p_econ_unst = M3cParams(
+            ToyParams(n = 120, steps = 1200, plans = 10),
+            agents, [1, 1, 2, 2], trues(4);
+            init_steps = 50,
+            λpos = 0.05, λneg = 0.02,
+            transactions = true, causal_distribution = true,
+            p_upstream = 0.4, guardians = [1, 2, 3, 4],
+            p_hazard = 0.05, p_side = 0.01,
+            repair_efficiency = 0.5,
+            advap = true,
+            p_new_model = 0.01,
+            events = Shock[],
+            accuracy_rule = :decay,
+            ratchet_k = 3
+        )
+        tr_econ_unst = run_m3c(p_econ_unst; seed)
+        sp_econ_unst = success_pattern(tr_econ_unst; from = 51)
+        tr_gov_unst = run_m5(M5Params(tr_econ_unst, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
 
-        # 100-year annual M7 population trajectory (teaching + research + births, G per entity)
-        tr_pop = run_m7(ToyParams(n = 100, steps = 100, plans = 10); seed, p_research = 0.08, central = false)
-        tr_births = run_births(ToyParams(n = 100, steps = 100, plans = 10); seed, p_birth = 0.03, central = false)
+        # Arm 3: Status-Quo Baseline (accuracy_rule = :window, advap = false, ratchet_k = 0)
+        p_econ_sq = M3cParams(
+            ToyParams(n = 120, steps = 1200, plans = 10),
+            agents, [1, 1, 2, 2], trues(4);
+            init_steps = 50,
+            λpos = 0.05, λneg = 0.02,
+            transactions = true, causal_distribution = true,
+            p_upstream = 0.4, guardians = [1, 2, 3, 4],
+            p_hazard = 0.10, p_side = 0.02,
+            repair_efficiency = 0.5,
+            advap = false,
+            p_new_model = 0.0,
+            events = century_events,
+            accuracy_rule = :window,
+            ratchet_k = 0
+        )
+        tr_econ_sq = run_m3c(p_econ_sq; seed)
+        sp_econ_sq = success_pattern(tr_econ_sq; from = 51)
+        tr_gov_sq = run_m5(M5Params(tr_econ_sq, 1:4; decisions = 1200, advap = false, p_delegate = 0.0, p_new_model = 0.0); seed)
 
         (
-            econ_floor_u = sp_econ.floor_u,
-            econ_floor_h = sp_econ.floor_h,
-            econ_median_u = sp_econ.median_u,
-            econ_peak_u = sp_econ.peak_u,
-            econ_tx = length(tr_econ.chosen_step),
-            gov_acc = mean(tr_gov.final_trace[601:1200]),
-            pop_floor_u_gain = tr_pop.floor_u[end] - tr_pop.floor_u[1],
-            pop_floor_h_gain = tr_pop.floor_h[end] - tr_pop.floor_h[1],
-            pop_median_u_gain = tr_pop.median_u[end] - tr_pop.median_u[1],
-            pop_births = tr_births.births
+            st_u = sp_econ_st.floor_u,
+            st_h = sp_econ_st.floor_h,
+            st_acc = mean(tr_gov_st.final_trace[601:1200]),
+            st_tx = length(tr_econ_st.chosen_step),
+            unst_u = sp_econ_unst.floor_u,
+            unst_h = sp_econ_unst.floor_h,
+            unst_acc = mean(tr_gov_unst.final_trace[601:1200]),
+            sq_u = sp_econ_sq.floor_u,
+            sq_h = sp_econ_sq.floor_h,
+            sq_acc = mean(tr_gov_sq.final_trace[601:1200])
         )
     end
 
-    c_cent_eu = record_comparison!(rows, "100yr_century", "econ_floor_u_gain",
-                                   [r.econ_floor_u for r in res_century], zeros(length(res_century)))
-    c_cent_eh = record_comparison!(rows, "100yr_century", "econ_floor_h_gain",
-                                   [r.econ_floor_h for r in res_century], zeros(length(res_century)))
-    c_cent_gov = record_comparison!(rows, "100yr_century", "gov_accuracy_vs_0.75",
-                                    [r.gov_acc for r in res_century], fill(0.75, length(res_century)))
-    c_cent_pu = record_comparison!(rows, "100yr_century", "pop_floor_u_gain",
-                                   [r.pop_floor_u_gain for r in res_century], zeros(length(res_century)))
-    c_cent_ph = record_comparison!(rows, "100yr_century", "pop_floor_h_gain",
-                                   [r.pop_floor_h_gain for r in res_century], zeros(length(res_century)))
+    c_cent_st_u   = record_comparison!(rows, "100yr_century", "century_floor_u_stressed_vs_unstressed",
+                                       [r.st_u for r in res_century], [r.unst_u for r in res_century])
+    c_cent_st_h   = record_comparison!(rows, "100yr_century", "century_floor_h_stressed_vs_unstressed",
+                                       [r.st_h for r in res_century], [r.unst_h for r in res_century])
+    c_cent_st_gov = record_comparison!(rows, "100yr_century", "century_gov_acc_stressed_vs_unstressed",
+                                       [r.st_acc for r in res_century], [r.unst_acc for r in res_century])
+
+    c_cent_bf_u   = record_comparison!(rows, "100yr_century", "century_floor_u_bf_vs_status_quo",
+                                       [r.st_u for r in res_century], [r.sq_u for r in res_century])
+    c_cent_bf_h   = record_comparison!(rows, "100yr_century", "century_floor_h_bf_vs_status_quo",
+                                       [r.st_h for r in res_century], [r.sq_h for r in res_century])
+    c_cent_bf_gov = record_comparison!(rows, "100yr_century", "century_gov_acc_bf_vs_status_quo",
+                                       [r.st_acc for r in res_century], [r.sq_acc for r in res_century])
 
     sec = IOBuffer()
-    @printf(sec, "## 3. 100-Year Composed Century World (1,200 economy steps + governance + 100-yr M7 population, `1:%d` seeds, %.1f min)\n\n",
+    @printf(sec, "## 3. 100-Year Composed Century World (1,200 economy steps + governance, `1:%d` seeds, %.1f min)\n\n",
             length(res_century), (time() - t0) / 60)
-    println(sec, "Includes 3 major catastrophes (steps 240, 660, 960), 2 measurement outages (steps 420, 840), 1 metric capture (step 540), and 3 breakthroughs (steps 300, 720, 1020), coupled with M5 governance and M7 population dynamics (teaching, research, births, G per entity).")
+    println(sec, "Paired arms comparing Stressed vs Unstressed (events disabled) and Benefuture vs Status-Quo Baseline (accuracy_rule=:window, advap=false, ratchet_k=0).")
     println(sec)
-    println(sec, "| Century Metric | Mean | Baseline | Effect ± SE | `z` | 95% CI |")
+    println(sec, "| Century Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
-        ("Economy 1,200-step `floor_u` growth", c_cent_eu),
-        ("Economy 1,200-step `floor_h` growth", c_cent_eh),
-        ("Governance late-half accuracy vs `0.75`", c_cent_gov),
-        ("Population 100-yr `floor_u` gain (teaching + research + births)", c_cent_pu),
-        ("Population 100-yr `floor_h` gain", c_cent_ph)
+        ("Century `floor_u` (Stressed vs Unstressed)", c_cent_st_u),
+        ("Century `floor_h` (Stressed vs Unstressed)", c_cent_st_h),
+        ("Century Governance Accuracy (Stressed vs Unstressed)", c_cent_st_gov),
+        ("Century `floor_u` (Benefuture vs Status-Quo Baseline)", c_cent_bf_u),
+        ("Century `floor_h` (Benefuture vs Status-Quo Baseline)", c_cent_bf_h),
+        ("Century Governance Accuracy (Benefuture vs Status-Quo Baseline)", c_cent_bf_gov)
     ]
         @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
                 label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
     end
-    @printf(sec, "\n- Mean century transactions executed: **%.1f**\n", mean(r.econ_tx for r in res_century))
-    @printf(sec, "- Mean century births admitted under escrow/ratchet: **%.1f**\n", mean(r.pop_births for r in res_century))
+    @printf(sec, "\n- Mean century transactions executed: **%.1f**\n", mean(r.st_tx for r in res_century))
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start)
 end

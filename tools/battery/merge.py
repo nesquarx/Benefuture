@@ -219,6 +219,80 @@ def write_convergence_md(rows, out_md, commit):
                 f.write(f"| `n = {nb}` | {fu['mean']:.2f} ± {fu['se']:.2f} | {fu['rel_hw_pct']:.1f}% | {fu['z']:.1f} | {per_b:.3f} |\n")
         f.write("\n")
 
+def merge_long_horizon(shard_files, out_csv, out_md, commit):
+    from collections import OrderedDict
+    groups = OrderedDict()
+
+    for fpath in shard_files:
+        with open(fpath, 'r') as f:
+            lines = [l.strip() for l in f if l.strip()]
+        if not lines:
+            continue
+        for l in lines[1:]:
+            parts = l.split(',')
+            if len(parts) < 12:
+                continue
+            suite, metric = parts[0], parts[1]
+            n_seeds = int(parts[2])
+            mean_a, mean_b = float(parts[3]), float(parts[4])
+            diff, se = float(parts[5]), float(parts[6])
+            key = (suite, metric)
+            if key not in groups:
+                groups[key] = []
+            groups[key].append({
+                'n': n_seeds, 'mean_a': mean_a, 'mean_b': mean_b,
+                'diff': diff, 'se': se
+            })
+
+    merged_rows = []
+    os.makedirs(os.path.dirname(out_csv), exist_ok=True)
+    with open(out_csv, 'w') as f:
+        f.write("suite,metric,n_seeds,mean_a,mean_b,diff,se,z,ci_lo,ci_hi,sig_z2,sig_z3\n")
+        for (suite, metric), records in groups.items():
+            total_n = sum(r['n'] for r in records)
+            if total_n == 0:
+                continue
+            weighted_ma = sum(r['n'] * r['mean_a'] for r in records) / total_n
+            weighted_mb = sum(r['n'] * r['mean_b'] for r in records) / total_n
+            weighted_diff = sum(r['n'] * r['diff'] for r in records) / total_n
+
+            total_ss = 0.0
+            for r in records:
+                n_i = r['n']
+                s_i_sq = n_i * (r['se'] ** 2)
+                total_ss += (n_i - 1) * s_i_sq + n_i * ((r['diff'] - weighted_diff) ** 2)
+
+            if total_n > 1:
+                pooled_var = total_ss / (total_n - 1)
+                pooled_se = math.sqrt(max(0.0, pooled_var) / total_n)
+            else:
+                pooled_se = records[0]['se']
+
+            z = (weighted_diff / pooled_se) if pooled_se > 1e-12 else 0.0
+            ci_lo = weighted_diff - 1.96 * pooled_se
+            ci_hi = weighted_diff + 1.96 * pooled_se
+            sig2 = "true" if abs(z) >= 2.0 else "false"
+            sig3 = "true" if abs(z) >= 3.0 else "false"
+
+            f.write(f"{suite},{metric},{total_n},{weighted_ma:.6f},{weighted_mb:.6f},{weighted_diff:.6f},{pooled_se:.6f},{z:.4f},{ci_lo:.6f},{ci_hi:.6f},{sig2},{sig3}\n")
+            merged_rows.append({
+                'suite': suite, 'metric': metric, 'n': total_n,
+                'mean_a': weighted_ma, 'mean_b': weighted_mb,
+                'diff': weighted_diff, 'se': pooled_se, 'z': z,
+                'ci_lo': ci_lo, 'ci_hi': ci_hi, 'sig2': sig2, 'sig3': sig3
+            })
+
+    os.makedirs(os.path.dirname(out_md), exist_ok=True)
+    with open(out_md, 'w') as f:
+        f.write("# Long-Horizon & Century Simulation Report\n\n")
+        f.write(f"- **Commit**: `{commit}`\n")
+        f.write(f"- **Consolidation**: Sharded parallel execution merged via statistical pooling\n")
+        f.write("- **Significance Standard**: Pre-stated `z = 2.0` (`z = 3.0` for README/BACKPROPAGATION).\n\n")
+        f.write("| Suite | Metric | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |\n")
+        f.write("|---|---|---|---|---|---|---|\n")
+        for r in merged_rows:
+            f.write(f"| `{r['suite']}` | `{r['metric']}` | {r['mean_a']:.4f} | {r['mean_b']:.4f} | {r['diff']:+.4f} ± {r['se']:.4f} | {r['z']:+.2f} | [{r['ci_lo']:.4f}, {r['ci_hi']:.4f}] |\n")
+
 def merge_generic(shard_files, out_csv, out_md, commit):
     # Simply concatenate rows, preserving header from first shard
     header = None
@@ -277,6 +351,8 @@ def main():
 
     if battery == "convergence":
         merge_convergence(shard_files, out_csv, out_md, commit)
+    elif battery == "long_horizon":
+        merge_long_horizon(shard_files, out_csv, out_md, commit)
     else:
         merge_generic(shard_files, out_csv, out_md, commit)
 
