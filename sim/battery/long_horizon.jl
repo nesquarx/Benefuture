@@ -12,15 +12,54 @@
 
 using BenefutureSim, Statistics, Random, Printf, Dates
 
-const OUT_DIR = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))
-mkpath(OUT_DIR)
-const MD_PATH = joinpath(OUT_DIR, "long_horizon.md")
-const CSV_PATH = joinpath(OUT_DIR, "long_horizon.csv")
+function parse_cli_args(args = ARGS)
+    parsed = Dict{String, Any}()
+    i = 1
+    while i <= length(args)
+        arg = args[i]
+        if arg == "--seeds" && i < length(args)
+            val = args[i+1]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 2
+        elseif startswith(arg, "--seeds=")
+            val = split(arg, "=", limit = 2)[2]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 1
+        elseif arg == "--shard" && i < length(args)
+            parsed["shard"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--shard=")
+            parsed["shard"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--out" && i < length(args)
+            parsed["out"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--out=")
+            parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        else
+            i += 1
+        end
+    end
+    return parsed
+end
 
+const CLI_ARGS = parse_cli_args()
+const OUT_DIR = get(CLI_ARGS, "out", get(ENV, "BF_OUT", joinpath(@__DIR__, "results")))
+mkpath(OUT_DIR)
+const SHARD_ID = get(CLI_ARGS, "shard", get(ENV, "BF_SHARD", ""))
+const MD_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "long_horizon.md" : "long_horizon.$SHARD_ID.md")
+const CSV_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "long_horizon.csv" : "long_horizon.$SHARD_ID.csv")
+
+const CLI_SEEDS = get(CLI_ARGS, "seeds", nothing)
 const N_ECON_SEEDS = parse(Int, get(ENV, "BF_ECON_SEEDS", "24"))
 const N_GOV_SEEDS = parse(Int, get(ENV, "BF_GOV_SEEDS", "24"))
 const N_CENTURY_SEEDS = parse(Int, get(ENV, "BF_CENTURY_SEEDS", "16"))
 const N_SWEEP_SEEDS = parse(Int, get(ENV, "BF_SWEEP_SEEDS", "64"))
+const ECON_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_ECON_SEEDS
+const GOV_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_GOV_SEEDS
+const CENTURY_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_CENTURY_SEEDS
+const SWEEP_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_SWEEP_SEEDS
 
 # Allowed operating window in local time (default: 00:00 / 12am to 21:00 / 9pm).
 const WIN_START_HOUR = parse(Int, get(ENV, "BF_SIM_START_HOUR", "0"))
@@ -141,7 +180,7 @@ begin
         )
     end
 
-    res_econ = parallel_map(1:N_ECON_SEEDS) do seed
+    res_econ = parallel_map(ECON_SEEDS) do seed
         tr_decay = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = false); seed)
         tr_win   = run_m3c(econ_10yr_world(accuracy_rule = :window, stressed = false); seed)
         tr_stress = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = true); seed)
@@ -162,13 +201,13 @@ begin
     c_tx = record_comparison!(rows, "10yr_economy", "tx_count_decay_vs_window",
                               Float64[r.tx_decay for r in res_econ], Float64[r.tx_win for r in res_econ])
     c_st_u = record_comparison!(rows, "10yr_economy", "floor_u_stressed_vs_zero",
-                                [r.stress.floor_u for r in res_econ], zeros(N_ECON_SEEDS))
+                                [r.stress.floor_u for r in res_econ], zeros(length(res_econ)))
     c_st_h = record_comparison!(rows, "10yr_economy", "floor_h_stressed_vs_zero",
-                                [r.stress.floor_h for r in res_econ], zeros(N_ECON_SEEDS))
+                                [r.stress.floor_h for r in res_econ], zeros(length(res_econ)))
 
     sec = IOBuffer()
     @printf(sec, "## 1. 10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, `1:%d` seeds, %.1f min)\n\n",
-            N_ECON_SEEDS, (time() - t0) / 60)
+            length(res_econ), (time() - t0) / 60)
     println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
@@ -197,7 +236,7 @@ begin
                                 λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     top_colluders = unique(vcat([sortperm(m3_base.relevance_leaf[:, d]; rev = true)[1:6] for d in 1:4]...))
 
-    res_gov = parallel_map(1:N_GOV_SEEDS) do seed
+    res_gov = parallel_map(GOV_SEEDS) do seed
         r_clean = run_m5(M5Params(m3_base, 1:4; decisions = 1200, advap = true, p_new_model = 0.02); seed)
         r_coll  = run_m5(M5Params(m3_base, 1:4; decisions = 1200, colluders = top_colluders,
                                   stealth = true, advap = true, loyalty = 2.0, p_delegate = 0.25,
@@ -218,11 +257,11 @@ begin
     c_clean = record_comparison!(rows, "20yr_governance", "late_half_acc_coll_vs_clean",
                                  [r.acc_coll_adv for r in res_gov], [r.acc_clean for r in res_gov])
     c_q4 = record_comparison!(rows, "20yr_governance", "final_quarter_acc_vs_0.75_bar",
-                              [r.q4_coll_adv for r in res_gov], fill(0.75, N_GOV_SEEDS))
+                              [r.q4_coll_adv for r in res_gov], fill(0.75, length(res_gov)))
 
     sec = IOBuffer()
     @printf(sec, "## 2. 20-Year Governance (1,200 decisions, 100 voters, stealth collusion & delegation, `1:%d` seeds, %.1f min)\n\n",
-            N_GOV_SEEDS, (time() - t0) / 60)
+            length(res_gov), (time() - t0) / 60)
     println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
@@ -245,7 +284,7 @@ begin
     #   measurement outages (years 35, 70), metric capture (year 45), and research breakthroughs (years 25, 60, 85).
     # - Governance (M5): 6,000 decisions (60/yr) weighted by the economy's domain reputations.
     # - Population (M7): 100 annual steps with teaching, research, births, deaths, and G per entity.
-    res_century = parallel_map(1:N_CENTURY_SEEDS) do seed
+    res_century = parallel_map(CENTURY_SEEDS) do seed
         skills = draw_skills(Xoshiro(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
         agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0]) for a in 1:12]
         century_events = [
@@ -297,19 +336,19 @@ begin
     end
 
     c_cent_eu = record_comparison!(rows, "100yr_century", "econ_floor_u_gain",
-                                   [r.econ_floor_u for r in res_century], zeros(N_CENTURY_SEEDS))
+                                   [r.econ_floor_u for r in res_century], zeros(length(res_century)))
     c_cent_eh = record_comparison!(rows, "100yr_century", "econ_floor_h_gain",
-                                   [r.econ_floor_h for r in res_century], zeros(N_CENTURY_SEEDS))
+                                   [r.econ_floor_h for r in res_century], zeros(length(res_century)))
     c_cent_gov = record_comparison!(rows, "100yr_century", "gov_accuracy_vs_0.75",
-                                    [r.gov_acc for r in res_century], fill(0.75, N_CENTURY_SEEDS))
+                                    [r.gov_acc for r in res_century], fill(0.75, length(res_century)))
     c_cent_pu = record_comparison!(rows, "100yr_century", "pop_floor_u_gain",
-                                   [r.pop_floor_u_gain for r in res_century], zeros(N_CENTURY_SEEDS))
+                                   [r.pop_floor_u_gain for r in res_century], zeros(length(res_century)))
     c_cent_ph = record_comparison!(rows, "100yr_century", "pop_floor_h_gain",
-                                   [r.pop_floor_h_gain for r in res_century], zeros(N_CENTURY_SEEDS))
+                                   [r.pop_floor_h_gain for r in res_century], zeros(length(res_century)))
 
     sec = IOBuffer()
     @printf(sec, "## 3. 100-Year Composed Century World (1,200 economy steps + governance + 100-yr M7 population, `1:%d` seeds, %.1f min)\n\n",
-            N_CENTURY_SEEDS, (time() - t0) / 60)
+            length(res_century), (time() - t0) / 60)
     println(sec, "Includes 3 major catastrophes (steps 240, 660, 960), 2 measurement outages (steps 420, 840), 1 metric capture (step 540), and 3 breakthroughs (steps 300, 720, 1020), coupled with M5 governance and M7 population dynamics (teaching, research, births, G per entity).")
     println(sec)
     println(sec, "| Century Metric | Mean | Baseline | Effect ± SE | `z` | 95% CI |")
@@ -349,7 +388,7 @@ begin
     own_share(tr) = (k = [i for i in eachindex(tr.chosen_step) if tr.chosen_step[i] > 50];
                      isempty(k) ? 0.0 : mean(tr.priced_leaf[k] .== tr.true_leaf[k]))
 
-    res_885 = parallel_map(1:N_SWEEP_SEEDS) do seed
+    res_885 = parallel_map(SWEEP_SEEDS) do seed
         tr_dec = run_m3c(better_models_world(accuracy_rule = :decay); seed)
         tr_win = run_m3c(better_models_world(accuracy_rule = :window); seed)
         (
@@ -370,17 +409,17 @@ begin
                                     [r.own_dec for r in res_885], [r.own_win for r in res_885])
     c_885_fu   = record_comparison!(rows, "open_885_better_models", "floor_u_decay_vs_window",
                                     [r.fu_dec for r in res_885], [r.fu_win for r in res_885])
-    pi_dec = proportion_interval(count(r.takeover_dec for r in res_885), N_SWEEP_SEEDS)
-    pi_win = proportion_interval(count(r.takeover_win for r in res_885), N_SWEEP_SEEDS)
+    pi_dec = proportion_interval(count(r.takeover_dec for r in res_885), length(res_885))
+    pi_win = proportion_interval(count(r.takeover_win for r in res_885), length(res_885))
 
     sec = IOBuffer()
     @printf(sec, "## 4. High-Seed Sweep: Open Question 8.85 (800-step Better-Models Takeover, `1:%d` seeds, %.1f min)\n\n",
-            N_SWEEP_SEEDS, (time() - t0) / 60)
+            length(res_885), (time() - t0) / 60)
     @printf(sec, "- **Takeover regime (`:decay`)**: `%d / %d` (%.1f%%, 95%% interval `[%.3f, %.3f]`)\n",
-            count(r.takeover_dec for r in res_885), N_SWEEP_SEEDS, 100 * pi_dec.p, pi_dec.lo, pi_dec.hi)
+            count(r.takeover_dec for r in res_885), length(res_885), 100 * pi_dec.p, pi_dec.lo, pi_dec.hi)
     @printf(sec, "- **Takeover regime (`:window`)**: `%d / %d` (%.1f%%, 95%% interval `[%.3f, %.3f]`)\n\n",
-            count(r.takeover_win for r in res_885), N_SWEEP_SEEDS, 100 * pi_win.p, pi_win.lo, pi_win.hi)
-    println(sec, "| Metric (`1:$N_SWEEP_SEEDS` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | `z` | 95% CI |")
+            count(r.takeover_win for r in res_885), length(res_885), 100 * pi_win.p, pi_win.lo, pi_win.hi)
+    println(sec, "| Metric (`1:$(length(res_885))` paired seeds) | `:decay` Mean | `:window` Mean | Paired Diff ± SE | `z` | 95% CI |")
     println(sec, "|---|---|---|---|---|---|")
     for (label, c) in [
         ("Takeover count per run", c_885_take),

@@ -12,10 +12,44 @@
 
 using BenefutureSim, Statistics, Random, Printf, Dates
 
-const OUT_DIR = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))
+function parse_cli_args(args = ARGS)
+    parsed = Dict{String, Any}()
+    i = 1
+    while i <= length(args)
+        arg = args[i]
+        if arg == "--seeds" && i < length(args)
+            val = args[i+1]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 2
+        elseif startswith(arg, "--seeds=")
+            val = split(arg, "=", limit = 2)[2]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 1
+        elseif arg == "--shard" && i < length(args)
+            parsed["shard"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--shard=")
+            parsed["shard"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--out" && i < length(args)
+            parsed["out"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--out=")
+            parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        else
+            i += 1
+        end
+    end
+    return parsed
+end
+
+const CLI_ARGS = parse_cli_args()
+const OUT_DIR = get(CLI_ARGS, "out", get(ENV, "BF_OUT", joinpath(@__DIR__, "results")))
 mkpath(OUT_DIR)
-const MD_PATH = joinpath(OUT_DIR, "convergence.md")
-const CSV_PATH = joinpath(OUT_DIR, "convergence.csv")
+const SHARD_ID = get(CLI_ARGS, "shard", get(ENV, "BF_SHARD", ""))
+const MD_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "convergence.md" : "convergence.$SHARD_ID.md")
+const CSV_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "convergence.csv" : "convergence.$SHARD_ID.csv")
 
 const WIN_START_HOUR = parse(Int, get(ENV, "BF_SIM_START_HOUR", "0"))
 const WIN_END_HOUR = parse(Int, get(ENV, "BF_SIM_END_HOUR", "21"))
@@ -41,8 +75,8 @@ function parallel_map(f, xs)
     return out
 end
 
-rel_hw(xs) = (m = abs(mean(xs)); m > 1e-12 ? 100.0 * ci_halfwidth(xs) / m : Inf)
-z_score(xs) = (se = std(xs) / sqrt(length(xs)); se > 1e-12 ? mean(xs) / se : Inf)
+rel_hw(xs) = length(xs) < 2 ? NaN : (m = abs(mean(xs)); m > 1e-12 ? 100.0 * ci_halfwidth(xs) / m : Inf)
+z_score(xs) = length(xs) < 2 ? NaN : (se = std(xs) / sqrt(length(xs)); se > 1e-12 ? mean(xs) / se : Inf)
 
 t_start = time()
 commit = current_commit()
@@ -50,7 +84,7 @@ csv_rows = NamedTuple[]
 
 function record_row!(rung, axis, param_val, steps_val, n_seeds, metric, vals; settle_med = NaN, settle_max = NaN)
     m = mean(vals)
-    se = std(vals) / sqrt(length(vals))
+    se = length(vals) > 1 ? std(vals) / sqrt(length(vals)) : 0.0
     rhw = rel_hw(vals)
     z = z_score(vals)
     push!(csv_rows, (
@@ -68,7 +102,7 @@ println("=== Running Convergence & Population-Diversity Sizing Suite on commit $
 # ---------------------------------------------------------------------------
 println("[1/4] Measuring M1 step-settling and population-size convergence...")
 m1_models = [MetricModel(0.0, 0.25), MetricModel(0.2, 0.35), MetricModel(0.0, 0.60)]
-m1_seeds = 1:8
+m1_seeds = get(CLI_ARGS, "seeds", 1:8)
 
 m1_long = parallel_map(m1_seeds) do seed
     p = M1Params(ToyParams(n = 200, steps = 1000, plans = 20), m1_models, 0.1, 20)
@@ -110,7 +144,7 @@ flush(stdout)
 # ---------------------------------------------------------------------------
 println("[2/4] Measuring M3c economy convergence across diverse agent/being populations and steps...")
 flush(stdout)
-m3c_seeds = 1:6
+m3c_seeds = get(CLI_ARGS, "seeds", 1:6)
 
 function make_m3c_world(n_beings::Int, n_agents::Int, steps::Int)
     plans = max(10, round(Int, 10 * n_beings / 80))
@@ -164,7 +198,7 @@ end
 # ---------------------------------------------------------------------------
 println("[3/4] Measuring M5 governance convergence across diverse voter populations and decision horizons...")
 flush(stdout)
-m5_seeds = 1:10
+m5_seeds = get(CLI_ARGS, "seeds", 1:10)
 
 function make_m5_pair(n_voters::Int, decisions::Int; alpha::Real = 0.3, c::Real = 1.5, misconception_σ::Real = 1.5)
     rng = Xoshiro(7000 + n_voters)
@@ -239,7 +273,7 @@ end
 # ---------------------------------------------------------------------------
 println("[4/4] Measuring M7 population convergence across diverse beings and steps...")
 flush(stdout)
-m7_seeds = 1:6
+m7_seeds = get(CLI_ARGS, "seeds", 1:6)
 
 m7_long = parallel_map(m7_seeds) do seed
     run_m7(ToyParams(n = 100, steps = 150, plans = 10); seed,

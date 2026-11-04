@@ -8,7 +8,41 @@
 # outcomes stay hidden): the worst case. AdvAp (L160) is on; loyalty to the bloc is a factor.
 using BenefutureSim, Statistics, Random, Printf
 
-const SEEDS, ACCURACY, DECISIONS = 1:3, 0.75, 800
+function parse_cli_args(args = ARGS)
+    parsed = Dict{String, Any}()
+    i = 1
+    while i <= length(args)
+        arg = args[i]
+        if arg == "--seeds" && i < length(args)
+            val = args[i+1]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 2
+        elseif startswith(arg, "--seeds=")
+            val = split(arg, "=", limit = 2)[2]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 1
+        elseif arg == "--shard" && i < length(args)
+            parsed["shard"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--shard=")
+            parsed["shard"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--out" && i < length(args)
+            parsed["out"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--out=")
+            parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        else
+            i += 1
+        end
+    end
+    return parsed
+end
+
+const CLI_ARGS = parse_cli_args()
+const ACCURACY, DECISIONS = 0.75, 800
+const SEEDS = get(CLI_ARGS, "seeds", 1:3)
 # Experts' skills follow the calibrated shape: a log-normal ladder (log-SD 0.4 around 0.25, about 0.1 to 0.55
 # over the 25 of a domain), executing with the calibrated intention-behaviour gap.
 ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / 25))
@@ -42,7 +76,7 @@ rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "24")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "128")))
 t0, commit = time(), current_commit()  # the code this run tests
 bt = battery(cached(converges, "governance-oracle"), names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.03, grid = 8)
-const OUT = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))  # a scratch directory for trial runs
+const OUT = get(CLI_ARGS, "out", get(ENV, "BF_OUT", joinpath(@__DIR__, "results")))  # a scratch directory for trial runs
 write_results("governance", bt, names; clean = NaN, minutes = (time() - t0) / 60, commit, dir = OUT)
 
 # Continuous methods (sim/src/methods.jl), on their own random stream after the outputs above, so

@@ -1,0 +1,173 @@
+name: Battery Suite
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+    inputs:
+      battery:
+        description: 'Battery to run (e.g. convergence, long_horizon, economy, governance, attack)'
+        required: true
+        default: 'convergence'
+        type: string
+      seeds:
+        description: 'Seed range (e.g. 1:8 or 1:256)'
+        required: true
+        default: '1:8'
+        type: string
+      shards:
+        description: 'Number of parallel shards (e.g. 4 or 16)'
+        required: true
+        default: '4'
+        type: string
+
+concurrency:
+  group: battery-${{ github.workflow }}-${{ inputs.battery || 'convergence' }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      battery_name: ${{ steps.plan.outputs.battery_name }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - id: plan
+        name: Plan battery shards
+        run: |
+          RAW_BATTERY="${{ inputs.battery || 'convergence' }}"
+          BATTERY_NAME="$(basename "$RAW_BATTERY" .jl)"
+          echo "battery_name=$BATTERY_NAME" >> "$GITHUB_OUTPUT"
+
+          SEEDS_STR="${{ inputs.seeds || '1:8' }}"
+          SHARDS_NUM="${{ inputs.shards || '4' }}"
+
+          python3 -c "
+          import json, sys
+
+          seeds_str = '$SEEDS_STR'
+          n_shards = int('$SHARDS_NUM')
+
+          if ':' in seeds_str:
+              parts = [int(p) for p in seeds_str.split(':')]
+              start, end = parts[0], parts[1]
+          else:
+              start, end = 1, int(seeds_str)
+
+          total = end - start + 1
+          n_shards = max(1, min(n_shards, total))
+          base = total // n_shards
+          rem = total % n_shards
+
+          matrix = []
+          curr = start
+          for i in range(1, n_shards + 1):
+              count = base + (1 if i <= rem else 0)
+              s_end = curr + count - 1
+              matrix.append({'shard': i, 'slice': f'{curr}:{s_end}'})
+              curr = s_end + 1
+
+          out = {'include': matrix}
+          print('matrix=' + json.dumps(out))
+          " >> "$GITHUB_OUTPUT"
+
+  shard:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache the Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean-toolchain') }}
+
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install the Lean toolchain
+        run: |
+          for attempt in 1 2 3 4; do
+            elan toolchain install "$(cat lean-toolchain)" && exit 0
+            sleep $((attempt * 15))
+          done
+          exit 1
+
+      - name: Build the Lean reference library
+        run: lake build BenefutureReference:shared
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.13'
+
+      - name: Run Battery Shard
+        env:
+          BF_SIM_START_HOUR: 0
+          BF_SIM_END_HOUR: 24
+        run: |
+          mkdir -p results
+          BATTERY="${{ needs.setup.outputs.battery_name }}"
+          SHARD="${{ matrix.shard }}"
+          SLICE="${{ matrix.slice }}"
+          echo "Running $BATTERY shard $SHARD (seeds $SLICE)..."
+          julia --project=sim -t 4 "sim/battery/${BATTERY}.jl" --seeds "$SLICE" --shard "$SHARD" --out results
+          if [ ! -f "results/${BATTERY}.${SHARD}.csv" ]; then
+            cp "results/${BATTERY}.csv" "results/${BATTERY}.${SHARD}.csv" 2>/dev/null || true
+          fi
+          if [ ! -f "results/${BATTERY}.${SHARD}.csv" ]; then
+            cp "sim/battery/results/${BATTERY}.csv" "results/${BATTERY}.${SHARD}.csv" 2>/dev/null || true
+          fi
+          ls -la results/
+
+      - name: Upload Shard Result Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: results/${{ needs.setup.outputs.battery_name }}.${{ matrix.shard }}.csv
+
+  merge:
+    needs: [setup, shard]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Shard Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: results_download
+          merge-multiple: true
+
+      - name: Merge Shards
+        run: |
+          BATTERY="${{ needs.setup.outputs.battery_name }}"
+          mkdir -p results
+          cp results_download/* results/ 2>/dev/null || true
+          ls -la results/
+          python3 tools/battery/merge.py --battery "$BATTERY" --results-dir results --out-dir sim/battery/results --commit "${{ github.sha }}"
+
+      - name: Commit and Push Results to battery-results Branch
+        run: |
+          BATTERY="${{ needs.setup.outputs.battery_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin battery-results:battery-results 2>/dev/null || git checkout -b battery-results
+          git checkout battery-results
+          git add "sim/battery/results/${BATTERY}.csv" "sim/battery/results/${BATTERY}.md"
+          git commit -m "battery(${BATTERY}): record results for commit $(git rev-parse --short HEAD)" || echo "No changes to commit"
+          git push origin battery-results

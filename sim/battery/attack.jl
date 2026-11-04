@@ -10,9 +10,42 @@
 # tooling, not rules.
 using BenefutureSim, Statistics, Random, Printf
 
+function parse_cli_args(args = ARGS)
+    parsed = Dict{String, Any}()
+    i = 1
+    while i <= length(args)
+        arg = args[i]
+        if arg == "--seeds" && i < length(args)
+            val = args[i+1]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 2
+        elseif startswith(arg, "--seeds=")
+            val = split(arg, "=", limit = 2)[2]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 1
+        elseif arg == "--shard" && i < length(args)
+            parsed["shard"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--shard=")
+            parsed["shard"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--out" && i < length(args)
+            parsed["out"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--out=")
+            parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        else
+            i += 1
+        end
+    end
+    return parsed
+end
+
+const CLI_ARGS = parse_cli_args()
 const BUDGET = parse(Float64, get(ENV, "BF_ATTACK_BUDGET", "1.0"))
 const POP, ITERS = parse(Int, get(ENV, "BF_ATTACK_POP", "8")), parse(Int, get(ENV, "BF_ATTACK_ITERS", "4"))
-const OUT = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))
+const OUT = get(CLI_ARGS, "out", get(ENV, "BF_OUT", joinpath(@__DIR__, "results")))
 const GROWTH, HARM, STEPS = 0.25, 3.0, 300
 lerp(a, b, t) = a + (b - a) * t
 pick(n, t) = 1 + min(n - 1, floor(Int, n * t))
@@ -97,8 +130,11 @@ end
 
 # --- Search ---------------------------------------------------------------------------------
 results = []
+cli_seeds = get(CLI_ARGS, "seeds", nothing)
+m3c_search_seeds = cli_seeds !== nothing ? cli_seeds : 1:2
+m5_search_seeds = cli_seeds !== nothing ? cli_seeds : 1:3
 for (label, m, decode, evaluate, search_seeds, check_seeds) in
-        (("economy (M3c)", 9, m3c_strategy, m3c_eval, 1:2, 11:14), ("governance (M5)", 6, m5_strategy, m5_eval, 1:3, 11:16))
+        (("economy (M3c)", 9, m3c_strategy, m3c_eval, m3c_search_seeds, 11:14), ("governance (M5)", 6, m5_strategy, m5_eval, m5_search_seeds, 11:16))
     t0 = time()
     r = cross_entropy_search(θ -> evaluate(decode(θ), search_seeds).margin, m; rng = Xoshiro(20261031), population = POP, iterations = ITERS)
     st = decode(r.θ)

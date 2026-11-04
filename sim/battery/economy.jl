@@ -15,7 +15,41 @@
 # one honest agent failed near-clean worlds: one agent's wealth spreads about ±10% across seeds.)
 using BenefutureSim, Statistics, Random, Printf
 
-const STEPS, SEEDS, MORE, GROWTH, GAIN, HARM = 300, 1:3, 4:5, 0.25, 1.1, 3.0
+function parse_cli_args(args = ARGS)
+    parsed = Dict{String, Any}()
+    i = 1
+    while i <= length(args)
+        arg = args[i]
+        if arg == "--seeds" && i < length(args)
+            val = args[i+1]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 2
+        elseif startswith(arg, "--seeds=")
+            val = split(arg, "=", limit = 2)[2]
+            parsed["seeds"] = contains(val, ":") ? let p = split(val, ":"); parse(Int, p[1]):parse(Int, p[2]) end : 1:parse(Int, val)
+            i += 1
+        elseif arg == "--shard" && i < length(args)
+            parsed["shard"] = parse(Int, args[i+1])
+            i += 2
+        elseif startswith(arg, "--shard=")
+            parsed["shard"] = parse(Int, split(arg, "=", limit = 2)[2])
+            i += 1
+        elseif arg == "--out" && i < length(args)
+            parsed["out"] = args[i+1]
+            i += 2
+        elseif startswith(arg, "--out=")
+            parsed["out"] = split(arg, "=", limit = 2)[2]
+            i += 1
+        else
+            i += 1
+        end
+    end
+    return parsed
+end
+
+const CLI_ARGS = parse_cli_args()
+const STEPS, MORE, GROWTH, GAIN, HARM = 300, 4:5, 0.25, 1.1, 3.0
+const SEEDS = get(CLI_ARGS, "seeds", 1:3)
 const FACTORS = [
     # noise (classes in sim/README.md, Noise)
     ("markers", (s, kw) -> (kw[:marker_σ] = 0.1 + 0.5s)),          # mixed: registries 0.1 to self-reports 0.6
@@ -101,7 +135,7 @@ rng = Xoshiro(20261029)
 budget = (rays = parse(Int, get(ENV, "BF_RAYS", "16")), screen_n = parse(Int, get(ENV, "BF_SCREEN", "64")))
 t0, commit = time(), current_commit()  # the code this run tests
 bt = battery(cached(converges, "economy-oracle"), names; rng, rays = budget.rays, screen_n = budget.screen_n, tmax = 2.0, tol = 0.06, grid = 6)
-const OUT = get(ENV, "BF_OUT", joinpath(@__DIR__, "results"))  # a scratch directory for trial runs
+const OUT = get(CLI_ARGS, "out", get(ENV, "BF_OUT", joinpath(@__DIR__, "results")))  # a scratch directory for trial runs
 write_results("economy", bt, names; clean = CLEAN.floor_u, minutes = (time() - t0) / 60, commit, dir = OUT)
 
 # Continuous methods (sim/src/methods.jl), on their own random stream after the outputs above, so
