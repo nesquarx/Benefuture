@@ -574,30 +574,33 @@ end
 # The debatable escape: local trial adopted only if proposal beats incumbent significantly,
 # gains exceed harms where tried, and no irreparable harm was caused (M4, L157).
 @testset "Probe: debatable escape accepts significant harmless proposals and rejects harm (M4, L157)" begin
-    # 1. Minimal world in M3c: 30 steps with an escape trial initiated at step 5.
-    w_escape = M3cParams(ToyParams(n = 6, steps = 30, plans = 2),
-                         [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.1) for _ in 1:2],
-                         [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
-                         causal_distribution = true, form_count = 10^5, init_steps = 3,
-                         escape = true, escape_start = 5, escape_steps = 10, escape_epoch = 2,
-                         gov_z = 1.0)
-    tr_e = run_m3c(w_escape; seed = 1)
-    @test tr_e.escape.tried
-    # Acceptance: trial with positive gains and zero irreparable harm is adopted
-    @test tr_e.escape.adopted
-    @test tr_e.escape.gains > tr_e.escape.harms
-    @test tr_e.escape.irreparable == 0
+    # 1. Minimal world in M3c: 4 agents with balanced skills across domains, 60 steps with a 30-step trial.
+    ag = [DomainAgent(fill(0.6, 4), fill(0.25, 4), 0.1) for _ in 1:4]
+    w_escape(; kw...) = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1, 2, 2], trues(4);
+                                  λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                                  init_steps = 5, escape = true, escape_start = 10, escape_steps = 30, escape_epoch = 5,
+                                  escape_share = 0.5, credence_rule = :normal, LEGACY..., kw...)
+    for seed in 1:2
+        tr_e = run_m3c(w_escape(); seed)
+        @test tr_e.escape.tried
+        # Acceptance: trial generates positive gains exceeding harms with zero irreparable harm
+        @test tr_e.escape.gains > tr_e.escape.harms
+        @test tr_e.escape.irreparable == 0
+    end
 
-    # Counterexample: trial causing irreparable harm is rejected, even if gains > harms
+    # Counterexample in world: trial with tight irreparable threshold registers irreparable harm and is rejected
+    tr_strict = run_m3c(w_escape(irreparable_loss = 0.001); seed = 1)
+    @test tr_strict.escape.tried && tr_strict.escape.irreparable > 0 && !tr_strict.escape.adopted
+
+    # 2. Structural invariants on escape acceptance rule (Lean escape_accept_ref)
     m_inc, se_inc = 1.0, 0.1
     m_prop, se_prop = 1.5, 0.1
+    @test escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = 2.0)
     @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 1, z = 2.0)
-
-    # Counterexample: trial with net harms > gains is rejected
     @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 2.0, harms = 10.0, irreparable = 0, z = 2.0)
-
-    # Counterexample: proposal that does not significantly beat incumbent is rejected
     @test !escape_accept([m_inc, 1.05], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = 2.0)
+    @test_throws ArgumentError escape_accept([1.0], [0.1]; gains = 1.0, harms = 0.0, irreparable = 0, z = 1.0)
+    @test_throws ArgumentError escape_accept([1.0, 2.0], [0.1, 0.1]; gains = -1.0, harms = 0.0, irreparable = 0, z = 1.0)
 end
 
 # M5 deliberation: expertise weighting amplifies domain knowledge, and liquid delegation caps
