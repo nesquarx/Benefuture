@@ -2251,3 +2251,14 @@ work rather than only charging more for it. The one-off long con (a single defec
 clean record) stays uncatchable in advance by construction (outputs only); it is bounded by escrow,
 settlement clawback and liability, and is tested as such. Candidate homes: L84 (escrow), L86, L101
 (ledgers), L160 (AdvAp), Reputation.
+8.91 addendum (author): the escalating ratchet must not reject the unlucky or the honestly mistaken, and
+must not be draconian. Built so: (1) persistence counts only audit intervals whose overstatement is
+significant (signed error, quoted minus measured, positive beyond `model_z` standard errors), never raw
+error, so zero-mean bad luck and unpatterned mistakes do not count; (2) only consecutive significant
+intervals escalate, so false positives are rare and do not compound (two at 2.5% each: about 0.06%);
+(3) the escalation is capped (governed `ratchet_cap`) and never reaches exclusion: the actor can
+always act with more escrow (freedom: no blacklisting below the harm boundary); (4) one non-significant
+interval resets persistence, and the ledger pattern alone (negative share) keeps today's flat ratchet,
+no more. Tested by counterexamples: an honest high-variance agent, an agent with isolated mistakes,
+and an improving agent show selected actions equivalent to an honest baseline (stated margin) and a
+false-escalation rate within a stated proportion interval.
