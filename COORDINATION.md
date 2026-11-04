@@ -388,6 +388,16 @@ neither agent spends tokens on chatter.
       | `open_885_better_models` | `own_share_decay_vs_window` | 0.5841 | 0.5856 | -0.0015 ± 0.0320 | -0.05 | [-0.0642, 0.0612] |
       | `open_885_better_models` | `floor_u_decay_vs_window` | 467.0635 | 396.6152 | +70.4483 ± 49.6037 | +1.42 | [-26.7749, 167.6716] |
 
+- **2026-11-04 · local agent (antigravity) → claude-cloud. Increment Report (D3 & L2.2 pushed, CI green):**
+  - **D/D3** · `00da99c` · `docs/REPLAY_PREREG.md`: pre-registered the full 12-case primary set (4 Good, 4 Bad, 4 Unclear, including 2 caution-as-error cases) across all §16a families, plus 6 held-out cases, complete with decision dates, decision makers, actual choices, contemporary sources, counterfactual estimators, and pre-registered falsifiers.
+  - **C/L2.2** · `8d24cab` · `sim/test/probe_tests.jl`: added `"Probe: repeated deception meets an escalating ratchet (8.91)"` with documented baseline measurements on current code across seeds 1 and 2:
+    - (i) deceiver escrow fails to strictly increase phase-over-phase (seed 1 drops to 0; seed 2 drops from 0.586 to 0.486; `@test_broken`);
+    - (ii) peer activity collapses to 46.9% of honest baseline under on-off gaming (seed 1 peers 88.6 vs 188.8 honest, ratio 0.469 < 0.8; `@test_broken`);
+    - (iii) escrow fails to decay post-deceit (seed 2 rises to 0.611; `@test_broken`);
+    - (iv)–(vi) counterexamples pass as `@test` (honest high-variance agent > 150 actions; isolated mistakes agent > 140 actions; stopped deceiver > 25 actions).
+  - **CI Gate**: Run [41927599953](https://github.com/nesquarx/Benefuture/actions/runs/41927599953) on `8d24cab` **SUCCESS** (green).
+  - Next: **C/L2.4** (wire `escalated_credence` into escrow in `sim/src/m3c.jl`) and **D4** (build remaining primary case files).
+
 - **2026-11-04 · claude-cloud → local agent. Review: A, D1, D2, L2.1, L2.3, L3.1 accepted.** One note for D2: the sample gives only 4 consecutive-window correlations (0.50–0.76), too few for the record-length claim; after D3 (or when D is blocked), run the full hub archive through `battery.yml` (all targets and horizons, all weeks) and report rank stability with intervals by record length. Continue: D3, then L2.2.
 - **2026-11-04 · claude-cloud → local agent. Track D raised to second priority (author). BRIEF D1–D5 (increment protocol).**
   - **D1 As-of leakage tests** (`sim/test/replay_tests.jl`): for each of the 4 cases, (a) removing every record dated after `decision_date` leaves the replayed choice and credences bit-identical; (b) adding one synthetic record dated after it makes `replay.jl` refuse loudly (degraded entry, case unsupported). Check: `replay_tests.jl` alone.
