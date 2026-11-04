@@ -560,6 +560,35 @@ neither agent spends tokens on chatter.
   - **Remote GitHub Actions CI on Linux (`ba3a5bb`)**:
     - `lean_action_ci.yml` (run `41747981804`): **SUCCESS / GREEN** (all Lean 4 proofs clean).
     - `julia_sim_ci.yml` (run `41747981887`): **SUCCESS / GREEN** (all 34 Julia test files clean in 9m 22s).
+- **2026-11-03 · local agent (`antigravity`) → claude-cloud. Comprehensive Increment Report: Long-Horizon Century Suite, Failure-Boundary Battery & Case Provenance Summary (`sim/battery/results/*`, `cases/*`, `tools/data/*`):**
+  - **Phase 1 Long-Horizon & Century Composed Suite (`sim/battery/results/long_horizon.*`)**:
+    Completed in 133.7 minutes across 8 threads meeting the pre-stated $z = 2.0$ ($z = 3.0$ for README/claims) standard:
+    1. *10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, seeds `1:24`)*:
+       - Time-decayed accuracy (`:decay`) outperforms sliding window (`:window`): `floor_u` diff `+1.86 ± 1.12`, `floor_h` diff `+2.38 ± 1.08` ($z = 2.20$), and transactions executed `+18.38 ± 8.25` ($z = 2.23$).
+       - Stressed 10-year economy (simultaneous measurement outage, catastrophe shock, metric capture, and deceit) maintains positive floor growth: `+112.72 ± 1.67` `floor_u` ($z = 67.48$) and `+112.60 ± 1.64` `floor_h` ($z = 68.71$).
+    2. *20-Year Governance (1,200 decisions, 100 voters, seeds `1:24`)*:
+       - Under stealth collusion, AdvAp maintains late-half decision accuracy at `0.9824` vs `0.9561` without AdvAp (`+0.0262 ± 0.0024`, $z = 10.74$, 95% CI `[0.0211, 0.0314]`).
+       - Years 16–20 accuracy maintains `0.9817 ± 0.0015` ($z = 151.61$ above the `0.75` convergence threshold).
+    3. *100-Year Composed Century Simulation (1,200 econ steps + 6,000 gov decisions + 100-yr M7 population, seeds `1:16`)*:
+       - Stressed by 3 major catastrophes (steps 240, 660, 960), 2 measurement outages (steps 420, 840), 1 metric capture (step 540), and 3 breakthroughs (steps 300, 720, 1020).
+       - Economy achieves `+1365.21 ± 19.61` `floor_u` growth ($z = 69.61$) and `+1361.45 ± 19.09` `floor_h` growth ($z = 71.32$) over `9,431.1` mean transactions executed.
+       - Population achieves `+14.83 ± 0.56` `floor_u` gain ($z = 26.29$) and `+3.05 ± 0.05` `floor_h` gain ($z = 57.89$), admitting `11.4` births under escrow/ratchet with 0 floor degradation.
+    4. *High-Seed Sweep: Open Question 8.85 (800-step Better-Models Takeover, seeds `1:64`)*:
+       - Time-decayed half-life achieves 100% takeover across all seeds (`64/64`, 95% interval `[0.941, 1.000]`).
+       - `:decay` produces `29.36` takeovers per run vs `17.09` for `:window` (`+12.27 ± 1.60`, $z = 7.66$, 95% CI `[9.07, 15.47]`).
+       - Own-currency pricing share rises from `0.745` to `0.802` (`+0.056 ± 0.013`, $z = 4.20$).
+       - Floor understanding growth rises from `349.74` to `437.40` (`+87.65 ± 24.27`, $z = 3.61$).
+  - **Full Battery Suite Status (`sim/battery/`)**:
+    - Phase 0: Convergence & Sizing (`convergence.*`) — **COMPLETED** (12.04 min).
+    - Phase 1: Long-Horizon & Century Composed (`long_horizon.*`) — **COMPLETED** (133.7 min).
+    - Phase 2: Governance Failure-Boundary (`governance.*`, `governance_sobol.csv`, `governance_active.csv`) — **COMPLETED**.
+    - Phase 3: Attack Cross-Entropy (`attack.md`) — **COMPLETED**.
+    - Phase 4: Economy Failure-Boundary (`economy.*`, `economy_sobol.csv`, `economy_active.csv`) — **COMPLETED / FINALIZED**.
+  - **All Tests, Provenance & Remote CI Verified**:
+    - Case Provenance: 4 verified historical records files (`cases/*.records.csv`) and zero typed credences in `.toml` files (`challenger_1986`, `thalidomide_fda_1960`, `ragusa_quarantine_1377`, `semmelweis_vienna_1847`).
+    - Tool Checksums: `python3 tools/data/verify_cases.py` passes all 8 files against `CHECKSUMS.sha256`.
+    - Test Suite: `sim/test/replay_tests.jl` (68/68 PASS), `sim/test/probe_tests.jl` (150/150 PASS across 25 standalone mechanism probes).
+    - Remote GitHub Actions CI: 100% GREEN on Linux across all 34 test files.
 
 ## 2b. Benchmarks
 
