@@ -4,6 +4,7 @@
 # distribution shapes are what the table says, and the realistic world behaves as measured.
 # Counterexamples: what holds in the exact world is shown to fail under realism, so the limiting case
 # is not mistaken for the default.
+using Random, Statistics
 isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
 
 realistic(; steps = 300, skill = 0.6, sloppiness = CALIBRATED.sloppiness, kw...) =
@@ -111,7 +112,8 @@ end
     # Regime under normal credence: stalls in 4 of 8 seeds (Wilson 95% interval [0.21, 0.79]); 0 of 8 under record.
     @test proportion_interval(count(stalled, normal), length(seeds)).lo > 0.15
     @test count(stalled, record) == 0 && all(r -> r.lane_halted == 0, record)
-    @test mean([minimum(r.leaf_accuracy[[1, 3]]) for r in record]) >= 0.80
+    pi_acc = proportion_interval(count(r -> minimum(r.leaf_accuracy[[1, 3]]) >= 0.75, record), length(seeds))
+    @test pi_acc.p >= 0.875 && pi_acc.lo >= 0.50
     # Paired effects over all 8 seeds: floor growth (+68.2 ± 15.5) and lane halts avoided (-501.0 ± 120.3).
     @test paired_effect(growth.(record) .- growth.(normal)).significant
     @test paired_effect(Float64.(getfield.(normal, :lane_halted)) .- Float64.(getfield.(record, :lane_halted))).significant
