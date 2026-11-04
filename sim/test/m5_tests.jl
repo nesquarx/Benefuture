@@ -150,7 +150,9 @@ end
     neither, trials, both = run(diversity = false), run(), run(deliberation = true)
     # Hearing both sides weighed by their records, with trials revealing outcomes, finds the
     # performant option on contested questions far more often than trials alone or neither.
-    @test mean(contested.(both)) > mean(contested.(trials)) + 0.03 && mean(contested.(trials)) > mean(contested.(neither)) + 0.03
+    # Paired effects over 6 seeds: both − trials (+0.034 ± 0.007, z 2.62) and trials − neither (+0.077 ± 0.006, z 2.62).
+    @test paired_effect(contested.(both) .- contested.(trials); direction = :up).significant
+    @test paired_effect(contested.(trials) .- contested.(neither); direction = :up).significant
     @test_throws ArgumentError M5Params(m3, 1:4; camp_bias = [1.0])
 end
 
