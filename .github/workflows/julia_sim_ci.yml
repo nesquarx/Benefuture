@@ -1,8 +1,8 @@
 name: Julia Sim CI
 
 # Tiers: every code push runs the fast tier (rules, units, probes); the full suite runs nightly on
-# main and on demand (workflow_dispatch with tier = full). Docs-only pushes run nothing; a newer push
-# cancels the run it supersedes.
+# main and on demand (workflow_dispatch with tier = full) as 8 parallel shards. Docs-only pushes run nothing;
+# a newer push cancels the run it supersedes.
 on:
   push:
     paths-ignore:
@@ -29,7 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  fast:
+    if: github.event_name != 'schedule' && (github.event_name != 'workflow_dispatch' || inputs.tier == 'fast')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -66,7 +67,80 @@ jobs:
         with:
           version: '1.13'
 
-      - name: Test BenefutureSim
+      - name: Test BenefutureSim (Fast Tier)
         env:
-          BF_TIER: ${{ github.event_name == 'schedule' && 'full' || (github.event_name == 'workflow_dispatch' && inputs.tier) || 'fast' }}
+          BF_TIER: fast
         run: julia --project=sim -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      sim_changes: ${{ steps.filter.outputs.sim_changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3.0.2
+        id: filter
+        with:
+          filters: |
+            sim_changes:
+              - 'sim/src/**'
+              - 'BenefutureReference/**'
+
+  full:
+    needs: filter
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tier == 'full') || (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.filter.outputs.sim_changes == 'true')
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache the Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean-toolchain') }}
+
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install the Lean toolchain
+        run: |
+          for attempt in 1 2 3 4; do
+            elan toolchain install "$(cat lean-toolchain)" && exit 0
+            sleep $((attempt * 15))
+          done
+          exit 1
+
+      - name: Build the Lean reference library
+        run: lake build BenefutureReference:shared
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.13'
+
+      - name: Test BenefutureSim Shard
+        env:
+          BF_TIER: full
+          BF_SHARD: ${{ matrix.shard }}
+        run: julia --project=sim -e 'using Pkg; Pkg.instantiate(); Pkg.test()'
+
+  full-gate:
+    needs: full
+    if: always() && needs.full.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all shards succeeded
+        run: |
+          if [ "${{ needs.full.result }}" != "success" ]; then
+            echo "One or more shards failed"
+            exit 1
+          fi

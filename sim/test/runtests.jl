@@ -64,7 +64,22 @@ const FAST_FILES = ["value_tests.jl", "goal_tests.jl", "analysis_tests.jl", "eco
                     "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "methods_tests.jl",
                     "battery_tests.jl", "probe_tests.jl"]
 @assert FAST_FILES ⊆ ALL_FILES
-for f in (get(ENV, "BF_TIER", "full") == "fast" ? FAST_FILES : ALL_FILES)
+
+const SHARDS = [
+    ["m5_tests.jl"],
+    ["m6_attacks_tests.jl"],
+    ["probe_tests.jl"],
+    ["models_tests.jl", "m4_tests.jl"],
+    ["calibrated_tests.jl", "m7_tests.jl", "replay_tests.jl"],
+    ["m6_tests.jl", "attack_tests.jl", "friction_m3c_tests.jl", "advap_tests.jl"],
+    ["m3_tests.jl", "m3b_tests.jl", "m3c_tests.jl", "m3d_tests.jl", "m3e_tests.jl", "m3f_tests.jl", "friction_tests.jl", "diversity_tests.jl"],
+    ["value_tests.jl", "goal_tests.jl", "m0_tests.jl", "m1_tests.jl", "analysis_tests.jl", "economy_tests.jl", "m2_tests.jl", "domain_tests.jl",
+     "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "battery_tests.jl", "methods_tests.jl"],
+]
+@assert sort(vcat(SHARDS...)) == sort(ALL_FILES)   # every file in exactly one shard
+
+tier = get(ENV, "BF_TIER", "full")
+for f in (tier == "fast" ? FAST_FILES : haskey(ENV, "BF_SHARD") ? SHARDS[parse(Int, ENV["BF_SHARD"])] : ALL_FILES)
     try
         @testset "$f" begin include(f) end
     catch
