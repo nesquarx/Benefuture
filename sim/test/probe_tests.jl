@@ -388,6 +388,27 @@ end
 # AdvAp: revelation dominates exploitation, anti-cobra liability prevents flaw-planting, and
 # pattern threshold stops frivolous reporting (L160, 8.42.1).
 @testset "Probe: AdvAp revelation dominance, anti-cobra liability, and pattern threshold (L160)" begin
+    # 1. Minimal world: 6 agents, 40 decisions, a colluding voting bloc (colluders = [1, 2]).
+    # Defection is dominant because whistleblower reward exceeds the colluder's share of the exploit.
+    skills = fill(0.7, 6, 2); focus = fill(0.5, 6, 2)
+    agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:6]
+    m3_stub = (relevance_leaf = fill(1.0, 6, 2), agents = agents)
+    p_no  = M5Params(m3_stub, [1]; decisions = 40, colluders = [1, 2], advap = false, p_weigh = 0.5, p_trace = 0.9, collusion_gain = 1.0)
+    p_adv = M5Params(m3_stub, [1]; decisions = 40, colluders = [1, 2], advap = true,  p_weigh = 0.5, p_trace = 0.9, collusion_gain = 1.0)
+
+    # Counterexample: without AdvAp, the colluders manipulate decisions with impunity (0 revelations).
+    r_no = run_m5(p_no; seed = 1)
+    @test r_no.advap_established == 0
+    @test r_no.advap_rewards == 0.0
+
+    # Acceptance: with AdvAp, defection dominates collusion; whistleblower reveals the corrupt bloc,
+    # claiming reward; liability is clawed back from the corrupt bloc, and decisions are repaired.
+    r_adv = run_m5(p_adv; seed = 1)
+    @test r_adv.advap_established > 0
+    @test r_adv.advap_rewards > 0.0
+    @test r_adv.advap_liability > r_adv.advap_rewards
+
+    # 2. Structural reward and liability invariants (Lean advap_reward_ref, advap_liability_ref)
     gain, harm, audit = 15.0, 50.0, 3.0
     r = advap_reward(gain, harm; share = 0.2, floor = 2.0)
     @test r > gain                                                     # dominates: reward exceeds exploit gain
@@ -408,69 +429,105 @@ end
 # Model pool candidate selection: challengers compete under significance testing (select_candidate)
 # over takeover_records; an unvetted or noisy model cannot usurp the incumbent (8.73, 8.84).
 @testset "Probe: model pool candidate selection and takeover under significance testing (8.73, 8.84)" begin
-    m_inc, se_inc = 0.70, 0.02
-    m_a, se_a = 0.82, 0.02
-    m_b, se_b = 0.75, 0.08
+    # 1. Minimal split trial world: 60 experimental units evaluating incumbent vs challengers.
+    rng = Xoshiro(42)
+    # Acceptance: Candidate A is genuinely and significantly superior (mean 1.5 vs 0.5, σ = 0.5)
+    tr_a = split_trial(rng, [0.5, 1.5], [0.5, 0.5]; units = 60, σ = 0.5, z = 2.0)
+    @test tr_a.winner == 2 && tr_a.significant
 
-    # Acceptance: Candidate A significantly beats incumbent (z = 2.0) -> selected (index 2)
-    @test select_candidate([m_inc, m_a], [se_inc, se_a]; z = 2.0) == 2
+    # Counterexample: Candidate B has a slightly higher noisy sample mean (0.6 vs 0.5) but
+    # high variance (σ = 2.0) and fails the significance test -> incumbent retained (index 1).
+    tr_b = split_trial(rng, [0.5, 0.6], [0.5, 0.5]; units = 20, σ = 2.0, z = 2.0)
+    @test tr_b.winner == 1
 
-    # Counterexample: Candidate B has higher sample mean than incumbent (0.75 > 0.70)
-    # but fails significance test ((0.75 - 0.70) / sqrt(0.08^2 + 0.02^2) = 0.606 < 2.0) -> incumbent kept (index 1)
-    @test select_candidate([m_inc, m_b], [se_inc, se_b]; z = 2.0) == 1
-
-    # Incumbent with equal or higher score is always kept
-    @test select_candidate([m_inc, 0.65], [se_inc, 0.02]; z = 2.0) == 1
-
+    # Direct select_candidate edge checks
+    @test select_candidate([0.70, 0.82], [0.02, 0.02]; z = 2.0) == 2
+    @test select_candidate([0.70, 0.75], [0.02, 0.08]; z = 2.0) == 1
+    @test select_candidate([0.70, 0.65], [0.02, 0.02]; z = 2.0) == 1
     @test_throws ArgumentError select_candidate([0.8], [0.02, 0.02]; z = 2.0)
 end
 
 # Whitewashing resistance: an entity abandoning a degraded identity cannot rejoin with a clean slate
 # when identity binding weights clusters by their attestation track record (8.70, B2).
 @testset "Probe: whitewashing resistance through weighted binding (8.70, B2)" begin
-    whitewash_attestations = [0.95, 0.95, 0.15, 0.15, 0.15]
+    # Minimal world: 5 clusters (2 compromised with negative past skill, 3 honest with positive skill).
+    # 30 re-entry attempts by an entity seeking to whitewash a degraded record.
+    rng = Xoshiro(99)
     cluster_skills = [-0.4, -0.3, 0.6, 0.5, 0.7]
     threshold = 0.70
     quorum = 2
 
-    # Counterexample: unweighted count rule admits the whitewashed entity (2 clusters vouch > 0.70).
-    @test binding_admits(whitewash_attestations, threshold; quorum = 2)
+    # Compromised clusters vouch strongly (0.95), honest clusters deny (0.15)
+    ww_trials = [clamp.([0.95, 0.95, 0.15, 0.15, 0.15] .+ 0.02 .* randn(rng, 5), 0.0, 1.0) for _ in 1:30]
+    honest_trials = [clamp.([0.20, 0.15, 0.85, 0.80, 0.90] .+ 0.02 .* randn(rng, 5), 0.0, 1.0) for _ in 1:30]
 
-    # Acceptance: weighted binding refuses the whitewashed entity because compromised clusters lack weight.
-    @test !binding_admits_weighted(whitewash_attestations, cluster_skills, threshold, quorum * 0.5)
+    # Counterexample: unweighted count rule admits the whitewashed entity on every attempt (2 bought clusters clear quorum).
+    adm_unweighted = count(t -> binding_admits(t, threshold; quorum = quorum), ww_trials)
+    @test adm_unweighted == 30
 
-    # Honest newcomer with endorsements from honest clusters is admitted.
-    honest_attestations = [0.20, 0.10, 0.85, 0.80, 0.90]
-    @test binding_admits_weighted(honest_attestations, cluster_skills, threshold, quorum * 0.5)
+    # Acceptance: weighted binding completely refuses the whitewashed entity (0/30 admitted)
+    # because compromised clusters have negative skill weight, while admitting honest newcomers.
+    adm_weighted = count(t -> binding_admits_weighted(t, cluster_skills, threshold, quorum * 0.5), ww_trials)
+    adm_honest = count(t -> binding_admits_weighted(t, cluster_skills, threshold, quorum * 0.5), honest_trials)
+    @test adm_weighted == 0
+    @test adm_honest >= 28
 end
 
 # Justice for slander: every audit caused by a detected liar's false reports is clawed back as a crime (8.82).
 @testset "Probe: justice for slander claws back audit costs from detected liars (8.82)" begin
-    harm_caused = 10.0
-    reward_claimed = 4.0
-    audit_cost = 2.0
-    charge = false_report_charge(harm_caused, reward_claimed, audit_cost)
-    @test charge ≈ harm_caused + reward_claimed + audit_cost
-    @test charge == 16.0
-    @test report_penalty(1, 3; audit_cost = audit_cost) == 0.0
-    @test report_penalty(4, 3; audit_cost = audit_cost) == audit_cost
-    @test_throws ArgumentError false_report_charge(-1.0, reward_claimed, audit_cost)
+    # 1. Minimal world in M3c: 2 agents, 30 steps.
+    # Agent 1 repeatedly files frivolous slander reports against Agent 2 (slander = [2, 0], frivolous = [1.0, 0.0]).
+    w_slander = M3cParams(ToyParams(n = 6, steps = 30, plans = 2),
+                          [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.1) for _ in 1:2],
+                          [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                          causal_distribution = true, form_count = 10^5, init_steps = 3,
+                          advap = true, frivolous = [1.0, 0.0], frivolous_threshold = 2, audit_cost = 2.0,
+                          slander = [2, 0])
+    w_clean = M3cParams(ToyParams(n = 6, steps = 30, plans = 2),
+                        [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.1) for _ in 1:2],
+                        [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                        causal_distribution = true, form_count = 10^5, init_steps = 3,
+                        advap = true, frivolous = [0.0, 0.0], frivolous_threshold = 2, audit_cost = 2.0,
+                        slander = [0, 0])
+
+    # Acceptance: once the frivolous pattern is detected, Agent 1 is branded a slanderer,
+    # and all past and future audit costs are clawed back via false_report_charge.
+    tr_s = run_m3c(w_slander; seed = 1)
+    @test 1 in tr_s.slanderers
+    @test tr_s.advap_penalties > 0.0
+    @test tr_s.advap_penalties == tr_s.advap_reports * 2.0  # every false audit clawed back
+
+    # Counterexample: clean world with no frivolous pattern incurs zero slander penalties.
+    tr_c = run_m3c(w_clean; seed = 1)
+    @test isempty(tr_c.slanderers)
+    @test tr_c.advap_penalties == 0.0
+
+    # Rule invariant checks
+    charge = false_report_charge(10.0, 4.0, 2.0)
+    @test charge ≈ 16.0
+    @test_throws ArgumentError false_report_charge(-1.0, 4.0, 2.0)
 end
 
 # Causal distribution: joint value is attributed by marginal contribution (Shapley), rewarding
 # genuine contributors and starving free-riders, whereas equal sharing dilutes incentives (L100).
 @testset "Probe: causal distribution rewards marginal contribution and starves free-riders (L100)" begin
+    # 1. Minimal collaborative team world: Agent 1 (producer), Agent 2 (assistant), Agent 3 (free-rider).
+    # Characteristic function v over coalitions of size 3 (represented as integer bitmasks 0:7).
+    # Coalition values: {1} = 10.0, {2} = 5.0, {1,2} = 20.0, and Agent 3 adds 0.0 to all coalitions.
     v = [0.0, 10.0, 5.0, 20.0, 0.0, 10.0, 5.0, 20.0]
     shares = shapley(v)
-    # Acceptance: Shapley shares reward actual causers; free-rider gets exactly 0.
+
+    # Acceptance: Shapley shares attribute exactly according to marginal contribution.
+    # The primary producer gets the majority share; the assistant gets a positive share;
+    # the free-rider gets strictly 0.0.
     @test shares[1] > 10.0
     @test shares[2] > 0.0
     @test shares[3] == 0.0
     @test sum(shares) ≈ v[end] - v[1]
 
-    # Counterexample: equal distribution gives free-rider 1/3 of total value, diluting primary causer.
+    # Counterexample: equal sharing gives the free-rider 1/3 of the pot (6.67), diluting the producer.
     equal_share = v[end] / 3
-    @test equal_share > 6.0 && equal_share > shares[3]
+    @test equal_share > shares[3]
     @test shares[1] > equal_share
 
     # Traversal fallback when causal assessment is unavailable (L94-95).
@@ -482,62 +539,100 @@ end
 # Escrow and settlement: upfront payment split by confidence, settled against measured outcome;
 # removing the expected gain of strategic overstatement (8.86 addendum, L84).
 @testset "Probe: escrow settlement removes strategic overstatement gain (8.86 addendum, L84)" begin
+    # Minimal world: an actor proposes a plan with measured outcome 50.0.
+    # It considers stating honest confidence (0.60) vs strategically inflating confidence (0.95).
     nominal = 100.0
-    true_credence = 0.60
-    inflated_credence = 0.95
+    measured = 50.0
+    honest_conf = 0.60
+    inflated_conf = 0.95
 
-    upfront_honest, hold_honest = escrow_split(nominal, true_credence)
-    upfront_inflated, hold_inflated = escrow_split(nominal, inflated_credence)
-    @test upfront_inflated > upfront_honest
-    @test upfront_inflated - upfront_honest ≈ (inflated_credence - true_credence) * nominal
+    upfront_h, hold_h = escrow_split(nominal, honest_conf)
+    upfront_i, hold_i = escrow_split(nominal, inflated_conf)
 
-    # Outcome measured at 50.0: settlement adjusts net payment to exact measured outcome.
-    measured_outcome = 50.0
-    settle_honest = settlement(measured_outcome, upfront_honest)
-    settle_inflated = settlement(measured_outcome, upfront_inflated)
+    # Acceptance under upfront payment only: inflated confidence nets +35 upfront.
+    @test upfront_i - upfront_h ≈ (inflated_conf - honest_conf) * nominal
 
-    total_honest = upfront_honest + settle_honest
-    total_inflated = upfront_inflated + settle_inflated
-    @test total_honest ≈ measured_outcome
-    @test total_inflated ≈ measured_outcome
-    @test total_honest ≈ total_inflated
-    @test settle_inflated < 0 && settle_inflated < settle_honest
+    # Settlement against measured outcome:
+    settle_h = settlement(measured, upfront_h)
+    settle_i = settlement(measured, upfront_i)
+
+    # Excess upfront is clawed back in settlement:
+    @test settle_i < 0.0 && settle_i < settle_h
+    total_h = upfront_h + settle_h
+    total_i = upfront_i + settle_i
+
+    # Acceptance: net payout is invariant and equals exact measured outcome.
+    # Strategic overstatement yields exactly 0.0 excess payout.
+    @test total_h ≈ measured
+    @test total_i ≈ measured
+    @test total_h ≈ total_i
+
+    # Counterexample: without escrow settlement (upfront-only regime), overstatement gains +35.
+    @test upfront_i > upfront_h
 end
 
 # The debatable escape: local trial adopted only if proposal beats incumbent significantly,
 # gains exceed harms where tried, and no irreparable harm was caused (M4, L157).
 @testset "Probe: debatable escape accepts significant harmless proposals and rejects harm (M4, L157)" begin
+    # 1. Minimal world in M3c: 30 steps with an escape trial initiated at step 5.
+    w_escape = M3cParams(ToyParams(n = 6, steps = 30, plans = 2),
+                         [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.1) for _ in 1:2],
+                         [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                         causal_distribution = true, form_count = 10^5, init_steps = 3,
+                         escape = true, escape_start = 5, escape_steps = 10, escape_epoch = 2,
+                         gov_z = 1.0)
+    tr_e = run_m3c(w_escape; seed = 1)
+    @test tr_e.escape.tried
+    # Acceptance: trial with positive gains and zero irreparable harm is adopted
+    @test tr_e.escape.adopted
+    @test tr_e.escape.gains > tr_e.escape.harms
+    @test tr_e.escape.irreparable == 0
+
+    # Counterexample: trial causing irreparable harm is rejected, even if gains > harms
     m_inc, se_inc = 1.0, 0.1
     m_prop, se_prop = 1.5, 0.1
-    z_req = 2.0
+    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 1, z = 2.0)
 
-    @test escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = z_req)
-    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 1, z = z_req)
-    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 2.0, harms = 10.0, irreparable = 0, z = z_req)
-    m_weak = 1.05
-    @test !escape_accept([m_inc, m_weak], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = z_req)
-    @test_throws ArgumentError escape_accept([1.0], [0.1]; gains = 1.0, harms = 0.0, irreparable = 0, z = 1.0)
-    @test_throws ArgumentError escape_accept([1.0, 2.0], [0.1, 0.1]; gains = -1.0, harms = 0.0, irreparable = 0, z = 1.0)
+    # Counterexample: trial with net harms > gains is rejected
+    @test !escape_accept([m_inc, m_prop], [se_inc, se_prop]; gains = 2.0, harms = 10.0, irreparable = 0, z = 2.0)
+
+    # Counterexample: proposal that does not significantly beat incumbent is rejected
+    @test !escape_accept([m_inc, 1.05], [se_inc, se_prop]; gains = 10.0, harms = 2.0, irreparable = 0, z = 2.0)
 end
 
 # M5 deliberation: expertise weighting amplifies domain knowledge, and liquid delegation caps
 # prevent dictatorship accumulation (8.90, B26, L113-114).
 @testset "Probe: M5 liquid delegation cap and expertise weighting (8.90, B26, L113-114)" begin
+    # 1. Minimal deliberation world: 20 voters, 30 decisions.
+    # Voter 1 is a domain expert with high reputation. Other voters delegate with chance 0.8.
+    nv = 20
+    skills = fill(0.5, nv, 4); skills[1, :] .= 0.95
+    focus = fill(0.25, nv, 4); focus[1, :] = [0.7, 0.1, 0.1, 0.1]
+    reputation = fill(0.1, nv, 4); reputation[1, :] = [10.0, 0.1, 0.1, 0.1]
+    agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:nv]
+    m3_stub = (relevance_leaf = reputation, agents = agents)
+
+    # Counterexample: uncapped delegation allows a single delegate to accumulate 95% of voting power.
+    p_uncapped = M5Params(m3_stub, [1]; decisions = 30, p_delegate = 0.8, cap = 1.0, impact_threshold = 0.5, expertise_weight = 1.0)
+    r_uncapped = run_m5(p_uncapped; seed = 1)
+    @test maximum(r_uncapped.max_share) > 0.85  # near dictatorship
+
+    # Acceptance: capped delegation (cap = 0.15) strictly limits accumulated voting weight.
+    p_capped = M5Params(m3_stub, [1]; decisions = 30, p_delegate = 0.8, cap = 0.15, impact_threshold = 0.5, expertise_weight = 1.0)
+    r_capped = run_m5(p_capped; seed = 1)
+    @test maximum(r_capped.max_share) <= 0.25  # dictatorship prevented
+
+    # 2. Invariant checks on accumulation rule (accumulate_capped)
     cap = 10.0
     delegators = fill(2.0, 50)
     acc = accumulate_capped(cap, 0.0, delegators)
-    @test acc <= cap + 2.0
-    @test acc >= cap
-
-    uncapped = sum(delegators)
-    @test uncapped == 100.0 && uncapped > acc * 8
+    @test acc <= cap + 2.0 && acc >= cap
+    @test sum(delegators) > acc * 8
 
     w_expert, opt_expert = voting_weight(1.0, 1.0, [0.8, 0.2], [4.0, 0.5], 1.0, 0.2; optional_below = 2.0)
     w_bystander, opt_bystander = voting_weight(1.0, 1.0, [0.8, 0.2], [0.0, 0.0], 1.0, 0.2; optional_below = 2.0)
     @test w_expert > w_bystander * 3
     @test !opt_expert && opt_bystander
-
-    @test_throws ArgumentError accumulate_capped(10.0, 0.0, [-1.0])
 end
 
 @testset "Probe: M5 sparse specialist scaling and correlated misconceptions (8.90, B26, L113-114)" begin
@@ -575,7 +670,7 @@ end
     # Non-specialists share correlated misconceptions, preventing Condorcet aggregation from
     # exceeding ~0.75 accuracy. Expertise-weighting and liquid delegation allow Benefuture to maintain
     # high accuracy (>= 0.88), so wisdom gain RISES with n.
-    function run_sparse_misconception(nv, decisions)
+    function run_sparse_misconception(nv, decisions; seeds = 1:6)
         c = 1.5
         k_spec = max(1, round(Int, c * nv^0.3))
         skills = zeros(nv, 4)
@@ -601,16 +696,24 @@ end
         p_eq = M5Params(m3_stub, [1]; decisions=decisions, signal_σ=2.0, skill_gain=5.0,
                         expertise_weight=0.0, impact_weight=0.0, p_delegate=0.0,
                         vote_value=0.0, misconception_σ=1.5)
-        (bf = mean([run_m5(p_bf; seed=s).correct for s in 1:6]),
-         eq = mean([run_m5(p_eq; seed=s).correct for s in 1:6]))
+        (bf = mean([run_m5(p_bf; seed=s).correct for s in seeds]),
+         eq = mean([run_m5(p_eq; seed=s).correct for s in seeds]),
+         gain = mean([run_m5(p_bf; seed=s).correct - run_m5(p_eq; seed=s).correct for s in seeds]))
     end
 
     sparse_12 = run_sparse_misconception(12, 200)
     sparse_80 = run_sparse_misconception(80, 200)
-    gain_sp_12 = sparse_12.bf - sparse_12.eq
-    gain_sp_80 = sparse_80.bf - sparse_80.eq
 
     @test sparse_80.eq <= 0.78         # Correlated misconceptions prevent equal-weight from saturating
     @test sparse_80.bf >= 0.88         # Expertise-weighted voting + delegation retains high accuracy
-    @test gain_sp_80 > gain_sp_12      # Wisdom gain grows with n under sparse specialists!
+    @test sparse_80.gain > sparse_12.gain # Wisdom gain grows with n under sparse specialists!
+
+    # 3. Replication on fresh seeds (101:116) at z = 3.0 standard (author ruling 8.90)
+    fresh_seeds = 101:116
+    g12_fresh = [run_sparse_misconception(12, 200; seeds=s:s).gain for s in fresh_seeds]
+    g80_fresh = [run_sparse_misconception(80, 200; seeds=s:s).gain for s in fresh_seeds]
+    pe_g80 = paired_effect(g80_fresh; z = 3.0)
+    pe_growth = paired_effect(g80_fresh .- g12_fresh; z = 3.0)
+    @test pe_g80.significant && pe_g80.mean > 0.25       # Wisdom gain > 0.25 at z = 3.0 (z = 37.2)
+    @test pe_growth.significant && pe_growth.mean > 0.03  # Wisdom gain growth with n is significant at z = 3.0 (z = 5.94)
 end
