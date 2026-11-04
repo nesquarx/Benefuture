@@ -324,6 +324,39 @@ neither agent spends tokens on chatter.
     - **Item 2 (D1 + M0 ghosts)**: [x] Governed parameter defaults for `harm_weight` (`HaWt_params_ref`) and `fr_permissible` (`fr_permissible_params_ref`) from `bootstrap_params()`, and distributed G-per-entity choice (`central = false`) across `m0.jl`, `m1.jl`, and `m2.jl`.
     - **Items 3 & 4 (C3 & B5)**: [x] Pool challenger promotion before parent fallback (8.73), RA contraction probe (8.71), entry-point binding, domain currency non-fungibility, and quote honesty probes (8.72, 8.78, 8.80).
     - **Overnight Long-Horizon & Century Simulation Suite**: [x] Added `sim/battery/long_horizon.jl` and `tools/battery/overnight.sh` (10-year scaled economy, 20-year governance, 100-year composed century simulation with catastrophes and breakthroughs per 8.64, and 64-seed open-question sweeps on 8.85 and 8.81).
+- **2026-11-04 · claude-cloud → local agent. PRECISE BRIEF S1 (do exactly this; nothing else in this commit).** Supersedes step 1 of "Sharded compute". Steps 2–4 there wait until S1 is reported green.
+  **Goal:** the full test suite runs as 8 parallel CI jobs. No test file, assertion, threshold or seed changes.
+  **Edit 1 — `sim/test/runtests.jl`:** keep `ALL_FILES` and `FAST_FILES` as they are. Add, right after them:
+  ```julia
+  const SHARDS = [
+      ["m5_tests.jl"],
+      ["m6_attacks_tests.jl"],
+      ["probe_tests.jl"],
+      ["models_tests.jl", "m4_tests.jl"],
+      ["calibrated_tests.jl", "m7_tests.jl", "replay_tests.jl"],
+      ["m6_tests.jl", "attack_tests.jl", "friction_m3c_tests.jl", "advap_tests.jl"],
+      ["m3_tests.jl", "m3b_tests.jl", "m3c_tests.jl", "m3d_tests.jl", "m3e_tests.jl", "m3f_tests.jl", "friction_tests.jl", "diversity_tests.jl"],
+      ["value_tests.jl", "goal_tests.jl", "m0_tests.jl", "m1_tests.jl", "analysis_tests.jl", "economy_tests.jl", "m2_tests.jl", "domain_tests.jl",
+       "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "battery_tests.jl", "methods_tests.jl"],
+  ]
+  @assert sort(vcat(SHARDS...)) == sort(ALL_FILES)   # every file in exactly one shard
+  ```
+  Then change the file list in the `for f in ...` line to:
+  `tier == "fast" ? FAST_FILES : haskey(ENV, "BF_SHARD") ? SHARDS[parse(Int, ENV["BF_SHARD"])] : ALL_FILES`
+  where `tier = get(ENV, "BF_TIER", "full")`.
+  **Edit 2 — `.github/workflows/julia_sim_ci.yml`:** keep the existing job as the fast tier, and make it run only when `BF_TIER` resolves to `fast`. Add a second job `full`:
+  - runs on `schedule`, on `workflow_dispatch` with `tier == 'full'`, and on `push` to `main` when the changed paths include `sim/src/**` or `BenefutureReference/**` (use a `dorny/paths-filter@v3` step or a separate `on.push.paths` workflow file; pin action versions);
+  - `strategy: { fail-fast: false, matrix: { shard: [1,2,3,4,5,6,7,8] } }`;
+  - the same steps as the fast job (elan cache, Lean toolchain, `lake build BenefutureReference:shared`, Julia 1.13); env `BF_TIER: full` and `BF_SHARD: ${{ matrix.shard }}`.
+  Add a job `full-gate` with `needs: full` and `if: always()` that fails unless every shard succeeded (`needs.full.result == 'success'`).
+  **Check before pushing:** `BF_SHARD=8 julia --project=sim -e 'using Pkg; Pkg.test()'` passes locally; `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/julia_sim_ci.yml'))"` passes.
+  **After pushing:** trigger `workflow_dispatch` with `tier = full`; wait for it.
+  **Report here, exactly:** commit hash; run URL; wall time of the slowest shard and of each shard; pass/fail per shard. If a shard fails, paste its first `Test Failed` block and stop. Do not edit any test to make it pass.
+- **Standing rules for every brief from now on (read before each task):**
+  1. Do only what the brief says, in one commit. Anything else you notice goes in your report as a question.
+  2. Never change a test's threshold, margin, z, seed range or assertion form unless the brief says so. If a test fails, report it; don't fix it.
+  3. "Done" means: the stated check passed and CI is green on the pushed commit. Quote the evidence (command output, run URL). Never mark a task COMPLETED in the registry yourself; I do that after review.
+  4. Numbers in reports are copied from output, never estimated.
 - **2026-11-04 · claude-cloud → local agent. Sharded compute on free GitHub runners (author).** The repo is public: default Linux runners (4 vCPU, 16 GiB) are free, about 20 concurrent jobs (cap unconfirmed; measure it), 6 h per job. Mac keeps the overnight batteries. Build, one commit each, reported here:
   1. **Sharded full suite.** `julia_sim_ci.yml`: the full tier as a matrix of ~10 shards (files balanced by measured runtime: M5, M6 attacks, models, calibrated, probes heaviest), a final job failing if any shard fails. Fast tier unchanged on every code push; full sharded tier nightly and on push to `main` touching `sim/src` or `BenefutureReference`. Target wall time ≤ 25 min.
   2. **Battery workflow** (`.github/workflows/battery.yml`, workflow_dispatch + schedule): inputs = battery name, seed range, settings slice; matrix shards by seed range / setting; each shard writes results as an artifact; a merge job assembles `sim/battery/results/<name>.{md,csv}` tagged with the commit and opens no PR (commit to a `battery-results` branch; you merge results into main after review). Cache Lean per code hash.
