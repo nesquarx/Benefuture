@@ -803,3 +803,16 @@ end
     # Counterexample (vi): agent that deceived then stopped returns to active participation
     @test all(selected_act(tr, 6) > 25 for tr in runs_onoff)
 end
+
+# Observability for 8.91 (L2.2a): the per-action escrow paid upfront (`exec_upfront`) is a trace only.
+@testset "Trace: exec_upfront is consistent with the per-agent upfront and changes no mechanism" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4]
+    w() = M3cParams(ToyParams(n = 60, steps = 60, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                    transactions = true, causal_distribution = true, LEGACY...)
+    tr = run_m3c(w(); seed = 1)
+    @test length(tr.exec_upfront) == length(tr.exec_agent) > 0
+    @test all(>=(0), tr.exec_upfront)
+    @test all(isapprox(sum(tr.exec_upfront[tr.exec_agent .== a]; init = 0.0), tr.upfront[a]; atol = 1e-9) for a in 1:4)
+    @test run_m3c(w(); seed = 1) == tr          # deterministic, so the other fields are untouched by the trace
+end

@@ -685,13 +685,13 @@ function run_m3c(p::M3cParams; seed)
           worst_drop = Float64[], chosen_agent = Int[], chosen_step = Int[], true_leaf = Int[],
           stop_leaf = Int[], priced_leaf = Int[], costs = Float64[], touched = Int[], valued_measured = Float64[], supply = Float64[], lane_supply = Float64[],
           lane_costs = Float64[], lane_measured = Float64[],
-          exec_pred = Float64[], exec_true = Float64[], exec_agent = Int[], exec_step = Int[])
+          exec_pred = Float64[], exec_true = Float64[], exec_agent = Int[], exec_step = Int[], exec_upfront = Float64[])
     # Each selected execution's predicted value (the proxy G optimised) and its true value (the realised
     # change's assessed value, which no marker sees exactly): the Goodhart gap (M6).
-    function executed!(j, a, step, pred, done)
+    function executed!(j, a, step, pred, done; upfront = 0.0)
         executed_j[j] = true
         push!(tr.exec_pred, plan_value(pred, t)); push!(tr.exec_true, plan_value(done, t))
-        push!(tr.exec_agent, a); push!(tr.exec_step, step)
+        push!(tr.exec_agent, a); push!(tr.exec_step, step); push!(tr.exec_upfront, upfront)  # escrow paid upfront (L84), 8.91
     end
     executed_j = falses(0)
     explored = Ref(0)
@@ -1161,7 +1161,8 @@ function run_m3c(p::M3cParams; seed)
                 end
             end
             blind[] || learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen)
-            executed!(j, a, step, offers[j][argmax([q[2] for q in offers[j]])][3], done)
+            executed!(j, a, step, offers[j][argmax([q[2] for q in offers[j]])][3], done;
+                      upfront = sum(sh * cr * plan_value(pr, t) for (_, sh, pr, cr) in offers[j]; init = 0.0))
             push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
