@@ -61,9 +61,16 @@ def sha(p):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write-checksums", action="store_true")
+    ap.add_argument("--start", default=START.isoformat(), help="first Monday (default: the committed sample's)")
+    ap.add_argument("--weeks", type=int, default=N_WEEKS, help="number of weekly forecast dates")
+    ap.add_argument("--out", default=None, help="output directory (default: cases/archive_sample, the committed sample)")
     a = ap.parse_args()
+    global OUT
+    if a.out:
+        OUT = Path(a.out)
     OUT.mkdir(parents=True, exist_ok=True)
-    dates = [(START + datetime.timedelta(days=7 * i)).isoformat() for i in range(N_WEEKS)]
+    start = datetime.date.fromisoformat(a.start)
+    dates = [(start + datetime.timedelta(days=7 * i)).isoformat() for i in range(a.weeks)]
     jobs = [(m, d) for m in MODELS for d in dates]
     with ThreadPoolExecutor(6) as ex:
         res = list(ex.map(one, jobs))
@@ -89,9 +96,10 @@ def main():
         w.writerow(["date", "value"])
         w.writerows(tr)
     print("truth raw sha256", hashlib.sha256(t).hexdigest(), "rows", len(tr))
-    for p in OUT.glob("covid19_hub_*"):
-        assert p.stat().st_size < 5_000_000, p
-    if a.write_checksums:
+    if not a.out:   # the committed sample stays small; a full-archive run writes outside the repository
+        for p in OUT.glob("covid19_hub_*"):
+            assert p.stat().st_size < 5_000_000, p
+    if a.write_checksums and not a.out:
         ck = ROOT / "tools" / "data" / "CHECKSUMS.sha256"
         lines = [l for l in ck.read_text().splitlines() if "archive_sample/" not in l]
         for p in sorted(OUT.glob("covid19_hub_*")):

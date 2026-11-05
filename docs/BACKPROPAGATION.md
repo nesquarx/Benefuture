@@ -2273,3 +2273,16 @@ and delays; short institutional memory. A straw man is as useless as a flatterin
 calibrated from data with sources and confidence (docs/CALIBRATION.md), and its own successes (it does
 recover from busts) must reproduce. Candidate homes: Implementation (comparison), L113–L114 (contrast),
 docs/CALIBRATION.md.
+8.93 finding (E4 D2, real forecasters): skill persists, moderately, and short records capture most of it.
+COVID-19 Forecast Hub, US national 1-week incident deaths, 10 teams, 140 weekly forecast dates from
+2020-06-01 (24,493 quantile rows; 276 missing files), scored by Lean `quantile_score_ref` on rolling
+6-week windows: forecaster rankings in consecutive windows correlate at Spearman 0.36 ± 0.09 (interval
+0.17–0.54, 22 window pairs), positive in 77% of pairs (interval 0.56–0.90). Ranking by L weeks of record
+predicts the next period at ρ = 0.36 (L = 2), 0.48 (L = 4), 0.51 (L = 5), then a plateau near 0.50–0.54
+out to L = 12. Reading for Benefuture: weighting by record is justified but noisy (a long record still
+predicts the next period's rank only at about 0.5), and most of the information arrives within about
+five resolved forecasts, consistent with the governed `actor_min_records` = 5 and with time-decayed
+records (8.85) rather than ever-longer windows. Caveats: one target and horizon, 10 teams, truth at the
+final archived vintage (revisions not reconstructed), a pandemic regime. Tools:
+`tools/data/fetch_covid19_forecast_hub.py --start 2020-06-01 --weeks 140 --out <dir>`,
+`tools/data/archive_full_report.jl`. Candidate homes: L82 (records), 8.69 (prediction accuracy), R4.
