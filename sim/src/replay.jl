@@ -26,7 +26,7 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     voting_cap = 0.05,
     impact_threshold = 0.50,
     min_skill_record = 20,
-    lt_window = 50
+    lt_window = 100
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -57,10 +57,11 @@ function get_frozen_replay_thresholds()
             voting_cap = m5_f.cap,
             impact_threshold = 0.50,
             min_skill_record = 20,
-            lt_window = 50
+            lt_window = 100
         )
-    catch
-        # Fall back to canonical defaults if runtime library is not yet loaded
+    catch e
+        # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
+        @warn "replay: governed thresholds not read from the code; using canonical defaults" exception = e maxlog = 1
     end
     return _FROZEN_REPLAY_THRESHOLDS_REF[]
 end
