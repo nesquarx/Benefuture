@@ -19,36 +19,31 @@ For every historical decision, the replay evaluates three counterfactual questio
 
 ## 2. Frozen Governed Thresholds
 
-All governed thresholds sit at their canonical values from `BenefutureReference/ParamSpace.lean` and `sim/README.md`. The replay engine refuses to run a case if any governed threshold is altered from this table.
+Generated from the code by `tools/data/prereg_thresholds.jl` (`julia --project=sim tools/data/prereg_thresholds.jl`), so this table cannot diverge from the rules the replay runs. The replay refuses a case if any of these is altered.
 
-| Parameter | Symbol / Field | Frozen Value | Role in Replay |
+| Parameter | Field | Value | Source |
 |---|---|---|---|
-| Quantile floor | `q_floor` | `0.10` | Bottom decile across affected beings/groups (`bf_floor_quantile`) |
-| Lexicographic tie tolerance | `epsilon_tie` | `1e-9` | Tie tolerance in $G$ (`bf_g_choose`) |
-| Harm weight scale | `kappa_harm` | `0.5` | Weight on harm relative to understanding and happiness (`bf_v`) |
-| Harm convexity exponent | `q_harm` | `1.5` | Convexity exponent in `bf_ha_wt` |
-| Harm severity schedule | `HARM_SCHEDULE` | `(0.0, 1.0, 2.0, 5.0)` | Multipliers for none, passing, severe, irreparable harm |
-| Freedom confidence threshold | `fr_thConf` | `0.90` | Confidence threshold in freedom report (`bf_fr_permissible`) |
-| Freedom high-harm threshold | `fr_thHigh` | `1.00` | High-harm threshold in freedom report (`bootstrap_params_ref`) |
-| Freedom severity multipliers | `fr_severities` | `(0.0, 0.25, 0.5, 1.0)` | Per-tier multipliers in `bf_fr_permissible` |
-| Escape trial horizon | `escape_horizon` | `5` | Horizon steps for debatable escape trial (`bf_escape_accept`) |
-| Escape catastrophic ceiling | `escape_catastrophic` | `10.0` | Catastrophic harm bound blocking escape trials |
-| Leaf domain status bar | `acc_bar_leaf` | `0.90` | Minimum lower-confidence accuracy for leaf domain currency |
-| Parent domain status bar | `acc_bar_parent` | `0.75` | Minimum lower-confidence accuracy for parent fallback |
-| Record credence cap | `credence_cap` | `0.99` | Clamp bound $[1 - \text{cap}, \text{cap}]$ in record credence |
-| Model takeover & bar $z$ | `model_z` | `2.0` | Standard-error multiplier for model takeover and bar ratchet |
-| Status bar ratchet multiple | `ratchet_multiple` | `20` | Minimum weighted record multiple of half-life before ratcheting |
-| Reference half-life | `h_ref` | `7.0` | Reference half-life at reference rate `r_ref` (8.85) |
-| Reference record rate | `r_ref` | `5.0` | Reference resolved records per step (8.85) |
-| Half-life rate exponent | `decay_beta` | `0.5` | Muted square-root scaling exponent $\beta$ in `bf_decay_halflife` |
-| Voting delegation cap | `voting_cap` | `0.05` | Maximum share of total voting weight held by any delegate |
-| High-impact voting bar | `impact_threshold` | `0.50` | Impact threshold above which participation duty applies |
-| Minimum skill record | `min_skill_record` | `20` | Resolved forecasts required before record weights a voter (8.69) |
-| Long-term harm window | `lt_window` | `50` | Horizon over which no existing group may end lower under 8.86 |
+| Floor quantile | `q` | 0.1 | ToyParams default (sim/src/m0.jl) |
+| Ha_wt synergy κ | `kappa_harm` | 0.5 | bootstrap_params_ref (ParamSpace.lean) |
+| Ha_wt exponent q | `q_harm` | 1.5 | bootstrap_params_ref |
+| Harm schedule (L61) | `HARM_SCHEDULE` | (0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01) | value.jl / harmSchedule_ref |
+| Fr confidence bar | `fr_thConf` | 0.9 | bootstrap_params_ref |
+| Fr high-harm bar | `fr_thHigh` | 1.0 | bootstrap_params_ref |
+| Fr severity multipliers | `sev_*` | (1000.0, 100.0, 10.0, 1.0, 0.5) | bootstrap_params_ref |
+| Leaf status bar | `threshold` | 0.9 | M3cParams default |
+| Coarse / parent bar | `coarse_threshold` | 0.75 | M3cParams default |
+| Novel-domain floor | `novel_floor` | 0.55 | M3cParams default (8.35) |
+| Credence cap | `max_credence` | 0.99 | M3cParams default |
+| Model significance z | `model_z` | 2.0 | M3cParams default |
+| Ratchet horizon multiple | `ratchet_horizon` | 20.0 | M3cParams default (8.84, 8.85) |
+| Accuracy half-life at reference rate | `acc_halflife` | 7.0 | M3cParams default (8.85) |
+| Reference transaction rate | `acc_rate_ref` | 5.0 | M3cParams default (8.85) |
+| Half-life rate mute | `acc_mute` | 0.5 | M3cParams default (8.85) |
+| Delegation cap | `cap` | 0.05 | M5Params default (L114) |
+| Participation impact bar | `impact_threshold` | 0.5 | M5Params default (8.46) |
+| Long-term window (accession, 8.86) | `lt_window` | 100 | pop_value / pop_choose signature default (sim/src/m7.jl) |
 
-Sweeps of `h_ref`, `decay_beta`, `model_z`, and `ratchet_multiple` are permitted only as sensitivity analyses reported alongside the frozen default run, never to select a post-hoc operating point.
-
----
+**Amendment 2026-11-05 (before any replay beyond the four original cases).** The earlier table did not match the governed point: it listed a harm schedule (0, 1, 2, 5) and Fr severity multipliers (0, 0.25, 0.5, 1) that exist nowhere in the code (the governed values are above), described κ as a harm weight (it is Ha_wt's synergy parameter), and gave the long-term window as 50 (the code's default is 100). Rows with no source in the code (an escape horizon of 5, a catastrophic ceiling of 10, a minimum skill record of 20, a tie tolerance) are dropped; any replay step that needs one names its governed parameter first. Replays already run on the four original cases are re-run against this table before their results count.
 
 ## 3. As-Of Reconstruction and Hindsight Guard
 
