@@ -1,0 +1,175 @@
+# Historical Decision Case: Bengal famine relief, War Cabinet, 4 August 1943 (held-out, docs/REPLAY_PREREG.md 4.3)
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b). Probabilities are Laplace rates (k+1)/(n+2) over
+# cases/bengal_famine_relief_1943.events.csv rows dated on or before 1943-08-04. Units: population and
+# `irreparable` are both counted in thousands of persons (so irreparable/population is a true per-person risk; the
+# bengal_denial_1942 exemplar mixes units of 10,000 and 100); u and h on the 0-100 scale of the other cases.
+# Built from as-of sources without running the replay (section 4.4).
+# Excluded on date grounds: the Statesman photographs (22 Aug 1943), Wavell's October 1943 demands, the army relief
+# operation, the December 1943 harvest, the Famine Inquiry Commission report (1945) and every mortality estimate; the
+# last appear only in [counterfactual]. Dated facts about 1942-43 (rice shortfall, import requests) are known to the
+# builder only through secondary compilations (Wikipedia, Ó Gráda, Greenough) and are used for context, not as events.
+# DISCREPANCY WITH THE REGISTRY (section 4.3): it names "Viceroy Wavell's emergency requests for 500,000 tons";
+# Wavell replaced Linlithgow only in October 1943, and secondary accounts of 4 Aug 1943 say the War Cabinet agreed to
+# a token shipment (about 150,000 tons of barley and wheat; sources disagree on the split) and refused the larger
+# demand. The actual_choice follows the registry (rejection of the emergency shipments); the token shipment is
+# carried as a separate option so the registry's coarse label does not hide it. The 500,000-ton figure is the
+# registry's and was not found in any as-of document.
+# Limits that make this case hard to price honestly: (1) the 1943 famine was a market and entitlement failure with
+# a crop shortfall, not a drought, so drought-famine precedents are the coarsest honest event, not a close analogue;
+# (2) no as-of count exists of grain imports reaching a famine in time, so the import option's effect rests on one
+# relief precedent (Bihar 1873-74) and one failure (1899-1900); (3) the death magnitude is a convention from the
+# famine_codes_1880 exemplar (a tenth of the exposed) and happens to equal the Famine Inquiry Commission's later
+# 1.5 million; that coincidence was not used to choose it.
+
+id = "bengal_famine_relief_1943"
+title = "War Cabinet refusal of emergency grain shipments to Bengal"
+family = "low_technology"
+era = "1943"
+tier = "coarse"
+decision_date = "1943-08-04"
+decision_makers = ["UK War Cabinet", "Prime Minister Churchill", "Secretary of State for India Amery", "Viceroy Linlithgow"]
+actual_choice = "reject_emergency_grain_shipments"
+actual_outcome_class = "bad"
+primary_or_held_out = "held_out"
+
+[[sources]]
+id = "indian_famine_relief_precedents"
+title = "Indian famines 1866-1900 read through the Famine Commissions: mortality high where relief was late, restricted or absent"
+as_of_date = "1900-12-31"
+url = "https://en.wikipedia.org/wiki/Bihar_famine_of_1873%E2%80%931874"
+notes = "Records: the rule 'mortality is high where relief is late, restricted or absent, low where the state imports and relieves early' scored on five famines (4 of 5 right; 1899-1900 is a miss: relief existed under the Famine Code and one million still died in British districts). Secondary summaries only (Wikipedia citing the Imperial Gazetteer of India vol. III 1907 pp. 475-502 and Hall-Matthews 1996, 2008); Famine Commission reports (1880, 1898, 1901) not read."
+
+[[ groups ]]
+id = "bengal_rural_poor_and_urban_destitute"
+name = "Bengal rural wage earners, small cultivators, fishers and urban poor exposed to the rice shortfall (order of 15 million persons)"
+population = 15000
+baseline_u = 55.0
+baseline_h = 55.0
+# Judgment: a quarter of Bengal's population of about 60 million (1941 census, Famine Inquiry Commission 1945 p. 4);
+# the same order as the coastal rural poor of the bengal_denial_1942 exemplar. Baselines copied from that exemplar.
+
+[[ groups ]]
+id = "war_effort_and_shipping"
+name = "Allied forces, supply services and merchant shipping whose tonnage a grain diversion would draw on (order of 1 million persons)"
+population = 1000
+baseline_u = 75.0
+baseline_h = 70.0
+# Copied from the war_effort group of the bengal_denial_1942 exemplar (1 million persons).
+
+[[ options ]]
+id = "reject_emergency_grain_shipments"
+name = "Reject the emergency request for large grain shipments to Bengal; rely on India's own supply and ordinary allocations"
+source = "indian_famine_relief_precedents"
+known_date = "1943-08-03"
+is_inaction = true
+scope_delta = 0.0
+# Legacy keys kept because the loader reads the inaction option's values before pricing; they equal the scenario
+# expectation below: p = (3+1)/(3+2) = 0.8; du = dh = 0.8 x -5.5 = -4.4; irreparable 0.8 x 1500 = 1200.
+pred_du = [-4.4, 0.0]
+pred_dh = [-4.4, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [1200.0, 0.0]
+
+# High-mortality famine without early relief or imports: 3 of 3 precedents (Orissa 1866, Rajputana 1868-70, Madras
+# and Bombay 1876-78) -> 4/5. Magnitude by the famine_codes_1880 convention (judgment, see header): about a tenth of
+# the exposed population dies, 1500 thousand of 15000 thousand; a death takes u and h to zero, so the group mean
+# falls by 0.10 x 55 = 5.5. (Orissa 1866 lost about a third of Orissa's people, so a tenth is conservative.)
+[[ options.scenarios ]]
+name = "high_mortality_famine_without_imports"
+p_chain = ["famine_mortality_high_without_early_relief"]
+du = [-5.5, 0.0]
+dh = [-5.5, 0.0]
+irreparable = [1500.0, 0.0]
+
+[[ options.scenarios ]]
+name = "contained_famine"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "approve_emergency_grain_shipments"
+name = "Approve the Government of India's emergency request: divert shipping to land about 500,000 tons of grain in Bengal"
+source = "indian_famine_relief_precedents"
+known_date = "1942-12-15"
+is_inaction = false
+scope_delta = 0.0
+# Known date: appeals for food imports began in mid-December 1942 (Wikipedia citing Ó Gráda 2009 pp. 174-179).
+# Expectations: p = (1+1)/(2+2) = 0.5; G1 du = dh = 0.5 x -5.5 = -2.75; irreparable 0.5 x 1500 = 750; war group
+# dh -1.0 and nha 1.0 in every scenario.
+pred_du = [-2.75, 0.0]
+pred_dh = [-2.75, -1.0]
+pred_nha = [0.0, 1.0]
+pred_irreparable = [750.0, 0.0]
+
+# With early relief and imports 1 of 2 precedents still had high mortality (Bihar 1873-74 low, with 450,000 tons of
+# Burma rice for 21.5 million affected, 0.021 t per head; 1899-1900 high despite Famine Code relief) -> 2/4. Coverage
+# here would be 500,000 t for 15 million, 0.033 t per head, above Bihar's. The failure scenario keeps the full death
+# toll (no partial credit). Cost to the war effort of diverting about 50 cargoes is a judgment: dh -1.0 and passing
+# harms 1.0 (half the size the bengal_denial_1942 exemplar gives a supply gain to an invader), applied in every scenario.
+# Shipping scale, as-of: Axis forces sank 230 Allied ships totalling 873,000 tons in the Indian Ocean from Jan 1942
+# to May 1943 (Tauger 2009 p. 193 via Wikipedia).
+[[ options.scenarios ]]
+name = "high_mortality_despite_imports"
+p_chain = ["famine_mortality_high_with_early_relief"]
+du = [-5.5, 0.0]
+dh = [-5.5, -1.0]
+nha = [0.0, 1.0]
+irreparable = [1500.0, 0.0]
+
+[[ options.scenarios ]]
+name = "famine_contained_by_imports"
+p_chain = []
+complement = true
+dh = [0.0, -1.0]
+nha = [0.0, 1.0]
+
+[[ options ]]
+id = "token_shipment_150k_tons"
+name = "Grant a token shipment of about 150,000 tons of barley and wheat and refuse the larger request"
+source = "indian_famine_relief_precedents"
+known_date = "1943-08-04"
+is_inaction = false
+scope_delta = 0.0
+# Secondary accounts give this as the War Cabinet's own response on 4 Aug 1943 (Wikipedia; Collingham 2012 p. 152
+# for the shipping reasons; the split of barley and wheat varies by source); the date equals the decision date.
+# A token quantity is below the Bihar coverage, so the no-relief rate applies; the effect is scaled by tonnage
+# (150/500 = 0.3 of the full-relief effect, judgment): deaths 1500 x (1 - 0.3) = 1050 thousand, mean fall 0.7 x 5.5
+# = 3.85; war group cost 0.3 x 1.0 = 0.3. Expectations: p = 0.8; G1 du = dh = 0.8 x -3.85 = -3.08; irreparable
+# 0.8 x 1050 = 840; war group dh -0.3 and nha 0.3 in every scenario.
+pred_du = [-3.08, 0.0]
+pred_dh = [-3.08, -0.3]
+pred_nha = [0.0, 0.3]
+pred_irreparable = [840.0, 0.0]
+
+[[ options.scenarios ]]
+name = "high_mortality_despite_token_imports"
+p_chain = ["famine_mortality_high_without_early_relief"]
+du = [-3.85, 0.0]
+dh = [-3.85, -0.3]
+nha = [0.0, 0.3]
+irreparable = [1050.0, 0.0]
+
+[[ options.scenarios ]]
+name = "contained_famine"
+p_chain = []
+complement = true
+dh = [0.0, -0.3]
+nha = [0.0, 0.3]
+
+[counterfactual]
+actual_floor_u_delta = -7.7
+actual_floor_h_delta = -7.7
+actual_irreparable = 2100.0
+alt_option = "approve_emergency_grain_shipments"
+# Estimators (later evidence, scoring outcomes not the choice). Actual deaths: the scholarly consensus of about 2.1
+# million (Ó Gráda 2007 p. 19, via Wikipedia; the Famine Inquiry Commission 1945 gave about 1.5 million for Jan 1943
+# to Jun 1944, Sen up to 3 million), on the group of 15 million: 2100/15000 x 55 = 7.7. Both counterfactual arrays are
+# DERIVED PLACEHOLDERS, not published estimates (no published estimate of deaths averted by 500,000 tons was found):
+# method 1 scales by the shortfall covered, 500,000 t of the 2 million t shortfall that government sources privately
+# admitted (Braund 1944 as cited by Ó Gráda 2015 p. 50), a quarter: 0.25 x 2100 = 525 deaths averted, 0.25 x 7.7 = 1.925;
+# method 2 takes the Bihar 1873-74 analogy as an upper bound (coverage per head above Bihar's, little mortality there):
+# all 2100 averted, 7.7. Differences are alternative (approve) minus actual: fewer deaths, higher floors.
+methods = ["shortfall_coverage_scaling", "bihar_1873_coverage_analogy_upper_bound"]
+est_floor_u_delta_diff = [1.925, 7.7]
+est_floor_h_delta_diff = [1.925, 7.7]
+est_irreparable_diff = [-525.0, -2100.0]

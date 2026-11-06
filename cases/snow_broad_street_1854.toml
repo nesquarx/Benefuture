@@ -1,0 +1,165 @@
+# Historical Decision Case: Broad Street pump handle, Soho, 7 September 1854 (held-out, docs/REPLAY_PREREG.md 4.3)
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b). Probabilities are Laplace rates (k+1)/(n+2) over
+# cases/snow_broad_street_1854.events.csv rows dated on or before 1854-09-07. Units: population and `irreparable`
+# are both counted in persons (so irreparable/population is a true per-person risk); u and h on the 0-100 scale of
+# the other cases. Built from as-of sources without running the replay (section 4.4).
+# Excluded on date grounds: Whitehead's house-to-house inquiry and the Cholera Inquiry Committee report (1855), Snow's
+# Southwark and Lambeth "grand experiment" tabulated after September 1854, the later totals (616 deaths) and every
+# post-decision map. Snow's own 1855 book is the only text found for the inquiry; it is retrospective, and the facts
+# used from it are dated on or before 1854-09-07 by its own account (see the events file).
+# Limits that make this case hard to price honestly: (1) no as-of record exists of pump closure ending an outbreak
+# in a district like this one beyond five anecdotes reported by Snow (selection by the reporter, no denominator);
+# (2) no as-of trial of the sanitary-cleansing measures (miasma doctrine) on an ongoing outbreak was found, so that
+# option's benefit in a miasma world is NOT priced (it carries its cost and the water-world deaths only);
+# (3) the daily course of the outbreak after 2 September was not tabulated as of 7 September, so the horizon deaths
+# are a judgment from the registered count and the flight of the population.
+
+id = "snow_broad_street_1854"
+title = "Removal of the Broad Street pump handle on John Snow's waterborne-cholera map"
+family = "low_technology"
+era = "1854"
+tier = "coarse"
+decision_date = "1854-09-07"
+decision_makers = ["Board of Guardians of St James's Parish (Westminster)"]
+actual_choice = "remove_pump_handle"
+actual_outcome_class = "good"
+primary_or_held_out = "held_out"
+
+[[sources]]
+id = "snow_water_supply_cohorts"
+title = "Snow's waterborne reading: 1849 London district mortality by water company and the 1849 local well clusters"
+as_of_date = "1854-09-06"
+url = "https://www.gutenberg.org/ebooks/72894"
+notes = "Records: the rule 'district on Southwark and Vauxhall or Lambeth water has 1849 cholera mortality above the London rate (62 per 10,000)' scored over the 38 registration districts of Farr's 1849 table as reprinted in Snow (1855) Table III (31 of 38 right: the rule misses seven north-bank districts above the mean, which Snow attributes to poverty and crowding). Page numbers are not in the Gutenberg transcription; Farr (1852) primary not seen."
+
+[[sources]]
+id = "farr_elevation_miasma"
+title = "Farr's elevation law and the General Board of Health's miasma doctrine (1849 London districts)"
+as_of_date = "1852-12-31"
+url = "https://github.com/friendly/HistData"
+notes = "Records: the rule 'district below 25 ft above Thames high water has 1849 mortality above 62 per 10,000' over the same 38 districts (29 of 38 right). Elevations from the HistData Cholera table after Farr (1852), primary and page not seen; rates from Snow (1855) Table III. The 25 ft cut is the builder's, set before scoring, not Farr's."
+
+[[ groups ]]
+id = "st_james_district_residents"
+name = "Residents of St James Westminster registration district, which contains the Broad Street pump catchment"
+population = 36406
+baseline_u = 45.0
+baseline_h = 45.0
+# Population: Registrar General estimate for 1853 as printed in Snow (1855) Table V (36,406; 1849 was 36,426).
+# The pump's catchment (within about 250 yards) is a fraction of this; the district is used because it is the
+# documented figure. Baselines are a judgment between the exemplars' poorest and mid groups.
+
+[[ options ]]
+id = "no_intervention_continue_pump"
+name = "Take no action on the pump; leave the outbreak to run its course under the prevailing sanitary doctrine"
+source = "farr_elevation_miasma"
+known_date = "1854-09-06"
+is_inaction = true
+scope_delta = 0.0
+# Legacy keys kept because the loader reads the inaction option's values before pricing; they equal the scenario
+# expectation below: pw = (9/10) x (62/69) = 0.808696; irreparable 0.808696 x 69 = 55.8; du = dh = 0.808696 x -0.085288 = -0.068972.
+pred_du = [-0.068972]
+pred_dh = [-0.068972]
+pred_nha = [0.0]
+pred_irreparable = [55.8]
+
+# Horizon deaths (judgment from as-of figures): the General Register Office list Snow obtained showed 89 cholera
+# deaths registered in the three sub-districts in the week ending 2 Sept, 79 of them on Friday and Saturday
+# (about 39.5 a day). Snow reports that by the time of the interview the worst streets were deserted by more than
+# three-quarters of their inhabitants, so a quarter of the exposure remains: 39.5 x 7 days x 0.25 = 69 deaths
+# over one week (8-14 Sept) if the pump keeps being used. A death takes the member's u and h to zero, so the group
+# mean falls by 69/36406 x 45 = 0.085288. Passing harms of non-fatal cases are not priced (no as-of attack-to-death ratio).
+# P(waterborne) = P(local clusters followed a shared water source) 8 of 8 -> 9/10, times P(victims drank the
+# pump water) 61 of 67 informed -> 62/69.
+[[ options.scenarios ]]
+name = "waterborne_exposure_continues"
+p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water"]
+du = [-0.085288]
+dh = [-0.085288]
+irreparable = [69.0]
+
+[[ options.scenarios ]]
+name = "pump_not_the_source"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "remove_pump_handle"
+name = "Remove the handle of the Broad Street pump so that its water can no longer be drawn"
+source = "snow_water_supply_cohorts"
+known_date = "1854-09-07"
+is_inaction = false
+scope_delta = 0.0
+# Expectations: pf = pw x (1/7) = 0.115528; irreparable 0.115528 x 69 = 7.9714; du = 0.115528 x -0.085288 = -0.009853;
+# dh = 0.115528 x (-0.085288 - 0.05) + (1 - 0.115528) x -0.05 = -0.059853.
+pred_du = [-0.009853]
+pred_dh = [-0.059853]
+pred_nha = [0.0]
+pred_irreparable = [7.9714]
+
+# The same waterborne world, but the cases continue after the source is withdrawn: 0 of 5 reported withdrawals
+# (Silver Street 1849, York twice 1849, Millbank Prison Aug 1854, Newcastle 1853) saw the cluster continue, so the
+# rate is 1/7. The event is coded 1 = cluster continued. The cost of losing the nearest pump (longer walk to other
+# pumps, within a few hundred yards) is a judgment of dh -0.05 (about 0.1 percent of baseline), applied in every scenario.
+[[ options.scenarios ]]
+name = "waterborne_and_removal_does_not_stop_cases"
+p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water", "cluster_continued_after_contaminated_source_withdrawn"]
+du = [-0.085288]
+dh = [-0.135288]
+irreparable = [69.0]
+
+[[ options.scenarios ]]
+name = "source_withdrawn_or_pump_not_the_source"
+p_chain = []
+complement = true
+dh = [-0.05]
+
+[[ options ]]
+id = "cleansing_and_ventilation_measures"
+name = "Order cleansing of cesspools, drains and houses, lime-washing and ventilation in the afflicted streets (General Board of Health directions) and leave the pump in use"
+source = "farr_elevation_miasma"
+known_date = "1848-12-31"
+is_inaction = false
+scope_delta = 0.0
+# Known date is an upper bound: the Nuisances Removal and Diseases Prevention Act 1848 (11 and 12 Vict. c. 123) and
+# the General Board of Health directions under it pre-date 1849 (exact assent date not verified). The pump stays in
+# use, so the waterborne scenario keeps its deaths (69) at the same probability pw = 0.808696; the cost of the works
+# and disruption is a judgment of dh -0.2 in every scenario. Expectations: irreparable 55.8; du = -0.068972;
+# dh = 0.808696 x (-0.085288 - 0.2) + (1 - 0.808696) x -0.2 = -0.268972.
+# NOT PRICED: any benefit of cleansing in a miasma world, because no as-of record of its effect on a running
+# outbreak was found; the option is therefore priced conservatively against itself.
+pred_du = [-0.068972]
+pred_dh = [-0.268972]
+pred_nha = [0.0]
+pred_irreparable = [55.8]
+
+[[ options.scenarios ]]
+name = "waterborne_exposure_continues_despite_cleansing"
+p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water"]
+du = [-0.085288]
+dh = [-0.285288]
+irreparable = [69.0]
+
+[[ options.scenarios ]]
+name = "pump_not_the_source"
+p_chain = []
+complement = true
+dh = [-0.2]
+
+[counterfactual]
+actual_floor_u_delta = -0.042
+actual_floor_h_delta = -0.042
+actual_irreparable = 34.0
+alt_option = "no_intervention_continue_pump"
+# Estimators (later evidence, scoring outcomes not the choice). Actual: attacks on 8-12 Sept were 12, 11, 5, 5, 1
+# (Snow 1855, table of daily attacks, Gutenberg #72894; 34 attacks, used as a proxy for deaths after removal; deaths
+# exceeded attacks in the decline, so this is a floor, PLACEHOLDER). Snow himself wrote that attacks had so far
+# diminished before the water was stopped that the handle's effect could not be decided, and Whitehead and later
+# authors doubt it was decisive: method 1 therefore puts deaths averted at 0. Method 2 is the upper bound that all
+# 34 later attacks would have occurred without the pump going on (PLACEHOLDER; no published estimate of averted
+# deaths was found). Differences are alternative (no intervention) minus actual: more deaths, lower floors.
+# 34/36406 x 45 = 0.042.
+methods = ["snow_decline_before_removal_zero_effect", "attacks_after_8_sept_upper_bound"]
+est_floor_u_delta_diff = [0.0, -0.042]
+est_floor_h_delta_diff = [0.0, -0.042]
+est_irreparable_diff = [0.0, 34.0]
