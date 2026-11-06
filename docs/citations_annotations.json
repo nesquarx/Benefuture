@@ -319,1836 +319,1572 @@
  },
  {
   "i": 53,
-  "relation": "context",
-  "bf_link": "understanding as the universe knowing itself",
-  "note": "Quotation from Cox's series used as an illustration of understanding as the universe trying to understand itself."
- },
- {
-  "i": 54,
-  "relation": "context",
-  "bf_link": "understanding as the cosmos knowing itself",
-  "note": "Quotation from Sagan's Cosmos used as an illustration of understanding as the cosmos coming to know itself."
- },
- {
-  "i": 55,
-  "relation": "evidence",
-  "bf_link": "deep understanding gives better results",
-  "note": "Same expert-novice study, cited under the claim that deep understanding gives better results, since experts sort problems by principle."
- },
- {
-  "i": 56,
-  "relation": "evidence",
-  "bf_link": "understanding improves happiness",
-  "note": "Happiness and IQ study cited for understanding improving happiness."
- },
- {
-  "i": 57,
-  "relation": "evidence",
-  "bf_link": "understanding improves happiness",
-  "note": "European study cited for higher cognitive ability tracking higher average subjective well-being."
- },
- {
-  "i": 58,
-  "relation": "evidence",
-  "bf_link": "understanding improves happiness",
-  "note": "OECD review cited for social and emotional skills being teachable and contributing to well-being."
- },
- {
-  "i": 59,
-  "relation": "evidence",
-  "bf_link": "cognition and wellbeing across life",
-  "note": "Longitudinal cohort cited for cognitive ability linked to later depressive symptoms, and the point that this holds beyond childhood."
- },
- {
-  "i": 60,
-  "relation": "evidence",
-  "bf_link": "understanding improves happiness",
-  "note": "Study of cognitive abilities and life satisfaction among the oldest-old, cited for the link extending into old age."
- },
- {
-  "i": 61,
-  "relation": "evidence",
-  "bf_link": "education raises understanding and wellbeing",
-  "note": "Handbook chapter cited for growing evidence that education affects health, crime, civic participation and social capital, not only earnings."
- },
- {
-  "i": 62,
-  "relation": "evidence",
-  "bf_link": "understanding stress improves well-being",
-  "note": "Evaluation of a stress-mindset intervention, cited for understanding stress enhancing the outcomes of the stress response."
- },
- {
-  "i": 63,
-  "relation": "evidence",
-  "bf_link": "understanding stress improves well-being",
-  "note": "Study linking a stress-is-enhancing mindset to fewer traumatic stress symptoms, cited for understanding stress reducing its effects."
- },
- {
-  "i": 64,
   "relation": "evidence",
   "bf_link": "cognition and happiness across societies",
   "note": "Study on cognitive ability, happiness and economic growth."
  },
  {
-  "i": 65,
-  "relation": "evidence",
-  "bf_link": "happy people learn better",
-  "note": "Popular article hosted by Harvard, cited for the claim that happy students learn better; a secondary summary, not a primary study."
- },
- {
-  "i": 66,
-  "relation": "evidence",
-  "bf_link": "happy people do better work",
-  "note": "Harvard Business Review article cited for the claim that most people do better work when they are happy."
- },
- {
-  "i": 67,
-  "relation": "evidence",
-  "bf_link": "positive psychology improves work performance",
-  "note": "Popular book cited for the claim that positive psychology improves performance at work; not a primary study."
- },
- {
-  "i": 68,
-  "relation": "theory",
-  "bf_link": "prior knowledge enables new learning",
-  "note": "Absorptive capacity theory is cited for the claim that a firm's ability to absorb new knowledge depends on its prior related knowledge."
- },
- {
-  "i": 69,
-  "relation": "precedent",
-  "bf_link": "learning from failures in advance",
-  "note": "The premortem is an existing practice, cited for the claim that understanding negative outcomes can prevent them."
- },
- {
-  "i": 70,
-  "relation": "theory",
-  "bf_link": "simpler models aid understanding",
-  "note": "Review of the simplicity principle, cited for the claim that simpler models are better for understanding."
- },
- {
-  "i": 71,
-  "relation": "evidence",
-  "bf_link": "frequent positive experiences matter most",
-  "note": "Study cited for the claim that the frequency rather than intensity of positive affect shapes happiness, and that small positive experiences add up."
- },
- {
-  "i": 72,
-  "relation": "theory",
-  "bf_link": "positive emotions broaden and build",
-  "note": "Broaden-and-build theory is cited for positive emotions widening thought-action repertoires, fostering creative ideas, social bonds and resources."
- },
- {
-  "i": 73,
-  "relation": "evidence",
-  "bf_link": "economic and social prosperity both matter",
-  "note": "Cross-national study cited for two separate types of prosperity, economic and social-psychological, predicting different kinds of well-being."
- },
- {
-  "i": 74,
-  "relation": "evidence",
-  "bf_link": "health and freedom matter more than income",
-  "note": "Study cited for health, personal security and freedom of choice affecting affect balance more than income or unemployment."
- },
- {
-  "i": 75,
+  "i": 54,
   "relation": "evidence",
   "bf_link": "art participation and life satisfaction",
   "note": "Study on art and cultural participation and life satisfaction."
  },
  {
-  "i": 76,
+  "i": 55,
   "relation": "evidence",
   "bf_link": "arts groups and wellbeing",
   "note": "Study on community arts group participation and wellbeing."
  },
  {
-  "i": 77,
+  "i": 56,
   "relation": "evidence",
   "bf_link": "creativity raises well-being",
   "note": "Study cited for the positive effect of creativity on subjective well-being."
  },
  {
-  "i": 78,
-  "relation": "evidence",
-  "bf_link": "deep understanding over surface features",
-  "note": "Expert-novice study of physics problem categorisation, cited for deep understanding that sorts problems by principle over surface features."
- },
- {
-  "i": 79,
-  "relation": "evidence",
-  "bf_link": "social and emotional skills are teachable",
-  "note": "OECD review cited for emotional and behavioural skills being as crucial to well-being as technical skills, and teachable."
- },
- {
-  "i": 80,
-  "relation": "evidence",
-  "bf_link": "understanding raises happiness",
-  "note": "Happiness and IQ study cited for a positive correlation between IQ and happiness."
- },
- {
-  "i": 81,
-  "relation": "evidence",
-  "bf_link": "understanding raises happiness",
-  "note": "European study cited for a positive correlation between IQ and happiness, and between cognitive ability and subjective well-being."
- },
- {
-  "i": 82,
-  "relation": "evidence",
-  "bf_link": "cognition and wellbeing across life",
-  "note": "Longitudinal cohort cited for cognitive ability and subjective well-being being linked across age groups, from childhood."
- },
- {
-  "i": 83,
-  "relation": "evidence",
-  "bf_link": "cognition and wellbeing across life",
-  "note": "Longitudinal study of the oldest-old cited for cognitive ability and life satisfaction being linked across age groups, to old age."
- },
- {
-  "i": 84,
-  "relation": "evidence",
-  "bf_link": "education raises understanding and wellbeing",
-  "note": "Handbook chapter cited for education, a tool for understanding, having societal benefits for health, participation and well-being."
- },
- {
-  "i": 85,
-  "relation": "evidence",
-  "bf_link": "understanding stress improves well-being",
-  "note": "Evaluation of a stress-mindset intervention, cited for understanding and managing stress improving well-being, not just avoiding it."
- },
- {
-  "i": 86,
-  "relation": "evidence",
-  "bf_link": "understanding stress improves well-being",
-  "note": "Study linking a stress-is-enhancing mindset to lower traumatic stress, cited for managing stress improving well-being."
- },
- {
-  "i": 87,
-  "relation": "theory",
-  "bf_link": "happiness drives progress",
-  "note": "Book on the origins of happiness, cited for an evolutionary argument that positive emotions drive behaviour essential to societal advancement."
- },
- {
-  "i": 88,
-  "relation": "evidence",
-  "bf_link": "happy people are more productive",
-  "note": "Popular article cited for happy individuals being more productive and performing better in domains; a secondary summary."
- },
- {
-  "i": 89,
-  "relation": "evidence",
-  "bf_link": "happy people are more productive",
-  "note": "Harvard Business Review article cited for happy individuals being more productive and performing better in domains."
- },
- {
-  "i": 90,
-  "relation": "evidence",
-  "bf_link": "happy people are more productive",
-  "note": "Popular book cited for happy individuals being more productive and performing better in domains; not a primary study."
- },
- {
-  "i": 91,
-  "relation": "theory",
-  "bf_link": "prior knowledge enables new learning",
-  "note": "Absorptive capacity theory is cited for existing knowledge forming the foundation for new discoveries, extending to innovation."
- },
- {
-  "i": 92,
-  "relation": "precedent",
-  "bf_link": "learning from failures in advance",
-  "note": "The premortem is cited for understanding past failures helping to prevent future ones, alongside the knowledge-foundation claim."
- },
- {
-  "i": 93,
-  "relation": "theory",
-  "bf_link": "simpler models aid understanding",
-  "note": "Review of the simplicity principle cited for simpler, more accessible models enhancing understanding and dissemination."
- },
- {
-  "i": 94,
-  "relation": "evidence",
-  "bf_link": "frequent positive experiences matter most",
-  "note": "Study cited for happiness being self-reinforcing, with even small positive experiences contributing to overall well-being."
- },
- {
-  "i": 95,
-  "relation": "theory",
-  "bf_link": "positive emotions broaden and build",
-  "note": "Broaden-and-build theory cited for happiness being self-reinforcing and positive emotions fostering creativity."
- },
- {
-  "i": 96,
-  "relation": "evidence",
-  "bf_link": "economic and social prosperity both matter",
-  "note": "Cross-national study cited for economic and social-psychological factors both contributing to well-being, with psychosocial prosperity significant."
- },
- {
-  "i": 97,
-  "relation": "evidence",
-  "bf_link": "health and freedom matter more than income",
-  "note": "Study cited for health, security and freedom of choice affecting emotional well-being more than purely economic factors."
- },
- {
-  "i": 98,
-  "relation": "evidence",
-  "bf_link": "arts participation and life satisfaction",
-  "note": "Study cited for engagement with art and culture linked to higher life satisfaction, mediated by health and relationships."
- },
- {
-  "i": 99,
-  "relation": "evidence",
-  "bf_link": "arts groups and wellbeing",
-  "note": "Study cited for participation in community arts groups positively influencing well-being in older adults."
- },
- {
-  "i": 100,
-  "relation": "evidence",
-  "bf_link": "creativity raises well-being",
-  "note": "Study cited for the act of being creative itself enhancing subjective well-being."
- },
- {
-  "i": 101,
+  "i": 57,
   "relation": "theory",
   "bf_link": "culture as memetic vehicle",
   "note": "Memetic approach to cultural evolution, cited for the framing of culture as a memetic vehicle within Benefuture."
  },
  {
-  "i": 102,
+  "i": 58,
   "relation": "context",
   "bf_link": "cultural heritage and preservation",
   "note": "Laboratory study of cumulative cultural evolution, cited beside the article's value for heritage; the study does not itself make the preservation claim."
  },
  {
-  "i": 103,
+  "i": 59,
   "relation": "theory",
   "bf_link": "edge-of-chaos adaptation",
   "note": "Complexity-science essay on adaptation near the edge of chaos, cited for the diversity section."
  },
  {
-  "i": 104,
+  "i": 60,
   "relation": "theory",
   "bf_link": "novelty as a measured value",
   "note": "Formal theory of creativity, fun and intrinsic motivation, cited for novelty as the nontrivial measure of diversity's value."
  },
  {
-  "i": 105,
+  "i": 61,
   "relation": "theory",
   "bf_link": "novelty as surprisal",
   "note": "Shannon's information theory supplies the surprise measure, negative log probability, that the diversity section uses for novelty."
  },
  {
-  "i": 106,
+  "i": 62,
   "relation": "evidence",
   "bf_link": "diverse groups outperform",
   "note": "Book arguing that diverse groups, firms and societies do better, cited for the diversity research thread."
  },
  {
-  "i": 107,
+  "i": 63,
   "relation": "theory",
   "bf_link": "diverse problem solvers outperform",
   "note": "Model paper on problem solving by heterogeneous agents, cited in the diversity research thread."
  },
  {
-  "i": 108,
+  "i": 64,
   "relation": "evidence",
   "bf_link": "collective intelligence in groups",
   "note": "Study of a collective intelligence factor in group performance, cited in the diversity research thread."
  },
  {
-  "i": 109,
+  "i": 65,
   "relation": "context",
   "bf_link": "crowd wisdom",
   "note": "Popular book on the wisdom of crowds, cited in the diversity research thread."
  },
  {
-  "i": 110,
+  "i": 66,
   "relation": "precedent",
   "bf_link": "domain hierarchy from existing classifications",
   "note": "Existing classification systems are the precedent from which the bootstrap domain hierarchy is said to be synthesised."
  },
  {
-  "i": 111,
+  "i": 67,
   "relation": "precedent",
   "bf_link": "tree-shaped domain hierarchy",
   "note": "Diderot's tree of human knowledge is the precedent the bootstrap domain hierarchy is compared to."
  },
  {
-  "i": 112,
+  "i": 68,
   "relation": "theory",
   "bf_link": "currency defines value and promises",
   "note": "Galbraith's account of money as the medium defining exchange value and its promises is cited for the economy's basis in currency."
  },
  {
-  "i": 113,
+  "i": 69,
   "relation": "counterpoint",
   "bf_link": "speculation detached from reality",
   "note": "Critique of traditional economics, cited for models drifting from exchange value into speculation detached from reality."
  },
  {
-  "i": 114,
+  "i": 70,
   "relation": "counterpoint",
   "bf_link": "speculation detached from reality",
   "note": "Historical account of the rise of finance, cited with the claim that economic models drift toward speculation detached from reality."
  },
  {
-  "i": 115,
+  "i": 71,
   "relation": "theory",
   "bf_link": "no truth absolute, many practically absolute",
   "note": "Popper's fallibilism is cited for the claim that no truth is objectively absolute, though many are practically absolute."
  },
  {
-  "i": 116,
+  "i": 72,
   "relation": "evidence",
   "bf_link": "avoiding scrutiny is worse than being wrong",
   "note": "Psychology book on the fallibility of everyday reasoning, cited for the claim that avoiding scrutiny is worse than being wrong."
  },
  {
-  "i": 117,
+  "i": 73,
   "relation": "evidence",
   "bf_link": "avoiding scrutiny is worse than being wrong",
   "note": "Study on fallibility salience and intellectual humility, cited under the claim that avoiding scrutiny is worse than being wrong."
  },
  {
-  "i": 118,
+  "i": 74,
   "relation": "theory",
   "bf_link": "avoiding scrutiny is worse than being wrong",
   "note": "Peirce's philosophical writings, cited under the claim that avoiding scrutiny is worse than being wrong."
  },
  {
-  "i": 119,
+  "i": 75,
   "relation": "theory",
   "bf_link": "safe handling of hazardous truths",
   "note": "Bostrom's typology of harms from knowledge is cited alongside infohazard inoculation, the education of safe handling of hazardous ideas."
  },
  {
-  "i": 120,
+  "i": 76,
   "relation": "evidence",
   "bf_link": "inoculation builds resistance to hazards",
   "note": "Review of inoculation and prebunking against misinformation, cited for education that builds resistance to hazardous ideas."
  },
  {
-  "i": 121,
+  "i": 77,
   "relation": "evidence",
   "bf_link": "inoculation builds resistance to hazards",
   "note": "Study on inoculation-based prebunking reducing susceptibility to misinformation, cited for education against hazardous ideas."
  },
  {
-  "i": 122,
+  "i": 78,
   "relation": "evidence",
   "bf_link": "inoculation builds resistance to hazards",
   "note": "2025 study on inoculation effects, cited for infohazard inoculation; the index title is truncated."
  },
  {
-  "i": 123,
+  "i": 79,
   "relation": "counterpoint",
   "bf_link": "positive liberty can license paternalism",
   "note": "Berlin's split of negative and positive liberty, with the warning that positive liberty can license paternalism, is a concern Benefuture must answer."
  },
  {
-  "i": 124,
+  "i": 80,
   "relation": "precedent",
   "bf_link": "positive freedom as capability",
   "note": "Benefuture's positive freedom is described as close to Sen's development as freedom, so Sen is a precedent for the freedom measure."
  },
  {
-  "i": 125,
+  "i": 81,
   "relation": "counterpoint",
   "bf_link": "counting options misranks freedom",
   "note": "Counting options as freedom is named as the standard flaw, that trivial options count as much as meaningful ones; Benefuture departs from it."
  },
  {
-  "i": 126,
+  "i": 82,
   "relation": "counterpoint",
   "bf_link": "harm gate against tiny-probability stakes",
   "note": "Pascal's mugging is the failure the harm gate must avoid: tiny invented probabilities of huge irreparable harm used to block action."
  },
  {
-  "i": 127,
+  "i": 83,
   "relation": "precedent",
   "bf_link": "harm principle limits paternalism",
   "note": "Mill's harm principle, that power over a person is warranted only to prevent harm to others, is the precedent for the harm boundary."
  },
  {
-  "i": 128,
+  "i": 84,
   "relation": "theory",
   "bf_link": "freedom as non-domination",
   "note": "Pettit's republicanism holds that freedom is non-domination: one is unfree whenever another can interfere arbitrarily, even unexercised."
  },
  {
-  "i": 129,
+  "i": 85,
   "relation": "theory",
   "bf_link": "truth survives collision with error",
   "note": "Mill's argument that false opinions have value, since truth stays alive by colliding with error, is cited on speech and truth."
  },
  {
-  "i": 130,
+  "i": 86,
   "relation": "theory",
   "bf_link": "collective action and public goods",
   "note": "Olson's collective-action theory is cited in the government discussion, where the system design arbitrates decision thresholds."
  },
  {
-  "i": 131,
+  "i": 87,
   "relation": "counterpoint",
   "bf_link": "expertise weighting versus epistocracy",
   "note": "Brennan's case against democracy is the epistocracy view the expertise and impact weighting is said to relate to."
  },
  {
-  "i": 132,
+  "i": 88,
   "relation": "theory",
   "bf_link": "expertise weighting versus epistocracy",
   "note": "Estlund's framework of democratic authority is cited as the account of epistocracy's problems that the weighting must handle."
  },
  {
-  "i": 133,
+  "i": 89,
   "relation": "theory",
   "bf_link": "affected stakeholders in decisions",
   "note": "Freeman's stakeholder approach is cited as one means by which the design handles epistocracy's problems."
  },
  {
-  "i": 134,
+  "i": 90,
   "relation": "theory",
   "bf_link": "all affected interests enfranchised",
   "note": "Goodin's account of enfranchising all affected interests is cited as the alternative to epistocracy that the weighting draws on."
  },
  {
-  "i": 135,
+  "i": 91,
   "relation": "precedent",
   "bf_link": "liquid democracy with capped delegation",
   "note": "Liquid democracy's potentials and problems are the precedent; the supports sentence says the delegation constraints aim to alleviate its issues."
  },
  {
-  "i": 136,
+  "i": 92,
   "relation": "evidence",
   "bf_link": "experiencing and remembering self differ",
   "note": "Book on the experiencing and remembering selves, cited for happiness during an event differing from happiness remembered afterwards."
  },
  {
-  "i": 137,
+  "i": 93,
   "relation": "theory",
   "bf_link": "eudaimonic versus hedonic happiness",
   "note": "Classification of eudaimonia and hedonia, cited in the happiness aspects."
  },
  {
-  "i": 138,
+  "i": 94,
   "relation": "evidence",
   "bf_link": "eudaimonic versus hedonic happiness",
   "note": "Review of research on hedonic and eudaimonic well-being, cited in the happiness aspects."
  },
  {
-  "i": 139,
+  "i": 95,
   "relation": "context",
   "bf_link": "flourishing as well-being",
   "note": "Popular book on flourishing and well-being, cited in the happiness aspects."
  },
  {
-  "i": 140,
+  "i": 96,
   "relation": "evidence",
   "bf_link": "happiness beyond economic factors",
   "note": "World Happiness Report, cited for sources of happiness in modern society being complex and beyond traditional economic considerations."
  },
  {
-  "i": 141,
+  "i": 97,
   "relation": "evidence",
   "bf_link": "happiness triggers are noisy",
   "note": "Book on mispredicting happiness, cited for happiness triggers being evolved, noisy, sometimes wrongly anticipated and possibly counterproductive."
  },
  {
-  "i": 142,
+  "i": 98,
   "relation": "context",
   "bf_link": "alien values and understanding",
   "note": "Wiki page on alien moralities, cited as an illustration of happiness from actions humans cannot comprehend, which reduces understanding."
  },
  {
-  "i": 143,
+  "i": 99,
   "relation": "evidence",
   "bf_link": "harm can give pleasure",
   "note": "Book on psychopathy, cited for scenarios in which persons gain pleasure or happiness from causing harm."
  },
  {
-  "i": 144,
+  "i": 100,
   "relation": "evidence",
   "bf_link": "harm can give pleasure",
   "note": "Study on the dark triad of personality, cited for people gaining pleasure from causing harm."
  },
  {
-  "i": 145,
+  "i": 101,
   "relation": "counterpoint",
   "bf_link": "experience machine and chemical happiness",
   "note": "Nozick's experience machine is the objection that happiness can be induced artificially, which the happiness discussion answers."
  },
  {
-  "i": 146,
+  "i": 102,
   "relation": "evidence",
   "bf_link": "frequent small positives matter",
   "note": "Study cited for happiness being self-reinforcing, with even small positive experiences contributing to overall well-being."
  },
  {
-  "i": 147,
+  "i": 103,
   "relation": "theory",
   "bf_link": "positive emotions build resources",
   "note": "Broaden-and-build theory cited for positive emotions broadening thought patterns and fostering creativity, which sustain happiness."
  },
  {
-  "i": 148,
+  "i": 104,
   "relation": "evidence",
   "bf_link": "social prosperity matters for wellbeing",
   "note": "Cross-national study cited for economic and social-psychological factors both contributing to well-being."
  },
  {
-  "i": 149,
+  "i": 105,
   "relation": "evidence",
   "bf_link": "health and freedom matter more than income",
   "note": "Cross-country OECD study, by its title, cited for health, security and freedom affecting emotional well-being more than income."
  },
  {
-  "i": 150,
+  "i": 106,
   "relation": "evidence",
   "bf_link": "arts participation and life satisfaction",
   "note": "Study cited for art and culture engagement linked to life satisfaction, mediated by health and relationships."
  },
  {
-  "i": 151,
+  "i": 107,
   "relation": "evidence",
   "bf_link": "arts groups and wellbeing",
   "note": "Study cited for community arts groups positively influencing well-being in older adults."
  },
  {
-  "i": 152,
+  "i": 108,
   "relation": "evidence",
   "bf_link": "creativity raises well-being",
   "note": "Study cited for the act of being creative itself enhancing subjective well-being."
  },
  {
-  "i": 153,
+  "i": 109,
   "relation": "theory",
   "bf_link": "loss aversion in utilitarian models",
   "note": "Prospect theory is cited as an input to utilitarian theoretic models in the happiness discussion."
  },
  {
-  "i": 154,
+  "i": 110,
   "relation": "theory",
   "bf_link": "adaptation limits lasting gains",
   "note": "Adaptation-level theory and the hedonic treadmill are cited as a further reason happiness gains fade."
  },
  {
-  "i": 155,
+  "i": 111,
   "relation": "evidence",
   "bf_link": "reward prediction error",
   "note": "Neuroscience study on reward prediction error, cited for how reward expectations shape the happiness discussion."
  },
  {
-  "i": 156,
+  "i": 112,
   "relation": "theory",
   "bf_link": "diminishing marginal utility",
   "note": "Microeconomics textbook cited for the principle of diminishing marginal utility."
  },
  {
-  "i": 157,
+  "i": 113,
   "relation": "precedent",
   "bf_link": "experience sampling measures happiness",
   "note": "Validation of experience sampling, an existing method for measuring happiness in daily life."
  },
  {
-  "i": 158,
+  "i": 114,
   "relation": "precedent",
   "bf_link": "life satisfaction scale",
   "note": "Satisfaction with Life Scale, an established instrument, cited among individual-level happiness measures."
  },
  {
-  "i": 159,
+  "i": 115,
   "relation": "precedent",
   "bf_link": "happiness questionnaire",
   "note": "Oxford Happiness Questionnaire, an established compact scale, cited among individual-level measures."
  },
  {
-  "i": 160,
+  "i": 116,
   "relation": "precedent",
   "bf_link": "subjective happiness measure",
   "note": "Subjective Happiness Scale, an established instrument, cited among individual-level measures."
  },
  {
-  "i": 161,
+  "i": 117,
   "relation": "precedent",
   "bf_link": "facial expression as an emotion measure",
   "note": "Survey of automatic facial-expression recognition, cited as an existing method for measuring emotion at individual level."
  },
  {
-  "i": 162,
+  "i": 118,
   "relation": "precedent",
   "bf_link": "electrodermal activity as a measure",
   "note": "Review of electrodermal activity, cited as an existing physiological method for individual-level measurement."
  },
  {
-  "i": 163,
+  "i": 119,
   "relation": "precedent",
   "bf_link": "wearables for mental health measurement",
   "note": "Review of wearable technology for mental health research, cited as an existing method for individual-level measurement."
  },
  {
-  "i": 164,
+  "i": 120,
   "relation": "precedent",
   "bf_link": "sentiment analysis of text",
   "note": "Survey of opinion mining and sentiment analysis, cited as an existing method for reading affect from text."
  },
  {
-  "i": 165,
+  "i": 121,
   "relation": "precedent",
   "bf_link": "neuroimaging of emotion",
   "note": "Meta-analysis of functional neuroimaging of emotion, cited as an existing method for individual-level measurement."
  },
  {
-  "i": 166,
+  "i": 122,
   "relation": "precedent",
   "bf_link": "heart rate variability standards",
   "note": "Task Force standards on heart rate variability, cited as an existing physiological measurement standard."
  },
  {
-  "i": 167,
+  "i": 123,
   "relation": "precedent",
   "bf_link": "survey research methods",
   "note": "Standard text on survey research methods, cited for community-level measurement."
  },
  {
-  "i": 168,
+  "i": 124,
   "relation": "precedent",
   "bf_link": "social network analysis",
   "note": "Standard text on analysing social networks, cited for community-level measurement."
  },
  {
-  "i": 169,
+  "i": 125,
   "relation": "precedent",
   "bf_link": "social network analysis",
   "note": "Standard text on social network analysis methods, cited for community-level measurement."
  },
  {
-  "i": 170,
+  "i": 126,
   "relation": "evidence",
   "bf_link": "social networks shape wellbeing",
   "note": "Book on how social networks shape behaviour and wellbeing, cited at community level."
  },
  {
-  "i": 171,
+  "i": 127,
   "relation": "evidence",
   "bf_link": "community ties and wellbeing",
   "note": "Book on the decline and revival of American community, cited at community level."
  },
  {
-  "i": 172,
+  "i": 128,
   "relation": "precedent",
   "bf_link": "national happiness measure",
   "note": "World Happiness Report 2022, an existing societal measure of happiness, cited at the societal level."
  },
  {
-  "i": 173,
+  "i": 129,
   "relation": "precedent",
   "bf_link": "innovation index",
   "note": "Global Innovation Index, an existing societal indicator, cited at the societal level."
  },
  {
-  "i": 174,
+  "i": 130,
   "relation": "precedent",
   "bf_link": "educational outcome measure",
   "note": "PISA results, an existing international education measure, cited at the societal level."
  },
  {
-  "i": 175,
+  "i": 131,
   "relation": "precedent",
   "bf_link": "social progress index",
   "note": "Social Progress Index, an existing societal measure, cited at the societal level."
  },
  {
-  "i": 176,
+  "i": 132,
   "relation": "precedent",
   "bf_link": "human development index",
   "note": "Human Development Report, an existing measure of human development, cited at the societal level."
  },
  {
-  "i": 177,
+  "i": 133,
   "relation": "precedent",
   "bf_link": "governance indicators",
   "note": "Worldwide Governance Indicators, an existing measure of governance, cited at the societal level."
  },
  {
-  "i": 178,
+  "i": 134,
   "relation": "precedent",
   "bf_link": "commons design principles",
   "note": "Review of design principles for community-based natural resource management; the design is said to align with Ostrom's principles, not to be empirically proven."
  },
  {
-  "i": 179,
+  "i": 135,
   "relation": "precedent",
   "bf_link": "commons design principles",
   "note": "Ostrom's principles for governing commons are the precedent the institutional design is said to align with; the outline is not an empirical pilot."
  },
  {
-  "i": 180,
+  "i": 136,
   "relation": "precedent",
   "bf_link": "generalised group design principles",
   "note": "Generalised core design principles for group efficacy, cited as the precedent for the institutional features listed (escrow, dispute resolution, nested enterprises)."
  },
  {
-  "i": 181,
+  "i": 137,
   "relation": "precedent",
   "bf_link": "digital government infrastructure",
   "note": "Book on Estonia's e-government ecosystem, cited as the precedent for digitised government services over decentralised infrastructure."
  },
  {
-  "i": 182,
+  "i": 138,
   "relation": "evidence",
   "bf_link": "decentralised participatory budgeting",
   "note": "Impact evaluation of Kerala's decentralisation, cited for devolved development budgets and participatory planning, as the supports sentence states."
  },
  {
-  "i": 183,
+  "i": 139,
   "relation": "precedent",
   "bf_link": "participatory budgeting",
   "note": "Study of participatory democracy in Porto Alegre, cited as the precedent for participatory budgeting."
  },
  {
-  "i": 184,
+  "i": 140,
   "relation": "evidence",
   "bf_link": "participatory budgeting spread",
   "note": "Volume on 35 years of participatory budgeting, cited for its spread from one 1989 pilot to over 11,500 implementations."
  },
  {
-  "i": 185,
+  "i": 141,
   "relation": "evidence",
   "bf_link": "mobile money reach and impacts",
   "note": "Study of mobile money's long-run poverty and gender impacts, cited for M-Pesa's reach and adoption figures."
  },
  {
-  "i": 186,
+  "i": 142,
   "relation": "evidence",
   "bf_link": "mobile money reach and impacts",
   "note": "NBER working paper on M-Pesa's economics, cited for its penetration and voluntary adoption figures."
  },
  {
-  "i": 187,
+  "i": 143,
   "relation": "precedent",
   "bf_link": "e-governance practice",
   "note": "Report on e-governance in practice, cited for Estonia's model being adopted or studied in other places."
  },
  {
-  "i": 188,
+  "i": 144,
   "relation": "precedent",
   "bf_link": "restorative reparation for victims",
   "note": "Restorative justice work, the precedent for the principle that harm to victims must be repaired or mitigated."
  },
  {
-  "i": 189,
+  "i": 145,
   "relation": "precedent",
   "bf_link": "proper scoring of forecasts",
   "note": "Brier score is the precedent for measuring forecast accuracy against random guessing."
  },
  {
-  "i": 190,
+  "i": 146,
   "relation": "counterpoint",
   "bf_link": "audit gaming and Goodhart",
   "note": "Strathern's account of audit gaming is the Goodhart's Law problem that the multi-model approach is meant to mitigate."
  },
  {
-  "i": 191,
+  "i": 147,
   "relation": "theory",
   "bf_link": "Goodhart variants met by design",
   "note": "Taxonomy of Goodhart's Law variants, used to map which design element answers each variant."
  },
  {
-  "i": 192,
+  "i": 148,
   "relation": "theory",
   "bf_link": "metric models as research programmes",
   "note": "Lakatos' research programmes are the model for metric models, open to entry and kept only while progressive."
  },
  {
-  "i": 193,
+  "i": 149,
   "relation": "theory",
   "bf_link": "iron rule of explanation",
   "note": "Strevens' iron rule, that any rationale may be held privately but only test confers public authority, is the standard metric models try to meet."
  },
  {
-  "i": 194,
+  "i": 150,
   "relation": "theory",
   "bf_link": "influence bounded by light cone",
   "note": "Minkowski's spacetime is the basis for bounding influence by the light cone in the propagation argument."
  },
  {
-  "i": 195,
+  "i": 151,
   "relation": "theory",
   "bf_link": "sensitive dependence limits strictness",
   "note": "Lorenz's deterministic nonperiodic flow is cited for sensitive dependence on initial conditions, so strictness matters less over time."
  },
  {
-  "i": 196,
+  "i": 152,
   "relation": "theory",
   "bf_link": "influence along an agent history",
   "note": "Four-dimensionalism is cited for an entity's history in spacetime, its worm, so influence depends on all cones along it."
  },
  {
-  "i": 197,
+  "i": 153,
   "relation": "theory",
   "bf_link": "shadow of the future",
   "note": "Cited for the claim that cooperation in repeated games depends on the shadow of the future."
  },
  {
-  "i": 198,
+  "i": 154,
   "relation": "evidence",
   "bf_link": "memory sustains cooperation",
   "note": "PNAS study cited for memory of past opponents being enough for cooperation to emerge, the basis of the memory-over-repetition point."
  },
  {
-  "i": 199,
+  "i": 155,
   "relation": "theory",
   "bf_link": "character formed by habituation",
   "note": "Aristotle's account of character formed by habituation is cited for the moral-formation point."
  },
  {
-  "i": 200,
+  "i": 156,
   "relation": "theory",
   "bf_link": "assess dispositions over single acts",
   "note": "Gauthier's constrained maximisation, which assesses dispositions rather than single acts, is cited as a basis for the morality section."
  },
  {
-  "i": 201,
+  "i": 157,
   "relation": "theory",
   "bf_link": "decide as one decision procedure",
   "note": "Functional decision theory is cited for choosing as if setting one's decision procedure across all its instances."
  },
  {
-  "i": 202,
+  "i": 158,
   "relation": "theory",
   "bf_link": "would one stay just unseen",
   "note": "Plato's ring of invisibility, asking whether one stays just under guaranteed impunity, is the thought experiment the morality section takes up."
  },
  {
-  "i": 203,
+  "i": 159,
   "relation": "theory",
   "bf_link": "conventions make morality pay",
   "note": "Hume's justice, completed by conventions that make it pay, is cited as the lineage for relying on conventions in morality."
  },
  {
-  "i": 204,
+  "i": 160,
   "relation": "theory",
   "bf_link": "morality grows with understanding",
   "note": "The Socratic view that no one does wrong willingly is cited for morality growing with understanding, since the self extends beyond what a being recognises."
  },
  {
-  "i": 205,
+  "i": 161,
   "relation": "counterpoint",
   "bf_link": "self-weakening impartiality",
   "note": "Parfit reached impartiality by weakening the self until others mattered as much; the section departs from that route to impartiality."
  },
  {
-  "i": 206,
+  "i": 162,
   "relation": "theory",
   "bf_link": "two-level moral calculation",
   "note": "Rawls's distinction between rules and acts is cited for the two-level calculation: rules in repeatable scenarios, act-level reasoning for novel cases."
  },
  {
-  "i": 207,
+  "i": 163,
   "relation": "theory",
   "bf_link": "two-level moral calculation",
   "note": "Hare's two-level account, rule utilitarianism in routine cases and act-level reasoning in novel or disputed ones, is cited for the same calculation."
  },
  {
-  "i": 208,
+  "i": 164,
   "relation": "theory",
   "bf_link": "utility as aggregate contribution",
   "note": "Stanford Encyclopedia entry on consequentialism, cited for moral worth as contribution to aggregate value across beings over time."
  },
  {
-  "i": 209,
+  "i": 165,
   "relation": "theory",
   "bf_link": "optimistic nihilism lineage",
   "note": "Nietzsche's active nihilism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics."
  },
  {
-  "i": 210,
+  "i": 166,
   "relation": "theory",
   "bf_link": "optimistic nihilism lineage",
   "note": "Sartrean existentialism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics."
  },
  {
-  "i": 211,
+  "i": 167,
   "relation": "theory",
   "bf_link": "optimistic nihilism lineage",
   "note": "Camus's absurdism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics."
  },
  {
-  "i": 212,
+  "i": 168,
   "relation": "theory",
   "bf_link": "pragmatic framework",
   "note": "Dewey's theory of valuation is cited in the lineage for the pragmatic character of the framework."
  },
  {
-  "i": 213,
+  "i": 169,
   "relation": "theory",
   "bf_link": "utility as measure of moral worth",
   "note": "Bentham's classical utilitarianism is cited for judging moral worth by contribution to overall utility, pleasure against pain."
  },
  {
-  "i": 214,
+  "i": 170,
   "relation": "theory",
   "bf_link": "higher and lower pleasures",
   "note": "Mill's higher and lower pleasures are cited as the refinement that adds an intellectual dimension to the utility measure."
  },
  {
-  "i": 215,
+  "i": 171,
   "relation": "theory",
   "bf_link": "egoism versus universal hedonism",
   "note": "Sidgwick is cited for identifying the tension between egoistic and universal hedonism in utilitarian thought."
  },
  {
-  "i": 216,
+  "i": 172,
   "relation": "theory",
   "bf_link": "preference satisfaction as maximand",
   "note": "Singer's preference utilitarianism is cited as an earlier move beyond hedonism toward preference satisfaction as the maximand."
  },
  {
-  "i": 217,
+  "i": 173,
   "relation": "theory",
   "bf_link": "act and rule utilitarianism",
   "note": "Hare's account, switching between act and rule, is cited for the lineage of utilitarian variants."
  },
  {
-  "i": 218,
+  "i": 174,
   "relation": "theory",
   "bf_link": "knowledge as intrinsic value",
   "note": "Moore's ideal utilitarianism is cited for treating knowledge as intrinsic value alongside pleasure."
  },
  {
-  "i": 219,
+  "i": 175,
   "relation": "theory",
   "bf_link": "epistemic consequentialism",
   "note": "Goldman's epistemic consequentialism evaluates beliefs by accuracy and truth-conduciveness, as cited in the lineage."
  },
  {
-  "i": 220,
+  "i": 176,
   "relation": "theory",
   "bf_link": "utility under uncertainty",
   "note": "Modern expected-utility theory is cited for treating utility as what rational agents maximise under uncertainty."
  },
  {
-  "i": 221,
+  "i": 177,
   "relation": "theory",
   "bf_link": "subjective probability in utility",
   "note": "Savage's extension of expected utility to subjective probability is cited in the decision-theory lineage."
  },
  {
-  "i": 222,
+  "i": 178,
   "relation": "evidence",
   "bf_link": "revealed preferences unstable under adaptation",
   "note": "Chapter on hedonic adaptation, cited for the instability of revealed preferences that Cognitive Progressive Utilitarianism addresses."
  },
  {
-  "i": 223,
+  "i": 179,
   "relation": "theory",
   "bf_link": "reference dependence in utility",
   "note": "Prospect theory is cited for the reference-dependence problem that Cognitive Progressive Utilitarianism addresses."
  },
  {
-  "i": 224,
+  "i": 180,
   "relation": "theory",
   "bf_link": "understanding above opinion and sensation",
   "note": "Plato's ranking of understanding above opinion and sensation is cited in the rationalist lineage."
  },
  {
-  "i": 225,
+  "i": 181,
   "relation": "theory",
   "bf_link": "intellectual pleasures above bodily",
   "note": "Plato's ranking of intellectual pleasures above bodily ones, with knowledge plus moderate pleasure, is cited in the rationalist lineage."
  },
  {
-  "i": 226,
+  "i": 182,
   "relation": "theory",
   "bf_link": "contemplation as highest flourishing",
   "note": "Aristotle's theoria, contemplation, as the highest human activity and most self-sufficient flourishing, is cited in the rationalist lineage."
  },
  {
-  "i": 227,
+  "i": 183,
   "relation": "theory",
   "bf_link": "freedom as understanding",
   "note": "Spinoza's definition of freedom as understanding's triumph over passive emotion is cited in the rationalist lineage."
  },
  {
-  "i": 228,
+  "i": 184,
   "relation": "counterpoint",
   "bf_link": "reason serves good will, not happiness",
   "note": "Kant's claim that reason exists for a good will rather than happiness is a rival to Benefuture's understanding-then-happiness ordering."
  },
  {
-  "i": 229,
+  "i": 185,
   "relation": "theory",
   "bf_link": "comprehension as telos",
   "note": "Hegel's Geist, with comprehension rather than satisfaction as the telos of existence, is cited in the rationalist lineage."
  },
  {
-  "i": 230,
+  "i": 186,
   "relation": "theory",
   "bf_link": "clarity as shield against suffering",
   "note": "The Stoic view that harm is an error of judgment, with epistemic clarity as the shield against suffering, is cited in the lineage."
  },
  {
-  "i": 231,
+  "i": 187,
   "relation": "theory",
   "bf_link": "four causes and adequate explanation",
   "note": "Aristotle's four causes are cited as the framework for what counts as an adequate explanation."
  },
  {
-  "i": 232,
+  "i": 188,
   "relation": "theory",
   "bf_link": "explanation as derivation from laws",
   "note": "Hempel's account of explanation as logical derivation from general laws and initial conditions is cited as the formal view of explanation."
  },
  {
-  "i": 233,
+  "i": 189,
   "relation": "theory",
   "bf_link": "hard-to-vary explanations",
   "note": "Deutsch argues that good explanations, hard to vary yet accounting for phenomena, are more fundamental than predictive accuracy alone."
  },
  {
-  "i": 234,
+  "i": 190,
   "relation": "context",
   "bf_link": "understanding over happiness, cross-cultural",
   "note": "Study of Aztec philosophy, cited in the cross-cultural list for rootedness in truth valued over happiness."
  },
  {
-  "i": 235,
+  "i": 191,
   "relation": "context",
   "bf_link": "knowledge as prerequisite for benevolence",
   "note": "The Analects, cited in the cross-cultural list for learning as the prerequisite for ren, benevolence."
  },
  {
-  "i": 236,
+  "i": 192,
   "relation": "context",
   "bf_link": "truth as prerequisite for bliss",
   "note": "Shankara's text, cited in the cross-cultural list for existence and truth as the prerequisite for bliss."
  },
  {
-  "i": 237,
+  "i": 193,
   "relation": "context",
   "bf_link": "knowledge of reality for the highest good",
   "note": "Nyaya commentary, cited in the cross-cultural list for knowledge of reality as necessary to the highest good."
  },
  {
-  "i": 238,
+  "i": 194,
   "relation": "context",
   "bf_link": "perceiving reality ends suffering",
   "note": "Buddhist discourse, cited in the cross-cultural list for perceiving reality as a predecessor to ending suffering."
  },
  {
-  "i": 239,
+  "i": 195,
   "relation": "context",
   "bf_link": "order against entropy as the good life",
   "note": "Zoroastrian history, cited in the cross-cultural list for alignment with cosmic order against disorder as the good life."
  },
  {
-  "i": 240,
+  "i": 196,
   "relation": "context",
   "bf_link": "society as a machine needing maintenance",
   "note": "Sumerian history, cited in the cross-cultural list for human purpose as executing divine functions rather than leisure."
  },
  {
-  "i": 241,
+  "i": 197,
   "relation": "context",
   "bf_link": "guardianship and systemic continuity",
   "note": "Maori anthropology, cited in the cross-cultural list for guardianship and causal layering over individual benefit."
  },
  {
-  "i": 242,
+  "i": 198,
   "relation": "theory",
   "bf_link": "understanding analogues sustain civilisations",
   "note": "Toynbee's historical argument is cited for civilisations that kept creative vitality by pursuing understanding through philosophy, science and art."
  },
  {
-  "i": 243,
+  "i": 199,
   "relation": "theory",
   "bf_link": "capabilities over hedonic measures",
   "note": "Sen's capabilities approach is cited as sharing scepticism of hedonic and preference measures, focusing on what beings can do and be."
  },
  {
-  "i": 244,
+  "i": 200,
   "relation": "theory",
   "bf_link": "capabilities over hedonic measures",
   "note": "Nussbaum's capabilities approach is cited as sharing scepticism of hedonic and preference measures."
  },
  {
-  "i": 245,
+  "i": 201,
   "relation": "context",
   "bf_link": "consequentialism operationalised by measurement",
   "note": "Book on long-term consequentialism, cited for the claim that effective altruism operationalises consequentialist ethics through measurement."
  },
  {
-  "i": 246,
+  "i": 202,
   "relation": "context",
   "bf_link": "consequentialism operationalised by measurement",
   "note": "Ord's Precipice, cited with the claim that effective altruism operationalises consequentialist ethics through measurement."
  },
  {
-  "i": 247,
+  "i": 203,
   "relation": "theory",
   "bf_link": "domain currencies never trade",
   "note": "Walzer's spheres of justice, where dominance should not convert across spheres, parallels the rule that domain currencies never trade."
  },
  {
-  "i": 248,
+  "i": 204,
   "relation": "theory",
   "bf_link": "vote on values, bet on beliefs",
   "note": "Hanson's markets, vote on values and bet on beliefs, are cited in one line as the positioning for the currency design."
  },
  {
-  "i": 249,
+  "i": 205,
   "relation": "theory",
   "bf_link": "research programmes need novel confirmed predictions",
   "note": "Lakatos's research programmes keep standing while predicting confirmed novel facts, the standard metric models must meet."
  },
  {
-  "i": 250,
+  "i": 206,
   "relation": "theory",
   "bf_link": "iron rule: only test confers authority",
   "note": "Strevens' iron rule, that any reason may be held privately but only empirical test confers public authority, is cited in one line for metric models."
  },
  {
-  "i": 251,
+  "i": 207,
   "relation": "theory",
   "bf_link": "progress as good explanations",
   "note": "Deutsch's account of progress as the growth of good explanations is cited in one line on understanding."
  },
  {
-  "i": 252,
+  "i": 208,
   "relation": "counterpoint",
   "bf_link": "pleasure and pain as sole value",
   "note": "Bentham's classical utilitarianism counts pleasure and pain as the sole measure of value, which Benefuture moves beyond."
  },
  {
-  "i": 253,
+  "i": 209,
   "relation": "counterpoint",
   "bf_link": "happiness kept as sole maximand",
   "note": "Mill ranked intellectual pleasures higher but kept happiness the only maximand, a point Benefuture departs from."
  },
  {
-  "i": 254,
+  "i": 210,
   "relation": "theory",
   "bf_link": "desire to know is fundamental",
   "note": "Aristotle's opening of the Metaphysics treats the desire to know as fundamental rather than instrumental, cited in the joy-of-understanding list."
  },
  {
-  "i": 255,
+  "i": 211,
   "relation": "theory",
   "bf_link": "contemplation of truth as joy",
   "note": "Aquinas's view that contemplation of truth is the most delightful pleasure is cited for joy in understanding."
  },
  {
-  "i": 256,
+  "i": 212,
   "relation": "theory",
   "bf_link": "understanding as its own joy",
   "note": "Leibniz's view of pleasure as the feeling of perfection, comprehension of order, is cited for joy being understanding's own phenomenology."
  },
  {
-  "i": 257,
+  "i": 213,
   "relation": "theory",
   "bf_link": "the pleasure of knowledge",
   "note": "Al-Ghazali's pleasure of knowledge, surpassing sensory pleasures, is cited in the joy-of-understanding list."
  },
  {
-  "i": 258,
+  "i": 214,
   "relation": "theory",
   "bf_link": "the pleasure of learning",
   "note": "The opening of the Analects, asking whether learning is not a pleasure, is cited as the first pleasure named."
  },
  {
-  "i": 259,
+  "i": 215,
   "relation": "evidence",
   "bf_link": "curiosity is intrinsically rewarding",
   "note": "Neuroscience study cited for curiosity activating reward circuitry, with information gain rewarding independent of external utility."
  },
  {
-  "i": 260,
+  "i": 216,
   "relation": "evidence",
   "bf_link": "understanding capacity is trainable",
   "note": "Review of inductive-reasoning training, cited for training significantly improving fluid intelligence, so understanding capacity can be upgraded."
  },
  {
-  "i": 261,
+  "i": 217,
   "relation": "evidence",
   "bf_link": "understanding capacity is trainable",
   "note": "Study of how much education improves intelligence, cited for the claim that understanding capacity is upgradeable over a lifetime."
  },
  {
-  "i": 262,
+  "i": 218,
   "relation": "theory",
   "bf_link": "cultural compounding of understanding",
   "note": "Cultural origins of cognition, cited for understanding compounding across generations, faster across large populations."
  },
  {
-  "i": 263,
+  "i": 219,
   "relation": "theory",
   "bf_link": "knowledge compounding drives growth",
   "note": "Romer's endogenous technological change is cited for knowledge compounding, which accelerates across large populations."
  },
  {
-  "i": 264,
+  "i": 220,
   "relation": "context",
   "bf_link": "compounding across generations",
   "note": "Fuller's Critical Path, cited for compounding accelerating across generations; the link to the claim is thin."
  },
  {
-  "i": 265,
+  "i": 221,
   "relation": "evidence",
   "bf_link": "critical thinking predicts outcomes",
   "note": "Study cited for critical thinking predicting avoidance of severe negative life outcomes better than raw intelligence."
  },
  {
-  "i": 266,
+  "i": 222,
   "relation": "evidence",
   "bf_link": "cognition underpins utilitarian judgement",
   "note": "Study of why the Cognitive Reflection Test predicts utilitarian judgements, cited for cognitive outcomes underpinning them."
  },
  {
-  "i": 267,
+  "i": 223,
   "relation": "evidence",
   "bf_link": "rationality distinct from intelligence",
   "note": "Book cited for rationality and intelligence being only partly dissociable constructs."
  },
  {
-  "i": 268,
+  "i": 224,
   "relation": "theory",
   "bf_link": "survival as minimising surprise",
   "note": "Free-energy principle cited as biophysical grounding: survival as minimisation of surprise through accurate internal models."
  },
  {
-  "i": 269,
+  "i": 225,
   "relation": "evidence",
   "bf_link": "soft skills yield long-term returns",
   "note": "Study on soft skills cited for yielding higher long-term returns than raw cognitive resources."
  },
  {
-  "i": 270,
+  "i": 226,
   "relation": "counterpoint",
   "bf_link": "objection: understanding only instrumental",
   "note": "Crisp is cited for the objection that only hedonic states are intrinsically valuable and understanding is merely instrumental."
  },
  {
-  "i": 271,
+  "i": 227,
   "relation": "theory",
   "bf_link": "hedonic adaptation limits happiness",
   "note": "Adaptation-level theory is cited for hedonic states being unstable under adaptation, in the response to the cognitive-priority objection."
  },
  {
-  "i": 272,
+  "i": 228,
   "relation": "counterpoint",
   "bf_link": "objection to lexical priority",
   "note": "Griffin is cited for the objection that lexical ordering is too rigid and trade-offs should be continuous, which Benefuture answers."
  },
  {
-  "i": 273,
+  "i": 229,
   "relation": "counterpoint",
   "bf_link": "objection: consequentialism alienates agents",
   "note": "Williams's critique that consequentialism alienates agents from their projects and relationships is an objection the section answers."
  },
  {
-  "i": 274,
+  "i": 230,
   "relation": "counterpoint",
   "bf_link": "objection: consequentialism alienates agents",
   "note": "Railton's alienation argument is cited with Williams as the objection to consequentialism that the section responds to."
  },
  {
-  "i": 275,
+  "i": 231,
   "relation": "theory",
   "bf_link": "self realised through the wider whole",
   "note": "Deep ecology's self-realisation through identification with the ecosystem is cited as a philosophical parallel to Benefuture's concept of self."
  },
  {
-  "i": 276,
+  "i": 232,
   "relation": "theory",
   "bf_link": "personhood is relational",
   "note": "Ubuntu's relational personhood, rejecting isolated existence, is cited as a philosophical parallel."
  },
  {
-  "i": 277,
+  "i": 233,
   "relation": "theory",
   "bf_link": "future interactions sustain cooperation",
   "note": "Axelrod's book on cooperation is cited for cooperation emerging when future interactions are valued."
  },
  {
-  "i": 278,
+  "i": 234,
   "relation": "theory",
   "bf_link": "future interactions sustain cooperation",
   "note": "Nowak's five rules for the evolution of cooperation are cited for cooperation emerging when future interactions are valued."
  },
  {
-  "i": 279,
+  "i": 235,
   "relation": "theory",
   "bf_link": "no isolated selfhood",
   "note": "Nagarjuna's dependent origination, which denies isolated selfhood, is cited as a parallel to the causal view of the self."
  },
  {
-  "i": 280,
+  "i": 236,
   "relation": "theory",
   "bf_link": "justice as maintaining cosmic order",
   "note": "Ma'at, justice as maintenance of cosmic order against chaos, is cited as a philosophical parallel."
  },
  {
-  "i": 281,
+  "i": 237,
   "relation": "theory",
   "bf_link": "justice objective and discoverable by reason",
   "note": "Mu'tazila theology's view of justice as objective and discoverable by reason is cited as a philosophical parallel."
  },
  {
-  "i": 282,
+  "i": 238,
   "relation": "theory",
   "bf_link": "identity as psychological continuity",
   "note": "Parfit's psychological-continuity account of identity is cited as a parallel to the design's concept of identity, not soul-substance."
  },
  {
-  "i": 283,
+  "i": 239,
   "relation": "context",
   "bf_link": "identity as causal layering",
   "note": "Article on whakapapa, cited as a parallel for identity understood as causal layering."
  },
  {
-  "i": 284,
+  "i": 240,
   "relation": "theory",
   "bf_link": "identity as becoming",
   "note": "Whitehead's process philosophy, identity as a trajectory of becoming rather than a static state, is cited as a parallel."
  },
  {
-  "i": 285,
+  "i": 241,
   "relation": "theory",
   "bf_link": "evidence and proof",
   "note": "Book on the nature of evidence, cited under proof."
  },
  {
-  "i": 286,
+  "i": 242,
   "relation": "theory",
   "bf_link": "falsification and scientific discovery",
   "note": "Popper's account of scientific discovery is cited under proof."
  },
  {
-  "i": 287,
+  "i": 243,
   "relation": "theory",
   "bf_link": "experiment and proof in physics",
   "note": "Book on experiment in physics, cited under proof."
  },
  {
-  "i": 288,
+  "i": 244,
   "relation": "theory",
   "bf_link": "falsification and scientific discovery",
   "note": "Popper's account of scientific discovery is cited again under proof."
  },
  {
-  "i": 289,
+  "i": 245,
   "relation": "theory",
   "bf_link": "paradigms and scientific revolutions",
   "note": "Kuhn's account of scientific revolutions is cited under proof."
  },
  {
-  "i": 290,
+  "i": 246,
   "relation": "evidence",
   "bf_link": "negative and positive reputation summed separately",
   "note": "Review of negativity bias, cited for negative and positive reputation being summed separately and not cancelling each other."
  },
  {
-  "i": 291,
+  "i": 247,
   "relation": "context",
   "bf_link": "consciousness definition still evolving",
   "note": "Nature feature on detecting consciousness, cited for the definition of consciousness still evolving."
  },
  {
-  "i": 292,
+  "i": 248,
   "relation": "theory",
   "bf_link": "panpsychic sentience as working assumption",
   "note": "Stanford entry on panpsychism, cited for the working assumption of panpsychic sentience behind the definition of a being."
  },
  {
-  "i": 293,
+  "i": 249,
   "relation": "theory",
   "bf_link": "minimise trust, distribute residual trust",
   "note": "Hurwicz's work on informational efficiency in resource allocation is cited for minimising required trust at each layer."
  },
  {
-  "i": 294,
+  "i": 250,
   "relation": "theory",
   "bf_link": "truthful action as dominant strategy",
   "note": "Myerson's optimal auction design is cited for systems where truthful, goal-aligned action is the dominant strategy."
  },
  {
-  "i": 295,
+  "i": 251,
   "relation": "precedent",
   "bf_link": "goal enforcement by nudges",
   "note": "Nudge is the precedent for enforcing goals through default choices rather than mandates."
  },
  {
-  "i": 296,
+  "i": 252,
   "relation": "theory",
   "bf_link": "strengthen under stress",
   "note": "Taleb's antifragility, gaining from disorder, is cited for systems designed to strengthen under stress rather than merely resist it."
  },
  {
-  "i": 297,
+  "i": 253,
   "relation": "theory",
   "bf_link": "circular validation and common method bias",
   "note": "Review of common method bias, cited for the risk that models validated only against each other correlate with each other rather than reality."
  },
  {
-  "i": 298,
+  "i": 254,
   "relation": "theory",
   "bf_link": "circular consensus under reflexivity",
   "note": "Soros's fallibility and reflexivity are cited for the risk of circular consensus, where models correlate with each other rather than reality."
  },
  {
-  "i": 299,
+  "i": 255,
   "relation": "theory",
   "bf_link": "values robust under optimisation pressure",
   "note": "Bostrom's account of specifying values robust under optimisation is cited as applying equally to civilisational systems."
  },
  {
-  "i": 300,
+  "i": 256,
   "relation": "theory",
   "bf_link": "corrigibility motivates auditing and goal correction",
   "note": "Corrigibility is cited with Goodhart and inner alignment as motivating competing metric models, adversarial auditing and a further design part."
  },
  {
-  "i": 301,
+  "i": 257,
   "relation": "theory",
   "bf_link": "approximation of extrapolated volition",
   "note": "Coherent extrapolated volition is cited for civilisational continuity operationalising an approximation of extrapolated human volition."
  },
  {
-  "i": 302,
+  "i": 258,
   "relation": "theory",
   "bf_link": "morality as understanding iterated interaction",
   "note": "The iterated-game result is cited as the foundation for defining morality as understanding that interactions with reality are iterative."
  },
  {
-  "i": 303,
+  "i": 259,
   "relation": "theory",
   "bf_link": "folk theorem sustains cooperation",
   "note": "The folk theorem for repeated games with discounting is cited as the framing that leverages repeated interaction."
  },
  {
-  "i": 304,
+  "i": 260,
   "relation": "theory",
   "bf_link": "metric models compete on accuracy",
   "note": "Hanson's values-and-beliefs framing is cited for metric models competing on predictive accuracy beyond the model in use."
  },
  {
-  "i": 305,
+  "i": 261,
   "relation": "theory",
   "bf_link": "metric models compete on accuracy and novelty",
   "note": "Same reference, cited for metric models competing on accuracy, marker correlation, causal explanation and novelty."
  },
  {
-  "i": 306,
+  "i": 262,
   "relation": "theory",
   "bf_link": "domain-locked currencies and escrow",
   "note": "Estlund's democratic authority is cited beside the currency applications bullet; the link to Estlund is indirect."
  },
  {
-  "i": 307,
+  "i": 263,
   "relation": "theory",
   "bf_link": "expertise and impact weighting; choice architecture",
   "note": "Spence's job-market signalling is cited beside the expertise-and-impact weighting bullet; the link is indirect."
  },
  {
-  "i": 308,
+  "i": 264,
   "relation": "theory",
   "bf_link": "social choice impossibility results",
   "note": "Gibbard's manipulation result is cited among standard social choice impossibility results that bound mechanism design."
  },
  {
-  "i": 309,
+  "i": 265,
   "relation": "theory",
   "bf_link": "social choice impossibility results",
   "note": "Arrow's impossibility theorem is cited among standard social choice results on aggregating preferences."
  },
  {
-  "i": 310,
+  "i": 266,
   "relation": "theory",
   "bf_link": "cardinal comparable weighting escapes Arrow",
   "note": "Sen's work shows that cardinal, interpersonally comparable weighting escapes Arrow's theorem, the route the design takes."
  },
  {
-  "i": 311,
+  "i": 267,
   "relation": "theory",
   "bf_link": "capability theory parallel",
   "note": "Sen's capability theory is cited as the parallel for the multi-currency, multi-metric approach."
  },
  {
-  "i": 312,
+  "i": 268,
   "relation": "theory",
   "bf_link": "capability theory parallel",
   "note": "Nussbaum's human development approach is cited as the parallel for the multi-currency, multi-metric approach."
  },
  {
-  "i": 313,
+  "i": 269,
   "relation": "theory",
   "bf_link": "parallel to free-energy principle",
   "note": "Friston's free-energy principle is cited as an interesting parallel to the understanding mechanism."
  },
  {
-  "i": 314,
+  "i": 270,
   "relation": "precedent",
   "bf_link": "accuracy via proper scoring rule",
   "note": "Brier's score is the precedent for measuring accuracy as one minus the Brier score, a proper scoring rule."
  },
  {
-  "i": 315,
+  "i": 271,
   "relation": "precedent",
   "bf_link": "similarity index for map-territory fit",
   "note": "Tversky's similarity index is cited as an existing way to quantify how well a description matches a target."
  },
  {
-  "i": 316,
+  "i": 272,
   "relation": "precedent",
   "bf_link": "divergence measures for correspondence",
   "note": "Divergence measures based on Shannon entropy are cited as existing structural similarity indices for model-reality correspondence."
  },
  {
-  "i": 317,
+  "i": 273,
   "relation": "precedent",
   "bf_link": "divergence between model and reality",
   "note": "Kullback-Leibler divergence is cited as an existing measure of correspondence."
  },
  {
-  "i": 318,
+  "i": 274,
   "relation": "theory",
   "bf_link": "probabilism for belief accuracy",
   "note": "Joyce's nonpragmatic vindication of probabilism is cited for probabilistic credences giving a coherent framework for belief accuracy."
  },
  {
-  "i": 319,
+  "i": 275,
   "relation": "precedent",
   "bf_link": "proper scoring of predictions",
   "note": "Brier score is cited as a proper scoring rule for evaluating probabilistic predictions and their accuracy."
  },
  {
-  "i": 320,
+  "i": 276,
   "relation": "precedent",
   "bf_link": "proper scoring rules",
   "note": "Strictly proper scoring rules are cited for log-likelihood scoring and calibration as complementary measures of predictive quality."
  },
  {
-  "i": 321,
+  "i": 277,
   "relation": "precedent",
   "bf_link": "forecast verification framework",
   "note": "General framework for forecast verification, cited with log-likelihood scoring and calibration as complementary measures."
  },
  {
-  "i": 322,
+  "i": 278,
   "relation": "theory",
   "bf_link": "argument structure",
   "note": "Toulmin's model of argument is cited under measuring understanding."
  },
  {
-  "i": 323,
+  "i": 279,
   "relation": "precedent",
   "bf_link": "formal causal criteria",
   "note": "Pearl's causal framework, with DAGs and do-calculus, is cited as the formal test of whether causal claims are identifiable."
  },
  {
-  "i": 324,
+  "i": 280,
   "relation": "theory",
   "bf_link": "mechanistic understanding beyond prediction",
   "note": "Woodward's interventionist account requires relationships invariant under intervention, separating mechanistic understanding from prediction."
  },
  {
-  "i": 325,
+  "i": 281,
   "relation": "precedent",
   "bf_link": "causal discovery from data",
   "note": "Causal discovery algorithms are cited as an existing way to identify causal structure from observational data."
  },
  {
-  "i": 326,
+  "i": 282,
   "relation": "theory",
   "bf_link": "complexity term for hypotheses",
   "note": "Solomonoff induction is cited as the analogy for the complexity term in the understanding model."
  },
  {
-  "i": 327,
+  "i": 283,
   "relation": "theory",
   "bf_link": "complexity as basis of the C term",
   "note": "Kolmogorov complexity is cited as the basis for the complexity term C in the understanding model."
  },
  {
-  "i": 328,
+  "i": 284,
   "relation": "precedent",
   "bf_link": "description length for model selection",
   "note": "Minimum description length is cited as a practical approximation to Kolmogorov complexity for model selection."
  },
  {
-  "i": 329,
+  "i": 285,
   "relation": "precedent",
   "bf_link": "description length for model selection",
   "note": "Grunwald's MDL principle is cited as the practical approximation to Kolmogorov complexity used for model selection."
  },
  {
-  "i": 330,
+  "i": 286,
   "relation": "context",
   "bf_link": "child cognitive assessment",
   "note": "Child assessment text cited under measuring understanding."
  },
  {
-  "i": 331,
+  "i": 287,
   "relation": "theory",
   "bf_link": "argument structure",
   "note": "Toulmin's argument model is cited again under measuring understanding."
  },
  {
-  "i": 332,
+  "i": 288,
   "relation": "precedent",
   "bf_link": "concept mapping for understanding",
   "note": "Concept mapping, Novak and Gowin's method, is cited as an existing way to assess understanding."
  },
  {
-  "i": 333,
+  "i": 289,
   "relation": "precedent",
   "bf_link": "concept maps as assessment",
   "note": "Concept maps as an assessment tool are cited as an existing method under measuring understanding."
  },
  {
-  "i": 334,
+  "i": 290,
   "relation": "precedent",
   "bf_link": "educative assessment",
   "note": "Educative assessment, designing tests to inform and improve performance, is cited as an existing approach."
  },
  {
-  "i": 335,
+  "i": 291,
   "relation": "precedent",
   "bf_link": "performance assessment",
   "note": "Performance assessments are cited as an existing alternative to multiple-choice tests of understanding."
  },
  {
-  "i": 336,
+  "i": 292,
   "relation": "context",
   "bf_link": "cognitive psychology background",
   "note": "Cognitive psychology textbook cited under measuring understanding."
  },
  {
-  "i": 337,
+  "i": 293,
   "relation": "precedent",
   "bf_link": "citation analysis",
   "note": "Citation indexes are cited as an existing analysis tool, for the citation-analysis part of measuring understanding."
  },
  {
-  "i": 338,
+  "i": 294,
   "relation": "context",
   "bf_link": "mindset",
   "note": "Popular book on mindset cited under measuring understanding."
  },
  {
-  "i": 339,
+  "i": 295,
   "relation": "precedent",
   "bf_link": "learning analytics",
   "note": "Learning analytics as a learning health system is cited as an existing practice for measuring learning."
  },
  {
-  "i": 340,
+  "i": 296,
   "relation": "precedent",
   "bf_link": "scoring rubrics",
   "note": "Scoring rubrics are cited as an existing practice for assessing performance."
  },
  {
-  "i": 341,
+  "i": 297,
   "relation": "precedent",
   "bf_link": "portfolio assessment",
   "note": "Portfolio assessment is cited as an existing method under measuring understanding."
  },
  {
-  "i": 342,
+  "i": 298,
   "relation": "precedent",
   "bf_link": "formative assessment",
   "note": "Formative assessment work is cited as an existing practice under measuring understanding."
  },
  {
-  "i": 343,
-  "relation": "precedent",
-  "bf_link": "formative assessment",
-  "note": "Assessment and classroom learning is cited under measuring understanding; the author listing appears garbled in the index, so the citation needs checking."
+  "i": 299,
+  "relation": "evidence",
+  "bf_link": "formative assessment raises learning",
+  "note": "Review evidence that formative assessment improves learning, cited where the article discusses measuring understanding."
  },
  {
-  "i": 344,
+  "i": 300,
   "relation": "precedent",
   "bf_link": "scoring rubrics",
   "note": "Scoring rubrics are cited again under measuring understanding."
  },
  {
-  "i": 345,
+  "i": 301,
   "relation": "evidence",
   "bf_link": "talk and reasoning development",
   "note": "Study on talk and the development of reasoning, cited under measuring understanding."
  },
  {
-  "i": 346,
+  "i": 302,
   "relation": "precedent",
   "bf_link": "classroom talk framework",
   "note": "Framework for lesson analysis of classroom talk, cited as an existing method under measuring understanding."
  },
  {
-  "i": 347,
+  "i": 303,
   "relation": "context",
   "bf_link": "language and learning in science",
   "note": "Book on language, learning and values in science, cited under measuring understanding."
  },
  {
-  "i": 348,
+  "i": 304,
   "relation": "context",
   "bf_link": "teaching methods",
   "note": "Textbook on teaching methods, cited under measuring understanding."
  },
  {
-  "i": 349,
+  "i": 305,
   "relation": "context",
   "bf_link": "classroom management",
   "note": "Article on classroom management, cited under measuring understanding."
  },
  {
-  "i": 350,
+  "i": 306,
   "relation": "precedent",
   "bf_link": "classroom assessment for learning",
   "note": "Classroom assessment for student learning is cited as an existing practice under measuring understanding."
  },
  {
-  "i": 351,
+  "i": 307,
   "relation": "theory",
   "bf_link": "uncertainty in quantitative risk",
   "note": "Guide to uncertainty in quantitative risk is cited under measuring understanding."
  },
  {
-  "i": 352,
+  "i": 308,
   "relation": "precedent",
   "bf_link": "social network analysis",
   "note": "Social network analysis text cited again under measuring understanding."
  },
  {
-  "i": 353,
+  "i": 309,
   "relation": "precedent",
   "bf_link": "social network analysis",
   "note": "Social network analysis methods text cited again under measuring understanding."
  },
  {
-  "i": 354,
+  "i": 310,
   "relation": "theory",
   "bf_link": "network effectiveness theory",
   "note": "Preliminary theory of interorganisational network effectiveness is cited under measuring understanding."
  },
  {
-  "i": 355,
+  "i": 311,
   "relation": "precedent",
   "bf_link": "innovation index",
   "note": "Global Innovation Index, an existing indicator, is cited under measuring understanding."
  },
  {
-  "i": 356,
+  "i": 312,
   "relation": "precedent",
   "bf_link": "educational outcome measure",
   "note": "PISA results, an existing international measure, are cited under measuring understanding."
  },
  {
-  "i": 357,
+  "i": 313,
   "relation": "precedent",
   "bf_link": "human development index",
   "note": "Human Development Report, an existing measure, is cited under measuring understanding."
  },
  {
-  "i": 358,
+  "i": 314,
   "relation": "precedent",
   "bf_link": "governance indicators",
   "note": "Worldwide Governance Indicators, an existing measure, are cited under measuring understanding."
