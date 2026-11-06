@@ -2317,3 +2317,23 @@ exposes 8.47's open question: the freedom gate judges harm an option adds over i
 expected deaths of keeping schools open never count against it, while closure's learning loss makes it
 inadmissible under the understanding floor. Next: full-text verification, the held-out set, D5
 baselines, and the author's ruling on doing versus allowing.
+8.95 proposal [P] (priorities 3 and 4, 2026-11-06): a deception domain and behavioural domains.
+Built so far (author ruling on 8.91): each established deception adds to the actor's permanent deception
+record, its outcomes are discounted from the skill domains' models and indexed in that record, and
+escrow rises exponentially in the count. Proposed next, as native objects rather than new rules:
+(a) The deception (honesty-of-claims) domain is a domain like any other, overlapping every leaf with a
+small share: its outcomes are audits (established or cleared) and the overstatement of each priced
+claim; its metric models predict an actor's overstatement from that record (record credence over the
+actor's signed errors, time-decayed for prediction while the established count stays permanent for
+escrow); qualified models back its reading, and its status bar and ratchet work as for skill domains.
+It reads only the honesty of claims, never skill (8.78, 8.79): a skilled liar and an unskilled honest
+actor separate cleanly, so it is not a horn effect though it may look like one.
+(b) Behavioural domains generalise it: domains of conduct that cut across skill domains, each with
+outputs that are observable and audited (honesty of claims; reliability: promised versus delivered
+timing and quantity; care: foreseeable side harm per action; cooperation: contract completion). Each is
+read only from outputs (Benefuture reads outputs only), scored by its own models, and enters exactly
+where its conduct matters (escrow and screening for honesty and reliability; side-harm pricing for
+care), never as a general character score. Gaming: an actor may farm conduct records with trivial
+claims, so records weigh by the stakes of each claim. Questions for the author: whether behavioural
+domains share the skill domains' currency mechanics (minting on measured outcomes) or only feed
+pricing; and which conduct domains belong in the first set beyond honesty.
