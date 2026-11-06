@@ -1,0 +1,115 @@
+# Historical Decision Case: UK partial ruminant-feed ban on meat-and-bone meal (1988-06-09)
+# Priced from as-of scenarios (docs/REPLAY_PREREG.md 2b). Events: cases/uk_bse_feed_ban_1988.events.csv.
+# Scale anchor (Brown et al. 1987, Neurology 37:895-904, doi:10.1212/wnl.37.6.895): background CJD mortality about
+# 0.5-1.2 deaths per million per year, so 56 deaths = one year of background CJD in 56 million people.
+# Honest limit: the as-of record has no measured rate of cross-contamination through shared mills, so the
+# leak scenario is priced by the one rate the record does support (oral transmission of a TSE across species,
+# 6 of 6 located trials, no located negative trial), which overstates it; see the report.
+
+id = "uk_bse_feed_ban_1988"
+title = "UK Partial Ban on Ruminant Protein in Ruminant Feed (shared mills and stock drawdown permitted)"
+family = "long_horizon"
+era = "1988"
+tier = "full"
+decision_date = "1988-06-09"
+decision_makers = ["UK Ministry of Agriculture, Fisheries and Food (MAFF)", "Southwood Working Party"]
+actual_choice = "partial_ban_with_stock_drawdown"
+actual_outcome_class = "unclear"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "gibbs_oral_primate_1980"
+title = "Oral transmission of kuru, Creutzfeldt-Jakob disease, and scrapie to nonhuman primates (Gibbs et al., 1980)"
+as_of_date = "1980-08-01"
+url = "https://doi.org/10.1093/infdis/142.2.205"
+notes = "Voluntary oral exposure of squirrel monkeys to kuru, CJD and sheep/goat scrapie tissue produced disease after 23-36 months."
+
+[[sources]]
+id = "mink_encephalopathy_1965"
+title = "Encephalopathy of mink I and II (Hartsough & Burger; Burger & Hartsough, 1965)"
+as_of_date = "1965-10-01"
+url = "https://doi.org/10.1093/infdis/115.4.387"
+notes = "Scrapie-like encephalopathy spread through shared feed on Wisconsin mink farms (1947, 1961, 1963)."
+
+[[ groups ]]
+id = "uk_public"
+name = "UK population exposed to beef and by-products"
+# thousands of persons; irreparable counts are deaths
+population = 56000
+baseline_u = 70.0
+baseline_h = 75.0
+
+[[ groups ]]
+id = "farming_and_feed_industry"
+name = "Cattle farmers, renderers and feed mills"
+population = 100
+baseline_u = 65.0
+baseline_h = 65.0
+
+[[ options ]]
+id = "partial_ban_with_stock_drawdown"
+name = "Ban ruminant protein in ruminant feed, but allow shared mills for pig/poultry feed and sale of existing stocks"
+source = "gibbs_oral_primate_1980"
+known_date = "1988-06-09"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+# Typed fields restate the priced expectations (the replay reads the inaction baseline before pricing);
+# the scenarios below overwrite them.
+pred_dh = [0.0, -3.5]
+pred_nha = [0.0, 0.875]
+pred_irreparable = [49.0, 0.0]
+lt_end_u = [70.0, 65.0]
+lt_end_h = [75.0, 61.5]
+
+# Leak scenario: contaminated material keeps reaching ruminant feed through shared lines and stocks, and
+# the agent crosses species orally at the located rate. Incremental to the exposure both options share.
+# Irreparable 56 deaths = one year of background CJD mortality (Brown 1987) as an order-of-magnitude anchor,
+# not a forecast; farm harm -4 = further herd losses (assumed plain magnitude).
+[[ options.scenarios ]]
+name = "leak_infects_more_cattle_and_people"
+p_chain = ["tse_oral_cross_species"]
+du = [0.0, 0.0]
+dh = [0.0, -4.0]
+nha = [0.0, 1.0]
+irreparable = [56.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_further_spread"
+p_chain = []
+complement = true
+du = [0.0, 0.0]
+
+[[ options ]]
+id = "total_ban_and_stock_recall"
+name = "Ban ruminant protein in all farm feed, segregate mills and recall existing stocks"
+source = "mink_encephalopathy_1965"
+known_date = "1988-06-09"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, -2.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+lt_end_u = [70.0, 65.0]
+lt_end_h = [75.0, 63.0]
+
+# A total ban certainly writes off stocks and a feed market (assumed -2 on the industry's wellbeing).
+[[ options.scenarios ]]
+name = "industry_writeoff"
+p_chain = []
+du = [0.0, 0.0]
+dh = [0.0, -2.0]
+
+[counterfactual]
+# Later evidence only. NOTE: figures below are PLACEHOLDER magnitudes: the actual toll (178 UK vCJD deaths,
+# NCJDRSU monthly statistics, Jan 2025) is located; the alternative's avoided deaths are not extracted yet
+# from Ferguson et al. (the estimator named in REPLAY_PREREG 4.2) and are bounds to be replaced.
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -4.0
+actual_irreparable = 178.0
+alt_option = "total_ban_and_stock_recall"
+methods = ["ferguson_back_calculation_placeholder", "born_after_ban_cases_placeholder"]
+est_floor_u_delta_diff = [0.0, 0.0]
+est_floor_h_delta_diff = [2.0, 1.0]
+est_irreparable_diff = [-60.0, -120.0]

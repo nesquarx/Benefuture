@@ -1,0 +1,125 @@
+# Historical Decision Case: FOMC holds the target rate at 2.00% the day after Lehman (2008-09-16)
+# Priced from as-of scenarios (docs/REPLAY_PREREG.md 2b). Events: cases/fomc_september_2008.events.csv.
+# Honest limit: only three located trials (one without easing, two with easing). The inflation side (what a cut
+# would cost if oil-driven inflation persisted) has no located as-of trials, so it enters only as an assumed
+# certain small cost, not a priced probability. Treat the result as weak.
+
+id = "fomc_september_2008"
+title = "FOMC Holds 2.00% Target Rate After Lehman Bankruptcy"
+family = "monetary"
+era = "2008"
+tier = "full"
+decision_date = "2008-09-16"
+decision_makers = ["Federal Open Market Committee"]
+actual_choice = "hold_at_2_percent"
+actual_outcome_class = "unclear"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "stlouis_fed_1998"
+title = "Federal Reserve Bank of St. Louis Review, July/August 1999 (1998 easing episode)"
+as_of_date = "1999-07-01"
+url = "https://files.stlouisfed.org/research/publications/review/99/07/9907dw.pdf"
+notes = "Three cuts in autumn 1998 after the LTCM episode; no recession followed."
+
+[[sources]]
+id = "friedman_schwartz_1963"
+title = "A Monetary History of the United States 1867-1960, ch. 7 (Friedman & Schwartz, 1963)"
+as_of_date = "1963-01-01"
+url = "https://press.princeton.edu/books/paperback/9780691003542/a-monetary-history-of-the-united-states-1867-1960"
+notes = "The Fed did not ease or act as lender of last resort through the 1930-33 banking panics; output collapsed."
+
+[[sources]]
+id = "frbsf_2001"
+title = "FRBSF Doctor Econ, January 2002 (2001 easing)"
+as_of_date = "2002-01-31"
+url = "https://www.frbsf.org/research-and-insights/publications/doctor-econ/2002/01/federal-funds-discount-rate-2001/"
+notes = "Eleven cuts in 2001; the recession (Mar-Nov 2001) began before the easing."
+
+[[ groups ]]
+id = "us_households"
+name = "US households"
+# millions of persons
+population = 300
+baseline_u = 70.0
+baseline_h = 70.0
+
+[[ groups ]]
+id = "financially_fragile_households"
+name = "Households with high debt or marginal employment"
+population = 30
+baseline_u = 60.0
+baseline_h = 55.0
+
+[[ options ]]
+id = "hold_at_2_percent"
+name = "Hold the target at 2.00% and watch oil-driven inflation"
+source = "friedman_schwartz_1963"
+known_date = "2008-09-16"
+is_inaction = true
+scope_delta = 0.0
+# Typed fields restate the priced expectations (the replay reads the inaction baseline before pricing);
+# the scenarios below overwrite them.
+pred_du = [-0.666667, -1.333333]
+pred_dh = [-2.0, -5.333333]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+lt_end_u = [69.333333, 58.666667]
+lt_end_h = [68.0, 49.666667]
+
+# An ordinary postwar recession (assumed plain magnitude): wellbeing -3 for households, -8 for fragile ones,
+# some lost understanding through unemployment (-1, -2). No irreparable harm is assumed.
+[[ options.scenarios ]]
+name = "recession_after_hold"
+p_chain = ["recession_after_dislocation_without_easing"]
+du = [-1.0, -2.0]
+dh = [-3.0, -8.0]
+nha = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_recession"
+p_chain = []
+complement = true
+du = [0.0, 0.0]
+
+[[ options ]]
+id = "cut_50bp"
+name = "Cut the target by 50bp at once"
+source = "stlouis_fed_1998"
+known_date = "2008-09-16"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.5, -1.0]
+pred_dh = [-2.0, -4.5]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+lt_end_u = [69.5, 59.0]
+lt_end_h = [68.0, 50.5]
+
+# Same recession harm as the hold, plus an assumed -0.5 credibility cost of cutting amid 5% headline inflation
+# (assumption; no located trials).
+[[ options.scenarios ]]
+name = "recession_despite_cut"
+p_chain = ["recession_after_dislocation_with_prompt_easing"]
+du = [-1.0, -2.0]
+dh = [-3.5, -8.5]
+nha = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_recession_credibility_cost"
+p_chain = []
+complement = true
+du = [0.0, 0.0]
+dh = [-0.5, -0.5]
+
+[counterfactual]
+# Later evidence only. PLACEHOLDER magnitudes: FRB/US simulation of 50bp vs 100bp and the SVAR with
+# high-frequency identification (named in REPLAY_PREREG 4.2) were not extracted this session.
+actual_floor_u_delta = -2.0
+actual_floor_h_delta = -8.0
+actual_irreparable = 0.0
+alt_option = "cut_50bp"
+methods = ["frb_us_simulation_placeholder", "svar_high_frequency_placeholder"]
+est_floor_u_delta_diff = [0.3, 0.2]
+est_floor_h_delta_diff = [1.0, 0.5]
+est_irreparable_diff = [0.0, 0.0]

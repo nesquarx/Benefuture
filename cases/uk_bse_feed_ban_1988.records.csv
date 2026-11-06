@@ -1,0 +1,7 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+gibbs_oral_primate_1980,KURU-ORAL,1980-08-01,1980-08-01,1980-08-01,1.0,1.0,"Gibbs et al. J Infect Dis 142(2):205-208 (1980), doi:10.1093/infdis/142.2.205 (claim: oral exposure transmits; held)"
+gibbs_oral_primate_1980,CJD-ORAL,1980-08-01,1980-08-01,1980-08-01,1.0,1.0,"Gibbs et al. J Infect Dis 142(2):205-208 (1980) (claim held)"
+gibbs_oral_primate_1980,SCRAPIE-ORAL,1980-08-01,1980-08-01,1980-08-01,1.0,1.0,"Gibbs et al. J Infect Dis 142(2):205-208 (1980) (claim held)"
+mink_encephalopathy_1965,TME-1947,1965-10-01,1965-10-01,1965-10-01,1.0,1.0,"Hartsough & Burger, J Infect Dis 115(4):387-392 (1965) (claim: feed-borne spread; held)"
+mink_encephalopathy_1965,TME-1961,1965-10-01,1965-10-01,1965-10-01,1.0,1.0,"Hartsough & Burger, J Infect Dis 115(4):387-392 (1965) (claim held)"
+mink_encephalopathy_1965,TME-1963,1965-10-01,1965-10-01,1965-10-01,1.0,1.0,"Burger & Hartsough, J Infect Dis 115(4):393-399 (1965) (claim held)"

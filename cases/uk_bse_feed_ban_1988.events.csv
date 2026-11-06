@@ -1,0 +1,7 @@
+event,trial_id,date,occurred,citation_with_page
+tse_oral_cross_species,kuru_to_squirrel_monkey,1980-08-01,1,"Gibbs CJ Jr, Amyx HL, Bacote A, Masters CL, Gajdusek DC. J Infect Dis 142(2):205-208 (1980), doi:10.1093/infdis/142.2.205 (voluntary oral exposure of squirrel monkeys to kuru-infected tissue; incubation c. 36 months reported)"
+tse_oral_cross_species,cjd_to_squirrel_monkey,1980-08-01,1,"Gibbs et al. J Infect Dis 142(2):205-208 (1980), doi:10.1093/infdis/142.2.205 (oral exposure to human CJD tissue; incubations 23 and 27 months reported)"
+tse_oral_cross_species,sheep_goat_scrapie_to_squirrel_monkey,1980-08-01,1,"Gibbs et al. J Infect Dis 142(2):205-208 (1980), doi:10.1093/infdis/142.2.205 (oral exposure to sheep/goat scrapie tissue; incubations 25 and 32 months reported)"
+tse_oral_cross_species,mink_encephalopathy_wisconsin_1947,1947-07-01,1,"Hartsough GR, Burger D. J Infect Dis 115(4):387-392 (1965), doi:10.1093/infdis/115.4.387 (first Brown County Wisconsin outbreak; feed-borne spread on ranch inferred; year approximate)"
+tse_oral_cross_species,mink_encephalopathy_wisconsin_1961,1961-07-01,1,"Hartsough & Burger, J Infect Dis 115(4):387-392 (1965); Burger D, Hartsough GR, J Infect Dis 115(4):393-399 (1965), doi:10.1093/infdis/115.4.393 (six farms sharing one ready-mix feed plant; year approximate)"
+tse_oral_cross_species,mink_encephalopathy_wisconsin_idaho_minnesota_1963,1963-07-01,1,"Burger & Hartsough, J Infect Dis 115(4):393-399 (1965) (natural transmission; downer cattle fed to mink on two farms; year approximate)"

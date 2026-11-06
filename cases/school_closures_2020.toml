@@ -1,0 +1,121 @@
+# Historical Decision Case: US statewide K-12 school closures (2020-03-20)
+# Priced from as-of scenarios (docs/REPLAY_PREREG.md 2b). Events: cases/school_closures_2020.events.csv.
+# Imperial College Report 9 (2020-03-16, doi:10.25561/77482): combined interventions halve deaths in the model
+# (seen via secondary summary); the unmitigated US toll of about 2.2 million is recalled, not re-read here.
+# Honest limit: transmission evidence is influenza (n = 3 located trials) and learning-loss evidence is
+# teacher strikes (n = 3), proxies for a novel virus and a pandemic closure; no located negative learning trial.
+
+id = "school_closures_2020"
+title = "Spring 2020 Statewide K-12 School Closures"
+family = "pandemic"
+era = "2020"
+tier = "full"
+decision_date = "2020-03-20"
+decision_makers = ["State Governors", "State Public Health Officers"]
+actual_choice = "close_schools_statewide"
+actual_outcome_class = "unclear"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "cauchemez_school_holidays_2009"
+title = "Closure of schools during an influenza pandemic (Cauchemez et al., Lancet Infect Dis 2009) and Cauchemez et al. Nature 2008"
+as_of_date = "2009-06-01"
+url = "https://doi.org/10.1038/nature06732"
+notes = "School holidays prevent about one in six seasonal influenza cases in France; closure effect heterogeneous and severity dependent."
+
+[[sources]]
+id = "strike_literature"
+title = "Teacher-strike studies of lost instruction (Belot & Webbink 2010; Baker 2013; Jaume & Willen 2019)"
+as_of_date = "2019-12-31"
+url = "https://econpapers.repec.org/RePEc:cje:issued:v:46:y:2013:i:3:p:1014-1036"
+notes = "Weeks of lost schooling reduce later achievement or earnings in Belgium, Ontario and Argentina."
+
+[[ groups ]]
+id = "students"
+name = "US K-12 students"
+# millions of persons; irreparable counts are thousands of deaths
+population = 50
+baseline_u = 65.0
+baseline_h = 75.0
+
+[[ groups ]]
+id = "adults_and_staff"
+name = "Other US residents including school staff, parents and older relatives"
+population = 280
+baseline_u = 70.0
+baseline_h = 72.0
+
+[[ options ]]
+id = "keep_schools_open"
+name = "Keep schools open with hygiene guidance"
+source = "cauchemez_school_holidays_2009"
+known_date = "2020-03-20"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+# Typed fields restate the priced expectations (the replay reads the inaction baseline before pricing);
+# the scenarios below overwrite them.
+pred_dh = [-0.6, -1.8]
+pred_nha = [0.0, 0.6]
+pred_irreparable = [0.0, 108.0]
+lt_end_u = [65.0, 70.0]
+lt_end_h = [74.4, 70.2]
+
+# If schools do transmit, keeping them open adds up to one sixth of mitigated-epidemic deaths (France: one in
+# six cases; Report 9: combined measures halve about 2.2 million unmitigated US deaths, so about 1.1 million
+# remain, one sixth being about 180 thousand). An upper-end anchor from influenza, not a COVID forecast.
+[[ options.scenarios ]]
+name = "faster_spread_through_schools"
+p_chain = ["school_closure_cuts_transmission"]
+du = [0.0, 0.0]
+dh = [-1.0, -3.0]
+nha = [0.0, 1.0]
+irreparable = [0.0, 180.0]
+
+[[ options.scenarios ]]
+name = "no_difference"
+p_chain = []
+complement = true
+du = [0.0, 0.0]
+
+[[ options ]]
+id = "close_schools_statewide"
+name = "Close schools statewide for in-person teaching"
+source = "strike_literature"
+known_date = "2020-03-20"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-2.4, 0.0]
+pred_dh = [-0.8, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+lt_end_u = [62.6, 70.0]
+lt_end_h = [74.2, 72.0]
+
+# Lost instruction: about a third of a school year (10 of 36 weeks, assumed) times an assumed 10 understanding
+# points per school year gives -3; wellbeing -1 from isolation (assumed plain magnitude).
+[[ options.scenarios ]]
+name = "learning_loss"
+p_chain = ["closure_learning_loss"]
+du = [-3.0, 0.0]
+dh = [-1.0, 0.0]
+nha = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_lasting_loss"
+p_chain = []
+complement = true
+du = [0.0, 0.0]
+
+[counterfactual]
+# Later evidence only. Learning loss: NWEA fall-2020 brief (math 5-10 percentile points below prior cohort).
+# Deaths avoided by closure: difference-in-differences across states (e.g. Auger et al., JAMA 2020) is the
+# named estimator; its figures are PLACEHOLDER bounds here (not extracted this session).
+actual_floor_u_delta = -4.0
+actual_floor_h_delta = -2.0
+actual_irreparable = 0.0
+alt_option = "keep_schools_open"
+methods = ["state_difference_in_differences_placeholder", "nwea_map_growth_learning_loss"]
+est_floor_u_delta_diff = [4.0, 3.0]
+est_floor_h_delta_diff = [2.0, 2.0]
+est_irreparable_diff = [20.0, 100.0]

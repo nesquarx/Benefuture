@@ -1,0 +1,7 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+cauchemez_school_holidays_2009,US-1918,2007-08-08,2007-08-08,2007-08-08,1.0,1.0,"Markel et al. JAMA 298(6):644-654 (2007) (claim: closure lowers transmission; held)"
+cauchemez_school_holidays_2009,FRANCE-1984-2006,2008-04-10,2008-04-10,2008-04-10,1.0,1.0,"Cauchemez et al. Nature 452:750-754 (2008) (claim held)"
+cauchemez_school_holidays_2009,HONGKONG-2008,2008-10-01,2008-10-01,2008-10-01,1.0,0.0,"Cowling et al. Emerg Infect Dis 14(10):1660-1662 (2008) (claim did not hold)"
+strike_literature,BELGIUM-1990,2010-01-01,2010-01-01,2010-01-01,1.0,1.0,"Belot & Webbink, Labour (2010) (claim: lost instruction lowers later outcomes; held)"
+strike_literature,ONTARIO-1998-2005,2013-09-01,2013-09-01,2013-09-01,1.0,1.0,"Baker, Canadian Journal of Economics 46(3):1014-1036 (2013) (claim held)"
+strike_literature,ARGENTINA,2019-01-01,2019-01-01,2019-01-01,1.0,1.0,"Jaume & Willen, Journal of Labor Economics (2019) (claim held)"

@@ -1,0 +1,4 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+stlouis_fed_1998,LTCM-1998,1998-11-17,1999-07-01,1999-07-01,1.0,1.0,"St. Louis Fed Review Jul/Aug 1999 (claim: prompt easing averts recession; held)"
+frbsf_2001,SEPT11-2001,2001-09-17,2002-01-31,2002-01-31,1.0,0.0,"FRBSF Doctor Econ Jan 2002 (claim: prompt easing averts recession; did not hold, recession dated Mar-Nov 2001)"
+friedman_schwartz_1963,PANICS-1930-33,1933-03-31,1963-01-01,1963-01-01,1.0,1.0,"Friedman & Schwartz (1963), ch. 7 (claim: no easing, deep contraction; held)"
