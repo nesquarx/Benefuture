@@ -1,0 +1,190 @@
+# Historical Decision Case: No Child Left Behind Act signed (final passage December 2001, decision date 2002-01-08)
+# Priced from as-of scenarios (docs/REPLAY_PREREG.md 2b). Events: cases/no_child_left_behind_2002.events.csv.
+# Built without running the replay (docs/REPLAY_PREREG.md 4.4). The builder knows the outcome (famous).
+#
+# HONEST LIMITS (read first)
+# - In this session the web was reachable only for FRED; every study named below is cited from memory,
+#   "(primary not seen)", without page numbers beyond what is recalled and marked. Direction-only trials are
+#   marked as such. A wrong recollection would change an event count; the counts are small (n = 4 and 5).
+# - As-of evidence on stakes-based accountability in 2001 is a handful of state systems (Texas, North Carolina,
+#   Kentucky) plus the 1980s-90s test-score-inflation literature. The mandate's design (100 percent proficient
+#   by 2013-14, escalating sanctions) had no as-of trial at all; the mandate's own feasibility is not priced.
+# - Not priced: narrowing of the curriculum (as-of surveys all point one way: Hoffman, Assaf and Paris,
+#   Reading Teacher 54(5), 2001, recalled; so no discriminating rate), dropout and retention effects, school
+#   funding changes, the later waivers. Irreparable harm is zero for every option (judgment).
+# - Magnitudes are JUDGMENT throughout (no as-of figure converts achievement to the understanding scale).
+#   Anchors: NAEP 4th-grade math percent proficient 13 (1990), 18 (1992), 21 (1996), 26 (2000), recalled, primary
+#   not seen: a trend of about 1.3 points a year already under the 1994 voluntary regime. Texas and North
+#   Carolina gains on NAEP math 1990-96 are of the order of a quarter standard deviation (Grissmer and others,
+#   RAND MR-924-EDU, 2000, recalled). Mapping used: one standard deviation = 15 scale points of understanding
+#   (judgment), so a real accountability gain of 0.15-0.2 SD is +2 to +3 points.
+# - Counts: public K-12 students about 47 million (NCES fall 2001), disadvantaged (Title I eligible) about 12
+#   million, public-school teachers about 3 million (NCES, recalled, approximate, primary not seen).
+# - baseline_u/baseline_h are scale conventions as in the exemplars.
+
+id = "no_child_left_behind_2002"
+title = "Sign the No Child Left Behind Act: Test-Based Accountability with Escalating Sanctions"
+family = "education"
+era = "2001-2002"
+tier = "full"
+decision_date = "2002-01-08"
+decision_makers = ["US Congress", "President Bush"]
+actual_choice = "sign_nclb"
+actual_outcome_class = "unclear"
+primary_or_held_out = "held_out"
+
+[[sources]]
+id = "naep_ltt_1999"
+title = "NAEP 1999 Trends in Academic Progress (Campbell, Hombo and Mazzeo, NCES 2000-469; primary not seen)"
+as_of_date = "2000-08-31"
+url = "https://nces.ed.gov/nationsreportcard/"
+notes = "Black-white gaps in long-term-trend reading and math at ages 13 and 17 were wider in 1999 than at their late-1980s low (direction only, recalled)."
+
+[[sources]]
+id = "state_test_vs_naep"
+title = "State accountability gains against independent tests: Grissmer et al. RAND MR-924-EDU (2000); Koretz and Barron RAND MR-1014-EDU (1998); Klein et al. RAND IP-202 / EPAA 8(49) (2000); Linn, Graue and Sanders, Educ Measurement 9(3) (1990)"
+as_of_date = "2000-10-31"
+url = "https://epaa.asu.edu/index.php/epaa/article/view/435"
+notes = "All four recalled, primary not seen. Texas and North Carolina NAEP math gains real; Kentucky KIRIS and Texas TAAS reading gains much larger than on NAEP; national norms inflated."
+
+[[ groups ]]
+id = "students"
+name = "US public K-12 students"
+# millions of persons
+population = 47
+baseline_u = 60.0
+baseline_h = 70.0
+
+[[ groups ]]
+id = "disadvantaged_students"
+name = "Low-income and minority students (Title I eligible)"
+population = 12
+baseline_u = 50.0
+baseline_h = 62.0
+
+[[ groups ]]
+id = "teachers"
+name = "US public-school teachers"
+# millions of persons
+population = 3.0
+baseline_u = 65.0
+baseline_h = 68.0
+
+[[ options ]]
+id = "keep_iasa_1994"
+name = "Let the 1994 Improving America's Schools Act continue: state-chosen standards, no binding federal sanctions"
+source = "naep_ltt_1999"
+known_date = "1994-10-20"
+is_inaction = true
+scope_delta = 0.0
+# Typed fields restate the priced expectations (the replay reads the inaction baseline before pricing);
+# the scenarios below overwrite them. Laplace rate (4+1)/(4+2) = 5/6 = 0.833333. E[du] = 5/6 x [0, -1.0, 0];
+# E[dh] = 5/6 x [0, -0.5, 0].
+pred_du = [0.0, -0.833333, 0.0]
+pred_dh = [0.0, -0.416667, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+lt_end_u = [60.0, 49.166667, 65.0]
+lt_end_h = [70.0, 61.583333, 68.0]
+
+# Gaps keep widening as in 1988-99 (4 of 4 trend series). Magnitude JUDGMENT: -1.0 understanding and -0.5
+# wellbeing for disadvantaged students over the horizon.
+[[ options.scenarios ]]
+name = "gaps_keep_widening"
+p_chain = ["gap_wider_than_late_1980s_low"]
+du = [0.0, -1.0, 0.0]
+dh = [0.0, -0.5, 0.0]
+nha = [0.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "gaps_hold_or_narrow"
+p_chain = []
+complement = true
+du = [0.0, 0.0, 0.0]
+dh = [0.0, 0.0, 0.0]
+nha = [0.0, 0.0, 0.0]
+
+[[ options ]]
+id = "sign_nclb"
+name = "Sign NCLB: annual testing grades 3-8, 100 percent proficient by 2013-14, escalating sanctions for failing schools"
+source = "state_test_vs_naep"
+known_date = "2001-12-13"
+is_inaction = false
+scope_delta = 0.0
+# Laplace rate (2+1)/(5+2) = 3/7 = 0.428571 for gains that replicate on NAEP; 4/7 complement.
+# E[du] = 3/7 x [2, 3, 0] + 4/7 x [-1, -1.5, 0]; E[dh] = 3/7 x [0.5, 1.0, -1.0] + 4/7 x [-0.5, -1.0, -2.0].
+pred_du = [0.285714, 0.428571, 0.0]
+pred_dh = [-0.071429, -0.142857, -1.571429]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+lt_end_u = [60.285714, 50.428571, 65.0]
+lt_end_h = [69.928571, 61.857143, 66.428571]
+
+# Gains replicate on independent tests (the Texas and North Carolina pattern): JUDGMENT +2 understanding for
+# students, +3 for disadvantaged students (gains concentrated where the gap is), wellbeing +0.5 and +1.0;
+# teachers bear workload and pressure, wellbeing -1.0 (judgment).
+[[ options.scenarios ]]
+name = "gains_replicate_on_naep"
+p_chain = ["state_gains_replicate_on_naep"]
+du = [2.0, 3.0, 0.0]
+dh = [0.5, 1.0, -1.0]
+nha = [0.0, 0.0, 0.0]
+
+# Gains are test inflation (the Kentucky, Texas reading and Lake Wobegon pattern) with narrowed instruction and
+# more exclusion and retention at the stakes: JUDGMENT -1.0 and -1.5 understanding, -0.5 and -1.0 wellbeing for
+# students and disadvantaged students; teachers -2.0 wellbeing.
+[[ options.scenarios ]]
+name = "score_inflation_and_narrowing"
+p_chain = []
+complement = true
+du = [-1.0, -1.5, 0.0]
+dh = [-0.5, -1.0, -2.0]
+nha = [0.0, 0.0, 0.0]
+
+[[ options ]]
+id = "reporting_and_flexibility_without_sanctions"
+name = "Reauthorize with annual testing, public reporting and state flexibility (Straight A's style), no federal sanctions"
+source = "state_test_vs_naep"
+known_date = "2001-05-23"
+is_inaction = false
+scope_delta = 0.0
+# Same rate 3/7. E[du] = 3/7 x [1.0, 1.5, 0]; E[dh] = 3/7 x [0.25, 0.5, 0].
+pred_du = [0.428571, 0.642857, 0.0]
+pred_dh = [0.107143, 0.214286, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+lt_end_u = [60.428571, 50.642857, 65.0]
+lt_end_h = [70.107143, 62.214286, 68.0]
+
+# No as-of trial isolates reporting without stakes (the House Straight A's provision of H.R.1 passed 2001-05-23,
+# recalled): the state-system event is reused with the same rate. JUDGMENT: gains are half those of the stakes
+# option (+1.0, +1.5; wellbeing +0.25, +0.5) because stakes drive the gain; Campbell (1979, Evaluation and
+# Program Planning 2:67-90, primary not seen) says distortion scales with stakes, so no side-effect costs.
+[[ options.scenarios ]]
+name = "gains_replicate_with_lower_stakes"
+p_chain = ["state_gains_replicate_on_naep"]
+du = [1.0, 1.5, 0.0]
+dh = [0.25, 0.5, 0.0]
+nha = [0.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_effect_without_stakes"
+p_chain = []
+complement = true
+du = [0.0, 0.0, 0.0]
+dh = [0.0, 0.0, 0.0]
+nha = [0.0, 0.0, 0.0]
+
+[counterfactual]
+# Later evidence only. PLACEHOLDER magnitudes. Named estimator: Dee and Jacob, J Policy Analysis and Management
+# 30(3), 2011 (comparative interrupted time series on NAEP: math gains about a quarter SD in 4th grade, little
+# in reading; recalled, not extracted). Half-weighting for the null in reading and the teacher-wellbeing figure are
+# judgment. Differences are alt (keep_iasa_1994) minus actual.
+actual_floor_u_delta = 1.7
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "keep_iasa_1994"
+methods = ["dee_jacob_2011_comparative_its_placeholder", "naep_ltt_trend_placeholder"]
+est_floor_u_delta_diff = [-1.0, -1.7, 0.0]
+est_floor_h_delta_diff = [0.0, 0.0, 1.0]
+est_irreparable_diff = [0.0, 0.0, 0.0]

@@ -1,0 +1,10 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+naep_ltt_1999,LTT-reading_age_13,2000-08-31,2000-08-31,2000-08-31,1.0,0,"NCES 2000-469 (claim: the 1994 premise that state standards narrow the gap continues the earlier narrowing; did not hold, direction only, primary not seen)"
+naep_ltt_1999,LTT-reading_age_17,2000-08-31,2000-08-31,2000-08-31,1.0,0,"NCES 2000-469 (claim: the 1994 premise that state standards narrow the gap continues the earlier narrowing; did not hold, direction only, primary not seen)"
+naep_ltt_1999,LTT-math_age_13,2000-08-31,2000-08-31,2000-08-31,1.0,0,"NCES 2000-469 (claim: the 1994 premise that state standards narrow the gap continues the earlier narrowing; did not hold, direction only, primary not seen)"
+naep_ltt_1999,LTT-math_age_17,2000-08-31,2000-08-31,2000-08-31,1.0,0,"NCES 2000-469 (claim: the 1994 premise that state standards narrow the gap continues the earlier narrowing; did not hold, direction only, primary not seen)"
+state_test_vs_naep,TX-MATH-1996,1997-02-28,1997-02-28,1997-02-28,1.0,1,"Grissmer et al. RAND MR-924-EDU (2000) (claim: state accountability gains are real learning; held on NAEP math)"
+state_test_vs_naep,NC-MATH-1996,1997-02-28,1997-02-28,1997-02-28,1.0,1,"Grissmer et al. RAND MR-924-EDU (2000) (claim held)"
+state_test_vs_naep,KY-KIRIS-1998,1998-12-31,1998-12-31,1998-12-31,1.0,0,"Koretz and Barron RAND MR-1014-EDU (1998) (claim did not hold)"
+state_test_vs_naep,TX-TAAS-2000,2000-10-31,2000-10-31,2000-10-31,1.0,0,"Klein et al. RAND IP-202 (2000) (claim did not hold)"
+state_test_vs_naep,NORMS-1990,1990-09-30,1990-09-30,1990-09-30,1.0,0,"Linn, Graue and Sanders (1990) (claim did not hold)"
