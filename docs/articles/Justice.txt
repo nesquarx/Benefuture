@@ -16,7 +16,7 @@ Once a crime has been discovered, the process of justice must investigate and un
 * The [[law]]s which have been violated.
 
 ===Reparation===
-The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated <ref name="Zehr1990">Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press.</ref>. This can take the shape of:
+The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated <ref name="Zehr1990">Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press. https://openlibrary.org/works/OL3246202W</ref>. This can take the shape of:
 * Undoing the harm directly if possible.
 * Providing the victims with resources, materials and support processes that would mitigate the harm.
 * Providing resources that are equal to the estimated value of the harm.

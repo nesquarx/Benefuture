@@ -4,36 +4,36 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Nash, J. (1951). Non-cooperative games. ''Annals of Mathematics'', 54(2), 286-295.",
+  "reference": "Nash, J. (1951). Non-cooperative games. ''Annals of Mathematics'', 54(2), 286-295. https://doi.org/10.2307/1969529",
   "supports": " off reporting and enjoying a greater reward and reputation, if they think of repeated exploitation over time or via collusion by other entities, in the former case they risk discovery by other agents and penalties for not reporting, when colluding, each agent still would gain much more by defecting",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1969529"
  },
  {
   "article": "Anti-Corruption",
   "section": "Aspects",
   "subsection": "Discussion",
   "name": "",
-  "reference": "Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press.",
+  "reference": "Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press. https://openlibrary.org/works/OL2259845W",
   "supports": "=== Discussion === Anti-corruption by design works by making optimal actions the natural coordination points",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2259845W"
  },
  {
   "article": "Anti-Corruption",
   "section": "Aspects",
   "subsection": "Discussion",
   "name": "",
-  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press.",
+  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. https://doi.org/10.1017/cbo9780511807763",
   "supports": "Empirical research on long-enduring commons institutions identifies recurring design principles: proportional equivalence between contributions and benefits, observable behavior, graduated sanctions, collective participation in rule-making, and nested governance at multiple scales.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511807763"
  },
  {
   "article": "Anti-Corruption",
   "section": "Aspects",
   "subsection": "Discussion",
   "name": "",
-  "reference": "North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press.",
+  "reference": "North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press. https://openlibrary.org/works/OL25675210W",
   "supports": "Long-run outcomes depend less on achieving optimal institutions than on the capacity to detect failure and adapt.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL25675210W"
  },
  {
   "article": "Art",
@@ -103,63 +103,63 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs.",
+  "reference": "Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs. https://openlibrary.org/works/OL1164980W",
   "supports": "* '''Competing Currencies''': Multiple currencies based on different [[Measurement|metric model]] sets compete on resource efficiency as Value (understanding/happiness/novelty) generated per physical resource unit.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1164980W"
  },
  {
   "article": "Benefuture currency",
   "section": "Aspects",
   "subsection": "",
   "name": "Hanson2013",
-  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178.",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
   "supports": "This prevents arbitrage, speculation, and emergence of a meta-currency that would reintroduce centralization.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/jopp.12008"
  },
  {
   "article": "Benefuture currency",
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Attempts to formalize prediction-contingent payment appear in prediction market literature; see Hanson, R. (2003). Combinatorial information market design. ''Information Systems Frontiers'', ''5''(1), 107-119.",
+  "reference": "Attempts to formalize prediction-contingent payment appear in prediction market literature; see Hanson, R. (2003). Combinatorial information market design. ''Information Systems Frontiers'', ''5''(1), 107-119. https://doi.org/10.1023/a:1022058209073",
   "supports": "Funds release when back-loaded measurements arrive from all relevant currencies, and payment is settled against the [[Measurement#Assessment|assessed]] difference the action made compared to not acting, predicted at first and measured as outcomes arrive.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1023/a:1022058209073"
  },
  {
   "article": "Benefuture currency",
   "section": "Aspects",
   "subsection": "Causal Distribution",
   "name": "",
-  "reference": "Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press.",
+  "reference": "Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press. https://doi.org/10.1515/9781400881970-018",
   "supports": " attributing credit weighted by degree of separation and [[Domain]] relevance, and netting what each entity paid onward against what it received, so that along a chain each link is credited for the value it added and not for the volume passing through it - which approximates shapley-esque mechanisms",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1515/9781400881970-018"
  },
  {
   "article": "Benefuture currency",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Strathern, M. (1997). 'Improving ratings': Audit in the British University system. ''European Review'', ''5''(3), 305-321.",
+  "reference": "Strathern, M. (1997). 'Improving ratings': Audit in the British University system. ''European Review'', ''5''(3), 305-321. https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4",
   "supports": "==Discussion== The multi-currency design addresses Goodhart's Law",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4"
  },
  {
   "article": "Benefuture currency",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press.",
+  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press. https://openlibrary.org/works/OL116534W",
   "supports": "The approach parallels capability theory in welfare economics",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL116534W"
  },
  {
   "article": "Benefuture currency",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press.",
+  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200",
   "supports": "The approach parallels capability theory in welfare economics",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.4159/harvard.9780674061200"
  },
  {
   "article": "Benefuture currency",
@@ -175,81 +175,81 @@
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Hayek, F. A. (1968/2002). Competition as a Discovery Procedure. ''Quarterly Journal of Austrian Economics'', 5(3), 9–23.",
+  "reference": "Hayek, F. A. (1968/2002). Competition as a Discovery Procedure. ''Quarterly Journal of Austrian Economics'', 5(3), 9–23. https://doi.org/10.1007/s12113-002-1029-0",
   "supports": "The discovery process",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1007/s12113-002-1029-0"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Choquet, G. (1954). Theory of capacities. ''Annales de l'Institut Fourier'', 5, 131–295.",
+  "reference": "Choquet, G. (1954). Theory of capacities. ''Annales de l'Institut Fourier'', 5, 131–295. https://doi.org/10.5802/aif.53",
   "supports": "Its form draws on earlier work on interacting criteria and non-additive measures",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.5802/aif.53"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Grabisch, M. (1997). k-order additive discrete fuzzy measures and their representation. ''Fuzzy Sets and Systems'', 92(2), 167–189.",
+  "reference": "Grabisch, M. (1997). k-order additive discrete fuzzy measures and their representation. ''Fuzzy Sets and Systems'', 92(2), 167–189. https://doi.org/10.1016/s0165-0114(97)00168-1",
   "supports": "Its form draws on earlier work on interacting criteria and non-additive measures",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/s0165-0114(97)00168-1"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Grabisch, M., & Roubens, M. (1999). An axiomatic approach to the concept of interaction among players in cooperative games. ''International Journal of Game Theory'', 28(4), 547–565.",
+  "reference": "Grabisch, M., & Roubens, M. (1999). An axiomatic approach to the concept of interaction among players in cooperative games. ''International Journal of Game Theory'', 28(4), 547–565. https://doi.org/10.1007/s001820050125",
   "supports": "Its form draws on earlier work on interacting criteria and non-additive measures",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1007/s001820050125"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Keeney, R. L., & Raiffa, H. (1976). ''Decisions with Multiple Objectives: Preferences and Value Tradeoffs''. Wiley.",
-  "supports": "Its form draws on earlier work on interacting criteria and non-additive measures, multi-attribute utility",
-  "doi_or_url": ""
+  "reference": "Keeney, R. L., & Raiffa, H. (1976). ''Decisions with Multiple Objectives: Preferences and Value Tradeoffs''. Wiley. https://openlibrary.org/works/OL4107460W",
+  "supports": "a and non-additive measures, multi-attribute utility",
+  "doi_or_url": "https://openlibrary.org/works/OL4107460W"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. ''Econometrica'', 47(2), 263–291.",
-  "supports": "''Annales de l'Institut Fourier'', 5, 131–295.</ref>, multi-attribute utility, separate curvature for gains and losses",
-  "doi_or_url": ""
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. ''Econometrica'', 47(2), 263–291. https://doi.org/10.2307/1914185",
+  "supports": "https://doi.org/10.1016/s0165-0114(97)00168-1</ref>, multi-attribute utility, separate curvature for gains and losses",
+  "doi_or_url": "https://doi.org/10.2307/1914185"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Tversky, A., & Kahneman, D. (1992). Advances in prospect theory: Cumulative representation of uncertainty. ''Journal of Risk and Uncertainty'', 5(4), 297–323.",
-  "supports": "''Fuzzy Sets and Systems'', 92(2), 167–189.</ref>, multi-attribute utility, separate curvature for gains and losses",
-  "doi_or_url": ""
+  "reference": "Tversky, A., & Kahneman, D. (1992). Advances in prospect theory: Cumulative representation of uncertainty. ''Journal of Risk and Uncertainty'', 5(4), 297–323. https://doi.org/10.1007/bf00122574",
+  "supports": "https://doi.org/10.1007/s001820050125</ref>, multi-attribute utility, separate curvature for gains and losses",
+  "doi_or_url": "https://doi.org/10.1007/bf00122574"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263.",
-  "supports": "International Journal of Game Theory'', 28(4), 547–565.</ref>, multi-attribute utility, separate curvature for gains and losses, explicit aversion to concentrated shortfall",
-  "doi_or_url": ""
+  "reference": "Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263. https://doi.org/10.1016/0022-0531(70)90039-6",
+  "supports": "https://openlibrary.org/works/OL4107460W</ref>, separate curvature for gains and losses, explicit aversion to concentrated shortfall",
+  "doi_or_url": "https://doi.org/10.1016/0022-0531(70)90039-6"
  },
  {
   "article": "Benefuture goals",
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "Arrow, K. J., Chenery, H. B., Minhas, B. S., & Solow, R. M. (1961). Capital-labor substitution and economic efficiency. ''Review of Economics and Statistics'', 43(3), 225–250.",
-  "supports": "Wiley.</ref>, separate curvature for gains and losses, explicit aversion to concentrated shortfall, constant-elasticity aggregation",
-  "doi_or_url": ""
+  "reference": "Arrow, K. J., Chenery, H. B., Minhas, B. S., & Solow, R. M. (1961). Capital-labor substitution and economic efficiency. ''Review of Economics and Statistics'', 43(3), 225–250. https://doi.org/10.2307/1927286",
+  "supports": "https://doi.org/10.2307/1914185</ref>, explicit aversion to concentrated shortfall, constant-elasticity aggregation",
+  "doi_or_url": "https://doi.org/10.2307/1927286"
  },
  {
   "article": "Benefuture goals",
@@ -257,7 +257,7 @@
   "subsection": "Synergy",
   "name": "",
   "reference": "Hill, A. V. (1910). The possible effects of the aggregation of the molecules of haemoglobin on its dissociation curves. ''Journal of Physiology'', 40, iv–vii.",
-  "supports": "47(2), 263–291.</ref>, explicit aversion to concentrated shortfall, constant-elasticity aggregation and saturating response curves",
+  "supports": "https://doi.org/10.1007/bf00122574</ref>, explicit aversion to concentrated shortfall, constant-elasticity aggregation and saturating response curves",
   "doi_or_url": ""
  },
  {
@@ -265,9 +265,9 @@
   "section": "Aspects",
   "subsection": "Synergy",
   "name": "",
-  "reference": "J. Figueira; S. Greco & M. Ehrgott (2005). '''''Multiple Criteria Decision Analysis: State of the Art Surveys''.''' Springer Verlag",
+  "reference": "J. Figueira; S. Greco & M. Ehrgott (2005). '''''Multiple Criteria Decision Analysis: State of the Art Surveys''.''' Springer Verlag https://doi.org/10.1007/b100605",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1007/b100605"
  },
  {
   "article": "Benefuture goals",
@@ -283,27 +283,27 @@
   "section": "Tradeoff priorities",
   "subsection": "Distribution Targets",
   "name": "Parfit1984",
-  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press.",
+  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. https://openlibrary.org/works/OL3153829W",
   "supports": "This directive, held together with the floors that may not fall and convex harm, blocks Parfit's Repugnant Conclusion",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3153829W"
  },
  {
   "article": "Benefuture goals",
   "section": "Tradeoff priorities",
   "subsection": "Distribution Targets",
   "name": "Nozick1974",
-  "reference": "Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books.",
+  "reference": "Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books. https://openlibrary.org/works/OL3336954W",
   "supports": "ng understanding ($U > H$) with lowest-tier peak pleasure precludes wireheading, and a utility monster aligned with the goals pushes the frontier and, through teachability and synergy, the floor, while the floors that may not fall and concave happiness keep the rest from being drawn away from others",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3336954W"
  },
  {
   "article": "Benefuture goals",
   "section": "Tradeoff priorities",
   "subsection": "Time",
   "name": "",
-  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette Books.",
+  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette Books. https://openlibrary.org/works/OL20670327W",
   "supports": "=== Time === Benefuture's time horizon extends from deepest memory to furthest predictable consequence",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20670327W"
  },
  {
   "article": "Benefuture goals",
@@ -391,9 +391,9 @@
   "section": "Discussion",
   "subsection": "",
   "name": "ClarkEtAl2018",
-  "reference": "Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press.",
+  "reference": "Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press. https://doi.org/10.2307/j.ctvc77dgq",
   "supports": "Evolutionary perspectives suggest that happiness and positive emotions play a crucial role in driving behaviors essential for survival and societal advancement",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/j.ctvc77dgq"
  },
  {
   "article": "Benefuture goals",
@@ -409,18 +409,18 @@
   "section": "Discussion",
   "subsection": "",
   "name": "Gilbert2012",
-  "reference": "Gilbert, D. (2012). '''The science behind the smile.''' ''Harvard Business Review, 90''(1-2), 84-90.",
+  "reference": "Gilbert, D. (2012). '''The science behind the smile.''' ''Harvard Business Review, 90''(1-2), 84-90. https://hbr.org/2012/01/the-science-behind-the-smile",
   "supports": "Happy individuals tend to be more productive and perform better in various [[Domain|domains]]",
-  "doi_or_url": ""
+  "doi_or_url": "https://hbr.org/2012/01/the-science-behind-the-smile"
  },
  {
   "article": "Benefuture goals",
   "section": "Discussion",
   "subsection": "",
   "name": "Achor2010",
-  "reference": "Achor, S. (2010). '''''The happiness advantage: the seven principles of positive psychology that fuel success and performance at work'''''. Crown Business.",
+  "reference": "Achor, S. (2010). '''''The happiness advantage: the seven principles of positive psychology that fuel success and performance at work'''''. Crown Business. https://openlibrary.org/works/OL15674042W",
   "supports": "Happy individuals tend to be more productive and perform better in various [[Domain|domains]]",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL15674042W"
  },
  {
   "article": "Benefuture goals",
@@ -454,9 +454,9 @@
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Taleb, N. N. (2007). ''The black swan: The impact of the highly improbable''. Random House.",
+  "reference": "Taleb, N. N. (2007). ''The black swan: The impact of the highly improbable''. Random House. https://openlibrary.org/works/OL3295030W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3295030W"
  },
  {
   "article": "Benefuture",
@@ -472,9 +472,9 @@
   "section": "Arguments",
   "subsection": "",
   "name": "",
-  "reference": "Sagan, C. (1980). ''Cosmos''. Random House.",
+  "reference": "Sagan, C. (1980). ''Cosmos''. Random House. https://openlibrary.org/works/OL15829966W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL15829966W"
  },
  {
   "article": "Citations",
@@ -544,27 +544,27 @@
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "J. Schmidhuber, \"Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010),\" in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interestingness), Sept. 2010, doi: 10.1109/TAMD.2010.2056368.",
+  "reference": "J. Schmidhuber, \"Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010),\" in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interestingness), Sept. 2010, doi: 10.1109/TAMD.2010.2056368. https://doi.org/10.1109/TAMD.2010.2056368",
   "supports": "Novelty being the nontrivial",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1109/TAMD.2010.2056368"
  },
  {
   "article": "Diversity",
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper).",
+  "reference": "'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). https://doi.org/10.1002/j.1538-7305.1948.tb01338.x",
   "supports": "* Diversity's main [[measurement]] is Novelty, the simple rarity (inverse of frequency of previous encounter) or surprise factor (negative log of probability",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1002/j.1538-7305.1948.tb01338.x"
  },
  {
   "article": "Diversity",
   "section": "Aspects",
   "subsection": "Research",
   "name": "",
-  "reference": "Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press.",
+  "reference": "Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press. https://doi.org/10.1515/9781400830282",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1515/9781400830282"
  },
  {
   "article": "Diversity",
@@ -589,9 +589,9 @@
   "section": "Aspects",
   "subsection": "Research",
   "name": "",
-  "reference": "Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday.",
+  "reference": "Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday. https://openlibrary.org/works/OL8036447W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8036447W"
  },
  {
   "article": "Domain",
@@ -616,36 +616,36 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Galbraith, J. K. (1975). ''Money: Whence it came, where it went''. Houghton Mifflin.",
+  "reference": "Galbraith, J. K. (1975). ''Money: Whence it came, where it went''. Houghton Mifflin. https://openlibrary.org/works/OL12558W",
   "supports": "* The major medium of defining value for exchange is [[currency]], human definitions of value in currency and the promises around it (demand, supply, debt, speculation) have largely defined our economies.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL12558W"
  },
  {
   "article": "Economy",
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Keen, S. (2011). ''Debunking economics: The naked emperor dethroned?'' Zed Books.",
+  "reference": "Keen, S. (2011). ''Debunking economics: The naked emperor dethroned?'' Zed Books. https://doi.org/10.5040/9781350250963",
   "supports": "*Traditional models initially started from exchange value, then focused on productivity, and is now often driven by fiat of speculative forces increasingly detached from [[reality]] across [[social networks]].",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.5040/9781350250963"
  },
  {
   "article": "Economy",
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Krippner, G. R. (2011). ''Capitalizing on crisis: The political origins of the rise of finance''. Harvard University Press.",
+  "reference": "Krippner, G. R. (2011). ''Capitalizing on crisis: The political origins of the rise of finance''. Harvard University Press. https://doi.org/10.4159/9780674058873",
   "supports": "*Traditional models initially started from exchange value, then focused on productivity, and is now often driven by fiat of speculative forces increasingly detached from [[reality]] across [[social networks]].",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.4159/9780674058873"
  },
  {
   "article": "Education",
   "section": "Aspects",
   "subsection": "",
   "name": "Popper1963",
-  "reference": "Popper, K. R. (1963). ''Conjectures and refutations: The growth of scientific knowledge''. Routledge & Kegan Paul.",
+  "reference": "Popper, K. R. (1963). ''Conjectures and refutations: The growth of scientific knowledge''. Routledge & Kegan Paul. https://openlibrary.org/works/OL1984581W",
   "supports": "Teaches the understanding that no truth is objectively absolute, yet many are practically absolute",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1984581W"
  },
  {
   "article": "Education",
@@ -670,36 +670,36 @@
   "section": "Aspects",
   "subsection": "",
   "name": "Peirce1955",
-  "reference": "Peirce, C. S. (1955). ''Philosophical writings of Peirce'' (J. Buchler, Ed.). Dover Publications. (Original work published 1940).",
+  "reference": "Peirce, C. S. (1955). ''Philosophical writings of Peirce'' (J. Buchler, Ed.). Dover Publications. (Original work published 1940). https://openlibrary.org/works/OL1834314W",
   "supports": "To understand that avoiding scrutiny is worse than being wrong",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1834314W"
  },
  {
   "article": "Education",
   "section": "Aspects",
   "subsection": "",
   "name": "Bostrom2011",
-  "reference": "Bostrom, N. (2011). Information hazards: A typology of potential harms from knowledge. ''Review of Contemporary Philosophy'', ''10'', 44–79.",
+  "reference": "Bostrom, N. (2011). Information hazards: A typology of potential harms from knowledge. ''Review of Contemporary Philosophy'', ''10'', 44–79. https://nickbostrom.com/information-hazards.pdf",
   "supports": "* '''Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth|truths]] which can become hazardous without sufficient grounding in contextual knowledge",
-  "doi_or_url": ""
+  "doi_or_url": "https://nickbostrom.com/information-hazards.pdf"
  },
  {
   "article": "Education",
   "section": "Aspects",
   "subsection": "",
   "name": "Lewandowsky2021",
-  "reference": "Lewandowsky, S., & van der Linden, S. (2021). Countering misinformation and fake news through inoculation and prebunking. ''European Review of Social Psychology'', ''32''(2), 348–384.",
+  "reference": "Lewandowsky, S., & van der Linden, S. (2021). Countering misinformation and fake news through inoculation and prebunking. ''European Review of Social Psychology'', ''32''(2), 348–384. https://doi.org/10.1080/10463283.2021.1876983",
   "supports": "* '''Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth|truths]] which can become hazardous without sufficient grounding in contextual knowledge",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1080/10463283.2021.1876983"
  },
  {
   "article": "Education",
   "section": "Aspects",
   "subsection": "",
   "name": "Roozenbeek2020",
-  "reference": "Roozenbeek, J., van der Linden, S., & Nygren, T. (2020). Prebunking interventions based on \"inoculation\" theory can reduce susceptibility to misinformation across cultures. ''The Harvard Kennedy School (HKS) Misinformation Review'', ''1''(2).",
-  "supports": "Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth|truths]] which can become hazardous without sufficient grounding in contextual knowledge",
-  "doi_or_url": ""
+  "reference": "Roozenbeek, J., van der Linden, S., & Nygren, T. (2020). Prebunking interventions based on \"inoculation\" theory can reduce susceptibility to misinformation across cultures. ''The Harvard Kennedy School (HKS) Misinformation Review'', ''1''(2). https://doi.org/10.37016/mr-2020-008",
+  "supports": "disseminate ideas and [[Truth|truths]] which can become hazardous without sufficient grounding in contextual knowledge",
+  "doi_or_url": "https://doi.org/10.37016/mr-2020-008"
  },
  {
   "article": "Education",
@@ -707,7 +707,7 @@
   "subsection": "",
   "name": "Maertens2025",
   "reference": "Maertens, R., Roozenbeek, J., Simons, J. S., Lewandowsky, S., Maturo, V., Goldberg, B., Xu, R., & van der Linden, S. (2025). Psychological booster shots targeting memory increase long-term resistance against misinformation. ''Nature Communications'', ''16''(1), 572. https://doi.org/10.1038/s41467-025-57205-x",
-  "supports": "''Review of Contemporary Philosophy'', ''10'', 44–79.</ref>",
+  "supports": "rmation-hazards.pdf</ref>",
   "doi_or_url": "https://doi.org/10.1038/s41467-025-57205-x"
  },
  {
@@ -778,63 +778,63 @@
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "'''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press.",
+  "reference": "'''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press. https://doi.org/10.4159/9780674041660",
   "supports": "== Discussion == Benefuture government's [[System Design]] is its main arbiter of [[Threshold of significance]] in [[Administration|Administrative]] [[Decision]] making at a fractal level, and along with [[Benefuture currency]], trying to solve the problem of collective action",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.4159/9780674041660"
  },
  {
   "article": "Government",
   "section": "Discussion",
   "subsection": "",
   "name": "Brennan2016",
-  "reference": "Brennan, J. (2016). ''Against Democracy''. Princeton University Press.",
+  "reference": "Brennan, J. (2016). ''Against Democracy''. Princeton University Press. https://openlibrary.org/works/OL20228215W",
   "supports": "The expertise and impact weightage does relate to Epistocracy",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20228215W"
  },
  {
   "article": "Government",
   "section": "Discussion",
   "subsection": "",
   "name": "Estlund2008",
-  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.",
+  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. https://openlibrary.org/works/OL8224067W",
   "supports": "The expertise and impact weightage does relate to Epistocracy but handles its problems",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8224067W"
  },
  {
   "article": "Government",
   "section": "Discussion",
   "subsection": "",
   "name": "Freeman1984",
-  "reference": "Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman.",
+  "reference": "Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman. https://openlibrary.org/works/OL4980191W",
   "supports": "The expertise and impact weightage does relate to Epistocracy but handles its problems via stakeholder",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4980191W"
  },
  {
   "article": "Government",
   "section": "Discussion",
   "subsection": "",
   "name": "Goodin2007",
-  "reference": "Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68.",
+  "reference": "Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68. https://doi.org/10.1111/j.1088-4963.2007.00098.x",
   "supports": "The expertise and impact weightage does relate to Epistocracy but handles its problems via stakeholder affected interests",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/j.1088-4963.2007.00098.x"
  },
  {
   "article": "Government",
   "section": "Discussion",
   "subsection": "",
   "name": "Blum2016",
-  "reference": "Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182.",
+  "reference": "Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182. https://doi.org/10.1111/jopp.12065",
   "supports": "The proposed delegation constraints attempt to alleviate the issues with liquid democracy",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/jopp.12065"
  },
  {
   "article": "Happiness",
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Kahneman, D. (2011). ''Thinking, fast and slow''. Farrar, Straus and Giroux.",
+  "reference": "Kahneman, D. (2011). ''Thinking, fast and slow''. Farrar, Straus and Giroux. https://openlibrary.org/works/OL15992072W",
   "supports": "* Happiness felt by the experiencing self during an [[Outcome|event]] and the happiness lingering on the remembering self post the event can vary by the type of event",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL15992072W"
  },
  {
   "article": "Happiness",
@@ -859,9 +859,9 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Seligman, M. E. P. (2011). '''''Flourish: A visionary new understanding of happiness and well-being''. Simon and Schuster.'''",
+  "reference": "Seligman, M. E. P. (2011). '''''Flourish: A visionary new understanding of happiness and well-being''. Simon and Schuster.''' https://openlibrary.org/works/OL19664526W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL19664526W"
  },
  {
   "article": "Happiness",
@@ -877,9 +877,9 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Gilbert, D. (2006). Stumbling on happiness. Alfred A. Knopf.",
+  "reference": "Gilbert, D. (2006). Stumbling on happiness. Alfred A. Knopf. https://openlibrary.org/works/OL265033W",
   "supports": "* It needs to be acknowledged that actual triggers for happiness are evolved, noisy, can be wrongly anticipated, and otherwise arbitrary and possibly counterproductive.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL265033W"
  },
  {
   "article": "Happiness",
@@ -895,9 +895,9 @@
   "section": "Aspects",
   "subsection": "",
   "name": "",
-  "reference": "Hare, R. D. (2003). ''Without conscience: The disturbing world of the psychopaths among us''. Guilford Press.",
+  "reference": "Hare, R. D. (2003). ''Without conscience: The disturbing world of the psychopaths among us''. Guilford Press. https://openlibrary.org/works/OL2003912W",
   "supports": "* There are scenarios where persons tend to gain pleasure or happiness by the action of causing harm,",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2003912W"
  },
  {
   "article": "Happiness",
@@ -913,9 +913,9 @@
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "'''Nozick, R. (1974).''' ''Anarchy, state, and utopia''. Basic Books.",
+  "reference": "'''Nozick, R. (1974).''' ''Anarchy, state, and utopia''. Basic Books. https://openlibrary.org/works/OL3336954W",
   "supports": "Happiness can also be felt with certain chemical changes in the human [[body]], which can also be artificially induced in an experience machine analogue",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3336954W"
  },
  {
   "article": "Happiness",
@@ -940,9 +940,9 @@
   "section": "Discussion",
   "subsection": "",
   "name": "DienerEtAl2010",
-  "reference": "Diener, E., Ng, W., & Arora, R. (2010). INTERPERSONAL RELATIONS AND GROUP PROCESSES Wealth and Happiness Across the World : Material Prosperity Predicts Life Evaluation , Whereas Psychosocial Prosperity Predicts Positive Feeling.",
+  "reference": "Diener, E., Ng, W., & Arora, R. (2010). INTERPERSONAL RELATIONS AND GROUP PROCESSES Wealth and Happiness Across the World : Material Prosperity Predicts Life Evaluation , Whereas Psychosocial Prosperity Predicts Positive Feeling. https://doi.org/10.1037/a0018066",
   "supports": "Research indicates that both economic and social-psychological factors contribute to well-being, with psychosocial prosperity playing a significant role in positive feelings",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1037/a0018066"
  },
  {
   "article": "Happiness",
@@ -985,9 +985,9 @@
   "section": "Discussion",
   "subsection": "",
   "name": "KahnemanTversky1979",
-  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*, *47*(2), 263-291.",
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*, *47*(2), 263-291. https://doi.org/10.2307/1914185",
   "supports": "In utilitarian theoretic models, Kahneman and Tversky's (1979) prospect theory",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1914185"
  },
  {
   "article": "Happiness",
@@ -1003,27 +1003,27 @@
   "section": "Discussion",
   "subsection": "",
   "name": "SchultzDayanMontague1997",
-  "reference": "Schultz, W., Dayan, P., & Montague, P. R. (1997). A neural substrate of prediction and reward. *Science*, *275*(5306), 1593-1599.",
+  "reference": "Schultz, W., Dayan, P., & Montague, P. R. (1997). A neural substrate of prediction and reward. *Science*, *275*(5306), 1593-1599. https://doi.org/10.1126/science.275.5306.1593",
   "supports": "Neuroscience research on reward prediction error (Schultz, Dayan, & Montague, 1997)",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1126/science.275.5306.1593"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "",
   "name": "Mankiw2021",
-  "reference": "Mankiw, N. G. (2021). *Principles of microeconomics* (9th ed.). Cengage learning.",
+  "reference": "Mankiw, N. G. (2021). *Principles of microeconomics* (9th ed.). Cengage learning. https://openlibrary.org/works/OL3361584W",
   "supports": "Even the microeconomic principle of diminishing marginal utility (Mankiw, 2021)",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3361584W"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Individual Level:'''",
   "name": "CsikszentmihalyiLarson1987",
-  "reference": "Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the Experience-Sampling Method. ''Journal of Youth and Adolescence'', ''16''(6), 539-550.",
+  "reference": "Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the Experience-Sampling Method. ''Journal of Youth and Adolescence'', ''16''(6), 539-550. https://doi.org/10.1097/00005053-198709000-00004",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1097/00005053-198709000-00004"
  },
  {
   "article": "Happiness",
@@ -1039,9 +1039,9 @@
   "section": "Discussion",
   "subsection": "'''Individual Level:'''",
   "name": "HillsArgyle2002",
-  "reference": "Hills, P., & Argyle, M. (2002). The Oxford Happiness Questionnaire: a compact scale for the measurement of psychological well-being. ''Personality and individual differences'', ''33''(7), 1071-1082.",
+  "reference": "Hills, P., & Argyle, M. (2002). The Oxford Happiness Questionnaire: a compact scale for the measurement of psychological well-being. ''Personality and individual differences'', ''33''(7), 1071-1082. https://doi.org/10.1016/s0191-8869(01)00213-6",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/s0191-8869(01)00213-6"
  },
  {
   "article": "Happiness",
@@ -1102,54 +1102,54 @@
   "section": "Discussion",
   "subsection": "'''Individual Level:'''",
   "name": "TaskForce1996",
-  "reference": "Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation, and clinical use. ''Circulation'', ''93''(5), 1043–1065.",
+  "reference": "Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation, and clinical use. ''Circulation'', ''93''(5), 1043–1065. https://doi.org/10.1161/01.cir.93.5.1043",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1161/01.cir.93.5.1043"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Community Level:'''",
   "name": "Fowler2013",
-  "reference": "Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications.",
+  "reference": "Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications. https://openlibrary.org/works/OL17630185W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL17630185W"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Community Level:'''",
   "name": "BorgattiEtAl2018",
-  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications.",
+  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. https://openlibrary.org/works/OL20578711W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20578711W"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Community Level:'''",
   "name": "WassermanFaust1994",
-  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press.",
+  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. https://doi.org/10.1017/cbo9780511815478",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511815478"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Community Level:'''",
   "name": "ChristakisFowler2009",
-  "reference": "Christakis, N. A., & Fowler, J. H. (2009). ''Connected: The surprising power of our social networks and how they shape our lives''. Little, Brown.",
+  "reference": "Christakis, N. A., & Fowler, J. H. (2009). ''Connected: The surprising power of our social networks and how they shape our lives''. Little, Brown. https://openlibrary.org/works/OL8027318W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8027318W"
  },
  {
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "'''Community Level:'''",
   "name": "Putnam2000",
-  "reference": "Putnam, R. D. (2000). ''Bowling alone: The collapse and revival of American community''. Simon and Schuster.",
+  "reference": "Putnam, R. D. (2000). ''Bowling alone: The collapse and revival of American community''. Simon and Schuster. https://openlibrary.org/works/OL4291077W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4291077W"
  },
  {
   "article": "Happiness",
@@ -1210,27 +1210,27 @@
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Cox, M., Arnold, G., & Villamayor-Tomás, S. (2010). A review of design principles for community-based natural resource management. ''Ecology and Society'', 15(4), 38.",
+  "reference": "Cox, M., Arnold, G., & Villamayor-Tomás, S. (2010). A review of design principles for community-based natural resource management. ''Ecology and Society'', 15(4), 38. https://doi.org/10.5751/es-03704-150438",
   "supports": " provide empirical proof of implementation—being a process outline rather than a fully specified pilot proposal—its [[System Design|institutional design]] aligns well with Ostrom's design principles for successful commons governance, which have been validated across 91 case studies in meta-analysis.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.5751/es-03704-150438"
  },
  {
   "article": "Implementation prototype",
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press.",
+  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. https://doi.org/10.1017/cbo9780511807763",
   "supports": " provide empirical proof of implementation—being a process outline rather than a fully specified pilot proposal—its [[System Design|institutional design]] aligns well with Ostrom's design principles for successful commons governance, which have been validated across 91 case studies in meta-analysis.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511807763"
  },
  {
   "article": "Implementation prototype",
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Wilson, D.S., Ostrom, E., & Cox, M.E. (2013). Generalizing the core design principles for the efficacy of groups. ''Journal of Economic Behavior & Organization'', 90, S21-S32.",
+  "reference": "Wilson, D.S., Ostrom, E., & Cox, M.E. (2013). Generalizing the core design principles for the efficacy of groups. ''Journal of Economic Behavior & Organization'', 90, S21-S32. https://doi.org/10.1016/j.jebo.2012.12.010",
   "supports": "e currency#Transaction Mechanics|escrow]] mechanisms), conflict resolution ([[Justice]] system, dispute resolution), recognized rights to organize (self-governing local [[Administration|administrations]]), and nested enterprises (fractal [[Government|governance]] from local to civilizational scale).",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/j.jebo.2012.12.010"
  },
  {
   "article": "Implementation prototype",
@@ -1246,18 +1246,18 @@
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Heller, P., Harilal, K.N., & Chaudhuri, S. (2007). Building Local Democracy: Evaluating the Impact of Decentralization in Kerala, India. ''World Development'', 35(4), 626-648.",
+  "reference": "Heller, P., Harilal, K.N., & Chaudhuri, S. (2007). Building Local Democracy: Evaluating the Impact of Decentralization in Kerala, India. ''World Development'', 35(4), 626-648. https://doi.org/10.1016/j.worlddev.2006.07.001",
   "supports": " digitized 100% of government services for 1.3 million citizens through decentralized interoperable infrastructure, * Kerala's People's Planning Campaign devolved 35-40% of state development budget across 1,214 local governments serving 31 million people through participatory deliberation structures",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/j.worlddev.2006.07.001"
  },
  {
   "article": "Implementation prototype",
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Baiocchi, G. (2005). ''Militants and Citizens: The Politics of Participatory Democracy in Porto Alegre''. Stanford University Press.",
+  "reference": "Baiocchi, G. (2005). ''Militants and Citizens: The Politics of Participatory Democracy in Porto Alegre''. Stanford University Press. https://doi.org/10.1515/9781503625129",
   "supports": ">, * Kerala's People's Planning Campaign devolved 35-40% of state development budget across 1,214 local governments serving 31 million people through participatory deliberation structures, * Porto Alegre's participatory budgeting processed municipal allocations through multi-tier citizen assemblies.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1515/9781503625129"
  },
  {
   "article": "Implementation prototype",
@@ -1273,18 +1273,18 @@
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Suri, T. & Jack, W. (2016). The long-run poverty and gender impacts of mobile money. ''Science'', 354(6317), 1288-1292.",
+  "reference": "Suri, T. & Jack, W. (2016). The long-run poverty and gender impacts of mobile money. ''Science'', 354(6317), 1288-1292. https://doi.org/10.1126/science.aah5309",
   "supports": " Participatory budgeting spread from a single 1989 pilot to over 11,500 implementations globally, * M-Pesa mobile money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1126/science.aah5309"
  },
  {
   "article": "Implementation prototype",
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Jack, W. & Suri, T. (2011). Mobile Money: The Economics of M-Pesa. ''NBER Working Paper'' No. 16721.",
-  "supports": " Participatory budgeting spread from a single 1989 pilot to over 11,500 implementations globally, * M-Pesa mobile money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations",
-  "doi_or_url": ""
+  "reference": "Jack, W. & Suri, T. (2011). Mobile Money: The Economics of M-Pesa. ''NBER Working Paper'' No. 16721. https://doi.org/10.3386/w16721",
+  "supports": "read from a single 1989 pilot to over 11,500 implementations globally, * M-Pesa mobile money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations",
+  "doi_or_url": "https://doi.org/10.3386/w16721"
  },
  {
   "article": "Implementation prototype",
@@ -1292,7 +1292,7 @@
   "subsection": "",
   "name": "",
   "reference": "e-Governance Academy. (2023). ''e-Governance in Practice''. Tallinn.",
-  "supports": "money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations, * Estonia's model has been voluntarily adopted or studied by over 60 countries through the e-Governance Academy.",
+  "supports": "d 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations, * Estonia's model has been voluntarily adopted or studied by over 60 countries through the e-Governance Academy.",
   "doi_or_url": ""
  },
  {
@@ -1300,9 +1300,9 @@
   "section": "Aspects",
   "subsection": "Reparation",
   "name": "Zehr1990",
-  "reference": "Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press.",
+  "reference": "Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press. https://openlibrary.org/works/OL3246202W",
   "supports": "===Reparation=== The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3246202W"
  },
  {
   "article": "Measurement",
@@ -1318,36 +1318,36 @@
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Strathern, M. (1997). \"Improving ratings\": audit in the British university system. ''European Review'', 5(3), 305–321",
+  "reference": "Strathern, M. (1997). \"Improving ratings\": audit in the British university system. ''European Review'', 5(3), 305–321 https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4",
   "supports": "This approach aims to promote innovation, adaptability, and robustness, mitigating the risks of bias and Goodhart's Law",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4"
  },
  {
   "article": "Measurement",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585.",
+  "reference": "Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585. https://arxiv.org/abs/1803.04585",
   "supports": "Goodhart's law has several variants and the design meets them in different places: novel markers for the regressional one, causal explanation and joint correlation within a declared range for the causal and extremal ones, and [[Adversarial adaptation]] for the adversarial one.",
-  "doi_or_url": ""
+  "doi_or_url": "https://arxiv.org/abs/1803.04585"
  },
  {
   "article": "Measurement",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Lakatos, I. (1978). ''The Methodology of Scientific Research Programmes: Philosophical Papers, Vol. 1''. Cambridge University Press.",
+  "reference": "Lakatos, I. (1978). ''The Methodology of Scientific Research Programmes: Philosophical Papers, Vol. 1''. Cambridge University Press. https://doi.org/10.1017/cbo9780511621123",
   "supports": "Metric models function as Lakatosian research programmes, open to entry and retained only while progressive through confirmed novel predictions,",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511621123"
  },
  {
   "article": "Measurement",
   "section": "Discussion",
   "subsection": "",
   "name": "",
-  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright.",
+  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. https://openlibrary.org/works/OL21639913W",
   "supports": "Metric models function as Lakatosian research programmes, open to entry and retained only while progressive through confirmed novel predictions, and attempt to instantiate Strevens' \"iron rule of explanation\", where any rationale may be held but authority is conferred solely by empirical test.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL21639913W"
  },
  {
   "article": "Morality",
@@ -1462,144 +1462,144 @@
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32.",
+  "reference": "Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32. https://doi.org/10.2307/2182230",
   "supports": "arizing two level ethical calculation: rule utilitarianism within established, repeatable scenarios to minimize overhead and cognitive load, employing varying levels of act utilitarianism for novel, high-stakes, or disputed parts of [[Interaction|interactions]] to capture nuance and update the rules",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/2182230"
  },
  {
   "article": "Philosophy",
   "section": "",
   "subsection": "",
   "name": ":0",
-  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press.",
+  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. https://doi.org/10.1093/0198246609.001.0001",
   "supports": "arizing two level ethical calculation: rule utilitarianism within established, repeatable scenarios to minimize overhead and cognitive load, employing varying levels of act utilitarianism for novel, high-stakes, or disputed parts of [[Interaction|interactions]] to capture nuance and update the rules",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1093/0198246609.001.0001"
  },
  {
   "article": "Philosophy",
   "section": "",
   "subsection": "",
   "name": "",
-  "reference": "Sinnott-Armstrong, W. (2023). Consequentialism. In E. N. Zalta (Ed.), ''The Stanford Encyclopedia of Philosophy''.",
+  "reference": "Sinnott-Armstrong, W. (2023). Consequentialism. In E. N. Zalta (Ed.), ''The Stanford Encyclopedia of Philosophy''. https://plato.stanford.edu/entries/consequentialism/",
   "supports": "It is '''Utilitarian''' because moral worth is determined by contribution to aggregate value across all [[being]]s over time, in the consequentialist tradition",
-  "doi_or_url": ""
+  "doi_or_url": "https://plato.stanford.edu/entries/consequentialism/"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "",
   "name": "",
-  "reference": "Nietzsche, F. (1901/1968). ''The Will to Power''. (W. Kaufmann, Trans.). Vintage.",
+  "reference": "Nietzsche, F. (1901/1968). ''The Will to Power''. (W. Kaufmann, Trans.). Vintage. https://openlibrary.org/works/OL17382563W",
   "supports": "==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL17382563W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "",
   "name": "",
-  "reference": "Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007.",
+  "reference": "Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007. https://openlibrary.org/works/OL1161181W",
   "supports": "==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism, Sartrean existentialism",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1161181W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "",
   "name": "",
-  "reference": "Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard.",
+  "reference": "Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard. https://openlibrary.org/works/OL1230690W",
   "supports": "==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism, Sartrean existentialism, and Camus's absurdism",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1230690W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "",
   "name": "",
-  "reference": "Dewey, J. (1939). ''Theory of Valuation''. University of Chicago Press.",
+  "reference": "Dewey, J. (1939). ''Theory of Valuation''. University of Chicago Press. https://openlibrary.org/works/OL111331W",
   "supports": "The framework is therefore pragmatic",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL111331W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Classical Utilitarianism",
   "name": "",
-  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789).",
+  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). https://openlibrary.org/works/OL738290W",
   "supports": "Classical utilitarianism established that moral worth is determined by contribution to overall utility, originally defined as maximization of pleasure and minimization of pain",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL738290W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Classical Utilitarianism",
   "name": "",
-  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn.",
+  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. https://openlibrary.org/works/OL1068100W",
   "supports": "Mill refined this to distinguish higher and lower pleasures, introducing an intellectual dimension",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1068100W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Classical Utilitarianism",
   "name": "",
-  "reference": "Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan.",
+  "reference": "Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan. https://openlibrary.org/works/OL1073633W",
   "supports": "Sidgwick systematized the framework, identifying the tension between egoistic and universal hedonism",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1073633W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Utilitarian variants",
   "name": "",
-  "reference": "Singer, P. (1979). ''Practical Ethics''. Cambridge University Press.",
+  "reference": "Singer, P. (1979). ''Practical Ethics''. Cambridge University Press. https://openlibrary.org/works/OL936837W",
   "supports": "=== Utilitarian variants === Preference utilitarianism already moved past hedonism, substituting preference-satisfaction as the maximand",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL936837W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Utilitarian variants",
   "name": ":0",
-  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press.",
+  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. https://doi.org/10.1093/0198246609.001.0001",
   "supports": "=== Utilitarian variants === Preference utilitarianism already moved past hedonism, substituting preference-satisfaction as the maximand and establishing the need to switch between act and rule",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1093/0198246609.001.0001"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Utilitarian variants",
   "name": "",
-  "reference": "Moore, G. E. (1903). ''Principia Ethica''. Cambridge University Press.",
+  "reference": "Moore, G. E. (1903). ''Principia Ethica''. Cambridge University Press. https://openlibrary.org/works/OL3907953W",
   "supports": "Ideal utilitarianism (Moore, Rashdall) granted knowledge (and others) as intrinsic value alongside pleasure",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3907953W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Utilitarian variants",
   "name": "",
-  "reference": "Goldman, A. I. (1986). ''Epistemology and Cognition''. Harvard University Press.",
+  "reference": "Goldman, A. I. (1986). ''Epistemology and Cognition''. Harvard University Press. https://openlibrary.org/works/OL1975149W",
   "supports": "Ideal utilitarianism (Moore, Rashdall) granted knowledge (and others) as intrinsic value alongside pleasure; epistemic consequentialism evaluates beliefs by their accuracy and truth-conduciveness",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1975149W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Decision Theory",
   "name": "",
-  "reference": "von Neumann, J., & Morgenstern, O. (1944). ''Theory of Games and Economic Behavior''. Princeton University Press.",
+  "reference": "von Neumann, J., & Morgenstern, O. (1944). ''Theory of Games and Economic Behavior''. Princeton University Press. https://openlibrary.org/works/OL1204974W",
   "supports": "Modern utility theory, formalized by von Neumann and Morgenstern, treats utility as that which rational agents maximize under uncertainty",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1204974W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Decision Theory",
   "name": "",
-  "reference": "Savage, L. J. (1954). ''The Foundations of Statistics''. Wiley.",
+  "reference": "Savage, L. J. (1954). ''The Foundations of Statistics''. Wiley. https://openlibrary.org/works/OL6612530W",
   "supports": "Savage extended this to subjective probability",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL6612530W"
  },
  {
   "article": "Philosophy",
@@ -1615,9 +1615,9 @@
   "section": "Lineage",
   "subsection": "Decision Theory",
   "name": "",
-  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. ''Econometrica'', 47(2), 263–291.",
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. ''Econometrica'', 47(2), 263–291. https://doi.org/10.2307/1914185",
   "supports": "Cognitive Progressive Utilitarianism addresses the instability of revealed preferences under hedonic adaptation and the reference-dependence problems identified by prospect theory",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1914185"
  },
  {
   "article": "Philosophy",
@@ -1642,99 +1642,99 @@
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Aristotle. (2009). ''Nicomachean Ethics''. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE).",
+  "reference": "Aristotle. (2009). ''Nicomachean Ethics''. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE). https://openlibrary.org/works/OL8273964W",
   "supports": "Aristotle's unmoved mover is rooted in cogitation, he identifies ''theoria'' (contemplation) as the highest human activity, the exercise of our distinguishing function and the most self-sufficient form of flourishing",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8273964W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Spinoza, B. (1985). ''Ethics''. (E. Curley, Trans.). Princeton University Press. (Original work published 1677).",
+  "reference": "Spinoza, B. (1985). ''Ethics''. (E. Curley, Trans.). Princeton University Press. (Original work published 1677). https://openlibrary.org/works/OL16697439W",
   "supports": "Spinoza defined freedom as the triumph of understanding over the bondage of passive emotions",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL16697439W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Kant, I. (1998). ''Groundwork of the Metaphysics of Morals''. (M. Gregor, Trans.). Cambridge University Press. (Original work published 1785).",
+  "reference": "Kant, I. (1998). ''Groundwork of the Metaphysics of Morals''. (M. Gregor, Trans.). Cambridge University Press. (Original work published 1785). https://doi.org/10.1017/cbo9780511809590",
   "supports": "Kant argued that if happiness were life's goal, instinct would suffice; reason exists to produce a good will aligned with universal law",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511809590"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Hegel, G. W. F. (1977). ''Phenomenology of Spirit''. (A. V. Miller, Trans.). Oxford University Press. (Original work published 1807).",
+  "reference": "Hegel, G. W. F. (1977). ''Phenomenology of Spirit''. (A. V. Miller, Trans.). Oxford University Press. (Original work published 1807). https://openlibrary.org/works/OL27676024W",
   "supports": "Hegel's process of ''Geist'' being epistemological in nature, positions comprehension rather than satisfaction as the telos of existence",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL27676024W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Aurelius, M. (2002). ''Meditations''. (G. Hays, Trans.). Modern Library. (Original work c. 180).",
+  "reference": "Aurelius, M. (2002). ''Meditations''. (G. Hays, Trans.). Modern Library. (Original work c. 180). https://openlibrary.org/works/OL1317211W",
   "supports": "The Stoics maintained that harm is fundamentally an error in judgment, identifying epistemic clarity as the only robust shield against suffering",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1317211W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Aristotle. (c. 350 BCE). ''Posterior Analytics''. In J. Barnes (Ed.), ''The Complete Works of Aristotle'' (Vol. 1). Princeton University Press, 1984.",
+  "reference": "Aristotle. (c. 350 BCE). ''Posterior Analytics''. In J. Barnes (Ed.), ''The Complete Works of Aristotle'' (Vol. 1). Princeton University Press, 1984. https://openlibrary.org/works/OL40411335W",
   "supports": "Beyond cogitation and predictive accuracy, Aristotle's four causes (material, formal, efficient, final) established the foundational Western framework for what constitutes an adequate explanation",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL40411335W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Hempel, C. G., & Oppenheim, P. (1948). Studies in the logic of explanation. ''Philosophy of Science'', ''15''(2), 135-175.",
+  "reference": "Hempel, C. G., & Oppenheim, P. (1948). Studies in the logic of explanation. ''Philosophy of Science'', ''15''(2), 135-175. https://doi.org/10.1086/286983",
   "supports": "Hempel formalized scientific explanation as logical derivation from general laws and initial conditions",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1086/286983"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Rationalist Ethics",
   "name": "",
-  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press.",
+  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. https://openlibrary.org/works/OL4325174W",
   "supports": "Deutsch argues that good explanations, which are hard to vary while still accounting for phenomena, are more fundamental than predictive accuracy alone",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4325174W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Maffie, J. (2014). ''Aztec Philosophy: Understanding a World in Motion''. University Press of Colorado.",
+  "reference": "Maffie, J. (2014). ''Aztec Philosophy: Understanding a World in Motion''. University Press of Colorado. https://doi.org/10.5876/9781607322238",
   "supports": "* '''Aztec''': ''Neltiliztli'' (rootedness in truth) over happiness, which was considered treacherous",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.5876/9781607322238"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books.",
+  "reference": "Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books. https://openlibrary.org/works/OL27033818W",
   "supports": "It is the prerequisite for ''Ren'' (Benevolence)",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL27033818W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Shankara. (1979). ''Upadesasahasri''. (S. Mayeda, Trans.). University of Tokyo Press.",
+  "reference": "Shankara. (1979). ''Upadesasahasri''. (S. Mayeda, Trans.). University of Tokyo Press. https://openlibrary.org/works/OL319022W",
   "supports": "* '''Vedic''': ''Sat'' (truth/existence) as structural prerequisite for ''Ananda'' (bliss)",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL319022W"
  },
  {
   "article": "Philosophy",
@@ -1759,18 +1759,18 @@
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Boyce, M. (1975). ''A History of Zoroastrianism''. Brill.",
+  "reference": "Boyce, M. (1975). ''A History of Zoroastrianism''. Brill. https://openlibrary.org/works/OL2976951W",
   "supports": "* '''Zoroastrian''': Alignment with ''Asha'' (cosmic order) against ''Druj'' (entropy) as the definition of the good life",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2976951W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Kramer, S. N. (1963). ''The Sumerians: Their History, Culture, and Character''. University of Chicago Press.",
+  "reference": "Kramer, S. N. (1963). ''The Sumerians: Their History, Culture, and Character''. University of Chicago Press. https://openlibrary.org/works/OL8469935W",
   "supports": "* '''Sumerian''': Humanity's purpose as executing the ''Me'' (divine functions)—society as machine requiring maintenance, not vehicle for leisure",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8469935W"
  },
  {
   "article": "Philosophy",
@@ -1786,135 +1786,135 @@
   "section": "Lineage",
   "subsection": "Cross-Cultural Convergence",
   "name": "",
-  "reference": "Toynbee, A. J. (1934–1961). ''A Study of History''. Oxford University Press.",
+  "reference": "Toynbee, A. J. (1934–1961). ''A Study of History''. Oxford University Press. https://openlibrary.org/works/OL1108523W",
   "supports": "Which is not to say all civilizations optimized for understanding analogues, but civilizations which maintained creative vitality attempting different forms of understanding analogues such as philosophy, science, and art, tended toward greater historical impact",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1108523W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Contemporary Positioning",
   "name": "",
-  "reference": "Sen, A. (1985). ''Commodities and Capabilities''. North-Holland.",
+  "reference": "Sen, A. (1985). ''Commodities and Capabilities''. North-Holland. https://openlibrary.org/works/OL8006981W",
   "supports": "=== Contemporary Positioning === The capabilities approach shares this skepticism of hedonic and preference measures, focusing on what [[Being|beings]] can do and be.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8006981W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Contemporary Positioning",
   "name": "",
-  "reference": "Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press.",
+  "reference": "Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press. https://openlibrary.org/works/OL25675444W",
   "supports": "=== Contemporary Positioning === The capabilities approach shares this skepticism of hedonic and preference measures, focusing on what [[Being|beings]] can do and be.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL25675444W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Contemporary Positioning",
   "name": "",
-  "reference": "MacAskill, W. (2022). ''What We Owe the Future''. Basic Books.",
+  "reference": "MacAskill, W. (2022). ''What We Owe the Future''. Basic Books. https://openlibrary.org/works/OL27138977W",
   "supports": "Effective Altruism represents the most developed contemporary attempt to operationalize consequentialist ethics through rigorous [[measurement]].",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL27138977W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Contemporary Positioning",
   "name": "",
-  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette.",
+  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette. https://openlibrary.org/works/OL20670327W",
   "supports": "Effective Altruism represents the most developed contemporary attempt to operationalize consequentialist ethics through rigorous [[measurement]].",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20670327W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Walzer, M. (1983). ''Spheres of Justice: A Defense of Pluralism and Equality''. Basic Books.",
+  "reference": "Walzer, M. (1983). ''Spheres of Justice: A Defense of Pluralism and Equality''. Basic Books. https://openlibrary.org/works/OL3350245W",
   "supports": "* '''Walzer's spheres:''' each social good has its own sphere, and injustice is converting dominance in one sphere into another.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3350245W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Hanson, R. (2013). Shall We Vote on Values, But Bet on Beliefs? ''Journal of Political Philosophy'', 21(2), 151–178.",
+  "reference": "Hanson, R. (2013). Shall We Vote on Values, But Bet on Beliefs? ''Journal of Political Philosophy'', 21(2), 151–178. https://doi.org/10.1111/jopp.12008",
   "supports": "* '''Hanson's markets:''' vote on values, bet on beliefs.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/jopp.12008"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Lakatos, I. (1970). Falsification and the Methodology of Scientific Research Programmes. In I. Lakatos & A. Musgrave (Eds.), ''Criticism and the Growth of Knowledge'' (pp. 91–196). Cambridge University Press.",
+  "reference": "Lakatos, I. (1970). Falsification and the Methodology of Scientific Research Programmes. In I. Lakatos & A. Musgrave (Eds.), ''Criticism and the Growth of Knowledge'' (pp. 91–196). Cambridge University Press. https://doi.org/10.1017/cbo9781139171434.009",
   "supports": "* '''Lakatos' programmes:''' a research programme keeps its standing while it predicts novel facts that are confirmed, and loses it as it degenerates.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9781139171434.009"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright.",
+  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. https://openlibrary.org/works/OL21639913W",
   "supports": "* '''Strevens' iron rule:''' any reason may be held privately, but only empirical test confers public authority.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL21639913W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press.",
+  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. https://openlibrary.org/works/OL4325174W",
   "supports": "* '''Deutsch's understanding:''' progress is the growth of good explanations.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4325174W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789).",
+  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). https://openlibrary.org/works/OL738290W",
   "supports": "* '''Even over Bentham's happiness:''' classical utilitarianism counts pleasure and pain as the sole measure of value.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL738290W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "Positioning in One Line",
   "name": "",
-  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn.",
+  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. https://openlibrary.org/works/OL1068100W",
   "supports": "Mill ranked intellectual pleasures above bodily ones but kept happiness the only maximand;",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1068100W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "The Joy of Understanding",
   "name": "",
-  "reference": "Aristotle. (1984). ''Metaphysics''. (W. D. Ross, Trans.). In J. Barnes (Ed.), ''The Complete Works of Aristotle''. Princeton University Press. (Original work c. 350 BCE).",
+  "reference": "Aristotle. (1984). ''Metaphysics''. (W. D. Ross, Trans.). In J. Barnes (Ed.), ''The Complete Works of Aristotle''. Princeton University Press. (Original work c. 350 BCE). https://openlibrary.org/works/OL20966539W",
   "supports": "Aristotle opens the ''Metaphysics'' with \"all men by nature desire to know,\" positioning this desire as fundamental rather than instrumental",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20966539W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "The Joy of Understanding",
   "name": "",
-  "reference": "Aquinas, T. (1947). ''Summa Theologica''. Benziger Bros. (Original work c. 1274).",
+  "reference": "Aquinas, T. (1947). ''Summa Theologica''. Benziger Bros. (Original work c. 1274). https://openlibrary.org/works/OL15314568W",
   "supports": "Aquinas argued that contemplation of truth is more delightful than any other pleasure, with the beatific vision—direct knowledge—as the supreme joy",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL15314568W"
  },
  {
   "article": "Philosophy",
   "section": "Lineage",
   "subsection": "The Joy of Understanding",
   "name": "",
-  "reference": "Leibniz, G. W. (1989). Principles of Nature and Grace. In ''Philosophical Essays''. (R. Ariew & D. Garber, Trans.). Hackett. (Original work published 1714).",
+  "reference": "Leibniz, G. W. (1989). Principles of Nature and Grace. In ''Philosophical Essays''. (R. Ariew & D. Garber, Trans.). Hackett. (Original work published 1714). https://openlibrary.org/works/OL1146787W",
   "supports": "Leibniz defined pleasure itself as \"the feeling of perfection,\" where perfection is the comprehension of order and harmony—joy is not a reward for understanding but understanding's phenomenology",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1146787W"
  },
  {
   "article": "Philosophy",
@@ -1939,63 +1939,63 @@
   "section": "Lineage",
   "subsection": "The Joy of Understanding",
   "name": "",
-  "reference": "Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psychological Science'', 20(8), 963–973.",
+  "reference": "Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psychological Science'', 20(8), 963–973. https://doi.org/10.1111/j.1467-9280.2009.02402.x",
   "supports": "Modern neuroscience confirms the structure in humans: curiosity activates reward circuitry directly, with information gain processed as intrinsically rewarding independent of external utility",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/j.1467-9280.2009.02402.x"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Klauer, K. J., & Phye, G. D. (2008). Inductive Reasoning: A Training Approach. ''Review of Educational Research'', 78(1), 85–123.",
+  "reference": "Klauer, K. J., & Phye, G. D. (2008). Inductive Reasoning: A Training Approach. ''Review of Educational Research'', 78(1), 85–123. https://doi.org/10.3102/0034654307313402",
   "supports": "'''Compoundability''': Training in inductive reasoning significantly improves fluid intelligence, demonstrating that understanding-capacity is upgradeable across a single lifetime",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.3102/0034654307313402"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Ritchie, S. J., & Tucker-Drob, E. M. (2018). How Much Does Education Improve Intelligence? ''Psychological Science'', 29(8), 1349–1362.",
+  "reference": "Ritchie, S. J., & Tucker-Drob, E. M. (2018). How Much Does Education Improve Intelligence? ''Psychological Science'', 29(8), 1349–1362. https://doi.org/10.1177/0956797618774253",
   "supports": "'''Compoundability''': Training in inductive reasoning significantly improves fluid intelligence, demonstrating that understanding-capacity is upgradeable across a single lifetime",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1177/0956797618774253"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Tomasello, M. (1999). ''The cultural origins of human cognition''. Harvard University Press.",
+  "reference": "Tomasello, M. (1999). ''The cultural origins of human cognition''. Harvard University Press. https://openlibrary.org/works/OL15251115W",
   "supports": "While generationally and across large populations, the compounding accelerates",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL15251115W"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Romer, P. M. (1990). Endogenous technological change. ''Journal of Political Economy'', ''98''(5), S71–S102.",
+  "reference": "Romer, P. M. (1990). Endogenous technological change. ''Journal of Political Economy'', ''98''(5), S71–S102. https://doi.org/10.1086/261725",
   "supports": "While generationally and across large populations, the compounding accelerates",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1086/261725"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Fuller, R. B. (1981). ''Critical path''. St. Martin's Press.",
+  "reference": "Fuller, R. B. (1981). ''Critical path''. St. Martin's Press. https://openlibrary.org/works/OL4109893W",
   "supports": "While generationally and across large populations, the compounding accelerates",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4109893W"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Butler, H. A., Pentoney, C., & Bong, M. P. (2017). Predicting Real-World Outcomes: Critical Thinking Ability is a Better Predictor of Life Decisions than Intelligence. ''Thinking Skills and Creativity'', 24, 38–46.",
+  "reference": "Butler, H. A., Pentoney, C., & Bong, M. P. (2017). Predicting Real-World Outcomes: Critical Thinking Ability is a Better Predictor of Life Decisions than Intelligence. ''Thinking Skills and Creativity'', 24, 38–46. https://doi.org/10.1016/j.tsc.2017.06.005",
   "supports": "'''Validity of causal reasoning''': Critical thinking ability is a stronger predictor of avoiding severe negative life outcomes than raw intelligence",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/j.tsc.2017.06.005"
  },
  {
   "article": "Philosophy",
@@ -2011,36 +2011,36 @@
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Stanovich, K. E. (2009). ''What Intelligence Tests Miss: The Psychology of Rational Thought''. Yale University Press.",
+  "reference": "Stanovich, K. E. (2009). ''What Intelligence Tests Miss: The Psychology of Rational Thought''. Yale University Press. https://openlibrary.org/works/OL1917206W",
   "supports": "Rationality and intelligence are partially dissociable constructs",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1917206W"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Friston, K. (2010). The free-energy principle: a unified brain theory? ''Nature Reviews Neuroscience'', 11(2), 127–138.",
+  "reference": "Friston, K. (2010). The free-energy principle: a unified brain theory? ''Nature Reviews Neuroscience'', 11(2), 127–138. https://doi.org/10.1038/nrn2787",
   "supports": "'''Biophysical grounding''': The free-energy principle defines survival as minimization of surprise via accurate internal modeling",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1038/nrn2787"
  },
  {
   "article": "Philosophy",
   "section": "Empirical Support",
   "subsection": "",
   "name": "",
-  "reference": "Heckman, J. J., & Kautz, T. (2012). Hard Evidence on Soft Skills. ''Labour Economics'', 19(4), 451–464.",
+  "reference": "Heckman, J. J., & Kautz, T. (2012). Hard Evidence on Soft Skills. ''Labour Economics'', 19(4), 451–464. https://doi.org/10.1016/j.labeco.2012.05.014",
   "supports": "- yield higher long-term returns than raw cognitive resources",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/j.labeco.2012.05.014"
  },
  {
   "article": "Philosophy",
   "section": "Objections and Responses",
   "subsection": "Against Cognitive Priority",
   "name": "",
-  "reference": "Crisp, R. (2006). ''Reasons and the Good''. Oxford University Press.",
+  "reference": "Crisp, R. (2006). ''Reasons and the Good''. Oxford University Press. https://openlibrary.org/works/OL2621639W",
   "supports": "'''Objection''': Hedonic welfare is the only intrinsically valuable state; understanding is merely instrumental",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2621639W"
  },
  {
   "article": "Philosophy",
@@ -2065,9 +2065,9 @@
   "section": "Objections and Responses",
   "subsection": "Against Consequentialism Generally",
   "name": "",
-  "reference": "Williams, B. (1973). A Critique of Utilitarianism. In J. J. C. Smart & B. Williams, ''Utilitarianism: For and Against'' (pp. 77–150). Cambridge University Press.",
+  "reference": "Williams, B. (1973). A Critique of Utilitarianism. In J. J. C. Smart & B. Williams, ''Utilitarianism: For and Against'' (pp. 77–150). Cambridge University Press. https://doi.org/10.1017/cbo9780511840852.002",
   "supports": "'''Objection''': Consequentialism alienates agents from their personal projects and relationships",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511840852.002"
  },
  {
   "article": "Philosophy",
@@ -2083,99 +2083,99 @@
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Morality",
   "name": "",
-  "reference": "Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press.",
+  "reference": "Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press. https://doi.org/10.1017/cbo9780511525599",
   "supports": "This parallels: * '''Deep Ecology''': Self-realization requires identification with the wider ecosystem",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511525599"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Morality",
   "name": "",
-  "reference": "Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday.",
+  "reference": "Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday. https://openlibrary.org/works/OL470336W",
   "supports": "* '''Ubuntu''': Personhood is relational; isolated existence is rejected",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL470336W"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Morality",
   "name": "",
-  "reference": "Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books.",
+  "reference": "Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books. https://openlibrary.org/works/OL2620286W",
   "supports": "* '''Iterated game theory''': Cooperation emerges when future interactions are valued",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2620286W"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Morality",
   "name": "",
-  "reference": "Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563.",
+  "reference": "Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563. https://doi.org/10.1126/science.1133755",
   "supports": "* '''Iterated game theory''': Cooperation emerges when future interactions are valued",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1126/science.1133755"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Morality",
   "name": "",
-  "reference": "Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press.",
+  "reference": "Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press. https://doi.org/10.1093/oso/9780195103175.001.0001",
   "supports": "* '''Buddhism:''' dependent origination (''pratītyasamutpāda'') denies isolated selfhood",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1093/oso/9780195103175.001.0001"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Justice",
   "name": "",
-  "reference": "Karenga, M. (2004). ''Maat, The Moral Ideal in Ancient Egypt''. Routledge.",
+  "reference": "Karenga, M. (2004). ''Maat, The Moral Ideal in Ancient Egypt''. Routledge. https://openlibrary.org/works/OL21257630W",
   "supports": "This parallels: * '''Ma'at''' (Egyptian): Justice as maintenance of cosmic order against chaos",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL21257630W"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Justice",
   "name": "",
-  "reference": "Hourani, G. F. (1985). ''Reason and Tradition in Islamic Ethics''. Cambridge University Press.",
+  "reference": "Hourani, G. F. (1985). ''Reason and Tradition in Islamic Ethics''. Cambridge University Press. https://doi.org/10.1017/cbo9780511570780",
   "supports": "* '''Mu'tazila theology''': Justice (''Adl'') as objective, rational property discoverable by reason (''Aql'')",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511570780"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Identity",
   "name": "",
-  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press.",
+  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. https://openlibrary.org/works/OL3153829W",
   "supports": "This parallels: * '''Parfit''': Personal identity as psychological continuity, not soul-substance",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3153829W"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Identity",
   "name": "",
-  "reference": "Roberts, M. (2013). Ways of Seeing: Whakapapa. ''Sites'', 10(1), 93–120.",
+  "reference": "Roberts, M. (2013). Ways of Seeing: Whakapapa. ''Sites'', 10(1), 93–120. https://doi.org/10.11157/sites-vol10iss1id236",
   "supports": "* '''Whakapapa''' (Maori): Identity as causal layering",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.11157/sites-vol10iss1id236"
  },
  {
   "article": "Philosophy",
   "section": "Philosophical Parallels in Benefuture Concepts",
   "subsection": "Identity",
   "name": "",
-  "reference": "Whitehead, A. N. (1929). ''Process and Reality''. Macmillan.",
+  "reference": "Whitehead, A. N. (1929). ''Process and Reality''. Macmillan. https://openlibrary.org/works/OL1133700W",
   "supports": "* '''Process philosophy''': Identity as trajectory of becoming rather than static state",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1133700W"
  },
  {
   "article": "Proof",
   "section": "Aspects",
   "subsection": "",
   "name": "Achinstein2001",
-  "reference": "Achinstein, P. (2001). *The book of evidence*. Oxford University Press.",
+  "reference": "Achinstein, P. (2001). *The book of evidence*. Oxford University Press. https://doi.org/10.1093/0195143892.001.0001",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1093/0195143892.001.0001"
  },
  {
   "article": "Proof",
@@ -2209,9 +2209,9 @@
   "section": "Aspects",
   "subsection": "",
   "name": "Kuhn1962",
-  "reference": "Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press.",
+  "reference": "Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press. https://openlibrary.org/works/OL3259254W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3259254W"
  },
  {
   "article": "Reputation",
@@ -2254,171 +2254,171 @@
   "section": "Aspects",
   "subsection": "Incentive Architecture",
   "name": "Myerson1981",
-  "reference": "Myerson, R. B. (1981). Optimal auction design. ''Mathematics of Operations Research'', ''6''(1), 58-73.",
+  "reference": "Myerson, R. B. (1981). Optimal auction design. ''Mathematics of Operations Research'', ''6''(1), 58-73. https://doi.org/10.1287/moor.6.1.58",
   "supports": "=== Incentive Architecture === Systems are designed such that truthful, goal-aligned action constitutes the dominant strategy for participants.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1287/moor.6.1.58"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Incentive Architecture",
   "name": "ThalerSunstein2008",
-  "reference": "Thaler, R. H., & Sunstein, C. R. (2008). ''Nudge: Improving Decisions about Health, Wealth, and Happiness''. Yale University Press.",
+  "reference": "Thaler, R. H., & Sunstein, C. R. (2008). ''Nudge: Improving Decisions about Health, Wealth, and Happiness''. Yale University Press. https://openlibrary.org/works/OL3936258W",
   "supports": "Goal enforcement operates via nudge",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL3936258W"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Antifragility",
   "name": "Taleb2012",
-  "reference": "Taleb, N. N. (2012). ''Antifragile: Things That Gain from Disorder''. Random House.",
+  "reference": "Taleb, N. N. (2012). ''Antifragile: Things That Gain from Disorder''. Random House. https://openlibrary.org/works/OL16726829W",
   "supports": "=== Antifragility === Systems are designed to strengthen under stress rather than merely resist it.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL16726829W"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Circularity Detection",
   "name": "Podsakoff2003",
-  "reference": "Podsakoff, P. M., MacKenzie, S. B., Lee, J. Y., & Podsakoff, N. P. (2003). Common method biases in behavioral research: A critical review of the literature and recommended remedies. ''Journal of Applied Psychology'', 88(5), 879-903.",
+  "reference": "Podsakoff, P. M., MacKenzie, S. B., Lee, J. Y., & Podsakoff, N. P. (2003). Common method biases in behavioral research: A critical review of the literature and recommended remedies. ''Journal of Applied Psychology'', 88(5), 879-903. https://doi.org/10.1037/0021-9010.88.5.879",
   "supports": "=== Circularity Detection === Self-referential and mutually-referential validation creates risk of circular consensus, where models correlate with each other rather than with reality, attribution chains validate their own conclusions, and reputation networks form mutual-endorsement loops.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1037/0021-9010.88.5.879"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Circularity Detection",
   "name": "Soros2013",
-  "reference": "Soros, G. (2013). Fallibility, reflexivity, and the human uncertainty principle. ''Journal of Economic Methodology'', 20(4), 309-329.",
+  "reference": "Soros, G. (2013). Fallibility, reflexivity, and the human uncertainty principle. ''Journal of Economic Methodology'', 20(4), 309-329. https://doi.org/10.1080/1350178x.2013.859415",
   "supports": "=== Circularity Detection === Self-referential and mutually-referential validation creates risk of circular consensus, where models correlate with each other rather than with reality, attribution chains validate their own conclusions, and reputation networks form mutual-endorsement loops.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1080/1350178x.2013.859415"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Alignment",
   "name": "",
-  "reference": "Bostrom, N. (2014). ''Superintelligence: Paths, Dangers, Strategies''. Oxford University Press.",
+  "reference": "Bostrom, N. (2014). ''Superintelligence: Paths, Dangers, Strategies''. Oxford University Press. https://openlibrary.org/works/OL17319280W",
   "supports": "=== Alignment === The challenge of specifying values that remain robust under optimization pressure—studied extensively in artificial agent design—applies equally to civilizational systems.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL17319280W"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Alignment",
   "name": "",
-  "reference": "Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''.",
+  "reference": "Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''. https://intelligence.org/files/Corrigibility.pdf",
   "supports": "Goodhart's law motivates [[Measurement|competing metric models]]; inner alignment failures motivate [[Technology Network|adversarial auditing]]; the corrigibility problem motivates the [[Benefuture goals#Vision|self-obsolescence]] axiom.",
-  "doi_or_url": ""
+  "doi_or_url": "https://intelligence.org/files/Corrigibility.pdf"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Alignment",
   "name": "",
-  "reference": "Yudkowsky, E. (2004). ''Coherent Extrapolated Volition''. Machine Intelligence Research Institute.",
+  "reference": "Yudkowsky, E. (2004). ''Coherent Extrapolated Volition''. Machine Intelligence Research Institute. https://intelligence.org/files/CEV.pdf",
   "supports": "[[Benefuture goals#Vision|Civilization continuity]] operationalizes an approximation of coherent extrapolated volition",
-  "doi_or_url": ""
+  "doi_or_url": "https://intelligence.org/files/CEV.pdf"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Iterated Game Foundation",
   "name": "",
-  "reference": "Robert Axelrod, William D. Hamilton, The Evolution of Cooperation.''Science'''''211''',1390-1396(1981). DOI:10.1126/science.7466396",
+  "reference": "Robert Axelrod, William D. Hamilton, The Evolution of Cooperation.''Science'''''211''',1390-1396(1981). DOI:10.1126/science.7466396 https://doi.org/10.1126/science.7466396",
   "supports": "=== Iterated Game Foundation === Benefuture [[Morality]] is defined as the understanding that [[Interaction|interactions]] between the [[Being#Self|self]] and [[reality]] are iterative",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1126/science.7466396"
  },
  {
   "article": "System Design",
   "section": "Aspects",
   "subsection": "Iterated Game Foundation",
   "name": "FudenbergMaskin1986",
-  "reference": "Fudenberg, D., & Maskin, E. (1986). The folk theorem in repeated games with discounting or with incomplete information. ''Econometrica'', ''54''(3), 533-554.",
+  "reference": "Fudenberg, D., & Maskin, E. (1986). The folk theorem in repeated games with discounting or with incomplete information. ''Econometrica'', ''54''(3), 533-554. https://doi.org/10.2307/1911307",
   "supports": "This framing leverages the folk theorem",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1911307"
  },
  {
   "article": "System Design",
   "section": "Applications",
   "subsection": "",
   "name": "Hanson2013",
-  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178.",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
   "supports": "*'''[[Measurement]]''' — metric models compete on predictive accuracy beyond the model already in use",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/jopp.12008"
  },
  {
   "article": "System Design",
   "section": "Applications",
   "subsection": "",
   "name": "Hanson2013",
-  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178.",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
   "supports": "*'''[[Measurement]]''' — metric models compete on predictive accuracy beyond the model already in use , correlation with established markers, causal explanation quality, and novelty *'''[[Benefuture currency]]''' — currencies are domain-locked with no arbitrage permitted",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1111/jopp.12008"
  },
  {
   "article": "System Design",
   "section": "Applications",
   "subsection": "",
   "name": "Estlund2008",
-  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press.",
+  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. https://openlibrary.org/works/OL8224067W",
   "supports": " currency]]''' — currencies are domain-locked with no arbitrage permitted competing via resource efficiency; probabilistic escrow adjusts dynamically; the transaction log serves as behavioral substrate *'''[[Government]]''' — expertise weighting combined with impact weighting integrates epistocratic",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL8224067W"
  },
  {
   "article": "System Design",
   "section": "Applications",
   "subsection": "",
   "name": "Spence1973",
-  "reference": "Spence, M. (1973). Job market signaling. ''The Quarterly Journal of Economics'', ''87''(3), 355-374.",
+  "reference": "Spence, M. (1973). Job market signaling. ''The Quarterly Journal of Economics'', ''87''(3), 355-374. https://doi.org/10.2307/1882010",
   "supports": "substrate *'''[[Government]]''' — expertise weighting combined with impact weighting integrates epistocratic and affected-interests principles; choice architecture creates goal-aligned defaults *'''[[Reputation]]''' — reputation is non-transferable and domain-specific, functioning as a costly signal",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1882010"
  },
  {
   "article": "System Design",
   "section": "Discussion",
   "subsection": "Mechanism Design Relation",
   "name": "Gibbard1973",
-  "reference": "Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601.",
+  "reference": "Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601. https://doi.org/10.2307/1914083",
   "supports": "=== Mechanism Design Relation === Standard impossibility results from social choice theory",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/1914083"
  },
  {
   "article": "System Design",
   "section": "Discussion",
   "subsection": "Mechanism Design Relation",
   "name": "Arrow1951",
-  "reference": "Arrow, K. J. (1951). ''Social Choice and Individual Values''. Wiley.",
+  "reference": "Arrow, K. J. (1951). ''Social Choice and Individual Values''. Wiley. https://openlibrary.org/works/OL5103552W",
   "supports": "=== Mechanism Design Relation === Standard impossibility results from social choice theory",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL5103552W"
  },
  {
   "article": "System Design",
   "section": "Discussion",
   "subsection": "Mechanism Design Relation",
   "name": "",
-  "reference": "Sen, A. (1970). ''Collective Choice and Social Welfare''. Holden-Day.",
+  "reference": "Sen, A. (1970). ''Collective Choice and Social Welfare''. Holden-Day. https://openlibrary.org/works/OL27118230W",
   "supports": "Cardinal, interpersonally comparable weighting escapes Arrow's theorem",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL27118230W"
  },
  {
   "article": "System Design",
   "section": "Discussion",
   "subsection": "Capability Grounding",
   "name": "Sen1999",
-  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press.",
+  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press. https://openlibrary.org/works/OL116534W",
   "supports": "=== Capability Grounding === The multi-currency, multi-metric approach parallels capability theory in welfare economics",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL116534W"
  },
  {
   "article": "System Design",
   "section": "Discussion",
   "subsection": "Capability Grounding",
   "name": "Nussbaum2011",
-  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press.",
+  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200",
   "supports": "=== Capability Grounding === The multi-currency, multi-metric approach parallels capability theory in welfare economics",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.4159/harvard.9780674061200"
  },
  {
   "article": "Understanding",
@@ -2434,9 +2434,9 @@
   "section": "Mathematical Representation",
   "subsection": "Ideal Case:",
   "name": ":1",
-  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3.",
+  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2",
   "supports": "one minus the Brier Score, a proper scoring rule",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2"
  },
  {
   "article": "Understanding",
@@ -2452,99 +2452,99 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151.",
+  "reference": "Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151. https://doi.org/10.1109/18.61115",
   "supports": "** Structural similarity indices from information theory provide additional measures of correspondence between model and reality.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1109/18.61115"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. ''Annals of Mathematical Statistics'', 22(1), 79-86.",
+  "reference": "Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. ''Annals of Mathematical Statistics'', 22(1), 79-86. https://doi.org/10.1214/aoms/1177729694",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1214/aoms/1177729694"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Joyce, J.M., 1998, \"A Nonpragmatic Vindication of Probabilism\", ''Philosophy of Science'', 65(4): 575–603.",
+  "reference": "Joyce, J.M., 1998, \"A Nonpragmatic Vindication of Probabilism\", ''Philosophy of Science'', 65(4): 575–603. https://doi.org/10.1086/392661",
   "supports": "* '''For B(i) — Prediction Accuracy:''' ** Joyce argues that probabilistic credences, conforming to probability theory, offer a coherent framework for assessing the accuracy of beliefs, suggesting their utility in measuring aspects of understanding.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1086/392661"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": ":13",
-  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3.",
+  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2",
   "supports": "** The Brier score provides a proper scoring rule for evaluating the accuracy of probabilistic predictions, which can be applied to assess predictive accuracy related to understanding.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. ''Journal of the American Statistical Association'', 102(477), 359–378.",
+  "reference": "Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. ''Journal of the American Statistical Association'', 102(477), 359–378. https://doi.org/10.1198/016214506000001437",
   "supports": "** Log-likelihood scoring and calibration metrics offer complementary measures of predictive quality.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1198/016214506000001437"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338.",
+  "reference": "Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338. https://doi.org/10.1175/1520-0493(1987)115%3C1330:agfffv%3E2.0.co;2",
   "supports": "** Log-likelihood scoring and calibration metrics offer complementary measures of predictive quality.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1175/1520-0493(1987)115%3C1330:agfffv%3E2.0.co;2"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge University Press.",
+  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge University Press. https://doi.org/10.1017/cbo9780511840005",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511840005"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Pearl, J. (2009). ''Causality: Models, Reasoning, and Inference'' (2nd ed.). Cambridge University Press.",
+  "reference": "Pearl, J. (2009). ''Causality: Models, Reasoning, and Inference'' (2nd ed.). Cambridge University Press. https://doi.org/10.1017/cbo9780511803161",
   "supports": "** Pearl's causal inference framework provides formal criteria for evaluating whether causal claims are structurally valid and identifiable from data, via directed acyclic graphs, do-calculus, and back-door/front-door criteria.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511803161"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Woodward, J. (2003). ''Making Things Happen: A Theory of Causal Explanation''. Oxford University Press.",
+  "reference": "Woodward, J. (2003). ''Making Things Happen: A Theory of Causal Explanation''. Oxford University Press. https://openlibrary.org/works/OL5916838W",
   "supports": "** Woodward's interventionist account specifies that genuine explanation requires identifying relationships invariant under intervention, distinguishing mechanistic understanding from mere predictive correlation.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL5916838W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Spirtes, P., Glymour, C., & Scheines, R. (2000). ''Causation, Prediction, and Search'' (2nd ed.). MIT Press.",
+  "reference": "Spirtes, P., Glymour, C., & Scheines, R. (2000). ''Causation, Prediction, and Search'' (2nd ed.). MIT Press. https://openlibrary.org/works/OL4312204W",
   "supports": "** Causal discovery algorithms enable empirical identification of causal structure from observational data.",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL4312204W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Solomonoff, R. J. (1964). A formal theory of inductive inference. ''Information and control'', ''7''(1), 1-22.",
+  "reference": "Solomonoff, R. J. (1964). A formal theory of inductive inference. ''Information and control'', ''7''(1), 1-22. https://doi.org/10.1016/S0019-9958(64)90223-2",
   "supports": "* '''For C(i) — Complexity:''' ** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/S0019-9958(64)90223-2"
  },
  {
   "article": "Understanding",
@@ -2552,7 +2552,7 @@
   "subsection": "Measuring understanding",
   "name": "",
   "reference": "Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. ''Problems of information transmission'', ''1''(1), 1-7.",
-  "supports": "* '''For C(i) — Complexity:''' ** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions.",
+  "supports": "/ref> * '''For C(i) — Complexity:''' ** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions.",
   "doi_or_url": ""
  },
  {
@@ -2560,45 +2560,45 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471.",
+  "reference": "Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471. https://doi.org/10.1016/0005-1098(78)90005-5",
   "supports": "** Minimum Description Length provides a practical approximation to Kolmogorov complexity for model selection.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1016/0005-1098(78)90005-5"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Grünwald, P. D. (2007). ''The Minimum Description Length Principle''. MIT Press.",
+  "reference": "Grünwald, P. D. (2007). ''The Minimum Description Length Principle''. MIT Press. https://doi.org/10.7551/mitpress/4643.001.0001",
   "supports": "** Minimum Description Length provides a practical approximation to Kolmogorov complexity for model selection.",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.7551/mitpress/4643.001.0001"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Sattler, J. M. (2014). ''Assessment of children: Cognitive foundations and applications''. Jerome M. Sattler, Publisher.",
+  "reference": "Sattler, J. M. (2014). ''Assessment of children: Cognitive foundations and applications''. Jerome M. Sattler, Publisher. https://openlibrary.org/works/OL27028090W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL27028090W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": ":2",
-  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge university press.",
+  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge university press. https://doi.org/10.1017/cbo9780511840005",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511840005"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Novak, J. D., & Gowin, D. B. (1984). ''Learning how to learn''. Cambridge University Press.",
+  "reference": "Novak, J. D., & Gowin, D. B. (1984). ''Learning how to learn''. Cambridge University Press. https://doi.org/10.1017/cbo9781139173469",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9781139173469"
  },
  {
   "article": "Understanding",
@@ -2614,27 +2614,27 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Wiggins, G. P. (1998). ''Educative assessment: Designing assessments to inform and improve performance''. Jossey-Bass.",
+  "reference": "Wiggins, G. P. (1998). ''Educative assessment: Designing assessments to inform and improve performance''. Jossey-Bass. https://openlibrary.org/works/OL1908797W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1908797W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass.",
+  "reference": "Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass. https://openlibrary.org/works/OL20347321W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20347321W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Anderson, J. R. (2016). ''Cognitive psychology and its implications''. Worth Publishers.",
+  "reference": "Anderson, J. R. (2016). ''Cognitive psychology and its implications''. Worth Publishers. https://openlibrary.org/works/OL519624W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL519624W"
  },
  {
   "article": "Understanding",
@@ -2650,9 +2650,9 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Dweck, C. S. (2006). ''Mindset: The new psychology of success''. Random House.",
+  "reference": "Dweck, C. S. (2006). ''Mindset: The new psychology of success''. Random House. https://openlibrary.org/works/OL2003465W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL2003465W"
  },
  {
   "article": "Understanding",
@@ -2677,9 +2677,9 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press.",
+  "reference": "Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press. https://openlibrary.org/works/OL18025057W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL18025057W"
  },
  {
   "article": "Understanding",
@@ -2731,72 +2731,72 @@
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Lemke, J. L. (1990). ''Talking science: Language, learning, and values''. Ablex Publishing Corporation.",
+  "reference": "Lemke, J. L. (1990). ''Talking science: Language, learning, and values''. Ablex Publishing Corporation. https://openlibrary.org/works/OL9116801W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL9116801W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Borich, G. D. (2017). ''Effective teaching methods''. Pearson.",
+  "reference": "Borich, G. D. (2017). ''Effective teaching methods''. Pearson. https://openlibrary.org/works/OL1897823W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL1897823W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Emmer, E. T., & Stough, L. M. (2001). Classroom management: A critical part of educational psychology, with implications for teacher education. ''Educational Psychologist'', ''36''(2), 103-113.",
+  "reference": "Emmer, E. T., & Stough, L. M. (2001). Classroom management: A critical part of educational psychology, with implications for teacher education. ''Educational Psychologist'', ''36''(2), 103-113. https://doi.org/10.1207/s15326985ep3602_5",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1207/s15326985ep3602_5"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Stiggins, R., Arter, J., Chappuis, J., & Chappuis, S. (2006). ''Classroom assessment for student learning: Doing it right—using it well''. Educational Testing Service.",
+  "reference": "Stiggins, R., Arter, J., Chappuis, J., & Chappuis, S. (2006). ''Classroom assessment for student learning: Doing it right—using it well''. Educational Testing Service. https://openlibrary.org/works/OL20247071W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20247071W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Morgan, M. G., & Henrion, M. (1990). ''Uncertainty: a guide to dealing with uncertainties in quantitative risk and policy analysis''. Cambridge university press.",
+  "reference": "Morgan, M. G., & Henrion, M. (1990). ''Uncertainty: a guide to dealing with uncertainties in quantitative risk and policy analysis''. Cambridge university press. https://doi.org/10.1017/cbo9780511840609",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511840609"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications.",
+  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. https://openlibrary.org/works/OL20578711W",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://openlibrary.org/works/OL20578711W"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press.",
+  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. https://doi.org/10.1017/cbo9780511815478",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.1017/cbo9780511815478"
  },
  {
   "article": "Understanding",
   "section": "Discussion",
   "subsection": "Measuring understanding",
   "name": "",
-  "reference": "Provan, K. G., & Milward, H. B. (1995). A preliminary theory of interorganizational network effectiveness. ''Administrative science quarterly'', ''40''(1), 1-33.",
+  "reference": "Provan, K. G., & Milward, H. B. (1995). A preliminary theory of interorganizational network effectiveness. ''Administrative science quarterly'', ''40''(1), 1-33. https://doi.org/10.2307/2393698",
   "supports": "",
-  "doi_or_url": ""
+  "doi_or_url": "https://doi.org/10.2307/2393698"
  },
  {
   "article": "Understanding",
