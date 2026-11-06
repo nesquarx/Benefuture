@@ -2390,3 +2390,19 @@ as standard alternatives, so the reading selects the compensated reform rather t
 (3) long-term recovery of displaced groups (scribes into printing, refiners amortising) has as-of
 precedents only in a few cases; where none exist the dip counts as permanent. A rerun after any change is a new
 replay on a new freeze, reported beside this one, never in its place.
+8.100 ruling (author, on 8.99, 2026-11-06): the strong per-being reading applies to all decisions, not
+only accessions; and a reform paired with the 8.86 absorption (compensation of those who bear the
+passing harm) is priced as a standard alternative. Built in the replay: each reform that leaves some
+group's happiness below inaction gets a compensated variant, the shortfall restored by a transfer from
+the groups it gains at `compensation_efficiency` 0.75 (governed); understanding (shared, not moved) and
+irreparable harm are not compensated. Second replay (code 5db1f226b216982d; not out of sample, written
+after the held-out result): primary set unchanged at 6/6 (Montreal now chooses its compensated variant);
+held-out 4/5 (printing press: the compensated privilege passes). The lead phase-down still fails: its
+gain is children's understanding, its costs adults' and refiners' happiness, and understanding cannot
+repay happiness, so adults stay below inaction and the strong reading keeps the status quo. Open for the
+author: whether the strong per-being reading is judged per dimension (understanding and happiness each
+not below inaction, as built) or on a being's combined value, which would admit trading a small broad
+happiness cost for a large understanding gain to the young. Also recorded: on the school closures case
+the replay's falsifier F1 test fires (keep open carries expected deaths while closure carries none); it
+fired in the first replay too and 8.94 did not report it. The test is cruder than F1's definition (which
+requires a catastrophic contemporary record); the case stays unclear.

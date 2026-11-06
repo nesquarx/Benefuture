@@ -42,6 +42,7 @@ Generated from the code by `tools/data/prereg_thresholds.jl` (`julia --project=s
 | Delegation cap | `cap` | 0.05 | M5Params default (L114) |
 | Participation impact bar | `impact_threshold` | 0.5 | M5Params default (8.46) |
 | Long-term window (accession, 8.86) | `lt_window` | 100 | pop_value / pop_choose signature default (sim/src/m7.jl) |
+| Compensation efficiency (8.100) | `compensation_efficiency` | 0.75 | replay default; analogue: excess burden of tax-financed transfers |
 
 **Amendment 2026-11-05 (before any replay beyond the four original cases).** The earlier table did not match the governed point: it listed a harm schedule (0, 1, 2, 5) and Fr severity multipliers (0, 0.25, 0.5, 1) that exist nowhere in the code (the governed values are above), described κ as a harm weight (it is Ha_wt's synergy parameter), and gave the long-term window as 50 (the code's default is 100). Rows with no source in the code (an escape horizon of 5, a catastrophic ceiling of 10, a minimum skill record of 20, a tie tolerance) are dropped; any replay step that needs one names its governed parameter first. Replays already run on the four original cases are re-run against this table before their results count.
 
@@ -334,6 +335,14 @@ Counterfactual differences are never summed into a single scalar utility. Every 
 3. `max_group_nha`: Deepest passing harm (`NHa`) borne by any single group, and whether long-term trajectories (`Ha_lt` over `lt_window`) recover above the no-action counterfactual (8.86).
 4. `irreparable_harm`: Deaths, permanent disability, or lost knowledge (`Ha_irr`), priced via `bf_life_value` and `bf_foreclosed`.
 5. `degraded`: Loud degradation ledger recording every fallback (coarse tier, parent domain, relative bar, missing forecast submission).
+
+### 4.5 Second replay: compensated reforms (amendment 2026-11-06, author ruling 8.100)
+
+The strong per-being reading holds for every decision, and each reform that leaves a group's happiness
+below inaction is also offered with the 8.86 absorption priced (`compensation_efficiency`, §2):
+understanding and irreparable harm are never compensated. Code frozen at hash prefix `5db1f226b216982d`
+(same recipe as §4.4). This rule was written after the first held-out replay, so the second replay of the
+held-out set is not out of sample; both results are reported, the first as the held-out result.
 
 ### 5b. Baselines (D5, amendment 2026-11-06)
 

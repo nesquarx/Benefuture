@@ -27,6 +27,7 @@ rows = [
     ("Delegation cap", "cap", m5.cap, "M5Params default (L114)"),
     ("Participation impact bar", "impact_threshold", m5.impact_threshold, "M5Params default (8.46)"),
     ("Long-term window (accession, 8.86)", "lt_window", 100, "pop_value / pop_choose signature default (sim/src/m7.jl)"),
+    ("Compensation efficiency (8.100)", "compensation_efficiency", BenefutureSim.get_frozen_replay_thresholds().compensation_efficiency, "replay default; analogue: excess burden of tax-financed transfers"),
 ]
 println("| Parameter | Field | Value | Source |")
 println("|---|---|---|---|")

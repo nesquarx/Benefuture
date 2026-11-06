@@ -307,7 +307,7 @@ end
     @test length(priced) == 9
     for (r, b) in priced
         @test b.actual == r.actual_choice
-        @test b.equal_weight in [String(o["id"]) for o in load_replay_case(joinpath(CASES_DIR, r.id * ".toml"))["options"]]
+        @test replace(b.equal_weight, r"\+compensated$" => "") in [String(o["id"]) for o in load_replay_case(joinpath(CASES_DIR, r.id * ".toml"))["options"]]
     end
     # Rates matter: weighting the known scenarios alike flips famine codes back to the status quo.
     fc = only(b for (r, b) in priced if r.id == "famine_codes_1880")
@@ -323,10 +323,12 @@ end
     s = evaluate_replay_suite([joinpath(CASES_DIR, i * ".toml") for i in ids])
     @test s.n_void == 0
     ch = Dict(r.id => r.chosen_option for r in s.results)
-    # The recorded first result (8.99): the strong per-group reading vetoes two good reforms with
-    # concentrated losers (scribes; refiners) when no recovery or compensation is priced.
-    @test ch["printing_press_europe_1470"] == "status_quo_scribal_trade_only"
+    # First replay (8.99, code a9c71a592e1e592e): 3/5, the strong per-group reading vetoing the printing
+    # press and the lead phase-down. Second replay (8.100, compensated reforms priced; not out of sample):
+    # the compensated printing privilege passes; the lead phase-down still fails, since its gain is
+    # children's understanding, which cannot repay adults' and refiners' happiness losses.
+    @test ch["printing_press_europe_1470"] == "grant_privileges_to_master_printers+compensated"
     @test ch["leaded_petrol_phaseout_1973"] == "status_quo_lead_free_availability_only"
-    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (3, 5)
+    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (4, 5)
     @test (s.scores[:mean_welfare].k, s.scores[:min_deaths].k) == (4, 2)
 end

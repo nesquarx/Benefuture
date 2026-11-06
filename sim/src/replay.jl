@@ -26,7 +26,8 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     voting_cap = 0.05,
     impact_threshold = 0.50,
     min_skill_record = 20,
-    lt_window = 100
+    lt_window = 100,
+    compensation_efficiency = 0.75
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -57,7 +58,8 @@ function get_frozen_replay_thresholds()
             voting_cap = m5_f.cap,
             impact_threshold = 0.50,
             min_skill_record = 20,
-            lt_window = 100
+            lt_window = 100,
+            compensation_efficiency = 0.75
         )
     catch e
         # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
@@ -662,6 +664,36 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     idle_idx === nothing && (idle_idx = 1)
     idle_opt = options[idle_idx]
 
+    # Compensated reforms (author ruling 8.100 on 8.99): the strong per-being reading holds for every
+    # decision, and each reform that leaves some group's happiness below inaction is also offered with the
+    # 8.86 absorption priced: the losers' happiness shortfall against inaction is restored by a transfer
+    # from the groups it gains, at `compensation_efficiency` (a transfer loses part of itself on the way;
+    # governed). Understanding is shared, not moved, and irreparable harm cannot be repaid, so neither is
+    # compensated: an option with those losses still fails the strong reading.
+    if !any(o -> haskey(o, "_compensated_of"), options)
+        idle_dh0 = Float64.(idle_opt["pred_dh"])
+        for (k, opt) in collect(enumerate(options))
+            k == idle_idx && continue
+            gap = Float64.(opt["pred_dh"]) .- idle_dh0
+            losers = findall(<(-th.epsilon_tie), gap)
+            gainers = findall(>(th.epsilon_tie), gap)
+            (isempty(losers) || isempty(gainers)) && continue
+            owed = sum(pops[g] * -gap[g] for g in losers)
+            per_head = owed / (th.compensation_efficiency * sum(pops[g] for g in gainers))
+            dh = Float64.(opt["pred_dh"])
+            dh[losers] .= idle_dh0[losers]
+            dh[gainers] .-= per_head
+            c = deepcopy(opt)
+            c["id"] = String(opt["id"]) * "+compensated"
+            c["pred_dh"] = dh
+            c["_compensated_of"] = String(opt["id"])
+            haskey(c, "lt_end_h") && (c["lt_end_h"] = Float64.(c["lt_end_h"]) .+ (dh .- Float64.(opt["pred_dh"])))
+            c["is_inaction"] = false
+            push!(options, c)
+            degraded["compensated variant priced for $(opt["id"]) (8.100)"] = 1
+        end
+    end
+
     idle_u = base_u .+ Float64.(idle_opt["pred_du"])
     idle_h = base_h .+ Float64.(idle_opt["pred_dh"])
     idle_lt_u = Float64.(get(idle_opt, "lt_end_u", idle_u))
@@ -762,7 +794,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     chosen_opt = options[chosen_idx]
     chosen_id = String(chosen_opt["id"])
     actual_id = String(case_dict["actual_choice"])
-    agrees = chosen_id == actual_id
+    agrees = String(get(chosen_opt, "_compensated_of", chosen_id)) == actual_id   # a compensated reform is that reform
     outcome_sym = Symbol(case_dict["actual_outcome_class"])
     agree_sym = agrees ? :agrees : :differs
 
@@ -841,6 +873,7 @@ function replay_scores(results, baselines)
         for (r, b) in zip(results, baselines)
             (r.void || b === nothing || r.outcome_class ∉ (:good, :bad)) && continue
             choice = rule == :benefuture ? r.chosen_option : getfield(b, rule)
+            choice = replace(choice, r"\+compensated$" => "")
             right = r.outcome_class == :good ? choice == r.actual_choice : choice != r.actual_choice
             k += right; n += 1
         end

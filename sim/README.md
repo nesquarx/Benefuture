@@ -1264,6 +1264,7 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Compensation efficiency (E4 replay) | `compensation_efficiency` | 0.75 | 8.100; analogue: the excess burden of tax-financed transfers, roughly 0.1 to 0.5 per unit raised |
 | Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
 | Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L157; 8.22 |
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
