@@ -805,3 +805,34 @@ end
     @test all(isapprox(sum(tr.exec_upfront[tr.exec_agent .== a]; init = 0.0), tr.upfront[a]; atol = 1e-9) for a in 1:4)
     @test run_m3c(w(); seed = 1) == tr          # deterministic, so the other fields are untouched by the trace
 end
+
+# ==============================================================================
+# Probe: the honesty of claims reads apart from skill (8.95 a, 8.97)
+# ==============================================================================
+# Hypothesis: the audit's reading (an actor's overstatement beyond what the models err on everyone)
+# lands only on actors who overstate, whatever their skill, so the honesty domain's reading is native
+# and not a horn effect; and deceit costs a liar earnings against an honest actor of equal skill.
+# Metrics: founded reports per audited actor (`founded_on`, trace only); earnings = upfront + settled −
+# liability. Smallest effects that matter: any founded report on an honest actor (regime, as a
+# proportion over seeds); a liar's earnings below its honest twin's by more than z = 3 standard errors.
+# Toy assumption named: the models' predictions are corrected by each actor's own track record (8.29),
+# which is what keeps low skill from reading as overstatement.
+@testset "Probe: the honesty of claims reads apart from skill (8.95)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    sk = [0.6, 0.6, 0.6, 0.2, 0.2, 0.6]   # 1–3 skilled honest, 4 unskilled liar, 5 unskilled honest, 6 skilled liar
+    ag = [DomainAgent([sk[a], 0, 0, 0], [1.0, 0, 0, 0], 0.0) for a in 1:6]
+    p = M3cParams(ToyParams(n = 40, steps = 120, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                  transactions = true, causal_distribution = true, deceit = [0, 0, 0, 1.0, 0, 1.0], advap = true, LEGACY...)
+    seeds = 1:5
+    trs = [run_m3c(p; seed = s) for s in seeds]
+    earn(tr) = (l = zeros(6); for c in tr.convictions; l[c.convicted] += c.liability; end; tr.upfront .+ tr.settled_value .- l)
+    # Honest actors, skilled or not, are never the object of a founded report (the regime, measured on the
+    # 200-step world: 0 founded reports on honest actors in 10 of 10 seeds, interval 0.71–1.0 at z = 2).
+    honest_clean = count(tr -> all(tr.founded_on[[1, 2, 3, 5]] .== 0), trs)
+    @test honest_clean == length(seeds)
+    # Liars, skilled or not, are (measured: 9–33 founded reports each).
+    @test all(tr -> tr.founded_on[4] > 0 && tr.founded_on[6] > 0, trs)
+    # Deceit does not pay at either skill (measured, seeds 1–4: skilled ≈ 3,200 vs ≈ 6,600; unskilled ≈ 120 vs ≈ 1,050).
+    @test paired_effect([earn(tr)[1] - earn(tr)[6] for tr in trs]; z = 3.0).significant
+    @test paired_effect([earn(tr)[5] - earn(tr)[4] for tr in trs]; z = 3.0).significant
+end

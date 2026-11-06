@@ -441,6 +441,7 @@ function run_m3c(p::M3cParams; seed)
     convictions = NamedTuple{(:reporter, :convicted, :liability, :reward, :step, :reversed),Tuple{Int,Int,Float64,Float64,Int,Bool}}[]
     slanderers = falses(na)  # reporters whose frivolous pattern has been detected (a lie detected)
     reports_by = zeros(Int, na)  # reports filed, per reporter
+    founded_on = zeros(Int, na)  # founded reports, per audited actor (trace only)
     pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
     vrng = Xoshiro(hash((seed, :advap)))
     adv = (reports = Ref(0), founded = Ref(0), established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0),
@@ -1615,7 +1616,7 @@ function run_m3c(p::M3cParams; seed)
                 sig = true_sig[lb_]
                 st = price_shares(classify_sig(sig))
                 if founded
-                    adv.founded[] += 1
+                    adv.founded[] += 1; founded_on[b] += 1
                     traced = rand(vrng) < (p.deceit[b] > 0 ? p.p_trace : p.p_false_trace)
                     if !traced
                         # Not established: the audit is the commons' cost, unless the reporter is a
@@ -1748,7 +1749,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],

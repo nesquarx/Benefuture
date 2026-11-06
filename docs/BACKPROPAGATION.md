@@ -2406,3 +2406,21 @@ happiness cost for a large understanding gain to the young. Also recorded: on th
 the replay's falsifier F1 test fires (keep open carries expected deaths while closure carries none); it
 fired in the first replay too and 8.94 did not report it. The test is cruder than F1's definition (which
 requires a catastrophic contemporary record); the case stays unclear.
+8.101 finding (2026-11-06, priority 3): the honesty-of-claims domain is already realised by native
+objects, and it reads honesty apart from skill. Probe (`sim/test/probe_tests.jl`, "the honesty of claims
+reads apart from skill"): six actors in one leaf, skill 0.6 or 0.2 crossed with honest or overstating.
+Over 10 seeds of a 200-step world, founded audit reports landed only on the two liars (unskilled 9–33,
+skilled 15–33 each) and never on an honest actor of either skill (10 of 10 seeds, interval 0.71–1.0 at
+z = 2); skill shows only in how often an actor is chosen (≈ 200 actions skilled, ≈ 100 unskilled).
+Deceit does not pay at either skill: earnings (upfront + settled − liability) ≈ 3,200 for the skilled
+liar against ≈ 6,600 for its honest twins, ≈ 120 for the unskilled liar against ≈ 1,050 (seeds 1–4;
+significant at z = 3 on the probe's smaller world). The mapping onto 8.95(a) and 8.96–8.97: the domain's
+metric model is the audit's reading (an actor's overstatement beyond what the models err on everyone);
+its ledger is the permanent deception count (8.91); its pricing is the escrow ratchet; booking once is
+the discount of established deceptions from the skill domains' models. What keeps low skill from reading
+as dishonesty is that models correct each prediction by the actor's own track record (8.29), named as
+the probe's condition. Not added: a separate honesty currency balance, since nothing measured so far
+needs it (parsimony); it becomes a candidate if a case appears where the native objects misprice
+honesty. Observed: a skilled liar is still chosen as often as its honest peers; that is as intended, since
+its quotes are corrected by its record and its delivered work is as good as theirs, so it loses on
+escrow and liability, not on access to work.
