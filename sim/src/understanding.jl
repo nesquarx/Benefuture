@@ -59,3 +59,14 @@ function random_utraits(rng, m::Integer)
     UTraits(0.5 + 0.4 * rand(rng), w, 0.1 .+ 0.8 .* rand(rng, m), 0.02 .+ 0.2 .* rand(rng, m),
             0.3 .+ 0.6 .* rand(rng, m), 0.4 .* rand(rng, m))
 end
+
+"""
+    understanding_ratios(traits, rng; kw...) -> Vector
+
+Each being's measured over true understanding (8.98), for M7's measured view (`run_m7(...; claim_ratio)`):
+the keywords are those of `understanding_truth_and_measure`, and `overclaim` may be one value per being.
+"""
+function understanding_ratios(traits::AbstractVector{UTraits}, rng; overclaim = 0.0, kw...)
+    oc = overclaim isa AbstractVector ? overclaim : fill(Float64(overclaim), length(traits))
+    [(r = understanding_truth_and_measure(t, rng; overclaim = oc[b], kw...); r.truth > 0 ? r.measured / r.truth : 1.0) for (b, t) in enumerate(traits)]
+end

@@ -867,3 +867,25 @@ end
     coin = UTraits(1.0, [1.0], [0.5], [0.0], [1.0], [0.0])
     @test understanding_truth_and_measure(coin, Xoshiro(7); n_records = 50).truth > 0.99
 end
+
+# ==============================================================================
+# Probe: measured understanding steers teaching (8.98, 8.104)
+# ==============================================================================
+# Hypothesis: when a third of beings overclaim causal explanation unaudited, the pragmatic equation reads
+# them higher than they are, entities take them for teachers, lessons predicted on that view deliver
+# little, and floor growth of understanding falls against an honest world on the same seeds (z = 3);
+# with every claim audited, overclaiming changes nothing (structural: identical runs).
+# Measured (60 beings, 120 steps, 8 seeds): floor growth 12.2 honest, 7.1 unaudited (−41%), 9.5 at
+# half the claims audited, 11.1 at 90%, 12.2 fully audited.
+@testset "Probe: measured understanding steers teaching (8.98)" begin
+    p = ToyParams(n = 60, steps = 120, plans = 6)
+    fg(tr) = tr.floor_u[end] - tr.floor_u[1]
+    traits(seed) = [random_utraits(Xoshiro(hash((seed, b))), 5) for b in 1:p.n]
+    ratios(seed, oc, ar) = understanding_ratios(traits(seed), Xoshiro(hash((seed, :meas))); n_records = 50,
+                                                overclaim = [b % 3 == 0 ? oc : 0.0 for b in 1:p.n], audit_rate = ar)
+    seeds = 1:8
+    honest = [fg(run_m7(p; seed, claim_ratio = ratios(seed, 0.0, 1.0))) for seed in seeds]
+    open_ = [fg(run_m7(p; seed, claim_ratio = ratios(seed, 0.4, 0.0))) for seed in seeds]
+    @test paired_effect(honest .- open_; z = 3.0).significant
+    @test ratios(1, 0.4, 1.0) == ratios(1, 0.0, 1.0)   # audited claims: overclaiming changes nothing measured
+end

@@ -244,7 +244,9 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3,
                 novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1,
                 accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
-                lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf)
+                lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
+                claim_ratio::Union{Nothing,AbstractVector} = nothing)
+    check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
           0 <= p_act <= 1 && all(x -> isfinite(x) && x >= 0, (action_scale, view_σ, pred_σ, rel_exponent, gain_σ, near_exponent)) && options >= 1 &&
@@ -311,20 +313,28 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 lesson_du, lesson_cap = zeros(p.n), fill(-Inf, p.n)  # lessons this step, and the best teachable level each learner met
                 for e in 1:p.n
                     (researching[e] || rand(rng) >= p_act) && continue
-                    view = ToyState(s.u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
+                    # Measured understanding (8.98): with `claim_ratio`, each being's level is read as the
+                    # pragmatic equation reads its outputs (measured over true, `understanding_ratios`), so
+                    # an unaudited overclaim looks higher than it is; lessons are predicted on that view
+                    # and delivered on the true levels.
+                    seen_u = claim_ratio === nothing ? s.u : s.u .* claim_ratio
+                    view = ToyState(seen_u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
                     opts = ToyPlan[]
                     for _ in 1:options
                         pl = capped(random_plan(rng, p))
                         push!(opts, ToyPlan(action_scale .* pl.du, action_scale .* pl.dh))
                     end
                     below = [b for b in 1:p.n if view.u[b] < view.u[e] - tacit[e]]
+                    lesson_seen = nothing
                     if !isempty(below)
                         learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
-                        push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = receive(length(learners)),
-                                                  tacit = tacit[e]))
+                        rec = receive(length(learners))
+                        push!(opts, teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = rec, tacit = tacit[e]))
+                        claim_ratio === nothing || (lesson_seen = teaching_plan(max.(view.u, 0.0), e, learners, min(1.0, ε * quality[e]); reception = rec, tacit = tacit[e]))
                     end
+                    base = [k == length(opts) && lesson_seen !== nothing ? lesson_seen : o for (k, o) in enumerate(opts)]
                     predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
-                                         o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
+                                         o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in base]
                     i = choose(view, predicted, p)
                     i == 1 && continue
                     acted += 1

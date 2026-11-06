@@ -2453,3 +2453,16 @@ reports per item with map fit read exactly, flooring near 0.024 when map fit is 
 overconfidence −0.05; unaudited explanation overclaims +0.14, removed by audits; exact knowledge of a
 fair coin reads 1. Limit: items mixing outcome probabilities need the binned decomposition (resolution
 and reliability) rather than the single uncertainty term. Candidate homes: L31 (PrAcc note).
+8.104 finding (2026-11-06, on 8.98): measured understanding steers teaching, and unaudited claims of
+explanation cost the floor. M7 now takes each being's measured-over-true understanding from the
+pragmatic equation (`understanding_ratios`, `run_m7(...; claim_ratio)`): entities see levels as the
+equation reads outputs, predict lessons on that view, and lessons deliver on true levels. With a third
+of beings overclaiming causal explanation by 0.4, over 8 seeds (60 beings, 120 steps): floor growth of
+understanding 12.2 honest, 7.1 with no audits (−41%, z ≈ 4.6), 9.5 with half the claims audited, 11.1
+at 90%, 12.2 fully audited (identical to honest). Mechanism: overclaimers look like teachers, entities
+choose their lessons, and the lessons pass on little. So the audit rate of explanation claims is a
+lever on the floor, with diminishing returns; in Benefuture it should emerge from AdvAp incentives
+(reporting an overclaim pays), not be set, so the next step is to let audits be AdvAp reports in M7
+rather than a fixed rate. Toy assumptions: traits fixed (teaching raises the scalar level, not the
+traits), one thing measured, the overclaim constant. Candidate homes: Understanding article
+(measurement), AdvAp (explanation claims as audit targets).
