@@ -836,3 +836,32 @@ end
     @test paired_effect([earn(tr)[1] - earn(tr)[6] for tr in trs]; z = 3.0).significant
     @test paired_effect([earn(tr)[5] - earn(tr)[4] for tr in trs]; z = 3.0).significant
 end
+
+# ==============================================================================
+# Probe: understanding measured by its equation over hidden traits (8.98, 8.102)
+# ==============================================================================
+# Hypotheses (stated before measuring; 40 random beings, 5 items each, common random numbers):
+# (a) measured understanding approaches true understanding as the record grows (error at 200 records
+#     below error at 10, z = 3); (b) overconfident reports lower measured understanding (proper scoring
+#     makes that gaming backfire; z = 3); (c) unaudited overclaims of causal explanation inflate it (z = 3),
+#     and full audits remove the bias (equivalent to zero within 0.01, a margin the unaudited bias of
+#     ≈ 0.022 exceeds, so it is detectable). Counterexample (8.102): with prediction accuracy as raw
+#     credence accuracy, perfect knowledge of a fair coin counts as no understanding.
+@testset "Probe: understanding measured by its equation over hidden traits (8.98)" begin
+    beings = 1:40
+    over(f) = [(rng = Xoshiro(s); tr = random_utraits(rng, 5); f(tr, s)) for s in beings]
+    gap(n; kw...) = over((tr, s) -> (r = understanding_truth_and_measure(tr, Xoshiro(1000 + s); n_records = n, kw...); r.measured - r.truth))
+    e10, e200 = abs.(gap(10)), abs.(gap(200))
+    @test paired_effect(e10 .- e200; z = 3.0).significant                       # measured: 0.026 → 0.0099
+    meas(k) = over((tr, s) -> understanding_truth_and_measure(tr, Xoshiro(2000 + s); n_records = 200, extremise_k = k).measured)
+    @test paired_effect(meas(1.0) .- meas(3.0); z = 3.0).significant              # measured: −0.017
+    b_open = over((tr, s) -> (r = understanding_truth_and_measure(tr, Xoshiro(3000 + s); n_records = 200, overclaim = 0.3, audit_rate = 0.0); r.measured - r.truth))
+    b_audit = over((tr, s) -> (r = understanding_truth_and_measure(tr, Xoshiro(3000 + s); n_records = 200, overclaim = 0.3, audit_rate = 1.0); r.measured - r.truth))
+    @test paired_effect(b_open; z = 3.0).significant                             # measured: +0.022
+    @test equivalent(b_audit; margin = 0.01, z = 3.0).equivalent                 # measured: ±0.005
+    @test mean(b_open) > 0.01
+    # Counterexample (8.102): a being that knows a fair coin exactly (credence 0.5 every time) has full
+    # explanation and no complexity, yet raw credence accuracy is 0, so its understanding reads 0.
+    coin = UTraits(1.0, [1.0], [0.5], [0.0], [1.0], [0.0])
+    @test understanding_truth_and_measure(coin, Xoshiro(7); n_records = 50).truth < 0.01
+end

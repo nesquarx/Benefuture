@@ -441,3 +441,19 @@ function repeat_escrow_credence(credence::Real, neg_share::Real, repeats::Intege
     check(0 <= credence <= 1 && 0 <= neg_share <= 1 && repeats >= 0 && growth >= 0 && 0 < floor <= 0.5, "credence, share in [0, 1]; repeats ≥ 0; growth ≥ 0; floor in (0, 0.5]")
     ccall(sym(:bf_repeat_escrow_credence), Float64, (Float64, Float64, Csize_t, Float64, Float64), credence, neg_share, repeats, growth, floor)
 end
+
+"""
+    pragmatic_understanding(map_fit, wt, ce, acc, cy; th = 0.0)
+
+Pragmatic understanding of a thing by a model (L31, Lean `pragmatic_understanding_ref`; proposal 8.98):
+map fit × the weighted mean of causal explanation × prediction accuracy × (1 − complexity) over the items
+whose weight P(X|T)·P(i|T,X)·Impact(i) reaches `th`.
+"""
+function pragmatic_understanding(map_fit::Real, wt, ce, acc, cy; th::Real = 0.0)
+    check(length(wt) == length(ce) == length(acc) == length(cy), "one weight, explanation, accuracy and complexity per item")
+    check(0 <= map_fit <= 1 && all(x -> 0 <= x <= 1, ce) && all(x -> 0 <= x <= 1, acc) && all(x -> 0 <= x <= 1, cy) && all(>=(0), wt),
+          "map fit, explanation, accuracy and complexity in [0, 1]; weights non-negative")
+    f(x) = floatarray(collect(Float64, x))
+    ccall(sym(:bf_pragmatic_understanding), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          Float64(map_fit), f(wt), f(ce), f(acc), f(cy), Float64(th))
+end

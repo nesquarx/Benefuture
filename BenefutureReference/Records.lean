@@ -51,6 +51,20 @@ def expected_effect_ref (probs effects : Array Float) : Float := Id.run do
     e := e + probs[i]! * effects[i]!
   return e
 
+/-- Pragmatic understanding of a thing by a model (L31; proposal 8.98): the model's map fit to the thing
+    times the weighted mean, over the situations and outcomes that matter, of causal explanation ×
+    prediction accuracy × (1 − complexity). Weights are P(X|T)·P(i|T,X)·Impact(i); items below the
+    significance threshold `th` are left out. No item at or above it: no understanding (0). -/
+def pragmatic_understanding_ref (mapFit : Float) (wt ce acc cy : Array Float) (th : Float) : Float := Id.run do
+  let n := min (min wt.size ce.size) (min acc.size cy.size)
+  let mut num := 0.0
+  let mut den := 0.0
+  for i in [0:n] do
+    if wt[i]! ≥ th then
+      num := num + wt[i]! * ce[i]! * acc[i]! * (1.0 - cy[i]!)
+      den := den + wt[i]!
+  return if den > 0.0 then mapFit * num / den else 0.0
+
 /-- Understanding trickles down and across (author ruling 8.44): a listener weighs a source only if
     the source's weight is at least its own, or, rarely, for novel input. -/
 def heard_ref (source own : Float) (novel : Bool) : Float :=

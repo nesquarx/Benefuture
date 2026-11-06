@@ -1194,6 +1194,7 @@ for removal.
 | Mechanism | Status | Note |
 |---|---|---|
 | Transactions quoted per currency, screened by G, logged | Native | L86–L89, L145 |
+| Understanding measured by its equation over hidden traits (`understanding.jl`) | Native rule, introduced world | L31 via Lean `pragmatic_understanding_ref`; the hidden traits and measurement noise are world model (8.98); a probe stage, not yet wired into the beings of M7 |
 | Outcome-first causal distribution, traversal fallback | Native | L94–L96; coalition values [P] 8.18 |
 | Balance overflow into reinvestment | Native | L103; reputation untouched (whether overflow boosts reputation is BACKPROPAGATION 8.51) |
 | Crime or accident by notice and mandate | Native | L115, L104; 8.25.3 |
@@ -1264,6 +1265,8 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Significance of an item in pragmatic understanding | `th` (`understanding_truth_and_measure`) | 0.0 | L31 (Wt ≥ Th) |
+| Audit rate of causal-explanation claims (8.98 probe) | `audit_rate` | 1.0 in the probe; swept 0–1 | institutional, so a sweep (CLAUDE.md), never a default |
 | Compensation efficiency (E4 replay) | `compensation_efficiency` | 0.75 | 8.100; analogue: the excess burden of tax-financed transfers, roughly 0.1 to 0.5 per unit raised |
 | Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
 | Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L157; 8.22 |
@@ -1391,6 +1394,8 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 
 | Step | Parameter | Default | Range to explore | Class; source (confidence) |
 |---|---|---|---|---|
+| Reading a claim of causal explanation (8.98 probe) | `σ_audit` | 0.05 | 0.02–0.2 | Judgment (low); audited readings of explanation quality, no calibrated source yet |
+| Reading map fit (8.98 probe) | `σ_map` | 0.05 | 0.02–0.2 | Judgment (low) |
 | A plan's effect on each being | `ToyParams.spread` | 1.0 | 0.5–3 | Invariant; 3.1, [VIV20] [MEA19] (medium). 1.0 is the low end of CV 1–3; the shape (heavy-tailed, signed) is not added: sites, not beings |
 | Carrying a plan out | agent `sloppiness` | 0.25 when an agent is not given one (`SLOPPINESS`); tests pass 0 as the exact limiting case | 0.1–0.5 | Mixed, invariant for individuals; 3.2, [WS06] (medium). Projects (3.10) are institution-dependent and swept |
 | Markers measuring levels and outcomes | `marker_σ` | 0.3 | 0.1–0.6 | Mixed; 3.1, `docs/DATA.md` 2 (high that 0.05 was optimistic). 0.3: understanding by tests (reliability 0.9); happiness by single items 0.6; counts and registries 0.1 (institution-dependent) |

@@ -344,6 +344,8 @@ understanding and irreparable harm are never compensated. Code frozen at hash pr
 (same recipe as §4.4). This rule was written after the first held-out replay, so the second replay of the
 held-out set is not out of sample; both results are reported, the first as the held-out result.
 
+Note (2026-11-06): adding `pragmatic_understanding_ref` to `BenefutureReference/Records.lean` changes the §4.4 hash recipe's output without touching any rule the replay calls; the held-out test pins both replays' choices, which are unchanged.
+
 ### 5b. Baselines (D5, amendment 2026-11-06)
 
 Every scenario-priced case is also decided by simple rules on the same as-of priced options

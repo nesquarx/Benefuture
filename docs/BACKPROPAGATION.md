@@ -2424,3 +2424,23 @@ needs it (parsimony); it becomes a candidate if a case appears where the native 
 honesty. Observed: a skilled liar is still chosen as often as its honest peers; that is as intended, since
 its quotes are corrected by its record and its delivered work is as good as theirs, so it loses on
 escrow and liability, not on access to work.
+8.102 finding and question (2026-11-06, on 8.98): understanding measured by its equation. Built: the
+pragmatic equation (L31) as a Lean rule (`pragmatic_understanding_ref`) and a probe world in which a
+being's true understanding is the equation on hidden traits (map fit; per item weight, true outcome
+probability, the spread of its credences, causal explanation, complexity) and its measured
+understanding the same equation on outputs (a finite record of scored reports, audited or unaudited
+claims of explanation, its model's description, a noisy map fit). Over 40 random beings, common random
+numbers, z = 3: (a) measurement error shrinks with the record (mean |measured − true| 0.026 at 10
+records per item, 0.0099 at 200); (b) overconfident reports lower measured understanding (−0.017), so
+proper scoring turns that gaming against the gamer; (c) unaudited overclaims of explanation inflate it
+(+0.022, about 40% of the mean true value) and full audits remove the bias (within ±0.005): explanation
+is the part that fails first and needs audit, accuracy protects itself. Question for the author: with
+prediction accuracy as raw credence accuracy (1 − Brier/0.25, 8.35–8.36), a being that knows a fair coin
+exactly reads 0, and understanding of any inherently uncertain process is scaled down by its
+irreducible uncertainty (the probe's mean true understanding is only 0.056). Murphy (1973, "A new vector
+partition of the probability score": the Brier score splits into reliability, resolution and an
+uncertainty term no forecaster can reduce) suggests scoring accuracy in the equation net of that term,
+for example skill against the best achievable credence. Should PrAcc in L31 be that relative skill,
+keeping raw accuracy for currency backing? Next, if ruled: wire hidden traits into M7's beings, so
+teaching and research raise traits and the floors are judged on true and measured understanding side
+by side. Candidate homes: L31 note; Understanding article (measurement); 8.35–8.36.
