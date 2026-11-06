@@ -301,7 +301,7 @@ end
 end
 
 @testset "Replay: D5 baselines on the same as-of priced options (§5b)" begin
-    cases = filter(f -> endswith(f, ".toml") && occursin("primary", read(f, String)), readdir(CASES_DIR; join = true))
+    cases = filter(f -> endswith(f, ".toml") && occursin("primary_or_held_out = \"primary\"", read(f, String)), readdir(CASES_DIR; join = true))
     s = evaluate_replay_suite(cases)
     priced = [(r, b) for (r, b) in zip(s.results, s.baselines) if b !== nothing]
     @test length(priced) == 9
@@ -315,4 +315,18 @@ end
     # Scored on settled outcomes only; the institutions score their good decisions by construction.
     @test s.scores[:benefuture].n == s.scores[:min_deaths].n == count(((r, b),) -> r.outcome_class in (:good, :bad), priced)
     @test s.scores[:actual].k == count(((r, b),) -> r.outcome_class == :good, priced)
+end
+
+@testset "Replay: held-out set, first replay under the frozen code (§4.4)" begin
+    ids = ["snow_broad_street_1854", "printing_press_europe_1470", "leaded_petrol_phaseout_1973",
+           "bengal_famine_relief_1943", "no_child_left_behind_2002", "volcker_disinflation_1979"]
+    s = evaluate_replay_suite([joinpath(CASES_DIR, i * ".toml") for i in ids])
+    @test s.n_void == 0
+    ch = Dict(r.id => r.chosen_option for r in s.results)
+    # The recorded first result (8.99): the strong per-group reading vetoes two good reforms with
+    # concentrated losers (scribes; refiners) when no recovery or compensation is priced.
+    @test ch["printing_press_europe_1470"] == "status_quo_scribal_trade_only"
+    @test ch["leaded_petrol_phaseout_1973"] == "status_quo_lead_free_availability_only"
+    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (3, 5)
+    @test (s.scores[:mean_welfare].k, s.scores[:min_deaths].k) == (4, 2)
 end

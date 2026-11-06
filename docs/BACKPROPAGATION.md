@@ -2370,3 +2370,23 @@ lets us show: whether measured understanding tracks true understanding as noise 
 (Goodhart on the equation's parts), which part fails first, and whether overstating outputs raises
 measured but not true understanding. Order (author: most useful wins first): after the E4 held-out
 replay. Candidate homes: `spec/Bf_Pseudocode.txt` L31 note; Understanding article (measurement).
+8.99 E4 held-out result (2026-11-06, first replay under the frozen code a9c71a592e1e592e; the result
+stands, nothing patched). Six held-out cases, built from as-of sources without running the replay (the
+builders knew the outcomes; most magnitudes are judgment; several sources secondary or unopened, listed
+in the case files). Scored on the five with a settled outcome: Benefuture 3/5 (interval 0.23 to 0.89),
+the institutions 4/5, mean welfare 4/5, fewest deaths 2/5, equal-weight scenarios 1/5, status quo 0/5.
+Benefuture removes the Broad Street pump handle, approves Bengal relief and chooses Volcker's reserve
+targeting (all right), and on NCLB (unclear) prefers reporting without sanctions; it keeps the status
+quo against the printing press and the 1973 lead phase-down, two good decisions: falsifier F2 fires
+twice. Cause, traced: the replay applies 8.86's strong per-group reading (no group below inaction over
+the long-term window) to every decision, while 8.86 rules it for accessions; with no recovery
+(`lt_end`) or compensation priced, a small group's loss (scribes' livelihoods; refiners' costs) vetoes
+a large gain, and the inaction option always passes its own check. On the primary set (8.94) the
+reading never bound against a good decision. Combined, primary and held-out: Benefuture 9/11, mean
+welfare 9/11, fewest deaths 8/11, institutions 6/11 (selection). Questions for the author: (1) does the
+strong per-being reading apply to all decisions or only to accessions; (2) if to all, should options
+that pair a reform with the 8.86 absorption (compensation of those who bear the passing harm) be priced
+as standard alternatives, so the reading selects the compensated reform rather than the status quo;
+(3) long-term recovery of displaced groups (scribes into printing, refiners amortising) has as-of
+precedents only in a few cases; where none exist the dip counts as permanent. A rerun after any change is a new
+replay on a new freeze, reported beside this one, never in its place.
