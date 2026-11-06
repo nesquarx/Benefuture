@@ -2343,3 +2343,13 @@ double counting: each measured outcome is booked once and split across the domai
 classification share (as lane harm already is, 8.67), so a deception that is both a skill-domain loss
 and a deception-domain record is not charged twice. Candidate homes: Benefuture currency (minting and
 burning), Domain (overlap and shares), 8.95.
+8.97 ruling (author, on 8.95): behavioural domains need no special setup; domains do what domains do. A
+behavioural domain is an ordinary domain, attached to a piece of work through ordinary classification
+(membership shares) only where the outcome of that behaviour counts toward the goals; elsewhere it has
+no share and reads nothing. When someone's job is to press a button at the right time, what counts is
+that it is triggered correctly, not whether it was done nicely or cooperatively, so conduct domains
+other than the ones that change that outcome carry no share there. Consequences: no first set is
+chosen in advance (a conduct domain forms, like any domain, where outcomes show it matters); there is
+no general character score; minting, burning and double-count avoidance are those of every domain
+(8.96). The honesty of claims attaches wherever a priced claim affects the outcome, which is most
+transactions, so it is the first to form. Supersedes 8.95's open questions.
