@@ -99,3 +99,5 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 - Process (author, 2026-11-03): CI runs in tiers: the fast tier (rules, units, probes) on every code push, the full suite nightly on main and on demand; docs-only pushes skip CI; superseded runs are cancelled. Probe coverage of every mechanism is audited (COORDINATION, probe audit).
 
 - Process (author, 2026-11-04): overnight batteries on the local machine; wide and deep batteries continuously as needed on sharded free GitHub runners; the full suite sharded (COORDINATION, sharded compute).
+
+- Process (author, 2026-11-06): the README is short and leads with the framework and its potential in the author's framing; caution sits beside claims; detail moved to docs/CLAIMS.md, docs/OPEN_PROBLEMS.md, docs/BUILD.md.
