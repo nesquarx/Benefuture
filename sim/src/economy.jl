@@ -417,3 +417,21 @@ function escalated_credence(credence::Real, neg_share::Real, persistence::Intege
     check(persistence >= 0 && isfinite(growth) && growth > 0 && isfinite(cap) && cap >= 1, "persistence non-negative, growth positive, cap at least 1")
     ccall(sym(:bf_escalated_credence), Float64, (Float64, Float64, Float64, Float64, Float64), credence, neg_share, persistence, growth, cap)
 end
+
+"Event probability from an as-of record of `k` occurrences in `n` trials, Laplace-smoothed (Lean `event_rate_ref`; 8.87)."
+function event_rate(k::Real, n::Real)
+    check(0 <= k <= n && isfinite(n), "0 ≤ k ≤ n")
+    ccall(sym(:bf_event_rate), Float64, (Float64, Float64), k, n)
+end
+
+"Sources' probabilities pooled by their record weights (Lean `pooled_probability_ref`; 8.87)."
+function pooled_probability(probs, weights)
+    check(length(probs) == length(weights) && all(p -> 0 <= p <= 1, probs) && all(>=(0), weights), "one weight ≥ 0 per probability in [0, 1]")
+    ccall(sym(:bf_pooled_probability), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, weights)))
+end
+
+"An option's expected effect over its scenarios (Lean `expected_effect_ref`; 8.87)."
+function expected_effect(probs, effects)
+    check(length(probs) == length(effects) && all(isfinite, effects), "one effect per probability")
+    ccall(sym(:bf_expected_effect), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, effects)))
+end

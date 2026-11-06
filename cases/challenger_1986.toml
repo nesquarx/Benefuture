@@ -56,6 +56,13 @@ pred_irreparable = [0.0, 0.0]
 lt_end_u = [85.0, 70.0]
 lt_end_h = [80.0, 70.0]
 
+# Scenario pricing (amendment 2026-11-05): delaying is certain to cost a short schedule slip.
+[[ options.scenarios ]]
+name = "delayed_launch"
+p_chain = []
+dh = [0.0, -0.5]
+nha = [0.0, 0.5]
+
 [[ options ]]
 id = "launch_at_31F"
 name = "Proceed with launch at 31°F ambient temperature (22°F below coldest flight experience)"
@@ -70,6 +77,23 @@ pred_nha = [0.0, 6.0]
 pred_irreparable = [7.0, 2.0]
 lt_end_u = [0.0, 66.0]
 lt_end_h = [0.0, 64.0]
+
+# Scenario pricing: a cold launch distresses the field joint (4 of 4 prior launches below 65°F), and a
+# distressed joint fails with the rate the record supports (0 of 7 distressed joints failed so far);
+# failure loses vehicle and crew, a consequence known before the decision.
+[[ options.scenarios ]]
+name = "joint_failure"
+p_chain = ["cold_launch_distress", "failure_given_distress"]
+du = [-85.0, -4.0]
+dh = [-80.0, -6.0]
+nha = [0.0, 6.0]
+irreparable = [7.0, 2.0]
+
+[[ options.scenarios ]]
+name = "nominal_flight"
+p_chain = []
+complement = true
+du = [0.0, 0.5]
 
 [counterfactual]
 actual_floor_u_delta = -85.0

@@ -407,6 +407,25 @@ struct HistoricalCaseRecord
     citation::String
 end
 
+"""
+    load_case_events(path, as_of) -> Dict(event => (occurrences, trials))
+
+As-of event counts for scenario pricing (8.87): rows `event,trial_id,date,occurred,citation_with_page`;
+only trials dated on or before `as_of` count.
+"""
+function load_case_events(path::AbstractString, as_of::Date)
+    counts = Dict{String,Tuple{Int,Int}}()
+    lines = readlines(path)
+    for l in lines[2:end]
+        isempty(strip(l)) && continue
+        f = split(l, ',')
+        Date(f[3]) <= as_of || continue
+        k, n = get(counts, String(f[1]), (0, 0))
+        counts[String(f[1])] = (k + (parse(Float64, f[4]) > 0 ? 1 : 0), n + 1)
+    end
+    counts
+end
+
 function load_case_records(csv_path::AbstractString)
     isfile(csv_path) || return HistoricalCaseRecord[]
     recs = HistoricalCaseRecord[]
@@ -438,6 +457,8 @@ function load_replay_case(path::AbstractString)
     if isfile(rec_path)
         d["_records"] = load_case_records(rec_path)
     end
+    ev_path = replace(path, r"\.toml$" => ".events.csv")
+    isfile(ev_path) && (d["_events_path"] = String(ev_path))
     return d
 end
 
@@ -623,6 +644,40 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     fr_ok = falses(n_opts)
 
     bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
+    # Scenario pricing (amendment 2026-11-05, 8.87): an option's effects are expected values over the
+    # scenarios known as of the decision, each scenario's probability the product of its chained events'
+    # Laplace rates (`event_rate_ref`) from the as-of events file. Typed effects are hindsight-prone:
+    # still computed, but the case is marked unsupported, loudly.
+    events = haskey(case_dict, "_events_path") ? load_case_events(case_dict["_events_path"], dec_date) : Dict{String,Tuple{Int,Int}}()
+    hindsight_typed = false
+    scen_conf = zeros(n_opts)
+    for opt in options
+        if haskey(opt, "scenarios")
+            ps = Float64[]; dus = Vector{Float64}[]; dhs = Vector{Float64}[]; nhas = Vector{Float64}[]; irrs = Vector{Float64}[]
+            for sc in opt["scenarios"]
+                p_s = 1.0
+                for ev in sc["p_chain"]
+                    haskey(events, ev) || throw(ArgumentError("case $(case_dict["id"]): event $ev has no as-of records"))
+                    k, n = events[ev]
+                    p_s *= event_rate(k, n)
+                end
+                get(sc, "complement", false) && (p_s = max(0.0, 1.0 - sum(ps)))   # the remaining mass (the nominal outcome)
+                push!(ps, p_s)
+                z = zeros(n_groups)
+                push!(dus, Float64.(get(sc, "du", z))); push!(dhs, Float64.(get(sc, "dh", z)))
+                push!(nhas, Float64.(get(sc, "nha", z))); push!(irrs, Float64.(get(sc, "irreparable", z)))
+            end
+            opt["pred_du"] = [expected_effect(ps, getindex.(dus, g)) for g in 1:n_groups]
+            opt["pred_dh"] = [expected_effect(ps, getindex.(dhs, g)) for g in 1:n_groups]
+            opt["pred_nha"] = [expected_effect(ps, getindex.(nhas, g)) for g in 1:n_groups]
+            opt["_scenario_irr"] = isempty(irrs) ? zeros(n_groups) : irrs[argmax([sum(x) * q for (x, q) in zip(irrs, ps)])]
+            opt["_scenario_p_irr"] = isempty(ps) ? 0.0 : maximum([sum(x) > 0 ? q : 0.0 for (x, q) in zip(irrs, ps)])
+            opt["pred_irreparable"] = [expected_effect(ps, getindex.(irrs, g)) for g in 1:n_groups]
+        else
+            hindsight_typed = true
+        end
+    end
+    hindsight_typed && (degraded["case unsupported: option effects typed, not priced from as-of scenarios (amendment 2026-11-05)"] = 1)
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
         dh = Float64.(opt["pred_dh"])
@@ -649,7 +704,9 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # Freedom gate (L135) on irreparable and passing harms
         total_irr = sum(irr)
         total_nha = sum(nha)
-        fr_ok[i] = fr_permissible(total_irr, 0.0, 0.0, total_nha, 0.0; confidence = conf)
+        fr_ok[i] = haskey(opt, "_scenario_irr") ?
+            fr_permissible(sum(opt["_scenario_irr"]), 0.0, 0.0, total_nha, 0.0; confidence = opt["_scenario_p_irr"]) :
+            fr_permissible(total_irr, 0.0, 0.0, total_nha, 0.0; confidence = conf)
 
         # Value per group weighted by group population share
         v_tot = 0.0

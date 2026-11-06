@@ -26,6 +26,31 @@ def source_weight_ref (rights wrongs : Float) : Float :=
   let q := (rights + 1.0) / (rights + wrongs + 2.0)
   max 0.0 (Float.log (q / (1.0 - q)))
 
+/-- An event's probability from an as-of record of `k` occurrences in `n` trials, smoothed by
+    Laplace's rule of succession ((k + 1) / (n + 2)): no record gives a coin toss, and no finite record
+    gives certainty (8.33). Used by the decision replay (8.87) to price options' scenarios. -/
+def event_rate_ref (k n : Float) : Float := (k + 1.0) / (n + 2.0)
+
+/-- Sources' probabilities for one event pooled by their record weights (`source_weight_ref`); with no
+    weight anywhere, the plain mean. -/
+def pooled_probability_ref (probs weights : Array Float) : Float := Id.run do
+  let n := min probs.size weights.size
+  if n == 0 then return 0.5
+  let mut sw := 0.0
+  let mut sp := 0.0
+  for i in [0:n] do
+    sw := sw + weights[i]!
+    sp := sp + weights[i]! * probs[i]!
+  if sw ≤ 0.0 then return (probs.foldl (· + ·) 0.0) / n.toFloat
+  return sp / sw
+
+/-- An option's expected effect over its scenarios: Σ probability × effect. -/
+def expected_effect_ref (probs effects : Array Float) : Float := Id.run do
+  let mut e := 0.0
+  for i in [0:min probs.size effects.size] do
+    e := e + probs[i]! * effects[i]!
+  return e
+
 /-- Understanding trickles down and across (author ruling 8.44): a listener weighs a source only if
     the source's weight is at least its own, or, rarely, for novel input. -/
 def heard_ref (source own : Float) (novel : Bool) : Float :=

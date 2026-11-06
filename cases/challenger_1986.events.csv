@@ -1,0 +1,12 @@
+event,trial_id,date,occurred,citation_with_page
+cold_launch_distress,STS-41-B,1984-02-03,1,"Rogers Commission Report (1986), Vol. 1, Ch. VI: field-joint O-ring incidents by launch temperature (57°F)"
+cold_launch_distress,STS-41-C,1984-04-06,1,"Rogers Commission Report (1986), Vol. 1, Ch. VI (63°F)"
+cold_launch_distress,STS-51-C,1985-01-24,1,"Rogers Commission Report (1986), Vol. 1, Ch. VI (53°F, coldest prior launch; blow-by)"
+cold_launch_distress,STS-61-C,1986-01-12,1,"Rogers Commission Report (1986), Vol. 1, Ch. VI (58°F)"
+failure_given_distress,STS-2,1981-11-12,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI: erosion, secondary seal held"
+failure_given_distress,STS-41-B,1984-02-03,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"
+failure_given_distress,STS-41-C,1984-04-06,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"
+failure_given_distress,STS-41-D,1984-08-30,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"
+failure_given_distress,STS-51-C,1985-01-24,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"
+failure_given_distress,STS-61-A,1985-10-30,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"
+failure_given_distress,STS-61-C,1986-01-12,0,"Rogers Commission Report (1986), Vol. 1, Ch. VI"

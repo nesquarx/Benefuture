@@ -45,6 +45,10 @@ Generated from the code by `tools/data/prereg_thresholds.jl` (`julia --project=s
 
 **Amendment 2026-11-05 (before any replay beyond the four original cases).** The earlier table did not match the governed point: it listed a harm schedule (0, 1, 2, 5) and Fr severity multipliers (0, 0.25, 0.5, 1) that exist nowhere in the code (the governed values are above), described κ as a harm weight (it is Ha_wt's synergy parameter), and gave the long-term window as 50 (the code's default is 100). Rows with no source in the code (an escape horizon of 5, a catastrophic ceiling of 10, a minimum skill record of 20, a tie tolerance) are dropped; any replay step that needs one names its governed parameter first. Replays already run on the four original cases are re-run against this table before their results count.
 
+## 2b. Pricing options from as-of scenarios (amendment 2026-11-05)
+
+Typed option effects let hindsight in (the original Challenger file gave the launch option the crew's actual deaths as its predicted harm). From this amendment, each option lists the scenarios known as of the decision, each with its consequences per group (known before the decision) and a probability: the product of its chained events' Laplace rates (Lean `event_rate_ref`) computed from the case's as-of events file (`cases/<id>.events.csv`: event, trial, date, occurred, citation). A `complement` scenario takes the remaining mass. Expected effects come from Lean `expected_effect_ref`; the freedom gate reads the irreparable scenario at its probability. Competing sources for one event are pooled by their record weights (`pooled_probability_ref`). A case whose options still carry typed effects is computed but marked unsupported, loudly, and does not count. Worked example: Challenger, where 4 of 4 launches below 65°F distressed the field joint and 0 of 7 distressed joints failed, so the launch prices a loss of vehicle and crew at (5/6)·(1/9) ≈ 0.09, which the freedom bar refuses.
+
 ## 3. As-Of Reconstruction and Hindsight Guard
 
 To prevent hindsight bias (Fischhoff 1975; Baron & Hershey 1988):

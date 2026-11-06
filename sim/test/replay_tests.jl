@@ -284,3 +284,18 @@ end
     @test all(r -> r.resolution_date <= w1_last_res, w1_as_of)
     @test any(r -> r.resolution_date > w1_last_res, store.records)
 end
+
+# Scenario pricing (amendment 2026-11-05, 8.87): option effects are expected values over scenarios
+# whose probabilities come from as-of event records, never typed with hindsight.
+@testset "Replay: scenario pricing from as-of event records (8.87)" begin
+    @test event_rate(0, 0) == 0.5 && event_rate(4, 4) ≈ 5 / 6 && event_rate(0, 7) ≈ 1 / 9
+    @test pooled_probability([0.2, 0.8], [1.0, 3.0]) ≈ 0.65 && pooled_probability([0.2, 0.8], [0.0, 0.0]) ≈ 0.5
+    @test expected_effect([0.25, 0.75], [-4.0, 4.0]) ≈ 2.0
+    c = BenefutureSim.load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "challenger_1986.toml"))
+    r = BenefutureSim.replay_decision(c)
+    launch = only(o for o in c["options"] if o["id"] == "launch_at_31F")
+    @test launch["_scenario_p_irr"] ≈ (5 / 6) * (1 / 9)          # priced from the record, not from the outcome
+    @test r.chosen_option == "delay_until_53F" && !any(occursin("typed", k) for k in keys(r.degraded))
+    t = BenefutureSim.replay_decision(BenefutureSim.load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "thalidomide_fda_1960.toml")))
+    @test any(occursin("typed", k) for k in keys(t.degraded))     # typed effects are flagged unsupported, loudly
+end
