@@ -26,7 +26,7 @@ on:
         default: 'full'
 
 concurrency:
-  group: julia-${{ github.ref }}-${{ github.event_name == 'schedule' && 'nightly' || 'push' }}
+  group: julia-${{ github.ref }}-${{ github.event_name }}   # push runs supersede push runs only; manual and nightly full runs are never cancelled by a push
   cancel-in-progress: true
 
 jobs:
