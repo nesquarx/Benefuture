@@ -508,7 +508,7 @@
   "section": "",
   "subsection": "Happiness is also self cyclic",
   "name": "",
-  "reference": "(Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''The Journal of Creative Behavior'', ''53''(4), 560–568. https://doi.org/10.1002/jocb.347)",
+  "reference": "(Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244)",
   "supports": "* '''Being Creative Makes You Happier:''' This study explores the positive effect of creativity on subjective well-being.",
   "doi_or_url": "https://doi.org/10.1002/jocb.347"
  },
@@ -976,7 +976,7 @@
   "section": "Discussion",
   "subsection": "",
   "name": "AcarRunco2019",
-  "reference": "Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. The Journal of Creative Behavior, 53(4), 560–568. https://doi.org/10.1002/jocb.347",
+  "reference": "Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244",
   "supports": "Even the act of being creative itself can enhance subjective well-being",
   "doi_or_url": "https://doi.org/10.1002/jocb.347"
  },
@@ -1084,9 +1084,9 @@
   "section": "Discussion",
   "subsection": "'''Individual Level:'''",
   "name": "PangLee2008",
-  "reference": "Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000001",
+  "reference": "Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000011",
   "supports": "** Sentiment analysis of social media.",
-  "doi_or_url": "https://doi.org/10.1561/1500000001"
+  "doi_or_url": "https://doi.org/10.1561/1500000011"
  },
  {
   "article": "Happiness",

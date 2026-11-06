@@ -1,0 +1,2004 @@
+[
+ {
+  "article": "Anti-Corruption",
+  "reference": "Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press. https://openlibrary.org/works/OL2259845W",
+  "verdict": "unclear",
+  "why": "Content is a one-line blurb (deterrence); the coordination-point claim cannot be checked.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Anti-Corruption",
+  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. https://doi.org/10.1017/cbo9780511807763",
+  "verdict": "supports",
+  "why": "Content covers institutions for governing common-pool resources, the topic of the design principles.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Art",
+  "reference": "Eco, U. (1989). [https://openlibrary.org/isbn/0674639758 ''The Open Work''] (A. Cancogni, Trans.). Harvard University Press.",
+  "verdict": "supports",
+  "why": "Content is about the open work and leaving arrangements open to many readings.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Art",
+  "reference": "Strevens, M. (2020). [https://openlibrary.org/isbn/1631491377 ''The Knowledge Machine: How Irrationality Created Modern Science'']. Liveright.",
+  "verdict": "related",
+  "why": "Content is a general blurb on the origins of science; the iron rule is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
+  "verdict": "related",
+  "why": "Content covers policy disputes and belief betting; arbitrage and meta-currency claims are not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press. https://openlibrary.org/works/OL116534W",
+  "verdict": "related",
+  "why": "Content is a general summary of Sen's development book; capability theory is not mentioned.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200",
+  "verdict": "supports",
+  "why": "Content is about the human development and capabilities approach.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Choquet, G. (1954). Theory of capacities. ''Annales de l'Institut Fourier'', 5, 131–295. https://doi.org/10.5802/aif.53",
+  "verdict": "supports",
+  "why": "Content is Choquet's theory of non-additive set functions and capacities.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Keeney, R. L., & Raiffa, H. (1976). ''Decisions with Multiple Objectives: Preferences and Value Tradeoffs''. Wiley. https://openlibrary.org/works/OL4107460W",
+  "verdict": "supports",
+  "why": "Content is multi-objective decision analysis and value tradeoffs.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. ''Econometrica'', 47(2), 263–291. https://doi.org/10.2307/1914185",
+  "verdict": "supports",
+  "why": "Content presents prospect theory as an alternative to expected utility.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Arrow, K. J., Chenery, H. B., Minhas, B. S., & Solow, R. M. (1961). Capital-labor substitution and economic efficiency. ''Review of Economics and Statistics'', 43(3), 225–250. https://doi.org/10.2307/",
+  "verdict": "supports",
+  "why": "Content covers elasticity of substitution between capital and labour (CES-type production); the bundled list is broader than the content.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books. https://openlibrary.org/works/OL3336954W",
+  "verdict": "unclear",
+  "why": "Content is a Wikipedia summary of the minimal-state argument; utility monster and wireheading claims are not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Chi, M. T. H., Feltovich, P. J., & Glaser, R. (1981). '''Categorization and representation of physics problems by experts and novices.''' ''Cognitive Science, 5''(2), 121–152. https://doi.org/10.1207/",
+  "verdict": "supports",
+  "why": "Content studies how experts and novices categorise physics problems by principle.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Ali, A., Ambler, G., Strydom, A., Rai, D., Cooper, C., McManus, S., Hassiotis, A., … '''The relationship between happiness and intelligent quotient: The contribution of socio-economic and clinical fac",
+  "verdict": "supports",
+  "why": "Content directly examines the association between IQ and happiness.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Khandaker, G.M., Stochl, J., Zammit, S., Goodyer, I., Lewis, G., Jones, P.B. '''Childhood inflammatory markers and''' '''intelligence as predictors of subsequent persistent depressive symptoms: A long",
+  "verdict": "related",
+  "why": "Content relates childhood cognition to depressive symptoms, not to happiness or well-being correlations.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Enkvist, A., Ekström, H., & Elmståhl, S. (2013). '''Associations between cognitive abilities and life satisfaction in the oldest-old. Results from the longitudinal population study Good Aging in Skåne",
+  "verdict": "supports",
+  "why": "Content examines cognitive abilities and life satisfaction in older adults.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Crum, A. J., Santoro, E., Handley-Miner, I., Smith, E. N., Evans, K., Moraveji, N., Achor, S., & Salovey, P. (2023). '''Evaluation of the “rethink stress” mindset intervention: A metacognitive approac",
+  "verdict": "supports",
+  "why": "Content tests a stress-is-enhancing mindset intervention on well-being outcomes.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Williams, S. E., & Ginty, A. T. (2023). '''A stress-is-enhancing mindset is associated with lower traumatic stress symptoms during the COVID-19 pandemic.''' ''Anxiety, Stress, & Coping, 37''(3), 293–3",
+  "verdict": "related",
+  "why": "Content covers stress mindset and traumatic stress symptoms, not the well-being improvement claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press. https://doi.org/10.2307/j.ctvc77dgq",
+  "verdict": "related",
+  "why": "Content summarises determinants of happiness; the evolutionary claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Achor, S. (2010). '''''The happiness advantage: the seven principles of positive psychology that fuel success and performance at work'''''. Crown Business. https://openlibrary.org/works/OL15674042W",
+  "verdict": "supports",
+  "why": "Content argues happiness fuels success and productivity.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Cohen, W. L., & Levinthal, D. A. (1990). '''Absorptive Capacity: A New Perspective on Learning and Innovation.''' ''Administrative Science Quarterly, 35''(1), 128-152. https://doi.org/10.2307/2393553",
+  "verdict": "supports",
+  "why": "Content is the absorptive capacity paper on prior knowledge and learning/innovation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Feldman J. (2016). '''The simplicity principle in perception and cognition.''' ''Wiley interdisciplinary reviews. Cognitive science'', 7(5), 330–340. https://doi.org/10.1002/wcs.1406",
+  "verdict": "related",
+  "why": "Content covers the simplicity principle in perception and cognition; the dissemination claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Taleb, N. N. (2007). ''The black swan: The impact of the highly improbable''. Random House. https://openlibrary.org/works/OL3295030W",
+  "verdict": "supports",
+  "why": "Content is about the impact of improbable events on civilisation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Benefuture",
+  "reference": "Sagan, C. (1980). ''Cosmos''. Random House. https://openlibrary.org/works/OL15829966W",
+  "verdict": "related",
+  "why": "Content describes science's history with civilisation; the claim about the universe understanding itself is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Citations",
+  "reference": "Burhan, N.A.S., Sabri, M.F. & Rindermann, H. Cognitive ability and economic growth: how much happiness is optimal?. ''I'' ''nt Rev Econ'' '''70''', 63–100 (2023). https://doi.org/10.1007/s12232-022-00",
+  "verdict": "supports",
+  "why": "Content studies cognitive ability, happiness and growth, and its conclusion addresses happiness as the aim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Citations",
+  "reference": "(Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Resea",
+  "verdict": "mismatch",
+  "why": "Cited for creativity and subjective well-being, but the content is a study of critical thinking disposition and scientific creativity in students.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "J. Schmidhuber, \"Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010),\" in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interest",
+  "verdict": "supports",
+  "why": "Content is the formal theory of intrinsic motivation driven by novel, surprising patterns.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "'''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). https://doi.org/10.1002/j.1538-7305.1948.tb013",
+  "verdict": "related",
+  "why": "Content is Shannon's communication theory; surprisal as a diversity measure is not shown in the content.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "Woolley, A. W., Chabris, C. F., Pentland, A., Hashmi, N., & Malone, T. W. (2010). Evidence for a collective intelligence factor in the performance of human groups. ''Science'', ''330''(6004), 686–688.",
+  "verdict": "supports",
+  "why": "Content reports a collective intelligence factor in human group performance.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday. https://openlibrary.org/works/OL80364",
+  "verdict": "supports",
+  "why": "Content is Surowiecki's argument that aggregated diverse judgements outperform elites.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Economy",
+  "reference": "Galbraith, J. K. (1975). ''Money: Whence it came, where it went''. Houghton Mifflin. https://openlibrary.org/works/OL12558W",
+  "verdict": "supports",
+  "why": "Content is a history of money and its uses, the topic of the claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Education",
+  "reference": "Gilovich, T. (1991). ''How we know what isn't so: The fallibility of human reason in everyday life''. Free Press. https://openlibrary.org/works/OL4459377W",
+  "verdict": "related",
+  "why": "Content covers how people come to hold false beliefs; the scrutiny claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Education",
+  "reference": "Koetke, J., Schumann, K., Porter, T., & Smilo-Morgan, I. (2023). Fallibility salience increases intellectual humility: Implications for people's willingness to investigate political misinformation. ''",
+  "verdict": "related",
+  "why": "Content covers intellectual humility and investigative behaviour; the specific claim about scrutiny is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Education",
+  "reference": "Peirce, C. S. (1955). ''Philosophical writings of Peirce'' (J. Buchler, Ed.). Dover Publications. (Original work published 1940). https://openlibrary.org/works/OL1834314W",
+  "verdict": "related",
+  "why": "Content describes Peirce's pragmatism essays in general; the scrutiny claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Education",
+  "reference": "Lewandowsky, S., & van der Linden, S. (2021). Countering misinformation and fake news through inoculation and prebunking. ''European Review of Social Psychology'', ''32''(2), 348–384. https://doi.org/",
+  "verdict": "supports",
+  "why": "Content is about inoculation against misinformation, the mechanism the claim relies on.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Education",
+  "reference": "Maertens, R., Roozenbeek, J., Simons, J. S., Lewandowsky, S., Maturo, V., Goldberg, B., Xu, R., & van der Linden, S. (2025). Psychological booster shots targeting memory increase long-term resistance ",
+  "verdict": "supports",
+  "why": "Content tests inoculation (booster shots) against misinformation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Bostrom, N. (2009). [https://doi.org/10.1093/analys/anp062 Pascal's Mugging]. ''Analysis'', 69(3), 443–445.",
+  "verdict": "supports",
+  "why": "Content is about Pascal's mugging, tiny probabilities of huge stakes.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Pettit, P. (1997). [https://openlibrary.org/isbn/0198290837 ''Republicanism: A Theory of Freedom and Government'']. Oxford University Press.",
+  "verdict": "supports",
+  "why": "Content presents Pettit's republican theory of freedom as non-domination.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Government",
+  "reference": "'''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press. https://doi.org/10.4159/9780674041660",
+  "verdict": "related",
+  "why": "Content covers Olson's collective action theory; the sentence concerns Benefuture's own system design, which Olson does not address.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Government",
+  "reference": "Brennan, J. (2016). ''Against Democracy''. Princeton University Press. https://openlibrary.org/works/OL20228215W",
+  "verdict": "supports",
+  "why": "Content argues democracy should be judged by results and that citizens deserve competent government, the epistocratic argument.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Government",
+  "reference": "Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182. https://doi.org/10.1111/jopp.12065",
+  "verdict": "supports",
+  "why": "Content is a study of liquid democracy's problems and perspectives.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Kahneman, D. (2011). ''Thinking, fast and slow''. Farrar, Straus and Giroux. https://openlibrary.org/works/OL15992072W",
+  "verdict": "related",
+  "why": "Content is a general blurb on Kahneman's book; the experiencing/remembering claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Ryan, R. M., & Deci, E. L. (2001). '''On happiness and human potentials: A review of research on hedonic and eudaimonic well-being.''' ''Annual Review of Psychology, 52''(1), 141–166.https://doi.org/1",
+  "verdict": "supports",
+  "why": "Content reviews hedonic and eudaimonic well-being, the types of happiness the claim distinguishes.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Hare, R. D. (2003). ''Without conscience: The disturbing world of the psychopaths among us''. Guilford Press. https://openlibrary.org/works/OL2003912W",
+  "verdict": "related",
+  "why": "Content describes psychopathic personalities; the general claim about gaining pleasure from harm is not directly shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Buckels, E. E., Jones, D. N., & Paulhus, D. L. (2013). Behavioral confirmation of everyday sadism. ''Psychological Science'', ''24''(11), 2201–2209. https://doi.org/10.1177/0956797613490749",
+  "verdict": "supports",
+  "why": "Content studies everyday sadism, pleasure from causing harm.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "'''Nozick, R. (1974).''' ''Anarchy, state, and utopia''. Basic Books. https://openlibrary.org/works/OL3336954W",
+  "verdict": "unclear",
+  "why": "Content is a Wikipedia summary of Nozick's book; the experience-machine claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Fredrickson B. L. (2004). The broaden-and-build theory of positive emotions. *Philosophical transactions of the Royal Society of London. Series B, Biological sciences, 359*(1449), 1367–1378. https://d",
+  "verdict": "supports",
+  "why": "Content is the broaden-and-build theory of positive emotions and well-being.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Diener, E., Ng, W., & Arora, R. (2010). INTERPERSONAL RELATIONS AND GROUP PROCESSES Wealth and Happiness Across the World : Material Prosperity Predicts Life Evaluation , Whereas Psychosocial Prosperi",
+  "verdict": "supports",
+  "why": "Content studies wealth, psychosocial prosperity and happiness.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Lee, C.-W., Lin, L.-C., & Hung, H.-C. (2021). Art and Cultural Participation and Life Satisfaction in Adults: The Role of Physical Health, Mental Health, and Interpersonal Relationships. ''Frontiers i",
+  "verdict": "supports",
+  "why": "Content links art and cultural participation to life satisfaction via health and relationships.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Resear",
+  "verdict": "mismatch",
+  "why": "Cited for creativity enhancing subjective well-being, but the content is about critical thinking and scientific creativity in students.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*, *47*(2), 263-291. https://doi.org/10.2307/1914185",
+  "verdict": "supports",
+  "why": "Content presents prospect theory as a model of decisions under risk.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Schultz, W., Dayan, P., & Montague, P. R. (1997). A neural substrate of prediction and reward. *Science*, *275*(5306), 1593-1599. https://doi.org/10.1126/science.275.5306.1593",
+  "verdict": "supports",
+  "why": "Content is the neural basis of prediction and reward learning.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Mankiw, N. G. (2021). *Principles of microeconomics* (9th ed.). Cengage learning. https://openlibrary.org/works/OL3361584W",
+  "verdict": "unclear",
+  "why": "Content is only a page-count record for Mankiw's textbook; diminishing marginal utility is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the Experience-Sampling Method. ''The Journal of Nervous and Mental Disease'', ''175''(9), 526–536. https://doi.org/10.1097/00005",
+  "verdict": "supports",
+  "why": "Content is the validity of the Experience Sampling Method.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Dunn, L. B., & Neighbors, C. (2019). Wearable technology: A promising tool for mental health researchers. ''Depression and anxiety'', ''36''(10), 997–1005. https://doi.org/10.1002/da.22951",
+  "verdict": "mismatch",
+  "why": "Cited for wearable sensors in mental health research, but the content is a corrigendum on SSRI-resistant depression treatment.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000011",
+  "verdict": "mismatch",
+  "why": "Cited for sentiment analysis of social media, but the content is about open-domain question answering.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications. https://openlibrary.org/works/OL17630185W",
+  "verdict": "related",
+  "why": "Content is a general survey-methods text; community surveys are not specifically shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. https://openlibrary.org/works/OL20578711W",
+  "verdict": "supports",
+  "why": "Content is a practical text on collecting and analysing social network data.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. https://doi.org/10.1017/cbo9780511815478",
+  "verdict": "supports",
+  "why": "Content covers social network analysis across the social sciences.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Christakis, N. A., & Fowler, J. H. (2009). ''Connected: The surprising power of our social networks and how they shape our lives''. Little, Brown. https://openlibrary.org/works/OL8027318W",
+  "verdict": "supports",
+  "why": "Content describes emotional contagion through social networks (happiness spreading).",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Putnam, R. D. (2000). ''Bowling alone: The collapse and revival of American community''. Simon and Schuster. https://openlibrary.org/works/OL4291077W",
+  "verdict": "supports",
+  "why": "Content is about social connection and community decline and revival.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Cox, M., Arnold, G., & Villamayor-Tomás, S. (2010). A review of design principles for community-based natural resource management. ''Ecology and Society'', 15(4), 38. https://doi.org/10.5751/es-03704-",
+  "verdict": "supports",
+  "why": "Content is a review of 91 studies testing Ostrom's commons design principles, which the claim relies on.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. https://doi.org/10.1017/cbo9780511807763",
+  "verdict": "supports",
+  "why": "Content is Ostrom's book setting out the commons design principles.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Baiocchi, G. (2005). ''Militants and Citizens: The Politics of Participatory Democracy in Porto Alegre''. Stanford University Press. https://doi.org/10.1515/9781503625129",
+  "verdict": "related",
+  "why": "Content covers Porto Alegre's participatory democracy; the Kerala figures in the sentence are not in the content.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Suri, T. & Jack, W. (2016). The long-run poverty and gender impacts of mobile money. ''Science'', 354(6317), 1288-1292. https://doi.org/10.1126/science.aah5309",
+  "verdict": "related",
+  "why": "Content covers M-Pesa's household adoption and poverty effects; the participatory-budgeting figures and 90% penetration are not in the content.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Jack, W. & Suri, T. (2011). Mobile Money: The Economics of M-Pesa. ''NBER Working Paper'' No. 16721. https://doi.org/10.3386/w16721",
+  "verdict": "related",
+  "why": "Content covers M-Pesa adoption and economics in Kenya; the participatory-budgeting figures in the sentence are not in the content.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Measurement",
+  "reference": "Lakatos, I. (1978). ''The Methodology of Scientific Research Programmes: Philosophical Papers, Vol. 1''. Cambridge University Press. https://doi.org/10.1017/cbo9780511621123",
+  "verdict": "supports",
+  "why": "Content is Lakatos's methodology of scientific research programmes, the source of the framework.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Measurement",
+  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. https://openlibrary.org/works/OL21639913W",
+  "verdict": "related",
+  "why": "Content is a general blurb on Strevens' book; the Lakatosian research-programme claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Axelrod, R., & Hamilton, W. D. (1981). [https://doi.org/10.1126/science.7466396 The Evolution of Cooperation]. ''Science'', 211(4489), 1390–1396.",
+  "verdict": "supports",
+  "why": "Content covers the evolution of cooperation in repeated interactions, the claim's topic.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Morozov, A. V., & Feigel, A. (2026). [https://doi.org/10.1073/pnas.2513282123 Emergence of cooperation due to opponent-specific responses in Prisoner's Dilemma]. ''Proceedings of the National Academy ",
+  "verdict": "supports",
+  "why": "Content studies opponent-specific responses in the Prisoner's Dilemma, i.e. memory of past opponents.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. https://doi.org/10.1093/0198246609.001.0001",
+  "verdict": "supports",
+  "why": "Content is Hare's two-level distinction in moral thinking.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007. https://openlibrary.org/works/OL1161181W",
+  "verdict": "related",
+  "why": "Content is Sartre's lecture on existentialism; the claim about the lineage of benefuture's nihilism is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard. https://openlibrary.org/works/OL1230690W",
+  "verdict": "related",
+  "why": "Content is Camus's essays on the absurd; the lineage claim about optimistic nihilism is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. https://openlibrary.org/works/OL1068100W",
+  "verdict": "supports",
+  "why": "Content is Mill's utilitarianism, the source of the higher/lower pleasures distinction.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. https://doi.org/10.1093/0198246609.001.0001",
+  "verdict": "related",
+  "why": "Content covers levels of moral thinking; the claim about preference utilitarianism is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "von Neumann, J., & Morgenstern, O. (1944). ''Theory of Games and Economic Behavior''. Princeton University Press. https://openlibrary.org/works/OL1204974W",
+  "verdict": "related",
+  "why": "Content describes the founding text of game theory; the utility-maximisation-under-uncertainty claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Savage, L. J. (1954). ''The Foundations of Statistics''. Wiley. https://openlibrary.org/works/OL6612530W",
+  "verdict": "supports",
+  "why": "Content describes Savage's foundations of statistics including subjective probability.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. ''Econometrica'', 47(2), 263–291. https://doi.org/10.2307/1914185",
+  "verdict": "supports",
+  "why": "Content is prospect theory, which the claim draws on for reference dependence.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Aristotle. (2009). ''Nicomachean Ethics''. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE). https://openlibrary.org/works/OL8273964W",
+  "verdict": "supports",
+  "why": "Content is Aristotle's account of the best life and contemplation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Kant, I. (1998). ''Groundwork of the Metaphysics of Morals''. (M. Gregor, Trans.). Cambridge University Press. (Original work published 1785). https://doi.org/10.1017/cbo9780511809590",
+  "verdict": "supports",
+  "why": "Content is Kant's Groundwork of moral philosophy.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Aurelius, M. (2002). ''Meditations''. (G. Hays, Trans.). Modern Library. (Original work c. 180). https://openlibrary.org/works/OL1317211W",
+  "verdict": "supports",
+  "why": "Content is Marcus Aurelius's Stoic reflections on judgement and suffering.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hempel, C. G., & Oppenheim, P. (1948). Studies in the logic of explanation. ''Philosophy of Science'', ''15''(2), 135-175. https://doi.org/10.1086/286983",
+  "verdict": "supports",
+  "why": "Content is Hempel and Oppenheim on explanation as derivation from laws.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. https://openlibrary.org/works/OL4325174W",
+  "verdict": "supports",
+  "why": "Content is Deutsch on explanation and the progress of knowledge.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Maffie, J. (2014). ''Aztec Philosophy: Understanding a World in Motion''. University Press of Colorado. https://doi.org/10.5876/9781607322238",
+  "verdict": "supports",
+  "why": "Content is a study of Aztec philosophy, the topic of the claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Kramer, S. N. (1963). ''The Sumerians: Their History, Culture, and Character''. University of Chicago Press. https://openlibrary.org/works/OL8469935W",
+  "verdict": "related",
+  "why": "Content is a general description of Sumerian civilisation; the claimed purpose of humanity is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Toynbee, A. J. (1934–1961). ''A Study of History''. Oxford University Press. https://openlibrary.org/works/OL1108523W",
+  "verdict": "related",
+  "why": "Content is a one-line description of Toynbee's universal history; the claim about civilisational understanding is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "MacAskill, W. (2022). ''What We Owe the Future''. Basic Books. https://openlibrary.org/works/OL27138977W",
+  "verdict": "related",
+  "why": "Content covers long-term well-being planning; the claim that effective altruism operationalises consequentialism is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hanson, R. (2013). Shall We Vote on Values, But Bet on Beliefs? ''Journal of Political Philosophy'', 21(2), 151–178. https://doi.org/10.1111/jopp.12008",
+  "verdict": "supports",
+  "why": "Content is Hanson's paper on voting on values and betting on beliefs.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. https://openlibrary.org/works/OL21639913W",
+  "verdict": "related",
+  "why": "Content is a general blurb on Strevens' book; the iron rule is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. https://openlibrary.org/works/OL4325174W",
+  "verdict": "supports",
+  "why": "Content is Deutsch on the nature and progress of knowledge and good explanations.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. https://openlibrary.org/works/OL1068100W",
+  "verdict": "supports",
+  "why": "Content is Mill's utilitarianism, including the ranking of pleasures.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Aquinas, T. (1947). ''Summa Theologica''. Benziger Bros. (Original work c. 1274). https://openlibrary.org/works/OL15314568W",
+  "verdict": "related",
+  "why": "Content is a general summary of the Summa; the claim about contemplation as the highest pleasure is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Confucius. (2003). ''Analects''. (E. Slingerland, Trans.). Hackett. (Original work c. 500 BCE). https://openlibrary.org/works/OL15092211W",
+  "verdict": "supports",
+  "why": "Content is the Analects, the source of the quoted opening line.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psyc",
+  "verdict": "supports",
+  "why": "Content is an fMRI study of curiosity and reward from information gain.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Klauer, K. J., & Phye, G. D. (2008). Inductive Reasoning: A Training Approach. ''Review of Educational Research'', 78(1), 85–123. https://doi.org/10.3102/0034654307313402",
+  "verdict": "supports",
+  "why": "Content is a training approach to inductive reasoning, the topic of the claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Ritchie, S. J., & Tucker-Drob, E. M. (2018). How Much Does Education Improve Intelligence? A Meta-Analysis. ''Psychological Science'', 29(8), 1358–1369. https://doi.org/10.1177/0956797618774253",
+  "verdict": "related",
+  "why": "Content is a meta-analysis of education's effect on intelligence; the claim about inductive training is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Tomasello, M. (1999). ''The cultural origins of human cognition''. Harvard University Press. https://openlibrary.org/works/OL15251115W",
+  "verdict": "related",
+  "why": "Content is Tomasello on the cultural origins of cognition; the compounding claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Romer, P. M. (1990). Endogenous technological change. ''Journal of Political Economy'', ''98''(5), S71–S102. https://doi.org/10.1086/261725",
+  "verdict": "supports",
+  "why": "Content is Romer's endogenous technological change, the knowledge-compounding mechanism.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Fuller, R. B. (1981). ''Critical path''. St. Martin's Press. https://openlibrary.org/works/OL4109893W",
+  "verdict": "related",
+  "why": "Content is Fuller's history of social systems; the compounding claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Baron, J., Scott, S., Fincher, K., & Emlen Metz, S. (2015). Why does the Cognitive Reflection Test (sometimes) predict utilitarian moral judgment (and other things)?''Journal of Applied Research in Me",
+  "verdict": "supports",
+  "why": "Content reports cognitive reflection and utilitarian moral judgement.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Stanovich, K. E. (2009). ''What Intelligence Tests Miss: The Psychology of Rational Thought''. Yale University Press. https://openlibrary.org/works/OL1917206W",
+  "verdict": "supports",
+  "why": "Content argues intelligence tests miss rational thinking, i.e. partial dissociation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Williams, B. (1973). A Critique of Utilitarianism. In J. J. C. Smart & B. Williams, ''Utilitarianism: For and Against'' (pp. 77–150). Cambridge University Press. https://doi.org/10.1017/cbo97805118408",
+  "verdict": "supports",
+  "why": "Content is Williams's critique of utilitarianism.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press. https://doi.org/10.1017/cbo9780511525599",
+  "verdict": "related",
+  "why": "Content covers ecology and value judgements; the deep-ecology self-realisation claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday. https://openlibrary.org/works/OL470336W",
+  "verdict": "related",
+  "why": "Content is about South Africa's Truth and Reconciliation Commission; the Ubuntu personhood claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books. https://openlibrary.org/works/OL2620286W",
+  "verdict": "supports",
+  "why": "Content is Axelrod on cooperation among egoists without central authority, the iterated-game claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563. https://doi.org/10.1126/science.1133755",
+  "verdict": "supports",
+  "why": "Content is Nowak's five rules for cooperation, including repeated interaction.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press. https://doi.org/10.1093/oso/9780195103175.001.0001",
+  "verdict": "mismatch",
+  "why": "Cited for Nagarjuna's dependent origination, but the content is an abstract of Nagel's essays on consciousness.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hourani, G. F. (1985). ''Reason and Tradition in Islamic Ethics''. Cambridge University Press. https://doi.org/10.1017/cbo9780511570780",
+  "verdict": "supports",
+  "why": "Content covers classical Islamic ethics, including the rational justice debate the claim draws on.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Roberts, M. (2013). Ways of Seeing: Whakapapa. ''Sites'', 10(1), 93–120. https://doi.org/10.11157/sites-vol10iss1id236",
+  "verdict": "supports",
+  "why": "Content is a paper on whakapapa as an alternative world view.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Proof",
+  "reference": "Achinstein, P. (2001). *The book of evidence*. Oxford University Press. https://doi.org/10.1093/0195143892.001.0001",
+  "verdict": "supports",
+  "why": "Content is Achinstein on what counts as evidence for a hypothesis.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Proof",
+  "reference": "Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press. https://openlibrary.org/works/OL3259254W",
+  "verdict": "unclear",
+  "why": "Content is one line (new index); the claim about falsifiability and decision-making is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Reputation",
+  "reference": "Rozin, P., & Royzman, E. B. (2001). [https://doi.org/10.1207/S15327957PSPR0504_2 Negativity bias, negativity dominance, and contagion]. ''Personality and Social Psychology Review'', ''5''(4), 296–320.",
+  "verdict": "supports",
+  "why": "Content is Rozin and Royzman on negativity bias and dominance, the asymmetry claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Myerson, R. B. (1981). Optimal auction design. ''Mathematics of Operations Research'', ''6''(1), 58-73. https://doi.org/10.1287/moor.6.1.58",
+  "verdict": "supports",
+  "why": "Content is Myerson's optimal auction design, mechanism design with incentive constraints.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Thaler, R. H., & Sunstein, C. R. (2008). ''Nudge: Improving Decisions about Health, Wealth, and Happiness''. Yale University Press. https://openlibrary.org/works/OL3936258W",
+  "verdict": "supports",
+  "why": "Content is Thaler and Sunstein's nudge and choice architecture.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Taleb, N. N. (2012). ''Antifragile: Things That Gain from Disorder''. Random House. https://openlibrary.org/works/OL16726829W",
+  "verdict": "supports",
+  "why": "Content is Taleb's antifragility concept.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Podsakoff, P. M., MacKenzie, S. B., Lee, J. Y., & Podsakoff, N. P. (2003). Common method biases in behavioral research: A critical review of the literature and recommended remedies. ''Journal of Appli",
+  "verdict": "related",
+  "why": "Content is a review of common method biases; the circular-validation claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Soros, G. (2013). Fallibility, reflexivity, and the human uncertainty principle. ''Journal of Economic Methodology'', 20(4), 309-329. https://doi.org/10.1080/1350178x.2013.859415",
+  "verdict": "related",
+  "why": "Content is Soros on reflexivity and fallibility; the circular-consensus claim is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Bostrom, N. (2014). ''Superintelligence: Paths, Dangers, Strategies''. Oxford University Press. https://openlibrary.org/works/OL17319280W",
+  "verdict": "supports",
+  "why": "Content is Bostrom on superintelligence and control of machine values, the alignment problem.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Robert Axelrod, William D. Hamilton, The Evolution of Cooperation.''Science'''''211''',1390-1396(1981). DOI:10.1126/science.7466396 https://doi.org/10.1126/science.7466396",
+  "verdict": "supports",
+  "why": "Content is Axelrod and Hamilton on cooperation through repeated interaction.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Fudenberg, D., & Maskin, E. (1986). The folk theorem in repeated games with discounting or with incomplete information. ''Econometrica'', ''54''(3), 533-554. https://doi.org/10.2307/1911307",
+  "verdict": "supports",
+  "why": "Content is the folk theorem for repeated games.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
+  "verdict": "related",
+  "why": "Content is Hanson's policy-betting paper; metric models competing on predictive accuracy are not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. https://doi.org/10.1111/jopp.12008",
+  "verdict": "related",
+  "why": "Content is Hanson's policy-betting paper; the metric-model criteria are not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Spence, M. (1973). Job market signaling. ''The Quarterly Journal of Economics'', ''87''(3), 355-374. https://doi.org/10.2307/1882010",
+  "verdict": "mismatch",
+  "why": "Cited for governance weighting and choice architecture, but the content is a job-market signalling model.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601. https://doi.org/10.2307/1914083",
+  "verdict": "supports",
+  "why": "Content is Gibbard on the impossibility of strategy-proof voting schemes.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Sen, A. (1999). ''Development as Freedom''. Oxford University Press. https://openlibrary.org/works/OL116534W",
+  "verdict": "related",
+  "why": "Content is a general summary of Sen's book; the capability-theory parallel is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200",
+  "verdict": "supports",
+  "why": "Content is Nussbaum on the human development and capabilities approach.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Tversky, A. (1977). Features of similarity. ''Psychological Review, 84''(4), 327–352. https://doi.org/10.1037/0033-295X.84.4.327",
+  "verdict": "supports",
+  "why": "Content is Tversky's set-theoretic similarity measure, the basis of the Tversky index.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151. https://doi.org/10.1109/18.61115",
+  "verdict": "supports",
+  "why": "Content is divergence measures based on Shannon entropy, the claim's information-theoretic similarity.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Joyce, J.M., 1998, \"A Nonpragmatic Vindication of Probabilism\", ''Philosophy of Science'', 65(4): 575–603. https://doi.org/10.1086/392661",
+  "verdict": "supports",
+  "why": "Content is Joyce's accuracy-based argument for probabilism.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. ''Journal of the American Statistical Association'', 102(477), 359–378. https://doi.org/10.1198/016214",
+  "verdict": "supports",
+  "why": "Content is proper scoring rules for probabilistic forecasts.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge University Press. https://doi.org/10.1017/cbo9780511840005",
+  "verdict": "supports",
+  "why": "Content is Toulmin's model of argument (claims, warrants, rebuttals).",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Pearl, J. (2009). ''Causality: Models, Reasoning, and Inference'' (2nd ed.). Cambridge University Press. https://doi.org/10.1017/cbo9780511803161",
+  "verdict": "supports",
+  "why": "Content is Pearl's causal inference framework.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Woodward, J. (2003). ''Making Things Happen: A Theory of Causal Explanation''. Oxford University Press. https://openlibrary.org/works/OL5916838W",
+  "verdict": "supports",
+  "why": "Content is Woodward's interventionist account of causal explanation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Spirtes, P., Glymour, C., & Scheines, R. (2000). ''Causation, Prediction, and Search'' (2nd ed.). MIT Press. https://openlibrary.org/works/OL4312204W",
+  "verdict": "supports",
+  "why": "Content is causal discovery from observational data.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Grünwald, P. D. (2007). ''The Minimum Description Length Principle''. MIT Press. https://doi.org/10.7551/mitpress/4643.001.0001",
+  "verdict": "supports",
+  "why": "Content is the minimum description length principle.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Sattler, J. M. (2014). ''Assessment of children: Cognitive foundations and applications''. Jerome M. Sattler, Publisher. https://openlibrary.org/works/OL27028090W",
+  "verdict": "supports",
+  "why": "Content is cognitive assessment of children.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Toulmin, S. E. (2003). ''The uses of argument''. Cambridge university press. https://doi.org/10.1017/cbo9780511840005",
+  "verdict": "supports",
+  "why": "Content is Toulmin on assertions and the analysis of justifications.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Novak, J. D., & Gowin, D. B. (1984). ''Learning how to learn''. Cambridge University Press. https://doi.org/10.1017/cbo9781139173469",
+  "verdict": "supports",
+  "why": "Content is Novak and Gowin's learning method, the source of concept maps.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Garfield, E. (1955). Citation indexes for science. ''Science'', ''122''(3159), 108-111. https://doi.org/10.1126/science.122.3159.108",
+  "verdict": "mismatch",
+  "why": "Cited for citation analysis, but the content is a study of network efficiency and cognitive decline in cerebral small vessel disease.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Dweck, C. S. (2006). ''Mindset: The new psychology of success''. Random House. https://openlibrary.org/works/OL2003465W",
+  "verdict": "related",
+  "why": "Content is a general book on mindset; the claim about measuring growth mindset is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press. https://openlibrary.org/works/OL18025057W",
+  "verdict": "supports",
+  "why": "Content is about teaching portfolios, the topic of the claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Black, P., & Wiliam, D. (1998). Assessment and classroom learning. ''Assessment in Education: Principles, Policy & Practice'', ''5''(1), 7–74. https://doi.org/10.1080/0969595980050102",
+  "verdict": "supports",
+  "why": "Content is a review of classroom formative assessment.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Mercer, N. (2008). Talk and the development of reasoning and understanding. ''Human Development'', ''51''(1), 90–100. https://doi.org/10.1159/000113158",
+  "verdict": "supports",
+  "why": "Content is Mercer on classroom talk and reasoning, the discussion-as-assessment claim.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Emmer, E. T., & Stough, L. M. (2001). Classroom management: A critical part of educational psychology, with implications for teacher education. ''Educational Psychologist'', ''36''(2), 103-113. https:",
+  "verdict": "related",
+  "why": "Content is a review of classroom management; observation as assessment data is not shown.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Morgan, M. G., & Henrion, M. (1990). ''Uncertainty: a guide to dealing with uncertainties in quantitative risk and policy analysis''. Cambridge university press. https://doi.org/10.1017/cbo97805118406",
+  "verdict": "supports",
+  "why": "Content covers uncertainty in risk analysis and techniques such as expert elicitation.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. https://openlibrary.org/works/OL20578711W",
+  "verdict": "supports",
+  "why": "Content is a text on analysing social networks.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. https://doi.org/10.1017/cbo9780511815478",
+  "verdict": "supports",
+  "why": "Content is a text on social network analysis.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Provan, K. G., & Milward, H. B. (1995). A preliminary theory of interorganizational network effectiveness. ''Administrative science quarterly'', ''40''(1), 1-33. https://doi.org/10.2307/2393698",
+  "verdict": "supports",
+  "why": "Content is a theory of interorganisational network effectiveness.",
+  "basis": "abstract or description read"
+ },
+ {
+  "article": "Adversarial adaptation",
+  "reference": "Nash, J. (1951). Non-cooperative games. ''Annals of Mathematics'', 54(2), 286-295. https://doi.org/10.2307/1969529",
+  "verdict": "related",
+  "why": "Nash equilibrium underlies the defection/collusion reasoning; specific claim not shown (general knowledge).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Anti-Corruption",
+  "reference": "North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press. https://openlibrary.org/works/OL25675210W",
+  "verdict": "supports",
+  "why": "North argues institutions and adaptive efficiency drive long-run performance (general knowledge); Open Library title matches.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Art",
+  "reference": "Tolstoy, L. (1897). [https://www.gutenberg.org/ebooks/64908 ''What Is Art?''] (A. Maude, Trans.).",
+  "verdict": "supports",
+  "why": "Gutenberg page is Tolstoy What Is Art?; art as transmission of feeling.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Art",
+  "reference": "Wimsatt, W. K., & Beardsley, M. C. (1946). [https://www.jstor.org/stable/27537676 The Intentional Fallacy]. ''The Sewanee Review'', 54(3), 468–488.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Art",
+  "reference": "Goodman, N. (1976). [https://openlibrary.org/isbn/0915144344 ''Languages of Art: An Approach to a Theory of Symbols''] (2nd ed.). Hackett.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Art",
+  "reference": "Bell, C. (1914). [https://www.gutenberg.org/ebooks/16917 ''Art'']. Chatto and Windus.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Art",
+  "reference": "Duchamp, M. (1917, replica 1964). [https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573 ''Fountain'']. Tate.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs. https://openlibrary.org/works/OL1164980W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Attempts to formalize prediction-contingent payment appear in prediction market literature; see Hanson, R. (2003). Combinatorial information market design. ''Information Systems Frontiers'', ''5''(1),",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press. https://doi.org/10.1",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Strathern, M. (1997). 'Improving ratings': Audit in the British University system. ''European Review'', ''5''(3), 305-321. https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.c",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture currency",
+  "reference": "Hayek, F. A. (1968/2002). Competition as a Discovery Procedure. ''Quarterly Journal of Austrian Economics'', 5(3), 9–23. https://doi.org/10.1007/s12113-002-1029-0",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Grabisch, M. (1997). k-order additive discrete fuzzy measures and their representation. ''Fuzzy Sets and Systems'', 92(2), 167–189. https://doi.org/10.1016/s0165-0114(97)00168-1",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Grabisch, M., & Roubens, M. (1999). An axiomatic approach to the concept of interaction among players in cooperative games. ''International Journal of Game Theory'', 28(4), 547–565. https://doi.org/10",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Tversky, A., & Kahneman, D. (1992). Advances in prospect theory: Cumulative representation of uncertainty. ''Journal of Risk and Uncertainty'', 5(4), 297–323. https://doi.org/10.1007/bf00122574",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263. https://doi.org/10.1016/0022-0531(70)90039-6",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "J. Figueira; S. Greco & M. Ehrgott (2005). '''''Multiple Criteria Decision Analysis: State of the Art Surveys''.''' Springer Verlag https://doi.org/10.1007/b100605",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "https://en.wikipedia.org/wiki/Multi-objective_optimization",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. https://openlibrary.org/works/OL3153829W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette Books. https://openlibrary.org/works/OL20670327W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Steponavičius, M., Gress-Wright, C., & Linzarini, A. (2023). '''Social and emotional skills: Latest evidence on teachability and impact on life outcomes''' (''OECD Education Working Papers No. 304'', ",
+  "verdict": "related",
+  "why": "OECD working paper on social and emotional skills fits; page returned 403.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Ahmed, R., Kesavayuth, D., & Zikos, V. (2018). '''Does being smarter make you happier? Evidence from Europe.''' ''Journal of Behavioral and Experimental Economics, 76'', 55-67. https://doi.org/10.1016",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Grossman, M. (2006). '''Education and nonmarket outcomes. In E. A. Hanushek & F. Welch (Eds.)''', ''Handbook of the economics of education'' (Vol. 1, pp. 577-633). Elsevier. https://doi.org/10.1016/S1",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Hinton, C. (2015). '''Happy students learn better'''. ''Edutopia''. Harvard publication. https://www.gse.harvard.edu/ideas/usable-knowledge/15/03/because-im-happy",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Gilbert, D. (2012). '''The science behind the smile.''' ''Harvard Business Review, 90''(1-2), 84-90. https://hbr.org/2012/01/the-science-behind-the-smile",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Benefuture goals",
+  "reference": "Klein G. (2007). '''Performing a project premortem.''' ''Harvard Business review 85'', 18–19. https://cltr.nl/wp-content/uploads/2020/11/Project-Pre-Mortem-HBR-Gary-Klein.pdf",
+  "verdict": "related",
+  "why": "Klein premortem on anticipating failure fits \"understanding past failures prevents future ones\" loosely.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Citations",
+  "reference": "(Kim, E. S., & Jang, S. N. (2015). Art and cultural participation and life satisfaction in adults: The role of physical health, mental health, and interpersonal relationships. ''Journal of Arts Manage",
+  "verdict": "related",
+  "why": "Kim & Jang 2015 on arts participation and life satisfaction matches the supports text (general knowledge; Crossref lookup 404).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Citations",
+  "reference": "(Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analy",
+  "verdict": "supports",
+  "why": "Sonke, Lee & Bradt 2018 on community arts groups and wellbeing in older adults matches the claim by title (Crossref lookup 404).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Culture",
+  "reference": "Ermakov, D., & Ermakov, A. (2021). Memetic approach to cultural evolution. ''Biosystems'', ''204'', 104378. https://doi.org/10.1016/j.biosystems.2021.104378",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Culture",
+  "reference": "S. Kirby, H. Cornish, & K. Smith, Cumulative cultural evolution in the laboratory: An experimental approach to the origins of structure in human language, ''Proc. Natl. Acad. Sci. U.S.A.'' 105 (31) 10",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press. https://doi.org/10.1515/9781400830282",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Diversity",
+  "reference": "Hong, L., & Page, S. E. (2001). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''97''(1), 123–163. https://doi.org/10.1006/jeth.2000.2709",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Economy",
+  "reference": "Keen, S. (2011). ''Debunking economics: The naked emperor dethroned?'' Zed Books. https://doi.org/10.5040/9781350250963",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Economy",
+  "reference": "Krippner, G. R. (2011). ''Capitalizing on crisis: The political origins of the rise of finance''. Harvard University Press. https://doi.org/10.4159/9780674058873",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Education",
+  "reference": "Popper, K. R. (1963). ''Conjectures and refutations: The growth of scientific knowledge''. Routledge & Kegan Paul. https://openlibrary.org/works/OL1984581W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Education",
+  "reference": "Bostrom, N. (2011). Information hazards: A typology of potential harms from knowledge. ''Review of Contemporary Philosophy'', ''10'', 44–79. https://nickbostrom.com/information-hazards.pdf",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Education",
+  "reference": "Roozenbeek, J., van der Linden, S., & Nygren, T. (2020). Prebunking interventions based on \"inoculation\" theory can reduce susceptibility to misinformation across cultures. ''The Harvard Kennedy Schoo",
+  "verdict": "supports",
+  "why": "Roozenbeek et al. 2020 prebunking/inoculation article; related to inoculation against misinformation (general knowledge; Crossref 404).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Berlin, I. (1969). [https://openlibrary.org/isbn/0192810340 ''Four Essays on Liberty''], \"Two Concepts of Liberty\". Oxford University Press.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Sen, A. (1999). [https://openlibrary.org/isbn/0198297580 ''Development as Freedom'']. Oxford University Press.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Pattanaik, P. K., & Xu, Y. (1990). [https://www.jstor.org/stable/40723933 On Ranking Opportunity Sets in Terms of Freedom of Choice]. ''Recherches Économiques de Louvain'', 56(3/4), 383–390.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Freedom",
+  "reference": "Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Government",
+  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. https://openlibrary.org/works/OL8224067W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Government",
+  "reference": "Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman. https://openlibrary.org/works/OL4980191W",
+  "verdict": "related",
+  "why": "Freeman stakeholder approach fits stakeholder weighting; not epistocracy specifically.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Government",
+  "reference": "Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68. https://doi.org/10.1111/j.1088-4963.2007.00098.x",
+  "verdict": "supports",
+  "why": "Goodin 2007 argues for enfranchising all affected interests, matching the claim.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Huta, V., Waterman, A.S. '''Eudaimonia and Its Distinction from Hedonia: Developing a Classification and Terminology for Understanding Conceptual and Operational Definitions.''' ''J Happiness Stud'' 1",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Seligman, M. E. P. (2011). '''''Flourish: A visionary new understanding of happiness and well-being''. Simon and Schuster.''' https://openlibrary.org/works/OL19664526W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Helliwell, J. F., Layard, R., Sachs, J. D., De Neve, J.-E., Aknin, L. B., & Wang, S. (Eds.). (2024). World Happiness Report 2024. University of Oxford: Wellbeing Research Centre. ISBN. 978-1-7348080-7",
+  "verdict": "related",
+  "why": "Link goes to a single chapter (life satisfaction among older adults in India) of WHR 2024, not the report broadly; fair but narrow for a claim about complex sources of happiness.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Gilbert, D. (2006). Stumbling on happiness. Alfred A. Knopf. https://openlibrary.org/works/OL265033W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "[https://tvtropes.org/pmwiki/pmwiki.php/Main/BlueAndOrangeMorality Blue and orange morality, TVtropes]",
+  "verdict": "related",
+  "why": "TV Tropes page on Blue and Orange Morality fits speculation about alien values; fetch 403.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Boarini, R., Comola, M., Smith, C., Manchin, R., & De Keulenaer, F. (2012). What makes for a better life? The determinants of subjective well-being in OECD countries: Evidence from 1 the Gallup World ",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analys",
+  "verdict": "supports",
+  "why": "Sonke, Lee & Bradt 2018 on community arts groups and wellbeing in older adults matches the claim by title (Crossref lookup 404).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Diener, E., Emmons, R. A., Larsen, R. J., & Smith, C. (1985). The Satisfaction with Life Scale. ''Journal of personality assessment'', ''49''(1), 71-75. https://doi.org/10.1037/0022-3514.49.1.71",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Hills, P., & Argyle, M. (2002). The Oxford Happiness Questionnaire: a compact scale for the measurement of psychological well-being. ''Personality and individual differences'', ''33''(7), 1071-1082. h",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Lyubomirsky, S., & Lepper, H. S. (1999). A measure of subjective happiness: Preliminary psychometric data. ''Social indicators research'', ''46''(1), 137-155. https://doi.org/10.1023/A:1008950211807",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Bartlett, M. S., Littlewort, G., Frank, M., & Movellan, J. R. (2006). Automatic recognition of facial expression: A survey. ''IEEE Transactions on human-machine systems'', ''36''(1), 15-35. https://do",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Critchley, H. D. (2002). Electrodermal activity. ''Physiological Measurement'', ''23''(3), R23–R39. https://doi.org/10.1088/0967-3334/23/3/R23",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Phan, K. L., Wager, T. D., Taylor, S. F., & Liberzon, I. (2002). Functional neuroimaging studies of human emotion: a meta-analysis of emotion activation and regulation. ''NeuroImage'', ''16''(2), 331–",
+  "verdict": "mismatch",
+  "why": "DOI 10.1006/nimg.2002.1127 resolves in Crossref to \"Boundary Element Method-Based Cortical Potential Imaging of Somatosensory Evoked Potentials\", not Phan et al. 2002 on functional neuroimaging of emotion.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation,",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Helliwell, J. F., Layard, R., & Sachs, J. D. (2022). ''World Happiness Report 2022''. Sustainable Development Solutions Network. https://worldhappiness.report/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. https://www.oecd.org/pisa/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "United Nations Development Programme. (Various years). ''Human Development Report''. http://hdr.undp.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Happiness",
+  "reference": "World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Wilson, D.S., Ostrom, E., & Cox, M.E. (2013). Generalizing the core design principles for the efficacy of groups. ''Journal of Economic Behavior & Organization'', 90, S21-S32. https://doi.org/10.1016/",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Implementation prototype",
+  "reference": "Heller, P., Harilal, K.N., & Chaudhuri, S. (2007). Building Local Democracy: Evaluating the Impact of Decentralization in Kerala, India. ''World Development'', 35(4), 626-648. https://doi.org/10.1016/",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Justice",
+  "reference": "Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press. https://openlibrary.org/works/OL3246202W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Measurement",
+  "reference": "Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2 Verification of forecasts expressed in terms of probability]. ''Monthly Weather Review'', 78(1), 1–3.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Measurement",
+  "reference": "Strathern, M. (1997). \"Improving ratings\": audit in the British university system. ''European Review'', 5(3), 305–321 https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Measurement",
+  "reference": "Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585. https://arxiv.org/abs/1803.04585",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Minkowski, H. (1909). [https://de.wikisource.org/wiki/Raum_und_Zeit_(Minkowski) Raum und Zeit]. ''Physikalische Zeitschrift'', 10, 104–111.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Lorenz, E. N. (1963). [https://doi.org/10.1175/1520-0469(1963)020%3C0130:DNF%3E2.0.CO;2 Deterministic Nonperiodic Flow]. ''Journal of the Atmospheric Sciences'', 20(2), 130–141.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Sider, T. (2001). [https://openlibrary.org/isbn/019924443X ''Four-Dimensionalism: An Ontology of Persistence and Time'']. Oxford University Press.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Aristotle. (c. 340 BCE). [http://classics.mit.edu/Aristotle/nicomachaen.html ''Nicomachean Ethics''], Book II.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Gauthier, D. (1986). [https://openlibrary.org/isbn/0198249926 ''Morals by Agreement'']. Oxford University Press.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Yudkowsky, E., & Soares, N. (2017). [https://arxiv.org/abs/1710.05060 Functional Decision Theory: A New Theory of Instrumental Rationality]. ''arXiv'':1710.05060.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Plato. (c. 375 BCE). [http://classics.mit.edu/Plato/republic.html ''Republic''], Book II.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Hume, D. (1739–40). [https://www.gutenberg.org/ebooks/4705 ''A Treatise of Human Nature''], Book 3, Part 2.",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Plato. (c. 380 BCE). [http://classics.mit.edu/Plato/protagoras.html ''Protagoras''].",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Morality",
+  "reference": "Parfit, D. (1984). [https://openlibrary.org/isbn/019824908X ''Reasons and Persons''], Part III. Oxford University Press.",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32. https://doi.org/10.2307/2182230",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Sinnott-Armstrong, W. (2023). Consequentialism. In E. N. Zalta (Ed.), ''The Stanford Encyclopedia of Philosophy''. https://plato.stanford.edu/entries/consequentialism/",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Nietzsche, F. (1901/1968). ''The Will to Power''. (W. Kaufmann, Trans.). Vintage. https://openlibrary.org/works/OL17382563W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Dewey, J. (1939). ''Theory of Valuation''. University of Chicago Press. https://openlibrary.org/works/OL111331W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). https://openlibrary.org/works/OL738290W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan. https://openlibrary.org/works/OL1073633W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Singer, P. (1979). ''Practical Ethics''. Cambridge University Press. https://openlibrary.org/works/OL936837W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Moore, G. E. (1903). ''Principia Ethica''. Cambridge University Press. https://openlibrary.org/works/OL3907953W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Goldman, A. I. (1986). ''Epistemology and Cognition''. Harvard University Press. https://openlibrary.org/works/OL1975149W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Spinoza, B. (1985). ''Ethics''. (E. Curley, Trans.). Princeton University Press. (Original work published 1677). https://openlibrary.org/works/OL16697439W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Hegel, G. W. F. (1977). ''Phenomenology of Spirit''. (A. V. Miller, Trans.). Oxford University Press. (Original work published 1807). https://openlibrary.org/works/OL27676024W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Aristotle. (c. 350 BCE). ''Posterior Analytics''. In J. Barnes (Ed.), ''The Complete Works of Aristotle'' (Vol. 1). Princeton University Press, 1984. https://openlibrary.org/works/OL40411335W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books. https://openlibrary.org/works/OL27033818W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Shankara. (1979). ''Upadesasahasri''. (S. Mayeda, Trans.). University of Tokyo Press. https://openlibrary.org/works/OL319022W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "''Samyutta Nikaya'' (12.23). In ''The Connected Discourses of the Buddha''. (B. Bodhi, Trans., 2000). Wisdom Publications. https://openlibrary.org/works/OL8353714W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Boyce, M. (1975). ''A History of Zoroastrianism''. Brill. https://openlibrary.org/works/OL2976951W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Sen, A. (1985). ''Commodities and Capabilities''. North-Holland. https://openlibrary.org/works/OL8006981W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press. https://openlibrary.org/works/OL25675444W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette. https://openlibrary.org/works/OL20670327W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Walzer, M. (1983). ''Spheres of Justice: A Defense of Pluralism and Equality''. Basic Books. https://openlibrary.org/works/OL3350245W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Lakatos, I. (1970). Falsification and the Methodology of Scientific Research Programmes. In I. Lakatos & A. Musgrave (Eds.), ''Criticism and the Growth of Knowledge'' (pp. 91–196). Cambridge Universit",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). https://openlibrary.org/works/OL738290W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Aristotle. (1984). ''Metaphysics''. (W. D. Ross, Trans.). In J. Barnes (Ed.), ''The Complete Works of Aristotle''. Princeton University Press. (Original work c. 350 BCE). https://openlibrary.org/works",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Leibniz, G. W. (1989). Principles of Nature and Grace. In ''Philosophical Essays''. (R. Ariew & D. Garber, Trans.). Hackett. (Original work published 1714). https://openlibrary.org/works/OL1146787W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Al-Ghazali. (2016). ''The Book of Knowledge''. (K. Honerkamp, Trans.). Fons Vitae. (Original work c. 1097). https://openlibrary.org/works/OL20978150W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Butler, H. A., Pentoney, C., & Bong, M. P. (2017). Predicting Real-World Outcomes: Critical Thinking Ability is a Better Predictor of Life Decisions than Intelligence. ''Thinking Skills and Creativity",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Friston, K. (2010). The free-energy principle: a unified brain theory? ''Nature Reviews Neuroscience'', 11(2), 127–138. https://doi.org/10.1038/nrn2787",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Heckman, J. J., & Kautz, T. (2012). Hard Evidence on Soft Skills. ''Labour Economics'', 19(4), 451–464. https://doi.org/10.1016/j.labeco.2012.05.014",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Crisp, R. (2006). ''Reasons and the Good''. Oxford University Press. https://openlibrary.org/works/OL2621639W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Karenga, M. (2004). ''Maat, The Moral Ideal in Ancient Egypt''. Routledge. https://openlibrary.org/works/OL21257630W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. https://openlibrary.org/works/OL3153829W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Philosophy",
+  "reference": "Whitehead, A. N. (1929). ''Process and Reality''. Macmillan. https://openlibrary.org/works/OL1133700W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Sentience",
+  "reference": "The quest to detect consciousness — in all its possible forms. (2025). ''Nature'', ''643'', 1172–1174. https://doi.org/10.1038/d41586-025-02349-5",
+  "verdict": "related",
+  "why": "Crossref gives the title as \"How to detect consciousness in people, animals and maybe even AI\" (headline variant of the Nature news feature); topic fits, but panpsychic assumption not addressed.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Sentience",
+  "reference": "Goff, Philip, William Seager, and Sean Allen-Hermanson, \"Panpsychism\", ''The Stanford Encyclopedia of Philosophy'' (Summer 2022 Edition), Edward N. Zalta (ed.), https://plato.stanford.edu/archives/sum",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''. https://intelligence.org/files/Corrigibility.pdf",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Yudkowsky, E. (2004). ''Coherent Extrapolated Volition''. Machine Intelligence Research Institute. https://intelligence.org/files/CEV.pdf",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. https://openlibrary.org/works/OL8224067W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Arrow, K. J. (1951). ''Social Choice and Individual Values''. Wiley. https://openlibrary.org/works/OL5103552W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "System Design",
+  "reference": "Sen, A. (1970). ''Collective Choice and Social Welfare''. Holden-Day. https://openlibrary.org/works/OL27118230W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "'''Friston, K. (2010).''' The free-energy principle: A unified brain theory? ''Nature Reviews Neuroscience'', ''11''(2), 127–138. https://doi.org/10.1038/nrn2787",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. ''Annals of Mathematical Statistics'', 22(1), 79-86. https://doi.org/10.1214/aoms/1177729694",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338. https://doi.org/10.1175/1520-0493(1987)115%3C1330:agfffv%3E2.0.co;",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Solomonoff, R. J. (1964). A formal theory of inductive inference. ''Information and control'', ''7''(1), 1-22. https://doi.org/10.1016/S0019-9958(64)90223-2",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471. https://doi.org/10.1016/0005-1098(78)90005-5",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Wiggins, G. P. (1998). ''Educative assessment: Designing assessments to inform and improve performance''. Jossey-Bass. https://openlibrary.org/works/OL1908797W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass. https://openlibrary.org/works/OL20347321W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Anderson, J. R. (2016). ''Cognitive psychology and its implications''. Worth Publishers. https://openlibrary.org/works/OL519624W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Siemens, G. (2013). Learning analytics: The dawn of a learning health system. ''American educational research journal'', ''50''(5), 1068-1089. https://doi.org/10.3102/0002831213485277",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Black, P., & Wiliam, D. (1998). ''Inside the Black Box''. GL Assessment. https://openlibrary.org/works/OL6365704W",
+  "verdict": "supports",
+  "why": "Work is the classic/primary source for the named claim or topic; title confirmed by page/Crossref/Open Library (general knowledge of content).",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Lemke, J. L. (1990). ''Talking science: Language, learning, and values''. Ablex Publishing Corporation. https://openlibrary.org/works/OL9116801W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Borich, G. D. (2017). ''Effective teaching methods''. Pearson. https://openlibrary.org/works/OL1897823W",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Stiggins, R., Arter, J., Chappuis, J., & Chappuis, S. (2006). ''Classroom assessment for student learning: Doing it right—using it well''. Educational Testing Service. https://openlibrary.org/works/OL",
+  "verdict": "related",
+  "why": "Same topic and a fair citation, but the specific claim is not shown by the content found.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. https://www.oecd.org/pisa/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "United Nations Development Programme. (Various years). ''Human Development Report''. http://hdr.undp.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ },
+ {
+  "article": "Understanding",
+  "reference": "World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/",
+  "verdict": "related",
+  "why": "Cited as a named indicator/dataset series; the link is the publisher home page, which fits the list item.",
+  "basis": "title match and general knowledge only; content not read"
+ }
+]

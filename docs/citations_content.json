@@ -76,7 +76,7 @@
   "source": "missing",
   "title": "The Connected Discourses of the Buddha"
  },
- "(Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''The Journal of Creative Behavior'', ''53''(4), 560–568. https://doi.org/10.1002/jocb.347)": {
+ "(Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244)": {
   "abstract": "Abstract This study explores the relationship between critical thinking disposition and scientific creativity and examines the hypothesized mediating role played by creative self‐concept (trait‐like creative self‐efficacy). A large sample ( N = 1,153) of Chinese high school students filled the Critical Thinking Disposition Inventory and revised trait‐like creative self‐efficacy scale, and then solved Scientific Creativity Test for Adolescent. Structural equation modeling has demonstrated that students’ critical thinking disposition was positively related to their creative self‐concept and scientific creativity, and creative self‐concept fully mediated the link between critical thinking disposition and scientific creativity. We discuss these findings in terms of the hypothetical role played by creative self‐concept for creative functioning.",
   "concepts": [
    "Creativity",
@@ -100,7 +100,7 @@
   "link": "https://doi.org/10.1080/13607827.2017.1354820",
   "source": "missing"
  },
- "Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. The Journal of Creative Behavior, 53(4), 560–568. https://doi.org/10.1002/jocb.347": {
+ "Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244": {
   "abstract": "Abstract This study explores the relationship between critical thinking disposition and scientific creativity and examines the hypothesized mediating role played by creative self‐concept (trait‐like creative self‐efficacy). A large sample ( N = 1,153) of Chinese high school students filled the Critical Thinking Disposition Inventory and revised trait‐like creative self‐efficacy scale, and then solved Scientific Creativity Test for Adolescent. Structural equation modeling has demonstrated that students’ critical thinking disposition was positively related to their creative self‐concept and scientific creativity, and creative self‐concept fully mediated the link between critical thinking disposition and scientific creativity. We discuss these findings in terms of the hypothetical role played by creative self‐concept for creative functioning.",
   "concepts": [
    "Creativity",
@@ -2357,7 +2357,7 @@
   "source": "missing",
   "title": "The Difference"
  },
- "Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000001": {
+ "Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000011": {
   "abstract": "The top-performing Question–Answering (QA) systems have been of two types: consistent, solid, well-established and multi-faceted systems that do well year after year, and ones that come out of nowhere employing totally innovative approaches and which out-perform almost everybody else. This article examines both types of system in depth. We establish what a “typical” QA-system looks like, and cover the commonly used approaches by the component modules. Understanding this will enable any proficient system developer to build his own QA-system. Fortunately there are many components available for free from their developers to make this a reasonable expectation for a graduate-level project. We also look at particular systems that have performed well and which employ interesting and innovative approaches.",
   "concepts": [
    "Question answering",
@@ -2369,7 +2369,7 @@
    "Natural language processing",
    "Linguistics"
   ],
-  "link": "https://doi.org/10.1561/1500000001",
+  "link": "https://doi.org/10.1561/1500000011",
   "source": "fetched",
   "title": "Open-Domain Question–Answering"
  },

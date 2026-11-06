@@ -36,3 +36,25 @@ Remaining, and why:
 
 Books are linked to edition-agnostic Open Library work pages; the cited edition's year and publisher
 are kept in the reference text.
+
+## Relevance check (2026-11-06)
+
+Per use, the cited work's content was compared with the sentence it supports (`docs/citations_relevance.json`).
+148 uses were judged from the work's abstract or description (95 support, 41 related, 7 mismatch, 5 too
+thin to tell); 138 uses have no abstract online and were judged only by title match and general
+knowledge (82 support, 55 related, 1 mismatch): those are not yet content-checked.
+
+Fixed: "Being creative makes you happier" was attributed to Acar & Runco (2019, J. Creative Behavior),
+whose DOI is a different paper; the work is Tan, Chuah, Lee & Tan (2021), IJERPH 18(14) 7244, verified
+on Crossref and its abstract matches the claim. Pang & Lee (2008) and Phan et al. (2002) DOIs pointed to
+other papers; corrected and verified. Nāgārjuna (Garfield trans.) and Garfield (1955) were fetcher errors;
+their DOIs are right.
+
+Open:
+- Dunn & Neighbors (2019), "Wearable technology: a promising tool for mental health researchers",
+  Depression and Anxiety 36(10): no record found; its DOI is a corrigendum on another study. Likely not a
+  real paper; needs a replacement or removal (author).
+- Spence (1973), job-market signalling, cited for government weighting (System Design): the right paper,
+  but it does not support that claim.
+- Uses marked "related" (96) cite a general work for a specific claim the content does not show; the
+  dataset home pages and broad books are the bulk.
