@@ -37,7 +37,7 @@ for path in sorted(ART.glob("*.txt")):
                 sec, sub = title, ""
             else:
                 sub = title
-        before = re.sub(REF, "", text[max(0, m.start() - 600):m.start()]).rstrip()
+        before = re.sub(REF, "", text[:m.start()])[-600:].rstrip()
         sentence = clean(re.split(r"(?<=[.!?])\s+|\n\n|----", before)[-1])[-300:]
         out.append({"article": path.stem, "section": sec, "subsection": sub, "name": name,
                     "reference": body, "supports": sentence,

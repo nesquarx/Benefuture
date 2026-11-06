@@ -19,9 +19,9 @@ Diversity is achieved by encouraging differences of circumstance, understanding,
 
 * Diverse groups, possessing a wider range of perspectives and knowledge, often outperform homogeneous groups in problem-solving and decision-making. <ref>Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press. https://doi.org/10.1515/9781400830282</ref>   
 
-* Formal models demonstrate how heterogeneous groups, compared to homogeneous ones, can achieve superior outcomes in complex problem-solving scenarios. <ref>Hong, L., & Page, S. E. (2003). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''112''(2), 185-213.</ref>
+* Formal models demonstrate how heterogeneous groups, compared to homogeneous ones, can achieve superior outcomes in complex problem-solving scenarios. <ref>Hong, L., & Page, S. E. (2001). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''97''(1), 123–163. https://doi.org/10.1006/jeth.2000.2709</ref>
 
-* Research suggests a "collective intelligence" factor exists in groups, with diverse groups often exhibiting higher collective intelligence and better performance. <ref>Woolley, A. W., Malone, T. W., & Pentland, A. (2008). Evidence for a collective intelligence factor in the performance of human groups. ''Nature'', ''455''(7215), 687-690.</ref>
+* Research suggests a "collective intelligence" factor exists in groups, with diverse groups often exhibiting higher collective intelligence and better performance. <ref>Woolley, A. W., Chabris, C. F., Pentland, A., Hashmi, N., & Malone, T. W. (2010). Evidence for a collective intelligence factor in the performance of human groups. ''Science'', ''330''(6004), 686–688. https://doi.org/10.1126/science.1193147</ref>
 
 * The "wisdom of crowds" phenomenon highlights how aggregating diverse opinions can lead to surprisingly accurate and insightful decisions. <ref>Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday. https://openlibrary.org/works/OL8036447W</ref>
 
