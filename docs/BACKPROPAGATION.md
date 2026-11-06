@@ -2286,3 +2286,19 @@ records (8.85) rather than ever-longer windows. Caveats: one target and horizon,
 final archived vintage (revisions not reconstructed), a pandemic regime. Tools:
 `tools/data/fetch_covid19_forecast_hub.py --start 2020-06-01 --weeks 140 --out <dir>`,
 `tools/data/archive_full_report.jl`. Candidate homes: L82 (records), 8.69 (prediction accuracy), R4.
+8.91 results so far (2026-11-06, diagnosis; nothing wired yet). (1) The addendum's "any clean interval
+resets persistence" defeats on/off deceit by construction: honest phases between bad ones reset it (seed
+1: interval significances 0.6, 0.57, −2.4, −1.7, 0.0, −1.2, 1.4, 3.1, −0.5, −2.4, 0.6, 2.4; deceptive
+intervals' mean overstatement +21 to +34). Proposed replacement [P]: the overstatement z-score of the
+actor's whole time-decayed record of signed errors (Lean `decayed_mean_se_ref`), escalating by the
+standard errors beyond `model_z`; honest errors and luck average to zero, on/off accumulates, stopping
+decays it. (2) Even so, detection is slow on short records: the on/off deceiver acts about 60 times in
+200 steps with noisy outcomes, and its decayed z rises from 0.7 (step 60) to 2.7 (step 199), so with the
+luck safeguard at z = 2 escrow barely escalates within the run (credence per phase unchanged to the
+third decimal). Protecting the unlucky costs detection speed; the trade-off is set by `model_z` and the
+record half-life. (3) Escrow is the wrong lever for the main harm: peers' activity collapses (79 vs 197
+honest, seed 1) because the fooled records drag the domain model below its bar and the currency goes
+down for everyone. The fix with leverage is in screening and model scoring (L2.5): records of an actor
+whose overstatement z is significant should not be charged against the model's accuracy at full weight,
+and its quotes should be screened with its overstatement corrected. Needs the author's choice before
+wiring.
