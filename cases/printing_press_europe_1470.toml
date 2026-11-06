@@ -1,0 +1,118 @@
+# Historical Decision Case: Municipal Adoption of the Printing Press (city councils of European commercial cities, 1475-01-01)
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b) and held out (section 4.3, freeze section 4.4). Built without running the replay.
+# Probabilities are Laplace rates (k+1)/(n+2) over cases/printing_press_europe_1470.events.csv rows dated on or before 1475-01-01.
+# Units: group populations in persons of one representative commercial city; u and h on the 0-100 scale of the other cases.
+# Sources are the Wikipedia articles listed in the events file, read on the web, all secondary (they cite Scholderer 1912,
+# Steinberg 1961, Renouard 1965, Hawkins 1884 and the Incunabula Short Title Catalogue, none of which was opened).
+# HARD LIMIT of this case: no as-of book-price, literacy or manuscript-output series was reachable. The magnitudes of understanding
+# and of scribal livelihood below are therefore JUDGMENTS built on the few as-of figures named, not derived from data. Dittmar (2011)
+# QJE 126:1133-1172 (doi 10.1093/qje/qjr035) was identified but post-dates t0 and its abstract is empty in Crossref; Buringh and van Zanden (2009)
+# J Econ Hist 69:409-445 (doi 10.1017/S0022050709000837) abstract only, also post-t0. Neither prices an option.
+# Excluded on date grounds: every datum after 1474-12-31 (Caxton 1476-77, the 1477 and later Dutch presses, 1480s growth, the
+# 1492 Trithemius text, Dittmar's 1500 data, output totals by 1500).
+
+id = "printing_press_europe_1470"
+title = "Municipal Privileges and Workshop Licences for Master Printers (European commercial cities, 1475)"
+family = "low_technology"
+era = "1455-1475"
+tier = "coarse"
+decision_date = "1475-01-01"
+decision_makers = ["City councils of European commercial cities"]
+actual_choice = "grant_privileges_to_master_printers"
+actual_outcome_class = "good"
+primary_or_held_out = "held_out"
+
+[[sources]]
+id = "early_printing_ventures_1454_1473"
+title = "Early printing ventures 1454-1473 (Mainz, Bamberg, Strasbourg, Augsburg, Venice, Paris): did each still print three years after its first imprint"
+as_of_date = "1474-12-31"
+url = "https://en.wikipedia.org/wiki/Peter_Sch%C3%B6ffer"
+notes = "Eight ventures, six persisted and two did not (Gutenberg's own workshop foreclosed by 1457; Pfister of Bamberg ended with his death c.1466). Selected by whether a biography exists, so failures are probably under-counted (survivorship); the Gering coding is ambiguous (see events file). Secondary Wikipedia articles only."
+
+[[ groups ]]
+id = "city_readers_and_learners"
+name = "Literate and learning residents of a commercial city (clergy, students, merchants, notaries; about 30,000 inhabitants is a judgment, no census read)"
+population = 30000
+baseline_u = 30.0
+baseline_h = 45.0
+
+[[ groups ]]
+id = "scribes_and_manuscript_trades"
+name = "Scribes, illuminators, parchment makers and stationers of the city (about 1 percent of inhabitants is a judgment)"
+population = 300
+baseline_u = 55.0
+baseline_h = 55.0
+
+# Derivations used by the options below.
+#  - Output scale (as-of): Johann of Speyer's first Venetian edition was 100 copies (1469) and 800 volumes were printed within
+#    seven months (Wikipedia, Johann and Wendelin of Speyer, citing Winship 1926; primary not seen): about 1,370 volumes a year from one press.
+#    A scribe's yearly output of a few volumes is a JUDGMENT (no figure read), so one press is worth some hundreds of scribe-years.
+#  - Persistence of a venture: event printing_venture_still_printing_3y_after_first_imprint, 6 of 8: (6+1)/(8+2) = 0.7.
+#  - If a press persists and serves the city (JUDGMENT, no price series read): readers' understanding +3.0 (10 percent of baseline 30,
+#    from several-fold more volumes in circulation), happiness +0.5; scribes' livelihoods -4.0 happiness (about 7 percent of baseline 55:
+#    part of the trade lost, part retooled, since Schoeffer was a copyist before printing and Colard Mansion a scribe and bookseller
+#    who became a printer, both from the Wikipedia articles read); scribes' understanding is untouched (understanding is shared,
+#    not moved).
+#  - No death or irreparable harm is priced; none is in the record.
+# Imports from neighbouring cities' presses reach the city whichever option is chosen (the dates-by-location table in Wikipedia 'Global
+# spread of the printing press' shows second presses in Rome 1467, Basel c.1468, Lyon 1473, Leuven 1473-74), so they cancel between options
+# and are not priced.
+
+[[ options ]]
+id = "status_quo_scribal_trade_only"
+name = "Take no municipal action: books come from the local scribes and stationers and from imports; no licences or privileges for printers"
+source = "early_printing_ventures_1454_1473"
+known_date = "1457-12-31"
+is_inaction = true
+scope_delta = 0.0
+# Legacy keys equal the scenario expectation (zero by definition: this option is the reference course).
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "reference_course"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "grant_privileges_to_master_printers"
+name = "Grant municipal privileges and workshop licences to master printers (as Venice granted Johann of Speyer a five-year monopoly in 1469 and Paris housed a press at the Sorbonne in 1470)"
+source = "early_printing_ventures_1454_1473"
+known_date = "1469-12-31"
+is_inaction = false
+scope_delta = 0.5
+# Legacy keys equal the scenario expectations below. readers du = 0.7 x 3.0 = 2.1; readers dh = 0.7 x 0.5 + 0.3 x -0.1 = 0.32;
+# scribes dh = 0.7 x -4.0 = -2.8.
+pred_du = [2.1, 0.0]
+pred_dh = [0.32, -2.8]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "press_persists_and_serves_city"
+p_chain = ["printing_venture_still_printing_3y_after_first_imprint"]
+du = [3.0, 0.0]
+dh = [0.5, -4.0]
+
+# The privilege is wasted if the venture lapses (JUDGMENT: a small cost to readers from forgone dues and workshop space, dh -0.1);
+# the scribes keep their trade.
+[[ options.scenarios ]]
+name = "venture_lapses"
+p_chain = []
+complement = true
+dh = [-0.1, 0.0]
+
+[counterfactual]
+# PLACEHOLDERS of the sign the pre-registration expects; none prices any option. The published estimate to adapt is Dittmar (2011) QJE
+# 126:1133-1172, cities that adopted printing early grew faster; its magnitude was not read (abstract unavailable) and the figures below
+# are not from it. The actual_* values equal this file's as-of expectations (2.1 understanding, 0.32 happiness), not an ex-post measurement.
+actual_floor_u_delta = 2.1
+actual_floor_h_delta = 0.32
+actual_irreparable = 0.0
+alt_option = "status_quo_scribal_trade_only"
+methods = ["city_growth_by_early_press_adoption", "book_production_series_buringh_van_zanden"]
+est_floor_u_delta_diff = [-2.0, -3.0]
+est_floor_h_delta_diff = [-0.3, -0.5]
+est_irreparable_diff = [0.0, 0.0]

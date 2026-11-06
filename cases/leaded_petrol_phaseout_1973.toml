@@ -1,0 +1,200 @@
+# Historical Decision Case: EPA Reduction of Lead in Gasoline (Administrator Train, 1973-11-28)
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b) and held out (section 4.3, freeze section 4.4). Every option effect is
+# a scenario known before the decision date; probabilities are Laplace rates (k+1)/(n+2) over the rows of
+# cases/leaded_petrol_phaseout_1973.events.csv dated on or before 1973-11-28. Built without running the replay.
+# Units: group populations in thousands of persons; u and h on the 0-100 scale of the other cases; baselines are judgment.
+# Principal source read in full: US EPA, Control of Lead Additives in Gasoline, 38 FR 33734 (Federal Register 1973-12-06,
+# rule signed 1973-11-28), https://www.govinfo.gov/content/pkg/FR-1973-12-06/pdf/FR-1973-12-06.pdf (pages 33734-33741; the
+# PDF text extraction is two-column and some digits are garbled, so a cost-per-gallon figure on p.33738 could not be read).
+# That notice documents the information set EPA held; only the studies it reports are coded as trials, never its decision.
+# Excluded on date grounds: Ethyl Corp v. EPA (1975-76), Needleman (1979), NHANES II (1976-80), Annest 1983, every later
+# estimate. They appear only in [counterfactual] below, which does not price any option.
+# Not opened: the studies EPA cites (Seven Cities, chamber, isotope, Rochester, Vermont, El Paso, Charleston), EPA's position
+# paper "EPA's Position on the Health Implications of Airborne Lead", the Bonner and Moore report, and 37 FR 3882 / 38 FR 1255,
+# 1258 (proposal and reproposal), whose content is known only as summarised in 38 FR 33734.
+
+id = "leaded_petrol_phaseout_1973"
+title = "EPA Scheduled Reduction of Lead Additives in Gasoline (1973)"
+family = "long_horizon"
+era = "1972-1979"
+tier = "full"
+decision_date = "1973-11-28"
+decision_makers = ["US EPA Administrator Russell Train"]
+actual_choice = "phase_down_total_pool_average_1975_1979"
+actual_outcome_class = "good"
+primary_or_held_out = "held_out"
+
+[[sources]]
+id = "air_lead_blood_lead_studies"
+title = "Studies of air lead and blood lead as reported in 38 FR 33734-33735 (Seven Cities, London taxi drivers, rural and primitive populations, chamber studies, urban-suburban comparisons, isotope pilot)"
+as_of_date = "1973-11-28"
+url = "https://www.govinfo.gov/content/pkg/FR-1973-12-06/pdf/FR-1973-12-06.pdf"
+notes = "Eight reported comparisons; four found air lead associated with blood lead and four did not (industry-cited nulls). Study dates were not established; each is dated at the decision as an upper bound. Primary studies not seen. EPA itself stated that lead from food, water, paint and dust are additive sources and that the share due to gasoline is hard to determine."
+
+[[sources]]
+id = "bonner_moore_refinery_study"
+title = "Bonner and Moore Associates refinery and crude-supply modelling for EPA, as reported in 38 FR 33738-33739"
+as_of_date = "1973-11-28"
+url = "https://www.govinfo.gov/content/pkg/FR-1973-12-06/pdf/FR-1973-12-06.pdf"
+notes = "Two modelled cases (all post-1975 cars on lead-free gasoline; a gradual return of lead-tolerant technology). Regulator-commissioned, not independent; the track record is circular (see records file). Primary report not seen."
+
+[[ groups ]]
+id = "urban_children_under_6"
+name = "US urban children under six (about 5 million; judgment from US urban population shares, no figure read)"
+population = 5000
+baseline_u = 40.0
+baseline_h = 55.0
+
+[[ groups ]]
+id = "urban_adults"
+name = "US urban adults exposed to traffic lead (about 60 million; judgment, no figure read)"
+population = 60000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "refining_and_additive_sector"
+name = "Refiners, lead-additive producers and their workforces (about 150 thousand; judgment, no figure read)"
+population = 150
+baseline_u = 60.0
+baseline_h = 65.0
+
+# Derivation shared by all options (the harm that unreduced gasoline lead does to the exposed groups, per group mean):
+#  - EPA (p.33735): up to 25 percent of urban children are over-exposed to lead (fraction f = 0.25) and a small but
+#    significant portion of urban adults (judgment: 5 percent).
+#  - Share of exposure attributable to air lead from gasoline (a): EPA p.33735 cites a preliminary isotope result that air
+#    lead at 2 ug/m3 can contribute as much as one third of total exposure: a = 1/3 (an upper-end figure, flagged).
+#  - Size of loss for an over-exposed person (JUDGMENT: the 1973 record has no quantified effect size; EPA p.33736-33737 lists
+#    only subclinical fine-motor and behavioural effects): 10 percent of understanding and 5 percent of happiness for a
+#    child, 2 percent of happiness and none of understanding for an adult.
+#  - children: du = -0.25 x (1/3) x 0.10 x 40 = -0.333, dh = -0.25 x (1/3) x 0.05 x 55 = -0.229;
+#    adults: dh = -0.05 x (1/3) x 0.02 x 60 = -0.020.
+# No irreparable harm is priced for any option: EPA p.33735-33737 says gasoline's contribution to clinical lead poisoning,
+# the cause of permanent neurologic damage, is not established ("not all links in the argument have been established"), and no
+# count of permanent harms attributable to gasoline lead is in the as-of record. This zero is a judgment about the record, not
+# a finding of safety, and means the freedom gate is not engaged for any option.
+# Exposure scenario probability: P(air lead materially contributes to exposure) = event air_lead_linked_to_blood_lead,
+# 4 of 8 reported comparisons found the association: (4+1)/(8+2) = 0.5.
+
+[[ options ]]
+id = "status_quo_lead_free_availability_only"
+name = "Rely on the January 1973 lead-free gasoline requirement for catalyst cars and on paint controls; do not limit lead in leaded grades; study further with HEW"
+source = "air_lead_blood_lead_studies"
+known_date = "1973-01-10"
+is_inaction = true
+scope_delta = 0.0
+# Legacy keys equal the scenario expectations below: 0.5 x [-0.3333, 0, 0] = [-0.1667, 0, 0] (du); 0.5 x [-0.2292, -0.02, 0]
+# = [-0.1146, -0.0100, 0] (dh).
+pred_du = [-0.1667, 0.0, 0.0]
+pred_dh = [-0.1146, -0.01, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+# The lead-free rule alone also lowers gasoline lead as catalyst cars enter (EPA p.33734: the lead-free and low-lead rules
+# together aim at a 60-65 percent cut in lead use from 1971). EPA gives no figure for the lead-free rule alone, so the full
+# attributable harm is kept here and the phase-down options are credited with the residual fraction below; that overstates
+# the phase-down's marginal benefit (flagged).
+[[ options.scenarios ]]
+name = "gasoline_lead_contributes_to_excess_exposure"
+p_chain = ["air_lead_linked_to_blood_lead"]
+du = [-0.3333, 0.0, 0.0]
+dh = [-0.2292, -0.02, 0.0]
+
+[[ options.scenarios ]]
+name = "air_lead_not_a_material_source"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "phase_down_leaded_grade_only_schedule_reproposed"
+name = "Reduce the lead content of leaded grades only: 2.00 (1975), 1.70 (1976), 1.50 (1977), 1.25 g/gal (1978), refinery averaging over leaded grades"
+source = "bonner_moore_refinery_study"
+known_date = "1973-01-10"
+is_inaction = false
+scope_delta = 0.5
+# Legacy keys equal the scenario expectations below. children: 0.5 x [-0.125] = -0.0625 (du), 0.5 x -0.0859 = -0.0430 (dh);
+# adults: 0.5 x -0.0075 + 0.25 x -0.15 = -0.0412 (dh); sector: -0.5 x (0.5 + 0.5) + 0.25 x -2.0 = -1.0 (dh).
+pred_du = [-0.0625, 0.0, 0.0]
+pred_dh = [-0.043, -0.0412, -1.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+# The reproposed rule (38 FR 1255, 1258, 1973-01-10; as summarised in 38 FR 33734) was designed for a 60-65 percent cut in
+# lead use from 1971, together with lead-free gasoline. Residual exposure fraction r = 1 - 0.625 = 0.375 (midpoint of
+# 60-65 percent, an upper-end benefit because it includes the catalyst-car effect). Residual harm: children du = -0.3333 x
+# 0.375 = -0.125, dh = -0.2292 x 0.375 = -0.0859; adults dh = -0.02 x 0.375 = -0.0075.
+# Cost to the sector (all scenarios): EPA p.33738 puts the extra refinery investment of the low-lead rule at $82 million
+# ($113 million if lead-tolerant technology returns) against $1.5 billion of 1980 refinery investment, 5.5 to 7.5 percent more
+# capital outlay; JUDGMENT: dh = -0.5 for the sector (cost is income and employment, so it prices happiness, not understanding).
+[[ options.scenarios ]]
+name = "residual_exposure_with_cost"
+p_chain = ["air_lead_linked_to_blood_lead"]
+du = [-0.125, 0.0, 0.0]
+dh = [-0.0859, -0.0075, -0.5]
+
+[[ options.scenarios ]]
+name = "no_material_exposure_cost_only"
+p_chain = []
+complement = true
+dh = [0.0, 0.0, -0.5]
+
+# Supply strain (additive risk term): P = event crude_requirement_rise_ge_1pct_from_lead_rule, 0 of 2 modelled cases:
+# (0+1)/(2+2) = 0.25 (modelled, not observed; see the source note). EPA p.33738-33739 says the final pool-average schedule was
+# "adjusted to moderate the impact in the early years", which implies a larger early-year strain for this leaded-grade-only
+# schedule. JUDGMENT: sector dh = -2.0 and adults dh = -0.15 (fuel cost) if strain occurs.
+[[ options.scenarios ]]
+name = "supply_strain"
+p_chain = ["crude_requirement_rise_ge_1pct_from_lead_rule"]
+dh = [0.0, -0.15, -2.0]
+
+[[ options ]]
+id = "phase_down_total_pool_average_1975_1979"
+name = "Reduce average lead in all gasoline grades (pool averaging): 1.7 (1975), 1.4 (1976), 1.0 (1978), 0.5 g/gal (1979), small refiners deferred to 1977"
+source = "bonner_moore_refinery_study"
+known_date = "1973-11-28"
+is_inaction = false
+scope_delta = 0.5
+# Legacy keys equal the scenario expectations below. children: 0.5 x [-0.125] = -0.0625 (du), 0.5 x -0.0859 = -0.0430 (dh);
+# adults: 0.5 x -0.0075 + 0.25 x -0.1 = -0.0288 (dh); sector: -0.5 x (0.5 + 0.5) + 0.25 x -1.5 = -0.875 (dh).
+pred_du = [-0.0625, 0.0, 0.0]
+pred_dh = [-0.043, -0.0288, -0.875]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+# The promulgated schedule keeps the same 1979 total lead use as the reproposed one (EPA p.33734: the pool schedule "would equal
+# the lead usage expected to result from the reproposed leaded grade reduction schedule in 1979"), so residual exposure and the
+# capital cost are the same as above; the early years are milder.
+[[ options.scenarios ]]
+name = "residual_exposure_with_cost"
+p_chain = ["air_lead_linked_to_blood_lead"]
+du = [-0.125, 0.0, 0.0]
+dh = [-0.0859, -0.0075, -0.5]
+
+[[ options.scenarios ]]
+name = "no_material_exposure_cost_only"
+p_chain = []
+complement = true
+dh = [0.0, 0.0, -0.5]
+
+# Supply strain: the same event (0.25). JUDGMENT: milder early years, so sector dh = -1.5 and adults dh = -0.1.
+[[ options.scenarios ]]
+name = "supply_strain"
+p_chain = ["crude_requirement_rise_ge_1pct_from_lead_rule"]
+dh = [0.0, -0.1, -1.5]
+
+[counterfactual]
+# PLACEHOLDERS of the sign the pre-registration expects; none prices any option. Later evidence for scoring the outcome only:
+# Annest et al. (1983) N Engl J Med 308:1373-1377 (PMID 6188954, abstract read): US blood lead fell about 37 percent (5.4 ug/dL)
+# from 1976 to 1980 and tracked gasoline lead (P < 0.001); Pirkle et al. (1994) JAMA 272:284-291 (PMID 8028141, abstract read):
+# mean blood lead of children 1-5 fell 77 percent (13.7 to 3.2 ug/dL, non-Hispanic white) from NHANES II to III; Grosse et al.
+# (2002) Environ Health Perspect 110:563-569 (PMID 12055046, abstract read): the decline from 1976 to 1999 implies preschool IQ
+# 2.2 to 4.7 points higher. Mapping IQ points one to one onto the understanding scale is a placeholder, and the 1976-99 decline
+# is not wholly due to the phase-down (upper bound). Happiness and irreparable differences are placeholders with no source.
+actual_floor_u_delta = 2.2
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "status_quo_lead_free_availability_only"
+methods = ["nhanes_blood_lead_gasoline_trend", "iq_dose_response_scaling"]
+est_floor_u_delta_diff = [-2.2, -4.7]
+est_floor_h_delta_diff = [-1.0, -2.0]
+est_irreparable_diff = [0.0, 0.0]
