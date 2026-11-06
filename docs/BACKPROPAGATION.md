@@ -2302,3 +2302,18 @@ down for everyone. The fix with leverage is in screening and model scoring (L2.5
 whose overstatement z is significant should not be charged against the model's accuracy at full weight,
 and its quotes should be screened with its overstatement corrected. Needs the author's choice before
 wiring.
+8.94 E4 status (2026-11-06, provisional; not README evidence). Of the 12 pre-registered primary cases,
+9 replay priced from as-of scenarios, 2 stay unsupported (thalidomide, Ragusa: no verifiable as-of
+rates; Ragusa's existing records cite an article that does not contain them) and 1 was not built
+(the 1933 university purge: no pre-decision outcome data without later scholarship). Cells of the 9:
+agrees on a good outcome 2 (famine codes, Montreal); differs from a bad outcome 4 (Challenger:
+delay; Semmelweis: retain; Bengal: no denial; beta-blockers: approve); differs on an unclear outcome 3
+(BSE: total ban; school closures: keep open; FOMC 2008: cut). No case has Benefuture differing from a
+good decision, but that is not yet evidence: the cases were chosen knowing their outcomes, rates rest
+on 1 to 6 prior trials, most magnitudes are judgments, sources were verified mainly from abstracts and
+search summaries (full text blocked), several counterfactuals are placeholders, one modelling choice
+in famine codes was made after seeing the result, and the baselines of D5 are not run. School closures
+exposes 8.47's open question: the freedom gate judges harm an option adds over inaction, so the
+expected deaths of keeping schools open never count against it, while closure's learning loss makes it
+inadmissible under the understanding floor. Next: full-text verification, the held-out set, D5
+baselines, and the author's ruling on doing versus allowing.
