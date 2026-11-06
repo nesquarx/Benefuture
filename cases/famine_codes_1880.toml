@@ -1,0 +1,110 @@
+# Historical Decision Case: Indian Famine Codes Enactment (Provisional Famine Code, 1883-06-09)
+# Sources: Report of the Indian Famine Commission, Part I (Calcutta, 1880); Imperial Gazetteer of India vol. III (1907);
+# Hall-Matthews (2008), Modern Asian Studies 42(1):1-24, https://doi.org/10.1017/S0026749X07002892
+# Tier: Coarse low-technology tier (8.88) - parent-level markers (deaths, relief expenditure), rules only.
+# Option effects are priced from as-of scenarios (docs/REPLAY_PREREG.md 2b); the events are in famine_codes_1880.events.csv.
+
+id = "famine_codes_1880"
+title = "Indian Provisional Famine Code: Early Wage Relief, Rail Grain Transport and Price Triggers (1883)"
+family = "low_technology"
+era = "1880-1883"
+tier = "coarse"
+decision_date = "1883-06-09"
+decision_makers = ["Famine Commission of 1880", "Government of India"]
+actual_choice = "adopt_famine_code"
+actual_outcome_class = "good"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "famine_commission_1880_report"
+title = "Report of the Indian Famine Commission, Part I (Strachey), reviewing the famines of 1866, 1868-70, 1873-74 and 1876-78"
+as_of_date = "1880-06-01"
+url = "https://en.wikipedia.org/wiki/Great_Famine_of_1876%E2%80%931878"
+notes = "Reports that mortality was high where relief was late or restricted (Orissa 1866, Rajputana 1868-70, Madras and Bombay 1876-78) and low in Bihar 1873-74, where the state imported grain and relieved early at the cost of heavy spending."
+
+[[ groups ]]
+id = "drought_exposed_rural_population"
+name = "Rural population of a drought-exposed province (per 100,000)"
+population = 100000
+baseline_u = 35.0
+baseline_h = 45.0
+
+[[ groups ]]
+id = "revenue_and_administration"
+name = "Taxpayers and the provincial and imperial administration that fund relief (per 20,000)"
+population = 20000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ options ]]
+id = "status_quo_ad_hoc_relief"
+name = "Keep ad hoc relief, decided district by district after distress is visible"
+source = "famine_commission_1880_report"
+known_date = "1880-06-01"
+is_inaction = true
+scope_delta = 0.0
+# Legacy keys kept only because the loader reads the inaction option's values before pricing; they equal
+# the scenario expectations below (0.8 x [-3.5, 0], 0.8 x [-4.5, -0.25], 0.8 x [10000, 0]).
+pred_du = [-2.8, 0.0]
+pred_dh = [-3.6, -0.25]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [8000.0, 0.0]
+
+# Scenario pricing. Horizon: the next severe drought, which both options face alike. A high-mortality
+# famine kills about a tenth of the exposed rural population (rounded and conservative against Orissa 1866,
+# where about a third of Orissa's people died, and 1876-78's 5.6-9.6 million deaths); a death takes the being
+# to zero, so the group mean falls by 0.10 x baseline (35, 45). Ad hoc relief still costs the administration
+# (Rs 30 million in 1876-78 against Rs 62.5 million in Bihar 1873-74): a happiness cost of -0.25, none to understanding (money spent does not lower what the group understands).
+[[ options.scenarios ]]
+name = "high_mortality_famine"
+p_chain = ["famine_mortality_high_without_early_relief"]
+du = [-3.5, 0.0]
+dh = [-4.5, -0.25]
+irreparable = [10000.0, 0.0]
+
+[[ options.scenarios ]]
+name = "contained_famine"
+p_chain = []
+complement = true
+dh = [0.0, -0.25]
+
+[[ options ]]
+id = "adopt_famine_code"
+name = "Adopt the Provisional Famine Code: scarcity triggers, early guaranteed wage relief on public works, rail grain transport, price monitoring"
+source = "famine_commission_1880_report"
+known_date = "1880-06-01"
+is_inaction = false
+scope_delta = 0.5
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+# Early state relief and imports produced 0 of 1 high-mortality famines (Bihar 1873-74). The code commits the
+# state to spend early and in full, about twice the ad hoc cost: -0.5 happiness to the administration
+# group in every scenario. The mortality scenario keeps the same size as above.
+[[ options.scenarios ]]
+name = "high_mortality_despite_code"
+p_chain = ["famine_mortality_high_with_early_relief"]
+du = [-3.5, 0.0]
+dh = [-4.5, -0.5]
+irreparable = [10000.0, 0.0]
+
+[[ options.scenarios ]]
+name = "contained_famine"
+p_chain = []
+complement = true
+dh = [0.0, -0.5]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "status_quo_ad_hoc_relief"
+# Counterfactual estimators (not inputs to the choice): district panel regressions of famine mortality on rainfall
+# shocks before and after the code and railways (Burgess & Donaldson 2010). Magnitudes below are placeholders of the
+# same sign as the pre-registered expectation and are not used to price any option.
+methods = ["district_panel_rainfall_shocks", "famine_year_comparison_1877_1897"]
+est_floor_u_delta_diff = [3.0, 3.5]
+est_floor_h_delta_diff = [4.0, 4.5]
+est_irreparable_diff = [-6000.0, -8000.0]

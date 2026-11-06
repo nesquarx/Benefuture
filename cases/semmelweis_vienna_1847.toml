@@ -41,12 +41,30 @@ source = "vienna_maternity_mortality_1841_1848"
 known_date = "1847-05-15"
 is_inaction = true
 scope_delta = 0.3
-pred_du = [0.5, 2.0]
-pred_dh = [0.5, -0.2]
-pred_nha = [0.0, 0.2]
-pred_irreparable = [0.0, 0.0]
-lt_end_u = [30.5, 57.0]
-lt_end_h = [40.5, 60.0]
+# Legacy keys kept only because the loader reads the inaction option's values before pricing; they equal
+# the scenario expectations below (0.0435 x [-3.48, 0], 0.0435 x [-4.64, 0], 0.0435 x [406, 0]).
+pred_du = [-0.151, 0.0]
+pred_dh = [-0.202, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [17.7, 0.0]
+
+# Scenario pricing (amendment 2026-11-05). Horizon one year, 3500 births (1848: 3556). A month is an
+# "epidemic month" when First Clinic mortality is at least 5%. Excess deaths are counted above the protected
+# non-epidemic rate (1.97%, Jun 1847 - Feb 1849), the background no option can remove; a death takes the
+# mother's understanding and happiness to zero, so the group mean falls by (deaths/3500) x baseline (30, 40).
+# Epidemic month: mean 13.56% (Jan 1841 - Apr 1847), excess 11.59% = 406 deaths a year if every month were one.
+# With handwashing 0 of 21 months were epidemic; the scenario still keeps the unprotected epidemic size.
+[[ options.scenarios ]]
+name = "epidemic_despite_protocol"
+p_chain = ["month_ge_5pct_with_handwashing"]
+du = [-3.48, 0.0]
+dh = [-4.64, 0.0]
+irreparable = [406.0, 0.0]
+
+[[ options.scenarios ]]
+name = "protected_clinic"
+p_chain = []
+complement = true
 
 [[ options ]]
 id = "dismiss_semmelweis_relax_handwashing"
@@ -55,12 +73,28 @@ source = "vienna_maternity_mortality_1841_1848"
 known_date = "1849-03-20"
 is_inaction = false
 scope_delta = -0.5
-pred_du = [-5.0, -1.0]
-pred_dh = [-12.0, 0.2]
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
 pred_nha = [0.0, 0.0]
-pred_irreparable = [8.6, 0.0]
-lt_end_u = [25.0, 54.0]
-lt_end_h = [28.0, 60.0]
+pred_irreparable = [0.0, 0.0]
+
+# Without handwashing 53 of 75 months (Jan 1841 - Apr 1847) were epidemic months (rate 0.70). In the
+# remaining months the unprotected rate was 2.95%, 0.98 points above the protected floor: 34 excess deaths a
+# year, du -0.29, dh -0.39.
+[[ options.scenarios ]]
+name = "epidemic_month_regime"
+p_chain = ["month_ge_5pct_without_handwashing"]
+du = [-3.48, 0.0]
+dh = [-4.64, 0.0]
+irreparable = [406.0, 0.0]
+
+[[ options.scenarios ]]
+name = "sporadic_months"
+p_chain = []
+complement = true
+du = [-0.29, 0.0]
+dh = [-0.39, 0.0]
+irreparable = [34.0, 0.0]
 
 [counterfactual]
 actual_floor_u_delta = -5.0

@@ -1,0 +1,5 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+famine_commission_1880_report,Orissa-1866,1866-08-01,1867-12-31,1867-12-31,1.0,1.0,"Constructed track record: the Commission's rule 'mortality is high where relief is late, restricted or absent' applied to Orissa 1866; outcome per https://en.wikipedia.org/wiki/Orissa_famine_of_1866 (in-sample: the rule was drawn from these famines)"
+famine_commission_1880_report,Rajputana-1868-70,1868-06-01,1870-12-31,1870-12-31,1.0,1.0,"Same rule applied to Rajputana 1868-70; outcome per https://en.wikipedia.org/wiki/Rajputana_famine_of_1869 (in-sample)"
+famine_commission_1880_report,Bihar-1873-74,1873-10-01,1874-12-31,1874-12-31,0.0,0.0,"Same rule applied to Bihar 1873-74 (early relief, so low mortality predicted); outcome per https://en.wikipedia.org/wiki/Bihar_famine_of_1873%E2%80%931874 (in-sample)"
+famine_commission_1880_report,Madras-Bombay-1876-78,1876-09-01,1878-12-31,1878-12-31,1.0,1.0,"Same rule applied to Madras and Bombay 1876-78; outcome per https://en.wikipedia.org/wiki/Great_Famine_of_1876%E2%80%931878 (in-sample)"
