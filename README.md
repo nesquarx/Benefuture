@@ -16,7 +16,7 @@
 >   cannot be raised by removing beings, revealing a flaw dominating exploiting it (given clawbacks),
 >   delegation-cap bounds, conservation, and Shapley sampling that never mints currency. The proofs
 >   say nothing about whether the definitions describe the world.
-> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 108 C
+> - **Bridged.** [`BenefutureReference/`](BenefutureReference) is a Float reference with 114 C
 >   exports that the simulation calls. [`BenefutureTest/`](BenefutureTest) proves exact ℚ oracles
 >   equal to the ℝ specification (12 theorems) and tests the Float rules against them, with interval
 >   bounds for exp, log and sqrt. Float rounding is tested, not bounded.
@@ -55,7 +55,7 @@ adversarial test:
   52 files, every one machine-checked, with **zero `sorry`, `admit`, custom axioms or
   `native_decide`**.
 - **Executable Lean reference** ([`BenefutureReference/`](BenefutureReference)): Mathlib-free Float
-  versions of the rules in 12 files, with **108 C exports**. It generates the test vectors in
+  versions of the rules in 12 files, with **114 C exports**. It generates the test vectors in
   [`spec/vectors/`](spec/vectors) and defines the simulation's rules (two exceptions remain in Julia, listed in the [parsimony audit](sim/README.md#parsimony-audit)).
 - **Differential bridge** ([`BenefutureTest/`](BenefutureTest)): 12 proved theorems showing that
   exact ℚ oracles equal the ℝ specification, plus **interval-bound ℚ oracles** for rules that use
@@ -135,8 +135,8 @@ simulation column cites the current build (`c2cc169`), with readings restated un
 | Credence from the record is robust to outliers | [`recordCredence_one_error`](Benefuture/Proposed/RecordCredence.lean), [`recordCredence_bounds`](Benefuture/Proposed/RecordCredence.lean) | Under heavy-tailed side harm: runs without halts 4 of 12 against 0 of 12; floor growth +51 ± 16 (paired, significant) ([calibrated_tests](sim/test/calibrated_tests.jl)) | Realistic world, 250 steps, 12 paired seeds, 8.85 accuracy |
 | Strictly proper scoring | [`brier_score_strictly_proper`](Benefuture/Governance/Incentives.lean) | Biased-but-precise models lose to unbiased ones ([m1_tests](sim/test/m1_tests.jl)) | Binary outcomes |
 | Identity binding against whitewashing | (rule in `BenefutureReference/Records.lean`; no ℝ theorem) | Binding leaves model accuracy equivalent to no whitewashing (−0.003 ± 0.002, margin 0.02, 10 seeds) ([m6_attacks_tests](sim/test/m6_attacks_tests.jl)) | Technology Network clusters attest; weighted by attestation record (8.70) |
-| Optimised attacks | — | Cross-entropy search: economy margin 0.53 on held-out seeds (1 = unattacked, < 0 = failure), with the bloc poorer than honest; governance margin 0.20 ([attack.md](sim/battery/results/attack.md)) | Attack budget at the realistic top of range; small search (8 × 4); build commit not recorded in that file |
-| Failure boundaries | — | Economy: 0 of 64 screened worlds fail; single-factor limits at markers 1.31×, execution 1.90×, side harm 1.98× the realistic bad end. Governance: 0 of 128 fail ([results](sim/battery/results)) | Severity 1 = realistic bad end; search to 2; recorded builds in each file |
+| Optimised attacks | — | Cross-entropy search: economy margin 0.38 on held-out seeds (1 = unattacked, < 0 = failure), with the bloc poorer than honest; governance margin 0.20 ([attack.md](sim/battery/results/attack.md)) | Attack budget at the realistic top of range; small search (8 × 4); build `102474a` |
+| Failure boundaries | — | Economy: 1 of 64 screened worlds fails (severities to 0.67); single-factor limits at markers 1.44× and execution 1.73× the realistic bad end, the rest not within 2× (build `102474a`). Governance: 0 of 128 fail ([results](sim/battery/results)) | Severity 1 = realistic bad end; search to 2; recorded builds in each file |
 | Modelled transitions are safe | [`step_preserves_mem`](Benefuture/Systems/State.lean), [`step_preserves_escrow_soundness`](Benefuture/Systems/State.lean) | Books balance under every noise source at once ([m3c_tests](sim/test/m3c_tests.jl)) | Over the modelled `Step` relation |
 | Parameters stay admissible under governance | [`governed_params_admissible`](Benefuture/Systems/ParamSpace.lean), [`perturb_run_drift`](Benefuture/Systems/ParamSpace.lean) | Within ±0.02 per epoch, outcomes do not depend on them ([m4_tests](sim/test/m4_tests.jl)) | Steps from the bootstrap point by SigThGv |
 
@@ -156,10 +156,10 @@ reader can check exactly where that boundary sits.
 | Problem | Where it bites outside Benefuture | What the design already does | What remains open |
 | :--- | :--- | :--- | :--- |
 | **Deceit that fools every measure at once** (common-mode error) | Shared blind spots across independent checks: in 2008 the major rating agencies rated the same securities AAA ([White 2010](https://doi.org/10.1257/jep.24.2.211), on how agency incentives and regulatory reliance converged). | Escrow settles on measured outcomes and each model prices each actor by its own record with that actor, so in simulation a deceiver that fools every model gains nothing relative to its peers. AdvAp reporting recovers part of the damage ([m6_tests](sim/test/m6_tests.jl)). | Competing models add nothing when all of them share the error; the defence then rests on outcome measurement and on people reporting. Before settlement the harm lands on the domain: in a marginal domain it kept the currency from qualifying in 2 of 6 seeds. |
-| **Intermittent ("on-off") deceit** | Reputation systems generally ([Hoffman, Zage & Nita-Rotaru 2009](https://doi.org/10.1145/1592451.1592452)): good behaviour in between masks bad. | Ledgers whose entries never decay keep the pattern visible (the attacker's negative share 0.39–0.49 against peers' ≤ 0.17), and AdvAp establishes the deception. | The pattern reaches escrow and readers' attention but not the prediction G screens on, so a capable domain's currency still goes down. The author has three candidate fixes to choose from ([8.58-d](docs/BACKPROPAGATION.md)). |
+| **Intermittent ("on-off") deceit** | Reputation systems generally ([Hoffman, Zage & Nita-Rotaru 2009](https://doi.org/10.1145/1592451.1592452)): good behaviour in between masks bad. | Each deception an audit establishes enters a permanent deception record; its outcomes are discounted from the domain's models (so the fooled records no longer take the currency down for everyone: peers 194 against 197 honest, 79 before) and escrow rises exponentially in the count (author ruling, [8.91](docs/BACKPROPAGATION.md)). Luck and honest mistakes are never established as deception, so they never raise it. | Only discovered deception counts, so a deceiver acts freely until its first audit; a one-off long con after a clean record is out of scope (bounded by escrow, clawback and liability, not caught). A deception domain with its own models is proposed ([8.95](docs/BACKPROPAGATION.md)). |
 | **Sybils and false names** | [Douceur 2002](https://doi.org/10.1007/3-540-45748-8_24) shows that without a trusted identity authority, one actor can always pose as many. [Cheng & Friedman 2005](https://doi.org/10.1145/1080192.1080202) prove that symmetric reputation cannot be sybilproof. | Shapley's null-player property gives a sybil that adds nothing exactly nothing. Identity binding by attesting clusters links whitewashing attempts and keeps model accuracy equivalent to no attack. | Splitting a *harm* across identities lightens its penalty by about 11% ([8.58-e](docs/BACKPROPAGATION.md)), and forks game Shapley shares ([8.57-a](docs/BACKPROPAGATION.md)). Identity binding is therefore a prerequisite, not an optional extra. Sybil *beings* are not yet simulated. |
 | **Measurement sets the ceiling** | Every evidence-based institution is only as good as its instruments (Goodhart's law in all its variants). | Models compete and none is protected. Noise ranges are calibrated, outages degrade to coarser fallbacks and are re-measured later, and with perfect measurement the floors provably never fall in simulation. | With realistic noise the guarantee weakens: noise on current levels alone let the true floor fall in 9% of steps ([M1](sim/README.md#m1-observations)). |
-| **Population ethics** | [Arrhenius 2000](https://doi.org/10.1017/S0266267100000249) proves that no welfarist axiology can satisfy a short list of individually plausible conditions, so every theory gives one up. | G ranks actions against not acting, not whole worlds. In a probe, with newborns counted in the floors at their predicted level, G refuses additions that lower the floors and takes 10 good lives over 200 barely worth living ([m7_tests](sim/test/m7_tests.jl)). When an admissible uplift exists, G never chooses to do nothing ([`uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean)), and removing beings cannot raise the floor ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean)). | Non-Sadism is given up only when an addition is forced: if beings will arrive anyway and G can only redirect them, the quantile floor can prefer a few lives below neutral to many barely positive ones ([8.56](docs/BACKPROPAGATION.md)). By the author's ruling ([8.86](docs/BACKPROPAGATION.md)), a forced addition is taken as given, like a suffering polity joining a Benefuture nation. The work is then to uplift the newcomers. Over the long term no existing individual may end lower; passing harm may be accepted as necessary and absorbed as deliberated; where that cannot be met, G falls back to protecting the floors, and says so. A probe to demonstrate this is queued. A positive floor alone moves the repugnant conclusion rather than resolving it ([`floor_shifts_repugnant_conclusion`](Benefuture/Axiology/RepugnantConclusion.lean)). |
+| **Population ethics** | [Arrhenius 2000](https://doi.org/10.1017/S0266267100000249) proves that no welfarist axiology can satisfy a short list of individually plausible conditions, so every theory gives one up. | G ranks actions against not acting, not whole worlds. In a probe, with newborns counted in the floors at their predicted level, G refuses additions that lower the floors and takes 10 good lives over 200 barely worth living ([m7_tests](sim/test/m7_tests.jl)). When an admissible uplift exists, G never chooses to do nothing ([`uplift_beats_inaction`](Benefuture/Proposed/PopulationDirection.lean)), and removing beings cannot raise the floor ([`removal_cannot_raise_floor`](Benefuture/Proposed/PopulationDirection.lean)). | Non-Sadism is given up only when an addition is forced: if beings will arrive anyway and G can only redirect them, the quantile floor can prefer a few lives below neutral to many barely positive ones ([8.56](docs/BACKPROPAGATION.md)). By the author's ruling ([8.86](docs/BACKPROPAGATION.md)), a forced addition is taken as given, like a suffering polity joining a Benefuture nation. The work is then to uplift the newcomers. Over the long term no existing individual may end lower; passing harm may be accepted as necessary and absorbed as deliberated; where that cannot be met, G falls back to protecting the floors, and says so. It is shown in the accession probe ([probe_tests](sim/test/probe_tests.jl), "Probe: accession and uplift (8.86)"). A positive floor alone moves the repugnant conclusion rather than resolving it ([`floor_shifts_repugnant_conclusion`](Benefuture/Axiology/RepugnantConclusion.lean)). |
 | **Rights against necessary harm; doing against allowing** | These are long-standing open questions in moral philosophy, and law settles them case by case. | Freedom is reported per plan, and irreversible harm is excluded. | Freedom excludes irreversible harm even when it is necessary and net-positive ([`freedom_excludes_irreversible_necessary_harm`](Benefuture/Subgoals/Freedom.lean)). Doing and allowing are not distinguished. |
 | **Honest forecasters lose to extremisers** | Winner-take-all forecasting contests reward overstated confidence ([Witkowski et al. 2023](https://doi.org/10.1287/mnsc.2022.4410)). | Challengers compete only on full record windows (8.58-b), and credence comes from the record (8.71). | In the economy, takeovers by equal-skill challengers are still extremists' (9 of 9) because honest credences are underconfident there ([8.58-c](docs/BACKPROPAGATION.md)). |
 
@@ -206,7 +206,7 @@ The author ruled that "an unnamed scalar is a ghost in the system".
   (`scarcity_floor`, 0.001, L83), the capacity share below which scarcity pricing stops rising.
 
 The result is that every coefficient a rule uses can now be governed and swept. These are governed
-parameters, not theorems. The pending M0 constants (harm weight's κ and q, Freedom's severity
+parameters, not theorems. The formerly literal M0 constants (harm weight's κ and q, Freedom's severity
 multipliers) were lifted into governed parameters read from `bootstrap_params()` (`HaWt_params_ref`,
 `fr_permissible_params_ref`).
 
@@ -267,13 +267,15 @@ the replay engine ([`sim/src/replay.jl`](sim/src/replay.jl)), counterfactual est
 difference-in-differences, inverse-variance combination; [`sim/src/counterfactual.jl`](sim/src/counterfactual.jl)),
 a forecasting layer scored by quantile (pinball) loss in Lean (`pinball_loss_ref`, `quantile_score_ref`, with a
 probe) and a rolling-window forecast replay, tested on a synthetic case with a known right choice
-([`sim/test/replay_tests.jl`](sim/test/replay_tests.jl)). Four documented cases are encoded (Challenger 1986,
-thalidomide at the FDA 1960, the Ragusa quarantine 1377, Semmelweis 1847), and in each the replayed choice
-matches what hindsight calls right. **That is not yet evidence**: the cases were chosen with their answers known,
-and their credences are still entered by hand (for example `credence_accuracy = 0.88` for the Thiokol charts)
-rather than derived from as-of records, which the pre-registration requires (8.87: no fitting). What would
-count: source records replayed as-of, cases including ones where the right choice was unclear at the time or
-where the actual choice was good, and the pre-registered falsifiers applied.
+([`sim/test/replay_tests.jl`](sim/test/replay_tests.jl)). Options are priced from what was known at the time:
+each option's scenarios carry the consequences known before the decision and probabilities computed from as-of
+event records (Lean `event_rate_ref`, `expected_effect_ref`); typed effects are flagged unsupported. Of the 12
+pre-registered primary cases, 9 replay this way, 2 stay unsupported (thalidomide, Ragusa: no verifiable as-of
+rates) and 1 was not built ([8.94](docs/BACKPROPAGATION.md)). Benefuture agrees with the 2 good actual decisions,
+differs from the 4 bad ones (Challenger: delay, at a loss probability of (5/6)(1/9) ≈ 0.09 from the record), and
+differs on the 3 unclear ones. **That is not yet evidence**: the cases were chosen knowing their outcomes, rates
+rest on 1 to 6 prior trials, most magnitudes are judgements, sources were checked mainly from abstracts, and the
+baselines are not run.
 
 **Test and compute infrastructure.** Probes now cover every core mechanism (19 audited); the eight that
 only called a rule function were rebuilt as small-world probes with acceptance and counterexample cases.
@@ -667,7 +669,8 @@ Population (M7)
 
 Historical decisions and long horizons
 - **Real forecasters' skill persists, moderately (E4 measurement layer, the first real-data result).** On the COVID-19 Forecast Hub (US weekly deaths, one week ahead, 10 teams, 140 weeks), scored by the Lean quantile score on rolling 6-week windows, team rankings in consecutive windows correlate at 0.36 ± 0.09 (z ≈ 4, 22 window pairs), and a ranking from L weeks of record predicts the next period at about 0.36 for L = 2, rising to a plateau near 0.5 from about five weeks. So weighting by record is justified but noisy, and most of its information arrives within about five resolved forecasts, in line with Benefuture's minimum record of five and time-decayed records ([BACKPROPAGATION 8.93](docs/BACKPROPAGATION.md)). Caveats: one target, a pandemic regime, truth at the final vintage.
-- **Historical decision replay (E4): machinery only.** The as-of replay, counterfactual estimators and quantile-scored forecast replay work on a synthetic case with a known right choice ([replay_tests](sim/test/replay_tests.jl)). The four encoded historical cases (Challenger, thalidomide, Ragusa, Semmelweis) all match hindsight, but their credences are entered by hand and the cases were picked knowing the answer, so they demonstrate nothing yet about Benefuture's decisions ([`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md)).
+- **Historical decision replay (E4): provisional.** 9 of 12 pre-registered cases are priced from as-of records; Benefuture agrees with 2 good decisions, differs from 4 bad and 3 unclear ones. Not evidence yet: cases chosen knowing outcomes, thin rates, judged magnitudes, baselines not run ([8.94](docs/BACKPROPAGATION.md), [`docs/REPLAY_PREREG.md`](docs/REPLAY_PREREG.md)).
+- **Status-quo comparison: specified, not built.** The baseline institution is one person, one vote with uncapped delegation, calibrated to realistic boom–bust and regulatory capture ([8.92](docs/BACKPROPAGATION.md)); comparisons in this README are against Benefuture's own arms until it is built.
 - **Run length and population size** ([convergence](sim/battery/results/convergence.md)). Results depend on population in ways the small test worlds hide. The q-floor in M1 shrinks from 15.3 at 20 beings to 6.3 at 1,000 (a floor over two beings flatters), so floor claims state their population. M3c economies of 20 beings and 4 agents spread 29% between seeds; from 40 beings and 6 agents, 3.5% or less. With plans scaled to population, M3c floor gain rises faster than population (104 at 80 beings, 251 at 240), and M7 understanding gain rises steeply at fixed per-being effort (6 at 20 beings, 27 at 500): candidate scale effects of shared understanding, under replication at z = 3 before they count.
 - **Expertise weighting at scale: open.** Weighting votes by domain record beats equal weight (+0.06 at 60 voters), but the current sweep copies one skill distribution per voter, so equal weight reaches certainty at 240 voters and the gain shrinks. By author clarification 8.90 specialists stay sparse in narrow subdomains as populations grow; the sweep is being rebuilt that way, with the hypothesis, stated before measuring, that the gain grows with population.
 - **Century and long-horizon battery.** Composed multi-decade and century simulations ([long_horizon](sim/battery/long_horizon.jl), launcher `tools/battery/overnight.sh`) test convergence over 5,000–20,000 steps with rare catastrophes and breakthroughs, validating stability beyond short test horizons.
@@ -725,7 +728,7 @@ Benefuture/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
-├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 106 C exports
+├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 114 C exports
 ├── BenefutureTest/              # ℚ oracles proved = spec, interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/
@@ -734,7 +737,7 @@ Benefuture/
 ├── sim/                         # Julia package BenefutureSim
 │   ├── src/                     # world model, rungs M0–M7, battery.jl (threaded, cached), methods.jl
 │   ├── test/                    # acceptance and adversarial suites, probes, differential tests
-│   └── battery/                 # economy, governance, attack batteries; results/
+│   └── battery/                 # economy, governance, attack, convergence and long_horizon batteries (sharded on GitHub runners via battery.yml); results/
 ├── tools/                       # setup/, battery/ (launcher, hooks), bench/, wiki_sync/, extraction/,
 │                                #   bf-graph/, check_readme_claims.py, theorem_index.py
 ├── COORDINATION.md              # multi-agent task registry
@@ -802,7 +805,7 @@ In order:
 8. `lake exe benefuture` regenerates [`spec/vectors/`](spec/vectors).
 9. `bench.jl` gives cross-machine timings.
 
-CI runs the Lean build and the simulation suite on every push.
+CI runs in tiers: the Lean build and the fast simulation tier (rules, units, probes) on every code push to `main`, the full suite as 8 parallel shards nightly and on demand; docs-only pushes run nothing.
 
 ### For implementers
 
@@ -819,7 +822,7 @@ CI runs the Lean build and the simulation suite on every push.
   (`governed_params_admissible`). Every gate value is listed with its default and source in
   [governed thresholds](sim/README.md#governed-thresholds).
 - **Vector files** (`spec/vectors/*.json`): `synergy`, `assessment`, `value`, `ehr`, `pricing`,
-  `escrow`, `reputation`, `democracy`, `harm`, `freedom`, `population`, each tied to its pseudocode
+  `escrow`, `reputation`, `democracy`, `harm`, `freedom`, `population`, `births`, each tied to its pseudocode
   line in the generator ([`Main.lean`](Main.lean)).
 
 ### Notation
