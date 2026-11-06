@@ -33,7 +33,7 @@ for b in "${@:-economy governance}"; do
     # the julia child's pid: the cmdline check above looks for the battery file in it
     for _ in 1 2 3 4 5 6 7 8 9 10; do
       if [[ -d /proc ]]; then
-        pid=$(pgrep -f "julia .*sim/battery/$name\.jl" | head -1)
+        pid=$(pgrep -f "^julia .*sim/battery/$name\.jl" | head -1)
       else
         pid=$(ps -Ao pid,command | grep "julia.*sim/battery/$name\.jl" | grep -v "bash -c" | grep -v grep | awk '{print $1}' | head -1)
       fi
