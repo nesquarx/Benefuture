@@ -755,11 +755,13 @@ end
     # (i) Author ruling on 8.91: discovered deception is permanent and escrow rises exponentially in its
     # count, so the upfront credence falls from the second bad phase to the third, and stays down after
     # the deceiver stops (measured: seed 1 0.40, 0.31, then 0.17; seed 2 0.49, 0.25, 0.18 at growth 0.5).
-    # Red baseline: with growth 0 (the flat ledger ratchet) it rose in seed 1 (0.40 to 0.75).
+    # Against the flat ledger ratchet (growth 0) on the same seeds, the escalating one leaves the deceiver a
+    # lower upfront credence in the third bad phase (a comparison, portable across platforms; single-seed
+    # trajectories are not).
     flat = [run_m3c(M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
                               causal_distribution = true, deceit = [0, 0, 0, 0, 0, 1.0], events = bad_events, on_off = 25,
-                              advap = true, ratchet_growth = 0.0, LEGACY...); seed = 1)]
-    @test !(phase_cred(flat[1], 126:150) < phase_cred(flat[1], 76:100))
+                              advap = true, ratchet_growth = 0.0, LEGACY...); seed = s) for s in 1:2]
+    @test all(phase_cred(runs_onoff[s], 126:150) < phase_cred(flat[s], 126:150) for s in 1:2)
     @test all(phase_cred(tr, 126:150) < phase_cred(tr, 76:100) && phase_cred(tr, 151:200) < phase_cred(tr, 76:100) for tr in runs_onoff)
     @test all(tr.deceptions[6] >= 1 for tr in runs_onoff)
     # (ii) Peers' activity: measurement discounts an established deception's outcomes (author ruling on
