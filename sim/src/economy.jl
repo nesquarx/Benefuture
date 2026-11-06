@@ -435,3 +435,9 @@ function expected_effect(probs, effects)
     check(length(probs) == length(effects) && all(isfinite, effects), "one effect per probability")
     ccall(sym(:bf_expected_effect), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, effects)))
 end
+
+"Escrow credence after `repeats` discovered deceptions (Lean `repeat_escrow_credence_ref`; author ruling on 8.91)."
+function repeat_escrow_credence(credence::Real, neg_share::Real, repeats::Integer; growth::Real, floor::Real)
+    check(0 <= credence <= 1 && 0 <= neg_share <= 1 && repeats >= 0 && growth >= 0 && 0 < floor <= 0.5, "credence, share in [0, 1]; repeats ≥ 0; growth ≥ 0; floor in (0, 0.5]")
+    ccall(sym(:bf_repeat_escrow_credence), Float64, (Float64, Float64, Csize_t, Float64, Float64), credence, neg_share, repeats, growth, floor)
+end

@@ -336,4 +336,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_expected_effect] def expectedEffect (probs effects : FloatArray) : Float :=
   expected_effect_ref probs.data effects.data
 
+-- 8.91 ruling: escrow exponential in discovered repeats
+@[export bf_repeat_escrow_credence] def repeatEscrowCredence (credence negShare : Float) (repeats : USize) (growth floorC : Float) : Float :=
+  repeat_escrow_credence_ref credence negShare repeats.toNat growth floorC
+
 end BenefutureReference.Export

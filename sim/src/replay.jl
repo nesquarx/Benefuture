@@ -704,13 +704,14 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # Freedom gate (L135) on irreparable and passing harms
         total_irr = sum(irr)
         total_nha = sum(nha)
-        # The freedom gate is per being and judges what an option adds over inaction (L135): the extra
-        # probability that a member of some group suffers irreparable harm, expected irreparable harms over
-        # the group's population, beyond the inaction option's.
+        # The freedom gate is per being (L135): the probability that a member of some group suffers
+        # irreparable harm, expected irreparable harms over the group's population. Inaction is judged the
+        # same way (author ruling on 8.47, 2026-11-06): where inaction risks irreparable harm and the
+        # decider is informed (every scenario-priced option is informed: its risk comes from the as-of
+        # record), allowing it counts as doing it.
         fr_ok[i] = if haskey(opt, "pred_irreparable") && all(o -> haskey(o, "scenarios"), options)
-            idle_irr = Float64.(idle_opt["pred_irreparable"])
-            excess = maximum((irr[g] - idle_irr[g]) / pops[g] for g in 1:n_groups)
-            excess <= 0 || fr_permissible(1.0, 0.0, 0.0, 0.0, 0.0; confidence = min(1.0, excess))
+            risk = maximum(irr[g] / pops[g] for g in 1:n_groups)
+            risk <= 0 || fr_permissible(1.0, 0.0, 0.0, 0.0, 0.0; confidence = min(1.0, risk))
         else
             fr_permissible(total_irr, 0.0, 0.0, total_nha, 0.0; confidence = conf)
         end

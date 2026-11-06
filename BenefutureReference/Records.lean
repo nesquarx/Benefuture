@@ -143,4 +143,12 @@ def escalated_credence_ref (credence negShare : Float) (persistence : Nat) (grow
   let p := min persistence.toFloat maxP
   0.5 + (credence - 0.5) * (1.0 - negShare) * (1.0 + growth) ^ (-p)
 
+/-- Repeated discovered deception (author ruling on 8.91, 2026-11-06): each deception established by an
+    audit adds to the actor's permanent deception record, and escrow rises exponentially with the count:
+    the upfront credence is the ledger ratchet's (`ratchet_credence_ref`) times (1 + growth)^(-repeats),
+    floored at `floorC` (never zero: the actor is not excluded, and settlement still pays what it delivers).
+    Only established deception counts, so bad luck and honest mistakes never raise it. -/
+def repeat_escrow_credence_ref (credence negShare : Float) (repeats : Nat) (growth floorC : Float) : Float :=
+  max floorC ((0.5 + (credence - 0.5) * (1.0 - negShare)) * Float.pow (1.0 + growth) (-(repeats.toFloat)))
+
 end BenefutureReference
