@@ -2337,3 +2337,9 @@ care), never as a general character score. Gaming: an actor may farm conduct rec
 claims, so records weigh by the stakes of each claim. Questions for the author: whether behavioural
 domains share the skill domains' currency mechanics (minting on measured outcomes) or only feed
 pricing; and which conduct domains belong in the first set beyond honesty.
+8.96 ruling (author, on 8.95 question 1): behavioural domains are ordinary domains for currency. Any
+currency-backing model that detects harm burns currency, and any that detects gain mints it, without
+double counting: each measured outcome is booked once and split across the domains it belongs to by
+classification share (as lane harm already is, 8.67), so a deception that is both a skill-domain loss
+and a deception-domain record is not charged twice. Candidate homes: Benefuture currency (minting and
+burning), Domain (overlap and shares), 8.95.
