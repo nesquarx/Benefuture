@@ -457,3 +457,10 @@ function pragmatic_understanding(map_fit::Real, wt, ce, acc, cy; th::Real = 0.0)
     ccall(sym(:bf_pragmatic_understanding), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           Float64(map_fit), f(wt), f(ce), f(acc), f(cy), Float64(th))
 end
+
+"Prediction accuracy net of irreducible uncertainty (Lean `relative_accuracy_ref`; author ruling 8.103)."
+function relative_accuracy(credences, outcomes)
+    check(length(credences) == length(outcomes) && all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes),
+          "one credence in [0, 1] per outcome of 0 or 1")
+    ccall(sym(:bf_relative_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
+end

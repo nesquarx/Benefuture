@@ -2444,3 +2444,12 @@ for example skill against the best achievable credence. Should PrAcc in L31 be t
 keeping raw accuracy for currency backing? Next, if ruled: wire hidden traits into M7's beings, so
 teaching and research raise traits and the floors are judged on true and measured understanding side
 by side. Candidate homes: L31 note; Understanding article (measurement); 8.35–8.36.
+8.103 ruling (author, on 8.102, 2026-11-06): prediction accuracy in the pragmatic equation (L31) is
+accuracy net of irreducible uncertainty; raw credence accuracy (8.35–8.36) still backs currency. Built:
+Lean `relative_accuracy_ref` (1 − (Brier − ō(1−ō))/0.25 per item whose outcomes share one probability,
+the Brier score less Murphy's uncertainty term), used for true and measured understanding. Probe rerun
+(40 beings, z = 3): mean true understanding 0.32 (was 0.056); record error 0.028 → 0.010 from 10 to 200
+reports per item with map fit read exactly, flooring near 0.024 when map fit is read at σ 0.05;
+overconfidence −0.05; unaudited explanation overclaims +0.14, removed by audits; exact knowledge of a
+fair coin reads 1. Limit: items mixing outcome probabilities need the binned decomposition (resolution
+and reliability) rather than the single uncertainty term. Candidate homes: L31 (PrAcc note).

@@ -51,6 +51,23 @@ def expected_effect_ref (probs effects : Array Float) : Float := Id.run do
     e := e + probs[i]! * effects[i]!
   return e
 
+/-- Prediction accuracy net of irreducible uncertainty (author ruling 8.103, on 8.102), for an item whose
+    outcomes share one probability: 1 − (Brier − ō(1−ō)) / 0.25, clamped to [0, 1]. The Brier score less
+    the record's uncertainty term (Murphy 1973) leaves the forecaster's own error, so exact knowledge of a
+    fair coin scores 1 rather than 0. Raw accuracy (`credence_accuracy_ref`) still backs currency. -/
+def relative_accuracy_ref (credences outcomes : Array Float) : Float := Id.run do
+  let n := min credences.size outcomes.size
+  if n == 0 then return 0.0
+  let mut b := 0.0
+  let mut o := 0.0
+  for i in [0:n] do
+    b := b + (credences[i]! - outcomes[i]!) ^ 2
+    o := o + outcomes[i]!
+  let nf := n.toFloat
+  let ob := o / nf
+  let r := 1.0 - (b / nf - ob * (1.0 - ob)) / 0.25
+  return if r < 0.0 then 0.0 else if r > 1.0 then 1.0 else r
+
 /-- Pragmatic understanding of a thing by a model (L31; proposal 8.98): the model's map fit to the thing
     times the weighted mean, over the situations and outcomes that matter, of causal explanation ×
     prediction accuracy × (1 − complexity). Weights are P(X|T)·P(i|T,X)·Impact(i); items below the

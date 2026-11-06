@@ -27,7 +27,7 @@ extremise(c, k) = c^k / (c^k + (1 - c)^k)
                                     audit_rate = 1.0, σ_audit = 0.05, σ_map = 0.05, n_truth = 4000, th = 0.0)
 
 True understanding: the equation on the hidden traits, with each item's accuracy the being's expected
-credence accuracy on its honest credences (estimated on `n_truth` events, the limit of a long record).
+accuracy net of irreducible uncertainty (8.103) on its honest credences (estimated on `n_truth` events, the limit of a long record).
 Measured: the equation on outputs: accuracy from `n_records` scored reports per item (reports extremised by
 `extremise_k`, the overconfidence gaming); causal explanation as claimed (true + `overclaim`) unless the
 item is audited (probability `audit_rate`, reading true + noise `σ_audit`); complexity exactly (the model's
@@ -42,10 +42,10 @@ function understanding_truth_and_measure(tr::UTraits, rng; n_records::Integer, e
     for i in 1:m
         c = [credence_draw(rng, tr.q[i], tr.acuity[i]) for _ in 1:n_truth]
         o = [Float64(rand(rng) < tr.q[i]) for _ in 1:n_truth]
-        acc_true[i] = credence_accuracy(c, o)
+        acc_true[i] = relative_accuracy(c, o)   # net of irreducible uncertainty (8.103)
         cr = [extremise(credence_draw(rng, tr.q[i], tr.acuity[i]), extremise_k) for _ in 1:n_records]
         orr = [Float64(rand(rng) < tr.q[i]) for _ in 1:n_records]
-        acc_meas[i] = credence_accuracy(cr, orr)
+        acc_meas[i] = relative_accuracy(cr, orr)
         ce_meas[i] = rand(rng) < audit_rate ? clamp(tr.ce[i] + σ_audit * randn(rng), 0, 1) : clamp(tr.ce[i] + overclaim, 0, 1)
     end
     truth = pragmatic_understanding(tr.map_fit, tr.wt, tr.ce, acc_true, tr.cy; th = th)

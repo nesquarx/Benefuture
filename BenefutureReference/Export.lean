@@ -333,6 +333,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_event_rate] def eventRate (k n : Float) : Float := event_rate_ref k n
 @[export bf_pooled_probability] def pooledProbability (probs weights : FloatArray) : Float :=
   pooled_probability_ref probs.data weights.data
+@[export bf_relative_accuracy] def relativeAccuracy (credences outcomes : FloatArray) : Float :=
+  relative_accuracy_ref credences.data outcomes.data
+
 @[export bf_pragmatic_understanding] def pragmaticUnderstanding (mapFit : Float) (wt ce acc cy : FloatArray) (th : Float) : Float :=
   pragmatic_understanding_ref mapFit wt.data ce.data acc.data cy.data th
 
