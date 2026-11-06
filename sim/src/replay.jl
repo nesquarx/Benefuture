@@ -621,36 +621,13 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     base_h = [Float64(g["baseline_h"]) for g in groups]
     pops = [Float64(g["population"]) for g in groups]
 
-    # Find inaction baseline option (or first option with is_inaction = true)
-    idle_idx = findfirst(o -> get(o, "is_inaction", false), options)
-    idle_idx === nothing && (idle_idx = 1)
-    idle_opt = options[idle_idx]
-
-    idle_u = base_u .+ Float64.(idle_opt["pred_du"])
-    idle_h = base_h .+ Float64.(idle_opt["pred_dh"])
-    idle_lt_u = Float64.(get(idle_opt, "lt_end_u", idle_u))
-    idle_lt_h = Float64.(get(idle_opt, "lt_end_h", idle_h))
-    idle_min_u = floor_quantile(idle_u, th.q_floor)
-    idle_min_h = floor_quantile(idle_h, th.q_floor)
-    idle_max_u = maximum(idle_u)
-
-    n_opts = length(options)
-    opt_values = zeros(n_opts)
-    d_scope = zeros(n_opts)
-    d_min_u = zeros(n_opts)
-    d_min_h = zeros(n_opts)
-    d_max_u = zeros(n_opts)
-    strong_ok = falses(n_opts)
-    fr_ok = falses(n_opts)
-
-    bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
     # Scenario pricing (amendment 2026-11-05, 8.87): an option's effects are expected values over the
     # scenarios known as of the decision, each scenario's probability the product of its chained events'
     # Laplace rates (`event_rate_ref`) from the as-of events file. Typed effects are hindsight-prone:
     # still computed, but the case is marked unsupported, loudly.
     events = haskey(case_dict, "_events_path") ? load_case_events(case_dict["_events_path"], dec_date) : Dict{String,Tuple{Int,Int}}()
     hindsight_typed = false
-    scen_conf = zeros(n_opts)
+    
     for opt in options
         if haskey(opt, "scenarios")
             ps = Float64[]; dus = Vector{Float64}[]; dhs = Vector{Float64}[]; nhas = Vector{Float64}[]; irrs = Vector{Float64}[]
@@ -678,6 +655,29 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         end
     end
     hindsight_typed && (degraded["case unsupported: option effects typed, not priced from as-of scenarios (amendment 2026-11-05)"] = 1)
+    # Find inaction baseline option (or first option with is_inaction = true)
+    idle_idx = findfirst(o -> get(o, "is_inaction", false), options)
+    idle_idx === nothing && (idle_idx = 1)
+    idle_opt = options[idle_idx]
+
+    idle_u = base_u .+ Float64.(idle_opt["pred_du"])
+    idle_h = base_h .+ Float64.(idle_opt["pred_dh"])
+    idle_lt_u = Float64.(get(idle_opt, "lt_end_u", idle_u))
+    idle_lt_h = Float64.(get(idle_opt, "lt_end_h", idle_h))
+    idle_min_u = floor_quantile(idle_u, th.q_floor)
+    idle_min_h = floor_quantile(idle_h, th.q_floor)
+    idle_max_u = maximum(idle_u)
+
+    n_opts = length(options)
+    opt_values = zeros(n_opts)
+    d_scope = zeros(n_opts)
+    d_min_u = zeros(n_opts)
+    d_min_h = zeros(n_opts)
+    d_max_u = zeros(n_opts)
+    strong_ok = falses(n_opts)
+    fr_ok = falses(n_opts)
+
+    bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
         dh = Float64.(opt["pred_dh"])

@@ -64,6 +64,9 @@ struct M3cParams
     acc_rate_ref::Float64      # the reference transaction rate, records per step (8.85; governed)
     acc_mute::Float64          # how far the half-life follows the rate: 1 a fixed record count, 0 a fixed time (8.85; governed)
     rate_halflife::Float64     # half-life in steps of a domain's measured transaction rate (8.85; governed)
+    ratchet_growth::Float64    # escalation per consecutive deceptive interval (8.91; governed; 0 = the flat ratchet)
+    ratchet_cap::Float64       # most the escalation may multiply the ratchet (8.91 addendum; governed; never exclusion)
+    pattern_halflife::Float64  # half-life in steps of a deceptive interval's weight in the pattern (8.91 revised; governed)
     novel_floor::Float64       # the least bar a novel domain's model clears to back a currency (8.35; governed)
     scarcity_floor::Float64    # share of capacity remaining below which scarcity pricing stops rising (L83; governed)
     actor_min_records::Int     # actor errors a model needs before its credence uses its record on that actor (8.29; governed)
@@ -216,7 +219,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 0.5, ratchet_cap::Real = 4.0, pattern_halflife::Real = 100.0, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -247,7 +250,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record),
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && ratchet_growth >= 0 && ratchet_cap >= 1 && pattern_halflife > 0 && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record),
           "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal or :record")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
@@ -299,7 +302,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, ratchet_growth, ratchet_cap, pattern_halflife, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -575,7 +578,22 @@ function run_m3c(p::M3cParams; seed)
                 credence(v, sharp * u; cap = p.max_credence)
             end
         end
-        a > 0 ? ratchet_credence(cr, ledger_neg_share(a)) : cr
+        a > 0 || return cr
+        pers = persistence_of(a)
+        (p.ratchet_growth > 0 && pers > 0) ? escalated_credence(cr, ledger_neg_share(a), pers; growth = p.ratchet_growth, cap = p.ratchet_cap) :
+                                             ratchet_credence(cr, ledger_neg_share(a))
+    end
+    # Repeated deception (8.91, revised): the overstatement z-score of the actor's whole priced record,
+    # time-decayed (half-life `pattern_halflife` steps; Lean `decayed_mean_se_ref`). Honest errors and bad
+    # luck average to zero; on/off deceit accumulates (honest phases between do not reset it) and decays
+    # once it stops. Escalation steps are the whole standard errors beyond `model_z`; below
+    # `actor_min_records` there is no judgement yet.
+    function persistence_of(a)
+        e, st = actor_err[a], actor_err_step[a]
+        length(e) < p.actor_min_records && return 0
+        m, se = decayed_mean_se(e, [Float64(cur[] - x) for x in st], p.pattern_halflife)
+        (isfinite(se) && se > 0) || return 0
+        max(0, floor(Int, m / se - p.model_z))
     end
     # The reputation ledgers (L101) carry patterns of mistakes and uncovered deception as well as
     # of success: an actor's negative share of its ledgers, whose entries never decay (only the
