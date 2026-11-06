@@ -2353,3 +2353,20 @@ chosen in advance (a conduct domain forms, like any domain, where outcomes show 
 no general character score; minting, burning and double-count avoidance are those of every domain
 (8.96). The honesty of claims attaches wherever a priced claim affects the outcome, which is most
 transactions, so it is the first to form. Supersedes 8.95's open questions.
+8.98 proposal [P] (author direction, 2026-11-06): understanding defined by its equation, over hidden
+traits. Outside the simulation nothing defines a "right" internal understanding or happiness beyond
+what is measured (outputs only). Understanding can be defined operationally by the pragmatic equation
+(L31), since its core, prediction accuracy, is proper scoring against reality; happiness is defined
+over private experience and can only be proxied. In the simulation, a being's understanding is today a
+free scalar raised by teaching and research. Proposed: beings carry hidden traits per domain
+(prediction accuracy, causal quality, coverage of the high-impact cases, model complexity); true
+understanding is the pragmatic equation on the hidden traits, measured understanding the same equation
+on noisy outputs (records, audits, classifications), so measurement error is the gap between them and
+"true understanding" is the definition under perfect information, a limiting case. Map fit reuses
+`subsethood`, causal quality the causal-distribution shares, weights the domains' outcome frequencies
+and impacts; complexity is the one new input. Teaching and research raise traits, still shared, not
+moved. Happiness stays a stipulated hidden state with noisy proxies, labelled as a stipulation. What it
+lets us show: whether measured understanding tracks true understanding as noise and gaming rise
+(Goodhart on the equation's parts), which part fails first, and whether overstating outputs raises
+measured but not true understanding. Order (author: most useful wins first): after the E4 held-out
+replay. Candidate homes: `spec/Bf_Pseudocode.txt` L31 note; Understanding article (measurement).
