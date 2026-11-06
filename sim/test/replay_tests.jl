@@ -299,3 +299,20 @@ end
     t = BenefutureSim.replay_decision(BenefutureSim.load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "thalidomide_fda_1960.toml")))
     @test any(occursin("typed", k) for k in keys(t.degraded))     # typed effects are flagged unsupported, loudly
 end
+
+@testset "Replay: D5 baselines on the same as-of priced options (§5b)" begin
+    cases = filter(f -> endswith(f, ".toml") && occursin("primary", read(f, String)), readdir(CASES_DIR; join = true))
+    s = evaluate_replay_suite(cases)
+    priced = [(r, b) for (r, b) in zip(s.results, s.baselines) if b !== nothing]
+    @test length(priced) == 9
+    for (r, b) in priced
+        @test b.actual == r.actual_choice
+        @test b.equal_weight in [String(o["id"]) for o in load_replay_case(joinpath(CASES_DIR, r.id * ".toml"))["options"]]
+    end
+    # Rates matter: weighting the known scenarios alike flips famine codes back to the status quo.
+    fc = only(b for (r, b) in priced if r.id == "famine_codes_1880")
+    @test fc.equal_weight == fc.status_quo != fc.actual
+    # Scored on settled outcomes only; the institutions score their good decisions by construction.
+    @test s.scores[:benefuture].n == s.scores[:min_deaths].n == count(((r, b),) -> r.outcome_class in (:good, :bad), priced)
+    @test s.scores[:actual].k == count(((r, b),) -> r.outcome_class == :good, priced)
+end

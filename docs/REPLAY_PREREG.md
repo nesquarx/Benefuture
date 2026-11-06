@@ -302,9 +302,15 @@ The held-out case set contains 6 cases that are formally reserved. Their metadat
 | `no_child_left_behind_2002` | High-Stakes Accountability Enactment (Family 4: Education) | 2002-01-08 | US Congress & President Bush | Sign No Child Left Behind Act mandating 100% proficiency with punitive sanctions for failing schools | `Unclear` | No |
 | `volcker_disinflation_1979` | Shift to Non-Borrowed Reserve Targeting (Family 6: Monetary) | 1979-10-06 | Federal Open Market Committee (Paul Volcker) | Abandon federal funds rate pegging in favor of strict bank reserve targeting to break inflation | `Good` | No |
 
----
+### 4.4 Freeze before the held-out replay (amendment 2026-11-06)
 
-## 5. Four-Cell Evaluation Matrix and Vector Success Pattern
+Before any held-out case file is written, the decision code is frozen: `sim/src/replay.jl` and every
+`BenefutureReference/*.lean` source, concatenated in that order (`cat sim/src/replay.jl BenefutureReference/*.lean | sha256sum`),
+hash prefix `a9c71a592e1e592e`, with the §2 thresholds. Held-out cases are built from as-of sources without running
+the replay; each is replayed once, after it is committed, under that hash. A case edited after its
+replay is reported with the edit and the reason, and its first result stands as the result. The
+case builders know the historical outcomes (they are famous); the freeze guards the rules, not the
+builders' knowledge, and the result is read with that limit.
 
 ---
 
@@ -328,6 +334,19 @@ Counterfactual differences are never summed into a single scalar utility. Every 
 3. `max_group_nha`: Deepest passing harm (`NHa`) borne by any single group, and whether long-term trajectories (`Ha_lt` over `lt_window`) recover above the no-action counterfactual (8.86).
 4. `irreparable_harm`: Deaths, permanent disability, or lost knowledge (`Ha_irr`), priced via `bf_life_value` and `bf_foreclosed`.
 5. `degraded`: Loud degradation ledger recording every fallback (coarse tier, parent domain, relative bar, missing forecast submission).
+
+### 5b. Baselines (D5, amendment 2026-11-06)
+
+Every scenario-priced case is also decided by simple rules on the same as-of priced options
+(`replay_baselines`): the institution's actual choice; the status quo (the case's inaction option);
+fewest expected irreparable harms (`min_deaths`); the largest population-weighted mean change of
+understanding plus happiness, with no floors, harm weighting or freedom gate (`mean_welfare`); and
+Benefuture's own rule with every known scenario weighted alike (`equal_weight`, testing whether the
+as-of rates matter). Ties go to the status quo. Each rule is scored on cases with a settled outcome
+class (right on a good decision when it chooses what the institution chose, on a bad one when it
+chooses otherwise; unclear cases unscored), with a `proportion_interval` at z = 2
+(`replay_scores`). A rule that matches Benefuture on every case shows the cases do not discriminate,
+not that Benefuture adds value; that needs cases where the rules part.
 
 ---
 

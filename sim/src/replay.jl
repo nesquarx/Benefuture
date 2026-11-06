@@ -644,6 +644,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                 push!(dus, Float64.(get(sc, "du", z))); push!(dhs, Float64.(get(sc, "dh", z)))
                 push!(nhas, Float64.(get(sc, "nha", z))); push!(irrs, Float64.(get(sc, "irreparable", z)))
             end
+            # D5 equal-weight baseline: every known scenario weighted alike, the as-of record ignored.
+            get(case_dict, "_scenario_weights", "rates") == "equal" && (ps = fill(1.0 / length(ps), length(ps)))
             opt["pred_du"] = [expected_effect(ps, getindex.(dus, g)) for g in 1:n_groups]
             opt["pred_dh"] = [expected_effect(ps, getindex.(dhs, g)) for g in 1:n_groups]
             opt["pred_nha"] = [expected_effect(ps, getindex.(nhas, g)) for g in 1:n_groups]
@@ -797,6 +799,57 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
 end
 
 """
+    replay_baselines(case_dict) -> NamedTuple of option ids
+
+The D5 comparison rules (`docs/REPLAY_PREREG.md` §5b), on the same as-of priced options as Benefuture:
+`actual` (the institution's choice), `status_quo` (the case's inaction option), `min_deaths` (fewest
+expected irreparable harms, nothing else counted), `mean_welfare` (largest population-weighted mean change
+of understanding plus happiness: no floors, no harm weighting, no freedom gate) and `equal_weight`
+(Benefuture's own rule with every known scenario weighted alike, testing whether the as-of rates matter).
+Ties go to the status quo. Only scenario-priced cases have baselines; others return `nothing`.
+"""
+function replay_baselines(case_dict::AbstractDict)
+    opts = case_dict["options"]
+    all(o -> haskey(o, "scenarios"), opts) || return nothing
+    c = deepcopy(case_dict)
+    replay_decision(c)                                  # prices the options from the as-of record
+    o = c["options"]
+    pops = [Float64(g["population"]) for g in c["groups"]]
+    w = pops ./ sum(pops)
+    sq = something(findfirst(x -> get(x, "is_inaction", false), o), 1)
+    pick(score) = (s = [score(x) for x in o]; best = maximum(s); s[sq] >= best - 1e-12 ? sq : argmax(s))
+    min_deaths = pick(x -> -sum(Float64.(x["pred_irreparable"])))
+    mean_welfare = pick(x -> sum(w .* (Float64.(x["pred_du"]) .+ Float64.(x["pred_dh"]))))
+    e = deepcopy(case_dict); e["_scenario_weights"] = "equal"
+    (actual = String(case_dict["actual_choice"]), status_quo = String(o[sq]["id"]),
+     min_deaths = String(o[min_deaths]["id"]), mean_welfare = String(o[mean_welfare]["id"]),
+     equal_weight = replay_decision(e).chosen_option)
+end
+
+"""
+    replay_scores(results, baselines) -> Dict(rule => (k, n, interval))
+
+Scores each rule on the cases with a settled outcome class: on a good decision a rule is right when it
+chooses what the institution chose; on a bad one, when it chooses otherwise. Unclear cases are not scored.
+Intervals by `proportion_interval` (z = 2). Unpriced or void cases are left out.
+"""
+function replay_scores(results, baselines)
+    rules = (:benefuture, :actual, :status_quo, :min_deaths, :mean_welfare, :equal_weight)
+    out = Dict{Symbol,Any}()
+    for rule in rules
+        k = 0; n = 0
+        for (r, b) in zip(results, baselines)
+            (r.void || b === nothing || r.outcome_class ∉ (:good, :bad)) && continue
+            choice = rule == :benefuture ? r.chosen_option : getfield(b, rule)
+            right = r.outcome_class == :good ? choice == r.actual_choice : choice != r.actual_choice
+            k += right; n += 1
+        end
+        out[rule] = (k = k, n = n, interval = n > 0 ? proportion_interval(k, n) : nothing)
+    end
+    out
+end
+
+"""
     evaluate_replay_suite(case_paths::AbstractVector{<:AbstractString})
 
 Evaluates a collection of historical case `.toml` files, returning the four-cell counts and
@@ -804,6 +857,7 @@ proportion intervals (`docs/DATA.md` §16d B9) and verifying that zero falsifier
 """
 function evaluate_replay_suite(case_paths::AbstractVector{<:AbstractString})
     results = [replay_decision(load_replay_case(p)) for p in case_paths]
+    baselines = [replay_baselines(load_replay_case(p)) for p in case_paths]
     valid = [r for r in results if !r.void]
     n = length(valid)
     cells = Dict(
@@ -818,7 +872,9 @@ function evaluate_replay_suite(case_paths::AbstractVector{<:AbstractString})
         n_valid = n,
         n_void = count(r -> r.void, results),
         cells = cells,
-        any_falsifier = any_falsifier
+        any_falsifier = any_falsifier,
+        baselines = baselines,
+        scores = replay_scores(results, baselines)
     )
 end
 
