@@ -12,6 +12,7 @@ include(joinpath(@__DIR__, "..", "test", "legacy.jl"))
 seeds_arg = something(findfirst(a -> startswith(a, "--seeds="), ARGS), 0)
 const SEEDS = seeds_arg == 0 ? (1:6) : eval(Meta.parse(split(ARGS[seeds_arg], "=")[2]))
 const STEPS = 300
+const BUILD = readchomp(`git rev-parse --short HEAD`)   # read at start: HEAD may move while it runs
 const SCALES = [0.5, 0.75, 1.5, 2.0]
 # (field, kind): :real scales; :int scales and rounds; :prob scales and clamps below 1.
 const THRESHOLDS = [(:threshold, :prob), (:coarse_threshold, :prob), (:model_z, :real), (:max_credence, :cred),
@@ -41,8 +42,13 @@ base = [reading(Dict{Symbol,Any}(), s) for s in SEEDS]
 keys_ = (:floor_u, :floor_h, :median_u, :median_h, :harm, :adv)
 rows = String[]
 t0 = time()
-for (f, kind) in THRESHOLDS, sc in SCALES
-    v = value(f, kind, sc)
+# Replication (BF_ARMS="field=value,..."): only the named arms, on the given (fresh) seeds.
+const ARMS = haskey(ENV, "BF_ARMS") ?
+    [(Symbol(split(a, "=")[1]), parse(Float64, split(a, "=")[2])) for a in split(ENV["BF_ARMS"], ",")] :
+    [(f, (kind == :int ? Float64(value(f, kind, sc)) : value(f, kind, sc))) for (f, kind) in THRESHOLDS for sc in SCALES]
+for (f, v0) in ARMS
+    v = DEFAULTS[f] isa Integer ? round(Int, v0) : v0
+    sc = round(v0 / DEFAULTS[f]; digits = 3)
     arm = [reading(Dict{Symbol,Any}(f => v), s) for s in SEEDS]
     cells = String[]; good = 0; bad = 0
     for k in keys_
@@ -58,10 +64,10 @@ for (f, kind) in THRESHOLDS, sc in SCALES
     push!(rows, "| `$f` | $(sc)× → $(round(v; sigdigits = 3)) | " * join(cells, " | ") * " | $verdict |")
     println(rows[end]); flush(stdout)
 end
-out = joinpath(@__DIR__, "results", "thresholds.md")
+out = joinpath(@__DIR__, "results", haskey(ENV, "BF_ARMS") ? "thresholds_replication.md" : "thresholds.md")
 open(out, "w") do io
     println(io, "# Governed-threshold perturbation battery\n")
-    println(io, "Build: commit $(readchomp(`git rev-parse --short HEAD`)). Seeds $(SEEDS); $(STEPS) steps; run time $(round((time() - t0) / 60; digits = 1)) minutes.")
+    println(io, "Build: commit $(BUILD). Seeds $(SEEDS); $(STEPS) steps; run time $(round((time() - t0) / 60; digits = 1)) minutes.")
     println(io, "World: the economy battery's, noise at moderate severity, two deceivers at full size, AdvAp on. Each cell: mean paired difference from the default (arm − default); + / − significant at z = 2. Harm and the deceivers' advantage are better when lower. 'candidate' = some reading better and none worse: for the author, after replication on fresh seeds.\n")
     println(io, "| Threshold | Setting | Floor u | Floor h | Median u | Median h | Harm peak | Deceivers' advantage | Verdict |")
     println(io, "|---|---|---|---|---|---|---|---|---|")
