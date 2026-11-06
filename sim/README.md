@@ -577,7 +577,8 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   leaf bar (`threshold`) to 0.675 or 0.45 (identical results) raises floor growth of understanding (+7.3);
   lowering the audit's minimum record (`adv_min_records`) to 2 or 4 raises floors (+5.6 to +11);
   `max_credence` 0.98 raises floor happiness (+5.2). With 48 arms at z = 2, two or three false
-  positives are expected, so these are candidates under replication on fresh seeds 7–18, not findings.
+  positives are expected; none replicated on fresh seeds 7–18 (`thresholds_replication.md`: no reading
+  significant for any of the four), so the defaults stand and the screen's candidates were noise.
   Inert here (no change in any reading at any scale): `model_z`, `adv_z`, `ratchet_horizon`,
   `actor_min_records`, `min_records`, and `max_credence` above its default; each needs a world where
   it binds before it can be governed by evidence.
