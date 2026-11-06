@@ -1,0 +1,8 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+nas_ozone_assessments,NRC-1976,1976-12-31,1976-12-31,1976-12-31,1.0,1.0,"Source claim: continued CFC release depletes ozone; scored on the events file row assessment_projects_depletion/NRC-1976"
+nas_ozone_assessments,NRC-1979,1979-12-31,1979-12-31,1979-12-31,1.0,1.0,"events file row assessment_projects_depletion/NRC-1979"
+nas_ozone_assessments,NRC-1982,1982-12-31,1982-12-31,1982-12-31,1.0,1.0,"events file row assessment_projects_depletion/NRC-1982"
+nas_ozone_assessments,NRC-1984,1984-03-01,1984-03-01,1984-03-01,1.0,1.0,"events file row assessment_projects_depletion/NRC-1984"
+halley_toms_observations,Halley-1985,1985-05-31,1985-05-31,1985-05-31,1.0,1.0,"Source claim: ozone is being lost; scored on events file row observed_ozone_loss/Halley-1985"
+halley_toms_observations,Nimbus7-TOMS-1986,1986-08-31,1986-08-31,1986-08-31,1.0,1.0,"events file row observed_ozone_loss/Nimbus7-TOMS-1986"
+us_aerosol_precedent,US-1978,1978-12-31,1978-12-31,1978-12-31,1.0,1.0,"Source claim: a CFC use restriction is workable; scored on events file row aerosol_restriction_achieved_target/US-1978"

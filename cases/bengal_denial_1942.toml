@@ -1,0 +1,123 @@
+# Historical Decision Case: Bengal "Denial Policy" (boat and rice denial), coastal Bengal, April 1942
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b). Probabilities are Laplace rates over
+# cases/bengal_denial_1942.events.csv rows dated on or before 1942-04-15. Units: group populations in units of
+# 10,000 persons; `irreparable` counts deaths in units of 100 persons (1500 = 150,000 deaths); u and h on the
+# 0-100 scale of the other cases.
+# Excluded on date grounds: the 1943 harvest, prices and mortality, the Famine Inquiry Commission (1945) and every
+# later estimate; they appear only in [counterfactual]. The preregistration also lists the Government of Bengal
+# denial-scheme instructions and district price indices; neither was located, so neither is used.
+
+id = "bengal_denial_1942"
+title = "Bengal Denial Policy: boat and surplus-rice seizure in coastal districts"
+family = "low_tech"
+era = "1942"
+tier = "coarse"
+decision_date = "1942-04-15"
+decision_makers = ["War Cabinet (London)", "Viceroy Lord Linlithgow", "Governor Sir John Herbert (Bengal)"]
+actual_choice = "denial_boats_and_rice"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "famine_precedents"
+title = "Earlier Indian and European famines in which grain was drained or exported (Orissa 1866, Ireland 1845-49)"
+as_of_date = "1866-12-31"
+url = "https://en.wikipedia.org/wiki/Orissa_famine_of_1866"
+notes = "Secondary summaries; primary Famine Commission reports not read. The Irish case is contested as evidence that exports caused deaths."
+
+[[sources]]
+id = "japanese_advance_record"
+title = "Japanese advances December 1941 to January 1942 (Hong Kong, Malaya, Dutch East Indies, Burma)"
+as_of_date = "1942-01-16"
+url = "https://historyplace.com/unitedstates/pacificwar/tline-bw.htm"
+notes = "Each conquest was followed by an attack on the next allied territory within weeks; Rangoon fell in March 1942 (sources differ on 7 or 8 March)."
+
+[[ groups ]]
+id = "coastal_rural_poor"
+name = "Rural wage earners, fishers and boat-dependent traders in coastal Bengal (order of 15 million persons)"
+population = 1500
+baseline_u = 55.0
+baseline_h = 55.0
+
+[[ groups ]]
+id = "war_effort"
+name = "Defence of eastern India: garrison, civil administration and supply services (order of 1 million persons)"
+population = 100
+baseline_u = 75.0
+baseline_h = 70.0
+
+[[ options ]]
+id = "no_denial_preserve_stocks"
+name = "Leave coastal boats and rice stocks with their owners and traders; defend and supply by ordinary means"
+source = "famine_precedents"
+known_date = "1942-04-14"
+is_inaction = true
+scope_delta = 0.0
+# The replay reads the not-acting baseline from these typed fields before it prices scenarios, so they carry the
+# baseline option's own scenario expectation from the events file: (5/6) x war_effort (dh -2, nha 2).
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, -1.6666666666666667]
+pred_nha = [0.0, 1.6666666666666667]
+pred_irreparable = [0.0, 0.0]
+
+# Scenario pricing: Japan attacked the next allied territory in 4 of 4 prior stages, so P(attack reaches the
+# Bengal coast) = 5/6. Only the increment attributable to leaving stocks in place is priced (the invasion itself
+# is common to both options): an invader finds boats and rice, a modest supply gain (judgment: dh -2, passing
+# harms 2 for the war effort; not irreparable).
+[[ options.scenarios ]]
+name = "invader_gains_local_stocks"
+p_chain = ["japan_attacks_next_allied_territory"]
+dh = [0.0, -2.0]
+nha = [0.0, 2.0]
+
+[[ options.scenarios ]]
+name = "no_landing"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "denial_boats_and_rice"
+name = "Confiscate or destroy boats able to carry more than ten persons and remove surplus rice from coastal districts"
+source = "japanese_advance_record"
+known_date = "1942-04-14"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+# Scenario pricing: where local grain was drained or exported during scarcity the famine was severe (2 of 2
+# precedents, Irish case contested), so P(famine deepened) = 3/4. Burma's rice (a 15 to 20 percent share of
+# Bengal demand per secondary sources) is already cut off, so the margin is thin. Magnitude is a judgment: 1
+# percent excess mortality among 15 million coastal poor (150,000 deaths, irreparable 1500), against Orissa 1866 as
+# an upper bound; loss of boats also cuts the grain-distribution channel (du -8, dh -10, passing harms 20).
+[[ options.scenarios ]]
+name = "famine_deepened"
+p_chain = ["famine_severe_when_local_grain_drained"]
+du = [-8.0, 0.0]
+dh = [-10.0, 0.0]
+nha = [20.0, 0.0]
+irreparable = [1500.0, 0.0]
+
+[[ options.scenarios ]]
+name = "disruption_only"
+p_chain = []
+complement = true
+dh = [-1.0, 0.0]
+nha = [1.0, 0.0]
+
+[counterfactual]
+actual_floor_u_delta = -8.0
+actual_floor_h_delta = -10.0
+actual_irreparable = 1500.0
+alt_option = "no_denial_preserve_stocks"
+# Estimators (later evidence, scoring outcomes not the choice): Sen (1981) entitlement-failure account of the 1943
+# famine against food-availability-decline accounts (Tauger 2003, Bowbrick), and inland-district comparison. Whether
+# denial caused a material share of the 2.1 million deaths (later consensus per secondary sources; Famine Inquiry
+# Commission 1945: about 1.5 million) is contested, so the irreparable difference is a wide judgment of
+# 150,000 to 300,000 deaths attributable to the denial (alternative minus actual: fewer deaths).
+methods = ["entitlement_failure_model", "inland_district_comparison"]
+est_floor_u_delta_diff = [8.0, 6.0]
+est_floor_h_delta_diff = [9.0, 7.0]
+est_irreparable_diff = [-1500.0, -3000.0]

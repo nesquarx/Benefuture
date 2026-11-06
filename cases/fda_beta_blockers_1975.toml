@@ -1,0 +1,112 @@
+# Historical Decision Case: FDA Cardiorenal Advisory Committee and the beta-blocker post-infarction indication (1975-09-12)
+# Scenario-priced (docs/REPLAY_PREREG.md section 2b). Probabilities are Laplace rates over
+# cases/fda_beta_blockers_1975.events.csv rows dated on or before 1975-09-12. Units: the one group's population is
+# in units of 1,000 patients (1,000 = a cohort of one million US post-infarction survivors); `irreparable` counts
+# deaths in units of 100 persons per year of delay; u and h on the 0-100 scale of the other cases.
+# Excluded on date grounds: the Multicentre International Study of practolol (BMJ 1975;3:735-740, issue of 1975-09-27,
+# two weeks after the decision date) and every later trial (Norwegian timolol 1981, BHAT 1982); they appear only in
+# [counterfactual]. The preregistration lists the Multicentre result and the FDA committee transcripts as sources; the
+# first post-dates the decision and the second was not located, so neither is used. Trial-level results of the
+# 1960s-1972 trials (Snow, Balcon, Norris, Reynolds) could not be verified from abstracts and are left out, and so is
+# every trial result known only from later reviews. The evidence priced here is therefore thin: see the notes.
+
+id = "fda_beta_blockers_1975"
+title = "FDA withholds the post-infarction secondary-prevention indication for propranolol pending US trials"
+family = "single_technical"
+era = "1975"
+tier = "full"
+decision_date = "1975-09-12"
+decision_makers = ["US FDA Cardiorenal Advisory Committee"]
+actual_choice = "require_us_trial"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary"
+
+[[sources]]
+id = "early_betablocker_postmi_trials"
+title = "Alprenolol post-infarction reports from Sweden, Lancet 1974 (Wilhelmsson et al.; Ahlmark et al.)"
+as_of_date = "1974-12-28"
+url = "https://pubmed.ncbi.nlm.nih.gov/4139587/"
+notes = "Both titles report a reduction in sudden deaths after myocardial infarction; abstracts not available, so the effect size and the total-mortality result are unknown here."
+
+[[sources]]
+id = "practolol_toxicity_reports"
+title = "Wright (1975) oculomucocutaneous syndrome with practolol, Br Med J 1:595-598"
+as_of_date = "1975-03-31"
+url = "https://pubmed.ncbi.nlm.nih.gov/1125623/"
+notes = "27 patients; three with profound visual loss; most improved on withdrawal. A molecule-specific toxicity of practolol, not shown for propranolol, which had been marketed since 1967-68."
+
+[[ groups ]]
+id = "us_post_mi_survivors"
+name = "US survivors of acute myocardial infarction, per year (cohort of about one million, judgment)"
+population = 1000
+baseline_u = 60.0
+baseline_h = 60.0
+
+[[ options ]]
+id = "require_us_trial"
+name = "Withhold the secondary-prevention indication and require a US randomized trial"
+source = "practolol_toxicity_reports"
+known_date = "1975-09-11"
+is_inaction = true
+scope_delta = 0.0
+# The replay reads the not-acting baseline from these typed fields before it prices scenarios, so they carry the
+# baseline option's own scenario expectation from the events file: 0.75 x (-3, -3, deaths 68).
+pred_du = [-2.25]
+pred_dh = [-2.25]
+pred_nha = [0.0]
+pred_irreparable = [51.0]
+
+# Scenario pricing: both long-term reports of 1974 found a reduction in sudden deaths (2 of 2), so P(the benefit
+# is real and is forgone while waiting) = 3/4. Magnitude is a judgment: average mortality after discharge about
+# 3.4 percent a year (Mulcahy et al., Br Heart J 1975;37:158-165, abstract read) and an assumed 20 percent relative
+# reduction give about 6,800 deaths a year per million survivors (irreparable 68 per year of delay), with ill-health
+# du -3, dh -3. The 20 percent is an assumption: the 1974 titles give no effect size.
+[[ options.scenarios ]]
+name = "benefit_forgone"
+p_chain = ["long_term_trial_reports_mortality_benefit"]
+du = [-3.0]
+dh = [-3.0]
+irreparable = [68.0]
+
+[[ options.scenarios ]]
+name = "no_benefit_to_forgo"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "approve_secondary_prevention"
+name = "Grant the post-infarction secondary-prevention indication on the strength of the European trials"
+source = "early_betablocker_postmi_trials"
+known_date = "1975-09-11"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.0]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+
+# Scenario pricing: one beta-blocker has shown serious toxicity (practolol, 1 of 1), so the chain gives 2/3 that a
+# class toxicity appears among treated survivors. The syndrome was reversible in most reported cases, so it is
+# priced as passing harm (dh -1, passing harms 3), not irreparable; 3 of 27 reported cases had profound visual loss,
+# and no incidence for propranolol is known, so no irreparable harm is priced (a stated omission that favours
+# approval). The rate is a thin analogy: no propranolol toxicity trial of this kind could be verified.
+[[ options.scenarios ]]
+name = "class_toxicity"
+p_chain = ["serious_toxicity_reported_for_class_member"]
+dh = [-1.0]
+nha = [3.0]
+
+[counterfactual]
+actual_floor_u_delta = -3.0
+actual_floor_h_delta = -3.0
+actual_irreparable = 90.0
+alt_option = "approve_secondary_prevention"
+# Estimators (later evidence, scoring outcomes not the choice): the Beta-Blocker Heart Attack Trial of propranolol
+# (JAMA 1982;247:1707-1714: mortality 7.2 vs 9.8 percent over about 25 months; figures from the 22-trial table of
+# Yusuf et al. 1985 as reproduced in Gelman et al., Bayesian Data Analysis, Table 5.4) and the Norwegian timolol
+# study (NEJM 1981;304:801-807); and the later Peltzman/Wardell drug-lag method. Differences are alternative minus
+# actual; about 0.9 to 1.2 percent a year of a one-million cohort, in units of 100 deaths.
+methods = ["bhat_and_timolol_mortality_reduction", "drug_lag_counterfactual_mortality"]
+est_floor_u_delta_diff = [3.0, 3.0]
+est_floor_h_delta_diff = [3.0, 3.0]
+est_irreparable_diff = [-90.0, -120.0]

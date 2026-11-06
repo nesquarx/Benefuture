@@ -1,0 +1,7 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+famine_precedents,Orissa-1866,1866-12-31,1866-12-31,1866-12-31,1.0,1.0,"Source claim: drained local grain means severe famine; scored on events row famine_severe_when_local_grain_drained/Orissa-1866"
+famine_precedents,Ireland-1847,1847-12-31,1847-12-31,1847-12-31,1.0,1.0,"events row famine_severe_when_local_grain_drained/Ireland-1847 (contested)"
+japanese_advance_record,Hong-Kong-1941,1941-12-08,1941-12-08,1941-12-08,1.0,1.0,"Source claim: Japan attacks the next allied territory; events row japan_attacks_next_allied_territory/Hong-Kong-1941"
+japanese_advance_record,Malaya-1941,1941-12-08,1941-12-08,1941-12-08,1.0,1.0,"events row japan_attacks_next_allied_territory/Malaya-1941"
+japanese_advance_record,Dutch-East-Indies-1942,1942-01-11,1942-01-11,1942-01-11,1.0,1.0,"events row japan_attacks_next_allied_territory/Dutch-East-Indies-1942"
+japanese_advance_record,Burma-1942,1942-01-16,1942-01-16,1942-01-16,1.0,1.0,"events row japan_attacks_next_allied_territory/Burma-1942"

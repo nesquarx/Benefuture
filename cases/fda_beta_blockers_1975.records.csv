@@ -1,0 +1,4 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+early_betablocker_postmi_trials,Wilhelmsson-alprenolol-1974,1974-11-16,1974-11-16,1974-11-16,1.0,1.0,"Source claim: long-term beta blockade after infarction reduces deaths; scored on events row long_term_trial_reports_mortality_benefit/Wilhelmsson-alprenolol-1974"
+early_betablocker_postmi_trials,Ahlmark-alprenolol-1974,1974-12-28,1974-12-28,1974-12-28,1.0,1.0,"events row long_term_trial_reports_mortality_benefit/Ahlmark-alprenolol-1974"
+practolol_toxicity_reports,practolol-oculomucocutaneous-1975,1975-03-31,1975-03-31,1975-03-31,1.0,1.0,"Source claim: a beta-blocker can carry serious toxicity; events row serious_toxicity_reported_for_class_member/practolol-oculomucocutaneous-1975"
