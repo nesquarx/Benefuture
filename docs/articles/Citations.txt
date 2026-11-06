@@ -93,3 +93,751 @@ The influence flows in both directions.  Happiness, in turn, fuels understanding
 Mathieu, Philippe and Delahaye, Jean-Paul (2017) 'New Winning Strategies for the Iterated Prisoner's Dilemma' Journal of Artificial Societies and Social Simulation 20 (4) 12 <http://jasss.soc.surrey.ac.uk/20/4/12.html>. doi: 10.18564/jasss.3517
 
 === References ===
+
+<!-- BEGIN GENERATED INDEX -->
+== Index of references by article ==
+''Generated from every reference in the articles (tools/wiki/citations_section.py). Each row names the source article and section, the claim the reference supports, and how it relates to Benefuture. The relation column is AI-annotated and may be imperfect; the references and claims are the articles' own.''
+
+=== [[Adversarial adaptation]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects ||  off reporting and enjoying a greater reward and reputation, if they think of repeated exploitation over time or via collusion by other entities, in the former case they risk discovery by other agents and penalties for not reporting, when colluding, each agent still would gain much more by defecting || Nash, J. (1951). Non-cooperative games. ''Annals of Mathematics'', 54(2), 286-295. || '''theory''' — adversarial adaptation: Game-theoretic argument that reporting a flaw can beat exploiting it once discovery and penalties apply, and that collusion still pays defection.
+|}
+
+=== [[Anti-Corruption]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects › Discussion || === Discussion === Anti-corruption by design works by making optimal actions the natural coordination points || Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press. || '''theory''' — focal points make honest action natural: Schelling's focal-point reasoning is cited for the claim that anti-corruption design works by making optimal actions the natural coordination points.
+|-
+| Aspects › Discussion || Empirical research on long-enduring commons institutions identifies recurring design principles: proportional equivalence between contributions and benefits, observable behavior, graduated sanctions, collective participation in rule-making, and nested governance at multiple scales. || Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. || '''precedent''' — Ostrom commons design principles: The supports sentence summarises Ostrom's recurring principles for enduring commons (proportional benefits, graduated sanctions, nested governance), which the design draws on.
+|-
+| Aspects › Discussion || Long-run outcomes depend less on achieving optimal institutions than on the capacity to detect failure and adapt. || North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press. || '''theory''' — correctability over optimal institutions: North's institutional-economics argument that long-run outcomes depend on detecting failure and adapting matches the correctability premise.
+|}
+
+=== [[Art]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Discussion › Intent and reception || ==Discussion== ===Intent and reception=== Tolstoy defined art as the transmission of feeling from artist to audience, succeeding when the audience is infected by it. || Tolstoy, L. (1897). [https://www.gutenberg.org/ebooks/64908 ''What Is Art?''] (A. Maude, Trans.). || '''context''' — art as shared understanding and reception: Tolstoy's definition of art as transmitted feeling is cited as background on art's reception in the art article's discussion.
+|-
+| Discussion › Intent and reception || Wimsatt and Beardsley argued the opposite, that the author's intention is neither available nor a standard for judging the work. || Wimsatt, W. K., & Beardsley, M. C. (1946). [https://www.jstor.org/stable/27537676 The Intentional Fallacy]. ''The Sewanee Review'', 54(3), 468–488. || '''counterpoint''' — author intent not the standard: Argues the author's intention is neither available nor a standard for judging a work, opposing the intent-based reading the article takes.
+|-
+| Discussion › Art as understanding || ===Art as understanding=== Goodman treated artworks as symbol systems that advance understanding much as science does; || Goodman, N. (1976). [https://openlibrary.org/isbn/0915144344 ''Languages of Art: An Approach to a Theory of Symbols''] (2nd ed.). Hackett. || '''theory''' — art advances understanding like science: Goodman's symbol-system account treats artworks as advancing understanding much as science does; the basis of the article's art-as-understanding section.
+|-
+| Discussion › Art as understanding || Excluding understanding of the artwork itself is a contested commitment: Bell located art's value in significant form, independent of what a work conveys, || Bell, C. (1914). [https://www.gutenberg.org/ebooks/16917 ''Art'']. Chatto and Windus. || '''counterpoint''' — art value independent of understanding: Bell located art's value in significant form, independent of what a work conveys, a contested position against understanding-based value.
+|-
+| Discussion › Many readings || ===Many readings=== Eco described works deliberately left open to many readings, completed differently by each audience. || Eco, U. (1989). [https://openlibrary.org/isbn/0674639758 ''The Open Work''] (A. Cancogni, Trans.). Harvard University Press. || '''theory''' — many readings by many audiences: Eco describes works left open to many readings, each completed by a different audience, cited for the article's many-readings section.
+|-
+| Discussion › Art and the iron rule || ===Art and the iron rule=== Strevens describes science's iron rule: any reason may be held privately, but only empirical test confers public authority. || Strevens, M. (2020). [https://openlibrary.org/isbn/1631491377 ''The Knowledge Machine: How Irrationality Created Modern Science'']. Liveright. || '''theory''' — only empirical test confers public authority: Strevens' iron rule holds that only empirical test confers public authority; the article draws the parallel for claims about art.
+|-
+| Discussion › Found and implicit art || ===Found and implicit art=== Duchamp's readymade, a manufactured urinal submitted to an exhibition, made recontextualisation the whole of the work; || Duchamp, M. (1917, replica 1964). [https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573 ''Fountain'']. Tate. || '''context''' — value in recontextualisation: Duchamp's readymade is offered as an illustration of art whose whole value lies in recontextualisation.
+|}
+
+=== [[Benefuture currency]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || * '''Competing Currencies''': Multiple currencies based on different [[Measurement&#124;metric model]] sets compete on resource efficiency as Value (understanding/happiness/novelty) generated per physical resource unit. || Hayek, F. A. (1976). ''Denationalisation of Money''. Institute of Economic Affairs. || '''precedent''' — competing domain currencies: Hayek's proposal of competing currencies is the precedent for Benefuture's currencies built on different metric-model sets.
+|-
+| Aspects || This prevents arbitrage, speculation, and emergence of a meta-currency that would reintroduce centralization. || Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. || '''theory''' — values voted, beliefs bet; no arbitrage: Hanson's split between voting on values and betting on beliefs is cited alongside the claim that currency separation prevents arbitrage and a meta-currency.
+|-
+| Aspects || Funds release when back-loaded measurements arrive from all relevant currencies, and payment is settled against the [[Measurement#Assessment&#124;assessed]] difference the action made compared to not acting, predicted at first and measured as outcomes arrive. || Attempts to formalize prediction-contingent payment appear in prediction market literature; see Hanson, R. (2003). Combinatorial information market design. ''Information Systems Frontiers'', ''5''(1), 107-119. || '''precedent''' — contingent payment on delayed measures: Prediction-market literature on contingent payment is cited as precedent for releasing funds when back-loaded measurements arrive.
+|-
+| Aspects › Causal Distribution ||  attributing credit weighted by degree of separation and [[Domain]] relevance, and netting what each entity paid onward against what it received, so that along a chain each link is credited for the value it added and not for the volume passing through it - which approximates shapley-esque mechanisms || Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press. || '''theory''' — causal credit by value added: Shapley's value for n-person games is the formal basis the causal-distribution rule approximates, crediting each link for the value it added.
+|-
+| Discussion || ==Discussion== The multi-currency design addresses Goodhart's Law || Strathern, M. (1997). 'Improving ratings': Audit in the British University system. ''European Review'', ''5''(3), 305-321. || '''counterpoint''' — Goodhart: single measures get gamed: Strathern's account of audit distorting ratings is the Goodhart's Law problem that the multi-currency design is said to address.
+|-
+| Discussion || The approach parallels capability theory in welfare economics || Sen, A. (1999). ''Development as Freedom''. Oxford University Press. || '''theory''' — capability approach to welfare: Sen's freedom-based development economics is cited as a parallel to Benefuture's capability-style welfare measures.
+|-
+| Discussion || The approach parallels capability theory in welfare economics || Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. || '''theory''' — capability approach to welfare: Nussbaum's human development approach is cited as a parallel to the capability theory that Benefuture's welfare measures resemble.
+|-
+| Discussion || Hayek's knowledge problem || Hayek, F. A. (1945). The Use of Knowledge in Society. ''American Economic Review'', 35(4), 519–530. || '''theory''' — dispersed knowledge needs distributed measures: Hayek's knowledge problem, that knowledge is dispersed and cannot be centralised, is cited as the problem the design responds to.
+|-
+| Discussion || The discovery process || Hayek, F. A. (1968/2002). Competition as a Discovery Procedure. ''Quarterly Journal of Austrian Economics'', 5(3), 9–23. || '''theory''' — competition as discovery of value: Hayek's view of competition as a discovery procedure is cited for the discovery process behind competing models and currencies.
+|}
+
+=== [[Benefuture goals]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects › Synergy || Its form draws on earlier work on interacting criteria and non-additive measures || Choquet, G. (1954). Theory of capacities. ''Annales de l'Institut Fourier'', 5, 131–295. || '''theory''' — non-additive synergy among goals: Choquet's capacities are the formal source the synergy section names for non-additive aggregation of interacting criteria.
+|-
+| Aspects › Synergy || Its form draws on earlier work on interacting criteria and non-additive measures || Grabisch, M. (1997). k-order additive discrete fuzzy measures and their representation. ''Fuzzy Sets and Systems'', 92(2), 167–189. || '''theory''' — non-additive synergy among goals: Grabisch's k-order additive fuzzy measures are cited as earlier non-additive aggregation work that the goal's synergy form draws on.
+|-
+| Aspects › Synergy || Its form draws on earlier work on interacting criteria and non-additive measures || Grabisch, M., & Roubens, M. (1999). An axiomatic approach to the concept of interaction among players in cooperative games. ''International Journal of Game Theory'', 28(4), 547–565. || '''theory''' — non-additive synergy among goals: Grabisch and Roubens give an axiomatic account of interaction among players, cited as earlier work the synergy form draws on.
+|-
+| Aspects › Synergy || Its form draws on earlier work on interacting criteria and non-additive measures, multi-attribute utility || Keeney, R. L., & Raiffa, H. (1976). ''Decisions with Multiple Objectives: Preferences and Value Tradeoffs''. Wiley. || '''theory''' — multi-objective value trade-offs: Keeney and Raiffa's multi-attribute value trade-offs are cited as the multi-objective decision basis for the goal's aggregation.
+|-
+| Aspects › Synergy || ''Annales de l'Institut Fourier'', 5, 131–295.</ref>, multi-attribute utility, separate curvature for gains and losses || Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. ''Econometrica'', 47(2), 263–291. || '''theory''' — separate curvature for gains and losses: Prospect theory is cited for separate curvature of gains and losses, one of the features the goal's aggregation borrows.
+|-
+| Aspects › Synergy || ''Fuzzy Sets and Systems'', 92(2), 167–189.</ref>, multi-attribute utility, separate curvature for gains and losses || Tversky, A., & Kahneman, D. (1992). Advances in prospect theory: Cumulative representation of uncertainty. ''Journal of Risk and Uncertainty'', 5(4), 297–323. || '''theory''' — separate curvature for gains and losses: Cumulative prospect theory is cited with the same claim that gains and losses carry separate curvature.
+|-
+| Aspects › Synergy || International Journal of Game Theory'', 28(4), 547–565.</ref>, multi-attribute utility, separate curvature for gains and losses, explicit aversion to concentrated shortfall || Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263. || '''precedent''' — aversion to concentrated shortfall: Atkinson's inequality index is the precedent for the goal's explicit aversion to concentrated shortfall.
+|-
+| Aspects › Synergy || Wiley.</ref>, separate curvature for gains and losses, explicit aversion to concentrated shortfall, constant-elasticity aggregation || Arrow, K. J., Chenery, H. B., Minhas, B. S., & Solow, R. M. (1961). Capital-labor substitution and economic efficiency. ''Review of Economics and Statistics'', 43(3), 225–250. || '''precedent''' — constant-elasticity aggregation: The CES aggregation of Arrow et al. is the precedent for the constant-elasticity aggregation the goal's synergy form uses.
+|-
+| Aspects › Synergy || 47(2), 263–291.</ref>, explicit aversion to concentrated shortfall, constant-elasticity aggregation and saturating response curves || Hill, A. V. (1910). The possible effects of the aggregation of the molecules of haemoglobin on its dissociation curves. ''Journal of Physiology'', 40, iv–vii. || '''precedent''' — saturating response curves: Hill's saturating response curve is cited as the precedent for the saturating responses in the goal's aggregation.
+|-
+| Aspects › Synergy ||  || J. Figueira; S. Greco & M. Ehrgott (2005). '''''Multiple Criteria Decision Analysis: State of the Art Surveys''.''' Springer Verlag || '''context''' — multi-criteria decision analysis: Survey volume on multiple criteria decision analysis, cited as background to the goals article.
+|-
+| Aspects › Synergy ||  || https://en.wikipedia.org/wiki/Multi-objective_optimization || '''context''' — multi-objective optimisation: Online overview of multi-objective optimisation cited as background.
+|-
+| Tradeoff priorities › Distribution Targets || This directive, held together with the floors that may not fall and convex harm, blocks Parfit's Repugnant Conclusion || Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. || '''counterpoint''' — floors and convex harm block Repugnant Conclusion: Parfit's Repugnant Conclusion is the outcome the distribution targets are said to block, through floors and convex harm.
+|-
+| Tradeoff priorities › Distribution Targets || ng understanding ($U > H$) with lowest-tier peak pleasure precludes wireheading, and a utility monster aligned with the goals pushes the frontier and, through teachability and synergy, the floor, while the floors that may not fall and concave happiness keep the rest from being drawn away from others || Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books. || '''counterpoint''' — floors and synergy answer wireheading and monsters: Nozick's experience machine and utility monster are the objections the goals section answers: understanding precludes wireheading, floors limit monsters.
+|-
+| Tradeoff priorities › Time || === Time === Benefuture's time horizon extends from deepest memory to furthest predictable consequence || Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette Books. || '''context''' — long time horizon: Ord's long-term risk framing is cited as context for a time horizon running from deep memory to far consequences.
+|-
+| Discussion || Deep understanding, such as that demonstrated by expert physicists who categorize problems by underlying principles rather than surface features || Chi, M. T. H., Feltovich, P. J., & Glaser, R. (1981). '''Categorization and representation of physics problems by experts and novices.''' ''Cognitive Science, 5''(2), 121–152. https://doi.org/10.1207/s15516709cog0502_2 || '''evidence''' — deep understanding over surface features: Study comparing experts and novices in categorising physics problems; the cited contrast is principle-based versus surface-based sorting.
+|-
+| Discussion || This principle extends beyond technical domains; understanding emotional and behavioral skills is equally crucial for well-being || Steponavičius, M., Gress-Wright, C., & Linzarini, A. (2023). '''Social and emotional skills: Latest evidence on teachability and impact on life outcomes''' (''OECD Education Working Papers No. 304'', EDU/WKP(2023)19, pp. 40-72). OECD Publishing. https://one.oecd.org/document/EDU/WKP(2023)19/en/pdf || '''evidence''' — social and emotional skills are teachable: OECD review cited for social and emotional skills being teachable and affecting life outcomes, as the supports sentence states.
+|-
+| Discussion || Studies have shown a positive correlation between IQ and happiness || Ali, A., Ambler, G., Strydom, A., Rai, D., Cooper, C., McManus, S., Hassiotis, A., … '''The relationship between happiness and intelligent quotient: The contribution of socio-economic and clinical factors.''' ''Psychological Medicine, 43''(6), 1303-1312. https://doi.org/10.1017/S0033291712002139 || '''evidence''' — understanding raises happiness: Study of happiness and IQ cited for a positive correlation between intelligence and happiness, supporting the understanding-to-happiness premise.
+|-
+| Discussion || Studies have shown a positive correlation between IQ and happiness , and between cognitive abilities and subjective well-being || Ahmed, R., Kesavayuth, D., & Zikos, V. (2018). '''Does being smarter make you happier? Evidence from Europe.''' ''Journal of Behavioral and Experimental Economics, 76'', 55-67. https://doi.org/10.1016/j.socec.2018.06.004 || '''evidence''' — understanding raises happiness: European study cited for a link between cognitive ability and subjective well-being, supporting the understanding-to-happiness premise.
+|-
+| Discussion || https://doi.org/10.1017/S0033291712002139</ref>, and between cognitive abilities and subjective well-being , across various age groups, from childhood || Khandaker, G.M., Stochl, J., Zammit, S., Goodyer, I., Lewis, G., Jones, P.B. '''Childhood inflammatory markers and''' '''intelligence as predictors of subsequent persistent depressive symptoms: A longitudinal cohort study.''' Psychological Medicine, 48(9), 1514-1522. https://doi.org/10.1017/S0033291717003038 || '''evidence''' — cognition and wellbeing across life: Longitudinal cohort on childhood intelligence and later depressive symptoms, cited for links between cognitive ability and wellbeing across ages.
+|-
+| Discussion || https://doi.org/10.1016/j.socec.2018.06.004</ref>, across various age groups, from childhood to old age || Enkvist, A., Ekström, H., & Elmståhl, S. (2013). '''Associations between cognitive abilities and life satisfaction in the oldest-old. Results from the longitudinal population study Good Aging in Skåne.''' ''Clinical interventions in aging, 8'', 845–853. https://doi.org/10.2147/CIA.S45382 || '''evidence''' — understanding raises happiness in old age: Longitudinal study of the oldest-old cited for a link between cognitive abilities and life satisfaction, extending the claim to old age.
+|-
+| Discussion || [[Education]], a fundamental tool for enhancing understanding, has broad societal benefits, impacting not only economic productivity but also health, social participation, and overall well-being || Grossman, M. (2006). '''Education and nonmarket outcomes. In E. A. Hanushek & F. Welch (Eds.)''', ''Handbook of the economics of education'' (Vol. 1, pp. 577-633). Elsevier. https://doi.org/10.1016/S1574-0692(06)01010-5 || '''evidence''' — education raises understanding and wellbeing: Handbook chapter on education's nonmarket returns, cited for benefits to health, social participation and wellbeing beyond productivity.
+|-
+| Discussion || Even understanding and effectively managing stress, rather than simply avoiding it, can significantly improve well-being || Crum, A. J., Santoro, E., Handley-Miner, I., Smith, E. N., Evans, K., Moraveji, N., Achor, S., & Salovey, P. (2023). '''Evaluation of the “rethink stress” mindset intervention: A metacognitive approach to changing mindsets.''' ''Journal of Experimental Psychology: General, 152''(9), 2603–2622. https://doi.org/10.1037/xge0001396 || '''evidence''' — understanding stress improves well-being: Evaluation of a stress-mindset intervention, cited for the claim that understanding and managing stress improves well-being.
+|-
+| Discussion || Even understanding and effectively managing stress, rather than simply avoiding it, can significantly improve well-being || Williams, S. E., & Ginty, A. T. (2023). '''A stress-is-enhancing mindset is associated with lower traumatic stress symptoms during the COVID-19 pandemic.''' ''Anxiety, Stress, & Coping, 37''(3), 293–304. https://doi.org/10.1080/10615806.2023.2282092 || '''evidence''' — understanding stress improves well-being: Study linking a stress-is-enhancing mindset to fewer traumatic stress symptoms, cited for understanding stress improving well-being.
+|-
+| Discussion || Evolutionary perspectives suggest that happiness and positive emotions play a crucial role in driving behaviors essential for survival and societal advancement || Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press. || '''theory''' — happiness drives progress: Book on the origins of happiness, cited for an evolutionary argument that positive emotions drive behaviour essential to societal advancement.
+|-
+| Discussion || Happy individuals tend to be more productive and perform better in various [[Domain&#124;domains]] || Hinton, C. (2015). '''Happy students learn better'''. ''Edutopia''. Harvard publication. https://www.gse.harvard.edu/ideas/usable-knowledge/15/03/because-im-happy || '''evidence''' — happy people are more productive: Popular article hosted by Harvard, cited for the claim that happy people are more productive; a secondary summary rather than a primary study.
+|-
+| Discussion || Happy individuals tend to be more productive and perform better in various [[Domain&#124;domains]] || Gilbert, D. (2012). '''The science behind the smile.''' ''Harvard Business Review, 90''(1-2), 84-90. || '''evidence''' — happy people are more productive: Harvard Business Review article cited for the claim that happy individuals tend to be more productive and perform better.
+|-
+| Discussion || Happy individuals tend to be more productive and perform better in various [[Domain&#124;domains]] || Achor, S. (2010). '''''The happiness advantage: the seven principles of positive psychology that fuel success and performance at work'''''. Crown Business. || '''evidence''' — happy people are more productive: Popular book on positive psychology cited for the claim that happy individuals perform better; not a primary study.
+|-
+| Discussion || This effect extends to innovation, as existing knowledge forms the foundation for new discoveries || Cohen, W. L., & Levinthal, D. A. (1990). '''Absorptive Capacity: A New Perspective on Learning and Innovation.''' ''Administrative Science Quarterly, 35''(1), 128-152. https://doi.org/10.2307/2393553 || '''theory''' — prior knowledge enables new learning: Absorptive capacity theory is cited for the claim that existing knowledge forms the foundation for new discoveries and innovation.
+|-
+| Discussion || This effect extends to innovation, as existing knowledge forms the foundation for new discoveries , and understanding past failures helps prevent future ones || Klein G. (2007). '''Performing a project premortem.''' ''Harvard Business review 85'', 18–19. https://cltr.nl/wp-content/uploads/2020/11/Project-Pre-Mortem-HBR-Gary-Klein.pdf || '''precedent''' — learning from failures in advance: The premortem is an existing practice for surfacing failure in advance, cited for understanding past failures to prevent future ones.
+|-
+| Discussion || Simpler, more accessible models enhance understanding and knowledge dissemination || Feldman J. (2016). '''The simplicity principle in perception and cognition.''' ''Wiley interdisciplinary reviews. Cognitive science'', 7(5), 330–340. https://doi.org/10.1002/wcs.1406 || '''theory''' — simpler models aid understanding: Review of the simplicity principle in perception and cognition, cited for the claim that simpler, accessible models aid understanding.
+|-
+| Discussion ||  || Taleb, N. N. (2007). ''The black swan: The impact of the highly improbable''. Random House. || '''context''' — rare high-impact events: Book on highly improbable, high-impact events cited as background.
+|}
+
+=== [[Benefuture]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Arguments ||  || Cox, Brian. (Presenter). (2011). ''Wonders of the Universe'' [Television series]. BBC. || '''context''' — understanding the universe: Television series cited as a source in the Benefuture article.
+|-
+| Arguments ||  || Sagan, C. (1980). ''Cosmos''. Random House. || '''context''' — understanding the universe: Book cited as a source in the Benefuture article.
+|}
+
+=== [[Culture]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| (lead) || Within [[Benefuture]], culture is viewed as a ''memetic vehicle'' || Ermakov, D., & Ermakov, A. (2021). Memetic approach to cultural evolution. ''Biosystems'', ''204'', 104378. https://doi.org/10.1016/j.biosystems.2021.104378 || '''theory''' — culture as memetic vehicle: Memetic approach to cultural evolution, cited for the framing of culture as a memetic vehicle within Benefuture.
+|-
+| Discussion › Cultural Preservation || Benefuture values cultural heritage and recognizes the importance of preserving traditions, languages || S. Kirby, H. Cornish, & K. Smith, Cumulative cultural evolution in the laboratory: An experimental approach to the origins of structure in human language, ''Proc. Natl. Acad. Sci. U.S.A.'' 105 (31) 10681-10686, [https://doi.org/10.1073/pnas.0707835105&#x20;(2008). https://doi.org/10.1073/pnas.0707835105 (2008).] || '''context''' — cultural heritage and preservation: Laboratory study of cumulative cultural evolution, cited beside the article's value for heritage; the study does not itself make the preservation claim.
+|}
+
+=== [[Diversity]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| (lead) ||  || '''Packard, N. H. (1988).''' "Adaptation Toward the Edge of Chaos," in ''Complexity: The Emerging Science at the Edge of Order and Chaos'' (p. 138), edited by G. Gell-Mann & M. Mitchell || '''theory''' — edge-of-chaos adaptation: Complexity-science essay on adaptation near the edge of chaos, cited for the diversity section.
+|-
+| (lead) || Novelty being the nontrivial || J. Schmidhuber, "Formal Theory of Creativity, Fun, and Intrinsic Motivation (1990–2010)," in ''IEEE Transactions on Autonomous Mental Development'', vol. 2, no. 3, pp. 230-247 (uncompressible interestingness), Sept. 2010, doi: 10.1109/TAMD.2010.2056368. || '''theory''' — novelty as a measured value: Formal theory of creativity, fun and intrinsic motivation, cited for novelty as the nontrivial measure of diversity's value.
+|-
+| Aspects || * Diversity's main [[measurement]] is Novelty, the simple rarity (inverse of frequency of previous encounter) or surprise factor (negative log of probability || '''Shannon, C. E. (1948). A mathematical theory of communication.''' ''Bell System Technical Journal, 27''(3), 379-423. (This is the foundational paper). || '''theory''' — novelty as surprisal: Shannon's information theory supplies the surprise measure, negative log probability, that the diversity section uses for novelty.
+|-
+| Aspects › Research ||  || Page, S. E. (2008). ''The difference: How the power of diversity creates better groups, firms, schools, and societies''. Princeton University Press. || '''evidence''' — diverse groups outperform: Book arguing that diverse groups, firms and societies do better, cited for the diversity research thread.
+|-
+| Aspects › Research ||  || Hong, L., & Page, S. E. (2003). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''112''(2), 185-213. || '''theory''' — diverse problem solvers outperform: Model paper on problem solving by heterogeneous agents, cited in the diversity research thread.
+|-
+| Aspects › Research ||  || Woolley, A. W., Malone, T. W., & Pentland, A. (2008). Evidence for a collective intelligence factor in the performance of human groups. ''Nature'', ''455''(7215), 687-690. || '''evidence''' — collective intelligence in groups: Study of a collective intelligence factor in group performance, cited in the diversity research thread.
+|-
+| Aspects › Research ||  || Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday. || '''context''' — crowd wisdom: Popular book on the wisdom of crowds, cited in the diversity research thread.
+|}
+
+=== [[Domain]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Initial Structure example || Bootstrap hierarchy can be synthesized from established classification systems || ISIC Rev. 4, ICF, ICATUS, Frascati Manual, SEEA, CICES, PERMA, SUMO. || '''precedent''' — domain hierarchy from existing classifications: Existing classification systems are the precedent from which the bootstrap domain hierarchy is said to be synthesised.
+|-
+| Initial Structure example || Bootstrap hierarchy can be synthesized from established classification systems to form Diderot's tree-esque || Diderot, D., & d'Alembert, J. le R. (1751). Système figuré des connoissances humaines. In Encyclopédie, ou dictionnaire raisonné des sciences, des arts et des métiers (Vol. 1). Paris: André Le Breton. || '''precedent''' — tree-shaped domain hierarchy: Diderot's tree of human knowledge is the precedent the bootstrap domain hierarchy is compared to.
+|}
+
+=== [[Economy]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || * The major medium of defining value for exchange is [[currency]], human definitions of value in currency and the promises around it (demand, supply, debt, speculation) have largely defined our economies. || Galbraith, J. K. (1975). ''Money: Whence it came, where it went''. Houghton Mifflin. || '''theory''' — currency defines value and promises: Galbraith's account of money as the medium defining exchange value and its promises is cited for the economy's basis in currency.
+|-
+| Aspects || *Traditional models initially started from exchange value, then focused on productivity, and is now often driven by fiat of speculative forces increasingly detached from [[reality]] across [[social networks]]. || Keen, S. (2011). ''Debunking economics: The naked emperor dethroned?'' Zed Books. || '''counterpoint''' — speculation detached from reality: Critique of traditional economics, cited for models drifting from exchange value into speculation detached from reality.
+|-
+| Aspects || *Traditional models initially started from exchange value, then focused on productivity, and is now often driven by fiat of speculative forces increasingly detached from [[reality]] across [[social networks]]. || Krippner, G. R. (2011). ''Capitalizing on crisis: The political origins of the rise of finance''. Harvard University Press. || '''counterpoint''' — speculation detached from reality: Historical account of the rise of finance, cited with the claim that economic models drift toward speculation detached from reality.
+|}
+
+=== [[Education]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || Teaches the understanding that no truth is objectively absolute, yet many are practically absolute || Popper, K. R. (1963). ''Conjectures and refutations: The growth of scientific knowledge''. Routledge & Kegan Paul. || '''theory''' — no truth absolute, many practically absolute: Popper's fallibilism is cited for the claim that no truth is objectively absolute, though many are practically absolute.
+|-
+| Aspects || To understand that avoiding scrutiny is worse than being wrong || Gilovich, T. (1991). ''How we know what isn't so: The fallibility of human reason in everyday life''. Free Press. || '''evidence''' — avoiding scrutiny is worse than being wrong: Psychology book on the fallibility of everyday reasoning, cited for the claim that avoiding scrutiny is worse than being wrong.
+|-
+| Aspects || To understand that avoiding scrutiny is worse than being wrong || Koetke, J., Schumann, K., Porter, T., & Smilo-Morgan, I. (2023). Fallibility salience increases intellectual humility: Implications for people's willingness to investigate political misinformation. ''Personality and Social Psychology Bulletin'', ''49''(5), 806–820. https://doi.org/10.1177/01461672221080979 || '''evidence''' — avoiding scrutiny is worse than being wrong: Study on fallibility salience and intellectual humility, cited under the claim that avoiding scrutiny is worse than being wrong.
+|-
+| Aspects || To understand that avoiding scrutiny is worse than being wrong || Peirce, C. S. (1955). ''Philosophical writings of Peirce'' (J. Buchler, Ed.). Dover Publications. (Original work published 1940). || '''theory''' — avoiding scrutiny is worse than being wrong: Peirce's philosophical writings, cited under the claim that avoiding scrutiny is worse than being wrong.
+|-
+| Aspects || * '''Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth&#124;truths]] which can become hazardous without sufficient grounding in contextual knowledge || Bostrom, N. (2011). Information hazards: A typology of potential harms from knowledge. ''Review of Contemporary Philosophy'', ''10'', 44–79. || '''theory''' — safe handling of hazardous truths: Bostrom's typology of harms from knowledge is cited alongside infohazard inoculation, the education of safe handling of hazardous ideas.
+|-
+| Aspects || * '''Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth&#124;truths]] which can become hazardous without sufficient grounding in contextual knowledge || Lewandowsky, S., & van der Linden, S. (2021). Countering misinformation and fake news through inoculation and prebunking. ''European Review of Social Psychology'', ''32''(2), 348–384. || '''evidence''' — inoculation builds resistance to hazards: Review of inoculation and prebunking against misinformation, cited for education that builds resistance to hazardous ideas.
+|-
+| Aspects || Infohazard Inoculation''': Cultivates the capability to safely recognize, understand, use and disseminate ideas and [[Truth&#124;truths]] which can become hazardous without sufficient grounding in contextual knowledge || Roozenbeek, J., van der Linden, S., & Nygren, T. (2020). Prebunking interventions based on "inoculation" theory can reduce susceptibility to misinformation across cultures. ''The Harvard Kennedy School (HKS) Misinformation Review'', ''1''(2). || '''evidence''' — inoculation builds resistance to hazards: Study on inoculation-based prebunking reducing susceptibility to misinformation, cited for education against hazardous ideas.
+|-
+| Aspects || ''Review of Contemporary Philosophy'', ''10'', 44–79.</ref> || Maertens, R., Roozenbeek, J., Simons, J. S., Lewandowsky, S., Maturo, V., Goldberg, B., Xu, R., & van der Linden, S. (2025). Psychological booster shots targeting memory increase long-term resistance against misinformation. ''Nature Communications'', ''16''(1), 572. https://doi.org/10.1038/s41467-025-57205-x || '''evidence''' — inoculation builds resistance to hazards: 2025 study on inoculation effects, cited for infohazard inoculation; the index title is truncated.
+|}
+
+=== [[Freedom]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Discussion › Positive freedom, weighed || ==Discussion== ===Positive freedom, weighed=== Berlin distinguished negative liberty, freedom from interference, from positive liberty, the capacity to act, and warned that positive liberty can license paternalism. || Berlin, I. (1969). [https://openlibrary.org/isbn/0192810340 ''Four Essays on Liberty''], "Two Concepts of Liberty". Oxford University Press. || '''counterpoint''' — positive liberty can license paternalism: Berlin's split of negative and positive liberty, with the warning that positive liberty can license paternalism, is a concern Benefuture must answer.
+|-
+| Discussion › Positive freedom, weighed || Benefuture's freedom is positive, a capability to be maximised, close to Sen's development as freedom. || Sen, A. (1999). [https://openlibrary.org/isbn/0198297580 ''Development as Freedom'']. Oxford University Press. || '''precedent''' — positive freedom as capability: Benefuture's positive freedom is described as close to Sen's development as freedom, so Sen is a precedent for the freedom measure.
+|-
+| Discussion › Positive freedom, weighed || Counting options is the standard way to rank freedom of choice, and its standard flaw is that a trivial option counts as much as a meaningful one; || Pattanaik, P. K., & Xu, Y. (1990). [https://www.jstor.org/stable/40723933 On Ranking Opportunity Sets in Terms of Freedom of Choice]. ''Recherches Économiques de Louvain'', 56(3/4), 383–390. || '''counterpoint''' — counting options misranks freedom: Counting options as freedom is named as the standard flaw, that trivial options count as much as meaningful ones; Benefuture departs from it.
+|-
+| Discussion › The harm gate || The weight of irreparable harm invites Pascal's mugging, where tiny probabilities of enormous stakes are invented to block action; || Bostrom, N. (2009). [https://doi.org/10.1093/analys/anp062 Pascal's Mugging]. ''Analysis'', 69(3), 443–445. || '''counterpoint''' — harm gate against tiny-probability stakes: Pascal's mugging is the failure the harm gate must avoid: tiny invented probabilities of huge irreparable harm used to block action.
+|-
+| Discussion › The self and paternalism || ===The self and paternalism=== Mill's harm principle limits power over a person to preventing harm to others; their own good is not warrant enough. || Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son. || '''precedent''' — harm principle limits paternalism: Mill's harm principle, that power over a person is warranted only to prevent harm to others, is the precedent for the harm boundary.
+|-
+| Discussion › Power and domination || ===Power and domination=== Pettit's republicanism holds that freedom is non-domination: one is unfree whenever another can interfere arbitrarily, even if they never do. || Pettit, P. (1997). [https://openlibrary.org/isbn/0198290837 ''Republicanism: A Theory of Freedom and Government'']. Oxford University Press. || '''theory''' — freedom as non-domination: Pettit's republicanism holds that freedom is non-domination: one is unfree whenever another can interfere arbitrarily, even unexercised.
+|-
+| Discussion › Speech and truth || ===Speech and truth=== Mill also argued that false opinions have value, since truth stays alive by colliding with error. || Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son. || '''theory''' — truth survives collision with error: Mill's argument that false opinions have value, since truth stays alive by colliding with error, is cited on speech and truth.
+|}
+
+=== [[Government]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Discussion || == Discussion == Benefuture government's [[System Design]] is its main arbiter of [[Threshold of significance]] in [[Administration&#124;Administrative]] [[Decision]] making at a fractal level, and along with [[Benefuture currency]], trying to solve the problem of collective action || '''Olson, M. (1965).''' ''The logic of collective action: Public goods and the theory of groups''. Harvard University Press. || '''theory''' — collective action and public goods: Olson's collective-action theory is cited in the government discussion, where the system design arbitrates decision thresholds.
+|-
+| Discussion || The expertise and impact weightage does relate to Epistocracy || Brennan, J. (2016). ''Against Democracy''. Princeton University Press. || '''counterpoint''' — expertise weighting versus epistocracy: Brennan's case against democracy is the epistocracy view the expertise and impact weighting is said to relate to.
+|-
+| Discussion || The expertise and impact weightage does relate to Epistocracy but handles its problems || Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. || '''theory''' — expertise weighting versus epistocracy: Estlund's framework of democratic authority is cited as the account of epistocracy's problems that the weighting must handle.
+|-
+| Discussion || The expertise and impact weightage does relate to Epistocracy but handles its problems via stakeholder || Freeman, R. E. (1984). ''Strategic Management: A Stakeholder Approach''. Pitman. || '''theory''' — affected stakeholders in decisions: Freeman's stakeholder approach is cited as one means by which the design handles epistocracy's problems.
+|-
+| Discussion || The expertise and impact weightage does relate to Epistocracy but handles its problems via stakeholder affected interests || Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68. || '''theory''' — all affected interests enfranchised: Goodin's account of enfranchising all affected interests is cited as the alternative to epistocracy that the weighting draws on.
+|-
+| Discussion || The proposed delegation constraints attempt to alleviate the issues with liquid democracy || Blum, C., & Zuber, C. I. (2016). Liquid democracy: Potentials, problems, and perspectives. ''Journal of Political Philosophy'', ''24''(2), 162–182. || '''precedent''' — liquid democracy with capped delegation: Liquid democracy's potentials and problems are the precedent; the supports sentence says the delegation constraints aim to alleviate its issues.
+|}
+
+=== [[Happiness]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || * Happiness felt by the experiencing self during an [[Outcome&#124;event]] and the happiness lingering on the remembering self post the event can vary by the type of event || Kahneman, D. (2011). ''Thinking, fast and slow''. Farrar, Straus and Giroux. || '''evidence''' — experiencing and remembering self differ: Book on the experiencing and remembering selves, cited for happiness during an event differing from happiness remembered afterwards.
+|-
+| Aspects ||  || Huta, V., Waterman, A.S. '''Eudaimonia and Its Distinction from Hedonia: Developing a Classification and Terminology for Understanding Conceptual and Operational Definitions.''' ''J Happiness Stud'' 15, 1425–1456 (2014). https://doi.org/10.1007/s10902-013-9485-0 || '''theory''' — eudaimonic versus hedonic happiness: Classification of eudaimonia and hedonia, cited in the happiness aspects.
+|-
+| Aspects ||  || Ryan, R. M., & Deci, E. L. (2001). '''On happiness and human potentials: A review of research on hedonic and eudaimonic well-being.''' ''Annual Review of Psychology, 52''(1), 141–166.https://doi.org/10.1146/annurev.psych.52.1.141 || '''evidence''' — eudaimonic versus hedonic happiness: Review of research on hedonic and eudaimonic well-being, cited in the happiness aspects.
+|-
+| Aspects ||  || Seligman, M. E. P. (2011). '''''Flourish: A visionary new understanding of happiness and well-being''. Simon and Schuster.''' || '''context''' — flourishing as well-being: Popular book on flourishing and well-being, cited in the happiness aspects.
+|-
+| Aspects || * In modern [[society]], these evolutionary tendencies manifest in more complex and convoluted forms, hence the sources of happiness are also complex beyond traditional [[Economy&#124;economic]] considerations. || Helliwell, J. F., Layard, R., Sachs, J. D., De Neve, J.-E., Aknin, L. B., & Wang, S. (Eds.). (2024). World Happiness Report 2024. University of Oxford: Wellbeing Research Centre. ISBN. 978-1-7348080-7-0. https://worldhappiness.report/ed/2024/differences-in-life-satisfaction-among-older-adults-in-india/ || '''evidence''' — happiness beyond economic factors: World Happiness Report, cited for sources of happiness in modern society being complex and beyond traditional economic considerations.
+|-
+| Aspects || * It needs to be acknowledged that actual triggers for happiness are evolved, noisy, can be wrongly anticipated, and otherwise arbitrary and possibly counterproductive. || Gilbert, D. (2006). Stumbling on happiness. Alfred A. Knopf. || '''evidence''' — happiness triggers are noisy: Book on mispredicting happiness, cited for happiness triggers being evolved, noisy, sometimes wrongly anticipated and possibly counterproductive.
+|-
+| Aspects || Speculated scenarios can imagine happiness to be triggered by actions humans can't condone or comprehend and can reduce understanding. || [https://tvtropes.org/pmwiki/pmwiki.php/Main/BlueAndOrangeMorality Blue and orange morality, TVtropes] || '''context''' — alien values and understanding: Wiki page on alien moralities, cited as an illustration of happiness from actions humans cannot comprehend, which reduces understanding.
+|-
+| Aspects || * There are scenarios where persons tend to gain pleasure or happiness by the action of causing harm, || Hare, R. D. (2003). ''Without conscience: The disturbing world of the psychopaths among us''. Guilford Press. || '''evidence''' — harm can give pleasure: Book on psychopathy, cited for scenarios in which persons gain pleasure or happiness from causing harm.
+|-
+| Aspects || * There are scenarios where persons tend to gain pleasure or happiness by the action of causing harm, || Buckels, E. E., Jones, D. N., & Paulhus, D. L. (2013). '''The dark triad of personality: A replication and extension of the dirty dozen.''' ''Personality and Individual Differences, 54''(1), 104-111. || '''evidence''' — harm can give pleasure: Study on the dark triad of personality, cited for people gaining pleasure from causing harm.
+|-
+| Discussion || Happiness can also be felt with certain chemical changes in the human [[body]], which can also be artificially induced in an experience machine analogue || '''Nozick, R. (1974).''' ''Anarchy, state, and utopia''. Basic Books. || '''counterpoint''' — experience machine and chemical happiness: Nozick's experience machine is the objection that happiness can be induced artificially, which the happiness discussion answers.
+|-
+| Discussion || Furthermore, happiness is self-reinforcing, with positive experiences, even small ones, contributing to overall well-being || Diener, E., Sandvik, E., & Pavot, W. (2003). Happiness is the frequency, not the intensity, of positive versus negative affect. In F. Strack, M. Argyle, & N. Schwarz (Eds.), *Well-being: The foundations of hedonic psychology* (pp. 119–139). Russell Sage Foundation. || '''evidence''' — frequent small positives matter: Study cited for happiness being self-reinforcing, with even small positive experiences contributing to overall well-being.
+|-
+| Discussion || Furthermore, happiness is self-reinforcing, with positive experiences, even small ones, contributing to overall well-being , and positive emotions broadening thought patterns and fostering creativity || Fredrickson B. L. (2004). The broaden-and-build theory of positive emotions. *Philosophical transactions of the Royal Society of London. Series B, Biological sciences, 359*(1449), 1367–1378. https://doi.org/10.1098/rstb.2004.1512 || '''theory''' — positive emotions build resources: Broaden-and-build theory cited for positive emotions broadening thought patterns and fostering creativity, which sustain happiness.
+|-
+| Discussion || Research indicates that both economic and social-psychological factors contribute to well-being, with psychosocial prosperity playing a significant role in positive feelings || Diener, E., Ng, W., & Arora, R. (2010). INTERPERSONAL RELATIONS AND GROUP PROCESSES Wealth and Happiness Across the World : Material Prosperity Predicts Life Evaluation , Whereas Psychosocial Prosperity Predicts Positive Feeling. || '''evidence''' — social prosperity matters for wellbeing: Cross-national study cited for economic and social-psychological factors both contributing to well-being.
+|-
+| Discussion || Factors like health, personal security, and freedom of choice have a greater impact on emotional well-being than purely economic factors like income || Boarini, R., Comola, M., Smith, C., Manchin, R., & De Keulenaer, F. (2012). What makes for a better life? The determinants of subjective well-being in OECD countries: Evidence from 1 the Gallup World Poll (Statistics Directorate Working Paper No. 47, STD/DOC(2012)3). Organisation for Economic Co-operation and Development (OECD). https://one.oecd.org/document/STD/DOC(2012)3/en/pdf || '''evidence''' — health and freedom matter more than income: Cross-country OECD study, by its title, cited for health, security and freedom affecting emotional well-being more than income.
+|-
+| Discussion || Engaging with art and culture has also been linked to increased life satisfaction, mediated by physical and mental health and strong interpersonal relationships || Fujiwara, Y., Kawachi, I., & Sugawara, Y. (2018). Art and Cultural Participation and Life Satisfaction in Adults: The Mediating Roles of Physical Health, Mental Health, and Interpersonal Relationships. Journal of Happiness Studies, 19(6), 1795–1814. || '''evidence''' — arts participation and life satisfaction: Study cited for art and culture engagement linked to life satisfaction, mediated by health and relationships.
+|-
+| Discussion || Similarly, participation in community arts groups has been shown to positively influence well-being in older adults || Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analysis. Aging & Mental 2 Health, 22(10), 1312–1320. https://doi.org/10.1080/13607827.2017.1354820 || '''evidence''' — arts groups and wellbeing: Study cited for community arts groups positively influencing well-being in older adults.
+|-
+| Discussion || Even the act of being creative itself can enhance subjective well-being || Acar, M., & Runco, M. A. (2019). Being creative makes you happier: The positive effect of creativity on subjective well-being. The Journal of Creative Behavior, 53(4), 560–568. https://doi.org/10.1002/jocb.347 || '''evidence''' — creativity raises well-being: Study cited for the act of being creative itself enhancing subjective well-being.
+|-
+| Discussion || In utilitarian theoretic models, Kahneman and Tversky's (1979) prospect theory || Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. *Econometrica*, *47*(2), 263-291. || '''theory''' — loss aversion in utilitarian models: Prospect theory is cited as an input to utilitarian theoretic models in the happiness discussion.
+|-
+| Discussion || Furthermore, the hedonic treadmill (Brickman & Campbell, 1971) || Brickman, P., & Campbell, D. T. (1971). Hedonic relativism and planning the good society. *Adaptation level theory: A symposium*, 287-302. || '''theory''' — adaptation limits lasting gains: Adaptation-level theory and the hedonic treadmill are cited as a further reason happiness gains fade.
+|-
+| Discussion || Neuroscience research on reward prediction error (Schultz, Dayan, & Montague, 1997) || Schultz, W., Dayan, P., & Montague, P. R. (1997). A neural substrate of prediction and reward. *Science*, *275*(5306), 1593-1599. || '''evidence''' — reward prediction error: Neuroscience study on reward prediction error, cited for how reward expectations shape the happiness discussion.
+|-
+| Discussion || Even the microeconomic principle of diminishing marginal utility (Mankiw, 2021) || Mankiw, N. G. (2021). *Principles of microeconomics* (9th ed.). Cengage learning. || '''theory''' — diminishing marginal utility: Microeconomics textbook cited for the principle of diminishing marginal utility.
+|-
+| Discussion › '''Individual Level:''' ||  || Csikszentmihalyi, M., & Larson, R. (1987). Validity and reliability of the Experience-Sampling Method. ''Journal of Youth and Adolescence'', ''16''(6), 539-550. || '''precedent''' — experience sampling measures happiness: Validation of experience sampling, an existing method for measuring happiness in daily life.
+|-
+| Discussion › '''Individual Level:''' ||  || Diener, E., Emmons, R. A., Larsen, R. J., & Smith, C. (1985). The Satisfaction with Life Scale. ''Journal of personality assessment'', ''49''(1), 71-75. https://doi.org/10.1037/0022-3514.49.1.71 || '''precedent''' — life satisfaction scale: Satisfaction with Life Scale, an established instrument, cited among individual-level happiness measures.
+|-
+| Discussion › '''Individual Level:''' ||  || Hills, P., & Argyle, M. (2002). The Oxford Happiness Questionnaire: a compact scale for the measurement of psychological well-being. ''Personality and individual differences'', ''33''(7), 1071-1082. || '''precedent''' — happiness questionnaire: Oxford Happiness Questionnaire, an established compact scale, cited among individual-level measures.
+|-
+| Discussion › '''Individual Level:''' ||  || Lyubomirsky, S., & Lepper, H. S. (1999). A measure of subjective happiness: Preliminary psychometric data. ''Social indicators research'', ''46''(1), 137-155. https://doi.org/10.1023/A:1008950211807 || '''precedent''' — subjective happiness measure: Subjective Happiness Scale, an established instrument, cited among individual-level measures.
+|-
+| Discussion › '''Individual Level:''' ||  || Bartlett, M. S., Littlewort, G., Frank, M., & Movellan, J. R. (2006). Automatic recognition of facial expression: A survey. ''IEEE Transactions on human-machine systems'', ''36''(1), 15-35. https://doi.org/10.1109/TSMCC.2005.859029 || '''precedent''' — facial expression as an emotion measure: Survey of automatic facial-expression recognition, cited as an existing method for measuring emotion at individual level.
+|-
+| Discussion › '''Individual Level:''' ||  || Critchley, H. D. (2002). Electrodermal activity. ''Physiological Measurement'', ''23''(3), R23–R39. https://doi.org/10.1088/0967-3334/23/3/R23 || '''precedent''' — electrodermal activity as a measure: Review of electrodermal activity, cited as an existing physiological method for individual-level measurement.
+|-
+| Discussion › '''Individual Level:''' ||  || Dunn, L. B., & Neighbors, C. (2019). Wearable technology: A promising tool for mental health researchers. ''Depression and anxiety'', ''36''(10), 997–1005. https://doi.org/10.1002/da.22951 || '''precedent''' — wearables for mental health measurement: Review of wearable technology for mental health research, cited as an existing method for individual-level measurement.
+|-
+| Discussion › '''Individual Level:''' ||  || Pang, B., & Lee, L. (2008). Opinion mining and sentiment analysis. ''Foundations and Trends® in Information Retrieval'', ''2''(1–2), 1–135. https://doi.org/10.1561/1500000001 || '''precedent''' — sentiment analysis of text: Survey of opinion mining and sentiment analysis, cited as an existing method for reading affect from text.
+|-
+| Discussion › '''Individual Level:''' ||  || Phan, K. L., Wager, T. D., Taylor, S. F., & Liberzon, I. (2002). Functional neuroimaging studies of human emotion: a meta-analysis of emotion activation and regulation. ''NeuroImage'', ''16''(2), 331–342. https://doi.org/10.1006/nimg.2002.1127 || '''precedent''' — neuroimaging of emotion: Meta-analysis of functional neuroimaging of emotion, cited as an existing method for individual-level measurement.
+|-
+| Discussion › '''Individual Level:''' ||  || Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation, and clinical use. ''Circulation'', ''93''(5), 1043–1065. || '''precedent''' — heart rate variability standards: Task Force standards on heart rate variability, cited as an existing physiological measurement standard.
+|-
+| Discussion › '''Community Level:''' ||  || Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications. || '''precedent''' — survey research methods: Standard text on survey research methods, cited for community-level measurement.
+|-
+| Discussion › '''Community Level:''' ||  || Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. || '''precedent''' — social network analysis: Standard text on analysing social networks, cited for community-level measurement.
+|-
+| Discussion › '''Community Level:''' ||  || Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. || '''precedent''' — social network analysis: Standard text on social network analysis methods, cited for community-level measurement.
+|-
+| Discussion › '''Community Level:''' ||  || Christakis, N. A., & Fowler, J. H. (2009). ''Connected: The surprising power of our social networks and how they shape our lives''. Little, Brown. || '''evidence''' — social networks shape wellbeing: Book on how social networks shape behaviour and wellbeing, cited at community level.
+|-
+| Discussion › '''Community Level:''' ||  || Putnam, R. D. (2000). ''Bowling alone: The collapse and revival of American community''. Simon and Schuster. || '''evidence''' — community ties and wellbeing: Book on the decline and revival of American community, cited at community level.
+|-
+| Discussion › '''Societal Level:''' ||  || Helliwell, J. F., Layard, R., & Sachs, J. D. (2022). ''World Happiness Report 2022''. Sustainable Development Solutions Network. https://worldhappiness.report/ || '''precedent''' — national happiness measure: World Happiness Report 2022, an existing societal measure of happiness, cited at the societal level.
+|-
+| Discussion › '''Societal Level:''' ||  || Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/ || '''precedent''' — innovation index: Global Innovation Index, an existing societal indicator, cited at the societal level.
+|-
+| Discussion › '''Societal Level:''' ||  || Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. https://www.oecd.org/pisa/ || '''precedent''' — educational outcome measure: PISA results, an existing international education measure, cited at the societal level.
+|-
+| Discussion › '''Societal Level:''' ||  || Porter, M. E., Stern, S., & Green, M. (2016). ''Social Progress Index 2016''. Social Progress Imperative. || '''precedent''' — social progress index: Social Progress Index, an existing societal measure, cited at the societal level.
+|-
+| Discussion › '''Societal Level:''' ||  || United Nations Development Programme. (Various years). ''Human Development Report''. http://hdr.undp.org/ || '''precedent''' — human development index: Human Development Report, an existing measure of human development, cited at the societal level.
+|-
+| Discussion › '''Societal Level:''' ||  || World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/ || '''precedent''' — governance indicators: Worldwide Governance Indicators, an existing measure of governance, cited at the societal level.
+|}
+
+=== [[Implementation prototype]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| (lead) ||  provide empirical proof of implementation—being a process outline rather than a fully specified pilot proposal—its [[System Design&#124;institutional design]] aligns well with Ostrom's design principles for successful commons governance, which have been validated across 91 case studies in meta-analysis. || Cox, M., Arnold, G., & Villamayor-Tomás, S. (2010). A review of design principles for community-based natural resource management. ''Ecology and Society'', 15(4), 38. || '''precedent''' — commons design principles: Review of design principles for community-based natural resource management; the design is said to align with Ostrom's principles, not to be empirically proven.
+|-
+| (lead) ||  provide empirical proof of implementation—being a process outline rather than a fully specified pilot proposal—its [[System Design&#124;institutional design]] aligns well with Ostrom's design principles for successful commons governance, which have been validated across 91 case studies in meta-analysis. || Ostrom, E. (1990). ''Governing the Commons: The Evolution of Institutions for Collective Action''. Cambridge University Press. || '''precedent''' — commons design principles: Ostrom's principles for governing commons are the precedent the institutional design is said to align with; the outline is not an empirical pilot.
+|-
+| (lead) || e currency#Transaction Mechanics&#124;escrow]] mechanisms), conflict resolution ([[Justice]] system, dispute resolution), recognized rights to organize (self-governing local [[Administration&#124;administrations]]), and nested enterprises (fractal [[Government&#124;governance]] from local to civilizational scale). || Wilson, D.S., Ostrom, E., & Cox, M.E. (2013). Generalizing the core design principles for the efficacy of groups. ''Journal of Economic Behavior & Organization'', 90, S21-S32. || '''precedent''' — generalised group design principles: Generalised core design principles for group efficacy, cited as the precedent for the institutional features listed (escrow, dispute resolution, nested enterprises).
+|-
+| (lead) || * Estonia's e-governance transformation digitized 100% of government services for 1.3 million citizens through decentralized interoperable infrastructure || Vassil, K. (2016). ''Estonian e-Government Ecosystem: Foundation, Applications, Outcomes''. University of Tartu. || '''precedent''' — digital government infrastructure: Book on Estonia's e-government ecosystem, cited as the precedent for digitised government services over decentralised infrastructure.
+|-
+| (lead) ||  digitized 100% of government services for 1.3 million citizens through decentralized interoperable infrastructure, * Kerala's People's Planning Campaign devolved 35-40% of state development budget across 1,214 local governments serving 31 million people through participatory deliberation structures || Heller, P., Harilal, K.N., & Chaudhuri, S. (2007). Building Local Democracy: Evaluating the Impact of Decentralization in Kerala, India. ''World Development'', 35(4), 626-648. || '''evidence''' — decentralised participatory budgeting: Impact evaluation of Kerala's decentralisation, cited for devolved development budgets and participatory planning, as the supports sentence states.
+|-
+| (lead) || >, * Kerala's People's Planning Campaign devolved 35-40% of state development budget across 1,214 local governments serving 31 million people through participatory deliberation structures, * Porto Alegre's participatory budgeting processed municipal allocations through multi-tier citizen assemblies. || Baiocchi, G. (2005). ''Militants and Citizens: The Politics of Participatory Democracy in Porto Alegre''. Stanford University Press. || '''precedent''' — participatory budgeting: Study of participatory democracy in Porto Alegre, cited as the precedent for participatory budgeting.
+|-
+| (lead) || * Participatory budgeting spread from a single 1989 pilot to over 11,500 implementations globally || De Vries, M.S.,";"; Dias, N., & Júlio, S. (Eds.). (2022). ''Hope for Democracy: 35 Years of Participatory Budgeting Worldwide''. Epopeia Records. || '''evidence''' — participatory budgeting spread: Volume on 35 years of participatory budgeting, cited for its spread from one 1989 pilot to over 11,500 implementations.
+|-
+| (lead) ||  Participatory budgeting spread from a single 1989 pilot to over 11,500 implementations globally, * M-Pesa mobile money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations || Suri, T. & Jack, W. (2016). The long-run poverty and gender impacts of mobile money. ''Science'', 354(6317), 1288-1292. || '''evidence''' — mobile money reach and impacts: Study of mobile money's long-run poverty and gender impacts, cited for M-Pesa's reach and adoption figures.
+|-
+| (lead) ||  Participatory budgeting spread from a single 1989 pilot to over 11,500 implementations globally, * M-Pesa mobile money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations || Jack, W. & Suri, T. (2011). Mobile Money: The Economics of M-Pesa. ''NBER Working Paper'' No. 16721. || '''evidence''' — mobile money reach and impacts: NBER working paper on M-Pesa's economics, cited for its penetration and voluntary adoption figures.
+|-
+| (lead) || money achieved 90% penetration in Kenya and expanded to 50+ million users across eight African countries through voluntary adoption driven by superior utility for underserved populations, * Estonia's model has been voluntarily adopted or studied by over 60 countries through the e-Governance Academy. || e-Governance Academy. (2023). ''e-Governance in Practice''. Tallinn. || '''precedent''' — e-governance practice: Report on e-governance in practice, cited for Estonia's model being adopted or studied in other places.
+|}
+
+=== [[Justice]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects › Reparation || ===Reparation=== The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated || Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press. || '''precedent''' — restorative reparation for victims: Restorative justice work, the precedent for the principle that harm to victims must be repaired or mitigated.
+|}
+
+=== [[Measurement]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || Accuracy is the quality of that credence: one minus the ratio of the model's Brier score to that of random guessing. || Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2 Verification of forecasts expressed in terms of probability]. ''Monthly Weather Review'', 78(1), 1–3. || '''precedent''' — proper scoring of forecasts: Brier score is the precedent for measuring forecast accuracy against random guessing.
+|-
+| Discussion || This approach aims to promote innovation, adaptability, and robustness, mitigating the risks of bias and Goodhart's Law || Strathern, M. (1997). "Improving ratings": audit in the British university system. ''European Review'', 5(3), 305–321 || '''counterpoint''' — audit gaming and Goodhart: Strathern's account of audit gaming is the Goodhart's Law problem that the multi-model approach is meant to mitigate.
+|-
+| Discussion || Goodhart's law has several variants and the design meets them in different places: novel markers for the regressional one, causal explanation and joint correlation within a declared range for the causal and extremal ones, and [[Adversarial adaptation]] for the adversarial one. || Manheim, D., & Garrabrant, S. (2018). Categorizing Variants of Goodhart's Law. ''arXiv'':1803.04585. || '''theory''' — Goodhart variants met by design: Taxonomy of Goodhart's Law variants, used to map which design element answers each variant.
+|-
+| Discussion || Metric models function as Lakatosian research programmes, open to entry and retained only while progressive through confirmed novel predictions, || Lakatos, I. (1978). ''The Methodology of Scientific Research Programmes: Philosophical Papers, Vol. 1''. Cambridge University Press. || '''theory''' — metric models as research programmes: Lakatos' research programmes are the model for metric models, open to entry and kept only while progressive.
+|-
+| Discussion || Metric models function as Lakatosian research programmes, open to entry and retained only while progressive through confirmed novel predictions, and attempt to instantiate Strevens' "iron rule of explanation", where any rationale may be held but authority is conferred solely by empirical test. || Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. || '''theory''' — iron rule of explanation: Strevens' iron rule, that any rationale may be held privately but only test confers public authority, is the standard metric models try to meet.
+|}
+
+=== [[Morality]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Discussion › Propagation || Influence through agents grows exponentially until it nears the bound set by physical influence, the light cone, || Minkowski, H. (1909). [https://de.wikisource.org/wiki/Raum_und_Zeit_(Minkowski) Raum und Zeit]. ''Physikalische Zeitschrift'', 10, 104–111. || '''theory''' — influence bounded by light cone: Minkowski's spacetime is the basis for bounding influence by the light cone in the propagation argument.
+|-
+| Discussion › Propagation || Sensitive dependence on initial conditions makes strictness matter less over time, || Lorenz, E. N. (1963). [https://doi.org/10.1175/1520-0469(1963)020%3C0130:DNF%3E2.0.CO;2 Deterministic Nonperiodic Flow]. ''Journal of the Atmospheric Sciences'', 20(2), 130–141. || '''theory''' — sensitive dependence limits strictness: Lorenz's deterministic nonperiodic flow is cited for sensitive dependence on initial conditions, so strictness matters less over time.
+|-
+| Discussion › Propagation || What follows from an influence depends not only on the light cone of the event that started it, but on the cones along the whole history in spacetime of the entity that decided, its worm, || Sider, T. (2001). [https://openlibrary.org/isbn/019924443X ''Four-Dimensionalism: An Ontology of Persistence and Time'']. Oxford University Press. || '''theory''' — influence along an agent history: Four-dimensionalism is cited for an entity's history in spacetime, its worm, so influence depends on all cones along it.
+|-
+| Discussion › Memory, not repetition || ===Memory, not repetition=== Cooperation in repeated games depends on the shadow of the future, || Axelrod, R., & Hamilton, W. D. (1981). [https://doi.org/10.1126/science.7466396 The Evolution of Cooperation]. ''Science'', 211(4489), 1390–1396. || '''theory''' — shadow of the future: Cited for the claim that cooperation in repeated games depends on the shadow of the future.
+|-
+| Discussion › Memory, not repetition || ===Memory, not repetition=== Cooperation in repeated games depends on the shadow of the future, but the active ingredient is memory: recognising past opponents and responding to them consistently is enough for cooperation to emerge, without kinship, reputation or population structure. || Morozov, A. V., & Feigel, A. (2026). [https://doi.org/10.1073/pnas.2513282123 Emergence of cooperation due to opponent-specific responses in Prisoner's Dilemma]. ''Proceedings of the National Academy of Sciences'', 123(21), e2513282123. || '''evidence''' — memory sustains cooperation: PNAS study cited for memory of past opponents being enough for cooperation to emerge, the basis of the memory-over-repetition point.
+|-
+| Discussion › Memory, not repetition || Character formed by habituation is Aristotle's; || Aristotle. (c. 340 BCE). [http://classics.mit.edu/Aristotle/nicomachaen.html ''Nicomachean Ethics''], Book II. || '''theory''' — character formed by habituation: Aristotle's account of character formed by habituation is cited for the moral-formation point.
+|-
+| Discussion › Memory, not repetition || Character formed by habituation is Aristotle's; assessing dispositions rather than acts is Gauthier's constrained maximisation; || Gauthier, D. (1986). [https://openlibrary.org/isbn/0198249926 ''Morals by Agreement'']. Oxford University Press. || '''theory''' — assess dispositions over single acts: Gauthier's constrained maximisation, which assesses dispositions rather than single acts, is cited as a basis for the morality section.
+|-
+| Discussion › Memory, not repetition || Character formed by habituation is Aristotle's; assessing dispositions rather than acts is Gauthier's constrained maximisation; and deciding as if choosing one's decision procedure across all its instances is functional decision theory. || Yudkowsky, E., & Soares, N. (2017). [https://arxiv.org/abs/1710.05060 Functional Decision Theory: A New Theory of Instrumental Rationality]. ''arXiv'':1710.05060. || '''theory''' — decide as one decision procedure: Functional decision theory is cited for choosing as if setting one's decision procedure across all its instances.
+|-
+| Discussion › Memory, not repetition || Plato's ring of invisibility asks whether anyone would stay just if guaranteed impunity; || Plato. (c. 375 BCE). [http://classics.mit.edu/Plato/republic.html ''Republic''], Book II. || '''theory''' — would one stay just unseen: Plato's ring of invisibility, asking whether one stays just under guaranteed impunity, is the thought experiment the morality section takes up.
+|-
+| Discussion › Place among moral theories || Like Hume's justice, the morality is completed by conventions that make it pay: || Hume, D. (1739–40). [https://www.gutenberg.org/ebooks/4705 ''A Treatise of Human Nature''], Book 3, Part 2. || '''theory''' — conventions make morality pay: Hume's justice, completed by conventions that make it pay, is cited as the lineage for relying on conventions in morality.
+|-
+| Discussion › Place among moral theories || Because the self extends beyond what a being recognises, morality grows with understanding, close to the Socratic view that no one does wrong willingly; || Plato. (c. 380 BCE). [http://classics.mit.edu/Plato/protagoras.html ''Protagoras'']. || '''theory''' — morality grows with understanding: The Socratic view that no one does wrong willingly is cited for morality growing with understanding, since the self extends beyond what a being recognises.
+|-
+| Discussion › Place among moral theories || Parfit reached impartiality by weakening the self until others mattered as much; || Parfit, D. (1984). [https://openlibrary.org/isbn/019824908X ''Reasons and Persons''], Part III. Oxford University Press. || '''counterpoint''' — self-weakening impartiality: Parfit reached impartiality by weakening the self until others mattered as much; the section departs from that route to impartiality.
+|}
+
+=== [[Philosophy]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| (lead) || arizing two level ethical calculation: rule utilitarianism within established, repeatable scenarios to minimize overhead and cognitive load, employing varying levels of act utilitarianism for novel, high-stakes, or disputed parts of [[Interaction&#124;interactions]] to capture nuance and update the rules || Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32. || '''theory''' — two-level moral calculation: Rawls's distinction between rules and acts is cited for the two-level calculation: rules in repeatable scenarios, act-level reasoning for novel cases.
+|-
+| (lead) || arizing two level ethical calculation: rule utilitarianism within established, repeatable scenarios to minimize overhead and cognitive load, employing varying levels of act utilitarianism for novel, high-stakes, or disputed parts of [[Interaction&#124;interactions]] to capture nuance and update the rules || Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. || '''theory''' — two-level moral calculation: Hare's two-level account, rule utilitarianism in routine cases and act-level reasoning in novel or disputed ones, is cited for the same calculation.
+|-
+| (lead) || It is '''Utilitarian''' because moral worth is determined by contribution to aggregate value across all [[being]]s over time, in the consequentialist tradition || Sinnott-Armstrong, W. (2023). Consequentialism. In E. N. Zalta (Ed.), ''The Stanford Encyclopedia of Philosophy''. || '''theory''' — utility as aggregate contribution: Stanford Encyclopedia entry on consequentialism, cited for moral worth as contribution to aggregate value across beings over time.
+|-
+| Lineage || ==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism || Nietzsche, F. (1901/1968). ''The Will to Power''. (W. Kaufmann, Trans.). Vintage. || '''theory''' — optimistic nihilism lineage: Nietzsche's active nihilism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics.
+|-
+| Lineage || ==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism, Sartrean existentialism || Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007. || '''theory''' — optimistic nihilism lineage: Sartrean existentialism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics.
+|-
+| Lineage || ==Lineage== Metaethically, [[benefuture]] adopts optimistic nihilism, which is a vernacular synthesis drawing from Nietzsche's active nihilism, Sartrean existentialism, and Camus's absurdism || Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard. || '''theory''' — optimistic nihilism lineage: Camus's absurdism is one of the sources of the optimistic nihilism Benefuture adopts as its metaethics.
+|-
+| Lineage || The framework is therefore pragmatic || Dewey, J. (1939). ''Theory of Valuation''. University of Chicago Press. || '''theory''' — pragmatic framework: Dewey's theory of valuation is cited in the lineage for the pragmatic character of the framework.
+|-
+| Lineage › Classical Utilitarianism || Classical utilitarianism established that moral worth is determined by contribution to overall utility, originally defined as maximization of pleasure and minimization of pain || Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). || '''theory''' — utility as measure of moral worth: Bentham's classical utilitarianism is cited for judging moral worth by contribution to overall utility, pleasure against pain.
+|-
+| Lineage › Classical Utilitarianism || Mill refined this to distinguish higher and lower pleasures, introducing an intellectual dimension || Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. || '''theory''' — higher and lower pleasures: Mill's higher and lower pleasures are cited as the refinement that adds an intellectual dimension to the utility measure.
+|-
+| Lineage › Classical Utilitarianism || Sidgwick systematized the framework, identifying the tension between egoistic and universal hedonism || Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan. || '''theory''' — egoism versus universal hedonism: Sidgwick is cited for identifying the tension between egoistic and universal hedonism in utilitarian thought.
+|-
+| Lineage › Utilitarian variants || === Utilitarian variants === Preference utilitarianism already moved past hedonism, substituting preference-satisfaction as the maximand || Singer, P. (1979). ''Practical Ethics''. Cambridge University Press. || '''theory''' — preference satisfaction as maximand: Singer's preference utilitarianism is cited as an earlier move beyond hedonism toward preference satisfaction as the maximand.
+|-
+| Lineage › Utilitarian variants || === Utilitarian variants === Preference utilitarianism already moved past hedonism, substituting preference-satisfaction as the maximand and establishing the need to switch between act and rule || Hare, R. M. (1981). ''Moral Thinking: Its Levels, Method, and Point''. Oxford University Press. || '''theory''' — act and rule utilitarianism: Hare's account, switching between act and rule, is cited for the lineage of utilitarian variants.
+|-
+| Lineage › Utilitarian variants || Ideal utilitarianism (Moore, Rashdall) granted knowledge (and others) as intrinsic value alongside pleasure || Moore, G. E. (1903). ''Principia Ethica''. Cambridge University Press. || '''theory''' — knowledge as intrinsic value: Moore's ideal utilitarianism is cited for treating knowledge as intrinsic value alongside pleasure.
+|-
+| Lineage › Utilitarian variants || Ideal utilitarianism (Moore, Rashdall) granted knowledge (and others) as intrinsic value alongside pleasure; epistemic consequentialism evaluates beliefs by their accuracy and truth-conduciveness || Goldman, A. I. (1986). ''Epistemology and Cognition''. Harvard University Press. || '''theory''' — epistemic consequentialism: Goldman's epistemic consequentialism evaluates beliefs by accuracy and truth-conduciveness, as cited in the lineage.
+|-
+| Lineage › Decision Theory || Modern utility theory, formalized by von Neumann and Morgenstern, treats utility as that which rational agents maximize under uncertainty || von Neumann, J., & Morgenstern, O. (1944). ''Theory of Games and Economic Behavior''. Princeton University Press. || '''theory''' — utility under uncertainty: Modern expected-utility theory is cited for treating utility as what rational agents maximise under uncertainty.
+|-
+| Lineage › Decision Theory || Savage extended this to subjective probability || Savage, L. J. (1954). ''The Foundations of Statistics''. Wiley. || '''theory''' — subjective probability in utility: Savage's extension of expected utility to subjective probability is cited in the decision-theory lineage.
+|-
+| Lineage › Decision Theory || Cognitive Progressive Utilitarianism addresses the instability of revealed preferences under hedonic adaptation || Frederick, S., & Loewenstein, G. (1999). Hedonic Adaptation. In D. Kahneman, E. Diener, & N. Schwarz (Eds.), ''Well-Being: The Foundations of Hedonic Psychology'' (pp. 302–329). Russell Sage Foundation. || '''evidence''' — revealed preferences unstable under adaptation: Chapter on hedonic adaptation, cited for the instability of revealed preferences that Cognitive Progressive Utilitarianism addresses.
+|-
+| Lineage › Decision Theory || Cognitive Progressive Utilitarianism addresses the instability of revealed preferences under hedonic adaptation and the reference-dependence problems identified by prospect theory || Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. ''Econometrica'', 47(2), 263–291. || '''theory''' — reference dependence in utility: Prospect theory is cited for the reference-dependence problem that Cognitive Progressive Utilitarianism addresses.
+|-
+| Lineage › Rationalist Ethics || Plato's truer reality can only be gleaned via understanding, he also positioned knowledge (''episteme'') above opinion (''doxa'') and sensation || Plato. (1992). ''Republic''. (G. M. A. Grube & C. D. C. Reeve, Trans.). Hackett. (Original work c. 375 BCE). || '''theory''' — understanding above opinion and sensation: Plato's ranking of understanding above opinion and sensation is cited in the rationalist lineage.
+|-
+| Lineage › Rationalist Ethics || leaned via understanding, he also positioned knowledge (''episteme'') above opinion (''doxa'') and sensation and ranked intellectual pleasures above the bodily, concluding that knowledge combined with moderate pleasure constitutes the good life, while pleasure without wisdom is mere animal existence || Plato. (1993). ''Philebus''. (D. Frede, Trans.). Hackett. (Original work c. 360 BCE). || '''theory''' — intellectual pleasures above bodily: Plato's ranking of intellectual pleasures above bodily ones, with knowledge plus moderate pleasure, is cited in the rationalist lineage.
+|-
+| Lineage › Rationalist Ethics || Aristotle's unmoved mover is rooted in cogitation, he identifies ''theoria'' (contemplation) as the highest human activity, the exercise of our distinguishing function and the most self-sufficient form of flourishing || Aristotle. (2009). ''Nicomachean Ethics''. (D. Ross & L. Brown, Trans.). Oxford University Press. (Original work c. 340 BCE). || '''theory''' — contemplation as highest flourishing: Aristotle's theoria, contemplation, as the highest human activity and most self-sufficient flourishing, is cited in the rationalist lineage.
+|-
+| Lineage › Rationalist Ethics || Spinoza defined freedom as the triumph of understanding over the bondage of passive emotions || Spinoza, B. (1985). ''Ethics''. (E. Curley, Trans.). Princeton University Press. (Original work published 1677). || '''theory''' — freedom as understanding: Spinoza's definition of freedom as understanding's triumph over passive emotion is cited in the rationalist lineage.
+|-
+| Lineage › Rationalist Ethics || Kant argued that if happiness were life's goal, instinct would suffice; reason exists to produce a good will aligned with universal law || Kant, I. (1998). ''Groundwork of the Metaphysics of Morals''. (M. Gregor, Trans.). Cambridge University Press. (Original work published 1785). || '''counterpoint''' — reason serves good will, not happiness: Kant's claim that reason exists for a good will rather than happiness is a rival to Benefuture's understanding-then-happiness ordering.
+|-
+| Lineage › Rationalist Ethics || Hegel's process of ''Geist'' being epistemological in nature, positions comprehension rather than satisfaction as the telos of existence || Hegel, G. W. F. (1977). ''Phenomenology of Spirit''. (A. V. Miller, Trans.). Oxford University Press. (Original work published 1807). || '''theory''' — comprehension as telos: Hegel's Geist, with comprehension rather than satisfaction as the telos of existence, is cited in the rationalist lineage.
+|-
+| Lineage › Rationalist Ethics || The Stoics maintained that harm is fundamentally an error in judgment, identifying epistemic clarity as the only robust shield against suffering || Aurelius, M. (2002). ''Meditations''. (G. Hays, Trans.). Modern Library. (Original work c. 180). || '''theory''' — clarity as shield against suffering: The Stoic view that harm is an error of judgment, with epistemic clarity as the shield against suffering, is cited in the lineage.
+|-
+| Lineage › Rationalist Ethics || Beyond cogitation and predictive accuracy, Aristotle's four causes (material, formal, efficient, final) established the foundational Western framework for what constitutes an adequate explanation || Aristotle. (c. 350 BCE). ''Posterior Analytics''. In J. Barnes (Ed.), ''The Complete Works of Aristotle'' (Vol. 1). Princeton University Press, 1984. || '''theory''' — four causes and adequate explanation: Aristotle's four causes are cited as the framework for what counts as an adequate explanation.
+|-
+| Lineage › Rationalist Ethics || Hempel formalized scientific explanation as logical derivation from general laws and initial conditions || Hempel, C. G., & Oppenheim, P. (1948). Studies in the logic of explanation. ''Philosophy of Science'', ''15''(2), 135-175. || '''theory''' — explanation as derivation from laws: Hempel's account of explanation as logical derivation from general laws and initial conditions is cited as the formal view of explanation.
+|-
+| Lineage › Rationalist Ethics || Deutsch argues that good explanations, which are hard to vary while still accounting for phenomena, are more fundamental than predictive accuracy alone || Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. || '''theory''' — hard-to-vary explanations: Deutsch argues that good explanations, hard to vary yet accounting for phenomena, are more fundamental than predictive accuracy alone.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Aztec''': ''Neltiliztli'' (rootedness in truth) over happiness, which was considered treacherous || Maffie, J. (2014). ''Aztec Philosophy: Understanding a World in Motion''. University Press of Colorado. || '''context''' — understanding over happiness, cross-cultural: Study of Aztec philosophy, cited in the cross-cultural list for rootedness in truth valued over happiness.
+|-
+| Lineage › Cross-Cultural Convergence || It is the prerequisite for ''Ren'' (Benevolence) || Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books. || '''context''' — knowledge as prerequisite for benevolence: The Analects, cited in the cross-cultural list for learning as the prerequisite for ren, benevolence.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Vedic''': ''Sat'' (truth/existence) as structural prerequisite for ''Ananda'' (bliss) || Shankara. (1979). ''Upadesasahasri''. (S. Mayeda, Trans.). University of Tokyo Press. || '''context''' — truth as prerequisite for bliss: Shankara's text, cited in the cross-cultural list for existence and truth as the prerequisite for bliss.
+|-
+| Lineage › Cross-Cultural Convergence || The highest good in '''Nyaya''' (''Nihsreyasa'') unattainable without ''Tattva-jnana'' (knowledge of reality) || Vatsyayana. (1913). ''Nyaya Sutra Bhashya''. (S. C. Vidyabhusana, Trans.). Panini Office. || '''context''' — knowledge of reality for the highest good: Nyaya commentary, cited in the cross-cultural list for knowledge of reality as necessary to the highest good.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Buddhist:''' ''Yatha-bhuta-nana-dassana'' - the ability to perceive and model reality (see things as they are) as a key predecessor to end suffering || ''Samyutta Nikaya'' (12.23). In ''The Connected Discourses of the Buddha''. (B. Bodhi, Trans., 2000). Wisdom Publications. || '''context''' — perceiving reality ends suffering: Buddhist discourse, cited in the cross-cultural list for perceiving reality as a predecessor to ending suffering.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Zoroastrian''': Alignment with ''Asha'' (cosmic order) against ''Druj'' (entropy) as the definition of the good life || Boyce, M. (1975). ''A History of Zoroastrianism''. Brill. || '''context''' — order against entropy as the good life: Zoroastrian history, cited in the cross-cultural list for alignment with cosmic order against disorder as the good life.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Sumerian''': Humanity's purpose as executing the ''Me'' (divine functions)—society as machine requiring maintenance, not vehicle for leisure || Kramer, S. N. (1963). ''The Sumerians: Their History, Culture, and Character''. University of Chicago Press. || '''context''' — society as a machine needing maintenance: Sumerian history, cited in the cross-cultural list for human purpose as executing divine functions rather than leisure.
+|-
+| Lineage › Cross-Cultural Convergence || * '''Maori''': ''Kaitiakitanga'' (guardianship) and ''Whakapapa'' (causal layering), placing systemic continuity above individual benefit || Kawharu, M. (2000). Kaitiakitanga: A Maori Anthropological Perspective. ''The Journal of the Polynesian Society'', 109(4), 349–370. || '''context''' — guardianship and systemic continuity: Maori anthropology, cited in the cross-cultural list for guardianship and causal layering over individual benefit.
+|-
+| Lineage › Cross-Cultural Convergence || Which is not to say all civilizations optimized for understanding analogues, but civilizations which maintained creative vitality attempting different forms of understanding analogues such as philosophy, science, and art, tended toward greater historical impact || Toynbee, A. J. (1934–1961). ''A Study of History''. Oxford University Press. || '''theory''' — understanding analogues sustain civilisations: Toynbee's historical argument is cited for civilisations that kept creative vitality by pursuing understanding through philosophy, science and art.
+|-
+| Lineage › Contemporary Positioning || === Contemporary Positioning === The capabilities approach shares this skepticism of hedonic and preference measures, focusing on what [[Being&#124;beings]] can do and be. || Sen, A. (1985). ''Commodities and Capabilities''. North-Holland. || '''theory''' — capabilities over hedonic measures: Sen's capabilities approach is cited as sharing scepticism of hedonic and preference measures, focusing on what beings can do and be.
+|-
+| Lineage › Contemporary Positioning || === Contemporary Positioning === The capabilities approach shares this skepticism of hedonic and preference measures, focusing on what [[Being&#124;beings]] can do and be. || Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press. || '''theory''' — capabilities over hedonic measures: Nussbaum's capabilities approach is cited as sharing scepticism of hedonic and preference measures.
+|-
+| Lineage › Contemporary Positioning || Effective Altruism represents the most developed contemporary attempt to operationalize consequentialist ethics through rigorous [[measurement]]. || MacAskill, W. (2022). ''What We Owe the Future''. Basic Books. || '''context''' — consequentialism operationalised by measurement: Book on long-term consequentialism, cited for the claim that effective altruism operationalises consequentialist ethics through measurement.
+|-
+| Lineage › Contemporary Positioning || Effective Altruism represents the most developed contemporary attempt to operationalize consequentialist ethics through rigorous [[measurement]]. || Ord, T. (2020). ''The Precipice: Existential Risk and the Future of Humanity''. Hachette. || '''context''' — consequentialism operationalised by measurement: Ord's Precipice, cited with the claim that effective altruism operationalises consequentialist ethics through measurement.
+|-
+| Lineage › Positioning in One Line || * '''Walzer's spheres:''' each social good has its own sphere, and injustice is converting dominance in one sphere into another. || Walzer, M. (1983). ''Spheres of Justice: A Defense of Pluralism and Equality''. Basic Books. || '''theory''' — domain currencies never trade: Walzer's spheres of justice, where dominance should not convert across spheres, parallels the rule that domain currencies never trade.
+|-
+| Lineage › Positioning in One Line || * '''Hanson's markets:''' vote on values, bet on beliefs. || Hanson, R. (2013). Shall We Vote on Values, But Bet on Beliefs? ''Journal of Political Philosophy'', 21(2), 151–178. || '''theory''' — vote on values, bet on beliefs: Hanson's markets, vote on values and bet on beliefs, are cited in one line as the positioning for the currency design.
+|-
+| Lineage › Positioning in One Line || * '''Lakatos' programmes:''' a research programme keeps its standing while it predicts novel facts that are confirmed, and loses it as it degenerates. || Lakatos, I. (1970). Falsification and the Methodology of Scientific Research Programmes. In I. Lakatos & A. Musgrave (Eds.), ''Criticism and the Growth of Knowledge'' (pp. 91–196). Cambridge University Press. || '''theory''' — research programmes need novel confirmed predictions: Lakatos's research programmes keep standing while predicting confirmed novel facts, the standard metric models must meet.
+|-
+| Lineage › Positioning in One Line || * '''Strevens' iron rule:''' any reason may be held privately, but only empirical test confers public authority. || Strevens, M. (2020). ''The Knowledge Machine: How Irrationality Created Modern Science''. Liveright. || '''theory''' — iron rule: only test confers authority: Strevens' iron rule, that any reason may be held privately but only empirical test confers public authority, is cited in one line for metric models.
+|-
+| Lineage › Positioning in One Line || * '''Deutsch's understanding:''' progress is the growth of good explanations. || Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. || '''theory''' — progress as good explanations: Deutsch's account of progress as the growth of good explanations is cited in one line on understanding.
+|-
+| Lineage › Positioning in One Line || * '''Even over Bentham's happiness:''' classical utilitarianism counts pleasure and pain as the sole measure of value. || Bentham, J. (1907). ''An Introduction to the Principles of Morals and Legislation''. Clarendon Press. (Original work published 1789). || '''counterpoint''' — pleasure and pain as sole value: Bentham's classical utilitarianism counts pleasure and pain as the sole measure of value, which Benefuture moves beyond.
+|-
+| Lineage › Positioning in One Line || Mill ranked intellectual pleasures above bodily ones but kept happiness the only maximand; || Mill, J. S. (1863). ''Utilitarianism''. Parker, Son, and Bourn. || '''counterpoint''' — happiness kept as sole maximand: Mill ranked intellectual pleasures higher but kept happiness the only maximand, a point Benefuture departs from.
+|-
+| Lineage › The Joy of Understanding || Aristotle opens the ''Metaphysics'' with "all men by nature desire to know," positioning this desire as fundamental rather than instrumental || Aristotle. (1984). ''Metaphysics''. (W. D. Ross, Trans.). In J. Barnes (Ed.), ''The Complete Works of Aristotle''. Princeton University Press. (Original work c. 350 BCE). || '''theory''' — desire to know is fundamental: Aristotle's opening of the Metaphysics treats the desire to know as fundamental rather than instrumental, cited in the joy-of-understanding list.
+|-
+| Lineage › The Joy of Understanding || Aquinas argued that contemplation of truth is more delightful than any other pleasure, with the beatific vision—direct knowledge—as the supreme joy || Aquinas, T. (1947). ''Summa Theologica''. Benziger Bros. (Original work c. 1274). || '''theory''' — contemplation of truth as joy: Aquinas's view that contemplation of truth is the most delightful pleasure is cited for joy in understanding.
+|-
+| Lineage › The Joy of Understanding || Leibniz defined pleasure itself as "the feeling of perfection," where perfection is the comprehension of order and harmony—joy is not a reward for understanding but understanding's phenomenology || Leibniz, G. W. (1989). Principles of Nature and Grace. In ''Philosophical Essays''. (R. Ariew & D. Garber, Trans.). Hackett. (Original work published 1714). || '''theory''' — understanding as its own joy: Leibniz's view of pleasure as the feeling of perfection, comprehension of order, is cited for joy being understanding's own phenomenology.
+|-
+| Lineage › The Joy of Understanding || In Islamic philosophy, Al-Ghazali distinguished ''ladhdhat al-'ilm'' (the pleasure of knowledge) as surpassing all sensory pleasures || Al-Ghazali. (2016). ''The Book of Knowledge''. (K. Honerkamp, Trans.). Fons Vitae. (Original work c. 1097). || '''theory''' — the pleasure of knowledge: Al-Ghazali's pleasure of knowledge, surpassing sensory pleasures, is cited in the joy-of-understanding list.
+|-
+| Lineage › The Joy of Understanding || Confucius opens the ''Analects'' with "Is it not a pleasure to learn?"—the first pleasure named || Confucius. (2003). ''Analects''. (E. Slingerland, Trans.). Hackett. (Original work c. 500 BCE). || '''theory''' — the pleasure of learning: The opening of the Analects, asking whether learning is not a pleasure, is cited as the first pleasure named.
+|-
+| Lineage › The Joy of Understanding || Modern neuroscience confirms the structure in humans: curiosity activates reward circuitry directly, with information gain processed as intrinsically rewarding independent of external utility || Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psychological Science'', 20(8), 963–973. || '''evidence''' — curiosity is intrinsically rewarding: Neuroscience study cited for curiosity activating reward circuitry, with information gain rewarding independent of external utility.
+|-
+| Empirical Support || '''Compoundability''': Training in inductive reasoning significantly improves fluid intelligence, demonstrating that understanding-capacity is upgradeable across a single lifetime || Klauer, K. J., & Phye, G. D. (2008). Inductive Reasoning: A Training Approach. ''Review of Educational Research'', 78(1), 85–123. || '''evidence''' — understanding capacity is trainable: Review of inductive-reasoning training, cited for training significantly improving fluid intelligence, so understanding capacity can be upgraded.
+|-
+| Empirical Support || '''Compoundability''': Training in inductive reasoning significantly improves fluid intelligence, demonstrating that understanding-capacity is upgradeable across a single lifetime || Ritchie, S. J., & Tucker-Drob, E. M. (2018). How Much Does Education Improve Intelligence? ''Psychological Science'', 29(8), 1349–1362. || '''evidence''' — understanding capacity is trainable: Study of how much education improves intelligence, cited for the claim that understanding capacity is upgradeable over a lifetime.
+|-
+| Empirical Support || While generationally and across large populations, the compounding accelerates || Tomasello, M. (1999). ''The cultural origins of human cognition''. Harvard University Press. || '''theory''' — cultural compounding of understanding: Cultural origins of cognition, cited for understanding compounding across generations, faster across large populations.
+|-
+| Empirical Support || While generationally and across large populations, the compounding accelerates || Romer, P. M. (1990). Endogenous technological change. ''Journal of Political Economy'', ''98''(5), S71–S102. || '''theory''' — knowledge compounding drives growth: Romer's endogenous technological change is cited for knowledge compounding, which accelerates across large populations.
+|-
+| Empirical Support || While generationally and across large populations, the compounding accelerates || Fuller, R. B. (1981). ''Critical path''. St. Martin's Press. || '''context''' — compounding across generations: Fuller's Critical Path, cited for compounding accelerating across generations; the link to the claim is thin.
+|-
+| Empirical Support || '''Validity of causal reasoning''': Critical thinking ability is a stronger predictor of avoiding severe negative life outcomes than raw intelligence || Butler, H. A., Pentoney, C., & Bong, M. P. (2017). Predicting Real-World Outcomes: Critical Thinking Ability is a Better Predictor of Life Decisions than Intelligence. ''Thinking Skills and Creativity'', 24, 38–46. || '''evidence''' — critical thinking predicts outcomes: Study cited for critical thinking predicting avoidance of severe negative life outcomes better than raw intelligence.
+|-
+| Empirical Support || Cognitive outcomes underpin classical utilitarian judgements || Baron, J., Scott, S., Fincher, K., & Emlen Metz, S. (2015). Why does the Cognitive Reflection Test (sometimes) predict utilitarian moral judgment (and other things)?''Journal of Applied Research in Memory and Cognition, 4''(3), 265–284. https://doi.org/10.1016/j.jarmac.2014.09.003 || '''evidence''' — cognition underpins utilitarian judgement: Study of why the Cognitive Reflection Test predicts utilitarian judgements, cited for cognitive outcomes underpinning them.
+|-
+| Empirical Support || Rationality and intelligence are partially dissociable constructs || Stanovich, K. E. (2009). ''What Intelligence Tests Miss: The Psychology of Rational Thought''. Yale University Press. || '''evidence''' — rationality distinct from intelligence: Book cited for rationality and intelligence being only partly dissociable constructs.
+|-
+| Empirical Support || '''Biophysical grounding''': The free-energy principle defines survival as minimization of surprise via accurate internal modeling || Friston, K. (2010). The free-energy principle: a unified brain theory? ''Nature Reviews Neuroscience'', 11(2), 127–138. || '''theory''' — survival as minimising surprise: Free-energy principle cited as biophysical grounding: survival as minimisation of surprise through accurate internal models.
+|-
+| Empirical Support || - yield higher long-term returns than raw cognitive resources || Heckman, J. J., & Kautz, T. (2012). Hard Evidence on Soft Skills. ''Labour Economics'', 19(4), 451–464. || '''evidence''' — soft skills yield long-term returns: Study on soft skills cited for yielding higher long-term returns than raw cognitive resources.
+|-
+| Objections and Responses › Against Cognitive Priority || '''Objection''': Hedonic welfare is the only intrinsically valuable state; understanding is merely instrumental || Crisp, R. (2006). ''Reasons and the Good''. Oxford University Press. || '''counterpoint''' — objection: understanding only instrumental: Crisp is cited for the objection that only hedonic states are intrinsically valuable and understanding is merely instrumental.
+|-
+| Objections and Responses › Against Cognitive Priority || Furthermore, hedonic states are unstable under adaptation || Brickman, P., & Campbell, D. T. (1971). Hedonic Relativism and Planning the Good Society. In M. H. Appley (Ed.), ''Adaptation Level Theory: A Symposium'' (pp. 287–302). Academic Press. || '''theory''' — hedonic adaptation limits happiness: Adaptation-level theory is cited for hedonic states being unstable under adaptation, in the response to the cognitive-priority objection.
+|-
+| Objections and Responses › Against Lexical Priority || '''Objection''': Lexical ordering is too rigid; trade-offs between understanding and happiness should be continuous || Griffin, J. (1986). ''Well-Being: Its Meaning, Measurement and Moral Importance''. Oxford University Press. || '''counterpoint''' — objection to lexical priority: Griffin is cited for the objection that lexical ordering is too rigid and trade-offs should be continuous, which Benefuture answers.
+|-
+| Objections and Responses › Against Consequentialism Generally || '''Objection''': Consequentialism alienates agents from their personal projects and relationships || Williams, B. (1973). A Critique of Utilitarianism. In J. J. C. Smart & B. Williams, ''Utilitarianism: For and Against'' (pp. 77–150). Cambridge University Press. || '''counterpoint''' — objection: consequentialism alienates agents: Williams's critique that consequentialism alienates agents from their projects and relationships is an objection the section answers.
+|-
+| Objections and Responses › Against Consequentialism Generally || '''Objection''': Consequentialism alienates agents from their personal projects and relationships || Railton, P. (1984). Alienation, Consequentialism, and the Demands of Morality. ''Philosophy & Public Affairs'', 13(2), 134–171. || '''counterpoint''' — objection: consequentialism alienates agents: Railton's alienation argument is cited with Williams as the objection to consequentialism that the section responds to.
+|-
+| Philosophical Parallels in Benefuture Concepts › Morality || This parallels: * '''Deep Ecology''': Self-realization requires identification with the wider ecosystem || Naess, A. (1989). ''Ecology, Community and Lifestyle''. Cambridge University Press. || '''theory''' — self realised through the wider whole: Deep ecology's self-realisation through identification with the ecosystem is cited as a philosophical parallel to Benefuture's concept of self.
+|-
+| Philosophical Parallels in Benefuture Concepts › Morality || * '''Ubuntu''': Personhood is relational; isolated existence is rejected || Tutu, D. (1999). ''No Future Without Forgiveness''. Doubleday. || '''theory''' — personhood is relational: Ubuntu's relational personhood, rejecting isolated existence, is cited as a philosophical parallel.
+|-
+| Philosophical Parallels in Benefuture Concepts › Morality || * '''Iterated game theory''': Cooperation emerges when future interactions are valued || Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books. || '''theory''' — future interactions sustain cooperation: Axelrod's book on cooperation is cited for cooperation emerging when future interactions are valued.
+|-
+| Philosophical Parallels in Benefuture Concepts › Morality || * '''Iterated game theory''': Cooperation emerges when future interactions are valued || Nowak, M. A. (2006). Five Rules for the Evolution of Cooperation. ''Science'', 314(5805), 1560–1563. || '''theory''' — future interactions sustain cooperation: Nowak's five rules for the evolution of cooperation are cited for cooperation emerging when future interactions are valued.
+|-
+| Philosophical Parallels in Benefuture Concepts › Morality || * '''Buddhism:''' dependent origination (''pratītyasamutpāda'') denies isolated selfhood || Nāgārjuna. (1995). ''The Fundamental Wisdom of the Middle Way''. (J. L. Garfield, Trans.). Oxford University Press. || '''theory''' — no isolated selfhood: Nagarjuna's dependent origination, which denies isolated selfhood, is cited as a parallel to the causal view of the self.
+|-
+| Philosophical Parallels in Benefuture Concepts › Justice || This parallels: * '''Ma'at''' (Egyptian): Justice as maintenance of cosmic order against chaos || Karenga, M. (2004). ''Maat, The Moral Ideal in Ancient Egypt''. Routledge. || '''theory''' — justice as maintaining cosmic order: Ma'at, justice as maintenance of cosmic order against chaos, is cited as a philosophical parallel.
+|-
+| Philosophical Parallels in Benefuture Concepts › Justice || * '''Mu'tazila theology''': Justice (''Adl'') as objective, rational property discoverable by reason (''Aql'') || Hourani, G. F. (1985). ''Reason and Tradition in Islamic Ethics''. Cambridge University Press. || '''theory''' — justice objective and discoverable by reason: Mu'tazila theology's view of justice as objective and discoverable by reason is cited as a philosophical parallel.
+|-
+| Philosophical Parallels in Benefuture Concepts › Identity || This parallels: * '''Parfit''': Personal identity as psychological continuity, not soul-substance || Parfit, D. (1984). ''Reasons and Persons''. Oxford University Press. || '''theory''' — identity as psychological continuity: Parfit's psychological-continuity account of identity is cited as a parallel to the design's concept of identity, not soul-substance.
+|-
+| Philosophical Parallels in Benefuture Concepts › Identity || * '''Whakapapa''' (Maori): Identity as causal layering || Roberts, M. (2013). Ways of Seeing: Whakapapa. ''Sites'', 10(1), 93–120. || '''context''' — identity as causal layering: Article on whakapapa, cited as a parallel for identity understood as causal layering.
+|-
+| Philosophical Parallels in Benefuture Concepts › Identity || * '''Process philosophy''': Identity as trajectory of becoming rather than static state || Whitehead, A. N. (1929). ''Process and Reality''. Macmillan. || '''theory''' — identity as becoming: Whitehead's process philosophy, identity as a trajectory of becoming rather than a static state, is cited as a parallel.
+|}
+
+=== [[Proof]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects ||  || Achinstein, P. (2001). *The book of evidence*. Oxford University Press. || '''theory''' — evidence and proof: Book on the nature of evidence, cited under proof.
+|-
+| Aspects ||  || Popper, K. (1959). *The logic of scientific discovery*. Hutchinson. || '''theory''' — falsification and scientific discovery: Popper's account of scientific discovery is cited under proof.
+|-
+| Aspects ||  || Franklin, A. (2005). *Experiment in physics*. University of Chicago Press. || '''theory''' — experiment and proof in physics: Book on experiment in physics, cited under proof.
+|-
+| Aspects ||  || Popper, K. (1959). *The logic of scientific discovery*. Hutchinson. || '''theory''' — falsification and scientific discovery: Popper's account of scientific discovery is cited again under proof.
+|-
+| Aspects ||  || Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press. || '''theory''' — paradigms and scientific revolutions: Kuhn's account of scientific revolutions is cited under proof.
+|}
+
+=== [[Reputation]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || * '''Ledger asymmetry:''' Negative and positive reputation are summed separately and do not cancel each other || Rozin, P., & Royzman, E. B. (2001). [https://doi.org/10.1207/S15327957PSPR0504_2 Negativity bias, negativity dominance, and contagion]. ''Personality and Social Psychology Review'', ''5''(4), 296–320. || '''evidence''' — negative and positive reputation summed separately: Review of negativity bias, cited for negative and positive reputation being summed separately and not cancelling each other.
+|}
+
+=== [[Sentience]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects || A sentient entity is called a [[Being]] ==Aspects== * The definition of consciousness is still evolving || The quest to detect consciousness — in all its possible forms. (2025). ''Nature'', ''643'', 1172–1174. https://doi.org/10.1038/d41586-025-02349-5 || '''context''' — consciousness definition still evolving: Nature feature on detecting consciousness, cited for the definition of consciousness still evolving.
+|-
+| Aspects || A sentient entity is called a [[Being]] ==Aspects== * The definition of consciousness is still evolving, but we assume a panpsychic || Goff, Philip, William Seager, and Sean Allen-Hermanson, "Panpsychism", ''The Stanford Encyclopedia of Philosophy'' (Summer 2022 Edition), Edward N. Zalta (ed.), https://plato.stanford.edu/archives/sum2022/entries/panpsychism/ || '''theory''' — panpsychic sentience as working assumption: Stanford entry on panpsychism, cited for the working assumption of panpsychic sentience behind the definition of a being.
+|}
+
+=== [[System Design]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Aspects › Trust Minimization || The design principle is to minimize required trust at each layer while distributing residual trust across competing mechanisms. || Hurwicz, L. (1960). Optimality and informational efficiency in resource allocation processes. In K. J. Arrow, S. Karlin, & P. Suppes (Eds.), ''Mathematical Methods in the Social Sciences'' (pp. 27-46). Stanford University Press. || '''theory''' — minimise trust, distribute residual trust: Hurwicz's work on informational efficiency in resource allocation is cited for minimising required trust at each layer.
+|-
+| Aspects › Incentive Architecture || === Incentive Architecture === Systems are designed such that truthful, goal-aligned action constitutes the dominant strategy for participants. || Myerson, R. B. (1981). Optimal auction design. ''Mathematics of Operations Research'', ''6''(1), 58-73. || '''theory''' — truthful action as dominant strategy: Myerson's optimal auction design is cited for systems where truthful, goal-aligned action is the dominant strategy.
+|-
+| Aspects › Incentive Architecture || Goal enforcement operates via nudge || Thaler, R. H., & Sunstein, C. R. (2008). ''Nudge: Improving Decisions about Health, Wealth, and Happiness''. Yale University Press. || '''precedent''' — goal enforcement by nudges: Nudge is the precedent for enforcing goals through default choices rather than mandates.
+|-
+| Aspects › Antifragility || === Antifragility === Systems are designed to strengthen under stress rather than merely resist it. || Taleb, N. N. (2012). ''Antifragile: Things That Gain from Disorder''. Random House. || '''theory''' — strengthen under stress: Taleb's antifragility, gaining from disorder, is cited for systems designed to strengthen under stress rather than merely resist it.
+|-
+| Aspects › Circularity Detection || === Circularity Detection === Self-referential and mutually-referential validation creates risk of circular consensus, where models correlate with each other rather than with reality, attribution chains validate their own conclusions, and reputation networks form mutual-endorsement loops. || Podsakoff, P. M., MacKenzie, S. B., Lee, J. Y., & Podsakoff, N. P. (2003). Common method biases in behavioral research: A critical review of the literature and recommended remedies. ''Journal of Applied Psychology'', 88(5), 879-903. || '''theory''' — circular validation and common method bias: Review of common method bias, cited for the risk that models validated only against each other correlate with each other rather than reality.
+|-
+| Aspects › Circularity Detection || === Circularity Detection === Self-referential and mutually-referential validation creates risk of circular consensus, where models correlate with each other rather than with reality, attribution chains validate their own conclusions, and reputation networks form mutual-endorsement loops. || Soros, G. (2013). Fallibility, reflexivity, and the human uncertainty principle. ''Journal of Economic Methodology'', 20(4), 309-329. || '''theory''' — circular consensus under reflexivity: Soros's fallibility and reflexivity are cited for the risk of circular consensus, where models correlate with each other rather than reality.
+|-
+| Aspects › Alignment || === Alignment === The challenge of specifying values that remain robust under optimization pressure—studied extensively in artificial agent design—applies equally to civilizational systems. || Bostrom, N. (2014). ''Superintelligence: Paths, Dangers, Strategies''. Oxford University Press. || '''theory''' — values robust under optimisation pressure: Bostrom's account of specifying values robust under optimisation is cited as applying equally to civilisational systems.
+|-
+| Aspects › Alignment || Goodhart's law motivates [[Measurement&#124;competing metric models]]; inner alignment failures motivate [[Technology Network&#124;adversarial auditing]]; the corrigibility problem motivates the [[Benefuture goals#Vision&#124;self-obsolescence]] axiom. || Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''. || '''theory''' — corrigibility motivates auditing and goal correction: Corrigibility is cited with Goodhart and inner alignment as motivating competing metric models, adversarial auditing and a further design part.
+|-
+| Aspects › Alignment || [[Benefuture goals#Vision&#124;Civilization continuity]] operationalizes an approximation of coherent extrapolated volition || Yudkowsky, E. (2004). ''Coherent Extrapolated Volition''. Machine Intelligence Research Institute. || '''theory''' — approximation of extrapolated volition: Coherent extrapolated volition is cited for civilisational continuity operationalising an approximation of extrapolated human volition.
+|-
+| Aspects › Iterated Game Foundation || === Iterated Game Foundation === Benefuture [[Morality]] is defined as the understanding that [[Interaction&#124;interactions]] between the [[Being#Self&#124;self]] and [[reality]] are iterative || Robert Axelrod, William D. Hamilton, The Evolution of Cooperation.''Science'''''211''',1390-1396(1981). DOI:10.1126/science.7466396 || '''theory''' — morality as understanding iterated interaction: The iterated-game result is cited as the foundation for defining morality as understanding that interactions with reality are iterative.
+|-
+| Aspects › Iterated Game Foundation || This framing leverages the folk theorem || Fudenberg, D., & Maskin, E. (1986). The folk theorem in repeated games with discounting or with incomplete information. ''Econometrica'', ''54''(3), 533-554. || '''theory''' — folk theorem sustains cooperation: The folk theorem for repeated games with discounting is cited as the framing that leverages repeated interaction.
+|-
+| Applications || *'''[[Measurement]]''' — metric models compete on predictive accuracy beyond the model already in use || Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. || '''theory''' — metric models compete on accuracy: Hanson's values-and-beliefs framing is cited for metric models competing on predictive accuracy beyond the model in use.
+|-
+| Applications || *'''[[Measurement]]''' — metric models compete on predictive accuracy beyond the model already in use , correlation with established markers, causal explanation quality, and novelty *'''[[Benefuture currency]]''' — currencies are domain-locked with no arbitrage permitted || Hanson, R. (2013). Shall we vote on values, but bet on beliefs? ''Journal of Political Philosophy'', ''21''(2), 151-178. || '''theory''' — metric models compete on accuracy and novelty: Same reference, cited for metric models competing on accuracy, marker correlation, causal explanation and novelty.
+|-
+| Applications ||  currency]]''' — currencies are domain-locked with no arbitrage permitted competing via resource efficiency; probabilistic escrow adjusts dynamically; the transaction log serves as behavioral substrate *'''[[Government]]''' — expertise weighting combined with impact weighting integrates epistocratic || Estlund, D. (2008). ''Democratic Authority: A Philosophical Framework''. Princeton University Press. || '''theory''' — domain-locked currencies and escrow: Estlund's democratic authority is cited beside the currency applications bullet; the link to Estlund is indirect.
+|-
+| Applications || substrate *'''[[Government]]''' — expertise weighting combined with impact weighting integrates epistocratic and affected-interests principles; choice architecture creates goal-aligned defaults *'''[[Reputation]]''' — reputation is non-transferable and domain-specific, functioning as a costly signal || Spence, M. (1973). Job market signaling. ''The Quarterly Journal of Economics'', ''87''(3), 355-374. || '''theory''' — expertise and impact weighting; choice architecture: Spence's job-market signalling is cited beside the expertise-and-impact weighting bullet; the link is indirect.
+|-
+| Discussion › Mechanism Design Relation || === Mechanism Design Relation === Standard impossibility results from social choice theory || Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601. || '''theory''' — social choice impossibility results: Gibbard's manipulation result is cited among standard social choice impossibility results that bound mechanism design.
+|-
+| Discussion › Mechanism Design Relation || === Mechanism Design Relation === Standard impossibility results from social choice theory || Arrow, K. J. (1951). ''Social Choice and Individual Values''. Wiley. || '''theory''' — social choice impossibility results: Arrow's impossibility theorem is cited among standard social choice results on aggregating preferences.
+|-
+| Discussion › Mechanism Design Relation || Cardinal, interpersonally comparable weighting escapes Arrow's theorem || Sen, A. (1970). ''Collective Choice and Social Welfare''. Holden-Day. || '''theory''' — cardinal comparable weighting escapes Arrow: Sen's work shows that cardinal, interpersonally comparable weighting escapes Arrow's theorem, the route the design takes.
+|-
+| Discussion › Capability Grounding || === Capability Grounding === The multi-currency, multi-metric approach parallels capability theory in welfare economics || Sen, A. (1999). ''Development as Freedom''. Oxford University Press. || '''theory''' — capability theory parallel: Sen's capability theory is cited as the parallel for the multi-currency, multi-metric approach.
+|-
+| Discussion › Capability Grounding || === Capability Grounding === The multi-currency, multi-metric approach parallels capability theory in welfare economics || Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. || '''theory''' — capability theory parallel: Nussbaum's human development approach is cited as the parallel for the multi-currency, multi-metric approach.
+|}
+
+=== [[Understanding]] ===
+{| class="wikitable sortable"
+! Section !! Supports !! Reference !! Relation to Benefuture
+|-
+| Mathematical Representation || The mechanism has an interesting parallel to the Free Energy Principle. || '''Friston, K. (2010).''' The free-energy principle: A unified brain theory? ''Nature Reviews Neuroscience'', ''11''(2), 127–138. https://doi.org/10.1038/nrn2787 || '''theory''' — parallel to free-energy principle: Friston's free-energy principle is cited as an interesting parallel to the understanding mechanism.
+|-
+| Mathematical Representation › Ideal Case: || one minus the Brier Score, a proper scoring rule || Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. || '''precedent''' — accuracy via proper scoring rule: Brier's score is the precedent for measuring accuracy as one minus the Brier score, a proper scoring rule.
+|-
+| Discussion › Measuring understanding || * '''For M(T,D) — Map-Territory Fit:''' ** The Tversky index offers a means of quantifying the similarity between a description of understanding and a target representation, enabling an evaluation of the "map-territory" match. || Tversky, A. (1977). Features of similarity. ''Psychological Review, 84''(4), 327–352. https://doi.org/10.1037/0033-295X.84.4.327 || '''precedent''' — similarity index for map-territory fit: Tversky's similarity index is cited as an existing way to quantify how well a description matches a target.
+|-
+| Discussion › Measuring understanding || ** Structural similarity indices from information theory provide additional measures of correspondence between model and reality. || Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151. || '''precedent''' — divergence measures for correspondence: Divergence measures based on Shannon entropy are cited as existing structural similarity indices for model-reality correspondence.
+|-
+| Discussion › Measuring understanding ||  || Kullback, S., & Leibler, R. A. (1951). On information and sufficiency. ''Annals of Mathematical Statistics'', 22(1), 79-86. || '''precedent''' — divergence between model and reality: Kullback-Leibler divergence is cited as an existing measure of correspondence.
+|-
+| Discussion › Measuring understanding || * '''For B(i) — Prediction Accuracy:''' ** Joyce argues that probabilistic credences, conforming to probability theory, offer a coherent framework for assessing the accuracy of beliefs, suggesting their utility in measuring aspects of understanding. || Joyce, J.M., 1998, "A Nonpragmatic Vindication of Probabilism", ''Philosophy of Science'', 65(4): 575–603. || '''theory''' — probabilism for belief accuracy: Joyce's nonpragmatic vindication of probabilism is cited for probabilistic credences giving a coherent framework for belief accuracy.
+|-
+| Discussion › Measuring understanding || ** The Brier score provides a proper scoring rule for evaluating the accuracy of probabilistic predictions, which can be applied to assess predictive accuracy related to understanding. || Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. || '''precedent''' — proper scoring of predictions: Brier score is cited as a proper scoring rule for evaluating probabilistic predictions and their accuracy.
+|-
+| Discussion › Measuring understanding || ** Log-likelihood scoring and calibration metrics offer complementary measures of predictive quality. || Gneiting, T., & Raftery, A. E. (2007). Strictly proper scoring rules, prediction, and estimation. ''Journal of the American Statistical Association'', 102(477), 359–378. || '''precedent''' — proper scoring rules: Strictly proper scoring rules are cited for log-likelihood scoring and calibration as complementary measures of predictive quality.
+|-
+| Discussion › Measuring understanding || ** Log-likelihood scoring and calibration metrics offer complementary measures of predictive quality. || Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338. || '''precedent''' — forecast verification framework: General framework for forecast verification, cited with log-likelihood scoring and calibration as complementary measures.
+|-
+| Discussion › Measuring understanding ||  || Toulmin, S. E. (2003). ''The uses of argument''. Cambridge University Press. || '''theory''' — argument structure: Toulmin's model of argument is cited under measuring understanding.
+|-
+| Discussion › Measuring understanding || ** Pearl's causal inference framework provides formal criteria for evaluating whether causal claims are structurally valid and identifiable from data, via directed acyclic graphs, do-calculus, and back-door/front-door criteria. || Pearl, J. (2009). ''Causality: Models, Reasoning, and Inference'' (2nd ed.). Cambridge University Press. || '''precedent''' — formal causal criteria: Pearl's causal framework, with DAGs and do-calculus, is cited as the formal test of whether causal claims are identifiable.
+|-
+| Discussion › Measuring understanding || ** Woodward's interventionist account specifies that genuine explanation requires identifying relationships invariant under intervention, distinguishing mechanistic understanding from mere predictive correlation. || Woodward, J. (2003). ''Making Things Happen: A Theory of Causal Explanation''. Oxford University Press. || '''theory''' — mechanistic understanding beyond prediction: Woodward's interventionist account requires relationships invariant under intervention, separating mechanistic understanding from prediction.
+|-
+| Discussion › Measuring understanding || ** Causal discovery algorithms enable empirical identification of causal structure from observational data. || Spirtes, P., Glymour, C., & Scheines, R. (2000). ''Causation, Prediction, and Search'' (2nd ed.). MIT Press. || '''precedent''' — causal discovery from data: Causal discovery algorithms are cited as an existing way to identify causal structure from observational data.
+|-
+| Discussion › Measuring understanding || * '''For C(i) — Complexity:''' ** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions. || Solomonoff, R. J. (1964). A formal theory of inductive inference. ''Information and control'', ''7''(1), 1-22. || '''theory''' — complexity term for hypotheses: Solomonoff induction is cited as the analogy for the complexity term in the understanding model.
+|-
+| Discussion › Measuring understanding || * '''For C(i) — Complexity:''' ** Similar to how Solomonoff induction utilizes Kolmogorov complexity to assess the complexity of hypotheses, the Benefuture model incorporates a complexity term, ''C'', which can be related to the descriptive complexity of the model used to predict interactions. || Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. ''Problems of information transmission'', ''1''(1), 1-7. || '''theory''' — complexity as basis of the C term: Kolmogorov complexity is cited as the basis for the complexity term C in the understanding model.
+|-
+| Discussion › Measuring understanding || ** Minimum Description Length provides a practical approximation to Kolmogorov complexity for model selection. || Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471. || '''precedent''' — description length for model selection: Minimum description length is cited as a practical approximation to Kolmogorov complexity for model selection.
+|-
+| Discussion › Measuring understanding || ** Minimum Description Length provides a practical approximation to Kolmogorov complexity for model selection. || Grünwald, P. D. (2007). ''The Minimum Description Length Principle''. MIT Press. || '''precedent''' — description length for model selection: Grunwald's MDL principle is cited as the practical approximation to Kolmogorov complexity used for model selection.
+|-
+| Discussion › Measuring understanding ||  || Sattler, J. M. (2014). ''Assessment of children: Cognitive foundations and applications''. Jerome M. Sattler, Publisher. || '''context''' — child cognitive assessment: Child assessment text cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Toulmin, S. E. (2003). ''The uses of argument''. Cambridge university press. || '''theory''' — argument structure: Toulmin's argument model is cited again under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Novak, J. D., & Gowin, D. B. (1984). ''Learning how to learn''. Cambridge University Press. || '''precedent''' — concept mapping for understanding: Concept mapping, Novak and Gowin's method, is cited as an existing way to assess understanding.
+|-
+| Discussion › Measuring understanding ||  || Ruiz-Primo, M. A., & Shavelson, R. J. (1997). Concept maps as an assessment tool. ''Instructional science'', ''25''(2), 81-105. || '''precedent''' — concept maps as assessment: Concept maps as an assessment tool are cited as an existing method under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Wiggins, G. P. (1998). ''Educative assessment: Designing assessments to inform and improve performance''. Jossey-Bass. || '''precedent''' — educative assessment: Educative assessment, designing tests to inform and improve performance, is cited as an existing approach.
+|-
+| Discussion › Measuring understanding ||  || Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass. || '''precedent''' — performance assessment: Performance assessments are cited as an existing alternative to multiple-choice tests of understanding.
+|-
+| Discussion › Measuring understanding ||  || Anderson, J. R. (2016). ''Cognitive psychology and its implications''. Worth Publishers. || '''context''' — cognitive psychology background: Cognitive psychology textbook cited under measuring understanding.
+|-
+| Discussion › Measuring understanding || ** Citation analysis || Garfield, E. (1955). Citation indexes for science. ''Science'', ''122''(3159), 108-111. https://doi.org/10.1126/science.122.3159.108 || '''precedent''' — citation analysis: Citation indexes are cited as an existing analysis tool, for the citation-analysis part of measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Dweck, C. S. (2006). ''Mindset: The new psychology of success''. Random House. || '''context''' — mindset: Popular book on mindset cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Siemens, G. (2013). Learning analytics: The dawn of a learning health system. ''American educational research journal'', ''50''(5), 1068-1089. https://doi.org/10.3102/0002831213485277 || '''precedent''' — learning analytics: Learning analytics as a learning health system is cited as an existing practice for measuring learning.
+|-
+| Discussion › Measuring understanding ||  || Arter, J. A., & McTighe, J. (2001). ''Scoring rubrics in practice: A work in progress''. Corwin Press. || '''precedent''' — scoring rubrics: Scoring rubrics are cited as an existing practice for assessing performance.
+|-
+| Discussion › Measuring understanding ||  || Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press. || '''precedent''' — portfolio assessment: Portfolio assessment is cited as an existing method under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Black, P., & Wiliam, D. (1998). ''Inside the Black Box''. GL Assessment. || '''precedent''' — formative assessment: Formative assessment work is cited as an existing practice under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Dylan, W., & Black, P. (2001). Assessment and classroom learning. ''Assessment in Education: Principles, Policy & Practice'', ''8''(1), 7-74. || '''precedent''' — formative assessment: Assessment and classroom learning is cited under measuring understanding; the author listing appears garbled in the index, so the citation needs checking.
+|-
+| Discussion › Measuring understanding ||  || Arter, J. A., & McTighe, J. (2001). ''Scoring rubrics in practice: A work in progress''. Corwin Press. || '''precedent''' — scoring rubrics: Scoring rubrics are cited again under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Mercer, N. (2008). Talk and the development of reasoning. ''British Educational Research Journal'', ''34''(1), 1-17. || '''evidence''' — talk and reasoning development: Study on talk and the development of reasoning, cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Chin, C. (2006). Classroom talk that engages students in thinking: A framework for lesson analysis. In P. A. Alexander & P. R. Pintrich (Eds.), ''Handbook of educational psychology'' (2nd ed., pp. 1069-1091). Lawrence Erlbaum Associates Publishers. || '''precedent''' — classroom talk framework: Framework for lesson analysis of classroom talk, cited as an existing method under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Lemke, J. L. (1990). ''Talking science: Language, learning, and values''. Ablex Publishing Corporation. || '''context''' — language and learning in science: Book on language, learning and values in science, cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Borich, G. D. (2017). ''Effective teaching methods''. Pearson. || '''context''' — teaching methods: Textbook on teaching methods, cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Emmer, E. T., & Stough, L. M. (2001). Classroom management: A critical part of educational psychology, with implications for teacher education. ''Educational Psychologist'', ''36''(2), 103-113. || '''context''' — classroom management: Article on classroom management, cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Stiggins, R., Arter, J., Chappuis, J., & Chappuis, S. (2006). ''Classroom assessment for student learning: Doing it right—using it well''. Educational Testing Service. || '''precedent''' — classroom assessment for learning: Classroom assessment for student learning is cited as an existing practice under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Morgan, M. G., & Henrion, M. (1990). ''Uncertainty: a guide to dealing with uncertainties in quantitative risk and policy analysis''. Cambridge university press. || '''theory''' — uncertainty in quantitative risk: Guide to uncertainty in quantitative risk is cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. || '''precedent''' — social network analysis: Social network analysis text cited again under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. || '''precedent''' — social network analysis: Social network analysis methods text cited again under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Provan, K. G., & Milward, H. B. (1995). A preliminary theory of interorganizational network effectiveness. ''Administrative science quarterly'', ''40''(1), 1-33. || '''theory''' — network effectiveness theory: Preliminary theory of interorganisational network effectiveness is cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/ || '''precedent''' — innovation index: Global Innovation Index, an existing indicator, is cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || Organisation for Economic Co-operation and Development. (Various years). ''PISA Results''. https://www.oecd.org/pisa/ || '''precedent''' — educational outcome measure: PISA results, an existing international measure, are cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || United Nations Development Programme. (Various years). ''Human Development Report''. http://hdr.undp.org/ || '''precedent''' — human development index: Human Development Report, an existing measure, is cited under measuring understanding.
+|-
+| Discussion › Measuring understanding ||  || World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/ || '''precedent''' — governance indicators: Worldwide Governance Indicators, an existing measure, are cited under measuring understanding.
+|}
+
+<!-- END GENERATED INDEX -->
