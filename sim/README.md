@@ -566,7 +566,10 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
-  regression test).
+  regression test). Governance on 9c0a09a (continuous methods, 576 Sobol evaluations, 10 active-learning
+  worlds): no failing world; total-order indices signal noise 0.54, ability scatter 0.47, local noise 0.26,
+  hidden outcomes 0.17, delegation 0.17, collusion 0.16, loyalty 0.06; the margin barely varies (variance
+  3e-5), so first-order indices are noise.
 - **Attack search** (commit 7063060; population 8 × 4 iterations, budget 1): no strategy found fails
   either world. Economy: the worst, a bloc of three with deceit 0.92 and laundering 0.83, takes the
   margin to 0.57 on held-out seeds (the bloc ends with negative wealth relative to honest agents);
