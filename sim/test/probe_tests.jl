@@ -1098,4 +1098,10 @@ end
     v, st, cal = arm(:vote), arm(:credence_stated), arm(:credence_calibrated)
     @test paired_effect(v .- st; z = 2.0).significant
     @test paired_effect(cal .- v; z = 3.0).significant
+    # (c) The diversity-novelty bonus for minority choices (L158, ruling 8.121) is what scores the hidden
+    # outcomes the bloc defects on: without its split trials calibrated credences are captured too
+    # (measured 0.959 with, 0.673 without).
+    nodiv = [acc(run_m5(M5Params(m3, 1:4; decisions = 800, signal_σ = 12.0, ability_spread = 1.5, p_apparent = 0.4,
+                                 colluders = bloc, stealth = true, loyalty = 5.0, ballot = :credence_calibrated, diversity = false); seed)) for seed in 1:6]
+    @test paired_effect(cal .- nodiv; z = 3.0).significant
 end

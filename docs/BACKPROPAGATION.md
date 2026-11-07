@@ -2727,3 +2727,11 @@ diversity-novelty bonus, correlated-ballot detection, delegation of credence, su
 Crime, so Confidence«Cf»); Government article: a "Confidence-weighted" aspect beside "Liquid where needed".
 Lean: `cfd_ballot_weight_ref` (weight × calibration slope in [0, 2] × capped stated log-odds), exported and
 called by M5's tally, so the rule lives once.
+8.122 finding (2026-11-07, on 8.121): the minority bonus is native and is what makes calibrated credence
+work. M5's diversity-novelty subsidy (L158: locales trying the option not chosen are paid `novelty_bonus`)
+already boosts clusters choosing minority options, and its split trials make otherwise hidden outcomes
+apparent. Against a stealth bloc (defecting only where outcomes stay hidden), 6 seeds: calibrated credences
+0.959 with the trials, 0.673 without (captured, like stated credences); plain votes 0.752 and 0.739. The
+bloc's confident wrong calls reach its members' records only through the minority trials. So the author's
+pairing in 8.121 is load-bearing: calibration needs outcomes, and the minority bonus produces them where a
+bloc would hide.
