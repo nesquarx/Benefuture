@@ -12,3 +12,12 @@ Drawn from public agendas by the criteria of `docs/REPLAY_PREREG.md` §8, before
 | 6 | economy | EU post-2027 Cohesion Policy legislative package (negotiations; consultations open) | [source](https://www.gov.ie/en/department-of-public-expenditure-ndp-delivery-and-reform/news/have-your-say-on-the-future-of-the-european-unions-cohesion-policy) | not built |
 
 Gaps in round 1: no candidate yet for security and geopolitics, or for education; round 2 searches those agendas (UN Security Council programme of work, national education acts with scheduled votes).
+
+# Round 2 (drawn 2026-11-07, security; education still without a dated candidate)
+
+Build order: `random.Random(20261108).shuffle` over the list as written.
+
+| Order | Family | Decision | Source | Status |
+|---|---|---|---|---|
+| 1 | security | UN Security Council: MONUSCO (DR Congo) mandate, expiring 20 December 2026 (renew, renew with drawdown, end) | [source](https://aa.com.tr/en/world/un-security-council-renews-mandate-of-peacekeeping-force-in-congo-for-another-year/3776162) | not built |
+| 2 | security | UN Security Council: AUSSOM (Somalia) mandate, expiring 31 December 2026 (renew, renew with drawdown, end) | [source](https://allafrica.com/stories/202512240311.html) | not built |
