@@ -2735,3 +2735,8 @@ apparent. Against a stealth bloc (defecting only where outcomes stay hidden), 6 
 bloc's confident wrong calls reach its members' records only through the minority trials. So the author's
 pairing in 8.121 is load-bearing: calibration needs outcomes, and the minority bonus produces them where a
 bloc would hide.
+8.122 continued: delegated credence is native. A delegate casts `cfd_ballot_weight` with the whole weight it
+holds (its delegators' included) times its own calibration and stated log-odds, so delegators inherit the
+delegate's calibrated confidence and the delegation caps still bound concentration; nothing added.
+Correlated-ballot detection (credences clustered far tighter than independent judges give, counted once as
+in 8.111) remains to build; calibration plus the minority trials already defeat the colluding bloc tested.
