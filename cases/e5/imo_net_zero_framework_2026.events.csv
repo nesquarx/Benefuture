@@ -1,0 +1,9 @@
+event,trial_id,date,occurred,citation_with_page
+imo_binding_standard_met_target,sulphur-cap-2020,2021-12-31,1,"MARPOL Annex VI 0.50% sulphur cap from 2020: compliance high (recalled; primary not seen)"
+imo_binding_standard_met_target,EEDI-phases,2020-12-31,1,"EEDI phase targets met by new ships (recalled; primary not seen)"
+imo_binding_standard_met_target,NOx-Tier-III-ECA,2021-12-31,1,"NOx Tier III applied in North American ECAs from 2016 (recalled; primary not seen)"
+imo_binding_standard_met_target,ballast-water-D2,2024-09-08,0,"Ballast water D-2 standard: repeated delays and an experience-building phase (recalled; primary not seen)"
+carbon_price_cut_covered_emissions,EU-ETS,2019-12-31,1,"EU ETS: covered emissions fell (recalled; primary not seen)"
+carbon_price_cut_covered_emissions,California-cap-and-trade,2020-12-31,1,"California cap-and-trade: covered emissions below cap (recalled; primary not seen)"
+carbon_price_cut_covered_emissions,CORSIA,2023-12-31,0,"CORSIA: offsetting with little effect on aviation emissions (recalled; primary not seen)"
+carbon_price_cut_covered_emissions,China-national-ETS,2024-12-31,0,"China national ETS: intensity-based, little absolute cut so far (recalled; primary not seen)"

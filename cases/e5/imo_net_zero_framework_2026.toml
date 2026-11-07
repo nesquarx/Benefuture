@@ -1,0 +1,139 @@
+# E5 current-decision case (REPLAY_PREREG §8), registered 2026-11-07; round 3 (third in seeded order; the
+# watch-listed Artemis case is skipped, criterion 5). Decision: the IMO Net-Zero Framework at the resumed
+# extraordinary MEPC session, 4 December 2026 (after MEPC 85, 30 November-3 December). Options as reported: adopt
+# as agreed (fuel GHG-intensity standard with its pricing mechanism and fund), adopt without the pricing element
+# (the alternative pressed by the US-led coalition), or adjourn again (October 2025: 57-49 to adjourn; MEPC 84,
+# April-May 2026: 55-51 to keep the text). Sources are trade press; the regulation text was not read.
+# Magnitudes (judgment, stated): shipping emits about 1 Gt CO2 a year; the full framework is taken to cut
+# about 10% of it over 2028-2035 (0.8 Gt), half through the standard and half through the price; at the
+# mortality cost of carbon, 2.26e-4 deaths per tonne (Bressler 2021, Nature Communications 12, 4467, abstract
+# read), each half is about 90,500 lifetime excess deaths, 70% borne by climate-vulnerable populations
+# (judgment). Air-pollution co-benefits are not counted (the framework targets GHG; Sofiev et al. 2018 cover
+# sulphur), which understates the case for adoption.
+
+id = "imo_net_zero_framework_2026"
+title = "IMO Net-Zero Framework: adopt with pricing, adopt without pricing, or adjourn (4 December 2026)"
+family = "environment"
+era = "2026"
+tier = "full"
+decision_date = "2026-11-07"
+decision_makers = ["IMO Member States (MEPC extraordinary session)"]
+actual_choice = "pending"
+actual_outcome_class = "pending"
+primary_or_held_out = "e5"
+
+[[sources]]
+id = "imo_and_pricing_record"
+title = "IMO binding environmental standards (sulphur cap 2020, EEDI, NOx Tier III, ballast water D-2) and carbon-pricing schemes (EU ETS, California, CORSIA, China national ETS)"
+as_of_date = "2026-11-07"
+url = "https://doi.org/10.1038/s41467-021-24487-w"
+notes = "Outcomes from public reporting, recalled; primary records not seen."
+
+[[ groups ]]
+id = "world_population"
+name = "World population outside the climate-vulnerable group (about 7 billion), in thousands"
+population = 7000000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "climate_vulnerable"
+name = "Climate-vulnerable and least-developed populations, including small island states (about 1.1 billion; judgment), in thousands"
+population = 1100000
+baseline_u = 30.0
+baseline_h = 35.0
+
+[[ groups ]]
+id = "shipping_sector"
+name = "Seafarers and shipping workforce (about 1.9 million; judgment), in thousands"
+population = 1900
+baseline_u = 50.0
+baseline_h = 50.0
+
+[[ options ]]
+id = "adjourn_again"
+name = "Adjourn again: no framework adopted"
+source = "imo_and_pricing_record"
+known_date = "2025-10-17"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0, 0.0]
+pred_dh = [0.0, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [31.7, 73.9, 0.0]
+
+[[ options.scenarios ]]
+name = "standard_would_have_worked"
+environmental_health = true
+p_chain = ["imo_binding_standard_met_target"]
+du = [-0.0002, -0.0012, 0.0]
+dh = [-0.0002, -0.0014, 0.0]
+irreparable = [27.2, 63.4, 0.0]
+
+[[ options.scenarios ]]
+name = "price_would_have_worked"
+environmental_health = true
+p_chain = ["carbon_price_cut_covered_emissions"]
+du = [-0.0002, -0.0012, 0.0]
+dh = [-0.0002, -0.0014, 0.0]
+irreparable = [27.2, 63.4, 0.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "adopt_without_pricing"
+name = "Adopt the fuel standard without the pricing element"
+source = "imo_and_pricing_record"
+known_date = "2026-05-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0, 0.0]
+pred_dh = [0.0, -0.02, -0.15]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [13.6, 31.7, 0.0]
+
+[[ options.scenarios ]]
+name = "price_would_have_worked"
+environmental_health = true
+p_chain = ["carbon_price_cut_covered_emissions"]
+du = [-0.0002, -0.0012, 0.0]
+dh = [-0.0002, -0.0014, 0.0]
+irreparable = [27.2, 63.4, 0.0]
+
+[[ options.scenarios ]]
+name = "compliance_costs"
+p_chain = []
+complement = true
+dh = [0.0, -0.02, -0.15]
+
+[[ options ]]
+id = "adopt_with_pricing"
+name = "Adopt the Net-Zero Framework as agreed, with its pricing mechanism and fund"
+source = "imo_and_pricing_record"
+known_date = "2025-04-11"
+is_inaction = false
+scope_delta = 0.0
+# freight costs on vulnerable states -0.05, partly returned by the fund +0.03: net -0.02; sector -0.3 (judgment)
+pred_du = [0.0, 0.0, 0.0]
+pred_dh = [0.0, -0.02, -0.3]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "costs_with_fund"
+p_chain = []
+complement = true
+dh = [0.0, -0.02, -0.3]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "adopt_with_pricing"
+methods = ["placeholder: scored when the outcome is known"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
