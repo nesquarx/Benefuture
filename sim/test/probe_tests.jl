@@ -889,3 +889,32 @@ end
     @test paired_effect(honest .- open_; z = 3.0).significant
     @test ratios(1, 0.4, 1.0) == ratios(1, 0.0, 1.0)   # audited claims: overclaiming changes nothing measured
 end
+
+# ==============================================================================
+# Probe: learners' reports audit overclaimed understanding (8.105)
+# ==============================================================================
+# Hypothesis: with no set audit rate, learners whose lessons deliver less than predicted (beyond what
+# lessons fall short on everyone) report the teacher, and a founded report audits its claims. Reports
+# find nearly every overclaimer (at least 90% per seed) and recover part of the floor lost to unaudited
+# overclaims (paired against no audits, z = 2). Measured (60 beings, 120 steps, 8 seeds): 19–20 of 20
+# overclaimers audited, most within 10 steps; 4–11 honest teachers audited too, which costs nothing here
+# (an audit reads them as they are); floor growth 7.1 unaudited, 9.3 with reports, 12.2 honest: the
+# early wasted lessons compound before detection, so reports recover about 40% of the loss.
+@testset "Probe: learners' reports audit overclaimed understanding (8.105)" begin
+    p = ToyParams(n = 60, steps = 120, plans = 6)
+    fg(tr) = tr.floor_u[end] - tr.floor_u[1]
+    traits(seed) = [random_utraits(Xoshiro(hash((seed, b))), 5) for b in 1:p.n]
+    oc = [b % 3 == 0 ? 0.4 : 0.0 for b in 1:p.n]
+    ratios(seed, o, ar) = understanding_ratios(traits(seed), Xoshiro(hash((seed, :meas))); n_records = 50, overclaim = o, audit_rate = ar)
+    seeds = 1:8
+    open_ = Float64[]; rep = Float64[]; caught = Float64[]
+    for seed in seeds
+        o, h = ratios(seed, oc, 0.0), ratios(seed, zeros(p.n), 1.0)
+        push!(open_, fg(run_m7(p; seed, claim_ratio = o)))
+        tr = run_m7(p; seed, claim_ratio = o, audited_ratio = h)
+        push!(rep, fg(tr))
+        push!(caught, count(b -> oc[b] > 0 && tr.audited_at[b] > 0, 1:p.n) / count(>(0), oc))
+    end
+    @test all(>=(0.9), caught)
+    @test paired_effect(rep .- open_; z = 2.0).significant
+end

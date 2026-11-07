@@ -245,7 +245,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1,
                 accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
-                claim_ratio::Union{Nothing,AbstractVector} = nothing)
+                claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
+                report_z::Real = 3.0, report_min::Integer = 5)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -253,6 +254,12 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
           0 <= novelty_min <= 1 && 0 < top_frac <= 1 &&
           accession_step >= 0 && accession_n >= 0 && lt_window >= 1 && (isinf(uplift_capacity) || uplift_capacity >= 0),
           "shares and chances in [0, 1] (research share below 1), gains, scatters and cost non-negative, class positive, valid accession parameters")
+    check(audited_ratio === nothing || (claim_ratio !== nothing && length(audited_ratio) == p.n), "an audited ratio per being, with claim ratios")
+    # Reported audits (8.105): a teacher whose lessons deliver less than predicted, beyond what lessons fall
+    # short on everyone, is reported by its learners; a founded report audits its claims, and it is read at
+    # its audited ratio from then on. Without `audited_ratio`, claims are never audited by report.
+    claim_ratio = claim_ratio === nothing ? nothing : collect(Float64, claim_ratio)
+    shortfall = [Float64[] for _ in 1:p.n]; audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
@@ -347,7 +354,25 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                         for b in findall(>(0), opts[i - 1].du)
                             lesson_cap[b] = max(lesson_cap[b], s.u[e] - tacit[e])
                         end
+                        if lesson_seen !== nothing
+                            for b in findall(>(0), lesson_seen.du)
+                                push!(shortfall[e], lesson_seen.du[b] - opts[i - 1].du[b])  # predicted less delivered
+                            end
+                        end
                         push!(tr.kind, :lesson)
+                    end
+                end
+                if audited_ratio !== nothing
+                    for e in 1:p.n
+                        x = shortfall[e]
+                        (length(x) >= report_min && claim_ratio[e] != audited_ratio[e]) || continue
+                        rest = vcat((shortfall[k] for k in 1:p.n if k != e)...)
+                        length(rest) >= 2 || continue
+                        m, se = mean(x), std(x) / sqrt(length(x)); m0, se0 = mean(rest), std(rest) / sqrt(length(rest))
+                        if (m - m0) / sqrt(se^2 + se0^2 + 1e-24) > report_z
+                            claim_ratio[e] = audited_ratio[e]; audits_by_report[] += 1; audited_at[e] = length(tr.floor_u)
+                            empty!(x)
+                        end
                     end
                 end
                 for b in 1:p.n
@@ -383,7 +408,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             record!()
         end
         return (; (k => getfield(tr, k) for k in keys(tr) if !(k in (:breakthroughs, :innovations, :spent)))...,
-                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[])
+                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[],
+                audits_by_report = audits_by_report[], audited_at = audited_at)
     end
 
     existing_ids = collect(1:p.n)
@@ -611,7 +637,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     end
 
     standard = (; (k => getfield(tr, k) for k in keys(tr) if !(k in (:breakthroughs, :innovations, :spent)))...,
-                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[])
+                breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[],
+                audits_by_report = audits_by_report[], audited_at = audited_at)
     (; standard...,
        newcomer_u_gain = mean(s.u[(p.n + 1):end]) - accession_u,
        newcomer_h_gain = mean(s.h[(p.n + 1):end]) - accession_h,

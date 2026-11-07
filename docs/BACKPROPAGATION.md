@@ -2466,3 +2466,17 @@ lever on the floor, with diminishing returns; in Benefuture it should emerge fro
 rather than a fixed rate. Toy assumptions: traits fixed (teaching raises the scalar level, not the
 traits), one thing measured, the overclaim constant. Candidate homes: Understanding article
 (measurement), AdvAp (explanation claims as audit targets).
+8.105 finding (2026-11-07, on 8.104): learners' reports audit overclaimed understanding without a set
+audit rate. In M7 a teacher's lessons are predicted on the measured view and delivered on true levels;
+each learner's shortfall (predicted less delivered) joins the teacher's record, and a teacher whose mean
+shortfall exceeds everyone else's by `report_z` (3) combined standard errors after `report_min` (5)
+lessons is reported and audited (read at its audited ratio from then on), the AdvAp pattern applied to
+lessons. With a third of beings overclaiming explanation by 0.4 (60 beings, 120 steps, 8 seeds): 19–20
+of 20 overclaimers audited per seed, most within 10 steps; 4–11 honest teachers audited too (an audit
+reads them as they are, so it costs nothing here; with audit costs it would); floor growth of
+understanding 7.1 with no audits, 9.3 with reports (z ≈ 2.6), 12.2 honest. The remaining gap is early:
+wasted lessons in the first steps compound through later teaching before detection, and lowering
+`report_min` to 2 changes nothing (9.4), so the lever left is detection that precedes lessons (claims
+checked before they are relied on, as escrow does for transactions), not faster reports. Toy assumptions:
+no reporter reward or audit cost modelled in M7, fixed traits. Candidate homes: AdvAp (lesson
+shortfalls as reportable outputs), Understanding article (measurement).

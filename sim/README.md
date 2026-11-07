@@ -1280,6 +1280,7 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Lesson-report significance and minimum lessons (M7, 8.105) | `report_z`, `report_min` | 3.0, 5 | AdvAp's `adv_z` and `adv_min_records` analogues |
 | Significance of an item in pragmatic understanding | `th` (`understanding_truth_and_measure`) | 0.0 | L31 (Wt ≥ Th) |
 | Audit rate of causal-explanation claims (8.98 probe) | `audit_rate` | 1.0 in the probe; swept 0–1 | institutional, so a sweep (CLAUDE.md), never a default |
 | Compensation efficiency (E4 replay) | `compensation_efficiency` | 0.75 | 8.100; analogue: the excess burden of tax-financed transfers, roughly 0.1 to 0.5 per unit raised |
