@@ -85,12 +85,20 @@ p_chain = ["serious_safety_restriction_within_2y"]
 dh = [-0.5, -0.0005]
 irreparable = [6.0, 0.0]
 
+# Edited after the first replay (2026-11-07): the scenarios were meant as additive components (expected effect
+# is linear in them), but the benefit sat in the complement, which the overlapping failure (0.8) and safety
+# (0.29) chains clipped to zero, pricing approval with no upside. The benefit now has its own event (a
+# surrogate approval later confirmed: 0 of 3, Laplace 0.2) and the complement carries no effect.
 [[ options.scenarios ]]
 name = "drug_works"
-p_chain = []
-complement = true
+p_chain = ["surrogate_approval_confirmed"]
 du = [1.0, 0.0]
 dh = [3.0, -0.0005]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
 
 [counterfactual]
 actual_floor_u_delta = 0.0
