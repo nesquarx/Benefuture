@@ -69,6 +69,13 @@ def lt_offset_admissible_ref (du dh base_h : Float) (nha : Bool) (retention comp
     if rel > soft_bar && !nha then false
     else duL >= loss * (1.0 + rel / offset_scale)
 
+/-- Policy-level irreparable harm (author ruling 8.124): among a decision's options, one whose expected
+    irreparable harm (aggregate, net of survival it adds elsewhere) exceeds the least such harm by more than
+    `tol` is blocked, unless the excess is necessary harm. Individual risk-taking stays under the per-being
+    freedom gate. -/
+def irreparable_blocked_ref (harm least tol : Float) (nha : Bool) : Bool :=
+  harm > least + tol && !nha
+
 /-- A confidence ballot's weight (LqCfdBfDm, author ruling 8.121): the voter's weight × the calibration of its
     confidence record (PrAcc of its past confidences, as a slope in [0, 2]) × its stated log-odds, capped at
     ±`cap`. Stated confidence counts only as far as it has proved calibrated. -/

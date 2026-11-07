@@ -2749,3 +2749,24 @@ adopt with pricing (9 of 13 rule sets). Also exposed, left open for the author: 
 absolute death tolls are small per person, so the freedom gate's per-being risk bar (0.1%) never binds and
 the floors barely move; only the environmental block catches them. Whether irreparable harm should also be
 read in absolute terms (a count bar beside the per-being bar) is a question for the author.
+8.124 ruling (author, 2026-11-07, on 8.123's open question): irreparable harm is irreparable harm, its
+severity massive for death, but an infinitesimal per-person chance is just that: freedom cannot stop a
+person crossing the road for the chance of being run over, but it can block a policy that raises that
+chance by a tiny amount for a whole population, unless the same policy increases survival by a massive
+amount elsewhere; at that scale it is a long-termist trolley problem. Read: individual risk-taking stays
+under the per-being freedom gate; a policy is judged by its aggregate expected irreparable harm, net of the
+survival it adds elsewhere, so among a decision's options one whose net expected irreparable harm exceeds
+the least-harm option's is blocked unless the excess is necessary harm. Generalises 8.118 (environmental
+pathways) to every pathway. Candidate homes: Freedom (harm boundary; individual vs policy), L135, L74.
+8.124 built (2026-11-07): Lean `irreparable_blocked_ref`: among a decision's options, one whose aggregate
+expected irreparable harm exceeds the least by more than `irr_tol` (1% of the least, at least 0.01;
+governed) is blocked in both readings; the per-being freedom gate stays for individual risk. Two defects
+found and fixed on the way, both against the rulings' letter: (1) a necessary-harm exemption had been written
+into the environmental and irreparable blocks; neither 8.118 nor 8.124 grants one (8.124's only exception,
+survival added elsewhere, is in the net comparison), so it is removed; (2) when no option passed the floors
+the replay fell back to inaction even when inaction was blocked; it now chooses the best-valued unblocked
+option, loudly (a blocked inaction is informed allowing, 8.47). Fourth replay (not out of sample): all
+choices unchanged except school closures 2020, now close schools (compensated), where keeping schools open
+carried 108 expected deaths against none; its falsifier F1 no longer fires. Pre-registered 6/6 and held-out
+5/5 unchanged. E5 credences: WHO binding annex 57% (was 44%), IMO adopt 79%, FDA wait 95%, FOMC hold 58%.
+The rule battery gains a fourteenth set (the full rules without this block).

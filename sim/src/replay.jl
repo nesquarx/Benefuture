@@ -31,7 +31,8 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     h_retention = 0.3,
     u_compounding = 1.5,
     offset_scale = 0.05,
-    soft_bar = 0.05
+    soft_bar = 0.05,
+    irr_tol = 0.01
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -67,7 +68,8 @@ function get_frozen_replay_thresholds()
             h_retention = 0.3,
             u_compounding = 1.5,
             offset_scale = 0.05,
-            soft_bar = 0.05
+            soft_bar = 0.05,
+            irr_tol = 0.01
         )
     catch e
         # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
@@ -737,6 +739,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
 
     bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
     env_least = minimum(get(o, "_env_harm", 0.0) for o in options)
+    irr_least = minimum(sum(Float64.(o["pred_irreparable"])) for o in options)   # (8.124) policy-level irreparable harm
+    rule_irr = get(ov, "irreparable", true)
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
         dh = Float64.(opt["pred_dh"])
@@ -817,7 +821,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                                                 offset_scale = th.offset_scale, soft_bar = th.soft_bar) for g in 1:n_groups) :
                                        all(lt_u .+ th.epsilon_tie .>= idle_lt_u) && all(lt_h .+ th.epsilon_tie .>= idle_lt_h)) &&
                        total_irr == 0.0 &&
-                       !(rule_env && env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least), nha = any(>(0), nha)))
+                       !(rule_env && env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) &&
+                       !(rule_irr && irreparable_blocked(total_irr, irr_least; tol = th.irr_tol * max(1.0, irr_least)))
     end
 
     # Filter by strong reading first; fall back to weak reading with loud degradation if none qualifies
@@ -827,12 +832,20 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         degraded["accession/group strong trajectory reading → weak floor reading (8.86)"] = 1
         # (8.118) the environmental health block holds in the weak reading too: it blocks, it does not just
         # disqualify from the strong reading (a defect found on the IMO E5 case, 2026-11-07).
-        env_b = [rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least),
-                                                nha = any(>(0), Float64.(o["pred_nha"]))) for o in options]
+        # No necessary-harm exemption: 8.118 states none, and 8.124's only exception, survival added elsewhere,
+        # is already in the comparison of net expected harms.
+        env_b = [(rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) ||
+                 (rule_irr && irreparable_blocked(sum(Float64.(o["pred_irreparable"])), irr_least; tol = th.irr_tol * max(1.0, irr_least))) for o in options]
         d_scope_w = [env_b[i] ? -1.0 : d_scope[i] for i in 1:n_opts]
         chosen_idx = g_choose(opt_values, d_scope_w, d_min_u, d_min_h, d_max_u)
     end
-    chosen_idx === nothing && (chosen_idx = idle_idx)
+    if chosen_idx === nothing
+        # Nothing passes the floors: choose the best-valued option that is not blocked (8.118, 8.124), loudly;
+        # inaction only if it is not blocked itself (a blocked inaction is informed allowing, 8.47).
+        allowed = [i for i in 1:n_opts if !(@isdefined(env_b) && env_b[i])]
+        chosen_idx = isempty(allowed) ? idle_idx : allowed[argmax(opt_values[allowed])]
+        degraded["no option passes the floors: best-valued unblocked option chosen"] = 1
+    end
 
     chosen_opt = options[chosen_idx]
     chosen_id = String(chosen_opt["id"])
@@ -942,11 +955,12 @@ share of configurations choosing each option.
 """
 function replay_rule_battery(case_dict::AbstractDict)
     configs = Pair{String,Dict{String,Any}}[
-        "1 weak floors only" => Dict{String,Any}("strong" => false, "compensate" => false, "offset" => false, "env" => false),
-        "2 + strong per-group" => Dict{String,Any}("compensate" => false, "offset" => false, "env" => false),
-        "3 + compensation" => Dict{String,Any}("offset" => false, "env" => false),
-        "4 + long-term offset" => Dict{String,Any}("env" => false),
-        "5 full" => Dict{String,Any}()]
+        "1 weak floors only" => Dict{String,Any}("strong" => false, "compensate" => false, "offset" => false, "env" => false, "irreparable" => false),
+        "2 + strong per-group" => Dict{String,Any}("compensate" => false, "offset" => false, "env" => false, "irreparable" => false),
+        "3 + compensation" => Dict{String,Any}("offset" => false, "env" => false, "irreparable" => false),
+        "4 + long-term offset" => Dict{String,Any}("env" => false, "irreparable" => false),
+        "5 full" => Dict{String,Any}(),
+        "5 full without the policy-level irreparable block (8.124)" => Dict{String,Any}("irreparable" => false)]
     for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)))
         for v in vals
             push!(configs, "full, $k = $v" => Dict{String,Any}(k => v))

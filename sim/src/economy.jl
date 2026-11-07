@@ -495,3 +495,7 @@ env_health_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
 "A confidence ballot's weight (Lean `cfd_ballot_weight_ref`; LqCfdBfDm, author ruling 8.121)."
 cfd_ballot_weight(vw, calibration, logodds; cap = 10.0) =
     ccall(sym(:bf_cfd_ballot_weight), Float64, (Float64, Float64, Float64, Float64), Float64(vw), Float64(calibration), Float64(logodds), Float64(cap))
+
+"Policy-level irreparable harm blocks an option beyond the least among the options (Lean `irreparable_blocked_ref`; author ruling 8.124)."
+irreparable_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
+    ccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
