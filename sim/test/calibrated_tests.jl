@@ -145,7 +145,8 @@ end
         t_lo, t_hi = min(1.0, 5.0 / np), min(1.0, 30.0 / np)
         [success_pattern(run_m7(ToyParams(n = np, steps = 80, plans = 10, touch = (t_lo, t_hi)); seed = s,
                                 teacher_cv = 0.5, reception_σ = 0.5, novelty_min = 0.2,
-                                research_share = 0.1, action_scale = 0.05, class = 10, central = false)).floor_u for s in seeds]
+                                research_share = 0.1, action_scale = 0.05, class = 10, central = false,
+                                traits = false)).floor_u for s in seeds]   # sized for the scalar mode (8.120); traits-mode sizing: convergence battery
     end
     g20 = m7_const_gains(20, 101:112)
     g150 = m7_const_gains(150, 101:112)
