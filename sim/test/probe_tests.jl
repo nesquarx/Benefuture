@@ -919,3 +919,23 @@ end
     @test paired_effect(rep .- open_; z = 2.0).significant
 end
 
+
+# ==============================================================================
+# Rules: measurement chains (8.107), acceptance and counterexample cases
+# ==============================================================================
+@testset "Rules: measurement chains (8.107)" begin
+    # A chain of readings is admissible; a loop (A reads B reads C reads A) is refused.
+    @test chains_acyclic([0 1 0; 0 0 1; 0 0 0])
+    @test !chains_acyclic([0 1 0; 0 0 1; 1 0 0])
+    @test !chains_acyclic([1 0; 0 0])                       # a reading that takes itself as input
+    # Readings sharing all their markers count once between them; independent ones add.
+    one = pooled_reading([10.0], [1.0], ones(1, 1))
+    same = pooled_reading([10.0, 10.0], [1.0, 1.0], [1 1; 1 1])
+    indep = pooled_reading([10.0, 20.0], [1.0, 1.0], [1 0; 0 1])
+    @test same.credence ≈ one.credence                       # identical markers add no credence
+    @test indep.credence ≈ 2.0 && indep.value ≈ 15.0
+    @test pooled_reading([10.0, 20.0], [1.0, 1.0], [1 0.5; 0.5 1]).credence < indep.credence   # partial overlap discounted
+    # Divergence beyond z combined standard errors triggers; agreement within noise does not.
+    @test chains_diverge([5.0, 15.0], [1.0, 1.0]; z = 3.0)
+    @test !chains_diverge([5.0, 6.0], [1.0, 1.0]; z = 3.0)
+end

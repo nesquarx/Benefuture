@@ -464,3 +464,21 @@ function relative_accuracy(credences, outcomes)
           "one credence in [0, 1] per outcome of 0 or 1")
     ccall(sym(:bf_relative_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
 end
+
+"Measurement chains (8.107): whether the dependency graph `adj` (adj[i, j] > 0: reading i takes j as input) is acyclic (Lean `acyclic_ref`)."
+function chains_acyclic(adj::AbstractMatrix)
+    n = size(adj, 1); check(size(adj, 2) == n, "square dependency matrix")
+    ccall(sym(:bf_acyclic), UInt8, (Ptr{Cvoid}, Csize_t), floatarray(vec(permutedims(Float64.(adj)))), n) == 1
+end
+
+"Overlap-discounted pooling of readings (8.107, Lean `pooled_reading_ref`): (value, effective credence)."
+function pooled_reading(values, credences, overlap::AbstractMatrix)
+    n = length(values); check(length(credences) == n && size(overlap) == (n, n), "one credence per reading, n × n overlap")
+    r = lean_floats(ccall(sym(:bf_pooled_reading), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                          floatarray(collect(Float64, values)), floatarray(collect(Float64, credences)), floatarray(vec(permutedims(Float64.(overlap))))))
+    (value = r[1], credence = r[2])
+end
+
+"Divergence between chains (8.107, Lean `chains_diverge_ref`): some pair differs by more than `z` combined standard errors."
+chains_diverge(values, ses; z::Real = 3.0) =
+    ccall(sym(:bf_chains_diverge), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(collect(Float64, values)), floatarray(collect(Float64, ses)), Float64(z)) == 1

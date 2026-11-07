@@ -51,6 +51,54 @@ def expected_effect_ref (probs effects : Array Float) : Float := Id.run do
     e := e + probs[i]! * effects[i]!
   return e
 
+/-- Measurement chains (8.107): the dependency graph of readings must be acyclic. `adj` is an n × n
+    row-major matrix, `adj[i*n+j] > 0` meaning reading i takes reading j as input. Kahn's algorithm:
+    true when every node can be removed in some order with no remaining inputs. -/
+def acyclic_ref (adj : Array Float) (n : Nat) : Bool := Id.run do
+  let mut indeg : Array Nat := Array.replicate n 0
+  for i in [0:n] do
+    for j in [0:n] do
+      if adj[i * n + j]! > 0.0 then indeg := indeg.set! i (indeg[i]! + 1)
+  let mut removed : Array Bool := Array.replicate n false
+  let mut count := 0
+  for _ in [0:n] do
+    let mut found := n
+    for k in [0:n] do
+      if found == n && !removed[k]! && indeg[k]! == 0 then found := k
+    if found == n then break
+    removed := removed.set! found true
+    count := count + 1
+    for i in [0:n] do
+      if adj[i * n + found]! > 0.0 then indeg := indeg.set! i (indeg[i]! - 1)
+  return count == n
+
+/-- Overlap-discounted pooling of readings of one quantity (8.107): each reading's credence is divided
+    by its total marker overlap with all readings (`overlap` row-major n × n, diagonal 1), so readings
+    that share their markers count once between them. Returns [pooled value, total effective credence]. -/
+def pooled_reading_ref (values credences overlap : Array Float) : Array Float := Id.run do
+  let n := min values.size credences.size
+  let mut num := 0.0
+  let mut den := 0.0
+  for i in [0:n] do
+    let mut o := 0.0
+    for j in [0:n] do
+      o := o + overlap[i * n + j]!
+    let w := if o > 0.0 then credences[i]! / o else 0.0
+    num := num + w * values[i]!
+    den := den + w
+  return #[if den > 0.0 then num / den else 0.0, den]
+
+/-- Divergence between chains (8.107): true when some pair of readings differs by more than `z`
+    combined standard errors; an automatic audit trigger, and reportable under AdvAp. -/
+def chains_diverge_ref (values ses : Array Float) (z : Float) : Bool := Id.run do
+  let n := min values.size ses.size
+  let mut d := false
+  for i in [0:n] do
+    for j in [i+1:n] do
+      let se := Float.sqrt (ses[i]! ^ 2 + ses[j]! ^ 2)
+      if se > 0.0 && Float.abs (values[i]! - values[j]!) / se > z then d := true
+  return d
+
 /-- Prediction accuracy net of irreducible uncertainty (author ruling 8.103, on 8.102), for an item whose
     outcomes share one probability: 1 − (Brier − ō(1−ō)) / 0.25, clamped to [0, 1]. The Brier score less
     the record's uncertainty term (Murphy 1973) leaves the forecaster's own error, so exact knowledge of a

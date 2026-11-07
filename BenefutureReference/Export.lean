@@ -333,6 +333,14 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_event_rate] def eventRate (k n : Float) : Float := event_rate_ref k n
 @[export bf_pooled_probability] def pooledProbability (probs weights : FloatArray) : Float :=
   pooled_probability_ref probs.data weights.data
+@[export bf_acyclic] def acyclicE (adj : FloatArray) (n : USize) : UInt8 := if acyclic_ref adj.data n.toNat then 1 else 0
+
+@[export bf_pooled_reading] def pooledReading (values credences overlap : FloatArray) : FloatArray :=
+  ⟨pooled_reading_ref values.data credences.data overlap.data⟩
+
+@[export bf_chains_diverge] def chainsDiverge (values ses : FloatArray) (z : Float) : UInt8 :=
+  if chains_diverge_ref values.data ses.data z then 1 else 0
+
 @[export bf_relative_accuracy] def relativeAccuracy (credences outcomes : FloatArray) : Float :=
   relative_accuracy_ref credences.data outcomes.data
 
