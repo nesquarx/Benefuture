@@ -962,6 +962,31 @@ function replay_rule_battery(case_dict::AbstractDict)
 end
 
 """
+    replay_credence(case_dict; draws = 40, σ = log(2) / 2, seed = 1) -> Dict(option => share)
+
+Benefuture's credence in each option for a case (author, 2026-11-07): every judged scenario magnitude (du, dh,
+nha, irreparable, per group) is scaled at once by an independent log-normal factor (σ = ln 2 / 2, so halving
+or doubling is two standard deviations), each draw replayed under all 13 rule sets of `replay_rule_battery`,
+and the share of the draws × rule sets choosing each option returned (compensated variants read as their
+reform). The as-of event rates are not jittered (they come from records, not judgment).
+"""
+function replay_credence(case_dict::AbstractDict; draws::Integer = 40, σ::Real = log(2) / 2, seed::Integer = 1)
+    rng = Xoshiro(seed)
+    counts = Dict{String,Int}(); total = 0
+    for _ in 1:draws
+        c = deepcopy(case_dict)
+        for opt in c["options"], sc in get(opt, "scenarios", []), key in ("du", "dh", "nha", "irreparable")
+            haskey(sc, key) || continue
+            sc[key] = [Float64(x) * exp(σ * randn(rng)) for x in sc[key]]
+        end
+        for x in replay_rule_battery(c).choices
+            counts[x] = get(counts, x, 0) + 1; total += 1
+        end
+    end
+    Dict(k => v / total for (k, v) in counts)
+end
+
+"""
     replay_scores(results, baselines) -> Dict(rule => (k, n, interval))
 
 Scores each rule on the cases with a settled outcome class: on a good decision a rule is right when it

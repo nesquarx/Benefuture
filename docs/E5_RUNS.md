@@ -13,3 +13,9 @@ One row per case per run (REPLAY_PREREG §8, lifecycle); rows are appended, neve
 | 2026-11-07 | 2d9ecfa | 3a32b9a683038e8f | fomc_january_2027 | cut_25bp (compensated) | cut_25bp 92%, hold 8% | 8 |
 | 2026-11-07 | 2d9ecfa | 3a32b9a683038e8f | imo_net_zero_framework_2026 | adopt_with_pricing (compensated) | adopt_with_pricing 69%, adjourn_again 31% | 0 |
 | 2026-11-07 | 2d9ecfa | 3a32b9a683038e8f | who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex (compensated) | adopt_binding_benefit_sharing_annex 100% | 4 |
+
+From 2026-11-07 (later the same day) rows carry an eighth column: Benefuture's credence across joint magnitude jitter (log-normal, σ = ln 2 / 2) × the 13 rule sets (`replay_credence`).
+| 2026-11-07 | a2eaa4e | a3a05d1f9f09f396 | fda_zrostudirsen_2027 | complete_response_wait | complete_response_wait 92%, accelerated_approval_with_confirmatory_trial 8% | 0 | complete_response_wait 95%, accelerated_approval_with_confirmatory_trial 5% |
+| 2026-11-07 | a2eaa4e | a3a05d1f9f09f396 | fomc_january_2027 | cut_25bp (compensated) | cut_25bp 92%, hold 8% | 8 | hold 58%, cut_25bp 38%, hike_25bp 4% |
+| 2026-11-07 | a2eaa4e | a3a05d1f9f09f396 | imo_net_zero_framework_2026 | adopt_with_pricing (compensated) | adopt_with_pricing 69%, adjourn_again 31% | 0 | adopt_with_pricing 77%, adjourn_again 23% |
+| 2026-11-07 | a2eaa4e | a3a05d1f9f09f396 | who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex (compensated) | adopt_binding_benefit_sharing_annex 100% | 4 | extend_negotiations_no_annex 56%, adopt_binding_benefit_sharing_annex 44% |
