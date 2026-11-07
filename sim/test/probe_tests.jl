@@ -972,3 +972,24 @@ end
     subtle = [run_m3c(w(chain_attrib = [1.0, 0.9], chain_mode = :domain); seed) for seed in 1:2]
     @test all(t -> t.chain_demoted == [false, true], subtle)
 end
+
+# ==============================================================================
+# Probe: understanding as its equation, with models taught whole (8.98, ruling 8.109)
+# ==============================================================================
+# Hypotheses (6 seeds, paired): (a) no crossed wires: every model a being holds at the end is a bundle
+# (base spread with complexity) that existed, never one model's accuracy with another's simplicity
+# (structural); (b) teaching raises floor growth of understanding (z = 3); (c) teachable breakthroughs
+# spread lower complexity (mean complexity lower than when every breakthrough stays tacit, z = 3);
+# (d) practice alone (no teaching) raises median understanding (z = 3). Measured (8 seeds): floor growth
+# +0.59 with teaching; complexity −0.044; practice +0.024.
+@testset "Probe: understanding as its equation, models taught whole (8.109)" begin
+    seeds = 1:6
+    fg(t) = t.floor_u[end] - t.floor_u[1]
+    base = [run_m7_traits(seed = s) for s in seeds]
+    @test all(t -> all(x -> x in t.bundles, t.final_bundles), base)
+    @test paired_effect(fg.(base) .- fg.([run_m7_traits(seed = s, ε = 0.0) for s in seeds]); z = 3.0).significant
+    tacit = [run_m7_traits(seed = s, p_teachable = 0.0) for s in seeds]
+    @test paired_effect([a.mean_cy[end] - b.mean_cy[end] for (a, b) in zip(base, tacit)]; z = 3.0, direction = :down).significant
+    pr = [run_m7_traits(seed = s, ε = 0.0) for s in seeds]; nopr = [run_m7_traits(seed = s, ε = 0.0, practice_gain = 0.0) for s in seeds]
+    @test paired_effect([a.median_u[end] - b.median_u[end] for (a, b) in zip(pr, nopr)]; z = 3.0).significant
+end

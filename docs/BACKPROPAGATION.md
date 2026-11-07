@@ -2531,3 +2531,17 @@ model's low complexity and another's accuracy). Acuity is partly the model's bas
 practice is not taught. Reduced complexity transfers with a taught model, and a research breakthrough
 can reduce it too. Teaching moves causal explanation toward the teacher's; research adds coverage and
 explanation (teachable or tacit). Candidate homes: Understanding (teaching, practice), L31.
+8.110 finding (2026-11-07, 8.98 with ruling 8.109): understanding as its equation, models taught whole.
+A traits world (`run_m7_traits`): each being holds per item a model bundle (base spread, complexity),
+a causal explanation and practice; its understanding is the pragmatic equation on them (accuracy net of
+irreducible uncertainty). Lessons move learners to the teacher's teachable bundle whole and their
+explanation toward the teacher's; practice sharpens one's own acuity; research finds lower-spread or
+lower-complexity bundles, teachable or tacit. Over 8 seeds (60 beings, 120 steps): no crossed wires
+(every final bundle existed; structural); teaching raises floor growth of understanding by 0.59 on the
+equation's 0–1 scale; teachable breakthroughs lower mean complexity by 0.044 against tacit ones; practice
+alone raises the median by 0.024. A defect found and fixed on the way: entities' predicted gain from a
+lesson counted model bundles but not the explanation a learner gains, so practice crowded out teaching
+(lessons 516 against 970 without practice); Benefuture counts both, and with both counted lessons rise
+to 1,824 and practice no longer lowers the median. Toy assumptions: one thing, fixed weights, no
+happiness, a noisy view of predicted gains in place of the full Lean G, no measured view (8.104) yet.
+Next: join the measured view and reports to the traits world, then compare with scalar M7's pattern.
