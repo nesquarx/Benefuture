@@ -23,3 +23,13 @@ Build order: `random.Random(20261108).shuffle` over the list as written.
 | 2 | security | UN Security Council: AUSSOM (Somalia) mandate, expiring 31 December 2026 (renew, renew with drawdown, end) | [source](https://allafrica.com/stories/202512240311.html) | held on building (2026-11-07), as MONUSCO: confounded trials; an African Union force, so UN-mission effect sizes transfer only by judgment; build once the effect sizes are read from full texts |
 
 MONUSCO and AUSSOM direction of effect, read from abstracts (2026-11-07): more UN military troops and police are associated with fewer civilians targeted (Hultman, Kathman & Shannon 2013, AJPS, https://doi.org/10.1111/ajps.12036) and fewer battlefield deaths (2014, APSR, https://doi.org/10.1017/S0003055414000446); magnitudes are not in the abstracts.
+
+# Round 3 (drawn 2026-11-07; chosen for crisp options, dated decisions, base rates in public records)
+
+Build order: `random.Random(20261109).shuffle` over the list as written.
+
+| Order | Family | Decision | Source | Status |
+|---|---|---|---|---|
+| 1 | health | FDA decision on z-rostudirsen (Dyne, Duchenne muscular dystrophy), accelerated approval on dystrophin production, PDUFA 21 January 2027 (approve with a confirmatory trial; complete response letter) | [source](https://www.2minutemedicine.com/?p=83226) | not built |
+| 2 | technology | Artemis III crewed Earth-orbit test flight, late 2027: go or no-go given as-of anomaly records (a Challenger-shaped decision; date not yet fixed, so watch-listed until it is) | [source](https://news.cgtn.com/news/2026-02-28/NASA-postpones-crewed-lunar-landing-to-2028-adds-new-Artemis-mission-1L7FeQ4wPXG/p.html) | not built |
+| 3 | environment | IMO Net-Zero Framework, resumed extraordinary MEPC session, 4 December 2026 (adopt as agreed with its carbon price; adopt without the pricing element; adjourn again) | [source](https://gcaptain.com/imo-climate-talks-stay-alive-as-carbon-plan-survives-u-s-pushback-at-mepc-84/) | not built |

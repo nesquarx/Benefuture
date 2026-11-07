@@ -315,6 +315,27 @@ builders' knowledge, and the result is read with that limit.
 
 ---
 
+### 4.7 Round 2 candidates (registered 2026-11-07): edge cases for the rules
+
+Chosen to stress the rules where they are weakest or newest, not for an expected verdict: precaution both
+ways, environmental health on both sides of a choice (8.118), compensation-heavy reforms, peacekeeping
+(which also calibrates the held E5 peacekeeping cases), and recent data-rich failures. Classes by the §4
+criteria; the builders know these outcomes (as for every E4 case), so they strengthen the rules, while E5
+tests them.
+
+| ID | Decision | Date | Class | Edge it tests |
+|---|---|---|---|---|
+| `swine_flu_vaccination_1976` | US mass swine-flu vaccination after Fort Dix | 1976-03-24 | Bad | precaution as overreaction (a caution error the other way) |
+| `ddt_ban_1972` | US EPA cancels DDT registrations | 1972-06-14 | Unclear | environmental health on both sides (wildlife and residues against malaria abroad) |
+| `german_nuclear_phaseout_2011` | Germany's accelerated nuclear phase-out after Fukushima | 2011-06-30 | Unclear | accident risk against coal air-pollution deaths (8.118 both ways) |
+| `sri_lanka_fertilizer_ban_2021` | Sri Lanka bans chemical fertilizer imports | 2021-04-27 | Bad | a reform with no compensated variant priced by its backers; recent, data-rich |
+| `unamir_drawdown_1994` | UN Security Council cuts UNAMIR in Rwanda (Resolution 912) | 1994-04-21 | Bad | peacekeeping withdrawal under escalating violence |
+| `smallpox_intensified_1967` | WHO Intensified Smallpox Eradication Programme | 1967-01-01 | Good | long horizon, irreversible gain, feasibility uncertain as of the date |
+| `operation_warp_speed_2020` | US advance purchase of unproven COVID-19 vaccines at scale | 2020-05-15 | Good | paying for options under uncertainty (dual-risk spending) |
+| `four_pests_sparrows_1958` | China's Four Pests campaign, sparrow eradication | 1958-02-12 | Bad | ecological side effects with health harm (8.118) |
+| `irish_bank_guarantee_2008` | Ireland's blanket bank guarantee | 2008-09-30 | Bad | contingent liability, compensation borne by the public |
+| `prohibition_1919` | US Eighteenth Amendment ratified | 1919-01-16 | Unclear | a freedom-limiting law against harm, compliance not ideal |
+
 ## 5. Four-Cell Evaluation Matrix and Vector Success Pattern
 
 Each replayed decision is classified on two orthogonal axes:
