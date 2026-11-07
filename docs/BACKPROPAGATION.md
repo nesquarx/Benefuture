@@ -2616,3 +2616,10 @@ condition on the result rather than patched away. Next: the comparison rerun wit
 admitted where demand goes unmet), and a world where deceivers' work is not useful. Until then the
 economy result stands: in a closed eight-agent economy, pricing out skilled deceivers costs about 10% of
 growth.
+8.115 continued (same day): rerun with open-market proposals (`adaptive_proposals`: an agent proposes in
+proportion to its recent acceptance, so a priced-out actor proposes less and its slots pass to others),
+8 seeds: the gap halves. Floor of understanding −12 ± 3 (was −24), floor of happiness −5 ± 2 (was −26),
+median of understanding no difference shown, median of happiness −8 ± 3; harm's peak equal; deceivers'
+advantage −180 against −3 endowments. The residual is the deceivers' own skilled work, which still
+reaches the economy less while they are priced out; a world where honest capacity grows to meet demand
+(entry) would test whether it closes. Results: `sim/battery/results/status_quo_economy_open.md`.

@@ -396,7 +396,7 @@ These confirm encoded rules:
 
 ### Negative and open results
 
-- **In a closed economy, pricing out skilled deceivers costs growth (8.115).** Against status-quo institutions in the same world, Benefuture's grow floors and medians about 10% less (8 seeds, z ≈ 11) while cutting the deceivers' advantage sharply. The cost is the deceivers' real work, priced out and not replaced in a fixed eight-agent world with no entry; without deceivers, the same vigilance costs nothing. Rerun with entry pending.
+- **In a closed economy, pricing out skilled deceivers costs growth (8.115).** Against status-quo institutions in the same world, Benefuture's grow floors and medians about 10% less (8 seeds, z ≈ 11) while cutting the deceivers' advantage sharply. The cost is the deceivers' real work, priced out and not replaced in a fixed eight-agent world with no entry; without deceivers, the same vigilance costs nothing. With open-market proposals (refused slots pass to others) the gap halves (floor of understanding −12 ± 3, floor of happiness −5 ± 2, median of understanding no difference shown). Entry of new producers pending.
 
 Formal and measured limits. Those shared with real institutions are put in context in
 [hard problems shared with every institution](#hard-problems-shared-with-every-institution).
