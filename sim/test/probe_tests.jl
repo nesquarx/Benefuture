@@ -1047,3 +1047,20 @@ end
     @test !lt_offset_admissible(60.0, -15.0, 50.0) && lt_offset_admissible(60.0, -15.0, 50.0; nha = true)
     @test env_health_blocked(2.0, 1.0) && !env_health_blocked(1.0, 1.0) && !env_health_blocked(2.0, 1.0; nha = true)
 end
+
+# ==============================================================================
+# Probe: understanding aggregates across things by priority (ruling 8.117)
+# ==============================================================================
+# Hypotheses (6 seeds): (a) with two things weighted by predicted long-term contribution (1.0 and 0.1),
+# effort follows priority: the high-priority thing's understanding grows more (z = 3; measured 0.57 vs 0.41);
+# (b) opening new things (novelty weight) costs no peak understanding when effort is allocated by goal
+# weight (equivalent to the closed world within 0.1; measured 0.90 vs 0.91 at 240 steps).
+@testset "Probe: understanding aggregates across things by priority (8.117)" begin
+    seeds = 1:6
+    a = [run_m7_traits(seed = s, things = [1.0, 0.1]) for s in seeds]
+    @test paired_effect([t.thing_gain[1] - t.thing_gain[2] for t in a]; z = 3.0).significant
+    op = [run_m7_traits(seed = s, max_new_things = 4, p_new_thing = 0.3, steps = 240) for s in seeds]
+    cl = [run_m7_traits(seed = s, steps = 240) for s in seeds]
+    @test all(t -> t.new_things == 4, op)
+    @test equivalent([o.peak_u[end] - c.peak_u[end] for (o, c) in zip(op, cl)]; margin = 0.1).equivalent   # measured −0.01, interval ±0.05
+end

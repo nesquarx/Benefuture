@@ -97,14 +97,28 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                        practice_gain::Real = 0.02, research_share::Real = 0.1, p_research::Real = 0.05,
                        p_teachable::Real = 0.5, p_act::Real = 0.3, class::Integer = 5, view_σ::Real = 0.02,
                        reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
-                       report_z::Real = 3.0, report_min::Integer = 5)
+                       report_z::Real = 3.0, report_min::Integer = 5, things = [1.0], max_new_things::Integer = 0,
+                       p_new_thing::Real = 0.0, novelty_weight::Real = 0.2)
+    check(!isempty(things) && all(>=(0), things) && max_new_things >= 0 && 0 <= p_new_thing <= 1 && novelty_weight >= 0, "valid things")
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
     rng = Xoshiro(seed); rrng = Xoshiro(hash((seed, :research))); vrng = Xoshiro(hash((seed, :views)))
-    wt = rand(rng, m); wt ./= sum(wt)
+    # Things (ruling 8.117): understanding aggregates across things by their priority (their predicted
+    # long-term contribution to the goals), each thing's pragmatic understanding weighted by it; research may
+    # open a new thing (a slot of `m` items, held at low traits), weighted for novelty.
+    mt = m                                         # items per thing
+    T = length(things) + max_new_things
+    W = vcat(Float64.(things), fill(Float64(novelty_weight), max_new_things))
+    active = vcat(trues(length(things)), falses(max_new_things))
+    m = mt * T
+    thing_of = [cld(i, mt) for i in 1:m]
+    wl = rand(rng, m); for t in 1:T; r = ((t - 1) * mt + 1):(t * mt); wl[r] ./= sum(wl[r]); end
+    gw() = [active[thing_of[i]] ? W[thing_of[i]] * wl[i] : 0.0 for i in 1:m]   # each item's weight toward the goals now
+    wt = gw()
     ms = 0.1 .+ 0.35 .* rand(rng, n, m)          # base spread of each being's model, per item
     mc = 0.1 .+ 0.6 .* rand(rng, n, m)           # its complexity
     ce = 0.2 .+ 0.5 .* rand(rng, n, m)           # causal explanation
+    for i in 1:m; active[thing_of[i]] || (ms[:, i] .= 0.45; mc[:, i] .= 0.7; ce[:, i] .= 0.05); end
     ts, tc, tce = copy(ms), copy(mc), copy(ce)    # the teachable parts (research gains may be tacit)
     pr = zeros(n, m)                              # practice
     # Measured view (8.104 in this world): a being's claimed explanation is its own plus `overclaim`
@@ -113,19 +127,28 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     audited = falses(n); shortfall = [Float64[] for _ in 1:n]; audits = Ref(0)
     claimed(b, i) = audited[b] ? tce[b, i] : min(1.0, tce[b, i] + oc[b])
     bundles = Set{Tuple{Float64,Float64}}((ms[b, i], mc[b, i]) for b in 1:n, i in 1:m)
-    Um(b) = pragmatic_understanding(1.0, wt, [audited[b] ? ce[b, i] : min(1.0, ce[b, i] + oc[b]) for i in 1:m], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in 1:m], mc[b, :])
-    U(b) = pragmatic_understanding(1.0, wt, ce[b, :], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in 1:m], mc[b, :])
+    agg(cev, b) = sum((W[t] * pragmatic_understanding(1.0, wl[r], cev[r], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in r], mc[b, r])
+                       for t in 1:T if active[t] for r in (((t - 1) * mt + 1):(t * mt),)); init = 0.0)
+    Um(b) = agg([audited[b] ? ce[b, i] : min(1.0, ce[b, i] + oc[b]) for i in 1:m], b)
+    U(b) = agg(ce[b, :], b)
     bval(s, c) = expected_relative_accuracy(s) * (1 - c)   # a bundle's worth, before practice
-    tr = (floor_u = Float64[], median_u = Float64[], peak_u = Float64[], mean_cy = Float64[], lessons = Ref(0), breakthroughs = Ref(0))
+    tr = (floor_u = Float64[], median_u = Float64[], peak_u = Float64[], mean_cy = Float64[], lessons = Ref(0), breakthroughs = Ref(0), new_things = Ref(0))
     rec!() = (u = [U(b) for b in 1:n]; push!(tr.floor_u, floor_quantile(u, 0.1)); push!(tr.median_u, median(u));
               push!(tr.peak_u, maximum(u)); push!(tr.mean_cy, mean(mc)))
+    thing_u(b, t) = (r = ((t - 1) * mt + 1):(t * mt); pragmatic_understanding(1.0, wl[r], ce[b, r], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in r], mc[b, r]))
+    thing_u0 = [mean(thing_u(b, t) for b in 1:n) for t in 1:T]
     rec!()
     for _ in 1:steps
         u = [U(b) for b in 1:n]
         researching = rand(rrng, n) .< research_share
         for b in findall(researching)
             rand(rrng) < p_research || continue
-            i = rand(rrng, 1:m)
+            if p_new_thing > 0 && !all(active) && rand(rrng) < p_new_thing
+                t = findfirst(!, active); active[t] = true; wt .= gw()   # a new thing opens (novelty weight)
+                i = (t - 1) * mt + rand(rrng, 1:mt); tr.new_things[] += 1
+            else
+                i = pick(rrng, wt ./ sum(wt))        # research goes where it counts toward the goals (8.117)
+            end
             s2, c2 = rand(rrng) < 0.5 ? (ms[b, i] * (1 - breakthrough), mc[b, i]) : (ms[b, i], mc[b, i] * (1 - breakthrough))
             ms[b, i], mc[b, i] = s2, c2; push!(bundles, (s2, c2))
             ce[b, i] += breakthrough * (1 - ce[b, i])
@@ -160,7 +183,9 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                     end
                 end
             else
-                i = rand(rng, 1:m); pr[e, i] += practice_gain       # practice: one's own acuity, never taught
+                # practice: one's own acuity, never taught, on the item where it adds most toward the goals (8.117)
+                i = argmax([wt[k] * ce[e, k] * (1 - mc[e, k]) * (expected_relative_accuracy(ms[e, k] * exp(-pr[e, k] - practice_gain)) - expected_relative_accuracy(ms[e, k] * exp(-pr[e, k]))) for k in 1:m])
+                pr[e, i] += practice_gain
             end
         end
         if reports
@@ -173,6 +198,6 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         end
         rec!()
     end
-    (; tr..., audits = audits[], audited = copy(audited), lessons = tr.lessons[], breakthroughs = tr.breakthroughs[], bundles = bundles,
+    (; tr..., audits = audits[], audited = copy(audited), lessons = tr.lessons[], breakthroughs = tr.breakthroughs[], new_things = tr.new_things[], thing_gain = [mean(thing_u(b, t) for b in 1:n) for t in 1:T] .- thing_u0, bundles = bundles,
        final_bundles = [(ms[b, i], mc[b, i]) for b in 1:n, i in 1:m], practice = pr)
 end

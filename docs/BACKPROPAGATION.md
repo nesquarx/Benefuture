@@ -2654,3 +2654,14 @@ phase-down passes). Sensitivity readout: of the 11 settled cases, 8 robust to ha
 judged magnitude (all right) and 3 contested (Bengal relief, lead, Volcker; all right as replayed).
 Choices are unchanged by 8.118 in these cases. The defaults 0.3, 1.5, 0.05, 0.05 are judgment (governed);
 hedonic adaptation is partial and event-dependent in the literature, so `h_retention` is swept later.
+8.117 built (2026-11-07): in the traits world understanding is the sum over things of each thing's
+pragmatic understanding weighted by its priority (its predicted long-term contribution to the goals);
+research may open a new thing at a novelty weight. Over 6 seeds: with two things weighted 1.0 and 0.1,
+understanding of the high-priority thing grows 0.57 against 0.41 (z ≫ 3); opening four new things costs no
+peak understanding (0.90 vs 0.91 at 240 steps, within ±0.05), and total understanding can now pass one
+thing's ceiling (one seed of six by 240 steps; new things start low and carry a small novelty weight). A
+defect fixed on the way: practice and research had picked items uniformly, so opening low-priority things
+diverted effort from what counts; Benefuture allocates by expected contribution, so practice now goes to
+the item where it adds most toward the goals and research picks items in proportion to their weight.
+Not yet in M7's traits mode (one thing there). Priorities are given inputs here; in Benefuture they
+come from predicted cross-domain outcomes, which the simulation does not yet derive.
