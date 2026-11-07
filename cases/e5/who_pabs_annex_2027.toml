@@ -1,0 +1,123 @@
+# E5 current-decision case (REPLAY_PREREG §8), registered 2026-11-07, as of that date. Not scored until the
+# outcome is known. Drawn first in round 1 (docs/E5_CANDIDATES.md).
+# Decision: the Pathogen Access and Benefit-Sharing (PABS) annex to the WHO Pandemic Agreement, target the
+# 80th World Health Assembly (May 2027). Positions as reported: about 100 low- and middle-income countries ask
+# for mandatory benefit sharing (guaranteed access to vaccines, therapeutics, diagnostics); high-income
+# countries prioritise innovation and unencumbered sequence access; talks extended (WHO, 28 March 2026;
+# IGWG7 July 2026; IGWG8 September 2026). Sources are news and WHO releases; the negotiating texts were not read.
+
+id = "who_pabs_annex_2027"
+title = "WHO Pandemic Agreement PABS annex: binding benefit sharing or continued negotiation (WHA80, May 2027)"
+family = "health"
+era = "2026-2027"
+tier = "full"
+decision_date = "2026-11-07"
+decision_makers = ["WHO Member States (World Health Assembly)"]
+actual_choice = "pending"
+actual_outcome_class = "pending"
+primary_or_held_out = "e5"
+
+[[sources]]
+id = "pandemic_history"
+title = "Pandemics with over 100,000 deaths by decade, 1900s-2020s (1918 influenza, 1957, 1968, 2009 H1N1, 2020 COVID-19)"
+as_of_date = "2026-11-07"
+url = "https://en.wikipedia.org/wiki/List_of_epidemics_and_pandemics"
+notes = "Decade windows; HIV/AIDS excluded as a slow epidemic, which lowers the rate (judgment)."
+
+[[sources]]
+id = "access_record"
+title = "Low- and middle-income access to pandemic countermeasures (H1N1 2009, COVID-19 2021, mpox 2022 and 2024; COVAX and AVAT deliveries)"
+as_of_date = "2026-11-07"
+url = "https://doi.org/10.1038/s41591-022-02064-y"
+notes = "Delays of six months or more for low- and middle-income countries in each of four events (judgment from the public record; primary datasets not opened). Commitments made in advance (COVAX, AVAT, 2021) under-delivered."
+
+[[ groups ]]
+id = "lmic_populations"
+name = "Populations of low- and middle-income countries (about 6.5 billion; judgment), in thousands"
+population = 6500000
+baseline_u = 30.0
+baseline_h = 40.0
+
+[[ groups ]]
+id = "hic_populations"
+name = "Populations of high-income countries (about 1.2 billion; judgment), in thousands"
+population = 1200000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "countermeasure_industry"
+name = "Vaccine, therapeutic and diagnostic industry workforce (about 1 million; judgment), in thousands"
+population = 1000
+baseline_u = 60.0
+baseline_h = 60.0
+
+# Magnitude (judgment, stated): in a COVID-scale pandemic, inequitable access costs about 11.3% of global
+# mortality (Moore et al. 2022 preprint: full vaccine sharing would have cut COVID-19 mortality 11.3% by
+# January 2022); against about 14.8 million excess deaths in 2020-21 (Msemburi et al. 2023, Nature) that is
+# about 1.67 million deaths, borne by low- and middle-income populations: irreparable 1670 (thousands); the
+# group mean falls by 1670/6.5e6 x baseline (30, 40) = 0.0077, 0.0103. Pandemics vary in size; a COVID-scale
+# one is assumed (judgment, upward of H1N1).
+
+[[ options ]]
+id = "extend_negotiations_no_annex"
+name = "No annex adopted at WHA80; negotiations continue (the Agreement cannot open for signature)"
+source = "access_record"
+known_date = "2026-03-28"
+is_inaction = true
+scope_delta = 0.0
+# 0.4 x 0.833 = 0.333: du -0.0077 x 0.333 = -0.0026; dh -0.0034; irreparable 556.7
+pred_du = [-0.0026, 0.0, 0.0]
+pred_dh = [-0.0034, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [556.7, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "pandemic_with_access_lag"
+environmental_health = false
+p_chain = ["pandemic_scale_event_in_decade", "lmic_access_lag_without_binding_sharing"]
+du = [-0.0077, 0.0, 0.0]
+dh = [-0.0103, 0.0, 0.0]
+irreparable = [1670.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_pandemic_or_access_timely"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "adopt_binding_benefit_sharing_annex"
+name = "Adopt a PABS annex with binding benefit sharing (set-aside of real-time production for low- and middle-income countries)"
+source = "access_record"
+known_date = "2026-04-27"
+is_inaction = false
+scope_delta = 0.1
+# 0.4 x 0.75 = 0.30: du -0.0023; dh -0.0031 for LMIC; industry dh -0.5 always (judgment: obligations on
+# pricing and supply); irreparable 501.0
+pred_du = [-0.0023, 0.0, 0.0]
+pred_dh = [-0.0031, 0.0, -0.5]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [501.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "pandemic_and_commitments_undelivered"
+p_chain = ["pandemic_scale_event_in_decade", "binding_commitment_undelivered"]
+du = [-0.0077, 0.0, 0.0]
+dh = [-0.0103, 0.0, -0.5]
+irreparable = [1670.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_pandemic_or_commitments_delivered"
+p_chain = []
+complement = true
+dh = [0.0, 0.0, -0.5]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "adopt_binding_benefit_sharing_annex"
+methods = ["placeholder: scored when the outcome is known"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
