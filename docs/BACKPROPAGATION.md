@@ -2550,3 +2550,16 @@ in every seed (8 seeds) and recover the loss (0.615). Cleaner than scalar M7 (8.
 honest teachers audited): in the traits world a lesson's shortfall is exactly the overclaimed
 explanation, so the signal is clean and detection beats the compounding. Next: compare the traits
 world's pattern with scalar M7's, and decide which becomes M7's default (author).
+8.111 finding (2026-11-07, 8.107): a fake second paradigm (undeclared copying) is caught. A biased chain
+plus a secret copy of it agree, so nothing diverges and, undetected, the harm stays hidden (+3.1 to +3.5
+per outcome). Independent chains carry independent noise (standardised difference variance near 2), so a
+pair agreeing far closer (below 0.2, over at least 20 readings) is one chain counted twice; the copy is
+folded into its source, and a domain left with fewer than two independent chains degrades loudly to spot
+audits (`chain_spot` 5%) that score and, if it errs one way, demote the chain left. Over 6 seeds: copy
+found and incumbent demoted in every seed, bias down to +0.5 to +1.6 (the rest accrues before detection),
+honest pairs never taken for copies. A defect fixed on the way: the divergence test assumed an outcome's
+value was a mean, not a sum, so honest pairs diverged constantly (about 300 audits); the reading's noise
+is now estimated from independent draws on the chains' own stream, and honest pairs need 6–15 audits.
+Consequence for 8.108: after a biased chain is demoted, spot audits continue on the one chain left, so
+audits run at 5–8% of outcomes rather than stopping. The 8.107 spirit (no single chain trusted without an
+independent check) settles this without a new ruling.

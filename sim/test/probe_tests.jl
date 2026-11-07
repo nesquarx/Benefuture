@@ -948,7 +948,7 @@ end
 # consuming the measurement domain's reading instead (a second chain of another paradigm, divergence
 # audits on the shared observable, chains scored against audits) reads outcomes without bias (no harm
 # hidden, none double counted: within 0.2 of zero), demotes the under-attributing chain in every seed,
-# and stops auditing once it has (audits under 5% of outcomes). Counterexample: two honest chains are
+# and then audits only at the spot rate kept while one independent chain remains (under 10% in all). Counterexample: two honest chains are
 # never demoted. Measured (3 seeds): bias +3.4 single, −0.01 to −0.03 domain; demoted after 5–11 audits.
 @testset "Probe: harm read through competing measurement chains (8.107)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
@@ -962,7 +962,7 @@ end
     @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant          # harm hidden
     @test all(t -> abs(mean(t.chain_bias)) < 0.2, domain)                                   # read at its true size
     @test all(t -> t.chain_demoted == [true, false], domain)
-    @test all(t -> t.chain_audits < 0.05 * length(t.chain_bias), domain)
+    @test all(t -> t.chain_audits < 0.10 * length(t.chain_bias), domain)   # demotion, then spot audits at 5% on the one chain left
     @test all(t -> !any(t.chain_demoted), honest)
     # A wrong majority (two agreeing chains counting half) against a right minority: audits weigh the
     # shared observable, not votes, so both majority chains are demoted (measured: 7–8 audits).
@@ -971,6 +971,18 @@ end
     # A subtle bias (10% of each loss) is caught too, later (measured: 23–34 audits).
     subtle = [run_m3c(w(chain_attrib = [1.0, 0.9], chain_mode = :domain); seed) for seed in 1:2]
     @test all(t -> t.chain_demoted == [false, true], subtle)
+    # A fake second paradigm: the biased chain plus an undeclared copy of it agree, so nothing diverges
+    # and, undetected, the harm stays hidden (measured +3.1 to +3.5). Agreement far closer than
+    # independent noise allows exposes the copy; with one independent chain left the domain degrades
+    # loudly to spot audits, which demote the biased chain (measured: copy found and incumbent demoted
+    # in 6 of 6 seeds, bias down to +0.5 to +1.6, the rest before detection); honest pairs are never
+    # taken for copies.
+    undetected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain, chain_detect = false); seed) for seed in 1:2]
+    detected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain); seed) for seed in 1:2]
+    @test all(t -> mean(t.chain_bias) > 2.5, undetected)
+    @test all(t -> t.chain_copied == [false, true] && t.chain_demoted[1], detected)
+    @test all(mean(d.chain_bias) < 0.6 * mean(u.chain_bias) for (d, u) in zip(detected, undetected))
+    @test all(t -> !any(t.chain_copied), honest)
 end
 
 # ==============================================================================

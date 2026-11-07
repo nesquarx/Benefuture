@@ -66,6 +66,9 @@ struct M3cParams
     rate_halflife::Float64     # half-life in steps of a domain's measured transaction rate (8.85; governed)
     chain_attrib::Vector{Float64}  # measurement chains for outcomes (8.107): the share of each being's loss each chain attributes (1 = full; last-symptom counting less)
     chain_mode::Symbol             # :single (the first chain's output is consumed) or :domain (the measurement domain's reading)
+    chain_copy::Vector{Int}        # chain k secretly copies chain chain_copy[k]'s reading (0 = independent; an attack, 8.107)
+    chain_detect::Bool             # detect undeclared copying by agreement closer than independent noise allows
+    chain_spot::Float64            # spot-audit chance per outcome when fewer than two independent chains remain (governed)
     chain_z::Float64               # divergence between chains that triggers an audit (8.107; governed)
     ratchet_growth::Float64    # escrow growth per discovered deception, exponential in the count (8.91 ruling; governed; 0 = the flat ratchet)
     novel_floor::Float64       # the least bar a novel domain's model clears to back a currency (8.35; governed)
@@ -220,7 +223,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, chain_copy = Int[], chain_detect::Bool = true, chain_spot::Real = 0.05, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -251,7 +254,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && ratchet_growth >= 0 && !isempty(chain_attrib) && all(x -> 0 <= x <= 1, chain_attrib) && chain_mode in (:single, :domain) && chain_z > 0 && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record),
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && ratchet_growth >= 0 && !isempty(chain_attrib) && all(x -> 0 <= x <= 1, chain_attrib) && chain_mode in (:single, :domain) && chain_z > 0 && 0 <= chain_spot <= 1 && (isempty(chain_copy) || (length(chain_copy) == length(chain_attrib) && all(k -> 0 <= chain_copy[k] < k, eachindex(chain_copy)))) && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record),
           "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal or :record")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
@@ -303,7 +306,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, Float64.(chain_attrib), chain_mode, Float64(chain_z), ratchet_growth, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, Float64.(chain_attrib), chain_mode, isempty(chain_copy) ? zeros(Int, length(chain_attrib)) : Int.(chain_copy), chain_detect, Float64(chain_spot), Float64(chain_z), ratchet_growth, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -402,11 +405,43 @@ function run_m3c(p::M3cParams; seed)
     attributed(pl, a) = ToyPlan(ifelse.(pl.du .< 0, a .* pl.du, pl.du), ifelse.(pl.dh .< 0, a .* pl.dh, pl.dh))
     function read_outcome(done)
         K = length(p.chain_attrib)
-        reads = [observed_plan(mrng, attributed(done, p.chain_attrib[k]), p.marker_σ) for k in 1:K]
+        reads = ToyPlan[]
+        for k in 1:K
+            j = p.chain_copy[k]
+            push!(reads, j == 0 ? observed_plan(mrng, attributed(done, p.chain_attrib[k]), p.marker_σ) :
+                         ToyPlan(reads[j].du .+ 0.01p.marker_σ .* randn(mrng, length(done.du)), reads[j].dh .+ 0.01p.marker_σ .* randn(mrng, length(done.dh))))
+        end
         (p.chain_mode == :single || K == 1) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
-        chs = findall(.!chain_demoted)
+        # A reading's own noise, estimated from independent draws on the chains' stream (never the world's).
+        se = max(1e-9, std([plan_value(observed_plan(crng, done, p.marker_σ), t) for _ in 1:8]))
+        # Undeclared copying (8.107): independent chains carry independent noise, so the standardised
+        # difference of two readings has variance near 2; a pair agreeing far closer (below 0.2) is one
+        # chain counted twice, and the later one is folded into the earlier (overlap 1).
+        if p.chain_detect
+            for k in 1:K, l in (k + 1):K
+                (chain_copied[l] || chain_copied[k]) && continue
+                push!(chain_pair[(k, l)], (plan_value(reads[l], t) - plan_value(reads[k], t)) / se)
+                x = chain_pair[(k, l)]
+                length(x) >= 4p.adv_min_records && var(x) < 0.2 && (chain_copied[l] = true; chain_copies[] += 1)
+            end
+        end
+        chs = findall(.!chain_demoted .& .!chain_copied)
         vals = [plan_value(reads[k], t) for k in chs]
-        se = p.marker_σ * sqrt(max(1, count(touched(done)))) / max(1, count(touched(done)))
+        if length(chs) < 2 && rand(mrng) < (isempty(chs) ? 1.0 : p.chain_spot)
+            # Fewer than two independent chains: the domain has lost its check, loudly; spot audits on the
+            # shared observable score the one that is left, and demote it if it errs one way.
+            degrade!("measurement domain", "spot audits", "fewer than two independent chains")
+            chain_audits[] += 1
+            audit = observed_plan(mrng, done, p.marker_σ)
+            if !isempty(chs)
+                k = chs[1]; push!(chain_serr[k], (vals[1] - plan_value(audit, t)) / se)
+                x = chain_serr[k]
+                length(x) >= p.adv_min_records && abs(mean(x)) > p.chain_z * std(x) / sqrt(length(x)) && (chain_demoted[k] = true)
+            end
+            push!(chain_bias, plan_value(audit, t) - plan_value(done, t))
+            return audit
+        end
+        isempty(chs) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
         out = if length(chs) > 1 && chains_diverge(vals, fill(se, length(chs)); z = p.chain_z)
             chain_audits[] += 1
             audit = observed_plan(mrng, done, p.marker_σ)
@@ -479,7 +514,7 @@ function run_m3c(p::M3cParams; seed)
     convictions = NamedTuple{(:reporter, :convicted, :liability, :reward, :step, :reversed),Tuple{Int,Int,Float64,Float64,Int,Bool}}[]
     slanderers = falses(na)  # reporters whose frivolous pattern has been detected (a lie detected)
     reports_by = zeros(Int, na)  # reports filed, per reporter
-    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; chain_demoted = falses(length(p.chain_attrib))  # measured less true value of each outcome read; audits by divergence (8.107)
+    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = Xoshiro(hash((seed, :chains))); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l)  # measured less true value of each outcome read; audits by divergence (8.107)
     founded_on = zeros(Int, na)  # founded reports, per audited actor (trace only)
     pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
     vrng = Xoshiro(hash((seed, :advap)))
@@ -1788,7 +1823,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
