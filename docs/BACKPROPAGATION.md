@@ -2695,3 +2695,16 @@ research also feeds the floor; the test now claims only that it costs no more th
 scalar finding stands as the scalar mode's. (2) Newcomers under existing-only floors gain 0.502 against a
 limit of 0.5, while the test's relative claim (uplift raises them over five times more) holds; the limit
 moves to 0.6 with the reason stated.
+8.121 ruling (author, 2026-11-07): credence voting in Benefuture's liquid democracy. Ballots carry
+credences (confidence per option); no separate ranking is needed, the order follows from the credences,
+and a voter may not state equal confidence on top options. Diversity and novelty bonuses always boost
+clusters that choose minority options, which keeps minority judgments alive and scored (no exploration
+rate needed). Design consequences carried from the discussion: influence is weighted by measured
+calibration, never by stated confidence alone (Nitzan and Paroush 1982: optimal weights are the log-odds
+of measured competence); stated credences are shrunk toward each voter's calibration record; credences
+are scored by a proper rule against outcomes, unchosen options against counterfactual estimates;
+correlated ballots (credences clustered far tighter than independent judges give) count once (8.111);
+a "surprisingly popular" check (Prelec, Seung and McCoy 2017) is a candidate minority-expertise
+detector. Probe planned in M5, red first: stated-credence weighting captured by overconfident voters;
+calibration-shrunk credence with the minority bonus resists it and beats current voting in hard worlds.
+Candidate homes: Government (voting), Diversity (minority bonus), L114.
