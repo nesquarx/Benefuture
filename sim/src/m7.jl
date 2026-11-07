@@ -247,7 +247,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
                 report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0,
-                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "0") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0)
+                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&

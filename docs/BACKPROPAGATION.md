@@ -2687,3 +2687,11 @@ the strong reading without compensation); lead phase-down 1973: phase-down in 11
 the strong reading without, or with only, compensation); Montreal: phase-down in 13 of 13. A suggestion
 therefore carries two robustness readings: across judged magnitudes (`replay_sensitivity`) and across
 rule sets (`replay_rule_battery`).
+8.120 (2026-11-07, author ruling on 8.112 question 3: switch if useful and needed): M7's per-entity worlds
+default to traits mode (`BF_M7_TRAITS=0` restores the scalar mode; the central chooser stays scalar).
+Before switching, the M7 suite ran in traits mode: everything held but two results. (1) Heavy research no
+longer lowers the floor (0.8 of time: 22.8 against 22.6 at 0.1): breakthroughs are taught whole, so
+research also feeds the floor; the test now claims only that it costs no more than a small margin, and the
+scalar finding stands as the scalar mode's. (2) Newcomers under existing-only floors gain 0.502 against a
+limit of 0.5, while the test's relative claim (uplift raises them over five times more) holds; the limit
+moves to 0.6 with the reason stated.
