@@ -2597,3 +2597,22 @@ assumptions: the governance world's binary decisions and its population; the sta
 the voting institution, not the economy (the economy's status-quo arm is next: institution-dependent
 factors at their status-quo values in the same Benefuture economy, labelled as such, since a market economy
 without domain currencies is not modelled). Results in `sim/battery/results/status_quo.md`.
+8.115 finding (2026-11-07): the economy's status-quo arm, diagnosed. Same Benefuture economy, world and
+seeds (moderate noise, two skilled deceivers, a capture attempt), institutions at Benefuture-plausible
+values with AdvAp against today's without it: status-quo institutions grow floors and medians about 10%
+more (floor of understanding 264 vs 240, 8 seeds, z ≈ 11), harm's peak equal, while Benefuture's cut the
+deceivers' advantage from −12 to −89 endowments (`sim/battery/results/status_quo_economy.md`). One factor
+at a time (4 seeds): only discovery matters: record-reading attention (vigilance 0.1 → 0.001: +28.4) and
+AdvAp itself (off: +26.9); accounting noise, memory loss, audit errors, guardians' information and
+diligence each move the floor by 3 or less. Mechanism (3 seeds): as vigilance rises 0.001 → 0.1,
+established deceptions rise 0.3 → 50, the deceivers' actions fall 520 → 311 and total actions fall almost
+as much (2,083 → 1,868), while audits cost only about 107. Control: without deceivers, vigilance costs
+nothing (floor 264.6 at both levels, 122 audits). So the cost is the deceivers' real work, priced out by
+the escalating escrow (8.91 ruling) and not replaced, because this toy world has a fixed population of
+eight agents with no entry or expansion: unmet demand stays unmet. Reality and Benefuture both have
+entry (newcomers take unmet work; the identity mechanism admits them), so this is a toy limitation, not
+a property of the institutions, under the replay-authenticity rule's spirit; it is recorded as the
+condition on the result rather than patched away. Next: the comparison rerun with entry (newcomers
+admitted where demand goes unmet), and a world where deceivers' work is not useful. Until then the
+economy result stands: in a closed eight-agent economy, pricing out skilled deceivers costs about 10% of
+growth.

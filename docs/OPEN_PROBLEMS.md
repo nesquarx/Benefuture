@@ -26,3 +26,5 @@ reader can check exactly where that boundary sits.
 | **Honest forecasters lose to extremisers** | Winner-take-all forecasting contests reward overstated confidence ([Witkowski et al. 2023](https://doi.org/10.1287/mnsc.2022.4410)). | Challengers compete only on full record windows (8.58-b), and credence comes from the record (8.71). | In the economy, takeovers by equal-skill challengers are still extremists' (9 of 9) because honest credences are underconfident there ([8.58-c](BACKPROPAGATION.md)). |
 
 ---
+
+- **Priced-out work is not replaced in closed worlds (8.115).** Benefuture's discovery institutions price out skilled deceivers; in a fixed eight-agent economy their real work is lost (about 10% of growth against status-quo institutions). Tracked fix: entry (newcomers taking unmet demand) in the comparison world, and a variant where the deceivers' work is not useful.
