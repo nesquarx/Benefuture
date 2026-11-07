@@ -409,4 +409,6 @@ E5 replays live decisions as of their registration date to investigate what Bene
 
 **Rule-set battery (amendment 2026-11-07, 8.119).** Each report also gives the suggestion's share across 13 coarse-to-fine Benefuture rule sets (`replay_rule_battery`); a suggestion that holds in only some rule sets is reported with the sets it needs.
 
+**Lifecycle (author, 2026-11-07).** As the framework strengthens, each E5 case is replayed again on each new code freeze until its measurement horizon (the date its outcome becomes measurable); every run is logged with its date, code hash, suggestion, rule-set battery and sensitivity, and none is replaced. At the horizon the case is frozen and becomes an E4 case: its outcome class judged by §4's criteria, scored by the four-cell rule, with the run history showing how the suggestion moved as the framework changed. The score uses the last run before the horizon, and the first run is reported beside it.
+
 **Scoring later.** When the outcome arrives, the frozen case is scored by the four-cell rule against the outcome class judged by the pre-registered criteria of §4, with the counterfactual methods named at registration.
