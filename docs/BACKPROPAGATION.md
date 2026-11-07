@@ -2502,7 +2502,9 @@ dependency graph, overlap-discounted pooling of readings that share markers, the
 Rulings: (2) divergence between chains is both an automatic audit trigger and a reportable output under
 AdvAp; gaming (flooding divergent chains to force audits) is met by the false-challenger ratchet;
 (3) the floors are judged under every chain, minority paradigms included: no one is refused a
-challenge except serial false challengers, who face the ratchet. Open: the rest of the design (author
+challenge except serial false challengers, who face the ratchet. Grounding (author): reality, operationally
+double-blind shared measurements: independent observers reading the same thing through separate
+chains and converging (the solipsism guard), never a privileged base layer. Open: the rest of the design (author
 still thinking). Candidate homes: Measurement (markers line, circularity), Domain, AdvAp.
 Lean when settled: acyclic dependency check; overlap-discounted pooling (identical markers give no more
 credence than one); divergence trigger. Sim: M3c harm read by two chains, one under-attributing.
