@@ -2488,7 +2488,7 @@ of beings overclaiming and learners' reports on, over 16 seeds: floor growth +1.
 (interval −0.9 to +1.6, not equivalent within 1.5). An 8-seed first look (11.6 against 9.3) overstated
 it. Neither claim is made; resolving it needs a larger world or more seeds by precision. Not in the
 README.
-8.107 author direction, partly open (2026-11-07): measurement chains as a domain. Measurement.txt's
+8.107 author direction (2026-11-07; set-up approved the same day): measurement chains as a domain. Measurement.txt's
 markers line bans one metric model using another's output (circularity) and asks for its source markers
 and logic instead; that blocks feedback loops and double counting bluntly but lets one paradigm's
 convention enter downstream silently (COVID deaths certified by last symptom against excess mortality:
