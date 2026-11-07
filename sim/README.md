@@ -1209,7 +1209,7 @@ for removal.
 | Mechanism | Status | Note |
 |---|---|---|
 | Transactions quoted per currency, screened by G, logged | Native | L86–L89, L145 |
-| Measurement chains: acyclic dependencies, overlap-discounted pooling, divergence trigger (8.107) | Native rules | Lean `acyclic_ref`, `pooled_reading_ref`, `chains_diverge_ref`; not yet wired into a world |
+| Measurement chains: acyclic dependencies, overlap-discounted pooling, divergence trigger (8.107) | Native rules | Lean `acyclic_ref`, `pooled_reading_ref`, `chains_diverge_ref`; M3c reads outcomes through chains (`chain_attrib`, `chain_mode = :domain`), audits on divergence, demotes chains by audited error (8.108) |
 | Understanding measured by its equation over hidden traits (`understanding.jl`) | Native rule, introduced world | L31 via Lean `pragmatic_understanding_ref`; the hidden traits and measurement noise are world model (8.98); wired into M7 as each being's measured view (`claim_ratio`); traits are fixed (teaching still raises the scalar level) |
 | Outcome-first causal distribution, traversal fallback | Native | L94–L96; coalition values [P] 8.18 |
 | Balance overflow into reinvestment | Native | L103; reputation untouched (whether overflow boosts reputation is BACKPROPAGATION 8.51) |
@@ -1281,6 +1281,7 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
 | Lesson-report significance and minimum lessons (M7, 8.105) | `report_z`, `report_min` | 3.0, 5 | AdvAp's `adv_z` and `adv_min_records` analogues |
 | Significance of an item in pragmatic understanding | `th` (`understanding_truth_and_measure`) | 0.0 | L31 (Wt ≥ Th) |
 | Audit rate of causal-explanation claims (8.98 probe) | `audit_rate` | 1.0 in the probe; swept 0–1 | institutional, so a sweep (CLAUDE.md), never a default |

@@ -939,3 +939,29 @@ end
     @test chains_diverge([5.0, 15.0], [1.0, 1.0]; z = 3.0)
     @test !chains_diverge([5.0, 6.0], [1.0, 1.0]; z = 3.0)
 end
+
+# ==============================================================================
+# Probe: harm read through competing measurement chains (8.107)
+# ==============================================================================
+# Hypothesis: an incumbent chain that counts only half of each loss (last-symptom counting) hides harm
+# when its output is consumed alone (measured value above true, the red baseline: harm goes unburned);
+# consuming the measurement domain's reading instead (a second chain of another paradigm, divergence
+# audits on the shared observable, chains scored against audits) reads outcomes without bias (no harm
+# hidden, none double counted: within 0.2 of zero), demotes the under-attributing chain in every seed,
+# and stops auditing once it has (audits under 5% of outcomes). Counterexample: two honest chains are
+# never demoted. Measured (3 seeds): bias +3.4 single, −0.01 to −0.03 domain; demoted after 5–11 audits.
+@testset "Probe: harm read through competing measurement chains (8.107)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.2) for _ in 1:6]
+    w(; kw...) = M3cParams(ToyParams(n = 60, steps = 100, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                           transactions = true, causal_distribution = true, p_side = 0.1, LEGACY..., kw...)
+    seeds = 1:3
+    single = [run_m3c(w(chain_attrib = [0.5]); seed) for seed in seeds]
+    domain = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in seeds]
+    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in seeds]
+    @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant          # harm hidden
+    @test all(t -> abs(mean(t.chain_bias)) < 0.2, domain)                                   # read at its true size
+    @test all(t -> t.chain_demoted == [true, false], domain)
+    @test all(t -> t.chain_audits < 0.05 * length(t.chain_bias), domain)
+    @test all(t -> !any(t.chain_demoted), honest)
+end

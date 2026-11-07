@@ -2508,3 +2508,17 @@ chains and converging (the solipsism guard), never a privileged base layer. Open
 still thinking). Candidate homes: Measurement (markers line, circularity), Domain, AdvAp.
 Lean when settled: acyclic dependency check; overlap-discounted pooling (identical markers give no more
 credence than one); divergence trigger. Sim: M3c harm read by two chains, one under-attributing.
+8.108 finding (2026-11-07, 8.107 step 3): harm read through competing measurement chains. M3c reads
+each outcome through measurement chains (`chain_attrib`: the share of each being's loss a chain
+attributes; `chain_mode`). Consuming an incumbent chain that counts half of each loss (last-symptom
+counting) alone hides harm: each outcome's measured value sits +3.4 above its true value (3 seeds, z = 3),
+so the harm is never burned. Consuming the measurement domain's reading instead, with a second chain of
+another paradigm: divergence beyond `chain_z` (3) triggers an audit on the shared observable; chains are
+scored against audits and one whose audited error exceeds the best live chain's by `chain_z` combined
+standard errors is demoted. The under-attributing chain is demoted after 5–11 audits in every seed,
+audits then stop (under 4% of outcomes), and outcomes are read within 0.04 of their true value: no harm
+hidden, none double counted. Two honest chains are never demoted. Toy assumptions: the audit reads the
+shared observable with ordinary marker noise; chains differ only in loss attribution; one leaf. Next
+(when ruled or as the plan allows): a minority chain right against an incumbent majority, and chains
+gamed to look agreeable (attributing fully only when audited). Candidate homes: Measurement (chains),
+AdvAp.
