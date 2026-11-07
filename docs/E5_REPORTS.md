@@ -20,3 +20,11 @@ Suggestions, never endorsements. Each case is replayed on a healthy cadence (wee
 - **Why:** after US tightening cycles since 1969, a recession followed within 24 months in 5 of 6 cycles where the peak was held for months and in 4 of 6 where cuts came soon after it (Laplace rates 0.75 and 0.625); a hike has no separating record and is priced with the hold's rate and a judged deeper recession.
 - **Caveat that matters:** the record is confounded: cuts soon after a peak usually came because a downturn was already visible, and holds when it was not, so the two rates are not like-for-like trials; the direction of the suggestion rests on them.
 - **Limits:** the October 2026 decision and vote are from secondary sources (the statement unread); recession magnitudes reuse the 2008 case's assumptions; some NBER dates from memory.
+
+## fda_zrostudirsen_2027 (registered 2026-11-07; committed before its replay; edited after it, see below)
+
+- **Suggested:** a complete response letter: wait for clinical-outcome data.
+- **Across rule sets:** wait in 12 of 13; approval only under the weak floor reading alone. **Across magnitudes:** no single halving or doubling flips it.
+- **Why:** no Duchenne therapy approved on a surrogate has had its benefit confirmed by a later trial in the as-of record (ataluren, viltolarsen, delandistrogene: 0 of 3; Laplace 0.2), and a serious safety signal priced from the 2025 gene-therapy deaths (1 of 5 surrogate-approved therapies restricted within two years) puts a per-patient death risk of about 0.3% on approval, above the freedom gate's 0.1% bar, while waiting costs families' happiness but no lives.
+- **What the suggestion rests on:** the safety analogue is from a different modality (gene therapy, not exon skipping, whose record shows no restriction); with exon skippers alone the safety rate would be 0 of 4 and the case would turn on the upside. The confirmatory record is three trials, recalled, primary not seen.
+- **First run, as the rules require:** the first replay also chose wait, but on a case-building error: the benefit sat in the scenario complement, which the overlapping failure and safety chains clipped to zero, pricing approval with no upside. The edit gives the benefit its own event; the corrected run is the one logged from here on, the first kept here.

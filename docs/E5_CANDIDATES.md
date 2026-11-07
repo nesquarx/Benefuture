@@ -30,6 +30,6 @@ Build order: `random.Random(20261109).shuffle` over the list as written.
 
 | Order | Family | Decision | Source | Status |
 |---|---|---|---|---|
-| 1 | health | FDA decision on z-rostudirsen (Dyne, Duchenne muscular dystrophy), accelerated approval on dystrophin production, PDUFA 21 January 2027 (approve with a confirmatory trial; complete response letter) | [source](https://www.2minutemedicine.com/?p=83226) | not built |
-| 2 | technology | Artemis III crewed Earth-orbit test flight, late 2027: go or no-go given as-of anomaly records (a Challenger-shaped decision; date not yet fixed, so watch-listed until it is) | [source](https://news.cgtn.com/news/2026-02-28/NASA-postpones-crewed-lunar-landing-to-2028-adds-new-Artemis-mission-1L7FeQ4wPXG/p.html) | not built |
+| 1 | health | FDA decision on z-rostudirsen (Dyne, Duchenne muscular dystrophy), accelerated approval on dystrophin production, PDUFA 21 January 2027 (approve with a confirmatory trial; complete response letter) | [source](https://www.2minutemedicine.com/?p=83226) | built and reported (docs/E5_REPORTS.md) |
+| 2 | technology | Artemis III crewed Earth-orbit test flight, late 2027: go or no-go given as-of anomaly records (a Challenger-shaped decision; date not yet fixed, so watch-listed until it is) | [source](https://news.cgtn.com/news/2026-02-28/NASA-postpones-crewed-lunar-landing-to-2028-adds-new-Artemis-mission-1L7FeQ4wPXG/p.html) | watch-listed: date not fixed (criterion 5) |
 | 3 | environment | IMO Net-Zero Framework, resumed extraordinary MEPC session, 4 December 2026 (adopt as agreed with its carbon price; adopt without the pricing element; adjourn again) | [source](https://gcaptain.com/imo-climate-talks-stay-alive-as-carbon-plan-survives-u-s-pushback-at-mepc-84/) | not built |
