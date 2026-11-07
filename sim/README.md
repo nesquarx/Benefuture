@@ -1285,6 +1285,7 @@ ratified.
 | Credence-ballot calibration prior and minimum record (M5, 8.121) | (prior slope 0.5, 5 records, log-odds cap 10) | 0.5, 5, 10 | judgment |
 | Long-term offset (E4 replay, 8.116): happiness retention, understanding compounding, offset premium scale, soft bar | `h_retention`, `u_compounding`, `offset_scale`, `soft_bar` | 0.3, 1.5, 0.05, 0.05 | judgment; hedonic adaptation is partial and event-dependent (to be swept) |
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
+| Persistent share of understanding loss counted as irreparable (8.125) | `u_loss_persistence` | 0.5 (an option may override from evidence) | judgment |
 | Policy-level irreparable harm tolerance (8.124) | `irr_tol` | 0.01 (relative to the least-harm option, at least 0.01) | judgment |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
 | Spot-audit chance when fewer than two independent chains remain (8.111) | `chain_spot` | 0.05 | judgment; institutional analogue: random audit rates |

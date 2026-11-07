@@ -499,3 +499,8 @@ cfd_ballot_weight(vw, calibration, logodds; cap = 10.0) =
 "Policy-level irreparable harm blocks an option beyond the least among the options (Lean `irreparable_blocked_ref`; author ruling 8.124)."
 irreparable_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
     ccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
+
+"Irreparable harm in death-equivalents: deaths plus persistent understanding loss (Lean `irreparable_equivalent_ref`; on 8.124)."
+irreparable_equivalent(deaths, du, pop, base_u, base_h; compounding = 1.5, persistence = 0.5) =
+    ccall(sym(:bf_irreparable_equivalent), Float64, (Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          Float64(deaths), Float64(du), Float64(pop), Float64(base_u), Float64(base_h), Float64(compounding), Float64(persistence))

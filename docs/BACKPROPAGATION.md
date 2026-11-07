@@ -2770,3 +2770,22 @@ choices unchanged except school closures 2020, now close schools (compensated), 
 carried 108 expected deaths against none; its falsifier F1 no longer fires. Pre-registered 6/6 and held-out
 5/5 unchanged. E5 credences: WHO binding annex 57% (was 44%), IMO adopt 79%, FDA wait 95%, FOMC hold 58%.
 The rule battery gains a fourteenth set (the full rules without this block).
+8.125 author direction and build (2026-11-07, on 8.124): at some level of counterfactual understanding
+loss, closing schools must be able to rule either way; it depends on how long and what options exist
+(online classes can shrink the loss). Built: lost knowledge counts as irreparable harm (as REPLAY_PREREG §5
+defines it) in death-equivalents: Lean `irreparable_equivalent_ref` adds to expected deaths the persistent
+share of long-term understanding loss (loss × compounding × persistence), as the share of a life's
+understanding and happiness it takes (a death takes both to zero), over the group's population; 8.124's
+block compares these totals. Persistence is a governed default (`u_loss_persistence` 0.5) that an option
+may override from evidence on its kind of loss; each case declares its unit ratio
+(`irreparable_per_population_unit`). School closures 2020 gains two as-of options (a three-week closure;
+closure with remote instruction keeping a quarter of teaching, from the record of full-time online schools),
+added after the fourth replay at the author's direction. Fifth replay (not out of sample): school closures
+returns to keep open (half of 2.4 points of students' understanding loss outweighs about 108 thousand
+expected deaths); with remote learning keeping 90% of instruction it chooses closure with remote learning,
+so the rule rules either way with the options. Volcker 1979 moves to incomes policy (its recession's
+understanding loss now counts as persistent, while incomes policy's cost is happiness), a miss on a good
+decision (held-out 4 of 5 on this replay). That exposes the uniform persistence: a child's lost schooling
+and an adult's unemployment spell are not equally lasting; Benefuture would estimate persistence per kind of
+loss from evidence, so per-option values are the fix, set from as-of evidence when each case is next
+sourced (not now, which would be tuning after seeing the flip).

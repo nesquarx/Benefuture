@@ -23,3 +23,7 @@ From 2026-11-07 (later the same day) rows carry an eighth column: Benefuture's c
 | 2026-11-07 | 4e70ef2 | a980f17f9aa16010 | fomc_january_2027 | cut_25bp (compensated) | cut_25bp 93%, hold 7% | 8 | hold 58%, cut_25bp 38%, hike_25bp 4% |
 | 2026-11-07 | 4e70ef2 | a980f17f9aa16010 | imo_net_zero_framework_2026 | adopt_with_pricing (compensated) | adopt_with_pricing 71%, adjourn_again 29% | 0 | adopt_with_pricing 79%, adjourn_again 21% |
 | 2026-11-07 | 4e70ef2 | a980f17f9aa16010 | who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex (compensated) | adopt_binding_benefit_sharing_annex 100% | 2 | adopt_binding_benefit_sharing_annex 57%, extend_negotiations_no_annex 43% |
+| 2026-11-07 | 4edfebf | a79526ed7e3b80bb | fda_zrostudirsen_2027 | complete_response_wait | complete_response_wait 93%, accelerated_approval_with_confirmatory_trial 7% | 0 | complete_response_wait 95%, accelerated_approval_with_confirmatory_trial 5% |
+| 2026-11-07 | 4edfebf | a79526ed7e3b80bb | fomc_january_2027 | cut_25bp (compensated) | cut_25bp 93%, hold 7% | 4 | cut_25bp 54%, hold 40%, hike_25bp 6% |
+| 2026-11-07 | 4edfebf | a79526ed7e3b80bb | imo_net_zero_framework_2026 | adopt_with_pricing (compensated) | adopt_with_pricing 71%, adjourn_again 29% | 0 | adopt_with_pricing 79%, adjourn_again 21% |
+| 2026-11-07 | 4edfebf | a79526ed7e3b80bb | who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex (compensated) | adopt_binding_benefit_sharing_annex 100% | 4 | adopt_binding_benefit_sharing_annex 55%, extend_negotiations_no_annex 45% |

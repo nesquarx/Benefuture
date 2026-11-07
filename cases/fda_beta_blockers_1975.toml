@@ -20,6 +20,7 @@ decision_makers = ["US FDA Cardiorenal Advisory Committee"]
 actual_choice = "require_us_trial"
 actual_outcome_class = "bad"
 primary_or_held_out = "primary"
+irreparable_per_population_unit = 10   # units declared 2026-11-07 for 8.124 death-equivalents: populations in 1,000 patients, deaths in 100s
 
 [[sources]]
 id = "early_betablocker_postmi_trials"

@@ -336,6 +336,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_lt_offset_admissible] def ltOffsetAdmissible (du dh base_h : Float) (nha : UInt8) (retention compounding offset_scale soft_bar : Float) : UInt8 :=
   if lt_offset_admissible_ref du dh base_h (nha != 0) retention compounding offset_scale soft_bar then 1 else 0
 
+@[export bf_irreparable_equivalent] def irreparableEquivalent (deaths du pop base_u base_h compounding persistence : Float) : Float :=
+  irreparable_equivalent_ref deaths du pop base_u base_h compounding persistence
+
 @[export bf_irreparable_blocked] def irreparableBlocked (harm least tol : Float) (nha : UInt8) : UInt8 :=
   if irreparable_blocked_ref harm least tol (nha != 0) then 1 else 0
 

@@ -15,6 +15,7 @@ decision_makers = ["State Governors", "State Public Health Officers"]
 actual_choice = "close_schools_statewide"
 actual_outcome_class = "unclear"
 primary_or_held_out = "primary"
+irreparable_per_population_unit = 1000   # units declared 2026-11-07 for 8.124 death-equivalents: populations in millions, deaths in thousands
 
 [[sources]]
 id = "cauchemez_school_holidays_2009"
@@ -106,6 +107,66 @@ name = "no_lasting_loss"
 p_chain = []
 complement = true
 du = [0.0, 0.0]
+
+# Options added 2026-11-07 after the fourth replay, at the author's direction (the choice should depend on how
+# long schools close and what mitigates the loss; recorded in docs/BACKPROPAGATION.md 8.125). As-of basis:
+# Spring 2020 closures were announced as two to three weeks; remote instruction was available but weak by the
+# record of full-time online schools (CREDO 2015, online charter students' growth far below peers'; recalled,
+# primary not seen), so remote learning is taken to keep a quarter of instruction (judgment).
+[[ options ]]
+id = "close_three_weeks"
+name = "Close schools for three weeks, then reassess"
+source = "strike_literature"
+known_date = "2020-03-13"
+is_inaction = false
+scope_delta = 0.0
+# learning loss 3 of 10 weeks: du -0.9, dh -0.3 at p 0.8; transmission: deaths 70% of the open-schools toll
+pred_du = [-0.72, 0.0]
+pred_dh = [-0.24, -1.26]
+pred_nha = [0.0, 0.42]
+pred_irreparable = [0.0, 75.6]
+
+[[ options.scenarios ]]
+name = "short_learning_loss"
+p_chain = ["closure_learning_loss"]
+du = [-0.9, 0.0]
+dh = [-0.3, 0.0]
+
+[[ options.scenarios ]]
+name = "spread_after_reopening"
+p_chain = ["school_closure_cuts_transmission"]
+dh = [-0.7, -2.1]
+nha = [0.0, 0.7]
+irreparable = [0.0, 126.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "close_with_remote_learning"
+name = "Close schools statewide with remote instruction"
+source = "strike_literature"
+known_date = "2020-03-13"
+is_inaction = false
+scope_delta = 0.0
+# remote keeps a quarter of instruction: loss 75% of the full closure's (du -2.25, dh -0.75 at p 0.8)
+pred_du = [-1.8, 0.0]
+pred_dh = [-0.6, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "learning_loss_with_remote"
+p_chain = ["closure_learning_loss"]
+du = [-2.25, 0.0]
+dh = [-0.75, 0.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
 
 [counterfactual]
 # Later evidence only. Learning loss: NWEA fall-2020 brief (math 5-10 percentile points below prior cohort).

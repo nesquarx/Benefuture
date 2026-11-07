@@ -32,7 +32,8 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     u_compounding = 1.5,
     offset_scale = 0.05,
     soft_bar = 0.05,
-    irr_tol = 0.01
+    irr_tol = 0.01,
+    u_loss_persistence = 0.5
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -69,7 +70,8 @@ function get_frozen_replay_thresholds()
             u_compounding = 1.5,
             offset_scale = 0.05,
             soft_bar = 0.05,
-            irr_tol = 0.01
+            irr_tol = 0.01,
+            u_loss_persistence = 0.5
         )
     catch e
         # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
@@ -739,7 +741,15 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
 
     bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
     env_least = minimum(get(o, "_env_harm", 0.0) for o in options)
-    irr_least = minimum(sum(Float64.(o["pred_irreparable"])) for o in options)   # (8.124) policy-level irreparable harm
+    # (8.124 and the author's note on it) policy-level irreparable harm in death-equivalents: expected deaths plus
+    # the persistent share of long-term understanding loss (lost knowledge); `irreparable_per_population_unit`
+    # converts a case's population units to its irreparable units (default 1).
+    upu = Float64(get(case_dict, "irreparable_per_population_unit", 1.0))
+    # An option may state how much of its understanding loss persists (`u_loss_persistence`, from evidence on that kind
+    # of loss: a child's lost schooling, an adult's unemployment spell); otherwise the governed default.
+    irr_eq(o) = sum(irreparable_equivalent(Float64(o["pred_irreparable"][g]), Float64(o["pred_du"][g]), pops[g] * upu, base_u[g], base_h[g];
+                                           compounding = th.u_compounding, persistence = Float64(get(o, "u_loss_persistence", th.u_loss_persistence))) for g in 1:n_groups)
+    irr_least = minimum(irr_eq(o) for o in options)
     rule_irr = get(ov, "irreparable", true)
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
@@ -822,7 +832,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                                        all(lt_u .+ th.epsilon_tie .>= idle_lt_u) && all(lt_h .+ th.epsilon_tie .>= idle_lt_h)) &&
                        total_irr == 0.0 &&
                        !(rule_env && env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) &&
-                       !(rule_irr && irreparable_blocked(total_irr, irr_least; tol = th.irr_tol * max(1.0, irr_least)))
+                       !(rule_irr && irreparable_blocked(irr_eq(opt), irr_least; tol = th.irr_tol * max(1.0, irr_least)))
     end
 
     # Filter by strong reading first; fall back to weak reading with loud degradation if none qualifies
@@ -835,7 +845,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # No necessary-harm exemption: 8.118 states none, and 8.124's only exception, survival added elsewhere,
         # is already in the comparison of net expected harms.
         env_b = [(rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) ||
-                 (rule_irr && irreparable_blocked(sum(Float64.(o["pred_irreparable"])), irr_least; tol = th.irr_tol * max(1.0, irr_least))) for o in options]
+                 (rule_irr && irreparable_blocked(irr_eq(o), irr_least; tol = th.irr_tol * max(1.0, irr_least))) for o in options]
         d_scope_w = [env_b[i] ? -1.0 : d_scope[i] for i in 1:n_opts]
         chosen_idx = g_choose(opt_values, d_scope_w, d_min_u, d_min_h, d_max_u)
     end

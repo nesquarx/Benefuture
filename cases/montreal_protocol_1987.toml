@@ -16,6 +16,7 @@ decision_makers = ["UNEP", "US EPA", "European Community", "Japan", "UK", "24 si
 actual_choice = "adopt_cfc_phase_down"
 actual_outcome_class = "good"
 primary_or_held_out = "primary"
+irreparable_per_population_unit = 10000   # units declared 2026-11-07 for 8.124 death-equivalents: populations in millions, deaths in 100s
 
 [[sources]]
 id = "nas_ozone_assessments"
