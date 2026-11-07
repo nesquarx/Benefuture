@@ -2480,3 +2480,11 @@ wasted lessons in the first steps compound through later teaching before detecti
 checked before they are relied on, as escrow does for transactions), not faster reports. Toy assumptions:
 no reporter reward or audit cost modelled in M7, fixed traits. Candidate homes: AdvAp (lesson
 shortfalls as reportable outputs), Understanding article (measurement).
+8.106 result, inconclusive (2026-11-07, on 8.105): claims trusted only as the record grows. M7 option
+`claim_record` (off by default): what a being claims beyond its level is trusted in proportion to its
+lessons delivered, reaching full trust at `claim_record` lessons (record credence, 8.29). With a third
+of beings overclaiming and learners' reports on, over 16 seeds: floor growth +1.2 over reports alone
+(standard error 0.75; not significant at z = 2) and within 0.3 of honest beings under the same check
+(interval −0.9 to +1.6, not equivalent within 1.5). An 8-seed first look (11.6 against 9.3) overstated
+it. Neither claim is made; resolving it needs a larger world or more seeds by precision. Not in the
+README.

@@ -918,3 +918,4 @@ end
     @test all(>=(0.9), caught)
     @test paired_effect(rep .- open_; z = 2.0).significant
 end
+
