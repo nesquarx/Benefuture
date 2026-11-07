@@ -2544,4 +2544,9 @@ lesson counted model bundles but not the explanation a learner gains, so practic
 (lessons 516 against 970 without practice); Benefuture counts both, and with both counted lessons rise
 to 1,824 and practice no longer lowers the median. Toy assumptions: one thing, fixed weights, no
 happiness, a noisy view of predicted gains in place of the full Lean G, no measured view (8.104) yet.
-Next: join the measured view and reports to the traits world, then compare with scalar M7's pattern.
+Measured view and reports joined (same day): with a third of beings overclaiming explanation by 0.4,
+floor growth falls 0.62 → 0.47 (z = 3); learners' reports audit all 20 overclaimers and no honest being
+in every seed (8 seeds) and recover the loss (0.615). Cleaner than scalar M7 (8.105: 40% recovered, some
+honest teachers audited): in the traits world a lesson's shortfall is exactly the overclaimed
+explanation, so the signal is clean and detection beats the compounding. Next: compare the traits
+world's pattern with scalar M7's, and decide which becomes M7's default (author).

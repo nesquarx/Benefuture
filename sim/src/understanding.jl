@@ -96,7 +96,8 @@ existed (`bundles`), so crossed wires can be checked.
 function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, seed::Integer = 1, ε::Real = 0.3,
                        practice_gain::Real = 0.02, research_share::Real = 0.1, p_research::Real = 0.05,
                        p_teachable::Real = 0.5, p_act::Real = 0.3, class::Integer = 5, view_σ::Real = 0.02,
-                       reception_σ::Real = 0.5, breakthrough::Real = 0.3)
+                       reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
+                       report_z::Real = 3.0, report_min::Integer = 5)
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
     rng = Xoshiro(seed); rrng = Xoshiro(hash((seed, :research))); vrng = Xoshiro(hash((seed, :views)))
@@ -106,7 +107,13 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     ce = 0.2 .+ 0.5 .* rand(rng, n, m)           # causal explanation
     ts, tc, tce = copy(ms), copy(mc), copy(ce)    # the teachable parts (research gains may be tacit)
     pr = zeros(n, m)                              # practice
+    # Measured view (8.104 in this world): a being's claimed explanation is its own plus `overclaim`
+    # until a founded report audits it (8.105: learners' shortfalls against everyone's).
+    oc = overclaim isa AbstractVector ? collect(Float64, overclaim) : fill(Float64(overclaim), n)
+    audited = falses(n); shortfall = [Float64[] for _ in 1:n]; audits = Ref(0)
+    claimed(b, i) = audited[b] ? tce[b, i] : min(1.0, tce[b, i] + oc[b])
     bundles = Set{Tuple{Float64,Float64}}((ms[b, i], mc[b, i]) for b in 1:n, i in 1:m)
+    Um(b) = pragmatic_understanding(1.0, wt, [audited[b] ? ce[b, i] : min(1.0, ce[b, i] + oc[b]) for i in 1:m], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in 1:m], mc[b, :])
     U(b) = pragmatic_understanding(1.0, wt, ce[b, :], [expected_relative_accuracy(ms[b, i] * exp(-pr[b, i])) for i in 1:m], mc[b, :])
     bval(s, c) = expected_relative_accuracy(s) * (1 - c)   # a bundle's worth, before practice
     tr = (floor_u = Float64[], median_u = Float64[], peak_u = Float64[], mean_cy = Float64[], lessons = Ref(0), breakthroughs = Ref(0))
@@ -129,18 +136,21 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         end
         for e in 1:n
             (researching[e] || rand(rng) >= p_act) && continue
-            view = u .+ view_σ .* randn(vrng, n)
+            view = [Um(b) for b in 1:n] .+ view_σ .* randn(vrng, n)
             below = [b for b in 1:n if b != e && view[b] < view[e]]
             # Predicted gain of a lesson to a class against practising one item oneself (on the view).
             learners = isempty(below) ? Int[] : below[randperm(rng, length(below))[1:min(class, length(below))]]
             lesson_gain = sum((sum(wt[i] * (max(0.0, bval(ts[e, i], tc[e, i]) - bval(ms[l, i], mc[l, i])) * ce[l, i] +
-                                        max(0.0, tce[e, i] - ce[l, i]) * bval(ms[l, i], mc[l, i])) for i in 1:m) for l in learners); init = 0.0) * ε   # models and explanation both
+                                        max(0.0, claimed(e, i) - ce[l, i]) * bval(ms[l, i], mc[l, i])) for i in 1:m) for l in learners); init = 0.0) * ε   # models and (claimed) explanation both
             # practice's predicted gain: the equation's change from sharpening one's best item
             practice_gain_pred = maximum(wt[i] * ce[e, i] * (1 - mc[e, i]) * (expected_relative_accuracy(ms[e, i] * exp(-pr[e, i] - practice_gain)) - expected_relative_accuracy(ms[e, i] * exp(-pr[e, i]))) for i in 1:m)
             if lesson_gain > practice_gain_pred
                 tr.lessons[] += 1
                 for l in learners
                     r = exp(reception_σ * randn(rng) - reception_σ^2 / 2)
+                    pred = sum(wt[i] * min(1.0, ε * r) * max(0.0, claimed(e, i) - ce[l, i]) for i in 1:m)
+                    real = sum(wt[i] * min(1.0, ε * r) * max(0.0, tce[e, i] - ce[l, i]) for i in 1:m)
+                    reports && push!(shortfall[e], pred - real)
                     for i in 1:m
                         if bval(ts[e, i], tc[e, i]) > bval(ms[l, i], mc[l, i]) && rand(rng) < min(1.0, ε * r)
                             ms[l, i], mc[l, i] = ts[e, i], tc[e, i]          # the model, taught whole (8.109)
@@ -153,8 +163,16 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                 i = rand(rng, 1:m); pr[e, i] += practice_gain       # practice: one's own acuity, never taught
             end
         end
+        if reports
+            for e in 1:n
+                x = shortfall[e]; (audited[e] || length(x) < report_min) && continue
+                rest = vcat((shortfall[k] for k in 1:n if k != e)...); length(rest) >= 2 || continue
+                z = (mean(x) - mean(rest)) / sqrt(var(x) / length(x) + var(rest) / length(rest) + 1e-24)
+                z > report_z && (audited[e] = true; audits[] += 1)
+            end
+        end
         rec!()
     end
-    (; tr..., lessons = tr.lessons[], breakthroughs = tr.breakthroughs[], bundles = bundles,
+    (; tr..., audits = audits[], audited = copy(audited), lessons = tr.lessons[], breakthroughs = tr.breakthroughs[], bundles = bundles,
        final_bundles = [(ms[b, i], mc[b, i]) for b in 1:n, i in 1:m], practice = pr)
 end

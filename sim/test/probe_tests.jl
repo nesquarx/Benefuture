@@ -992,4 +992,13 @@ end
     @test paired_effect([a.mean_cy[end] - b.mean_cy[end] for (a, b) in zip(base, tacit)]; z = 3.0, direction = :down).significant
     pr = [run_m7_traits(seed = s, ε = 0.0) for s in seeds]; nopr = [run_m7_traits(seed = s, ε = 0.0, practice_gain = 0.0) for s in seeds]
     @test paired_effect([a.median_u[end] - b.median_u[end] for (a, b) in zip(pr, nopr)]; z = 3.0).significant
+    # (e) Measured view and learners' reports in this world: a third overclaiming explanation by 0.4 cut
+    # floor growth (measured 0.62 → 0.47); reports audit every overclaimer, no honest one (measured: 20
+    # of 20, none false, every seed), and recover the loss (0.615).
+    oc = [b % 3 == 0 ? 0.4 : 0.0 for b in 1:60]
+    open_ = [run_m7_traits(seed = s, overclaim = oc) for s in seeds]
+    rep = [run_m7_traits(seed = s, overclaim = oc, reports = true) for s in seeds]
+    @test paired_effect(fg.(base) .- fg.(open_); z = 3.0).significant
+    @test paired_effect(fg.(rep) .- fg.(open_); z = 3.0).significant
+    @test all(t -> all(b -> t.audited[b] == (oc[b] > 0), 1:60), rep)
 end
