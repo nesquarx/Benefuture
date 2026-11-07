@@ -261,8 +261,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     # its audited ratio from then on. Without `audited_ratio`, claims are never audited by report.
     claim_ratio = claim_ratio === nothing ? nothing : collect(Float64, claim_ratio)
     shortfall = [Float64[] for _ in 1:p.n]; taught_n = zeros(Int, p.n); audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
-    check(!traits || (!central && accession_step == 0 && accession_n == 0 && n_items >= 1 && 0 < breakthrough < 1 && practice_per_u >= 0),
-          "traits mode (8.98, 8.109): G per entity, no accession yet")
+    check(!traits || (!central && n_items >= 1 && 0 < breakthrough < 1 && practice_per_u >= 0),
+          "traits mode (8.98, 8.109): G per entity")
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
@@ -287,9 +287,24 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
         tts, ttc, ttce = copy(tms), copy(tmc), copy(tce); tpr = zeros(p.n, n_items)
         Utr(b) = pragmatic_understanding(1.0, twt, tce[b, :], [expected_relative_accuracy(tms[b, i] * exp(-tpr[b, i])) for i in 1:n_items], tmc[b, :])
         tscale = mean(s.u) / mean(Utr(b) for b in 1:p.n)
-        relevel!() = (for b in 1:p.n; s.u[b] = tscale * Utr(b); end)
+        relevel!() = (for b in eachindex(s.u); s.u[b] = tscale * Utr(b); end)
         relevel!()
         tbval(sp, c) = expected_relative_accuracy(sp) * (1 - c)
+        # Apply a step's level changes in traits mode: work becomes practice; a gain to a newcomer (an uplift
+        # programme) is a lesson from the best teacher among the existing, at the share of the gap it closes.
+        function apply_traits!(du, newcomers)
+            best = argmax([Utr(b) for b in 1:p.n])
+            for b in eachindex(du)
+                du[b] == 0 && continue
+                if b in newcomers && du[b] > 0
+                    gap = tscale * (Utr(best) - Utr(b))
+                    gap > 0 && tlesson!(best, b, min(1.0, du[b] / gap))
+                else
+                    i = rand(xrng, 1:n_items); tpr[b, i] = max(0.0, tpr[b, i] + practice_per_u * du[b] / tscale)
+                end
+            end
+            relevel!()
+        end
         function tlesson!(e, l, share)
             for i in 1:n_items
                 if tbval(tts[e, i], ttc[e, i]) > tbval(tms[l, i], tmc[l, i]) && rand(xrng) < share
@@ -480,6 +495,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     degraded = NamedTuple{(:step, :reason),Tuple{Int,Symbol}}[]
     nha_bearers = Int[]
     arng = Xoshiro(hash((seed, :accession)))
+    nu_start = Ref(Float64(accession_u))   # newcomers' starting level (in traits mode, read from their traits)
 
     for step in 1:p.steps
         if step == accession_step
@@ -490,6 +506,14 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             append!(novelty, fill(novelty_min, accession_n))
             append!(tacit, zeros(accession_n))
             append!(quality, ones(accession_n))
+            if traits   # newcomers enter knowing little of the thing: wide spread, complex models, thin explanation
+                tms = vcat(tms, fill(0.45, accession_n, n_items)); tmc = vcat(tmc, fill(0.7, accession_n, n_items))
+                tce = vcat(tce, fill(0.05, accession_n, n_items)); tpr = vcat(tpr, zeros(accession_n, n_items))
+                tts = vcat(tts, fill(0.45, accession_n, n_items)); ttc = vcat(ttc, fill(0.7, accession_n, n_items))
+                ttce = vcat(ttce, fill(0.05, accession_n, n_items))
+                relevel!()
+                nu_start[] = mean(s.u[(p.n + 1):end])
+            end
             prev[] = (copy(s.u), copy(s.h))
         end
 
@@ -554,7 +578,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
                 end
                 maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
-                s.u .+= total_du; s.h .+= total_dh
+                traits ? (apply_traits!(total_du, Int[]); s.h .+= total_dh) : (s.u .+= total_du; s.h .+= total_dh)
                 push!(tr.actions, acted); push!(tr.chosen, acted)
                 record!()
                 continue
@@ -683,7 +707,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 push!(tr.kind, :none)
             else
                 push!(tr.kind, is_uplift[i - 1] ? :uplift : :ordinary)
-                s.u .+= plans[i - 1].du
+                traits ? apply_traits!(copy(plans[i - 1].du), newcomers) : (s.u .+= plans[i - 1].du)
                 s.h .+= plans[i - 1].dh
             end
 
@@ -702,7 +726,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 breakthroughs = tr.breakthroughs[], innovations = tr.innovations[], research_spent = tr.spent[],
                 audits_by_report = audits_by_report[], audited_at = audited_at)
     (; standard...,
-       newcomer_u_gain = mean(s.u[(p.n + 1):end]) - accession_u,
+       newcomer_u_gain = mean(s.u[(p.n + 1):end]) - nu_start[],
        newcomer_h_gain = mean(s.h[(p.n + 1):end]) - accession_h,
        existing_u_Floor = floor_quantile(s.u[1:p.n], p.q),
        degraded = degraded,

@@ -1064,3 +1064,16 @@ end
     @test all(t -> t.new_things == 4, op)
     @test equivalent([o.peak_u[end] - c.peak_u[end] for (o, c) in zip(op, cl)]; margin = 0.1).equivalent   # measured −0.01, interval ±0.05
 end
+
+# ==============================================================================
+# Probe: accession in M7's traits mode (8.112 continued)
+# ==============================================================================
+# Hypothesis: with accession in traits mode, newcomers enter knowing little (wide spread, complex models,
+# thin explanation), uplift reaches them as lessons from the best teacher, and their understanding rises
+# from where it starts (every seed), with no fallback logged.
+@testset "Probe: accession in M7's traits mode" begin
+    p = ToyParams(n = 60, steps = 120, plans = 6)
+    trs = [run_m7(p; seed, accession_step = 40, accession_n = 20, traits = true) for seed in 1:3]
+    @test all(t -> t.newcomer_u_gain > 0, trs)
+    @test all(t -> isempty(t.degraded), trs)
+end

@@ -2665,3 +2665,13 @@ diverted effort from what counts; Benefuture allocates by expected contribution,
 the item where it adds most toward the goals and research picks items in proportion to their weight.
 Not yet in M7's traits mode (one thing there). Priorities are given inputs here; in Benefuture they
 come from predicted cross-domain outcomes, which the simulation does not yet derive.
+8.112 continued (2026-11-07): accession ported into M7's traits mode, without merging M7's duplicated
+accession loop: newcomers enter with low traits (spread 0.45, complexity 0.7, explanation 0.05); before
+accession, work becomes practice (lessons in that phase are also read as practice, an approximation);
+after it, an uplift programme's gains to newcomers become lessons from the best existing teacher at the
+share of the gap they close, and existing beings' work becomes practice. Over 3 seeds (60 beings, 20
+newcomers at step 40, 120 steps), newcomers' understanding rises 5.8 to 6.1 from where it starts, with no
+fallback logged. With accession ported, traits mode covers M7's per-entity worlds; the central chooser
+stays scalar (a limiting case for tests). Per the author's ruling on 8.112's question 3 (traits mode
+becomes default if useful and needed for future updates), the switch is proposed once the full M7 suite
+passes in traits mode.
