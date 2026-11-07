@@ -2725,5 +2725,5 @@ diversity-novelty bonus, correlated-ballot detection, delegation of credence, su
 `LqCfdBfDm(D_n) := LqdBfDm | Vote_i := Confidence«Cf»_i(Options), ¬Tie(top Cf_i); D_n ≈ Σ VW_i·PrAcc_i(Cf)·logit(Cf_i); Di, N(minority clusters) → VW↑;`
 (PrAcc of the voter's confidence record is the calibration that shrinks stated confidence; Cr is taken by
 Crime, so Confidence«Cf»); Government article: a "Confidence-weighted" aspect beside "Liquid where needed".
-Lean: not yet formalised (the M5 simulation implements it in Julia; a Lean reference rule for the
-ballot weight is the next step under the rules-live-once convention).
+Lean: `cfd_ballot_weight_ref` (weight × calibration slope in [0, 2] × capped stated log-odds), exported and
+called by M5's tally, so the rule lives once.

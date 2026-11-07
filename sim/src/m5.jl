@@ -361,7 +361,8 @@ function run_m5(p::M5Params; seed)
         stated(i) = (i in p.colluders && defect) ? 10.0 : clamp(p.overconfidence[i] * 2 * signal[i] / caps[i, k]^2, -10.0, 10.0)
         cal_k(i) = (x = cal_rec[i]; length(x) < 5 ? 0.5 : clamp(sum(a * b for (a, b) in x) / max(1e-9, sum(a^2 for (a, _) in x)), 0.0, 2.0))
         ballot_w(i) = p.ballot == :vote ? vote(i) : p.ballot == :credence_stated ? stated(i) : cal_k(i) * stated(i)
-        tally = tag_tally === nothing || p.ballot != :vote ? sum((held[i] * ballot_w(i) for i in 1:na if !delegated[i]); init = 0.0) : tag_tally
+        bw(i) = p.ballot == :vote ? held[i] * vote(i) : cfd_ballot_weight(held[i], p.ballot == :credence_stated ? 1.0 : cal_k(i), stated(i))
+        tally = tag_tally === nothing || p.ballot != :vote ? sum((bw(i) for i in 1:na if !delegated[i]); init = 0.0) : tag_tally
         correct += sign(tally) == sign(truth)
         push!(correct_trace, sign(tally) == sign(truth))
         t = apparent ? tally_apparent : tally_hidden

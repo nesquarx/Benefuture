@@ -69,6 +69,14 @@ def lt_offset_admissible_ref (du dh base_h : Float) (nha : Bool) (retention comp
     if rel > soft_bar && !nha then false
     else duL >= loss * (1.0 + rel / offset_scale)
 
+/-- A confidence ballot's weight (LqCfdBfDm, author ruling 8.121): the voter's weight × the calibration of its
+    confidence record (PrAcc of its past confidences, as a slope in [0, 2]) × its stated log-odds, capped at
+    ±`cap`. Stated confidence counts only as far as it has proved calibrated. -/
+def cfd_ballot_weight_ref (vw calibration logodds cap : Float) : Float :=
+  let l := if logodds > cap then cap else if logodds < -cap then -cap else logodds
+  let c := if calibration < 0.0 then 0.0 else if calibration > 2.0 then 2.0 else calibration
+  vw * c * l
+
 /-- Environmental health harm (author ruling 8.118): an option, inaction included, is blocked when its
     projected health harm through environmental pathways exceeds the least such harm among the options
     available by more than `tol`, unless that excess is necessary harm. -/
