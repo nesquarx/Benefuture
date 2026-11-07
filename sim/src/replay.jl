@@ -825,7 +825,12 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     chosen_idx = g_choose(opt_values, d_scope_strong, d_min_u, d_min_h, d_max_u)
     if chosen_idx === nothing
         degraded["accession/group strong trajectory reading → weak floor reading (8.86)"] = 1
-        chosen_idx = g_choose(opt_values, d_scope, d_min_u, d_min_h, d_max_u)
+        # (8.118) the environmental health block holds in the weak reading too: it blocks, it does not just
+        # disqualify from the strong reading (a defect found on the IMO E5 case, 2026-11-07).
+        env_b = [rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least),
+                                                nha = any(>(0), Float64.(o["pred_nha"]))) for o in options]
+        d_scope_w = [env_b[i] ? -1.0 : d_scope[i] for i in 1:n_opts]
+        chosen_idx = g_choose(opt_values, d_scope_w, d_min_u, d_min_h, d_max_u)
     end
     chosen_idx === nothing && (chosen_idx = idle_idx)
 

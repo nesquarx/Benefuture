@@ -2740,3 +2740,12 @@ holds (its delegators' included) times its own calibration and stated log-odds, 
 delegate's calibrated confidence and the delegation caps still bound concentration; nothing added.
 Correlated-ballot detection (credences clustered far tighter than independent judges give, counted once as
 in 8.111) remains to build; calibration plus the minority trials already defeat the colluding bloc tested.
+8.123 defect found and fixed (2026-11-07, on the IMO E5 case): the environmental-health block (8.118)
+was applied only inside the strong per-group reading, so when every option failed the strong reading (as in
+global cases, where deaths are tiny per person and small costs fall on some groups), the weak fallback
+chose the option with the most environmental health harm. The block now holds in the weak reading too.
+Historical choices unchanged (replay tests pass); the IMO case moves from adjourn (first run, kept) to
+adopt with pricing (9 of 13 rule sets). Also exposed, left open for the author: in global cases, large
+absolute death tolls are small per person, so the freedom gate's per-being risk bar (0.1%) never binds and
+the floors barely move; only the environmental block catches them. Whether irreparable harm should also be
+read in absolute terms (a count bar beside the per-being bar) is a question for the author.
