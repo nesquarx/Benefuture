@@ -1077,3 +1077,25 @@ end
     @test all(t -> t.newcomer_u_gain > 0, trs)
     @test all(t -> isempty(t.degraded), trs)
 end
+
+# ==============================================================================
+# Probe: credence ballots weighted by calibration resist a confident bloc (ruling 8.121)
+# ==============================================================================
+# Hypotheses (6 seeds; hard world: signal noise 12, ability scatter 1.5, 40% of outcomes apparent; a
+# colluding bloc of 30% of each domain's top experts votes its side with maximal stated confidence where the
+# outcome will stay hidden): (a) red baseline: credences weighted as stated are captured, deciding worse
+# than plain votes (z = 2; measured 0.674 vs 0.752); (b) credences shrunk to each voter's calibration record
+# beat plain votes (z = 3; measured 0.964).
+@testset "Probe: credence ballots weighted by calibration resist a confident bloc (8.121)" begin
+    ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / 25))
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? ladder(r) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4]) for k in 1:4 for r in 1:25],
+                           [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    bloc = unique(vcat([sortperm(m3.relevance_leaf[:, d]; rev = true)[1:round(Int, 0.3 * 25)] for d in 1:4]...))
+    acc(tr) = mean(tr.correct_trace[401:end])
+    arm(b) = [acc(run_m5(M5Params(m3, 1:4; decisions = 800, signal_σ = 12.0, ability_spread = 1.5, p_apparent = 0.4,
+                                   colluders = bloc, stealth = true, loyalty = 5.0, ballot = b); seed)) for seed in 1:6]
+    v, st, cal = arm(:vote), arm(:credence_stated), arm(:credence_calibrated)
+    @test paired_effect(v .- st; z = 2.0).significant
+    @test paired_effect(cal .- v; z = 3.0).significant
+end

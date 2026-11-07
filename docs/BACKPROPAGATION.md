@@ -2709,3 +2709,15 @@ a "surprisingly popular" check (Prelec, Seung and McCoy 2017) is a candidate min
 detector. Probe planned in M5, red first: stated-credence weighting captured by overconfident voters;
 calibration-shrunk credence with the minority bonus resists it and beats current voting in hard worlds.
 Candidate homes: Government (voting), Diversity (minority bonus), L114.
+8.121 built (2026-11-07): credence ballots in M5 (`ballot`: :vote, :credence_stated, :credence_calibrated;
+`overconfidence` per voter). A voter states its log-odds that the option is right (2 × reading / σ² for its
+own noise, times its overconfidence); calibrated ballots shrink them by the voter's record (outcome sign
+regressed on stated log-odds over apparent outcomes; 0.5 before five records). Readings, 6 seeds, last
+400 of 800 decisions: easy world (signal noise 6): all arms about 0.97, credences add nothing at the
+ceiling. Harder world (noise 12, ability scatter 1.5, 40% of outcomes apparent): stated credences 0.983
+against votes 0.977 (+0.6 points, z ≈ 2); a fifth of voters overstating their log-odds sixfold cost 0.1
+points, recovered by calibration. With a colluding bloc (30% of each domain's top experts voting their side
+at maximal stated confidence where outcomes stay hidden): votes 0.752; stated credences 0.674, captured;
+calibrated credences 0.964. Calibration is what makes credences safe: weighted as stated they hand a
+confident bloc the vote, shrunk to the record they expose it. Not yet built: the minority-cluster
+diversity-novelty bonus, correlated-ballot detection, delegation of credence, surprisingly-popular check.

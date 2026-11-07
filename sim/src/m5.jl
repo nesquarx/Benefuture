@@ -88,6 +88,8 @@ struct M5Params
     advice_defer::Float64      # share who defer to it (world)
     advice_α::Float64          # the rest: w ~ Beta(α, β) (world)
     advice_β::Float64
+    ballot::Symbol             # :vote (sign), :credence_stated (stated log-odds), :credence_calibrated (log-odds shrunk to each voter's record) (8.121)
+    overconfidence::Vector{Float64}  # a voter's stated log-odds over its honest ones (1 honest; world)
     misconception_σ::Float64   # standard deviation of correlated misconception among non-specialists (8.90; world)
 end
 
@@ -108,7 +110,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
                   echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.20, advice_avg::Real = 0.20,
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
-                  misconception_σ::Real = 0.0)
+                  misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[])
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -138,6 +140,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
     check(all(x -> 0 <= x <= 1, (advice_stay, advice_avg, advice_defer)) && advice_stay + advice_avg + advice_defer <= 1 + 1e-12 &&
           isfinite(advice_α) && isfinite(advice_β) && advice_α > 0 && advice_β > 0, "advice shares in [0, 1] summing to at most 1; Beta shapes positive")
     check(isfinite(misconception_σ) && misconception_σ >= 0, "misconception noise non-negative")
+    check(ballot in (:vote, :credence_stated, :credence_calibrated) && (isempty(overconfidence) || length(overconfidence) == length(m3.agents)), "a ballot kind, one overconfidence per voter")
     check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
@@ -150,7 +153,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
              source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
-             advice_stay, advice_avg, advice_defer, advice_α, advice_β, Float64(misconception_σ))
+             advice_stay, advice_avg, advice_defer, advice_α, advice_β, ballot, isempty(overconfidence) ? ones(length(m3.agents)) : collect(Float64, overconfidence), Float64(misconception_σ))
 end
 
 """
@@ -174,6 +177,7 @@ function run_m5(p::M5Params; seed)
     share_when_right, share_when_wrong = Float64[], Float64[]
     na = size(p.skills, 1)
     correct, max_share, max_single, bloc_expertise = 0, Float64[], Float64[], Float64[]
+    cal_rec = [Tuple{Float64,Float64}[] for _ in 1:size(p.skills, 1)]   # (stated log-odds, outcome sign) per voter (8.121)
     tally_apparent, tally_hidden = [0, 0], [0, 0]  # (correct, decided)
     # Votes are outputs (author ruling 8.29): reputation moves with each apparent decision, and
     # each agent's recent apparent votes per domain are its audited record (L114).
@@ -350,7 +354,14 @@ function run_m5(p::M5Params; seed)
             end
         end
         vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
-        tally = tag_tally === nothing ? sum(held[i] * vote(i) for i in 1:na if !delegated[i]) : tag_tally
+        # Credence ballots (8.121): a voter states its log-odds that the option is right (from its reading and
+        # its own noise, Gaussian: 2 × reading / σ², times its overconfidence); `:credence_calibrated` shrinks
+        # them by its record's calibration slope (outcome sign regressed on stated log-odds over apparent
+        # outcomes), so stated confidence weighs only as far as it has proved calibrated.
+        stated(i) = (i in p.colluders && defect) ? 10.0 : clamp(p.overconfidence[i] * 2 * signal[i] / caps[i, k]^2, -10.0, 10.0)
+        cal_k(i) = (x = cal_rec[i]; length(x) < 5 ? 0.5 : clamp(sum(a * b for (a, b) in x) / max(1e-9, sum(a^2 for (a, _) in x)), 0.0, 2.0))
+        ballot_w(i) = p.ballot == :vote ? vote(i) : p.ballot == :credence_stated ? stated(i) : cal_k(i) * stated(i)
+        tally = tag_tally === nothing || p.ballot != :vote ? sum((held[i] * ballot_w(i) for i in 1:na if !delegated[i]); init = 0.0) : tag_tally
         correct += sign(tally) == sign(truth)
         push!(correct_trace, sign(tally) == sign(truth))
         t = apparent ? tally_apparent : tally_hidden
@@ -389,6 +400,7 @@ function run_m5(p::M5Params; seed)
             for i in 1:na
                 delegated[i] && continue
                 record_vote!(i, k, vote(i) == sign(truth), held[i], total)
+                p.ballot == :vote || push!(cal_rec[i], (stated(i) / 10, sign(truth)))   # calibration record (8.121), log-odds scaled
             end
             if p.deliberation
                 for i in 1:na  # source tracking: what each person published, its own reading

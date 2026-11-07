@@ -1282,6 +1282,7 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Credence-ballot calibration prior and minimum record (M5, 8.121) | (prior slope 0.5, 5 records, log-odds cap 10) | 0.5, 5, 10 | judgment |
 | Long-term offset (E4 replay, 8.116): happiness retention, understanding compounding, offset premium scale, soft bar | `h_retention`, `u_compounding`, `offset_scale`, `soft_bar` | 0.3, 1.5, 0.05, 0.05 | judgment; hedonic adaptation is partial and event-dependent (to be swept) |
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
