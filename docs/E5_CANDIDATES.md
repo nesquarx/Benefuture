@@ -19,5 +19,5 @@ Build order: `random.Random(20261108).shuffle` over the list as written.
 
 | Order | Family | Decision | Source | Status |
 |---|---|---|---|---|
-| 1 | security | UN Security Council: MONUSCO (DR Congo) mandate, expiring 20 December 2026 (renew, renew with drawdown, end) | [source](https://aa.com.tr/en/world/un-security-council-renews-mandate-of-peacekeeping-force-in-congo-for-another-year/3776162) | not built |
+| 1 | security | UN Security Council: MONUSCO (DR Congo) mandate, expiring 20 December 2026 (renew, renew with drawdown, end) | [source](https://aa.com.tr/en/world/un-security-council-renews-mandate-of-peacekeeping-force-in-congo-for-another-year/3776162) | held on building (2026-11-07): the dated trials (violence after mission ends; violence during renewals) are confounded, since missions stay where violence rises, so raw rates would favour withdrawal misleadingly; pricing needs the literature's effect sizes (e.g. Hultman, Kathman and Shannon on UN troop numbers and civilian deaths) read from the papers, not memory. Build once sourced, before 20 December 2026 |
 | 2 | security | UN Security Council: AUSSOM (Somalia) mandate, expiring 31 December 2026 (renew, renew with drawdown, end) | [source](https://allafrica.com/stories/202512240311.html) | not built |
