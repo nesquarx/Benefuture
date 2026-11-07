@@ -1210,7 +1210,7 @@ for removal.
 |---|---|---|
 | Transactions quoted per currency, screened by G, logged | Native | L86–L89, L145 |
 | Measurement chains: acyclic dependencies, overlap-discounted pooling, divergence trigger (8.107) | Native rules | Lean `acyclic_ref`, `pooled_reading_ref`, `chains_diverge_ref`; M3c reads outcomes through chains (`chain_attrib`, `chain_mode = :domain`), audits on divergence, demotes chains by audited error (8.108) |
-| Understanding as its equation, models taught whole (`run_m7_traits`, 8.109–8.110) | Native rule, introduced world | L31 via Lean; a separate traits stage beside scalar M7; chooser simplified |
+| Understanding as its equation, models taught whole (`run_m7_traits`, 8.109–8.110) | Native rule, introduced world | L31 via Lean; a separate traits stage, and ported into M7 as `traits = true` (G per entity, no accession yet; 8.112) |
 | Understanding measured by its equation over hidden traits (`understanding.jl`) | Native rule, introduced world | L31 via Lean `pragmatic_understanding_ref`; the hidden traits and measurement noise are world model (8.98); wired into M7 as each being's measured view (`claim_ratio`); traits are fixed (teaching still raises the scalar level) |
 | Outcome-first causal distribution, traversal fallback | Native | L94–L96; coalition values [P] 8.18 |
 | Balance overflow into reinvestment | Native | L103; reputation untouched (whether overflow boosts reputation is BACKPROPAGATION 8.51) |

@@ -2563,3 +2563,15 @@ is now estimated from independent draws on the chains' own stream, and honest pa
 Consequence for 8.108: after a biased chain is demoted, spot audits continue on the one chain left, so
 audits run at 5–8% of outcomes rather than stopping. The 8.107 spirit (no single chain trusted without an
 independent check) settles this without a new ruling.
+8.112 finding and open question (2026-11-07): M7 ported to traits mode (`run_m7(...; traits = true)`):
+understanding is the pragmatic equation on each being's per-item model bundles (taught whole, 8.109),
+explanation and practice, scaled to M7's units so G per entity, views, happiness, floors and research
+spending run unchanged; work becomes practice, chosen lessons pass models and explanation, research finds
+better bundles. Over 8 seeds (60 beings, 120 steps) against scalar M7: floor growth of understanding 15.4
+vs 12.4, median 14.0 vs 11.2, peak 10.2 vs 13.0; happiness and harm's peak about equal; teaching drives the
+floor (+15.3, z ≫ 3). Not yet ported: accession, the central chooser. Open (parked, author): the
+equation is a weighted mean bounded by 1 per thing, so understanding of one thing has a ceiling and the
+frontier cannot run away; open-ended growth needs new things, but the corpus does not say how
+understanding aggregates across things (a sum over things that matter, each weighted by its impact, would
+let research that opens a new thing add understanding without diluting the old). Until ruled, traits
+mode models one thing and scalar M7 stays the default.

@@ -1014,3 +1014,21 @@ end
     @test paired_effect(fg.(rep) .- fg.(open_); z = 3.0).significant
     @test all(t -> all(b -> t.audited[b] == (oc[b] > 0), 1:60), rep)
 end
+
+# ==============================================================================
+# Probe: M7 in traits mode, understanding as its equation (8.98, 8.109, 8.112)
+# ==============================================================================
+# Hypothesis: with M7's full machinery (G per entity on noisy views, happiness, research spending), the
+# traits mode (understanding the pragmatic equation on model bundles taught whole, explanation, practice)
+# runs and teaching raises floor growth of understanding (z = 3). Measured (8 seeds, 60 beings, 120 steps):
+# floor growth 15.4 traits vs 12.4 scalar; median 14.0 vs 11.2; peak 10.2 vs 13.0 (the equation is bounded
+# per thing, so the frontier cannot run away); teaching +15.3.
+@testset "Probe: M7 in traits mode (8.112)" begin
+    p = ToyParams(n = 60, steps = 120, plans = 6)
+    fg(tr) = tr.floor_u[end] - tr.floor_u[1]
+    seeds = 1:4
+    tt = [run_m7(p; seed, traits = true) for seed in seeds]
+    t0 = [run_m7(p; seed, traits = true, ε = 0.0) for seed in seeds]
+    @test paired_effect(fg.(tt) .- fg.(t0); z = 3.0).significant
+    @test_throws ArgumentError run_m7(p; seed = 1, traits = true, central = true)
+end

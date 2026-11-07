@@ -246,7 +246,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
-                report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0)
+                report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0,
+                traits::Bool = false, n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -260,6 +261,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     # its audited ratio from then on. Without `audited_ratio`, claims are never audited by report.
     claim_ratio = claim_ratio === nothing ? nothing : collect(Float64, claim_ratio)
     shortfall = [Float64[] for _ in 1:p.n]; taught_n = zeros(Int, p.n); audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
+    check(!traits || (!central && accession_step == 0 && accession_n == 0 && n_items >= 1 && 0 < breakthrough < 1 && practice_per_u >= 0),
+          "traits mode (8.98, 8.109): G per entity, no accession yet")
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
@@ -271,6 +274,31 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     s = toy_state(p, rng)
     novelty = novelty_min .+ (1 - novelty_min) .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
     tacit = zeros(p.n)
+    # Traits mode (8.98, ruling 8.109): understanding is the pragmatic equation on each being's traits
+    # per item (a model bundle of base spread and complexity, taught whole; causal explanation; practice,
+    # never taught), on its own stream; levels are that equation scaled to the toy world's units, so the
+    # rest of M7 (G, views, happiness, floors) reads them as before. Work becomes practice, lessons pass
+    # models and explanation, research finds better bundles.
+    if traits
+        xrng = Xoshiro(hash((seed, :traits)))
+        twt = rand(xrng, n_items); twt ./= sum(twt)
+        tms = 0.1 .+ 0.35 .* rand(xrng, p.n, n_items); tmc = 0.1 .+ 0.6 .* rand(xrng, p.n, n_items)
+        tce = 0.2 .+ 0.5 .* rand(xrng, p.n, n_items)
+        tts, ttc, ttce = copy(tms), copy(tmc), copy(tce); tpr = zeros(p.n, n_items)
+        Utr(b) = pragmatic_understanding(1.0, twt, tce[b, :], [expected_relative_accuracy(tms[b, i] * exp(-tpr[b, i])) for i in 1:n_items], tmc[b, :])
+        tscale = mean(s.u) / mean(Utr(b) for b in 1:p.n)
+        relevel!() = (for b in 1:p.n; s.u[b] = tscale * Utr(b); end)
+        relevel!()
+        tbval(sp, c) = expected_relative_accuracy(sp) * (1 - c)
+        function tlesson!(e, l, share)
+            for i in 1:n_items
+                if tbval(tts[e, i], ttc[e, i]) > tbval(tms[l, i], tmc[l, i]) && rand(xrng) < share
+                    tms[l, i], tmc[l, i] = tts[e, i], ttc[e, i]; tts[l, i], ttc[l, i] = tts[e, i], ttc[e, i]
+                end
+                tce[l, i] += share * max(0.0, ttce[e, i] - tce[l, i]); ttce[l, i] = max(ttce[l, i], tce[l, i])
+            end
+        end
+    end
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], top_share = Float64[], chosen = Int[], kind = Symbol[], actions = Int[], breakthroughs = Ref(0),
           innovations = Ref(0), spent = Ref(0.0))
@@ -297,11 +325,20 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
                 chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
                 if rand(rrng) < chance
-                    gain = research_gain * exp(gain_σ * randn(rrng))
-                    new = s.u[b] + gain  # beyond the frontier only if it passes the peak
-                    rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
-                    s.u[b] = new
-                    tr.breakthroughs[] += 1
+                    if traits
+                        i = rand(xrng, 1:n_items)   # a better bundle on one item (lower spread or, a breakthrough, lower complexity)
+                        rand(xrng) < 0.5 ? (tms[b, i] *= 1 - breakthrough) : (tmc[b, i] *= 1 - breakthrough)
+                        tce[b, i] += breakthrough * (1 - tce[b, i])
+                        if rand(rrng) < p_teachable; tts[b, i] = tms[b, i]; ttc[b, i] = tmc[b, i]; ttce[b, i] = tce[b, i]; end
+                        s.u[b] = tscale * Utr(b)
+                        tr.breakthroughs[] += 1
+                    else
+                        gain = research_gain * exp(gain_σ * randn(rrng))
+                        new = s.u[b] + gain  # beyond the frontier only if it passes the peak
+                        rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
+                        s.u[b] = new
+                        tr.breakthroughs[] += 1
+                    end
                 end
             end
             workforce = 1 - count(researching) / p.n
@@ -317,6 +354,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 # noisy view of the levels, predicting its own options (ordinary work, and a lesson it
                 # could teach) with its own error, choosing by the Lean rules; all act concurrently.
                 total_du, total_dh, acted = zeros(p.n), zeros(p.n), 0
+                trait_lessons = Tuple{Int,Int,Float64}[]
                 lesson_du, lesson_cap = zeros(p.n), fill(-Inf, p.n)  # lessons this step, and the best teachable level each learner met
                 for e in 1:p.n
                     (researching[e] || rand(rng) >= p_act) && continue
@@ -354,6 +392,11 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                         total_du .+= opts[i - 1].du; total_dh .+= opts[i - 1].dh
                         push!(tr.kind, :ordinary)
                     else
+                        if traits
+                            for l in findall(>(0), opts[i - 1].du)
+                                push!(trait_lessons, (e, l, min(1.0, opts[i - 1].du[l] / max(1e-12, s.u[e] - tacit[e] - s.u[l]))))   # the share of the gap: ε × quality × reception
+                            end
+                        end
                         # Concurrent lessons add up, but no learner ends above the best teacher it met.
                         lesson_du .+= opts[i - 1].du
                         for b in findall(>(0), opts[i - 1].du)
@@ -381,11 +424,24 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                         end
                     end
                 end
+                if traits
+                    # Work becomes practice on one item (its gain in level units, converted); lessons pass
+                    # models whole and explanation; levels are re-read from the equation.
+                    for b in 1:p.n
+                        total_du[b] == 0 && continue
+                        i = rand(xrng, 1:n_items)
+                        tpr[b, i] = max(0.0, tpr[b, i] + practice_per_u * total_du[b] / tscale)
+                    end
+                    for (e, l, share) in trait_lessons; tlesson!(e, l, share); end
+                    empty!(trait_lessons)
+                    relevel!(); s.h .+= total_dh
+                else
                 for b in 1:p.n
                     lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
                 end
                 maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
                 s.u .+= total_du; s.h .+= total_dh
+                end
                 push!(tr.actions, acted); push!(tr.chosen, acted)
                 record!()
                 continue
