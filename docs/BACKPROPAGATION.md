@@ -2675,3 +2675,15 @@ fallback logged. With accession ported, traits mode covers M7's per-entity world
 stays scalar (a limiting case for tests). Per the author's ruling on 8.112's question 3 (traits mode
 becomes default if useful and needed for future updates), the switch is proposed once the full M7 suite
 passes in traits mode.
+8.119 author direction and build (2026-11-07): mix both: historical cases (E4) strengthen the system
+against edge cases, current ones (E5) test it as it stands; and every E5 suggestion is read across a
+coarse-to-fine battery of Benefuture rule sets, since otherwise one could say it only wins in this
+configuration. Built (`replay_rule_battery`, battery-only overrides never used for scoring): 13 rule sets:
+weak floors alone; + strong per-group reading; + compensated reforms; + long-term offset; + environmental
+block (full); and the full set with each judged threshold at a low and a high value (happiness retention
+0.1, 0.6; understanding compounding 1.0, 2.0; compensation efficiency 0.5, 1.0; soft bar 0.02, 0.1).
+Readings: WHO PABS annex: binding annex in 13 of 13; FOMC January 2027: cut in 12 of 13 (hold only under
+the strong reading without compensation); lead phase-down 1973: phase-down in 11 of 13 (status quo under
+the strong reading without, or with only, compensation); Montreal: phase-down in 13 of 13. A suggestion
+therefore carries two robustness readings: across judged magnitudes (`replay_sensitivity`) and across
+rule sets (`replay_rule_battery`).

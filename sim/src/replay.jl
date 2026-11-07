@@ -490,6 +490,11 @@ Executes Benefuture's decision replay (`docs/DATA.md` §16a, §16d B6, B7, B9) o
 """
 function replay_decision(case_dict::AbstractDict; thresholds...)
     th = check_frozen_thresholds(; thresholds...)
+    # Rule-set battery (author, 8.119): a case may carry `_rule_overrides` (rule switches and threshold values)
+    # so a suggestion can be read across coarse-to-fine rule sets; never used for scoring.
+    ov = get(case_dict, "_rule_overrides", Dict{String,Any}())
+    th = merge(th, (; (Symbol(k) => Float64(v) for (k, v) in ov if hasproperty(th, Symbol(k)))...))
+    rule_strong, rule_comp, rule_offset, rule_env = get(ov, "strong", true), get(ov, "compensate", true), get(ov, "offset", true), get(ov, "env", true)
     dec_date = Date(case_dict["decision_date"])
     tier = get(case_dict, "tier", "full")
     case_id = String(get(case_dict, "id", ""))
@@ -682,7 +687,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     # from the groups it gains, at `compensation_efficiency` (a transfer loses part of itself on the way;
     # governed). Understanding is shared, not moved, and irreparable harm cannot be repaid, so neither is
     # compensated: an option with those losses still fails the strong reading.
-    if !any(o -> haskey(o, "_compensated_of"), options)
+    if rule_comp && !any(o -> haskey(o, "_compensated_of"), options)
         idle_dh0 = Float64.(idle_opt["pred_dh"])
         for (k, opt) in collect(enumerate(options))
             k == idle_idx && continue
@@ -796,7 +801,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         d_min_h[i] = floor_quantile(h_after, th.q_floor) - idle_min_h + th.epsilon_tie
         # (8.116) the floors too are judged on the long-term projection: a dip in the happiness floor is
         # admissible where the floor's projected understanding gain offsets it (premium, soft bar).
-        if d_min_h[i] < 0 && d_min_u[i] > 0 &&
+        if rule_offset && d_min_h[i] < 0 && d_min_u[i] > 0 &&
            lt_offset_admissible(d_min_u[i], d_min_h[i], idle_min_h; retention = th.h_retention, compounding = th.u_compounding,
                                 offset_scale = th.offset_scale, soft_bar = th.soft_bar)
             d_min_h[i] = th.epsilon_tie
@@ -807,11 +812,12 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # (8.116) projected long term, happiness adapts and understanding compounds; an understanding gain may
         # offset a happiness cost for the same group, at a premium growing with its size, within a soft bar
         # unless the drop is necessary harm.
-        strong_ok[i] = all(lt_offset_admissible(lt_u[g] - idle_lt_u[g], lt_h[g] - idle_lt_h[g], base_h[g]; nha = nha[g] > 0,
+        strong_ok[i] = rule_strong && (rule_offset ? all(lt_offset_admissible(lt_u[g] - idle_lt_u[g], lt_h[g] - idle_lt_h[g], base_h[g]; nha = nha[g] > 0,
                                                 retention = th.h_retention, compounding = th.u_compounding,
-                                                offset_scale = th.offset_scale, soft_bar = th.soft_bar) for g in 1:n_groups) &&
+                                                offset_scale = th.offset_scale, soft_bar = th.soft_bar) for g in 1:n_groups) :
+                                       all(lt_u .+ th.epsilon_tie .>= idle_lt_u) && all(lt_h .+ th.epsilon_tie .>= idle_lt_h)) &&
                        total_irr == 0.0 &&
-                       !env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least), nha = any(>(0), nha))
+                       !(rule_env && env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least), nha = any(>(0), nha)))
     end
 
     # Filter by strong reading first; fall back to weak reading with loud degradation if none qualifies
@@ -916,6 +922,38 @@ function replay_sensitivity(case_dict::AbstractDict; factors = (0.5, 2.0))
         end
     end
     flips
+end
+
+"""
+    replay_rule_battery(case_dict) -> (configs, choices, shares)
+
+A suggestion read across coarse-to-fine Benefuture rule sets (author, 8.119), so no single configuration
+carries it: (1) the weak floor reading alone; (2) + the strong per-group reading; (3) + compensated
+reforms; (4) + the long-term offset of happiness by understanding; (5) + the environmental health block
+(the full rule set); then the full set with each of its judged thresholds at a low and a high value
+(happiness retention 0.1, 0.6; understanding compounding 1.0, 2.0; compensation efficiency 0.5, 1.0; soft
+bar 0.02, 0.1). Returns each configuration's choice (compensated variants read as their reform) and the
+share of configurations choosing each option.
+"""
+function replay_rule_battery(case_dict::AbstractDict)
+    configs = Pair{String,Dict{String,Any}}[
+        "1 weak floors only" => Dict{String,Any}("strong" => false, "compensate" => false, "offset" => false, "env" => false),
+        "2 + strong per-group" => Dict{String,Any}("compensate" => false, "offset" => false, "env" => false),
+        "3 + compensation" => Dict{String,Any}("offset" => false, "env" => false),
+        "4 + long-term offset" => Dict{String,Any}("env" => false),
+        "5 full" => Dict{String,Any}()]
+    for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)))
+        for v in vals
+            push!(configs, "full, $k = $v" => Dict{String,Any}(k => v))
+        end
+    end
+    choices = String[]
+    for (_, o) in configs
+        c = deepcopy(case_dict); c["_rule_overrides"] = o
+        push!(choices, replace(replay_decision(c).chosen_option, r"\+compensated$" => ""))
+    end
+    shares = Dict(x => count(==(x), choices) / length(choices) for x in unique(choices))
+    (configs = first.(configs), choices = choices, shares = shares)
 end
 
 """

@@ -407,4 +407,6 @@ E5 replays live decisions as of their registration date to investigate what Bene
 
 **Freeze and report.** Each case is built from as-of sources, committed, then replayed once under a recorded code freeze (§4.4). Its report gives: the suggested option (and compensated variants, §4.5), the vector success pattern, the falsifier checks, the baselines (§5b), and the sensitivity readout (§5c). A case whose choice flips under one halved or doubled judged magnitude is published as contested, with the flipping figures named. Reports are suggestions, never endorsements; the case file states its judged figures and the sources not opened.
 
+**Rule-set battery (amendment 2026-11-07, 8.119).** Each report also gives the suggestion's share across 13 coarse-to-fine Benefuture rule sets (`replay_rule_battery`); a suggestion that holds in only some rule sets is reported with the sets it needs.
+
 **Scoring later.** When the outcome arrives, the frozen case is scored by the four-cell rule against the outcome class judged by the pre-registered criteria of §4, with the counterfactual methods named at registration.
