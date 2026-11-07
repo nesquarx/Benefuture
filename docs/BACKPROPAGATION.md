@@ -2586,3 +2586,14 @@ open question of whether understanding gains may offset happiness costs) and rig
 ones, but those 4 rest on judged magnitudes within a factor of two, so they are reported as contested,
 not as wins. Of the unscored cases, FOMC 2008 and BSE are contested; NCLB and school closures are robust.
 The readout changes no decision (a new function; the held-out test pins both replays' choices).
+8.114 finding (2026-11-07): governance against a status-quo arm. Same population, worlds and seeds (the
+governance battery's: signal noise, ability scatter, hidden outcomes, local noise, a colluding bloc of top
+experts, loyalty), decided by Benefuture (expertise-weighted liquid democracy, capped audited delegation,
+reporting rewarded) and by a status-quo arm (one person one vote, no delegation, no reward for revealing a
+bloc). Share of the last half of 800 decisions right, 8 seeds: severity 0, 0.984 both (easy worlds do not
+separate them); severity 0.5, 0.981 vs 0.946 (+0.035 ± 0.006); severity 1, the realistic bad end, 0.974 vs
+0.885 (+0.089 ± 0.010, z ≈ 9). The advantage grows with how hard and adversarial the world is. Toy
+assumptions: the governance world's binary decisions and its population; the status-quo arm changes only
+the voting institution, not the economy (the economy's status-quo arm is next: institution-dependent
+factors at their status-quo values in the same Benefuture economy, labelled as such, since a market economy
+without domain currencies is not modelled). Results in `sim/battery/results/status_quo.md`.
