@@ -124,6 +124,7 @@ Benefuture«Bf» {
     Imp(A, t) := ΔV : ∫MM_Me(Δℝ | A) dt;
     BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i)/ΣRe(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
     LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;
+    LqCfdBfDm(D_n) := LqdBfDm | Vote_i := Confidence«Cf»_i(Options), ¬Tie(top Cf_i); D_n ≈ Σ VW_i·PrAcc_i(Cf)·logit(Cf_i); Di, N(minority clusters) → VW↑;
     Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract));
     J := Repair(Ha) ∧ Prevent(Cr), Restorative;
     ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * ΣRe_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * ΣRe_-ve_j(Dn(Ha_i))) * P(Overreact) | (ContextAware ∧ Transparent);

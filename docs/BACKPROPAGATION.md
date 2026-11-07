@@ -2721,3 +2721,9 @@ at maximal stated confidence where outcomes stay hidden): votes 0.752; stated cr
 calibrated credences 0.964. Calibration is what makes credences safe: weighted as stated they hand a
 confident bloc the vote, shrunk to the record they expose it. Not yet built: the minority-cluster
 diversity-novelty bonus, correlated-ballot detection, delegation of credence, surprisingly-popular check.
+8.121 backpropagated (2026-11-07, author): pseudocode line added after LqdBfDm in all three copies,
+`LqCfdBfDm(D_n) := LqdBfDm | Vote_i := Confidence«Cf»_i(Options), ¬Tie(top Cf_i); D_n ≈ Σ VW_i·PrAcc_i(Cf)·logit(Cf_i); Di, N(minority clusters) → VW↑;`
+(PrAcc of the voter's confidence record is the calibration that shrinks stated confidence; Cr is taken by
+Crime, so Confidence«Cf»); Government article: a "Confidence-weighted" aspect beside "Liquid where needed".
+Lean: not yet formalised (the M5 simulation implements it in Julia; a Lean reference rule for the
+ballot weight is the next step under the rules-live-once convention).
