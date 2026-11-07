@@ -1,6 +1,6 @@
 # E5 reports: current decisions, as Benefuture would suggest them
 
-Suggestions, never endorsements. Each case is replayed on every new code freeze until its measurement horizon, every run logged here and none replaced; at the horizon it becomes an E4 case (`docs/REPLAY_PREREG.md` §8, lifecycle). Measurement horizons: who_pabs_annex_2027, the 80th World Health Assembly (May 2027) for the decision and the next pandemic-scale event for the outcome (open-ended: scored on access delays in the next declared emergency); fomc_january_2027, the decision on 27 January 2027 and recession status by January 2029. Each case: `cases/e5/<id>.*`, registered as of its date; scored when the outcome is known (`docs/REPLAY_PREREG.md` §8).
+Suggestions, never endorsements. Each case is replayed on a healthy cadence (weekly, or on a material change; every change only in the last days before its due date) until its measurement horizon, every run logged here and none replaced; at the horizon it becomes an E4 case (`docs/REPLAY_PREREG.md` §8, lifecycle). Measurement horizons: who_pabs_annex_2027, the 80th World Health Assembly (May 2027) for the decision and the next pandemic-scale event for the outcome (open-ended: scored on access delays in the next declared emergency); fomc_january_2027, the decision on 27 January 2027 and recession status by January 2029. Each case: `cases/e5/<id>.*`, registered as of its date; scored when the outcome is known (`docs/REPLAY_PREREG.md` §8).
 
 ## who_pabs_annex_2027 (registered 2026-11-07; code as of commit following 9acab74)
 
