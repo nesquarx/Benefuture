@@ -246,7 +246,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
-                report_z::Real = 3.0, report_min::Integer = 5)
+                report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -259,7 +259,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     # short on everyone, is reported by its learners; a founded report audits its claims, and it is read at
     # its audited ratio from then on. Without `audited_ratio`, claims are never audited by report.
     claim_ratio = claim_ratio === nothing ? nothing : collect(Float64, claim_ratio)
-    shortfall = [Float64[] for _ in 1:p.n]; audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
+    shortfall = [Float64[] for _ in 1:p.n]; taught_n = zeros(Int, p.n); audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
     rng = Xoshiro(seed)
     trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
     vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
@@ -324,7 +324,12 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     # pragmatic equation reads its outputs (measured over true, `understanding_ratios`), so
                     # an unaudited overclaim looks higher than it is; lessons are predicted on that view
                     # and delivered on the true levels.
-                    seen_u = claim_ratio === nothing ? s.u : s.u .* claim_ratio
+                    # Claims checked before they are relied on (8.106): with `claim_record` > 0, what a
+                    # being claims beyond its level is trusted only in proportion to its record of
+                    # lessons delivered (record credence, 8.29), so an untested claim moves no one.
+                    seen_u = claim_ratio === nothing ? s.u :
+                             claim_record == 0 ? s.u .* claim_ratio :
+                             s.u .* (1 .+ min.(1.0, taught_n ./ claim_record) .* (claim_ratio .- 1))
                     view = ToyState(seen_u .+ view_σ .* randn(vrng, p.n), s.h .+ view_σ .* randn(vrng, p.n))
                     opts = ToyPlan[]
                     for _ in 1:options
@@ -357,6 +362,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                         if lesson_seen !== nothing
                             for b in findall(>(0), lesson_seen.du)
                                 push!(shortfall[e], lesson_seen.du[b] - opts[i - 1].du[b])  # predicted less delivered
+                                taught_n[e] += 1
                             end
                         end
                         push!(tr.kind, :lesson)
