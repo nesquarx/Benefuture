@@ -332,3 +332,15 @@ end
     @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (4, 5)
     @test (s.scores[:mean_welfare].k, s.scores[:min_deaths].k) == (4, 2)
 end
+
+@testset "Replay: sensitivity readout, which judged magnitude flips the choice (8.113)" begin
+    robust = ["challenger_1986", "famine_codes_1880", "semmelweis_vienna_1847", "bengal_denial_1942"]
+    for id in robust
+        @test isempty(replay_sensitivity(load_replay_case(joinpath(CASES_DIR, id * ".toml"))))
+    end
+    # Montreal is contested: halving the happiness cost of delay to the world public, or doubling the
+    # residual depletion's under the phase-down, flips the choice to delay.
+    m = replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml")))
+    @test !isempty(m) && all(x -> x.chosen == "delay_await_certainty", m)
+    @test replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "ragusa_quarantine_1377.toml"))) === nothing
+end

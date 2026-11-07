@@ -346,6 +346,10 @@ held-out set is not out of sample; both results are reported, the first as the h
 
 Note (2026-11-06): adding `pragmatic_understanding_ref` to `BenefutureReference/Records.lean` changes the §4.4 hash recipe's output without touching any rule the replay calls; the held-out test pins both replays' choices, which are unchanged.
 
+### 5c. Sensitivity readout (amendment 2026-11-07)
+
+Every scenario-priced case reports which judged magnitude, halved or doubled alone, flips Benefuture's choice (`replay_sensitivity`). A case with any flip is reported as contested, beside its cell, never counted as a win or a loss on its own.
+
 ### 5b. Baselines (D5, amendment 2026-11-06)
 
 Every scenario-priced case is also decided by simple rules on the same as-of priced options

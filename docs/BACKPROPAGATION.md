@@ -2575,3 +2575,14 @@ frontier cannot run away; open-ended growth needs new things, but the corpus doe
 understanding aggregates across things (a sum over things that matter, each weighted by its impact, would
 let research that opens a new thing add understanding without diluting the old). Until ruled, traits
 mode models one thing and scalar M7 stays the default.
+8.113 finding (2026-11-07, E4 extension; 8.107 applied to replays): a sensitivity readout
+(`replay_sensitivity`) halves and doubles each judged magnitude (each scenario's du, dh, nha, irreparable
+per group) alone and reports every scaling that flips Benefuture's choice. Of the 11 cases with a settled
+outcome: 7 are robust to every such scaling (Challenger, famine codes, Semmelweis, beta-blockers, Bengal
+denial, printing press, lead phase-down) and 4 are contested (Montreal, Snow, Bengal relief, Volcker),
+each flipping under one halved or doubled happiness or understanding cost. Benefuture is right on 6 of the
+7 robust cases (the miss, the lead phase-down, is robust: it does not hinge on a judged figure but on the
+open question of whether understanding gains may offset happiness costs) and right on all 4 contested
+ones, but those 4 rest on judged magnitudes within a factor of two, so they are reported as contested,
+not as wins. Of the unscored cases, FOMC 2008 and BSE are contested; NCLB and school closures are robust.
+The readout changes no decision (a new function; the held-out test pins both replays' choices).

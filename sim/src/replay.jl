@@ -859,6 +859,33 @@ function replay_baselines(case_dict::AbstractDict)
 end
 
 """
+    replay_sensitivity(case_dict; factors = (0.5, 2.0)) -> Vector of NamedTuples
+
+Which judged magnitude flips Benefuture's choice (8.107: a choice that flips under another admissible
+reading is contested, not a verdict). Each scenario effect (du, dh, nha, irreparable) of each option, per
+group, is scaled by each factor alone, everything else as-of, and the case replayed; every scaling that
+changes the chosen option is returned as (option, scenario, effect, group, factor, chosen). An empty
+result means the choice is robust to halving or doubling any single judged magnitude.
+"""
+function replay_sensitivity(case_dict::AbstractDict; factors = (0.5, 2.0))
+    all(o -> haskey(o, "scenarios"), case_dict["options"]) || return nothing
+    base = replay_decision(deepcopy(case_dict)).chosen_option
+    flips = NamedTuple[]
+    for (oi, opt) in enumerate(case_dict["options"]), (si, sc) in enumerate(opt["scenarios"]), key in ("du", "dh", "nha", "irreparable")
+        haskey(sc, key) || continue
+        for g in eachindex(sc[key]), f in factors
+            Float64(sc[key][g]) == 0.0 && continue
+            c = deepcopy(case_dict)
+            c["options"][oi]["scenarios"][si][key][g] = Float64(sc[key][g]) * f
+            ch = replay_decision(c).chosen_option
+            ch != base && push!(flips, (option = String(opt["id"]), scenario = String(get(sc, "name", string(si))), effect = key,
+                                        group = String(case_dict["groups"][g]["id"]), factor = f, chosen = ch))
+        end
+    end
+    flips
+end
+
+"""
     replay_scores(results, baselines) -> Dict(rule => (k, n, interval))
 
 Scores each rule on the cases with a settled outcome class: on a good decision a rule is right when it
