@@ -1,0 +1,9 @@
+event,trial_id,date,occurred,citation_with_page
+surrogate_approval_not_confirmed,ataluren-EU,2023-09-30,1,"Ataluren: EU conditional approval 2014; confirmatory study did not confirm benefit, CHMP negative opinion 2023 (recalled; primary not seen)"
+surrogate_approval_not_confirmed,viltolarsen-RACER53,2024-05-31,1,"Viltolarsen: RACER53 confirmatory trial missed its primary endpoint, 2024 (recalled; primary not seen)"
+surrogate_approval_not_confirmed,delandistrogene-EMBARK,2023-10-31,1,"Delandistrogene moxeparvovec: EMBARK missed its primary endpoint, 2023 (recalled; primary not seen)"
+serious_safety_restriction_within_2y,eteplirsen,2018-09-19,0,"Eteplirsen: no safety restriction within two years of 2016 approval (recalled)"
+serious_safety_restriction_within_2y,golodirsen,2021-12-12,0,"Golodirsen: no restriction within two years (recalled; kidney monitoring labelled from approval)"
+serious_safety_restriction_within_2y,viltolarsen,2022-08-12,0,"Viltolarsen: no restriction within two years (recalled)"
+serious_safety_restriction_within_2y,casimersen,2023-02-25,0,"Casimersen: no restriction within two years (recalled)"
+serious_safety_restriction_within_2y,delandistrogene,2025-06-22,1,"Delandistrogene moxeparvovec: deaths from liver injury reported in 2025, label and use restricted (recalled; primary not seen)"
