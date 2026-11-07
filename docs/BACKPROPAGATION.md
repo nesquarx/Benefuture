@@ -2488,3 +2488,21 @@ of beings overclaiming and learners' reports on, over 16 seeds: floor growth +1.
 (interval −0.9 to +1.6, not equivalent within 1.5). An 8-seed first look (11.6 against 9.3) overstated
 it. Neither claim is made; resolving it needs a larger world or more seeds by precision. Not in the
 README.
+8.107 author direction, partly open (2026-11-07): measurement chains as a domain. Measurement.txt's
+markers line bans one metric model using another's output (circularity) and asks for its source markers
+and logic instead; that blocks feedback loops and double counting bluntly but lets one paradigm's
+convention enter downstream silently (COVID deaths certified by last symptom against excess mortality:
+Msemburi et al. 2023, Nature, 14.8M excess deaths 2020–21, 2.7× the 5.4M reported; the gap was visible
+only to whoever held both chains). Direction (author): instruments, protocols and transformations are
+metric models in a measurement domain, scored by predicting observables shared across paradigms;
+calibration domains overlap it and feed it, and so on (perception is measurement, author; cf. L19, an
+output is a significant perceived change). Downstream models consume the domain's reading (the spread
+across chains, with provenance), never one model's output; circularity is then structural: an acyclic
+dependency graph, overlap-discounted pooling of readings that share markers, the spread always shown.
+Rulings: (2) divergence between chains is both an automatic audit trigger and a reportable output under
+AdvAp; gaming (flooding divergent chains to force audits) is met by the false-challenger ratchet;
+(3) the floors are judged under every chain, minority paradigms included: no one is refused a
+challenge except serial false challengers, who face the ratchet. Open: the rest of the design (author
+still thinking). Candidate homes: Measurement (markers line, circularity), Domain, AdvAp.
+Lean when settled: acyclic dependency check; overlap-discounted pooling (identical markers give no more
+credence than one); divergence trigger. Sim: M3c harm read by two chains, one under-attributing.
