@@ -2524,3 +2524,10 @@ shared observable with ordinary marker noise; chains differ only in loss attribu
 (when ruled or as the plan allows): a minority chain right against an incumbent majority, and chains
 gamed to look agreeable (attributing fully only when audited). Candidate homes: Measurement (chains),
 AdvAp.
+8.109 ruling (author, 2026-11-07, on the M7 traits mapping): a model is taught whole. Teaching transfers a
+model, with its complexity and the base of its acuity together: one can be taught a highly complex,
+highly accurate model or a simple, less accurate one, but teaching cannot cross the wires (take one
+model's low complexity and another's accuracy). Acuity is partly the model's base and partly practice;
+practice is not taught. Reduced complexity transfers with a taught model, and a research breakthrough
+can reduce it too. Teaching moves causal explanation toward the teacher's; research adds coverage and
+explanation (teachable or tacit). Candidate homes: Understanding (teaching, practice), L31.
