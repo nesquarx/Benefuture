@@ -10,3 +10,11 @@ Suggestions, never endorsements. Each case: `cases/e5/<id>.*`, registered as of 
 - **What would move it:** evidence that a binding set-aside delivers (a delivery record better than 2021's), or a larger pandemic-scale magnitude.
 - **Limits:** sources are news and WHO releases, the negotiating texts unread; magnitudes and group sizes are judgment; one pandemic size (COVID-scale) assumed.
 - **Procedure note:** this case was replayed seconds after it was written and before it was committed (§8 asks commit first); the file was not edited after the replay.
+
+## fomc_january_2027 (registered 2026-11-07; committed before its replay)
+
+- **Suggested:** cut 25bp to 3.50-3.75% (with the inflation-persistence cost to households compensated from the value its avoided recession risk mints).
+- **Contested:** flips to hold if the recession magnitudes are halved under a hold or doubled under a cut (each of four judged figures), so not robust.
+- **Why:** after US tightening cycles since 1969, a recession followed within 24 months in 5 of 6 cycles where the peak was held for months and in 4 of 6 where cuts came soon after it (Laplace rates 0.75 and 0.625); a hike has no separating record and is priced with the hold's rate and a judged deeper recession.
+- **Caveat that matters:** the record is confounded: cuts soon after a peak usually came because a downturn was already visible, and holds when it was not, so the two rates are not like-for-like trials; the direction of the suggestion rests on them.
+- **Limits:** the October 2026 decision and vote are from secondary sources (the statement unread); recession magnitudes reuse the 2008 case's assumptions; some NBER dates from memory.
