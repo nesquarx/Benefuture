@@ -964,4 +964,11 @@ end
     @test all(t -> t.chain_demoted == [true, false], domain)
     @test all(t -> t.chain_audits < 0.05 * length(t.chain_bias), domain)
     @test all(t -> !any(t.chain_demoted), honest)
+    # A wrong majority (two agreeing chains counting half) against a right minority: audits weigh the
+    # shared observable, not votes, so both majority chains are demoted (measured: 7–8 audits).
+    majority = [run_m3c(w(chain_attrib = [0.5, 0.5, 1.0], chain_mode = :domain); seed) for seed in 1:2]
+    @test all(t -> t.chain_demoted == [true, true, false], majority)
+    # A subtle bias (10% of each loss) is caught too, later (measured: 23–34 audits).
+    subtle = [run_m3c(w(chain_attrib = [1.0, 0.9], chain_mode = :domain); seed) for seed in 1:2]
+    @test all(t -> t.chain_demoted == [false, true], subtle)
 end

@@ -2517,7 +2517,9 @@ another paradigm: divergence beyond `chain_z` (3) triggers an audit on the share
 scored against audits and one whose audited error exceeds the best live chain's by `chain_z` combined
 standard errors is demoted. The under-attributing chain is demoted after 5–11 audits in every seed,
 audits then stop (under 4% of outcomes), and outcomes are read within 0.04 of their true value: no harm
-hidden, none double counted. Two honest chains are never demoted. Toy assumptions: the audit reads the
+hidden, none double counted. Two honest chains are never demoted. A wrong majority (two agreeing chains counting half) against
+one right minority chain: both majority chains are demoted after 7–8 audits (audits weigh the shared
+observable, not votes); a subtle bias (10% of each loss) is caught after 23–34. Toy assumptions: the audit reads the
 shared observable with ordinary marker noise; chains differ only in loss attribution; one leaf. Next
 (when ruled or as the plan allows): a minority chain right against an incumbent majority, and chains
 gamed to look agreeable (attributing fully only when audited). Candidate homes: Measurement (chains),
