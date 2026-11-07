@@ -2696,8 +2696,9 @@ scalar finding stands as the scalar mode's. (2) Newcomers under existing-only fl
 limit of 0.5, while the test's relative claim (uplift raises them over five times more) holds; the limit
 moves to 0.6 with the reason stated.
 8.121 ruling (author, 2026-11-07): credence voting in Benefuture's liquid democracy. Ballots carry
-credences (confidence per option); no separate ranking is needed, the order follows from the credences,
-and a voter may not state equal confidence on top options. Diversity and novelty bonuses always boost
+credences (confidence per option), and the credences have value beyond tie-breaks: they weigh in the
+aggregate (a more confident, better-calibrated judgment moves the outcome more); no separate ranking is
+needed, the order follows from the credences, and a voter may not state equal confidence on top options. Diversity and novelty bonuses always boost
 clusters that choose minority options, which keeps minority judgments alive and scored (no exploration
 rate needed). Design consequences carried from the discussion: influence is weighted by measured
 calibration, never by stated confidence alone (Nitzan and Paroush 1982: optimal weights are the log-odds
