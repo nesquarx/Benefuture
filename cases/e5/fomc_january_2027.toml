@@ -1,0 +1,127 @@
+# E5 current-decision case (REPLAY_PREREG §8), registered 2026-11-07, as of that date; drawn third in round 1.
+# Decision: FOMC, 26-27 January 2027 (tentative date, federalreserve.gov calendar). As of registration: target
+# range 3.75-4.00% (raised 16 September 2026, held 28 October 2026 by 10-2, two dissents for a hike; reported by
+# secondary sources, official statement not read); CPI 3.7% a year to September 2026 (FRED CPIAUCSL 336.298 vs
+# 324.245), core PCE 3.1% (FRED PCEPILFE 130.902 vs 126.940), unemployment 4.1% (FRED UNRATE, October 2026).
+# Structure follows the 2008 case (cases/fomc_september_2008.toml) and its magnitudes: an ordinary postwar
+# recession costs households du -1, dh -3, fragile households du -2, dh -8 (assumed there, reused here).
+
+id = "fomc_january_2027"
+title = "FOMC January 2027: hold at 3.75-4.00%, cut 25bp, or hike 25bp"
+family = "economy"
+era = "2026-2027"
+tier = "full"
+decision_date = "2026-11-07"
+decision_makers = ["Federal Open Market Committee"]
+actual_choice = "pending"
+actual_outcome_class = "pending"
+primary_or_held_out = "e5"
+
+[[sources]]
+id = "tightening_cycles"
+title = "Ends of US tightening cycles 1969-2023 and NBER recessions within 24 months"
+as_of_date = "2026-11-07"
+url = "https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions"
+notes = "Cycle peaks and first cuts read from the public record (FRED FEDFUNDS for dates); NBER dates confirmed for 1969, 1973, 1980-81, 1990, 2001, 2007, 2020 in this repository's Volcker case work; others from memory, primary not seen."
+
+[[ groups ]]
+id = "us_households"
+name = "US households"
+population = 335
+baseline_u = 70.0
+baseline_h = 70.0
+
+[[ groups ]]
+id = "financially_fragile_households"
+name = "Households with high debt or marginal employment"
+population = 35
+baseline_u = 60.0
+baseline_h = 55.0
+
+[[ options ]]
+id = "hold"
+name = "Hold the target range at 3.75-4.00%"
+source = "tightening_cycles"
+known_date = "2026-10-28"
+is_inaction = true
+scope_delta = 0.0
+# p = 6/8 = 0.75: du -0.75, -1.5; dh -2.25, -6.0
+pred_du = [-0.75, -1.5]
+pred_dh = [-2.25, -6.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "recession_after_holding_at_the_peak"
+p_chain = ["recession_within_24m_when_peak_held"]
+du = [-1.0, -2.0]
+dh = [-3.0, -8.0]
+
+[[ options.scenarios ]]
+name = "no_recession"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "cut_25bp"
+name = "Cut the target range by 25bp to 3.50-3.75%"
+source = "tightening_cycles"
+known_date = "2026-10-28"
+is_inaction = false
+scope_delta = 0.0
+# p = 5/8 = 0.625: recession du -0.625, -1.25; dh -0.625 x (3.5, 8.5) = -2.19, -5.31; with no recession an
+# assumed inflation-persistence cost dh -0.5 (core PCE 3.1%, CPI 3.7%; assumption, no located trials):
+# 0.375 x -0.5 = -0.19 -> dh -2.38, -5.50
+pred_du = [-0.625, -1.25]
+pred_dh = [-2.38, -5.5]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "recession_despite_cut"
+p_chain = ["recession_within_24m_when_cut_soon_after_peak"]
+du = [-1.0, -2.0]
+dh = [-3.5, -8.5]
+
+[[ options.scenarios ]]
+name = "no_recession_inflation_persists"
+p_chain = []
+complement = true
+dh = [-0.5, -0.5]
+
+# A hike has no as-of record separating it from a hold (no located trials of a further hike after a pause at
+# the peak), so it is priced with the hold's recession rate and judged magnitudes: a deeper recession (du
+# -1.2, -2.4; dh -3.6, -9.6) against an inflation gain with no recession (dh +0.3). Judgment throughout.
+[[ options ]]
+id = "hike_25bp"
+name = "Raise the target range by 25bp to 4.00-4.25%"
+source = "tightening_cycles"
+known_date = "2026-10-28"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.9, -1.8]
+pred_dh = [-2.625, -7.125]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "deeper_recession_after_further_hike"
+p_chain = ["recession_within_24m_when_peak_held"]
+du = [-1.2, -2.4]
+dh = [-3.6, -9.6]
+
+[[ options.scenarios ]]
+name = "no_recession_inflation_lower"
+p_chain = []
+complement = true
+dh = [0.3, 0.3]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "cut_25bp"
+methods = ["placeholder: scored when the outcome is known"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]

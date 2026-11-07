@@ -1,0 +1,13 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+tightening_cycles,REC-1969-1971,1971-08-31,1971-08-31,1971-08-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-1974-1976,1976-07-31,1976-07-31,1976-07-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-1981-1983,1983-05-31,1983-05-31,1983-05-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-2000-2002,2002-05-31,2002-05-31,2002-05-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-2006-2008,2008-06-30,2008-06-30,2008-06-30,1.0,1.0,"cycle record"
+tightening_cycles,REC-2023-2025,2025-07-31,2025-07-31,2025-07-31,0.0,0.0,"cycle record"
+tightening_cycles,REC-1984-1986,1986-08-31,1986-08-31,1986-08-31,0.0,0.0,"cycle record"
+tightening_cycles,REC-1989-1991,1991-05-31,1991-05-31,1991-05-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-1995-1997,1997-02-28,1997-02-28,1997-02-28,0.0,0.0,"cycle record"
+tightening_cycles,REC-2001-2002,2002-12-31,2002-12-31,2002-12-31,1.0,1.0,"cycle record"
+tightening_cycles,REC-2007-2009,2009-06-30,2009-06-30,2009-06-30,1.0,1.0,"cycle record"
+tightening_cycles,REC-2019-2020,2020-12-31,2020-12-31,2020-12-31,1.0,1.0,"cycle record"
