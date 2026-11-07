@@ -1282,6 +1282,8 @@ ratified.
 | Gate | Parameter | Default | Source |
 |---|---|---|---|
 | Floor quantile and significance | `ToyParams.q`, `ToyParams.th` | 0.1, 1.0 | L74, L48 |
+| Long-term offset (E4 replay, 8.116): happiness retention, understanding compounding, offset premium scale, soft bar | `h_retention`, `u_compounding`, `offset_scale`, `soft_bar` | 0.3, 1.5, 0.05, 0.05 | judgment; hedonic adaptation is partial and event-dependent (to be swept) |
+| Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
 | Spot-audit chance when fewer than two independent chains remain (8.111) | `chain_spot` | 0.05 | judgment; institutional analogue: random audit rates |
 | Copy detection: variance of standardised differences, minimum readings (8.111) | (fixed 0.2, 4 × `adv_min_records`) | 0.2, 20 | definitional (independent noise gives 2) |

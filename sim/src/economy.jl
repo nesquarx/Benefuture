@@ -482,3 +482,12 @@ end
 "Divergence between chains (8.107, Lean `chains_diverge_ref`): some pair differs by more than `z` combined standard errors."
 chains_diverge(values, ses; z::Real = 3.0) =
     ccall(sym(:bf_chains_diverge), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(collect(Float64, values)), floatarray(collect(Float64, ses)), Float64(z)) == 1
+
+"Strong per-being reading over the long-term projection with understanding offsetting happiness (Lean `lt_offset_admissible_ref`; author ruling 8.116)."
+lt_offset_admissible(du, dh, base_h; nha::Bool = false, retention = 0.3, compounding = 1.5, offset_scale = 0.05, soft_bar = 0.05) =
+    ccall(sym(:bf_lt_offset_admissible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
+          Float64(du), Float64(dh), Float64(base_h), UInt8(nha), Float64(retention), Float64(compounding), Float64(offset_scale), Float64(soft_bar)) == 1
+
+"Environmental health harm blocks an option beyond the least among the options (Lean `env_health_blocked_ref`; author ruling 8.118)."
+env_health_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
+    ccall(sym(:bf_env_health_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1

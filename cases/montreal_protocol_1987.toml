@@ -73,6 +73,7 @@ pred_irreparable = [1250.0, 0.0]
 # premature deaths over the long term (irreparable 2000 units of 100).
 [[ options.scenarios ]]
 name = "depletion_continues"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["assessment_projects_depletion", "observed_ozone_loss"]
 du = [-3.0, 0.0]
 dh = [-3.0, 0.0]
@@ -117,6 +118,7 @@ nha = [0.0, 3.0]
 # evidence arrives). Judgment: half the delay scenario's ill-health, no priced deaths.
 [[ options.scenarios ]]
 name = "residual_depletion"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["assessment_projects_depletion", "observed_ozone_loss"]
 du = [-1.5, 0.0]
 dh = [-1.5, 0.0]

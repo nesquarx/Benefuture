@@ -51,6 +51,30 @@ def expected_effect_ref (probs effects : Array Float) : Float := Id.run do
     e := e + probs[i]! * effects[i]!
   return e
 
+/-- Strong per-being reading over the long-term projection, with understanding offsetting happiness
+    (author ruling 8.116). `du`, `dh`: a being's (or group's) change against inaction; projected long
+    term, happiness adapts (× `retention`) and understanding compounds (× `compounding`). An
+    understanding loss is never offset. A happiness loss is admissible if the projected understanding
+    gain covers it with a premium that grows with its size (need = loss × (1 + relative loss /
+    `offset_scale`)), and only while the relative loss (over the baseline `base_h`) stays within the
+    soft bar `soft_bar`, unless the drop is necessary harm (`nha`). -/
+def lt_offset_admissible_ref (du dh base_h : Float) (nha : Bool) (retention compounding offset_scale soft_bar : Float) : Bool :=
+  let duL := du * compounding
+  let dhL := dh * retention
+  if duL < -1e-9 then false
+  else if dhL >= -1e-9 then true
+  else
+    let loss := -dhL
+    let rel := if base_h > 0.0 then loss / base_h else loss
+    if rel > soft_bar && !nha then false
+    else duL >= loss * (1.0 + rel / offset_scale)
+
+/-- Environmental health harm (author ruling 8.118): an option, inaction included, is blocked when its
+    projected health harm through environmental pathways exceeds the least such harm among the options
+    available by more than `tol`, unless that excess is necessary harm. -/
+def env_health_blocked_ref (harm least tol : Float) (nha : Bool) : Bool :=
+  harm > least + tol && !nha
+
 /-- Measurement chains (8.107): the dependency graph of readings must be acyclic. `adj` is an n × n
     row-major matrix, `adj[i*n+j] > 0` meaning reading i takes reading j as input. Kahn's algorithm:
     true when every node can be removed in some order with no remaining inputs. -/

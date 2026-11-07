@@ -2623,3 +2623,34 @@ median of understanding no difference shown, median of happiness −8 ± 3; harm
 advantage −180 against −3 endowments. The residual is the deceivers' own skilled work, which still
 reaches the economy less while they are priced out; a world where honest capacity grows to meet demand
 (entry) would test whether it closes. Results: `sim/battery/results/status_quo_economy_open.md`.
+8.116 ruling (author, 2026-11-07, on 8.100's open question): an understanding gain may offset a happiness
+cost for the same being, but the larger the difference the harder it should be; beyond soft thresholds
+only drops that are necessary harm (NHa) are allowed; the long-term projection has the final say:
+happiness adapts and is transient, understanding compounds. Candidate homes: L74 (strong per-being
+reading over Ha_lt), Happiness (adaptation), Understanding (compounding).
+8.117 ruling (author, 2026-11-07, on 8.112's open question): understanding aggregates across things
+through the priorities and cross-domain outcomes: what counts is its predicted long-term contribution to
+the goals (a great deal of understanding of one version of a game's rules may count less than a little of
+local health trends), with space left for novelty. Candidate homes: Understanding (aggregation), L31,
+Benefuture goals (priorities).
+8.118 ruling (author, 2026-11-07): the same long-term reading blocks anything projected to cause
+environmental effects that harm health. Built: Lean `env_health_blocked_ref`: an option, inaction
+included (8.47), is blocked when its projected health harm through environmental pathways (scenarios
+tagged `environmental_health`, at as-of probabilities, population-weighted) exceeds the least such harm
+among the options by more than a tolerance, unless the excess is necessary harm. Every option in the
+tagged cases leaves some exposure, so the block is relative. Tagged after the ruling: lead (exposure
+persists; residual exposure), Montreal (depletion continues; residual depletion), Snow (exposure
+continues under each option). Candidate homes: L74 (long-term reading), Freedom (harm boundary), Harm.
+8.116 and 8.118 built and replayed (third replay, code bee2c7384dca49c1; not out of sample: written after the
+held-out result). Lean `lt_offset_admissible_ref`: projected long term, happiness changes are retained at
+`h_retention` 0.3 and understanding changes compound at `u_compounding` 1.5; an understanding loss is
+never offset; a happiness loss is admissible if the projected understanding gain covers it with a
+premium growing with its relative size (`offset_scale` 0.05) and only within the soft bar (`soft_bar`
+0.05 of the baseline) unless necessary harm. Applied per group and to the floors. Compensation is now
+financed first by value minted on the reform's understanding gains (8.96: good mints currency), only the
+remainder from happiness gains, since a reform whose gain is understanding could otherwise never repay
+its losers. Results: pre-registered 6/6 (unchanged); held-out 5/5 (the compensated pool-average lead
+phase-down passes). Sensitivity readout: of the 11 settled cases, 8 robust to halving or doubling any
+judged magnitude (all right) and 3 contested (Bengal relief, lead, Volcker; all right as replayed).
+Choices are unchanged by 8.118 in these cases. The defaults 0.3, 1.5, 0.05, 0.05 are judgment (governed);
+hedonic adaptation is partial and event-dependent in the literature, so `h_retention` is swept later.

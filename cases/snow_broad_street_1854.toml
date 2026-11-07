@@ -73,6 +73,7 @@ pred_irreparable = [55.8]
 # pump water) 61 of 67 informed -> 62/69.
 [[ options.scenarios ]]
 name = "waterborne_exposure_continues"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water"]
 du = [-0.085288]
 dh = [-0.085288]
@@ -103,6 +104,7 @@ pred_irreparable = [7.9714]
 # pumps, within a few hundred yards) is a judgment of dh -0.05 (about 0.1 percent of baseline), applied in every scenario.
 [[ options.scenarios ]]
 name = "waterborne_and_removal_does_not_stop_cases"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water", "cluster_continued_after_contaminated_source_withdrawn"]
 du = [-0.085288]
 dh = [-0.135288]
@@ -135,6 +137,7 @@ pred_irreparable = [55.8]
 
 [[ options.scenarios ]]
 name = "waterborne_exposure_continues_despite_cleansing"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["local_cholera_cluster_followed_shared_water", "broad_street_victim_drank_pump_water"]
 du = [-0.085288]
 dh = [-0.285288]

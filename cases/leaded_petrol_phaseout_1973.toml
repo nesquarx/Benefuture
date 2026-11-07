@@ -96,6 +96,7 @@ pred_irreparable = [0.0, 0.0, 0.0]
 # the phase-down's marginal benefit (flagged).
 [[ options.scenarios ]]
 name = "gasoline_lead_contributes_to_excess_exposure"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["air_lead_linked_to_blood_lead"]
 du = [-0.3333, 0.0, 0.0]
 dh = [-0.2292, -0.02, 0.0]
@@ -128,6 +129,7 @@ pred_irreparable = [0.0, 0.0, 0.0]
 # capital outlay; JUDGMENT: dh = -0.5 for the sector (cost is income and employment, so it prices happiness, not understanding).
 [[ options.scenarios ]]
 name = "residual_exposure_with_cost"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["air_lead_linked_to_blood_lead"]
 du = [-0.125, 0.0, 0.0]
 dh = [-0.0859, -0.0075, -0.5]
@@ -166,6 +168,7 @@ pred_irreparable = [0.0, 0.0, 0.0]
 # capital cost are the same as above; the early years are milder.
 [[ options.scenarios ]]
 name = "residual_exposure_with_cost"
+environmental_health = true   # 8.118: an environmental pathway to health harm (tagged after the ruling)
 p_chain = ["air_lead_linked_to_blood_lead"]
 du = [-0.125, 0.0, 0.0]
 dh = [-0.0859, -0.0075, -0.5]

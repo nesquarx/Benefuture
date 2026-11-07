@@ -27,7 +27,11 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     impact_threshold = 0.50,
     min_skill_record = 20,
     lt_window = 100,
-    compensation_efficiency = 0.75
+    compensation_efficiency = 0.75,
+    h_retention = 0.3,
+    u_compounding = 1.5,
+    offset_scale = 0.05,
+    soft_bar = 0.05
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -59,7 +63,11 @@ function get_frozen_replay_thresholds()
             impact_threshold = 0.50,
             min_skill_record = 20,
             lt_window = 100,
-            compensation_efficiency = 0.75
+            compensation_efficiency = 0.75,
+            h_retention = 0.3,
+            u_compounding = 1.5,
+            offset_scale = 0.05,
+            soft_bar = 0.05
         )
     catch e
         # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
@@ -648,6 +656,10 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             end
             # D5 equal-weight baseline: every known scenario weighted alike, the as-of record ignored.
             get(case_dict, "_scenario_weights", "rates") == "equal" && (ps = fill(1.0 / length(ps), length(ps)))
+            # (8.118) projected health harm through environmental pathways: population-weighted losses in
+            # scenarios tagged `environmental_health`, at their as-of probabilities.
+            opt["_env_harm"] = sum((ps[k] * sum(pops[g] * max(0.0, -(dus[k][g] + dhs[k][g])) for g in 1:n_groups)
+                                    for (k, sc) in enumerate(opt["scenarios"]) if get(sc, "environmental_health", false)); init = 0.0)
             opt["pred_du"] = [expected_effect(ps, getindex.(dus, g)) for g in 1:n_groups]
             opt["pred_dh"] = [expected_effect(ps, getindex.(dhs, g)) for g in 1:n_groups]
             opt["pred_nha"] = [expected_effect(ps, getindex.(nhas, g)) for g in 1:n_groups]
@@ -677,8 +689,15 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             gap = Float64.(opt["pred_dh"]) .- idle_dh0
             losers = findall(<(-th.epsilon_tie), gap)
             gainers = findall(>(th.epsilon_tie), gap)
-            (isempty(losers) || isempty(gainers)) && continue
+            uplus = any(>(th.epsilon_tie), Float64.(opt["pred_du"]) .- Float64.(idle_opt["pred_du"]))
+            (isempty(losers) || (isempty(gainers) && !uplus)) && continue
+            isempty(gainers) && (gainers = findall(>(th.epsilon_tie), Float64.(opt["pred_du"]) .- Float64.(idle_opt["pred_du"])))
             owed = sum(pops[g] * -gap[g] for g in losers)
+            # Good mints currency (8.96): the reform's measured understanding gains mint value that pays the
+            # compensation first (at `compensation_efficiency`); only the remainder is taken from happiness gains.
+            ugap = Float64.(opt["pred_du"]) .- Float64.(idle_opt["pred_du"])
+            minted = th.compensation_efficiency * sum(pops[g] * max(0.0, ugap[g]) for g in 1:n_groups)
+            owed = max(0.0, owed - minted)
             per_head = owed / (th.compensation_efficiency * sum(pops[g] for g in gainers))
             dh = Float64.(opt["pred_dh"])
             dh[losers] .= idle_dh0[losers]
@@ -712,6 +731,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     fr_ok = falses(n_opts)
 
     bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
+    env_least = minimum(get(o, "_env_harm", 0.0) for o in options)
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
         dh = Float64.(opt["pred_dh"])
@@ -774,12 +794,24 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         d_scope[i] = Float64(opt["scope_delta"]) - Float64(idle_opt["scope_delta"]) + th.epsilon_tie
         d_min_u[i] = floor_quantile(u_after, th.q_floor) - idle_min_u + th.epsilon_tie
         d_min_h[i] = floor_quantile(h_after, th.q_floor) - idle_min_h + th.epsilon_tie
+        # (8.116) the floors too are judged on the long-term projection: a dip in the happiness floor is
+        # admissible where the floor's projected understanding gain offsets it (premium, soft bar).
+        if d_min_h[i] < 0 && d_min_u[i] > 0 &&
+           lt_offset_admissible(d_min_u[i], d_min_h[i], idle_min_h; retention = th.h_retention, compounding = th.u_compounding,
+                                offset_scale = th.offset_scale, soft_bar = th.soft_bar)
+            d_min_h[i] = th.epsilon_tie
+        end
         d_max_u[i] = maximum(u_after) - idle_max_u + th.epsilon_tie
 
         # Strong per-group long-term trajectory check (8.86) and no unexcused irreparable harm
-        strong_ok[i] = all(lt_u .+ th.epsilon_tie .>= idle_lt_u) &&
-                       all(lt_h .+ th.epsilon_tie .>= idle_lt_h) &&
-                       total_irr == 0.0
+        # (8.116) projected long term, happiness adapts and understanding compounds; an understanding gain may
+        # offset a happiness cost for the same group, at a premium growing with its size, within a soft bar
+        # unless the drop is necessary harm.
+        strong_ok[i] = all(lt_offset_admissible(lt_u[g] - idle_lt_u[g], lt_h[g] - idle_lt_h[g], base_h[g]; nha = nha[g] > 0,
+                                                retention = th.h_retention, compounding = th.u_compounding,
+                                                offset_scale = th.offset_scale, soft_bar = th.soft_bar) for g in 1:n_groups) &&
+                       total_irr == 0.0 &&
+                       !env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least), nha = any(>(0), nha))
     end
 
     # Filter by strong reading first; fall back to weak reading with loud degradation if none qualifies
@@ -869,7 +901,8 @@ result means the choice is robust to halving or doubling any single judged magni
 """
 function replay_sensitivity(case_dict::AbstractDict; factors = (0.5, 2.0))
     all(o -> haskey(o, "scenarios"), case_dict["options"]) || return nothing
-    base = replay_decision(deepcopy(case_dict)).chosen_option
+    strip_c(x) = replace(x, r"\+compensated$" => "")   # a compensated reform is that reform
+    base = strip_c(replay_decision(deepcopy(case_dict)).chosen_option)
     flips = NamedTuple[]
     for (oi, opt) in enumerate(case_dict["options"]), (si, sc) in enumerate(opt["scenarios"]), key in ("du", "dh", "nha", "irreparable")
         haskey(sc, key) || continue
@@ -877,7 +910,7 @@ function replay_sensitivity(case_dict::AbstractDict; factors = (0.5, 2.0))
             Float64(sc[key][g]) == 0.0 && continue
             c = deepcopy(case_dict)
             c["options"][oi]["scenarios"][si][key][g] = Float64(sc[key][g]) * f
-            ch = replay_decision(c).chosen_option
+            ch = strip_c(replay_decision(c).chosen_option)
             ch != base && push!(flips, (option = String(opt["id"]), scenario = String(get(sc, "name", string(si))), effect = key,
                                         group = String(case_dict["groups"][g]["id"]), factor = f, chosen = ch))
         end

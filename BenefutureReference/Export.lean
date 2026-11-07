@@ -333,6 +333,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_event_rate] def eventRate (k n : Float) : Float := event_rate_ref k n
 @[export bf_pooled_probability] def pooledProbability (probs weights : FloatArray) : Float :=
   pooled_probability_ref probs.data weights.data
+@[export bf_lt_offset_admissible] def ltOffsetAdmissible (du dh base_h : Float) (nha : UInt8) (retention compounding offset_scale soft_bar : Float) : UInt8 :=
+  if lt_offset_admissible_ref du dh base_h (nha != 0) retention compounding offset_scale soft_bar then 1 else 0
+
+@[export bf_env_health_blocked] def envHealthBlocked (harm least tol : Float) (nha : UInt8) : UInt8 :=
+  if env_health_blocked_ref harm least tol (nha != 0) then 1 else 0
+
 @[export bf_acyclic] def acyclicE (adj : FloatArray) (n : USize) : UInt8 := if acyclic_ref adj.data n.toNat then 1 else 0
 
 @[export bf_pooled_reading] def pooledReading (values credences overlap : FloatArray) : FloatArray :=

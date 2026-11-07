@@ -1032,3 +1032,18 @@ end
     @test paired_effect(fg.(tt) .- fg.(t0); z = 3.0).significant
     @test_throws ArgumentError run_m7(p; seed = 1, traits = true, central = true)
 end
+
+# ==============================================================================
+# Rules: long-term offset of happiness by understanding (8.116) and environmental health harm (8.118)
+# ==============================================================================
+@testset "Rules: long-term offset (8.116) and environmental health harm (8.118)" begin
+    @test lt_offset_admissible(1.0, -0.5, 50.0)                    # a small happiness cost covered by understanding
+    @test !lt_offset_admissible(-0.1, 1.0, 50.0)                   # an understanding loss is never offset
+    @test !lt_offset_admissible(0.1, -20.0, 50.0)                  # beyond the soft bar, and uncovered
+    @test lt_offset_admissible(0.0, 1.0, 50.0)                     # no loss, no question
+    # The larger the cost, the harder: the same gain covers a small cost but not a larger one, whose premium grows with it.
+    @test lt_offset_admissible(0.5, -0.5, 50.0) && !lt_offset_admissible(0.5, -2.4, 50.0)
+    # Beyond the soft bar only necessary harm may pass (and still needs the premium covered).
+    @test !lt_offset_admissible(60.0, -15.0, 50.0) && lt_offset_admissible(60.0, -15.0, 50.0; nha = true)
+    @test env_health_blocked(2.0, 1.0) && !env_health_blocked(1.0, 1.0) && !env_health_blocked(2.0, 1.0; nha = true)
+end

@@ -346,6 +346,10 @@ held-out set is not out of sample; both results are reported, the first as the h
 
 Note (2026-11-06): adding `pragmatic_understanding_ref` to `BenefutureReference/Records.lean` changes the §4.4 hash recipe's output without touching any rule the replay calls; the held-out test pins both replays' choices, which are unchanged.
 
+### 4.6 Third replay: long-term offset and environmental health (amendment 2026-11-07, author rulings 8.116, 8.118)
+
+Understanding gains may offset happiness costs for the same group over the long-term projection (happiness retained at `h_retention`, understanding compounding at `u_compounding`, a premium growing with the cost, a soft bar beyond which only necessary harm passes), the floors judged the same way; compensation is financed first by value minted on understanding gains; options causing more environmental health harm than the least-harm option are blocked. Code hash prefix `bee2c7384dca49c1`. Written after the held-out result, so not out of sample; reported beside the first and second replays.
+
 ### 5c. Sensitivity readout (amendment 2026-11-07)
 
 Every scenario-priced case reports which judged magnitude, halved or doubled alone, flips Benefuture's choice (`replay_sensitivity`). A case with any flip is reported as contested, beside its cell, never counted as a win or a loss on its own.

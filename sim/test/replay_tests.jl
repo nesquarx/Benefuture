@@ -328,8 +328,11 @@ end
     # the compensated printing privilege passes; the lead phase-down still fails, since its gain is
     # children's understanding, which cannot repay adults' and refiners' happiness losses.
     @test ch["printing_press_europe_1470"] == "grant_privileges_to_master_printers+compensated"
-    @test ch["leaded_petrol_phaseout_1973"] == "status_quo_lead_free_availability_only"
-    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (4, 5)
+    # Third replay (8.116: understanding gains offset happiness costs over the long-term projection, compensation
+    # financed first by value minted on understanding gains, floors judged the same way): the compensated
+    # pool-average lead phase-down passes; not out of sample.
+    @test ch["leaded_petrol_phaseout_1973"] == "phase_down_total_pool_average_1975_1979+compensated"
+    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (5, 5)
     @test (s.scores[:mean_welfare].k, s.scores[:min_deaths].k) == (4, 2)
 end
 
@@ -338,9 +341,10 @@ end
     for id in robust
         @test isempty(replay_sensitivity(load_replay_case(joinpath(CASES_DIR, id * ".toml"))))
     end
-    # Montreal is contested: halving the happiness cost of delay to the world public, or doubling the
-    # residual depletion's under the phase-down, flips the choice to delay.
-    m = replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml")))
-    @test !isempty(m) && all(x -> x.chosen == "delay_await_certainty", m)
+    # With 8.116 Montreal is robust; Volcker stays contested (halving recession costs to cyclical workers
+    # flips it away from reserve targeting).
+    @test isempty(replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml"))))
+    v = replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "volcker_disinflation_1979.toml")))
+    @test !isempty(v) && all(x -> x.chosen != "reserve_targeting", v)
     @test replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "ragusa_quarantine_1377.toml"))) === nothing
 end
