@@ -387,3 +387,20 @@ A mechanism or tier is falsified—and must be recorded in `docs/BACKPROPAGATION
 3. **F3 — Failure of Progressive Complexity (8.88)**: In the coarse tier (parent-level markers, rule-only fallbacks, no dense model pool), Benefuture performs worse than the historical actors on low-technology cases where they succeeded, demonstrating that the rules depend on modern high-frequency measurement rather than degrading gracefully.
 4. **F4 — Hindsight Dependence**: A desirable decision in any case depends on an input or option dated after $t_0$, or disappears when post-$t_0$ revisions are replaced by real-time vintages.
 
+
+## 8. Current Decisions (E5): Selection Criteria (pre-registered 2026-11-07, before any case is built)
+
+E5 replays live decisions as of their registration date to investigate what Benefuture would suggest and why. No outcome exists yet, so nothing is scored at registration; each case is frozen and scored when its outcome arrives, which makes E5 the prospective test set for E4.
+
+**Eligibility.** A decision enters only if all hold:
+1. Its options are stated by the deciding body or by credible public alternatives (no option invented to make a point).
+2. Each scenario event it needs has at least three dated prior trials in public records.
+3. Each affected group's baseline can be estimated from public statistics, and its size is known to within a factor of two.
+4. The decision, and a first measurable outcome, are expected within three years of registration.
+5. The decider and date are identifiable.
+
+**Selection blind to verdict.** A candidate list is drawn first, by the criteria above, from public agendas (legislative calendars, regulators' consultation lists, central banks' meeting schedules, international negotiations with stated deadlines), recorded with its date and source before any case is priced. Cases are then taken from the list in a recorded random order (seed stated), balanced across families (health, economy, environment, security and geopolitics, education, technology), at most two per family per round. A drawn case that fails eligibility on building is recorded with the reason, never silently replaced.
+
+**Freeze and report.** Each case is built from as-of sources, committed, then replayed once under a recorded code freeze (§4.4). Its report gives: the suggested option (and compensated variants, §4.5), the vector success pattern, the falsifier checks, the baselines (§5b), and the sensitivity readout (§5c). A case whose choice flips under one halved or doubled judged magnitude is published as contested, with the flipping figures named. Reports are suggestions, never endorsements; the case file states its judged figures and the sources not opened.
+
+**Scoring later.** When the outcome arrives, the frozen case is scored by the four-cell rule against the outcome class judged by the pre-registered criteria of §4, with the counterfactual methods named at registration.
