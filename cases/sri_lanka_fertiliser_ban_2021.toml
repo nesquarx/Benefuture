@@ -1,0 +1,146 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): Sri Lanka's ban on imports of chemical fertilisers
+# and agrochemicals (announced 27 April 2021, gazetted 6 May 2021), an overnight move to organic farming. As of
+# the decision: foreign-exchange reserves falling; the chronic kidney disease of unknown aetiology (CKDu) in the
+# dry zone, with agrochemicals one contested hypothesis among several; earlier abrupt or mandated withdrawals of
+# synthetic inputs (Cuba after 1990, Bhutan's 2008 organic goal, Sikkim's 2016 all-organic state) and gradual
+# transitions (Andhra Pradesh's natural farming programme from 2016). Sources recalled from the public record;
+# primary documents not seen. Builders know the outcome (rice and tea yields fell sharply; the ban was reversed in
+# November 2021; it fed the 2022 crisis).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "sri_lanka_fertiliser_ban_2021"
+title = "Sri Lanka bans chemical fertiliser imports overnight (April-May 2021)"
+family = "agriculture"
+era = "2021"
+tier = "full"
+decision_date = "2021-04-27"
+decision_makers = ["President Gotabaya Rajapaksa and cabinet"]
+actual_choice = "ban_imports_now"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "agri_record"
+title = "Abrupt and gradual withdrawals of synthetic farm inputs, and the CKDu aetiology record, before April 2021"
+as_of_date = "2021-04-26"
+url = "https://www.who.int/publications/i/item/WHO-FWC-PHE-EPE-13.01"
+notes = "WHO and Sri Lanka Ministry of Health CKDu investigation (2013) recalled; withdrawal record recalled; primary records not seen."
+
+[[ groups ]]
+id = "farm_households"
+name = "Farming households (about 7 million people), in thousands"
+population = 7000
+baseline_u = 45.0
+baseline_h = 50.0
+
+[[ groups ]]
+id = "rest_of_population"
+name = "Rest of Sri Lanka's population (about 15 million), in thousands"
+population = 15000
+baseline_u = 50.0
+baseline_h = 55.0
+
+# Magnitudes (judgment, stated): an abrupt withdrawal that cuts yields by about a quarter to a third: farm incomes
+# fall (farm happiness -3, passing harm), food prices and foreign exchange worsen for everyone (-1), and food
+# insecurity adds about 0.2 thousand deaths over the following years. A phased transition with subsidies and
+# extension: if yields fall, about a third of that. If agrochemicals do drive CKDu, keeping imports unchanged
+# costs about 2 thousand deaths over a decade in the dry zone (an environmental pathway, 8.118); the ban removes
+# most of it (residual from persistence: a fifth), the phased transition about two thirds. Import savings:
+# about 0.4 billion dollars a year; mild relief (+0.2 for everyone) under the ban, half under phasing.
+
+[[ options ]]
+id = "keep_imports"
+name = "Keep fertiliser imports and subsidies; fund CKDu research and water treatment"
+source = "agri_record"
+known_date = "2021-04-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.2, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.8, 0.0]
+
+[[ options.scenarios ]]
+name = "agrochemical_ckdu"
+environmental_health = true
+p_chain = ["agrochemical_ckdu_link_supported"]
+dh = [-0.5, 0.0]
+irreparable = [2.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_link"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "ban_imports_now"
+name = "Ban chemical fertiliser and agrochemical imports at once"
+source = "agri_record"
+known_date = "2021-04-27"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-2.5, -0.6]
+pred_nha = [2.4, 0.0]
+pred_irreparable = [0.3, 0.06]
+
+[[ options.scenarios ]]
+name = "yield_collapse"
+p_chain = ["abrupt_input_withdrawal_cut_yields"]
+dh = [-3.0, -1.0]
+nha = [3.0, 0.0]
+irreparable = [0.14, 0.06]
+
+[[ options.scenarios ]]
+name = "residual_ckdu"
+environmental_health = true
+p_chain = ["agrochemical_ckdu_link_supported"]
+dh = [-0.1, 0.0]
+irreparable = [0.4, 0.0]
+
+[[ options.scenarios ]]
+name = "import_savings"
+p_chain = []
+dh = [0.2, 0.2]
+
+[[ options ]]
+id = "phased_transition"
+name = "Phase down chemical inputs over five or more years with organic subsidies, extension and testing"
+source = "agri_record"
+known_date = "2019-11-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.6, -0.2]
+pred_nha = [0.4, 0.0]
+pred_irreparable = [0.3, 0.01]
+
+[[ options.scenarios ]]
+name = "yield_dip"
+p_chain = ["phased_input_transition_cut_yields"]
+dh = [-1.0, -0.33]
+nha = [1.0, 0.0]
+irreparable = [0.05, 0.02]
+
+[[ options.scenarios ]]
+name = "residual_ckdu"
+environmental_health = true
+p_chain = ["agrochemical_ckdu_link_supported"]
+dh = [-0.17, 0.0]
+irreparable = [0.67, 0.0]
+
+[[ options.scenarios ]]
+name = "import_savings"
+p_chain = []
+dh = [0.1, 0.1]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -3.0
+actual_irreparable = 0.2
+alt_option = "keep_imports"
+methods = ["placeholder: yield losses (rice about 20-30 percent in the 2021 Maha season, recalled) priced as judgment"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [2.5]
+est_irreparable_diff = [-0.2]

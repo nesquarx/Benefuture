@@ -1,0 +1,10 @@
+event,trial_id,date,occurred,citation_with_page
+abrupt_input_withdrawal_cut_yields,cuba-1990s,1995-12-31,1,"Cuba's Special Period: synthetic inputs collapsed, yields fell sharply (recalled)"
+abrupt_input_withdrawal_cut_yields,bhutan-2008,2012-12-31,1,"Bhutan's all-organic goal: yields fell where inputs were withdrawn; goal postponed (recalled)"
+abrupt_input_withdrawal_cut_yields,sikkim-2016,2017-12-31,1,"Sikkim all-organic by 2016 with a ban on chemical inputs: yields fell for several crops (recalled; contested)"
+phased_input_transition_cut_yields,andhra-zbnf,2020-12-31,0,"Andhra Pradesh natural farming programme from 2016: no reported yield collapse (recalled)"
+phased_input_transition_cut_yields,eu-organic-conversion,2015-12-31,1,"EU organic conversion support: organic yields lower than conventional on average (recalled)"
+phased_input_transition_cut_yields,sikkim-phased-2003,2010-12-31,0,"Sikkim's phased early years 2003-2010: no reported collapse (recalled)"
+agrochemical_ckdu_link_supported,who-sl-2013,2013-12-31,1,"WHO and Ministry of Health CKDu investigation: agrochemicals among contributing factors (recalled)"
+agrochemical_ckdu_link_supported,glyphosate-hypothesis,2016-12-31,0,"Glyphosate-metal complex hypothesis: not confirmed (recalled)"
+agrochemical_ckdu_link_supported,cadmium-studies,2018-12-31,0,"Cadmium exposure studies: insufficient to explain CKDu (recalled)"
