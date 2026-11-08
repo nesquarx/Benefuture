@@ -3004,3 +3004,13 @@ binding (8.70) is still [P]. Proposal: add the model-entry rate as a swept facto
 property: in Benefuture it should emerge from incentives, so a range, not a default; 0 to 0.3 per step per leaf, as
 the C3 probe used) and a newcomer/whitewash factor once identity binding enters the iterated worlds. Not changed yet:
 it alters the battery's comparability with its earlier runs; to be made at the next deliberate battery revision.
+
+8.107 agreeable chains (2026-11-08, M3c probe): an attack where a second measurement chain reports 60% of the
+incumbent's reading in place of its own (`chain_shade`) stays too close to the incumbent to diverge quickly and too
+far to be taken for a copy (variance of standardised differences above 0.2). Over 4 seeds: hidden bias +0.7 to +1.7 per
+outcome against about 0 for an honest pair, all accrued before detection; both chains are then demoted in every seed
+(the shaded chain carries part of the bias) and the domain falls back to audits. Spot audits even when chains agree
+(`chain_spot_all`, 5%) did not shorten the undetected period and once demoted an honest chain, so they stay off. Open:
+what shortens it. Candidates within native mechanisms: scoring chains against the outcomes that do become apparent
+(as M5 does with shared errors, 8.121): a shaded chain's errors track the incumbent's beyond what independent noise
+allows, which the shared-error rule (`coerror_copy_ref`) may catch earlier than divergence does.

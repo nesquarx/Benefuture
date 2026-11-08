@@ -69,6 +69,8 @@ struct M3cParams
     chain_copy::Vector{Int}        # chain k secretly copies chain chain_copy[k]'s reading (0 = independent; an attack, 8.107)
     chain_detect::Bool             # detect undeclared copying by agreement closer than independent noise allows
     chain_spot::Float64            # spot-audit chance per outcome when fewer than two independent chains remain (governed)
+    chain_shade::Vector{Float64}   # chain k reports this share of chain 1's reading in place of its own (an attack: looking agreeable, 8.107)
+    chain_spot_all::Bool           # spot audits at `chain_spot` even when chains agree (8.107: no chain trusted without an independent check)
     adaptive_proposals::Bool       # agents propose in proportion to their recent acceptance, so refused slots pass to others (8.115; world)
     chain_z::Float64               # divergence between chains that triggers an audit (8.107; governed)
     ratchet_growth::Float64    # escrow growth per discovered deception, exponential in the count (8.91 ruling; governed; 0 = the flat ratchet)
@@ -224,7 +226,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, chain_copy = Int[], chain_detect::Bool = true, chain_spot::Real = 0.05, adaptive_proposals::Bool = false, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, chain_copy = Int[], chain_detect::Bool = true, chain_spot::Real = 0.05, chain_shade = Float64[], chain_spot_all::Bool = false, adaptive_proposals::Bool = false, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -307,7 +309,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!isnan(overflow_base) && overflow_base >= 0, "overflow base must be non-negative")
     M3cParams(toy, agents, collect(Int, leaf_parent), collect(Bool, known), collect(Tuple{Int,Int,Float64}, overlaps),
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
-              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, Float64.(chain_attrib), chain_mode, isempty(chain_copy) ? zeros(Int, length(chain_attrib)) : Int.(chain_copy), chain_detect, Float64(chain_spot), adaptive_proposals, Float64(chain_z), ratchet_growth, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
+              σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, Float64.(chain_attrib), chain_mode, isempty(chain_copy) ? zeros(Int, length(chain_attrib)) : Int.(chain_copy), chain_detect, Float64(chain_spot), isempty(chain_shade) ? zeros(length(chain_attrib)) : Float64.(chain_shade), chain_spot_all, adaptive_proposals, Float64(chain_z), ratchet_growth, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
               causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
@@ -412,6 +414,12 @@ function run_m3c(p::M3cParams; seed)
             push!(reads, j == 0 ? observed_plan(mrng, attributed(done, p.chain_attrib[k]), p.marker_σ) :
                          ToyPlan(reads[j].du .+ 0.01p.marker_σ .* randn(mrng, length(done.du)), reads[j].dh .+ 0.01p.marker_σ .* randn(mrng, length(done.dh))))
         end
+        # Looking agreeable (an attack): a chain reports a share of chain 1's reading in place of its own, staying
+        # too close to diverge but too far to be taken for a copy.
+        for k in 2:K
+            sh = p.chain_shade[k]; sh > 0 || continue
+            reads[k] = ToyPlan((1 - sh) .* reads[k].du .+ sh .* reads[1].du, (1 - sh) .* reads[k].dh .+ sh .* reads[1].dh)
+        end
         (p.chain_mode == :single || K == 1) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
         # A reading's own noise, estimated from independent draws on the chains' stream (never the world's).
         se = max(1e-9, std([plan_value(observed_plan(crng, done, p.marker_σ), t) for _ in 1:8]))
@@ -443,7 +451,7 @@ function run_m3c(p::M3cParams; seed)
             return audit
         end
         isempty(chs) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
-        out = if length(chs) > 1 && chains_diverge(vals, fill(se, length(chs)); z = p.chain_z)
+        out = if length(chs) > 1 && (chains_diverge(vals, fill(se, length(chs)); z = p.chain_z) || (p.chain_spot_all && rand(mrng) < p.chain_spot))
             chain_audits[] += 1
             audit = observed_plan(mrng, done, p.marker_σ)
             # Chains are scored against audits (cross-chain scoring): a chain whose audited error exceeds

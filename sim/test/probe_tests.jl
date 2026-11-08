@@ -983,6 +983,14 @@ end
     @test all(t -> t.chain_copied == [false, true] && t.chain_demoted[1], detected)
     @test all(mean(d.chain_bias) < 0.6 * mean(u.chain_bias) for (d, u) in zip(detected, undetected))
     @test all(t -> !any(t.chain_copied), honest)
+    # Looking agreeable (8.107): a second chain reporting 60% of the incumbent's reading in place of its own stays
+    # too close to diverge quickly and too far to be taken for a copy. Measured (4 seeds): hidden bias +0.7 to +1.7 per
+    # outcome against about 0 for an honest pair, accrued before detection; both chains are demoted in every seed
+    # (the shaded chain carries part of the bias). Spot audits even when chains agree (5%) did not shorten it and
+    # once demoted an honest chain, so they stay off.
+    agreeable = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain, chain_shade = [0.0, 0.6]); seed) for seed in seeds]
+    @test all(t -> mean(t.chain_bias) > 0.5 && all(t.chain_demoted), agreeable)
+    @test all(t -> !any(t.chain_copied), agreeable)
 end
 
 # ==============================================================================
