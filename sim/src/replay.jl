@@ -674,6 +674,11 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             opt["_env_harm"] = sum((ps[k] * sum(pops[g] * max(0.0, -(dus[k][g] + dhs[k][g])) +
                                                 irrs[k][g] / upu_env * (base_u[g] + base_h[g]) for g in 1:n_groups)
                                     for (k, sc) in enumerate(opt["scenarios"]) if get(sc, "environmental_health", false)); init = 0.0)
+            # (8.127, trolley rules) net expected harm over all scenarios, in the same unit: losses of u and h in
+            # person-points plus deaths at their group's baseline u + h; read only when every option is blocked.
+            opt["_total_harm"] = sum((ps[k] * sum(pops[g] * max(0.0, -(dus[k][g] + dhs[k][g])) +
+                                                  irrs[k][g] / upu_env * (base_u[g] + base_h[g]) for g in 1:n_groups)
+                                      for k in eachindex(ps)); init = 0.0)
             opt["pred_du"] = [expected_effect(ps, getindex.(dus, g)) for g in 1:n_groups]
             opt["pred_dh"] = [expected_effect(ps, getindex.(dhs, g)) for g in 1:n_groups]
             opt["pred_nha"] = [expected_effect(ps, getindex.(nhas, g)) for g in 1:n_groups]
@@ -861,15 +866,13 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         allowed = [i for i in 1:n_opts if !(@isdefined(env_b) && env_b[i])]
         if isempty(allowed)
             # Every option blocked: the environmental and irreparable blocks each measure against their own least
-            # option, and together they can exclude everything. Inaction has no default privilege (8.47); choose
-            # the option whose blocked harms exceed their leasts least, each excess relative to its least (scale at
-            # least 1), summed (8.127, author ruling 2026-11-08: trolley rules, fail loud). Loud.
-            excess(o) = (rule_env ? max(0.0, get(o, "_env_harm", 0.0) - env_least) / max(1.0, env_least) : 0.0) +
-                        (rule_irr ? max(0.0, irr_eq(o) - irr_least) / max(1.0, irr_least) : 0.0)
-            ex = [excess(o) for o in options]
-            cand = findall(x -> x <= minimum(ex) + 1e-12, ex)
+            # option, and together they can exclude everything. Inaction has no default privilege (8.47). Author
+            # ruling 8.127 (2026-11-08): trolley rules, loudly. The blocks no longer discriminate, so the choice is
+            # the least net expected harm (8.124), every harm counted in one unit (`_total_harm`); ties to value.
+            ex = [Float64(get(o, "_total_harm", 0.0)) for o in options]
+            cand = findall(x -> x <= minimum(ex) * (1 + 1e-9) + 1e-12, ex)
             chosen_idx = cand[argmax(opt_values[cand])]
-            degraded["every option blocked: least relative excess over the blocks' leasts chosen"] = 1
+            degraded["every option blocked: least net expected harm chosen (trolley rules, 8.127)"] = 1
         else
             chosen_idx = allowed[argmax(opt_values[allowed])]
             degraded["no option passes the floors: best-valued unblocked option chosen"] = 1

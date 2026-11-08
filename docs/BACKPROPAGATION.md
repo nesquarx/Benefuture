@@ -2818,3 +2818,9 @@ not habit. Jitter draws are added in batches of 20 until every option's share ha
 standard error of at most 0.02 (each draw a cluster of the rule battery's choices; at most 640 draws). Found
 on the FOMC E5 case, whose cut share moved 13 points between seeds at 40 draws. First results stay recorded;
 restated credences sit beside them (docs/E4_ROUND2.md, docs/E5_RUNS.md).
+
+8.127 built per the ruling (2026-11-08, Sri Lanka 2021 case): the first build weighed only the blocks'
+excesses, which left out harms neither block sees (the ban's yield collapse) and chose the ban. Read as the
+trolley ruling (8.124, net expected harm): when every option is blocked, the least net expected harm over all
+scenarios wins, in one unit (u and h losses in person-points plus deaths at baseline u + h), ties to value,
+loudly. Interpretation of "trolley rules" recorded for the author to confirm.

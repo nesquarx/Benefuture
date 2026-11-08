@@ -49,3 +49,24 @@ Credences were drawn from a habitual 40 jitter draws, and the FOMC case's cut sh
 - Rule battery: keep 69%, close oldest eight 25%, phase out 6%. Credence (80 draws): keep 76%, phase out 12.5%, close oldest eight 11%. No single-magnitude flips.
 - Defect found and fixed (same day, before this record): environmental health harm counted only understanding and happiness losses, not deaths, so the air-pollution deaths were invisible to the environmental block. Deaths now count at their group's baseline understanding plus happiness (a death takes both to zero). The result above is unchanged by the fix (same choice, battery and flips). Red test first (synthetic: environmental block alone, deaths without happiness loss).
 - Reading: the rules favour keeping the fleet on deaths, but the environmental block, as the case prices it, prefers the phase-out. That is the judged accident happiness loss doing the work. A nationwide lasting −0.5 is large (about 330 thousand death-equivalents in person-points); the magnitude stands as built.
+
+## Sri Lanka fertiliser import ban, April 2021 (case committed before replay)
+
+First result (8.127 fallback as first built; it stands):
+- Benefuture: ban imports now. Cell bad/agrees: it repeated the decision that went badly. F1–F4 false. All-blocked fallback: the environmental block's least option is the ban (least CKDu exposure if agrochemicals drive it), the irreparable block's least option is the phased transition, so everything is blocked and the ban had the least relative excess.
+- Baselines: status quo and mean welfare keep imports; minimum deaths phased; equal weight ban.
+- Rule battery: ban 75%, keep 25%. Credence (140 draws): ban 68%, keep 22%, phased 10%.
+
+Defect: the fallback weighed only the blocks' excesses, so harms that neither block sees, here the ban's expected yield collapse (farm happiness −3 at probability 0.8), were left out. The author's ruling on 8.127 was "trolley rules", and the trolley ruling (8.124) compares net expected harm. Fixed: when every option is blocked, the choice is the least net expected harm over all scenarios, in one unit (losses of understanding and happiness in person-points, plus deaths at their group's baseline understanding plus happiness); ties go to value. Loud. Red test first.
+
+## Round 2 under the corrected fallback (all first results above stand)
+
+| Case | Choice | Cell | Rule battery | Credence (draws) | Flips |
+|---|---|---|---|---|---|
+| UNAMIR 1994 | reinforce, compensated | bad/differs | reinforce 69% | reinforce 65%, keep 35% (60) | 2 |
+| Swine flu 1976 | vaccinate, compensated | bad/agrees | vaccinate 69% | vaccinate 75%, stockpile 25% (120) | 1 |
+| DDT 1972 | cancel, compensated | good/agrees | cancel 75% | phase down 37%, cancel 32%, keep 31% (320) | 4, all to phase down |
+| German nuclear 2011 | close oldest eight only | bad/differs | close eight 94% | keep 41%, close eight 38%, phase out 21% (540) | 7 |
+| Sri Lanka 2021 | keep imports | bad/differs | keep 94% | keep 62%, ban 30%, phased 7% (320) | 7 |
+
+Reading: DDT, German nuclear and Sri Lanka are contested (many single-magnitude flips; credence split), so none counts as a win. Swine flu repeats the bad decision on as-of base rates. Only UNAMIR is robust and right. The E5 suggestions are unchanged by the fix (`docs/E5_RUNS.md`).

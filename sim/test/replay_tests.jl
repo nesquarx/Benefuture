@@ -403,3 +403,13 @@ end
     end
     @test replay_decision(c).chosen_option != "keep_2010_extension"
 end
+
+@testset "Replay: when every option is blocked, trolley rules: least net expected harm, all harms counted (8.127)" begin
+    # Sri Lanka 2021: every option is blocked, and the overnight ban's expected yield collapse (farm happiness -3
+    # at 0.8) is neither environmental nor large in deaths, so weighing only the blocks' excesses chose the ban
+    # though its total expected harm is several times the phased transition's.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "sri_lanka_fertiliser_ban_2021.toml"))
+    r = replay_decision(c)
+    @test any(occursin("every option blocked", k) for k in keys(r.degraded))
+    @test replace(r.chosen_option, r"\+compensated$" => "") != "ban_imports_now"
+end
