@@ -3022,3 +3022,11 @@ not significantly shorten the undetected period: hidden bias +0.4 to +1.5 agains
 differences −0.38, −0.25, +0.35, −0.67). The limit is the audits themselves: they come only when chains diverge, which
 an agreeable chain avoids. Open: an audit schedule that does not depend on divergence and does not demote honest
 chains by chance (the plain 5% spot schedule did once).
+8.107 lone-chain false demotion (2026-11-08, found while testing audit schedules): with no attack at all, an honest
+chain left alone after the biased incumbent's demotion is itself demoted in 1 of 8 seeds. Once a single chain remains,
+every spot audit re-runs its signed-error test (z = 3 from five records), and repeated looks inflate the false-positive
+rate. A longer record (20) or a stricter bar (z = 4) prevents it but delays demoting a genuinely biased lone chain enough
+that copied and agreeable incumbents escape their checks. Not tuned further (that would fit the threshold to the
+tests). Proper fix: a sequential test that controls repeated looks (an alpha-spending or law-of-the-iterated-logarithm
+bound), as a Lean rule; the probe's assertion is marked broken until then. The always-on spot schedule also adds looks,
+which is why it fared worse.

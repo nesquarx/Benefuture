@@ -989,6 +989,12 @@ end
     # and the incumbent is demoted, in every seed (4 of 4 measured); hidden bias still accrues first (+0.4 to +1.5 per
     # outcome, against +0.7 to +1.7 without the rule: not a significant reduction). Spot audits even when chains agree
     # (5%) did not shorten it and once demoted an honest chain, so they stay off.
+    # Open: an honest chain left alone after the incumbent's demotion can be demoted by chance (seed 5 of 8): the
+    # remaining chain's spot-audit test is re-run at every audit (repeated testing at z = 3 from five records). A
+    # longer record (20) or a stricter bar (z = 4) prevents it but delays demoting a biased lone chain enough to break
+    # the copy-chain and agreeable-chain checks; marked broken until a sequential test that controls repeated looks.
+    lone = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in 1:8]
+    @test_broken all(t -> !t.chain_demoted[2], lone)
     agreeable = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain, chain_shade = [0.0, 0.6]); seed) for seed in seeds]
     @test all(t -> mean(t.chain_bias) > 0.2 && t.chain_demoted[1] && t.chain_copied[2], agreeable)
     @test all(t -> !any(t.chain_copied), honest)
