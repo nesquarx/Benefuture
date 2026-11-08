@@ -3057,3 +3057,12 @@ longer blocked by heavy drinkers' own deaths. Candidate homes: Freedom (chosen r
 learn, learning to learn to learn). Applied: the meta tier holds every meta level summed for now; how deeper levels
 weigh against shallower ones (each a further priority step, or compounding) is open within the ruling. Sure Start 1998's
 reading is unchanged until that weighting is set.
+8.131 continued (author, 2026-11-08): "the meta levels compound on a bell curve, certain meta levels are practical enough
+to implement and accelerate U acquisition and transmission, but after a certain number of levels it can get esoteric and
+abstract... Governed params, discovery needed." Built: Lean `meta_multiplier_ref` (export `bf_meta_multiplier`, Julia
+`meta_multiplier`): the meta tier's weight is multiplied by 1 + amp·exp(−(level − peak)²/(2·width²)); defaults set by
+reasoning before the re-read (amp 1, peak at level 2, teaching how to learn, width 1 level: 1.61 at level 1, 2.0 at 2,
+1.61 at 3, 1.01 at 5); options may declare `meta_level` (default 1, learning to learn). Re-read: Sure Start 1998 now
+chooses Sure Start (rule battery 94%; GCSE targets 88% before); Head Start, printing, NCLB, NSF, lead and school closures
+unchanged. Hindsight caution: the defaults were reasoned before running, but by a builder who knew Sure Start was the
+case they could flip. Governed: amp, peak, width, to be discovered (a battery sweep once a world produces meta levels).

@@ -128,3 +128,12 @@ function tiered_value(u::AbstractVector{<:Real}, h::AbstractVector{<:Real}, n::A
           floatarray(Float64.(u)), floatarray(Float64.(h)), floatarray(Float64.(n)),
           floatarray(Float64.(su)), floatarray(Float64.(sh)), floatarray(Float64.(sn)), α, β, γ, harm_wt, λ, qp, qm)
 end
+
+"""
+    meta_multiplier(level; amp = 1.0, peak = 2.0, width = 1.0)
+
+How much a meta level's understanding compounds (author, 2026-11-08, on 8.131; Lean `meta_multiplier_ref`): a bell curve
+over levels, peaking at practical meta levels and fading as they grow abstract. Governed; defaults are judgment.
+"""
+meta_multiplier(level::Real; amp::Real = 1.0, peak::Real = 2.0, width::Real = 1.0) =
+    ccall(sym(:bf_meta_multiplier), Float64, (Float64, Float64, Float64, Float64), Float64(level), Float64(amp), Float64(peak), Float64(width))

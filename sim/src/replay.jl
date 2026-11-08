@@ -840,6 +840,9 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                 us = haskey(opt, "u_tiers") ? Float64.(opt["u_tiers"][g]) : haskey(case_tiers, "u") ? Float64.(case_tiers["u"][g]) : (n_groups > 1 && g == g_low_u ? [0, 0, 0, 0, 1.0, 0] : [0, 0, 0, 1.0, 0, 0])
                 hs = haskey(opt, "h_tiers") ? Float64.(opt["h_tiers"][g]) : haskey(case_tiers, "h") ? Float64.(case_tiers["h"][g]) : (n_groups > 1 && g == g_low_h ? [0, 0, 0, 1.0, 0, 0] : [0, 0, 0, 0, 1.0, 0])
                 ns = haskey(opt, "n_tiers") ? Float64.(opt["n_tiers"]) : zeros(6)
+                # (8.131, author on meta levels) the meta tier compounds on a bell curve over levels; an option may
+                # declare the meta level of its understanding (`meta_level`, default 1: learning to learn)
+                us = copy(us); us[3] *= meta_multiplier(Float64(get(opt, "meta_level", 1.0)))
                 tiered_value(ddu .* us, ddh .* hs, ns; harm_wt = hw, α = bp.alpha, β = bp.beta, γ = bp.gamma,
                              λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
             else

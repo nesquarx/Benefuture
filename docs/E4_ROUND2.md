@@ -287,3 +287,10 @@ Heavy drinkers' own deaths are tagged as a freely chosen risk (harm, but outside
 deaths from violence and poisoned liquor are not. The freedom rule then blocks the national ban, and the choice is to
 leave liquor to the states (rule battery 100%; credence 90%, local option with high licence taxes 10%). The first
 result (national prohibition) stands above; the case stays unscored (outcome contested).
+
+### Sure Start 1998 under meta-level compounding (8.131, 2026-11-08)
+
+With the meta tier compounding on a bell curve over levels (author; defaults amp 1, peak level 2, width 1, learning to
+learn at level 1 weighted 1.61×), the choice becomes Sure Start early years (rule battery 94%), against GCSE targets
+(88%) with meta linear. The first reading stands above. Contrast tally unchanged in count (the tiers decided 3 of 6);
+the Sure Start case now decides for early years.

@@ -329,4 +329,12 @@ def tiered_value_ref (u h n : List Float) (alpha beta gamma haWt lambda qPlus qM
         (tiered_ref h tierScheduleH_ref lambda 1.0 qPlus qMinus)
         (tiered_ref n tierScheduleN_ref lambda 1.0 qPlus qMinus)
         alpha beta gamma haWt lambda qPlus qMinus
+/-- Meta levels compound on a bell curve (author, 2026-11-08, on 8.131): the meta tier's weight is multiplied by
+  `1 + amp * exp(-(level - peak)^2 / (2 * width^2))`; practical meta levels (learning to learn, teaching how to learn)
+  accelerate understanding's acquisition and transmission, deeper levels grow esoteric and the boost fades. `amp`,
+  `peak` and `width` are governed, to be discovered. -/
+def meta_multiplier_ref (level amp peak width : Float) : Float :=
+  if width <= 0.0 then 1.0
+  else 1.0 + amp * Float.exp (-((level - peak) * (level - peak)) / (2.0 * width * width))
+
 end BenefutureReference

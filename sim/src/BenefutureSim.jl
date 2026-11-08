@@ -8,7 +8,7 @@ the rules act on. Rules are checked against the test vectors in `spec/vectors/`.
 module BenefutureSim
 
 export phi, net_synergy, squashed_synergy
-export tiered_value, tier_schedules, run_programmes
+export tiered_value, tier_schedules, run_programmes, meta_multiplier
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_permissible
 export floor_quantile, g_choose
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value

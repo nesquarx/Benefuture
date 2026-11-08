@@ -80,6 +80,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_sequential_significant] def sequentialSignificant (mean sd : Float) (n n0 : USize) (z : Float) : UInt8 :=
   if sequential_significant_ref mean sd n.toNat n0.toNat z then 1 else 0
 
+@[export bf_meta_multiplier] def metaMultiplier (level amp peak width : Float) : Float :=
+  meta_multiplier_ref level amp peak width
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 
