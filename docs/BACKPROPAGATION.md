@@ -3038,3 +3038,11 @@ each look. Wired into the lone-chain spot-audit test. With it and spot audits ra
 demoted in 8 of 8 (mean hidden bias 0.95), copied chains' incumbents in 8 of 8; the domain probe's audit budget stays
 under 16% of outcomes. At 5% with the sequential bar an agreeable incumbent survived one of 3 runs: a test that
 controls repeated looks buys detection with more audits rather than a lower bar. M3c tests pass.
+
+8.121 surprisingly popular check, not built (2026-11-08, parsimony): the candidate minority-expertise detector (Prelec,
+Seung and McCoy 2017, Nature: pick the answer more popular than voters predict it will be) addresses majorities that
+share a misconception while a minority knows better. M5 already handles that case through records: under sparse
+specialists with correlated misconceptions (8.90 probe) expertise weighting and liquid delegation keep accuracy at 0.88
+or above while equal weighting is capped near 0.75. Its remaining niche is a cold-start domain with no records, where it
+needs only voters' predictions of others' votes; it stays a candidate for that case, to be built when a domain-entry
+probe shows a cold-start failure that records cannot yet correct.
