@@ -187,6 +187,9 @@ function run_m5(p::M5Params; seed)
     # than independent noise allows (Lean `copies_ref`) is one judgment counted twice, and the later voter's ballot is
     # folded into the earlier one (counted once).
     pair_d = Dict{Tuple{Int,Int},Vector{Float64}}(); folded = falses(size(p.skills, 1)); folds = Ref(0)
+    # Shared errors on known outcomes (8.121): per pair, outcomes where both erred and where either erred.
+    co_both = zeros(Int, size(p.skills, 1), size(p.skills, 1)); co_either = zeros(Int, size(p.skills, 1), size(p.skills, 1))
+    wrong_k = falses(size(p.skills, 1)); seen_k = falses(size(p.skills, 1))
     tally_apparent, tally_hidden = [0, 0], [0, 0]  # (correct, decided)
     # Votes are outputs (author ruling 8.29): reputation moves with each apparent decision, and
     # each agent's recent apparent votes per domain are its audited record (L114).
@@ -373,26 +376,6 @@ function run_m5(p::M5Params; seed)
         cal_k(i) = (x = cal_rec[i]; length(x) < 5 ? 0.5 : clamp(sum(a * b for (a, b) in x) / max(1e-9, sum(a^2 for (a, _) in x)), 0.0, 2.0))
         ballot_w(i) = p.ballot == :vote ? vote(i) : p.ballot == :credence_stated ? stated(i) : cal_k(i) * stated(i)
         bw(i) = p.ballot == :vote ? held[i] * vote(i) : cfd_ballot_weight(held[i], p.ballot == :credence_stated ? 1.0 : cal_k(i), stated(i))
-        if p.dedupe && p.ballot != :vote
-            # Outputs only (Benefuture reads ballots, not minds): stated credences; deliberation correlates honest
-            # ballots too, so "far closer than independent" is judged against the typical pair: a pair's variance of
-            # differences below a fifth of the median pair's is one judgment counted twice.
-            for i in 1:na, j in (i + 1):na
-                (folded[i] || folded[j]) && continue
-                d = get!(pair_d, (i, j), Float64[])
-                push!(d, stated(j) - stated(i)); length(d) > 40 && popfirst!(d)
-            end
-            if n % 10 == 0 && n >= 20
-                live = [d for ((i, j), d) in pair_d if length(d) >= 20 && !folded[i] && !folded[j]]
-                if !isempty(live)
-                    med = median(var.(live))
-                    for ((i, j), d) in pair_d
-                        (folded[i] || folded[j] || length(d) < 20) && continue
-                        copies(d; min_n = 20, below = 0.2 * med) && (folded[j] = true; folds[] += 1)
-                    end
-                end
-            end
-        end
         tally = tag_tally === nothing || p.ballot != :vote ? sum((bw(i) for i in 1:na if !delegated[i] && !folded[i]); init = 0.0) : tag_tally
         correct += sign(tally) == sign(truth)
         push!(correct_trace, sign(tally) == sign(truth))
@@ -433,6 +416,27 @@ function run_m5(p::M5Params; seed)
                 delegated[i] && continue
                 record_vote!(i, k, vote(i) == sign(truth), held[i], total)
                 p.ballot == :vote || push!(cal_rec[i], (stated(i) / 10, sign(truth)))   # calibration record (8.121), log-odds scaled
+                p.dedupe && p.ballot != :vote && (wrong_k[i] = sign(stated(i)) != sign(truth); seen_k[i] = true)
+            end
+            if p.dedupe && p.ballot != :vote
+                # Shared errors on this known outcome; every tenth decision, a pair erring together far more than the
+                # typical pair (Lean `coerror_copy_ref`) is one judgment counted twice: the later ballot is folded.
+                for i in 1:na, j in (i + 1):na
+                    (seen_k[i] && seen_k[j]) || continue
+                    (wrong_k[i] || wrong_k[j]) && (co_either[i, j] += 1)
+                    (wrong_k[i] && wrong_k[j]) && (co_both[i, j] += 1)
+                end
+                fill!(seen_k, false); fill!(wrong_k, false)
+                if n % 10 == 0
+                    shares = [co_both[i, j] / co_either[i, j] for i in 1:na for j in (i + 1):na if co_either[i, j] >= 10]
+                    if !isempty(shares)
+                        med = median(shares)
+                        for i in 1:na, j in (i + 1):na
+                            (folded[i] || folded[j]) && continue
+                            coerror_copy(co_both[i, j], co_either[i, j]; med_share = med) && (folded[j] = true; folds[] += 1)
+                        end
+                    end
+                end
             end
             if p.deliberation
                 for i in 1:na  # source tracking: what each person published, its own reading

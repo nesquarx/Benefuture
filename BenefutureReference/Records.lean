@@ -288,4 +288,11 @@ def copies_ref (diffs : Array Float) (minN : Nat) (below : Float) : Bool := Id.r
   let ss := diffs.foldl (fun a x => a + (x - mean) * (x - mean)) 0.0
   return ss / (n.toFloat - 1.0) < below
 
+/-- Copied judgments err together (8.121): of the known outcomes where either of a pair erred (`either`, at least
+  `minEither`), the share where both erred (`both`) is near one for a copy; honest voters, even deliberating together,
+  share errors far less often. A pair is one judgment counted twice when its share is at least `floorShare` and
+  exceeds the typical pair's share (`medShare`) by `margin`. -/
+def coerror_copy_ref (both either minEither medShare floorShare margin : Float) : Bool :=
+  either >= minEither && either > 0.0 && both / either >= floorShare && both / either >= medShare + margin
+
 end BenefutureReference

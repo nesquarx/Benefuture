@@ -500,6 +500,11 @@ cfd_ballot_weight(vw, calibration, logodds; cap = 10.0) =
 copies(diffs; min_n::Integer = 20, below::Real = 0.2) =
     ccall(sym(:bf_copies), UInt8, (Ptr{Cvoid}, Csize_t, Float64), floatarray(Float64.(diffs)), Csize_t(min_n), Float64(below)) == 1
 
+"Copied judgments err together: shared-error share near one and above the typical pair's (Lean `coerror_copy_ref`; 8.121)."
+coerror_copy(both, either; min_either::Real = 10, med_share::Real = 0.0, floor_share::Real = 0.9, margin::Real = 0.3) =
+    ccall(sym(:bf_coerror_copy), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
+          Float64(both), Float64(either), Float64(min_either), Float64(med_share), Float64(floor_share), Float64(margin)) == 1
+
 "Policy-level irreparable harm blocks an option beyond the least among the options (Lean `irreparable_blocked_ref`; author ruling 8.124)."
 irreparable_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
     ccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1

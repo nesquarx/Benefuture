@@ -1362,6 +1362,7 @@ ratified.
 | Window of other actors' errors an AdvAp audit compares with (hardcoded, `sim/src/m3c.jl`) | – | max(`track_window`, 20) | L160; 8.38 |
 | Priority tier schedules (U, H, N; six tiers each) | 0.8, 0.6, 0.4, 0.25, 0.15, 0.05; novelty trivial 0 | 8.129 (governed; may be governed per domain, `tiered_value(...; su, sh, sn)`); L57–L60; Lean `tierScheduleU_ref`, `tierScheduleH_ref`, `tierScheduleN_ref` (canonical `defaultSchedule`) |
 | Copy detection: variance of standardised differences below which a pair is one source (chains: 0.2 of independent noise over ≥ 20 readings; ballots: 0.2 of the median pair, over ≥ 20, off by default) | 0.2 | 8.111, 8.121; Lean `copies_ref` |
+| Shared-error copy detection for ballots: share of shared errors among outcomes where either erred (floor; margin over the median pair; minimum outcomes) | 0.9; 0.3; 10 | 8.121; Lean `coerror_copy_ref` |
 
 ### Ghost audit
 

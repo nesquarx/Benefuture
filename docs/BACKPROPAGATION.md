@@ -2984,3 +2984,15 @@ together on apparent outcomes beyond what deliberation explains (residual correl
 own record), or agree before deliberation (if pre-deliberation outputs are published). Candidate homes: Government
 (voting), L114. The calibration record already partly handles the attack (copiers inherit the leader's mediocre
 record).
+
+8.121 correlated ballots, resolved (2026-11-08): copies err together. A new Lean rule, `coerror_copy_ref` (export
+`bf_coerror_copy`, Julia `coerror_copy`): of the known outcomes where either of a pair erred (at least 10), a pair whose
+share of shared errors is at least 0.9 and exceeds the typical pair's by 0.3 is one judgment counted twice, and the later
+ballot is folded. Probe (6 paired seeds, 800 decisions, calibrated credence ballots, a bloc of 30% of top experts
+copying a mediocre voter): copies counted as independent 0.934, counted once 0.965 (z ≥ 2); with no copiers, detection
+on and off both 0.983 (equivalent within 0.5 points). Honest voters, even deliberating together, err together far less
+than copies do, which the output-only test of variance could not see. Detection (`dedupe`) stays off by default until
+the full suite runs with it on. Governed: shared-error floor 0.9, margin over the median pair 0.3, at least 10
+outcomes. Gaming: a bloc that injects independent noise into its copies to spread its errors also spreads its votes,
+which is no longer copying; a bloc that copies only on decisions that stay hidden is AdvAp's case (8.38), and its
+known-outcome record stays honest.
