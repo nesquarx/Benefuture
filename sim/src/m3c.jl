@@ -215,6 +215,10 @@ struct M3cParams
     # holds the sum of both balances (debts included), ledgers, relevance, allowance and capacity, and both records; the
     # absorbed identity goes dormant. Naive: the absorbed identity's negative ledger and debts are dropped (the exploit).
     merges::Vector{Tuple{Int,Int,Int}}
+    # Resource-accounting contraction (8.71 (2), L83): a stall is a society that overpromised and cannot shrink back. With
+    # `ra_rate` > 0, each step in which more StandCoin work halts unfunded than executes, baseline resource prices shrink by
+    # that share (deflation absorbs the hit); otherwise they recover toward 1 at the same rate. Governed (0: off).
+    ra_rate::Float64
 end
 
 """
@@ -257,7 +261,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[])
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -314,6 +318,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "forks: step ≥ 1, parent and slot distinct agents, share in (0, 1); rule :split or :naive")
     check(all(m -> m[1] >= 1 && 1 <= m[2] <= length(agents) && 1 <= m[3] <= length(agents) && m[2] != m[3], merges),
           "merges: step ≥ 1, absorbed and target distinct agents")
+    check(isfinite(ra_rate) && 0 <= ra_rate < 1, "contraction rate in [0, 1)")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -338,7 +343,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges))
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -805,6 +810,7 @@ function run_m3c(p::M3cParams; seed)
     # Blocked proposals, logged as classification evidence (L88, L145).
     evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
     available = p.capacity
+    price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
@@ -1253,7 +1259,8 @@ function run_m3c(p::M3cParams; seed)
             end
         end
         priced = [price_shares(st) for st in stops]
-        unit_cost = scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
+        unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
+        halted0, executed0 = lane.halted[], lane.executed[]
         costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
                  for (j, plan) in enumerate(plans)]
         menu, menu_preds, offers, lane_queue = Int[], ToyPlan[], Dict{Int,Vector{Tuple{Int,Float64,ToyPlan,Float64}}}(), Int[]
@@ -1677,6 +1684,14 @@ function run_m3c(p::M3cParams; seed)
         end
         empty!(repairs)
         available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
+        if p.ra_rate > 0
+            if lane.halted[] - halted0 > lane.executed[] - executed0
+                price_scale[] *= 1 - p.ra_rate
+                degrade!("resource prices", "contracted baseline pricing", "StandCoin work halting unfunded (8.71)")
+            else
+                price_scale[] = min(1.0, price_scale[] / (1 - p.ra_rate))
+            end
+        end
         # Formation of novel leaves from clustered blockages; then memory is reclassified.
         formed = false
         for k in sort(collect(keys(buffers)))
