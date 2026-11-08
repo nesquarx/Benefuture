@@ -3144,3 +3144,10 @@ parent's qualified models: `fallback_network_ref` moves an ineligible leaf's sha
 credence: the record credence (8.71 default) prices with the backing model's record. (4) StandCoin last, logged loudly
 ("domain currency → StandCoin lane"). Not built: several qualified models of one domain each backing a currency at once
 (quotes composed as L86 composes currencies); M3c lets one model back each leaf.
+8.71 (2) RA contraction, first reading (2026-11-08): built as `ra_rate` in M3c (each step in which more StandCoin work
+halts unfunded than executes, baseline resource prices shrink by that share, recovering otherwise; logged loudly). On the
+heavy-side-harm stall world under the normal credence (8 seeds): stalled 6/8 without, 7/8 with `ra_rate` 0.05; floor of
+understanding 115.8 → 107.2. Price contraction alone does not absorb the stall: halts come from depleted StandCoin balances,
+and cheaper resources do not refill them. Recorded as is, option off by default. Open for the author: what else RA should
+shrink (the ruling names baseline pricing, the commons and overall resource spending; the commons and spending sides, e.g.
+lane budgets or commons draws, are not built), and whether the record credence (which removes this stall, 0/8) settles it.
