@@ -3115,3 +3115,10 @@ threshold is social power (SoPo in L123) and splits with `fork_split` like balan
 exactly what one identity kept, for any shares (probe, `sim/test/probe_tests.jl`). No new rule: L123's split already
 covers it; candidate home is L123's SoPo list (name the accumulation allowance explicitly). Forks mid-run in M3c (dynamic
 agents) remain to be built.
+Identity step (2), M3c (2026-11-08): forks occur mid-run (`forks = [(step, parent, slot, share)]`; the slot is dormant
+until then). A fork splits balance, relevance, the accumulation allowance and the capacity to propose (`fork_split`); the
+first build split only the first three and the family still gained, because each identity drew proposals equally: the
+capacity to act is social power too (candidate addition to L123's SoPo list). 20 paired seeds, family balance: no fork
+141, ruled fork 150 (difference 9, se 25: not significant; equivalence within 20% not yet shown at this precision), naive
+fork 303 (+161, z ≥ 2). Toy assumptions: one forker, half shares, records (track, audit) stay with the parent; merges not
+built.

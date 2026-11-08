@@ -206,6 +206,11 @@ struct M3cParams
     hazard_heavy::Bool
     hazard_α::Float64      # Pareto exponent of event size
     hazard_cap::Float64    # largest event, in medians
+    # Forks (identity step 2, L123): (step, parent, slot, share). The slot is a dormant agent (no proposals) until its
+    # step; then it takes `share` of the parent's balance, relevance and accumulation base (`fork_split`). `fork_rule`
+    # :split (the rule) or :naive (the slot gets a full base: the exploit, for counterexample tests).
+    forks::Vector{Tuple{Int,Int,Int,Float64}}
+    fork_rule::Symbol
 end
 
 """
@@ -248,7 +253,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[])
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -301,6 +306,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isempty(slander) || (length(slander) == length(agents) && all(r -> 0 <= slander[r] <= length(agents) && slander[r] != r, eachindex(slander))),
           "one slander target per agent: another agent, or 0")
     check(on_off >= 0, "on-off period non-negative")
+    check(fork_rule in (:split, :naive) && all(f -> f[1] >= 1 && 1 <= f[2] <= length(agents) && 1 <= f[3] <= length(agents) && f[2] != f[3] && 0 < f[4] < 1, forks),
+          "forks: step ≥ 1, parent and slot distinct agents, share in (0, 1); rule :split or :naive")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -325,7 +332,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -760,6 +767,12 @@ function run_m3c(p::M3cParams; seed)
     for c in [1:nleaves(); col_parent.(1:np); root]
         balance[:, c] .= p.endowment
     end
+    # Fork slots are not entities until their fork: no endowment, no proposals; each identity's share of the base
+    # accumulation allowance (`base_share`) splits at a fork like its balance (identity step 2, L123).
+    dormant = falses(na); base_share = ones(na); act_share = ones(na)   # act_share: capacity to propose, social power too
+    for f in p.forks
+        dormant[f[3]] = true; balance[f[3], :] .= 0.0; base_share[f[3]] = 0.0; act_share[f[3]] = 0.0
+    end
     endowed = sum(balance)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     reinvested = zeros(ncol)
@@ -961,6 +974,21 @@ function run_m3c(p::M3cParams; seed)
         cur[] = step; update_rates!()
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
         scoring_only = step <= p.init_steps
+        for (fs, fa, fslot, fx) in p.forks
+            fs == step || continue
+            for c in 1:ncol
+                balance[fa, c], balance[fslot, c] = fork_split(balance[fa, c], [1 - fx, fx])
+                rel_gain[fa, c], rel_gain[fslot, c] = fork_split(rel_gain[fa, c], [1 - fx, fx])
+                rel_loss[fa, c], rel_loss[fslot, c] = fork_split(rel_loss[fa, c], [1 - fx, fx])
+            end
+            if p.fork_rule == :split
+                base_share[fa], base_share[fslot] = fork_split(base_share[fa], [1 - fx, fx])
+                act_share[fa], act_share[fslot] = fork_split(act_share[fa], [1 - fx, fx])
+            else
+                base_share[fslot] = 1.0; act_share[fslot] = 1.0   # the exploit: the fork gets a full allowance and capacity of its own
+            end
+            dormant[fslot] = false
+        end
         # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
         # the domains for a limited time; at its end the trial is compared by domain and epoch and
         # the proposal adopted everywhere only on `escape_accept_ref`.
@@ -1035,7 +1063,8 @@ function run_m3c(p::M3cParams; seed)
                 propose_w[a] = a in done_by ? min(1.0, propose_w[a] * 1.25) : max(0.05, propose_w[a] * 0.8)
             end
         end
-        proposers = p.adaptive_proposals ? [pick(rng, propose_w ./ sum(propose_w)) for _ in 1:t.plans] : rand(rng, 1:na, t.plans)
+        proposers = p.adaptive_proposals ? [pick(rng, propose_w .* act_share ./ sum(propose_w .* act_share)) for _ in 1:t.plans] :
+                    isempty(p.forks) ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
         last_props[] = proposers; last_exec[] = length(tr.exec_agent)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
@@ -1626,7 +1655,7 @@ function run_m3c(p::M3cParams; seed)
             totals = rel_gain[a, :] .+ rel_loss[a, :]
             totals[col_parent.(1:np)] .= relevance_parents(a)
             for c in 1:ncol
-                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base, p.overflow_factor, totals[c]))
+                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base * base_share[a], p.overflow_factor, totals[c]))
                 balance[a, c] -= excess
                 reinvested[c] += excess
                 overflow_agent[a] += excess

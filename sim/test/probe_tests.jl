@@ -1237,3 +1237,22 @@ end
     sh = [0.7, 0.2, 0.1]; b = fork_split(bal, sh); ths = fork_split(th, sh)
     @test sum(b[i] - overflow(b[i], ths[i]) for i in 1:3) ≈ kept1 atol = 1e-9
 end
+
+@testset "Probe: a mid-run fork in M3c gains its family far less under the split rule than the naive one (identity step 2, L123)" begin
+    # Gaming: a skilled agent forks (half to a dormant slot at step 10) to win a second accumulation allowance and a second
+    # share of proposals. Hypothesis, stated before measuring: under the naive rule (the fork gets a full allowance and
+    # capacity) the family's balance rises (effect, z = 2); under the rule (balance, relevance, allowance and capacity split
+    # by `fork_split`) the gain is significantly smaller than the naive one. 20 paired seeds.
+    ag = [DomainAgent([k == l ? (k == 1 && r == 1 ? 0.9 : 0.3) : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    ag = [ag; ag[1]]
+    P(f, rule) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                           overflow_base = 20.0, forks = [(f, 1, 9, 0.5)], fork_rule = rule)
+    fam(tr) = sum(tr.balance[1, :]) + sum(tr.balance[9, :])
+    S = 1:20
+    none = [fam(run_m3c(P(81, :split); seed = s)) for s in S]   # fork after the run ends: never forks
+    sp = [fam(run_m3c(P(10, :split); seed = s)) for s in S]
+    nv = [fam(run_m3c(P(10, :naive); seed = s)) for s in S]
+    @test paired_effect(nv .- none).significant && mean(nv .- none) > 0
+    @test paired_effect(nv .- sp).significant && mean(nv .- sp) > 0
+    @test_throws ArgumentError P(10, :maybe)
+end
