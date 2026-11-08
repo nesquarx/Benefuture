@@ -371,3 +371,21 @@ end
     for sc in o["scenarios"]; haskey(sc, "du") && (sc["du"] = [-0.3, 0.0]); end       # remote keeping 90% of instruction
     @test replace(replay_decision(c).chosen_option, r"\+compensated$" => "") == "close_with_remote_learning"
 end
+
+@testset "Replay: when the blocks exclude every option, the least-excess option is chosen, never inaction by default" begin
+    # DDT 1972 with the phase-down's residual harm halved: the environmental block (least: phase-down) excludes
+    # cancellation, the irreparable block (least: cancellation) excludes the phase-down, and both exclude keeping
+    # DDT. Keeping it, blocked under both, must not win by default (8.47, 8.124).
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "ddt_ban_1972.toml"))
+    c["options"][3]["scenarios"][1]["dh"] = [-0.00175, 0.0]
+    r = replay_decision(c)
+    @test r.chosen_option != "keep_registration"
+    @test any(occursin("every option blocked", k) for k in keys(r.degraded))
+end
+
+@testset "Replay: credences are stable to the seed (draws by precision, not habit)" begin
+    # FOMC January 2027 is a near tie; with a habitual 40 draws the cut share moved 13 points between seeds 1 and 2.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "fomc_january_2027.toml"))
+    a = replay_credence(c; seed = 1); b = replay_credence(c; seed = 2)
+    @test all(abs(get(a, k, 0.0) - get(b, k, 0.0)) <= 0.06 for k in union(keys(a), keys(b)))
+end

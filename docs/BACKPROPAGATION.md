@@ -2802,3 +2802,17 @@ Sixth replay (not out of sample): school closures 2020 is a close call, as it sh
 learning in 9 of 16 rule sets and keep open in 7; credence keep open 44%, close with remote learning 37%,
 three-week closure 18%; Volcker back to reserve targeting (held-out 5 of 5). Candidate homes: Understanding
 (irreparability), Harm (irreparable kinds), Freedom.
+
+8.127 [P] (2026-11-08, E4 round 2 DDT case): the environmental block (8.118) and the irreparable block (8.124)
+each measure against their own least option, so together they can exclude every option. The replay then chose
+inaction by default, even where inaction was blocked under both. Proposal: when every option is blocked, choose
+the option whose blocked harms exceed their leasts least, each excess relative to its least (scale at least 1),
+summed; ties go to value. Grounds: inaction has no default privilege (8.47), and 8.124's fallback already picks
+among the least-blocked. Candidate homes: the pseudocode's G fallback line; the Governance article. Open for
+the author: whether the two excesses should be weighed alike, or the irreparable one first (lexicographic).
+
+8.128 (2026-11-08, method; follows CLAUDE.md, significance testing): replay credences are drawn by precision,
+not habit. Jitter draws are added in batches of 20 until every option's share has a Student-t-inflated
+standard error of at most 0.02 (each draw a cluster of the rule battery's choices; at most 640 draws). Found
+on the FOMC E5 case, whose cut share moved 13 points between seeds at 40 draws. First results stay recorded;
+restated credences sit beside them (docs/E4_ROUND2.md, docs/E5_RUNS.md).

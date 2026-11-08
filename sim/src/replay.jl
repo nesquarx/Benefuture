@@ -854,8 +854,21 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # Nothing passes the floors: choose the best-valued option that is not blocked (8.118, 8.124), loudly;
         # inaction only if it is not blocked itself (a blocked inaction is informed allowing, 8.47).
         allowed = [i for i in 1:n_opts if !(@isdefined(env_b) && env_b[i])]
-        chosen_idx = isempty(allowed) ? idle_idx : allowed[argmax(opt_values[allowed])]
-        degraded["no option passes the floors: best-valued unblocked option chosen"] = 1
+        if isempty(allowed)
+            # Every option blocked: the environmental and irreparable blocks each measure against their own least
+            # option, and together they can exclude everything. Inaction has no default privilege (8.47); choose
+            # the option whose blocked harms exceed their leasts least, each excess relative to its least (scale at
+            # least 1), summed ([P], E4 round 2 DDT case, 2026-11-08). Loud.
+            excess(o) = (rule_env ? max(0.0, get(o, "_env_harm", 0.0) - env_least) / max(1.0, env_least) : 0.0) +
+                        (rule_irr ? max(0.0, irr_eq(o) - irr_least) / max(1.0, irr_least) : 0.0)
+            ex = [excess(o) for o in options]
+            cand = findall(x -> x <= minimum(ex) + 1e-12, ex)
+            chosen_idx = cand[argmax(opt_values[cand])]
+            degraded["every option blocked: least relative excess over the blocks' leasts chosen"] = 1
+        else
+            chosen_idx = allowed[argmax(opt_values[allowed])]
+            degraded["no option passes the floors: best-valued unblocked option chosen"] = 1
+        end
     end
 
     chosen_opt = options[chosen_idx]
@@ -995,20 +1008,51 @@ or doubling is two standard deviations), each draw replayed under all 13 rule se
 and the share of the draws × rule sets choosing each option returned (compensated variants read as their
 reform). The as-of event rates are not jittered (they come from records, not judgment).
 """
-function replay_credence(case_dict::AbstractDict; draws::Integer = 40, σ::Real = log(2) / 2, seed::Integer = 1)
+function replay_credence(case_dict::AbstractDict; draws::Union{Nothing,Integer} = nothing, σ::Real = log(2) / 2, seed::Integer = 1,
+                         tol::Real = 0.02, batch::Integer = 20, max_draws::Integer = 640)
+    replay_credence_stats(case_dict; draws, σ, seed, tol, batch, max_draws).shares
+end
+
+"""
+    replay_credence_stats(case; draws = nothing, tol = 0.02, ...) -> (shares, draws, se, stable)
+
+Credence by precision (CLAUDE.md: seeds by precision, not habit): jitter draws are added in batches until every
+option's share has a Student-t-inflated standard error, taken over draws (each draw a cluster of the rule
+battery's choices), at most `tol`, or `max_draws` is reached (then `stable = false`, loudly by the caller).
+A fixed `draws` overrides.
+"""
+function replay_credence_stats(case_dict::AbstractDict; draws::Union{Nothing,Integer} = nothing, σ::Real = log(2) / 2,
+                               seed::Integer = 1, tol::Real = 0.02, batch::Integer = 20, max_draws::Integer = 640)
     rng = Xoshiro(seed)
-    counts = Dict{String,Int}(); total = 0
-    for _ in 1:draws
+    per = Dict{String,Int}[]
+    limit = draws === nothing ? max_draws : draws
+    se = Inf; stable = false
+    while length(per) < limit
         c = deepcopy(case_dict)
         for opt in c["options"], sc in get(opt, "scenarios", []), key in ("du", "dh", "nha", "irreparable")
             haskey(sc, key) || continue
             sc[key] = [Float64(x) * exp(σ * randn(rng)) for x in sc[key]]
         end
+        d = Dict{String,Int}()
         for x in replay_rule_battery(c).choices
-            counts[x] = get(counts, x, 0) + 1; total += 1
+            d[x] = get(d, x, 0) + 1
+        end
+        push!(per, d)
+        n = length(per)
+        if draws === nothing && n >= batch && n % batch == 0
+            ks = union((keys(x) for x in per)...)
+            m = sum(sum(values(x)) for x in per) / n
+            se = maximum(std([get(x, k, 0) / m for x in per]) / sqrt(n) for k in ks)
+            stable = se * t_inflation(n - 1) <= tol
+            stable && break
         end
     end
-    Dict(k => v / total for (k, v) in counts)
+    total = sum(sum(values(x)) for x in per)
+    counts = Dict{String,Int}()
+    for x in per, (k, v) in x
+        counts[k] = get(counts, k, 0) + v
+    end
+    (shares = Dict(k => v / total for (k, v) in counts), draws = length(per), se = se, stable = draws !== nothing || stable)
 end
 
 """
