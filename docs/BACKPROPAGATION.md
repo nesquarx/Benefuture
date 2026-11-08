@@ -3122,3 +3122,8 @@ capacity to act is social power too (candidate addition to L123's SoPo list). 20
 141, ruled fork 150 (difference 9, se 25: not significant; equivalence within 20% not yet shown at this precision), naive
 fork 303 (+161, z ≥ 2). Toy assumptions: one forker, half shares, records (track, audit) stay with the parent; merges not
 built.
+Identity step (2), records (2026-11-08): at a fork the reputation ledgers split by `fork_split` and each recorded error
+(track records, value errors, unaudited audit-log entries) goes to the fork with chance `share`, else stays: a partition,
+so the family holds one record. Audited entries stay with the parent, settled. Probe: forking on the last step, a copied
+record leaves the family about twice the parent's positive ledger; the partition leaves it within 25% (post-fork activity
+on that step moves it). Merges not built.

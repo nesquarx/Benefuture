@@ -769,6 +769,7 @@ function run_m3c(p::M3cParams; seed)
     end
     # Fork slots are not entities until their fork: no endowment, no proposals; each identity's share of the base
     # accumulation allowance (`base_share`) splits at a fork like its balance (identity step 2, L123).
+    frng = Xoshiro(hash((seed, :fork))); fork_records = Ref(0)
     dormant = falses(na); base_share = ones(na); act_share = ones(na)   # act_share: capacity to propose, social power too
     for f in p.forks
         dormant[f[3]] = true; balance[f[3], :] .= 0.0; base_share[f[3]] = 0.0; act_share[f[3]] = 0.0
@@ -981,6 +982,36 @@ function run_m3c(p::M3cParams; seed)
                 rel_gain[fa, c], rel_gain[fslot, c] = fork_split(rel_gain[fa, c], [1 - fx, fx])
                 rel_loss[fa, c], rel_loss[fslot, c] = fork_split(rel_loss[fa, c], [1 - fx, fx])
             end
+            # Records (reputation, L123 Re): the ledgers split by `fork_split`; each recorded error (track, audit log, value
+            # errors) goes to the fork with chance `share`, else stays: a partition, so the family holds one record, not two.
+            # Naive: the fork copies all of it (a doubled reputation, the exploit).
+            for c in 1:ncol
+                if p.fork_rule == :split
+                    h_pos[fa, c], h_pos[fslot, c] = fork_split(h_pos[fa, c], [1 - fx, fx])
+                    h_neg[fa, c], h_neg[fslot, c] = fork_split(h_neg[fa, c], [1 - fx, fx])
+                else
+                    h_pos[fslot, c] = h_pos[fa, c]; h_neg[fslot, c] = h_neg[fa, c]
+                end
+            end
+            if p.fork_rule == :split
+                for (mdl, v) in collect(track[fa])
+                    go = [rand(frng) < fx for _ in v]; st = track_step[fa][mdl]
+                    track[fslot][mdl] = v[go]; track_step[fslot][mdl] = st[go]
+                    track[fa][mdl] = v[.!go]; track_step[fa][mdl] = st[.!go]
+                end
+                go = [rand(frng) < fx for _ in actor_err[fa]]
+                actor_err[fslot] = actor_err[fa][go]; actor_err_step[fslot] = actor_err_step[fa][go]
+                actor_err[fa] = actor_err[fa][.!go]; actor_err_step[fa] = actor_err_step[fa][.!go]
+                done = audit_log[fa][1:(audit_from[fa] - 1)]; open_ = audit_log[fa][audit_from[fa]:end]   # audited entries stay settled
+                go = [rand(frng) < fx for _ in open_]
+                audit_log[fslot] = open_[go]; audit_from[fslot] = 1
+                audit_log[fa] = [done; open_[.!go]]
+            else
+                track[fslot] = deepcopy(track[fa]); track_step[fslot] = deepcopy(track_step[fa])
+                actor_err[fslot] = copy(actor_err[fa]); actor_err_step[fslot] = copy(actor_err_step[fa])
+                audit_log[fslot] = copy(audit_log[fa])
+            end
+            fork_records[] += 1
             if p.fork_rule == :split
                 base_share[fa], base_share[fslot] = fork_split(base_share[fa], [1 - fx, fx])
                 act_share[fa], act_share[fslot] = fork_split(act_share[fa], [1 - fx, fx])

@@ -1256,3 +1256,20 @@ end
     @test paired_effect(nv .- sp).significant && mean(nv .- sp) > 0
     @test_throws ArgumentError P(10, :maybe)
 end
+
+@testset "Probe: a fork divides its record, never doubles it (identity step 2, L123 Re)" begin
+    # Gaming: forking to double a reputation. Fork on the last step, so the family's ledgers are the parent's record.
+    # Counterexample: copying the record (naive) leaves the family with about twice the positive ledger. Acceptance: under
+    # the rule (ledgers by `fork_split`, recorded errors partitioned) the family holds what the parent alone held.
+    ag = [DomainAgent([k == l ? (k == 1 && r == 1 ? 0.9 : 0.3) : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    ag = [ag; ag[1]]
+    P(f, rule) = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                           forks = [(f, 1, 9, 0.5)], fork_rule = rule)
+    led(tr) = sum(tr.h_pos_own[1, :]) + sum(tr.h_pos_own[9, :])
+    for s in 1:3
+        none, sp, nv = led(run_m3c(P(61, :split); seed = s)), led(run_m3c(P(60, :split); seed = s)), led(run_m3c(P(60, :naive); seed = s))
+        none > 0 || continue
+        @test nv > 1.5 * none
+        @test isapprox(sp, none; rtol = 0.25)
+    end
+end
