@@ -660,6 +660,10 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                 for ev in sc["p_chain"]
                     haskey(events, ev) || throw(ArgumentError("case $(case_dict["id"]): event $ev has no as-of records"))
                     k, n = events[ev]
+                    # Trials that would have entered the record had they gone the other way (fizzled outbreaks,
+                    # quiet successes), declared by the case with sources, count as non-occurrences: the record of
+                    # occurrences alone inflates the rate (found on swine flu 1976).
+                    n += Int(get(get(case_dict, "unrecorded_trials", Dict{String,Any}()), ev, 0))
                     p_s *= event_rate(k, n)
                 end
                 get(sc, "complement", false) && (p_s = max(0.0, 1.0 - sum(ps)))   # the remaining mass (the nominal outcome)

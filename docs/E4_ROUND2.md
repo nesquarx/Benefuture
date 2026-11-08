@@ -250,3 +250,16 @@ Read on fresh loads (after the mutation fix):
 - Benefuture: tobacco control, compensated. Rule battery (17 sets): tobacco control 88%; the weak-floors and strong-per-group sets without compensation choose hospital capacity (smokers' lost pleasure fails the strong per-being reading until it is compensated); every set from compensation on, including the tiers-off set, chooses tobacco control. Credence (160 draws): tobacco 79%, hospital 19%. Baselines: fewest deaths tobacco, mean welfare hospital.
 - Construction defect, found on reading the result: the header says both options avert the same expected deaths, but as built tobacco control averts about 64 thousand against 40, so size, not kind, can decide. A variant correcting part of it (still unequal: 40 against 56 thousand remaining in the success scenarios) gives the same choices (battery 88%, credence 71%); further adjustment was stopped rather than tuned toward any answer.
 - Reading: the tiers do not decide this case either; compensation does. Of three contrast cases, the tiers decided one (NSF 1950). Building a clean contrast (equal size, equal evidence, different kind) by hand is error-prone; a checker that computes each option's expected deaths and value before the replay, and refuses a contrast case whose sizes differ beyond a tolerance, would prevent this (added to the open problems).
+
+## Base rates with unrecorded trials (2026-11-08; mechanism built, swine flu re-read as a hypothetical)
+
+Cases may now declare `[unrecorded_trials]` per event: trials that would have entered the record had they gone the
+other way (fizzled outbreaks, quiet successes), each with its source; they count as non-occurrences (red test first).
+Swine flu 1976, read with 0, 3 and 6 hypothetical unrecorded fizzled outbreaks (pandemic rate 0.67, 0.44, 0.33): the
+choice stays vaccinate everyone and the rule battery stays 82% vaccinate in all three. The earlier reading under the
+swine flu entry ("a Benefuture with an adversarial base-rate check would have priced Fort Dix's lack of spread;
+stockpiling then wins") is therefore not supported: on the case's magnitudes, the pandemic's expected deaths dwarf the
+vaccine's adverse events at any plausible rate, so the error lies in the magnitudes or in the absence of an option to
+wait for evidence of spread with vaccine on hand (the stockpile option prices late vaccine as averting only a quarter),
+not in the base rate. No unrecorded trials are written into the case file: the as-of reports of sporadic human
+infections are recalled, not verified.

@@ -442,3 +442,13 @@ end
     # deaths from a freely chosen risk count in that block is unruled; marked broken until it is.
     @test_broken replace(replay_decision(c).chosen_option, r"\+compensated$" => "") != "national_prohibition"
 end
+
+@testset "Replay: base rates count trials that would have been recorded had they gone the other way" begin
+    # Swine flu 1976: the pandemic base rate came from recorded strains only (3 pandemics in 4 trials), but as of
+    # 1976 sporadic human swine-influenza infections that never spread had also been reported; a case declaring
+    # them (`[unrecorded_trials]`, with sources) must have them counted as non-occurrences.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "swine_flu_vaccination_1976.toml"))
+    c["unrecorded_trials"] = Dict{String,Any}("novel_strain_outbreak_became_pandemic" => 3)
+    o = only(x for x in replay_decision(c).case["options"] if x["id"] == "do_nothing")
+    @test o["pred_irreparable"][1] ≈ event_rate(3, 7) * 70.0
+end
