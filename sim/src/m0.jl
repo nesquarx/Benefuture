@@ -88,12 +88,12 @@ end
 
 G over inaction and `plans`: 1 for inaction, k + 1 for `plans[k]`.
 """
-function choose(s::ToyState, plans, p::ToyParams)
+function choose(s::ToyState, plans, p::ToyParams; tiers::Bool = false)
     for plan in plans
         check(length(plan.du) == length(s.u) && length(plan.dh) == length(s.h), "plan must cover every being")
     end
     fu, fh, pu = floor_quantile(s.u, p.q), floor_quantile(s.h, p.q), maximum(s.u)
-    values = [0.0; [plan_value(plan, p) for plan in plans]]
+    values = [0.0; [tiers ? tiered_plan_value(plan, p, s.u, s.h) : plan_value(plan, p) for plan in plans]]   # 8.129
     d_min_u = [0.0; [floor_quantile(s.u .+ plan.du, p.q) - fu for plan in plans]]
     d_min_h = [0.0; [floor_quantile(s.h .+ plan.dh, p.q) - fh for plan in plans]]
     d_max_u = [0.0; [maximum(s.u .+ plan.du) - pu for plan in plans]]
@@ -162,3 +162,27 @@ end
 "Conj_FloorsRise over a trace: across every window of length w, neither floor falls."
 floors_rise(tr; w::Int = 1) =
     all(tr.floor_u[t] <= tr.floor_u[t + w] && tr.floor_h[t] <= tr.floor_h[t + w] for t in 1:(length(tr.floor_u) - w))
+
+"""
+    tiered_plan_value(plan, p, u, h) -> Float64
+
+Σ V over the beings a plan touches, each being's changes typed by priority tier (8.129) through its position on
+the global curve (author, 2026-11-08): an understanding gain that carries a being past the best is peak, one to a
+being at or below the floor quantile is floor, else median; happiness likewise baseline or median (comparable in
+the toy world, so global). Losses keep their passing-harm weight as in `being_value`. Novelty is not typed here.
+"""
+function tiered_plan_value(plan::ToyPlan, p::ToyParams, u::AbstractVector, h::AbstractVector)
+    passing = 4
+    fu, fh, pu = floor_quantile(u, p.q), floor_quantile(h, p.q), maximum(u)
+    total = 0.0
+    for b in eachindex(plan.du)
+        du, dh = plan.du[b] / p.th, plan.dh[b] / p.th
+        du == 0 && dh == 0 && continue
+        U = zeros(6); H = zeros(6)
+        U[u[b] + plan.du[b] > pu ? 1 : u[b] <= fu ? 5 : 4] = du
+        H[h[b] <= fh ? 4 : 5] = dh
+        tiers = [(i == passing ? abs(min(du, 0)) + abs(min(dh, 0)) : 0.0, w) for (i, w) in enumerate(HARM_SCHEDULE)]
+        total += tiered_value(U, H, zeros(6); harm_wt = harm_weight(tiers; λ = p.gp.λ), p.gp...)
+    end
+    total
+end

@@ -247,7 +247,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
                 report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0,
-                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0)
+                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0, tiers::Bool = false)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -400,7 +400,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     base = [k == length(opts) && lesson_seen !== nothing ? lesson_seen : o for (k, o) in enumerate(opts)]
                     predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
                                          o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in base]
-                    i = choose(view, predicted, p)
+                    i = choose(view, predicted, p; tiers)
                     i == 1 && continue
                     acted += 1
                     if i - 1 <= options
@@ -473,7 +473,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                                             tacit = tacit[teacher]))
             end
             plans = [ordinary; taught]
-            i = choose(s, plans, p)
+            i = choose(s, plans, p; tiers)
             push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
             push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
             if i > 1
@@ -560,7 +560,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     end
                     predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
                                          o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
-                    i = choose(view, predicted, p)
+                    i = choose(view, predicted, p; tiers)
                     i == 1 && continue
                     acted += 1
                     if i - 1 <= options
@@ -595,7 +595,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                                                 tacit = tacit[teacher]))
                 end
                 plans = [ordinary; taught]
-                i = choose(s, plans, p)
+                i = choose(s, plans, p; tiers)
                 push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
                 push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
                 if i > 1
@@ -674,7 +674,8 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 fu = floor_quantile(s.u, p.q)
                 fh = floor_quantile(s.h, p.q)
                 pu = maximum(s.u)
-                values = [0.0; [plan_value(pl, p) for pl in plans]]
+                # (8.129) with `tiers`, each being's changes are typed by their position on the global curve
+                values = [0.0; [tiers ? tiered_plan_value(pl, p, s.u, s.h) : plan_value(pl, p) for pl in plans]]
                 d_min_u = [0.0; [floor_quantile(s.u .+ pl.du, p.q) - fu for pl in plans]]
                 d_min_h = [0.0; [floor_quantile(s.h .+ pl.dh, p.q) - fh for pl in plans]]
                 d_max_u = [0.0; [maximum(s.u .+ pl.du) - pu for pl in plans]]

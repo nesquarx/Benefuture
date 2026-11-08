@@ -2873,3 +2873,17 @@ understanding floor rises with it, and the happiness floor never falls. Open, fo
 schedules the tiered chooser never entertains at all; raw happiness is the lowest happiness tier, but a world
 with no satisficing or shareable happiness is itself a weird tradeoff, which the happiness kinds (satisficing,
 shareable) in world models should correct rather than the schedule.
+
+8.129 author note (2026-11-08): "the priorities are strange because they encode a lot of other metrics and
+choices, we'll get to learn more when we sim them all together." Default schedules stay; happiness kinds go into
+the world models rather than reweighting the schedule.
+
+8.129 in M7, positions only (2026-11-08): `run_m7(...; tiers = true)` values each plan with each being's changes
+typed by global position (`tiered_plan_value`, sim/src/m0.jl; `choose(...; tiers)`). Hypothesis stated before
+measuring: higher understanding peak with no floor falling. Over 6 paired seeds (n 40, 120 steps): no
+understanding effect (floor +0.14 ± 0.46, median +0.14 ± 0.47, peak −0.02 ± 0.45; equivalence not shown), and the
+happiness floor falls 0.27 ± 0.09 (z > 2.6). Reading: M7's plans carry no kinds, so every effect lands in the low
+positional tiers (understanding median or floor, happiness baseline or median), and happiness loses weight
+against understanding relative to the scalar reading. Tiers need kind-typed effects (teaching as teachable,
+research as peak or paradigm, happiness as satisficing or shareable) before they help in M7. Tiers stay off by
+default there (`tiers = false`). Next: kinds on M7's plans.
