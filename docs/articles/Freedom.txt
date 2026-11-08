@@ -41,6 +41,16 @@ Mill also argued that false opinions have value, since truth stays alive by coll
 ===Freedom in the system===
 Baseline needs are priced at or below zero for uses within freedom ([[Benesophont#Aspects|sophont baseline]]); governed thresholds are perturbed only within freedom ([[Threshold of significance]]); and [[Government|governance]] measures itself partly by the expansion of rights and freedoms.
 
+===In simulation===
+In the replays of historical decisions ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]) the harm gate is applied per being: what counts is the chance that a member of some group suffers irreparable harm, and allowing a foreseeable harm through inaction counts as doing it. Tragic choices, where every option harms, go to the priorities instead, as the article says.
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* The harm gate: harm that is neither established and severe nor over the severity ceiling passes ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>fr_permissible_spec</code>, <code>fr_permissible_of</code>]); established harm at the long-term kind or worse blocks ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>established_severe_blocks</code>]), and so does expected severity over the ceiling, however speculative ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>probable_severe_harm_blocks</code>]).
+* At the default thresholds: a 50% chance of one passing harm passes ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>mild_passing_chance_permitted</code>]); a 1% chance of one irreparable harm blocks ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>speculative_catastrophe_blocks</code>]); a 0.1% chance of one irreversible non-fatal harm does not paralyse action ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>remote_irreversible_chance_permitted</code>]).
+* The reference the simulation calls ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>fr_permissible_ref</code>, <code>severity_score_ref</code>]).
+* Thresholds are perturbed only within freedom ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Measurement/Threshold.lean <code>perturbed_threshold_remains_positive</code>]).
+
 ==See also==
 * [[Harm]]
 * [[Power]]
@@ -52,4 +62,4 @@ Baseline needs are priced at or below zero for uses within freedom ([[Benesophon
 ==References==
 <references/>
 
-<small>AI Disclaimer: Definition and aspects are human notes; examples and discussion are AI written.</small>
+<small>AI Disclaimer: Definition and aspects are human notes; examples, discussion and the formal reference are AI written.</small>
