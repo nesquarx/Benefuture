@@ -99,7 +99,7 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                        reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
                        report_z::Real = 3.0, report_min::Integer = 5, things = [1.0], max_new_things::Integer = 0,
                        p_new_thing::Real = 0.0, novelty_weight::Real = 0.2,
-                       weight_σ::Real = 0.0, meta_research::Real = 0.0)
+                       weight_σ::Real = 0.0, meta_research::Real = 0.0, per_being::Bool = false, meta_share::Real = 0.0)
     check(!isempty(things) && all(>=(0), things) && max_new_things >= 0 && 0 <= p_new_thing <= 1 && novelty_weight >= 0, "valid things")
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
@@ -119,6 +119,11 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     # (chance `meta_research` per step) halves the estimate's log-error. Understanding is still measured on the truth.
     wrng = Xoshiro(hash((seed, :weights))); werr = weight_σ .* randn(wrng, length(W))
     gw() = [active[thing_of[i]] ? W[thing_of[i]] * exp(werr[thing_of[i]]) * wl[i] : 0.0 for i in 1:m]   # each item's estimated weight toward the goals now
+    # Per-being estimates (8.131 continued): each being steers by its own estimate; a researcher spends a share
+    # `meta_share` of its research on the priorities (halving its own estimate's error and passing it to one other
+    # being) instead of on objects, so meta-research competes for effort.
+    werrb = per_being ? weight_σ .* randn(wrng, n, length(W)) : zeros(0, 0)
+    gwb(e) = per_being ? [active[thing_of[i]] ? W[thing_of[i]] * exp(werrb[e, thing_of[i]]) * wl[i] : 0.0 for i in 1:m] : wt
     wt = gw()
     ms = 0.1 .+ 0.35 .* rand(rng, n, m)          # base spread of each being's model, per item
     mc = 0.1 .+ 0.6 .* rand(rng, n, m)           # its complexity
@@ -150,12 +155,16 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         end
         researching = rand(rrng, n) .< research_share
         for b in findall(researching)
+            if per_being && rand(wrng) < meta_share
+                werrb[b, :] .*= 0.5; o = rand(wrng, 1:n); werrb[o, :] .= werrb[b, :]
+                continue
+            end
             rand(rrng) < p_research || continue
             if p_new_thing > 0 && !all(active) && rand(rrng) < p_new_thing
                 t = findfirst(!, active); active[t] = true; wt .= gw()   # a new thing opens (novelty weight)
                 i = (t - 1) * mt + rand(rrng, 1:mt); tr.new_things[] += 1
             else
-                i = pick(rrng, wt ./ sum(wt))        # research goes where it counts toward the goals (8.117)
+                wb = gwb(b); i = pick(rrng, wb ./ sum(wb))        # research goes where it counts toward the goals (8.117), as the researcher sees it
             end
             s2, c2 = rand(rrng) < 0.5 ? (ms[b, i] * (1 - breakthrough), mc[b, i]) : (ms[b, i], mc[b, i] * (1 - breakthrough))
             ms[b, i], mc[b, i] = s2, c2; push!(bundles, (s2, c2))
@@ -167,20 +176,21 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         end
         for e in 1:n
             (researching[e] || rand(rng) >= p_act) && continue
+            we = gwb(e)
             view = [Um(b) for b in 1:n] .+ view_σ .* randn(vrng, n)
             below = [b for b in 1:n if b != e && view[b] < view[e]]
             # Predicted gain of a lesson to a class against practising one item oneself (on the view).
             learners = isempty(below) ? Int[] : below[randperm(rng, length(below))[1:min(class, length(below))]]
-            lesson_gain = sum((sum(wt[i] * (max(0.0, bval(ts[e, i], tc[e, i]) - bval(ms[l, i], mc[l, i])) * ce[l, i] +
+            lesson_gain = sum((sum(we[i] * (max(0.0, bval(ts[e, i], tc[e, i]) - bval(ms[l, i], mc[l, i])) * ce[l, i] +
                                         max(0.0, claimed(e, i) - ce[l, i]) * bval(ms[l, i], mc[l, i])) for i in 1:m) for l in learners); init = 0.0) * ε   # models and (claimed) explanation both
             # practice's predicted gain: the equation's change from sharpening one's best item
-            practice_gain_pred = maximum(wt[i] * ce[e, i] * (1 - mc[e, i]) * (expected_relative_accuracy(ms[e, i] * exp(-pr[e, i] - practice_gain)) - expected_relative_accuracy(ms[e, i] * exp(-pr[e, i]))) for i in 1:m)
+            practice_gain_pred = maximum(we[i] * ce[e, i] * (1 - mc[e, i]) * (expected_relative_accuracy(ms[e, i] * exp(-pr[e, i] - practice_gain)) - expected_relative_accuracy(ms[e, i] * exp(-pr[e, i]))) for i in 1:m)
             if lesson_gain > practice_gain_pred
                 tr.lessons[] += 1
                 for l in learners
                     r = exp(reception_σ * randn(rng) - reception_σ^2 / 2)
-                    pred = sum(wt[i] * min(1.0, ε * r) * max(0.0, claimed(e, i) - ce[l, i]) for i in 1:m)
-                    real = sum(wt[i] * min(1.0, ε * r) * max(0.0, tce[e, i] - ce[l, i]) for i in 1:m)
+                    pred = sum(we[i] * min(1.0, ε * r) * max(0.0, claimed(e, i) - ce[l, i]) for i in 1:m)
+                    real = sum(we[i] * min(1.0, ε * r) * max(0.0, tce[e, i] - ce[l, i]) for i in 1:m)
                     reports && push!(shortfall[e], pred - real)
                     for i in 1:m
                         if bval(ts[e, i], tc[e, i]) > bval(ms[l, i], mc[l, i]) && rand(rng) < min(1.0, ε * r)
@@ -192,7 +202,7 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                 end
             else
                 # practice: one's own acuity, never taught, on the item where it adds most toward the goals (8.117)
-                i = argmax([wt[k] * ce[e, k] * (1 - mc[e, k]) * (expected_relative_accuracy(ms[e, k] * exp(-pr[e, k] - practice_gain)) - expected_relative_accuracy(ms[e, k] * exp(-pr[e, k]))) for k in 1:m])
+                i = argmax([we[k] * ce[e, k] * (1 - mc[e, k]) * (expected_relative_accuracy(ms[e, k] * exp(-pr[e, k] - practice_gain)) - expected_relative_accuracy(ms[e, k] * exp(-pr[e, k]))) for k in 1:m])
                 pr[e, i] += practice_gain
             end
         end

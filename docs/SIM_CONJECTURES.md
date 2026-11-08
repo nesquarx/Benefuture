@@ -120,3 +120,6 @@ admissible parameter point; the sim then tests the dynamics or the empirical inp
 Claims that are value commitments or real-world empirical facts: understanding-first as a value
 choice; cross-cultural convergence (Philosophy); real-world measurability of U/H; human acceptance.
 These need argument, field data or pilots (Implementation prototype), not simulation.
+
+## [CONJ] 8.131: interior optimum for meta-research share (refuted in first regime)
+Hypothesis: with per-being noisy priority estimates, the floor of understanding peaks at an interior `meta_share`. First reading (`run_m7_traits`, things [1.0,0.3,0.1], m 6, 200 steps, weight_σ 1.5, `per_being=true`, 8 paired seeds): floor 1.055 / 1.044 / 1.020 / 0.937 / 0.839 at meta_share 0 / 0.1 / 0.3 / 0.6 / 0.9; true weights 1.068. Monotone falling: independent per-being errors largely average out (cost of noise 0.013), so diverted research costs more than it repairs. The global-error case (one shared estimate, earlier probe: 0.977 → 1.058 with meta-research) is where meta-research pays; correlated error is the regime to test next. First result recorded as is.
