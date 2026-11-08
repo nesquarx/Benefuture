@@ -70,3 +70,15 @@ end
     @test_throws ArgumentError escalated_credence(0.9, 1.5, 1)
     @test_throws ArgumentError escalated_credence(0.9, 0.2, 1; growth = 0.0)
 end
+
+@testset "Forks divide standing and conserve it (L123, 8.34; Lean fork_split_ref)" begin
+    # Structural: whatever the shares, a fork family's parts sum to the parent's amount, none is negative, and a fork
+    # cannot take more than the whole (no escape from a liability, no doubled reputation).
+    rng = Random.Xoshiro(7)
+    for _ in 1:200
+        n = rand(rng, 1:5); sh = rand(rng, n) .* (rand(rng, n) .> 0.2); a = 100 * randn(rng)
+        parts = fork_split(a, sh)
+        @test isapprox(sum(parts), a; atol = 1e-9 * max(1, abs(a))) && length(parts) == n
+        @test all(p -> abs(p) <= abs(a) + 1e-9, parts)
+    end
+end

@@ -83,6 +83,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_meta_multiplier] def metaMultiplier (level amp peak width : Float) : Float :=
   meta_multiplier_ref level amp peak width
 
+@[export bf_fork_split] def forkSplit (amount : Float) (shares : FloatArray) : FloatArray :=
+  ⟨fork_split_ref amount shares.data⟩
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 

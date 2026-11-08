@@ -306,4 +306,13 @@ def sequential_significant_ref (mean sd : Float) (n n0 : Nat) (z : Float) : Bool
     let bar := z * Float.sqrt (1.0 + Float.log (n.toFloat / n0.toFloat))
     Float.abs mean > bar * se
 
+/-- A fork divides an identity's standing (L123, 8.34): each new identity takes `shares[k]` (non-negative, summing to
+  one) of the parent's balance, liability, reputation and base vote, so the family's totals are conserved and no fork
+  escapes a liability or doubles a reputation; a liability a fork cannot cover overflows to the family through causal
+  distribution (`overflow_ref`'s job elsewhere). Returns each fork's part of `amount`. -/
+def fork_split_ref (amount : Float) (shares : Array Float) : Array Float := Id.run do
+  let tot := shares.foldl (fun a x => a + (if x > 0.0 then x else 0.0)) 0.0
+  if tot <= 0.0 then return shares.map (fun _ => amount / shares.size.toFloat)
+  return shares.map (fun x => amount * (if x > 0.0 then x else 0.0) / tot)
+
 end BenefutureReference

@@ -3066,3 +3066,12 @@ reasoning before the re-read (amp 1, peak at level 2, teaching how to learn, wid
 chooses Sure Start (rule battery 94%; GCSE targets 88% before); Head Start, printing, NCLB, NSF, lead and school closures
 unchanged. Hindsight caution: the defaults were reasoned before running, but by a builder who knew Sure Start was the
 case they could flip. Governed: amp, peak, width, to be discovered (a battery sweep once a world produces meta levels).
+
+Identity step (2), forks (2026-11-08): the split of L123 (`Fork(Id(E_i)) → Split_Dn(SoPo_i: C, Re, ...) → New(Ids[i,j]),
+LiabilityOverflow ← CD`) as a Lean rule, `fork_split_ref` (export `bf_fork_split`, Julia `fork_split`): each new identity
+takes its share of the parent's balance, liability, reputation and base vote, the family's totals conserved, so no fork
+escapes a liability or doubles a reputation; overflow beyond a fork's cover goes to the family through causal
+distribution. Structural test (200 random splits): parts sum to the parent's amount, none exceeds it. The base-vote part
+was already built in M5 (`fork_rule = :divided`, 8.34). Not yet built: forks in M3c's world (a dynamic agent set, so a
+fork can occur mid-run and its records follow it) and merges; the probe for that is a forker trying to shed a liability
+or double a reputation, red on outcome.
