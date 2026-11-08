@@ -2932,3 +2932,10 @@ from happiness. Reading: in M7 the tradeoff the tiers correct (raw happiness bou
 not on offer; M7's ordinary plans move understanding and happiness together at random. The probe world, where it is on
 offer, is where tiers decide. The research choice itself (against a fixed share) is a separate question, open.
 `research_choice` and `tiers` stay off by default.
+
+8.129 first contrast case (2026-11-08): NSF Act 1950, basic against mission-directed research, options set close in
+size and differing in kind. With tiers the replay chooses the basic research foundation (rule battery 76%, credence
+77%, no flips); the collapsed scalar reading chooses the applied agency, as does the mean-welfare rule. The tiers
+decide here as the author's ruling intends (teachable peak understanding with paradigm novelty outclassing median
+understanding with near-term happiness). Hindsight-exposed (magnitudes set close by design, kinds declared knowing
+the outcome); further contrast cases and an E5 contrast follow (docs/E5_CANDIDATES.md).
