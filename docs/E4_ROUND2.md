@@ -138,3 +138,11 @@ and E5 candidates (research funding against applied programmes, teaching reforms
 - Rule battery (17 sets): eradicate 100%. Credence (540 draws): eradicate 68%, regional elimination of accessible areas first 32%, continued control 1%.
 - Sensitivity flips (2), both to regional elimination (halving the gap between the campaign's success and failure tolls).
 - Reading: an easy case on the record of the time: three of five elimination attempts had succeeded where tried, and the toll of continued control dwarfed the cost. The rules agree with a decision that went well; simple rules agree too, so it does not separate Benefuture from them. Not a contrast case for priorities (all options differ in size, not kind).
+
+## Operation Warp Speed, May 2020 (case committed before replay; tiers declared before replay)
+
+- Benefuture: parallel development with at-risk manufacturing. Cell good/agrees; F1–F4 false.
+- Baselines: status quo the conventional sequence; minimum deaths, mean welfare and equal weight all choose Warp Speed.
+- Rule battery (17 sets): Warp Speed 100%. Credence (540 draws): Warp Speed 45%, conventional sequence 29%, development without at-risk manufacturing 26%.
+- Sensitivity flips (7): six to development without at-risk manufacturing, one to the conventional sequence.
+- Reading: right on the central estimates, but contested: the as-of base rate for a vaccine against an emergent pathogen within two years is low (1 of 5, H1N1 on an existing platform), and the options' tolls differ by a few tens of thousands of deaths out of about 300, so moderate errors in the judged magnitudes flip the choice. Not counted as a robust win. Close in size; the options differ in timing, not in kind.
