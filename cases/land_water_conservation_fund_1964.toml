@@ -1,0 +1,116 @@
+# Historical decision case (E4 contrast case for priority tiers, stylised): the US Land and Water Conservation Fund
+# Act of 3 September 1964, funding federal and state acquisition and development of parks and outdoor recreation
+# areas, against an equal sum returned to households as a cash rebate (stylised). Built so both options deliver the
+# same quantity (happiness, for the same people, equal in size) on the same record, differing only in kind: shared
+# and eudaimonic happiness (recreation in common, nature) against satisficing and sensory happiness spent privately.
+# As of the decision: the Outdoor Recreation Resources Review Commission's report (1962) on rising demand for outdoor
+# recreation; park use records. Sources: the ORRRC report (linked); the rest recalled. Builders know the outcome (the
+# fund has supported tens of thousands of park projects). Not scored.
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "land_water_conservation_fund_1964"
+title = "Shared outdoor recreation or an equal cash rebate (Land and Water Conservation Fund, 1964; stylised contrast)"
+family = "environment"
+era = "1964"
+tier = "full"
+decision_date = "1964-09-03"
+decision_makers = ["US Congress and President Johnson (stylised alternative)"]
+actual_choice = "parks_and_recreation_fund"
+actual_outcome_class = "unclear"
+primary_or_held_out = "contrast"
+irreparable_per_population_unit = 1
+
+[[sources]]
+id = "recreation_record"
+title = "Outdoor Recreation Resources Review Commission report (1962) and park-use records before September 1964"
+as_of_date = "1964-09-02"
+url = "https://www.nps.gov/subjects/lwcf/index.htm"
+notes = "Programme history page used to identify the ORRRC report and the fund's aims; use records recalled."
+
+[[ groups ]]
+id = "residents"
+name = "US residents (about 192 million), in thousands"
+population = 192000
+baseline_u = 50.0
+baseline_h = 60.0
+
+# Magnitudes (judgment, stated; equal by design): either option, if it is used as the record suggests, raises
+# happiness by 0.2; if not, a fifth of it. Same record for both (public spending on leisure reaching its users).
+# Understanding unchanged by both (a small gain from nature and from what households buy is left out, equal by
+# design).
+
+[[ options ]]
+id = "neither"
+name = "Neither"
+source = "recreation_record"
+known_date = "1963-12-31"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.0]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+
+[[ options.scenarios ]]
+name = "status_quo"
+p_chain = []
+
+[[ options ]]
+id = "parks_and_recreation_fund"
+name = "A fund to acquire and develop parks and outdoor recreation areas"
+source = "recreation_record"
+known_date = "1964-09-03"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.16]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+# Priority kinds (8.129, option-level): shared and eudaimonic happiness (recreation in common, nature).
+h_tiers = [[0.4, 0.5, 0.1, 0, 0, 0]]
+
+[[ options.scenarios ]]
+name = "used"
+p_chain = ["public_leisure_spending_reached_users"]
+dh = [0.2]
+
+[[ options.scenarios ]]
+name = "little_used"
+p_chain = []
+complement = true
+dh = [0.04]
+
+[[ options ]]
+id = "equal_cash_rebate"
+name = "An equal sum returned to households as a cash rebate"
+source = "recreation_record"
+known_date = "1964-09-03"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.16]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+# Priority kinds: satisficing and sensory happiness spent privately.
+h_tiers = [[0, 0, 0.6, 0, 0.1, 0.3]]
+
+[[ options.scenarios ]]
+name = "used"
+p_chain = ["public_leisure_spending_reached_users"]
+dh = [0.2]
+
+[[ options.scenarios ]]
+name = "little_used"
+p_chain = []
+complement = true
+dh = [0.04]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "equal_cash_rebate"
+methods = ["stylised contrast; not scored"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
