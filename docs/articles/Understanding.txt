@@ -129,5 +129,17 @@ Some existing [[Reality|real]] world markers and methods for [[measurement]] are
 ** World Governance Indicators. <ref>World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/</ref>
 Ultimately, we have to start with measuring proxies of understanding, but with constant tuning via data from [[Social networks|social]] and [[Technology Network|currency networks]], it can approach a comprehensive and accurate measurement of understanding.
 
+=== In simulation ===
+* Understanding measured by its equation tracks the truth: the error from a being's record falls as the record grows, until a noisy reading of how well its map fits sets a floor; overconfident reporting lowers measured understanding, as proper scoring should ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Teaching raises the floor of understanding, and models are taught whole: no learner ends with one model's accuracy and another's simplicity. When a third of beings overclaim explanation and nothing is audited, the floor grows 41% slower; learners' reports of lessons that fall short find nearly every overclaimer and recover most of the loss.
+* Valued through its priorities, understanding stops being traded for raw happiness: in a small world where a chooser picks research, teaching, entertainment or practice, valuing by plain totals entertains every step and understanding stalls, while valuing by priority tiers teaches and researches, and median understanding grows several-fold with no fall in the happiness floor.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* The practical equation and its accuracy term ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>pragmatic_understanding_ref</code>, <code>relative_accuracy_ref</code>]).
+* Causal explanation adds to understanding ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>causal_explanation_enhances_understanding</code>]); forgetting is harm ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Priorities.lean <code>forgetting_is_harm</code>]).
+* Understanding is shared, not moved: sharing never lowers it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>u_sharing_gain_nonneg</code>]).
+* Priority over happiness and novelty ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Order.lean <code>understanding_dominates_happiness</code>, <code>understanding_dominates_novelty</code>]); its priority tiers, peak to undirected, and the value over them ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>tierScheduleU_ref</code>, <code>tiered_value_sched_ref</code>]).
+
 == References ==
-<references /><small>AI Disclaimer: This article is 85% human notes with 15% AI assisted formatting and literature review.</small>
+<references /><small>AI Disclaimer: This article is 85% human notes with 15% AI assisted formatting and literature review; the simulation notes and formal reference are AI written.</small>

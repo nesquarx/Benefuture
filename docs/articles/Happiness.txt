@@ -83,6 +83,16 @@ While the central notions of happiness are subjective, localized, culture specif
 ** World Governance Indicators. <ref name="WGI">World Bank. (Various years). ''Worldwide Governance Indicators''. <nowiki>http://www.govindicators.org/</nowiki></ref>
 
 
+=== In simulation ===
+* Happiness enters the value calculation through its priority tiers, eudaimonic first and raw sensory peak last; valued that way, a chooser stops buying raw happiness at the cost of understanding, and the happiness floor does not fall ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]). Without the kinds of happiness modelled (satisficing, shareable), a chooser valuing by tiers may neglect ordinary enjoyment altogether; the kinds, read per being, are being added to the world models.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* The happiness score is a positive structure whatever the bias claims, and its kinds partition it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Priorities.lean <code>happiness_score_eq</code>, <code>happiness_score_nonneg</code>, <code>kind_tiers_partition_happiness</code>]).
+* Biased happiness counts less, and malicious pleasure claimed with full confidence counts nothing ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Priorities.lean <code>more_bias_less_happiness</code>, <code>fully_biased_contributes_nothing</code>]).
+* Happiness at or above its recent average carries no harm ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Priorities.lean <code>h_at_or_above_average_no_harm</code>, <code>coming_down_not_harm</code>]).
+* Its priority below understanding and above novelty ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Order.lean <code>understanding_dominates_happiness</code>, <code>happiness_dominates_novelty</code>]); its priority tiers and the value over them ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>tierScheduleH_ref</code>, <code>tiered_value_sched_ref</code>]).
+
 == References ==
 <references />
-----<small>AI Disclaimer: This article is 10% AI compiled with 90% human notes.</small>
+----<small>AI Disclaimer: This article is 10% AI compiled with 90% human notes; the simulation notes and formal reference are AI written.</small>
