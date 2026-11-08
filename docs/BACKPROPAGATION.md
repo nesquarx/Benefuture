@@ -3138,3 +3138,9 @@ ballots already weigh stated confidence by each voter's calibration record (8.12
 winning choices, so exaggeration buys no weight (calibrated ballots hold 96% right against a confident bloc that captures
 stated-confidence weighting, 67%). Reopen only if a probe shows exaggerated confidence paying somewhere the records do not
 reach (e.g. one-off decisions with no record).
+8.71 fallback order, status (2026-11-08): built natively in M3c, in the ruled order. (1) Another qualified model of the
+domain: a qualified challenger takes over when the top model dips below its bar (8.73, logged as a degradation). (2) The
+parent's qualified models: `fallback_network_ref` moves an ineligible leaf's share to its eligible parents by μ. (3) Lower
+credence: the record credence (8.71 default) prices with the backing model's record. (4) StandCoin last, logged loudly
+("domain currency → StandCoin lane"). Not built: several qualified models of one domain each backing a currency at once
+(quotes composed as L86 composes currencies); M3c lets one model back each leaf.
