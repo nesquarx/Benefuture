@@ -2958,3 +2958,12 @@ and do not enter the policy block, so pricing wins. Reading B (8.124 as written)
 least option whoever chose the risk, so the ban stands. A middle reading counts only harm to others (households,
 bystanders) in the block. The test is marked broken until ruled. Candidate homes: Freedom (chosen risk), Harm
 (irreparable), L135.
+
+8.131 open question (2026-11-08, Sure Start 1998 contrast case): the understanding priorities read
+`Sy(peak > teachable > meta^x > median > floor > undirected)` (L58). The reference weights meta linearly at its schedule
+position (0.4), so on a case built to differ only in kind (same children, same size, same record), exam content
+(teachable, median) beats early-years learning capacity (meta, floor) and the replay chooses GCSE targets over Sure
+Start. What is x in `meta^x`? Readings: (a) x > 1 compounds meta gains over the long-term window (learning to learn
+multiplies later learning), which would likely reverse this case; (b) x indexes meta levels (meta, meta-meta, ...),
+each weighted in turn; (c) x is a governed exponent. Until ruled, meta stays linear. Candidate homes: L58, the
+Understanding article (tiers).
