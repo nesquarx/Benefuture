@@ -8,7 +8,7 @@ the rules act on. Rules are checked against the test vectors in `spec/vectors/`.
 module BenefutureSim
 
 export phi, net_synergy, squashed_synergy
-export tiered_value, tier_schedules
+export tiered_value, tier_schedules, run_programmes
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_permissible
 export floor_quantile, g_choose
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
@@ -51,6 +51,7 @@ include("methods.jl")
 include("diversity.jl")
 include("m5.jl")
 include("m7.jl")
+include("programmes.jl")
 include("counterfactual.jl")
 include("replay.jl")
 include("forecast_archive.jl")

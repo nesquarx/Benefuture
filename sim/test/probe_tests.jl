@@ -1134,3 +1134,15 @@ end
     teach = [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
     @test tiered_value(teach, zeros(6), zeros(6); kw..., su = [0.8, 0.8, 0.4, 0.25, 0.15, 0.05]) > tiered_value(teach, zeros(6), zeros(6); kw...)
 end
+
+@testset "Probe: valued by priority tiers, G stops trading understanding for raw happiness (8.129)" begin
+    # Programme world: valued by scalar sums, the chooser entertains every step and understanding stagnates;
+    # valued through the tiers it teaches and researches. Hypothesis: median understanding after 100 steps is
+    # higher under tiers; smallest effect that matters 1.0 (the starting spread); paired seeds; z = 3.
+    using Statistics
+    d = [median(run_programmes(seed = s, tiered = true).u) - median(run_programmes(seed = s, tiered = false).u) for s in 1:6]
+    @test paired_effect(d; z = 3.0).significant && mean(d) > 1.0
+    r = run_programmes(seed = 1, tiered = true)
+    @test minimum(r.h) >= 50.0 - 1e-9          # the happiness floor does not fall
+    @test r.trace["entertain"] == 0 || r.trace["teach"] + r.trace["research"] > r.trace["entertain"]
+end

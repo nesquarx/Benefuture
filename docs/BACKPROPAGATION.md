@@ -2855,3 +2855,21 @@ schedules; `tier_schedules()` reads the defaults from the reference; `tiered_val
 domain's governed schedules (six weights in [0, 1), in priority order). Probe: a domain ranking teachability with
 peak values a teachable gain above the default. Domain schedules ride the existing per-domain governance
 (thresholds governed like any other); which domains govern their own is a world parameter until governance sets it.
+
+8.129 tier positions (author, 2026-11-08): "when we say peak median floor for U it's the position of the U in the
+global curve as U is comparable, while H has trouble being compared so it's global when comparable and personal
+when not." Applied: understanding's peak, median and floor tiers are positions on the global curve (a gain is
+peak only where it carries a being past the best; floor only where the lowest rises); happiness's positional
+tiers (baseline, median) are global where happiness is comparable and personal where not, while its kind tiers
+(eudaimonic, shareable, satisficing, sensory peak) are read for each being. Candidate homes: L57–L59 (a note on
+positional tiers), the Understanding and Happiness articles.
+
+8.129 probe (2026-11-08): `run_programmes` (sim/src/programmes.jl), the smallest world where tiers decide
+something: each step a chooser picks research, teaching, entertainment or practice by expected value, effects
+typed by tier. Over 6 paired seeds, 100 steps, 20 beings: valued by scalar sums the chooser entertains every
+step and median understanding stays at about 1.5; valued through the tiers it teaches and researches (seed 1:
+76 and 24 steps), median understanding reaches 8 to 12 (z ≫ 3 against a smallest effect of 1.0), the
+understanding floor rises with it, and the happiness floor never falls. Open, for the author: under the default
+schedules the tiered chooser never entertains at all; raw happiness is the lowest happiness tier, but a world
+with no satisficing or shareable happiness is itself a weird tradeoff, which the happiness kinds (satisficing,
+shareable) in world models should correct rather than the schedule.

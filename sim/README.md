@@ -1272,6 +1272,7 @@ for removal.
 | Weight on advice per person and domain (mixture of stay, average, defer, Beta) | World (8.63) | behaviour adapted from advice-taking studies (`docs/CALIBRATION.md` 1.4); not a rule |
 | AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L160 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
 | Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
+| Programme world (`run_programmes`): a probe world for priority tiers, one global chooser over four typed programmes | Introduced (probe only, 8.129) | Shows tiers deciding before tier-typed effects enter M7 and the replay; remove once M7 emits tier-typed changes. Gaming: a programme claiming a higher tier than it delivers (teachable that is tacit, paradigm that is incremental) is caught by the usual assessed outcomes and records |
 
 ## Governed thresholds
 
