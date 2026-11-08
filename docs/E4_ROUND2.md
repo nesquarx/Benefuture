@@ -130,3 +130,11 @@ and new E4 and E5 candidates chosen where the contrast is the decision.
 Reading: where options differ in kind here, they also differ in magnitude by far more, and magnitude decides.
 Priorities should decide cases where options are close in size but differ in kind; such cases are the next E4
 and E5 candidates (research funding against applied programmes, teaching reforms against test regimes).
+
+## Smallpox eradication, May 1966 / January 1967 (case committed before replay; tiers declared before replay)
+
+- Benefuture: intensified global eradication, compensated (donors' cost restored from the gains). Cell good/agrees; F1–F4 false.
+- Baselines: status quo continues national control; minimum deaths, mean welfare and equal weight all eradicate.
+- Rule battery (17 sets): eradicate 100%. Credence (540 draws): eradicate 68%, regional elimination of accessible areas first 32%, continued control 1%.
+- Sensitivity flips (2), both to regional elimination (halving the gap between the campaign's success and failure tolls).
+- Reading: an easy case on the record of the time: three of five elimination attempts had succeeded where tried, and the toll of continued control dwarfed the cost. The rules agree with a decision that went well; simple rules agree too, so it does not separate Benefuture from them. Not a contrast case for priorities (all options differ in size, not kind).
