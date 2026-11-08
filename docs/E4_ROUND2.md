@@ -280,3 +280,10 @@ infections are recalled, not verified.
 - Tiers decide: the two options tie exactly on the collapsed scalar, and the tiers-off set follows option order (parks when listed first, the cash rebate when the order is swapped), while the full rules choose parks in both orders. The same check on Sure Start 1998 confirms the tiers decided there too (GCSE in both orders; the tiers-off set follows order). Shared and eudaimonic happiness outweighs satisficing and sensory happiness of equal size, as 8.129 intends.
 - Contrast tally: tiers decided 3 of 6 (NSF 1950 for basic research; Sure Start 1998 for GCSE targets over early years; Land and Water Conservation Fund 1964 for shared recreation); the others were decided by stronger evidence (Head Start), compensation (tobacco) and understanding's priority over happiness (public broadcasting).
 - Minor defect noted and fixed: exact ties on value were broken by option order silently; they are now reported (a `degraded` entry naming the tied options; red test first).
+
+### Prohibition 1919 under rulings 8.127 (freedom pricing) and 8.130 (chosen-risk deaths), 2026-11-08
+
+Heavy drinkers' own deaths are tagged as a freely chosen risk (harm, but outside the policy-level irreparable block);
+deaths from violence and poisoned liquor are not. The freedom rule then blocks the national ban, and the choice is to
+leave liquor to the states (rule battery 100%; credence 90%, local option with high licence taxes 10%). The first
+result (national prohibition) stands above; the case stays unscored (outcome contested).

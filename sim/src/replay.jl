@@ -694,6 +694,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             opt["_scenario_irr"] = isempty(irrs) ? zeros(n_groups) : irrs[argmax([sum(x) * q for (x, q) in zip(irrs, ps)])]
             opt["_scenario_p_irr"] = isempty(ps) ? 0.0 : maximum([sum(x) > 0 ? q : 0.0 for (x, q) in zip(irrs, ps)])
             opt["pred_irreparable"] = [expected_effect(ps, getindex.(irrs, g)) for g in 1:n_groups]
+            # (8.130) deaths from a freely chosen risk are harm, but do not count in the policy-level irreparable block
+            opt["_chosen_irr"] = [sum((ps[k] * irrs[k][g] for (k, sc) in enumerate(opt["scenarios"]) if get(sc, "chosen_risk", false)); init = 0.0) for g in 1:n_groups]
         else
             hindsight_typed = true
         end
@@ -767,7 +769,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     # Only generational understanding loss is irreparable (author ruling 8.126): the share never regained, or regained
     # too late to join later synergistic breakthroughs (`u_loss_persistence`, 0.1 by default, governed; an option may
     # state its own from evidence, e.g. dropout). A recoverable loss stays a reparable harm for the floors and value.
-    irr_eq(o) = sum(irreparable_equivalent(Float64(o["pred_irreparable"][g]), Float64(o["pred_du"][g]), pops[g] * upu, base_u[g], base_h[g];
+    irr_eq(o) = sum(irreparable_equivalent(Float64(o["pred_irreparable"][g]) - Float64(get(o, "_chosen_irr", zeros(n_groups))[g]), Float64(o["pred_du"][g]), pops[g] * upu, base_u[g], base_h[g];
                                            compounding = th.u_compounding, persistence = Float64(get(o, "u_loss_persistence", th.u_loss_persistence))) for g in 1:n_groups)
     irr_least = minimum(irr_eq(o) for o in options)
     rule_irr = get(ov, "irreparable", true)

@@ -77,6 +77,7 @@ pred_irreparable = [50.0, 0.0, 0.0]
 
 [[ options.scenarios ]]
 name = "alcohol_harm_continues"
+chosen_risk = true   # heavy drinkers' own deaths: a freely chosen risk (8.130; tagged 2026-11-08, structural)
 p_chain = []
 dh = [-1.0, 0.0, 0.0]
 irreparable = [50.0, 0.0, 0.0]
@@ -101,6 +102,7 @@ dh = [1.0, 0.0, 0.0]
 
 [[ options.scenarios ]]
 name = "harm_not_cut"
+chosen_risk = true   # heavy drinkers' own deaths (8.130)
 p_chain = []
 complement = true
 dh = [-1.0, 0.0, 0.0]
@@ -131,7 +133,13 @@ name = "harm_halved_where_adopted"
 p_chain = []
 dh = [-0.5, -0.3, 0.0]
 nha = [0.0, 0.3, 0.0]
-irreparable = [25.0, 0.5, 1.5]
+irreparable = [0.0, 0.5, 1.5]
+
+[[ options.scenarios ]]
+name = "heavy_drinkers_remaining_deaths"
+chosen_risk = true   # heavy drinkers' own deaths where licence taxes have not deterred them (8.130; split 2026-11-08)
+p_chain = []
+irreparable = [25.0, 0.0, 0.0]
 
 [counterfactual]
 actual_floor_u_delta = 0.0

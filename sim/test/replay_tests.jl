@@ -437,10 +437,9 @@ end
     # it; per the Freedom article (a chosen risk is priced, not prohibited) and 8.46 (laws protect only against
     # outcomes beyond the freedom harm boundary), the ban must not be chosen while the pricing option is unblocked.
     c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "prohibition_1919.toml"))
-    # Open question for the author (8.130): the pricing option is itself blocked by the policy-level irreparable rule
-    # (more expected deaths, mostly heavy drinkers dying of a chosen risk), so the freedom rule does not bite. Whether
-    # deaths from a freely chosen risk count in that block is unruled; marked broken until it is.
-    @test_broken replace(replay_decision(c).chosen_option, r"\+compensated$" => "") != "national_prohibition"
+    # Author ruling 8.130: deaths from a freely chosen risk are harm but do not count in the policy-level irreparable
+    # block, so the pricing option is no longer blocked by heavy drinkers' own deaths and the freedom rule bites.
+    @test replace(replay_decision(c).chosen_option, r"\+compensated$" => "") != "national_prohibition"
 end
 
 @testset "Replay: base rates count trials that would have been recorded had they gone the other way" begin

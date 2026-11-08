@@ -3046,3 +3046,14 @@ specialists with correlated misconceptions (8.90 probe) expertise weighting and 
 or above while equal weighting is capped near 0.75. Its remaining niche is a cold-start domain with no records, where it
 needs only voters' predictions of others' votes; it stays a candidate for that case, to be built when a domain-entry
 probe shows a cold-start failure that records cannot yet correct.
+
+8.130 ruling (author, 2026-11-08): "The death outcome is harm, always. It needs to be logged and repair initiated as an
+accident. But when it's a freely chosen risk, as long as the P doesn't change and no criminality is discovered, nothing
+else needs to happen." Applied in the replay: deaths from a freely chosen risk (scenarios tagged `chosen_risk`) count as
+harm in value and in total expected harm, but not in the policy-level irreparable block (8.124), provided the option does
+not raise that risk's probability; criminality is outside the replay. On Prohibition 1919 the pricing option is then no
+longer blocked by heavy drinkers' own deaths. Candidate homes: Freedom (chosen risk), Harm (irreparable), L135.
+8.131 ruling (author, 2026-11-08): `meta^x` in L58 means levels of meta: meta, meta-meta, meta-meta-meta... (learning to
+learn, learning to learn to learn). Applied: the meta tier holds every meta level summed for now; how deeper levels
+weigh against shallower ones (each a further priority step, or compounding) is open within the ruling. Sure Start 1998's
+reading is unchanged until that weighting is set.
