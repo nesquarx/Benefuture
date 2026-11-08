@@ -1,0 +1,144 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): UN Security Council Resolution 912, 21 April 1994,
+# reducing UNAMIR in Rwanda from about 2,500 to 270 personnel. As of the decision: the 11 January 1994 cable from
+# UNAMIR's commander reporting an informant's account of plans and lists to exterminate Tutsi; mass killing since
+# 7 April; ten Belgian peacekeepers killed on 7 April and Belgium's withdrawal; the commander's request for
+# reinforcement and a stronger mandate (about 5,000 troops). Sources recalled from the public record (UN
+# Independent Inquiry 1999 retells the as-of record; primary documents not seen). Builders know the outcome.
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "unamir_drawdown_1994"
+title = "UN Security Council reduces UNAMIR in Rwanda to 270 personnel (Resolution 912, 21 April 1994)"
+family = "security"
+era = "1994"
+tier = "full"
+decision_date = "1994-04-21"
+decision_makers = ["UN Security Council"]
+actual_choice = "reduce_to_270"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+
+[[sources]]
+id = "un_mission_record"
+title = "Outcomes of UN missions reduced, withdrawn or reinforced before 1994 (ONUC 1960-64, UNAVEM II 1991-93, UNTAC 1992-93, UNOSOM I and II 1992-94, ONUMOZ 1992-94)"
+as_of_date = "1994-04-20"
+url = "https://peacekeeping.un.org/en/past-peacekeeping-operations"
+notes = "Outcomes as known by April 1994, recalled; primary records not seen."
+
+[[ groups ]]
+id = "targeted_civilians"
+name = "Tutsi and moderate Hutu civilians (about 1.2 million; 1991 census about 8.4% Tutsi of 7.1 million, plus targeted Hutu; judgment)"
+population = 1200
+baseline_u = 30.0
+baseline_h = 35.0
+
+[[ groups ]]
+id = "other_rwandans"
+name = "Other residents of Rwanda (about 6 million)"
+population = 6000
+baseline_u = 30.0
+baseline_h = 35.0
+
+[[ groups ]]
+id = "peacekeepers"
+name = "Peacekeepers deployed or to be deployed (about 5 thousand)"
+population = 5
+baseline_u = 50.0
+baseline_h = 50.0
+
+# Magnitudes (judgment, stated, as of 21 April): killing at the reported pace of the first two weeks (tens of
+# thousands, with lists and radio incitement) would, unchecked for three months, reach about 500 thousand of the
+# targeted group; a mission able to protect concentrations and deter would cut that to about 100 thousand
+# (judgment; no as-of estimate of a counterfactual existed). A death takes u and h to zero: group means fall by
+# deaths/1,200 x baseline. Peacekeeper deaths in a reinforced Chapter VII mission: about 0.1 thousand (judgment,
+# from the ten Belgians and UNOSOM II's losses).
+
+[[ options ]]
+id = "maintain_2500"
+name = "Keep UNAMIR at about 2,500 under its existing Chapter VI mandate"
+source = "un_mission_record"
+known_date = "1994-04-07"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [-9.3, 0.0, 0.0]
+pred_dh = [-10.8, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [370.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "killing_continues_under_weak_mandate"
+p_chain = ["killing_continues_with_chapter_vi_mission"]
+du = [-12.5, 0.0, 0.0]
+dh = [-14.6, 0.0, 0.0]
+irreparable = [500.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
+du = [-2.5, 0.0, 0.0]
+dh = [-2.9, 0.0, 0.0]
+irreparable = [100.0, 0.0, 0.0]
+
+[[ options ]]
+id = "reduce_to_270"
+name = "Reduce UNAMIR to 270 personnel (Resolution 912)"
+source = "un_mission_record"
+known_date = "1994-04-21"
+is_inaction = false
+scope_delta = -0.2
+pred_du = [-10.8, 0.0, 0.0]
+pred_dh = [-12.6, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [433.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "killing_escalates_after_reduction"
+p_chain = ["killing_escalates_after_un_reduction"]
+du = [-12.5, 0.0, 0.0]
+dh = [-14.6, 0.0, 0.0]
+irreparable = [500.0, 0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
+du = [-2.5, 0.0, 0.0]
+dh = [-2.9, 0.0, 0.0]
+irreparable = [100.0, 0.0, 0.0]
+
+[[ options ]]
+id = "reinforce_5000_chapter_vii"
+name = "Reinforce to about 5,000 with a Chapter VII mandate to protect civilians (the commander's request)"
+source = "un_mission_record"
+known_date = "1994-04-15"
+is_inaction = false
+scope_delta = 0.2
+pred_du = [-5.8, 0.0, -0.4]
+pred_dh = [-6.8, 0.0, -1.4]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [233.0, 0.0, 0.1]
+
+[[ options.scenarios ]]
+name = "strong_mission_contains_killing"
+p_chain = ["strong_mission_contained_violence"]
+du = [-2.5, 0.0, -0.4]
+dh = [-2.9, 0.0, -1.4]
+irreparable = [100.0, 0.0, 0.1]
+
+[[ options.scenarios ]]
+name = "containment_fails"
+p_chain = []
+complement = true
+du = [-12.5, 0.0, -0.4]
+dh = [-14.6, 0.0, -1.4]
+irreparable = [500.0, 0.0, 0.1]
+
+[counterfactual]
+actual_floor_u_delta = -12.5
+actual_floor_h_delta = -14.6
+actual_irreparable = 500.0
+alt_option = "reinforce_5000_chapter_vii"
+methods = ["placeholder: Kuperman 2001 and Feil 1998 disagree on what reinforcement could have saved; not extracted"]
+est_floor_u_delta_diff = [5.0, 2.0]
+est_floor_h_delta_diff = [6.0, 2.5]
+est_irreparable_diff = [-200.0, -75.0]

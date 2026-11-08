@@ -1,0 +1,5 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+un_mission_record,REC-onuc,1965-12-31,1965-12-31,1965-12-31,1.0,1.0,"record"
+un_mission_record,REC-unavem,1993-12-31,1993-12-31,1993-12-31,1.0,1.0,"record"
+un_mission_record,REC-untac,1993-09-30,1993-09-30,1993-09-30,0.0,0.0,"record"
+un_mission_record,REC-unosom2,1993-10-31,1993-10-31,1993-10-31,0.0,0.0,"record"
