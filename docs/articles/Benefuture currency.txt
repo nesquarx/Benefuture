@@ -138,6 +138,16 @@ Currency supply is endogenous — directly coupled to net measured [[Good]] minu
 
 '''Cross-domain friction:''' The no-direct-exchange rule imposes a real cost: transactions outside a [[Sophont]]'s primary production [[Domain]] are more expensive in production-domain currency than in consumption-domain currency (a singer pays less for a microphone than an astrophysicist, the same singer pays much more for a telescope than the astrophysicist). This is the price of preventing wealth-to-political-power conversion via full fungibility. The friction stays manageable because most human activity is genuinely multi-domain (a meal simultaneously touches Agriculture, Health, Culture, and Social domains), [[Benesophont#Aspects|sophont baseline]] covers fundamental cross-domain needs, and the price differential itself serves as a correct information signal directing sophonts toward currencies whose models best understand their transactions.
 
+===In simulation===
+* Credence from the record keeps the currency regime working under heavy-tailed side harm, where a plain accuracy score halts runs ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]); sampling error in the causal shares never mints or destroys currency.
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Good mints, harm burns: value creation expands supply and a harm penalty contracts it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>value_creation_expands_supply</code>, <code>harm_penalty_contracts_supply</code>]).
+* Escrow: upfront payment plus escrow equals the nominal payment, and with no confidence everything is held ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>escrow_conservation</code>, <code>zero_confidence_escrow_blackout</code>]).
+* Prices: the quoted price is the negative of the actor's net credit, negative when predicted value exceeds cost, and lower in the currency whose models understand the transaction ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>quoted_price_equals_negative_net_delta</code>, <code>negative_price_when_upfront_exceeds_cost</code>, <code>competing_currency_pricing_disparity</code>]).
+* No arbitrage between currencies ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>no_arbitrage_pure_swap</code>, <code>closed_cycle_arbitrage_negative</code>]); a currency needs a qualified model behind it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>currency_requires_qualified_model</code>]).
+
 ==References==
 <references />
-<small>AI Disclaimer: This article is 25% AI compiled with 75% human notes.</small>
+<small>AI Disclaimer: This article is 25% AI compiled with 75% human notes; the simulation notes and formal reference are AI written.</small>

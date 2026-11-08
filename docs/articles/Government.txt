@@ -132,6 +132,17 @@ Benefuture prioritizes peaceful cooperation and conflict prevention through dipl
 
 '''Transparency:''' Benefuture strives for transparency in its defense policies and capabilities, to the extent that it does not compromise its security.
 
+=== In simulation ===
+* Ballots of credences, each shrunk to the voter's calibration record, resist a colluding bloc of confident experts: where outcomes stay hidden, plain votes decided 75% right, credences taken as stated 67%, credences weighted by calibration 96% ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]). The bonus for minority choices is what makes it work: its trials surface the hidden outcomes that calibration needs.
+* Against status-quo institutions in the same simulated world, Benefuture's governance kept outcomes right 97.4% of the time against 88.5%.
+
+=== Formal reference ===
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Expertise-weighted voting: domain reputation and grounded impact are never negative, and relative expertise sums to one ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Democracy.lean <code>get_domain_reputation_nonneg</code>, <code>get_grounded_domain_impact_nonneg</code>, <code>relative_expertise_sum_one</code>]).
+* Credence ballots: a voter's weight from stated confidence, shrunk to its calibration and capped ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>cfd_ballot_weight_ref</code>]).
+* Adversarial governance: revealing a flaw dominates exploiting it, a colluder gains by defecting, good-faith dissent costs nothing, fabrication is penalised ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Adversarial.lean <code>revelation_strictly_dominates</code>, <code>collusive_defection_strictly_dominates</code>, <code>good_faith_dissent_zero_penalty</code>, <code>malicious_fabrication_penalized</code>]).
+* Thresholds: debatable ones go to debate, others are perturbed within freedom ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>threshold_governance_soundness</code>]).
+
 === References ===
 <references />
-----<small>AI Disclaimer: This article is</small> <small>40% AI compiled with 60% human notes.</small>
+----<small>AI Disclaimer: This article is</small> <small>40% AI compiled with 60% human notes; the simulation notes and formal reference are AI written.</small>
