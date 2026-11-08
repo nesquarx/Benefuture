@@ -1,0 +1,157 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): the US government's Operation Warp Speed, announced
+# 15 May 2020: funding several COVID-19 vaccine candidates in parallel and manufacturing doses at risk, before
+# efficacy was known. As of the decision: about 90 thousand US deaths; no coronavirus vaccine ever licensed (SARS
+# and MERS programmes stopped); the fastest vaccine licensure on record about four years (mumps), H1N1 vaccine in
+# months in 2009 on an existing platform; several candidates in phase 1 (mRNA, adenoviral vector, protein).
+# Sources recalled from the public record; primary documents not seen. Builders know the outcome (two mRNA
+# vaccines authorised in December 2020, about 95% efficacy).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "operation_warp_speed_2020"
+title = "US funds parallel COVID-19 vaccine development and at-risk manufacturing (Operation Warp Speed, May 2020)"
+family = "health"
+era = "2020"
+tier = "full"
+decision_date = "2020-05-15"
+decision_makers = ["US administration (HHS, DoD)"]
+actual_choice = "parallel_development_and_at_risk_manufacturing"
+actual_outcome_class = "good"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+# Priority tiers (8.129; declared before the replay): older adults' losses are health (median understanding;
+# happiness half satisficing, half baseline); everyone else's general (median; satisficing and median happiness).
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0.5, 0.5, 0, 0], [0, 0, 0.5, 0, 0.5, 0]]
+
+[[sources]]
+id = "vaccine_record"
+title = "Vaccine development timelines for novel and emergent pathogens before May 2020"
+as_of_date = "2020-05-14"
+url = "https://www.nejm.org/doi/full/10.1056/NEJMp2005630"
+notes = "Lurie et al. 2020 (NEJM), 'Developing Covid-19 Vaccines at Pandemic Speed', on parallel development and at-risk manufacturing; timelines recalled; primary records not seen."
+
+[[ groups ]]
+id = "older_adults"
+name = "US adults 65 and over (about 54 million), in thousands"
+population = 54000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "rest_of_population"
+name = "Other US residents (about 276 million), in thousands"
+population = 276000
+baseline_u = 55.0
+baseline_h = 62.0
+
+# Magnitudes (judgment, stated): without a vaccine before 2022, about 300 thousand further US deaths through 2021,
+# mostly older adults (240 of them 65 and over), with distancing costs to everyone (happiness -1). A vaccine
+# available in early 2021 averts about 60% of the 2021 deaths and most distancing costs; a conventional sequence
+# (each phase after the last, manufacturing after licensure) that succeeds delivers about a year later, averting a
+# third as much; funding development only, without at-risk manufacturing, delivers about four months later than
+# Warp Speed. Cost: about 10 billion dollars (happiness -0.02 across the rest of the population); at-risk doses
+# wasted if candidates fail add -0.01.
+
+[[ options ]]
+id = "conventional_sequential_development"
+name = "Leave development to the usual sequence: phases in turn, manufacturing after licensure"
+source = "vaccine_record"
+known_date = "2020-03-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.9, -0.9]
+pred_nha = [0.9, 0.9]
+pred_irreparable = [220.0, 55.0]
+
+[[ options.scenarios ]]
+name = "vaccine_late_2021"
+p_chain = ["vaccine_for_emergent_pathogen_licensed_within_two_years"]
+dh = [-0.75, -0.75]
+nha = [0.75, 0.75]
+irreparable = [190.0, 48.0]
+
+[[ options.scenarios ]]
+name = "no_vaccine_before_2022"
+p_chain = []
+complement = true
+dh = [-1.0, -1.0]
+nha = [1.0, 1.0]
+irreparable = [240.0, 60.0]
+
+[[ options ]]
+id = "parallel_development_and_at_risk_manufacturing"
+name = "Fund several candidates in parallel and manufacture doses at risk before efficacy is known"
+source = "vaccine_record"
+known_date = "2020-05-15"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.8, -0.82]
+pred_nha = [0.8, 0.8]
+pred_irreparable = [200.0, 50.0]
+
+[[ options.scenarios ]]
+name = "vaccine_early_2021"
+p_chain = ["vaccine_for_emergent_pathogen_licensed_within_two_years"]
+dh = [-0.45, -0.45]
+nha = [0.45, 0.45]
+irreparable = [100.0, 25.0]
+
+[[ options.scenarios ]]
+name = "candidates_fail"
+p_chain = []
+complement = true
+dh = [-1.0, -1.01]
+nha = [1.0, 1.0]
+irreparable = [240.0, 60.0]
+
+[[ options.scenarios ]]
+name = "programme_cost"
+p_chain = []
+dh = [0.0, -0.02]
+
+[[ options ]]
+id = "fund_development_without_at_risk_manufacturing"
+name = "Fund parallel development, but manufacture only after efficacy results"
+source = "vaccine_record"
+known_date = "2020-04-15"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.85, -0.86]
+pred_nha = [0.85, 0.85]
+pred_irreparable = [210.0, 52.0]
+
+[[ options.scenarios ]]
+name = "vaccine_mid_2021"
+p_chain = ["vaccine_for_emergent_pathogen_licensed_within_two_years"]
+dh = [-0.6, -0.6]
+nha = [0.6, 0.6]
+irreparable = [150.0, 38.0]
+
+[[ options.scenarios ]]
+name = "candidates_fail"
+p_chain = []
+complement = true
+dh = [-1.0, -1.0]
+nha = [1.0, 1.0]
+irreparable = [240.0, 60.0]
+
+[[ options.scenarios ]]
+name = "programme_cost"
+p_chain = []
+dh = [0.0, -0.01]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -0.5
+actual_irreparable = 125.0
+alt_option = "conventional_sequential_development"
+methods = ["placeholder: deaths averted by vaccination in 2021 (published estimates of the order of hundreds of thousands in the US, recalled) priced as judgment"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [-0.4]
+est_irreparable_diff = [100.0]

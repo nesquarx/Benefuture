@@ -1,0 +1,6 @@
+event,trial_id,date,occurred,citation_with_page
+vaccine_for_emergent_pathogen_licensed_within_two_years,h1n1-2009,2009-11-30,1,"H1N1 pandemic vaccine licensed within months on the seasonal platform (recalled)"
+vaccine_for_emergent_pathogen_licensed_within_two_years,sars-2003,2005-12-31,0,"SARS vaccine programmes stopped when the outbreak ended (recalled)"
+vaccine_for_emergent_pathogen_licensed_within_two_years,ebola-2014,2016-12-31,0,"rVSV-ZEBOV effective in the 2015 ring trial, licensed 2019 (recalled)"
+vaccine_for_emergent_pathogen_licensed_within_two_years,zika-2016,2018-12-31,0,"Zika vaccine candidates not licensed (recalled)"
+vaccine_for_emergent_pathogen_licensed_within_two_years,mers-2012,2014-12-31,0,"MERS vaccine candidates not licensed (recalled)"
