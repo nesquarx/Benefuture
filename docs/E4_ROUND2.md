@@ -236,3 +236,11 @@ not 94% no programme; UNAMIR's credence is 58% with 3 flips, so it moves from ro
 restated: robust and right 3 (smallpox, Four Pests, Irish guarantee), robust and wrong 1 (swine flu), contested 5
 (UNAMIR, DDT, German nuclear, Sri Lanka, Warp Speed), unclear 1 (Prohibition); right on 8 of 9 settled cases as
 before.
+
+## Contrast case: Head Start, 1965 (early childhood against remedial reading; committed before replay, kinds declared before; outcome unclear, not scored)
+
+Read on fresh loads (after the mutation fix):
+- Benefuture: Head Start, compensated. Cell unclear/agrees.
+- Baselines: status quo, fewest deaths (no deaths at stake) and equal weight no new programme; mean welfare Head Start.
+- Rule battery (17 sets): Head Start 94%; only the strong per-group reading without compensation keeps the status quo (other residents' small cost). The tiers-off rule set also chooses Head Start. Credence (320 draws): Head Start 75%, remedial reading 19%, none 6%. Flips 3.
+- Reading: the tiers do not decide this case: Head Start wins on size as priced (the as-of record for early-childhood projects was 3 of 3 against 1 of 2 for remedial programmes, so its expected gain is larger), not on kind. A cleaner contrast needs equal as-of evidence for both options. Of the two contrast cases so far, the tiers decided one (NSF 1950).
