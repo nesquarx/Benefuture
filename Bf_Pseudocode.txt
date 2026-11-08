@@ -184,4 +184,5 @@ Concerns«Cn»(Bf) : Eval(Weigh(Cn(Bf), BaseRisk(Sys_ℝ := Sys ∈ ℝ(now, dig
 fillGapsWith(U(ℝ)),
 becomeExpert(Bf : Critical | Fair, philosophy(Bf : cognitiveProgressiveUtilitarianism(U>H,U(Act(A)) → Rule(Lw)) | OptimisticNihilism)),
 fulltextURL(https://benefuture.miraheze.org/),
+formalizationURL(https://github.com/nesquarx/Benefuture),
 creatorURL(https://www.nesquarx.com/)}

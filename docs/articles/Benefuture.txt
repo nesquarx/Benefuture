@@ -196,6 +196,7 @@ Concerns«Cn»(Bf) : Eval(Weigh(Cn(Bf), BaseRisk(Sys_ℝ := Sys ∈ ℝ(now, dig
 fillGapsWith(U(ℝ)),
 becomeExpert(Bf : Critical | Fair, philosophy(Bf : cognitiveProgressiveUtilitarianism(U>H,U(Act(A)) → Rule(Lw)) | OptimisticNihilism)),
 fulltextURL(https://benefuture.miraheze.org/),
+formalizationURL(https://github.com/nesquarx/Benefuture),
 creatorURL(https://www.nesquarx.com/)}
 </syntaxhighlight>
 </div>
@@ -236,5 +237,8 @@ Critical analysis of common concerns about Benefuture must be considered beyond 
 ==Credits==
 Benefuture is a thought experiment by [https://www.nesquarx.com Nesquarx]
 
+==Formalization==
+Benefuture is being formalized in an open repository, [https://github.com/nesquarx/Benefuture Benefuture on GitHub]. Its pseudocode (above) is the source; the repository proves its core rules in the Lean proof assistant (about four hundred theorems, none left unproved), writes the rules once as Lean reference functions, and runs them in simulated societies written in Julia: toy worlds of beings, models, currencies and votes, tested against stated hypotheses on paired seeds, with every threshold listed as governed. It also replays historical decisions on what was known at the time, against simple rules on the same prices, and registers forecasts of decisions still to come before their outcomes are known. What is proved, what is simulated and what remains open is kept in its [https://github.com/nesquarx/Benefuture/blob/main/README.md overview] and [https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md claims record]; core articles link the proofs and reference functions for their rules under "Formal reference".
+
 == '''References''' ==
-<references /><small>AI Disclaimer: This article is</small> <small>95% human written with 5% AI formatting and literature review.</small>
+<references /><small>AI Disclaimer: This article is</small> <small>95% human written with 5% AI formatting and literature review; the formalization paragraph is AI written.</small>
