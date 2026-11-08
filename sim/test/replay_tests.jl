@@ -452,3 +452,11 @@ end
     o = only(x for x in replay_decision(c).case["options"] if x["id"] == "do_nothing")
     @test o["pred_irreparable"][1] ≈ event_rate(3, 7) * 70.0
 end
+
+@testset "Replay: an exact tie on value is reported, not broken silently by option order" begin
+    # LWCF 1964 under the collapsed scalar reading: parks and the cash rebate tie exactly, and the choice followed
+    # option order without a word.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "land_water_conservation_fund_1964.toml"))
+    c["_rule_overrides"] = Dict{String,Any}("tiers" => false)
+    @test any(occursin("tie", k) for k in keys(replay_decision(c).degraded))
+end

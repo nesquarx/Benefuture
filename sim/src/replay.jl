@@ -912,6 +912,11 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         end
     end
 
+    # An exact tie on value with another option is reported, not broken silently by option order (found on the
+    # LWCF 1964 contrast case); the deterministic choice stands, loudly.
+    tied = [String(options[i]["id"]) for i in 1:n_opts if i != chosen_idx && i != idle_idx &&
+            abs(opt_values[i] - opt_values[chosen_idx]) <= 1e-12 * max(1.0, abs(opt_values[chosen_idx]))]
+    isempty(tied) || (degraded["exact tie on value with " * join(tied, ", ") * ": broken by option order"] = 1)
     chosen_opt = options[chosen_idx]
     chosen_id = String(chosen_opt["id"])
     actual_id = String(case_dict["actual_choice"])
