@@ -2991,8 +2991,7 @@ share of shared errors is at least 0.9 and exceeds the typical pair's by 0.3 is 
 ballot is folded. Probe (6 paired seeds, 800 decisions, calibrated credence ballots, a bloc of 30% of top experts
 copying a mediocre voter): copies counted as independent 0.934, counted once 0.965 (z ≥ 2); with no copiers, detection
 on and off both 0.983 (equivalent within 0.5 points). Honest voters, even deliberating together, err together far less
-than copies do, which the output-only test of variance could not see. Detection (`dedupe`) stays off by default until
-the full suite runs with it on. Governed: shared-error floor 0.9, margin over the median pair 0.3, at least 10
+than copies do, which the output-only test of variance could not see. Detection (`dedupe`) is on by default: the full M5 test file passes with it on (16 test sets). Governed: shared-error floor 0.9, margin over the median pair 0.3, at least 10
 outcomes. Gaming: a bloc that injects independent noise into its copies to spread its errors also spreads its votes,
 which is no longer copying; a bloc that copies only on decisions that stay hidden is AdvAp's case (8.38), and its
 known-outcome record stays honest.

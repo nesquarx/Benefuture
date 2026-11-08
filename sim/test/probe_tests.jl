@@ -1162,13 +1162,13 @@ end
     acc(tr) = mean(tr.correct_trace[401:end])
     arm(; kw...) = [acc(run_m5(M5Params(m3, 1:4; decisions = 800, signal_σ = 12.0, ability_spread = 1.5, p_apparent = 0.4,
                                         ballot = :credence_calibrated, kw...); seed)) for seed in 1:6]
-    none = arm(); counted = arm(copiers = bloc, copy_leader = leader); once = arm(copiers = bloc, copy_leader = leader, dedupe = true)
+    none = arm(dedupe = false); counted = arm(copiers = bloc, copy_leader = leader, dedupe = false); once = arm(copiers = bloc, copy_leader = leader)
     @test paired_effect(none .- counted; z = 2.0).significant && mean(none .- counted) > 0.005   # measured 0.983 vs 0.934
     # (b) copies err together on known outcomes far more than honest pairs, even deliberating ones (Lean
     # `coerror_copy_ref`); counting such pairs once recovers accuracy (measured 0.965 against 0.934) ...
     @test paired_effect(once .- counted; z = 2.0).significant
     # ... and leaves an honest population alone (equivalent within 0.5 points; measured 0.983 both). Judged on stated
     # credences instead (variance of differences), honest deliberating experts were folded (0.926) and copies not caught.
-    honest = arm(dedupe = true)
+    honest = arm()
     @test equivalent(honest .- none; margin = 0.005).equivalent
 end
