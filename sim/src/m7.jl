@@ -247,7 +247,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
                 report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0,
-                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0, tiers::Bool = false)
+                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0, tiers::Bool = false, h_profiles::Bool = tiers)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -271,6 +271,17 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     quality = lognormal_mean1(Xoshiro(hash((seed, :teachers))), teacher_cv, p.n)
     # A learner's reception is log-normal of mean 1 (a few learn a lot; 3.7), so ε stays the mean share of the gap.
     receive(n) = exp.(reception_σ .* randn(trng, n) .- reception_σ^2 / 2)
+    # Personal happiness profiles (8.129, author 2026-11-08): each being's split of a happiness change over the
+    # kinds (eudaimonic, shareable, satisficing, baseline, median, sensory peak), a world property on its own stream;
+    # mostly satisficing on average, varying by being.
+    hprof = if tiers && h_profiles
+        hrng = Xoshiro(hash((seed, :happiness_profiles)))
+        m = [0.15, 0.15, 0.4, 0.1, 0.1, 0.1]
+        P = [m[k] * exp(0.5 * randn(hrng)) for _ in 1:p.n, k in 1:6]
+        P ./ sum(P; dims = 2)
+    else
+        nothing
+    end
     s = toy_state(p, rng)
     novelty = novelty_min .+ (1 - novelty_min) .* rand(rrng, p.n)  # a per-being trait: how novel its perspective (world)
     tacit = zeros(p.n)
@@ -400,7 +411,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     base = [k == length(opts) && lesson_seen !== nothing ? lesson_seen : o for (k, o) in enumerate(opts)]
                     predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
                                          o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in base]
-                    i = choose(view, predicted, p; tiers)
+                    i = choose(view, predicted, p; tiers, kinds = [k <= options ? :ordinary : :teach for k in eachindex(predicted)], hprof)
                     i == 1 && continue
                     acted += 1
                     if i - 1 <= options
@@ -473,7 +484,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                                             tacit = tacit[teacher]))
             end
             plans = [ordinary; taught]
-            i = choose(s, plans, p; tiers)
+            i = choose(s, plans, p; tiers, kinds = [k <= length(ordinary) ? :ordinary : :teach for k in eachindex(plans)], hprof)
             push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
             push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
             if i > 1
@@ -560,7 +571,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                     end
                     predicted = [ToyPlan(o.du .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.du .!= 0),
                                          o.dh .+ pred_σ .* action_scale .* randn(vrng, p.n) .* (o.dh .!= 0)) for o in opts]
-                    i = choose(view, predicted, p; tiers)
+                    i = choose(view, predicted, p; tiers, kinds = [k <= options ? :ordinary : :teach for k in eachindex(predicted)], hprof)
                     i == 1 && continue
                     acted += 1
                     if i - 1 <= options
@@ -595,7 +606,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                                                 tacit = tacit[teacher]))
                 end
                 plans = [ordinary; taught]
-                i = choose(s, plans, p; tiers)
+                i = choose(s, plans, p; tiers, kinds = [k <= length(ordinary) ? :ordinary : :teach for k in eachindex(plans)], hprof)
                 push!(tr.chosen, i); push!(tr.actions, i > 1 ? 1 : 0)
                 push!(tr.kind, i == 1 ? :none : i <= nplans + 1 ? :ordinary : :lesson)
                 if i > 1

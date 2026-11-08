@@ -88,12 +88,12 @@ end
 
 G over inaction and `plans`: 1 for inaction, k + 1 for `plans[k]`.
 """
-function choose(s::ToyState, plans, p::ToyParams; tiers::Bool = false)
+function choose(s::ToyState, plans, p::ToyParams; tiers::Bool = false, kinds = nothing, hprof = nothing)
     for plan in plans
         check(length(plan.du) == length(s.u) && length(plan.dh) == length(s.h), "plan must cover every being")
     end
     fu, fh, pu = floor_quantile(s.u, p.q), floor_quantile(s.h, p.q), maximum(s.u)
-    values = [0.0; [tiers ? tiered_plan_value(plan, p, s.u, s.h) : plan_value(plan, p) for plan in plans]]   # 8.129
+    values = [0.0; [tiers ? tiered_plan_value(plans[k], p, s.u, s.h; kind = kinds === nothing ? :ordinary : kinds[k], hprof) : plan_value(plans[k], p) for k in eachindex(plans)]]   # 8.129
     d_min_u = [0.0; [floor_quantile(s.u .+ plan.du, p.q) - fu for plan in plans]]
     d_min_h = [0.0; [floor_quantile(s.h .+ plan.dh, p.q) - fh for plan in plans]]
     d_max_u = [0.0; [maximum(s.u .+ plan.du) - pu for plan in plans]]
@@ -171,7 +171,8 @@ the global curve (author, 2026-11-08): an understanding gain that carries a bein
 being at or below the floor quantile is floor, else median; happiness likewise baseline or median (comparable in
 the toy world, so global). Losses keep their passing-harm weight as in `being_value`. Novelty is not typed here.
 """
-function tiered_plan_value(plan::ToyPlan, p::ToyParams, u::AbstractVector, h::AbstractVector)
+function tiered_plan_value(plan::ToyPlan, p::ToyParams, u::AbstractVector, h::AbstractVector;
+                           kind::Symbol = :ordinary, hprof::Union{Nothing,AbstractMatrix} = nothing)
     passing = 4
     fu, fh, pu = floor_quantile(u, p.q), floor_quantile(h, p.q), maximum(u)
     total = 0.0
@@ -179,8 +180,20 @@ function tiered_plan_value(plan::ToyPlan, p::ToyParams, u::AbstractVector, h::Ab
         du, dh = plan.du[b] / p.th, plan.dh[b] / p.th
         du == 0 && dh == 0 && continue
         U = zeros(6); H = zeros(6)
-        U[u[b] + plan.du[b] > pu ? 1 : u[b] <= fu ? 5 : 4] = du
-        H[h[b] <= fh ? 4 : 5] = dh
+        # Kinds first, position second (8.129): a lesson's gain is teachable understanding (peak if it carries the
+        # learner past the best); otherwise the gain's position on the global curve decides.
+        if kind == :teach && du > 0
+            U[u[b] + plan.du[b] > pu ? 1 : 2] = du
+        else
+            U[u[b] + plan.du[b] > pu ? 1 : u[b] <= fu ? 5 : 4] = du
+        end
+        # Happiness: each being's personal profile over the kinds (eudaimonic, shareable, satisficing) where given
+        # (author, 2026-11-08: the same outcome rates differently for different beings), else by position.
+        if hprof !== nothing
+            H .= dh .* view(hprof, b, :)
+        else
+            H[h[b] <= fh ? 4 : 5] = dh
+        end
         tiers = [(i == passing ? abs(min(du, 0)) + abs(min(dh, 0)) : 0.0, w) for (i, w) in enumerate(HARM_SCHEDULE)]
         total += tiered_value(U, H, zeros(6); harm_wt = harm_weight(tiers; λ = p.gp.λ), p.gp...)
     end

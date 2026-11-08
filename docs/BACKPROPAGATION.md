@@ -2909,3 +2909,14 @@ battery's seventeenth set); cases declare group kinds in `[tiers]`, options may 
 `n_tiers`); undeclared, changes are typed by global position. All 26 cases re-run (docs/E4_ROUND2.md): no choice
 changes, credences move at most five points, because group-level kinds are shared by every option of a case.
 Priorities decide only where options differ in kind for the same group; option-level kinds and contrast cases next.
+
+8.129 in M7 with kinds (2026-11-08): lessons' gains typed teachable (peak past the best), other gains by global
+position; each being's happiness split by a personal profile over the kinds (mostly satisficing on average, varying
+by being; own stream). Hypothesis stated before measuring: the understanding floor or peak rises, with no fall of the
+happiness floor (z = 2). Over 8 paired seeds (n 40, 120 steps): understanding floor +0.13 ± 0.37, median +0.18 ±
+0.36, peak +0.11 ± 0.39 (no effect; hypothesis not supported, equivalence not shown); happiness floor +0.14 ± 0.07
+(at z ≈ 2, not counted; the fall without kinds is gone). Reading: in M7 each entity chooses among a few random
+ordinary plans and at most one lesson, and lessons already win on value most of the time they are offered, so typing
+them teachable changes few choices; research is a fixed share, not a choice. Tiers will bite in M7 when research,
+teaching and ordinary work compete for the same effort (as in the probe world), which needs research as a choice.
+Tiers stay off by default in M7.
