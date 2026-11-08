@@ -146,3 +146,10 @@ and E5 candidates (research funding against applied programmes, teaching reforms
 - Rule battery (17 sets): Warp Speed 100%. Credence (540 draws): Warp Speed 45%, conventional sequence 29%, development without at-risk manufacturing 26%.
 - Sensitivity flips (7): six to development without at-risk manufacturing, one to the conventional sequence.
 - Reading: right on the central estimates, but contested: the as-of base rate for a vaccine against an emergent pathogen within two years is low (1 of 5, H1N1 on an existing platform), and the options' tolls differ by a few tens of thousands of deaths out of about 300, so moderate errors in the judged magnitudes flip the choice. Not counted as a robust win. Close in size; the options differ in timing, not in kind.
+
+## Four Pests campaign, 1958 (case committed before replay; tiers declared before replay)
+
+- Benefuture: the campaign against rats, flies and mosquitoes, leaving sparrows. Cell bad/differs: it avoids the decision that went badly; F1–F4 false.
+- Baselines: status quo no campaign; minimum deaths, mean welfare and equal weight all leave sparrows out.
+- Rule battery (17 sets): three pests 100%. Credence (60 draws): three pests 94%, no campaign 6%. No single-magnitude flips.
+- Reading: robust and right, but on thin evidence for the decisive risk: the insect-damage chance comes from one weakly documented precedent (Prussia's sparrow bounties, 1 of 1, Laplace 2/3) and the ornithologists' warnings, which the case does not price separately. Simple rules agree, so the case does not separate Benefuture from them. It is also the clearest case so far for the environmental block: the sparrow cull is the option with an environmental pathway to health harm.
