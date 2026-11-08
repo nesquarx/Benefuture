@@ -2887,3 +2887,18 @@ positional tiers (understanding median or floor, happiness baseline or median), 
 against understanding relative to the scalar reading. Tiers need kind-typed effects (teaching as teachable,
 research as peak or paradigm, happiness as satisficing or shareable) before they help in M7. Tiers stay off by
 default there (`tiers = false`). Next: kinds on M7's plans.
+
+8.129 kinds across beings and contexts (author, 2026-11-08): "in reality particularly for happiness the same
+outcome may rate differently for different beings, while for U a model has the same priority spread for anyone,
+but the impact profiles can vary by context, the same aerodynamics drag which rates much lower than seatbelt in a
+car can rate higher than seatbelts in an aircraft." Design consequences for the kinds work:
+(1) Happiness: an outcome's split across happiness tiers is per being (a personal profile mapping the outcome to
+eudaimonic, shareable, satisficing, ... for that being), drawn as a world property with its own noise, read
+through outputs only (stated and revealed responses), never assumed uniform.
+(2) Understanding: a model's tier spread (peak, teachable, meta, ...) is a property of the model, the same for
+every being who holds it.
+(3) Impact by context: what a piece of understanding is worth depends on the context it is applied in (drag below
+seatbelts in a car, above them in an aircraft). This is the priority-per-thing weighting of 8.117 made
+context-dependent: the weight of a thing is its predicted long-term contribution in the context of use, set by
+that context's (domain's) governance, consistent with per-domain tier schedules (8.129 clarified).
+Candidate homes: L57–L59 and the Understanding (aggregation) and Happiness articles.
