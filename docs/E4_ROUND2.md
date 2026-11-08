@@ -263,3 +263,8 @@ vaccine's adverse events at any plausible rate, so the error lies in the magnitu
 wait for evidence of spread with vaccine on hand (the stockpile option prices late vaccine as averting only a quarter),
 not in the base rate. No unrecorded trials are written into the case file: the as-of reports of sporadic human
 infections are recalled, not verified.
+
+## Contrast case: public broadcasting or a commercial entertainment subsidy, 1967 (stylised; passes contrast_check; committed before replay; not scored)
+
+- Benefuture: public broadcasting. Rule battery: public broadcasting 100%, including the tiers-off set. Credence: 99%. Baselines: mean welfare the commercial subsidy (as designed: equal on the collapsed scalar); fewest deaths and status quo neither.
+- Reading: the tiers do not decide; understanding's priority over happiness does (value weights and the understanding floor), before kinds enter. A contrast that isolates the tiers needs both options to deliver the same quantity in different kinds (understanding against understanding, as in NSF 1950, or happiness against happiness), not understanding against happiness. Contrast tally: tiers decided 1 of 4 (NSF); the others were decided by size of evidence (Head Start), by compensation (tobacco) and by the priority of understanding over happiness (public broadcasting).
