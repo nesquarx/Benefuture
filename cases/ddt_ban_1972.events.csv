@@ -1,0 +1,7 @@
+event,trial_id,date,occurred,citation_with_page
+persistent_pollutant_human_harm_found,minamata-mercury,1968-09-26,1,"Minamata methylmercury recognised as cause (recalled)"
+persistent_pollutant_human_harm_found,yusho-pcb,1968-12-31,1,"Yusho PCB poisoning (recalled; high-dose contamination, not background)"
+persistent_pollutant_human_harm_found,ddt-volunteers-hayes,1956-12-31,0,"Hayes volunteer feeding study: no adverse effect (recalled)"
+persistent_pollutant_human_harm_found,ddt-workers-laws,1967-12-31,0,"Laws Montrose plant workers: no adverse effect (recalled)"
+organophosphate_substitution_poisonings,parathion-1960s,1969-12-31,1,"Parathion farmworker poisonings and deaths recorded (recalled)"
+organophosphate_substitution_poisonings,california-1960s,1970-12-31,1,"California occupational pesticide illness reports (recalled)"

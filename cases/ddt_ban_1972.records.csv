@@ -1,0 +1,3 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+pesticide_record,REC-MINAMATA,1968-09-26,1968-09-26,1968-09-26,1.0,1.0,"record"
+pesticide_record,REC-HAYES,1956-12-31,1956-12-31,1956-12-31,0.0,0.0,"record"

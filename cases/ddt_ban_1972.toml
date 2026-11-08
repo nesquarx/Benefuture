@@ -1,0 +1,146 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): the US EPA order of 14 June 1972 (Administrator
+# Ruckelshaus) cancelling DDT for nearly all agricultural uses, against the hearing examiner's recommendation to
+# keep it. As of the decision: eggshell thinning and raptor declines recorded; DDT and its metabolites persistent
+# and accumulating in human fat; no confirmed human harm at background exposure (volunteer and worker studies);
+# organophosphate substitutes acutely toxic to farmworkers. Sources recalled from the public record (the EPA
+# order and the Sweeney hearing record; primary documents not seen). Builders know the outcome (raptor recovery;
+# later IARC classification of DDT as probably carcinogenic; human harm at background levels still contested).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "ddt_ban_1972"
+title = "US EPA cancels DDT for most agricultural uses (14 June 1972)"
+family = "environment"
+era = "1972"
+tier = "full"
+decision_date = "1972-06-14"
+decision_makers = ["EPA Administrator Ruckelshaus"]
+actual_choice = "cancel_agricultural_uses"
+actual_outcome_class = "good"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "pesticide_record"
+title = "Persistent pollutant and pesticide record before June 1972 (Minamata, Yusho, DDT volunteer and worker studies, parathion poisonings, eggshell thinning)"
+as_of_date = "1972-06-13"
+url = "https://www.epa.gov/ingredients-used-pesticide-products/ddt-brief-history-and-status"
+notes = "Recalled; primary records not seen."
+
+[[ groups ]]
+id = "us_population"
+name = "US residents (about 209 million), in thousands"
+population = 209000
+baseline_u = 55.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "farm_workers"
+name = "US farm operators and hired farmworkers (about 4 million), in thousands"
+population = 4000
+baseline_u = 45.0
+baseline_h = 50.0
+
+# Magnitudes (judgment, stated): if DDT at accumulated background levels harms human health, about 2 thousand
+# premature deaths over the long term (cancers, judgment) with mild ill-health across the population; that
+# pathway is environmental (8.118). Cancellation removes most new exposure (residual from persistence: a quarter);
+# keeping minor and public-health uses with a phase-down removes about two thirds. Substitution by organophosphates
+# poisons farmworkers: if it happens at the 1960s parathion rates, about 0.1 thousand deaths over a decade and
+# ill-health among farmworkers; farm costs mildly lower happiness for farm operators.
+
+[[ options ]]
+id = "keep_registration"
+name = "Keep DDT registered (the hearing examiner's recommendation)"
+source = "pesticide_record"
+known_date = "1972-04-25"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.005, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [1.0, 0.0]
+
+[[ options.scenarios ]]
+name = "background_human_harm"
+environmental_health = true
+p_chain = ["persistent_pollutant_human_harm_found"]
+dh = [-0.01, 0.0]
+irreparable = [2.0, 0.0]
+
+[[ options.scenarios ]]
+name = "no_human_harm"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "cancel_agricultural_uses"
+name = "Cancel DDT for nearly all agricultural uses"
+source = "pesticide_record"
+known_date = "1972-06-14"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.001, -0.3]
+pred_nha = [0.0, 0.3]
+pred_irreparable = [0.25, 0.075]
+
+[[ options.scenarios ]]
+name = "residual_human_harm"
+environmental_health = true
+p_chain = ["persistent_pollutant_human_harm_found"]
+dh = [-0.0025, 0.0]
+irreparable = [0.5, 0.0]
+
+[[ options.scenarios ]]
+name = "substitute_poisonings"
+p_chain = ["organophosphate_substitution_poisonings"]
+dh = [0.0, -0.3]
+nha = [0.0, 0.3]
+irreparable = [0.0, 0.1]
+
+[[ options.scenarios ]]
+name = "farm_costs"
+p_chain = []
+complement = true
+dh = [0.0, -0.2]
+
+[[ options ]]
+id = "phase_down_keep_essential"
+name = "Phase DDT down over several years, keeping public-health and minor uses"
+source = "pesticide_record"
+known_date = "1971-01-07"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.002, -0.2]
+pred_nha = [0.0, 0.15]
+pred_irreparable = [0.33, 0.04]
+
+[[ options.scenarios ]]
+name = "residual_human_harm"
+environmental_health = true
+p_chain = ["persistent_pollutant_human_harm_found"]
+dh = [-0.0035, 0.0]
+irreparable = [0.67, 0.0]
+
+[[ options.scenarios ]]
+name = "substitute_poisonings_slower"
+p_chain = ["organophosphate_substitution_poisonings"]
+dh = [0.0, -0.15]
+nha = [0.0, 0.15]
+irreparable = [0.0, 0.05]
+
+[[ options.scenarios ]]
+name = "farm_costs"
+p_chain = []
+complement = true
+dh = [0.0, -0.1]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -0.2
+actual_irreparable = 0.05
+alt_option = "keep_registration"
+methods = ["placeholder: human harm at background levels remains contested; raptor recovery is not a human outcome in this case"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.1]
+est_irreparable_diff = [0.5]
