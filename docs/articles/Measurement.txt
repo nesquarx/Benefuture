@@ -124,6 +124,17 @@ The [[Benefuture]] measurement system addresses the inherent difficulty of quant
 
 '''Continuous Evolution:''' The dynamic nature of the market, with its constant influx of new models and data, ensures that [[Benefuture]]'s understanding of understanding/happiness is always evolving. The "sunset clause" maintains system efficiency by removing outdated models. This continuous search for better metrics reflects the [[Benefuture]] principle of maximizing [[Understanding]].
 
+=== In simulation ===
+* Competing measurement chains expose hidden harm: when one chain counts only half of each loss, reading its output alone hides harm; reading through the measurement domain (a second chain of another paradigm, audits where chains disagree, chains scored against audits) demotes the biased chain after a handful of audits and then reads outcomes at their true size, auditing under 4% of them; honest chains are never demoted, and a wrong majority of agreeing chains loses to a right minority ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* With perfect measurement the floors and peak of understanding never fall; with realistic noise, measured changes that do not clear the threshold of significance do not move decisions.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Assessment: the predicted or measured outcome less the counterfactual prediction, over the threshold ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>As_ref</code>]); significance assessment keeps loss aversion ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Synergy.lean <code>significant_assessment_preserves_loss_aversion</code>]).
+* Metric models: scores weighted in strict order, accuracy and the relative status bar bounded ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Measurement/MetricModel.lean <code>model_score_weights_strictly_ordered</code>, <code>qualified_accuracy_bounds</code>, <code>relative_status_bar_bounds</code>, <code>status_bar_ge_floor</code>]).
+* Measurement chains: no chain may measure itself through others ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>acyclic_ref</code>]); chains are pooled by credence and audited where they diverge ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>pooled_reading_ref</code>, <code>chains_diverge_ref</code>]).
+* A challenger replaces the incumbent only when it beats it by z combined standard errors ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/ParamSpace.lean <code>select_candidate_ref</code>]).
+
 === References ===
 <references />
-<small>AI Disclaimer: This article is 80% Human written with 20% AI formatting and literature review.</small>
+<small>AI Disclaimer: This article is 80% Human written with 20% AI formatting and literature review; the simulation notes and formal reference are AI written.</small>
