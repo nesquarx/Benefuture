@@ -2995,3 +2995,12 @@ than copies do, which the output-only test of variance could not see. Detection 
 outcomes. Gaming: a bloc that injects independent noise into its copies to spread its errors also spreads its votes,
 which is no longer copying; a bloc that copies only on decisions that stay hidden is AdvAp's case (8.38), and its
 known-outcome record stays honest.
+
+Battery coverage of the B5/C3 mechanisms (2026-11-08 check): the economy battery's worlds run transactions, causal
+distribution, the record-based credence and AdvAp, but no new models ever enter (`p_new_model = 0`), so under its
+injected captures the fallback order skips the pool step (a qualified challenger promoted before the parent) and goes
+straight to the parent or StandCoin; identity binding is not exercised (no newcomers or whitewashing), and weighted
+binding (8.70) is still [P]. Proposal: add the model-entry rate as a swept factor in the economy battery (a world
+property: in Benefuture it should emerge from incentives, so a range, not a default; 0 to 0.3 per step per leaf, as
+the C3 probe used) and a newcomer/whitewash factor once identity binding enters the iterated worlds. Not changed yet:
+it alters the battery's comparability with its earlier runs; to be made at the next deliberate battery revision.
