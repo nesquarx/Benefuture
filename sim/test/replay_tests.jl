@@ -115,8 +115,8 @@ end
         for opt in c_dict["options"]
             @test !haskey(opt, "pred_confidence")   # not typed in TOML
         end
-        # After replay_decision, credences and options are populated dynamically from records
-        replay_decision(c_dict)
+        # replay_decision prices a copy (credences populated from records) and returns it; the input stays as loaded
+        c_dict = replay_decision(c_dict).case
         if c_dict["id"] == "challenger_1986"
             @test c_dict["sources"][1]["credence_record_n"] == 24
             @test c_dict["sources"][2]["credence_record_n"] == 24
@@ -223,7 +223,7 @@ end
         c_base = load_replay_case(p)
         res_base = replay_decision(c_base)
         @test !res_base.void
-        creds_base = [src["credence_accuracy"] for src in c_base["sources"]]
+        creds_base = [src["credence_accuracy"] for src in res_base.case["sources"]]
         choice_base = res_base.chosen_option
 
         # (a) Removing every record dated after decision_date leaves choice and credences bit-identical
@@ -233,7 +233,7 @@ end
         res_clean = replay_decision(c_clean)
         @test !res_clean.void
         @test res_clean.chosen_option == choice_base
-        creds_clean = [src["credence_accuracy"] for src in c_clean["sources"]]
+        creds_clean = [src["credence_accuracy"] for src in res_clean.case["sources"]]
         @test creds_clean == creds_base
 
         # (b) Adding one synthetic record dated after decision_date makes replay.jl refuse loudly (degraded entry, case unsupported)
@@ -293,7 +293,7 @@ end
     @test expected_effect([0.25, 0.75], [-4.0, 4.0]) ≈ 2.0
     c = BenefutureSim.load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "challenger_1986.toml"))
     r = BenefutureSim.replay_decision(c)
-    launch = only(o for o in c["options"] if o["id"] == "launch_at_31F")
+    launch = only(o for o in r.case["options"] if o["id"] == "launch_at_31F")
     @test launch["_scenario_p_irr"] ≈ (5 / 6) * (1 / 9)          # priced from the record, not from the outcome
     @test r.chosen_option == "delay_until_53F" && !any(occursin("typed", k) for k in keys(r.degraded))
     t = BenefutureSim.replay_decision(BenefutureSim.load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "thalidomide_fda_1960.toml")))
@@ -412,4 +412,14 @@ end
     r = replay_decision(c)
     @test any(occursin("every option blocked", k) for k in keys(r.degraded))
     @test replace(r.chosen_option, r"\+compensated$" => "") != "ban_imports_now"
+end
+
+@testset "Replay: a decision leaves its case unchanged, so later readings are not contaminated" begin
+    # Head Start 1965: computing the decision first added compensated variants and overwrote priced fields in
+    # the case, and the rule battery read afterwards reported 94% for no programme, against 16 of 17 rule sets
+    # choosing Head Start on a fresh copy.
+    f = joinpath(@__DIR__, "..", "..", "cases", "head_start_1965.toml")
+    fresh = replay_rule_battery(load_replay_case(f)).shares
+    c = load_replay_case(f); replay_decision(c)
+    @test replay_rule_battery(c).shares == fresh
 end

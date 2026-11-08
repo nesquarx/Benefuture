@@ -2939,3 +2939,9 @@ size and differing in kind. With tiers the replay chooses the basic research fou
 decide here as the author's ruling intends (teachable peak understanding with paradigm novelty outclassing median
 understanding with near-term happiness). Hindsight-exposed (magnitudes set close by design, kinds declared knowing
 the outcome); further contrast cases and an E5 contrast follow (docs/E5_CANDIDATES.md).
+
+Replay defect (2026-11-08, Head Start contrast case): `replay_decision` mutated its input case, so rule-battery,
+credence and baseline readings taken on the same object afterwards were contaminated (choices were not). Fixed: the
+decision works on a copy and returns it; all cases re-read on fresh loads (docs/E4_ROUND2.md). Restated: printing
+1470's battery favours the printers (94%), Head Start's favours Head Start (94%), UNAMIR is contested (credence 58%,
+3 flips); round 2 robust and right 3, contested 5.

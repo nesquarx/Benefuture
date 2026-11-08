@@ -493,6 +493,10 @@ Executes Benefuture's decision replay (`docs/DATA.md` §16a, §16d B6, B7, B9) o
    evaluates competing counterfactual estimates, and checks Falsifiers F1–F4.
 """
 function replay_decision(case_dict::AbstractDict; thresholds...)
+    # The decision prices options, adds compensated variants and records flags on the case; it works on a copy so
+    # the caller's case stays as loaded and later readings (battery, credence, baselines) are not contaminated
+    # (a defect found on the Head Start contrast case, 2026-11-08).
+    case_dict = deepcopy(case_dict)
     th = check_frozen_thresholds(; thresholds...)
     # Rule-set battery (author, 8.119): a case may carry `_rule_overrides` (rule switches and threshold values)
     # so a suggestion can be read across coarse-to-fine rule sets; never used for scoring.
@@ -550,7 +554,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                     floor_h_diff_spread = (0.0, 0.0),
                     irreparable_diff_mean = 0.0,
                     falsifiers = (F1 = false, F2 = false, F3 = false, F4 = true),
-                    degraded = degraded
+                    degraded = degraded,
+                    case = case_dict
                 )
             end
         end
@@ -928,7 +933,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         floor_h_diff_spread = agrees ? (0.0, 0.0) : (minimum(fh_diffs), maximum(fh_diffs)),
         irreparable_diff_mean = agrees ? 0.0 : mean(irr_diffs),
         falsifiers = (F1 = f1_violated, F2 = f2_violated, F3 = f3_violated, F4 = false),
-        degraded = degraded
+        degraded = degraded,
+        case = case_dict   # the priced copy (record credences, compensated variants); the input is left unchanged
     )
 end
 
@@ -945,8 +951,7 @@ Ties go to the status quo. Only scenario-priced cases have baselines; others ret
 function replay_baselines(case_dict::AbstractDict)
     opts = case_dict["options"]
     all(o -> haskey(o, "scenarios"), opts) || return nothing
-    c = deepcopy(case_dict)
-    replay_decision(c)                                  # prices the options from the as-of record
+    c = replay_decision(case_dict).case                 # the options priced from the as-of record
     o = c["options"]
     pops = [Float64(g["population"]) for g in c["groups"]]
     w = pops ./ sum(pops)

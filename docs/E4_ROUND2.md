@@ -184,3 +184,55 @@ Robustness (credence at least 60% and at most two single-magnitude flips): robus
 - Baselines: status quo and fewest deaths (no deaths at stake, so it keeps the status quo) no civilian agency; mean welfare the applied agency; equal weight the basic foundation.
 - Rule battery (17 sets): basic foundation 76%, applied agency 24%. The collapsed scalar reading (tiers off) chooses the applied agency; with tiers, the basic foundation. Credence (20 draws, stable): basic 77%, applied 21%, none 2%. No single-magnitude flips.
 - Reading: the first case where the priority tiers decide: with magnitudes set close on purpose (each agency raising the public's understanding by about 0.3 if its programme pays off; the applied agency's arriving sooner with near-term happiness), the kinds (breakthroughs and teachable models with paradigm novelty, against median understanding with incremental novelty) carry the choice. Strong cautions: the magnitudes were set close by design and the kinds declared by a builder who knew the outcome, so this shows the tiers working as intended on a contrast, not that they predict; the next contrast cases (Head Start, Sure Start, tobacco control, public broadcasting) test whether they decide the same way where the outcome is less one-sided, and an E5 contrast will test it without hindsight.
+
+## Defect: readings after a decision were contaminated (found 2026-11-08 on Head Start; fixed)
+
+`replay_decision` priced options, added compensated variants and wrote flags into the case it was given. Readings
+taken afterwards on the same case object (rule battery, credence, baselines) started from that mutated case. Most
+replays in this file computed the decision first, so their battery shares and credences above may be wrong (choices
+are not: each decision ran on a fresh case). The E5 rerun log was not affected (it loads a fresh case per reading).
+Fixed: the decision now works on a copy and returns it (`r.case`); red test first. Every case re-read below, each
+reading on a fresh load; the figures above stay as first reported.
+
+| Case | Choice | Cell | Rule battery (top) | Credence (draws; top three) | Flips |
+|---|---|---|---|---|---|
+| bengal_denial_1942 | no_denial_preserve_stocks | bad/differs | no_denial_preserve_stocks 100% | no_denial_preserve_stocks 100% (20) | 0 |
+| bengal_famine_relief_1943 | approve_emergency_grain_shipments+c | bad/differs | approve_emergency_grain_shipments 100% | approve_emergency_grain_shipments 51%, token_shipment_150k_tons 36%, reject_emergency_grain_shipments 13% (540) | 3 |
+| challenger_1986 | delay_until_53F | bad/differs | delay_until_53F 100% | delay_until_53F 100% (20) | 0 |
+| ddt_ban_1972 | cancel_agricultural_uses+c | good/agrees | cancel_agricultural_uses 76%, phase_down_keep_essential 12%, keep_registration 12% | cancel_agricultural_uses 46%, phase_down_keep_essential 33%, keep_registration 22% (360) | 5 |
+| famine_codes_1880 | adopt_famine_code+c | good/agrees | adopt_famine_code 100% | adopt_famine_code 94%, status_quo_ad_hoc_relief 6% (120) | 0 |
+| fda_beta_blockers_1975 | approve_secondary_prevention | bad/differs | approve_secondary_prevention 100% | approve_secondary_prevention 100% (20) | 0 |
+| fomc_september_2008 | cut_50bp | unclear/differs | cut_50bp 100% | cut_50bp 60%, hold_at_2_percent 40% (380) | 2 |
+| four_pests_campaign_1958 | three_pests_without_sparrows | bad/differs | three_pests_without_sparrows 100% | three_pests_without_sparrows 89%, no_campaign 11% (60) | 0 |
+| german_nuclear_phaseout_2011 | close_oldest_eight_only | bad/differs | close_oldest_eight_only 94%, phase_out_by_2022 6% | keep_2010_extension 42%, close_oldest_eight_only 38%, phase_out_by_2022 21% (540) | 7 |
+| head_start_1965 | head_start_early_childhood+c | unclear/agrees | head_start_early_childhood 94%, no_new_programme 6% | head_start_early_childhood 75%, remedial_reading_programme 19%, no_new_programme 6% (320) | 3 |
+| irish_bank_guarantee_2008 | deposits_only_and_resolve_weakest_bank+c | bad/differs | deposits_only_and_resolve_weakest_bank 100% | deposits_only_and_resolve_weakest_bank 84%, no_guarantee 8%, blanket_guarantee_all_liabilities 8% (180) | 0 |
+| leaded_petrol_phaseout_1973 | phase_down_total_pool_average_1975_1979+c | good/agrees | phase_down_total_pool_average_1975_1979 88%, status_quo_lead_free_availability_only 12% | phase_down_total_pool_average_1975_1979 40%, phase_down_leaded_grade_only_schedule_reproposed 37%, status_quo_lead_free_availability_only 23% (420) | 10 |
+| montreal_protocol_1987 | adopt_cfc_phase_down+c | good/agrees | adopt_cfc_phase_down 100% | adopt_cfc_phase_down 94%, delay_await_certainty 6% (100) | 0 |
+| no_child_left_behind_2002 | reporting_and_flexibility_without_sanctions | unclear/differs | reporting_and_flexibility_without_sanctions 100% | reporting_and_flexibility_without_sanctions 100%, sign_nclb 0% (20) | 0 |
+| nsf_basic_research_1950 | basic_research_foundation+c | good/agrees | basic_research_foundation 82%, mission_directed_applied_agency 18% | basic_research_foundation 77%, mission_directed_applied_agency 20%, no_civilian_science_agency 4% (120) | 0 |
+| operation_warp_speed_2020 | parallel_development_and_at_risk_manufacturing | good/agrees | parallel_development_and_at_risk_manufacturing 100% | parallel_development_and_at_risk_manufacturing 45%, conventional_sequential_development 29%, fund_development_without_at_risk_manufacturing 26% (540) | 7 |
+| printing_press_europe_1470 | grant_privileges_to_master_printers+c | good/agrees | grant_privileges_to_master_printers 94%, status_quo_scribal_trade_only 6% | grant_privileges_to_master_printers 94%, status_quo_scribal_trade_only 6% (20) | 0 |
+| prohibition_1919 | national_prohibition | unclear/agrees | national_prohibition 71%, state_local_option_continues 29% | national_prohibition 51%, local_option_and_high_licence_taxes 30%, state_local_option_continues 19% (320) | 2 |
+| ragusa_quarantine_1377 | enact_30_day_isolation | good/agrees | enact_30_day_isolation 100% | enact_30_day_isolation 100% (20) | n/a |
+| school_closures_2020 | close_with_remote_learning | unclear/differs | close_with_remote_learning 59%, keep_schools_open 41% | keep_schools_open 52%, close_with_remote_learning 30%, close_three_weeks 10% (220) | 5 |
+| semmelweis_vienna_1847 | retain_handwashing_protocol | bad/differs | retain_handwashing_protocol 100% | retain_handwashing_protocol 100% (20) | 0 |
+| smallpox_eradication_1967 | intensified_global_eradication+c | good/agrees | intensified_global_eradication 100% | intensified_global_eradication 67%, regional_elimination_accessible_areas 32%, continue_national_control 1% (520) | 3 |
+| snow_broad_street_1854 | remove_pump_handle | good/agrees | remove_pump_handle 100% | remove_pump_handle 96%, no_intervention_continue_pump 4% (20) | 0 |
+| sri_lanka_fertiliser_ban_2021 | keep_imports | bad/differs | keep_imports 94%, ban_imports_now 6% | keep_imports 62%, ban_imports_now 30%, phased_transition 8% (340) | 7 |
+| swine_flu_vaccination_1976 | vaccinate_everyone+c | bad/agrees | vaccinate_everyone 82%, stockpile_and_watch 18% | vaccinate_everyone 66%, stockpile_and_watch 32%, do_nothing 2% (280) | 2 |
+| thalidomide_fda_1960 | withhold_approval_pending_safety | good/agrees | withhold_approval_pending_safety 100% | withhold_approval_pending_safety 100% (20) | n/a |
+| uk_bse_feed_ban_1988 | total_ban_and_stock_recall | unclear/differs | total_ban_and_stock_recall 100% | total_ban_and_stock_recall 95%, partial_ban_with_stock_drawdown 5% (40) | 0 |
+| unamir_drawdown_1994 | reinforce_5000_chapter_vii+c | bad/differs | reinforce_5000_chapter_vii 71%, maintain_2500 29% | reinforce_5000_chapter_vii 58%, maintain_2500 39%, reduce_to_270 3% (180) | 3 |
+| volcker_disinflation_1979 | reserve_targeting | good/agrees | reserve_targeting 100% | incomes_policy 51%, reserve_targeting 45%, continue_funds_rate_pegging 4% (580) | 4 |
+| fda_zrostudirsen_2027 | complete_response_wait | pending/differs | complete_response_wait 94%, accelerated_approval_with_confirmatory_trial 6% | complete_response_wait 96%, accelerated_approval_with_confirmatory_trial 4% (20) | 0 |
+| fomc_january_2027 | cut_25bp | pending/differs | cut_25bp 94%, hold 6% | cut_25bp 50%, hold 44%, hike_25bp 6% (420) | 4 |
+| imo_net_zero_framework_2026 | adopt_with_pricing+c | pending/differs | adopt_with_pricing 88%, adjourn_again 12% | adopt_with_pricing 88%, adjourn_again 12%, adopt_without_pricing 0% (20) | 0 |
+| who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex+c | pending/differs | adopt_binding_benefit_sharing_annex 100% | adopt_binding_benefit_sharing_annex 55%, extend_negotiations_no_annex 45% (340) | 2 |
+
+Corrections that change a reading: printing 1470's rule battery is 94% for the printers' privileges (not 94% for
+the scribal status quo, as reported under option-level kinds); Head Start 1965's is 94% Head Start (credence 75%),
+not 94% no programme; UNAMIR's credence is 58% with 3 flips, so it moves from robust to contested. Round 2 tally
+restated: robust and right 3 (smallpox, Four Pests, Irish guarantee), robust and wrong 1 (swine flu), contested 5
+(UNAMIR, DDT, German nuclear, Sri Lanka, Warp Speed), unclear 1 (Prohibition); right on 8 of 9 settled cases as
+before.
