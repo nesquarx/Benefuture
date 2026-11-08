@@ -33,3 +33,21 @@ Build order: `random.Random(20261109).shuffle` over the list as written.
 | 1 | health | FDA decision on z-rostudirsen (Dyne, Duchenne muscular dystrophy), accelerated approval on dystrophin production, PDUFA 21 January 2027 (approve with a confirmatory trial; complete response letter) | [source](https://www.2minutemedicine.com/?p=83226) | built and reported (docs/E5_REPORTS.md) |
 | 2 | technology | Artemis III crewed Earth-orbit test flight, late 2027: go or no-go given as-of anomaly records (a Challenger-shaped decision; date not yet fixed, so watch-listed until it is) | [source](https://news.cgtn.com/news/2026-02-28/NASA-postpones-crewed-lunar-landing-to-2028-adds-new-Artemis-mission-1L7FeQ4wPXG/p.html) | watch-listed: date not fixed (criterion 5) |
 | 3 | environment | IMO Net-Zero Framework, resumed extraordinary MEPC session, 4 December 2026 (adopt as agreed with its carbon price; adopt without the pricing element; adjourn again) | [source](https://gcaptain.com/imo-climate-talks-stay-alive-as-carbon-plan-survives-u-s-pushback-at-mepc-84/) | built and reported (docs/E5_REPORTS.md); built out of seeded order only by skipping the watch-listed Artemis case |
+
+## Contrast candidates for priority tiers (8.129, 2026-11-08)
+
+Cases chosen because their options are close in size but differ in the kind of change they make for the same
+people, so the priority tiers, not magnitudes or blocks, should decide. Not yet built; each is built from as-of
+sources and committed before its replay. Picked for the contrast, not for a known outcome: the outcome class of
+each is noted only where already public, and none was chosen because Benefuture is expected to get it right.
+
+| Candidate | Type | Contrast (kind against kind) | As-of sources to find |
+|---|---|---|---|
+| Bush's *Science, the Endless Frontier* and the NSF Act (1945-1950): basic research council against mission-directed applied research | E4 | peak and teachable understanding, paradigm novelty, against median understanding and incremental novelty | Bush 1945 report; Kilgore bill debate; wartime OSRD record |
+| Head Start (1965) against a remedial reading programme of similar cost | E4 | meta understanding and the floor (learning to learn, early years) against median understanding (skills taught to the test) | Perry Preschool early results; Coleman Report (1966) for as-of evidence after the decision only as a check |
+| England's Sure Start (1998) against an equal sum on GCSE attainment targets | E4 | meta and floor against median | Sure Start Treasury review 1998; school-improvement evaluations to 1998 |
+| Preventive against curative health spending of equal cost: tobacco control (1964 Surgeon General's report) against expanded hospital capacity | E4 | eudaimonic and baseline happiness, floor of understanding over decades, against satisficing happiness now | 1964 report; hospital-construction (Hill-Burton) record |
+| Public broadcasting (Public Broadcasting Act 1967) against an equal subsidy to commercial entertainment | E4 | teachable understanding and shareable happiness against sensory-peak happiness | Carnegie Commission report 1967 |
+| A national research agency's next budget split between basic and applied lines (a current one) | E5 | as above, prospective | the agency's budget documents and prior evaluations |
+
+Build order: Bush/NSF and Head Start first (the clearest contrasts, well documented as of their dates).
