@@ -1,7 +1,7 @@
 # Convergence & Population-Diversity Sizing Report
 
-- **Commit**: `7177b3c`
-- **Runtime**: `25.40` minutes (`4` threads)
+- **Commit**: `14fa4e5`
+- **Runtime**: `24.01` minutes (`4` threads)
 - **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
 
 ## 1. M1 Metric Competition & Distributed Choice (`seeds = 1:10`)
