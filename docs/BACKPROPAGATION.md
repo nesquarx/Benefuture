@@ -3151,3 +3151,12 @@ understanding 115.8 → 107.2. Price contraction alone does not absorb the stall
 and cheaper resources do not refill them. Recorded as is, option off by default. Open for the author: what else RA should
 shrink (the ruling names baseline pricing, the commons and overall resource spending; the commons and spending sides, e.g.
 lane budgets or commons draws, are not built), and whether the record credence (which removes this stall, 0/8) settles it.
+
+8.133 ruling (author, 2026-11-08): "Global RA will still need to be built, or else the economy output u/h doesn't stay
+tightly coupled to the inputs of Rc/t and may at some point become a vibe economy issuing checks it can't cash." Resource
+accounting (L83) is global: the currency issued for measured understanding and happiness must stay bound to the resources
+and time (Rc, t) actually available to deliver on it, economy-wide, not only per transaction. The record credence removing
+one stall does not settle it; the price contraction alone (`ra_rate`) is one lever, not the mechanism. To build: a global
+ledger of issued claims against resource and time capacity, with contraction of baseline pricing, the commons and overall
+spending when claims outrun capacity; probe red on outcome (issuance outrunning capacity, checks that cannot be cashed).
+Candidate homes: L83, Benefuture currency, Resource accounting.
