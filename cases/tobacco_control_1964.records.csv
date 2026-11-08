@@ -1,0 +1,2 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+health_record,REC-HB,1960-12-31,1960-12-31,1960-12-31,1.0,1.0,"record"

@@ -1,0 +1,139 @@
+# Historical decision case (E4 contrast case for priority tiers, docs/E5_CANDIDATES.md): after the US Surgeon
+# General's report *Smoking and Health* (11 January 1964), a federal health budget increment spent either on tobacco
+# control (warnings, public education, cessation, a cigarette tax rise) or on expanded hospital capacity (more
+# Hill-Burton construction) of equal cost. A stylised decision built for the contrast: options set to avert about
+# the same expected deaths over two decades and backed by records of the same strength, so that only the kind of
+# change differs. As of the decision: the report's finding that smoking causes lung cancer in men; earlier health
+# education campaigns (tuberculosis and anti-spitting, wartime venereal disease campaigns) that changed behaviour;
+# hospital expansion (Hill-Burton from 1946, the NHS from 1948) that cut mortality from treatable conditions.
+# Sources: the 1964 report (linked); the rest recalled. Builders know the outcome (US adult smoking fell from about
+# 42% in 1965 to under 20% by the 2010s; tobacco control is widely credited with millions of deaths averted).
+# Not scored (stylised options); used to see whether the tiers decide.
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "tobacco_control_1964"
+title = "Tobacco control or hospital capacity after the Surgeon General's report (1964; stylised contrast)"
+family = "health"
+era = "1964"
+tier = "full"
+decision_date = "1964-01-11"
+decision_makers = ["US Congress and Department of Health, Education and Welfare (stylised)"]
+actual_choice = "tobacco_control_programme"
+actual_outcome_class = "unclear"
+primary_or_held_out = "contrast"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "health_record"
+title = "Smoking and Health (1964), and health education and hospital expansion records before 1964"
+as_of_date = "1964-01-11"
+url = "https://profiles.nlm.nih.gov/spotlight/nn/catalog/nlm:nlmuid-101584932X202-doc"
+notes = "The 1964 Surgeon General's report read for its causal finding; campaign and hospital records recalled."
+
+[[ groups ]]
+id = "smokers"
+name = "Adult smokers (about 50 million), in thousands"
+population = 50000
+baseline_u = 50.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "everyone_else"
+name = "Everyone else (about 140 million), in thousands"
+population = 140000
+baseline_u = 50.0
+baseline_h = 60.0
+
+# Magnitudes (judgment, stated, equal on purpose): either option, if its record holds, averts about 100 thousand
+# deaths over two decades (counted as harm under the alternatives); if not, a fifth of that. Tobacco control's
+# deaths averted are among smokers, and it spreads understanding of health risk (+0.2 for smokers, teachable and
+# meta: knowing why and how to change) at the cost of a chosen pleasure given up or taxed (smokers' happiness -0.3,
+# the sensory peak kind) and later longer, healthier lives (+0.3, eudaimonic and baseline). Hospital capacity's
+# deaths averted are spread across everyone, with satisficing happiness from care nearer home (+0.1 for everyone).
+# Cost equal (happiness -0.01 for everyone either way).
+
+[[ options ]]
+id = "neither"
+name = "Neither: the budget increment is not spent"
+source = "health_record"
+known_date = "1963-12-31"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [80.0, 40.0]
+
+[[ options.scenarios ]]
+name = "deaths_not_averted"
+p_chain = []
+irreparable = [80.0, 40.0]
+
+[[ options ]]
+id = "tobacco_control_programme"
+name = "Tobacco control: warnings, education, cessation support and a cigarette tax rise"
+source = "health_record"
+known_date = "1964-01-11"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.15, 0.0]
+pred_dh = [-0.01, -0.01]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [20.0, 40.0]
+# Priority kinds (8.129, option-level): understanding of risk is teachable and meta; happiness splits between the
+# pleasure given up (sensory peak, negative) and longer healthy lives (eudaimonic and baseline, positive): net small,
+# so the split is carried by separate scenarios below.
+u_tiers = [[0, 0.5, 0.5, 0, 0, 0], [0, 0, 0, 1, 0, 0]]
+h_tiers = [[0.5, 0, 0, 0.5, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[ options.scenarios ]]
+name = "behaviour_changes"
+p_chain = ["health_education_campaign_changed_behaviour"]
+du = [0.2, 0.0]
+dh = [0.0, -0.01]
+irreparable = [0.0, 40.0]
+
+[[ options.scenarios ]]
+name = "little_change"
+p_chain = []
+complement = true
+du = [0.05, 0.0]
+dh = [-0.01, -0.01]
+irreparable = [64.0, 40.0]
+
+[[ options ]]
+id = "expanded_hospital_capacity"
+name = "Expanded hospital capacity of equal cost"
+source = "health_record"
+known_date = "1963-06-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [0.06, 0.06]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [53.0, 27.0]
+u_tiers = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h_tiers = [[0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[ options.scenarios ]]
+name = "mortality_falls"
+p_chain = ["hospital_expansion_cut_treatable_mortality"]
+dh = [0.09, 0.09]
+irreparable = [47.0, 23.0]
+
+[[ options.scenarios ]]
+name = "little_effect"
+p_chain = []
+complement = true
+dh = [0.0, 0.0]
+irreparable = [73.0, 37.0]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "expanded_hospital_capacity"
+methods = ["stylised contrast; not scored"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
