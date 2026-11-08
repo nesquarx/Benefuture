@@ -2945,3 +2945,16 @@ credence and baseline readings taken on the same object afterwards were contamin
 decision works on a copy and returns it; all cases re-read on fresh loads (docs/E4_ROUND2.md). Restated: printing
 1470's battery favours the printers (94%), Head Start's favours Head Start (94%), UNAMIR is contested (credence 58%,
 3 flips); round 2 robust and right 3, contested 5.
+
+8.130 open question (2026-11-08, Prohibition 1919 replay): do deaths from a freely chosen risk count in the
+policy-level irreparable block (8.124)? Built: a freedom rule in the replay (Freedom article: a chosen risk is priced,
+not prohibited; 8.46: laws protect only against outcomes beyond the freedom harm boundary): an option that bans a
+chosen risk (`restricts_chosen_risk`) is blocked while an option that prices it (`prices_chosen_risk`) is available and
+not itself blocked; it joins the rule battery (switch `freedom`) only for cases that tag such options. On Prohibition it
+does not bite: local option with high licence taxes leaves more expected deaths (about 27 against 21 thousand, mostly
+heavy drinkers) and is blocked by the policy-level irreparable rule, so the ban stands. Reading A (the Freedom
+article's spirit): deaths from a chosen risk are the chooser's, priced against their own gains across the extended self,
+and do not enter the policy block, so pricing wins. Reading B (8.124 as written): irreparable harm is blocked beyond the
+least option whoever chose the risk, so the ban stands. A middle reading counts only harm to others (households,
+bystanders) in the block. The test is marked broken until ruled. Candidate homes: Freedom (chosen risk), Harm
+(irreparable), L135.

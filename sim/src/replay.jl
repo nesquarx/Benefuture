@@ -767,6 +767,14 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                                            compounding = th.u_compounding, persistence = Float64(get(o, "u_loss_persistence", th.u_loss_persistence))) for g in 1:n_groups)
     irr_least = minimum(irr_eq(o) for o in options)
     rule_irr = get(ov, "irreparable", true)
+    _other_block(o) = (rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) ||
+                      (rule_irr && irreparable_blocked(irr_eq(o), irr_least; tol = th.irr_tol * max(1.0, irr_least)))
+    free_block(o) = get(ov, "freedom", true) && get(o, "restricts_chosen_risk", false) &&
+                    any(q -> get(q, "prices_chosen_risk", false) && !_other_block(q), options)
+    # (Freedom article; ruling 8.46) a law that bans a chosen risk (`restricts_chosen_risk`) is blocked while an
+    # option that prices the same risk (`prices_chosen_risk`) is available and not itself blocked: a chosen risk is
+    # priced, not prohibited, and laws protect only against outcomes beyond the freedom harm boundary.
+    rule_free = get(ov, "freedom", true)
     rule_tiers = get(ov, "tiers", true)   # (8.129) priority tiers; false is the collapsed scalar reading
     g_low_u = argmin(base_u); g_low_h = argmin(base_h)
     # a case may declare each group's tier split once (`[tiers]` u, h: per group six shares), options override
@@ -862,7 +870,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                                        all(lt_u .+ th.epsilon_tie .>= idle_lt_u) && all(lt_h .+ th.epsilon_tie .>= idle_lt_h)) &&
                        total_irr == 0.0 &&
                        !(rule_env && env_health_blocked(get(opt, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) &&
-                       !(rule_irr && irreparable_blocked(irr_eq(opt), irr_least; tol = th.irr_tol * max(1.0, irr_least)))
+                       !(rule_irr && irreparable_blocked(irr_eq(opt), irr_least; tol = th.irr_tol * max(1.0, irr_least))) &&
+                       !free_block(opt)
     end
 
     # Filter by strong reading first; fall back to weak reading with loud degradation if none qualifies
@@ -875,7 +884,8 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         # No necessary-harm exemption: 8.118 states none, and 8.124's only exception, survival added elsewhere,
         # is already in the comparison of net expected harms.
         env_b = [(rule_env && env_health_blocked(get(o, "_env_harm", 0.0), env_least; tol = 1e-6 * max(1.0, env_least))) ||
-                 (rule_irr && irreparable_blocked(irr_eq(o), irr_least; tol = th.irr_tol * max(1.0, irr_least))) for o in options]
+                 (rule_irr && irreparable_blocked(irr_eq(o), irr_least; tol = th.irr_tol * max(1.0, irr_least))) ||
+                 free_block(o) for o in options]
         d_scope_w = [env_b[i] ? -1.0 : d_scope[i] for i in 1:n_opts]
         chosen_idx = g_choose(opt_values, d_scope_w, d_min_u, d_min_h, d_max_u)
     end
@@ -1013,6 +1023,10 @@ function replay_rule_battery(case_dict::AbstractDict)
         "5 full" => Dict{String,Any}(),
         "5 full without the policy-level irreparable block (8.124)" => Dict{String,Any}("irreparable" => false),
         "5 full without priority tiers, the collapsed scalar reading (8.129)" => Dict{String,Any}("tiers" => false)]
+    # the freedom rule only acts where an option bans or prices a chosen risk; elsewhere its "off" set would only
+    # duplicate the full set and inflate its share
+    any(o -> get(o, "restricts_chosen_risk", false) || get(o, "prices_chosen_risk", false), case_dict["options"]) &&
+        push!(configs, "5 full without freedom pricing of chosen risk (8.46)" => Dict{String,Any}("freedom" => false))
     for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)), ("u_loss_persistence", (0.02, 0.3)))
         for v in vals
             push!(configs, "full, $k = $v" => Dict{String,Any}(k => v))

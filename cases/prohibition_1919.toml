@@ -83,6 +83,7 @@ irreparable = [50.0, 0.0, 0.0]
 
 [[ options ]]
 id = "national_prohibition"
+restricts_chosen_risk = true   # a ban on a chosen risk (tagged 2026-11-08 for the freedom rule; structural)
 name = "National prohibition of manufacture, sale and transport"
 source = "liquor_record"
 known_date = "1917-12-18"
@@ -114,6 +115,7 @@ irreparable = [2.0, 3.0, 5.0]
 
 [[ options ]]
 id = "local_option_and_high_licence_taxes"
+prices_chosen_risk = true      # prices the chosen risk through licence taxes (tagged 2026-11-08; structural)
 name = "Federal support for local option and high licence taxes, no national ban"
 source = "liquor_record"
 known_date = "1913-01-01"

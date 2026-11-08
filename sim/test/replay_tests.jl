@@ -431,3 +431,14 @@ end
     @test !contrast_check(load_replay_case(joinpath(d, "tobacco_control_1964.toml")); tol = 0.1).ok
     @test contrast_check(load_replay_case(joinpath(d, "nsf_basic_research_1950.toml")); tol = 0.1).ok
 end
+
+@testset "Replay: a ban on a chosen risk yields to pricing it (Freedom; ruling 8.46)" begin
+    # Prohibition 1919: national prohibition bans a chosen risk while local option with high licence taxes prices
+    # it; per the Freedom article (a chosen risk is priced, not prohibited) and 8.46 (laws protect only against
+    # outcomes beyond the freedom harm boundary), the ban must not be chosen while the pricing option is unblocked.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "prohibition_1919.toml"))
+    # Open question for the author (8.130): the pricing option is itself blocked by the policy-level irreparable rule
+    # (more expected deaths, mostly heavy drinkers dying of a chosen risk), so the freedom rule does not bite. Whether
+    # deaths from a freely chosen risk count in that block is unruled; marked broken until it is.
+    @test_broken replace(replay_decision(c).chosen_option, r"\+compensated$" => "") != "national_prohibition"
+end
