@@ -2920,3 +2920,15 @@ ordinary plans and at most one lesson, and lessons already win on value most of 
 them teachable changes few choices; research is a fixed share, not a choice. Tiers will bite in M7 when research,
 teaching and ordinary work compete for the same effort (as in the probe world), which needs research as a choice.
 Tiers stay off by default in M7.
+
+8.129 in M7 with research as a choice (2026-11-08): `run_m7(...; research_choice = true)` lets each being weigh a
+research attempt (expected gain at its chance; peak and paradigm novelty when it would pass the frontier) against a
+step of ordinary work, valued alike. Hypothesis stated before measuring: with tiers, the understanding floor or peak
+rises with no fall of the happiness floor (z = 2). Over 8 paired seeds (n 40, 120 steps, research a choice in both
+arms): understanding floor +0.21 ± 0.55, median +0.25 ± 0.49, peak +0.31 ± 0.49 (no effect); happiness floor −0.15 ±
+0.06 (z ≈ 2.5, a fall). Not supported. Both arms research heavily (about 45% of beings a step, against the fixed 10%:
+research spend about 2,000 against 480), so the scalar arm already favours research and the tiers mostly shift weight
+from happiness. Reading: in M7 the tradeoff the tiers correct (raw happiness bought at the cost of understanding) is
+not on offer; M7's ordinary plans move understanding and happiness together at random. The probe world, where it is on
+offer, is where tiers decide. The research choice itself (against a fixed share) is a separate question, open.
+`research_choice` and `tiers` stay off by default.

@@ -247,7 +247,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
                 claim_ratio::Union{Nothing,AbstractVector} = nothing, audited_ratio::Union{Nothing,AbstractVector} = nothing,
                 report_z::Real = 3.0, report_min::Integer = 5, claim_record::Integer = 0,
-                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0, tiers::Bool = false, h_profiles::Bool = tiers)
+                traits::Bool = (!central && get(ENV, "BF_M7_TRAITS", "1") == "1"), n_items::Integer = 5, breakthrough::Real = 0.3, practice_per_u::Real = 1.0, tiers::Bool = false, h_profiles::Bool = tiers, research_choice::Bool = false)
     check(claim_ratio === nothing || (length(claim_ratio) == p.n && all(x -> isfinite(x) && x >= 0, claim_ratio)), "one non-negative measured-to-true ratio per being")
     check(0 <= ε <= 1 && 0 <= research_share < 1 && all(x -> isfinite(x) && x >= 0, (research_gain, research_σ, research_cost, reception_σ, teacher_cv)) &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_innovate <= 1 && class >= 1 && lessons >= 0 &&
@@ -344,8 +344,28 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     if accession_step == 0 && accession_n == 0
         for _ in 1:p.steps
             peak, med = maximum(s.u), median(s.u)
-            # Research: a share of beings spend this step on it.
-            researching = [rand(rrng) < research_share for _ in 1:p.n]
+            # Research: a share of beings spend this step on it; with `research_choice` (8.129), each being instead
+            # weighs a research attempt (expected gain at its chance; peak and paradigm novelty when it would pass the
+            # frontier) against a step of ordinary work (a random plan's expected value), valued alike (tiers or not).
+            researching = if research_choice
+                map(1:p.n) do b
+                    rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
+                    ch = clamp(p_research * rel^rel_exponent * novelty[b], 0.0, 1.0)
+                    g = ch * research_gain / p.th
+                    pl = random_plan(rng, p); work = ToyPlan(action_scale .* pl.du, action_scale .* pl.dh)
+                    vw = tiers ? tiered_plan_value(work, p, s.u, s.h; hprof) : plan_value(work, p)
+                    vr = if tiers
+                        U = zeros(6); U[s.u[b] + research_gain > peak ? 1 : 4] = g
+                        N = zeros(6); N[s.u[b] + research_gain > peak ? 1 : 4] = ch
+                        tiered_value(U, zeros(6), N; harm_wt = 1.0, p.gp...)
+                    else
+                        value_on_being(g, 0.0, ch; harm_wt = 1.0, p.gp...)
+                    end
+                    vr > vw
+                end
+            else
+                [rand(rrng) < research_share for _ in 1:p.n]
+            end
             for b in findall(researching)
                 tr.spent[] += research_cost
                 rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
