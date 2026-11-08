@@ -3095,3 +3095,9 @@ meta-research at 5% a step (both differences significant at z = 2, above the sta
 understanding accelerates the goals is worth as much as a large share of the object-level gains, and it is learnable.
 Toy assumptions: one shared societal estimate (not per being), a fixed halving per meta-research success, no cost to
 meta-research. Next: per-being estimates, meta-research competing for effort, and its meta level under the bell curve.
+
+8.132 ruling (author, 2026-11-08): "Meta research should be its own domain and meta research outcomes should educate to
+update individual and policy level priorities towards greater goal acceleration over time." Implemented in the traits
+world as `meta_domain`: meta-research outcomes sharpen a published policy estimate of priorities; beings take it partly
+each step (`meta_uptake`, governed default 0.3; uptake is behaviour, never ideal). Candidate homes: L58 (meta tier), the
+Understanding article (meta-research as a domain), L95-style domain tree (meta-research a leaf with its own record).

@@ -1288,6 +1288,7 @@ ratified.
 | Credence-ballot calibration prior and minimum record (M5, 8.121) | (prior slope 0.5, 5 records, log-odds cap 10) | 0.5, 5, 10 | judgment |
 | Long-term offset (E4 replay, 8.116): happiness retention, understanding compounding, offset premium scale, soft bar | `h_retention`, `u_compounding`, `offset_scale`, `soft_bar` | 0.3, 1.5, 0.05, 0.05 | judgment; hedonic adaptation is partial and event-dependent (to be swept) |
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
+| Meta-research share of research and policy-estimate sharpening per outcome (traits world, 8.131–8.132) | `meta_share`, (halving) | 0 (off), 0.5 | judgment; swept, interior optimum ≈0.05 under shared misjudgement |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
 | Policy-level irreparable harm tolerance (8.124) | `irr_tol` | 0.01 (relative to the least-harm option, at least 0.01) | judgment |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
@@ -1498,6 +1499,8 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |  |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |  |
 | Error of society's estimate of each thing's priority (log-normal σ; 8.131 continued, traits world) | `weight_σ` | 0 (limiting case); probe 1.5 | judgment; range 0–2 |
+| Per-being priority estimates and the share of their error common to all (8.131–8.132) | `per_being`, `weight_shared` | off, 0 | judgment; range 0–1 |
+| Uptake of published meta-research priorities per step (education, 8.132) | `meta_uptake` | 0.3 | judgment; advice-taking is partial (CALIBRATION weight-on-advice); range 0.05–0.6 |
 
 The batteries' severity scales do not all match this table: laundering runs to 0.5 at severity 1
 (table 0–1), hidden outcomes take `p_apparent` from 0.9 down to 0.1 (table 0.2–1), local noise takes

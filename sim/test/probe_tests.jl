@@ -1203,3 +1203,17 @@ end
     @test paired_effect(truth .- noisy; z = 2.0).significant && mean(truth .- noisy) > 0.02
     @test paired_effect(meta .- noisy; z = 2.0).significant && mean(meta .- noisy) > 0.02
 end
+
+@testset "Probe: meta-research as its own domain educates priorities (8.132)" begin
+    # Hypothesis: when beings share a misjudgement of priorities (weight_shared 1), a small share of research spent on the
+    # meta domain lifts the floor of understanding (direction +, smallest effect 0.01), and spending most of it there
+    # costs more than it repairs (interior optimum). Paired seeds; z = 2 on the paired standard error.
+    f(ms, s) = run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 200, weight_σ = 1.5, per_being = true,
+                             meta_share = ms, weight_shared = 1.0, meta_domain = true).floor_u[end]
+    S = 1:10
+    up = [f(0.05, s) - f(0.0, s) for s in S]
+    down = [f(0.3, s) - f(0.05, s) for s in S]
+    se(d) = std(d) / sqrt(length(d))
+    @test mean(up) > max(2se(up), 0.01)
+    @test mean(down) < -2se(down)
+end
