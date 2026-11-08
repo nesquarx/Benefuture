@@ -552,7 +552,7 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   | PRIM peel share; least support; least coverage; trimming | 5%; max(5%, 3 worlds); 50%; 2 standard errors | same |
   | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
 
-- **Convergence on 5019de0** (traits-mode M7, the default since 8.112): understanding floor and median settle at step 132 (worst 133) at n = 100; between-seed half-width under 10% from n = 20 (8.0%) to 2.5% at n = 300; floor gain 11.5 at n = 20 to 14.3 at n = 500. Sizing: n ≥ 20, steps ≥ 135 ([convergence](battery/results/convergence.md)).
+- **Convergence on 5019de0, repeated on 7177b3c** (traits-mode M7, the default since 8.112; identical readings): understanding floor and median settle at step 132 (worst 133) at n = 100; between-seed half-width under 10% from n = 20 (8.0%) to 2.5% at n = 300; floor gain 11.5 at n = 20 to 14.3 at n = 500. Sizing: n ≥ 20, steps ≥ 135 ([convergence](battery/results/convergence.md)).
 - **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
   success pattern, repeating its 9ceed47 and 98a12ee readings; governance on 72179c2 under the calibrated
   ranges (signal noise 2–6, ability scatter 0.5–1.5, hidden outcomes 0.7–0.1, delegation 0–0.4): no
