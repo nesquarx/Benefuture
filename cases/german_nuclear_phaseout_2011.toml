@@ -1,0 +1,141 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): Germany's decision after Fukushima (moratorium 14
+# March 2011; cabinet 6 June 2011, Bundestag 30 June) to close the eight oldest reactors at once and the other
+# nine by 2022, reversing the 2010 lifetime extension (to about 2036). As of the decision: Fukushima Daiichi's
+# core damage (March 2011); the record of severe accidents (TMI 1979, Chernobyl 1986); published mortality per
+# TWh by source (Markandya and Wilkinson 2007, Lancet: coal about 25, gas about 3, nuclear about 0.07 deaths per
+# TWh in Europe, recalled); earlier phase-outs (Italy 1987, Sweden's Barsebäck 1999-2005, Lithuania's Ignalina
+# 2009). Sources recalled; primary documents not seen. Builders know the outcome (lignite and coal kept running
+# longer; Jarvis, Deschenes and Jha 2019 estimate about 1,100 extra deaths a year from air pollution).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "german_nuclear_phaseout_2011"
+title = "Germany closes eight reactors at once and the rest by 2022 after Fukushima (June 2011)"
+family = "energy"
+era = "2011"
+tier = "full"
+decision_date = "2011-06-06"
+decision_makers = ["Federal cabinet (Chancellor Merkel), Bundestag"]
+actual_choice = "phase_out_by_2022"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "energy_record"
+title = "Severe reactor accidents, mortality per TWh by source, and earlier nuclear phase-outs, before June 2011"
+as_of_date = "2011-06-05"
+url = "https://doi.org/10.1016/S0140-6736(07)61253-7"
+notes = "Markandya and Wilkinson 2007 (Lancet): deaths per TWh by electricity source; the accident and phase-out record recalled; primary records not seen."
+
+[[ groups ]]
+id = "german_population"
+name = "German residents (about 81.8 million), in thousands"
+population = 81800
+baseline_u = 60.0
+baseline_h = 65.0
+
+# Magnitudes (judgment, stated): German nuclear output about 140 TWh a year. If the shortfall is filled partly
+# by coal and lignite (about half of it, the rest gas, renewables and imports), about 70 TWh a year at about 15
+# deaths per TWh (a coal-gas mix) over the ten years to 2022 is about 10 thousand deaths, with mild ill-health
+# across the population; an environmental pathway (8.118). Closing only the eight oldest: about 40 percent of
+# that. A severe accident in Germany: evacuation and radiation deaths of about 2 thousand (Fukushima's evacuation
+# deaths scaled to German density, judgment), large happiness losses from displacement and fear across the
+# population, an environmental pathway. Its rate is per national fleet-decade (events file); keeping the 2010
+# extension runs the full fleet about 1.4 decades more, the phase-out about half the fleet for one decade.
+# Higher electricity prices: mild happiness loss.
+
+[[ options ]]
+id = "keep_2010_extension"
+name = "Keep the 2010 lifetime extension (all seventeen reactors, to about 2036), with post-Fukushima safety review"
+source = "energy_record"
+known_date = "2010-10-28"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [-0.105]
+pred_nha = [0.0]
+pred_irreparable = [0.42]
+
+[[ options.scenarios ]]
+name = "severe_accident"
+environmental_health = true
+p_chain = ["fleet_decade_severe_accident"]
+dh = [-0.5]
+irreparable = [2.8]
+
+[[ options.scenarios ]]
+name = "no_accident"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "phase_out_by_2022"
+name = "Close the eight oldest reactors at once and the other nine by 2022"
+source = "energy_record"
+known_date = "2011-05-30"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [-0.09]
+pred_nha = [0.0]
+pred_irreparable = [8.2]
+
+[[ options.scenarios ]]
+name = "fossil_replacement"
+environmental_health = true
+p_chain = ["nuclear_shortfall_filled_by_fossil"]
+dh = [-0.02]
+irreparable = [10.0]
+
+[[ options.scenarios ]]
+name = "severe_accident_residual_fleet"
+environmental_health = true
+p_chain = ["fleet_decade_severe_accident"]
+dh = [-0.2]
+irreparable = [1.0]
+
+[[ options.scenarios ]]
+name = "price_rise"
+p_chain = []
+dh = [-0.05]
+
+[[ options ]]
+id = "close_oldest_eight_only"
+name = "Close the eight oldest reactors; keep the other nine to the 2010 extension"
+source = "energy_record"
+known_date = "2011-03-14"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [-0.09]
+pred_nha = [0.0]
+pred_irreparable = [3.5]
+
+[[ options.scenarios ]]
+name = "fossil_replacement"
+environmental_health = true
+p_chain = ["nuclear_shortfall_filled_by_fossil"]
+dh = [-0.008]
+irreparable = [4.0]
+
+[[ options.scenarios ]]
+name = "severe_accident_newer_fleet"
+environmental_health = true
+p_chain = ["fleet_decade_severe_accident"]
+dh = [-0.35]
+irreparable = [1.6]
+
+[[ options.scenarios ]]
+name = "price_rise"
+p_chain = []
+dh = [-0.02]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -0.05
+actual_irreparable = 12.0
+alt_option = "keep_2010_extension"
+methods = ["Jarvis, Deschenes and Jha 2019 (NBER w26598): about 1,100 extra deaths a year from coal replacing nuclear"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.03]
+est_irreparable_diff = [-12.0]
