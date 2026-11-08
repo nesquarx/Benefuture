@@ -3075,3 +3075,15 @@ distribution. Structural test (200 random splits): parts sum to the parent's amo
 was already built in M5 (`fork_rule = :divided`, 8.34). Not yet built: forks in M3c's world (a dynamic agent set, so a
 fork can occur mid-run and its records follow it) and merges; the probe for that is a forker trying to shed a liability
 or double a reputation, red on outcome.
+8.131 continued (author, 2026-11-08): "It's also not just about methods of learning, it's also about understanding which
+U applied accelerates goal propagation at meta levels." The meta tier covers (a) methods of learning and teaching
+(learning to learn, teaching how to learn) and (b) understanding of which understanding, applied, accelerates the goal's
+propagation: knowing which research, teaching, institutions or models advance understanding and happiness fastest. Part
+(b) is what Benefuture's own priority weights per thing (8.117: a thing's predicted long-term contribution to the goals)
+and its research selection are; a being's estimate of those weights is itself meta understanding, at a level set by how
+far removed it is from direct application (which knowledge accelerates which knowledge...). Consequences for the
+simulation: in the traits world and M7, the priority weights that steer practice and research are given, not learned;
+a probe should let beings hold noisy estimates of them, improvable by meta-level research, and show that better
+estimates accelerate the goal's whole pattern (red on outcome: with fixed noisy estimates, effort flows to low-priority
+things). The bell curve of 8.131 then applies over the levels of (b) as well. Candidate homes: L58 (meta tier), the
+Understanding and Benefuture goals articles.
