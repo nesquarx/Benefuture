@@ -1500,7 +1500,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |  |
 | Error of society's estimate of each thing's priority (log-normal σ; 8.131 continued, traits world) | `weight_σ` | 0 (limiting case); probe 1.5 | judgment; range 0–2 |
 | Per-being priority estimates and the share of their error common to all (8.131–8.132) | `per_being`, `weight_shared` | off, 0 | judgment; range 0–1 |
-| Uptake of published meta-research priorities per step (education, 8.132) | `meta_uptake` | 0.3 | judgment; advice-taking is partial (CALIBRATION weight-on-advice); range 0.05–0.6 |
+| Uptake of published meta-research priorities (an outcome, not governed; 8.132): disposition Beta(mean, concentration) per being, times log-normal noise per step | `meta_uptake`, `uptake_conc`, `uptake_σ` | 0.3, 1.5, 1.0 | judgment; advice-taking is partial (CALIBRATION weight-on-advice); ranges 0.05–0.6, 0.5–10, 0.3–1.5 |
 
 The batteries' severity scales do not all match this table: laundering runs to 0.5 at severity 1
 (table 0–1), hidden outcomes take `p_apparent` from 0.9 down to 0.1 (table 0.2–1), local noise takes

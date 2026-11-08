@@ -82,6 +82,16 @@ end
 "Expected accuracy net of irreducible uncertainty for credence spread `s` (8.103): 1 − s²/0.25, floored at 0."
 expected_relative_accuracy(s) = max(0.0, 1 - s^2 / 0.25)
 
+# Gamma(k, 1) draw (Marsaglia–Tsang; k < 1 by the boost U^(1/k)), for Beta-distributed dispositions without a dependency.
+function _gamma(rng, k::Real)
+    k < 1 && return _gamma(rng, k + 1) * rand(rng)^(1 / k)
+    d = k - 1 / 3; c = 1 / sqrt(9d)
+    while true
+        x = randn(rng); v = (1 + c * x)^3
+        v > 0 && log(rand(rng)) < x^2 / 2 + d - d * v + d * log(v) && return d * v
+    end
+end
+
 """
     run_m7_traits(; n, m, steps, seed, ε, practice_gain, research_share, p_research, p_teachable,
                   p_act, class, view_σ, reception_σ) -> NamedTuple
@@ -99,7 +109,7 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                        reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
                        report_z::Real = 3.0, report_min::Integer = 5, things = [1.0], max_new_things::Integer = 0,
                        p_new_thing::Real = 0.0, novelty_weight::Real = 0.2,
-                       weight_σ::Real = 0.0, meta_research::Real = 0.0, per_being::Bool = false, meta_share::Real = 0.0, weight_shared::Real = 0.0, meta_domain::Bool = false, meta_uptake::Real = 0.3)
+                       weight_σ::Real = 0.0, meta_research::Real = 0.0, per_being::Bool = false, meta_share::Real = 0.0, weight_shared::Real = 0.0, meta_domain::Bool = false, meta_uptake::Real = 0.3, uptake_conc::Real = 1.5, uptake_σ::Real = 1.0)
     check(!isempty(things) && all(>=(0), things) && max_new_things >= 0 && 0 <= p_new_thing <= 1 && novelty_weight >= 0, "valid things")
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
@@ -128,7 +138,12 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     # Meta-research as its own domain (8.132): its outcomes publish a policy-level estimate of priorities (`pol`, the
     # log-errors the published record still carries, starting as the beings' mean); each step a being takes the published
     # estimate partly (`meta_uptake` of the gap: education, never ideal), so individual and policy priorities improve together.
+    # Uptake (8.132, author): heavy noise, an outcome of each being's disposition and moment, never governed. Dispositions
+    # are Beta with mean `meta_uptake` and concentration `uptake_conc` (low: wide spread); each step adds log-normal noise.
+    urng = Xoshiro(hash((seed, :uptake)))
+    upk = [begin x = _gamma(urng, meta_uptake * uptake_conc); x / (x + _gamma(urng, (1 - meta_uptake) * uptake_conc)) end for _ in 1:n]
     pol = per_being && meta_domain ? vec(sum(werrb, dims = 1)) ./ n : Float64[]
+    gwp() = [active[thing_of[i]] ? W[thing_of[i]] * exp(pol[thing_of[i]]) * wl[i] : 0.0 for i in 1:m]   # items' weights under the published priorities
     wt = gw()
     ms = 0.1 .+ 0.35 .* rand(rng, n, m)          # base spread of each being's model, per item
     mc = 0.1 .+ 0.6 .* rand(rng, n, m)           # its complexity
@@ -160,8 +175,9 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         end
         researching = rand(rrng, n) .< research_share
         if per_being && meta_domain
-            for b in 1:n
-                werrb[b, :] .+= meta_uptake .* (pol .- werrb[b, :])
+            for b in 1:n          # uptake is an outcome, not a rule: each being's own disposition, noisy every step
+                u = clamp(upk[b] * exp(uptake_σ * randn(urng) - uptake_σ^2 / 2), 0.0, 1.0)
+                werrb[b, :] .+= u .* (pol .- werrb[b, :])
             end
         end
         for b in findall(researching)
@@ -178,7 +194,7 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                 t = findfirst(!, active); active[t] = true; wt .= gw()   # a new thing opens (novelty weight)
                 i = (t - 1) * mt + rand(rrng, 1:mt); tr.new_things[] += 1
             else
-                wb = gwb(b); i = pick(rrng, wb ./ sum(wb))        # research goes where it counts toward the goals (8.117), as the researcher sees it
+                wb = meta_domain && per_being ? gwp() : gwb(b); i = pick(rrng, wb ./ sum(wb))   # with a meta domain, research funding follows the published (policy) priorities        # research goes where it counts toward the goals (8.117), as the researcher sees it
             end
             s2, c2 = rand(rrng) < 0.5 ? (ms[b, i] * (1 - breakthrough), mc[b, i]) : (ms[b, i], mc[b, i] * (1 - breakthrough))
             ms[b, i], mc[b, i] = s2, c2; push!(bundles, (s2, c2))

@@ -3099,5 +3099,11 @@ meta-research. Next: per-being estimates, meta-research competing for effort, an
 8.132 ruling (author, 2026-11-08): "Meta research should be its own domain and meta research outcomes should educate to
 update individual and policy level priorities towards greater goal acceleration over time." Implemented in the traits
 world as `meta_domain`: meta-research outcomes sharpen a published policy estimate of priorities; beings take it partly
-each step (`meta_uptake`, governed default 0.3; uptake is behaviour, never ideal). Candidate homes: L58 (meta tier), the
+each step (`meta_uptake`; uptake is behaviour, never ideal). Candidate homes: L58 (meta tier), the
 Understanding article (meta-research as a domain), L95-style domain tree (meta-research a leaf with its own record).
+
+8.132 continued (author, 2026-11-08): "Put heavy noise on the uptake, uptake is not a governed param, it's an outcome."
+Uptake is now each being's disposition (Beta, mean `meta_uptake` 0.3, concentration `uptake_conc` 1.5: wide) times
+log-normal noise each step (`uptake_σ` 1.0), on its own stream; world parameters, never governed thresholds. Research
+funding now follows the published (policy) priorities. Readings (10 paired seeds, floor at meta_share 0 / 0.05 / 0.3):
+independent errors 1.065 / 1.056 / 1.015, shared 1.012 / 1.057 / 1.017; the interior optimum survives the noise.
