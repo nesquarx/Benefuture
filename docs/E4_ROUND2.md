@@ -153,3 +153,10 @@ and E5 candidates (research funding against applied programmes, teaching reforms
 - Baselines: status quo no campaign; minimum deaths, mean welfare and equal weight all leave sparrows out.
 - Rule battery (17 sets): three pests 100%. Credence (60 draws): three pests 94%, no campaign 6%. No single-magnitude flips.
 - Reading: robust and right, but on thin evidence for the decisive risk: the insect-damage chance comes from one weakly documented precedent (Prussia's sparrow bounties, 1 of 1, Laplace 2/3) and the ornithologists' warnings, which the case does not price separately. Simple rules agree, so the case does not separate Benefuture from them. It is also the clearest case so far for the environmental block: the sparrow cull is the option with an environmental pathway to health harm.
+
+## Irish bank guarantee, 30 September 2008 (case committed before replay; tiers declared before replay)
+
+- Benefuture: guarantee deposits only and resolve the weakest bank with losses to its bondholders, compensated (the bondholders' small shortfall against no guarantee restored from residents' gains). Cell bad/differs: it avoids the decision that went badly; F1–F4 false.
+- Baselines: status quo no guarantee; minimum deaths, mean welfare and equal weight all choose deposits only.
+- Rule battery (17 sets): deposits only 100%. Credence (20 draws, stable): deposits only 99%, no guarantee 1%. No single-magnitude flips.
+- Reading: robust and right on the as-of record: every property-bust banking crisis in the record (4 of 4) was one of solvency, so a guarantee of bonds moved losses to the state with high probability, whatever the banks said. The case prices the run after a partial guarantee as likely (2 of 3) and it still does not change the choice. Simple rules agree.
