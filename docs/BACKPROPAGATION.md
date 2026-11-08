@@ -3127,3 +3127,9 @@ Identity step (2), records (2026-11-08): at a fork the reputation ledgers split 
 so the family holds one record. Audited entries stay with the parent, settled. Probe: forking on the last step, a copied
 record leaves the family about twice the parent's positive ledger; the partition leaves it within 25% (post-fork activity
 on that step moves it). Merges not built.
+Identity step (2), merges (2026-11-08): `merges = [(step, absorbed, into)]` in M3c. The merged identity holds the sum of
+both balances (debts included), ledgers, relevance, allowance and capacity, and both records (the absorbed identity's
+unaudited entries join the audit log); the absorbed identity goes dormant. Probe: a sloppy identity merging into a clean
+one on the last step; a naive merge (negative ledger and debts dropped) leaves the merged negative ledger short of the
+sum; the rule keeps it within 25% (3 seeds, each exercised). Candidate home: L123 (merge as the inverse of Fork, the
+family totals conserved both ways).

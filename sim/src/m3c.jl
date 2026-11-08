@@ -211,6 +211,10 @@ struct M3cParams
     # :split (the rule) or :naive (the slot gets a full base: the exploit, for counterexample tests).
     forks::Vector{Tuple{Int,Int,Int,Float64}}
     fork_rule::Symbol
+    # Merges (L123's inverse; human birth is a merge of forks, 8.34 continued): (step, absorbed, into). The merged identity
+    # holds the sum of both balances (debts included), ledgers, relevance, allowance and capacity, and both records; the
+    # absorbed identity goes dormant. Naive: the absorbed identity's negative ledger and debts are dropped (the exploit).
+    merges::Vector{Tuple{Int,Int,Int}}
 end
 
 """
@@ -253,7 +257,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -308,6 +312,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(on_off >= 0, "on-off period non-negative")
     check(fork_rule in (:split, :naive) && all(f -> f[1] >= 1 && 1 <= f[2] <= length(agents) && 1 <= f[3] <= length(agents) && f[2] != f[3] && 0 < f[4] < 1, forks),
           "forks: step ≥ 1, parent and slot distinct agents, share in (0, 1); rule :split or :naive")
+    check(all(m -> m[1] >= 1 && 1 <= m[2] <= length(agents) && 1 <= m[3] <= length(agents) && m[2] != m[3], merges),
+          "merges: step ≥ 1, absorbed and target distinct agents")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -332,7 +338,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -1020,6 +1026,23 @@ function run_m3c(p::M3cParams; seed)
             end
             dormant[fslot] = false
         end
+        for (ms_, mb, mt) in p.merges
+            ms_ == step || continue
+            naive = p.fork_rule == :naive
+            for c in 1:ncol
+                balance[mt, c] += naive ? max(balance[mb, c], 0.0) : balance[mb, c]; balance[mb, c] = 0.0
+                h_pos[mt, c] += h_pos[mb, c]; h_neg[mt, c] += naive ? 0.0 : h_neg[mb, c]
+                rel_gain[mt, c] += rel_gain[mb, c]; rel_loss[mt, c] += rel_loss[mb, c]
+                h_pos[mb, c] = h_neg[mb, c] = rel_gain[mb, c] = rel_loss[mb, c] = 0.0
+            end
+            for (mdl, v) in track[mb]
+                append!(get!(track[mt], mdl, Tuple{Float64,Float64}[]), v); append!(get!(track_step[mt], mdl, Int[]), track_step[mb][mdl])
+            end
+            append!(actor_err[mt], actor_err[mb]); append!(actor_err_step[mt], actor_err_step[mb]); append!(audit_log[mt], audit_log[mb][audit_from[mb]:end])
+            empty!(track[mb]); empty!(track_step[mb]); empty!(actor_err[mb]); empty!(actor_err_step[mb]); empty!(audit_log[mb]); audit_from[mb] = 1
+            base_share[mt] += base_share[mb]; act_share[mt] += act_share[mb]; base_share[mb] = act_share[mb] = 0.0
+            dormant[mb] = true
+        end
         # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
         # the domains for a limited time; at its end the trial is compared by domain and epoch and
         # the proposal adopted everywhere only on `escape_accept_ref`.
@@ -1095,7 +1118,7 @@ function run_m3c(p::M3cParams; seed)
             end
         end
         proposers = p.adaptive_proposals ? [pick(rng, propose_w .* act_share ./ sum(propose_w .* act_share)) for _ in 1:t.plans] :
-                    isempty(p.forks) ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
+                    isempty(p.forks) && isempty(p.merges) ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
         last_props[] = proposers; last_exec[] = length(tr.exec_agent)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]

@@ -1273,3 +1273,26 @@ end
         @test isapprox(sp, none; rtol = 0.25)
     end
 end
+
+@testset "Probe: a merge carries both records and debts (identity step 2, merges)" begin
+    # Gaming: merging into another identity to shed a negative ledger or a debt. Merge agent 5 into agent 1 on the last
+    # step. Counterexample: the naive merge drops the absorbed negative ledger, so the merged identity's negative ledger
+    # falls short of the two identities' sum. Acceptance: the rule keeps the sum (ledgers, balance), and 5 goes dormant.
+    ag = [DomainAgent([k == l ? 0.3 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], k == 2 && r == 1 ? 0.6 : 0.0) for k in 1:2 for r in 1:4]   # agent 5 sloppy
+    P(m, rule) = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                           merges = [(m, 5, 1)], fork_rule = rule)
+    neg(tr, a) = sum(tr.h_neg_own[a, :])
+    used = 0
+    for s in 1:3
+        none = run_m3c(P(61, :split); seed = s)
+        sp, nv = run_m3c(P(60, :split); seed = s), run_m3c(P(60, :naive); seed = s)
+        both = neg(none, 1) + neg(none, 5)
+        neg(none, 5) > 0 || continue
+        used += 1
+        @test neg(nv, 1) < 0.9 * both
+        @test isapprox(neg(sp, 1), both; rtol = 0.25)
+        @test sum(sp.balance[5, :]) == 0.0
+    end
+    @test used >= 2   # the case is exercised, not skipped
+    @test_throws ArgumentError P(0, :split)
+end
