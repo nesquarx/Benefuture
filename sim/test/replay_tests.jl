@@ -423,3 +423,11 @@ end
     c = load_replay_case(f); replay_decision(c)
     @test replay_rule_battery(c).shares == fresh
 end
+
+@testset "Replay: contrast cases are checked for equal size before replay (8.129)" begin
+    # Tobacco 1964 was built to avert equal expected deaths but, as built, does not (about 56 against 80 thousand
+    # among the acting options), so size could decide; the checker must refuse it. NSF 1950 (no deaths at stake) passes.
+    d = joinpath(@__DIR__, "..", "..", "cases")
+    @test !contrast_check(load_replay_case(joinpath(d, "tobacco_control_1964.toml")); tol = 0.1).ok
+    @test contrast_check(load_replay_case(joinpath(d, "nsf_basic_research_1950.toml")); tol = 0.1).ok
+end

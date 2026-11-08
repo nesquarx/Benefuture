@@ -1136,3 +1136,19 @@ function evaluate_replay_suite(case_paths::AbstractVector{<:AbstractString})
     )
 end
 
+
+"""
+    contrast_check(case; tol = 0.1) -> (ok, deaths)
+
+Before replaying a contrast case for the priority tiers (8.129), checks that its acting options are equal in size
+where size could decide: each acting option's expected deaths (summed over groups, priced from the as-of record)
+must lie within `tol` × max(1, the largest) of the others. Inaction is left out. A failing case is not a clean
+contrast (size, not kind, may decide); found necessary on the tobacco 1964 case.
+"""
+function contrast_check(case_dict::AbstractDict; tol::Real = 0.1)
+    c = replay_decision(case_dict).case
+    acting = [o for o in c["options"] if !get(o, "is_inaction", false) && !haskey(o, "_compensated_of")]
+    deaths = Dict(String(o["id"]) => sum(Float64.(o["pred_irreparable"])) for o in acting)
+    v = collect(values(deaths))
+    (ok = isempty(v) || maximum(v) - minimum(v) <= tol * max(1.0, maximum(v)), deaths = deaths)
+end
