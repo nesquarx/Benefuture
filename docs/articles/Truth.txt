@@ -9,4 +9,8 @@ A statement is said to be true if it can be [[proof|proven]] to be valid in [[re
 * The level of truth and its context is an important metadata about any statement.
 * Source of information can help estimate the level of truth, but not decide it.
 * Unprovable statements cannot be considered as truth of any kind.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* A causal model strictly dominates a black box of equal fit; causal explanation adds to understanding; pragmatic fit amplifies ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>causal_model_strictly_dominates_blackbox</code>, <code>causal_explanation_enhances_understanding</code>, <code>pragmatic_fit_amplification</code>]).
+* Scoring forecasts by the Brier score is strictly proper: honest credences maximise expected score ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>brier_score_strictly_proper</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

@@ -37,6 +37,15 @@ Empirical research on long-enduring commons institutions identifies recurring de
 
 No design succeeds permanently. Long-run outcomes depend less on achieving optimal institutions than on the capacity to detect failure and adapt.<ref>North, D. C. (1990). ''Institutions, Institutional Change and Economic Performance''. Cambridge University Press. https://openlibrary.org/works/OL25675210W</ref> This is why [[Adversarial adaptation]] and [[Progressive complexity]] are integral: a corruption-resistant system is not one where corruption is impossible, but one where successful corruption reveals the vulnerability and triggers correction.
 
+==== In simulation ====
+* Deceit does not pay, for skilled and unskilled actors alike, and audits read the honesty of claims apart from skill; repeated deception, once discovered, is priced out ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]). In a closed economy, pricing out skilled deceivers costs some growth against status-quo institutions; this is tracked as open.
+
+=== Formal reference ===
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Acting aligned with good takes strictly less effort than bad, under the anti-corruption design requirement ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>good_strictly_easier_than_bad</code>]).
+* Trust needed falls as audit is spread across more independent adversarial clusters ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>trust_monotonically_decreases_with_clusters</code>]).
+* Delegation has no trivial cycles and accumulated power is capped; a star of delegations concentrates power ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>delegation_no_trivial_cycles</code>, <code>accumulate_capped_bound</code>, <code>star_topology_power_concentration</code>]).
+
 === References ===
 <references />
-----<small>AI Disclaimer: This article is 100% human written.</small>
+----<small>AI Disclaimer: This article is 100% human written, except the simulation notes and formal reference, which are AI written.</small>

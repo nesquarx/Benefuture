@@ -134,7 +134,7 @@ Benefuture prioritizes peaceful cooperation and conflict prevention through dipl
 
 === In simulation ===
 * Ballots of credences, each shrunk to the voter's calibration record, resist a colluding bloc of confident experts: where outcomes stay hidden, plain votes decided 75% right, credences taken as stated 67%, credences weighted by calibration 96% ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]). The bonus for minority choices is what makes it work: its trials surface the hidden outcomes that calibration needs.
-* Against status-quo institutions in the same simulated world, Benefuture's governance kept outcomes right 97.4% of the time against 88.5%.
+* At the realistic bad end of the simulated world (noisy, partly deceptive), its governance decided 97% right against 89% for one person, one vote.
 
 === Formal reference ===
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
