@@ -3014,3 +3014,11 @@ outcome against about 0 for an honest pair, all accrued before detection; both c
 what shortens it. Candidates within native mechanisms: scoring chains against the outcomes that do become apparent
 (as M5 does with shared errors, 8.121): a shaded chain's errors track the incumbent's beyond what independent noise
 allows, which the shared-error rule (`coerror_copy_ref`) may catch earlier than divergence does.
+8.107 agreeable chains, shared errors (2026-11-08): the shared-error rule of 8.121 (`coerror_copy_ref`) applied to
+measurement chains' errors on audited outcomes (wrong = beyond twice a reading's noise; with two chains the 0.9 floor
+alone decides, there being no typical pair). It names the shaded chain as a copy in 4 of 4 seeds, the incumbent is
+then demoted, and no honest chain is ever folded (copy-chain and honest-pair probes unchanged, M3c tests pass). It does
+not significantly shorten the undetected period: hidden bias +0.4 to +1.5 against +0.7 to +1.7 without it (paired
+differences −0.38, −0.25, +0.35, −0.67). The limit is the audits themselves: they come only when chains diverge, which
+an agreeable chain avoids. Open: an audit schedule that does not depend on divergence and does not demote honest
+chains by chance (the plain 5% spot schedule did once).

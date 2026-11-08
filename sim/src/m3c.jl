@@ -457,6 +457,17 @@ function run_m3c(p::M3cParams; seed)
             # Chains are scored against audits (cross-chain scoring): a chain whose audited error exceeds
             # the best chs chain's by `chain_z` combined standard errors is demoted from the pool.
             for (i, k) in enumerate(chs); push!(chain_err[k], abs(vals[i] - plan_value(audit, t))); end
+            # Shared errors (8.121 rule applied to chains, 8.107): a chain wrong (beyond twice a reading's noise) on
+            # the same audited outcomes as another, far more than independent noise allows, is folded into it.
+            if p.chain_detect
+                wrongc = [abs(vals[i] - plan_value(audit, t)) > 2se for i in eachindex(chs)]
+                for a in eachindex(chs), b in (a + 1):length(chs)
+                    k, l = chs[a], chs[b]
+                    e = get!(chain_co, (k, l), [0, 0])
+                    (wrongc[a] || wrongc[b]) && (e[2] += 1); (wrongc[a] && wrongc[b]) && (e[1] += 1)
+                    coerror_copy(e[1], e[2]; min_either = 10, med_share = 0.0, margin = 0.0) && !chain_copied[l] && (chain_copied[l] = true; chain_copies[] += 1)
+                end
+            end
             if all(k -> length(chain_err[k]) >= p.adv_min_records, chs)
                 st = [(mean(chain_err[k]), std(chain_err[k]) / sqrt(length(chain_err[k]))) for k in chs]
                 b = argmin(first.(st))
@@ -524,7 +535,7 @@ function run_m3c(p::M3cParams; seed)
     slanderers = falses(na)  # reporters whose frivolous pattern has been detected (a lie detected)
     reports_by = zeros(Int, na)  # reports filed, per reporter
     propose_w = ones(na); last_props = Ref(Int[]); last_exec = Ref(0)  # proposal weights (8.115)
-    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = Xoshiro(hash((seed, :chains))); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l)  # measured less true value of each outcome read; audits by divergence (8.107)
+    chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = Xoshiro(hash((seed, :chains))); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l); chain_co = Dict{Tuple{Int,Int},Vector{Int}}()  # measured less true value of each outcome read; audits by divergence (8.107)
     founded_on = zeros(Int, na)  # founded reports, per audited actor (trace only)
     pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
     vrng = Xoshiro(hash((seed, :advap)))
