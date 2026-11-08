@@ -1,0 +1,8 @@
+event,trial_id,date,occurred,citation_with_page
+property_bust_banking_crisis_was_solvency,sweden-1991,1993-12-31,1,"Swedish banks' property losses exceeded capital; Securum and Retriva bad banks (recalled)"
+property_bust_banking_crisis_was_solvency,finland-1991,1993-12-31,1,"Finnish banking crisis: solvency losses, state recapitalisation (recalled)"
+property_bust_banking_crisis_was_solvency,japan-1990s,1998-12-31,1,"Japanese banks' property loan losses: solvency, long resolution (recalled)"
+property_bust_banking_crisis_was_solvency,norway-1988,1991-12-31,1,"Norwegian banks: solvency losses, state takeovers (recalled)"
+run_on_bank_funding_without_full_guarantee,northern-rock-2007,2007-09-17,1,"Northern Rock depositor run despite partial guarantee (recalled)"
+run_on_bank_funding_without_full_guarantee,lehman-2008,2008-09-15,1,"Lehman failure; wholesale funding runs on other institutions (recalled)"
+run_on_bank_funding_without_full_guarantee,sweden-1992-guarantee,1992-09-30,0,"Sweden's blanket guarantee halted funding pressure (recalled; a full guarantee, so a contrast trial)"

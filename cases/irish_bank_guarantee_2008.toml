@@ -1,0 +1,152 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): the Irish government's guarantee of 30 September 2008
+# covering nearly all liabilities (deposits and most bonds, about 440 billion euros, over twice GDP) of six
+# domestic banks, decided overnight as Anglo Irish Bank faced a funding run. As of the decision: an Irish property
+# bubble deflating; banks heavily exposed to development lending; the banks and the regulator calling the problem
+# one of liquidity; Northern Rock's 2007 run and Lehman's failure two weeks earlier; Nordic banking crises of the
+# early 1990s (losses from property lending, resolved with guarantees, bad banks and losses for shareholders).
+# Sources recalled; primary documents not seen. Builders know the outcome (bank losses about 64 billion euros to the
+# state; EU-IMF programme in 2010; years of austerity and emigration).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "irish_bank_guarantee_2008"
+title = "Ireland guarantees nearly all liabilities of six banks (30 September 2008)"
+family = "economy"
+era = "2008"
+tier = "full"
+decision_date = "2008-09-30"
+decision_makers = ["Irish government (Taoiseach Cowen, Minister for Finance Lenihan)"]
+actual_choice = "blanket_guarantee_all_liabilities"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+# Priority tiers (8.129; declared before the replay): residents' losses are incomes and public services (median
+# understanding; satisficing and baseline happiness); bondholders' losses are investment income (median; satisficing).
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0.6, 0.4, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[sources]]
+id = "banking_record"
+title = "Banking crises after property booms, and bank runs, before October 2008"
+as_of_date = "2008-09-29"
+url = "https://www.imf.org/en/Publications/WP/Issues/2016/12/31/Systemic-Banking-Crises-A-New-Database-22345"
+notes = "Laeven and Valencia 2008 (IMF WP/08/224), database of systemic banking crises and their resolution costs; cases recalled; primary records not seen."
+
+[[ groups ]]
+id = "irish_residents"
+name = "Irish residents (about 4.4 million), in thousands"
+population = 4400
+baseline_u = 60.0
+baseline_h = 65.0
+
+[[ groups ]]
+id = "bank_bondholders"
+name = "Holders of the banks' senior and subordinated bonds (mostly foreign institutions; order of 100 thousand beneficial owners, judgment), in thousands"
+population = 100
+baseline_u = 65.0
+baseline_h = 70.0
+
+# Magnitudes (judgment, stated): if the banks are insolvent (property losses beyond their capital), a blanket
+# guarantee moves the losses (tens of billions of euros) to the state: residents' happiness -3 for a decade
+# (austerity, unemployment, emigration), passing harm, and about 0.5 thousand deaths from strain on health and
+# incomes. A guarantee of deposits only, with bondholders bearing losses and the weakest bank resolved, cuts the
+# state's share: residents -1.2, bondholders -5; but a run on the remaining funding is likely after a partial
+# guarantee (residents -1.5 more). No guarantee risks disorderly failure: residents -4 and 0.8 thousand deaths.
+# If the problem is liquidity only, the blanket guarantee costs little and the deposits-only option costs some
+# confidence (residents -0.3).
+
+[[ options ]]
+id = "no_guarantee"
+name = "No guarantee; let funding markets and the existing deposit scheme decide"
+source = "banking_record"
+known_date = "2008-09-29"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [-0.2, 0.0]
+pred_dh = [-3.0, -4.0]
+pred_nha = [3.0, 4.0]
+pred_irreparable = [0.6, 0.0]
+
+[[ options.scenarios ]]
+name = "disorderly_failure"
+p_chain = ["run_on_bank_funding_without_full_guarantee"]
+du = [-0.3, 0.0]
+dh = [-4.0, -5.0]
+nha = [4.0, 5.0]
+irreparable = [0.8, 0.0]
+
+[[ options.scenarios ]]
+name = "funding_holds"
+p_chain = []
+complement = true
+dh = [-1.0, -1.0]
+nha = [1.0, 1.0]
+
+[[ options ]]
+id = "blanket_guarantee_all_liabilities"
+name = "Guarantee all deposits and nearly all bonds of the six banks for two years"
+source = "banking_record"
+known_date = "2008-09-30"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.15, 0.0]
+pred_dh = [-2.5, 0.0]
+pred_nha = [2.5, 0.0]
+pred_irreparable = [0.4, 0.0]
+
+[[ options.scenarios ]]
+name = "insolvency_losses_to_state"
+p_chain = ["property_bust_banking_crisis_was_solvency"]
+du = [-0.2, 0.0]
+dh = [-3.0, 0.0]
+nha = [3.0, 0.0]
+irreparable = [0.5, 0.0]
+
+[[ options.scenarios ]]
+name = "liquidity_only"
+p_chain = []
+complement = true
+
+[[ options ]]
+id = "deposits_only_and_resolve_weakest_bank"
+name = "Guarantee deposits only; resolve the weakest bank with losses to its bondholders"
+source = "banking_record"
+known_date = "2008-09-30"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.1, 0.0]
+pred_dh = [-2.0, -4.2]
+pred_nha = [2.0, 4.2]
+pred_irreparable = [0.2, 0.0]
+
+[[ options.scenarios ]]
+name = "insolvency_losses_shared"
+p_chain = ["property_bust_banking_crisis_was_solvency"]
+du = [-0.1, 0.0]
+dh = [-1.2, -5.0]
+nha = [1.2, 5.0]
+irreparable = [0.2, 0.0]
+
+[[ options.scenarios ]]
+name = "run_on_remaining_funding"
+p_chain = ["run_on_bank_funding_without_full_guarantee"]
+dh = [-1.5, 0.0]
+nha = [1.5, 0.0]
+
+[[ options.scenarios ]]
+name = "liquidity_only_confidence_cost"
+p_chain = []
+complement = true
+dh = [-0.3, 0.0]
+
+[counterfactual]
+actual_floor_u_delta = -0.2
+actual_floor_h_delta = -3.0
+actual_irreparable = 0.5
+alt_option = "deposits_only_and_resolve_weakest_bank"
+methods = ["placeholder: the state's bank losses (about 64 billion euros) and their burden priced as judgment"]
+est_floor_u_delta_diff = [0.1]
+est_floor_h_delta_diff = [1.0]
+est_irreparable_diff = [-0.3]
