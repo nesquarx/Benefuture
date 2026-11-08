@@ -166,8 +166,13 @@ jobs:
           BATTERY="${{ needs.setup.outputs.battery_name }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin battery-results:battery-results 2>/dev/null || git checkout -b battery-results
-          git checkout battery-results
+          # The results files are also tracked on main, so switching branches with them modified fails; set them
+          # aside, switch (creating the branch if absent), and copy them back.
+          mkdir -p "$RUNNER_TEMP/results"
+          cp "sim/battery/results/${BATTERY}.csv" "sim/battery/results/${BATTERY}.md" "$RUNNER_TEMP/results/"
+          if git fetch origin battery-results:battery-results 2>/dev/null; then git checkout -f battery-results; else git checkout -f -b battery-results; fi
+          mkdir -p sim/battery/results
+          cp "$RUNNER_TEMP/results/${BATTERY}.csv" "$RUNNER_TEMP/results/${BATTERY}.md" sim/battery/results/
           git add "sim/battery/results/${BATTERY}.csv" "sim/battery/results/${BATTERY}.md"
           git commit -m "battery(${BATTERY}): record results for commit $(git rev-parse --short HEAD)" || echo "No changes to commit"
           git push origin battery-results
