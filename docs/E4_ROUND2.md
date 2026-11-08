@@ -116,3 +116,17 @@ raw happiness), and few of these cases pose that contrast; many choices are also
 before value. Next: option-level kinds where a case's options genuinely differ in kind (school closures with remote
 learning against without; printing against scribal copying; research programmes), declared from as-of sources,
 and new E4 and E5 candidates chosen where the contrast is the decision.
+
+### Option-level kinds (8.129, 2026-11-08; as-of bases stated in the case files)
+
+- NCLB 2002: sanction-driven gains declared narrow (median and floor, little teachable or meta; as-of basis:
+  score inflation under high-stakes testing, Koretz and others on Kentucky's KIRIS in the 1990s); reporting
+  without sanctions declared broader. Choice unchanged: reporting and flexibility, 100% of rule sets and credence.
+- Printing 1470: scribal gains declared less teachable (copies scarce and variant). Choice unchanged: printers'
+  privileges, compensated; rule battery and credence 94% for the scribal status quo (as before).
+- School closures 2020: no as-of basis found to split closure's loss differently from remote learning's by
+  kind, so nothing declared.
+
+Reading: where options differ in kind here, they also differ in magnitude by far more, and magnitude decides.
+Priorities should decide cases where options are close in size but differ in kind; such cases are the next E4
+and E5 candidates (research funding against applied programmes, teaching reforms against test regimes).

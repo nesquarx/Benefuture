@@ -73,6 +73,8 @@ source = "early_printing_ventures_1454_1473"
 known_date = "1457-12-31"
 is_inaction = true
 scope_delta = 0.0
+# Priority kinds (8.129, option-level; as-of basis: scribal copies scarce and variant): gains less teachable.
+u_tiers = [[0.1, 0.3, 0.2, 0.4, 0, 0], [0, 0, 0, 1, 0, 0]]
 # Legacy keys equal the scenario expectation (zero by definition: this option is the reference course).
 pred_du = [0.0, 0.0]
 pred_dh = [0.0, 0.0]
