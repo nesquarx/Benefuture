@@ -63,6 +63,14 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_tiered_value] def tieredValue (u h n : FloatArray) (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
   tiered_value_ref u.data.toList h.data.toList n.data.toList alpha beta gamma haWt lambda qPlus qMinus
 
+@[export bf_tiered_value_sched] def tieredValueSched (u h n su sh sn : FloatArray)
+    (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
+  tiered_value_sched_ref u.data.toList h.data.toList n.data.toList su.data.toList sh.data.toList sn.data.toList
+    alpha beta gamma haWt lambda qPlus qMinus
+
+@[export bf_tier_schedule_at] def tierScheduleAt (which i : USize) : Float :=
+  (if which == 0 then tierScheduleU_ref else if which == 1 then tierScheduleH_ref else tierScheduleN_ref).getD i.toNat 0.0
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 

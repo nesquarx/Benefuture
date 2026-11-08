@@ -2848,3 +2848,10 @@ novelty move the value by under 1%. Finding: with the non-transferable peak four
 favour the teachable side only narrowly (4.58 to 4.49); teaching's multiplier comes from understanding spreading
 to other beings, which the world models must carry (M7's teachable/tacit split already does). Next: world
 models emit tier-typed changes (M7 first, then the replay's case schema), each behind its probe.
+
+8.129 clarified (author, 2026-11-08): "Each priority tier's coefficients are governed params as usual, and can have
+domain specific governance." Built: Lean `tiered_value_sched_ref` (export `bf_tiered_value_sched`) takes the three
+schedules; `tier_schedules()` reads the defaults from the reference; `tiered_value(...; su, sh, sn)` takes a
+domain's governed schedules (six weights in [0, 1), in priority order). Probe: a domain ranking teachability with
+peak values a teachable gain above the default. Domain schedules ride the existing per-domain governance
+(thresholds governed like any other); which domains govern their own is a world parameter until governance sets it.

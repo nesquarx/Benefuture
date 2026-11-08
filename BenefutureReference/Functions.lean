@@ -317,7 +317,13 @@ def tierScheduleN_ref : List Float := [0.8, 0.6, 0.4, 0.25, 0.15, 0.0]
 def tiered_ref (xs sched : List Float) (lambda kappa qPlus qMinus : Float) : Float :=
   Sy_signed_ref (xs.zip (sched.zip sched)) lambda kappa qPlus qMinus
 
-/-- V over tier vectors (L63 with L57–L60): each quantity synthesised through its tiers, then V as before. -/
+/-- V over tier vectors with given schedules (author, 2026-11-08: each tier's coefficients are governed, and may
+  be governed per domain): each quantity synthesised through its own schedule, then V as before. -/
+def tiered_value_sched_ref (u h n su sh sn : List Float) (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
+  V_ref (tiered_ref u su lambda 1.0 qPlus qMinus) (tiered_ref h sh lambda 1.0 qPlus qMinus)
+        (tiered_ref n sn lambda 1.0 qPlus qMinus) alpha beta gamma haWt lambda qPlus qMinus
+
+/-- V over tier vectors (L63 with L57–L60) at the default schedules. -/
 def tiered_value_ref (u h n : List Float) (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
   V_ref (tiered_ref u tierScheduleU_ref lambda 1.0 qPlus qMinus)
         (tiered_ref h tierScheduleH_ref lambda 1.0 qPlus qMinus)

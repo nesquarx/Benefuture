@@ -97,21 +97,34 @@ function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, p
 end
 
 """
-    tiered_value(u, h, n; harm_wt, α, β, γ, λ, qp, qm)
+    tier_schedules() -> (u, h, n)
 
-V over priority tiers (author ruling 8.129; Lean `tiered_value_ref`): `u`, `h`, `n` are six-tier change vectors
-in priority order (understanding: peak, teachable, meta, median, floor, undirected; happiness: eudaimonic,
+The default priority tier schedules from the Lean reference (8.129; governed thresholds, each may be governed per
+domain and passed to `tiered_value` as `su`, `sh`, `sn`).
+"""
+tier_schedules() = Tuple([ccall(sym(:bf_tier_schedule_at), Float64, (Csize_t, Csize_t), w, i) for i in 0:5] for w in 0:2)
+
+"""
+    tiered_value(u, h, n; harm_wt, α, β, γ, λ, qp, qm, su, sh, sn)
+
+V over priority tiers (author ruling 8.129; Lean `tiered_value_sched_ref`): `u`, `h`, `n` are six-tier change
+vectors in priority order (understanding: peak, teachable, meta, median, floor, undirected; happiness: eudaimonic,
 shareable, satisficing, baseline, median, peak; novelty: paradigm, point of view, chaotic, incremental, perilous,
-trivial). Each is synthesised by synergy over its tier schedule, then combined as in `value_on_being`.
+trivial). Each is synthesised by synergy over its tier schedule (`su`, `sh`, `sn`: governed coefficients, the
+reference defaults unless a domain governs its own), then combined as in `value_on_being`.
 """
 function tiered_value(u::AbstractVector{<:Real}, h::AbstractVector{<:Real}, n::AbstractVector{<:Real}; harm_wt::Real,
-                      α::Real, β::Real, γ::Real, λ::Real, qp::Real, qm::Real)
+                      α::Real, β::Real, γ::Real, λ::Real, qp::Real, qm::Real,
+                      su = tier_schedules()[1], sh = tier_schedules()[2], sn = tier_schedules()[3])
     check(length(u) == 6 && length(h) == 6 && length(n) == 6, "six tiers each for understanding, happiness and novelty")
+    check(all(s -> length(s) == 6 && all(w -> isfinite(w) && 0 <= w < 1, s) && issorted(s; rev = true), (su, sh, sn)),
+          "tier schedules: six weights in [0, 1), in priority order")
     check(all(isfinite, u) && all(isfinite, h) && all(isfinite, n) && all(isfinite, (λ, qp, qm)), "inputs must be finite")
     check(isfinite(harm_wt) && harm_wt >= 1, "harm weight must be at least 1")
     check(1 > α > β > γ > 0, "priorities must satisfy 1 > α > β > γ > 0")
     check(λ >= 0 && qp > 0 && qm > 0, "λ non-negative and exponents positive")
-    ccall(sym(:bf_tiered_value), Float64,
-          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
-          floatarray(Float64.(u)), floatarray(Float64.(h)), floatarray(Float64.(n)), α, β, γ, harm_wt, λ, qp, qm)
+    ccall(sym(:bf_tiered_value_sched), Float64,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          floatarray(Float64.(u)), floatarray(Float64.(h)), floatarray(Float64.(n)),
+          floatarray(Float64.(su)), floatarray(Float64.(sh)), floatarray(Float64.(sn)), α, β, γ, harm_wt, λ, qp, qm)
 end

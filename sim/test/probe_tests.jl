@@ -1123,3 +1123,14 @@ end
     v0 = tiered_value(uA, hA, zeros(6); kw...)
     @test abs(tiered_value(uA, hA, [0.0, 0.0, 0.0, 0.0, 0.0, 10.0]; kw...) - v0) < 0.01 * abs(v0)   # trivial novelty ≈ 0
 end
+
+@testset "Probe: tier coefficients are governed, per domain where governed (8.129)" begin
+    # A domain that governs its own understanding schedule (here: teachability ranked equal to peak, as a teaching
+    # domain might) values a teachable gain above what the default schedule gives it.
+    bp = NamedTuple{BenefutureSim.PARAM_FIELDS}(Tuple(bootstrap_params()))
+    kw = (harm_wt = 1.0, α = bp.alpha, β = bp.beta, γ = bp.gamma, λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
+    su, sh, sn = tier_schedules()
+    @test su == [0.8, 0.6, 0.4, 0.25, 0.15, 0.05] && sn[6] == 0.0
+    teach = [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
+    @test tiered_value(teach, zeros(6), zeros(6); kw..., su = [0.8, 0.8, 0.4, 0.25, 0.15, 0.05]) > tiered_value(teach, zeros(6), zeros(6); kw...)
+end
