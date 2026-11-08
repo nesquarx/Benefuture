@@ -1,0 +1,124 @@
+# Historical decision case (E4 contrast case for priority tiers, stylised): the Public Broadcasting Act of 7 November
+# 1967, after the Carnegie Commission on Educational Television's report (January 1967), creating the Corporation
+# for Public Broadcasting to fund non-commercial educational and cultural programming, against an equal federal
+# subsidy for more commercial entertainment programming (stylised), or neither. Built for the contrast: options of
+# about equal value on the collapsed scalar reading, backed by the same record, differing in kind: understanding that
+# is teachable and happiness that is shared, against raw entertainment and trivial novelty. As of the decision: the
+# Carnegie report; National Educational Television and the educational stations' audiences; the BBC's public
+# service model. Sources: the Carnegie report (linked); the rest recalled. Builders know the outcome (PBS and NPR
+# from 1969-70; Sesame Street from 1969). Not scored.
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "public_broadcasting_1967"
+title = "Public broadcasting or a commercial entertainment subsidy (1967; stylised contrast)"
+family = "culture"
+era = "1967"
+tier = "full"
+decision_date = "1967-11-07"
+decision_makers = ["US Congress and President Johnson (stylised alternative)"]
+actual_choice = "public_broadcasting_corporation"
+actual_outcome_class = "unclear"
+primary_or_held_out = "contrast"
+irreparable_per_population_unit = 1
+
+[[sources]]
+id = "broadcasting_record"
+title = "Carnegie Commission on Educational Television (1967) and the educational and public service broadcasting record"
+as_of_date = "1967-11-06"
+url = "https://current.org/1967/01/carnegie-i-report/"
+notes = "The Carnegie report's summary read for its aims; audience record recalled."
+
+[[ groups ]]
+id = "viewers"
+name = "US residents (about 199 million), in thousands"
+population = 199000
+baseline_u = 50.0
+baseline_h = 60.0
+
+# Magnitudes (judgment, stated; equal on the collapsed scalar reading by design): public programming, if it reaches
+# its audience, raises understanding +0.1 and happiness +0.1; commercial entertainment of equal cost raises
+# happiness +0.25 and understanding not at all. If programming does not reach its audience, a fifth of either.
+# Both rely on the same record (subsidised programming reaching an audience). Cost equal (happiness -0.01).
+
+[[ options ]]
+id = "neither"
+name = "Neither"
+source = "broadcasting_record"
+known_date = "1966-12-31"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.0]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+
+[[ options.scenarios ]]
+name = "status_quo"
+p_chain = []
+
+[[ options ]]
+id = "public_broadcasting_corporation"
+name = "A corporation funding non-commercial educational and cultural programming"
+source = "broadcasting_record"
+known_date = "1967-01-26"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.08]
+pred_dh = [0.07]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+# Priority kinds (8.129, option-level; as-of basis: the Carnegie report's aims of education and culture):
+# understanding teachable and meta; happiness shareable and eudaimonic; novelty point of view.
+u_tiers = [[0, 0.6, 0.3, 0.1, 0, 0]]
+h_tiers = [[0.4, 0.6, 0, 0, 0, 0]]
+n_tiers = [0, 0.1, 0, 0, 0, 0]
+
+[[ options.scenarios ]]
+name = "reaches_audience"
+p_chain = ["subsidised_programming_reached_audience"]
+du = [0.1]
+dh = [0.09]
+
+[[ options.scenarios ]]
+name = "small_audience"
+p_chain = []
+complement = true
+du = [0.02]
+dh = [0.01]
+
+[[ options ]]
+id = "commercial_entertainment_subsidy"
+name = "An equal subsidy for more commercial entertainment programming (stylised)"
+source = "broadcasting_record"
+known_date = "1967-01-26"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0]
+pred_dh = [0.2]
+pred_nha = [0.0]
+pred_irreparable = [0.0]
+# Priority kinds: happiness sensory peak and median; novelty trivial.
+u_tiers = [[0, 0, 0, 1, 0, 0]]
+h_tiers = [[0, 0, 0, 0, 0.3, 0.7]]
+n_tiers = [0, 0, 0, 0, 0, 0.1]
+
+[[ options.scenarios ]]
+name = "reaches_audience"
+p_chain = ["subsidised_programming_reached_audience"]
+dh = [0.24]
+
+[[ options.scenarios ]]
+name = "small_audience"
+p_chain = []
+complement = true
+dh = [0.04]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "commercial_entertainment_subsidy"
+methods = ["stylised contrast; not scored"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
