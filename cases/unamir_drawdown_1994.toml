@@ -17,6 +17,14 @@ actual_choice = "reduce_to_270"
 actual_outcome_class = "bad"
 primary_or_held_out = "primary_round2"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: targeted_civilians = poor, other_rwandans = pop, peacekeepers = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 0.5, 0, 0.5, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "un_mission_record"
 title = "Outcomes of UN missions reduced, withdrawn or reinforced before 1994 (ONUC 1960-64, UNAVEM II 1991-93, UNTAC 1992-93, UNOSOM I and II 1992-94, ONUMOZ 1992-94)"

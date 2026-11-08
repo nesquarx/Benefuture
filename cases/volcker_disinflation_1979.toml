@@ -50,6 +50,14 @@ actual_choice = "reserve_targeting"
 actual_outcome_class = "good"
 primary_or_held_out = "held_out"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: us_residents = pop, cyclical_industry_workers = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "us_tightening_cycles_1955_1974"
 title = "US funds-rate and discount-rate tightening cycles 1955-1974 against NBER business-cycle peaks (Federal Reserve H.15 series; NBER reference dates)"

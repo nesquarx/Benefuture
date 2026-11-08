@@ -2902,3 +2902,10 @@ seatbelts in a car, above them in an aircraft). This is the priority-per-thing w
 context-dependent: the weight of a thing is its predicted long-term contribution in the context of use, set by
 that context's (domain's) governance, consistent with per-domain tier schedules (8.129 clarified).
 Candidate homes: L57–L59 and the Understanding (aggregation) and Happiness articles.
+
+8.129 in the replay (author request, 2026-11-08, "redo the E4/5s considering priorities"): built and re-read. The
+replay values group changes through the tiers (rule switch `tiers`, default on; the scalar reading is the rule
+battery's seventeenth set); cases declare group kinds in `[tiers]`, options may override (`u_tiers`, `h_tiers`,
+`n_tiers`); undeclared, changes are typed by global position. All 26 cases re-run (docs/E4_ROUND2.md): no choice
+changes, credences move at most five points, because group-level kinds are shared by every option of a case.
+Priorities decide only where options differ in kind for the same group; option-level kinds and contrast cases next.

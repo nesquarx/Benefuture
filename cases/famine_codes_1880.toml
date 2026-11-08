@@ -15,6 +15,14 @@ actual_choice = "adopt_famine_code"
 actual_outcome_class = "good"
 primary_or_held_out = "primary"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: drought_exposed_rural_population = poor, revenue_and_administration = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "famine_commission_1880_report"
 title = "Report of the Indian Famine Commission, Part I (Strachey), reviewing the famines of 1866, 1868-70, 1873-74 and 1876-78"

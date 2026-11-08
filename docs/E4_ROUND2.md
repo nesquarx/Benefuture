@@ -70,3 +70,49 @@ Defect: the fallback weighed only the blocks' excesses, so harms that neither bl
 | Sri Lanka 2021 | keep imports | bad/differs | keep 94% | keep 62%, ban 30%, phased 7% (320) | 7 |
 
 Reading: DDT, German nuclear and Sri Lanka are contested (many single-magnitude flips; credence split), so none counts as a win. Swine flu repeats the bad decision on as-of base rates. Only UNAMIR is robust and right. The E5 suggestions are unchanged by the fix (`docs/E5_RUNS.md`).
+
+## All E4 and E5 cases re-read with priority tiers (8.129, 2026-11-08)
+
+The replay now values each group's changes through the priority tiers (Lean `tiered_value_ref`); the collapsed
+scalar reading stays in the rule battery as a seventeenth set. Each case declares its groups' kinds (`[tiers]`:
+education as teachable and meta understanding, developing children's learning capacity as meta and floor,
+targeted and poorest groups at the floor and happiness baseline, incomes and jobs as satisficing happiness,
+science communities as peak and teachable). The kinds were declared after the outcomes were known for E4 cases,
+so the re-read is hindsight-exposed; first results stand. Credences by precision (8.128).
+
+| Case | Choice | Cell | Credence (top three) |
+|---|---|---|---|
+| bengal_denial_1942 | no_denial_preserve_stocks | bad/differs | no_denial_preserve_stocks 100% |
+| bengal_famine_relief_1943 | approve_emergency_grain_shipments+compensated | bad/differs | approve_emergency_grain_shipments 60%, token_shipment_150k_tons 35%, reject_emergency_grain_shipments 5% |
+| challenger_1986 | delay_until_53F | bad/differs | delay_until_53F 100% |
+| ddt_ban_1972 | cancel_agricultural_uses+compensated | good/agrees | phase_down_keep_essential 38%, cancel_agricultural_uses 32%, keep_registration 29% |
+| famine_codes_1880 | adopt_famine_code+compensated | good/agrees | adopt_famine_code 100% |
+| fda_beta_blockers_1975 | approve_secondary_prevention | bad/differs | approve_secondary_prevention 100% |
+| fomc_september_2008 | cut_50bp | unclear/differs | cut_50bp 60%, hold_at_2_percent 40% |
+| german_nuclear_phaseout_2011 | close_oldest_eight_only | bad/differs | keep_2010_extension 42%, close_oldest_eight_only 38%, phase_out_by_2022 21% |
+| leaded_petrol_phaseout_1973 | phase_down_total_pool_average_1975_1979+compensated | good/agrees | phase_down_total_pool_average_1975_1979 36%, status_quo_lead_free_availability_only 33%, phase_down_leaded_grade_only_schedule_reproposed 31% |
+| montreal_protocol_1987 | adopt_cfc_phase_down+compensated | good/agrees | adopt_cfc_phase_down 100% |
+| no_child_left_behind_2002 | reporting_and_flexibility_without_sanctions | unclear/differs | reporting_and_flexibility_without_sanctions 99%, sign_nclb 1% |
+| printing_press_europe_1470 | grant_privileges_to_master_printers+compensated | good/agrees | status_quo_scribal_trade_only 94%, grant_privileges_to_master_printers 6% |
+| ragusa_quarantine_1377 | enact_30_day_isolation | good/agrees | enact_30_day_isolation 100% |
+| school_closures_2020 | close_with_remote_learning | unclear/differs | keep_schools_open 47%, close_with_remote_learning 27%, close_three_weeks 14% |
+| semmelweis_vienna_1847 | retain_handwashing_protocol | bad/differs | retain_handwashing_protocol 100% |
+| snow_broad_street_1854 | remove_pump_handle | good/agrees | remove_pump_handle 96%, no_intervention_continue_pump 4% |
+| sri_lanka_fertiliser_ban_2021 | keep_imports | bad/differs | keep_imports 62%, ban_imports_now 30%, phased_transition 8% |
+| swine_flu_vaccination_1976 | vaccinate_everyone+compensated | bad/agrees | vaccinate_everyone 81%, stockpile_and_watch 19%, do_nothing 0% |
+| thalidomide_fda_1960 | withhold_approval_pending_safety | good/agrees | withhold_approval_pending_safety 100% |
+| uk_bse_feed_ban_1988 | total_ban_and_stock_recall | unclear/differs | total_ban_and_stock_recall 95%, partial_ban_with_stock_drawdown 5% |
+| unamir_drawdown_1994 | reinforce_5000_chapter_vii+compensated | bad/differs | reinforce_5000_chapter_vii 67%, maintain_2500 32%, reduce_to_270 1% |
+| volcker_disinflation_1979 | reserve_targeting | good/agrees | incomes_policy 51%, reserve_targeting 45%, continue_funds_rate_pegging 4% |
+| fda_zrostudirsen_2027 | complete_response_wait | pending/differs | complete_response_wait 95%, accelerated_approval_with_confirmatory_trial 5% |
+| fomc_january_2027 | cut_25bp | pending/differs | cut_25bp 62%, hold 34%, hike_25bp 4% |
+| imo_net_zero_framework_2026 | adopt_with_pricing+compensated | pending/differs | adopt_with_pricing 77%, adjourn_again 22%, adopt_without_pricing 1% |
+| who_pabs_annex_2027 | adopt_binding_benefit_sharing_annex+compensated | pending/differs | adopt_binding_benefit_sharing_annex 74%, extend_negotiations_no_annex 26% |
+
+Reading: no choice changes, and credences move by at most five points. The kinds belong to groups, so every option
+in a case carries the same ones, and the tiers mostly rescale. Priorities bite where options differ in the kind of
+change they make for the same group (a reform yielding teachable against tacit understanding, or eudaimonic against
+raw happiness), and few of these cases pose that contrast; many choices are also settled by the floors and blocks
+before value. Next: option-level kinds where a case's options genuinely differ in kind (school closures with remote
+learning against without; printing against scribal copying; research programmes), declared from as-of sources,
+and new E4 and E5 candidates chosen where the contrast is the decision.

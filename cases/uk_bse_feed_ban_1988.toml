@@ -18,6 +18,14 @@ actual_outcome_class = "unclear"
 primary_or_held_out = "primary"
 irreparable_per_population_unit = 0.001   # units declared 2026-11-07 for 8.124 death-equivalents: populations in thousands, deaths in persons
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: uk_public = pop, farming_and_feed_industry = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "gibbs_oral_primate_1980"
 title = "Oral transmission of kuru, Creutzfeldt-Jakob disease, and scrapie to nonhuman primates (Gibbs et al., 1980)"

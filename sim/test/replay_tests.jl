@@ -354,7 +354,7 @@ end
 
 @testset "Replay: rule-set battery, coarse to fine (8.119)" begin
     b = replay_rule_battery(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml")))
-    @test length(b.configs) == 16 && b.shares["adopt_cfc_phase_down"] == 1.0   # robust across every rule set
+    @test length(b.configs) == 17 && b.shares["adopt_cfc_phase_down"] == 1.0   # robust across every rule set
     l = replay_rule_battery(load_replay_case(joinpath(CASES_DIR, "leaded_petrol_phaseout_1973.toml")))
     @test l.choices[2] == "status_quo_lead_free_availability_only" && l.choices[5] == "phase_down_total_pool_average_1975_1979"   # rule-dependent
     # The default (no overrides) is the full rule set.

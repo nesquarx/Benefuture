@@ -17,6 +17,14 @@ actual_choice = "pending"
 actual_outcome_class = "pending"
 primary_or_held_out = "e5"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: us_households = pop, financially_fragile_households = poor.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0], [0, 0, 0, 1, 0, 0]]
+
 [[sources]]
 id = "tightening_cycles"
 title = "Ends of US tightening cycles 1969-2023 and NBER recessions within 24 months"

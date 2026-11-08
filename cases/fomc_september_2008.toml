@@ -15,6 +15,14 @@ actual_choice = "hold_at_2_percent"
 actual_outcome_class = "unclear"
 primary_or_held_out = "primary"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: us_households = pop, financially_fragile_households = poor.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0], [0, 0, 0, 1, 0, 0]]
+
 [[sources]]
 id = "stlouis_fed_1998"
 title = "Federal Reserve Bank of St. Louis Review, July/August 1999 (1998 easing episode)"

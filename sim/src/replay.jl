@@ -762,6 +762,10 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
                                            compounding = th.u_compounding, persistence = Float64(get(o, "u_loss_persistence", th.u_loss_persistence))) for g in 1:n_groups)
     irr_least = minimum(irr_eq(o) for o in options)
     rule_irr = get(ov, "irreparable", true)
+    rule_tiers = get(ov, "tiers", true)   # (8.129) priority tiers; false is the collapsed scalar reading
+    g_low_u = argmin(base_u); g_low_h = argmin(base_h)
+    # a case may declare each group's tier split once (`[tiers]` u, h: per group six shares), options override
+    case_tiers = get(case_dict, "tiers", Dict{String,Any}())
     for (i, opt) in enumerate(options)
         du = Float64.(opt["pred_du"])
         dh = Float64.(opt["pred_dh"])
@@ -807,12 +811,22 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             irr[g] > 0 && push!(tiers, (irr[g], HARM_SCHEDULE[1]))
             nha[g] > 0 && push!(tiers, (nha[g], HARM_SCHEDULE[4]))
             hw = isempty(tiers) ? 1.0 : harm_weight(tiers; λ = bp.lambda)
-            vg = value_on_being(du[g] - Float64(idle_opt["pred_du"][g]),
-                                dh[g] - Float64(idle_opt["pred_dh"][g]),
-                                0.0;
-                                harm_wt = hw,
-                                α = bp.alpha, β = bp.beta, γ = bp.gamma,
-                                λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
+            ddu = du[g] - Float64(idle_opt["pred_du"][g]); ddh = dh[g] - Float64(idle_opt["pred_dh"][g])
+            vg = if rule_tiers
+                # (8.129) priority tiers: an option may declare each group's split of its understanding and
+                # happiness changes over the six tiers (`u_tiers`, `h_tiers`: per group, six shares summing to 1)
+                # and its novelty by tier (`n_tiers`, six magnitudes); undeclared, changes are typed by position on
+                # the global curve (author, 2026-11-08): the lowest group's understanding is floor and its
+                # happiness baseline, every other group's median.
+                us = haskey(opt, "u_tiers") ? Float64.(opt["u_tiers"][g]) : haskey(case_tiers, "u") ? Float64.(case_tiers["u"][g]) : (n_groups > 1 && g == g_low_u ? [0, 0, 0, 0, 1.0, 0] : [0, 0, 0, 1.0, 0, 0])
+                hs = haskey(opt, "h_tiers") ? Float64.(opt["h_tiers"][g]) : haskey(case_tiers, "h") ? Float64.(case_tiers["h"][g]) : (n_groups > 1 && g == g_low_h ? [0, 0, 0, 1.0, 0, 0] : [0, 0, 0, 0, 1.0, 0])
+                ns = haskey(opt, "n_tiers") ? Float64.(opt["n_tiers"]) : zeros(6)
+                tiered_value(ddu .* us, ddh .* hs, ns; harm_wt = hw, α = bp.alpha, β = bp.beta, γ = bp.gamma,
+                             λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
+            else
+                value_on_being(ddu, ddh, 0.0; harm_wt = hw, α = bp.alpha, β = bp.beta, γ = bp.gamma,
+                               λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
+            end
             v_tot += (pops[g] / sum(pops)) * vg
         end
         # Irreparable harm when Fr is violated penalises the option heavily
@@ -992,7 +1006,8 @@ function replay_rule_battery(case_dict::AbstractDict)
         "3 + compensation" => Dict{String,Any}("offset" => false, "env" => false, "irreparable" => false),
         "4 + long-term offset" => Dict{String,Any}("env" => false, "irreparable" => false),
         "5 full" => Dict{String,Any}(),
-        "5 full without the policy-level irreparable block (8.124)" => Dict{String,Any}("irreparable" => false)]
+        "5 full without the policy-level irreparable block (8.124)" => Dict{String,Any}("irreparable" => false),
+        "5 full without priority tiers, the collapsed scalar reading (8.129)" => Dict{String,Any}("tiers" => false)]
     for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)), ("u_loss_persistence", (0.02, 0.3)))
         for v in vals
             push!(configs, "full, $k = $v" => Dict{String,Any}(k => v))

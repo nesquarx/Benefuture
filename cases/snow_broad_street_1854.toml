@@ -25,6 +25,14 @@ actual_choice = "remove_pump_handle"
 actual_outcome_class = "good"
 primary_or_held_out = "held_out"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: st_james_district_residents = poor.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0]]
+h = [[0, 0, 0, 1, 0, 0]]
+
 [[sources]]
 id = "snow_water_supply_cohorts"
 title = "Snow's waterborne reading: 1849 London district mortality by water company and the 1849 local well clusters"

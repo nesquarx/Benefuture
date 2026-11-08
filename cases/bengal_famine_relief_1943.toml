@@ -32,6 +32,14 @@ actual_choice = "reject_emergency_grain_shipments"
 actual_outcome_class = "bad"
 primary_or_held_out = "held_out"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: bengal_rural_poor_and_urban_destitute = poor, war_effort_and_shipping = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "indian_famine_relief_precedents"
 title = "Indian famines 1866-1900 read through the Famine Commissions: mortality high where relief was late, restricted or absent"

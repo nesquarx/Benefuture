@@ -17,6 +17,14 @@ actual_choice = "vaccinate_everyone"
 actual_outcome_class = "bad"
 primary_or_held_out = "primary_round2"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: us_population = pop.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0]]
+
 [[sources]]
 id = "influenza_record"
 title = "Novel influenza outbreaks and mass influenza vaccination campaigns before 1976 (1918, 1957, 1968 pandemics; 1974 Wisconsin swine case; 1957 and 1968 vaccination campaigns)"

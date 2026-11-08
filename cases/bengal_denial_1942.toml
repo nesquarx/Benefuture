@@ -19,6 +19,14 @@ actual_outcome_class = "bad"
 primary_or_held_out = "primary"
 irreparable_per_population_unit = 100   # units declared 2026-11-07 for 8.124 death-equivalents: populations in 10,000s, deaths in 100s
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: coastal_rural_poor = poor, war_effort = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "famine_precedents"
 title = "Earlier Indian and European famines in which grain was drained or exported (Orissa 1866, Ireland 1845-49)"

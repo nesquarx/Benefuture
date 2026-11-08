@@ -12,6 +12,14 @@ actual_choice = "launch_at_31F"
 actual_outcome_class = "bad"
 primary_or_held_out = "primary"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: crew = science, program_community = science.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0.5, 0.5, 0, 0, 0, 0], [0.5, 0.5, 0, 0, 0, 0]]
+h = [[0.6, 0.4, 0, 0, 0, 0], [0.6, 0.4, 0, 0, 0, 0]]
+
 [[sources]]
 id = "thiokol_teleconf_charts"
 title = "Morton Thiokol Engineering Teleconference Charts on O-Ring Thermal Distress (Boisjoly & Thompson)"

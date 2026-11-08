@@ -22,6 +22,14 @@ actual_choice = "grant_privileges_to_master_printers"
 actual_outcome_class = "good"
 primary_or_held_out = "held_out"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: city_readers_and_learners = readers, scribes_and_manuscript_trades = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0.2, 0.5, 0.3, 0, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0.5, 0.5, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "early_printing_ventures_1454_1473"
 title = "Early printing ventures 1454-1473 (Mainz, Bamberg, Strasbourg, Augsburg, Venice, Paris): did each still print three years after its first imprint"

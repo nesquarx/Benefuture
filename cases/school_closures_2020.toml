@@ -17,6 +17,14 @@ actual_outcome_class = "unclear"
 primary_or_held_out = "primary"
 irreparable_per_population_unit = 1000   # units declared 2026-11-07 for 8.124 death-equivalents: populations in millions, deaths in thousands
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: students = student, adults_and_staff = pop.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0.4, 0.4, 0.2, 0, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0.3, 0, 0.7, 0, 0, 0], [0, 0, 0.5, 0, 0.5, 0]]
+
 [[sources]]
 id = "cauchemez_school_holidays_2009"
 title = "Closure of schools during an influenza pandemic (Cauchemez et al., Lancet Infect Dis 2009) and Cauchemez et al. Nature 2008"

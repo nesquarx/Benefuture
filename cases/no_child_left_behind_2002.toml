@@ -33,6 +33,14 @@ actual_choice = "sign_nclb"
 actual_outcome_class = "unclear"
 primary_or_held_out = "held_out"
 
+
+# Priority tiers (8.129; declared 2026-11-08 after the outcome was known for E4 cases, so hindsight-exposed; first
+# results stay recorded). Kinds by group: students = student, disadvantaged_students = dstudent, teachers = teachers.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0.4, 0.4, 0.2, 0, 0], [0, 0.3, 0.3, 0, 0.4, 0], [0, 0.5, 0, 0.5, 0, 0]]
+h = [[0.3, 0, 0.7, 0, 0, 0], [0.2, 0, 0.3, 0.5, 0, 0], [0, 0, 1, 0, 0, 0]]
+
 [[sources]]
 id = "naep_ltt_1999"
 title = "NAEP 1999 Trends in Academic Progress (Campbell, Hombo and Mazzeo, NCES 2000-469; primary not seen)"
