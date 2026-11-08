@@ -1,0 +1,8 @@
+event,trial_id,date,occurred,citation_with_page
+novel_strain_outbreak_became_pandemic,1918,1919-03-31,1,"1918 influenza (recalled)"
+novel_strain_outbreak_became_pandemic,1957-H2N2,1958-03-31,1,"1957 Asian influenza (recalled)"
+novel_strain_outbreak_became_pandemic,1968-H3N2,1969-03-31,1,"1968 Hong Kong influenza (recalled)"
+novel_strain_outbreak_became_pandemic,1974-Wisconsin-swine,1975-03-31,0,"Sporadic human swine influenza case, no spread (recalled; selection caution: outbreaks that fizzled are under-recorded)"
+mass_flu_vaccination_serious_adverse_events,1957-campaign,1958-03-31,0,"1957 influenza vaccination: no serious adverse signal recorded (recalled)"
+mass_flu_vaccination_serious_adverse_events,1968-campaign,1969-03-31,0,"1968 influenza vaccination: no serious adverse signal recorded (recalled)"
+mass_flu_vaccination_serious_adverse_events,annual-1960s,1970-12-31,0,"Annual influenza vaccination in the 1960s: no serious adverse signal recorded (recalled)"

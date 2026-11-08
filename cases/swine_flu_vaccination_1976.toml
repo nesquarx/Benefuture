@@ -1,0 +1,129 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): the US decision of 24 March 1976 to vaccinate the
+# whole population against the swine influenza strain found at Fort Dix (February 1976: one recruit's death,
+# about 230 infected by serology). As of the decision: a strain related to the 1918 virus, no spread beyond Fort
+# Dix yet, the pandemics of 1957 and 1968 in memory. Sources recalled from the public record (Neustadt and
+# Fineberg's later account retells the as-of record; primary documents not seen). Builders know the outcome
+# (no pandemic; Guillain-Barré cases among about 45 million vaccinated; programme halted in December).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "swine_flu_vaccination_1976"
+title = "US mass vaccination against swine influenza after Fort Dix (24 March 1976)"
+family = "health"
+era = "1976"
+tier = "full"
+decision_date = "1976-03-24"
+decision_makers = ["President Ford on CDC and advisory committee advice"]
+actual_choice = "vaccinate_everyone"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+
+[[sources]]
+id = "influenza_record"
+title = "Novel influenza outbreaks and mass influenza vaccination campaigns before 1976 (1918, 1957, 1968 pandemics; 1974 Wisconsin swine case; 1957 and 1968 vaccination campaigns)"
+as_of_date = "1976-03-23"
+url = "https://www.cdc.gov/flu/pandemic-resources/basics/past-pandemics.html"
+notes = "Recalled; primary records not seen."
+
+[[ groups ]]
+id = "us_population"
+name = "US residents (about 215 million), in thousands"
+population = 215000
+baseline_u = 55.0
+baseline_h = 60.0
+
+# Magnitudes (judgment, stated): a pandemic of the 1957/1968 kind kills about 70 thousand in the US (1957 about
+# 116 thousand, 1968 about 100 thousand, recalled; taken lower for better care in 1976); with the whole
+# population offered vaccine before it arrives, about half averted (efficacy about 0.7, uptake well short of
+# all); with vaccine produced and stockpiled but given only on evidence of spread, about a quarter averted (it
+# arrives late). A mass campaign's serious adverse events: if a rate above 1 per 100,000 materialises, about 0.05
+# thousand deaths among about 100 million vaccinated (judgment). Programme cost: about 135 million dollars
+# (recalled): happiness -0.01 across the population.
+
+[[ options ]]
+id = "stockpile_and_watch"
+name = "Produce and stockpile vaccine; vaccinate if the strain spreads"
+source = "influenza_record"
+known_date = "1976-03-22"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [-0.006, 0.0]
+pred_dh = [-0.012, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [26.3, 0.0]
+
+[[ options.scenarios ]]
+name = "pandemic_with_late_vaccine"
+p_chain = ["novel_strain_outbreak_became_pandemic"]
+du = [-0.01, 0.0]
+dh = [-0.015, 0.0]
+irreparable = [52.5, 0.0]
+
+[[ options.scenarios ]]
+name = "no_pandemic_stockpile_cost"
+p_chain = []
+complement = true
+dh = [-0.005, 0.0]
+
+[[ options ]]
+id = "vaccinate_everyone"
+name = "Vaccinate the whole population before the next flu season"
+source = "influenza_record"
+known_date = "1976-03-24"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.004, 0.0]
+pred_dh = [-0.017, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [17.5, 0.0]
+
+[[ options.scenarios ]]
+name = "pandemic_mostly_prevented"
+p_chain = ["novel_strain_outbreak_became_pandemic"]
+du = [-0.006, 0.0]
+dh = [-0.02, 0.0]
+irreparable = [35.0, 0.0]
+
+[[ options.scenarios ]]
+name = "serious_adverse_events"
+p_chain = ["mass_flu_vaccination_serious_adverse_events"]
+irreparable = [0.05, 0.0]
+
+[[ options.scenarios ]]
+name = "programme_cost"
+p_chain = []
+complement = true
+dh = [-0.01, 0.0]
+
+[[ options ]]
+id = "do_nothing"
+name = "No federal programme beyond routine vaccination"
+source = "influenza_record"
+known_date = "1976-02-20"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.008, 0.0]
+pred_dh = [-0.013, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [35.0, 0.0]
+
+[[ options.scenarios ]]
+name = "pandemic_unmitigated"
+p_chain = ["novel_strain_outbreak_became_pandemic"]
+du = [-0.016, 0.0]
+dh = [-0.026, 0.0]
+irreparable = [70.0, 0.0]
+
+[[ options.scenarios ]]
+name = "residual"
+p_chain = []
+complement = true
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -0.01
+actual_irreparable = 0.03
+alt_option = "stockpile_and_watch"
+methods = ["placeholder: no pandemic occurred; the stockpile option's cost and its avoided adverse events are judgment"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.005]
+est_irreparable_diff = [-0.03]

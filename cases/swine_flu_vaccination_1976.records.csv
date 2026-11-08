@@ -1,0 +1,4 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+influenza_record,REC-1957,1958-03-31,1958-03-31,1958-03-31,1.0,1.0,"record"
+influenza_record,REC-1968,1969-03-31,1969-03-31,1969-03-31,1.0,1.0,"record"
+influenza_record,REC-1974,1975-03-31,1975-03-31,1975-03-31,0.0,0.0,"record"
