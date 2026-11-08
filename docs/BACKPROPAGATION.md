@@ -3133,3 +3133,8 @@ unaudited entries join the audit log); the absorbed identity goes dormant. Probe
 one on the last step; a naive merge (negative ledger and debts dropped) leaves the merged negative ledger short of the
 sum; the rule keeps it within 25% (3 seeds, each exercised). Candidate home: L123 (merge as the inverse of Fork, the
 family totals conserved both ways).
+Proper scoring (queue item, 2026-11-08): Brier-style payments for predictors and voters are not built. Parsimony: credence
+ballots already weigh stated confidence by each voter's calibration record (8.121) and reputation is the record of
+winning choices, so exaggeration buys no weight (calibrated ballots hold 96% right against a confident bloc that captures
+stated-confidence weighting, 67%). Reopen only if a probe shows exaggerated confidence paying somewhere the records do not
+reach (e.g. one-off decisions with no record).
