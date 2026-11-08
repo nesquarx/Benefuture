@@ -77,6 +77,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_coerror_copy] def coerrorCopy (both either minEither medShare floorShare margin : Float) : UInt8 :=
   if coerror_copy_ref both either minEither medShare floorShare margin then 1 else 0
 
+@[export bf_sequential_significant] def sequentialSignificant (mean sd : Float) (n n0 : USize) (z : Float) : UInt8 :=
+  if sequential_significant_ref mean sd n.toNat n0.toNat z then 1 else 0
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 

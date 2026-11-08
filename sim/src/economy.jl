@@ -505,6 +505,10 @@ coerror_copy(both, either; min_either::Real = 10, med_share::Real = 0.0, floor_s
     ccall(sym(:bf_coerror_copy), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
           Float64(both), Float64(either), Float64(min_either), Float64(med_share), Float64(floor_share), Float64(margin)) == 1
 
+"A signed error's mean is significant under repeated looks: beyond z·√(1 + ln(n/n0)) standard errors (Lean `sequential_significant_ref`; 8.107)."
+sequential_significant(mean, sd, n; n0::Integer = 5, z::Real = 3.0) =
+    ccall(sym(:bf_sequential_significant), UInt8, (Float64, Float64, Csize_t, Csize_t, Float64), Float64(mean), Float64(sd), Csize_t(n), Csize_t(n0), Float64(z)) == 1
+
 "Policy-level irreparable harm blocks an option beyond the least among the options (Lean `irreparable_blocked_ref`; author ruling 8.124)."
 irreparable_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
     ccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1

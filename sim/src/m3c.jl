@@ -445,7 +445,7 @@ function run_m3c(p::M3cParams; seed)
             if !isempty(chs)
                 k = chs[1]; push!(chain_serr[k], (vals[1] - plan_value(audit, t)) / se)
                 x = chain_serr[k]
-                length(x) >= p.adv_min_records && abs(mean(x)) > p.chain_z * std(x) / sqrt(length(x)) && (chain_demoted[k] = true)
+                sequential_significant(mean(x), std(x), length(x); n0 = p.adv_min_records, z = p.chain_z) && (chain_demoted[k] = true)   # repeated looks (8.107)
             end
             push!(chain_bias, plan_value(audit, t) - plan_value(done, t))
             return audit

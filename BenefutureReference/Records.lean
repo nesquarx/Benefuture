@@ -295,4 +295,15 @@ def copies_ref (diffs : Array Float) (minN : Nat) (below : Float) : Bool := Id.r
 def coerror_copy_ref (both either minEither medShare floorShare margin : Float) : Bool :=
   either >= minEither && either > 0.0 && both / either >= floorShare && both / either >= medShare + margin
 
+/-- A test re-run at every new record (repeated looks) must not fire by chance as the record grows: a signed error's
+  mean is significant only beyond `z * sqrt(1 + ln(n / n0))` standard errors, a bar that equals `z` at the minimum
+  record `n0` and grows slowly with each look (an iterated-logarithm-style boundary), so a genuine bias, whose
+  evidence grows like `sqrt n`, still crosses it (8.107, lone-chain spot audits). -/
+def sequential_significant_ref (mean sd : Float) (n n0 : Nat) (z : Float) : Bool :=
+  if n < n0 || n < 2 || sd <= 0.0 then false
+  else
+    let se := sd / Float.sqrt n.toFloat
+    let bar := z * Float.sqrt (1.0 + Float.log (n.toFloat / n0.toFloat))
+    Float.abs mean > bar * se
+
 end BenefutureReference
