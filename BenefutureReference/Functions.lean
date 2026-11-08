@@ -300,4 +300,27 @@ def p_overreact_ref (alpha delta rePos reNeg : Float) : Float :=
 def ehr_expected_response_ref (alpha delta margin h rePos reNeg : Float) : Float :=
   h * (1.0 - p_forgive_ref alpha rePos + margin * p_overreact_ref alpha delta rePos reNeg)
 
+
+/--
+  Priority tier schedules (L57–L60, author ruling 8.129): each of understanding, happiness and novelty is split
+  across six tiers in priority order and recombined by synergy, so high tiers moving together outclass a larger
+  amount in low tiers. Understanding: peak > teachable > meta > median > floor > undirected. Happiness:
+  eudaimonic > shareable > satisficing > baseline > median > peak. Novelty: paradigm > point of view > chaotic >
+  incremental > perilous > trivial (≈ 0). Weights follow the canonical schedule (`defaultSchedule`, governed);
+  novelty's trivial tier is 0 per L60.
+-/
+def tierScheduleU_ref : List Float := [0.8, 0.6, 0.4, 0.25, 0.15, 0.05]
+def tierScheduleH_ref : List Float := [0.8, 0.6, 0.4, 0.25, 0.15, 0.05]
+def tierScheduleN_ref : List Float := [0.8, 0.6, 0.4, 0.25, 0.15, 0.0]
+
+/-- One quantity through its tiers: Sy([(x_i, w_i, w_i)]) with gains and losses weighted alike (L13, w₋ = w₊). -/
+def tiered_ref (xs sched : List Float) (lambda kappa qPlus qMinus : Float) : Float :=
+  Sy_signed_ref (xs.zip (sched.zip sched)) lambda kappa qPlus qMinus
+
+/-- V over tier vectors (L63 with L57–L60): each quantity synthesised through its tiers, then V as before. -/
+def tiered_value_ref (u h n : List Float) (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
+  V_ref (tiered_ref u tierScheduleU_ref lambda 1.0 qPlus qMinus)
+        (tiered_ref h tierScheduleH_ref lambda 1.0 qPlus qMinus)
+        (tiered_ref n tierScheduleN_ref lambda 1.0 qPlus qMinus)
+        alpha beta gamma haWt lambda qPlus qMinus
 end BenefutureReference

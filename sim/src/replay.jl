@@ -872,7 +872,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             ex = [Float64(get(o, "_total_harm", 0.0)) for o in options]
             cand = findall(x -> x <= minimum(ex) * (1 + 1e-9) + 1e-12, ex)
             chosen_idx = cand[argmax(opt_values[cand])]
-            degraded["every option blocked: least net expected harm chosen (trolley rules, 8.127)"] = 1
+            degraded["every option blocked: least net expected harm chosen (trolley rules, 8.127); look for lateral options first"] = 1
         else
             chosen_idx = allowed[argmax(opt_values[allowed])]
             degraded["no option passes the floors: best-valued unblocked option chosen"] = 1

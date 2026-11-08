@@ -60,6 +60,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_v] def value (u h n alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
   V_ref u h n alpha beta gamma haWt lambda qPlus qMinus
 
+@[export bf_tiered_value] def tieredValue (u h n : FloatArray) (alpha beta gamma haWt lambda qPlus qMinus : Float) : Float :=
+  tiered_value_ref u.data.toList h.data.toList n.data.toList alpha beta gamma haWt lambda qPlus qMinus
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 

@@ -1359,6 +1359,7 @@ ratified.
 | Entries before a model prices an actor by its record on it, else its record overall (hardcoded, `sim/src/m3c.jl`) | – | 5 | L84; 8.29 |
 | Records an actor needs before an AdvAp report (hardcoded, `sim/src/m3c.jl`) | – | 5 | L160; 8.38 |
 | Window of other actors' errors an AdvAp audit compares with (hardcoded, `sim/src/m3c.jl`) | – | max(`track_window`, 20) | L160; 8.38 |
+| Priority tier schedules (U, H, N; six tiers each) | 0.8, 0.6, 0.4, 0.25, 0.15, 0.05; novelty trivial 0 | 8.129; L57–L60; Lean `tierScheduleU_ref`, `tierScheduleH_ref`, `tierScheduleN_ref` (canonical `defaultSchedule`) |
 
 ### Ghost audit
 

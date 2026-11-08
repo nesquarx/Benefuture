@@ -95,3 +95,23 @@ function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, p
           irreparable, irreversible, longterm, passing, time_loss, confidence,
           th_conf, th_high, severities[1], severities[2], severities[3], severities[4], severities[5]) == 1
 end
+
+"""
+    tiered_value(u, h, n; harm_wt, α, β, γ, λ, qp, qm)
+
+V over priority tiers (author ruling 8.129; Lean `tiered_value_ref`): `u`, `h`, `n` are six-tier change vectors
+in priority order (understanding: peak, teachable, meta, median, floor, undirected; happiness: eudaimonic,
+shareable, satisficing, baseline, median, peak; novelty: paradigm, point of view, chaotic, incremental, perilous,
+trivial). Each is synthesised by synergy over its tier schedule, then combined as in `value_on_being`.
+"""
+function tiered_value(u::AbstractVector{<:Real}, h::AbstractVector{<:Real}, n::AbstractVector{<:Real}; harm_wt::Real,
+                      α::Real, β::Real, γ::Real, λ::Real, qp::Real, qm::Real)
+    check(length(u) == 6 && length(h) == 6 && length(n) == 6, "six tiers each for understanding, happiness and novelty")
+    check(all(isfinite, u) && all(isfinite, h) && all(isfinite, n) && all(isfinite, (λ, qp, qm)), "inputs must be finite")
+    check(isfinite(harm_wt) && harm_wt >= 1, "harm weight must be at least 1")
+    check(1 > α > β > γ > 0, "priorities must satisfy 1 > α > β > γ > 0")
+    check(λ >= 0 && qp > 0 && qm > 0, "λ non-negative and exponents positive")
+    ccall(sym(:bf_tiered_value), Float64,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          floatarray(Float64.(u)), floatarray(Float64.(h)), floatarray(Float64.(n)), α, β, γ, harm_wt, λ, qp, qm)
+end

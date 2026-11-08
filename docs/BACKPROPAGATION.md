@@ -2824,3 +2824,27 @@ excesses, which left out harms neither block sees (the ban's yield collapse) and
 trolley ruling (8.124, net expected harm): when every option is blocked, the least net expected harm over all
 scenarios wins, in one unit (u and h losses in person-points plus deaths at baseline u + h), ties to value,
 loudly. Interpretation of "trolley rules" recorded for the author to confirm.
+
+8.127 confirmed (author, 2026-11-08): "if all available options are harmful, a) if possible look for lateral
+options, else choose least harm; the goal equation would say the same anyway." The trolley reading stands:
+least net expected harm when every option is blocked. Added requirement: an all-blocked decision first searches
+for lateral options (options outside the set offered). In the replay the case set is fixed, so the trace now
+says so loudly ("look for lateral options first") and such cases are flagged for a lateral-option pass by the
+case builder, as-of sources only; in the simulation, entities facing an all-blocked choice should propose new
+options (the M3c `adaptive_proposals` route) before falling back. Candidate homes: the pseudocode's G fallback
+line; the Governance article (decisions).
+
+8.129 ruling (author, 2026-11-08): priority tiers come ahead of further replay work, "without it we will continue
+to see weird tradeoffs in sims. Any value can be split across priorities and then run through synergy.
+Teachable peak meta understanding with paradigm shifting novelty will massively outclass peak non-transferable
+understanding which provides peak happiness to a lot of people in a given field, and trivial novelty wouldn't
+even budge the needle." Built: Lean `tiered_ref` and `tiered_value_ref` (BenefutureReference/Functions.lean;
+export `bf_tiered_value`; Julia `tiered_value`): understanding, happiness and novelty each split over six tiers
+(L57–L60) with the canonical schedule 0.8, 0.6, 0.4, 0.25, 0.15, 0.05 (novelty's trivial tier 0), each
+synthesised by synergy, then V as before. Probe (red first): per being, with the same peak understanding,
+teachable + meta + paradigm novelty scores 4.58 against 1.17 for non-transferable peak with raw happiness and
+trivial novelty, while the scalar value ranked the latter first (8.78 against 5.15); ten units of trivial
+novelty move the value by under 1%. Finding: with the non-transferable peak four times larger, the tiers alone
+favour the teachable side only narrowly (4.58 to 4.49); teaching's multiplier comes from understanding spreading
+to other beings, which the world models must carry (M7's teachable/tacit split already does). Next: world
+models emit tier-typed changes (M7 first, then the replay's case schema), each behind its probe.

@@ -1105,3 +1105,21 @@ end
                                  colluders = bloc, stealth = true, loyalty = 5.0, ballot = :credence_calibrated, diversity = false); seed)) for seed in 1:6]
     @test paired_effect(cal .- nodiv; z = 3.0).significant
 end
+
+@testset "Probe: priority tiers split a value and synergy rewards the high tiers together (8.129)" begin
+    # The author's example, per being. A: peak understanding that is also teachable and meta, with paradigm-shifting
+    # novelty. B: the same peak understanding, non-transferable, with raw (peak-tier) happiness and trivial novelty.
+    # Collapsed to scalars, B's larger totals outweigh A; through the tiers A must outclass B, and trivial novelty
+    # must barely move the value. (With B's peak four times A's, the tiers alone favour A only narrowly, 4.58 to
+    # 4.49: teaching's multiplier across beings belongs to the world models, not the per-being value.)
+    bp = NamedTuple{BenefutureSim.PARAM_FIELDS}(Tuple(bootstrap_params()))
+    kw = (harm_wt = 1.0, α = bp.alpha, β = bp.beta, γ = bp.gamma, λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)
+    #            peak teach meta median floor undirected
+    uA = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0];  hA = zeros(6);                    nA = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    uB = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0];  hB = [0.0, 0.0, 0.0, 0.0, 0.0, 3.0]; nB = [0.0, 0.0, 0.0, 0.0, 0.0, 3.0]
+    @test value_on_being(sum(uB), sum(hB), sum(nB); kw...) > value_on_being(sum(uA), sum(hA), sum(nA); kw...)  # the weird tradeoff
+    vA = tiered_value(uA, hA, nA; kw...); vB = tiered_value(uB, hB, nB; kw...)
+    @test vA > 1.5 * vB
+    v0 = tiered_value(uA, hA, zeros(6); kw...)
+    @test abs(tiered_value(uA, hA, [0.0, 0.0, 0.0, 0.0, 0.0, 10.0]; kw...) - v0) < 0.01 * abs(v0)   # trivial novelty ≈ 0
+end
