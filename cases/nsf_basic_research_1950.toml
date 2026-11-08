@@ -1,0 +1,144 @@
+# Historical decision case (E4 contrast case for priority tiers, docs/E5_CANDIDATES.md): the US National Science
+# Foundation Act of 10 May 1950, after Vannevar Bush's report *Science, the Endless Frontier* (July 1945) and the
+# rival Kilgore bills. Options close in size but different in kind: a foundation for basic research steered by
+# scientists (Bush), a mission-directed agency for applied research spread by region with public patents
+# (Kilgore), or no civilian agency (research funded by the military and industry, as in 1946-1950 through the
+# Office of Naval Research). As of the decision: the wartime OSRD record (radar, the proximity fuse, mass
+# production of penicillin, the bomb); fission discovered in 1938 and weaponised by 1945; the transistor
+# announced in 1948. Sources: Bush 1945 (linked); the Kilgore debate and OSRD record recalled; primary records
+# beyond Bush's report not seen. Builders know the outcome (the NSF's basic research is widely credited with
+# long-run returns; the 1950 act was a compromise nearer Bush).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "nsf_basic_research_1950"
+title = "US creates the National Science Foundation for basic research (NSF Act, May 1950)"
+family = "science"
+era = "1950"
+tier = "full"
+decision_date = "1950-05-10"
+decision_makers = ["US Congress and President Truman"]
+actual_choice = "basic_research_foundation"
+actual_outcome_class = "good"
+primary_or_held_out = "contrast"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "science_policy_record"
+title = "Bush, Science, the Endless Frontier (1945), and the wartime research record before May 1950"
+as_of_date = "1950-05-09"
+url = "https://www.nsf.gov/about/history/vbush1945.htm"
+notes = "Bush 1945 read for its argument (basic research as the pacemaker of technological progress); the Kilgore alternative and the OSRD record recalled."
+
+[[ groups ]]
+id = "us_public"
+name = "US residents (about 151 million), in thousands"
+population = 151000
+baseline_u = 50.0
+baseline_h = 60.0
+
+[[ groups ]]
+id = "scientists_and_engineers"
+name = "Scientists and engineers (about 0.5 million), in thousands"
+population = 500
+baseline_u = 75.0
+baseline_h = 65.0
+
+# Magnitudes (judgment, stated, chosen close in size on purpose): over two decades, either agency raises the
+# public's understanding by about 0.3 on the 0-100 scale through what it funds, if its programme pays off; the
+# applied agency's gains arrive sooner and bring near-term happiness (+0.2: products, jobs), the basic
+# foundation's are slower but its understanding is breakthroughs and teachable models (peak and teachable),
+# with paradigm novelty, where the applied agency's is median understanding with incremental novelty. Without a
+# civilian agency, military and industrial research continue (understanding +0.1, mostly median). Cost of either
+# agency: happiness -0.02 for the public. For scientists, the basic foundation is eudaimonic work (+1), the
+# applied agency satisficing (+0.6).
+
+[[ options ]]
+id = "no_civilian_science_agency"
+name = "No civilian agency: research funded by the military (Office of Naval Research) and industry"
+source = "science_policy_record"
+known_date = "1946-08-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.1, 0.3]
+pred_dh = [0.0, 0.2]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+u_tiers = [[0, 0.1, 0, 0.9, 0, 0], [0.1, 0.2, 0, 0.7, 0, 0]]
+h_tiers = [[0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0]]
+n_tiers = [0, 0, 0, 0.3, 0, 0]
+
+[[ options.scenarios ]]
+name = "military_and_industrial_research"
+p_chain = []
+du = [0.1, 0.3]
+dh = [0.0, 0.2]
+
+[[ options ]]
+id = "basic_research_foundation"
+name = "A foundation for basic research steered by scientists (Bush)"
+source = "science_policy_record"
+known_date = "1945-07-25"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.24, 1.0]
+pred_dh = [-0.02, 1.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+# Priority kinds (8.129, option-level; as-of basis: Bush's argument that basic research yields the models later
+# applied, and the fission and transistor record): breakthroughs and teachable models; paradigm novelty.
+u_tiers = [[0.4, 0.4, 0.1, 0.1, 0, 0], [0.5, 0.4, 0.1, 0, 0, 0]]
+h_tiers = [[0, 0, 0.5, 0, 0.5, 0], [0.8, 0.2, 0, 0, 0, 0]]
+n_tiers = [0.5, 0.2, 0, 0, 0, 0]
+
+[[ options.scenarios ]]
+name = "basic_research_pays_off"
+p_chain = ["basic_discovery_applied_within_two_decades"]
+du = [0.3, 1.2]
+dh = [-0.02, 1.0]
+
+[[ options.scenarios ]]
+name = "slow_payoff"
+p_chain = []
+complement = true
+du = [0.05, 0.6]
+dh = [-0.02, 1.0]
+
+[[ options ]]
+id = "mission_directed_applied_agency"
+name = "A mission-directed agency for applied research, spread by region, with public patents (Kilgore)"
+source = "science_policy_record"
+known_date = "1945-02-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.24, 0.5]
+pred_dh = [0.14, 0.6]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+# Priority kinds (8.129, option-level; as-of basis: the wartime applied programmes' record): median understanding,
+# incremental novelty, satisficing happiness from products and jobs.
+u_tiers = [[0, 0.2, 0, 0.8, 0, 0], [0.1, 0.3, 0, 0.6, 0, 0]]
+h_tiers = [[0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0]]
+n_tiers = [0, 0, 0, 0.5, 0, 0]
+
+[[ options.scenarios ]]
+name = "applied_programmes_pay_off"
+p_chain = ["applied_research_programme_met_its_goal"]
+du = [0.3, 0.6]
+dh = [0.18, 0.6]
+
+[[ options.scenarios ]]
+name = "applied_programmes_fall_short"
+p_chain = []
+complement = true
+du = [0.05, 0.2]
+dh = [0.0, 0.6]
+
+[counterfactual]
+actual_floor_u_delta = 0.3
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "mission_directed_applied_agency"
+methods = ["placeholder: long-run returns to basic against applied research are contested in magnitude; judgment"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]

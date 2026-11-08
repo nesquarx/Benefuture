@@ -1,0 +1,9 @@
+event,trial_id,date,occurred,citation_with_page
+basic_discovery_applied_within_two_decades,fission-1938,1945-07-16,1,"Fission discovered 1938, applied by 1945 (recalled)"
+basic_discovery_applied_within_two_decades,quantum-solid-state-1930s,1948-06-30,1,"Solid-state quantum theory to the transistor, 1948 (recalled)"
+basic_discovery_applied_within_two_decades,penicillin-1928,1945-12-31,0,"Penicillin discovered 1928, mass-produced from 1943: just beyond two decades from first report to wide use counted as 0 (recalled)"
+basic_discovery_applied_within_two_decades,radio-waves-1887,1900-12-31,1,"Hertz 1887 to Marconi's wireless by 1901 (recalled)"
+applied_research_programme_met_its_goal,radar-osrd,1945-08-15,1,"Microwave radar programme (recalled)"
+applied_research_programme_met_its_goal,proximity-fuse,1944-12-31,1,"Proximity fuse (recalled)"
+applied_research_programme_met_its_goal,manhattan,1945-07-16,1,"Manhattan Project (recalled)"
+applied_research_programme_met_its_goal,synthetic-rubber,1944-12-31,1,"Synthetic rubber programme (recalled)"
