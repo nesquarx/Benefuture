@@ -1291,7 +1291,8 @@ ratified.
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
 | Policy-level irreparable harm tolerance (8.124) | `irr_tol` | 0.01 (relative to the least-harm option, at least 0.01) | judgment |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
-| Spot-audit chance when fewer than two independent chains remain (8.111) | `chain_spot` | 0.05 | judgment; institutional analogue: random audit rates |
+| Spot-audit chance when fewer than two independent chains remain (8.111) | `chain_spot` | 0.1 (0.05 until 2026-11-08: with the sequential test of repeated looks, more audits buy detection without false alarms) | judgment; institutional analogue: random audit rates |
+| Sequential significance bar for tests re-run at every new record: `z·√(1 + ln(n/n0))` (z = `chain_z` 3, n0 = `adv_min_records` 5) | `chain_z`, `adv_min_records` | 3; 5 | 8.107; Lean `sequential_significant_ref` |
 | Copy detection: variance of standardised differences, minimum readings (8.111) | (fixed 0.2, 4 × `adv_min_records`) | 0.2, 20 | definitional (independent noise gives 2) |
 | Lesson-report significance and minimum lessons (M7, 8.105) | `report_z`, `report_min` | 3.0, 5 | AdvAp's `adv_z` and `adv_min_records` analogues |
 | Significance of an item in pragmatic understanding | `th` (`understanding_truth_and_measure`) | 0.0 | L31 (Wt ≥ Th) |

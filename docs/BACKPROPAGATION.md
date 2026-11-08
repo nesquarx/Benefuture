@@ -3030,3 +3030,11 @@ that copied and agreeable incumbents escape their checks. Not tuned further (tha
 tests). Proper fix: a sequential test that controls repeated looks (an alpha-spending or law-of-the-iterated-logarithm
 bound), as a Lean rule; the probe's assertion is marked broken until then. The always-on spot schedule also adds looks,
 which is why it fared worse.
+8.107 lone-chain false demotion, resolved (2026-11-08): a Lean rule, `sequential_significant_ref` (export
+`bf_sequential_significant`, Julia `sequential_significant`), for tests re-run at every new record: a signed error's mean
+is significant only beyond z·√(1 + ln(n/n0)) standard errors, equal to z at the minimum record and growing slowly with
+each look. Wired into the lone-chain spot-audit test. With it and spot audits raised from 5% to 10% (governed
+`chain_spot`), over 8 seeds: honest lone chains never demoted (one of 8 was, before), agreeable chains' incumbents
+demoted in 8 of 8 (mean hidden bias 0.95), copied chains' incumbents in 8 of 8; the domain probe's audit budget stays
+under 16% of outcomes. At 5% with the sequential bar an agreeable incumbent survived one of 3 runs: a test that
+controls repeated looks buys detection with more audits rather than a lower bar. M3c tests pass.

@@ -962,7 +962,7 @@ end
     @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant          # harm hidden
     @test all(t -> abs(mean(t.chain_bias)) < 0.2, domain)                                   # read at its true size
     @test all(t -> t.chain_demoted == [true, false], domain)
-    @test all(t -> t.chain_audits < 0.10 * length(t.chain_bias), domain)   # demotion, then spot audits at 5% on the one chain left
+    @test all(t -> t.chain_audits < 0.16 * length(t.chain_bias), domain)   # demotion, then spot audits at 10% on the one chain left
     @test all(t -> !any(t.chain_demoted), honest)
     # A wrong majority (two agreeing chains counting half) against a right minority: audits weigh the
     # shared observable, not votes, so both majority chains are demoted (measured: 7–8 audits).
@@ -989,17 +989,17 @@ end
     # and the incumbent is demoted, in every seed (4 of 4 measured); hidden bias still accrues first (+0.4 to +1.5 per
     # outcome, against +0.7 to +1.7 without the rule: not a significant reduction). Spot audits even when chains agree
     # (5%) did not shorten it and once demoted an honest chain, so they stay off.
-    # Open: an honest chain left alone after the incumbent's demotion can be demoted by chance (seed 5 of 8): the
-    # remaining chain's spot-audit test is re-run at every audit (repeated testing at z = 3 from five records). A
-    # longer record (20) or a stricter bar (z = 4) prevents it but delays demoting a biased lone chain enough to break
-    # the copy-chain and agreeable-chain checks; marked broken until a sequential test that controls repeated looks.
+    # An honest chain left alone after the incumbent's demotion is not demoted by chance: its spot-audit test is re-run
+    # at every audit, so the bar grows with the looks (Lean `sequential_significant_ref`); with a fixed z = 3 from five
+    # records one of 8 seeds demoted it.
     lone = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in 1:8]
     @test all(t -> !t.chain_demoted[2], lone)
     agreeable = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain, chain_shade = [0.0, 0.6]); seed) for seed in seeds]
-    # With the sequential bar (Lean `sequential_significant_ref`) the lone honest chain is safe (8 of 8), but in one
-    # of 3 seeds the agreeable chain's biased incumbent survives the run (bias +2.8); pending the audit-rate test.
-    @test all(t -> t.chain_copied[2], agreeable)
-    @test_broken all(t -> mean(t.chain_bias) > 0.2 && t.chain_demoted[1], agreeable)
+    # With the sequential bar (Lean `sequential_significant_ref`) the lone honest chain is safe (8 of 8); at spot audits
+    # of 5% the agreeable chain's biased incumbent survived one of 3 runs (bias +2.8), at 10% it is demoted in 8 of 8
+    # (copied incumbents 8 of 8, honest lone chains never): a sequential test buys detection with more audits, not
+    # with a lower bar.
+    @test all(t -> mean(t.chain_bias) > 0.2 && t.chain_demoted[1] && t.chain_copied[2], agreeable)
     @test all(t -> !any(t.chain_copied), honest)
 end
 
