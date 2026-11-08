@@ -332,11 +332,10 @@ end
     # financed first by value minted on understanding gains, floors judged the same way): the compensated
     # pool-average lead phase-down passes; not out of sample.
     @test ch["leaded_petrol_phaseout_1973"] == "phase_down_total_pool_average_1975_1979+compensated"
-    # Fifth replay (persistent understanding loss counted as irreparable harm in death-equivalents, uniform
-    # persistence 0.5): Volcker moves to incomes policy (its recession's understanding loss now counts), 4 of 5;
-    # see 8.125.
-    @test ch["volcker_disinflation_1979"] == "incomes_policy"
-    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (4, 5)
+    # Sixth replay (8.126: only the generational share of understanding loss, 0.1 by default, is irreparable):
+    # Volcker back to reserve targeting, 5 of 5 (at a uniform 0.5, 8.125, it had moved to incomes policy).
+    @test ch["volcker_disinflation_1979"] == "reserve_targeting"
+    @test (s.scores[:benefuture].k, s.scores[:benefuture].n) == (5, 5)
     @test (s.scores[:mean_welfare].k, s.scores[:min_deaths].k) == (4, 2)
 end
 
@@ -345,17 +344,17 @@ end
     for id in robust
         @test isempty(replay_sensitivity(load_replay_case(joinpath(CASES_DIR, id * ".toml"))))
     end
-    # With 8.116 Montreal is robust; Volcker stays contested: since 8.125 it chooses incomes policy, and halving
-    # the recession costs to cyclical workers flips it back to reserve targeting.
+    # With 8.116 Montreal is robust; Volcker stays contested: it chooses reserve targeting, and doubling the
+    # recession costs to cyclical workers flips it to incomes policy (8.126).
     @test isempty(replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml"))))
     v = replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "volcker_disinflation_1979.toml")))
-    @test !isempty(v) && all(x -> x.chosen == "reserve_targeting", v)
+    @test !isempty(v) && all(x -> x.chosen == "incomes_policy", v)
     @test replay_sensitivity(load_replay_case(joinpath(CASES_DIR, "ragusa_quarantine_1377.toml"))) === nothing
 end
 
 @testset "Replay: rule-set battery, coarse to fine (8.119)" begin
     b = replay_rule_battery(load_replay_case(joinpath(CASES_DIR, "montreal_protocol_1987.toml")))
-    @test length(b.configs) == 14 && b.shares["adopt_cfc_phase_down"] == 1.0   # robust across every rule set
+    @test length(b.configs) == 16 && b.shares["adopt_cfc_phase_down"] == 1.0   # robust across every rule set
     l = replay_rule_battery(load_replay_case(joinpath(CASES_DIR, "leaded_petrol_phaseout_1973.toml")))
     @test l.choices[2] == "status_quo_lead_free_availability_only" && l.choices[5] == "phase_down_total_pool_average_1975_1979"   # rule-dependent
     # The default (no overrides) is the full rule set.
@@ -364,7 +363,9 @@ end
 
 @testset "Replay: school closures rule either way with duration and remote learning (8.125)" begin
     f = joinpath(CASES_DIR, "school_closures_2020.toml")
-    @test replay_decision(load_replay_case(f)).chosen_option == "keep_schools_open"   # remote keeps a quarter (as of 2020)
+    # A close call (8.126): across the rule battery neither option holds 60%.
+    b = replay_rule_battery(load_replay_case(f))
+    @test maximum(values(b.shares)) < 0.6
     c = load_replay_case(f)
     o = c["options"][findfirst(x -> x["id"] == "close_with_remote_learning", c["options"])]
     for sc in o["scenarios"]; haskey(sc, "du") && (sc["du"] = [-0.3, 0.0]); end       # remote keeping 90% of instruction

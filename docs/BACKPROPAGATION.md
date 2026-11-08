@@ -2789,3 +2789,16 @@ decision (held-out 4 of 5 on this replay). That exposes the uniform persistence:
 and an adult's unemployment spell are not equally lasting; Benefuture would estimate persistence per kind of
 loss from evidence, so per-option values are the fix, set from as-of evidence when each case is next
 sourced (not now, which would be tuning after seeing the flip).
+8.126 ruling (author, 2026-11-08, on 8.125): the irreparability of understanding loss is not that of
+health. Only generational losses are irreparable: understanding someone would never gain again, or gain
+late enough to substantially reduce later synergistic breakthroughs; irreparable understanding loss is
+more like declining a risky exploration that might otherwise never be taken. A generic loss over a couple
+of months that can be regained is not irreparable, and weighing it against a per-person death risk under
+0.005 is a nuanced decision that can flip on many threshold assumptions. Built: `u_loss_persistence` now
+means the generational share of a loss (default 0.1, governed; an option may state its own from evidence,
+such as dropout); recoverable loss stays a reparable harm for the floors and value; the rule battery gains
+two sets (generational share 0.02 and 0.3; 16 in all) and the credences jitter magnitudes across them.
+Sixth replay (not out of sample): school closures 2020 is a close call, as it should be: closure with remote
+learning in 9 of 16 rule sets and keep open in 7; credence keep open 44%, close with remote learning 37%,
+three-week closure 18%; Volcker back to reserve targeting (held-out 5 of 5). Candidate homes: Understanding
+(irreparability), Harm (irreparable kinds), Freedom.

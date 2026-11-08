@@ -33,7 +33,7 @@ const _DEFAULT_FROZEN_THRESHOLDS = (
     offset_scale = 0.05,
     soft_bar = 0.05,
     irr_tol = 0.01,
-    u_loss_persistence = 0.5
+    u_loss_persistence = 0.1
 )
 
 const _FROZEN_REPLAY_THRESHOLDS_REF = Ref(_DEFAULT_FROZEN_THRESHOLDS)
@@ -71,7 +71,7 @@ function get_frozen_replay_thresholds()
             offset_scale = 0.05,
             soft_bar = 0.05,
             irr_tol = 0.01,
-            u_loss_persistence = 0.5
+            u_loss_persistence = 0.1
         )
     catch e
         # Progressive degradation, loudly (CLAUDE.md): fall back to the canonical defaults, never silently.
@@ -745,8 +745,9 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
     # the persistent share of long-term understanding loss (lost knowledge); `irreparable_per_population_unit`
     # converts a case's population units to its irreparable units (default 1).
     upu = Float64(get(case_dict, "irreparable_per_population_unit", 1.0))
-    # An option may state how much of its understanding loss persists (`u_loss_persistence`, from evidence on that kind
-    # of loss: a child's lost schooling, an adult's unemployment spell); otherwise the governed default.
+    # Only generational understanding loss is irreparable (author ruling 8.126): the share never regained, or regained
+    # too late to join later synergistic breakthroughs (`u_loss_persistence`, 0.1 by default, governed; an option may
+    # state its own from evidence, e.g. dropout). A recoverable loss stays a reparable harm for the floors and value.
     irr_eq(o) = sum(irreparable_equivalent(Float64(o["pred_irreparable"][g]), Float64(o["pred_du"][g]), pops[g] * upu, base_u[g], base_h[g];
                                            compounding = th.u_compounding, persistence = Float64(get(o, "u_loss_persistence", th.u_loss_persistence))) for g in 1:n_groups)
     irr_least = minimum(irr_eq(o) for o in options)
@@ -971,7 +972,7 @@ function replay_rule_battery(case_dict::AbstractDict)
         "4 + long-term offset" => Dict{String,Any}("env" => false, "irreparable" => false),
         "5 full" => Dict{String,Any}(),
         "5 full without the policy-level irreparable block (8.124)" => Dict{String,Any}("irreparable" => false)]
-    for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)))
+    for (k, vals) in (("h_retention", (0.1, 0.6)), ("u_compounding", (1.0, 2.0)), ("compensation_efficiency", (0.5, 1.0)), ("soft_bar", (0.02, 0.1)), ("u_loss_persistence", (0.02, 0.3)))
         for v in vals
             push!(configs, "full, $k = $v" => Dict{String,Any}(k => v))
         end

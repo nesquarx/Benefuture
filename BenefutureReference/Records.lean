@@ -69,9 +69,9 @@ def lt_offset_admissible_ref (du dh base_h : Float) (nha : Bool) (retention comp
     if rel > soft_bar && !nha then false
     else duL >= loss * (1.0 + rel / offset_scale)
 
-/-- Irreparable harm in death-equivalents (author, on 8.124, 2026-11-07; lost knowledge is irreparable harm,
-    REPLAY_PREREG §5): a group's expected deaths plus the persistent share of its long-term understanding loss
-    (the loss × compounding × `persistence`), counted as the share of a life's understanding and happiness it
+/-- Irreparable harm in death-equivalents (author, on 8.124 and 8.126): a group's expected deaths plus the generational
+    share of its long-term understanding loss (never regained, or too late for later synergistic breakthroughs:
+    the loss × compounding × `persistence`; a recoverable loss is not irreparable), counted as the share of a life's understanding and happiness it
     takes (a death takes both to zero), over the group's population (`pop` in irreparable units). -/
 def irreparable_equivalent_ref (deaths du pop base_u base_h compounding persistence : Float) : Float :=
   let loss := if du < 0.0 then -du * compounding * persistence else 0.0
