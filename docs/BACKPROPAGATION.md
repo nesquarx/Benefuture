@@ -3087,3 +3087,11 @@ a probe should let beings hold noisy estimates of them, improvable by meta-level
 estimates accelerate the goal's whole pattern (red on outcome: with fixed noisy estimates, effort flows to low-priority
 things). The bell curve of 8.131 then applies over the levels of (b) as well. Candidate homes: L58 (meta tier), the
 Understanding and Benefuture goals articles.
+8.131 continued, probe (2026-11-08): in the traits world, society steers practice, research and lessons by an estimate
+of each thing's priority (log-normal error `weight_σ`), while understanding is measured on the true priorities; meta-level
+research (chance `meta_research` a step) halves the estimate's log-error. Three things (priorities 1, 0.3, 0.1), 8 paired
+seeds, 200 steps: floor of understanding 1.068 steering by the truth, 0.977 by a noisy estimate (σ 1.5), 1.058 with
+meta-research at 5% a step (both differences significant at z = 2, above the stated 0.02). Understanding of which
+understanding accelerates the goals is worth as much as a large share of the object-level gains, and it is learnable.
+Toy assumptions: one shared societal estimate (not per being), a fixed halving per meta-research success, no cost to
+meta-research. Next: per-being estimates, meta-research competing for effort, and its meta level under the bell curve.

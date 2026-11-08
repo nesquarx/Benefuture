@@ -1497,6 +1497,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | A locale's own reading of the options; its conviction margin; outcome measurement (M5) | `local_σ`, `conviction`, `outcome_σ` | 1, 1.5, 1 | 0.5–3, 0.5–3, 0.5–3 |  |
 | A carrying being under contract (world) | `p_contracted`, `contract_share` | 0, 0.2 | 0–1, 0.05–0.5 |  |
 | A prevention shocking those it protects | `p_shock`, `shock_size` | 0, 0.2 | 0–0.5, 0–1 |  |
+| Error of society's estimate of each thing's priority (log-normal σ; 8.131 continued, traits world) | `weight_σ` | 0 (limiting case); probe 1.5 | judgment; range 0–2 |
 
 The batteries' severity scales do not all match this table: laundering runs to 0.5 at severity 1
 (table 0–1), hidden outcomes take `p_apparent` from 0.9 down to 0.1 (table 0.2–1), local noise takes

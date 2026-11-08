@@ -98,7 +98,8 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                        p_teachable::Real = 0.5, p_act::Real = 0.3, class::Integer = 5, view_σ::Real = 0.02,
                        reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
                        report_z::Real = 3.0, report_min::Integer = 5, things = [1.0], max_new_things::Integer = 0,
-                       p_new_thing::Real = 0.0, novelty_weight::Real = 0.2)
+                       p_new_thing::Real = 0.0, novelty_weight::Real = 0.2,
+                       weight_σ::Real = 0.0, meta_research::Real = 0.0)
     check(!isempty(things) && all(>=(0), things) && max_new_things >= 0 && 0 <= p_new_thing <= 1 && novelty_weight >= 0, "valid things")
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
@@ -113,7 +114,11 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     m = mt * T
     thing_of = [cld(i, mt) for i in 1:m]
     wl = rand(rng, m); for t in 1:T; r = ((t - 1) * mt + 1):(t * mt); wl[r] ./= sum(wl[r]); end
-    gw() = [active[thing_of[i]] ? W[thing_of[i]] * wl[i] : 0.0 for i in 1:m]   # each item's weight toward the goals now
+    # Priority weights as meta understanding (8.131 continued): society steers practice, research and lessons by its
+    # estimate of each thing's contribution to the goals (log-normal error `weight_σ`, own stream); meta-level research
+    # (chance `meta_research` per step) halves the estimate's log-error. Understanding is still measured on the truth.
+    wrng = Xoshiro(hash((seed, :weights))); werr = weight_σ .* randn(wrng, length(W))
+    gw() = [active[thing_of[i]] ? W[thing_of[i]] * exp(werr[thing_of[i]]) * wl[i] : 0.0 for i in 1:m]   # each item's estimated weight toward the goals now
     wt = gw()
     ms = 0.1 .+ 0.35 .* rand(rng, n, m)          # base spread of each being's model, per item
     mc = 0.1 .+ 0.6 .* rand(rng, n, m)           # its complexity
@@ -140,6 +145,9 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     rec!()
     for _ in 1:steps
         u = [U(b) for b in 1:n]
+        if meta_research > 0 && rand(wrng) < meta_research   # meta-level research sharpens the estimate of priorities
+            werr .*= 0.5; wt .= gw()
+        end
         researching = rand(rrng, n) .< research_share
         for b in findall(researching)
             rand(rrng) < p_research || continue

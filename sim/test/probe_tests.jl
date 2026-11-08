@@ -1190,3 +1190,16 @@ end
     honest = arm()
     @test equivalent(honest .- none; margin = 0.005).equivalent
 end
+
+@testset "Probe: priority weights are meta understanding, sharpened by meta-level research (8.131 continued)" begin
+    # Traits world with three things of priority 1, 0.3 and 0.1. Hypotheses (8 paired seeds, 200 steps, z = 2, smallest
+    # effect 0.02 on the 0-1+ scale): (a) red baseline: steering practice, research and lessons by a noisy estimate of
+    # the priorities (log-normal error 1.5) lowers the floor of understanding (measured on the true priorities) against
+    # steering by the truth; (b) meta-level research that halves the estimate's error (chance 5% a step) raises it
+    # back toward the truth. Measured: 1.068 true, 0.977 noisy, 1.058 noisy with meta-research.
+    using Statistics
+    floor_at(σ, mr) = [run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 200, weight_σ = σ, meta_research = mr).floor_u[end] for s in 1:8]
+    truth, noisy, meta = floor_at(0.0, 0.0), floor_at(1.5, 0.0), floor_at(1.5, 0.05)
+    @test paired_effect(truth .- noisy; z = 2.0).significant && mean(truth .- noisy) > 0.02
+    @test paired_effect(meta .- noisy; z = 2.0).significant && mean(meta .- noisy) > 0.02
+end
