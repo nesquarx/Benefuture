@@ -1,0 +1,134 @@
+# Historical decision case (E4 contrast case for priority tiers, docs/E5_CANDIDATES.md): the Office of Economic
+# Opportunity's launch of Project Head Start (announced February 1965, first summer programme 1965): comprehensive
+# early-childhood programmes for disadvantaged preschoolers, against a remedial reading programme of similar cost for
+# disadvantaged early-elementary pupils, or neither. As of the decision: early results from the Perry Preschool
+# Project (Ypsilanti, from 1962), Gray and Klaus's Early Training Project (from 1962) and Deutsch's Institute for
+# Developmental Studies (New York) showing early gains; remedial and compensatory school programmes with mixed
+# records (New York's Higher Horizons, gains faded; St Louis's Banneker project, reported gains). Sources recalled;
+# primary documents not seen. Builders know the outcome (the 1969 Westinghouse evaluation found test-score gains
+# faded; later studies found long-run gains in schooling and adult outcomes). Outcome contested: marked unclear.
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "head_start_1965"
+title = "US launches Project Head Start (1965)"
+family = "education"
+era = "1965"
+tier = "full"
+decision_date = "1965-02-19"
+decision_makers = ["Office of Economic Opportunity (Shriver) and President Johnson"]
+actual_choice = "head_start_early_childhood"
+actual_outcome_class = "unclear"
+primary_or_held_out = "contrast"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+[[sources]]
+id = "compensatory_education_record"
+title = "Preschool and remedial programmes for disadvantaged children before February 1965"
+as_of_date = "1965-02-18"
+url = "https://highscope.org/perry-preschool-project/"
+notes = "Perry Preschool project description (begun 1962) for the as-of early-childhood record; other programmes recalled; primary records not seen."
+
+[[ groups ]]
+id = "disadvantaged_children"
+name = "Disadvantaged children aged 3 to 8 (about 4 million, judgment), in thousands"
+population = 4000
+baseline_u = 30.0
+baseline_h = 45.0
+
+[[ groups ]]
+id = "taxpayers"
+name = "Other US residents (about 190 million), in thousands"
+population = 190000
+baseline_u = 50.0
+baseline_h = 60.0
+
+# Magnitudes (judgment, stated, close in size on purpose): either programme, if it works, raises the reached
+# children's understanding by about 1 point on the 0-100 scale over their schooling; remedial reading's gain is
+# measured sooner and its happiness is satisficing (school success); Head Start's comes with health and nutrition
+# services and family involvement (happiness +0.3, satisficing and baseline). Cost about 100 million dollars a year
+# either way (happiness -0.01 for other residents). If a programme does not work, a fifth of its gain remains.
+
+[[ options ]]
+id = "no_new_programme"
+name = "No new federal programme for disadvantaged young children"
+source = "compensatory_education_record"
+known_date = "1964-01-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [0.0, 0.0]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "status_quo"
+p_chain = []
+
+[[ options ]]
+id = "head_start_early_childhood"
+name = "Head Start: comprehensive early-childhood programmes (education, health, nutrition, parents)"
+source = "compensatory_education_record"
+known_date = "1965-02-19"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.84, 0.0]
+pred_dh = [0.3, -0.01]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+# Priority kinds (8.129, option-level; as-of basis: the early-childhood projects' aim of readiness to learn, and
+# their gains on general ability tests rather than taught content): meta understanding (learning to learn) and the
+# floor; happiness satisficing and baseline.
+u_tiers = [[0, 0.1, 0.5, 0, 0.4, 0], [0, 0, 0, 1, 0, 0]]
+h_tiers = [[0, 0, 0.5, 0.5, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[ options.scenarios ]]
+name = "early_childhood_gains"
+p_chain = ["early_childhood_programme_raised_ability"]
+du = [1.0, 0.0]
+dh = [0.3, -0.01]
+
+[[ options.scenarios ]]
+name = "gains_small"
+p_chain = []
+complement = true
+du = [0.2, 0.0]
+dh = [0.3, -0.01]
+
+[[ options ]]
+id = "remedial_reading_programme"
+name = "A remedial reading programme of similar cost for disadvantaged early-elementary pupils"
+source = "compensatory_education_record"
+known_date = "1964-06-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.6, 0.0]
+pred_dh = [0.15, -0.01]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [0.0, 0.0]
+# Priority kinds (8.129, option-level; as-of basis: remedial programmes target taught reading content): teachable
+# and median understanding, some floor; happiness satisficing.
+u_tiers = [[0, 0.4, 0, 0.4, 0.2, 0], [0, 0, 0, 1, 0, 0]]
+h_tiers = [[0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[ options.scenarios ]]
+name = "reading_gains"
+p_chain = ["remedial_school_programme_raised_scores"]
+du = [1.0, 0.0]
+dh = [0.2, -0.01]
+
+[[ options.scenarios ]]
+name = "gains_fade"
+p_chain = []
+complement = true
+du = [0.2, 0.0]
+dh = [0.1, -0.01]
+
+[counterfactual]
+actual_floor_u_delta = 0.3
+actual_floor_h_delta = 0.2
+actual_irreparable = 0.0
+alt_option = "remedial_reading_programme"
+methods = ["placeholder: outcome contested (short-run fade-out, long-run gains); not scored"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
