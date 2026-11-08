@@ -28,3 +28,8 @@ reader can check exactly where that boundary sits.
 ---
 
 - **Priced-out work is not replaced in closed worlds (8.115).** Benefuture's discovery institutions price out skilled deceivers; in a fixed eight-agent economy their real work is lost (about 10% of growth against status-quo institutions). Tracked fix: entry (newcomers taking unmet demand) in the comparison world, and a variant where the deceivers' work is not useful.
+
+- **Replay does not yet separate Benefuture from the fewest-deaths rule** (E4 round 2, 2026-11-08): both are right on 8 of 9 settled cases. Cases where they differ (German nuclear, Sri Lanka) are few, and the priority tiers decide only where options are close in size but differ in kind, which few cases pose. Next: contrast cases chosen for that, declared from as-of sources.
+- **Freedom's pricing of self-regarding risk is not modelled in the replay** (Prohibition 1919): a ban on a chosen risk is weighed only through happiness lost, not through the freedom boundary's preference for pricing over prohibition.
+- **Base rates from recorded events only** (swine flu 1976): outbreaks that fizzled are under-recorded, so the replay's pandemic base rate was inflated; an adversarial base-rate check (trials that would have been recorded had they gone the other way) is parked.
+

@@ -160,3 +160,20 @@ and E5 candidates (research funding against applied programmes, teaching reforms
 - Baselines: status quo no guarantee; minimum deaths, mean welfare and equal weight all choose deposits only.
 - Rule battery (17 sets): deposits only 100%. Credence (20 draws, stable): deposits only 99%, no guarantee 1%. No single-magnitude flips.
 - Reading: robust and right on the as-of record: every property-bust banking crisis in the record (4 of 4) was one of solvency, so a guarantee of bonds moved losses to the state with high probability, whatever the banks said. The case prices the run after a partial guarantee as likely (2 of 3) and it still does not change the choice. Simple rules agree.
+
+## Prohibition, January 1919 (case committed before replay; tiers declared before replay; outcome unclear, not scored)
+
+- Benefuture: national prohibition. Cell unclear/agrees (consumption and cirrhosis fell; crime and corruption rose; repealed 1933).
+- Baselines: status quo and mean welfare leave liquor to the states; minimum deaths and equal weight choose prohibition.
+- Rule battery: prohibition 71%, states' local option 29%. Credence (320 draws): prohibition 53%, local option with high licence taxes 35%, states' local option 12%. Sensitivity flips (2), both to local option with high licence taxes.
+- Reading: contested. The as-of record makes evasion certain (4 of 4 prohibitions) and harm reduction likely (2 of 2), and the replay prices moderate drinkers' lost pleasure as happiness only; how Benefuture's freedom boundary treats a ban on a self-regarding risk (priced, not prohibited, per the Freedom article) is not modelled in the replay, which would weigh against a ban. Recorded as an open modelling gap.
+
+## Round 2 tally (10 cases, committed before replay; 9 with a settled outcome)
+
+| | Right on settled cases | Interval (z = 2) |
+|---|---|---|
+| Benefuture | 8 of 9 (wrong: swine flu 1976) | 0.56–0.98 |
+| Fewest deaths | 8 of 9 (wrong: swine flu 1976) | 0.56–0.98 |
+| Status quo | 6 of 9 | 0.35–0.88 |
+
+Robustness (credence at least 60% and at most two single-magnitude flips): robust and right: UNAMIR, smallpox, Four Pests, Irish guarantee (4); robust and wrong: swine flu (1); contested though right as replayed: DDT, German nuclear, Sri Lanka, Warp Speed (4); unclear outcome: Prohibition (1). Benefuture does not separate from the fewest-deaths rule on these cases; it differs from it on German nuclear and Sri Lanka (both right for both). Builders knew the outcomes; sources recalled, not verified from primary texts. Defects found and fixed during the round: the all-blocked fallback (8.127, ruled), environmental harm counting deaths, credences by precision (8.128).
