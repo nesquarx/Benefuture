@@ -41,3 +41,11 @@ Credences were drawn from a habitual 40 jitter draws, and the FOMC case's cut sh
 - UNAMIR 1994: reinforce 57%, keep 2,500 40%, reduce 3% (180 draws; first: keep 55%, reinforce 41%). The top pick flips to the reinforcement the rules choose.
 - Swine flu 1976: vaccinate 64%, stockpile 34%, do nothing 2% (280 draws; unchanged in substance).
 - School closures 2020 (round 1): keep open 53%, close with remote learning 30%, close three weeks 9%, close statewide 8% (200 draws; first: keep open 44%).
+
+## German nuclear phase-out, June 2011 (case committed before replay)
+
+- Benefuture: keep the 2010 extension. Cell bad/differs: it avoids the decision that went badly. F1–F4 false. Reached through the all-blocked fallback (8.127): the environmental block's least option is the phase-out (a severe accident's nationwide happiness loss, −0.5 points on a 0.21 fleet-decade rate, outweighs the fossil replacement's air-pollution deaths in person-points), the irreparable block's least option is keeping the fleet (0.6 against 8.2 thousand expected deaths), so every option is blocked and keeping the fleet has the least relative excess.
+- Baselines: status quo and minimum deaths keep; mean welfare and equal weight close the oldest eight only.
+- Rule battery: keep 69%, close oldest eight 25%, phase out 6%. Credence (80 draws): keep 76%, phase out 12.5%, close oldest eight 11%. No single-magnitude flips.
+- Defect found and fixed (same day, before this record): environmental health harm counted only understanding and happiness losses, not deaths, so the air-pollution deaths were invisible to the environmental block. Deaths now count at their group's baseline understanding plus happiness (a death takes both to zero). The result above is unchanged by the fix (same choice, battery and flips). Red test first (synthetic: environmental block alone, deaths without happiness loss).
+- Reading: the rules favour keeping the fleet on deaths, but the environmental block, as the case prices it, prefers the phase-out. That is the judged accident happiness loss doing the work. A nationwide lasting −0.5 is large (about 330 thousand death-equivalents in person-points); the magnitude stands as built.

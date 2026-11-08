@@ -667,7 +667,12 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             get(case_dict, "_scenario_weights", "rates") == "equal" && (ps = fill(1.0 / length(ps), length(ps)))
             # (8.118) projected health harm through environmental pathways: population-weighted losses in
             # scenarios tagged `environmental_health`, at their as-of probabilities.
-            opt["_env_harm"] = sum((ps[k] * sum(pops[g] * max(0.0, -(dus[k][g] + dhs[k][g])) for g in 1:n_groups)
+            # Deaths count too: a death takes a being's understanding and happiness to zero, so each death in
+            # population units (irreparable / `irreparable_per_population_unit`) adds its group's baseline u + h
+            # (a defect found on the German phase-out case, 2026-11-08: air-pollution deaths were not counted).
+            upu_env = Float64(get(case_dict, "irreparable_per_population_unit", 1.0))
+            opt["_env_harm"] = sum((ps[k] * sum(pops[g] * max(0.0, -(dus[k][g] + dhs[k][g])) +
+                                                irrs[k][g] / upu_env * (base_u[g] + base_h[g]) for g in 1:n_groups)
                                     for (k, sc) in enumerate(opt["scenarios"]) if get(sc, "environmental_health", false)); init = 0.0)
             opt["pred_du"] = [expected_effect(ps, getindex.(dus, g)) for g in 1:n_groups]
             opt["pred_dh"] = [expected_effect(ps, getindex.(dhs, g)) for g in 1:n_groups]

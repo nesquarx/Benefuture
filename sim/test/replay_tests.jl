@@ -389,3 +389,17 @@ end
     a = replay_credence(c; seed = 1); b = replay_credence(c; seed = 2)
     @test all(abs(get(a, k, 0.0) - get(b, k, 0.0)) <= 0.06 for k in union(keys(a), keys(b)))
 end
+
+@testset "Replay: environmental health harm counts deaths (a death takes understanding and happiness to zero)" begin
+    # German phase-out 2011, irreparable block switched off so the environmental block acts alone: give keeping the
+    # fleet an accident that kills 100 thousand with no happiness loss, and give the other options no accident.
+    # Counting only u and h losses, keeping the fleet looked harmless and was chosen; with deaths it is the
+    # largest environmental harm and is blocked.
+    c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "german_nuclear_phaseout_2011.toml"))
+    c["_rule_overrides"] = Dict{String,Any}("irreparable" => false)
+    for o in c["options"], sc in o["scenarios"]
+        occursin("accident", sc["name"]) || continue
+        sc["dh"] = [0.0]; sc["irreparable"] = [o["id"] == "keep_2010_extension" ? 100.0 : 0.0]
+    end
+    @test replay_decision(c).chosen_option != "keep_2010_extension"
+end
