@@ -1,0 +1,136 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): the World Health Assembly's resolution of May 1966
+# (WHA19.16) launching the Intensified Smallpox Eradication Programme from 1 January 1967, with a special budget,
+# against continuing national control programmes. As of the decision: smallpox eliminated in the USSR, North
+# America and Western Europe; endemic in about 30 countries; the 1959 eradication resolution had stalled; the
+# malaria eradication programme was faltering; freeze-dried vaccine and the bifurcated needle available. Sources
+# recalled from the public record (Fenner et al. 1988 retells the as-of record; primary documents not seen).
+# Builders know the outcome (last natural case 1977; certified eradicated 1980).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "smallpox_eradication_1967"
+title = "WHO launches the Intensified Smallpox Eradication Programme (WHA19.16, May 1966; from January 1967)"
+family = "health"
+era = "1967"
+tier = "full"
+decision_date = "1966-05-13"
+decision_makers = ["World Health Assembly"]
+actual_choice = "intensified_global_eradication"
+actual_outcome_class = "good"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+# Priority tiers (8.129; declared before the replay): endemic populations at the floor and happiness baseline; donor
+# populations median and satisficing.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[sources]]
+id = "smallpox_record"
+title = "Smallpox elimination and disease eradication campaigns before May 1966"
+as_of_date = "1966-05-12"
+url = "https://www.who.int/health-topics/smallpox"
+notes = "Recalled; primary records not seen."
+
+[[ groups ]]
+id = "endemic_populations"
+name = "Populations of endemic countries (about 1.1 billion), in thousands"
+population = 1100000
+baseline_u = 35.0
+baseline_h = 45.0
+
+[[ groups ]]
+id = "donor_populations"
+name = "Populations of contributing high-income countries (about 700 million), in thousands"
+population = 700000
+baseline_u = 60.0
+baseline_h = 65.0
+
+# Magnitudes (judgment, stated): about 1.5 million smallpox deaths a year in endemic countries (WHO's own estimates
+# of 10 to 15 million cases a year, recalled), so about 15 million over a decade under continued control
+# (irreparable 15,000), with illness, blindness and scarring across the population (happiness -0.3, passing harm).
+# An intensified campaign that succeeds averts most deaths after its first years (3,000 thousand over the decade)
+# and all thereafter; one that fails leaves about two thirds (10,000). Focusing on accessible regions halves the
+# toll (7,500). Cost: about 300 million dollars over a decade from donors (happiness -0.01), half that for the
+# regional option. Importation risk to donor countries is small (deaths 0.5 thousand a decade) and ends only with
+# eradication.
+
+[[ options ]]
+id = "continue_national_control"
+name = "Continue national control programmes with WHO advice"
+source = "smallpox_record"
+known_date = "1959-05-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [-0.2, 0.0]
+pred_dh = [-0.3, 0.0]
+pred_nha = [0.3, 0.0]
+pred_irreparable = [15000.0, 0.5]
+
+[[ options.scenarios ]]
+name = "endemic_toll_continues"
+p_chain = []
+du = [-0.2, 0.0]
+dh = [-0.3, 0.0]
+nha = [0.3, 0.0]
+irreparable = [15000.0, 0.5]
+
+[[ options ]]
+id = "intensified_global_eradication"
+name = "Launch an intensified global eradication programme with a special budget"
+source = "smallpox_record"
+known_date = "1966-05-13"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.08, 0.0]
+pred_dh = [-0.12, -0.01]
+pred_nha = [0.12, 0.0]
+pred_irreparable = [5000.0, 0.2]
+
+[[ options.scenarios ]]
+name = "eradication_succeeds"
+p_chain = ["smallpox_elimination_achieved_where_attempted"]
+du = [-0.04, 0.0]
+dh = [-0.06, -0.01]
+nha = [0.06, 0.0]
+irreparable = [3000.0, 0.1]
+
+[[ options.scenarios ]]
+name = "campaign_falls_short"
+p_chain = []
+complement = true
+du = [-0.13, 0.0]
+dh = [-0.2, -0.01]
+nha = [0.2, 0.0]
+irreparable = [10000.0, 0.4]
+
+[[ options ]]
+id = "regional_elimination_accessible_areas"
+name = "Fund elimination in the most accessible regions first; defer the hardest countries"
+source = "smallpox_record"
+known_date = "1965-01-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.1, 0.0]
+pred_dh = [-0.15, -0.005]
+pred_nha = [0.15, 0.0]
+pred_irreparable = [7500.0, 0.4]
+
+[[ options.scenarios ]]
+name = "regional_elimination"
+p_chain = []
+du = [-0.1, 0.0]
+dh = [-0.15, -0.005]
+nha = [0.15, 0.0]
+irreparable = [7500.0, 0.4]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -0.05
+actual_irreparable = 2000.0
+alt_option = "continue_national_control"
+methods = ["placeholder: deaths averted by eradication priced as judgment from WHO case estimates"]
+est_floor_u_delta_diff = [-0.1]
+est_floor_h_delta_diff = [-0.2]
+est_irreparable_diff = [13000.0]
