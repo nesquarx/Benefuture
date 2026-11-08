@@ -3107,3 +3107,11 @@ Uptake is now each being's disposition (Beta, mean `meta_uptake` 0.3, concentrat
 log-normal noise each step (`uptake_σ` 1.0), on its own stream; world parameters, never governed thresholds. Research
 funding now follows the published (policy) priorities. Readings (10 paired seeds, floor at meta_share 0 / 0.05 / 0.3):
 independent errors 1.065 / 1.056 / 1.015, shared 1.012 / 1.057 / 1.017; the interior optimum survives the noise.
+
+Identity step (2) continued (2026-11-08): the cheapest fork exploit is the accumulation allowance. Each identity's
+threshold (`accumulation_threshold_ref`: base + factor × relevance) carries a base, so k forks of one balance would keep k
+allowances out of overflow (2000 held, base 500, relevance 300: one identity keeps 800, two forks 1600, four 2000). The
+threshold is social power (SoPo in L123) and splits with `fork_split` like balance and reputation; the family then keeps
+exactly what one identity kept, for any shares (probe, `sim/test/probe_tests.jl`). No new rule: L123's split already
+covers it; candidate home is L123's SoPo list (name the accumulation allowance explicitly). Forks mid-run in M3c (dynamic
+agents) remain to be built.

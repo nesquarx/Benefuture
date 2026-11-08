@@ -1217,3 +1217,23 @@ end
     @test mean(up) > max(2se(up), 0.01)
     @test mean(down) < -2se(down)
 end
+
+@testset "Probe: a fork cannot multiply the accumulation allowance (identity step 2, L123)" begin
+    # Gaming: each identity's accumulation threshold carries a base allowance, so k forks holding one balance would keep
+    # k allowances out of overflow. Counterexample: forks given full thresholds keep more than the single identity.
+    # Acceptance: the threshold is social power and splits by `fork_split` like the balance; the family keeps no more.
+    bal, base, rel = 2000.0, 500.0, 300.0
+    th = accumulation_threshold(base, 1.0, rel)
+    kept1 = bal - overflow(bal, th)
+    for k in (2, 4, 8)
+        sh = fill(1 / k, k); b = fork_split(bal, sh)
+        naive = sum(b[i] - overflow(b[i], th) for i in 1:k)
+        ths = fork_split(th, sh)
+        split = sum(b[i] - overflow(b[i], ths[i]) for i in 1:k)
+        @test naive > kept1 + 1e-9
+        @test split ≈ kept1 atol = 1e-9
+    end
+    # Unequal shares conserve too.
+    sh = [0.7, 0.2, 0.1]; b = fork_split(bal, sh); ths = fork_split(th, sh)
+    @test sum(b[i] - overflow(b[i], ths[i]) for i in 1:3) ≈ kept1 atol = 1e-9
+end
