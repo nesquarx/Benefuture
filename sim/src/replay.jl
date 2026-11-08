@@ -858,7 +858,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             # Every option blocked: the environmental and irreparable blocks each measure against their own least
             # option, and together they can exclude everything. Inaction has no default privilege (8.47); choose
             # the option whose blocked harms exceed their leasts least, each excess relative to its least (scale at
-            # least 1), summed ([P], E4 round 2 DDT case, 2026-11-08). Loud.
+            # least 1), summed (8.127, author ruling 2026-11-08: trolley rules, fail loud). Loud.
             excess(o) = (rule_env ? max(0.0, get(o, "_env_harm", 0.0) - env_least) / max(1.0, env_least) : 0.0) +
                         (rule_irr ? max(0.0, irr_eq(o) - irr_least) / max(1.0, irr_least) : 0.0)
             ex = [excess(o) for o in options]

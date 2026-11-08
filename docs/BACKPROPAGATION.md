@@ -2803,7 +2803,9 @@ learning in 9 of 16 rule sets and keep open in 7; credence keep open 44%, close 
 three-week closure 18%; Volcker back to reserve targeting (held-out 5 of 5). Candidate homes: Understanding
 (irreparability), Harm (irreparable kinds), Freedom.
 
-8.127 [P] (2026-11-08, E4 round 2 DDT case): the environmental block (8.118) and the irreparable block (8.124)
+8.127 [R] (2026-11-08, E4 round 2 DDT case; ruled by the author the same day: "8.127 fix, trolley rules, and fail
+loud, yes": the fix stands, the all-blocked choice follows the trolley rulings on net expected harm (8.124), and
+it is logged loudly): the environmental block (8.118) and the irreparable block (8.124)
 each measure against their own least option, so together they can exclude every option. The replay then chose
 inaction by default, even where inaction was blocked under both. Proposal: when every option is blocked, choose
 the option whose blocked harms exceed their leasts least, each excess relative to its least (scale at least 1),
