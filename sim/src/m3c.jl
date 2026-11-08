@@ -423,7 +423,7 @@ function run_m3c(p::M3cParams; seed)
                 (chain_copied[l] || chain_copied[k]) && continue
                 push!(chain_pair[(k, l)], (plan_value(reads[l], t) - plan_value(reads[k], t)) / se)
                 x = chain_pair[(k, l)]
-                length(x) >= 4p.adv_min_records && var(x) < 0.2 && (chain_copied[l] = true; chain_copies[] += 1)
+                copies(x; min_n = 4p.adv_min_records, below = 0.2) && (chain_copied[l] = true; chain_copies[] += 1)
             end
         end
         chs = findall(.!chain_demoted .& .!chain_copied)

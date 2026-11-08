@@ -278,4 +278,14 @@ def escalated_credence_ref (credence negShare : Float) (persistence : Nat) (grow
 def repeat_escrow_credence_ref (credence negShare : Float) (repeats : Nat) (growth floorC : Float) : Float :=
   max floorC ((0.5 + (credence - 0.5) * (1.0 - negShare)) * Float.pow (1.0 + growth) (-(repeats.toFloat)))
 
+/-- Undeclared copying (8.111; correlated ballots, 8.121): two independent sources' standardised differences have
+  variance near the sum of their noise variances (about 1 or 2 by construction); a pair whose standardised
+  differences, over at least `minN` readings, have variance below `below` is one source counted twice. -/
+def copies_ref (diffs : Array Float) (minN : Nat) (below : Float) : Bool := Id.run do
+  let n := diffs.size
+  if n < minN || n < 2 then return false
+  let mean := diffs.foldl (· + ·) 0.0 / n.toFloat
+  let ss := diffs.foldl (fun a x => a + (x - mean) * (x - mean)) 0.0
+  return ss / (n.toFloat - 1.0) < below
+
 end BenefutureReference

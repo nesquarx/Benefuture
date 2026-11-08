@@ -71,6 +71,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_tier_schedule_at] def tierScheduleAt (which i : USize) : Float :=
   (if which == 0 then tierScheduleU_ref else if which == 1 then tierScheduleH_ref else tierScheduleN_ref).getD i.toNat 0.0
 
+@[export bf_copies] def copies (diffs : FloatArray) (minN : USize) (below : Float) : UInt8 :=
+  if copies_ref diffs.data minN.toNat below then 1 else 0
+
 @[export bf_harm_schedule_len] def harmScheduleLen (_ : Unit) : USize := harmSchedule_ref.length.toUSize
 @[export bf_harm_schedule_at] def harmScheduleAt (i : USize) : Float := harmSchedule_ref.getD i.toNat 0.0
 

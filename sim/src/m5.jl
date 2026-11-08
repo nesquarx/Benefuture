@@ -91,6 +91,9 @@ struct M5Params
     ballot::Symbol             # :vote (sign), :credence_stated (stated log-odds), :credence_calibrated (log-odds shrunk to each voter's record) (8.121)
     overconfidence::Vector{Float64}  # a voter's stated log-odds over its honest ones (1 honest; world)
     misconception_σ::Float64   # standard deviation of correlated misconception among non-specialists (8.90; world)
+    copiers::Vector{Int}       # voters who secretly replace their reading with `copy_leader`'s (an attack, 8.121; world)
+    copy_leader::Int           # the voter they copy (0: none)
+    dedupe::Bool               # count correlated ballots once: pairs agreeing far closer than independent noise allows (8.111, 8.121)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -110,7 +113,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   tag_liars = Int[], tag_lie::Symbol = :misattribute, tag_audit::Bool = true, echo_margin::Real = 0.1,
                   echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.20, advice_avg::Real = 0.20,
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
-                  misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[])
+                  misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[],
+                  copiers = Int[], copy_leader::Integer = 0, dedupe::Bool = false)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -153,7 +157,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              deliberation, n_contacts, model_σ0, p_new_model, improve_drift, improve_σ, scale_min, model_capture,
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
              source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
-             advice_stay, advice_avg, advice_defer, advice_α, advice_β, ballot, isempty(overconfidence) ? ones(length(m3.agents)) : collect(Float64, overconfidence), Float64(misconception_σ))
+             advice_stay, advice_avg, advice_defer, advice_α, advice_β, ballot, isempty(overconfidence) ? ones(length(m3.agents)) : collect(Float64, overconfidence), Float64(misconception_σ),
+             collect(Int, copiers), Int(copy_leader), dedupe)
 end
 
 """
@@ -178,6 +183,10 @@ function run_m5(p::M5Params; seed)
     na = size(p.skills, 1)
     correct, max_share, max_single, bloc_expertise = 0, Float64[], Float64[], Float64[]
     cal_rec = [Tuple{Float64,Float64}[] for _ in 1:size(p.skills, 1)]   # (stated log-odds, outcome sign) per voter (8.121)
+    # Correlated ballots (8.121, 8.111): each pair's recent standardised reading differences; a pair agreeing far closer
+    # than independent noise allows (Lean `copies_ref`) is one judgment counted twice, and the later voter's ballot is
+    # folded into the earlier one (counted once).
+    pair_d = Dict{Tuple{Int,Int},Vector{Float64}}(); folded = falses(size(p.skills, 1)); folds = Ref(0)
     tally_apparent, tally_hidden = [0, 0], [0, 0]  # (correct, decided)
     # Votes are outputs (author ruling 8.29): reputation moves with each apparent decision, and
     # each agent's recent apparent votes per domain are its audited record (L114).
@@ -266,6 +275,8 @@ function run_m5(p::M5Params; seed)
         end
         signal = [truth + p.camp_bias[i] + choice_noise(crng, caps[i, k]) +
                   (p.misconception_σ > 0 ? misconception * exp(-p.skill_gain * max(0.0, p.skills[i, k])) : 0.0) for i in 1:na]
+        # Copiers (an attack, 8.121): a bloc secretly takes one voter's reading as its own before ballots are cast.
+        p.copy_leader > 0 && for i in p.copiers; signal[i] = signal[p.copy_leader] + 0.01 * caps[i, k] * randn(crng); end
         defect = !(p.stealth && apparent)  # a stealthy bloc defects only where it will not be seen
         weight_gap[] = max(weight_gap[], abs(sum(held[i] for i in 1:na if !delegated[i]) - total) / total)
         tag_tally, cast, caught_now = nothing, held, falses(na)
@@ -362,7 +373,27 @@ function run_m5(p::M5Params; seed)
         cal_k(i) = (x = cal_rec[i]; length(x) < 5 ? 0.5 : clamp(sum(a * b for (a, b) in x) / max(1e-9, sum(a^2 for (a, _) in x)), 0.0, 2.0))
         ballot_w(i) = p.ballot == :vote ? vote(i) : p.ballot == :credence_stated ? stated(i) : cal_k(i) * stated(i)
         bw(i) = p.ballot == :vote ? held[i] * vote(i) : cfd_ballot_weight(held[i], p.ballot == :credence_stated ? 1.0 : cal_k(i), stated(i))
-        tally = tag_tally === nothing || p.ballot != :vote ? sum((bw(i) for i in 1:na if !delegated[i]); init = 0.0) : tag_tally
+        if p.dedupe && p.ballot != :vote
+            # Outputs only (Benefuture reads ballots, not minds): stated credences; deliberation correlates honest
+            # ballots too, so "far closer than independent" is judged against the typical pair: a pair's variance of
+            # differences below a fifth of the median pair's is one judgment counted twice.
+            for i in 1:na, j in (i + 1):na
+                (folded[i] || folded[j]) && continue
+                d = get!(pair_d, (i, j), Float64[])
+                push!(d, stated(j) - stated(i)); length(d) > 40 && popfirst!(d)
+            end
+            if n % 10 == 0 && n >= 20
+                live = [d for ((i, j), d) in pair_d if length(d) >= 20 && !folded[i] && !folded[j]]
+                if !isempty(live)
+                    med = median(var.(live))
+                    for ((i, j), d) in pair_d
+                        (folded[i] || folded[j] || length(d) < 20) && continue
+                        copies(d; min_n = 20, below = 0.2 * med) && (folded[j] = true; folds[] += 1)
+                    end
+                end
+            end
+        end
+        tally = tag_tally === nothing || p.ballot != :vote ? sum((bw(i) for i in 1:na if !delegated[i] && !folded[i]); init = 0.0) : tag_tally
         correct += sign(tally) == sign(truth)
         push!(correct_trace, sign(tally) == sign(truth))
         t = apparent ? tally_apparent : tally_hidden

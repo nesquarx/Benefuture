@@ -1146,3 +1146,26 @@ end
     @test minimum(r.h) >= 50.0 - 1e-9          # the happiness floor does not fall
     @test r.trace["entertain"] == 0 || r.trace["teach"] + r.trace["research"] > r.trace["entertain"]
 end
+
+@testset "Probe: correlated ballots count once (8.121, 8.111)" begin
+    # A bloc of 30% of each domain's top experts secretly takes one mediocre voter's reading as its own and states it
+    # as credence. Hypotheses (paired seeds, last 400 of 800 decisions): (a) red baseline: with copies counted as
+    # independent, calibrated credence ballots decide worse than with no copying (z = 2); (b) counting pairs that agree
+    # far closer than independent noise allows once (Lean `copies_ref`) recovers accuracy against counting them all
+    # (z = 2). Smallest effect that matters: 0.5 points.
+    ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / 25))
+    m3 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                           [DomainAgent([k == l ? ladder(r) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4]) for k in 1:4 for r in 1:25],
+                           [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    bloc = unique(vcat([sortperm(m3.relevance_leaf[:, d]; rev = true)[1:round(Int, 0.3 * 25)] for d in 1:4]...))
+    leader = sortperm(vec(sum(m3.relevance_leaf; dims = 2)))[50]          # a mediocre voter
+    acc(tr) = mean(tr.correct_trace[401:end])
+    arm(; kw...) = [acc(run_m5(M5Params(m3, 1:4; decisions = 800, signal_σ = 12.0, ability_spread = 1.5, p_apparent = 0.4,
+                                        ballot = :credence_calibrated, kw...); seed)) for seed in 1:6]
+    none = arm(); counted = arm(copiers = bloc, copy_leader = leader); once = arm(copiers = bloc, copy_leader = leader, dedupe = true)
+    @test paired_effect(none .- counted; z = 2.0).significant && mean(none .- counted) > 0.005   # measured 0.983 vs 0.934
+    # (b) not achieved: judged on outputs alone, honest experts who deliberate agree as closely as copies do, so
+    # pairwise dedupe folds honest experts (0.926 with no copiers) and does worse than counting everyone with copiers
+    # (0.805 vs 0.934). Detection is off by default until it can tell copying from deliberated agreement.
+    @test_broken paired_effect(once .- counted; z = 2.0).significant
+end

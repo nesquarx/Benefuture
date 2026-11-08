@@ -2967,3 +2967,20 @@ Start. What is x in `meta^x`? Readings: (a) x > 1 compounds meta gains over the 
 multiplies later learning), which would likely reverse this case; (b) x indexes meta levels (meta, meta-meta, ...),
 each weighted in turn; (c) x is a governed exponent. Until ruled, meta stays linear. Candidate homes: L58, the
 Understanding article (tiers).
+
+8.121 correlated ballots (2026-11-08): built and found wanting. The undeclared-copying test of 8.111 (a pair whose
+standardised differences have variance far below independent noise is one source counted twice) is now a Lean rule,
+`copies_ref` (export `bf_copies`, Julia `copies`), used by M3c's measurement chains in place of the inline Julia test
+(rules live once; M3c tests pass) and offered to M5 ballots (`dedupe`). Attack (M5, `copiers`, `copy_leader`): 30% of
+each domain's top experts secretly take one mediocre voter's reading as their own. Probe (6 paired seeds, last 400 of
+800 decisions, calibrated credence ballots): copying costs accuracy (0.983 without copiers against 0.934 with them
+counted as independent, z ≥ 2): the red baseline holds. Counting correlated ballots once does not recover it: judged
+on outputs alone (stated credences), honest experts who deliberate together agree as closely as copies, so pairwise
+dedupe folds honest experts (0.926 with no copiers at all) and with copiers does worse than counting everyone (0.805
+against 0.934). An earlier version standardised deliberated readings by raw signal noise (a units error) and folded
+nearly everyone (0.59); fixed by judging pairs against the median pair. Detection stays off by default (`dedupe =
+false`); the recovery assertion is marked broken. What would tell copying from deliberated agreement: copies err
+together on apparent outcomes beyond what deliberation explains (residual correlation of errors against each voter's
+own record), or agree before deliberation (if pre-deliberation outputs are published). Candidate homes: Government
+(voting), L114. The calibration record already partly handles the attack (copiers inherit the leader's mediocre
+record).
