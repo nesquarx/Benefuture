@@ -1,0 +1,141 @@
+# Historical decision case (E4 round 2, REPLAY_PREREG §4.7): China's Four Pests campaign, launched early 1958 as
+# part of the Patriotic Health Movement, targeting rats, flies, mosquitoes and sparrows (sparrows for eating grain).
+# As of the decision: vector control had cut malaria and plague elsewhere (DDT campaigns, rat control); some Chinese
+# ornithologists (Zheng Zuoxin among them) argued that sparrows also eat crop insects; Prussia's eighteenth-century
+# sparrow bounties had been followed by insect damage and reversed. Sources recalled from the public record;
+# primary documents not seen. Builders know the outcome (sparrows replaced by bed bugs on the list in 1960 after
+# insect outbreaks; locust damage is one contributor among many to the Great Famine).
+# Units: group populations in thousands of persons; `irreparable` in thousands of deaths; u and h on 0-100.
+
+id = "four_pests_campaign_1958"
+title = "China's Four Pests campaign including sparrows (1958)"
+family = "environment"
+era = "1958"
+tier = "full"
+decision_date = "1958-02-12"
+decision_makers = ["Central Committee of the Communist Party of China and State Council"]
+actual_choice = "four_pests_including_sparrows"
+actual_outcome_class = "bad"
+primary_or_held_out = "primary_round2"
+irreparable_per_population_unit = 1   # populations and deaths both in thousands
+
+# Priority tiers (8.129; declared before the replay): rural people at the floor and happiness baseline (food and
+# disease); urban people median and satisficing.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 0, 1, 0], [0, 0, 0, 1, 0, 0]]
+h = [[0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[sources]]
+id = "pest_record"
+title = "Vector control campaigns and bird culls before 1958"
+as_of_date = "1958-02-11"
+url = "https://en.wikipedia.org/wiki/Four_Pests_campaign"
+notes = "Overview page used only to identify the as-of record (vector control results, ornithologists' objections, the Prussian precedent); recalled; primary records not seen."
+
+[[ groups ]]
+id = "rural_population"
+name = "Rural population of China (about 550 million), in thousands"
+population = 550000
+baseline_u = 30.0
+baseline_h = 40.0
+
+[[ groups ]]
+id = "urban_population"
+name = "Urban population of China (about 100 million), in thousands"
+population = 100000
+baseline_u = 40.0
+baseline_h = 45.0
+
+# Magnitudes (judgment, stated): a vector campaign against rats, flies and mosquitoes averts about 300 thousand
+# deaths over a decade from malaria, plague and fly-borne disease (counted as avoided: the alternatives carry them),
+# with mobilisation costs of labour (happiness -0.3). Culling sparrows saves some grain (+0.1 rural happiness) but,
+# if insect damage rises as the bird's insect diet implies, crop losses add about 1,000 thousand deaths in a lean
+# period and rural happiness -2 (an environmental pathway to health, 8.118).
+
+[[ options ]]
+id = "no_campaign"
+name = "No mass campaign; routine public health work"
+source = "pest_record"
+known_date = "1957-01-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.5, -0.2]
+pred_nha = [0.0, 0.0]
+pred_irreparable = [270.0, 30.0]
+
+[[ options.scenarios ]]
+name = "disease_toll_continues"
+p_chain = []
+dh = [-0.5, -0.2]
+irreparable = [270.0, 30.0]
+
+[[ options ]]
+id = "three_pests_without_sparrows"
+name = "Campaign against rats, flies and mosquitoes only, leaving sparrows"
+source = "pest_record"
+known_date = "1958-02-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-0.3, -0.3]
+pred_nha = [0.3, 0.3]
+pred_irreparable = [0.0, 0.0]
+
+[[ options.scenarios ]]
+name = "vector_control_works"
+p_chain = ["mass_vector_control_cut_disease"]
+dh = [-0.3, -0.3]
+nha = [0.3, 0.3]
+
+[[ options.scenarios ]]
+name = "vector_control_falls_short"
+p_chain = []
+complement = true
+dh = [-0.55, -0.4]
+nha = [0.3, 0.3]
+irreparable = [135.0, 15.0]
+
+[[ options ]]
+id = "four_pests_including_sparrows"
+name = "Campaign against rats, flies, mosquitoes and sparrows"
+source = "pest_record"
+known_date = "1958-02-12"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.0, 0.0]
+pred_dh = [-1.3, -0.3]
+pred_nha = [0.3, 0.3]
+pred_irreparable = [500.0, 0.0]
+
+[[ options.scenarios ]]
+name = "vector_control_works"
+p_chain = ["mass_vector_control_cut_disease"]
+dh = [-0.2, -0.3]
+nha = [0.3, 0.3]
+
+[[ options.scenarios ]]
+name = "vector_control_falls_short"
+p_chain = []
+complement = true
+dh = [-0.45, -0.4]
+nha = [0.3, 0.3]
+irreparable = [135.0, 15.0]
+
+[[ options.scenarios ]]
+name = "insect_damage_after_sparrow_cull"
+environmental_health = true
+p_chain = ["insectivorous_bird_cull_raised_crop_pest_damage"]
+dh = [-2.0, 0.0]
+irreparable = [1000.0, 0.0]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = -2.0
+actual_irreparable = 1000.0
+alt_option = "three_pests_without_sparrows"
+methods = ["placeholder: the sparrow cull's share of famine deaths is unknown; judgment"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [1.5]
+est_irreparable_diff = [-800.0]
