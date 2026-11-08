@@ -109,7 +109,7 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
                        reception_σ::Real = 0.5, breakthrough::Real = 0.3, overclaim = 0.0, reports::Bool = false,
                        report_z::Real = 3.0, report_min::Integer = 5, things = [1.0], max_new_things::Integer = 0,
                        p_new_thing::Real = 0.0, novelty_weight::Real = 0.2,
-                       weight_σ::Real = 0.0, meta_research::Real = 0.0, per_being::Bool = false, meta_share::Real = 0.0, weight_shared::Real = 0.0, meta_domain::Bool = false, meta_uptake::Real = 0.3, uptake_conc::Real = 1.5, uptake_σ::Real = 1.0)
+                       weight_σ::Real = 0.0, meta_research::Real = 0.0, per_being::Bool = false, meta_share::Real = 0.0, weight_shared::Real = 0.0, meta_domain::Bool = false, meta_uptake::Real = 0.3, uptake_conc::Real = 1.5, uptake_σ::Real = 1.0, meta_noise::Real = 0.0, meta_meas_σ::Real = 0.0, meta_th::Real = 1.0)
     check(!isempty(things) && all(>=(0), things) && max_new_things >= 0 && 0 <= p_new_thing <= 1 && novelty_weight >= 0, "valid things")
     check(n >= 2 && m >= 1 && steps >= 1 && 0 <= ε <= 1 && practice_gain >= 0 && 0 <= research_share < 1 &&
           0 <= p_research <= 1 && 0 <= p_teachable <= 1 && 0 <= p_act <= 1 && class >= 1 && view_σ >= 0, "valid traits world")
@@ -140,7 +140,8 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
     # estimate partly (`meta_uptake` of the gap: education, never ideal), so individual and policy priorities improve together.
     # Uptake (8.132, author): heavy noise, an outcome of each being's disposition and moment, never governed. Dispositions
     # are Beta with mean `meta_uptake` and concentration `uptake_conc` (low: wide spread); each step adds log-normal noise.
-    urng = Xoshiro(hash((seed, :uptake)))
+    urng = Xoshiro(hash((seed, :uptake))); mrng = Xoshiro(hash((seed, :meta)))
+    meta_rec = Tuple{Float64, Float64}[]; meta_adopt = Ref(0); meta_wrong = Ref(0)
     upk = [begin x = _gamma(urng, meta_uptake * uptake_conc); x / (x + _gamma(urng, (1 - meta_uptake) * uptake_conc)) end for _ in 1:n]
     pol = per_being && meta_domain ? vec(sum(werrb, dims = 1)) ./ n : Float64[]
     gwp() = [active[thing_of[i]] ? W[thing_of[i]] * exp(pol[thing_of[i]]) * wl[i] : 0.0 for i in 1:m]   # items' weights under the published priorities
@@ -183,7 +184,15 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         for b in findall(researching)
             if per_being && rand(wrng) < meta_share
                 if meta_domain
-                    pol .*= 0.5                    # a meta-research outcome sharpens the published priorities
+                    # The meta domain is a leaf with its own record (8.132): an outcome is a noisy proposal (`meta_noise`),
+                    # its gain measured with error (`meta_meas_σ`); the published priorities adopt it only past the
+                    # significance bar (`meta_th` measurement errors, L48), as any leaf's claim would be.
+                    prop = pol .* 0.5 .+ meta_noise .* randn(mrng, length(pol))
+                    gain = sum(abs, pol) - sum(abs, prop); seen = gain + meta_meas_σ * randn(mrng)
+                    push!(meta_rec, (gain, seen))
+                    if meta_meas_σ == 0 || seen > meta_th * meta_meas_σ
+                        pol .= prop; meta_adopt[] += 1; gain < 0 && (meta_wrong[] += 1)
+                    end
                 else
                     werrb[b, :] .*= 0.5; o = rand(wrng, 1:n); werrb[o, :] .= werrb[b, :]
                 end
@@ -247,5 +256,6 @@ function run_m7_traits(; n::Integer = 60, m::Integer = 5, steps::Integer = 120, 
         rec!()
     end
     (; tr..., audits = audits[], audited = copy(audited), lessons = tr.lessons[], breakthroughs = tr.breakthroughs[], new_things = tr.new_things[], thing_gain = [mean(thing_u(b, t) for b in 1:n) for t in 1:T] .- thing_u0, bundles = bundles,
-       final_bundles = [(ms[b, i], mc[b, i]) for b in 1:n, i in 1:m], practice = pr)
+       final_bundles = [(ms[b, i], mc[b, i]) for b in 1:n, i in 1:m], practice = pr,
+       meta_record = meta_rec, meta_adopted = meta_adopt[], meta_wrong = meta_wrong[])
 end

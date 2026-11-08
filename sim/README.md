@@ -1289,6 +1289,7 @@ ratified.
 | Long-term offset (E4 replay, 8.116): happiness retention, understanding compounding, offset premium scale, soft bar | `h_retention`, `u_compounding`, `offset_scale`, `soft_bar` | 0.3, 1.5, 0.05, 0.05 | judgment; hedonic adaptation is partial and event-dependent (to be swept) |
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
 | Meta-research share of research and policy-estimate sharpening per outcome (traits world, 8.131–8.132) | `meta_share`, (halving) | 0 (off), 0.5 | judgment; swept, interior optimum ≈0.05 under shared misjudgement |
+| Meta leaf's adoption bar: measured gain must exceed this many measurement errors (8.132; L48) | `meta_th` | 1.0 | as `ToyParams.th` |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
 | Policy-level irreparable harm tolerance (8.124) | `irr_tol` | 0.01 (relative to the least-harm option, at least 0.01) | judgment |
 | Divergence between measurement chains that triggers an audit, and the demotion margin (8.107–8.108) | `chain_z` | 3.0 | the audit z (`adv_z`) |
@@ -1501,6 +1502,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | Error of society's estimate of each thing's priority (log-normal σ; 8.131 continued, traits world) | `weight_σ` | 0 (limiting case); probe 1.5 | judgment; range 0–2 |
 | Per-being priority estimates and the share of their error common to all (8.131–8.132) | `per_being`, `weight_shared` | off, 0 | judgment; range 0–1 |
 | Uptake of published meta-research priorities (an outcome, not governed; 8.132): disposition Beta(mean, concentration) per being, times log-normal noise per step | `meta_uptake`, `uptake_conc`, `uptake_σ` | 0.3, 1.5, 1.0 | judgment; advice-taking is partial (CALIBRATION weight-on-advice); ranges 0.05–0.6, 0.5–10, 0.3–1.5 |
+| Meta-research outcome noise and the error measuring its gain (8.132) | `meta_noise`, `meta_meas_σ` | 0, 0 (limiting case); probe 0.6, 0.5 | judgment; ranges 0–1, 0–1 |
 
 The batteries' severity scales do not all match this table: laundering runs to 0.5 at severity 1
 (table 0–1), hidden outcomes take `p_apparent` from 0.9 down to 0.1 (table 0.2–1), local noise takes
