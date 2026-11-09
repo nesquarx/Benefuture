@@ -18,6 +18,7 @@ import difflib
 import http.cookiejar
 import json
 import os
+import ssl
 import subprocess
 import sys
 import urllib.parse
@@ -67,8 +68,10 @@ def apply_blocks(live, blocks):
 
 class Wiki:
     def __init__(self):
+        ssl_ctx = ssl._create_unverified_context()
         self.opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),
+            urllib.request.HTTPSHandler(context=ssl_ctx))
 
     def call(self, params, post=False):
         params = {**params, "format": "json", "formatversion": "2"}

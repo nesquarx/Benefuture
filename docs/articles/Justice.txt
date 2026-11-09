@@ -36,6 +36,15 @@ The process of Justice must provide ways to prevent the same crime in the future
 ==Discussion==
 Justice is often again a separate arm of the [[administration]] than lawmaking and [[enforcement]] to avoid concentration of power. The power allotted to the justice system again has extreme chances of abuse. It should fall under the same scrutiny as other powerful entities and [[Anti-Corruption]] measures should be applied. As a key system of  [[benefuture]] [[civilization]], [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
 
+===In simulation===
+* Negative outcomes are penalised through the losses they carry downstream, and every outcome is fully distributed; unguarded hazards cut floor growth by a sixth, while contracted guardians and repair through the commons recover most of it ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Full reparation eliminates residual societal harm, and an accident requires pure restitution without punitive friction ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>RestorativePackage</code>, <code>full_reparation_eliminates_residual_harm</code>, <code>accident_requires_pure_restitution_without_punitive_friction</code>]).
+* Crime and accident are mutually exclusive, and informed volition or informed inaction under a duty constitutes a crime ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>crime_and_accident_mutually_exclusive</code>, <code>verified_informed_volition_is_crime</code>, <code>informed_inaction_under_duty_is_crime</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Justice.lean <code>is_crime_ref</code>]).
+* Paying positive shares and penalising negative ones distributes the full outcome ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/OutcomeDistribution.lean <code>sides_sum</code>, <code>breached_duty_assessed_negative</code>]).
+
 === References ===
 <references />
-<small>AI Disclaimer: This article is</small> <small>100% human written.</small>
+<small>AI Disclaimer: This article is</small> <small>100% human written, except the simulation notes and formal reference, which are AI written.</small>

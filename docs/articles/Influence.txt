@@ -19,4 +19,8 @@ Influence is usually achieved via manipulation of an entity's inputs to modify t
 *Influence via leverage
 **Via affecting or promise to affect [[Thing|things]] that the entity values highly (people and possessions)
 
-----<small>AI Disclaimer: This article is 100% human written.</small>
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Influence, good influence, and shared liability proportional to control ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Influence</code>, <code>is_good_influence</code>, <code>influencer_shares_positive_liability</code>, <code>full_control_shares_full_liability</code>]).
+
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

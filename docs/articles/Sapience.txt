@@ -9,4 +9,8 @@ Sapience is the ability to [[understanding|understand]] any [[thing]] and maximi
 ==Examples==
 * Sapience is often correlated to intelligence in [[being]]s.
 * Problem solving ability, reasoning ability, resource management, etc. are some key outcomes of sufficient sapience.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Sapience combines understanding and prediction accuracy, and its index is bounded ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Prediction.lean <code>Sapience</code>, <code>sapience_index</code>, <code>sapience_index_bounded</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

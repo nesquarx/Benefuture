@@ -94,7 +94,7 @@ The government's performance is measured by its success in:
 *   Maximizing overall societal understanding/happiness.
 *   Increasing the floor, median, and peak of understanding.
 *   Increasing the floor and median of happiness.
-*   Improving the efficiency of R/T use.
+*   Improving the efficiency of resource and time use.
 *   Expanding the [[rights]] and freedoms of sophonts.
 * The emphasis on median and floor is to increase the overall level, but benefuture also recognises the importance of peak understanding to generate breakthroughs.
 

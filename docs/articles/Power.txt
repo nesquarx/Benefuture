@@ -10,4 +10,9 @@ Power is the magnitude of capacity to affect changes upon [[reality]], [[thing]]
 ** How frequently it can be used
 ** The expenditure of time, effort, energy, etc, required to use it 
 ** The circumstances that restrict its use
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Power and impact ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Power</code>, <code>Impact</code>]).
+* Capping delegated voting power prevents star concentration ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>accumulate_capped_bound</code>, <code>star_topology_power_concentration</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/DelegationWisdom.lean <code>capped_influence_vanishes</code>, <code>multi_round_weight_lt</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>accumulate_capped_ref</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

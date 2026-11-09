@@ -9,4 +9,8 @@ Communication for an [[entity]] (communicator) is to produce [[output]]s specifi
 ==Example==
 * Outputing patterns with specific pre-agreed meanings.
 * Speaking, writing, signing to somebody in a common language.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Communication aligns the understanding of communicator and communicatee ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>Communication</code>, <code>Cm</code>]); source provenance and echo detection ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>count_once_ref</code>, <code>undisclosed_echo_ref</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

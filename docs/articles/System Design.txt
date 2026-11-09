@@ -69,6 +69,17 @@ Standard impossibility results from social choice theory<ref name="Gibbard1973">
 === Capability Grounding ===
 The multi-currency, multi-metric approach parallels capability theory in welfare economics<ref name="Sen1999">Sen, A. (1999). ''Development as Freedom''. Oxford University Press. https://openlibrary.org/works/OL116534W</ref><ref name="Nussbaum2011">Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200</ref>: distinct dimensions of value are measured separately rather than collapsed into a single utility metric.
 
+=== In simulation ===
+* Cross-entropy search for worst-case coordinated attacks found no strategy within the realistic attack budget that breaks the system's positive floor growth, and attackers end poorer than honest peers ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Copied ballots in governance are detected by their shared errors on known outcomes rather than raw agreement (which honest deliberation also produces), restoring decision accuracy without penalising honest voters.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Trust minimization and anti-corruption design: required trust lies in the open unit interval and decreases as independent audit clusters are added, and aligned actions take strictly less effort than harmful ones ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>trust_bounded_in_open_interval</code>, <code>trust_monotonically_decreases_with_clusters</code>, <code>good_strictly_easier_than_bad</code>]).
+* Circularity prevention and state invariants: metric models are non-circular under the empirical marker requirement ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Measurement/MetricModel.lean <code>empirical_marker_not_model_output</code>, <code>metric_models_are_non_circular</code>]); transitions preserve append-only memory, injective identities, and escrow soundness ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/State.lean <code>step_preserves_mem</code>, <code>step_preserves_id</code>, <code>step_preserves_escrow_soundness</code>]); shared-error copy detection ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>coerror_copy_ref</code>]).
+* Behavioral transaction substrate: pure intermediaries who add no value earn zero causal contribution ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Substrate.lean <code>pure_intermediary_earns_zero_cc</code>, <code>upstream_ancestor_earns_positive_attribution</code>]).
+* Parameter governance keeps all governed parameters within their admissible bounds ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/ParamSpace.lean <code>bootstrap_admissible</code>, <code>governed_params_admissible</code>, <code>perturb_run_drift</code>]).
+
 == See also ==
 * [[Adversarial adaptation]]
 * [[Progressive complexity]]
@@ -80,4 +91,4 @@ The multi-currency, multi-metric approach parallels capability theory in welfare
 
 == References ==
 <references />
-<small>AI Disclaimer: This article is 45% human notes with 55% AI summarization and literature review.</small>
+<small>AI Disclaimer: This article is 45% human notes with 55% AI summarization and literature review; the simulation notes and formal reference are AI written.</small>

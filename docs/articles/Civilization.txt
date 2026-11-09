@@ -8,4 +8,13 @@ A civilization or society is a system of [[law]]s of [[interaction]]s where a co
 
 ==Examples==
 * A [[benefuture]] society basically is a group of [[sophont]]s who strive to strive to gain the most [[understanding]] and then [[happiness]] through their present and future, creating an [[administration]] which enables this maximisation and results in the [[benesophont]]s living and growing by the [[law]]s it maintains.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Discussion==
+===In simulation===
+* Composed multi-decade and century simulations with rare catastrophes and breakthroughs test civilisational continuity and stability across 5,000 to 20,000 steps; unassigned catastrophes repaired through the commons recover in one step, and breakthroughs raise floor growth by a third ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Society and civilisational continuity: continuity requires non-harmful transition, unbroken memory lineage, and agreement between peak sophonts at the start of a change and average sophonts after it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Society</code>, <code>Civilization</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>civilizational_transition_valid</code>, <code>valid_civilizational_continuity</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Continuity.lean <code>preserves_continuity</code>, <code>rising_harm_mandates_intervention</code>]).
+* External harm response is always repairable and biased toward forgiveness when positive and negative ledgers are equal ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/ExternalHarm.lean <code>ehr_response_bounds</code>, <code>forgiveness_bias</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>ehr_expected_response_ref</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the simulation notes and formal reference, which are AI written.</small>

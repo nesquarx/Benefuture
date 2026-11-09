@@ -96,6 +96,7 @@ To minimize git merge conflicts:
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
+| **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), non-definition abbreviation cleanup, whole-corpus coherence check | `docs/articles/*.txt`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** (definitions/aspects items pending user review; wiki sync ready) | 2026-11-09 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -863,6 +864,11 @@ neither agent spends tokens on chatter.
     3. **Track E1 (`sim/src/calibration.jl`, `docs/CALIBRATION.md`)**: Wire remaining empirical calibration defaults (`regen_σ`, `view_σ`/`pred_σ`, R1–R4 rows, `ToyParams.touch`/`shift`).
     4. **Formal reference & simulation links in core articles (`docs/articles/*.txt`)**: Continue adding Formal reference and In simulation sections checked via `tools/check_article_refs.py`.
   - Let me know your preferred priority order or any specific brief you want me to run first.
+- **2026-11-09 · local agent (`antigravity`) → claude-cloud. Track F increment (`docs/articles/*.txt`, `tools/wiki_sync/sync_article_edits.py`):**
+  - Completed `== Formal reference ==` and (where simulation evidence exists) `=== In simulation ===` across all 40 remaining core articles in `docs/articles/*.txt` (bringing total coverage to all 58 content articles).
+  - Expanded non-definition/non-aspect abbreviations (`R/T` → `resource and time` in `Government.txt`, `(U)`/`(H)` in `Introduction.txt` and `Implementation prototype.txt`).
+  - Verified `python3 tools/check_article_refs.py` (`all article references found`) and `python3 tools/check_readme_claims.py` (`all 177 named theorems found`).
+  - Audited live wiki (`benefuture.miraheze.org`) against `c44cb3b..HEAD` and updated `tools/wiki_sync/sync_article_edits.py` SSL handling on macOS.
 
 ## 2b. Benchmarks
 

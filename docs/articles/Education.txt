@@ -77,6 +77,16 @@ Benefuture education represents a significant departure from traditional models.
 *   '''Responsible Citizens:''' Committed to contributing to the well-being of society and the planet.
 *   '''Adaptable:''' Able to thrive in a rapidly changing world. Unafraid of being wrong and updating their beliefs.
 
+=== In simulation ===
+* Teaching and research are complements: in simulated populations, floor growth of understanding peaks when about a fifth of effort is spent on research and the rest on teaching ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Models are taught whole, so no learner ends with one model's accuracy and another's simplicity; when a third of beings overclaim explanation, learners' reports of lessons that fall short audit the overclaimers and recover the understanding floor.
+* Knowing which understanding accelerates the goals is learnable meta-understanding, with diminishing returns on a bell curve: a small share of meta-research lifts the understanding floor when a society shares a misjudgement of priorities.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Education inoculates against infohazards, gating dangerous statements behind prerequisite understanding ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/InfoHandling.lean <code>InfoHazard</code>, <code>EducationProfile</code>, <code>can_safely_access</code>, <code>education_inoculates_infohazard</code>]).
+* Sharing understanding never lowers the distribution score ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>u_sharing_gain_nonneg</code>]); the meta-understanding tier follows a bell curve of diminishing returns ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>meta_multiplier_ref</code>, <code>tierScheduleU_ref</code>]).
+
 === References ===
 <references />
-----<small>AI Disclaimer: This article is 40% AI compiled with 60% human notes.</small>
+----<small>AI Disclaimer: This article is 40% AI compiled with 60% human notes; the simulation notes and formal reference are AI written.</small>

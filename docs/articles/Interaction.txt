@@ -12,4 +12,8 @@ Interaction is the process of a [[thing]] (interactor) taking [[input]]s and pro
 * '''Perception''', to gather information from reality about [[thing]]s.
 * '''Consumption''' and '''Excretion''', to sustain a being.
 * '''[[Communication]]''', to convey information to another [[entity]].
-<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Interaction, input, output, and the permanence of every interaction in memory ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Interaction</code>, <code>Input</code>, <code>Output</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>interaction_permanently_in_memory</code>]).
+<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

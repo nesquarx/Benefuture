@@ -38,4 +38,9 @@ A person is capable of understanding, agreeing and committing to a [[contract]] 
 * Artificial intelligences crossing the personhood thresholds should be considered as persons.
 * Most systems and machines which exhibit the sapience thresholds but not the sentient thresholds, should not be considered a person.
 * A brain-dead human corpse is not a person till the technology to resuscitate from brain-death becomes viable.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Personhood capacities, ontological inclusion, and the liability ordering across persons, beings, and entities ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Person.lean <code>PersonhoodCapacities</code>, <code>Person</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>ontological_liability_ordering</code>]).
+* Every person is guaranteed the baseline floor of essential goods ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>essential_goods_guaranteed_floor</code>, <code>baseline_income_guarantees_free_essentials</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

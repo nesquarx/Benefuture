@@ -9,3 +9,9 @@ An outcome set of changes happening in [[reality]] as percieved by an [[entity]]
 * A being repeatedly [[input]]s sustenance to effect the outcome of their continued survival.
 * An [[entity]] performs certain [[output]]s to bring forth the outcome of increased [[understanding]] obtained by certain [[person]]s.
 * A [[civilization]] undertaking a complex geological landscaping to avoid the outcome of a natural disaster.
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Outcome, action, and long-term outcome significance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Outcome</code>, <code>Action</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reality.lean <code>outcome_significance</code>, <code>outcome_significance_nonneg</code>]).
+* Settling on measured outcomes removes the gain from overstating predictions ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>settlement_removes_overstatement_gain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Economy.lean <code>cause_settlement_ref</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

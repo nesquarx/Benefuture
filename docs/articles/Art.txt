@@ -44,6 +44,10 @@ Duchamp's readymade, a manufactured urinal submitted to an exhibition, made reco
 ===Art in the system===
 [[Culture]] is a memetic vehicle, and art is among its strongest carriers. Optimising education, art and culture toward the [[Benefuture goals#Subgoals|subgoals]] is itself a subgoal, artistic expression that promotes understanding and empathy is a practice culture encourages, and the [[Benefuture currency|currency]] funds cultural projects with an emphasis on novel contributions.
 
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* An artwork, the experience it brings about, and its non-negative art value from truth level and novelty ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Art.lean <code>Artwork</code>, <code>ArtExperience</code>, <code>art_value</code>, <code>art_value_nonneg</code>]).
+
 ==See also==
 * [[Culture]]
 * [[Communication]]
@@ -54,4 +58,4 @@ Duchamp's readymade, a manufactured urinal submitted to an exhibition, made reco
 ==References==
 <references/>
 
-<small>AI Disclaimer: Definition and aspects are human notes; examples and discussion are AI written.</small>
+<small>AI Disclaimer: Definition and aspects are human notes; examples, discussion and the formal reference are AI written.</small>

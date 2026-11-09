@@ -9,3 +9,10 @@ A crime occurs when a set of events which can be traced to be triggered by infor
 * Completed [[Education|infohazard education]] is evidence of being informed for harms within its scope.
 * When harm is caused without informed volition or informed inaction against a mandate or contract by any entity, it is called an accident.
 * A hazard one creates is direct harm: intent decides whether it is accident or crime, and repair happens either way.
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Crime and accident are mutually exclusive; verified informed volition or an ignored warning is a crime, while uninformed or involuntary action is an accident ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>crime_and_accident_mutually_exclusive</code>, <code>verified_informed_volition_is_crime</code>, <code>warning_ignored_constitutes_crime</code>, <code>uninformed_action_is_accident</code>, <code>involuntary_action_is_accident</code>]).
+* Informed inaction under a duty from a contract or communicated law is a crime; inaction without a duty is not, and an uninformed breach is an accident ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>informed_inaction_under_duty_is_crime</code>, <code>inaction_without_duty_is_not_crime</code>, <code>uninformed_breach_is_accident</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Justice.lean <code>is_crime_ref</code>]).
+* Liability scales with ontological capacity ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

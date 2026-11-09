@@ -10,4 +10,8 @@ An entity is a [[thing]] which can perform [[interaction]]s and exhibits any amo
 * A machine with a particular purpose is an entity.
 * All [[being]]s are entities.
 * A collective group of beings operating under certain regulations can behave as a non-sentient entity, such as a corporation. In that case, the beings comprising it are treated as beings, but not the entity.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Entity, interaction, fork and merge conservation, and external harm response ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Entity</code>, <code>fork_conserves_social_capital</code>, <code>merge_conserves_reputation</code>, <code>external_response_always_repairable</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

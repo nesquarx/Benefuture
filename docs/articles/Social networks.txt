@@ -26,4 +26,13 @@ The system of channels of [[communication]] and [[interaction]]s between [[perso
 
 * Modern social networks exist in multiple formats but is not optimized for benefuture.
 * A [[benefuture currency]] [[Technology Network|technology network]] is a network optimized for benefuture [[society]].
-----<small>AI disclaimer: This article is 100% human written</small>
+
+== Discussion ==
+=== In simulation ===
+* Deliberation with source tracking removes the echo cost of repeated claims, so groups with realistic advice-taking decide as accurately as independent voters ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Social network, identity binding, differential privacy budget exhaustion, and reciprocal infohazard-gated queries ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/TechnologyNetwork.lean <code>SocialNetwork</code>, <code>sub_threshold_identity_flagged</code>, <code>non_reciprocal_query_denied</code>, <code>uneducated_pii_query_gated</code>, <code>composition_attack_exhaustion</code>]).
+* Source provenance: counting an upstream source once and flagging undisclosed echoes or falsified tags ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>count_once_ref</code>, <code>tagged_reading_ref</code>, <code>tags_falsified_ref</code>, <code>undisclosed_echo_ref</code>]).
+----<small>AI disclaimer: This article is 100% human written, except the simulation notes and formal reference, which are AI written.</small>

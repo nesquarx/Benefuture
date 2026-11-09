@@ -25,11 +25,14 @@ Diversity is achieved by encouraging differences of circumstance, understanding,
 
 * The "wisdom of crowds" phenomenon highlights how aggregating diverse opinions can lead to surprisingly accurate and insightful decisions. <ref>Surowiecki, J. (2004). ''The wisdom of crowds: Why the many are smarter than the few and how collective wisdom shapes business, economies, societies''. Doubleday. https://openlibrary.org/works/OL8036447W</ref>
 
+=== In simulation ===
+* In governance, the diversity and novelty bonus for minority choices is what makes credence voting resist a colluding expert bloc: its split trials surface the hidden outcomes that calibration needs to expose the bloc's overconfidence, raising decision accuracy from 67% to 96% ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]); when experts are divided, hearing both sides with diversity's trials finds the better option 84.4% of the time against 73.8% with neither.
+
 === Formal reference ===
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
-* Novelty falls with frequency: a never-seen option is maximally novel, a seen one less so ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Diversity.lean <code>zero_frequency_yields_maximal_novelty</code>, <code>positive_frequency_strictly_diminishes_novelty</code>]).
+* Novelty falls with frequency: a never-seen option is maximally novel, a seen one less so ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Diversity.lean <code>zero_frequency_yields_maximal_novelty</code>, <code>positive_frequency_strictly_diminishes_novelty</code>]); summed over a population, novelty equals the number of distinct types and duplicates add none ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>population_novelty_eq_effective_types</code>, <code>copies_add_no_diversity</code>]).
 * Monoculture triggers diversity, flourishing growth does not ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Diversity.lean <code>monoculture_stagnation_triggers_diversity</code>, <code>flourishing_growth_avoids_diversity_injection</code>]); stagnation mandates novelty even when the stagnant system is Benefuture itself ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>marginal_stagnation_mandates_novelty</code>]).
 
 === References ===
 <references />
-<small>AI Disclaimer: the formal reference is AI written.</small>
+<small>AI Disclaimer: the simulation notes and formal reference are AI written.</small>

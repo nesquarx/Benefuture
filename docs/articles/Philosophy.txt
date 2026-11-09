@@ -128,7 +128,12 @@ Several [[Benefuture]] concepts parallel positions in existing philosophical lit
 
 The framework applies its own principles reflexively. If Cognitive Progressive Utilitarianism becomes a monoculture yielding diminishing returns to value, it must yield to superior alternatives. This follows from the [[diversity]] axiom: no system, including this one, is exempt from the requirement to demonstrate ongoing contribution to understanding and happiness. For the formal statement, see [[Benefuture goals#Vision|Possible Obsolescence]].
 
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Priority ordering of understanding over happiness over novelty, and synergy with loss aversion ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Order.lean <code>understanding_dominates_happiness</code>, <code>happiness_dominates_novelty</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Synergy.lean <code>equal_gains_and_losses_are_negative</code>, <code>loss_aversion_holds_above_one</code>]).
+* Self-obsolescence under monoculture stagnation, and no one-shot harmful games in reality ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>marginal_stagnation_mandates_novelty</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>no_one_shot_harmful_games</code>]).
+
 ==References==
 <references/>
 
-<small>AI Disclaimer: This article is 80% human notes with 20% AI-assisted literature review and formatting.</small>
+<small>AI Disclaimer: This article is 80% human notes with 20% AI-assisted literature review and formatting; the formal reference is AI written.</small>

@@ -38,6 +38,14 @@ Decision theory refutes the one-shot framing; morality is understanding that ref
 
 Morality is not the source of value. Under optimistic nihilism the [[Benefuture goals|goal]] says what is valued, morality explains why a being that understands correctly complies, and [[law]] and [[enforcement]] cover the lag before saturation, during which a defection's return can be smaller than its gain.
 
+===In simulation===
+* Once models price actors by their own track record and escrow settles on outcomes, a caught deceiver ends behind its honest self, and fooling every model gains nothing relative to honest peers ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Harm to a coupled part of the extended self is harm to the being, there are no one-shot harmful games in reality, and every interaction stays in memory ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>defection_harms_extended_self</code>, <code>no_one_shot_harmful_games</code>, <code>interaction_permanently_in_memory</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Being.lean <code>extended_self_propagates_harm</code>]).
+* Settling on measured outcomes removes the gain from overstating predictions ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>settlement_removes_overstatement_gain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Pricing.lean <code>transaction_settlement_removes_overstatement_gain</code>]).
+
 ==See also==
 * [[Being#Self|Self]]
 * [[Philosophy#Morality|Philosophical parallels]]
@@ -48,4 +56,4 @@ Morality is not the source of value. Under optimistic nihilism the [[Benefuture 
 ==References==
 <references/>
 
-<small>AI Disclaimer: Definition and aspects are human notes; examples and discussion are AI written.</small>
+<small>AI Disclaimer: Definition and aspects are human notes; examples, discussion, simulation notes and the formal reference are AI written.</small>

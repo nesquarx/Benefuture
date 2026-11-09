@@ -238,6 +238,15 @@ The following concerns, while differently phrased, resolve to responses already 
 
 Unknown unknowns will continue to exist. The question is whether we handle them better through systems designed to detect, acknowledge, and correct their own failures — or through ones that are not.
 
+=== In simulation ===
+* Each major critique on this page is tested as an explicit adversarial or failure-boundary scenario in the simulation suite ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record], [https://github.com/nesquarx/Benefuture/blob/main/docs/OPEN_PROBLEMS.md open problems]): Goodhart over-optimisation under selection pressure, colluding expert blocs, copied ballots, identity whitewashing, slandering, deceptive over-claiming, biased measurement chains, and forced population additions. Where a mechanism fell short (such as closed-economy growth cost when pricing out skilled deceivers, or extremised forecasts in winner-take-all takeovers), the limitation is recorded openly rather than tuned away.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Revelation strictly dominates silent exploitation and collusive defection strictly dominates staying in a cartel, when clawbacks fund the bounty ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/RevelationGame.lean <code>revelation_dominant</code>, <code>exploit_not_equilibrium</code>, <code>revelation_needs_clawback</code>, <code>immediate_revelation_dominates</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Adversarial.lean <code>collusive_defection_strictly_dominates</code>]).
+* Domain isolation (no halo or horn), capped multi-round delegation, and non-circular metric models ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Democracy.lean <code>anti_halo_domain_isolation</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/DelegationWisdom.lean <code>multi_round_weight_lt</code>, <code>capped_influence_vanishes</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Measurement/MetricModel.lean <code>metric_models_are_non_circular</code>]).
+* Self-obsolescence under monoculture stagnation, and fork conservation without social-capital duplication ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>marginal_stagnation_mandates_novelty</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>fork_initial_novelty_is_zero</code>, <code>fork_conserves_social_capital</code>]).
+
 == See also ==
 * [[Benefuture#Critical Evaluation|Critical Evaluation]]
 * [[System Design]]
@@ -247,4 +256,4 @@ Unknown unknowns will continue to exist. The question is whether we handle them 
 * [[Progressive complexity]]
 * [[Anti-Corruption]]
 ----
-<small>AI Disclaimer: This article is 60% AI formatted with 40% human seed notes and review.</small>
+<small>AI Disclaimer: This article is 60% AI formatted with 40% human seed notes and review; the simulation notes and formal reference are AI written.</small>

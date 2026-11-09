@@ -42,6 +42,17 @@ The system incorporates several mechanisms to prevent manipulation of reputation
 * A community organizer whose efforts lead to measurable improvements in local well-being will gain reputation within the community and in the field of organising skills.
 * An individual attempting to artificially inflate their reputation by creating fake accounts or engaging in other manipulative behaviors will be detected by the [[Technology Network]] and penalized.
 
+== Discussion ==
+=== In simulation ===
+* Payments and reputation stay strictly within an action's domain profile and never leak across domains ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Identity binding makes whitewashing (resetting a bad record under a fresh identity) equivalent to none, and slandering convicts no one; when models price actors by their track record and escrow settles on outcomes, fooling every model gains nothing relative to honest peers.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Positive and negative ledgers never decrease as memory grows, never cancel each other, stay strictly within an action's domains, and conserve the attributed contribution across leaf domains ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reputation.lean <code>hPos_nondecreasing_on_append</code>, <code>hNeg_nondecreasing_on_append</code>, <code>conservation_positive</code>, <code>conservation_negative</code>, <code>reputation_locality</code>, <code>reputation_no_transfer</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Democracy.lean <code>reputation_ledger_non_cancellation</code>, <code>anti_halo_domain_isolation</code>]).
+* Lazy exponential decay across checkpoints is exact ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/State.lean <code>cache_correct</code>, <code>decay_transitive</code>, <code>checkpoint_sound</code>]); cyclic mutual reviews are attenuated ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>complete_cyclic_attenuation</code>]).
+* Decay, relative reputation, and escalated credence on repeated overstatement as the simulation calls them ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>Rep_decay_ref</code>, <code>relative_reputation_ref</code>, <code>cyclic_review_attenuate_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>persistence_ref</code>, <code>escalated_credence_ref</code>]).
+
 === References ===
 <references />
-----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes.</small>
+----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes; the simulation notes and formal reference are AI written.</small>

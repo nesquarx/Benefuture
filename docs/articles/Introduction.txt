@@ -1,7 +1,7 @@
 [[Category:Benefuture]]
 What if civilization were designed to actually increase understanding and then wellbeing — and could measure whether it was working? What if the systems that govern society got stronger when challenged, rewarded those who found their flaws, and were built to replace themselves if something better emerged?
 
-'''Benefuture''' is a consequentialist [[philosophy]] of [[civilization]] that attempts to answer these questions. The thought experiment proposes a dynamic society committed to ''[[Benefuture goals#Vision|perpetual becoming]]'' — a continuous journey of learning and adaptation. Grounded in [[Benefuture#Arguments|optimistic nihilism]], it posits a self-chosen [[Benefuture goals|purpose]]: to maximize universal [[Understanding]] (U), then [[Happiness]] (H), while minimizing [[Harm]] — pursued through systematic [[Measurement|measurement]], [[Benefuture currency|incentive alignment]], and [[Government|adaptive governance]], all on a decentralized [[Technology Network]].
+'''Benefuture''' is a consequentialist [[philosophy]] of [[civilization]] that attempts to answer these questions. The thought experiment proposes a dynamic society committed to ''[[Benefuture goals#Vision|perpetual becoming]]'' — a continuous journey of learning and adaptation. Grounded in [[Benefuture#Arguments|optimistic nihilism]], it posits a self-chosen [[Benefuture goals|purpose]]: to maximize universal [[Understanding]], then [[Happiness]], while minimizing [[Harm]] — pursued through systematic [[Measurement|measurement]], [[Benefuture currency|incentive alignment]], and [[Government|adaptive governance]], all on a decentralized [[Technology Network]].
 
 The whole framework is a derivation cascade from one cognitive prior to classical utilitarianism: ''prioritize understanding over happiness''. Most of the framework's structure follows from taking this premise seriously and tracing its consequences: what must be measured, how value should be distributed, how and why systems must challenge themselves, and when they should yield to successors.
 
@@ -166,4 +166,8 @@ The goal is not to arrive but to improve — universal [[Understanding]], shared
 * '''For implementation''': [[Implementation prototype]]
 * '''For a narrative walkthrough:''' [[Life in benefuture|Life of a Sophont]]
 * '''To critique the framework''': Start with [[Critique addressal]] of [[Benefuture#Critical Evaluation|Critical Evaluation]]
-----<small>AI Disclaimer: This article is 70% AI compiled with 30% human notes.</small>
+
+== Formal reference ==
+The rules summarized on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* The ontological chain, priority ordering, and goal chooser ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Math/Order.lean <code>understanding_dominates_happiness</code>, <code>happiness_dominates_novelty</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>goal_G_sound</code>, <code>dominated_plan_not_chosen</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Goal.lean <code>g_choose_ref</code>]).
+----<small>AI Disclaimer: This article is 70% AI compiled with 30% human notes; the formal reference is AI written.</small>

@@ -15,4 +15,9 @@ If a [[thing]] is claimed to exist in reality, it is to claim that the pattern o
 * A [[being]] described inside a static simulation like a book, is a description and not a real being because it is not active and can not interact with reality. If the described being exists in reality, the being in reality is a real thing while the description still remains the description.
 * A [[person]] who exists in an active simulation, which can interact with reality in the same way a person can, is real. If the person can only interact with other parts of the simulation, they are considered real inside the simulation and treated as a real person inside the simulation, but are still not considered a real person out in reality.
 * If the known universe turns out to be a simulation, for all the beings inside the simulation, it is the real universe and notions of reality apply.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Reality is the perceivable or changeable subset of the universe; a bridged simulation is part of reality, while an isolated simulation is not ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reality.lean <code>reality_is_subset_of_universe</code>, <code>bridged_simulation_is_part_of_reality</code>, <code>isolated_simulation_not_in_external_reality</code>]).
+* Actions that contract the scope of reality are ineligible under the goal ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Value.lean <code>inward_shrinkage_violates_goal</code>, <code>contracting_action_is_ineligible</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

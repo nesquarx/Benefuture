@@ -1,2 +1,7 @@
 [[Category:Benefuture]][[Category:Definitions]]
 Ignorance is a lack of [[significant]] [[understanding]] required to take a [[decision]].
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Domain ignorance when understanding falls below the threshold of significance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>is_domain_ignorant</code>, <code>Ig</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

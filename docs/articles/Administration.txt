@@ -19,4 +19,13 @@ An administration is an [[entity]] in a [[society]] that [[Government|creates, m
 ==Examples==
 * A [[government]] of a polity is a common form of administration.
 * Often, the leadership of a big organisation also performs in an administration adjacent role.
-----<small>AI Disclaimer: This article is 100% human written.</small>
+
+==Discussion==
+===In simulation===
+* Unassigned catastrophes repaired through the commons recover in a single step, against 30 to 40 steps when left to individual recovery ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Administration and sophont oversight: oversight requires threshold reputation across the domain, systems security, and ethics ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Governance.lean <code>Administration</code>, <code>SophontOversight</code>, <code>is_oversight_authorized</code>, <code>sub_threshold_oversight_blocked</code>]).
+* Rising harm mandates intervention, and stagnating resource efficiency triggers innovation ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>harm_escalation_mandates_intervention</code>, <code>efficiency_stagnation_triggers_innovation</code>]).
+----<small>AI Disclaimer: This article is 100% human written, except the simulation notes and formal reference, which are AI written.</small>

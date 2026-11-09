@@ -5,6 +5,10 @@ Sentience is the quality of an [[entity]] exhibiting [[preference]]s and a thres
 * We assume the threshold of consciousness required to be deemed a sentient being to be at a level where it [[understanding|understands]] itself sufficiently to engage in [[civilization]]. This is soft threshold, there are more detailed [[person#Sentience_thresholds|thresholds]] for personhood.
 * Sentient entities can be assumed to hold a level of agency and intent and may be held responsible for their [[interaction]]s.
 
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Sentience and preferences on a being ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Being.lean <code>Preference</code>, <code>Sentience</code>, <code>Being</code>]).
+
 === References ===
 <references />
-----<small>AI Disclaimer: This article is 100% human written.</small>
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

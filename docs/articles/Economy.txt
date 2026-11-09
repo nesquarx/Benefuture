@@ -12,7 +12,18 @@ In a [[benefuture]] economy, value is defined to be [[understanding]] and [[happ
 *A benefuture economy is heavily dependent upon technology and communication, but its roots lie in defining the [[benefuture currency]] to constantly map resources to the goals.
 *As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
 
+== Discussion ==
+=== In simulation ===
+* In the calibrated economy, population floors grow across every seed, and books balance under every noise source at once; with all noise sources pushed to their realistic bad end simultaneously, floors still rise at a twelfth to a fifth of clean growth ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Balance overflow trades reinvestment against concentration: the reinvested share shifts from 84% to 11% as the Gini coefficient rises from 0.18 to 0.53.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Balance overflow conserves currency and redirects surplus above the ceiling into domain reinvestment ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>balance_overflow_conservation_law</code>, <code>balance_overflow_activates_reinvestment</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/State.lean <code>auto_spill_enforces_ceiling</code>]).
+* The sophont baseline guarantees essential goods at or below zero price ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>essential_goods_guaranteed_floor</code>, <code>baseline_income_guarantees_free_essentials</code>]).
+* Resource cost, transaction pricing, supply change, and competition efficiency ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Pricing.lean <code>transaction_price_eq</code>, <code>resource_use_without_good_burns</code>, <code>heavier_model_less_efficient</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>resource_cost_ref</code>, <code>transaction_price_ref</code>, <code>supply_delta_ref</code>, <code>competition_efficiency_ref</code>]).
+
 == References ==
 <references />
 
-----<small>AI Disclaimer: This article is 5% AI compiled with 95% human notes.</small>
+----<small>AI Disclaimer: This article is 5% AI compiled with 95% human notes; the simulation notes and formal reference are AI written.</small>

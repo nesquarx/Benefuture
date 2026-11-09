@@ -9,4 +9,10 @@ A benesophont or sophont in [[benefuture]] is a [[person]] whose [[interaction]]
 * An aspiring benesophont is expected to use their [[Person#Aspects|personal capacities]] to intend and attempt rational action towards the forwarding goals, but the benefuture [[system design]] does not assume them to succeed and thus accounts for irrational actions which can then be nudged towards rationality to bring their intents and attempts to fruition.
 * Sophoncy is not a higher privileged class over a non benefuture Aligned [[person]] (who are still fully protected as all beings are in Benefuture), but it's definitely a more responsible class. To have control over the mechanisms of benefuture, a track record of goal-aligned outputs ([[reputation]]) is necessary. Alignment is with the goals, not with any implementation mechanism; dissent over mechanisms is channelled through [[Adversarial adaptation]].
 
-----<small>AI Disclaimer: This article is 100% human written.</small>
+==Formal reference==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+* Sophont definition and the ontological inclusion chain from sophonts through persons, beings, and entities to things ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>Sophont</code>, <code>master_ontological_inclusion_chain</code>]).
+* Sophont baseline income guarantees free essential goods, and sophonts bear the highest tier of ontological liability ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>SophontBaselineIncome</code>, <code>baseline_income_guarantees_free_essentials</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
+* Sophont oversight requires threshold reputation in the domain, systems security, and ethics ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Governance.lean <code>SophontOversight</code>, <code>sub_threshold_oversight_blocked</code>]).
+
+----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

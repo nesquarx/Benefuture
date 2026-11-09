@@ -75,6 +75,16 @@ Domains solve several fundamental problems:
 
 As a key [[System Design|system]] of [[benefuture]] [[civilization]], domain classification incorporates [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|progressive strategies]]. Under degraded conditions, coarser distinctions (Level 1-2) preserve basic function.
 
+=== In simulation ===
+* Missing domains form from clustered blocked work within about 20 steps, and work no currency can value is screened by the [[Benefuture goals|goal]] on the best available model ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+* Challengers take over a domain's currency only by the significance rule: over 400 steps the takeover regime holds in two-thirds of seeds, and over 800 steps in all of them, while floors lose no more than 5% of their growth.
+
+== Formal reference ==
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Causally disjoint domains have zero overlap, and aggregating at a parent domain is monotone and never double-counts ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Domain.lean <code>disjoint_domains_have_zero_overlap</code>, <code>aggregate_no_double_count</code>, <code>aggregate_monotonicity</code>]).
+* Fuzzy subsethood lies in the unit interval, equals one for a domain with itself, and is invariant under renaming; a monotone hierarchy update has a fixed point ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/DomainHierarchy.lean <code>fuzzy_subsethood_in_unit_interval</code>, <code>fuzzy_subsethood_self</code>, <code>fuzzy_subsethood_rename_invariant</code>, <code>hierarchy_fixed_point_exists</code>]).
+* Classifying an action into domains, rolling membership, parent aggregation, and the relative status bar ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Domains.lean <code>profile_valid_ref</code>, <code>classify_ref</code>, <code>membership_rolling_ref</code>, <code>aggregate_at_parent_ref</code>, <code>relative_bar_ref</code>]).
+
 == References ==
 <references />
-----<small>AI Disclaimer: This article is 30% AI compiled with 70% human notes.</small>
+----<small>AI Disclaimer: This article is 30% AI compiled with 70% human notes; the simulation notes and formal reference are AI written.</small>
