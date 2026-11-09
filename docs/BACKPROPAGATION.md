@@ -3180,3 +3180,8 @@ AdvAp reporters as needed). Gaming by wrong measurements is handled by the exist
 chains, audits). For the build: generation and extraction are outcomes priced through RA's supply estimate (generation
 mints, extraction burns); the M6 test is a withholder who hides supply to raise prices, red on outcome (the withholder
 profits) before discovery and clawback, then repaid with AdvAp reward to the reporter.
+8.133 continued (author, 2026-11-09, clarification): the withholder repays the whole increase in valuation the hidden
+scarcity caused, including on supply someone else provided (the market-wide premium, not only its own sales), and pays
+the AdvAp reporter's reward itself; a self-report earns no reward. Test assertions: discovered, the withholder's net from
+withholding is negative (premium on all affected trades + reporter reward ≥ its gain); buyers are made whole; a
+self-reporting withholder repays the premium with no reward paid.
