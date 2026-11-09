@@ -59,7 +59,7 @@ case $mode in
   stop)
     if ((${#finished[@]})); then
       for f in "${finished[@]}"; do touch "$state/${f%% *}.acked"; done
-      reason="Battery finished: ${finished[*]}. Record its results tagged with its commit (sim/README.md Latest readings), commit and push, and relaunch with tools/battery/run.sh if the code changed since."
+      reason="Battery finished: ${finished[*]}. Record its results tagged with its commit (sim/README.md Latest readings), commit and push, and relaunch with tools/battery/run.sh only if executable code changed since (sim/src, sim/battery or the Lean reference: the battery's code_hash); commits of docs or results never warrant a rebuild or relaunch."
       printf '{"decision":"block","reason":"%s"}\n' "$reason"
     fi ;;
 esac
