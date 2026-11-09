@@ -4,10 +4,11 @@ A table adapting every world parameter, noise distribution and range in `sim/` t
 empirical sources, as far as they exist. It extends `docs/DATA.md` (which maps datasets to objects)
 with numbers: a proposed default, range and distribution shape per parameter, the dimensionless
 quantity a source can pin down, and a confidence. Status: the invariant (and the invariant part of
-mixed) defaults of the top ten and the battery ranges of section 7 have been applied in `sim/`
-(`CALIBRATED` in `sim/src/calibration.jl`; `sim/README.md`, Noise, lists each default and its class);
-the "Now" columns hold the pre-calibration values. Rows outside that increment (`regen_σ`, `view_σ`,
-`pred_σ`, the research rows, `touch` and `shift`) are proposals still. Nothing here is validated
+mixed) defaults across all sections (`CALIBRATED` in `sim/src/calibration.jl`, including `regen_σ`,
+`view_σ`, `pred_σ`, `research_σ`, `research_gain`, `birth_pred_σ`, `touch`, `shift`, `bind_miss`),
+the battery ranges of section 7, the domain predictability distributions of section 8, and the
+status-quo institutional baselines of section 9 have been recorded (`sim/README.md`, Noise, lists
+each default and its class); the "Now" columns hold the pre-calibration values. Nothing here is validated
 against the world, only run in the simulation. Governed thresholds are not
 calibrated here (they are governed, SigThGv L157); section 4 lists institutional analogues only.
 

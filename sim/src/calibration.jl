@@ -34,6 +34,15 @@ const CALIBRATED = (
     ε = 0.2,               # a course closes 0.1-0.2 of the lead, per year (3.7)
     reception_σ = 0.8,     # learners' gains, log-SD (3.7)
     teacher_cv = 0.5,      # teachers' effect multiplier, CV 0.4-0.6 (3.7)
+    regen_σ = 0.3,         # biological / fishery recruitment variability, low end of 0.3-0.8 (3.11)
+    view_σ = 0.3,          # individual view / estimation error, low end of 0.3-0.6 (3.2)
+    pred_σ = 0.3,          # individual prediction error, low end of 0.3-0.6 (3.2)
+    research_σ = 1.0,      # career-stable researcher multiplier log-SD, 0.5-1.0 (3.7)
+    research_gain = 2.0,   # innovation value scale (3.7)
+    birth_pred_σ = 0.5,    # fertility projection error, 0.3-1.0 relative to mean (3.8)
+    touch = (0.01, 0.3),   # intervention reach, 0.01-0.3 (3.1)
+    shift = 0.2,           # effect size scatter relative to spread, 0.1-0.3 (3.1)
+    bind_miss = 0.05,      # biometric / document false non-match rate, 0.001-0.2 (3.5)
 )
 
 const SLOPPINESS = CALIBRATED.sloppiness

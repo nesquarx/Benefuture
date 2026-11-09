@@ -238,10 +238,10 @@ and `lessons` lessons, the work done scaled by the time left. Records the Goal's
 top decile's share, research spending (tallied), successes (`breakthroughs`), in-job innovations,
 entities acting per step (`actions`) and the kind of each action taken (`kind`).
 """
-function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Real = 0.1, research_gain::Real = 2.0, research_σ::Real = 1.0,
+function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Real = 0.1, research_gain::Real = CALIBRATED.research_gain, research_σ::Real = CALIBRATED.research_σ,
                 p_research::Real = 0.05, p_teachable::Real = 0.5, research_cost::Real = 1.0, p_innovate::Real = 0.01,
                 class::Integer = 10, lessons::Integer = 3, reception_σ::Real = CALIBRATED.reception_σ, teacher_cv::Real = CALIBRATED.teacher_cv, central::Bool = false,
-                p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3,
+                p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ, pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3,
                 novelty_min::Real = 0.2, rel_exponent::Real = 2.0, gain_σ::Real = 0.5, near_exponent::Real = 4.0, top_frac::Real = 0.1,
                 accession_step::Integer = 0, accession_n::Integer = 0, accession_u::Real = 2.0, accession_h::Real = 2.0,
                 lt_window::Integer = 20, existing_only_floors::Bool = false, uplift_capacity::Real = Inf,
@@ -799,10 +799,10 @@ understanding (`raw_floor_u`), population, births (by causer), final credences a
 of settled births.
 """
 function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 20, q_opt::Real = 0.5, threshold::Real = 0.75,
-                    pool_confidence::Real = 0.9, pool::Integer = 5, birth_pred_σ::Real = 0.5, birth_spread::Real = 1.0,
+                    pool_confidence::Real = 0.9, pool::Integer = 5, birth_pred_σ::Real = CALIBRATED.birth_pred_σ, birth_spread::Real = 1.0,
                     inherit::Real = 0.5, settle_σ::Real = 0.1, birth_joy::Real = 0.5, income::Real = 1.0, endowment::Real = 10.0,
                     gamers::Real = 0.0, gamer_bias::Real = 5.0, gamer_models::Integer = 1, ratchet::Bool = true, central::Bool = false,
-                    p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = 0.2, pred_σ::Real = 0.2, options::Integer = 3,
+                    p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ, pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3,
                     lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (p_birth, q_opt, threshold, pool_confidence, inherit, gamers, p_act)),
           "chances, shares, quantile, threshold and confidence in [0, 1]")
