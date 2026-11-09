@@ -33,9 +33,15 @@ def git(*args):
     return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
 
 
+def git_optional(*args):
+    p = subprocess.run(["git", *args], capture_output=True, text=True)
+    return p.stdout if p.returncode == 0 else None
+
+
 def changed_articles(base, head):
     out = git("diff", "--name-only", base, head, "--", ARTICLES)
-    return [p for p in out.splitlines() if p.endswith(".txt")]
+    return [p for p in out.splitlines() if p.endswith(".txt")
+            and os.path.basename(p) not in ("Citations.txt", "Template.txt", "redirects.txt")]
 
 
 def edit_blocks(old_text, new_text):
@@ -45,10 +51,16 @@ def edit_blocks(old_text, new_text):
     for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
         if op == "equal":
             continue
-        if i1 > 0 and j1 > 0:
+        while i1 > 0 and j1 > 0 and a[i1 - 1] == b[j1 - 1]:
             i1, j1 = i1 - 1, j1 - 1
-        elif i2 < len(a) and j2 < len(b):
-            i2, j2 = i2 + 1, j2 + 1
+            if a[i1].strip():
+                break
+        if (i1 == i2 or not "\n".join(a[i1:i2]).strip()) and i2 < len(a) and j2 < len(b):
+            while i2 < len(a) and j2 < len(b) and a[i2] == b[j2]:
+                orig_line = a[i2]
+                i2, j2 = i2 + 1, j2 + 1
+                if orig_line.strip():
+                    break
         blocks.append(("\n".join(a[i1:i2]), "\n".join(b[j1:j2])))
     return blocks
 
@@ -91,13 +103,21 @@ class Wiki:
     def page(self, title):
         res = self.call({"action": "query", "prop": "revisions", "titles": title,
                          "rvprop": "content|timestamp", "rvslots": "main", "curtimestamp": 1})
-        rev = res["query"]["pages"][0]["revisions"][0]
+        pg = res["query"]["pages"][0]
+        if pg.get("missing"):
+            return None, None, res["curtimestamp"]
+        rev = pg["revisions"][0]
         return rev["slots"]["main"]["content"], rev["timestamp"], res["curtimestamp"]
 
-    def edit(self, title, text, basets, startts, summary):
-        return self.call({"action": "edit", "title": title, "text": text, "summary": summary,
-                          "basetimestamp": basets, "starttimestamp": startts,
-                          "nocreate": 1, "bot": 1, "token": self.csrf}, post=True)
+    def edit(self, title, text, basets, startts, summary, create=False):
+        params = {"action": "edit", "title": title, "text": text, "summary": summary,
+                  "starttimestamp": startts, "bot": 1, "token": self.csrf}
+        if create:
+            params["createonly"] = 1
+        else:
+            params["basetimestamp"] = basets
+            params["nocreate"] = 1
+        return self.call(params, post=True)
 
 
 def main():
@@ -105,6 +125,7 @@ def main():
     ap.add_argument("--base", default="HEAD~1")
     ap.add_argument("--head", default="HEAD")
     ap.add_argument("--apply", action="store_true", help="write to the wiki (default: dry run)")
+    ap.add_argument("--create-missing", action="store_true", help="create pages that do not exist yet on the live wiki")
     ap.add_argument("--summary", default=None)
     args = ap.parse_args()
 
@@ -117,9 +138,33 @@ def main():
     failed = False
     for path in changed_articles(args.base, args.head):
         title = os.path.basename(path)[:-4]
-        blocks = edit_blocks(git("show", f"{args.base}:{path}"), git("show", f"{args.head}:{path}"))
+        if title.endswith(" (redirect)"):
+            title = title[:-11]
+        old_rev = git_optional("show", f"{args.base}:{path}")
+        new_rev = git("show", f"{args.head}:{path}")
         live, basets, startts = wiki.page(title)
+        if live is None:
+            if not args.create_missing:
+                print(f"NEW  {title}: missing on live wiki (pass --create-missing to create)")
+                continue
+            elif not args.apply:
+                print(f"DRY  {title}: would create new page ({len(new_rev)} bytes)")
+                continue
+            else:
+                res = wiki.edit(title, new_rev, None, startts, summary, create=True)
+                status = res.get("edit", {}).get("result")
+                failed |= status != "Success"
+                print(f"{'NEW ' if status == 'Success' else 'FAIL'} {title}: {status or res}")
+                continue
+        blocks = edit_blocks(old_rev if old_rev is not None else live, new_rev)
         new, problems = apply_blocks(live, blocks)
+        if problems:
+            for sha in git("log", "--format=%H", f"{args.base}..{args.head}", "--", path).splitlines():
+                hist = git_optional("show", f"{sha}:{path}")
+                if hist is not None and hist.rstrip() == live.rstrip():
+                    blocks = edit_blocks(hist, new_rev)
+                    new, problems = apply_blocks(live, blocks)
+                    break
         if problems:
             failed = True
             print(f"SKIP {title}: " + "; ".join(problems))
