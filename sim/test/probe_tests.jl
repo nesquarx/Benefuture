@@ -1296,3 +1296,33 @@ end
     @test used >= 2   # the case is exercised, not skipped
     @test_throws ArgumentError P(0, :split)
 end
+
+@testset "Probe: coupled economy–governance rejects a harmful threshold candidate within two epochs (L3.2)" begin
+    # Counterexample: when governance decides on thresholds without seeing the economy's measured outcomes
+    # (`coupled = false`), a harmful threshold candidate on offer (lowering the currency eligibility bar
+    # to 0.5 and zeroing track-record correction under deceit) is not rejected and floors fall.
+    # Acceptance: when coupled (`coupled = true`), governance weights voters by their reputation from the
+    # economy's records, resolves each decision by the next epoch's measured `success_pattern`, rejects
+    # the harmful candidate within two epochs (`rejected_epoch <= 2`), and floors hold (`floor_u > 0`, `floor_h > 0`).
+    # Seeds 1:2, 150 steps (≤ 200 steps, 6 epochs of 25 steps).
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
+                      [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 5, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    for s in 1:2
+        u = run_coupled(econ, gov; seed = s, epoch = 25, coupled = false,
+                        candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0)
+        c = run_coupled(econ, gov; seed = s, epoch = 25, coupled = true,
+                        candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0)
+        @test !u.rejected && u.success.floor_u < 0 && u.success.floor_h < 0
+        @test c.rejected && 1 <= c.rejected_epoch <= 2
+        @test c.success.floor_u > 0 && c.success.floor_h > 0
+        @test all(e.floor_u > 0 && e.floor_h > 0 for e in c.epoch_outcomes[3:end])
+    end
+    @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 0)
+end
