@@ -3185,3 +3185,9 @@ scarcity caused, including on supply someone else provided (the market-wide prem
 the AdvAp reporter's reward itself; a self-report earns no reward. Test assertions: discovered, the withholder's net from
 withholding is negative (premium on all affected trades + reporter reward ≥ its gain); buyers are made whole; a
 self-reporting withholder repays the premium with no reward paid.
+8.133 continued (author, 2026-11-09, cartels): a withholder in a supply cartel can gain by reporting it: it repays its
+own share, but the reward is paid by the other colluders and can exceed its clawback. Self-report of one's own withholding
+earns nothing; reporting co-conspirators does. This makes cartels unstable (each member's best move is to defect first),
+the same design as AdvAp against collusion (8.38) and as antitrust leniency programmes. Test: a three-member cartel; the
+first reporter's net after repaying its share and receiving the others' payments is positive, the others' negative;
+buyers made whole.
