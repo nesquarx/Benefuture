@@ -1326,3 +1326,17 @@ end
     end
     @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 0)
 end
+
+@testset "Probe (red): issued currency outruns deliverable resources without global RA (8.133)" begin
+    # Hypothesis (author ruling 8.133): without global resource accounting the currency issued for measured value is not
+    # bound to the resources and time that can deliver on it, so claims grow without bound against fixed capacity ("checks
+    # it cannot cash"). Metric: total balances over one step's deliverable resources (regen × capacity × base cost).
+    # Desired outcome (to hold once RA is built): claims stay within a governed horizon of capacity (here 50 steps) and do
+    # not keep growing with run length. Red on the current code: 27.6 → 107.6 → 220 steps of capacity at 60/120/240 steps.
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    P(T) = M3cParams(ToyParams(n = 40, steps = T, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
+    claimed(T) = (p = P(T); sum(run_m3c(p; seed = 1).balance) / (p.regen * p.capacity * p.cost_per_touch))
+    short, long = claimed(60), claimed(240)
+    @test long > short                       # the undesired outcome, observed now
+    @test_broken long <= 50.0                # the desired outcome: claims bounded by RA's horizon of capacity
+end

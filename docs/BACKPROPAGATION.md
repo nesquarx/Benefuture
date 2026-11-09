@@ -3191,3 +3191,8 @@ earns nothing; reporting co-conspirators does. This makes cartels unstable (each
 the same design as AdvAp against collusion (8.38) and as antitrust leniency programmes. Test: a three-member cartel; the
 first reporter's net after repaying its share and receiving the others' payments is positive, the others' negative;
 buyers made whole.
+8.133 step 1 (2026-11-09): red probe. In a small M3c world (8 agents, 2 domains), total balances measured in steps of
+deliverable resources (regen × capacity × base cost) grow with run length: 27.6, 107.6, 220 steps of capacity at 60, 120
+and 240 steps (3 seeds). Overflow caps each identity but not the total; nothing binds issuance to capacity. Probe in
+`sim/test/probe_tests.jl` (desired bound marked broken until RA is built; the 50-step horizon is a placeholder governed
+threshold). Next: RA's estimates (production map, supply, best spread, commons reserve) as Lean reference functions.
