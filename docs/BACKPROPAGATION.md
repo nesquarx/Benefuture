@@ -3172,3 +3172,11 @@ long-term value, and (d) the reserve the commons must hold so degraded fallbacks
 Other mechanisms act on these estimates: pricing, issuance bounded by deliverable value, commons provisioning,
 contraction when claims outrun capacity. Candidate homes: L83, Resource accounting article, Benefuture currency, Commons,
 Progressive complexity.
+8.133 continued (author, 2026-11-09, resources and gaming): many resources are themselves the result of work that needs
+commissioning and execution; RA does not commission it, but its estimates let pricing shift, make resource extraction burn
+currency, and let generation pay the work appropriately. Gaming: the successful exploit is artificial scarcity, hidden;
+RA and BTS are well placed to discover it, and once discovered the enhanced demand price is repaid from clawbacks (and to
+AdvAp reporters as needed). Gaming by wrong measurements is handled by the existing measurement mechanisms (competing
+chains, audits). For the build: generation and extraction are outcomes priced through RA's supply estimate (generation
+mints, extraction burns); the M6 test is a withholder who hides supply to raise prices, red on outcome (the withholder
+profits) before discovery and clawback, then repaid with AdvAp reward to the reporter.
