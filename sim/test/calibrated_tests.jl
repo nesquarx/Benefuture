@@ -24,11 +24,14 @@ realistic(; steps = 300, skill = 0.6, sloppiness = CALIBRATED.sloppiness, kw...)
     # Institution-dependent figures are not defaults here: no hazards arise unless a world sets them, and
     # guardians' diligence and information, vigilance and the trace chance keep their governed or placeholder values.
     @test p.p_hazard == 0.0 && p.p_informed == 0.8 && p.vigilance == 0.05 && p.p_trace == 0.5
-    # M5: non-experts' signal noise; M7: a course's share of the lead.
+    # M5: non-experts' signal noise; M7: a course's share of the lead and individual view/prediction noise.
     m3 = run_m3c(realistic(steps = 30); seed = 1)
     @test M5Params(m3, 1:4).signal_σ == CALIBRATED.signal_σ == 2.0
     t = ToyParams(n = 60, steps = 30, plans = 5)
-    @test run_m7(t; seed = 1) == run_m7(t; seed = 1, ε = CALIBRATED.ε) && run_m7(t; seed = 1) != run_m7(t; seed = 1, ε = 0.3)
+    @test run_m7(t; seed = 1) == run_m7(t; seed = 1, ε = CALIBRATED.ε, view_σ = CALIBRATED.view_σ, pred_σ = CALIBRATED.pred_σ, research_σ = CALIBRATED.research_σ, research_gain = CALIBRATED.research_gain)
+    @test run_m7(t; seed = 1) != run_m7(t; seed = 1, ε = 0.3)
+    @test CALIBRATED.regen_σ == 0.3 && CALIBRATED.view_σ == 0.3 && CALIBRATED.pred_σ == 0.3
+    @test CALIBRATED.touch == (0.01, 0.3) && CALIBRATED.shift == 0.2 && CALIBRATED.bind_miss == 0.05 && CALIBRATED.birth_pred_σ == 0.5
 end
 
 @testset "Calibration: distribution shapes" begin

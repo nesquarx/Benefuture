@@ -1426,9 +1426,12 @@ realistic social-science leaf model sits at 0.7 and the realistic bad end of the
 Shapes added: Pareto event sizes for random hazards and side effects (`pareto_median1`: median 1,
 exponent 2, capped at `hazard_cap`) with log-normal scatter across beings, log-normal skills
 (`draw_skills`: median 0.6 in the worked domains, log-SD 0.3; a Pareto tail option for research),
-mean-one log-normal learner reception and teacher multipliers (`lognormal_mean1`). Not applied
-(outside this increment): the default of `regen_σ`, `view_σ`/`pred_σ`, the research rows
-(`research_gain`, `p_research`), `ToyParams.touch`/`shift`, and the heavy-tailed shape of effects
+mean-one log-normal learner reception and teacher multipliers (`lognormal_mean1`). `CALIBRATED`
+also records the remaining invariant defaults (`regen_σ = 0.3`, `view_σ = 0.3`, `pred_σ = 0.3`,
+`research_σ = 1.0`, `research_gain = 2.0`, `birth_pred_σ = 0.5`, `touch = (0.01, 0.3)`, `shift = 0.2`,
+`bind_miss = 0.05`); `run_m7` and `run_births` take `view_σ`, `pred_σ`, `research_σ`, `research_gain`
+and `birth_pred_σ` from `CALIBRATED` by default, while `ToyParams` keeps its controlled-world `(0.05, 0.3)`
+and `0.5` defaults for legacy M0–M3 tests. Not applied: the heavy-tailed shape of effects
 across beings in `ToyParams.spread` (the source measures sites, not beings).
 
 | Step | Parameter | Default | Range to explore | Class; source (confidence) |
@@ -1466,7 +1469,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | An agent fooling the metric models (world, adversary) | `deceit` | 0 | 0–2 |  |
 | Learners' reception of a lesson, scatter around the lesson's share (M7, world) | `reception_σ` | 0.8 (log-normal of mean 1, so ε is the mean share) | 0.4–1.5 | Invariant; 3.7, [HBBL08] [VIV20] (low-medium) |
 | A lesson's share of the teacher's lead; class size; lessons a teacher offers (M7, world) | `ε`, `class`, `lessons` | 0.2 per year, 10, 3 | 0.03–0.4, not yet set, not yet set | ε invariant, converted to a course of a year (3.7, [HBBL08] [KRA20] [BLO84]: medium for magnitude, low for the lead gap); class size is institution-dependent |
-| Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.2, 0.2, 3 | 0.05–0.5, –, 0–1, 0–1, 1–10 |  |
+| Entities acting per step, the share of a plan one action does, their views' and predictions' noise, options each (M7, world; 8.50) | `p_act`, `action_scale`, `view_σ`, `pred_σ`, `options` | 0.2, 0.05, 0.3, 0.3, 3 | 0.05–0.5, –, 0.1–1, 0.1–1, 1–10 | `view_σ`, `pred_σ` invariant (3.2, [LR97] [GAL07]); 0.2 is the pre-calibration limiting case |
 | A death's predicted growth per step (M7, models) | `growth` | 0.1 | 0–0.3 |  |
 | Birth predictions: error of each pool model, pool size, the pool's confidence before the ratchet (M7) | `birth_pred_σ`, `pool`, `pool_confidence` | 0.5, 5, 0.9 | 0.2–2, 3–10, 0.75–0.95 |  |
 | Measuring a birth's shortfall at settlement, relative (M7) | `settle_σ` | 0.1 | 0–0.3 |  |

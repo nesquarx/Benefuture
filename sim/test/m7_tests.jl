@@ -311,7 +311,7 @@ end
 
     # 2. Counterexample (existing_only_floors = true): newcomers stagnate
     t_stag = run_m7(p; seed = 1, accession_step = 10, accession_n = 50, existing_only_floors = true)
-    @test t_stag.newcomer_u_gain < 0.6   # traits mode: 0.502 (scalar: below 0.5); the relative claim below is the test
+    @test t_stag.newcomer_u_gain < 0.8   # traits mode at CALIBRATED.view_σ = 0.3: 0.686 (at 0.2: 0.502); the relative claim below is the test
     @test t_acc.newcomer_u_gain > 5 * t_stag.newcomer_u_gain
 
     # 3. Newcomers outnumbering residents (accession_n = 150 > p.n = 100)
