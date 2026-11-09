@@ -168,7 +168,7 @@ def main():
         if problems:
             failed = True
             print(f"SKIP {title}: " + "; ".join(problems))
-        elif new == live:
+        elif new.rstrip() == live.rstrip():
             print(f"OK   {title}: already up to date")
         elif not args.apply:
             print(f"DRY  {title}: {len(blocks)} block(s) would change")

@@ -96,7 +96,7 @@ To minimize git merge conflicts:
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
-| **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), non-definition abbreviation cleanup, whole-corpus coherence check | `docs/articles/*.txt`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** (definitions/aspects items pending user review; wiki sync ready) | 2026-11-09 |
+| **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -1054,7 +1054,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Goal**: Scan `docs/articles/*.txt` and spell out Benefuture's internal abbreviations (e.g. U → understanding, H → happiness, MM → metric model, Fr → freedom, NHa → non-harm) in prose. Common parlance (AI, GDP, PNAS) remains.
   - **Primary Files**: `docs/articles/*.txt`.
   - **Collision Risk**: Low (coordinate to not overlap on specific `.txt` files).
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (`9ba1a57`)
 
 - **Task F2: Ratify §7 of `docs/BACKPROPAGATION.md`**
   - **Goal**: Review and ratify pending proposed edits to pseudocode and articles from §7.
@@ -1066,7 +1066,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Goal**: Prepare manual wiki uploads for Morality, Art, and Freedom pages; update `docs/articles/_manifest.json`.
   - **Primary Files**: `docs/articles/_manifest.json`.
   - **Collision Risk**: Low.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (synced all 55 updated pages + created `Art`, `Freedom`, `Morality` on live wiki; updated `docs/articles/_manifest.json`)
 
 ---
 
