@@ -35,7 +35,11 @@ jobs:
       - id: plan
         name: Plan battery shards
         run: |
-          RAW_BATTERY="${{ inputs.battery || 'convergence' }}"
+          # Scheduled runs rotate through the batteries by day, so each gets a fresh run on the latest build every few
+          # days; a manual run names its battery.
+          ROTATION=(economy governance convergence attack long_horizon)
+          RAW_BATTERY="${{ inputs.battery }}"
+          if [ -z "$RAW_BATTERY" ]; then RAW_BATTERY="${ROTATION[$(( $(date -u +%j | sed 's/^0*//') % ${#ROTATION[@]} ))]}"; fi
           BATTERY_NAME="$(basename "$RAW_BATTERY" .jl)"
           echo "battery_name=$BATTERY_NAME" >> "$GITHUB_OUTPUT"
 
@@ -110,6 +114,14 @@ jobs:
         with:
           version: '1.13'
 
+      - name: Restore the battery's evaluation cache (resumable across runs; files are keyed by code hash)
+        uses: actions/cache@v4
+        with:
+          path: sim/battery/cache
+          key: battery-cache-${{ needs.setup.outputs.battery_name }}-${{ matrix.shard }}-${{ github.run_id }}
+          restore-keys: |
+            battery-cache-${{ needs.setup.outputs.battery_name }}-${{ matrix.shard }}-
+
       - name: Run Battery Shard
         env:
           BF_SIM_START_HOUR: 0
@@ -124,8 +136,9 @@ jobs:
           if [ ! -f "results/${BATTERY}.${SHARD}.csv" ]; then
             cp "results/${BATTERY}.csv" "results/${BATTERY}.${SHARD}.csv" 2>/dev/null || true
           fi
+          # Never stand in the committed results for a shard that produced none: fail loudly instead.
           if [ ! -f "results/${BATTERY}.${SHARD}.csv" ]; then
-            cp "sim/battery/results/${BATTERY}.csv" "results/${BATTERY}.${SHARD}.csv" 2>/dev/null || true
+            echo "::error::shard $SHARD of $BATTERY produced no results"; exit 1
           fi
           ls -la results/
 
