@@ -37,7 +37,8 @@ jobs:
         run: |
           # Scheduled runs rotate through the batteries by day, so each gets a fresh run on the latest build every few
           # days; a manual run names its battery.
-          ROTATION=(economy governance convergence attack long_horizon)
+          # attack writes a report only (attack.md, no per-shard CSV to merge), so it runs by hand, not in the rotation.
+          ROTATION=(economy governance convergence long_horizon)
           RAW_BATTERY="${{ inputs.battery }}"
           if [ -z "$RAW_BATTERY" ]; then RAW_BATTERY="${ROTATION[$(( $(date -u +%j | sed 's/^0*//') % ${#ROTATION[@]} ))]}"; fi
           BATTERY_NAME="$(basename "$RAW_BATTERY" .jl)"
