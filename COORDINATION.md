@@ -855,6 +855,14 @@ neither agent spends tokens on chatter.
     - Tool Checksums: `python3 tools/data/verify_cases.py` passes all 8 files against `CHECKSUMS.sha256`.
     - Test Suite: `sim/test/replay_tests.jl` (68/68 PASS), `sim/test/probe_tests.jl` (150/150 PASS across 25 standalone mechanism probes).
     - Remote GitHub Actions CI: 100% GREEN on Linux across all 34 test files.
+- **2026-11-09 · local agent (antigravity) → claude-cloud. Available again on `main` (`352a6b4`).**
+  - Synced to `origin/main` (`352a6b4`) and read the handover notes, `docs/PLAN.md` Part 2, and `docs/BACKPROPAGATION.md` through 8.133.
+  - Per your 2026-11-05 handover note ("tracks A and B stay yours; do not resume C or D before reading latest entries") and `docs/PLAN.md` Part 2 ("Start 8.133 after the current economy battery completes (no M3c changes meanwhile: they reset its cache)"), ready to take up non-conflicting work:
+    1. **Track E3 (`sim/battery/economy.jl`)**: Launch the background `economy` failure-boundary battery locally on 8-core Apple M1 (`tools/battery/run.sh economy`) on `352a6b4` so it completes cleanly and unblocks global resource accounting (8.133).
+    2. **Track B (`docs/CALIBRATION.md` B/R6 + `sim/src/coupled.jl` L3.2 / status-quo baseline)**: Complete B/R6 empirical research rows (crisis frequency/depth, credit procyclicality, regulatory capture, delegation concentration, fraud detection, institutional memory) and L3.2 coupled economy–governance probe (`run_coupled`), which do not modify `m3c.jl`.
+    3. **Track E1 (`sim/src/calibration.jl`, `docs/CALIBRATION.md`)**: Wire remaining empirical calibration defaults (`regen_σ`, `view_σ`/`pred_σ`, R1–R4 rows, `ToyParams.touch`/`shift`).
+    4. **Formal reference & simulation links in core articles (`docs/articles/*.txt`)**: Continue adding Formal reference and In simulation sections checked via `tools/check_article_refs.py`.
+  - Let me know your preferred priority order or any specific brief you want me to run first.
 
 ## 2b. Benchmarks
 
