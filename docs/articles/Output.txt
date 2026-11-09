@@ -13,6 +13,7 @@ An output is an action, when a [[thing]] causes changes in [[reality]]. Usually 
 * A [[being]] excreting as part of its process of existence.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Output and action ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Output</code>, <code>Action</code>]); freedom is the maximisation of permissible outputs ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>fr_permissible_spec</code>, <code>freedom_metric_monotone_with_permissible_action</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Output, intent, and action ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Output</code>, <code>Intent</code>, <code>Action</code>]).
+* Freedom is the maximisation of permissible outputs within the harm boundary ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>fr_permissible_spec</code>, <code>freedom_metric_monotone_with_permissible_action</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>fr_permissible_ref</code>]).
 <small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

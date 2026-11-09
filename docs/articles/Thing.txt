@@ -14,6 +14,7 @@ A thing is an identifiable pattern of information, rendered in energy, matter or
 * The [[Identity]] of a thing is tied to its pattern and location in reality.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Thing, spacetime grounding, and unique identity pattern in reality ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Thing.lean <code>Thing</code>, <code>SpacetimeGrounding</code>, <code>identity_of</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reality.lean <code>thing_identity_pattern_matches_self</code>, <code>reality_state_id_injective</code>, <code>identity_pattern_is_identity</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Thing, spacetime grounding, and pattern matching ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Thing.lean <code>Thing</code>, <code>SpacetimeGrounding</code>, <code>identity_of</code>, <code>Pattern</code>]).
+* Unique identity pattern in reality and the ontological inclusion chain ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reality.lean <code>thing_identity_pattern_matches_self</code>, <code>reality_state_id_injective</code>, <code>identity_pattern_is_identity</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]).
 <small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

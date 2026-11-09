@@ -11,6 +11,7 @@ An accolade is acknowledgement of a [[sophont]] behaving in a way that advances 
 * A currency award upon adding to universal [[understanding]] that contributes to further gains.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * An accolade acknowledges good beyond duty and is a merit only when no one would have done the same unprompted ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>Accolade</code>, <code>Aco</code>]).
+* Carrying another's output on earns an accolade outside contract, and causal distribution settles contributions ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Economy.lean <code>carry_fee_ref</code>, <code>cause_settlement_ref</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

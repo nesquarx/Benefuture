@@ -20,7 +20,8 @@ Influence is usually achieved via manipulation of an entity's inputs to modify t
 **Via affecting or promise to affect [[Thing|things]] that the entity values highly (people and possessions)
 
 == Formal reference ==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Influence, good influence, and shared liability proportional to control ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Influence</code>, <code>is_good_influence</code>, <code>influencer_shares_positive_liability</code>, <code>full_control_shares_full_liability</code>]).
+* Persuasive and truth-degrading influence in deliberation, and source deduplication ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>truth_degradation_excluded_from_freedom_tr</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>count_once_ref</code>, <code>undisclosed_echo_ref</code>]).
 
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

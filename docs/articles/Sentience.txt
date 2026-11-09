@@ -6,8 +6,9 @@ Sentience is the quality of an [[entity]] exhibiting [[preference]]s and a thres
 * Sentient entities can be assumed to hold a level of agency and intent and may be held responsible for their [[interaction]]s.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Sentience and preferences on a being ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Being.lean <code>Preference</code>, <code>Sentience</code>, <code>Being</code>]).
+* Subjective experience integration and graded personhood thresholds ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Priorities.lean <code>happiness_score_eq</code>, <code>happiness_score_nonneg</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>happiness_score_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Person.lean <code>PersonhoodCapacities</code>, <code>Person</code>]).
 
 === References ===
 <references />

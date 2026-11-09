@@ -7,7 +7,7 @@ A civilization or society is a system of [[law]]s of [[interaction]]s where a co
 * The infrastructure for creation, modification, implementation, and enforcement of these rules is maintained by an [[entity]] called the [[administration]] which is instantiated, moderated, operated and ratified by the [[sophont]]s who are members of that society.
 
 ==Examples==
-* A [[benefuture]] society basically is a group of [[sophont]]s who strive to strive to gain the most [[understanding]] and then [[happiness]] through their present and future, creating an [[administration]] which enables this maximisation and results in the [[benesophont]]s living and growing by the [[law]]s it maintains.
+* A [[benefuture]] society basically is a group of [[sophont]]s who strive to gain the most [[understanding]] and then [[happiness]] through their present and future, creating an [[administration]] which enables this maximisation and results in the [[benesophont]]s living and growing by the [[law]]s it maintains.
 
 ==Discussion==
 ===In simulation===

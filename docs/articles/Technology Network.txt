@@ -1,7 +1,7 @@
 [[Category:Benefuture]]
 [[Category:WorldBuilding]]
 
-The [[Technology Network]] is the decentralized, transparent, and evolving computational infrastructure underpinning the [[Life in benefuture|lived experiences]] in the [[Benefuture]] system. It facilitates the [[Measurement|measurement]] of [[Understanding]] (U) and [[Happiness]] (H), the operation of [[Benefuture currency|competing currencies]], and the functioning of [[Government|weighted direct democracy]]. It is deeply enmeshed with [[Social networks|social networks]], leveraging their data and providing tools for enhanced [[communication]], [[education]] and collaboration.
+The [[Technology Network]] is the decentralized, transparent, and evolving computational infrastructure underpinning the [[Life in benefuture|lived experiences]] in the [[Benefuture]] system. It facilitates the [[Measurement|measurement]] of [[Understanding]] and [[Happiness]], the operation of [[Benefuture currency|competing currencies]], and the functioning of [[Government|weighted direct democracy]]. It is deeply enmeshed with [[Social networks|social networks]], leveraging their data and providing tools for enhanced [[communication]], [[education]] and collaboration.
 
 ==Aspects==
 

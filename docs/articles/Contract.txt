@@ -9,5 +9,6 @@ A contract or agreement is a documented statement of multiple [[entity|entities]
 * Any [[harm]] caused by an invalid contract goes through the process of [[justice]].
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
-* An invalid contract is null and void ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>invalid_contract_null_and_void</code>]); escrow conserves the nominal payment ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>escrow_conservation</code>]).
+* Contract validity and nullity when harm exceeds the contract's bound ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>Contract</code>, <code>is_valid_contract</code>, <code>invalid_contract_null_and_void</code>]).
+* Probabilistic escrow conserves the nominal payment and settles against measured outcomes ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>escrow_conservation</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>Escrow_split_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Economy.lean <code>settlement_ref</code>, <code>cause_settlement_ref</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

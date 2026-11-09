@@ -1,6 +1,6 @@
 [[Category:Benefuture]] [[Category:WorldBuilding]]
 
-Government in a [[Benefuture]] [[society]] is a system of [[Administration|administrative]] decision making using '''[[Reputation|expertise]] and impact weighted direct democracy''', facilitated by technology. It is a decentralized, transparent, and continuously adaptive mechanism for collective decision-making, aiming to maximize societal [[Understanding]] (U) and [[Happiness]] (H) while minimizing [[harm]]. It is ''not'' a ruling body, but a facilitator of societal self-governance, with all actions ultimately valued and incentivized through the [[Benefuture currency|Benefuture Currency]].
+Government in a [[Benefuture]] [[society]] is a system of [[Administration|administrative]] decision making using '''[[Reputation|expertise]] and impact weighted direct democracy''', facilitated by technology. It is a decentralized, transparent, and continuously adaptive mechanism for collective decision-making, aiming to maximize societal [[Understanding]] and [[Happiness]] while minimizing [[harm]]. It is ''not'' a ruling body, but a facilitator of societal self-governance, with all actions ultimately valued and incentivized through the [[Benefuture currency|Benefuture Currency]].
 
 == Aspects ==
 

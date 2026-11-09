@@ -2,6 +2,7 @@
 Ignorance is a lack of [[significant]] [[understanding]] required to take a [[decision]].
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Domain ignorance when understanding falls below the threshold of significance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>is_domain_ignorant</code>, <code>Ig</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Domain ignorance when understanding falls below the threshold of significance, and contextual relevance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>is_domain_ignorant</code>, <code>Ig</code>, <code>calculate_relevance</code>]).
+* Unmeasured uncertainty holds full escrow until evidence arrives ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>zero_confidence_escrow_blackout</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Domains.lean <code>credence_ref</code>, <code>record_credence_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>Escrow_split_ref</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

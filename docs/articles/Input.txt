@@ -17,6 +17,7 @@ Input is the process of a [[thing]] absorbing information, energy, or matter fro
 * Colliding with another object and taking damage.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Input and interaction ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Input</code>, <code>Interaction</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Input, interaction, and communication ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Input</code>, <code>Interaction</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>Communication</code>]).
+* Source-tagged readings and deduplicating repeated inputs from the same root source ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>tagged_reading_ref</code>, <code>count_once_ref</code>]).
 ----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes; the formal reference is AI written.</small>

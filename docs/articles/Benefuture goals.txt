@@ -16,7 +16,7 @@ Which decompose to the following subgoals
 
 ====== '''Subgoals''' ======
 # Maximising processes where [[happiness]] is synergistic with [[understanding]] and the application of it.
-# Maximising the number and quality of [[sophont]]s who would achieve greater [[understanding]] then [[happiness]] and and contribute to these goals now and in the future.
+# Maximising the number and quality of [[sophont]]s who would achieve greater [[understanding]] then [[happiness]] and contribute to these goals now and in the future.
 # Maximising the [[diversity]] of sophonts such that the intersection of [[understanding]] is minimally yet optimally redundant and contains the necessary chaos for maximising future understanding.
 # Altering [[society]] to maximise the range of [[output]]s each [[sophont]] could make (maximising [[freedom]] via the range of meaningful choices which don't cause established, long-term or worse [[harm]], or harm whose probability times severity is too high) which would achieve and contribute to these goals now and in the future.
 # Maximising the [[understanding]] achieved by and available to each [[person]], unless there is a [[significant]] depletion of [[happiness]] in the process over time.

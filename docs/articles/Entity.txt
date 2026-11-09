@@ -12,6 +12,7 @@ An entity is a [[thing]] which can perform [[interaction]]s and exhibits any amo
 * A collective group of beings operating under certain regulations can behave as a non-sentient entity, such as a corporation. In that case, the beings comprising it are treated as beings, but not the entity.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Entity, interaction, fork and merge conservation, and external harm response ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Entity</code>, <code>fork_conserves_social_capital</code>, <code>merge_conserves_reputation</code>, <code>external_response_always_repairable</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Entity and the ontological inclusion chain ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Entity</code>, <code>Interaction</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>ontological_liability_ordering</code>]).
+* Fork and merge conservation, and external harm response ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>fork_conserves_social_capital</code>, <code>merge_conserves_reputation</code>, <code>external_response_always_repairable</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>fork_split_ref</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

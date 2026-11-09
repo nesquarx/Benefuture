@@ -14,6 +14,7 @@ Interaction is the process of a [[thing]] (interactor) taking [[input]]s and pro
 * '''[[Communication]]''', to convey information to another [[entity]].
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Interaction, input, output, and the permanence of every interaction in memory ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Interaction</code>, <code>Input</code>, <code>Output</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>interaction_permanently_in_memory</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Interaction, input, output, and outcome ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Interaction</code>, <code>Input</code>, <code>Output</code>, <code>Outcome</code>]).
+* Permanence of every interaction in memory and non-existence of one-shot harmful games in reality ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>interaction_permanently_in_memory</code>, <code>no_one_shot_harmful_games</code>]).
 <small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

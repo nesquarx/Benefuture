@@ -11,7 +11,7 @@ In a [[benefuture]] civilisation, laws are [[interaction]] patterns designed to 
 * If a law is found to be negatively affecting progress towards the [[goals]], it needs to be removed or modified to positively affect the goals.
 * If a law can be modified to provide greater progress towards the [[goals]] then it should be.
 * Laws can over time acquire exceptions, nuances and subdivisions via modification.
-* Laws which too bloated with complexity need to be broken down into simpler laws that retain all features of the parent law while generalising its scope.
+* Laws which are too bloated with complexity need to be broken down into simpler laws that retain all features of the parent law while generalising its scope.
 * As a key system of  [[benefuture]] [[civilization]], [[Anti-Corruption|anti-corruption]] measures and [[Progressive complexity|Progressive strategies]] also need to be applied in its [[System Design|system design]].
 
 ==For sophonts==
@@ -35,5 +35,7 @@ Responsibilities are interaction patterns which sophonts may perform at their di
 
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
-* An invalid contract is null and void; liability is ordered ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>invalid_contract_null_and_void</code>, <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
+* Law, embedded automated compliance, and contract validity ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>Law</code>, <code>Lw</code>, <code>is_automatically_enforced</code>, <code>invalid_contract_null_and_void</code>]).
+* Liability increases strictly with awareness and agency: sophont, person, administration, being or entity, thing ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
+* Baseline rights (Maslow tiers 1–3) are guaranteed at or below zero price ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>essential_goods_guaranteed_floor</code>, <code>baseline_income_guarantees_free_essentials</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Pricing.lean <code>price_negative_when_value_exceeds_cost</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>

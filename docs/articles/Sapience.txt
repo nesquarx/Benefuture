@@ -11,6 +11,7 @@ Sapience is the ability to [[understanding|understand]] any [[thing]] and maximi
 * Problem solving ability, reasoning ability, resource management, etc. are some key outcomes of sufficient sapience.
 
 ==Formal reference==
-The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
-* Sapience combines understanding and prediction accuracy, and its index is bounded ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Prediction.lean <code>Sapience</code>, <code>sapience_index</code>, <code>sapience_index_bounded</code>]).
+The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
+* Sapience combines understanding and prediction accuracy, and its index is bounded ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Prediction.lean <code>Sapience</code>, <code>sapience_index</code>, <code>sapience_index_bounded</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>SapienceProfile</code>]).
+* Prediction skill from choices and credence accuracy ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Domains.lean <code>choice_skill_ref</code>, <code>credence_accuracy_ref</code>]).
 ----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
