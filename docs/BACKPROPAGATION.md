@@ -3160,3 +3160,15 @@ one stall does not settle it; the price contraction alone (`ra_rate`) is one lev
 ledger of issued claims against resource and time capacity, with contraction of baseline pricing, the commons and overall
 spending when claims outrun capacity; probe red on outcome (issuance outrunning capacity, checks that cannot be cashed).
 Candidate homes: L83, Benefuture currency, Resource accounting.
+
+8.133 continued (author, 2026-11-09): "RA is basically the understanding of how much of what resources produce value in
+what way, combined with the supply of the resources; it optimizes for best spread into domains that give the best
+long-term value (which includes short-term value too). It also figures out what resources need to be provisioned by
+commons for robust progressive complexity protection etc. Not all the functions are conducted by RA directly, but it
+enables these estimates." Reading for the build: resource accounting is a model domain, not a controller. It estimates
+(a) value per unit of each resource in each domain (a production map, learned from measured outcomes), (b) each
+resource's supply and its regeneration, and from them (c) the allocation of resources across domains that maximises
+long-term value, and (d) the reserve the commons must hold so degraded fallbacks stay funded (progressive complexity).
+Other mechanisms act on these estimates: pricing, issuance bounded by deliverable value, commons provisioning,
+contraction when claims outrun capacity. Candidate homes: L83, Resource accounting article, Benefuture currency, Commons,
+Progressive complexity.
