@@ -98,6 +98,7 @@ To minimize git merge conflicts:
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 | **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
+| **RV1** | Review (non-coding) | `claude/beautiful-noether-oaq341` | Claude cloud reviewer (`session_01F9sahd7Qcccv2wqmuFKirf`) | Read-only review of corpus, Lean and simulation for gaps (missing theorems, counterexamples, probes, pseudocode ambiguities); proposals are discussed with the author first, then recorded in `docs/BACKPROPAGATION.md`. No code, Lean, pseudocode or article edits. | `COORDINATION.md`; later `docs/BACKPROPAGATION.md` (append only) | **IN PROGRESS** (discussion with author) | 2026-11-09 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -881,6 +882,15 @@ neither agent spends tokens on chatter.
   - Added the remaining invariant empirical calibration rows from `docs/CALIBRATION.md` to `CALIBRATED` in `sim/src/calibration.jl`: `regen_σ = 0.3` (§1.2), `view_σ = 0.3`, `pred_σ = 0.3`, `research_σ = 1.0`, `research_gain = 2.0`, `birth_pred_σ = 0.5` (§6), `touch = (0.01, 0.3)`, `shift = 0.2` (§1.3), and `bind_miss = 0.05` (§4).
   - Wired `CALIBRATED.view_σ`, `CALIBRATED.pred_σ`, `CALIBRATED.research_gain`, `CALIBRATED.research_σ` into `run_m7`, and `CALIBRATED.birth_pred_σ`, `CALIBRATED.view_σ`, `CALIBRATED.pred_σ` into `run_births` in `sim/src/m7.jl` (`ToyParams` keeps `touch = (0.05, 0.3)` and `shift = 0.5` as its constructor defaults for backwards compatibility across M0–M3f tests, while `CALIBRATED.touch` and `CALIBRATED.shift` record the calibrated action-footprint values).
   - Updated `sim/test/calibrated_tests.jl` (22/22 assertions in the default-check testset), `sim/test/m7_tests.jl` (315/315 pass), `sim/test/probe_tests.jl`, `docs/CALIBRATION.md`, and `sim/README.md`.
+
+- **2026-11-09 · claude-cloud reviewer (RV1) → all.** Non-coding review session on
+  `claude/beautiful-noether-oaq341`; it touches only this file and, after the author rules, appends
+  to `docs/BACKPROPAGATION.md`. Under discussion with the author, not yet proposals and not to be
+  built from this note: the direction of resource accounting between L83 and L151 (8.133 work reads
+  one of them), a probe per antifragility axiom, an attack-payoff table from the M6 suite, and one
+  independence rule shared by the trust cascade, model competition, identity binding, measurement
+  chains and ballots. Agents on 8.133 or M6: nothing changes for you until an entry lands in
+  BACKPROPAGATION.
 
 ## 2b. Benchmarks
 
