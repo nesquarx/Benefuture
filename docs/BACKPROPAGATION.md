@@ -3201,3 +3201,12 @@ new issuance allowed = max(0, horizon × deliverable value per step − claims o
 cases: never negative, never pushes claims past the cap). Next: resource accounting's estimate of deliverable value per
 step (supply × value per unit, from measured outcomes) and wiring the headroom into M3c minting, then re-reading the red
 probe.
+8.133 step 2b (2026-11-10): `deliverable_value_ref` (supply × regeneration × value per unit; at first the base price) and
+a global issuance cap in M3c (`ra_horizon`, off by default): each step's net new issuance beyond the headroom under the
+horizon is taken back pro rata from the identities whose balances rose, never issued, logged loudly. The red probe turns
+green with the cap (claims ≤ 50 steps of capacity at 240 steps; 220 without). Finding (6 seeds): floors are identical
+with and without the cap (floor of understanding 26.76, happiness 24.36) while 2026 units are withheld per run. In this
+world balances barely feed back into real outcomes: currency is earned but little of it is spent on resources (only the
+StandCoin lane draws on balances), so an uncashable claim costs nothing here and the cap is cosmetic. The coupling the
+ruling protects (output bound to resource and time inputs) needs balances that buy resources and commission work
+(8.133 continued: generation pays work, extraction burns); that is the next step, before the cap can show an effect.
