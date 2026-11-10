@@ -316,3 +316,15 @@ def fork_split_ref (amount : Float) (shares : Array Float) : Array Float := Id.r
   return shares.map (fun x => amount * (if x > 0.0 then x else 0.0) / tot)
 
 end BenefutureReference
+
+/-- Issuance headroom (resource accounting, L83; author ruling 8.133): currency outstanding stays within what resources
+    can deliver over a governed horizon. Given the claims outstanding, resource accounting's estimate of value deliverable
+    per step, and the horizon in steps, the new issuance allowed is the gap, never negative. -/
+def issuance_headroom_ref (claims deliverablePerStep horizon : Float) : Float :=
+  let cap := horizon * deliverablePerStep
+  if cap - claims > 0.0 then cap - claims else 0.0
+
+/-- Deliverable value per step (resource accounting's capacity estimate, L83; 8.133): a resource's supply, the share of
+    it that regenerates each step, and the value one unit delivers (from measured outcomes; at first its base price). -/
+def deliverable_value_ref (supply regenRate unitValue : Float) : Float :=
+  supply * regenRate * unitValue

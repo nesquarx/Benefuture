@@ -3196,6 +3196,20 @@ deliverable resources (regen × capacity × base cost) grow with run length: 27.
 and 240 steps (3 seeds). Overflow caps each identity but not the total; nothing binds issuance to capacity. Probe in
 `sim/test/probe_tests.jl` (desired bound marked broken until RA is built; the 50-step horizon is a placeholder governed
 threshold). Next: RA's estimates (production map, supply, best spread, commons reserve) as Lean reference functions.
+8.133 step 2a (2026-11-10): first rule, `issuance_headroom_ref` (export `bf_issuance_headroom`, Julia `issuance_headroom`):
+new issuance allowed = max(0, horizon × deliverable value per step − claims outstanding). Structural test (200 random
+cases: never negative, never pushes claims past the cap). Next: resource accounting's estimate of deliverable value per
+step (supply × value per unit, from measured outcomes) and wiring the headroom into M3c minting, then re-reading the red
+probe.
+8.133 step 2b (2026-11-10): `deliverable_value_ref` (supply × regeneration × value per unit; at first the base price) and
+a global issuance cap in M3c (`ra_horizon`, off by default): each step's net new issuance beyond the headroom under the
+horizon is taken back pro rata from the identities whose balances rose, never issued, logged loudly. The red probe turns
+green with the cap (claims ≤ 50 steps of capacity at 240 steps; 220 without). Finding (6 seeds): floors are identical
+with and without the cap (floor of understanding 26.76, happiness 24.36) while 2026 units are withheld per run. In this
+world balances barely feed back into real outcomes: currency is earned but little of it is spent on resources (only the
+StandCoin lane draws on balances), so an uncashable claim costs nothing here and the cap is cosmetic. The coupling the
+ruling protects (output bound to resource and time inputs) needs balances that buy resources and commission work
+(8.133 continued: generation pays work, extraction burns); that is the next step, before the cap can show an effect.
 
 8.134 (review RV1, 2026-11-09; author: "good catch… they're inverse of each other") [P]: resource accounting reads in
 opposite directions in two lines. L83 defines it as cost per gain (`↓Cost / Δ↑(U, H)`, lower is better); L152 calls for
@@ -3288,3 +3302,30 @@ Rc_Innovation L152, CvCnt L153, Di_N_Balance L159, AntiCorruption L160, TrustMin
 earlier entries here cite L150, L151, L156 and L158 for them. Entries 8.134–8.140 use the current lines. Proposal: a
 checker that resolves each cited line to the term it names (as `tools/check_article_refs.py` does for theorems), or
 citations by term name only.
+
+8.142 (author ruling, 2026-11-10; closes 8.134) [R]: "flip RA 83". L83 now reads
+`RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};`: resource accounting is gain per cost,
+higher is better, so L152 (`RA(t + Δt) <= RA(t) ⇒ NeedInnovation`) reads as written and matches L82, the Lean and 8.133.
+Applied to the three copies (`spec/Bf_Pseudocode.txt`, `Bf_Pseudocode.txt`, the block in `docs/articles/Benefuture.txt`,
+byte-identical), the quotations of the line in `Benefuture/Economy/Currency.lean` and `Pricing.lean`, and the coherence
+audit; the unused field `ResourceAccounting.costPerValue` is renamed `valuePerCost`. Left for the author's review: the
+wiki sync of Benefuture, and any article prose that still describes resource accounting as cost per gain. Reviewer's
+note, not acted on: `- Audit` now subtracts the audit's cost from the gain per cost; whether audit belongs inside the
+cost instead is open.
+
+8.143 (author, 2026-11-10; closes the question in 8.136): "Model novelty is rewarded, it's in the pseudocode, why would
+a novel method not hit it?" A novel method earns through the novelty term models already compete on (L49, `N(m)`, and
+L51, `↑N(M)`); independence needs no reward of its own. So 8.136 only measures: the effective number of independent
+judges, from shared errors, with declared sources and methods as cold-start priors.
+
+8.144 (author rulings, 2026-11-10, on 8.137): the native response to each antifragility axiom. Rc_Innovation (L152):
+overflow's directed investment, the commons reserve and novelty's priority (the reviewer's reading), and more funding
+into raising resource efficiency itself. CvCnt (L153): validation by the peak then and the average now; where it fails,
+Justice and a shift of funding to repair or reorient. Di_N_Balance (L159): the minority bonus and novelty's priority, and
+detection of monoculture that raises the novelty bonuses in the domain or subdomain concerned. TrustMin (L162):
+adversarial clusters, and verification against reality (the cascade's last term, `reqTt(ℝ)`). Harm_Intv (L151) as read
+in 8.137, not corrected. For the probes of 8.137: each asserts its response by outcome (efficiency recovers after funding
+shifts; a failed validation ends in repair or reorientation, not a stall; a detected monoculture's domain shows higher
+novelty bonuses and then variety; required trust falls with clusters and floors at what reality verifies). Still open
+from 8.137: what bounds innovation spending at a physical limit.
+

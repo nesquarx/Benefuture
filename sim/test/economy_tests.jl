@@ -82,3 +82,13 @@ end
         @test all(p -> abs(p) <= abs(a) + 1e-9, parts)
     end
 end
+
+@testset "Issuance headroom (8.133, L83): structural" begin
+    @test issuance_headroom(100.0, 10.0, 50.0) ≈ 400.0
+    @test issuance_headroom(600.0, 10.0, 50.0) == 0.0          # claims past the horizon: no new issuance
+    for _ in 1:200
+        c, d, h = 1000rand(), 50rand(), 100rand()
+        x = issuance_headroom(c, d, h)
+        @test x >= 0 && c + x <= max(c, h * d) + 1e-9           # never pushes claims past the cap
+    end
+end

@@ -333,15 +333,16 @@ theorem currency_requires_qualified_model (c : Currency) :
 /-- 
   Resource Accounting (RA ∈ T):
   Corresponds to: Bf_Pseudocode.txt L83:
-  "RcAccounting«RA»(Transaction«Tx») := ↓Cost / Δ↑(U, H) - Audit ∧ ↓Usage{Rc, t};"
-  Tracks physical resource consumption, cost reduction relative to U/H gains, and anti-corruption audit verification.
+  "RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};"
+  Tracks physical resource consumption, the gain in understanding and happiness per unit of cost (higher is better;
+  author ruling 8.142), and anti-corruption audit verification.
 -/
 structure ResourceAccounting extends Thing where
   transactionId  : String
   resourceCost   : Int
   timeUsage      : Nat
   auditVerified  : Bool
-  costPerValue   : Int
+  valuePerCost   : Int
   deriving Repr, DecidableEq
 
 /-- Coercion: Every ResourceAccounting record is canonically a Thing in Reality. -/

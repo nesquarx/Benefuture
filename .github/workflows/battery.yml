@@ -188,5 +188,5 @@ jobs:
           mkdir -p sim/battery/results
           cp "$RUNNER_TEMP/results/${BATTERY}.csv" "$RUNNER_TEMP/results/${BATTERY}.md" sim/battery/results/
           git add "sim/battery/results/${BATTERY}.csv" "sim/battery/results/${BATTERY}.md"
-          git commit -m "battery(${BATTERY}): record results for commit $(git rev-parse --short HEAD)" || echo "No changes to commit"
+          git commit -m "battery(${BATTERY}): record results for commit ${GITHUB_SHA::7}" || echo "No changes to commit"
           git push origin battery-results
