@@ -898,9 +898,9 @@ neither agent spends tokens on chatter.
   an attack-payoff table from the existing suite. **Probe owner**: 8.137, a probe per antifragility axiom, and 8.138,
   law drift under sub-threshold changes. **Reference owners**: 8.136 (one independence rule from shared errors) and the
   rule gaps listed in 8.140. **Docs**: 8.141, drifted line citations in §Af_Axioms; 8.140, definitional theorems to
-  file under By construction. New file `Benefuture/Proposed/ReviewFindings.lean` (15 theorems); please report its
-  build and regenerate `docs/THEOREM_INDEX.md` on merge (not regenerated here, to avoid colliding with other
-  branches).
+  file under By construction. New file `Benefuture/Proposed/ReviewFindings.lean` (15 theorems): the module builds
+  here (`lake build Benefuture.Proposed.ReviewFindings`); the full build and the Julia suites were not run, so please
+  report them. `docs/THEOREM_INDEX.md` is regenerated and the README and CLAIMS counts read 414.
 
 ## 2b. Benchmarks
 
