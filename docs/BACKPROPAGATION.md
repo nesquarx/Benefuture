@@ -3196,3 +3196,95 @@ deliverable resources (regen × capacity × base cost) grow with run length: 27.
 and 240 steps (3 seeds). Overflow caps each identity but not the total; nothing binds issuance to capacity. Probe in
 `sim/test/probe_tests.jl` (desired bound marked broken until RA is built; the 50-step horizon is a placeholder governed
 threshold). Next: RA's estimates (production map, supply, best spread, commons reserve) as Lean reference functions.
+
+8.134 (review RV1, 2026-11-09; author: "good catch… they're inverse of each other") [P]: resource accounting reads in
+opposite directions in two lines. L83 defines it as cost per gain (`↓Cost / Δ↑(U, H)`, lower is better); L152 calls for
+innovation when it fails to rise, which is right only for gain per cost. The Lean (`allocation_step`,
+`Benefuture/Axioms/Antifragility.lean`) and ruling 8.133 (value per unit of each resource) read it as gain per cost, as
+does currency competition (L82, `ΔV / (ΔRc + Δt)`). Reviewer's recommendation, awaiting the author's ruling: restate L83
+as gain per cost and leave L152 and the Lean unchanged. Reason: cost per gain, minimised, ranks a harmful transaction
+(negative gain) ahead of every beneficial one; gain per cost ranks it behind (`cost_per_gain_prefers_harm`,
+`gain_per_cost_ranks_harm_last`, `Benefuture/Proposed/ReviewFindings.lean`). The alternative (keep L83, turn L152 to
+`>=`) gives L151 and L152 one shape but keeps that misordering. Candidate homes: L83 (all three copies), Benefuture
+currency, Resource accounting. Pseudocode not edited.
+
+8.135 (author, 2026-11-09, on L151): a society with zero standing harm still needs intervention; the reviewer's reading
+of `Ha(t + Δt) >= Ha(t)` at zero as a defect is withdrawn. Reading recorded for the sources: (a) stasis decays: novelty
+is 1 / frequency (L36) and is part of happiness (L37), so constant experience lowers happiness below the average of its
+window, which is harm (L54) (`stasis_happiness_falls`, `stasis_is_harm`, `Benefuture/Proposed/ReviewFindings.lean`); (b)
+beings are mortal and truth levels never reach 1 (8.33), so a flat zero reading more likely marks blind instruments than
+absent harm; (c) gaming: were only a rise to trigger, hiding harm would silence the axiom; with "not falling" a flat
+reading triggers too, so suppression gains nothing. Candidate homes: Harm (aspects), Progressive complexity, L151
+comment in `Antifragility.lean`. Checked with it: happiness harm is taken against a rolling window (`h_harm_ref`), so a
+low early life does not hide later falls; understanding harm is taken against the running maximum of the whole history
+(`u_harm_ref`), as L54 states.
+
+8.136 (review RV1; author, 2026-11-09: "we'd need other measures of independence than just source consumption, like the
+processing it does; two models or clusters can consume the same sources, use completely different methods yet agree on
+the outcome") [P]: independence is assumed in five places and measured in three. The trust cascade (L162,
+`cascaded_required_trust`) halves required trust per cluster; model competition (L49), identity binding by two or more
+clusters (L133), competing measurement chains (8.107) and credence ballots (8.121) all rest on the same assumption. The
+reference holds separate detectors (`copies_ref`, `coerror_copy_ref`, `effective_types_ref`). Proposal: one reference
+rule for the effective number of independent judges, read from outputs only: shared errors on settled outcomes lower
+it; agreement on correct outcomes never does (the author's case: same sources, different methods, same answer);
+declared sources and declared methods (L51 `Declared`, `OpenSource`) are two separate priors used only before a record
+exists. The trust cascade then halves per effectively independent cluster and floors at the shared error, not at
+reality (`pooling_keeps_shared_error`, `pooling_removes_independent_error`). Gaming: copies add idiosyncratic noise to
+look independent (caught late, 8.111); the rule must stay on errors, which noise does not decorrelate at the shared
+part. Open for the author: is diversity of method rewarded as novelty, or only measured? Parsimony: this merges
+detectors and introduces none.
+
+8.137 (review RV1; author asked for more, 2026-11-09) [P]: the antifragility axioms state when something is needed,
+not what follows; in the simulation only harm intervention has a trace. By parsimony each response should be a native
+mechanism. Reviewer's reading of the native responses, for the author to correct, with the gaming of each trigger:
+Harm_Intv (L151): harm not falling → sophont oversight, justice's repair, the Goal's lateral option; gamed by hiding
+harm, which "not falling" defeats (8.135). Rc_Innovation (L152): efficiency not rising → overflow's directed
+investment, the commons reserve (8.133), novelty's priority; gamed by sandbagging efficiency to draw funds, and it
+spends without end at a physical limit unless Di_N_Balance (L159) takes over there (open for the author). CvCnt (L153):
+significant change → validation by the peak then and the average now over memory; gamed by many sub-threshold changes
+(8.138) and by choosing who counts as peak. Di_N_Balance (L159): low marginal value of spreading a good → the minority
+bonus (8.122) and novelty's priority; gamed by manufactured novelty. TrustMin (L162): a layer needs trust → adversarial
+clusters; gamed by collusion (8.136). Prog, SigThGv and AdvAp already have traces or tests. Proposal: one probe per
+axiom in `sim/test/probe_tests.jl`, each with three cases (the trigger fires and the native response restores; a
+noise-made false trigger costs a bounded amount; the gamed trigger pays less than honesty), and a ledger in
+`sim/README.md` (axiom, trigger rule, response, probe, status). Not built.
+
+8.138 (review RV1) [P]: L139 (`EmbeddedLaws … DynamicAp: ΔImp(ΔLw) < Th`) has no rule in Lean, the reference or the
+simulation; `Law` carries only an `isEmbedded` flag. Stated: n adaptations each under the threshold drift at most n · Th
+(`bounded_adaptations_bound_drift`); the per-step bound alone bounds nothing, since enough half-threshold steps pass
+any limit (`sub_threshold_steps_pass_any_limit`). So embedded-law adaptation needs a bound over a span, which CvCnt's
+validation (L153–154) supplies if the accumulated change since the last validation counts toward its significance.
+Proposed probe: slow drift through sub-threshold law changes; the validation blocks harmful drift and passes good
+change. Candidate homes: L139, Law, Civilization.
+
+8.139 (review RV1; author, 2026-11-09: "good idea") [P]: Anti-Corruption (L160) is proved only by construction
+(`good_strictly_easier_than_bad` defines bad effort as good effort plus positive friction). Its content is a measured
+claim: every known attack pays less than honesty. Proposal for the M6 owner: one table from the attack suite (attack,
+attacker's payoff less the honest payoff on the same seeds, interval, seeds), judged by `paired_effect`; an attack that
+pays is an open problem by that row. No new mechanism.
+
+8.140 (review RV1) [P]: further theorems stated in `Benefuture/Proposed/ReviewFindings.lean`, and gaps left as
+proposals. Stated: a convex penalty is lighter on a harm split across identities, and assessment on the origin removes
+the gain (8.58-e; `split_harm_lightens_convex_penalty`, `origin_assessment_removes_split_gain`); confidence voting's
+logit (L115, absent from the Lean specification): even confidence weighs nothing, opposite confidences cancel, weight
+rises with confidence, and a record with no accuracy weighs nothing (`logit_half`, `logit_complement`,
+`logit_strict_mono`, `no_record_no_weight`); against an honest forecaster an extremist wins a winner-take-all contest
+more often than not with a worse expected Brier loss (`extremist_wins_more_and_scores_worse`), the formal side of the
+open problem beside `brier_score_strictly_proper`. Left as proposals (they need a rule in the reference, owned by the
+agents building there): issuance bound to capacity with its counterexample (8.133); `OncePer(Ha)` (L99) as
+idempotence of the penalty per harm, at present only a comment; `CorrSc` (L50), an opaque integer in
+`MetricModel.lean`, as its leave-one-out formula with bounds; `EnsurePath(Ed → Access)`, `!Censor` (L134) as the
+existence of a finite path of education to every gated statement; reputation's `recount(Mem)` (L101) as independence of
+the log's order. Not found by name: a harm-split theorem; conservation under fork and merge exists
+(`Benefuture/Ontology/Entity.lean`). Records: several theorems are definitional unfoldings
+(`efficiency_stagnation_triggers_innovation`, `harm_growth_activates_intervention`, `valid_civilizational_continuity`,
+`baseline_income_guarantees_free_essentials`, `infohazard_is_statement`, `art_value_nonneg`); they belong under By
+construction in `docs/CLAIMS.md`, and §7 of `docs/pseudocode_lean_coherence_audit.md` overstates their elimination.
+Articles (author: yes): Art's Formal reference rests on `art_value_nonneg` alone; either L126's success rule (intended
+effect against the distribution of actual effects) is formalised or the section says only the value sum is.
+
+8.141 (review RV1) [P]: line citations in §Af_Axioms have drifted. The sources' current lines are Harm_Intv L151,
+Rc_Innovation L152, CvCnt L153, Di_N_Balance L159, AntiCorruption L160, TrustMin L162, while the Lean docstrings and
+earlier entries here cite L150, L151, L156 and L158 for them. Entries 8.134–8.140 use the current lines. Proposal: a
+checker that resolves each cited line to the term it names (as `tools/check_article_refs.py` does for theorems), or
+citations by term name only.

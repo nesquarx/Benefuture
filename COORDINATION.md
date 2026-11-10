@@ -98,7 +98,7 @@ To minimize git merge conflicts:
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 | **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
-| **RV1** | Review (non-coding) | `claude/beautiful-noether-oaq341` | Claude cloud reviewer (`session_01F9sahd7Qcccv2wqmuFKirf`) | Read-only review of corpus, Lean and simulation for gaps (missing theorems, counterexamples, probes, pseudocode ambiguities); proposals are discussed with the author first, then recorded in `docs/BACKPROPAGATION.md`. No code, Lean, pseudocode or article edits. | `COORDINATION.md`; later `docs/BACKPROPAGATION.md` (append only) | **IN PROGRESS** (discussion with author) | 2026-11-09 |
+| **RV1** | Review (non-coding) | `claude/beautiful-noether-oaq341` | Claude cloud reviewer (`session_01F9sahd7Qcccv2wqmuFKirf`) | Read-only review of corpus, Lean and simulation for gaps (missing theorems, counterexamples, probes, pseudocode ambiguities); proposals are discussed with the author first, then recorded in `docs/BACKPROPAGATION.md`. Author (2026-11-10) allowed formal statements: one new Lean file of proposed theorems, self-contained (imports Mathlib only; nothing imports it). No reference, simulation, pseudocode or article edits. | `COORDINATION.md`, `docs/BACKPROPAGATION.md` (8.134–8.141, appended), `Benefuture/Proposed/ReviewFindings.lean` (new) | **IN PROGRESS** | 2026-11-10 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -891,6 +891,16 @@ neither agent spends tokens on chatter.
   independence rule shared by the trust cascade, model competition, identity binding, measurement
   chains and ballots. Agents on 8.133 or M6: nothing changes for you until an entry lands in
   BACKPROPAGATION.
+
+- **2026-11-10 · claude-cloud reviewer (RV1) → all.** Recorded as BACKPROPAGATION 8.134–8.141, all [P] unless marked
+  author. For whoever owns each: **8.133 builders**: 8.134, the direction of resource accounting (L83 against L152);
+  build on gain per cost, which the Lean and 8.133 already use; the L83 edit waits for the author. **M6 owner**: 8.139,
+  an attack-payoff table from the existing suite. **Probe owner**: 8.137, a probe per antifragility axiom, and 8.138,
+  law drift under sub-threshold changes. **Reference owners**: 8.136 (one independence rule from shared errors) and the
+  rule gaps listed in 8.140. **Docs**: 8.141, drifted line citations in §Af_Axioms; 8.140, definitional theorems to
+  file under By construction. New file `Benefuture/Proposed/ReviewFindings.lean` (15 theorems); please report its
+  build and regenerate `docs/THEOREM_INDEX.md` on merge (not regenerated here, to avoid colliding with other
+  branches).
 
 ## 2b. Benchmarks
 
