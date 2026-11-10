@@ -3196,3 +3196,8 @@ deliverable resources (regen × capacity × base cost) grow with run length: 27.
 and 240 steps (3 seeds). Overflow caps each identity but not the total; nothing binds issuance to capacity. Probe in
 `sim/test/probe_tests.jl` (desired bound marked broken until RA is built; the 50-step horizon is a placeholder governed
 threshold). Next: RA's estimates (production map, supply, best spread, commons reserve) as Lean reference functions.
+8.133 step 2a (2026-11-10): first rule, `issuance_headroom_ref` (export `bf_issuance_headroom`, Julia `issuance_headroom`):
+new issuance allowed = max(0, horizon × deliverable value per step − claims outstanding). Structural test (200 random
+cases: never negative, never pushes claims past the cap). Next: resource accounting's estimate of deliverable value per
+step (supply × value per unit, from measured outcomes) and wiring the headroom into M3c minting, then re-reading the red
+probe.
