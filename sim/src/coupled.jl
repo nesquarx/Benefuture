@@ -30,37 +30,9 @@ function _with_econ_epoch(p::M3cParams, pv::AbstractVector{<:Real}, epoch_steps:
                      touch = t.touch, shift = t.shift, spread = t.spread, gp = t.gp)
     th = threshold === nothing ? p.threshold : Float64(threshold)
     tw = track_window === nothing ? p.track_window : Int(track_window)
-    M3cParams(
-        t_ep, p.agents, p.leaf_parent, p.known, p.overlaps, p.λpos, p.λneg, p.marker_σ, p.window,
-        p.spread, p.classify_σ, p.parent_threshold, p.μ_min, p.leaf_threshold, p.temperature,
-        p.σ_leaf, p.σ_branch, p.σ_coarse, p.n_learn, th, p.novel_threshold, p.coarse_threshold,
-        p.max_credence, p.ratchet_k, p.ratchet_margin, p.ratchet_horizon, p.accuracy_rule,
-        p.acc_halflife, p.acc_rate_ref, p.acc_mute, p.rate_halflife, p.chain_attrib, p.chain_mode,
-        p.chain_copy, p.chain_detect, p.chain_spot, p.chain_shade, p.chain_spot_all,
-        p.adaptive_proposals, p.chain_z, p.ratchet_growth, p.novel_floor, p.scarcity_floor,
-        p.actor_min_records, p.attest_min_records, p.adv_min_records, p.adv_track_floor,
-        p.form_buffer, p.own_axis, p.bind_conf_compromised, p.bind_conf_affirm, p.bind_conf_deny,
-        p.loud, p.credence_rule, p.min_records, p.μ_rate, p.μ_every, p.endowment, p.cost_per_touch,
-        p.capacity, p.regen, p.overflow_base, p.overflow_factor, p.expert_share, p.form_count,
-        p.form_radius, p.max_new, init_steps, p.transactions, p.causal_distribution,
-        p.cc_threshold, p.traversal_decay, p.p_upstream, p.β_upstream, p.recent_outputs,
-        p.attribution_σ, p.accolade_rate, p.contract_share, p.p_contracted, p.p_hazard,
-        p.hazard_share, p.hazard_size, p.hazard_σ, p.guardians, p.p_informed, p.diligence,
-        p.repair_efficiency, p.p_side, p.side_share, p.side_size, p.p_foresee, p.p_shock,
-        p.shock_size, false, p.adapt, p.gov_epoch, p.gov_δ, p.gov_candidates, p.gov_trials,
-        p.gov_z, p.gov_gauge, p.bias_σ, p.cost_σ, p.regen_σ, p.memory_loss, p.participation,
-        p.remeasure_σ, p.deceit, tw, p.p_trace, p.launder, p.launder_saving,
-        p.choice_σ, p.choice_gain, p.ability_spread, p.advap, p.vigilance, p.adv_z, p.adv_share,
-        p.adv_floor, p.audit_cost, p.frivolous_threshold, p.adv_window, p.p_false_trace,
-        p.frivolous, p.pattern_attention, p.stake_attention, p.marginal_margin, p.relative_bar,
-        p.escape, p.escape_start, p.escape_steps, p.escape_share, p.escape_epoch,
-        p.irreparable_loss, p.p_new_model, p.improve_drift, p.improve_σ, p.scale_min, p.model_z,
-        p.pool_max, p.explore_share, p.takeover_records, p.p_extremist, p.extremise, p.whitewash,
-        p.bind_miss, p.bind_clusters, p.bind_threshold, p.bind_quorum, p.bind_compromised,
-        p.p_reveal, p.p_newcomer, p.attest_pooled, p.bind_weighted, p.bind_quorum_weight,
-        p.slander, p.on_off, p.events, p.hazard_heavy, p.hazard_α, p.hazard_cap, p.forks,
-        p.fork_rule, p.merges, p.ra_rate
-    )
+    # Copy every field, overriding these four: positional lists break whenever M3cParams gains a field.
+    over = Dict{Symbol,Any}(:toy => t_ep, :threshold => th, :track_window => tw, :init_steps => Int(init_steps))
+    M3cParams((get(over, f, getfield(p, f)) for f in fieldnames(M3cParams))...)
 end
 
 """
