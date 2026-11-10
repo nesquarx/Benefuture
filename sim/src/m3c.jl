@@ -219,6 +219,10 @@ struct M3cParams
     # `ra_rate` > 0, each step in which more StandCoin work halts unfunded than executes, baseline resource prices shrink by
     # that share (deflation absorbs the hit); otherwise they recover toward 1 at the same rate. Governed (0: off).
     ra_rate::Float64
+    # Global resource accounting (8.133): with `ra_horizon` > 0, new issuance (positive credits) is capped so claims
+    # outstanding stay within that many steps of deliverable value (`deliverable_value_ref` of capacity, regeneration and
+    # base price; `issuance_headroom_ref`); value beyond the cap is not issued, logged loudly. Governed (0: off).
+    ra_horizon::Float64
 end
 
 """
@@ -261,7 +265,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -319,6 +323,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(m -> m[1] >= 1 && 1 <= m[2] <= length(agents) && 1 <= m[3] <= length(agents) && m[2] != m[3], merges),
           "merges: step ≥ 1, absorbed and target distinct agents")
     check(isfinite(ra_rate) && 0 <= ra_rate < 1, "contraction rate in [0, 1)")
+    check(isfinite(ra_horizon) && ra_horizon >= 0, "issuance horizon non-negative")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -343,7 +348,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -811,6 +816,7 @@ function run_m3c(p::M3cParams; seed)
     evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
     available = p.capacity
     price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
+    ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
@@ -987,6 +993,7 @@ function run_m3c(p::M3cParams; seed)
         cur[] = step; update_rates!()
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
         scoring_only = step <= p.init_steps
+        bal0 = p.ra_horizon > 0 ? copy(balance) : balance
         for (fs, fa, fslot, fx) in p.forks
             fs == step || continue
             for c in 1:ncol
@@ -1684,6 +1691,18 @@ function run_m3c(p::M3cParams; seed)
         end
         empty!(repairs)
         available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
+        # Global resource accounting (8.133): the step's net new issuance is capped at the headroom left under the horizon of
+        # deliverable value; the excess is taken back pro rata from the identities whose balances rose this step (not issued).
+        if p.ra_horizon > 0
+            cap = p.ra_horizon * deliverable_value(p.capacity, p.regen, p.cost_per_touch)
+            over = sum(balance) - max(cap, sum(bal0))
+            if over > 0
+                rise = max.(balance .- bal0, 0.0); tot = sum(rise)
+                tot > 0 && (balance .-= rise .* min(1.0, over / tot))
+                ra_withheld[] += min(over, tot)
+                degrade!("issuance", "capped at resource accounting's headroom", "claims at the horizon of deliverable value (8.133)")
+            end
+        end
         if p.ra_rate > 0
             if lane.halted[] - halted0 > lane.executed[] - executed0
                 price_scale[] *= 1 - p.ra_rate
@@ -1937,7 +1956,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], overflow_agent = overflow_agent, lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],

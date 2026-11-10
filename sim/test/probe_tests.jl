@@ -1340,6 +1340,10 @@ end
     P(T) = M3cParams(ToyParams(n = 40, steps = T, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
     claimed(T) = (p = P(T); sum(run_m3c(p; seed = 1).balance) / (p.regen * p.capacity * p.cost_per_touch))
     short, long = claimed(60), claimed(240)
-    @test long > short                       # the undesired outcome, observed now
-    @test_broken long <= 50.0                # the desired outcome: claims bounded by RA's horizon of capacity
+    @test long > short                       # the undesired outcome without resource accounting
+    @test long > 50.0
+    # With global resource accounting (`ra_horizon` 50): issuance capped at the headroom, claims stay within the horizon.
+    PR(T) = M3cParams(ToyParams(n = 40, steps = T, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02, ra_horizon = 50.0)
+    bounded(T) = (p = PR(T); sum(run_m3c(p; seed = 1).balance) / (p.regen * p.capacity * p.cost_per_touch))
+    @test bounded(240) <= 50.0 + 1e-6
 end

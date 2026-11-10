@@ -524,3 +524,7 @@ irreparable_equivalent(deaths, du, pop, base_u, base_h; compounding = 1.5, persi
 "New issuance allowed so claims outstanding stay within `horizon` steps of deliverable value (Lean `issuance_headroom_ref`; L83, 8.133)."
 issuance_headroom(claims, deliverable_per_step, horizon) =
     ccall(sym(:bf_issuance_headroom), Float64, (Float64, Float64, Float64), Float64(claims), Float64(deliverable_per_step), Float64(horizon))
+
+"Deliverable value per step: supply × regeneration rate × value per unit (Lean `deliverable_value_ref`; L83, 8.133)."
+deliverable_value(supply, regen_rate, unit_value) =
+    ccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))

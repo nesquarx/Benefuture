@@ -77,6 +77,9 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_coerror_copy] def coerrorCopy (both either minEither medShare floorShare margin : Float) : UInt8 :=
   if coerror_copy_ref both either minEither medShare floorShare margin then 1 else 0
 
+@[export bf_deliverable_value] def deliverableValue (supply regenRate unitValue : Float) : Float :=
+  deliverable_value_ref supply regenRate unitValue
+
 @[export bf_issuance_headroom] def issuanceHeadroom (claims deliverablePerStep horizon : Float) : Float :=
   issuance_headroom_ref claims deliverablePerStep horizon
 

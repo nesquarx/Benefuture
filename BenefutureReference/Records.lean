@@ -323,3 +323,8 @@ end BenefutureReference
 def issuance_headroom_ref (claims deliverablePerStep horizon : Float) : Float :=
   let cap := horizon * deliverablePerStep
   if cap - claims > 0.0 then cap - claims else 0.0
+
+/-- Deliverable value per step (resource accounting's capacity estimate, L83; 8.133): a resource's supply, the share of
+    it that regenerates each step, and the value one unit delivers (from measured outcomes; at first its base price). -/
+def deliverable_value_ref (supply regenRate unitValue : Float) : Float :=
+  supply * regenRate * unitValue
