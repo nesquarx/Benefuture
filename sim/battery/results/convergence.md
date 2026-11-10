@@ -1,6 +1,6 @@
 # Convergence & Population-Diversity Sizing Report
 
-- **Commit**: `11c82f8f6d453d71df755a5a6f7dd389fd400fd7`
+- **Commit**: `435cd668ab3f4b770a2fe34c3684c18bb8606056`
 - **Sharded Execution**: Consolidated across parallel shards
 - **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
 
@@ -28,9 +28,9 @@
 |---|---|---|---|---|
 | `100` (`50` active) | 49.74 ± 1.10 | 4.3% | 45.1 | 3.6% |
 | `150` (`100` active) | 101.70 ± 1.04 | 2.0% | 98.0 | 1.5% |
-| `250` (`200` active) | 213.82 ± 1.44 | 1.3% | 149.0 | 1.6% |
-| `350` (`300` active) | 325.57 ± 2.06 | 1.2% | 158.0 | 1.1% |
-| `400` (`350` active) | 382.41 ± 1.95 | 1.0% | 196.3 | 0.5% |
+| `250` (`200` active) | 213.61 ± 1.43 | 1.3% | 149.7 | 1.6% |
+| `350` (`300` active) | 324.32 ± 2.25 | 1.4% | 143.9 | 1.2% |
+| `400` (`350` active) | 381.09 ± 2.25 | 1.2% | 169.2 | 0.6% |
 
 | Diverse Population (`n` beings, `n_agents` log-normal, `150` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Gain / Plan |
 |---|---|---|---|---|---|
@@ -38,7 +38,7 @@
 | `n = 40`, `agents = 6`, `plans = 10` | 191.40 ± 2.86 | 2.9% | 66.9 | 4.785 | 19.14 |
 | `n = 80`, `agents = 8`, `plans = 10` | 101.70 ± 1.04 | 2.0% | 98.0 | 1.271 | 10.17 |
 | `n = 160`, `agents = 12`, `plans = 20` | 89.67 ± 1.31 | 2.9% | 68.3 | 0.560 | 4.48 |
-| `n = 240`, `agents = 16`, `plans = 30` | 112.75 ± 0.73 | 1.3% | 153.9 | 0.470 | 3.76 |
+| `n = 240`, `agents = 16`, `plans = 30` | 112.50 ± 0.76 | 1.3% | 148.9 | 0.469 | 3.75 |
 
 ## 3. M5 Governance with Diverse Voter Skills & Ability Caps
 | Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
@@ -62,18 +62,18 @@
 ## 4. M7 Population with Diverse Teachers, Learners & Novelty (Distributed G)
 | Steps (`n = 100`) | `floor_u` Gain ± SE | `floor_u` Rel 95% Half-Width | `floor_u` `z` | `median_u` Rel 95% Half-Width |
 |---|---|---|---|---|
-| `25` | 4.66 ± 0.15 | 6.3% | 31.0 | 7.3% |
-| `50` | 7.84 ± 0.29 | 7.3% | 26.9 | 8.2% |
-| `80` | 11.66 ± 0.54 | 9.1% | 21.5 | 10.6% |
-| `120` | 17.46 ± 0.80 | 9.0% | 21.8 | 9.9% |
-| `150` | 21.86 ± 0.86 | 7.7% | 25.4 | 8.0% |
+| `25` | 11.03 ± 0.28 | 5.0% | 39.2 | 4.4% |
+| `50` | 12.66 ± 0.30 | 4.6% | 42.5 | 4.7% |
+| `80` | 14.35 ± 0.37 | 5.0% | 38.8 | 5.0% |
+| `120` | 16.72 ± 0.27 | 3.2% | 61.7 | 2.9% |
+| `150` | 17.99 ± 0.31 | 3.4% | 57.6 | 3.1% |
 
 | Diverse Beings (`n`, `teacher_cv = 0.5`, `reception_σ = 0.5`, `80` steps) | `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being |
 |---|---|---|---|---|
-| `n = 20` | 6.58 ± 0.69 | 20.6% | 9.5 | 0.329 |
-| `n = 40` | 9.25 ± 0.93 | 19.6% | 10.0 | 0.231 |
-| `n = 80` | 10.02 ± 0.84 | 16.5% | 11.9 | 0.125 |
-| `n = 150` | 10.27 ± 0.44 | 8.3% | 23.6 | 0.068 |
-| `n = 300` | 11.33 ± 0.29 | 5.1% | 38.7 | 0.038 |
-| `n = 500` | 10.75 ± 0.25 | 4.6% | 42.6 | 0.022 |
+| `n = 20` | 11.93 ± 0.59 | 9.7% | 20.3 | 0.597 |
+| `n = 40` | 12.68 ± 0.42 | 6.5% | 30.0 | 0.317 |
+| `n = 80` | 13.20 ± 0.34 | 5.1% | 38.5 | 0.165 |
+| `n = 150` | 13.78 ± 0.23 | 3.3% | 59.3 | 0.092 |
+| `n = 300` | 13.99 ± 0.20 | 2.8% | 69.0 | 0.047 |
+| `n = 500` | 14.28 ± 0.21 | 2.9% | 67.9 | 0.029 |
 
