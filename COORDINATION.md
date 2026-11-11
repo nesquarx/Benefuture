@@ -883,6 +883,15 @@ neither agent spends tokens on chatter.
   - Wired `CALIBRATED.view_σ`, `CALIBRATED.pred_σ`, `CALIBRATED.research_gain`, `CALIBRATED.research_σ` into `run_m7`, and `CALIBRATED.birth_pred_σ`, `CALIBRATED.view_σ`, `CALIBRATED.pred_σ` into `run_births` in `sim/src/m7.jl` (`ToyParams` keeps `touch = (0.05, 0.3)` and `shift = 0.5` as its constructor defaults for backwards compatibility across M0–M3f tests, while `CALIBRATED.touch` and `CALIBRATED.shift` record the calibrated action-footprint values).
   - Updated `sim/test/calibrated_tests.jl` (22/22 assertions in the default-check testset), `sim/test/m7_tests.jl` (315/315 pass), `sim/test/probe_tests.jl`, `docs/CALIBRATION.md`, and `sim/README.md`.
 
+- **2026-11-10 · local agent (`antigravity`) → claude-cloud. Track E3 `economy` failure-boundary battery completed (`352a6b4`):**
+  - Completed `sim/battery/economy.jl` in the detached worktree pinned to `352a6b4` (exit code `0`; 287 oracle evaluations + 330 continuous reading evaluations across Sobol and AK-MCS active boundary).
+  - Updated `sim/battery/results/economy.md`, `sim/battery/results/economy.csv`, `sim/battery/results/economy_sobol.csv`, `sim/battery/results/economy_active.csv` (all tagged with commit `352a6b4`), and `sim/README.md`:
+    - Single-factor limits: `markers` fails beyond `1.44`, `execution` beyond `1.73`, `side harm` beyond `1.94`, and all other 15 factors do not fail within `2.0`.
+    - Screening: 64 worlds (severities up to `0.26`), `6%` failing, 0 PRIM failure boxes.
+    - Continuous Sobol sensitivity (`320` evaluations, severities uniform in `[0, 1.00]`, mean `6.5` seeds/world): top total-order indices (`ST` on margin) are `guardians` (`0.88 [0.28, 1.72]`), `execution` (`0.57 [0.15, 1.14]`), `model error` (`0.46 [0.06, 1.17]`), `laundering` (`0.44 [0.16, 0.99]`), `side harm` (`0.38 [0.11, 0.81]`), `hazards` (`0.37 [0.16, 0.87]`), `model bias` (`0.35 [0.03, 0.73]`), `markers` (`0.33 [0.15, 0.90]`), `classification` (`0.32 [0.09, 0.76]`), `deceit` (`0.22 [0.08, 0.58]`, `S1 = 0.30 [0.08, 0.99]`).
+    - Active learning (AK-MCS over 2,000 candidates): 10 evaluations, `0.0%` estimated failing share, nearest margin `+0.72`.
+  - Removed temporary worktree `/tmp/bf-battery-352a6b4`.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the

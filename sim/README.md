@@ -553,17 +553,19 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
 
 - **Convergence on 5019de0, repeated on 7177b3c and 14fa4e5** (traits-mode M7, the default since 8.112; identical readings): understanding floor and median settle at step 132 (worst 133) at n = 100; between-seed half-width under 10% from n = 20 (8.0%) to 2.5% at n = 300; floor gain 11.5 at n = 20 to 14.3 at n = 500. Sizing: n ≥ 20, steps ≥ 135 ([convergence](battery/results/convergence.md)).
-- **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
-  success pattern, repeating its 9ceed47 and 98a12ee readings; governance on 72179c2 under the calibrated
+- **Latest readings** (realistic ranges, AdvAp on; economy on code 352a6b4 (with continuous Sobol and AK-MCS active-learning sections), judged by the Goal's whole
+  success pattern; governance on 72179c2 under the calibrated
   ranges (signal noise 2–6, ability scatter 0.5–1.5, hidden outcomes 0.7–0.1, delegation 0–0.4): no
   factor fails alone within twice its realistic top and no screened world fails; total-order indices
   ability scatter 0.71, signal noise 0.49, collusion 0.36, local noise 0.26, delegation 0.21, hidden
   outcomes 0.17, loyalty 0.06 (first-order intervals too wide to read at 64 rows). Economy on the
-  calibrated build, ff30b17, its screening and rays reproduced exactly on fd11d5a: 8% of 64 screened
-  worlds fail; alone, side harm fails at 0.31 of its realistic top, markers at 1.35, execution at
-  1.65, model error at 1.94, the rest not within 2; the side-harm boundary is a stall of the
-  currencies under the normal credence, removed by the record credence (8.66); its continuous
-  section is running on e85dc6d). Economy on 26b55f8: alone, only execution (1.40) and side harm (1.31) fail within twice their
+  calibrated build, ff30b17, its screening and rays reproduced on fd11d5a and completed on 352a6b4:
+  alone, only markers (1.44), execution (1.73) and side harm (1.94) fail within twice their realistic
+  tops, the rest not within 2; 6% of 64 screened worlds fail (severities up to 0.26); continuous Sobol
+  total-order indices (320 evaluations) rank guardians 0.88, execution 0.57, model error 0.46,
+  laundering 0.44, side harm 0.38, hazards 0.37, model bias 0.35, markers 0.33, classification 0.32,
+  deceit 0.22, inattention 0.21, outage 0.13, memory loss 0.10; AK-MCS active learning (10 of 2000
+  candidates) finds 0.0% estimated failing share, nearest margin +0.72). Economy on 26b55f8: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
