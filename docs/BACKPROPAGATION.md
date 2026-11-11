@@ -3219,3 +3219,9 @@ global RA, claims accumulate past capacity, and when holders spend, funded actio
 (checks that cannot be cashed; metric: share of funded actions refused, and price spikes in `scarcity_cost`). With RA's
 issuance cap, refusals and spikes should fall without lowering the floors. Gaming to test with it: hoarding claims to
 corner capacity (artificial scarcity, the 8.133 withholder).
+8.133 step 3 (2026-11-11): budget constraint in M3c (`budget = true`, off by default): an action needs its proposer's
+currency for its resource cost, and available resources; a funded action refused for lack of resources is counted as
+uncashable and logged loudly. Scarce capacity (300), 240 steps, transactions on, issuance cap at horizon 50 against none,
+12 paired seeds: uncashable refusals −8.5 (se 10.8), floor of understanding +3.2 (se 1.9), floor of happiness +2.9
+(se 1.9); none significant at z = 2.25 (a 3-seed first reading suggested a doubling of the floor; it did not hold at 12).
+Direction favours the cap; precision insufficient. Next: seeds until stable, and the withholder/hoarding test.
