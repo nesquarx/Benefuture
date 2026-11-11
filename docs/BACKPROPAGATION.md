@@ -3231,3 +3231,12 @@ the 0.5 tolerance). The issuance cap lifts the floor of understanding by 2.78 (s
 where currency must buy scarce resources, binding issuance to deliverable capacity improves the floors, though the
 mechanism is not mainly fewer refused claims; next: trace where the floor gain comes from (which actions the cap
 defers), then the withholder/hoarding test.
+8.133 trace (2026-11-11; budget world, capacity 300, skills 0.2–0.8, 16 seeds): without the cap 185.5 actions executed,
+77.8 refused uncashable, 1.4 unfunded, floor 9.98; with the cap 219.7 executed, 35.6 uncashable, 30.5 unfunded, floor
+13.59. Executors' mean skill is unchanged (0.594 vs 0.596), so the gain is not better selection: the cap converts
+refusals at the resource stage (claims arriving at exhausted capacity) into refusals at the funding stage, and more work
+gets through in total (+34 actions). Reading: uncapped claims bunch demand on capacity; capped issuance spreads it.
+Withholder test design (next): one agent holds back part of capacity (supply hidden from RA's estimate), raising
+scarcity_cost; measure its gain against peers before discovery; on discovery (RA's supply estimate vs observed draws, or
+a BTS report) it repays the premium on every affected action, including others' supply, plus the reporter's reward (none
+on self-report); a three-member cartel where the first reporter nets positive. Red first: the withholder profits.
