@@ -3225,3 +3225,9 @@ uncashable and logged loudly. Scarce capacity (300), 240 steps, transactions on,
 12 paired seeds: uncashable refusals −8.5 (se 10.8), floor of understanding +3.2 (se 1.9), floor of happiness +2.9
 (se 1.9); none significant at z = 2.25 (a 3-seed first reading suggested a doubling of the floor; it did not hold at 12).
 Direction favours the cap; precision insufficient. Next: seeds until stable, and the withholder/hoarding test.
+8.133 step 3 precision (2026-11-11): same comparison, seeds added by precision to the cap of 64 (se 0.73 did not reach
+the 0.5 tolerance). The issuance cap lifts the floor of understanding by 2.78 (se 0.73, z 3.8) and of happiness by 2.56
+(se 0.74, z 3.5): significant at z = 2 and z = 3. Uncashable refusals −5.5 (se 4.2): not significant. Reading: in a world
+where currency must buy scarce resources, binding issuance to deliverable capacity improves the floors, though the
+mechanism is not mainly fewer refused claims; next: trace where the floor gain comes from (which actions the cap
+defers), then the withholder/hoarding test.
