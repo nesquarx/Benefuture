@@ -3210,3 +3210,12 @@ world balances barely feed back into real outcomes: currency is earned but littl
 StandCoin lane draws on balances), so an uncashable claim costs nothing here and the cap is cosmetic. The coupling the
 ruling protects (output bound to resource and time inputs) needs balances that buy resources and commission work
 (8.133 continued: generation pays work, extraction burns); that is the next step, before the cap can show an effect.
+8.133 step 3 design (2026-11-11): why the cap did not bite. M3c charges each executed action its resource cost from the
+actor's balance, but nothing requires the balance to be there first: balances may go negative and actions run anyway,
+so issued currency never competes for resources. The coupling to build: a budget constraint (an action executes only if
+its proposer's balance, plus pledges, covers its cost, as the StandCoin lane already requires) and resources that run
+out (`available`), so currency is a claim on scarce capacity. Red outcome to show first: with the constraint and no
+global RA, claims accumulate past capacity, and when holders spend, funded actions are refused for lack of resources
+(checks that cannot be cashed; metric: share of funded actions refused, and price spikes in `scarcity_cost`). With RA's
+issuance cap, refusals and spikes should fall without lowering the floors. Gaming to test with it: hoarding claims to
+corner capacity (artificial scarcity, the 8.133 withholder).
