@@ -223,6 +223,7 @@ struct M3cParams
     # outstanding stay within that many steps of deliverable value (`deliverable_value_ref` of capacity, regeneration and
     # base price; `issuance_headroom_ref`); value beyond the cap is not issued, logged loudly. Governed (0: off).
     ra_horizon::Float64
+    budget::Bool   # 8.133 step 3: actions need the proposer's currency for their cost and available resources (world; off: legacy)
 end
 
 """
@@ -265,7 +266,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -348,7 +349,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -817,6 +818,7 @@ function run_m3c(p::M3cParams; seed)
     available = p.capacity
     price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
     ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
+    budget = (unfunded = Ref(0), uncashable = Ref(0))
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
@@ -1331,6 +1333,17 @@ function run_m3c(p::M3cParams; seed)
             # Local, not the step's: a deferred measurement must keep this action's own values.
             local a, plan, l, done, seen, measured, credits, minted, idx
             a, plan, l = proposers[j], plans[j], leaves[j]
+            # Budget constraint (8.133 step 3): the proposer must hold the currency for the action's resource cost, and the
+            # resources must be there; a funded action refused for lack of resources is a check that cannot be cashed.
+            if p.budget
+                if sum(max.(balance[a, :], 0.0)) < costs[j]
+                    budget.unfunded[] += 1; return
+                elseif available < count(touched(plan))
+                    budget.uncashable[] += 1
+                    degrade!("resources", "action refused", "funded claim but capacity exhausted (8.133)")
+                    return
+                end
+            end
             done, seen, measured = perform!(j, a)
             balance[a, root] -= priced[j][root] * costs[j]
             minted = 0.0
@@ -1956,7 +1969,7 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],
