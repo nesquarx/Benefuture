@@ -3240,3 +3240,9 @@ Withholder test design (next): one agent holds back part of capacity (supply hid
 scarcity_cost; measure its gain against peers before discovery; on discovery (RA's supply estimate vs observed draws, or
 a BTS report) it repays the premium on every affected action, including others' supply, plus the reporter's reward (none
 on self-report); a three-member cartel where the first reporter nets positive. Red first: the withholder profits.
+8.133 withholder, red (2026-11-11): M3c option `supplier`/`supply_share`/`withhold` (a supplier paid its share of every
+action's resource cost; it may hide part of its supply, raising scarcity prices). Budget world, capacity 300, supplier
+owning half the capacity and hiding 60% of it, 48 paired seeds: the withholder's income rises by 76.6 (se 31.8,
+significant at z = 2); floor of understanding +0.5 (se 0.9, not significant). The exploit pays, as the ruling expects
+before discovery. Next: discovery (RA's supply estimate against observed availability, or a report) and repayment of the
+market-wide premium plus the reporter's reward, then the three-member cartel.
