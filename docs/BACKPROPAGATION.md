@@ -3257,3 +3257,25 @@ Probes in `sim/test/probe_tests.jl` (budget world, `capacity = 300, regen = 0.20
 profits significantly; external discovery (`advap = true`, 16 seeds) makes all buyers whole and nets negative for the
 withholder; lone self-report (`16` seeds) pays 0 reward and repays market-wide premium; 3-member cartel (`16` seeds) nets
 strictly positive for the first reporter (`withhold_agent_net[1] > 0`) and strictly negative for colluders.
+
+L3.3 & L3.4 Coupled Long-Horizon Battery & Root-Cause Diagnosis (2026-11-12): Recorded the sharded `long_horizon` battery results
+from commit `51006a9a9fe2c917a6d019667fb03d5eae7262f1` (`sim/battery/results/long_horizon.md`, `sim/battery/results/long_horizon.csv`,
+paired seeds `1:32` across the 2 × 2 factorial `:bf` vs `:status_quo` × `:stressed` vs `:unstressed` and the 800-step `open_885_better_models` sweep):
+(1) `20yr_coupled_gov` (`steps = 240, epoch = 20, m5_decisions = 1200`): `:bf` improves late-half governance accuracy over `:status_quo`
+    both stressed (`0.9572 vs 0.9548`, `+0.0024 ± 0.0007, z = +3.29`) and unstressed (`0.9570 vs 0.9550`, `+0.0020 ± 0.0007, z = +3.12`).
+(2) `100yr_century` (`steps = 1200, epoch = 25, m5_decisions = 1200`): `:bf` raises `floor_h` (`928.6542 vs 921.9642`, `+6.6900 ± 2.8990, z = +2.31`)
+    and `median_h` (`1277.7377 vs 1270.7819`, `+6.9558 ± 3.5464, z = +1.96` stressed; `1286.8120 vs 1279.9659`, `+6.8461 ± 3.3301, z = +2.06` unstressed),
+    and stressed `gov_acc` (`0.9551 vs 0.9540`, `+0.0010 ± 0.0005, z = +1.92`).
+(3) `10yr_coupled` (`steps = 120, epoch = 24, m5_decisions = 120`): economy floors are flat (`floor_u` `+0.1466 ± 1.0327, z = +0.14`) and
+    `worst_drop` slightly higher in `:bf` stressed (`27.5657 vs 26.8965`, `+0.6691 ± 0.1943, z = +3.44`), while the stress manipulation itself
+    drops floors strongly across all horizons (`z = -4.05` at 10yr, `-5.13` at 20yr, `-9.45` at 100yr).
+(4) Diagnosis of the `10yr_coupled` flatness (`sim/src/coupled.jl:119-122`): `run_coupled` starts each `24`- or `25`-step epoch by calling `run_m3c(p_ep; ...)`
+    from scratch (`ep_init = 12` in epoch 1 and `0` in epochs 2+) instead of continuing live M3c state. Each epoch therefore resets `mpool` accuracy
+    histories (leaving only 24–25 steps vs `:window = 100` and `ratchet_horizon * acc_halflife = 140`), resets agent balances/ledgers/AdvAp records,
+    and lets catastrophes hit freshly initialized epochs (`worst_drop` `8.14–116.65` in coupled `ep=24` vs `1.18–3.20` in continuous 120-step `run_m3c` on seeds 1–4).
+    Thread-resumable M3c state across `run_coupled` epochs is the candidate fix so economic memory matures continuously over 10–100yr horizons.
+(5) Diagnosis of `open_885_better_models` (`1:32` seeds on `51006a9`): `takeover_count_decay_vs_window` moved from `+12.27 ± 1.60` on build `5605704`
+    to `2.5938 vs 2.8125 (-0.2188 ± 0.2448, z = -0.89)` (`own_share +0.0342 ± 0.0225, z = +1.52`; `floor_u +51.6158 ± 34.5720, z = +1.49`). A 4-seed
+    diagnostic of `better_models_world` (`takeover_records = 100`, calibrated defaults) confirms total takeovers stay at ~2–3 per 800 steps under both
+    `credence_rule = :record` (`mean = 2.75` for both `:decay` and `:window`) and `:normal` (`mean = 1.75` vs `2.0`), showing no significant takeover
+    count difference once `takeover_records = 100` (8.58-b) and calibrated noise govern eligibility.
