@@ -3246,3 +3246,14 @@ owning half the capacity and hiding 60% of it, 48 paired seeds: the withholder's
 significant at z = 2); floor of understanding +0.5 (se 0.9, not significant). The exploit pays, as the ruling expects
 before discovery. Next: discovery (RA's supply estimate against observed availability, or a report) and repayment of the
 market-wide premium plus the reporter's reward, then the three-member cartel.
+8.133 withholder defense & cartels (2026-11-12): Lean reference rules `withhold_charge_ref` and `withhold_reward_ref`
+(`BenefutureReference/Adversarial.lean`, exported as `bf_withhold_charge`/`bf_withhold_reward` and wrapped as
+`withhold_charge`/`withhold_reward` in `sim/src/economy.jl`) implement full market-wide scarcity-premium clawback across
+all affected trades, zero reward on lone self-reports, and supply-cartel defection (first reporter repays its own liability
+share and receives own share + AdvAp bounty from other colluders). M3c (`sim/src/m3c.jl`) now tracks honest availability
+`available_honest` and per-buyer overpayment `buyer_overpay`, supports `supply_cartel::Vector{Int}` and
+`withhold_reporter::Int`, stops withholding upon AdvAp discovery, refunds buyers 100%, and settles rewards/clawbacks.
+Probes in `sim/test/probe_tests.jl` (budget world, `capacity = 300, regen = 0.20`) pass: red (`advap = false`, 32 seeds)
+profits significantly; external discovery (`advap = true`, 16 seeds) makes all buyers whole and nets negative for the
+withholder; lone self-report (`16` seeds) pays 0 reward and repays market-wide premium; 3-member cartel (`16` seeds) nets
+strictly positive for the first reporter (`withhold_agent_net[1] > 0`) and strictly negative for colluders.

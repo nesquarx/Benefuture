@@ -892,6 +892,15 @@ neither agent spends tokens on chatter.
     - Active learning (AK-MCS over 2,000 candidates): 10 evaluations, `0.0%` estimated failing share, nearest margin `+0.72`.
   - Removed temporary worktree `/tmp/bf-battery-352a6b4`.
 
+- **2026-11-12 · local agent (`antigravity`) → claude-cloud. 8.133 Artificial-Scarcity Supply Withholding Defense, Full Buyer Repayment & Cartel Defection (`BenefutureReference/Adversarial.lean`, `BenefutureReference/Export.lean`, `sim/src/economy.jl`, `sim/src/m3c.jl`, `sim/test/advap_tests.jl`, `sim/test/probe_tests.jl`):**
+  - **Lean Reference & Exports**: Added `withhold_charge_ref` (`max 0.0 marketPremium + max 0.0 reward + max 0.0 auditCost`) and `withhold_reward_ref` (0 on lone self-report; `ownLiability + advap_reward_ref 0.0 remainingPremium advShare advFloor` on cartel defection; `advap_reward_ref 0.0 remainingPremium advShare advFloor` on external discovery) to `BenefutureReference/Adversarial.lean`, exported as `bf_withhold_charge` / `bf_withhold_reward` in `BenefutureReference/Export.lean`, rebuilt shared library (`lake build BenefutureReference:shared`, 28 jobs), and wrapped & exported as `withhold_charge` / `withhold_reward` in `sim/src/economy.jl` and `sim/src/BenefutureSim.jl`.
+  - **M3c Mechanics (`sim/src/m3c.jl`)**: Added `supply_cartel::Vector{Int}` and `withhold_reporter::Int` to `M3cParams`; tracked counterfactual honest availability `available_honest`, market-wide overpayment `buyer_overpay`, and per-agent net `withhold_agent_net`; implemented AdvAp discovery stopping withholding and restoring capacity, 100% buyer reimbursement across all affected trades (`withhold_refunded ≈ withhold_premium`), 0 reward on lone self-reports, and cartel defection where the first reporter repays its own share while remaining colluders pay the rest + AdvAp bounty.
+  - **Verification**:
+    - `sim/test/advap_tests.jl`: `56/56` passed (including `13/13` new unit tests on `withhold_reward`/`withhold_charge`).
+    - `sim/test/probe_tests.jl` (3 new 8.133 probes): red probe (`advap = false`, 32 seeds) `1/1`; AdvAp external discovery + lone self-report (16 seeds each) `177/177`; 3-member cartel defection (16 seeds) `96/96`.
+    - `sim/test/economy_tests.jl` (`650/650`) and `sim/test/m3c_tests.jl` (`49/49`) passed; `tools/check_readme_claims.py` and `tools/check_article_refs.py` passed.
+  - **Next**: Track B / L3.3 (`sim/battery/long_horizon.jl` / `sim/battery/status_quo.jl` coupled comparison).
+
 - **2026-11-11 · local agent (`antigravity`) → claude-cloud. Track B/L3.1b and B/L3.1c: Status-quo institutional baseline & probe (`sim/src/status_quo.jl`, `sim/src/BenefutureSim.jl`, `sim/README.md`, `sim/test/probe_tests.jl`):**
   - **B/L3.1b Build (`sim/src/status_quo.jl`, `sim/src/BenefutureSim.jl`, `sim/README.md`)**:
     - Created `StatusQuoParams` and `run_status_quo` implementing the six empirical pillars of modern institutions (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6):

@@ -401,4 +401,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_repeat_escrow_credence] def repeatEscrowCredence (credence negShare : Float) (repeats : USize) (growth floorC : Float) : Float :=
   repeat_escrow_credence_ref credence negShare repeats.toNat growth floorC
 
+-- 8.133 ruling: artificial-scarcity supply withholding charge and AdvAp/cartel reward
+@[export bf_withhold_charge] def withholdCharge (marketPremium reward auditCost : Float) : Float :=
+  withhold_charge_ref marketPremium reward auditCost
+
+@[export bf_withhold_reward] def withholdReward (ownLiability remainingPremium advShare advFloor : Float)
+    (hasCoconspirators selfReport : UInt8) : Float :=
+  withhold_reward_ref ownLiability remainingPremium advShare advFloor (hasCoconspirators != 0) (selfReport != 0)
+
 end BenefutureReference.Export

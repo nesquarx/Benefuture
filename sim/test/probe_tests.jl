@@ -1402,3 +1402,78 @@ end
     # (4) Uncapped delegation concentrates voting power below full representation
     @test mean(n_eff_vals) < 8.0
 end
+
+@testset "Probe (red): resource supplier profits from artificial scarcity withholding without AdvAp (8.133)" begin
+    # Red world (author ruling 8.133; BACKPROPAGATION.md 8.133): without AdvAp discovery,
+    # hiding part of owned capacity raises scarcity prices so the supplier profits.
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_p(wh)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supplier = 1, supply_share = 0.5, withhold = wh, advap = false)
+    end
+    diffs = [run_m3c(make_p(0.6); seed = s).supplier_income - run_m3c(make_p(0.0); seed = s).supplier_income for s in 1:32]
+    pe = paired_effect(diffs; z = 2.0)
+    @test pe.mean > 0 && pe.significant
+end
+
+@testset "Probe: AdvAp discovery makes artificial scarcity unprofitable and self-reports earn 0 reward (8.133)" begin
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_p(; wh = 0.6, reporter = 0)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supplier = 1, supply_share = 0.5, withhold = wh, advap = true, vigilance = 0.2,
+                  adv_share = 0.1, adv_floor = 1.0, audit_cost = 1.0, withhold_reporter = reporter)
+    end
+    # 1. External discovery across 16 paired seeds:
+    ext_nets = Float64[]
+    for s in 1:16
+        tr = run_m3c(make_p(reporter = 0); seed = s)
+        @test tr.withhold_discovered
+        @test tr.withhold_stopped
+        @test tr.withhold_premium > 0
+        @test tr.withhold_refunded ≈ tr.withhold_premium     # buyers 100% made whole
+        @test tr.withhold_reward > 0
+        @test tr.withhold_agent_net[1] < 0                  # repays market-wide premium + reward + audit > gain
+        push!(ext_nets, tr.withhold_agent_net[1])
+    end
+    @test mean(ext_nets) < 0
+
+    # 2. Lone withholder self-reporting across 16 seeds: 0 reward, repays market-wide premium, buyers made whole.
+    for s in 1:16
+        tr_self = run_m3c(make_p(reporter = 1); seed = s)
+        @test tr_self.withhold_discovered
+        @test tr_self.withhold_reward == 0.0
+        @test tr_self.withhold_refunded ≈ tr_self.withhold_premium
+        @test tr_self.withhold_clawback ≈ tr_self.withhold_premium
+        @test tr_self.withhold_agent_net[1] < 0
+    end
+end
+
+@testset "Probe: three-member supply cartel unravels because first reporter nets positive (8.133)" begin
+    # 3-member cartel [1, 2, 3]: reporter 1 repays its own share (1/3 P), remaining 2/3 P + AdvAp reward
+    # is paid by colluders 2 and 3; defector nets strictly positive, colluders strictly negative, buyers whole.
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_cartel(; reporter = 1)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supply_share = 0.6, withhold = 0.6, supply_cartel = [1, 2, 3],
+                  advap = true, vigilance = 0.2, adv_share = 0.1, adv_floor = 1.0, audit_cost = 1.0,
+                  withhold_reporter = reporter)
+    end
+    for s in 1:16
+        tr = run_m3c(make_cartel(reporter = 1); seed = s)
+        @test tr.withhold_discovered
+        @test tr.withhold_stopped
+        @test tr.withhold_premium > 0
+        @test tr.withhold_refunded ≈ tr.withhold_premium     # buyers 100% made whole
+        @test tr.withhold_agent_net[1] > 0                  # first reporter nets strictly positive
+        @test tr.withhold_agent_net[2] < 0 && tr.withhold_agent_net[3] < 0   # colluders net strictly negative
+    end
+end

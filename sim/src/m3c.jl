@@ -224,12 +224,17 @@ struct M3cParams
     # base price; `issuance_headroom_ref`); value beyond the cap is not issued, logged loudly. Governed (0: off).
     ra_horizon::Float64
     budget::Bool   # 8.133 step 3: actions need the proposer's currency for their cost and available resources (world; off: legacy)
-    # A resource supplier (8.133, gaming): agent `supplier` owns `supply_share` of capacity and is paid that share of every
-    # action's resource cost (generation pays work); it may hide `withhold` of its supply (artificial scarcity, raising
-    # scarcity prices; world, adversary). 0: no supplier.
+    # A resource supplier or supply cartel (8.133, gaming): agent `supplier` (or agents in
+    # `supply_cartel`) owns `supply_share` of capacity (split equally across cartel members) and is
+    # paid that share of every action's resource cost (generation pays work); it may hide
+    # `withhold` of its supply (artificial scarcity, raising scarcity prices; world, adversary).
+    # `withhold_reporter`: 0 lets an external AdvAp observer discover it; > 0 designates the
+    # reporter (either an external reporter, a self-reporting supplier, or a cartel first reporter).
     supplier::Int
     supply_share::Float64
     withhold::Float64
+    supply_cartel::Vector{Int}
+    withhold_reporter::Int
 end
 
 """
@@ -272,7 +277,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -332,6 +337,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isfinite(ra_rate) && 0 <= ra_rate < 1, "contraction rate in [0, 1)")
     check(isfinite(ra_horizon) && ra_horizon >= 0, "issuance horizon non-negative")
     check(0 <= supplier <= length(agents) && 0 <= supply_share <= 1 && 0 <= withhold <= 1, "supplier an agent or 0; shares in [0, 1]")
+    check(all(i -> 1 <= i <= length(agents), supply_cartel) && length(unique(supply_cartel)) == length(supply_cartel),
+          "supply_cartel agents distinct and in 1..na")
+    check(!(supplier > 0 && !isempty(supply_cartel)), "specify supplier or supply_cartel, not both")
+    check(0 <= withhold_reporter <= length(agents), "withhold_reporter an agent or 0")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -356,7 +365,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -823,6 +832,15 @@ function run_m3c(p::M3cParams; seed)
     # Blocked proposals, logged as classification evidence (L88, L145).
     evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
     available = p.capacity
+    available_honest = p.capacity
+    suppliers = p.supplier > 0 ? [p.supplier] : p.supply_cartel
+    wrng = Xoshiro(hash((seed, :withhold_advap)))
+    withhold_stopped = Ref(false)
+    buyer_overpay = zeros(na)
+    sup_scarcity_gain = zeros(na)
+    sup_clawback = zeros(na)
+    sup_reward = zeros(na)
+    withhold_totals = (premium = Ref(0.0), refunded = Ref(0.0), clawback = Ref(0.0), reward = Ref(0.0), discovered = Ref(0))
     price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
     ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
     budget = (unfunded = Ref(0), uncashable = Ref(0))
@@ -1277,9 +1295,11 @@ function run_m3c(p::M3cParams; seed)
         end
         priced = [price_shares(st) for st in stops]
         unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
+        unit_cost_honest = price_scale[] * scarcity_cost(p.cost_per_touch, available_honest, p.capacity; floor_share = p.scarcity_floor)
         halted0, executed0 = lane.halted[], lane.executed[]
         costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
                  for (j, plan) in enumerate(plans)]
+        costs_honest = unit_cost > 0 ? costs .* (unit_cost_honest / unit_cost) : copy(costs)
         menu, menu_preds, offers, lane_queue = Int[], ToyPlan[], Dict{Int,Vector{Tuple{Int,Float64,ToyPlan,Float64}}}(), Int[]
         executed_j = falses(length(plans))
         for j in eachindex(plans)
@@ -1354,7 +1374,15 @@ function run_m3c(p::M3cParams; seed)
             end
             done, seen, measured = perform!(j, a)
             balance[a, root] -= priced[j][root] * costs[j]
-            p.supplier > 0 && (balance[p.supplier, root] += p.supply_share * costs[j]; supplier_income[] += p.supply_share * costs[j])
+            if !isempty(suppliers)
+                per_sup_inc = p.supply_share * costs[j] / length(suppliers)
+                per_sup_extra = (!withhold_stopped[] && p.withhold > 0) ? p.supply_share * max(0.0, costs[j] - costs_honest[j]) / length(suppliers) : 0.0
+                for s_idx in suppliers
+                    balance[s_idx, root] += per_sup_inc
+                    sup_scarcity_gain[s_idx] += per_sup_extra
+                end
+                supplier_income[] += p.supply_share * costs[j]
+            end
             minted = 0.0
             if blind[]
                 # Measurement outage (L154 Progressive: degrade, fall back): paid by prediction
@@ -1410,12 +1438,18 @@ function run_m3c(p::M3cParams; seed)
             # resource cost, less the harm; a measurement outage mints the upfront now, the settlement later.
             shares = sum(sh for (_, sh, _, _) in offers[j]; init = 0.0)
             cost_paid = (priced[j][root] + shares) * costs[j]
+            if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j]
+                overpay = (priced[j][root] + shares) * (costs[j] - costs_honest[j])
+                buyer_overpay[a] += overpay
+                withhold_totals.premium[] += overpay
+            end
             push!(tr.supply, blind[] ? minted - cost_paid :
                   supply_delta(shares * sum(x[2] for x in credits), cost_paid, -shares * sum(x[3] for x in credits)))
             blind[] || trial_outcome!(l, measured, seen)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
             available -= count(touched(plan))
+            available_honest -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
         end
@@ -1432,6 +1466,7 @@ function run_m3c(p::M3cParams; seed)
                 credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured))
                 lane.init_executed[] += 1
                 available -= count(touched(plan))
+                available_honest -= count(touched(plan))
                 s.u .+= done.du
                 s.h .+= done.dh
             end
@@ -1489,6 +1524,15 @@ function run_m3c(p::M3cParams; seed)
                 balance[e, root] -= g
                 lane.cofunded[] += g
             end
+            if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j] > 0
+                ratio = (costs[j] - costs_honest[j]) / costs[j]
+                buyer_overpay[a] += self_pay * ratio
+                withhold_totals.premium[] += self_pay * ratio
+                for (e, g) in pledges
+                    buyer_overpay[e] += g * ratio
+                    withhold_totals.premium[] += g * ratio
+                end
+            end
             done, seen, measured = perform!(j, a)
             executed!(j, a, step, pred, done)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
@@ -1513,6 +1557,7 @@ function run_m3c(p::M3cParams; seed)
                 end)
             end
             available -= count(touched(plan))
+            available_honest -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
         end
@@ -1533,6 +1578,11 @@ function run_m3c(p::M3cParams; seed)
                 if bp !== nothing && balance[a, root] >= costs[j]
                     pred = fooled(bp[2], a, plan, tkey(bp[1]))
                     balance[a, root] -= costs[j]
+                    if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j]
+                        overpay = costs[j] - costs_honest[j]
+                        buyer_overpay[a] += overpay
+                        withhold_totals.premium[] += overpay
+                    end
                     done, seen, measured = perform!(j, a)
                     explored[] += 1
                     push!(tr.lane_costs, costs[j]); push!(tr.lane_measured, measured)
@@ -1546,6 +1596,7 @@ function run_m3c(p::M3cParams; seed)
                     push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
                     push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
                     available -= count(touched(plan))
+                    available_honest -= count(touched(plan))
                     s.u .+= done.du
                     s.h .+= done.dh
                 end
@@ -1712,8 +1763,11 @@ function run_m3c(p::M3cParams; seed)
             s.u .+= rep.du; s.h .+= rep.dh
         end
         empty!(repairs)
-        available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
-        p.supplier > 0 && (available = min(available, p.capacity * (1 - p.withhold * p.supply_share)))   # hidden supply
+        regen_amt = p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng))
+        available = min(p.capacity, max(0.0, available) + regen_amt)
+        available_honest = min(p.capacity, max(0.0, available_honest) + regen_amt)
+        (!isempty(suppliers) && !withhold_stopped[]) &&
+            (available = min(available, p.capacity * (1 - p.withhold * p.supply_share)))   # hidden supply
         # Global resource accounting (8.133): the step's net new issuance is capped at the headroom left under the horizon of
         # deliverable value; the excess is taken back pro rata from the identities whose balances rose this step (not issued).
         if p.ra_horizon > 0
@@ -1930,6 +1984,69 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
             end
+            # Artificial-scarcity supply withholding discovery, full buyer repayment, and cartel defection (8.133).
+            if !isempty(suppliers) && p.withhold > 0 && !withhold_stopped[] && withhold_totals.premium[] > 0 && rand(wrng) < p.vigilance
+                ext = [i for i in 1:na if !(i in suppliers)]
+                reporter = p.withhold_reporter > 0 ? p.withhold_reporter : (isempty(ext) ? 0 : rand(wrng, ext))
+                if reporter > 0
+                    withhold_stopped[] = true
+                    withhold_totals.discovered[] += 1
+                    adv.reports[] += 1; adv.founded[] += 1; adv.established[] += 1; adv.audits[] += p.audit_cost
+                    P = withhold_totals.premium[]
+                    refunded = 0.0
+                    for b in 1:na
+                        buyer_overpay[b] > 0 || continue
+                        balance[b, root] += buyer_overpay[b]
+                        refunded += buyer_overpay[b]
+                        buyer_overpay[b] = 0.0
+                    end
+                    withhold_totals.refunded[] += refunded
+                    m = length(suppliers)
+                    self_rep = reporter in suppliers
+                    if !self_rep
+                        rew = withhold_reward(0.0, P; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = m > 1, self_report = false)
+                        chg = withhold_charge(P, rew; audit_cost = p.audit_cost)
+                        per = chg / m
+                        for s_idx in suppliers
+                            balance[s_idx, root] -= per
+                            sup_clawback[s_idx] += per
+                        end
+                        balance[reporter, root] += rew
+                        sup_reward[reporter] += rew
+                        adv.rewards[] += rew; adv.liability[] += chg; adv.net[] += rew - chg
+                        withhold_totals.clawback[] += chg; withhold_totals.reward[] += rew
+                    elseif m == 1
+                        rew = withhold_reward(P, 0.0; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = false, self_report = true)
+                        chg = withhold_charge(P, rew; audit_cost = 0.0)
+                        s_idx = suppliers[1]
+                        balance[s_idx, root] -= chg
+                        sup_clawback[s_idx] += chg
+                        adv.liability[] += chg; adv.net[] -= chg
+                        withhold_totals.clawback[] += chg
+                    else
+                        own_liab = P / m
+                        rem_prem = P - own_liab
+                        rew = withhold_reward(own_liab, rem_prem; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = true, self_report = true)
+                        balance[reporter, root] -= own_liab
+                        sup_clawback[reporter] += own_liab
+                        others = [s_idx for s_idx in suppliers if s_idx != reporter]
+                        chg_others = withhold_charge(rem_prem, rew; audit_cost = p.audit_cost)
+                        per_other = chg_others / length(others)
+                        for s_idx in others
+                            balance[s_idx, root] -= per_other
+                            sup_clawback[s_idx] += per_other
+                        end
+                        balance[reporter, root] += rew
+                        sup_reward[reporter] += rew
+                        adv.rewards[] += rew; adv.liability[] += own_liab + chg_others; adv.net[] += rew - (own_liab + chg_others)
+                        withhold_totals.clawback[] += own_liab + chg_others; withhold_totals.reward[] += rew
+                    end
+                    available = max(available, available_honest)
+                end
+            end
         end
         blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
@@ -1979,7 +2096,9 @@ function run_m3c(p::M3cParams; seed)
                h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
+               withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
+               lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                cofunder_credit = cofunder_credit[], interaction = interaction[],
                accolade_credit = accolade_credit[], contract_credit = contract_credit[],

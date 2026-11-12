@@ -52,3 +52,30 @@ end
     @test_throws ArgumentError neg_share(-1.0, 0.0)
     @test_throws ArgumentError credence_score(1.5, 1.0)
 end
+
+@testset "Supply withholding and cartel defection rules (8.133, Lean reference)" begin
+    # External reporter: receives max(floor, share * market_premium); withholder repays whole market premium + reward + audit.
+    rew_ext = withhold_reward(0.0, 100.0; share = 0.25, floor = 5.0, has_coconspirators = false, self_report = false)
+    @test rew_ext ≈ 25.0
+    @test withhold_charge(100.0, rew_ext; audit_cost = 2.0) ≈ 127.0
+    @test withhold_reward(0.0, 10.0; share = 0.25, floor = 5.0) ≈ 5.0
+
+    # Lone withholder self-report: earns 0 reward, still repays the entire market-wide premium.
+    rew_self = withhold_reward(100.0, 0.0; share = 0.25, floor = 5.0, has_coconspirators = false, self_report = true)
+    @test rew_self == 0.0
+    @test withhold_charge(100.0, rew_self; audit_cost = 0.0) ≈ 100.0
+
+    # Cartel defector (3 members equal share of P = 90 -> own = 30, remaining = 60):
+    # Defector pays own = 30, receives own + max(floor, share * 60) = 30 + 15 = 45 from other colluders -> +15 net.
+    rew_def = withhold_reward(30.0, 60.0; share = 0.25, floor = 5.0, has_coconspirators = true, self_report = true)
+    @test rew_def ≈ 45.0
+    @test rew_def - 30.0 ≈ 15.0
+    @test withhold_charge(60.0, rew_def; audit_cost = 2.0) ≈ 107.0   # remaining 2 colluders pay remaining 60 + 45 reward + 2 audit
+
+    # Edge cases and input validation.
+    @test withhold_charge(-10.0, -5.0; audit_cost = 1.0) ≈ 1.0
+    @test_throws ArgumentError withhold_charge(NaN, 1.0; audit_cost = 1.0)
+    @test_throws ArgumentError withhold_charge(1.0, 1.0; audit_cost = -1.0)
+    @test_throws ArgumentError withhold_reward(1.0, Inf; share = 0.25, floor = 5.0)
+    @test_throws ArgumentError withhold_reward(1.0, 1.0; share = -0.1, floor = 5.0)
+end
