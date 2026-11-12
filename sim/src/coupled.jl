@@ -24,15 +24,30 @@ end
 function _with_econ_epoch(p::M3cParams, pv::AbstractVector{<:Real}, epoch_steps::Integer;
                           threshold::Union{Nothing,Real} = nothing,
                           track_window::Union{Nothing,Integer} = nothing,
-                          init_steps::Integer = p.init_steps)
+                          init_steps::Integer = p.init_steps,
+                          step_offset::Integer = 0)
     t = _with_param_vector(p.toy, pv)
     t_ep = ToyParams(n = t.n, steps = epoch_steps, plans = t.plans, q = t.q, th = t.th,
                      touch = t.touch, shift = t.shift, spread = t.spread, gp = t.gp)
     th = threshold === nothing ? p.threshold : Float64(threshold)
     tw = track_window === nothing ? p.track_window : Int(track_window)
-    # Copy every field, overriding these four: positional lists break whenever M3cParams gains a field.
-    over = Dict{Symbol,Any}(:toy => t_ep, :threshold => th, :track_window => tw, :init_steps => Int(init_steps))
+    ep_events = Shock[]
+    for ev in p.events
+        ev_end = ev.step + max(1, ev.duration) - 1
+        if ev.step <= step_offset + epoch_steps && ev_end >= step_offset + 1
+            s0 = max(1, ev.step - step_offset)
+            dur = ev.duration == 0 ? 0 : (min(ev_end, step_offset + epoch_steps) - max(ev.step, step_offset + 1) + 1)
+            push!(ep_events, shock(ev.kind; step = s0, duration = dur, size = ev.size, share = ev.share, target = ev.target))
+        end
+    end
+    # Copy every field, overriding these five: positional lists break whenever M3cParams gains a field.
+    over = Dict{Symbol,Any}(:toy => t_ep, :threshold => th, :track_window => tw, :init_steps => Int(init_steps), :events => ep_events)
     M3cParams((get(over, f, getfield(p, f)) for f in fieldnames(M3cParams))...)
+end
+
+function _with_m5_rep_dec(gp::M5Params, rep::AbstractMatrix{<:Real}, dec::Int)
+    over = Dict{Symbol,Any}(:reputation => Float64.(rep), :decisions => dec)
+    M5Params((get(over, f, getfield(gp, f)) for f in fieldnames(M5Params))...)
 end
 
 """
@@ -53,10 +68,15 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      coupled::Bool = true,
                      candidate_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
                      candidate_threshold::Union{Nothing,Real} = nothing,
-                     candidate_track_window::Union{Nothing,Integer} = nothing)
+                     candidate_track_window::Union{Nothing,Integer} = nothing,
+                     m5_decisions::Integer = 0)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
+    check(m5_decisions >= 0, "m5_decisions must be non-negative")
     n_epochs = econ.toy.steps ÷ epoch
     check(n_epochs >= 1, "at least one epoch required")
+    m5_trace = Float64[]
+    base_dec = m5_decisions ÷ n_epochs
+    rem_dec = m5_decisions % n_epochs
 
     na = length(econ.agents)
     nd = count(econ.known)
@@ -97,7 +117,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
 
     for ep in 1:n_epochs
         ep_init = ep == 1 ? min(econ.init_steps, epoch ÷ 2) : 0
-        p_ep = _with_econ_epoch(econ, pv_cur, epoch; threshold = th_cur, track_window = tw_cur, init_steps = ep_init)
+        p_ep = _with_econ_epoch(econ, pv_cur, epoch; threshold = th_cur, track_window = tw_cur,
+                                init_steps = ep_init, step_offset = (ep - 1) * epoch)
         tr_ep = run_m3c(p_ep; seed = Int(hash((seed, :epoch, ep)) & 0x7fffffff))
 
         # Stitch step-by-step deltas onto the running state trace.
@@ -231,6 +252,17 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         push!(thresholds_trace, th_cur)
         push!(track_windows_trace, tw_cur)
         pending_vote = (k = k, held = held, delegated = delegated, total = total, votes = votes, chose_cand = chose_cand)
+        if m5_decisions > 0
+            dec_ep = base_dec + (ep <= rem_dec ? 1 : 0)
+            if dec_ep > 0
+                rep_m5 = max.(reputation, 0.0)
+                if sum(rep_m5) <= 0
+                    rep_m5 = fill(1e-3, size(rep_m5))
+                end
+                tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff))
+                append!(m5_trace, tr_m5.final_trace)
+            end
+        end
     end
 
     full_tr = (floor_u = floor_u, floor_h = floor_h, median_u = median_u, median_h = median_h,
@@ -246,5 +278,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      rejected = rejected,
      rejected_epoch = rejected_epoch,
      reputation = reputation,
-     records = record)
+     records = record,
+     gov_trace = m5_trace,
+     gov_acc = isempty(m5_trace) ? NaN : mean(m5_trace[(length(m5_trace) ÷ 2 + 1):end]))
 end
