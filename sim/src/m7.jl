@@ -76,6 +76,49 @@ function birth_escrow(initial::Real, predicted::Real; window::Integer, baseline:
 end
 
 """
+    birth_accrued_escrow(initial, predicted; window, elapsed, baseline) -> Float64
+
+Predicted shortfall accrued over the first `elapsed` steps of the dependency window
+(Lean `birth_accrued_escrow_ref`; finding 8.54): `0` at `elapsed = 0`, reaching `birth_escrow`
+when `elapsed >= window`.
+"""
+function birth_accrued_escrow(initial::Real, predicted::Real; window::Integer, elapsed::Integer, baseline::Real)
+    check(all(isfinite, (initial, predicted, baseline)) && window >= 1 && elapsed >= 0,
+          "finite levels, window at least 1, elapsed non-negative")
+    ccall(sym(:bf_birth_accrued_escrow), Float64, (Float64, Float64, Csize_t, Csize_t, Float64),
+          initial, predicted, window, elapsed, baseline)
+end
+
+"""
+    pending_escrow_loss(measured_so_far, accrued_escrow) -> Float64
+
+Pending escrow deficit during dependency (Lean `pending_escrow_loss_ref`; finding 8.54):
+excess of measured shortfall so far over accrued predicted escrow covering elapsed steps.
+"""
+function pending_escrow_loss(measured_so_far::Real, accrued_escrow::Real)
+    check(all(isfinite, (measured_so_far, accrued_escrow)) && measured_so_far >= 0 && accrued_escrow >= 0,
+          "non-negative finite measured shortfall and accrued escrow")
+    ccall(sym(:bf_pending_escrow_loss), Float64, (Float64, Float64), measured_so_far, accrued_escrow)
+end
+
+# Causer credence under settled + optional pending-escrow shortfall ledgers (8.54).
+function birth_confidence(base_conf::Real, gain::Real, loss::Real, e::Integer,
+                          born, causer, pred_h_b, elapsed_b, baseline_b, short_b;
+                          window::Integer, ratchet::Bool, pending_ledger::Bool)
+    ratchet || return Float64(base_conf)
+    g, l = Float64(gain), Float64(loss)
+    if pending_ledger
+        for d in eachindex(born)
+            (born[d] > 0 && causer[d] == e) || continue
+            acc = birth_accrued_escrow(0.0, pred_h_b[d]; window, elapsed = elapsed_b[d], baseline = baseline_b[d])
+            g += min(acc, short_b[d])
+            l += pending_escrow_loss(short_b[d], acc)
+        end
+    end
+    ratchet_credence(base_conf, neg_share(g, l))
+end
+
+"""
     accession_admissible(d_scope, d_min_u, d_min_h, d_max_u, existing_du, existing_dh) -> Bool
 
 Strong per-being accession admissibility (8.86; Lean `accession_admissible_ref`): G-admissible on
@@ -824,12 +867,38 @@ most one birth. Records the Goal's success pattern over the levels G reads, the 
 understanding (`raw_floor_u`), population, births (by causer), final credences and the escrow totals
 of settled births.
 """
+function step_dependents!(s, born, causer, mature_u, mature_h, posted_b, baseline_b, short_b, elapsed_b,
+                          balance, gains, losses, tr, srng, t; window::Integer, settle_σ::Real)
+    for d in eachindex(born)
+        born[d] > 0 || continue
+        age = t - born[d]
+        own_h = mature_h[d] * (age + 1) / window
+        s.u[d] = mature_u[d] * (age + 1) / window
+        s.h[d] = max(own_h, baseline_b[d])
+        short_b[d] += max(0.0, baseline_b[d] - own_h)
+        elapsed_b[d] += 1
+        age == window - 1 || continue
+        s.h[d] = own_h  # mature: the escrow's work is done
+        measured = max(0.0, short_b[d] * (1 + settle_σ * randn(srng)))
+        st, c = settlement(measured, posted_b[d]), causer[d]
+        if st > 0
+            pay = min(st, max(0.0, balance[c]))
+            balance[c] -= pay; tr.clawback[] += pay; tr.uncovered[] += st - pay
+        else
+            balance[c] -= st; tr.refund[] -= st
+        end
+        gains[c] += min(posted_b[d], measured); losses[c] += max(0.0, measured - posted_b[d])
+        tr.posted[] += posted_b[d]; tr.measured[] += measured; tr.settled[] += 1
+        born[d] = 0; elapsed_b[d] = 0
+    end
+end
+
 function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 20, q_opt::Real = 0.5, threshold::Real = 0.75,
                     pool_confidence::Real = 0.9, pool::Integer = 5, birth_pred_σ::Real = CALIBRATED.birth_pred_σ, birth_spread::Real = 1.0,
                     inherit::Real = 0.5, settle_σ::Real = 0.1, birth_joy::Real = 0.5, income::Real = 1.0, endowment::Real = 10.0,
-                    gamers::Real = 0.0, gamer_bias::Real = 5.0, gamer_models::Integer = 1, ratchet::Bool = true, central::Bool = false,
-                    p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ, pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3,
-                    lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0)
+                    gamers::Real = 0.0, gamer_bias::Real = 5.0, gamer_models::Integer = 1, ratchet::Bool = true, pending_ledger::Bool = true,
+                    central::Bool = false, p_act::Real = 0.2, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ,
+                    pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3, lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (p_birth, q_opt, threshold, pool_confidence, inherit, gamers, p_act)),
           "chances, shares, quantile, threshold and confidence in [0, 1]")
     check(window >= 1 && pool >= 1 && options >= 1 && gamer_models >= 0, "window, pool and options at least 1, gaming models non-negative")
@@ -842,10 +911,10 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
     n0 = p.n
     gamer = [b <= round(Int, gamers * n0) for b in 1:n0]
     balance, gains, losses, births_by = fill(Float64(endowment), n0), zeros(n0), zeros(n0), zeros(Int, n0)
-    # Dependents: birth step (0 for adults), causer, true mature levels, the level G reads, escrow,
-    # baseline and the shortfall measured so far.
-    born, causer = zeros(Int, n0), zeros(Int, n0)
-    mature_u, mature_h, read_u = zeros(n0), zeros(n0), zeros(n0)
+    # Dependents: birth step (0 for adults), causer, true mature levels, the levels G reads, escrow,
+    # baseline, elapsed steps, and the shortfall measured so far.
+    born, causer, elapsed_b = zeros(Int, n0), zeros(Int, n0), zeros(Int, n0)
+    mature_u, mature_h, read_u, pred_h_b = zeros(n0), zeros(n0), zeros(n0), zeros(n0)
     posted_b, baseline_b, short_b = zeros(n0), zeros(n0), zeros(n0)
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], raw_floor_u = Float64[], population = Int[], actions = Int[],
@@ -853,7 +922,8 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
           uncovered = Ref(0.0))
     dependent(b) = born[b] > 0
     reading() = [dependent(b) ? read_u[b] : s.u[b] for b in eachindex(s.u)]
-    confidence(e) = ratchet ? ratchet_credence(pool_confidence, neg_share(gains[e], losses[e])) : pool_confidence
+    confidence(e) = birth_confidence(pool_confidence, gains[e], losses[e], e, born, causer, pred_h_b, elapsed_b, baseline_b, short_b;
+                                     window, ratchet, pending_ledger)
     prev = Ref((copy(s.u), copy(s.h)))
     function record!()
         ru = reading()
@@ -880,7 +950,7 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
         lh = birth_level(ph; q = q_opt, confidence = c, threshold, initial = 0.0)
         esc = birth_escrow(0.0, lh; window, baseline = base)
         balance[e] >= esc || return nothing
-        (; e, nb, mu, mh, lu, esc, base)
+        (; e, nb, mu, mh, lu, lh, esc, base)
     end
     function give_birth!(o)
         balance[o.e] -= o.esc
@@ -888,7 +958,8 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
         own_h = o.mh / window  # the first step of the trajectory from 0; the escrow keeps happiness at the baseline
         push!(s.u, o.mu / window); push!(s.h, max(own_h, o.base))
         push!(gamer, false); push!(balance, 0.0); push!(gains, 0.0); push!(losses, 0.0); push!(births_by, 0)
-        push!(born, length(tr.floor_u)); push!(causer, o.e); push!(mature_u, o.mu); push!(mature_h, o.mh); push!(read_u, o.lu)
+        push!(born, length(tr.floor_u)); push!(causer, o.e); push!(elapsed_b, 1)
+        push!(mature_u, o.mu); push!(mature_h, o.mh); push!(read_u, o.lu); push!(pred_h_b, o.lh)
         push!(posted_b, o.esc); push!(baseline_b, o.base); push!(short_b, max(0.0, o.base - own_h))
     end
     record!()
@@ -896,27 +967,8 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
         n = length(s.u)
         adults = [!dependent(b) for b in 1:n]
         balance[adults] .+= income
-        # Dependents grow towards their mature levels; at the window's close the escrow settles.
-        for d in filter(dependent, 1:n)
-            age = t - born[d]  # steps since birth (the birth step is age 0): level (age + 1) / window of the mature
-            own_h = mature_h[d] * (age + 1) / window
-            s.u[d] = mature_u[d] * (age + 1) / window
-            s.h[d] = max(own_h, baseline_b[d])
-            short_b[d] += max(0.0, baseline_b[d] - own_h)
-            age == window - 1 || continue
-            s.h[d] = own_h  # mature: the escrow's work is done
-            measured = max(0.0, short_b[d] * (1 + settle_σ * randn(srng)))
-            st, c = settlement(measured, posted_b[d]), causer[d]
-            if st > 0
-                pay = min(st, max(0.0, balance[c]))
-                balance[c] -= pay; tr.clawback[] += pay; tr.uncovered[] += st - pay
-            else
-                balance[c] -= st; tr.refund[] -= st
-            end
-            gains[c] += min(posted_b[d], measured); losses[c] += max(0.0, measured - posted_b[d])
-            tr.posted[] += posted_b[d]; tr.measured[] += measured; tr.settled[] += 1
-            born[d] = 0
-        end
+        step_dependents!(s, born, causer, mature_u, mature_h, posted_b, baseline_b, short_b, elapsed_b,
+                         balance, gains, losses, tr, srng, t; window, settle_σ)
         adults = [!dependent(b) for b in 1:n]
         ru = reading()
         total_du, total_dh, acted, newborns = zeros(n), zeros(n), 0, []
@@ -1102,4 +1154,173 @@ function run_population_identities(p::ToyParams; seed::Integer = 1,
      floor_u = floor_u, floor_h = floor_h,
      total_votes_trace = total_votes_trace,
      harm_non_sophont_rejected = harm_non_sophont_rejected)
+end
+
+"""
+    run_population_world(p::ToyParams; seed, ...)
+
+Composed M7 population world (Task D3): combines frontier research (`p_research`, breakthroughs,
+tacit knowledge, spending), peer teaching (`teaching_plan`), and births with escrow settlement and
+the pending-shortfall ratchet (`pending_ledger = true`, finding 8.54) under per-entity G (`pop_choose`).
+"""
+function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, research_share::Real = 0.1,
+                              research_cost::Real = 1.0, research_gain::Real = CALIBRATED.research_gain,
+                              research_σ::Real = CALIBRATED.research_σ, gain_σ::Real = 0.4, p_teachable::Real = 0.5,
+                              rel_exponent::Real = 1.0, near_exponent::Real = 1.0, p_innovate::Real = 0.02,
+                              ε::Real = 0.5, lessons::Integer = 1, class::Integer = 4, tacit_initial::Real = 0.0,
+                              novelty_initial::Real = 1.0, p_birth::Real = 0.03, window::Integer = 20, q_opt::Real = 0.5,
+                              threshold::Real = 0.75, pool_confidence::Real = 0.9, pool::Integer = 5,
+                              birth_pred_σ::Real = CALIBRATED.birth_pred_σ, birth_spread::Real = 1.0,
+                              inherit::Real = 0.5, settle_σ::Real = 0.1, birth_joy::Real = 0.5, income::Real = 1.0,
+                              endowment::Real = 10.0, gamers::Real = 0.0, gamer_bias::Real = 5.0,
+                              gamer_models::Integer = 1, ratchet::Bool = true, pending_ledger::Bool = true,
+                              p_act::Real = 0.3, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ,
+                              pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3, lt_window::Real = 100,
+                              growth::Real = 0.1, scale::Real = 20.0)
+    check(all(x -> isfinite(x) && 0 <= x <= 1, (p_research, research_share, p_teachable, p_innovate, ε,
+          p_birth, q_opt, threshold, pool_confidence, inherit, gamers, p_act)),
+          "rates, shares, quantile, threshold and confidence in [0, 1]")
+    check(window >= 1 && pool >= 1 && options >= 1 && lessons >= 0 && class >= 1 && gamer_models >= 0,
+          "window, pool, options, class positive; lessons and gaming models non-negative")
+    check(all(x -> isfinite(x) && x >= 0, (research_cost, research_gain, research_σ, gain_σ, rel_exponent,
+          near_exponent, tacit_initial, novelty_initial, birth_pred_σ, birth_spread, settle_σ, birth_joy,
+          income, endowment, gamer_bias, action_scale, view_σ, pred_σ)), "scales, costs and dispersions non-negative")
+    rng = Xoshiro(seed)
+    rrng, vrng = Xoshiro(hash((seed, :pop_research))), Xoshiro(hash((seed, :pop_views)))
+    brng, mrng, srng = Xoshiro(hash((seed, :pop_births))), Xoshiro(hash((seed, :pop_pred))), Xoshiro(hash((seed, :pop_settle)))
+    s = toy_state(p, rng)
+    n0 = p.n
+    gamer = [b <= round(Int, gamers * n0) for b in 1:n0]
+    balance, gains, losses, births_by = fill(Float64(endowment), n0), zeros(n0), zeros(n0), zeros(Int, n0)
+    born, causer, elapsed_b = zeros(Int, n0), zeros(Int, n0), zeros(Int, n0)
+    mature_u, mature_h, read_u, pred_h_b = zeros(n0), zeros(n0), zeros(n0), zeros(n0)
+    posted_b, baseline_b, short_b = zeros(n0), zeros(n0), zeros(n0)
+    novelty, tacit, quality = fill(Float64(novelty_initial), n0), fill(Float64(tacit_initial), n0), ones(n0)
+    tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
+          worst_drop = Float64[], raw_floor_u = Float64[], population = Int[], actions = Int[],
+          births = Ref(0), settled = Ref(0), posted = Ref(0.0), measured = Ref(0.0), clawback = Ref(0.0), refund = Ref(0.0),
+          uncovered = Ref(0.0), breakthroughs = Ref(0), innovations = Ref(0), lessons_chosen = Ref(0), spent = Ref(0.0))
+    dependent(b) = born[b] > 0
+    reading() = [dependent(b) ? read_u[b] : s.u[b] for b in eachindex(s.u)]
+    confidence(e) = birth_confidence(pool_confidence, gains[e], losses[e], e, born, causer, pred_h_b, elapsed_b, baseline_b, short_b;
+                                     window, ratchet, pending_ledger)
+    prev = Ref((copy(s.u), copy(s.h)))
+    function record!()
+        ru = reading()
+        push!(tr.floor_u, floor_quantile(ru, p.q)); push!(tr.floor_h, floor_quantile(s.h, p.q))
+        push!(tr.median_u, median(ru)); push!(tr.median_h, median(s.h)); push!(tr.peak_u, maximum(ru))
+        pu, ph = prev[]; m = length(pu)
+        push!(tr.worst_drop, max(0.0, maximum(pu .- s.u[1:m]), maximum(ph .- s.h[1:m])))
+        prev[] = (copy(s.u), copy(s.h))
+        push!(tr.raw_floor_u, floor_quantile(s.u, p.q)); push!(tr.population, length(s.u))
+    end
+    receive(m) = 1.0 / (1 + 0.1 * (m - 1))
+    record!()
+    for t in 1:p.steps
+        n = length(s.u)
+        adults = [!dependent(b) for b in 1:n]
+        balance[adults] .+= income
+        step_dependents!(s, born, causer, mature_u, mature_h, posted_b, baseline_b, short_b, elapsed_b,
+                         balance, gains, losses, tr, srng, t; window, settle_σ)
+        adults = [!dependent(b) for b in 1:n]
+        peak, med = maximum(s.u), median(s.u)
+        researching = [adults[b] && rand(rrng) < research_share for b in 1:n]
+        for b in findall(researching)
+            tr.spent[] += research_cost
+            rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
+            chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+            if rand(rrng) < chance
+                gain = research_gain * exp(gain_σ * randn(rrng))
+                new = s.u[b] + gain
+                rand(rrng) < p_teachable || (tacit[b] += new - s.u[b])
+                s.u[b] = new
+                tr.breakthroughs[] += 1
+            end
+        end
+        peak = maximum(s.u); med = median(s.u)
+        near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:n]
+        ru = reading()
+        total_du, total_dh, acted, newborns = zeros(n), zeros(n), 0, Any[]
+        lesson_du, lesson_cap = zeros(n), fill(-Inf, n)
+        for e in findall(adults .& .!researching)
+            rand(rng) >= p_act && continue
+            view = ToyState(ru .+ view_σ .* randn(vrng, n), s.h .+ view_σ .* randn(vrng, n))
+            opts, plans, kinds = Any[], PopPlan[], Symbol[]
+            for _ in 1:options
+                du, dh = random_plan_over(rng, p, adults)
+                cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:n]
+                sdu = [du[b] > 0 ? min(action_scale * du[b], cap[b]) : action_scale * du[b] for b in 1:n]
+                sdh = action_scale .* dh
+                push!(opts, (sdu, sdh)); push!(kinds, :ordinary)
+                push!(plans, PopPlan(sdu .+ pred_σ .* action_scale .* randn(vrng, n) .* (sdu .!= 0),
+                                     sdh .+ pred_σ .* action_scale .* randn(vrng, n) .* (sdh .!= 0)))
+            end
+            if lessons > 0
+                below = [b for b in 1:n if view.u[b] < view.u[e] - tacit[e]]
+                if !isempty(below)
+                    learners = below[randperm(rng, length(below))[1:min(class, length(below))]]
+                    r_vec = fill(receive(length(learners)), length(learners))
+                    tp = teaching_plan(s.u, e, learners, min(1.0, ε * quality[e]); reception = r_vec, tacit = tacit[e])
+                    push!(opts, tp); push!(kinds, :lesson)
+                    push!(plans, PopPlan(tp.du .+ pred_σ .* action_scale .* randn(vrng, n) .* (tp.du .!= 0),
+                                         tp.dh .+ pred_σ .* action_scale .* randn(vrng, n) .* (tp.dh .!= 0)))
+                end
+            end
+            if rand(rng) < p_birth
+                med_u, med_h = median(s.u), median(s.h)
+                mu = med_u + inherit * (s.u[e] - med_u) + birth_spread * randn(brng)
+                mh = med_h + inherit * (s.h[e] - med_h) + birth_spread * randn(brng)
+                pu = mu .+ birth_pred_σ .* randn(mrng, pool)
+                ph = mh .+ birth_pred_σ .* randn(mrng, pool)
+                gamer[e] && (pu = [pu; fill(mu + gamer_bias, gamer_models)]; ph = [ph; fill(mh + gamer_bias, gamer_models)])
+                c = confidence(e)
+                base = floor_quantile(s.h, p.q)
+                lu = birth_level(pu; q = q_opt, confidence = c, threshold, initial = 0.0)
+                lh = birth_level(ph; q = q_opt, confidence = c, threshold, initial = 0.0)
+                esc = birth_escrow(0.0, lh; window, baseline = base)
+                if balance[e] >= esc
+                    joy = zeros(n); joy[e] = birth_joy
+                    push!(opts, (; e, mu, mh, lu, lh, esc, base)); push!(kinds, :birth)
+                    push!(plans, PopPlan(zeros(n), joy; births = [Newborn(pu, ph; confidence = c)]))
+                end
+            end
+            i = pop_choose(view, plans, p; q_opt, threshold, lt_window, growth, scale)
+            i == 1 && continue
+            acted += 1
+            k = kinds[i - 1]; o = opts[i - 1]
+            if k == :ordinary
+                total_du .+= o[1]; total_dh .+= o[2]
+            elseif k == :lesson
+                tr.lessons_chosen[] += 1
+                lesson_du .+= o.du
+                for b in findall(>(0), o.du)
+                    lesson_cap[b] = max(lesson_cap[b], s.u[e] - tacit[e])
+                end
+            else
+                total_dh[o.e] += birth_joy; push!(newborns, o)
+            end
+        end
+        for b in 1:n
+            lesson_du[b] > 0 && (total_du[b] += min(lesson_du[b], max(0.0, lesson_cap[b] - s.u[b])))
+        end
+        maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
+        s.u .+= total_du; s.h .+= total_dh
+        for o in newborns
+            balance[o.e] -= o.esc
+            births_by[o.e] += 1; tr.births[] += 1
+            own_h = o.mh / window
+            push!(s.u, o.mu / window); push!(s.h, max(own_h, o.base))
+            push!(gamer, false); push!(balance, 0.0); push!(gains, 0.0); push!(losses, 0.0); push!(births_by, 0)
+            push!(born, length(tr.floor_u)); push!(causer, o.e); push!(elapsed_b, 1)
+            push!(mature_u, o.mu); push!(mature_h, o.mh); push!(read_u, o.lu); push!(pred_h_b, o.lh)
+            push!(posted_b, o.esc); push!(baseline_b, o.base); push!(short_b, max(0.0, o.base - own_h))
+            push!(novelty, novelty_initial); push!(tacit, tacit_initial); push!(quality, 1.0)
+        end
+        push!(tr.actions, acted)
+        record!()
+    end
+    conf = [confidence(b) for b in eachindex(s.u)]
+    refs = (:births, :settled, :posted, :measured, :clawback, :refund, :uncovered, :breakthroughs, :innovations, :lessons_chosen, :spent)
+    (; (k => getfield(tr, k) for k in keys(tr) if !(k in refs))..., (k => getfield(tr, k)[] for k in refs)...,
+     births_by = births_by, gamer = gamer, confidence = conf)
 end

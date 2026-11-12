@@ -82,7 +82,7 @@ def main : IO Unit := do
   IO.FS.writeFile "spec/vectors/ehr.json" ehrJson
 
   -- 12. births.json (M7: 8.47 life value, 8.52 births; [P] readings)
-  let bJson := s!"\{\n  \"foreclosed_u5_h4_g0_1_0_2_w100\": {foreclosed_ref 5.0 4.0 0.1 0.2 100.0},\n  \"life_value_ended_f30_w0_9_s20\": {life_value_ref 30.0 0.9 20.0 false},\n  \"life_value_saved_f30_w0_9_s20\": {life_value_ref 30.0 0.9 20.0 true},\n  \"optimistic_average_1234_q0_5\": {optimistic_average_ref #[1.0, 2.0, 3.0, 4.0] 0.5},\n  \"birth_level_unconfident\": {birth_level_ref #[1.0, 2.0, 3.0, 4.0] 0.5 0.7 0.75 0.0},\n  \"birth_escrow_0_to_4_w4_base2\": {birth_escrow_ref 0.0 4.0 4 2.0},\n  \"shortfall_123_base2_5\": {shortfall_ref #[1.0, 2.0, 3.0] 2.5}\n}\n"
+  let bJson := s!"\{\n  \"foreclosed_u5_h4_g0_1_0_2_w100\": {foreclosed_ref 5.0 4.0 0.1 0.2 100.0},\n  \"life_value_ended_f30_w0_9_s20\": {life_value_ref 30.0 0.9 20.0 false},\n  \"life_value_saved_f30_w0_9_s20\": {life_value_ref 30.0 0.9 20.0 true},\n  \"optimistic_average_1234_q0_5\": {optimistic_average_ref #[1.0, 2.0, 3.0, 4.0] 0.5},\n  \"birth_level_unconfident\": {birth_level_ref #[1.0, 2.0, 3.0, 4.0] 0.5 0.7 0.75 0.0},\n  \"birth_escrow_0_to_4_w4_base2\": {birth_escrow_ref 0.0 4.0 4 2.0},\n  \"shortfall_123_base2_5\": {shortfall_ref #[1.0, 2.0, 3.0] 2.5},\n  \"birth_accrued_escrow_w4_e2\": {birth_accrued_escrow_ref 0.0 4.0 4 2 2.0},\n  \"pending_escrow_loss_m3_e1\": {pending_escrow_loss_ref 3.0 1.0}\n}\n"
   IO.FS.writeFile "spec/vectors/births.json" bJson
 
   IO.println "Test vectors successfully emitted to spec/vectors/*.json"

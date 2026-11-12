@@ -159,6 +159,8 @@ end
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.5) ≈ v["optimistic_average_1234_q0_5"]
     @test birth_level([1.0, 2.0, 3.0, 4.0]; q = 0.5, confidence = 0.7, threshold = 0.75, initial = 0.0) ≈ v["birth_level_unconfident"]
     @test birth_escrow(0.0, 4.0; window = 4, baseline = 2.0) ≈ v["birth_escrow_0_to_4_w4_base2"]
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 2, baseline = 2.0) ≈ v["birth_accrued_escrow_w4_e2"]
+    @test pending_escrow_loss(3.0, 1.0) ≈ v["pending_escrow_loss_m3_e1"]
     @test shortfall([1.0, 2.0, 3.0], 2.5) ≈ v["shortfall_123_base2_5"]
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.5) ≈ 3.0
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.0) ≈ 2.5
@@ -177,6 +179,9 @@ end
     @test_throws ArgumentError optimistic_average([1.0], 1.5)
     @test_throws ArgumentError birth_level([1.0]; q = 0.5, confidence = 1.5, threshold = 0.75, initial = 0.0)
     @test_throws ArgumentError birth_escrow(0.0, 4.0; window = 0, baseline = 2.0)
+    @test_throws ArgumentError birth_accrued_escrow(0.0, 4.0; window = 0, elapsed = 1, baseline = 2.0)
+    @test_throws ArgumentError birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = -1, baseline = 2.0)
+    @test_throws ArgumentError pending_escrow_loss(-1.0, 0.0)
     @test_throws ArgumentError shortfall([1.0, Inf], 2.0)
 end
 
@@ -356,4 +361,40 @@ end
                                         merge_events = [(step = 2, a = 1, b = 2, memory_loss = 0.1)])
     @test tr_full.shares[1] ≈ 1.0 && tr_full.base_votes[1] ≈ 1.0
     @test tr_full.total_votes_trace[end] ≈ 3.0
+end
+
+@testset "M7 D3: pending escrow ratchet (8.54) and composed population world" begin
+    # 1. Within the first dependency window (steps = 15 < window = 20), zero births settle.
+    #    Pending-ledger accounting catches over-optimistic gamers before first settlement.
+    p_short = ToyParams(n = 30, steps = 15, plans = 6)
+    init = 1:p_short.n
+    unsettled_on = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2,
+                               gamer_bias = 20.0, gamer_models = 3, pending_ledger = true) for seed in 1:4]
+    unsettled_off = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2,
+                                gamer_bias = 20.0, gamer_models = 3, pending_ledger = false) for seed in 1:4]
+    @test any(any(t.gamer[init] .& (t.births_by[init] .> 0)) for t in unsettled_on)
+    for (tf, tl) in zip(unsettled_on, unsettled_off)
+        @test tf.settled == 0 && tl.settled == 0
+        g_made = tf.gamer[init] .& (tf.births_by[init] .> 0)
+        h_made = .!tf.gamer[init] .& (tf.births_by[init] .> 0)
+        any(g_made) && @test mean(tl.confidence[init][g_made]) ≈ 0.9
+        any(g_made) && @test mean(tf.confidence[init][g_made]) < 0.75
+        any(h_made) && @test mean(tf.confidence[init][h_made]) >= 0.75
+    end
+
+    # 2. Composed M7 world: research breakthroughs, peer teaching, births, and pending escrow together.
+    p_comp = ToyParams(n = 40, steps = 60, plans = 8)
+    ts = [run_population_world(p_comp; seed, p_research = 0.08, research_share = 0.12, p_birth = 0.05,
+                               gamers = 0.2, gamer_bias = 20.0, gamer_models = 3) for seed in 1:3]
+    for tr in ts
+        @test tr.spent > 0
+        @test tr.breakthroughs >= 1
+        @test tr.lessons_chosen >= 1
+        @test tr.births >= 1 && tr.settled >= 1
+        @test tr.floor_h[end] >= tr.floor_h[1] - 1e-6
+        @test tr.floor_u[end] >= tr.floor_u[1] - 1e-6
+        @test tr.uncovered < 0.02 * max(tr.measured, 1e-9)
+    end
+    @test_throws ArgumentError run_population_world(p_comp; seed = 1, p_birth = 1.5)
+    @test_throws ArgumentError run_population_world(p_comp; seed = 1, window = 0)
 end

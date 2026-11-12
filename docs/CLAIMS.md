@@ -532,8 +532,8 @@ Governance and thresholds
 Population (M7)
 - **Deaths.** The trolley switch is chosen, except when the one holds the peak of understanding.
   Removing the worst-off for gains to others is not chosen ([m7_tests](../sim/test/m7_tests.jl)).
-- **Births.** Births are escrowed against predicted shortfall, and over-optimistic causers are
-  clawed back (finding 8.54).
+- **Births.** Births are escrowed against predicted shortfall, over-optimistic causers are
+  clawed back on settlement, and the pending-shortfall ledger (`birth_accrued_escrow`, `pending_escrow_loss`, `pending_ledger = true`) catches over-optimistic first-window causers before settlement ([finding 8.54](../docs/BACKPROPAGATION.md), [Population.lean](../BenefutureReference/Population.lean)). Composed worlds integrate research, peer teaching, and births under per-entity G ([m7_tests](../sim/test/m7_tests.jl)).
 - **Population ethics.** G avoids the Repugnant Conclusion in probes. It gives up Non-Sadism only in a forced addition (8.56), which by ruling 8.86 is taken as given and answered by uplift.
 - **Accession and forced additions (8.86).** A joined population well below the floors is uplifted by G without harming existing beings over their long-term counterfactual window; when a large accession cannot meet the strong per-being reading, G falls back to combined floors with loud progressive degradation logging and zero stalls ([probe_tests](../sim/test/probe_tests.jl), [m7_tests](../sim/test/m7_tests.jl)).
 - **Teaching and research** are complements; uplift peaks near a fifth of time on research.

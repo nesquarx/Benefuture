@@ -1072,7 +1072,8 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 
 - **Task D3: Birth Escrow, Ratchet & Composed Population Ethics**
   - **Goal**: Birth escrow settled against measured shortfall (8.52); findings 8.54–8.56 (births before first settlement); composed world test with teaching and research.
-  - **Primary Files**: `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `spec/vectors/births.json`.
+  - **Primary Files**: `BenefutureReference/Population.lean`, `BenefutureReference/Export.lean`, `Main.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl`, `spec/vectors/births.json`.
+  - **Status**: `[x] COMPLETED` (`2026-11-12`: `birth_accrued_escrow_ref` / `pending_escrow_loss_ref`, `pending_ledger = true` catching over-optimistic gamers inside the first dependency window before settlement, and composed `run_population_world` integrating research + teaching + births + pending escrow).
   - **Collision Risk**: Low.
   - **Status**: `AVAILABLE`
 

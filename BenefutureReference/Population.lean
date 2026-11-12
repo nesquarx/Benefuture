@@ -57,6 +57,18 @@ def birth_trajectory_ref (initial predicted : Float) (window : Nat) : Array Floa
 def birth_escrow_ref (initial predicted : Float) (window : Nat) (baseline : Float) : Float :=
   shortfall_ref (birth_trajectory_ref initial predicted window) baseline
 
+/-- Accrued birth escrow over the first `elapsed` steps of the dependency window (8.54 [P]): the
+    predicted shortfall along `birth_trajectory_ref` for steps `1..min elapsed window`. Equals `0` at
+    `elapsed = 0` and equals `birth_escrow_ref` when `elapsed ≥ window`. -/
+def birth_accrued_escrow_ref (initial predicted : Float) (window elapsed : Nat) (baseline : Float) : Float :=
+  shortfall_ref ((birth_trajectory_ref initial predicted window).extract 0 (min elapsed window)) baseline
+
+/-- Unsettled (pending) escrow deficit accrued during dependency (8.54 [P]): the excess of measured
+    shortfall so far over the accrued escrow covering those elapsed steps. Feeds into the causer's
+    ratchet ledger before settlement so over-optimistic first-window births cannot dodge the ratchet. -/
+def pending_escrow_loss_ref (measuredSoFar accruedEscrow : Float) : Float :=
+  max 0.0 (measuredSoFar - accruedEscrow)
+
 def accession_admissible_ref (dScope dMinU dMinH dMaxU : Float) (existingDeltaU existingDeltaH : Array Float) : Bool :=
   dScope >= 0.0 && dMinU >= 0.0 && dMinH >= 0.0 && dMaxU >= 0.0 && (List.range (min existingDeltaU.size existingDeltaH.size)).all (fun i => existingDeltaU[i]! >= 0.0 && existingDeltaH[i]! >= 0.0)
 

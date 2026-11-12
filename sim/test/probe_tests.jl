@@ -1519,3 +1519,43 @@ end
     @test sum(tr_split.base_votes[i] for i in 21:23) <= 1.0 + 1e-9   # merged 21 + surviving 23 <= 1 full person vote
     @test tr_naive.total_votes_trace[5] > tr_split.total_votes_trace[5] + 0.5   # naive inflated votes on fork step
 end
+
+@testset "Probe: pending birth-escrow shortfall catches gamers before first settlement (D3, 8.54)" begin
+    # Within a single dependency window (steps = 15 < window = 20), zero births settle. Without the
+    # pending-shortfall ledger (`pending_ledger = false`), over-optimistic causers keep full confidence
+    # (0.9 >= 0.75); with it (`pending_ledger = true`, default), accrued shortfall deficit pulls gamer
+    # credence below 0.75 before step 20 while honest causers stay above threshold.
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 0, baseline = 2.0) == 0.0
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 2, baseline = 2.0) ≈ 1.0
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 4, baseline = 2.0) ≈ birth_escrow(0.0, 4.0; window = 4, baseline = 2.0)
+    @test pending_escrow_loss(3.0, 1.0) ≈ 2.0
+    @test pending_escrow_loss(1.0, 3.0) == 0.0
+
+    p_short = ToyParams(n = 30, steps = 15, plans = 6)
+    init = 1:p_short.n
+    unsettled_legacy = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2, gamer_bias = 20.0,
+                                   gamer_models = 3, pending_ledger = false) for seed in 1:4]
+    unsettled_fixed = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2, gamer_bias = 20.0,
+                                  gamer_models = 3, pending_ledger = true) for seed in 1:4]
+    for (tl, tf) in zip(unsettled_legacy, unsettled_fixed)
+        @test tl.settled == 0 && tf.settled == 0
+        g_made = tf.gamer[init] .& (tf.births_by[init] .> 0)
+        h_made = .!tf.gamer[init] .& (tf.births_by[init] .> 0)
+        any(g_made) && @test mean(tl.confidence[init][g_made]) ≈ 0.9
+        any(g_made) && @test mean(tf.confidence[init][g_made]) < 0.75
+        any(h_made) && @test mean(tf.confidence[init][h_made]) >= 0.75
+    end
+end
+
+@testset "Probe: composed M7 population world integrates research, teaching, births, and pending escrow (D3)" begin
+    p = ToyParams(n = 40, steps = 60, plans = 8)
+    ts = [run_population_world(p; seed, p_research = 0.08, research_share = 0.12, p_birth = 0.05,
+                               gamers = 0.2, gamer_bias = 20.0, gamer_models = 3) for seed in 1:3]
+    for tr in ts
+        @test tr.spent > 0
+        @test tr.breakthroughs >= 1
+        @test tr.births >= 1 && tr.settled >= 1
+        @test tr.floor_h[end] >= tr.floor_h[1] - 1e-6
+        @test tr.uncovered < 0.02 * max(tr.measured, 1e-9)
+    end
+end
