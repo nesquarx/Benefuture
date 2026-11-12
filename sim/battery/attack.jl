@@ -81,7 +81,8 @@ function m3c_world(st)
     events = st.capture > 0 ? [shock(:capture; step = s, duration = d, size = st.capture, target = st.target) for (s, d) in st.windows] : Shock[]
     M3cParams(ToyParams(n = 80, steps = STEPS, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4], p_foresee = 1.0,
-              repair_efficiency = 0.5, advap = true, deceit = per(st.deceit), launder = per(st.launder), frivolous = per(st.frivolous), events)
+              repair_efficiency = 0.5, advap = true, credence_rule = :record, bind_weighted = true,
+              deceit = per(st.deceit), launder = per(st.launder), frivolous = per(st.frivolous), events)
 end
 const NOATTACK = (bloc = Int[], deceit = 0.0, launder = 0.0, frivolous = 0.0, capture = 0.0, target = 1, windows = Tuple{Int,Int}[])
 pattern(tr) = success_pattern(tr; from = 51)

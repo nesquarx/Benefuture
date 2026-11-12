@@ -20,7 +20,7 @@ using BenefutureSim, Statistics, Random, Printf, Dates
 # only in `MECHANISM_FIELDS`. `stress` (:stressed | :unstressed) switches catastrophes, outages and
 # capture; research breakthroughs occur in both.
 const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
-const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule)
+const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule, :bind_weighted)
 const GOV_MECHANISM_FIELDS = (:advap,)
 const WORLD_ARMS = (:bf, :status_quo)
 
@@ -70,6 +70,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
         advap = bf,
         ratchet_k = bf ? 3 : 0,
         credence_rule = bf ? :record : :normal,
+        bind_weighted = bf,
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
                           loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf)

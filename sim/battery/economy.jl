@@ -94,10 +94,12 @@ function world(sev)
     M3cParams(ToyParams(n = 80, steps = STEPS, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4],
               diligence = fill(dil, 8), p_foresee = 1.0, repair_efficiency = 0.5, deceit = [0, 0, 0, 0, 0, 0, d, d], launder = [0, 0, 0, 0, 0, lc, 0, 0],
-              advap = true,
+              advap = true, credence_rule = :record, bind_weighted = true,
               events, kw...)
 end
 pattern(tr) = success_pattern(tr; from = 51)
+const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
+if !WORLD_ONLY
 const CLEAN = let ps = [pattern(run_m3c(world(zeros(length(FACTORS))); seed)) for seed in SEEDS]
     (; (f => mean(getfield(p, f) for p in ps) for f in (:floor_u, :floor_h, :median_u, :median_h, :peak_u, :worst_drop))...)
 end
@@ -163,4 +165,5 @@ if mbudget.sobol > 0 || mbudget.active > 0
                         active_budget = mbudget.active)
     write_methods("economy", m, names; reading_note = "Readings: the success pattern's continuous margin (each criterion scaled so the clean world reads 1 and the criterion's edge 0; the margin is the weakest) and each criterion's slack, averaged over seeds 1, 2, … until the margin's standard error (Student-t inflated) is within $SE_TOL ($SEED_MIN to $SEED_MAX seeds).",
                   screen_fail_rate = bt.screening.fail_rate, minutes = (time() - t1) / 60, dir = OUT)
+end
 end

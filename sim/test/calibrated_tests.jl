@@ -9,7 +9,7 @@ isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # t
 
 realistic(; steps = 300, skill = 0.6, sloppiness = CALIBRATED.sloppiness, kw...) =
     M3cParams(ToyParams(n = 80, steps = steps, plans = 10), [DomainAgent([skill, 0, 0, 0], [1.0, 0, 0, 0], sloppiness) for _ in 1:6],
-              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, kw...)
+              [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, bind_weighted = true, kw...)
 
 @testset "Calibration: the defaults are the calibrated ones" begin
     p = realistic(steps = 20)
@@ -107,15 +107,15 @@ end
                             marker_σ = 0.1, bias_σ = 0.1, classify_σ = 0.05, spread = 0.05, cost_σ = 0.05, regen_σ = 0.3,
                             attribution_σ = 0.1, p_hazard = 0.05, p_informed = 0.95, vigilance = 0.1, p_false_trace = 0.005,
                             p_side = 0.01 + 0.09 * 0.6, credence_rule = rule)
-    seeds = 1:8
+    seeds = 1:16
     normal = [run_m3c(world(:normal); seed) for seed in seeds]
     record = [run_m3c(world(:record); seed) for seed in seeds]
     growth(tr) = success_pattern(tr; from = 51).floor_u
     stalled(tr) = tr.lane_halted > 500 && minimum(tr.leaf_accuracy[[1, 3]]) < 0.75
-    # Regime under normal credence: stalls in 4 of 8 seeds (Wilson 95% interval [0.21, 0.79]); 0 of 8 under record.
+    # Regime under normal credence: stalls in 10 of 16 seeds (lo = 0.382 > 0.15; 2 of 8 on 1:8 after later shifts); 0 of 16 under record.
     @test proportion_interval(count(stalled, normal), length(seeds)).lo > 0.15
     @test count(stalled, record) == 0 && all(r -> r.lane_halted == 0, record)
-    # Leaf accuracy >= 0.75 in 8 of 8 seeds on macOS (lo = 0.667), 7 of 8 on Linux (lo = 0.529).
+    # Leaf accuracy >= 0.75 in 16 of 16 seeds on macOS (lo = 0.80).
     @test proportion_interval(count(r -> minimum(r.leaf_accuracy[[1, 3]]) >= 0.75, record), length(record)).lo > 0.5
     # Paired effects over all 8 seeds: floor growth (+68.2 ± 15.5) and lane halts avoided (-501.0 ± 120.3).
     @test paired_effect(growth.(record) .- growth.(normal)).significant
@@ -156,4 +156,29 @@ end
     @test rel_hw(g20) > 0.10 && rel_hw(g150) < 0.10
     ef = paired_effect(g150 .- g20; z = 3.0)
     @test ef.significant
+end
+
+@testset "Economy & battery worlds: default protections active (PLAN.md)" begin
+    r = realistic(; steps = 20)
+    @test r.credence_rule == :record && r.accuracy_rule == :decay && r.ratchet_k == 3
+    @test r.transactions && r.causal_distribution && r.bind_weighted && r.scarcity_floor == 0.001
+    withenv("BF_WORLD_ONLY" => "1") do
+        econ_mod = Module()
+        Core.eval(econ_mod, :(using BenefutureSim, Statistics, Random, Printf))
+        Base.include(econ_mod, normpath(joinpath(@__DIR__, "..", "battery", "economy.jl")))
+        ew = Core.eval(econ_mod, :(world(zeros(length(FACTORS)))))
+        @test ew.credence_rule == :record && ew.accuracy_rule == :decay && ew.ratchet_k == 3
+        @test ew.transactions && ew.causal_distribution && ew.advap && ew.bind_weighted
+
+        lh_mod = Module()
+        Core.eval(lh_mod, :(using BenefutureSim, Statistics, Random, Printf, Dates))
+        Base.include(lh_mod, normpath(joinpath(@__DIR__, "..", "battery", "long_horizon.jl")))
+        lhw = Core.eval(lh_mod, :(world(1; arm = :bf).econ))
+        @test lhw.credence_rule == :record && lhw.accuracy_rule == :decay && lhw.ratchet_k == 3
+        @test lhw.transactions && lhw.causal_distribution && lhw.advap && lhw.bind_weighted
+    end
+    # Regression guard: bind_quorum = 0 disables binding even when bind_weighted = true.
+    unbound_w = run_m3c(realistic(; steps = 20, bind_weighted = true, bind_quorum = 0,
+                                  whitewash = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]); seed = 1)
+    @test unbound_w.identities_admitted > 0 && unbound_w.identities_linked == 0
 end

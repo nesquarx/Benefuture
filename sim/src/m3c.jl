@@ -879,7 +879,8 @@ function run_m3c(p::M3cParams; seed)
     attest_skill(c) = length(attest_out[c]) < p.attest_min_records ? 1.0 :
         p.attest_pooled ? choice_skill(attest_cred[c], fill(0.5, length(attest_out[c])), attest_out[c]) :
         class_balanced_skill(attest_cred[c], attest_out[c])
-    bind!(confs) = p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
+    bind!(confs) = p.bind_quorum == 0 ? true :
+                   p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
                    binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
     top_leaf(st) = (k = argmax(st); k <= lmax ? k : 0)
     function relevance_parents(a)

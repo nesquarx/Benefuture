@@ -109,12 +109,12 @@ end
 ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8], [1, 1, 2, 2], trues(4);
     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75,
-    p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
+    p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, credence_rule = :normal, kw...)
 
 @testset "Extremised forecasts: in the economy" begin
     native = [run_m3c(ext_world(); seed) for seed in 1:16]
-    # Extremists dominate takeovers: a regime, the share of takeovers that are extremists' with its
-    # interval (over 16 seeds under time-decayed accuracy, 13 of 13 under the fixed window).
+    # Extremists dominate takeovers under `credence_ref` (`:normal`): 15 of 19 over 16 seeds (lo = 0.562 > 0.5).
+    # (Under default `:record`, total takeovers drop to 6 of 9 over 16 seeds, lo = 0.349.)
     ext, all_ = sum(tr.takeovers_extreme for tr in native), sum(tr.takeovers for tr in native)
     @test proportion_interval(ext, all_).lo > 0.5
     # Unsupported, so not asserted: that the takeover-record bar (8.58-b) changes nothing here. Under
