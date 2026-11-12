@@ -1279,6 +1279,7 @@ for removal.
 | Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
 | Programme world (`run_programmes`): a probe world for priority tiers, one global chooser over four typed programmes | Introduced (probe only, 8.129) | Shows tiers deciding before tier-typed effects enter M7 and the replay; remove once M7 emits tier-typed changes. Gaming: a programme claiming a higher tier than it delivers (teachable that is tacit, paradigm that is incremental) is caught by the usual assessed outcomes and records |
 | `chain_spot_all` (spot audits even when chains agree) | Introduced, off (8.107 agreeable chains) | Tested against agreeable chains; did not help and once demoted an honest chain. Candidate for removal unless a later probe needs it. `chain_shade` is an attack parameter of the world, not a mechanism |
+| Status-quo institutional baseline (`run_status_quo`, `status_quo.jl`) | Introduced (baseline, 8.92; B/L3.1b) | Institutional comparison baseline (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6): procyclical credit multiplier and boom–bust contraction, regulatory capture drift and leniency, uncapped delegation, delayed enforcement, and statutory credit amnesia |
 
 ## Governed thresholds
 
@@ -1400,6 +1401,19 @@ over `sim/src` and `BenefutureReference` (author ruling: an unnamed scalar is a 
 Resolved (lifted into governed parameter defaults from `bootstrap_params()`):
 Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (via `HaWt_params_ref`), Fr's confidence bar 0.9 and
 severity multipliers 1000/100/10/1/0.5 (`fr_permissible_params_ref`).
+
+### Status-quo baseline parameters (R6)
+
+Parameters of the status-quo institutional baseline (`StatusQuoParams` in `sim/src/status_quo.jl`), calibrated against empirical findings in `docs/CALIBRATION.md` §9 (R6; BACKPROPAGATION 8.92).
+
+| Parameter | Default | Represents; target | Source (confidence) |
+|---|---|---|---|
+| `crisis_hazard`, `crisis_depth`, `crisis_recovery` | 0.003, 0.15, 36 | Systemic banking/financial crisis monthly probability ($p_{\text{step}} = 1 - (1 - 0.035)^{1/12} \approx 0.003$), peak-to-trough output drop (0.09–0.25), and recovery time (24–48 steps) | Reinhart & Rogoff 2009 [RR09a, RR09b]; Laeven & Valencia 2013, 2020 [LV13, LV20] (high) |
+| `credit_window`, `credit_elasticity`, `bust_contraction`, `bust_threshold` | 60, 0.20, 0.25, 0.10 | 5-year rolling output window ($n_y = 12$, 60 monthly steps), credit multiplier elasticity on recent growth ($\eta = 0.20$), bust contraction ($c_{\text{bust}} = 0.25$), and credit gap trigger (+10 pp) | Schularick & Taylor 2012 [ST12]; Jordà, Schularick & Taylor 2013 [JST13]; Borio & Lowe 2002 [BL02]; Drehmann et al. 2011 [DBT11] (high) |
+| `reg_drift`, `leniency_factor` | 0.003, 0.50 | Regulatory capture drift rate toward incumbent preferences ($\delta_{\text{step}} = 0.003$ per monthly step) and audit scrutiny discount on captured firms | Stigler 1971 [STI71]; Dal Bó 2006 [DAL06]; Lucca, Seru & Trebbi 2014 [LST14]; Blanes i Vidal et al. 2012 [BVF12] (high) |
+| `delegation_cap`, `base_weight`, `expertise_weight` | 1.0, 1.0, 0.0 | One-person-one-vote equal weight with uncapped delegation ($N_{\text{eff}} \approx 2.5$–$5.5$) without expertise weighting | Laakso & Taagepera 1979 [LT79]; Taagepera & Shugart 1989 [TS89]; Kling et al. 2015 [KLI15]; Fritsch et al. 2024 [FMW24] (very high) |
+| `p_detect_step`, `enforcement_lag` | 0.015, 24 | Misconduct detection probability per monthly step ($p_{\text{detect, step}} \approx 0.015$) and legal/enforcement delay before clawbacks or penalties take effect (18–36 steps, median 24 steps) | Dyck, Morse & Zingales 2010, 2023 [DMZ10, DMZ23]; Bryant & Eckard 1991 [BE91]; Karpoff, Lee & Martin 2008 [KLM08] (high) |
+| `memory_window`, `accuracy_rule`, `escrow`, `single_currency` | 100, `:window`, 0.50, true | Flat rectangular sliding window dropping records older than 100 monthly steps (~8.3 years), fixed escrow without credence pricing, and single fiat currency | 15 U.S.C. § 1681c; Musto 2004 [MUS04]; Dobbie, Goldsmith-Pinkham, Mahoney & Song 2020 [DGMS20] (very high) |
 
 ## Noise
 

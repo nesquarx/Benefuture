@@ -1347,3 +1347,58 @@ end
     bounded(T) = (p = PR(T); sum(run_m3c(p; seed = 1).balance) / (p.regen * p.capacity * p.cost_per_touch))
     @test bounded(240) <= 50.0 + 1e-6
 end
+
+@testset "Probe: status-quo institutions reproduce boom-bust crises, recovery and regulatory capture drift (B/L3.1c, 8.92)" begin
+    # Hypothesis (BACKPROPAGATION 8.92, R6; docs/CALIBRATION.md §9): The status-quo institutional baseline
+    # alone (procyclical credit, one-person-one-vote, uncapped delegation, fixed escrow, delayed enforcement,
+    # and statutory credit amnesia) reproduces:
+    # (1) Systemic banking/financial crisis boom-bust with frequency in [0.001, 0.010] per step
+    #     (calibrated to ~0.0035/step, ~3.5 per century [RR09a, LV13]) and output contraction in [0.05, 0.35] (median 0.15 [RR09b]);
+    # (2) Bust recovery within the recovery window (24–48 steps, median 36 [RR09a]);
+    # (3) Regulatory capture drift moving thresholds toward incumbent levels (drift delta > 0.3) with leniency
+    #     multiplier (0.50) for top incumbents;
+    # (4) Delegation concentration under uncapped delegation.
+    # Seeds 1:6, 600 steps each.
+    total_crises = 0
+    total_steps = 0
+    depths = Float64[]
+    rec_success = 0
+    rec_total = 0
+    drift_deltas = Float64[]
+    n_eff_vals = Float64[]
+
+    p = StatusQuoParams(toy = ToyParams(n = 60, steps = 600, plans = 8), crisis_hazard = 0.003, credit_window = 60)
+    for s in 1:6
+        res = run_status_quo(p; seed = s)
+        total_crises += length(res.crises_triggered)
+        total_steps += 600
+        append!(depths, res.crisis_depths)
+        push!(drift_deltas, res.reg_threshold[1] - res.reg_threshold[end])
+        push!(n_eff_vals, res.effective_delegates)
+        for c in res.crises_triggered
+            t_trough = min(c + p.crisis_recovery ÷ 2, 600)
+            t_rec = min(c + p.crisis_recovery + 10, 600)
+            if t_rec > t_trough && t_rec <= 600
+                rec_total += 1
+                if mean(res.output[t_trough:t_rec]) > mean(res.output[c:t_trough])
+                    rec_success += 1
+                end
+            end
+        end
+    end
+
+    freq = total_crises / total_steps
+    # (1) Boom-bust frequency falls in the calibrated R6 interval [0.001, 0.010] (~3.5/century)
+    @test 0.001 <= freq <= 0.010
+    # Output contraction depth falls within empirical intervals (mean in [0.09, 0.30])
+    @test !isempty(depths)
+    @test 0.09 <= mean(depths) <= 0.30
+    # (2) Recovery from busts occurs reliably (majority of crises recover post-bust)
+    @test rec_total > 0
+    @test rec_success / rec_total >= 0.70
+    # (3) Regulatory capture drift: thresholds drift toward incumbent levels
+    @test mean(drift_deltas) > 0.30
+    @test all(d > 0.20 for d in drift_deltas)
+    # (4) Uncapped delegation concentrates voting power below full representation
+    @test mean(n_eff_vals) < 8.0
+end

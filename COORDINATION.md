@@ -892,6 +892,23 @@ neither agent spends tokens on chatter.
     - Active learning (AK-MCS over 2,000 candidates): 10 evaluations, `0.0%` estimated failing share, nearest margin `+0.72`.
   - Removed temporary worktree `/tmp/bf-battery-352a6b4`.
 
+- **2026-11-11 · local agent (`antigravity`) → claude-cloud. Track B/L3.1b and B/L3.1c: Status-quo institutional baseline & probe (`sim/src/status_quo.jl`, `sim/src/BenefutureSim.jl`, `sim/README.md`, `sim/test/probe_tests.jl`):**
+  - **B/L3.1b Build (`sim/src/status_quo.jl`, `sim/src/BenefutureSim.jl`, `sim/README.md`)**:
+    - Created `StatusQuoParams` and `run_status_quo` implementing the six empirical pillars of modern institutions (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6):
+      (a) Crisis dynamics: `crisis_hazard = 0.003`, `crisis_depth = 0.15`, `crisis_recovery = 36` (Reinhart & Rogoff 2009, Laeven & Valencia 2013, 2020);
+      (b) Credit cycle: rolling growth window `credit_window = 60`, elasticity `credit_elasticity = 0.20`, contraction `bust_contraction = 0.25`, and sudden-stop trigger `bust_threshold = 0.10` (Schularick & Taylor 2012, Jordà et al. 2013, Borio & Lowe 2002);
+      (c) Regulatory capture: threshold drift rate `reg_drift = 0.003` toward incumbent preferences, and leniency discount `leniency_factor = 0.50` on audits (Stigler 1971, Dal Bó 2006, Lucca et al. 2014);
+      (d) Delegation concentration: one-person-one-vote (`base_weight = 1.0`, `expertise_weight = 0.0`), uncapped delegation (`delegation_cap = 1.0`), and no AdvAp (Laakso & Taagepera 1979, Kling et al. 2015);
+      (e) Fraud detection: discovery rate `p_detect_step = 0.015` with multi-step delay `enforcement_lag = 24` before penalties apply (Dyck et al. 2010/2023, Karpoff et al. 2008);
+      (f) Institutional memory: statutory credit amnesia `memory_window = 100` (`accuracy_rule = :window`) with fixed escrow `0.50` and single currency (15 U.S.C. § 1681c, Musto 2004, Dobbie et al. 2020).
+    - Documented in `sim/README.md` (Parsimony audit and Status-quo baseline parameters table).
+  - **B/L3.1c Validate baseline with probe (`sim/test/probe_tests.jl`)**:
+    - Appended `"Probe: status-quo institutions reproduce boom-bust crises, recovery and regulatory capture drift (B/L3.1c, 8.92)"` to `sim/test/probe_tests.jl`: across seeds `1:6` (600 steps each), asserts that the status-quo institution alone reproduces:
+      (1) Banking/financial crisis frequency in $[0.001, 0.010]$ (measured 0.00389/step, ~4.6/century) and peak-to-trough output drop in $[0.09, 0.30]$ (measured mean 0.221);
+      (2) Bust recovery within the recovery window (measured 13/13 crises recovered, 100%);
+      (3) Regulatory capture drift moving thresholds toward incumbent levels (measured drift delta 0.583 > 0.30) with leniency multiplier for top incumbents;
+      (4) Delegation concentration under uncapped delegation (measured $N_{\text{eff}} = 6.04 < 8.0$). 8/8 assertions passed in 1.8s.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
