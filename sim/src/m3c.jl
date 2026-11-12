@@ -235,6 +235,12 @@ struct M3cParams
     withhold::Float64
     supply_cartel::Vector{Int}
     withhold_reporter::Int
+    # Model collusion & profile gaming under competing models (Task B4; 8.2, 8.23).
+    model_collude::Float64        # chance an arriving challenger belongs to a colluding model cartel (world)
+    model_collude_bias::Float64   # systematic upward bias added by a colluding model for `collude_actors`
+    collude_actors::Vector{Int}   # actors favored by colluding models (empty: all actors when collude triggers)
+    profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
+    profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
 end
 
 """
@@ -277,7 +283,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
+                   model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -306,6 +313,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
           isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
+    check(0 <= model_collude <= 1 && isfinite(model_collude_bias) && profile_mode in (:measured, :declared) &&
+          (isempty(collude_actors) || all(a -> 1 <= a <= length(agents), collude_actors)) &&
+          (isempty(profile_gamers) || (length(profile_gamers) == length(agents) && all(x -> 0 <= x <= nl + max_new + np + 1, profile_gamers))),
+          "model collusion in [0, 1], finite bias, valid profile mode and agent/leaf indices")
     check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
     check(isempty(deceit) || (length(deceit) == length(agents) && all(isfinite, deceit)), "one finite deceit per agent")
     check(track_window >= 0 && 0 <= p_trace <= 1, "track record window non-negative, trace chance in [0, 1]")
@@ -365,7 +376,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
+              model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -436,7 +448,8 @@ function run_m3c(p::M3cParams; seed)
     function fooled(pred, a, plan, c)
         cu, ch = correction(a, c)
         m = touched(plan)
-        d = deceit_now(a)
+        coll_d = (c in collude_uids && (isempty(p.collude_actors) || a in p.collude_actors)) ? p.model_collude_bias : 0.0
+        d = deceit_now(a) + coll_d
         (d == 0 && cu == 0 && ch == 0) ? pred :
             ToyPlan(pred.du .+ (d - cu) .* m, pred.dh .+ (d - ch) .* m)
     end
@@ -623,8 +636,8 @@ function run_m3c(p::M3cParams; seed)
     # leaf j's currency (the top model); a captured model is the top one when the capture begins.
     # `sharp` is the share of its uncertainty a model states: 1 honest, below 1 an extremist (a world
     # property of the model, M6), whose credences sit nearer 0 and 1 than its record supports.
-    Model = NamedTuple{(:uid, :scale, :bias, :sharp, :hist),Tuple{Int,Float64,Float64,Float64,Vector{Rec}}}
-    mpool = [Model[(uid = j, scale = 1.0, bias = lbias[j], sharp = 1.0, hist = lhist[j])] for j in 1:lmax]
+    Model = NamedTuple{(:uid, :scale, :bias, :sharp, :collude, :hist),Tuple{Int,Float64,Float64,Float64,Bool,Vector{Rec}}}
+    mpool = [Model[(uid = j, scale = 1.0, bias = lbias[j], sharp = 1.0, collude = false, hist = lhist[j])] for j in 1:lmax]
     top = ones(Int, lmax)
     topm(j) = mpool[j][top[j]]
     tkey(c) = c <= lmax ? topm(c).uid : c
@@ -632,7 +645,10 @@ function run_m3c(p::M3cParams; seed)
     irng = Xoshiro(hash((seed, :models)))
     takeovers, next_uid = Ref(0), Ref(10^6)  # challengers' track-record keys never meet a currency column
     takeovers_extreme, arrivals_extreme = Ref(0), Ref(0)
+    takeovers_colluding, arrivals_colluding = Ref(0), Ref(0)
+    collude_uids = Set{Int}()
     xtrng = Xoshiro(hash((seed, :extremist)))
+    collrng = Xoshiro(hash((seed, :model_collude)))
     # Accuracy over the recent window is the quality of a model's credences (Lean
     # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
     # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
@@ -1281,7 +1297,15 @@ function run_m3c(p::M3cParams; seed)
         end
         sigs = [true_sig[l] .+ p.spread .* randn(drng, dims) .+ p.classify_σ .* randn(crng, dims) for l in leaves]
         pms = [parent_mem(c) for c in sigs]
-        stops = [classify_sig(c) for c in sigs]
+        stops = map(eachindex(sigs)) do j
+            if p.profile_mode == :declared && !isempty(p.profile_gamers) && p.profile_gamers[proposers[j]] > 0
+                st = zeros(ncol)
+                st[p.profile_gamers[proposers[j]]] = 1.0
+                st
+            else
+                classify_sig(sigs[j])
+            end
+        end
         for j in 1:nleaves()
             if !leaf_ok(j) && length(mpool[j]) > 1
                 best_k = eval_challengers(j; only_if_eligible = true)
@@ -1290,11 +1314,20 @@ function run_m3c(p::M3cParams; seed)
                     lhist[j] = topm(j).hist
                     takeovers[] += 1
                     takeovers_extreme[] += topm(j).sharp != 1.0
+                    takeovers_colluding[] += topm(j).collude
                     degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
         end
         priced = [price_shares(st) for st in stops]
+        if !scoring_only
+            for j in eachindex(priced)
+                if any(k -> !leaf_ok(k) && stops[j][k] > 0.5 && priced[j][k] <= 0.5 &&
+                            any(q -> priced[j][lmax + q] > 0.5, 1:np), 1:nleaves())
+                    degrade!("leaf domain pricing", "eligible parent model by μ", "leaf model below eligibility bar (8.23)")
+                end
+            end
+        end
         unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
         unit_cost_honest = price_scale[] * scarcity_cost(p.cost_per_touch, available_honest, p.capacity; floor_share = p.scarcity_floor)
         halted0, executed0 = lane.halted[], lane.executed[]
@@ -1847,8 +1880,11 @@ function run_m3c(p::M3cParams; seed)
                     next_uid[] += 1
                     extreme = p.p_extremist > 0 && rand(xtrng) < p.p_extremist
                     arrivals_extreme[] += extreme
+                    coll = p.model_collude > 0 && rand(collrng) < p.model_collude
+                    arrivals_colluding[] += coll
+                    coll && push!(collude_uids, next_uid[])
                     push!(mpool[j], (uid = next_uid[], scale = scale,
-                                    bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, hist = Rec[]))
+                                    bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, collude = coll, hist = Rec[]))
                     if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
                         cands = [k for k in eachindex(mpool[j]) if k != top[j]]
                         scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
@@ -1862,6 +1898,7 @@ function run_m3c(p::M3cParams; seed)
                 if best_k != top[j]
                     top[j] = best_k; lhist[j] = topm(j).hist; takeovers[] += 1
                     takeovers_extreme[] += topm(j).sharp != 1.0
+                    takeovers_colluding[] += topm(j).collude
                     !old_ok && degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
@@ -2114,6 +2151,7 @@ function run_m3c(p::M3cParams; seed)
                advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
                advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
+               takeovers_colluding = takeovers_colluding[], arrivals_colluding = arrivals_colluding[],
                explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
                attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,

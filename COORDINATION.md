@@ -1016,7 +1016,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Goal**: Adversarial collusion between metric models; gaming profile signatures; simpler fallbacks per 8.23.
   - **Primary Files**: `sim/test/m6_attacks_tests.jl`, `sim/src/m3c.jl`.
   - **Collision Risk**: Low.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (`COMPONENT_FALLBACKS` registry + parent fallback logging in `domains.jl`/`m3c.jl`; `model_collude`/`model_collude_bias`/`collude_actors` and `profile_mode`/`profile_gamers` in `m3c.jl`; acceptance, adversarial, and probe tests in `domain_tests.jl`, `m6_attacks_tests.jl`, and `probe_tests.jl`).
 
 - **Task B5: Identity Entry-Point Binding, Cash-in Across Domains & Quote Honesty Probes (8.72, 8.78, 8.80)**
   - **Goal**: Entry-point binding against sybils (8.72), cash-in non-fungibility across domains (8.80), and transactions-domain honesty (8.78/8.79).

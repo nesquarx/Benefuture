@@ -325,3 +325,32 @@ function quantile_score(quantiles, predictions, outcomes, scale::Real)
     ccall(sym(:bf_quantile_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           floatarray(collect(Float64, quantiles)), floatarray(collect(Float64, predictions)), floatarray(collect(Float64, outcomes)), scale)
 end
+
+"""
+    COMPONENT_FALLBACKS
+
+Author ruling 8.23 registry naming the simpler fallback for every component in Benefuture that
+consumes a model, measurement, or record (`docs/PLAN.md` §38, Task B4).
+"""
+const COMPONENT_FALLBACKS = (
+    (component = :leaf_pricing, consumes = :leaf_model, primary = "qualified leaf model (`leaf_ok`)",
+     condition = "leaf model below eligibility bar (`currency_eligible`)", fallback = "eligible parent model by μ (`fallback_network`), else StandCoin lane"),
+    (component = :prediction_credence, consumes = :model_error_record, primary = "time-decayed record credence (`decayed_record_credence`) / normal `credence`",
+     condition = "no records or diverging error spread", fallback = "coin toss (0.5)"),
+    (component = :actor_track_record, consumes = :actor_error_record, primary = "per-(actor, model) error correction (`correction`)",
+     condition = "fewer than `actor_min_records` or captured model", fallback = "uncorrected model prediction (or AdvAp audit on anomaly)"),
+    (component = :measurement_reading, consumes = :measurement_chains, primary = "pooled independent measurement chains (`chain_mode = :domain`)",
+     condition = "fewer than two independent chains or outage (`blind`)", fallback = "spot audits on shared observable (`audits`), else predicted upfront with deferred settlement"),
+    (component = :causal_distribution, consumes = :attribution_model, primary = "Shapley coalition shares (`shapley_shares`)",
+     condition = "confidence below `cc_threshold` or >`exact_max` without sample coverage", fallback = "traversal shares weighted by `decay^degree` (`traversal_shares`, L95)"),
+    (component = :identity_binding, consumes = :attestation_records, primary = "class-balanced attestation skill weighted quorum (`binding_admits_weighted`)",
+     condition = "fewer than `attest_min_records` attestations or unweighted quorum", fallback = "prior cluster skill 1.0 (`binding_admits` unweighted quorum)"),
+    (component = :model_challenger, consumes = :model_pool, primary = "highest significant Brier-scoring challenger (`eval_challengers`)",
+     condition = "no challenger clears `takeover_records` or `model_z`", fallback = "current incumbent (or parent fallback if unqualified, 8.73)"),
+    (component = :birth_level, consumes = :birth_prediction_pool, primary = "pool optimistic average above `threshold` (`birth_level`) + settled `birth_escrow`",
+     condition = "pool confidence below `threshold` or unsettled first window", fallback = "initial level 0.0 and pending-shortfall ledger (`birth_accrued_escrow`, `pending_escrow_loss`, 8.54)"),
+    (component = :accession_floors, consumes = :long_term_counterfactual, primary = "per-being non-degrading counterfactual uplift (`accession_admissible`)",
+     condition = "overwhelming accession cannot preserve every resident at old thresholds", fallback = "combined floors with loud degradation logging (`accession_fallback_never_stalls`, 8.86)"),
+    (component = :resource_issuance, consumes = :capacity_and_rate_records, primary = "uncapped net credit issuance (`supply_delta`)",
+     condition = "claims reach `ra_horizon` deliverable headroom or unfunded StandCoin halts", fallback = "headroom cap (`issuance_headroom`, 8.133) and contracted baseline pricing (`ra_rate`, 8.71)"),
+)

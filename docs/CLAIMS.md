@@ -510,6 +510,14 @@ Gaming and attacks (M6)
   - **Goodhart under selection pressure** ([Gao et al. 2023](https://arxiv.org/abs/2210.10760), on
     proxy over-optimisation): without track records the proxy gap grows from 16.6 to 20.5 as
     candidates go from 2 to 32; with them it stays within half a unit.
+  - **Model collusion and profile gaming (8.2, 8.23).** When arriving challengers collude with a
+    favored actor (`model_collude`), omitting per-model track records lets upfront escrow exceed
+    settled value in 6 of 6 seeds while native per-`(actor, model)` track records, record credence,
+    and AdvAp keep upfront within settled value in 6 of 6 seeds even after colluding takeovers; under
+    `:measured` signature routing, noisy leaf-1 actors declaring leaf 2 cannot degrade leaf 2's
+    model accuracy (`> 0.9` in 6 of 6 seeds vs degraded `:declared` counterexample); and
+    `COMPONENT_FALLBACKS` names the 10 simpler fallbacks logged in `degraded`
+    ([domain_tests](../sim/test/domain_tests.jl), [m6_attacks_tests](../sim/test/m6_attacks_tests.jl)).
 - **Optimised attacks** (cross-entropy method) found no strategy that breaks the success pattern; the
   worst cases are frozen as tests ([attack_tests](../sim/test/attack_tests.jl), [attack.md](../sim/battery/results/attack.md)).
   A search this small is weak evidence that no breaking strategy exists.

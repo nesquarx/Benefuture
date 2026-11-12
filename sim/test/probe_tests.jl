@@ -1559,3 +1559,40 @@ end
         @test tr.uncovered < 0.02 * max(tr.measured, 1e-9)
     end
 end
+
+# ==============================================================================
+# Probe: model collusion, profile gaming, and 8.23 named fallbacks (Task B4)
+# ==============================================================================
+@testset "Probe: model collusion, profile gaming, and 8.23 named fallbacks (B4)" begin
+    @test length(COMPONENT_FALLBACKS) == 10
+    toy = ToyParams(; n = 30, steps = 120, plans = 4)
+    ag_cap = [DomainAgent([0.8, 0.2], [0.5, 0.5], 0.1), DomainAgent([0.2, 0.8], [0.5, 0.5], 0.1)]
+    tr_cap = run_m3c(M3cParams(toy, ag_cap, [1, 1], [true, true]; λpos = 0.05, λneg = 0.02,
+                               events = [shock(:capture; step = 60, duration = 60, size = 15.0, target = 1)]); seed = 1)
+    @test any(occursin("eligible parent model by μ", k) for k in keys(tr_cap.degraded))
+
+    ag_c = [DomainAgent([0.5, 0.5], [0.5, 0.5], 0.1) for _ in 1:6]
+    cw(tw, adv) = M3cParams(ToyParams(; n = 60, steps = 300, plans = 10), ag_c, [1, 1], [true, true];
+                            λpos = 0.05, λneg = 0.02, transactions = true, accuracy_rule = :window,
+                            p_new_model = 0.1, improve_drift = -0.4, improve_σ = 0.1,
+                            takeover_records = 10, min_records = 5, pool_max = 8,
+                            events = [shock(:capture; step = 40, duration = 60, size = 3.0, target = 1)],
+                            model_collude = 0.9, model_collude_bias = 3.0, collude_actors = [1],
+                            track_window = tw, credence_rule = :record, advap = adv)
+    red_c = [run_m3c(cw(0, false); seed = s) for s in 1:6]
+    grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:6]
+    @test all(r -> r.upfront[1] > r.settled_value[1], red_c)
+    @test all(g -> g.upfront[1] <= g.settled_value[1], grn_c)
+    @test paired_effect([(r.upfront[1] - r.settled_value[1]) - (g.upfront[1] - g.settled_value[1]) for (r, g) in zip(red_c, grn_c)]).significant
+
+    ag_p = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
+    pw(mode) = M3cParams(ToyParams(; n = 60, steps = 200, plans = 8), ag_p, [1, 1], [true, true];
+                         λpos = 0.05, λneg = 0.02, transactions = true, profile_mode = mode, profile_gamers = [2, 0, 0, 0])
+    red_p = [run_m3c(pw(:declared); seed = s) for s in 1:6]
+    grn_p = [run_m3c(pw(:measured); seed = s) for s in 1:6]
+    @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red_p, grn_p)]).significant
+    @test all(g -> g.leaf_accuracy[2] > 0.9, grn_p)
+end

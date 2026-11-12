@@ -160,3 +160,17 @@ end
     @test_throws ArgumentError record_credence(0.0, [0.1, Inf])
     @test_throws ArgumentError record_credence(0.0, base; cap = 0.4)
 end
+
+# Author ruling 8.23: every component consuming a model, measurement, or record names its simpler
+# fallback, and when a leaf model drops below eligibility bar, pricing falls back to parent models
+# and logs the degradation loudly.
+@testset "Component fallbacks (8.23)" begin
+    @test length(COMPONENT_FALLBACKS) == 10
+    @test all(x -> !isempty(string(x.component)) && !isempty(x.primary) && !isempty(x.condition) && !isempty(x.fallback), COMPONENT_FALLBACKS)
+    @test :leaf_pricing in first.(COMPONENT_FALLBACKS) && :model_challenger in first.(COMPONENT_FALLBACKS)
+    toy = ToyParams(; n = 30, steps = 120, plans = 4)
+    ag = [DomainAgent([0.8, 0.2], [0.5, 0.5], 0.1), DomainAgent([0.2, 0.8], [0.5, 0.5], 0.1)]
+    tr = run_m3c(M3cParams(toy, ag, [1, 1], [true, true]; λpos = 0.05, λneg = 0.02,
+                           events = [shock(:capture; step = 60, duration = 60, size = 15.0, target = 1)]); seed = 1)
+    @test any(occursin("eligible parent model by μ", k) for k in keys(tr.degraded))
+end
