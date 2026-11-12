@@ -60,4 +60,24 @@ def birth_escrow_ref (initial predicted : Float) (window : Nat) (baseline : Floa
 def accession_admissible_ref (dScope dMinU dMinH dMaxU : Float) (existingDeltaU existingDeltaH : Array Float) : Bool :=
   dScope >= 0.0 && dMinU >= 0.0 && dMinH >= 0.0 && dMaxU >= 0.0 && (List.range (min existingDeltaU.size existingDeltaH.size)).all (fun i => existingDeltaU[i]! >= 0.0 && existingDeltaH[i]! >= 0.0)
 
+/-- Graded personhood across cognitive & social capacity dimensions (L71; `PersonhoodCapacities`),
+    each clamped to `[0, 1]`. Returns their mean in `[0, 1]`, or `0.0` when no capacities exist
+    (e.g., non-sophont sentient beings). -/
+def personhood_ref (capacities : Array Float) : Float :=
+  if capacities.size == 0 then 0.0
+  else
+    let clamp01 (x : Float) : Float := if x <= 0.0 then 0.0 else if x >= 1.0 then 1.0 else x
+    let total := capacities.foldl (fun acc x => acc + clamp01 x) 0.0
+    total / capacities.size.toFloat
+
+/-- Base vote weight for a sentient being (ruling 8.35.5; 8.34): non-sophonts hold moral
+    standing in U/H/harm (`G`, `V`) but zero base vote; sophonts scale linearly with graded
+    personhood and are divided by `forkShare` across identity forks (`fork_split_ref`). -/
+def base_vote_ref (baseVote personhood : Float) (sophont : Bool) (forkShare : Float) : Float :=
+  if !sophont then 0.0
+  else
+    let clamp01 (x : Float) : Float := if x <= 0.0 then 0.0 else if x >= 1.0 then 1.0 else x
+    let b := if baseVote > 0.0 then baseVote else 0.0
+    b * clamp01 personhood * clamp01 forkShare
+
 end BenefutureReference

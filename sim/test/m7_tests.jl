@@ -327,3 +327,33 @@ end
     @test all(d.reason == :weak_accession_floor for d in t_tight.degraded)
     @test !isempty(t_tight.nha_bearers)
 end
+
+@testset "M7 D2: graded personhood, non-sophont moral standing, forks and merges (L71, 8.34, 8.35.5)" begin
+    vp = isdefined(@__MODULE__, :vectors) ? vectors("population") :
+        Dict("personhood_half" => 0.5, "base_vote_non_sophont" => 0.0, "base_vote_scaled_forked" => 0.75)
+    @test personhood(fill(0.5, 6)) ≈ vp["personhood_half"]
+    @test base_vote(1.0, 1.0, false) ≈ vp["base_vote_non_sophont"]
+    @test base_vote(2.0, 0.75, true; fork_share = 0.5) ≈ vp["base_vote_scaled_forked"]
+    p = ToyParams(n = 16, steps = 25, plans = 8)
+    soph = vcat(trues(12), falses(4))
+    caps = [i <= 12 ? fill(0.5, 6) : zeros(6) for i in 1:16]
+    # Maturing sophonts, 2-way fork of being 1 at step 8, merge back of children (17, 18) at step 16 with memory loss.
+    forks = [(step = 8, parent = 1, shares = [0.6, 0.4])]
+    merges = [(step = 16, a = 17, b = 18, memory_loss = 0.2)]
+    tr = run_population_identities(p; seed = 2, sophont = soph, capacities = caps,
+                                   maturation_rate = 0.02, fork_events = forks, merge_events = merges,
+                                   fork_rule = :split, harm_non_sophont_probe = true)
+    # Non-sophonts have 0 base vote throughout yet non-sophont-harming plans are rejected every step.
+    @test all(tr.base_votes[i] == 0.0 for i in 13:16)
+    @test tr.harm_non_sophont_rejected == p.steps
+    # Total base votes across live beings never jump discontinuously across the step-8 fork (within 1 step of maturation).
+    @test abs((tr.total_votes_trace[8] - tr.total_votes_trace[7]) - (tr.total_votes_trace[7] - tr.total_votes_trace[6])) < 1e-9
+    # Merged fork (17) is alive, (18) dormant, and merged share equals 1.0 (sum of 0.6 + 0.4).
+    @test tr.alive[17] && !tr.alive[18]
+    @test tr.shares[17] ≈ 1.0 atol = 1e-9
+    # Counterexample: unrelated full sophonts merging cannot stack base vote above 1.0.
+    tr_full = run_population_identities(ToyParams(n = 4, steps = 5, plans = 4); seed = 1,
+                                        merge_events = [(step = 2, a = 1, b = 2, memory_loss = 0.1)])
+    @test tr_full.shares[1] ≈ 1.0 && tr_full.base_votes[1] ≈ 1.0
+    @test tr_full.total_votes_trace[end] ≈ 3.0
+end

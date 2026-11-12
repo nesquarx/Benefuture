@@ -59,7 +59,7 @@ def main : IO Unit := do
   let p0 : List Float := [2.0, 6.0, 8.0, 9.0, 10.0]
   let p1 : List Float := [0.0, 6.0, 8.0, 9.0, 10.0]
   let fronts := pareto_front_ref [[1.0, 1.0], [0.5, 1.0], [2.0, 0.0], [0.0, 0.0]]
-  let popJson := s!"\{\n  \"skew_key_before\": {skew_key_ref p0},\n  \"skew_key_after_lowering_min\": {skew_key_ref p1},\n  \"novelty_copies_5\": {population_novelty_ref [] [7, 7, 7, 7, 7]},\n  \"novelty_distinct_5\": {population_novelty_ref [] [1, 2, 3, 4, 5]},\n  \"novelty_with_history\": {population_novelty_ref [1, 1, 2] [1, 2, 3]},\n  \"effective_types_mixed\": {effective_types_ref [1, 1, 2, 3, 3, 3]},\n  \"pareto_front_indices\": {fronts},\n  \"delegation_capped_cap100_w10x30\": {accumulate_capped_ref 100.0 0.0 (List.replicate 30 10.0)}\n}\n"
+  let popJson := s!"\{\n  \"skew_key_before\": {skew_key_ref p0},\n  \"skew_key_after_lowering_min\": {skew_key_ref p1},\n  \"novelty_copies_5\": {population_novelty_ref [] [7, 7, 7, 7, 7]},\n  \"novelty_distinct_5\": {population_novelty_ref [] [1, 2, 3, 4, 5]},\n  \"novelty_with_history\": {population_novelty_ref [1, 1, 2] [1, 2, 3]},\n  \"effective_types_mixed\": {effective_types_ref [1, 1, 2, 3, 3, 3]},\n  \"pareto_front_indices\": {fronts},\n  \"delegation_capped_cap100_w10x30\": {accumulate_capped_ref 100.0 0.0 (List.replicate 30 10.0)},\n  \"personhood_half\": {personhood_ref #[1.0, 0.5, 0.5, 1.0, 0.0, 0.0]},\n  \"base_vote_non_sophont\": {base_vote_ref 2.0 1.0 false 1.0},\n  \"base_vote_scaled_forked\": {base_vote_ref 2.0 0.75 true 0.5}\n}\n"
   IO.FS.writeFile "spec/vectors/population.json" popJson
 
   -- 8. freedom.json (L135, author's reading; defaults thConf = 0.9, thHigh = 1)

@@ -278,6 +278,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_birth_escrow] def birthEscrow (initial predicted : Float) (window : USize) (baseline : Float) : Float :=
   birth_escrow_ref initial predicted window.toNat baseline
 
+@[export bf_personhood] def personhoodExport (capacities : FloatArray) : Float :=
+  personhood_ref capacities.data
+
+@[export bf_base_vote] def baseVoteExport (baseVote personhood : Float) (sophont : UInt8) (forkShare : Float) : Float :=
+  base_vote_ref baseVote personhood (sophont != 0) forkShare
+
 -- Shapley sampling
 @[export bf_shapley_sampled] def shapleySampled (n m : USize) (perms vals : FloatArray) : FloatArray :=
   ⟨shapley_sampled_ref n.toNat m.toNat perms.data vals.data⟩

@@ -88,6 +88,32 @@ function accession_admissible(d_scope::Real, d_min_u::Real, d_min_h::Real, d_max
           d_scope, d_min_u, d_min_h, d_max_u, floatarray(collect(Float64, existing_du)), floatarray(collect(Float64, existing_dh))) == 1
 end
 
+"""
+    personhood(capacities) -> Float64
+
+Graded personhood in `[0, 1]` across cognitive & social capacity dimensions (L71; Lean
+`personhood_ref`). Empty capacities return `0.0`.
+"""
+function personhood(capacities)
+    check(all(isfinite, capacities), "capacities must be finite")
+    ccall(sym(:bf_personhood), Float64, (Ptr{Cvoid},), floatarray(collect(Float64, capacities)))
+end
+
+"""
+    base_vote(base, personhood_level, sophont; fork_share = 1.0) -> Float64
+
+Base vote weight following personhood and identity novelty rather than identity count (ruling
+8.35.5, 8.34; Lean `base_vote_ref`): non-sophont sentient beings get `0.0` (while holding moral
+standing in U/H/harm); sophonts scale with graded `personhood_level` and are divided by
+`fork_share`.
+"""
+function base_vote(base::Real, personhood_level::Real, sophont::Bool; fork_share::Real = 1.0)
+    check(all(isfinite, (base, personhood_level, fork_share)) && base >= 0 && 0 <= personhood_level <= 1 && 0 <= fork_share <= 1,
+          "non-negative base vote, personhood and fork_share in [0, 1]")
+    ccall(sym(:bf_base_vote), Float64, (Float64, Float64, UInt8, Float64),
+          base, personhood_level, sophont ? 0x01 : 0x00, fork_share)
+end
+
 # ---- Plans over a changing population ----
 
 "A birth a plan causes: the model pool's predictions of the newborn's mature levels and its confidence."
@@ -954,4 +980,126 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
     refs = (:births, :settled, :posted, :measured, :clawback, :refund, :uncovered)
     (; (k => getfield(tr, k) for k in keys(tr) if !(k in refs))..., (k => getfield(tr, k)[] for k in refs)...,
      births_by = births_by, gamer = gamer, confidence = conf)
+end
+
+"""
+    run_population_identities(p; seed = 1, sophont = nothing, capacities = nothing, maturation_rate = 0.0,
+                              fork_events = NamedTuple[], merge_events = NamedTuple[], fork_rule = :split,
+                              base_vote_weight = 1.0, harm_non_sophont_probe = false)
+
+M7 world tracking graded personhood (`L71`), base-vote scaling with personhood and novelty rather
+than identity count (`8.35.5`), non-sophont moral standing in `G`/`V` without voting rights, and
+population forks and merges (`8.34`, `fork_split`).
+"""
+function run_population_identities(p::ToyParams; seed::Integer = 1,
+                                   sophont::Union{Nothing,AbstractVector{Bool}} = nothing,
+                                   capacities::Union{Nothing,AbstractVector{<:AbstractVector{<:Real}}} = nothing,
+                                   maturation_rate::Real = 0.0,
+                                   fork_events = NamedTuple[],
+                                   merge_events = NamedTuple[],
+                                   fork_rule::Symbol = :split,
+                                   base_vote_weight::Real = 1.0,
+                                   harm_non_sophont_probe::Bool = false)
+    check(fork_rule in (:split, :per_identity), "fork_rule must be :split or :per_identity")
+    check(isfinite(maturation_rate) && maturation_rate >= 0 && isfinite(base_vote_weight) && base_vote_weight >= 0,
+          "maturation_rate and base_vote_weight must be non-negative")
+    rng = Xoshiro(seed)
+    s0 = toy_state(p, rng)
+    u = copy(s0.u)
+    h = copy(s0.h)
+    soph = sophont === nothing ? trues(p.n) : collect(Bool, sophont)
+    check(length(soph) == p.n, "one sophont flag per initial being")
+    caps = if capacities === nothing
+        [soph[i] ? fill(1.0, 6) : zeros(6) for i in 1:p.n]
+    else
+        check(length(capacities) == p.n, "one capacity vector per initial being")
+        [clamp.(Float64.(c), 0.0, 1.0) for c in capacities]
+    end
+    shares = ones(p.n)
+    alive = trues(p.n)
+    origin = collect(1:p.n)
+
+    votes_for(i) = alive[i] ? base_vote(base_vote_weight, personhood(caps[i]), soph[i]; fork_share = shares[i]) : 0.0
+    floor_u = Float64[]; floor_h = Float64[]
+    total_votes_trace = Float64[]
+    harm_non_sophont_rejected = 0
+
+    for t in 1:p.steps
+        # Process scheduled population forks (`(step, parent, shares)`).
+        for ev in fork_events
+            ev.step == t || continue
+            par = ev.parent
+            (1 <= par <= length(alive) && alive[par]) || continue
+            part_shares = fork_rule == :split ? fork_split(shares[par], ev.shares) : ones(length(ev.shares))
+            alive[par] = false
+            for k in eachindex(part_shares)
+                push!(u, u[par]); push!(h, h[par])
+                push!(soph, soph[par]); push!(caps, copy(caps[par]))
+                push!(shares, min(1.0, part_shares[k]))
+                push!(alive, true); push!(origin, origin[par])
+            end
+        end
+        # Process scheduled population merges (`(step, a, b, memory_loss)`).
+        for ev in merge_events
+            ev.step == t || continue
+            a, b = ev.a, ev.b
+            ml = hasproperty(ev, :memory_loss) ? clamp(Float64(ev.memory_loss), 0.0, 1.0) : 0.0
+            (1 <= a <= length(alive) && 1 <= b <= length(alive) && a != b && alive[a] && alive[b]) || continue
+            u[a] = (1.0 - ml) * max(u[a], u[b]) + ml * 0.5 * (u[a] + u[b])
+            h[a] = 0.5 * (h[a] + h[b])
+            caps[a] .= (1.0 - ml) .* max.(caps[a], caps[b]) .+ ml .* 0.5 .* (caps[a] .+ caps[b])
+            soph[a] = soph[a] || soph[b]
+            shares[a] = min(1.0, shares[a] + shares[b])
+            alive[b] = false
+            shares[b] = 0.0
+        end
+
+        live_idx = findall(alive)
+        if maturation_rate > 0
+            for i in live_idx
+                soph[i] || continue
+                caps[i] .= clamp.(caps[i] .+ maturation_rate, 0.0, 1.0)
+            end
+        end
+
+        # G chooses over the full sentient population `B(t)`, including non-sophonts.
+        nl = length(live_idx)
+        s_live = ToyState(u[live_idx], h[live_idx])
+        p_live = ToyParams(n = nl, steps = p.steps, plans = p.plans, q = p.q, th = p.th,
+                           touch = (min(p.touch[1], nl), min(p.touch[2], nl)), shift = p.shift, spread = p.spread, gp = p.gp)
+        plans = [random_plan(rng, p_live) for _ in 1:p.plans]
+        if harm_non_sophont_probe && any(!soph[i] for i in live_idx)
+            ns_local = findall(i -> !soph[live_idx[i]], 1:nl)
+            so_local = findall(i -> soph[live_idx[i]], 1:nl)
+            if !isempty(so_local)
+                du_ex = zeros(nl); dh_ex = zeros(nl)
+                dh_ex[so_local] .= 0.5
+                dh_ex[ns_local] .= -5.0
+                push!(plans, ToyPlan(du_ex, dh_ex))
+            end
+        end
+        c = choose(s_live, plans, p_live)
+        if harm_non_sophont_probe && any(!soph[i] for i in live_idx) && c != length(plans) + 1
+            harm_non_sophont_rejected += 1
+        end
+        if c > 1
+            chosen = plans[c - 1]
+            u[live_idx] .+= chosen.du
+            h[live_idx] .+= chosen.dh
+        end
+
+        live_now = findall(alive)
+        push!(floor_u, floor_quantile(u[live_now], p.q))
+        push!(floor_h, floor_quantile(h[live_now], p.q))
+        push!(total_votes_trace, sum(votes_for(i) for i in live_now; init = 0.0))
+    end
+
+    live_end = findall(alive)
+    base_votes = [votes_for(i) for i in eachindex(alive)]
+    (u = u, h = h, sophont = soph, capacities = caps, shares = shares, alive = alive, origin = origin,
+     live = live_end, base_votes = base_votes,
+     live_personhood = [personhood(caps[i]) for i in live_end],
+     floor_u = floor_u, floor_h = floor_h,
+     total_votes_trace = total_votes_trace,
+     harm_non_sophont_rejected = harm_non_sophont_rejected)
 end

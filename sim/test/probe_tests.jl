@@ -1477,3 +1477,45 @@ end
         @test tr.withhold_agent_net[2] < 0 && tr.withhold_agent_net[3] < 0   # colluders net strictly negative
     end
 end
+
+@testset "Probe: graded personhood scales base vote, non-sophonts get 0 vote while protected in G, and population forks conserve vote (D2, L71, 8.34, 8.35.5)" begin
+    # 1. Lean rules: graded personhood across 6 dimensions, non-sophont 0 vote, and fork conservation.
+    @test personhood(zeros(6)) == 0.0
+    @test personhood(Float64[]) == 0.0
+    @test personhood([1.0, 0.5, 0.5, 1.0, 0.0, 0.0]) ≈ 0.5
+    @test personhood([1.5, -0.2, 1.0]) ≈ 2.0 / 3.0
+    @test base_vote(1.0, 1.0, false) == 0.0                       # non-sophont gets 0 base vote
+    @test base_vote(1.0, 0.5, true) ≈ 0.5                         # graded personhood scales vote
+    @test base_vote(2.0, 0.75, true; fork_share = 0.5) ≈ 0.75     # fork divides base vote
+    @test_throws ArgumentError personhood([NaN])
+    @test_throws ArgumentError base_vote(-1.0, 0.5, true)
+    @test_throws ArgumentError base_vote(1.0, 1.5, true)
+
+    # 2. World probe: population with maturing graded sophonts, non-sophonts, a 3-way fork at step 5,
+    # and a partial re-merge at step 12.
+    p = ToyParams(n = 20, steps = 20, plans = 8)
+    soph = vcat(trues(16), falses(4))   # 16 sophonts, 4 non-sophonts
+    caps = [i <= 16 ? fill(0.4, 6) : zeros(6) for i in 1:20]
+    forks = [(step = 5, parent = 1, shares = [0.5, 0.3, 0.2])]
+    # Merge two fork children back (new indices after 20 are 21, 22, 23).
+    merges = [(step = 12, a = 21, b = 22, memory_loss = 0.25)]
+
+    tr_split = run_population_identities(p; seed = 1, sophont = soph, capacities = caps,
+                                         maturation_rate = 0.03, fork_events = forks, merge_events = merges,
+                                         fork_rule = :split, harm_non_sophont_probe = true)
+    # Counterexample: naive per-identity voting lets the fork triple its parent's base vote.
+    tr_naive = run_population_identities(p; seed = 1, sophont = soph, capacities = caps,
+                                         maturation_rate = 0.03, fork_events = forks, merge_events = merges,
+                                         fork_rule = :per_identity, harm_non_sophont_probe = true)
+
+    # Non-sophonts still hold 0 base vote yet are included in G's floors, rejecting every harm-non-sophont plan.
+    @test all(tr_split.base_votes[i] == 0.0 for i in 17:20)
+    @test tr_split.harm_non_sophont_rejected == p.steps
+    @test tr_split.floor_h[end] >= tr_split.floor_h[1]
+
+    # Maturation lifts per-identity personhood from 0.4 toward 1.0, lifting total base votes smoothly
+    # BEFORE the fork without any fork-inflation discontinuity.
+    @test tr_split.total_votes_trace[4] > tr_split.total_votes_trace[1]
+    @test sum(tr_split.base_votes[i] for i in 21:23) <= 1.0 + 1e-9   # merged 21 + surviving 23 <= 1 full person vote
+    @test tr_naive.total_votes_trace[5] > tr_split.total_votes_trace[5] + 0.5   # naive inflated votes on fork step
+end

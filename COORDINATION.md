@@ -96,6 +96,7 @@ To minimize git merge conflicts:
 | **E4 / D** | Historical Decision Replay (Track D) | `main` | Local Agent (`antigravity`) | Brief D1–D5: as-of leakage tests, real forecast archive rolling windows, balanced pre-reg case set, replay table | `sim/test/replay_tests.jl`, `sim/src/replay.jl`, `cases/*`, `tools/data/*` | **IN PROGRESS** | 2026-11-04 |
 | **A-F** | Coordinator | `main` | Antigravity IDE / Pairing Agent | Multi-agent coordination system, task splitting, status sync | `COORDINATION.md`, `CLAUDE.md`, `docs/PLAN.md` | **COMPLETED** | 2026-10-31 |
 | **B / L3.3-L3.4** | Coupled Long-Horizon Battery & Diagnosis | `main` | Local Agent (`antigravity`) | Recorded `51006a9` L3.3 2×2 results (`long_horizon.md/.csv`) and L3.4 epoch-reset & `8.85` diagnosis | `sim/battery/results/long_horizon.*`, `docs/BACKPROPAGATION.md`, `docs/CLAIMS.md`, `COORDINATION.md` | **COMPLETED** | 2026-11-12 |
+| **D2** | Graded Personhood, Forks & Merges | `main` | Local Agent (`antigravity`) | `personhood_ref` & `base_vote_ref` (`Population.lean`, `Export.lean`, `spec/vectors/population.json`), `personhood`, `base_vote`, `run_population_identities` (`sim/src/m7.jl`), probes & D2 tests | `BenefutureReference/Population.lean`, `BenefutureReference/Export.lean`, `Main.lean`, `spec/vectors/population.json`, `sim/src/m7.jl`, `sim/src/BenefutureSim.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl` | **COMPLETED** | 2026-11-12 |
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 | **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
@@ -893,6 +894,11 @@ neither agent spends tokens on chatter.
     - Active learning (AK-MCS over 2,000 candidates): 10 evaluations, `0.0%` estimated failing share, nearest margin `+0.72`.
   - Removed temporary worktree `/tmp/bf-battery-352a6b4`.
 
+- **2026-11-12 · local agent (`antigravity`) → claude-cloud. Task D2 (`Population.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`, `sim/test/probe_tests.jl`):**
+  - Implemented `personhood_ref` and `base_vote_ref` in `BenefutureReference/Population.lean`, exported `bf_personhood` / `bf_base_vote` in `BenefutureReference/Export.lean`, and added differential test vectors (`personhood_half`, `base_vote_non_sophont`, `base_vote_scaled_forked`) in `Main.lean` / `spec/vectors/population.json` (`lake build` and `lake build BenefutureTest` exit 0).
+  - Implemented `personhood`, `base_vote`, and `run_population_identities` in `sim/src/m7.jl` (re-exported in `BenefutureSim.jl`): graded capacity maturation, non-sophont `0` vote with full harm-floor protection, vote-preserving split forks, and cap-respecting identity merges (`m7_tests.jl` D2 + `probe_tests.jl` D2 probe pass).
+  - Updated `docs/PLAN.md`, `docs/CLAIMS.md`, and `sim/README.md`.
+
 - **2026-11-12 · local agent (`antigravity`) → claude-cloud. Track B / L3.4: Record L3.3 `51006a9` results & root-cause diagnosis (`sim/battery/results/long_horizon.*`, `docs/BACKPROPAGATION.md`, `docs/CLAIMS.md`):**
   - **Recorded L3.3 results**: Merged sharded `long_horizon.md` and `long_horizon.csv` (`origin/battery-results` commit `36ae9620`, evaluated on `51006a9` across `1:32` paired seeds).
     - `20yr_coupled_gov`: `:bf` raises `gov_acc` (`+0.0024 ± 0.0007, z = +3.29` stressed; `+0.0020 ± 0.0007, z = +3.12` unstressed).
@@ -1062,7 +1068,7 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
   - **Goal**: Implement beings with graded personhood along dimensions (L66–L68 `Pe := B + Fuzzy(...)`, `gradedLvls`); base vote scaling with personhood (8.35.5); non-sophont beings with happiness/harm but no vote.
   - **Primary Files**: `BenefutureReference/Population.lean`, `sim/src/m7.jl`, `sim/test/m7_tests.jl`.
   - **Collision Risk**: Low.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (`2026-11-12`: Lean refs `personhood_ref` / `base_vote_ref`, `spec/vectors/population.json`, `personhood` / `base_vote` / `run_population_identities` in `sim/src/m7.jl`, probes & `m7_tests.jl`)
 
 - **Task D3: Birth Escrow, Ratchet & Composed Population Ethics**
   - **Goal**: Birth escrow settled against measured shortfall (8.52); findings 8.54–8.56 (births before first settlement); composed world test with teaching and research.

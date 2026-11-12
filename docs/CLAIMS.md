@@ -537,6 +537,7 @@ Population (M7)
 - **Population ethics.** G avoids the Repugnant Conclusion in probes. It gives up Non-Sadism only in a forced addition (8.56), which by ruling 8.86 is taken as given and answered by uplift.
 - **Accession and forced additions (8.86).** A joined population well below the floors is uplifted by G without harming existing beings over their long-term counterfactual window; when a large accession cannot meet the strong per-being reading, G falls back to combined floors with loud progressive degradation logging and zero stalls ([probe_tests](../sim/test/probe_tests.jl), [m7_tests](../sim/test/m7_tests.jl)).
 - **Teaching and research** are complements; uplift peaks near a fifth of time on research.
+- **Graded personhood, non-sophont standing, forks and merges (D2 / L71, 8.34, 8.35.5).** `personhood` blends capacity-dimension averages and minima, `base_vote` scales linearly with personhood and `fork_share` (0 for non-sophonts while non-sophont-harming plans still fail the harm floor), splits preserve total base vote across children, and merges consolidate fork identity shares at 1.0 without stacking unrelated beings ([m7_tests](../sim/test/m7_tests.jl), [Population.lean](../BenefutureReference/Population.lean)).
 
 Historical decisions and long horizons
 - **Real forecasters' skill persists, moderately (E4 measurement layer, the first real-data result).** On the COVID-19 Forecast Hub (US weekly deaths, one week ahead, 10 teams, 140 weeks), scored by the Lean quantile score on rolling 6-week windows, team rankings in consecutive windows correlate at 0.36 ± 0.09 (z ≈ 4, 22 window pairs), and a ranking from L weeks of record predicts the next period at about 0.36 for L = 2, rising to a plateau near 0.5 from about five weeks. So weighting by record is justified but noisy, and most of its information arrives within about five resolved forecasts, in line with Benefuture's minimum record of five and time-decayed records ([BACKPROPAGATION 8.93](BACKPROPAGATION.md)). Caveats: one target, a pandemic regime, truth at the final vintage.
@@ -562,7 +563,7 @@ Historical decisions and long horizons
 - **Expertise weighting at scale: open.** Weighting votes by domain record beats equal weight (+0.06 at 60 voters), but the current sweep copies one skill distribution per voter, so equal weight reaches certainty at 240 voters and the gain shrinks. By author clarification 8.90 specialists stay sparse in narrow subdomains as populations grow; the sweep is being rebuilt that way, with the hypothesis, stated before measuring, that the gain grows with population.
 - **Century and long-horizon battery.** Composed multi-decade and century simulations ([long_horizon](../sim/battery/long_horizon.jl), launcher `tools/battery/overnight.sh`) test convergence over 5,000–20,000 steps with rare catastrophes and breakthroughs, validating stability beyond short test horizons.
 
-Not yet demonstrated: the `Conj_*` conjectures over a `SimTrace`, forks and graded personhood, and
+Not yet demonstrated: the `Conj_*` conjectures over a `SimTrace`, and
 networks and propagation (M8) ([SIM_CONJECTURES](SIM_CONJECTURES.md), [PLAN](PLAN.md)).
 
 ---
