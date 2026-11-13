@@ -1581,9 +1581,11 @@ end
                             track_window = tw, credence_rule = :record, advap = adv)
     red_c = [run_m3c(cw(0, false); seed = s) for s in 1:6]
     grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:6]
-    @test all(r -> r.upfront[1] > r.settled_value[1], red_c)
-    @test all(g -> g.upfront[1] <= g.settled_value[1], grn_c)
-    @test paired_effect([(r.upfront[1] - r.settled_value[1]) - (g.upfront[1] - g.settled_value[1]) for (r, g) in zip(red_c, grn_c)]).significant
+    # Unsupported on Linux (2026-11-13): the per-seed claims (upfront above settled value in every unprotected seed, within it
+    # in every protected seed) and the paired effect hold on macOS seeds 1:6 but not on Linux: over seeds 1:16 the gap
+    # difference is +263 (se 133), not significant, with protected seeds on both sides of zero. Only distributional claims
+    # are portable; until one is re-established (seeds by precision, on Linux), the runs execute and the claim is not asserted.
+    @test length(red_c) == length(grn_c) == 6
 
     ag_p = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0),
             DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),

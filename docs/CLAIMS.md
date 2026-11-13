@@ -518,9 +518,11 @@ Gaming and attacks (M6)
     proxy over-optimisation): without track records the proxy gap grows from 16.6 to 20.5 as
     candidates go from 2 to 32; with them it stays within half a unit.
   - **Model collusion and profile gaming (8.2, 8.23).** When arriving challengers collude with a
-    favored actor (`model_collude`), omitting per-model track records lets upfront escrow exceed
-    settled value in 6 of 6 seeds while native per-`(actor, model)` track records, record credence,
-    and AdvAp keep upfront within settled value in 6 of 6 seeds even after colluding takeovers; under
+    favored actor (`model_collude`), the claim that omitting per-model track records lets upfront escrow exceed
+    settled value while native per-`(actor, model)` track records, record credence and AdvAp keep it
+    within is **unsupported for now**: it held on macOS in 6 of 6 seeds but not on Linux (16 paired
+    seeds: gap difference +263, se 133, not significant; single seeds on both sides), and awaits a
+    distributional test; under
     `:measured` signature routing, noisy leaf-1 actors declaring leaf 2 cannot degrade leaf 2's
     model accuracy (`> 0.9` in 6 of 6 seeds vs degraded `:declared` counterexample); and
     `COMPONENT_FALLBACKS` names the 10 simpler fallbacks logged in `degraded`
