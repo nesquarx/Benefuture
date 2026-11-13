@@ -3419,5 +3419,5 @@ arm, a parent or coarser model, the previous threshold) carries the work until t
 convergence test for score-only records (the existing `sequential_significant` / accuracy-stability machinery, not a
 fixed `init_steps`); (b) a legacy funder during score-only periods in M3c and in `run_coupled`; (c) the same shape for
 governance candidates: scored in shadow against the incumbent before adoption (the predict-measure-adapt loop of 8.134
-with the incumbent in force). "RSI" is recorded as the author wrote it; its expansion is to be confirmed. Candidate
+with the incumbent in force). RSI is recursive self-improvement at the scale of systems rather than of an AI (author, 2026-11-13): each new layer of the system is scored in shadow by the arrangement it will replace, takes over once converged, and becomes the legacy that scores the next. Candidate
 homes: L82, Progressive complexity, Measurement, Government, Benefuture (overview: the repeating structure).
