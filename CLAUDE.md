@@ -3,6 +3,7 @@
 ## Read first
 - `COORDINATION.md`: multi-agent task registry, claims, and collision avoidance (check and register before starting).
 - `docs/CODING_STYLE.md`: the principal's methodology (dual-suite tests first, atemporal docs, zero speculative patching).
+- `docs/DESIGN_PRINCIPLES.md`: outset design invariants and pre-build checklist distilled from `docs/BACKPROPAGATION.md` rulings; check before adding mechanisms or asking for rulings.
 - `docs/PLAN.md` Part 2 (direction) every turn; Part 1 (history) only when needed.
 
 ## Sources of truth

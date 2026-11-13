@@ -246,8 +246,11 @@ comparative ones and welcome.
 
 **7.11 Open.** End-of-horizon conduct under no inheritance (B25). Expertise normalised within
 domain is proposed in Government but not yet in L113 or `Governance.Democracy`.
-Status: the expertise half is resolved by 8.22.1 (L113's Re/ΣRe term; Lean `relative_expertise` in
-`Governance.Democracy`); end-of-horizon conduct (B25) stays open.
+Status: resolved as a rule (both halves). The expertise half is resolved by 8.22.1 (L113's Re/ΣRe term;
+Lean `relative_expertise` in `Governance.Democracy`). End-of-horizon conduct (B25) is settled as a rule
+by 7.12 (author ruling): there is no financial inheritance, but (1) ideological and causal inheritance
+continue, and (2) the extended self (`Self«Sl»`) contains things and relations that outlast the being
+(`docs/SIM_CONJECTURES.md` B25; only the M8 simulation test of B25 remains unrun).
 
 **7.12 Self, lifespan and inheritance.** The self's harm horizon is the long-term window:
 `Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self

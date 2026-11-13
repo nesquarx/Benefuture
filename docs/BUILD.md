@@ -16,8 +16,9 @@ Benefuture/
 ├── BenefutureTest/              # ℚ oracles proved = spec, interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/
-├── docs/                        # articles/ (wiki source), BACKPROPAGATION, SPEC_DIVERGENCES, PLAN,
-│                                #   CALIBRATION, DATA, ODD, OSTROM, SOTA, THEOREM_INDEX, CODING_STYLE
+├── docs/                        # articles/ (wiki source), BACKPROPAGATION, DESIGN_PRINCIPLES,
+│                                #   SPEC_DIVERGENCES, PLAN, CALIBRATION, DATA, ODD, OSTROM, SOTA,
+│                                #   THEOREM_INDEX, CODING_STYLE
 ├── sim/                         # Julia package BenefutureSim
 │   ├── src/                     # world model, rungs M0–M7, battery.jl (threaded, cached), methods.jl
 │   ├── test/                    # acceptance and adversarial suites, probes, differential tests
