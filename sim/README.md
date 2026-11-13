@@ -1301,6 +1301,7 @@ ratified.
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
 | Meta-research share of research and policy-estimate sharpening per outcome (traits world, 8.131–8.132) | `meta_share`, (halving) | 0 (off), 0.5 | judgment; swept, interior optimum ≈0.05 under shared misjudgement |
 | Issuance horizon: claims outstanding may reach this many steps of deliverable value (8.133, L83; `issuance_headroom_ref`) | (to wire) | 50 (placeholder) | judgment; to be governed |
+| Governance candidate's resolution (predict - measure - adapt, 8.134; `prediction_on_track_ref`, `resolution_due_ref`): ETA in epochs, ETA grace in epochs, confidence band on the predicted change in floor_u + floor_h | `candidate_eta`, `eta_grace`, `candidate_confidence` (`run_coupled`, continuous mode; prediction `candidate_prediction`, none = old one-epoch rule) | 1, 0, 0 (reproduce the one-epoch rule; a candidate states its own) | judgment; defaults are placeholders to be governed |
 | Resource-accounting contraction rate when StandCoin work halts unfunded (8.71 (2), L83) | `ra_rate` | 0 (off) | judgment; first reading did not absorb the stall |
 | Meta leaf's adoption bar: measured gain must exceed this many measurement errors (8.132; L48) | `meta_th` | 1.0 | as `ToyParams.th` |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |

@@ -1330,6 +1330,46 @@ end
     @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 0)
 end
 
+@testset "Probe: a governance candidate is judged at its own stated ETA, not one epoch after adoption (predict - measure - adapt, 8.134)" begin
+    # Rules (structural): `prediction_on_track` (measured >= predicted - band) and `resolution_due` (steps >= ETA + grace).
+    @test prediction_on_track(1.0, 1.0, 0.0) && !prediction_on_track(0.9, 1.0, 0.0) && prediction_on_track(0.9, 1.0, 0.2)
+    @test !resolution_due(2, 3, 0) && resolution_due(3, 3, 0) && !resolution_due(3, 3, 1) && resolution_due(4, 3, 1)
+    # Hypothesis (author ruling 8.134; L3.4 trace): the L3.2 candidate (eligibility bar 0.5, no track window) dips floors in its
+    # first epoch and gains afterwards, so rejecting it one epoch after adoption (ETA 1) ends the continuous run lower than
+    # judging it at a stated ETA of 3 epochs. Direction: final floor_u + floor_h higher with ETA 3 than with ETA 1. Metric: the
+    # run's `success.floor_u + success.floor_h`, paired on seeds. Smallest effect that matters: 5 units (the L3.2 world's
+    # sums are 20-50). Prediction stated: 0.0 (no net loss), confidence band 0.
+    # Structural claims (every seed): with ETA 3 nothing is resolved before the third epoch after adoption; with the defaults
+    # (no prediction) the ETA keywords change nothing; ETA 1 resolves at the first epoch after adoption, as before.
+    # MEASURED (Linux, seeds 1:4): the hypothesis does NOT hold. Judged at ETA 3 the candidate is kept and the run ends LOWER
+    # (the dip-then-gain of the L3.4 trace belongs to the candidate applied for one epoch only; kept permanently it is a net
+    # loss). The assertions record the outcome as measured, not the hoped-for one.
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
+                      [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 5, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    tot(r) = r.success.floor_u + r.success.floor_h
+    d = Float64[]
+    for s in 1:4
+        base = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
+        idle = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
+        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
+        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
+        @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch
+        @test e1.rejected_epoch == base.rejected_epoch
+        @test e3.rejected_epoch == 0 || e3.rejected_epoch >= 4
+        push!(d, tot(e3) - tot(e1))
+    end
+    m, se = mean(d), std(d) / sqrt(length(d))
+    @test m < -5 && abs(m) > 2 * se       # measured: ETA 3 ends lower (about -19), against the hypothesis
+end
+
 @testset "Probe (red): issued currency outruns deliverable resources without global RA (8.133)" begin
     # Hypothesis (author ruling 8.133): without global resource accounting the currency issued for measured value is not
     # bound to the resources and time that can deliver on it, so claims grow without bound against fixed capacity ("checks

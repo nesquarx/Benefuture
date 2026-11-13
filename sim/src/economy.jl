@@ -525,6 +525,14 @@ irreparable_equivalent(deaths, du, pop, base_u, base_h; compounding = 1.5, persi
 issuance_headroom(claims, deliverable_per_step, horizon) =
     ccall(sym(:bf_issuance_headroom), Float64, (Float64, Float64, Float64), Float64(claims), Float64(deliverable_per_step), Float64(horizon))
 
+"A measured outcome is on track when it reaches the prediction less the confidence band (Lean `prediction_on_track_ref`; 8.134)."
+prediction_on_track(measured, predicted, confidence_band) =
+    ccall(sym(:bf_prediction_on_track), UInt8, (Float64, Float64, Float64), Float64(measured), Float64(predicted), Float64(confidence_band)) == 1
+
+"A decision is judged once its ETA plus ETA grace has elapsed (Lean `resolution_due_ref`; 8.134)."
+resolution_due(steps_since_adoption, eta, eta_grace) =
+    ccall(sym(:bf_resolution_due), UInt8, (Csize_t, Csize_t, Csize_t), Csize_t(steps_since_adoption), Csize_t(eta), Csize_t(eta_grace)) == 1
+
 "Deliverable value per step: supply × regeneration rate × value per unit (Lean `deliverable_value_ref`; L83, 8.133)."
 deliverable_value(supply, regen_rate, unit_value) =
     ccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))

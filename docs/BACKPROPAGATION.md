@@ -3319,3 +3319,21 @@ a domain is under-measured, which is already built in." No temporary lower eligi
 proposal in the L3.4 trace is withdrawn. Metric models mature as score-only models before backing a currency (L82); the
 novel-domain floor (`novel_threshold`, `novel_floor`) already covers under-measured domains. The L3.4 observation stands
 only as a fact about that toy world (a lowered bar there raised later floors), not as a mechanism.
+
+8.134 build, step 1 (2026-11-13): predict - measure - adapt for governance candidates, continuous mode. Lean rules
+`prediction_on_track_ref` (measured >= predicted - confidence band) and `resolution_due_ref` (steps since adoption >= ETA
++ ETA grace), exported as `bf_prediction_on_track` and `bf_resolution_due` (Julia `prediction_on_track`, `resolution_due`).
+`run_coupled(...; continuous = true)` takes `candidate_prediction` (predicted change in floor_u + floor_h; none keeps the
+old one-epoch rule exactly), `candidate_eta` (epochs, default 1), `candidate_confidence` (band, default 0) and `eta_grace`
+(default 0). A held candidate is neither resolved nor replaced before ETA + grace; at resolution the outcome is the change
+in floor_u + floor_h over the whole window since adoption, kept if on track (it then stays adopted), else rejected with
+incumbent values restored; voters' records are scored at resolution. Not built yet: adapting the proposer's record to
+missed predictions, and predictions on anything but governance candidates. Probe (L3.2 world, continuous, 150 steps,
+4 seeds, prediction 0, band 0): final floor_u + floor_h with ETA 1 (rejected at epoch 2 in every seed) 37.6, 44.2, 47.8,
+48.4 (mean 44.5); with ETA 3 (kept in 3 of the 4 seeds shown; never resolved before epoch 4) 18.7, 17.7, 30.5, 35.5
+(mean 25.6); paired difference ETA 3 minus ETA 1 -18.9, standard error 2.8, n = 4. The hypothesis did not hold: judging at
+the stated ETA ends the run LOWER, not higher. Reading: the dip-then-gain of the L3.4 trace belongs to the candidate in
+force for one epoch only; kept permanently it is a net loss in this toy world, so the ETA rule does what it should (the
+candidate is not rejected early) and the rejection at ETA 1 was, by accident, the better outcome here. Parameters were
+not tuned; the probe asserts the measured direction. Six-seed exploration (same world): ETA 3 rejected at epoch 4 in one
+seed, never in the others; ETA 4 never. The run on 1 platform (Linux) only.

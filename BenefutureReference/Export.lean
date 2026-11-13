@@ -83,6 +83,12 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_issuance_headroom] def issuanceHeadroom (claims deliverablePerStep horizon : Float) : Float :=
   issuance_headroom_ref claims deliverablePerStep horizon
 
+@[export bf_prediction_on_track] def predictionOnTrack (measured predicted confidenceBand : Float) : UInt8 :=
+  if prediction_on_track_ref measured predicted confidenceBand then 1 else 0
+
+@[export bf_resolution_due] def resolutionDue (stepsSinceAdoption eta etaGrace : USize) : UInt8 :=
+  if resolution_due_ref stepsSinceAdoption.toNat eta.toNat etaGrace.toNat then 1 else 0
+
 @[export bf_sequential_significant] def sequentialSignificant (mean sd : Float) (n n0 : USize) (z : Float) : UInt8 :=
   if sequential_significant_ref mean sd n.toNat n0.toNat z then 1 else 0
 

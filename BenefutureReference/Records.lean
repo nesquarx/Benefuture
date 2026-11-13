@@ -324,6 +324,16 @@ def issuance_headroom_ref (claims deliverablePerStep horizon : Float) : Float :=
   let cap := horizon * deliverablePerStep
   if cap - claims > 0.0 then cap - claims else 0.0
 
+/-- Prediction on track (predict - measure - adapt; author ruling 8.134): a measured outcome is on track when it reaches
+    the predicted one less the stated confidence band; a result inside the band counts as on track. -/
+def prediction_on_track_ref (measured predicted confidenceBand : Float) : Bool :=
+  measured >= predicted - confidenceBand
+
+/-- Resolution due (8.134): a decision is judged when its stated ETA, plus the grace its ETA allows, has been reached
+    (steps or epochs since adoption, one unit throughout); not before. -/
+def resolution_due_ref (stepsSinceAdoption eta etaGrace : Nat) : Bool :=
+  stepsSinceAdoption >= eta + etaGrace
+
 /-- Deliverable value per step (resource accounting's capacity estimate, L83; 8.133): a resource's supply, the share of
     it that regenerates each step, and the value one unit delivers (from measured outcomes; at first its base price). -/
 def deliverable_value_ref (supply regenRate unitValue : Float) : Float :=

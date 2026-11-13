@@ -69,9 +69,17 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
                      candidate_threshold::Union{Nothing,Real} = nothing,
                      candidate_track_window::Union{Nothing,Integer} = nothing,
-                     m5_decisions::Integer = 0, continuous::Bool = false)
+                     m5_decisions::Integer = 0, continuous::Bool = false,
+                     candidate_prediction::Union{Nothing,Real} = nothing, candidate_eta::Integer = 1,
+                     candidate_confidence::Real = 0.0, eta_grace::Integer = 0)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0, "m5_decisions must be non-negative")
+    check(candidate_eta >= 1 && eta_grace >= 0 && candidate_confidence >= 0, "eta at least 1, grace and confidence band non-negative")
+    # Predict - measure - adapt (8.134, continuous mode): the candidate states a predicted change in floor_u + floor_h over its
+    # horizon, an ETA (epochs), a confidence band and an ETA grace; it is judged at ETA + grace, over the whole window since adoption.
+    pm = continuous && candidate_prediction !== nothing
+    adopt_ep = 0       # epoch boundary at which the held candidate was adopted
+    kept = false       # the candidate was judged on track and stays adopted
     n_epochs = econ.toy.steps ÷ epoch
     check(n_epochs >= 1, "at least one epoch required")
     m5_trace = Float64[]
@@ -117,7 +125,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
 
     prev_rel = zeros(na, nd)
     # One epoch's governance: resolve the pending decision by the measured outcome `sp`, then decide the next thresholds.
-    function govern_epoch!(ep, tr_ep, sp)
+    function govern_epoch!(ep, tr_ep, sp, win_change = nothing)
         push!(epoch_outcomes, sp)
         outcome_val = sp.floor_u + sp.floor_h
 
@@ -135,10 +143,22 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
 
+        # 8.134: a held candidate is neither resolved nor replaced before its ETA (plus grace); once kept, it stays adopted.
+        if pm && pending_vote !== nothing && pending_vote.chose_cand && (kept || !resolution_due(ep - adopt_ep, candidate_eta, eta_grace))
+            push!(adopted_candidate, true)
+            push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+            return
+        end
+
         # (b) Resolve the previous epoch's governance decision by the economy's measured outcome.
         if coupled && pending_vote !== nothing
             # A candidate succeeds only if the economy's floors did not fall and it did not underperform the incumbent.
             floors_held = sp.floor_u >= -1e-9 && sp.floor_h >= -1e-9 && outcome_val >= (isempty(inc_scores) ? 0.0 : mean(inc_scores) - 0.5)
+            if pm && pending_vote.chose_cand   # judged against its own prediction over the window since adoption
+                outcome_val = win_change
+                floors_held = prediction_on_track(win_change, candidate_prediction, candidate_confidence)
+                kept = floors_held
+            end
             if pending_vote.chose_cand
                 push!(cand_scores, outcome_val)
             else
@@ -154,7 +174,11 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 length(record[i, pending_vote.k]) > max(gp.audit_window, 1) && popfirst!(record[i, pending_vote.k])
             end
             # If the candidate degraded the floors or failed `select_candidate` against the incumbent, reject it.
-            if pending_vote.chose_cand && !floors_held
+            if pm && pending_vote.chose_cand && !floors_held
+                rejected = true
+                rejected_epoch == 0 && (rejected_epoch = ep)
+                pv_cur = copy(pv_inc); th_cur = th_inc; tw_cur = tw_inc
+            elseif pending_vote.chose_cand && !floors_held
                 ms = [isempty(inc_scores) ? 1.0 : mean(inc_scores), mean(cand_scores)]
                 ses = [length(inc_scores) < 2 ? 0.1 : std(inc_scores) / sqrt(length(inc_scores)),
                        length(cand_scores) < 2 ? 0.1 : std(cand_scores) / sqrt(length(cand_scores))]
@@ -226,6 +250,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)
         chose_cand = tally > 0 && !(coupled && rejected)
 
+        chose_cand && (adopt_ep = ep)
         if chose_cand
             pv_cur = copy(cand_pv)
             th_cur = cand_th
@@ -257,7 +282,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         # `run_m3c`'s governor at each epoch boundary and its thresholds apply from the next step.
         tr_all = run_m3c(econ; seed = seed, governor_every = epoch, governor = (step, snap) -> begin
             ep = step ÷ epoch
-            govern_epoch!(ep, snap, success_pattern(snap; from = max(1, step - epoch + 1)))
+            win = pm && adopt_ep > 0 ? (w = success_pattern(snap; from = adopt_ep * epoch + 1); w.floor_u + w.floor_h) : nothing
+            govern_epoch!(ep, snap, success_pattern(snap; from = max(1, step - epoch + 1)), win)
             (pv = pv_cur, threshold = th_cur, track_window = tw_cur)
         end)
         floor_u, floor_h, median_u, median_h = tr_all.floor_u, tr_all.floor_h, tr_all.median_u, tr_all.median_h
