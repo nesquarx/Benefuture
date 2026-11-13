@@ -3304,3 +3304,18 @@ accepted for long-term gain is the author's own rule for forced additions, 8.86,
 the resolution window is a governed threshold, and a temporary bootstrap bar for young currencies may be a real
 mechanism worth naming (candidate homes: L82 eligibility, Threshold of significance, SigThGv). Not built; `continuous`
 stays off by default until the probe is restated.
+
+8.134 ruling (author, 2026-11-13): "All measurements and ensuing decisions should be on a 'predict - measure - adapt'
+loop, with grace given for ETA, confidence and the predictions themselves." Every decision carries a prediction of its
+outcome with an expected time of arrival and a confidence; it is judged when the measurement is due, not before, within
+the grace its own stated ETA and confidence allow; then the rule or threshold adapts. This answers the L3.4 question: a
+governance candidate is resolved against its own predicted trajectory over its own stated horizon (a predicted
+short-term dip inside the stated confidence is not a failure), not on the single epoch after adoption. To build:
+candidates state (predicted outcome, ETA, confidence); resolution waits for the ETA; a result within the grace band
+counts as on track; missed predictions adapt the proposer's record. Candidate homes: L48/SigThGv, Government,
+Measurement, Decision.
+8.135 ruling (author, 2026-11-13): "MMs get to strengthen before becoming currencies, no need for leniency there unless
+a domain is under-measured, which is already built in." No temporary lower eligibility bar for young currencies: the
+proposal in the L3.4 trace is withdrawn. Metric models mature as score-only models before backing a currency (L82); the
+novel-domain floor (`novel_threshold`, `novel_floor`) already covers under-measured domains. The L3.4 observation stands
+only as a fact about that toy world (a lowered bar there raised later floors), not as a mechanism.
