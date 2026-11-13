@@ -51,7 +51,7 @@ function _with_m5_rep_dec(gp::M5Params, rep::AbstractMatrix{<:Real}, dec::Int)
 end
 
 """
-    run_coupled(econ, gov; seed, epoch = 25, coupled = true, candidate_pv = nothing, candidate_threshold = nothing, candidate_track_window = nothing) -> NamedTuple
+    run_coupled(econ, gov; seed, epoch = 25, coupled = true, candidate_pv = nothing, candidate_threshold = nothing, candidate_track_window = nothing, continuous = false, ..., loud = econ.loud) -> NamedTuple
 
 Step the M3c economy `econ` in epochs of `epoch` steps (default 25), coupled to M5 liquid-democracy
 governance (`gov`, an `M5Params` or a builder `tr -> M5Params`). At each epoch end:
@@ -63,6 +63,10 @@ governance (`gov`, an `M5Params` or a builder `tr -> M5Params`). At each epoch e
     epoch (`success_pattern`), feeding voters' records (`vote_reputation`) and rejecting candidates
     whose measured outcome degrades the floors (`select_candidate`). When `coupled = false`,
     governance never observes the economy's outcomes.
+
+Candidates that attempt to lower the accuracy eligibility bar below `econ.threshold` violate the
+upward-only bar ratchet (8.84): the bar-lowering move is refused loudly at proposal (recorded in
+`degraded`, warned if `loud = true`) and clamped to the incumbent bar rather than silently ignored.
 """
 function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      coupled::Bool = true,
@@ -72,7 +76,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      m5_decisions::Integer = 0, continuous::Bool = false,
                      candidate_prediction::Union{Nothing,Real} = nothing, candidate_eta::Integer = 1,
                      candidate_confidence::Real = 0.0, eta_grace::Integer = 0,
-                     candidate_vs_incumbent::Bool = false)
+                     candidate_vs_incumbent::Bool = false,
+                     loud::Bool = econ.loud)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0, "m5_decisions must be non-negative")
     check(candidate_eta >= 1 && eta_grace >= 0 && candidate_confidence >= 0, "eta at least 1, grace and confidence band non-negative")
@@ -102,6 +107,23 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     th_cur = th_inc
     tw_inc = econ.track_window
     tw_cur = tw_inc
+    degraded = Dict{String,NamedTuple{(:first, :last, :count),Tuple{Int,Int,Int}}}()
+    function degrade!(mechanism, substitute, reason, at::Int)
+        k = "$mechanism → $substitute ($reason)"
+        d = get(degraded, k, nothing)
+        if d === nothing
+            degraded[k] = (first = at, last = at, count = 1)
+            loud && @warn "Degraded at epoch $at: $k"
+        else
+            degraded[k] = (first = d.first, last = at, count = d.count + 1)
+        end
+    end
+    cand_th_raw = candidate_threshold === nothing ? th_inc : Float64(candidate_threshold)
+    th_lowered = candidate_threshold !== nothing && cand_th_raw < th_inc
+    if th_lowered
+        degrade!("candidate threshold $cand_th_raw", "kept $th_inc",
+                 "eligibility bar only rises (8.84): bar-lowering proposal refused", 0)
+    end
 
     # Accumulate continuous floor/median/peak trajectories across epochs.
     s0 = toy_state(econ.toy, Xoshiro(seed))
@@ -235,12 +257,12 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             end
             perturb(pv_cur, c, COUPLED_GOV_FIELDS; δ = econ.gov_δ)
         end
-        cand_th = candidate_threshold === nothing ? th_inc : Float64(candidate_threshold)
+        cand_th = candidate_threshold === nothing ? th_inc : max(th_cur, Float64(candidate_threshold))
         cand_tw = candidate_track_window === nothing ? tw_inc : Int(candidate_track_window)
 
         # Voters receive noisy signals; once coupled outcome evidence shows the candidate failed, voters' signals reflect that record.
         caps = ability_caps(arng, max.(gp.skills, 0.0); base = gp.signal_σ, gain = gp.skill_gain, spread = gp.ability_spread)
-        has_offer = candidate_pv !== nothing || candidate_threshold !== nothing || candidate_track_window !== nothing
+        has_offer = candidate_pv !== nothing || (candidate_threshold !== nothing && !th_lowered) || candidate_track_window !== nothing
         prior_signal = if coupled && rejected
             -2.0
         elseif has_offer
@@ -341,5 +363,6 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      reputation = reputation,
      records = record,
      gov_trace = m5_trace,
-     gov_acc = isempty(m5_trace) ? NaN : mean(m5_trace[(length(m5_trace) ÷ 2 + 1):end]))
+     gov_acc = isempty(m5_trace) ? NaN : mean(m5_trace[(length(m5_trace) ÷ 2 + 1):end]),
+     degraded = degraded)
 end

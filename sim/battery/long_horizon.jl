@@ -176,6 +176,7 @@ function flush_report!(sections, rows, commit, t_start; status = "IN PROGRESS")
         @printf(io, "- **Commit**: `%s`\n", commit)
         @printf(io, "- **Threads**: `%d`\n", Threads.nthreads())
         @printf(io, "- **Status**: `%s` (%.1f minutes elapsed)\n", status, elapsed)
+        println(io, "- **Coupling Mode**: `continuous = true` (persistent M3c state across epochs, L3.4 / `run_coupled`)")
         println(io, "- **Significance Standard**: Exploratory `z = 2.0`; **README / formal claim bar `z = 3.0`**, contiguous paired seeds `1:N`.")
         println(io, "- **Pre-stated Hypotheses & Smallest Effects That Matter (`L3.3`)**:")
         println(io, "  - *Mechanisms (`:bf` vs `:status_quo`)*: Under identical world, adversaries, noise, and shocks (`L3.1`), Benefuture (`:decay`, `advap = true`, `ratchet_k = 3`, `:record`) yields higher `floor_u`, `floor_h`, `median_u`, `median_h`, smaller `worst_drop`, and higher `gov_acc` than `:status_quo` (`:window`, `advap = false`, `ratchet_k = 0`, `:normal`), with strongest advantage under `:stressed`.")
@@ -232,7 +233,7 @@ const COUPLED_METRICS = [
 
 function run_l33_arm(seed::Integer; arm::Symbol, stress::Symbol, steps::Integer, epoch::Integer, m5_decisions::Integer)
     w = world(seed; arm = arm, stress = stress, steps = steps, decisions = m5_decisions)
-    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions)
+    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions, continuous = true)
     sp = tr.success
     (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u,
      median_h = sp.median_h, worst_drop = sp.worst_drop, gov_acc = tr.gov_acc)
