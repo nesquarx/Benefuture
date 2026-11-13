@@ -242,6 +242,8 @@ struct M3cParams
     collude_actors::Vector{Int}   # actors favored by colluding models (empty: all actors when collude triggers)
     profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
     profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
+    converge_init::Bool           # hold score-only Phase 1 until a domain converges (`currency_eligible` + `sequential_significant`; 8.136)
+    legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
 end
 
 """
@@ -285,7 +287,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
-                   model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[])
+                   model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
+                   converge_init::Bool = false, legacy_funder::Bool = false)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -379,7 +382,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
-              model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers))
+              model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
+              converge_init, legacy_funder)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -874,7 +878,11 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
     budget = (unfunded = Ref(0), uncashable = Ref(0))
     supplier_income = Ref(0.0)
-    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
+    lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0), legacy_executed = Ref(0))
+    econ_converged = Ref(false)
+    converge_step = Ref(0)
+    legacy_bal = fill(p.endowment, na)
+    leg_th = Ref(1.0)
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
     xrng = Xoshiro(hash((seed, :choice)))
@@ -1083,6 +1091,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
                    withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
                    lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+                   legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[],
                    credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                    cofunder_credit = cofunder_credit[], interaction = interaction[],
                    accolade_credit = accolade_credit[], contract_credit = contract_credit[],
@@ -1120,7 +1129,22 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     for step in 1:t.steps
         cur[] = step; update_rates!()
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
-        scoring_only = step <= p.init_steps
+        if p.converge_init && !econ_converged[]
+            n0 = max(p.min_records, 2)
+            function domain_converged(h, ok)
+                n = length(h)
+                ok && n >= n0 || return false
+                sk = Float64[1.0 - (x.credence - x.outcome)^2 / 0.25 for x in h]
+                sd = std(sk)
+                sd <= 0.0 ? mean(sk) > 0.0 : sequential_significant(mean(sk), sd, n; n0 = n0, z = p.model_z)
+            end
+            known_leaves = [j for j in 1:nleaves() if !lnovel[j]]
+            if !isempty(known_leaves) && all(j -> domain_converged(lhist[j], leaf_ok(j)), known_leaves)
+                econ_converged[] = true
+                converge_step[] = step
+            end
+        end
+        scoring_only = p.converge_init ? !econ_converged[] : step <= p.init_steps
         bal0 = p.ra_horizon > 0 ? copy(balance) : balance
         for (fs, fa, fslot, fx) in p.forks
             fs == step || continue
@@ -1597,7 +1621,49 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             s.u .+= done.du
             s.h .+= done.dh
         end
-        if scoring_only
+        if scoring_only && p.legacy_funder
+            # Author ruling 8.136 (Phase 1): immature domain/economy uses legacy institutional funder separately from Bf balances.
+            degrade!("score-only phase (Phase 1)", "legacy institutional funder (status-quo screen)", "models immature: awaiting convergence")
+            leg_th[] = max(0.5, leg_th[] - 0.003 * (leg_th[] - 0.5))
+            f = choose(obs, menu_preds, t)
+            j_f = f > 1 ? menu[f - 1] : 0
+            if j_f > 0
+                a, plan, l = proposers[j_f], plans[j_f], leaves[j_f]
+                done, seen, measured = perform!(j_f, a)
+                score!(stops[j_f], pms[j_f], l, plan, seen, Dict(offers[j_f][1][1] => offers[j_f][1][3]), a)
+                blind[] || learn!(a, plan, offers[j_f][1][3], seen)
+                executed!(j_f, a, step, offers[j_f][1][3], done)
+                credit!(step, sigs[j_f], stops[j_f], measured, pms[j_f], priced[j_f],
+                        blind[] ? [(a, 0.0, 0.0)] : credits_for(j_f, a, seen, measured);
+                        up_degrees = ups[j_f] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j_f]])
+                lane.legacy_executed[] += 1
+                lane.init_executed[] += 1
+                nt = count(touched(plan))
+                need = scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor) * nt
+                p.budget && (legacy_bal[a] -= need)
+                available -= nt
+                available_honest -= nt
+                s.u .+= done.du
+                s.h .+= done.dh
+            end
+            for j in eachindex(plans)
+                j == j_f && continue
+                a, plan = proposers[j], plans[j]
+                reported_val = deceit_now(a) > 0 ? leg_th[] : plan_value(plan, t)
+                reported_val >= leg_th[] || continue
+                nt = count(touched(plan))
+                need = scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor) * nt
+                available >= nt && (!p.budget || legacy_bal[a] >= need) || continue
+                p.budget && (legacy_bal[a] -= need)
+                done, _, _ = perform!(j, a)
+                executed_j[j] = true
+                lane.legacy_executed[] += 1
+                available -= nt
+                available_honest -= nt
+                s.u .+= done.du
+                s.h .+= done.dh
+            end
+        elseif scoring_only
             # Score-only: no currency moves; the work G chooses is executed, scored and logged.
             f = choose(obs, menu_preds, t)
             if f > 1

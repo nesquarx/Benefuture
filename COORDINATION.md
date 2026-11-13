@@ -106,6 +106,7 @@ To minimize git merge conflicts:
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 | **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
 | **RV1** | Review (non-coding) | `claude/beautiful-noether-oaq341` | Claude cloud reviewer (`session_01F9sahd7Qcccv2wqmuFKirf`) | Read-only review of corpus, Lean and simulation for gaps (missing theorems, counterexamples, probes, pseudocode ambiguities); proposals are discussed with the author first, then recorded in `docs/BACKPROPAGATION.md`. Author (2026-11-10) allowed formal statements: one new Lean file of proposed theorems, self-contained (imports Mathlib only; nothing imports it). No reference, simulation, pseudocode or article edits. | `COORDINATION.md`, `docs/BACKPROPAGATION.md` (8.137–8.148, appended), `Benefuture/Proposed/ReviewFindings.lean` (new); by author ruling 8.145, L83 in the three pseudocode copies and its quotations (`Benefuture/Economy/Currency.lean`, `Pricing.lean`, coherence audit) | **COMPLETED** (merged to `main`) | 2026-11-13 |
+| **8.136** | RSI Convergence, Legacy Funder & Shadow Governance | `antigravity/8136-rsi-convergence` | Local Agent (`antigravity`) | Author ruling 8.136 in `wt-8136` off `origin/main` (`a6802da`): score-only until domain convergence (`converge_init`), legacy funder (`legacy_funder`), shadow governance scoring (`shadow`, `incumbent_pv`), `probe_tests.jl`, `sim/README.md` Parsimony audit, `docs/BACKPROPAGATION.md` + `COORDINATION.md` sync | `sim/src/m3c.jl`, `sim/src/coupled.jl`, `sim/test/probe_tests.jl`, `sim/README.md`, `docs/BACKPROPAGATION.md`, `COORDINATION.md` | **COMPLETED** | 2026-11-13 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -1017,6 +1018,10 @@ neither agent spends tokens on chatter.
   By-construction filing (8.143), the line-citation checker (8.144). Open with the author: whether audit sits inside
   the cost in L83; what bounds innovation spending at a physical limit. Not run by this session: the reference and
   test libraries, the Julia suites.
+- **2026-11-13 · antigravity (8.136 / coordinator) → all. RV1 merged (`a6802da`); `wt-rv1` removed; `8.136` claimed on `antigravity/8136-rsi-convergence`.**
+  - `origin/main` is at `a6802da` (RV1 merged via `02ee33d` into `main` on top of `2a12ac4`); GitHub Actions on `a6802da` (`Lean Action CI` `43504295652` and `Julia Sim CI` `43504295443` `filter`/`fast`) passed.
+  - `wt-rv1` is deleted on disk; local `Benefuture/` checkout stays untouched at `2a12ac4` (`6` commits behind `origin/main`, zero `sim/` overlap in `2a12ac4..a6802da`) while background `long_horizon.jl` (`pid 83274`) completes Suite 3 (`100yr_century`).
+  - No git/code conflicts between `antigravity/8136-rsi-convergence` (`wt-8136`, rebased on `a6802da`) and `origin/main` across `COORDINATION.md`, `docs/BACKPROPAGATION.md`, or `sim/test/probe_tests.jl`. Implementing & verifying Author Ruling **8.136** (`converge_init`, `legacy_funder`, `shadow`, `incumbent_pv`) in `wt-8136`.
 
 
 ## 2b. Benchmarks

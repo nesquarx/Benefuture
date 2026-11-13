@@ -1746,3 +1746,80 @@ end
     @test c.leaf_accuracy == a.leaf_accuracy || c.balance != a.balance   # the bar moved: pricing changes after step 20
     @test_throws ArgumentError run_m3c(P; seed = 1, governor = (st, sn) -> nothing)
 end
+
+@testset "Probe: score-only until converged, legacy funder, and shadow governance (8.136)" begin
+    # Author ruling 8.136:
+    # (a) Immature domains stay score-only until model convergence (`currency_eligible` + `sequential_significant`),
+    #     rather than switching on a fixed `init_steps` clock;
+    # (b) Until converged, a legacy institutional funder (`status_quo` screen) absorbs the work cleanly without
+    #     touching Bf balances or stalling via StandCoin halts;
+    # (c) Governance waits for convergence and evaluates candidates in shadow over their ETA window while the
+    #     incumbent remains live, promoting only if `prediction_on_track` and `select_candidate` approve.
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    T = ToyParams(n = 40, steps = 80, plans = 6)
+    P_clock = M3cParams(T, ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                        transactions = true, init_steps = 5, min_records = 15, threshold = 0.85,
+                        model_z = 3.0, cost_per_touch = 0.25)
+    P_conv = M3cParams(T, ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                       transactions = true, init_steps = 5, min_records = 15, threshold = 0.85,
+                       model_z = 3.0, cost_per_touch = 0.25, converge_init = true, legacy_funder = true)
+
+    clocks = [run_m3c(P_clock; seed = s) for s in 1:16]
+    convs  = [run_m3c(P_conv; seed = s) for s in 1:16]
+    @test all(c -> c.converged && c.converge_step > 5 && c.legacy_executed > 0, convs)
+    @test paired_effect([cl.lane_halted - cv.lane_halted for (cl, cv) in zip(clocks, convs)]; z = 3.0, direction = :up).significant
+    @test paired_effect([cv.floor_u[end] - cl.floor_u[end] for (cl, cv) in zip(clocks, convs)]; z = 3.0, direction = :up).significant
+
+    # Counterexample: unpredictable / noisy domain never converges; stays score-only with legacy carrying work and Bf balances untouched.
+    P_noise = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                        transactions = true, init_steps = 5, min_records = 12, threshold = 0.99,
+                        marker_σ = 10.0, σ_leaf = 10.0, converge_init = true, legacy_funder = true)
+    rn = run_m3c(P_noise; seed = 1)
+    @test !rn.converged && rn.converge_step == 0 && rn.legacy_executed > 0 && rn.lane_halted == 0
+    @test all(==(P_noise.endowment), rn.balance)
+
+    # Governance part (b + c): same converged economy (`econ_8136`), varying only `shadow`.
+    ag_c = vcat(
+        [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4],
+        [DomainAgent([0.8, 0.8], [0.5, 0.5], 0.0) for _ in 1:2],
+    )
+    dec_c = vcat(zeros(8), fill(2.5, 2))
+    gov(tr) = M5Params(tr, 1:2; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    econ_8136 = M3cParams(ToyParams(n = 40, steps = 300, plans = 6), ag_c, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                          transactions = true, causal_distribution = true, init_steps = 5,
+                          deceit = dec_c, track_window = 20, actor_min_records = 10, threshold = 0.80,
+                          converge_init = true, legacy_funder = true)
+
+    hi_live = [run_coupled(econ_8136, gov; seed = s, epoch = 25, continuous = true,
+                           candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0,
+                           candidate_prediction = 40.0, candidate_eta = 3, candidate_vs_incumbent = true, shadow = false) for s in 1:16]
+    none_sh = [run_coupled(econ_8136, gov; seed = s, epoch = 25, continuous = true, shadow = true) for s in 1:16]
+    hi_sh   = [run_coupled(econ_8136, gov; seed = s, epoch = 25, continuous = true,
+                           candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0,
+                           candidate_prediction = 40.0, candidate_eta = 3, candidate_vs_incumbent = true, shadow = true) for s in 1:16]
+
+    @test all(r -> !r.shadow_promoted && !any(r.adopted_candidate) && r.rejected &&
+                   !isempty(r.prediction_record) && r.prediction_calibration == 0.0, hi_sh)
+    @test all(((h, n),) -> abs(h.success.floor_u - n.success.floor_u) < 1e-9, zip(hi_sh, none_sh))
+    @test paired_effect([s.success.floor_u - l.success.floor_u for (s, l) in zip(hi_sh, hi_live)]; z = 3.0, direction = :up).significant
+
+    # Positive shadow promotion: an admissible but overly risk-averse incumbent (`par_timid`: q₊ = 1.05, q₋ = 50, λ = 1)
+    # converges in Phase 1, evaluates `bootstrap_params()` in shadow for ETA = 2 epochs, and promotes live (16/16 seeds, z >> 3).
+    par_timid = copy(bootstrap_params())
+    par_timid[1] = 0.25; par_timid[2] = 0.20; par_timid[3] = 0.15; par_timid[4] = 0.05
+    par_timid[6] = 1.05; par_timid[7] = 50.0; par_timid[8] = 1.0
+    @test admissible(par_timid)
+    econ_pos = M3cParams(ToyParams(n = 40, steps = 240, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                         transactions = true, causal_distribution = true, init_steps = 5,
+                         min_records = 8, threshold = 0.70, model_z = 2.0, endowment = 20.0,
+                         converge_init = true, legacy_funder = true)
+    bad_none = [run_coupled(econ_pos, gov; seed = s, epoch = 40, continuous = true,
+                            incumbent_pv = par_timid, shadow = true) for s in 1:16]
+    good_sh  = [run_coupled(econ_pos, gov; seed = s, epoch = 40, continuous = true,
+                            incumbent_pv = par_timid, candidate_pv = bootstrap_params(),
+                            candidate_prediction = 0.0, candidate_eta = 2, shadow = true) for s in 1:16]
+    @test all(r -> r.shadow_promoted && any(r.adopted_candidate) && !r.rejected &&
+                   !isempty(r.prediction_record) && r.prediction_calibration == 1.0, good_sh)
+    @test paired_effect([g.success.floor_u - b.success.floor_u for (g, b) in zip(good_sh, bad_none)]; z = 3.0, direction = :up).significant
+end

@@ -77,10 +77,13 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_prediction::Union{Nothing,Real} = nothing, candidate_eta::Integer = 1,
                      candidate_confidence::Real = 0.0, eta_grace::Integer = 0,
                      candidate_vs_incumbent::Bool = false,
+                     shadow::Bool = false,
+                     incumbent_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
                      loud::Bool = econ.loud)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0, "m5_decisions must be non-negative")
     check(candidate_eta >= 1 && eta_grace >= 0 && candidate_confidence >= 0, "eta at least 1, grace and confidence band non-negative")
+    check(!shadow || continuous, "shadow requires continuous = true")
     # Predict - measure - adapt (8.134, continuous mode): the candidate states a predicted change in floor_u + floor_h over its
     # horizon, an ETA (epochs), a confidence band and an ETA grace; it is judged at ETA + grace, over the whole window since adoption.
     pm = continuous && candidate_prediction !== nothing
@@ -89,6 +92,9 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     prediction_record = NamedTuple[]   # each resolved prediction: (epoch, predicted, measured, on_track)
     adopt_ep = 0       # epoch boundary at which the held candidate was adopted
     kept = false       # the candidate was judged on track and stays adopted
+    shadow_pending = Ref{Any}(nothing)
+    shadow_promoted = false
+    live_history = NamedTuple[]
     n_epochs = econ.toy.steps ÷ epoch
     check(n_epochs >= 1, "at least one epoch required")
     m5_trace = Float64[]
@@ -101,7 +107,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     arng = Xoshiro(hash((seed, :coupled_ability)))
     crng = Xoshiro(hash((seed, :coupled_choice)))
 
-    pv_inc = bootstrap_params()
+    pv_inc = incumbent_pv === nothing ? bootstrap_params() : collect(Float64, incumbent_pv)
     pv_cur = copy(pv_inc)
     th_inc = econ.threshold
     th_cur = th_inc
@@ -169,6 +175,62 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
 
+        # 8.136: evaluate a pending shadow candidate once its ETA (+ grace) resolves while incumbent stayed live.
+        if shadow && shadow_pending[] !== nothing
+            coupled && pending_vote !== nothing && !pending_vote.chose_cand && push!(inc_scores, outcome_val)
+            pend = shadow_pending[]
+            if !resolution_due(ep - pend.start_ep, candidate_eta, eta_grace)
+                pv_cur = copy(pend.pv_inc); th_cur = pend.th_inc; tw_cur = pend.tw_inc
+                push!(adopted_candidate, false)
+                push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+                pending_vote = nothing
+                return
+            end
+            t_b = econ.toy
+            econ_sh = M3cParams((f === :toy ? ToyParams(n = t_b.n, steps = ep * epoch, plans = t_b.plans, q = t_b.q, th = t_b.th,
+                                                        touch = t_b.touch, shift = t_b.shift, spread = t_b.spread, gp = t_b.gp) :
+                                 getfield(econ, f) for f in fieldnames(M3cParams))...)
+            hist_snap = copy(live_history)
+            sh_tr = run_m3c(econ_sh; seed = seed, governor_every = epoch, governor = (st, _) -> begin
+                ke = st ÷ epoch
+                ke < pend.start_ep ? hist_snap[ke] : pend.cand
+            end)
+            win_sh = success_pattern(sh_tr; from = pend.start_ep * epoch + 1)
+            sh_win = win_sh.floor_u + win_sh.floor_h
+            ov_sh = cvi ? sh_win / (ep - pend.start_ep) : sh_win
+            floors_held = pm ? prediction_on_track(ov_sh, candidate_prediction, candidate_confidence) :
+                               (win_sh.floor_u >= -1e-9 && win_sh.floor_h >= -1e-9)
+            pm && push!(prediction_record, (epoch = ep, predicted = Float64(candidate_prediction), measured = Float64(ov_sh), on_track = floors_held))
+            sd = [((sh_tr.floor_u[t + 1] - sh_tr.floor_u[t]) + (sh_tr.floor_h[t + 1] - sh_tr.floor_h[t])) -
+                  ((tr_ep.floor_u[t + 1] - tr_ep.floor_u[t]) + (tr_ep.floor_h[t + 1] - tr_ep.floor_h[t]))
+                  for t in (pend.start_ep * epoch + 1):(ep * epoch)]
+            se = length(sd) >= 2 ? std(sd) / sqrt(length(sd)) : 0.0
+            beats_inc = !coupled || (length(sd) >= 1 && (se <= 0.0 ? mean(sd) > 0.0 : select_candidate([0.0, mean(sd)], [0.0, se]; z = econ.gov_z) == 2))
+            if floors_held && beats_inc
+                shadow_promoted = true
+                pv_cur = copy(pend.cand.pv); th_cur = pend.cand.threshold; tw_cur = pend.cand.track_window
+                pv_inc = copy(pv_cur); th_inc = th_cur; tw_inc = tw_cur
+                adopt_ep = ep; kept = true
+                push!(adopted_candidate, true)
+            else
+                rejected = true
+                rejected_epoch == 0 && (rejected_epoch = ep)
+                pv_cur = copy(pend.pv_inc); th_cur = pend.th_inc; tw_cur = pend.tw_inc
+                push!(adopted_candidate, false)
+            end
+            shadow_pending[] = nothing
+            pending_vote = nothing
+            push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+            return
+        end
+
+        # 8.136: an explicit candidate already promoted from shadow stays live (do not re-test cand == inc).
+        if shadow && kept && (candidate_pv !== nothing || candidate_threshold !== nothing || candidate_track_window !== nothing)
+            push!(adopted_candidate, true)
+            push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+            return
+        end
+
         # 8.134: a held candidate is neither resolved nor replaced before its ETA (plus grace); once kept, it stays adopted.
         if pm && pending_vote !== nothing && pending_vote.chose_cand && (kept || !resolution_due(ep - adopt_ep, candidate_eta, eta_grace))
             push!(adopted_candidate, true)
@@ -221,8 +283,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             push!(inc_scores, outcome_val)
         end
 
-        # Keep governance from proposing/adopting while the economy is still in score-only warm-up (`init_steps`).
-        if continuous && ep * epoch < econ.init_steps
+        # Keep governance from proposing/adopting while the economy is still in score-only warm-up (`init_steps` or `!converged`; 8.136).
+        if continuous && (econ.converge_init ? !tr_ep.converged : ep * epoch < econ.init_steps)
             pv_cur = copy(pv_inc); th_cur = th_inc; tw_cur = tw_inc
             push!(adopted_candidate, false)
             push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
@@ -290,8 +352,14 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 select_candidate([mean(inc_scores), Float64(candidate_prediction)], [std(inc_scores) / sqrt(length(inc_scores)), 0.0]; z = econ.gov_z) == 2
         end
 
-        chose_cand && (adopt_ep = ep)
-        if chose_cand
+        adopted_cand_live = chose_cand && !shadow
+        if chose_cand && shadow
+            shadow_pending[] = (start_ep = ep,
+                                cand = (pv = copy(cand_pv), threshold = cand_th, track_window = cand_tw),
+                                pv_inc = copy(pv_inc), th_inc = th_inc, tw_inc = tw_inc)
+            pv_cur = copy(pv_inc); th_cur = th_inc; tw_cur = tw_inc
+        elseif chose_cand
+            adopt_ep = ep
             pv_cur = copy(cand_pv)
             th_cur = cand_th
             tw_cur = cand_tw
@@ -300,11 +368,11 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             th_cur = th_inc
             tw_cur = tw_inc
         end
-        push!(adopted_candidate, chose_cand)
+        push!(adopted_candidate, adopted_cand_live)
         push!(params_trace, copy(pv_cur))
         push!(thresholds_trace, th_cur)
         push!(track_windows_trace, tw_cur)
-        pending_vote = (k = k, held = held, delegated = delegated, total = total, votes = votes, chose_cand = chose_cand)
+        pending_vote = (k = k, held = held, delegated = delegated, total = total, votes = votes, chose_cand = adopted_cand_live)
         if m5_decisions > 0
             dec_ep = base_dec + (ep <= rem_dec ? 1 : 0)
             if dec_ep > 0
@@ -324,7 +392,9 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             ep = step ÷ epoch
             win = pm && adopt_ep > 0 ? (w = success_pattern(snap; from = adopt_ep * epoch + 1); w.floor_u + w.floor_h) : nothing
             govern_epoch!(ep, snap, success_pattern(snap; from = max(1, step - epoch + 1)), win)
-            (pv = pv_cur, threshold = th_cur, track_window = tw_cur)
+            ret = (pv = pv_cur, threshold = th_cur, track_window = tw_cur)
+            push!(live_history, (pv = copy(ret.pv), threshold = ret.threshold, track_window = ret.track_window))
+            ret
         end)
         floor_u, floor_h, median_u, median_h = tr_all.floor_u, tr_all.floor_h, tr_all.median_u, tr_all.median_h
         peak_u, worst_drop = tr_all.peak_u, tr_all.worst_drop
@@ -373,5 +443,9 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      records = record,
      gov_trace = m5_trace,
      gov_acc = isempty(m5_trace) ? NaN : mean(m5_trace[(length(m5_trace) ÷ 2 + 1):end]),
+     converged = continuous ? tr_all.converged : false,
+     converge_step = continuous ? tr_all.converge_step : 0,
+     legacy_executed = continuous ? tr_all.legacy_executed : 0,
+     shadow_promoted = shadow_promoted,
      degraded = degraded)
 end

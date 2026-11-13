@@ -3575,3 +3575,37 @@ from 8.140: what bounds innovation spending at a physical limit.
 8.148 (review RV1, 2026-11-13, numbering): entries 8.137–8.147 were written on 2026-11-09/10 as 8.134–8.144 on the
 review branch and renumbered at merge, because `main` had meanwhile used 8.134–8.136 for other rulings. Commit messages
 on that branch (303e867, df1fde0) carry the old numbers: old number + 3 = number here.
+
+8.136 build (2026-11-13, `antigravity/8136-rsi-convergence` off `a6802da`): RSI convergence, legacy funder & shadow governance
+implemented and verified (`sim/src/m3c.jl`, `sim/src/coupled.jl`, `sim/test/probe_tests.jl`, `sim/README.md`, `COORDINATION.md`).
+1. Phase 1 score-only convergence & legacy funder (`sim/src/m3c.jl`): added opt-in `converge_init::Bool = false` and
+   `legacy_funder::Bool = false` on `M3cParams`, plus trace fields `converged`, `converge_step`, `legacy_executed`. When
+   `converge_init = true`, known leaves stay in score-only mode past any fixed `init_steps` until `domain_converged` passes
+   both `leaf_ok` (`currency_eligible`) and `sequential_significant` on calibration scores over `min_records` at `model_z`. When
+   `legacy_funder = true`, unconverged steps run a legacy status-quo funder separately from Bf balances (recorded via `degrade!`,
+   avoiding StandCoin halts). Zero new Lean rule formulas; reuses `sequential_significant_ref`.
+2. Shadow counterfactual governance (`sim/src/coupled.jl`): added `shadow::Bool = false` and `incumbent_pv = nothing` on
+   `run_coupled` (requires `continuous = true`). While `!tr_ep.converged` under `converge_init`, governance stays idle. Once
+   converged and a candidate is proposed under `shadow = true`, the incumbent remains live over `candidate_eta + eta_grace`
+   epochs while `run_coupled` replays the candidate in shadow via `run_m3c` from `live_history`. Promotion occurs only if
+   `floors_held && beats_inc` (`prediction_on_track` / non-negative floors + `select_candidate` over step deltas at `econ.gov_z`),
+   and a promoted explicit candidate stays live on subsequent epochs rather than re-testing `cand == inc`.
+3. Corpus cross-references mapped (`sim/README.md` Parsimony audit & Governed thresholds; zero pseudocode modifications):
+   `spec/Bf_Pseudocode.txt` `L22` (`Domain`), `L30-31` (`Understanding`), `L35-36` (`Diversity`/`Novelty`), `L49-52` (`MetricMl`),
+   `L82` (`C ↔ TopModels`), `L83` (`RA`), `L141` (`Implementation` Phase 1 score-only / Phase 2 parallel), `L153-159` (`CvCnt`,
+   `Progressive`, `SigThGv`, `Di_N_Balance`); articles `Benefuture.txt`, `Measurement.txt`, `Domain.txt`, `Implementation prototype.txt`,
+   `Progressive complexity.txt`, `Diversity.txt`, `Government.txt`, `Benefuture currency.txt`; and `README.md`.
+4. Verification (`wt-8136`, macOS `arm64`, generous margins):
+   - `8.136` probe `@testset` (`sim/test/probe_tests.jl`, `11/11` pass in both isolated run and `BF_SHARD=3`): Phase 1 across 16
+     seeds converges past `init_steps = 5`, reduces `lane_halted` and lifts `floor_u` at `z >= 3.0`; noisy `P_noise` stays
+     unconverged (`balance == endowment`, `lane_halted == 0`); negative shadow (`hi_sh`) rejects `16/16` (`cal == 0.0`,
+     `abs(hi_sh.floor_u - none_sh.floor_u) < 1e-9`, beats `hi_live` at `z >= 3.0`); positive shadow (`good_sh`, admissible
+     `par_timid -> bootstrap_params()` on `econ_pos`) promotes `16/16` (`cal == 1.0`, `mean = +24.26 +- 1.33` `floor_u`,
+     `min = +11.59`, `max = +33.96`, `t = 18.24` vs 16-seed `pe.z = 3.26`, `paired_effect(z = 3.0).significant`).
+   - Full `BF_SHARD=3` (`probe_tests.jl`): `L3.2` (`64/64`), `8.134` (`43/43` & `85/85`), `8.133`, `D2`, `D3`, `B4` (`10/10`),
+     `C1/C2` (`26/26`), `L3.4` (`5/5`), `8.136` (`11/11`) all pass. Pre-existing failures in `8.95` (`line 836`, `3/4`), `8.107`
+     (`lines 964-1002`, `9/14`), `8.131 continued` (`lines 1203-1204`), and `8.132` (`line 1217`) also fail identically on
+     untouched `main` (`2a12ac4`).
+   - `m3c_tests.jl` (`49/49`), `calibrated_tests.jl` (`107/107`), `world_tests.jl` (`1027/1027`), `lake build` (`2066` jobs),
+     `tools/check_article_refs.py` (`all article references found`), and `tools/check_readme_claims.py` (`all 177 named theorems found`)
+     all pass. Note: full 8-shard nightly Julia sweep outside `{probe, m3c, calibrated, world}` was not re-run in `wt-8136`.

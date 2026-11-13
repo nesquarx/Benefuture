@@ -1229,7 +1229,7 @@ for removal.
 | Preventions as ordinary recorded actions | Native | L97, L145; 8.24 (replaced a duty payment) |
 | Hazard penalty of a lone contributor | Native | its whole outcome; a one-player Shapley call removed |
 | Carrying fee (accolade or contract share) | Native, basis [P] | L96 N_CCtype, L121; gaming check in 8.22 |
-| Score-only start, eligibility thresholds | Native | Implementation Phase 1, L82 |
+| Score-only start, eligibility thresholds, and legacy Phase-1 funder | Native | Implementation Phase 1, L82; 8.136: `converge_init` holds models score-only until `domain_converged` (`currency_eligible` + `sequential_significant`, L153), `legacy_funder` runs status-quo work separately from Bf balances |
 | Overlaps as rolling averages; formation from blockages | Ruled | 8.6, 8.12 |
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
@@ -1286,6 +1286,7 @@ for removal.
 | Programme world (`run_programmes`): a probe world for priority tiers, one global chooser over four typed programmes | Introduced (probe only, 8.129) | Shows tiers deciding before tier-typed effects enter M7 and the replay; remove once M7 emits tier-typed changes. Gaming: a programme claiming a higher tier than it delivers (teachable that is tacit, paradigm that is incremental) is caught by the usual assessed outcomes and records |
 | `chain_spot_all` (spot audits even when chains agree) | Introduced, off (8.107 agreeable chains) | Tested against agreeable chains; did not help and once demoted an honest chain. Candidate for removal unless a later probe needs it. `chain_shade` is an attack parameter of the world, not a mechanism |
 | Status-quo institutional baseline (`run_status_quo`, `status_quo.jl`) | Introduced (baseline, 8.92; B/L3.1b) | Institutional comparison baseline (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6): procyclical credit multiplier and boom–bust contraction, regulatory capture drift and leniency, uncapped delegation, delayed enforcement, and statutory credit amnesia |
+| Shadow counterfactual governance (`shadow` in `run_coupled`) | Native | L141 Phase 2 (parallel), L157 (`select_candidate_ref`), L158 (`Di_N_Balance`); 8.136: replays the candidate in shadow over `candidate_eta + eta_grace` while keeping the incumbent live; promotes only when `floors_held && beats_inc` (`gov_z`, `select_candidate`) |
 
 ## Governed thresholds
 
@@ -1303,6 +1304,8 @@ ratified.
 | Issuance horizon: claims outstanding may reach this many steps of deliverable value (8.133, L83; `issuance_headroom_ref`) | (to wire) | 50 (placeholder) | judgment; to be governed |
 | Governance candidate's resolution (predict - measure - adapt, 8.134; `prediction_on_track_ref`, `resolution_due_ref`): ETA in epochs, ETA grace in epochs, confidence band on the predicted change in floor_u + floor_h | `candidate_eta`, `eta_grace`, `candidate_confidence` (`run_coupled`, continuous mode; prediction `candidate_prediction`, none = old one-epoch rule) | 1, 0, 0 (reproduce the one-epoch rule; a candidate states its own) | judgment; defaults are placeholders to be governed |
 | Candidate versus incumbent (8.134 refinement): eligibility needs its predicted per-epoch outcome above the incumbent's recorded mean by the significance rule (z = `gov_z`, at least 2 incumbent records); resolution compares measured per-epoch outcome with its own prediction | `candidate_vs_incumbent` (`run_coupled`, continuous mode, needs `candidate_prediction`) | off (false); no new numeric value, reuses `gov_z` and `candidate_confidence` | judgment; predict - measure - adapt applied to the incumbent |
+| Domain-convergence gate for Phase 1 and legacy institutional funder (8.136) | `converge_init`, `legacy_funder` (`M3cParams`) | `false`, `false` (reuses `min_records`, `model_z`, `threshold`) | judgment; L82, Implementation Phase 1, L153 |
+| Shadow counterfactual evaluation and fixed pre-promotion incumbent (8.136) | `shadow`, `incumbent_pv` (`run_coupled`, continuous mode) | `false`, `nothing` (reuses `gov_z`, `candidate_eta`, `eta_grace`) | judgment; L141 Phase 2 parallel, L157 (`select_candidate_ref`), L158 |
 | Resource-accounting contraction rate when StandCoin work halts unfunded (8.71 (2), L83) | `ra_rate` | 0 (off) | judgment; first reading did not absorb the stall |
 | Meta leaf's adoption bar: measured gain must exceed this many measurement errors (8.132; L48) | `meta_th` | 1.0 | as `ToyParams.th` |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
