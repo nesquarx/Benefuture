@@ -3291,3 +3291,16 @@ does not (its floor is higher, an artefact of re-initialised epochs). The harmfu
 in 8 of 8 seeds. Unexplained, to trace before any claim: with the harmful candidate offered and rejected, the continuous
 run's final floor is far higher (22.8) than with no candidate (3.4). `continuous` is off by default; the long-horizon
 battery should move to it once that is understood.
+L3.4 trace (2026-11-13): the unexplained floor is explained, and it changes what the L3.2 probe shows. In the continuous
+economy (6 seeds), lowering the eligibility bar to 0.5 with no track-record window for steps 26–50 only, then restoring
+both, ends with a floor of understanding of 22.4 against 5.1 for the plain run; the parameter vector plays no part
+(re-applying the bootstrap vector changes nothing). So the candidate the L3.2 probe calls harmful is harmful only while it
+is in force (floors fall during that epoch, which is why governance rejects it) and beneficial afterwards: a temporarily
+lower bar lets currencies qualify sooner, and the economy then grows from a higher base. Two consequences. (1) The L3.2
+probe's reading ("rejects a harmful candidate, floors hold") depended on the epoch-reset mode, where nothing carries
+over; in a continuous economy the same rejection is myopic: governance judges a candidate on the one epoch after
+adoption. (2) Open for the author: decisions should be resolved over the horizon their effects take (short-term harm
+accepted for long-term gain is the author's own rule for forced additions, 8.86, and for long-term value generally), so
+the resolution window is a governed threshold, and a temporary bootstrap bar for young currencies may be a real
+mechanism worth naming (candidate homes: L82 eligibility, Threshold of significance, SigThGv). Not built; `continuous`
+stays off by default until the probe is restated.
