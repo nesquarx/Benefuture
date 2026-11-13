@@ -3408,23 +3408,47 @@ with no intervention. The L3.2 and 8.134 probes are to be re-measured on a warme
 starts with immature models stays stuck (no currency, work halting in the StandCoin lane) for the whole run in 4 of 6
 seeds; the stall family (8.71, 8.133) again.
 
-310f1a0 follow-up (2026-11-13): loud bar-ratchet refusal & warmed-up L3.2 / 8.134 probe re-measurement (`sim/src/coupled.jl`,
-`sim/test/probe_tests.jl`).
+8.136 ruling (author, 2026-11-13): "Immature domains (in fact immature anything) should run score only till it converges
+sufficiently before starting to fund work, till then existing/legacy systems should take up the burden, this is the
+repeating structure of RSI in Bf." Generalises 8.135: any new component (a domain, a metric model, a currency, a rule, a
+threshold candidate, an institution) runs in score-only mode, predicting and being measured without directing resources,
+until its record has converged enough; meanwhile the existing or legacy system keeps funding and deciding. Promotion is
+by convergence, not by a clock. This settles the stuck start in the L3.2 diagnosis: a world whose models are immature
+should not fall to a halting StandCoin lane; the incumbent arrangement (the status-quo institutions of the comparison
+arm, a parent or coarser model, the previous threshold) carries the work until the new models converge. To build: (a) a
+convergence test for score-only records (the existing `sequential_significant` / accuracy-stability machinery, not a
+fixed `init_steps`); (b) a legacy funder during score-only periods in M3c and in `run_coupled`; (c) the same shape for
+governance candidates: scored in shadow against the incumbent before adoption (the predict-measure-adapt loop of 8.134
+with the incumbent in force). RSI is recursive self-improvement at the scale of systems rather than of an AI (author, 2026-11-13): each new layer of the system is scored in shadow by the arrangement it will replace, takes over once converged, and becomes the legacy that scores the next. Candidate
+homes: L82, Progressive complexity, Measurement, Government, Benefuture (overview: the repeating structure).
+8.136 continued (author, 2026-11-13): "Models, Domains, Continuity and Diversity axioms all operate with this notion
+already." So 8.136 names a structure the sources already carry, not a new mechanism (parsimony): metric models qualify by
+record before backing a currency, domains form and become eligible by evidence, continuity keeps the existing
+arrangement in force through change, and diversity keeps challengers scored beside incumbents. For the build: no new
+rule set; the convergence test, the legacy funder and shadow scoring are to be expressed through those existing rules,
+and anything the simulation adds beyond them is listed in the parsimony audit. For the corpus: locate the lines in the
+pseudocode and the four articles that state it, cross-reference them, and name the shared structure once (recursive
+self-improvement at systems scale) in the overview; not yet done, and not yet checked line by line against the sources.
+
+310f1a0 follow-up (2026-11-13): loud bar-ratchet refusal, warm-up guard & warmed-up L3.2 / 8.134 probe re-measurement (`sim/src/coupled.jl`,
+`sim/test/probe_tests.jl`; see 8.136 above for the next phase replacing fixed `init_steps`).
 1. Bar-lowering candidates refused loudly at proposal (`sim/src/coupled.jl`): `run_coupled` now takes `loud::Bool = econ.loud`,
    returns `degraded::Dict{String,NamedTuple{(:first,:last,:count),Tuple{Int,Int,Int}}}` matching `m3c.jl`, records an entry at
    epoch `0` (and `@warn`s when `loud = true`) whenever `candidate_threshold < econ.threshold`, clamps `cand_th = max(th_cur, Float64(candidate_threshold))`
-   so `thresholds` never falls below the incumbent bar in either epoch or continuous mode, and excludes a bar-lowering-only
-   threshold offer from `has_offer` so it is refused at proposal rather than silently swallowed.
-2. Re-measured on warmed-up world (`init_steps = 50`, `sim/test/probe_tests.jl`):
+   so `thresholds` never falls below the incumbent bar in either epoch or continuous mode, excludes a bar-lowering-only
+   threshold offer from `has_offer` so it is refused at proposal rather than silently swallowed, and in `continuous = true` keeps
+   governance from proposing/adopting before `econ.init_steps` warm-up completes (`ep * epoch < econ.init_steps`).
+2. Re-measured on warmed-up world (`init_steps = 50` + warm-up guard, `sim/test/probe_tests.jl`) testing predictions P1–P4:
    - **L3.2 (`init_steps = 50`, `continuous = false`, seeds `1:8`, macOS)**: with bar-lowering refused (`threshold` kept at `0.9`,
      only `bad_pv` + `candidate_track_window = 0` live), coupled rejects at epoch `2` in `8/8` (`diff(c - u)`: `floor_u +28.03 +- 1.37`,
      `floor_h +28.35 +- 1.20`; all post-rejection epochs hold `> -1`). In `continuous = true` (`init_steps = 50`, seeds `1:8`),
-     `diff(c - u)` is `floor_u +12.30 +- 2.07`, `floor_h +12.16 +- 1.79` (also rejects at epoch `2` in `8/8`).
-   - **8.134 ETA & refinement (`init_steps = 50`, `continuous = true`, seeds `1:16`, macOS; `floor_u + floor_h` mean +- se)**:
-     `none = 44.95 +- 2.51`, `old` / `e1` (`ETA 1`) = `38.26 +- 1.54`, `e3` (`ETA 3, pred 0`) = `19.17 +- 1.18`,
+     `diff(c - u)` is `floor_u +12.30 +- 2.07`, `floor_h +12.16 +- 1.79` (rejects at epoch `2`).
+   - **8.134 ETA & refinement (`init_steps = 50` + warm-up guard, `continuous = true`, seeds `1:16`, macOS; `floor_u + floor_h` mean +- se)**:
+     `none = 46.29 +- 2.73`, `old` / `e1` (`ETA 1`) = `33.23 +- 1.10`, `e3` (`ETA 3, pred 0`) = `20.71 +- 0.88`,
      `lo` (`candidate_vs_incumbent, pred -5`) = `45.38 +- 2.57`, `hi` (`candidate_vs_incumbent, pred 10`) = `23.68 +- 1.12`.
-     Clearing the `init_steps = 5` stuck-world confound removes the spurious `old > none` gain completely (`38.26` vs `44.95`):
-     the baseline world now reaches ~`45` without intervention. Meanwhile `e3 - e1 = -19.09 +- 2.04` (`z = -9.34`), honest-low `lo`
-     is never adopted (`16/16`) and stays equivalent to `none` (`+0.43 +- 1.51`, 95% CI `[-2.85, +3.71]` inside `+-5.0`), and
-     dishonest-high `hi` is adopted, misses its own prediction at `ETA 3`, is rejected (`calibration == 0.0`), and trails `old`
-     (`old - hi = +14.58 +- 1.63`, `z = +8.92`). (Single platform macOS; Linux CI verification pending push.)
+     Governance never acts during warm-up (`0/16` adopted at epoch `1`). **P1 HELD**: adopting the harmful candidate degrades floors vs `none`
+     (`old - none = -13.07 +- 2.58, z = -5.06`; `e3 - none = -25.58 +- 2.82, z = -9.07`; `e3 - e1 = -12.52 +- 1.26, z = -9.94`),
+     and `lo` now beats `old` (`+12.15 +- 2.65, z = +4.58`). **P2 HELD**: `lo` is adopted `0/16` (`lo - none = -0.91 +- 1.17`,
+     95% CI `[-3.45, +1.62]` inside `+-5.0` margin). **P3 HELD**: `hi` is adopted at epoch `2`, misses at ETA `3` (epoch `5`),
+     and is rejected (`calibration == 0.0`) in `16/16`. **P4 SPLIT**: `lo` beats `old` (`z = +4.58`), whereas `hi` falls below `old`
+     (`old - hi = +9.55 +- 1.27, z = +7.52`) during its 3-epoch ETA. (Single platform macOS; Linux CI verification pending push.)

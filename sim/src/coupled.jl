@@ -221,6 +221,15 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             push!(inc_scores, outcome_val)
         end
 
+        # Keep governance from proposing/adopting while the economy is still in score-only warm-up (`init_steps`).
+        if continuous && ep * epoch < econ.init_steps
+            pv_cur = copy(pv_inc); th_cur = th_inc; tw_cur = tw_inc
+            push!(adopted_candidate, false)
+            push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+            pending_vote = nothing
+            return
+        end
+
         # (a) At epoch end, governance decides on the next epoch's governed thresholds.
         k = gp.domains[rand(grng, 1:length(gp.domains))]
         rep_k = max.(reputation[:, k], 0.0)

@@ -1348,14 +1348,16 @@ end
     # Rules (structural): `prediction_on_track` (measured >= predicted - band) and `resolution_due` (steps >= ETA + grace).
     @test prediction_on_track(1.0, 1.0, 0.0) && !prediction_on_track(0.9, 1.0, 0.0) && prediction_on_track(0.9, 1.0, 0.2)
     @test !resolution_due(2, 3, 0) && resolution_due(3, 3, 0) && !resolution_due(3, 3, 1) && resolution_due(4, 3, 1)
-    # Re-measured on warmed-up world (`init_steps = 50`, per 310f1a0; seeds 1:8, continuous = true):
-    # Prediction stated: 0.0 (no net loss), confidence band 0. Metric: `success.floor_u + success.floor_h`, paired on seeds 1:8.
-    # Smallest effect that matters: 5 units.
-    # Structural claims (every seed): with ETA 3 nothing is resolved before the third epoch after adoption; with the defaults
-    # (no prediction) the ETA keywords change nothing; ETA 1 resolves at the first epoch after adoption, as before.
-    # MEASURED (macOS, init_steps = 50, seeds 1:16 mean +- se): old / e1 38.26 +- 1.54; e3 19.17 +- 1.18 (e3 - e1 = -19.09 +- 2.04,
-    # z = -9.34; on seeds 1:8, e3 - e1 = -21.26 +- 3.00). Unlike init_steps = 5, ETA 1 no longer outperforms the no-candidate world
-    # (none 44.95 +- 2.51), because the 5-step warm-up's stuck baseline is gone; ETA 3 still ends far lower than ETA 1.
+    # Re-measured on warmed-up world (`init_steps = 50`, per 310f1a0; governance held until warm-up finishes at step 50, continuous = true):
+    # Pre-measurement predictions (53a47c0 P1): L3.2 candidate (only `track_window = 0` live; bar change inert by 8.84) is harmful
+    # throughout, so adopting it lowers final floor_u + floor_h against no candidate (`none`), and the old one-epoch rule (`e1`/`old`)
+    # no longer beats the refinement (`lo`). Metric: `success.floor_u + success.floor_h`, paired on seeds. Smallest effect that matters: 5 units.
+    # Structural claims (every seed): governance does not act before warm-up finishes (`!adopted_candidate[1]`); with ETA 3 nothing
+    # resolves before the third epoch after adoption; with defaults (`idle`) ETA keywords change nothing; ETA 1 resolves one epoch
+    # after adoption (at epoch 3, after epoch 2 adoption).
+    # MEASURED (macOS, init_steps = 50 + warm-up guard, seeds 1:16 mean +- se): none 46.29 +- 2.73; old / e1 (ETA 1) 33.23 +- 1.10;
+    # e3 (ETA 3, pred 0) 20.71 +- 0.88; e3 - e1 = -12.52 +- 1.26 (z = -9.94); e3 - none = -25.58 +- 2.82 (z = -9.07);
+    # old - none = -13.07 +- 2.58 (z = -5.06). P1 holds: adopting the candidate harms floors against no candidate.
     ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
                       [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
     dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
@@ -1373,29 +1375,31 @@ end
         idle = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
         e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
         e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
+        @test !e1.adopted_candidate[1] && !e3.adopted_candidate[1]
         @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch
-        @test e1.rejected_epoch == base.rejected_epoch
-        @test e3.rejected_epoch == 0 || e3.rejected_epoch >= 4
+        @test e1.rejected_epoch == base.rejected_epoch && e1.rejected_epoch == 3
+        @test e3.rejected_epoch == 0 || e3.rejected_epoch >= 5
         @test any(occursin("bar-lowering", k) for k in keys(base.degraded)) && all(>=(econ.threshold), base.thresholds)
         push!(d, tot(e3) - tot(e1))
     end
     m, se = mean(d), std(d) / sqrt(length(d))
-    @test m < -5 && abs(m) > 3 * se       # measured (init_steps = 50): ETA 3 ends ~21 below ETA 1
+    @test m < -5 && abs(m) > 3 * se
 end
 
 @testset "Probe: a candidate is eligible only if its prediction beats the incumbent's record and is judged against its own prediction (8.134 refinement)" begin
-    # Re-measured on warmed-up world (`init_steps = 50`, per 310f1a0; seeds 1:16):
-    # Hypothesis (author ruling 8.134; predict - measure - adapt applied to the incumbent): with `candidate_vs_incumbent`, (1) a harmful
-    # candidate making an honest LOW per-epoch prediction (-5, below the incumbent's record) is never adopted, so the run matches the
-    # no-candidate continuous run within the 5-unit equivalence margin; (2) one making a dishonest HIGH prediction (10 per epoch, above
-    # the incumbent's record) is adopted, misses its own prediction at the ETA (3 epochs), is rejected, and `prediction_record` shows the miss.
+    # Re-measured on warmed-up world (`init_steps = 50` + warm-up guard, seeds 1:16):
+    # Pre-measurement predictions (53a47c0):
+    #   P1 (0.7): harmful L3.2 candidate lowers final floor_u + floor_h vs no candidate, and old ETA 1 no longer beats refinement (`lo`).
+    #   P2 (0.8): under `candidate_vs_incumbent`, honest-low (-5) is never adopted and matches `none` within a margin of 5.
+    #   P3 (0.8): dishonest-high (10) is adopted, misses at ETA 3, is rejected, with the miss recorded in `prediction_record`.
+    #   P4 (0.6): refinement arms' final floors are not significantly below the old rule's (`old`).
     # Metric: `success.floor_u + success.floor_h` of the final run, paired on seeds 1:16. Smallest effect that matters: 5 units.
-    # MEASURED (macOS, init_steps = 50, seeds 1:16, mean +- se): no candidate 44.95 +- 2.51; old rule (ETA 1) 38.26 +- 1.54;
-    # honest-low 45.38 +- 2.57; dishonest-high 23.68 +- 1.12. Part (1): never adopted in 16 of 16; paired difference lo - none = +0.43 +- 1.51
-    # (95% CI [-2.85, +3.71], well inside +-5.0 equivalence margin; exact trajectories differ in some seeds because the no-candidate arm
-    # occasionally adopts random governance perturbations while honest-low holds bootstrap). Part (2): adopted and later rejected at epoch >= 4
-    # (prediction_calibration == 0.0) in 16 of 16; old - high = +14.58 +- 1.63 (z = 8.92; ETA 1 still outperforms honest-high miss, while no
-    # longer outperforming no-candidate once init_steps = 50 clears the 5-step stall).
+    # MEASURED (macOS, init_steps = 50 + warm-up guard, seeds 1:16, mean +- se): none 46.29 +- 2.73; old (ETA 1) 33.23 +- 1.10;
+    # honest-low (lo) 45.38 +- 2.57; dishonest-high (hi) 23.68 +- 1.12.
+    # Outcomes vs P1-P4: P1 HELD (`old - none = -13.07 +- 2.58`, `z = -5.06`; `lo - old = +12.15 +- 2.65`, `z = +4.58`).
+    # P2 HELD (`lo` adopted 0/16; `lo - none = -0.91 +- 1.17`, 95% CI `[-3.45, +1.62]`, equivalent within `+-5.0`).
+    # P3 HELD (`hi` adopted at epoch 2, rejected at epoch 5 with `calibration == 0.0` in 16/16).
+    # P4 SPLIT: `lo` beats `old` (`+12.15, z = +4.58`), whereas `hi` falls below `old` (`old - hi = +9.55 +- 1.27, z = +7.52`) during its 3-epoch ETA.
     ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
                       [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
     dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
@@ -1407,20 +1411,24 @@ end
     bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
     kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
     tot(r) = r.success.floor_u + r.success.floor_h
-    dL, dAH = Float64[], Float64[]
+    dL, dON, dLO, dAH = Float64[], Float64[], Float64[], Float64[]
     for s in 1:16
         none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true)
         old = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
         lo = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = -5.0, candidate_eta = 3, candidate_vs_incumbent = true)
         hi = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 10.0, candidate_eta = 3, candidate_vs_incumbent = true)
+        @test !none.adopted_candidate[1] && !old.adopted_candidate[1] && !lo.adopted_candidate[1] && !hi.adopted_candidate[1]
         @test !any(lo.adopted_candidate) && isempty(lo.prediction_record) && isnan(lo.prediction_calibration)
-        @test any(hi.adopted_candidate) && hi.rejected && hi.rejected_epoch >= 4
+        @test any(hi.adopted_candidate) && hi.rejected && hi.rejected_epoch >= 5
         @test length(hi.prediction_record) == 1 && !hi.prediction_record[1].on_track && hi.prediction_calibration == 0.0
         @test hi.prediction_record[1].measured < hi.prediction_record[1].predicted
-        push!(dL, tot(lo) - tot(none)); push!(dAH, tot(old) - tot(hi))
+        push!(dL, tot(lo) - tot(none)); push!(dON, tot(none) - tot(old))
+        push!(dLO, tot(lo) - tot(old)); push!(dAH, tot(old) - tot(hi))
     end
-    @test equivalent(dL; margin = 5.0, side = :both).equivalent
-    @test paired_effect(dAH; z = 3.0, direction = :up).significant   # measured (init_steps = 50): old ends +14.6 above hi (z = 8.9)
+    @test paired_effect(dON; z = 3.0, direction = :up).significant     # P1a: old harms warmed-up world vs none (-13.1, z = -5.06)
+    @test paired_effect(dLO; z = 3.0, direction = :up).significant     # P1b & P4(lo): lo beats old (+12.2, z = +4.58)
+    @test equivalent(dL; margin = 5.0, side = :both).equivalent        # P2: lo matches none within +-5 (-0.91, CI [-3.45, +1.62])
+    @test paired_effect(dAH; z = 3.0, direction = :up).significant     # P4(hi): old still exceeds hi miss (+9.55, z = +7.52)
     @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 25, continuous = true, candidate_vs_incumbent = true)
 end
 
