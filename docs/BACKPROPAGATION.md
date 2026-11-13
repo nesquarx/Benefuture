@@ -3395,3 +3395,12 @@ Confidence: high for the ratchet latch (exact identity of arms, bar trace) and f
 outcome counts and halts fit it, but I did not intervene on assessed outcomes directly). Unexplained: why a zero window (not just more executed work) leaves
 the floor higher than the dip suggests, i.e. whether the deceivers' executed plans are caught and repaired (convictions, advocate-ap) or merely outweighed;
 and the two bimodal seeds at `init_steps = 25`. Six seeds per arm; no significance threshold claimed beyond the paired effects shown.
+Lead's reading of the L3.2 world diagnosis (2026-11-13). (1) The "L3.4 trace" claim that a temporarily lower bar lets
+currencies qualify sooner is superseded: the bar never moved. (2) The latch is the ratified rule, not a defect: the bar for
+accuracy only rises (8.84), so a governance candidate that lowers the eligibility threshold is inert by design; the L3.2
+candidate's only live part was the track window. Candidates that lower the bar should be refused loudly at proposal rather
+than silently ignored (to build: a `degraded`-style notice). (3) The probe world's warm-up of 5 steps was the toy
+assumption at fault: models must strengthen before backing currencies (8.135), and a warm-up of 50 gives the same floors
+with no intervention. The L3.2 and 8.134 probes are to be re-measured on a warmed-up world. (4) Still open: a world that
+starts with immature models stays stuck (no currency, work halting in the StandCoin lane) for the whole run in 4 of 6
+seeds; the stall family (8.71, 8.133) again.
