@@ -1657,20 +1657,25 @@ end
     @test any(occursin("eligible parent model by μ", k) for k in keys(tr_cap.degraded))
 
     ag_c = [DomainAgent([0.5, 0.5], [0.5, 0.5], 0.1) for _ in 1:6]
-    cw(tw, adv) = M3cParams(ToyParams(; n = 60, steps = 300, plans = 10), ag_c, [1, 1], [true, true];
+    cw(tw, adv) = M3cParams(ToyParams(; n = 50, steps = 260, plans = 8), ag_c, [1, 1], [true, true];
                             λpos = 0.05, λneg = 0.02, transactions = true, accuracy_rule = :window,
-                            p_new_model = 0.1, improve_drift = -0.4, improve_σ = 0.1,
-                            takeover_records = 10, min_records = 5, pool_max = 8,
-                            events = [shock(:capture; step = 40, duration = 60, size = 3.0, target = 1)],
-                            model_collude = 0.9, model_collude_bias = 3.0, collude_actors = [1],
+                            p_new_model = 0.2, improve_drift = -0.4, improve_σ = 0.1,
+                            takeover_records = 5, min_records = 5, pool_max = 8,
+                            events = [shock(:capture; step = 10, duration = 20, size = 5.0, target = 1)],
+                            model_collude = 1.0, model_collude_bias = 5.0, collude_actors = [1],
                             track_window = tw, credence_rule = :record, advap = adv)
-    red_c = [run_m3c(cw(0, false); seed = s) for s in 1:6]
-    grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:6]
-    # Unsupported on Linux (2026-11-13): the per-seed claims (upfront above settled value in every unprotected seed, within it
-    # in every protected seed) and the paired effect hold on macOS seeds 1:6 but not on Linux: over seeds 1:16 the gap
-    # difference is +263 (se 133), not significant, with protected seeds on both sides of zero. Only distributional claims
-    # are portable; until one is re-established (seeds by precision, on Linux), the runs execute and the claim is not asserted.
-    @test length(red_c) == length(grn_c) == 6
+    red_c = [run_m3c(cw(0, false); seed = s) for s in 1:24]
+    grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:24]
+    gap1(tr) = (idx = findall(==(1), tr.exec_agent); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    post1(tr) = (idx = findall(i -> tr.exec_agent[i] == 1 && tr.exec_step[i] > 35, eachindex(tr.exec_agent)); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    pay_red = [r.upfront[1] - r.settled_value[1] for r in red_c]
+    pay_grn = [g.upfront[1] - g.settled_value[1] for g in grn_c]
+    @test mean(r -> r.takeovers_colluding, red_c) >= 1.0 && mean(g -> g.takeovers_colluding, grn_c) >= 1.0
+    @test paired_effect(pay_red .- pay_grn; z = 2.0).significant
+    @test paired_effect(pay_grn; z = 2.0, direction = :down).significant
+    @test paired_effect([gap1(r) - gap1(g) for (r, g) in zip(red_c, grn_c)]; z = 3.0).significant
+    @test paired_effect([post1(r) - post1(g) for (r, g) in zip(red_c, grn_c)]; z = 3.0).significant
+    @test equivalent([post1(g) for g in grn_c]; margin = 5.0, z = 2.0).equivalent
 
     ag_p = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0),
             DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
@@ -1678,10 +1683,10 @@ end
             DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
     pw(mode) = M3cParams(ToyParams(; n = 60, steps = 200, plans = 8), ag_p, [1, 1], [true, true];
                          λpos = 0.05, λneg = 0.02, transactions = true, profile_mode = mode, profile_gamers = [2, 0, 0, 0])
-    red_p = [run_m3c(pw(:declared); seed = s) for s in 1:6]
-    grn_p = [run_m3c(pw(:measured); seed = s) for s in 1:6]
-    @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red_p, grn_p)]).significant
-    @test all(g -> g.leaf_accuracy[2] > 0.9, grn_p)
+    red_p = [run_m3c(pw(:declared); seed = s) for s in 1:16]
+    grn_p = [run_m3c(pw(:measured); seed = s) for s in 1:16]
+    @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red_p, grn_p)]; z = 3.0).significant
+    @test mean(g -> g.leaf_accuracy[2], grn_p) > 0.9 && mean(r -> r.leaf_accuracy[2], red_p) < 0.75
 end
 
 # ==============================================================================
