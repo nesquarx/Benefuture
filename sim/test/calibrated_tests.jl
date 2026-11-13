@@ -182,3 +182,5 @@ end
                                   whitewash = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]); seed = 1)
     @test unbound_w.identities_admitted > 0 && unbound_w.identities_linked == 0
 end
+
+include("dataset_adapter_tests.jl")

@@ -974,19 +974,17 @@ labour is case curation and data, not code.
 Each pick names its rung, its role and the toy assumption it would retire. Order is by how much a
 dataset constrains what the simulation currently invents, and how directly it maps.
 
-1. **Model pools: COVID-19 Forecast Hub, with M4 as a cross-check** (M3c economy and M5 governance;
-   calibration). Set `p_new_model`, `improve_drift`, `improve_σ` and `scale_min` from the arrival and
+1. **Model pools: COVID-19 Forecast Hub, with M4 as a cross-check** (`[Implemented]` in `sim/src/dataset_adapters.jl`: `calibrate_model_pool`, `validate_model_pool`, `calibrate_m4_errors` on `cases/archive_sample/` and `cases/calibration_sample/m4_methods_benchmark.csv`, fetched via `tools/data/fetch_covid19_forecast_hub.py` & `fetch_m4_benchmark.py`; M3c economy and M5 governance). Set `p_new_model`, `improve_drift`, `improve_σ` and `scale_min` from the arrival and
    relative accuracy of real forecasting teams, and model error by level from real spreads; then
    *validate* (held out) the turnover of the best model and the ensemble-against-best comparison.
    Retires the toy assumptions "model noise by σ" and "better models arrive at an invented rate"
    (8.42.2), the two most consequential assumptions behind the eligibility cliff (8.32).
-2. **Domain reputation: the Stack Exchange dump** (M3–M3c; calibration then validation). Build a real
+2. **Domain reputation: the Stack Exchange dump** (`[Implemented]` in `sim/src/dataset_adapters.jl`: `stackexchange_domain_network`, `calibrate_stackexchange_skills`, `validate_stackexchange_reputation`, `parse_stackexchange_tags_xml` on `cases/calibration_sample/stackexchange_{answers,cross_site}.csv`, fetched via `tools/data/fetch_stackexchange_sample.py`; M3–M3c). Build a real
    domain network (tags as leaves, sites as parents, μ from co-occurrence), calibrate per-domain skill
    heterogeneity and `n_learn`, then validate the recount, the decay rates' effect on how well
    relevance tracks later answer quality, and no-halo isolation across sites. Retires "fixed agents
    and skills" drawn from uniform ranges and "signature axes" as the domain geometry.
-3. **Audit and repair: Wikipedia edit/revert history, with Geiger–Halfaker's outage** (M3f and M6
-   AdvAp; noise ranges then validation). Set `vigilance`, detection lag, `p_false_trace` and the
+3. **Audit and repair: Wikipedia edit/revert history, with Geiger–Halfaker's outage** (`[Implemented]` in `sim/src/dataset_adapters.jl`: `load_wikipedia_reverts`, `calibrate_wikipedia_audit`, `validate_wikipedia_outage` on `cases/calibration_sample/wikipedia_reverts_sample.csv` and MediaWiki history TSV schemas, fetched via `tools/data/fetch_wikipedia_reverts.py`; M3f and M6 AdvAp). Set `vigilance`, detection lag, `p_false_trace` and the
    deception base rate from vandalism and reverts; validate the outage reading (late detection, repair
    on return) against the bot outage. Retires readers' vigilance as a constant and the invented
    false-conviction rate. Retraction Watch with Fanelli and Dyck–Morse–Zingales then gives a
