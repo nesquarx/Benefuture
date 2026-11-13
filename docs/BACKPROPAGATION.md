@@ -3421,3 +3421,11 @@ fixed `init_steps`); (b) a legacy funder during score-only periods in M3c and in
 governance candidates: scored in shadow against the incumbent before adoption (the predict-measure-adapt loop of 8.134
 with the incumbent in force). RSI is recursive self-improvement at the scale of systems rather than of an AI (author, 2026-11-13): each new layer of the system is scored in shadow by the arrangement it will replace, takes over once converged, and becomes the legacy that scores the next. Candidate
 homes: L82, Progressive complexity, Measurement, Government, Benefuture (overview: the repeating structure).
+8.136 continued (author, 2026-11-13): "Models, Domains, Continuity and Diversity axioms all operate with this notion
+already." So 8.136 names a structure the sources already carry, not a new mechanism (parsimony): metric models qualify by
+record before backing a currency, domains form and become eligible by evidence, continuity keeps the existing
+arrangement in force through change, and diversity keeps challengers scored beside incumbents. For the build: no new
+rule set; the convergence test, the legacy funder and shadow scoring are to be expressed through those existing rules,
+and anything the simulation adds beyond them is listed in the parsimony audit. For the corpus: locate the lines in the
+pseudocode and the four articles that state it, cross-reference them, and name the shared structure once (recursive
+self-improvement at systems scale) in the overview; not yet done, and not yet checked line by line against the sources.
