@@ -3337,3 +3337,21 @@ force for one epoch only; kept permanently it is a net loss in this toy world, s
 candidate is not rejected early) and the rejection at ETA 1 was, by accident, the better outcome here. Parameters were
 not tuned; the probe asserts the measured direction. Six-seed exploration (same world): ETA 3 rejected at epoch 4 in one
 seed, never in the others; ETA 4 never. The run on 1 platform (Linux) only.
+
+8.134 build, step 2 (2026-11-13): candidate versus incumbent, proposer record. `run_coupled(...; continuous = true, candidate_vs_incumbent = true)`
+(needs `candidate_prediction`, now a predicted outcome PER EPOCH): (a) a candidate is eligible at the vote only if its prediction beats
+the incumbent's recorded mean (`inc_scores`) under `select_candidate` at z = `gov_z` with the record's standard error, and not at all
+until two incumbent records exist; (b) at resolution the measured change since adoption is divided by the epochs elapsed and judged
+by `prediction_on_track` against the candidate's OWN prediction. Each resolved prediction is returned as `prediction_record`
+(epoch, predicted, measured, on_track) with `prediction_calibration` (share on track, NaN when none resolved). Defaults and all
+other behaviour unchanged. Probe (L3.2 world, continuous, 150 steps, seeds 1:8, Linux; final floor_u + floor_h, mean +- se):
+no candidate 6.9 +- 2.6; (A) old rule, ETA 1, 44.4 +- 1.8; (B) 8.134 build, prediction 0 ETA 3, 27.6 +- 2.8; (C-low) honest low
+prediction -5, 8.2 +- 3.6; (C-high) dishonest high prediction 10, 19.0 +- 2.2. Adoption (epochs adopted): B 6 of 6 epochs in 7 seeds (kept, never rejected) and 3 in one (rejected at epoch 4), 0 in all 8 for C-low, 3 in all 8 for C-high (rejected at epoch 5 in 8 of 8, record
+shows measured below 10, calibration 0). Hypothesis (1) held: C-low never adopted (8 of 8) and equal to the no-candidate run in 6 of 8
+seeds; paired difference +1.2 +- 1.2 (equivalent within margin 5; in the other 2 seeds the no-candidate run adopts a random
+governance perturbation that the offer displaced). Hypothesis (2) held: adopted, missed, rejected, recorded. Not hypothesised, measured:
+the old rule ends far higher than C-low (paired +36.2 +- 4.6) and than C-high (+25.4 +- 3.4); B beats C-high by +8.6 +- 3.9 (not tested
+as a claim). The harmful candidate's one-epoch trial raises later floors (L3.4 trace), and the refinement forgoes that gain by never
+trialling a candidate that does not out-promise the incumbent; per 8.135 no bootstrap leniency is added. Not tuned. Not built: feeding
+`prediction_calibration` into the proposer's reputation (the native next step: reputation = record of winning choices, so a proposer
+whose predictions keep missing loses weight), the incumbent's own prediction being judged, and predictions beyond governance candidates.

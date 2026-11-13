@@ -71,13 +71,17 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_track_window::Union{Nothing,Integer} = nothing,
                      m5_decisions::Integer = 0, continuous::Bool = false,
                      candidate_prediction::Union{Nothing,Real} = nothing, candidate_eta::Integer = 1,
-                     candidate_confidence::Real = 0.0, eta_grace::Integer = 0)
+                     candidate_confidence::Real = 0.0, eta_grace::Integer = 0,
+                     candidate_vs_incumbent::Bool = false)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0, "m5_decisions must be non-negative")
     check(candidate_eta >= 1 && eta_grace >= 0 && candidate_confidence >= 0, "eta at least 1, grace and confidence band non-negative")
     # Predict - measure - adapt (8.134, continuous mode): the candidate states a predicted change in floor_u + floor_h over its
     # horizon, an ETA (epochs), a confidence band and an ETA grace; it is judged at ETA + grace, over the whole window since adoption.
     pm = continuous && candidate_prediction !== nothing
+    check(!candidate_vs_incumbent || pm, "candidate_vs_incumbent needs continuous = true and a candidate_prediction")
+    cvi = candidate_vs_incumbent   # prediction is per epoch and judged against the incumbent's record (8.134 refinement)
+    prediction_record = NamedTuple[]   # each resolved prediction: (epoch, predicted, measured, on_track)
     adopt_ep = 0       # epoch boundary at which the held candidate was adopted
     kept = false       # the candidate was judged on track and stays adopted
     n_epochs = econ.toy.steps ÷ epoch
@@ -155,9 +159,10 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             # A candidate succeeds only if the economy's floors did not fall and it did not underperform the incumbent.
             floors_held = sp.floor_u >= -1e-9 && sp.floor_h >= -1e-9 && outcome_val >= (isempty(inc_scores) ? 0.0 : mean(inc_scores) - 0.5)
             if pm && pending_vote.chose_cand   # judged against its own prediction over the window since adoption
-                outcome_val = win_change
-                floors_held = prediction_on_track(win_change, candidate_prediction, candidate_confidence)
+                outcome_val = cvi ? win_change / (ep - adopt_ep) : win_change   # per epoch when judged against the incumbent
+                floors_held = prediction_on_track(outcome_val, candidate_prediction, candidate_confidence)
                 kept = floors_held
+                push!(prediction_record, (epoch = ep, predicted = Float64(candidate_prediction), measured = Float64(outcome_val), on_track = floors_held))
             end
             if pending_vote.chose_cand
                 push!(cand_scores, outcome_val)
@@ -249,6 +254,10 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         end for i in 1:na]
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)
         chose_cand = tally > 0 && !(coupled && rejected)
+        if chose_cand && cvi   # eligible only if its predicted per-epoch outcome beats the incumbent's measured record by the significance rule
+            chose_cand = length(inc_scores) >= 2 &&
+                select_candidate([mean(inc_scores), Float64(candidate_prediction)], [std(inc_scores) / sqrt(length(inc_scores)), 0.0]; z = econ.gov_z) == 2
+        end
 
         chose_cand && (adopt_ep = ep)
         if chose_cand
@@ -326,6 +335,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      track_windows = track_windows_trace,
      adopted_candidate = adopted_candidate,
      rejected = rejected,
+     prediction_record = prediction_record,
+     prediction_calibration = isempty(prediction_record) ? NaN : count(r -> r.on_track, prediction_record) / length(prediction_record),
      rejected_epoch = rejected_epoch,
      reputation = reputation,
      records = record,

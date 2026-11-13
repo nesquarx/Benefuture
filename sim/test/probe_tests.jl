@@ -1370,6 +1370,51 @@ end
     @test m < -5 && abs(m) > 2 * se       # measured: ETA 3 ends lower (about -19), against the hypothesis
 end
 
+@testset "Probe: a candidate is eligible only if its prediction beats the incumbent's record and is judged against its own prediction (8.134 refinement)" begin
+    # Hypothesis (author ruling 8.134; predict - measure - adapt applied to the incumbent): with `candidate_vs_incumbent`, (1) a harmful
+    # candidate making an honest LOW per-epoch prediction (-5, below the incumbent's record) is never adopted, so the run matches the
+    # no-candidate continuous run; (2) one making a dishonest HIGH prediction (10 per epoch, above the incumbent's record) is adopted,
+    # misses its own prediction at the ETA (3 epochs), is rejected, and `prediction_record` shows the miss. Directions: (1) final
+    # floor_u + floor_h equal to the no-candidate run (paired difference near 0); (2) the record's on_track false, calibration 0.
+    # Metric: `success.floor_u + success.floor_h` of the final run, paired on seeds 1:8 (8 seeds; the claims below are structural
+    # or have effects far beyond 2 standard errors, so no more were added). Smallest effect that matters: 5 units.
+    # MEASURED (Linux, seeds 1:8, mean +- se of the final sum): no candidate 6.9 +- 2.6; old rule (ETA 1) 44.4 +- 1.8; 8.134 build
+    # (prediction 0, ETA 3) 27.6 +- 2.8; honest-low 8.2 +- 3.6; dishonest-high 19.0 +- 2.2. Part (1): never adopted in 8 of 8, and
+    # equal to the no-candidate run in 6 of 8 seeds (in the other 2 the no-candidate run adopts a random governance perturbation
+    # the offer displaced); paired difference +1.2 +- 1.2, within the margin. Part (2): adopted at epochs 2-4 and rejected at epoch 5
+    # in 8 of 8, record shows the miss. Not hypothesised, measured: the old rule ends far higher (the lasting benefit of the
+    # one-epoch trial, L3.4 trace) than the honest-low arm, so the refinement forgoes that gain, consistent with 8.135.
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
+                      [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 5, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    tot(r) = r.success.floor_u + r.success.floor_h
+    dL, dAH = Float64[], Float64[]
+    same = 0
+    for s in 1:8
+        none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true)
+        old = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
+        lo = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = -5.0, candidate_eta = 3, candidate_vs_incumbent = true)
+        hi = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 10.0, candidate_eta = 3, candidate_vs_incumbent = true)
+        @test !any(lo.adopted_candidate) && isempty(lo.prediction_record) && isnan(lo.prediction_calibration)   # by construction
+        @test any(hi.adopted_candidate) && hi.rejected && hi.rejected_epoch >= 4
+        @test length(hi.prediction_record) == 1 && !hi.prediction_record[1].on_track && hi.prediction_calibration == 0.0
+        @test hi.prediction_record[1].measured < hi.prediction_record[1].predicted
+        same += lo.floor_u == none.floor_u
+        push!(dL, tot(lo) - tot(none)); push!(dAH, tot(old) - tot(hi))
+    end
+    @test same >= 6
+    @test equivalent(dL; margin = 5.0, side = :both).equivalent
+    @test paired_effect(dAH; z = 2.0, direction = :up).significant   # measured: the old rule's one-epoch trial ends higher (+25)
+    @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 25, continuous = true, candidate_vs_incumbent = true)
+end
+
 @testset "Probe (red): issued currency outruns deliverable resources without global RA (8.133)" begin
     # Hypothesis (author ruling 8.133): without global resource accounting the currency issued for measured value is not
     # bound to the resources and time that can deliver on it, so claims grow without bound against fixed capacity ("checks
