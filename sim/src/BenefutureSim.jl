@@ -57,6 +57,7 @@ include("programmes.jl")
 include("counterfactual.jl")
 include("replay.jl")
 include("forecast_archive.jl")
+include("dataset_adapters.jl")
 include("understanding.jl")
 
 function __init__()
