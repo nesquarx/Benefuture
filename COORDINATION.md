@@ -1037,15 +1037,15 @@ The remaining work from `docs/PLAN.md`, `docs/BACKPROPAGATION.md`, and `docs/CAL
 
 - **Task C1: Deep Transaction Trees with Degree of Separation (L95)**
   - **Goal**: Extend transaction trees beyond depth 1; causal distribution with degree of separation attenuation; traversal fallback.
-  - **Primary Files**: `sim/src/economy.jl`, `sim/test/m3d_tests.jl`, `BenefutureReference/Economy.lean`.
+  - **Primary Files**: `sim/src/economy.jl`, `sim/src/m3c.jl`, `sim/test/m3d_tests.jl`, `BenefutureReference/Economy.lean`.
   - **Collision Risk**: Medium (touches `sim/src/economy.jl`).
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (`upstream_depth` propagation in `sim/src/m3c.jl`, multi-hop Shapley coalitions + `L95` `traversal_shares` degree attenuation, per-degree tracking `upstream_pos_by_degree` / `upstream_neg_by_degree` / `max_upstream_degree`, verified in `sim/test/m3d_tests.jl` and `sim/test/probe_tests.jl`).
 
 - **Task C2: Step (5) Open Log as Universal Source of Truth**
   - **Goal**: Derive reputation recount, μ, model scoring, and CC directly from the logged transaction trace; ensure auditability.
-  - **Primary Files**: `sim/src/economy.jl`, `sim/src/m3d.jl`, `sim/test/m3d_tests.jl`.
+  - **Primary Files**: `sim/src/m3c.jl`, `sim/src/BenefutureSim.jl`, `sim/test/m3d_tests.jl`, `sim/test/probe_tests.jl`.
   - **Collision Risk**: Low to Medium.
-  - **Status**: `AVAILABLE`
+  - **Status**: `[x] COMPLETED` (`recount`, `recount_μ`, `recount_models`, `recount_cc` in `sim/src/m3c.jl` reconstruct reputation, overlap degrees, model accuracy, and causal distribution totals from `tr.memory`/`tr.evidence`/`tr.formations` to `1e-10` when `memory_loss = 0.0`, including across formations, deferred outage settlements, and `advap` takeovers/repairs).
 
 - **Task C3: Economy Robustness & Fallback Order (8.71, 8.73)**
   - **Goal**: Qualified challenger promotion, parent fallback, maintenance bar, StandCoin lane, and RA contraction probe.

@@ -54,8 +54,8 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Ontology.Domain`, `Proposed.DomainHierarchy` | simulated | leaf shares, fuzzy parents, aggregation, learnt overlaps (M3c) |
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); accession admissibility and per-being protection (`accession_admissible_ref`); the full `goal_G` with D and Pareto filtering not yet |
-| `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
-| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
+| `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c), and universal open-log recounts (`recount`, `recount_μ`, `recount_models`, `recount_cc`) from logged sequences; identity and `Step` invariants not yet |
+| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; multi-hop transaction trees up to `upstream_depth` links with degree of separation; outcome-first causal distribution with Shapley shares and degree-attenuated traversal fallback (`L95`, M3d) |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding against whitewashing (M6, `binding_admits_ref`); privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters, experimental design and the debatable escape (`select_candidate_ref`, `gauge_radius_ref`, `escape_accept_ref`; M4); the simulation's own gates not yet |
@@ -265,17 +265,23 @@ the union of all concerned currencies; it is tested with gaming agents (M6). Bas
 pricing (L143) needs beings who transact for basic needs themselves (M7).
 
 Transaction trees and outcome-first causal distribution (BACKPROPAGATION 8.16–8.18): an action
-may build on a recent output of another agent in its domain, carrying part of its effect. Each
+may build on a recent output of another agent in its domain, carrying part of its effect and
+propagating upstream lineage up to `upstream_depth` hops (with degree of separation tracking). Each
 being an action touches is an outcome, its assessed change in V. The causal-explanation model
 estimates each contributor's effect; contributors share each outcome Shapley-style (Lean
 `shapley_ref`) over coalition values (V of the members' summed effects, the actor's own effect
 counting only if the coalition can fund the action); positive shares are paid and negative shares
 penalised. Below the confidence threshold (`cc_assessed_ref`), the traversal fallback shares the
-outcome by net contribution and degree of separation (`traversal_shares_ref`). Tests: intermediaries
-who add nothing earn almost nothing while the makers upstream are paid; every outcome is fully
-distributed; a bad output is penalised through the losses it carries downstream; co-funders whose
-money was needed are credited; heavy attribution error switches distribution to the fallback; the
-books balance and reputation recounts exactly.
+outcome by net contribution and degree of separation (`traversal_shares_ref`, attenuated by
+`traversal_decay^degree`, L95). From the open log (`tr.memory`, `tr.evidence`, `tr.formations`),
+`recount`, `recount_μ`, `recount_models`, and `recount_cc` reconstruct reputation, overlap degrees
+(`μ`), model accuracy (`leaf_accuracy`), and causal distribution totals to machine precision when
+`memory_loss = 0`. Tests: intermediaries who add nothing earn almost nothing while the makers
+upstream are paid; every outcome is fully distributed; multi-hop degree-2+ upstream creators receive
+degree-attenuated credit under Shapley and L95 fallback; a bad output is penalised through the losses
+it carries downstream; co-funders whose money was needed are credited; heavy attribution error
+switches distribution to the fallback; the books balance and open-log recounts match incremental state
+across formations, outages, and adversarial-adaptation repairs/takeovers.
 
 ## M3e observations
 
@@ -1475,7 +1481,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | Hazard harm | `hazard_σ` | 1.0 as a CV (log-normal across beings); event size Pareto: `hazard_heavy` on, exponent `hazard_α` 2, median 1, capped at `hazard_cap` 20 medians | 0.5–2 (CV); α 1.5–2; off (`hazard_heavy` false): Gaussian, 0.2 | Invariant for natural hazards; 3.9, [CSN09] [CT20] [MAR21] (medium). The cap is a world bound (a Pareto of exponent 2 has no variance); the Gaussian shape is the limiting case. Catastrophes (`shock`) keep their stated size |
 | Hazards arising (world; battery factor): chance per step, share of beings threatened, harm per being | `p_hazard`, `hazard_share`, `hazard_size` | 0, 0.1, 1 | 0.05–0.3, not yet set, not yet set | Mixed; 3.9, [CLA18] [CT16] (medium for shape, low for rates). Rate is a battery factor; default stays 0, since a rate acts only with guardians, whose diligence is institution-dependent |
 | Side effects of actions (world; battery factor): chance per action, share of touched beings harmed, harm per being | `p_side`, `side_share`, `side_size` | 0.01, 0.3, 1 (size heavy-tailed like a random hazard) | 0.01–0.1, not yet set, not yet set | Mixed; 3.9, [DEV08] [BRE91] [LAN10] (medium). Simple domains 0.01, complex 0.05–0.1; the preventable share (`p_foresee`) is institution-dependent |
-| Actions building on another's recent output; how much of its effect they carry (M3c, world) | `p_upstream`, `β_upstream` | 0, 0.5 | not yet set |  |
+| Actions building on another's recent output; how much of its effect they carry; max hops propagated (M3c, world) | `p_upstream`, `β_upstream`, `upstream_depth` | 0, 0.5, 1 | not yet set |  |
 | Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | not yet set |  |
 | Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | not yet set |  |
 | Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | not yet set |  |

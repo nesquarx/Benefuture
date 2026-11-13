@@ -1596,3 +1596,28 @@ end
     @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red_p, grn_p)]).significant
     @test all(g -> g.leaf_accuracy[2] > 0.9, grn_p)
 end
+
+# ==============================================================================
+# Probe: deep transaction trees (L95) and Step (5) open-log recounts (Tasks C1, C2)
+# ==============================================================================
+@testset "Probe: deep transaction trees (L95) and Step (5) open-log recounts (C1, C2)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    Ts = ToyParams(n = 30, steps = 160, plans = 6, spread = 0.05)
+    ag = [DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.0], [1.0], 0.0)]
+    fb_run(dec, s) = run_m3c(M3cParams(Ts, ag, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02,
+                                       memory_loss = 0.0, transactions = true, causal_distribution = true,
+                                       p_upstream = 1.0, upstream_depth = 3, attribution_σ = 2.0,
+                                       traversal_decay = dec); seed = s)
+    low_dec = [fb_run(0.25, s) for s in 1:6]
+    high_dec = [fb_run(0.75, s) for s in 1:6]
+    @test all(r -> r.max_upstream_degree >= 2 && r.fallback_outcomes > 0, high_dec)
+    @test paired_effect([h.upstream_pos_by_degree[2] - l.upstream_pos_by_degree[2] for (l, h) in zip(low_dec, high_dec)]).significant
+
+    for r in high_dec
+        @test isapprox(recount_μ(r), r.μ; atol = 1e-10)
+        @test isapprox(recount_models(r).leaf_accuracy, r.leaf_accuracy; atol = 1e-10)
+        rcc = recount_cc(r)
+        @test isapprox(rcc.upstream_pos_by_degree, r.upstream_pos_by_degree; atol = 1e-10)
+        @test isapprox(rcc.credit_pos, r.credit_pos; atol = 1e-10)
+    end
+end

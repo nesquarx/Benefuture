@@ -480,6 +480,13 @@ Transactions and causal distribution
   outputs are penalised through the losses they carry downstream, and every outcome is fully
   distributed ([m3d_tests](../sim/test/m3d_tests.jl)). Beyond 10 contributors, sampled Shapley shares
   match exact or closed-form ones within the bound ([shapley_sampling_tests](../sim/test/shapley_sampling_tests.jl)).
+  Multi-hop transaction chains (`upstream_depth`) propagate attenuated ancestor effects across degrees of
+  separation both in Shapley attribution and in the `L95` traversal fallback (`traversal_decay`).
+- **Open log as universal source of truth (Step 5).** With `memory_loss = 0`, `recount`, `recount_μ`,
+  `recount_models`, and `recount_cc` reconstruct incremental reputation, domain overlap degrees (`μ`),
+  model accuracy (`leaf_accuracy`), and causal distribution totals directly from the logged trace
+  (`tr.memory`, `tr.evidence`, `tr.formations`), including across leaf formations, outages, and
+  adversarial-adaptation repairs and takeovers ([m3d_tests](../sim/test/m3d_tests.jl), [probe](../sim/test/probe_tests.jl)).
 
 Hazards and black swans
 - **Hazards.** Unguarded hazards cut floor growth by a sixth. Contracted guardians recover most of
