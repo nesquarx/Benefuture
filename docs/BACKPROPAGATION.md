@@ -3355,3 +3355,43 @@ as a claim). The harmful candidate's one-epoch trial raises later floors (L3.4 t
 trialling a candidate that does not out-promise the incumbent; per 8.135 no bootstrap leniency is added. Not tuned. Not built: feeding
 `prediction_calibration` into the proposer's reputation (the native next step: reputation = record of winning choices, so a proposer
 whose predictions keep missing loses weight), the incumbent's own prediction being judged, and predictions beyond governance candidates.
+
+L3.2 world diagnosis (2026-11-13): why 25 steps of a lower bar lift the L3.2 probe world sixfold, and the finding that the lower bar never took effect. Measured by
+`run_m3c` with a `governor` (the L3.4 trace's setting: 8 agents, 4 leaves, half deceivers at skill -0.9, 150 steps, `init_steps = 5`; epoch = lowered values
+for steps 26-50, restored at 50), paired on seeds 1:6, Linux; the metric is the run's final `floor_u + floor_h` change, mean +- se. Scratch scripts were not
+kept in the repository. Predictions made before measuring: (1) threshold 0.5 carries the gain, track window 0 little (confidence 0.6); (2) the leaves qualify
+during the epoch and stay qualified (0.5); (3) a score-only warm-up of 25-50 steps with no lowered bar gives a similar gain (0.4). Results: (1) and (2) were
+wrong, (3) held.
+1. The lowered threshold is a no-op. Threshold 0.5 alone ends bit-for-bit identical to the unchanged run (10.0 +- 4.6, six seeds, same seed-by-seed values);
+   track window 0 alone equals both together (43.0 +- 2.0, paired +33.0 +- 5.5). The bar trace stays at 0.9 for all 150 steps in the "both" arm.
+   Mechanism: in `run_m3c`, `ratchet!` computes `lfloor[j] = ratchet_bar(accs, leaf_bar(j); ...)` where `leaf_bar(j) = max(th_now[], lfloor[j])`, and the Lean
+   `ratchet_bar_ref` returns at least its `bar` argument; so `lfloor` latches the initial 0.9 at step 1 and the bar can never fall, whatever the governor sets
+   afterwards. The ratchet is meant never to fall by its own rule (8.84), but here it also swallows any later lowering of the governed threshold (so does any
+   governance move of the bar mid-run). A permanent 0.5 set at construction does work (bar 0.5 throughout; 49.5 +- 5.6, paired +39.5 +- 4.6 against 10.0). So the
+   probe's "harmful candidate" in the epoch mode (which rebuilds the run with 0.5 at start) acts through the bar; in the continuous mode only the zero window acts.
+2. What matters is the track window (and, equivalently, a longer warm-up), through a stuck state, not through qualification. In the unchanged run four of
+   six seeds sit at accuracy about 0.2-0.55 for all 150 steps, with 0 leaves at the 0.9 bar, `lane_halted` 315-348 against 40-49 executions and only 45-54
+   assessed outcomes (the two seeds that escape late, near step 120, have 172-227 assessed outcomes). Work is stuck in the funded (StandCoin) lane: after the
+   5 score-only steps, work executes only when the proposer and experts can pay, the balances are poor, so it halts; with almost nothing executed there are few
+   assessed outcomes, so the models do not mature and no currency qualifies: a closed loop (the `degraded` log shows "domain currency -> StandCoin lane (no
+   qualified model can price it)" in every run). `novel_threshold` and `novel_floor` do not break it here (no leaf counts as novel in this world). Track window 0
+   (models stop correcting for deceivers' overstatement, so deceivers' plans look valuable and are funded) lets work flow: executions 185-341, halts 14-123,
+   assessed outcomes 368-474, mean accuracy rising to 0.69-0.92. During the epoch floors dip (-5.6 at step 50, which is why governance rejects it), then climb
+   as the models, trained on the volume of assessed outcomes, mature. Persistence: tw0 for steps 26-50 ends 43.0 +- 2.0; 26-75 33.2 +- 1.5; 51-75 31.3 +- 1.7;
+   101-125 8.1 +- 1.2 (no gain; base 10.0); tw0 from 26 on for good 27.7 +- 3.2 (one 25-step epoch is the best of these; the early window is what counts).
+3. A proper warm-up gives the same gain with no lowered bar and no deceiver-friendly window. `init_steps = 50`: 43.1 +- 1.9, paired +33.1 +- 4.6 (six of six
+   above 36), `lane_halted` 0-21, 44-50 score-only executions, accuracy 0.4-0.6 at step 50 and 0.8 by step 75. `init_steps = 25`: 36.5 +- 9.8 (bimodal: four seeds
+   43-60, two seeds 6-8), paired +26.5 +- 12.0. The 5-step warm-up is simply too short for models to mature, in line with 8.135.
+Recommendation: (a) restate the L3.2 probe world with a proper warm-up (`init_steps` of 50, or until the models' record count reaches `min_records`), since with
+it the world has no 6x gain to find and the harmful candidate's effect can be judged without a confound; the 8.134 steps 1-2 probe readings (ETA, incumbent
+comparison) were taken on this stuck baseline (about 7-10) and should be re-measured on the warmed-up one before they are quoted. (b) Treat `lfloor`'s
+self-reference as a code defect to fix after a red test: file `sim/src/m3c.jl`, `ratchet!` / `leaf_bar` (the ratchet's seed `leaf_bar(j)` includes the previous
+`lfloor`; it should start from the governed threshold alone and keep `lfloor` separate, or decay when the governed threshold is lowered; the choice is the
+author's, since 8.84 says the bar never falls by the ratchet). The L3.4 trace's "a temporarily lower bar lets currencies qualify sooner" is superseded: no
+qualification happened (the bar never moved); the gain came from the zero window and its volume of assessed outcomes. (c) The stuck state itself (no
+currency, no funded work, no records, no models) is the interesting world finding: score-only execution is the only thing that breaks it, so a long enough
+score-only phase, or a floor of score-only execution while no currency qualifies, is what the rules need; this is native (L82 maturity) and needs no leniency.
+Confidence: high for the ratchet latch (exact identity of arms, bar trace) and for the warm-up equivalence; moderate for the stuck-loop account (the assessed
+outcome counts and halts fit it, but I did not intervene on assessed outcomes directly). Unexplained: why a zero window (not just more executed work) leaves
+the floor higher than the dip suggests, i.e. whether the deceivers' executed plans are caught and repaired (convictions, advocate-ap) or merely outweighed;
+and the two bimodal seeds at `init_steps = 25`. Six seeds per arm; no significance threshold claimed beyond the paired effects shown.
