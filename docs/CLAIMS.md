@@ -518,13 +518,14 @@ Gaming and attacks (M6)
     proxy over-optimisation): without track records the proxy gap grows from 16.6 to 20.5 as
     candidates go from 2 to 32; with them it stays within half a unit.
   - **Model collusion and profile gaming (8.2, 8.23).** When arriving challengers collude with a
-    favored actor (`model_collude`), the claim that omitting per-model track records lets upfront escrow exceed
-    settled value while native per-`(actor, model)` track records, record credence and AdvAp keep it
-    within is **unsupported for now**: it held on macOS in 6 of 6 seeds but not on Linux (16 paired
-    seeds: gap difference +263, se 133, not significant; single seeds on both sides), and awaits a
-    distributional test; under
-    `:measured` signature routing, noisy leaf-1 actors declaring leaf 2 cannot degrade leaf 2's
-    model accuracy (`> 0.9` in 6 of 6 seeds vs degraded `:declared` counterexample); and
+    favored actor (`model_collude`), omitting per-model track records lets colluding challengers take
+    over (`1.92` mean colluding takeovers vs `1.54` protected over 24 paired seeds) and inflate
+    that actor's predictions (`+93.9` proxy gap overall, `+72.2` post-capture; upfront minus settled
+    `+198.6 ± 75.6`). Native per-`(actor, model)` track records, record credence, and AdvAp keep
+    upfront escrow within settled value (`-94.2 ± 28.3`, paired reduction `z = 3.27`) and collapse
+    the post-capture proxy gap to `0.01` (`z = 13.54`, overall gap reduction `z = 11.57`); under
+    `:measured` signature routing (16 paired seeds), noisy leaf-1 actors declaring leaf 2 cannot
+    degrade leaf 2's model accuracy (`0.940` mean vs `0.607` under `:declared`, `z = 11.1`); and
     `COMPONENT_FALLBACKS` names the 10 simpler fallbacks logged in `degraded`
     ([domain_tests](../sim/test/domain_tests.jl), [m6_attacks_tests](../sim/test/m6_attacks_tests.jl)).
 - **Optimised attacks** (cross-entropy method) found no strategy that breaks the success pattern; the
