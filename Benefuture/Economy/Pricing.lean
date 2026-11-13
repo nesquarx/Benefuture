@@ -4,7 +4,7 @@
   Corresponds to: Bf_Pseudocode.txt L82, L83, L84, L86, L99; Benefuture currency.txt (Resource
   Accounting, Pricing, supply).
   "C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i), compete(ΔV / (ΔResource«Rc» + Δt));"
-  "RcAccounting«RA»(Transaction«Tx») := ↓Cost / Δ↑(U, H) - Audit ∧ ↓Usage{Rc, t};"
+  "RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};"
   "TP_Gen(A) :: … price_c = (MM_Me((Rc[], t[]) → A | RA) - MM_Pr(V ← A) + PE_hold);"
   "{CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha);"
 

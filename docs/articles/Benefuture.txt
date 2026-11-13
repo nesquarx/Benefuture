@@ -92,7 +92,7 @@ Benefuture«Bf» {
     Bad«Bd»(t) := (A, O) → Ha(t);
 
     C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i) ,compete(ΔV / (ΔResource«Rc» + Δt));
-    RcAccounting«RA»(Transaction«Tx») := ↓Cost / Δ↑(U, H) - Audit ∧ ↓Usage{Rc, t};
+    RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};
     ProbabilisticEscrow«PE»(CNet_i) : Pay_t0(C_i)(P(As(V, A, t_0) > 0)), hold(1 - P), Pay_gradual(As(V, A, t) | ∪MM_Me(CNet(relevantDn(A))));
     TransactionProposal«TP_k» := {A, E[ΔV | MM_k], PE(C_k)};
     TP_Gen(A) :: ∀c ∈ CNet(relevantDn(A)) : c → Gen(TP_{k_c}(A)):price_c=(MM_Me((Rc[],t[])→A|RA)-MM_Pr(V←A)+PE_hold);

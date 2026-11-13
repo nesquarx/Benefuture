@@ -589,7 +589,7 @@ networks and propagation (M8) ([SIM_CONJECTURES](SIM_CONJECTURES.md), [PLAN](PLA
 
 ##  Epistemic scope: what is proved, what is simulated, what is open
 
-**(a) Deductive guarantees (Lean 4).** The 399 theorems in [`Benefuture/`](Benefuture) and the 12
+**(a) Deductive guarantees (Lean 4).** The 414 theorems in [`Benefuture/`](Benefuture) and the 12
 bridge theorems in [`BenefutureTest/`](../BenefutureTest) hold for the definitions as written. Designs
 tagged [P] live in `Benefuture/Proposed/`. Behavioural claims are stated as `Conj_*` in
 [Benefuture/Systems/Conjectures.lean](../Benefuture/Systems/Conjectures.lean) and are unproved. No

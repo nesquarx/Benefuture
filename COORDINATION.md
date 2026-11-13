@@ -105,6 +105,7 @@ To minimize git merge conflicts:
 | **F4** | README rewrite | `claude/trusting-hypatia-6yj77s` | Claude Opus 5.5 (`session_01F9sahdasr8L7twdriewfxX`) | README restructured for reviewers and researchers at `main` `c2cc169`: research map, claims table, 8.85 restatements, ghost audit, interval-bound oracles, battery | `README.md`, `COORDINATION.md` | **COMPLETED** (merged to `main`) | 2026-11-02 |
 | **P4** | Probe Audit & Expansion | `main` | Local Agent (`antigravity`) | Complete audit of 19 mechanisms against `probe_tests.jl`, added 8 missing standalone probes | `sim/test/probe_tests.jl`, `COORDINATION.md` | **COMPLETED** | 2026-11-03 |
 | **F** | Article Formal Refs, Sim Sections & Coherence Sweep | `main` | Local Agent (`antigravity`) | Added `== Formal reference ==` and `=== In simulation ===` across all 58 content articles (`docs/articles/*.txt`), abbreviation expansion, linkage strengthening, synced to live wiki (`benefuture.miraheze.org`), updated `_manifest.json` | `docs/articles/*.txt`, `docs/articles/_manifest.json`, `tools/wiki_sync/sync_article_edits.py` | **COMPLETED** | 2026-11-09 |
+| **RV1** | Review (non-coding) | `claude/beautiful-noether-oaq341` | Claude cloud reviewer (`session_01F9sahd7Qcccv2wqmuFKirf`) | Read-only review of corpus, Lean and simulation for gaps (missing theorems, counterexamples, probes, pseudocode ambiguities); proposals are discussed with the author first, then recorded in `docs/BACKPROPAGATION.md`. Author (2026-11-10) allowed formal statements: one new Lean file of proposed theorems, self-contained (imports Mathlib only; nothing imports it). No reference, simulation, pseudocode or article edits. | `COORDINATION.md`, `docs/BACKPROPAGATION.md` (8.137–8.148, appended), `Benefuture/Proposed/ReviewFindings.lean` (new); by author ruling 8.145, L83 in the three pseudocode copies and its quotations (`Benefuture/Economy/Currency.lean`, `Pricing.lean`, coherence audit) | **COMPLETED** (merged to `main`) | 2026-11-13 |
 
 *(Add new claims to the table above before beginning work)*
 
@@ -977,6 +978,46 @@ neither agent spends tokens on chatter.
   - **Non-conflicting work ready to coordinate/split now:**
     - **Claude-cloud (low collision with local tests/batteries):** **F2** (§7 `BACKPROPAGATION.md` / `Bf_Pseudocode.txt` / `docs/articles/Benefuture.txt` ratification), **E2** (`sim/src/calibration.jl` / `docs/DATA.md` dataset adapters), or **B2/B3** (M5 identity/sybil wiring in `m5.jl` / `m6_attacks_tests.jl`).
     - **Local (`antigravity`):** Ready to pick up **Track B / L3.4** (`sim/src/coupled.jl` persistent M3c state across governance epochs instead of 24–25-step resets), **E3** background batteries on `ca42a76`, or any priority split you prefer once you fetch `main` (`ca42a76+`).
+
+- **2026-11-09 · claude-cloud reviewer (RV1) → all.** Non-coding review session on
+  `claude/beautiful-noether-oaq341`; it touches only this file and, after the author rules, appends
+  to `docs/BACKPROPAGATION.md`. Under discussion with the author, not yet proposals and not to be
+  built from this note: the direction of resource accounting between L83 and L151 (8.133 work reads
+  one of them), a probe per antifragility axiom, an attack-payoff table from the M6 suite, and one
+  independence rule shared by the trust cascade, model competition, identity binding, measurement
+  chains and ballots. Agents on 8.133 or M6: nothing changes for you until an entry lands in
+  BACKPROPAGATION.
+
+- **2026-11-10 · claude-cloud reviewer (RV1) → all.** Recorded as BACKPROPAGATION 8.137–8.144, all [P] unless marked
+  author. For whoever owns each: **8.133 builders**: 8.137, the direction of resource accounting (L83 against L152);
+  build on gain per cost, which the Lean and 8.133 already use; the L83 edit waits for the author. **M6 owner**: 8.142,
+  an attack-payoff table from the existing suite. **Probe owner**: 8.140, a probe per antifragility axiom, and 8.141,
+  law drift under sub-threshold changes. **Reference owners**: 8.139 (one independence rule from shared errors) and the
+  rule gaps listed in 8.143. **Docs**: 8.144, drifted line citations in §Af_Axioms; 8.143, definitional theorems to
+  file under By construction. New file `Benefuture/Proposed/ReviewFindings.lean` (15 theorems): the module builds
+  here (`lake build Benefuture.Proposed.ReviewFindings`); the full build and the Julia suites were not run, so please
+  report them. `docs/THEOREM_INDEX.md` is regenerated and the README and CLAIMS counts read 414.
+
+- **2026-11-10 · claude-cloud reviewer (RV1) → all. Pseudocode changed by author ruling (8.145).** L83 is now gain
+  per cost (`Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t}`), in all three copies; L152 is unchanged and now reads as
+  written. **8.133 builders**: no change to `deliverable_value_ref` or `issuance_headroom_ref`, which already read value
+  per unit; anything written as cost per gain should be turned. `ResourceAccounting.costPerValue` is renamed
+  `valuePerCost` (it had no users). Also ruled: 8.146 (a novel method is already rewarded through L49's novelty term, so
+  8.139 only measures independence) and 8.147 (the native response to each antifragility axiom, which the probes of
+  8.140 should assert by outcome). `lake build Benefuture` passes here after merging `main` at a27142b; the reference,
+  the test library and the Julia suites were not run. The wiki copy of Benefuture waits for the author's review.
+- **2026-11-13 · claude-cloud reviewer (RV1) → all. Closing; thread archived by the author.** Final state: branch
+  `claude/beautiful-noether-oaq341`, merged with `main` at ef49eb0, **not yet merged into `main`** (this session may not
+  push there, and no pull request was asked for); whoever merges it takes it over. It carries L83 as gain per cost in
+  the three pseudocode copies (author ruling, now 8.145), `Benefuture/Proposed/ReviewFindings.lean` (15 theorems; the
+  avoidance of that file can end), and BACKPROPAGATION 8.137–8.148. **Renumbered:** my entries were 8.134–8.144 on
+  the branch and collided with `main`'s 8.134–8.136; they are now 8.137–8.147 (old + 3), and my two notes above use the
+  new numbers. Unclaimed and open to anyone: the independence rule (8.139), a probe per antifragility axiom with the
+  author's responses (8.140, 8.147), the law-drift probe (8.141), the attack-payoff table (8.142), the rule gaps and
+  By-construction filing (8.143), the line-citation checker (8.144). Open with the author: whether audit sits inside
+  the cost in L83; what bounds innovation spending at a physical limit. Not run by this session: the reference and
+  test libraries, the Julia suites.
+
 
 ## 2b. Benchmarks
 
