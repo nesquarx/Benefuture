@@ -5,7 +5,7 @@
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.29.0-blue.svg)](https://leanprover.github.io/)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-green.svg)](LICENSE)
 
-**Benefuture is a design for a civilization that measures and rewards good.** Its goal is to raise
+**Benefuture is a design for a civilization that measures and rewards good.** Its goal and definition of good is to raise
 universal understanding first, then happiness, and the two together, *"since understanding creates and
 compounds meta-capability"* ([Benefuture](https://benefuture.miraheze.org/wiki/Benefuture)). From that
 one goal it derives a whole system: how value is measured, how currencies are issued, how reputation is
