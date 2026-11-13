@@ -519,11 +519,12 @@ Gaming and attacks (M6)
     candidates go from 2 to 32; with them it stays within half a unit.
   - **Model collusion and profile gaming (8.2, 8.23).** When arriving challengers collude with a
     favored actor (`model_collude`), omitting per-model track records lets colluding challengers take
-    over (`1.92` mean colluding takeovers vs `1.54` protected over 24 paired seeds) and inflate
-    that actor's predictions (`+93.9` proxy gap overall, `+72.2` post-capture; upfront minus settled
-    `+198.6 ± 75.6`). Native per-`(actor, model)` track records, record credence, and AdvAp keep
-    upfront escrow within settled value (`-94.2 ± 28.3`, paired reduction `z = 3.27`) and collapse
-    the post-capture proxy gap to `0.01` (`z = 13.54`, overall gap reduction `z = 11.57`); under
+    over (`2.02` mean colluding takeovers vs `1.53` protected over 64 paired seeds) and inflate
+    that actor's predictions (upfront minus settled `+149.9` over 64 seeds). Native per-`(actor, model)`
+    track records, record credence, and AdvAp keep upfront escrow within settled value (`-81.6`,
+    paired reduction `+231.5 ± 48.0`, `z = 4.82`; per-execution reduction `+3.10 ± 0.63`, `z = 4.96`)
+    and collapse the overall and post-capture proxy gaps (`z >= 3.0` over 64 seeds; post-capture gap
+    equivalent within `5.0`); under
     `:measured` signature routing (16 paired seeds), noisy leaf-1 actors declaring leaf 2 cannot
     degrade leaf 2's model accuracy (`0.940` mean vs `0.607` under `:declared`, `z = 11.1`); and
     `COMPONENT_FALLBACKS` names the 10 simpler fallbacks logged in `degraded`

@@ -3429,3 +3429,26 @@ rule set; the convergence test, the legacy funder and shadow scoring are to be e
 and anything the simulation adds beyond them is listed in the parsimony audit. For the corpus: locate the lines in the
 pseudocode and the four articles that state it, cross-reference them, and name the shared structure once (recursive
 self-improvement at systems scale) in the overview; not yet done, and not yet checked line by line against the sources.
+
+310f1a0 follow-up (2026-11-13): loud bar-ratchet refusal, warm-up guard & warmed-up L3.2 / 8.134 probe re-measurement (`sim/src/coupled.jl`,
+`sim/test/probe_tests.jl`; see 8.136 above for the next phase replacing fixed `init_steps`).
+1. Bar-lowering candidates refused loudly at proposal (`sim/src/coupled.jl`): `run_coupled` now takes `loud::Bool = econ.loud`,
+   returns `degraded::Dict{String,NamedTuple{(:first,:last,:count),Tuple{Int,Int,Int}}}` matching `m3c.jl`, records an entry at
+   epoch `0` (and `@warn`s when `loud = true`) whenever `candidate_threshold < econ.threshold`, clamps `cand_th = max(th_cur, Float64(candidate_threshold))`
+   so `thresholds` never falls below the incumbent bar in either epoch or continuous mode, excludes a bar-lowering-only
+   threshold offer from `has_offer` so it is refused at proposal rather than silently swallowed, and in `continuous = true` keeps
+   governance from proposing/adopting before `econ.init_steps` warm-up completes (`ep * epoch < econ.init_steps`).
+2. Re-measured on warmed-up world (`init_steps = 50` + warm-up guard, `sim/test/probe_tests.jl`) testing predictions P1–P4:
+   - **L3.2 (`init_steps = 50`, `continuous = false`, seeds `1:8`, macOS)**: with bar-lowering refused (`threshold` kept at `0.9`,
+     only `bad_pv` + `candidate_track_window = 0` live), coupled rejects at epoch `2` in `8/8` (`diff(c - u)`: `floor_u +28.03 +- 1.37`,
+     `floor_h +28.35 +- 1.20`; all post-rejection epochs hold `> -1`). In `continuous = true` (`init_steps = 50`, seeds `1:8`),
+     `diff(c - u)` is `floor_u +12.30 +- 2.07`, `floor_h +12.16 +- 1.79` (rejects at epoch `2`).
+   - **8.134 ETA & refinement (`init_steps = 50` + warm-up guard, `continuous = true`, seeds `1:16`, macOS; `floor_u + floor_h` mean +- se)**:
+     `none = 46.29 +- 2.73`, `old` / `e1` (`ETA 1`) = `33.23 +- 1.10`, `e3` (`ETA 3, pred 0`) = `20.71 +- 0.88`,
+     `lo` (`candidate_vs_incumbent, pred -5`) = `45.38 +- 2.57`, `hi` (`candidate_vs_incumbent, pred 10`) = `23.68 +- 1.12`.
+     Governance never acts during warm-up (`0/16` adopted at epoch `1`). **P1 HELD**: adopting the harmful candidate degrades floors vs `none`
+     (`old - none = -13.07 +- 2.58, z = -5.06`; `e3 - none = -25.58 +- 2.82, z = -9.07`; `e3 - e1 = -12.52 +- 1.26, z = -9.94`),
+     and `lo` now beats `old` (`+12.15 +- 2.65, z = +4.58`). **P2 HELD**: `lo` is adopted `0/16` (`lo - none = -0.91 +- 1.17`,
+     95% CI `[-3.45, +1.62]` inside `+-5.0` margin). **P3 HELD**: `hi` is adopted at epoch `2`, misses at ETA `3` (epoch `5`),
+     and is rejected (`calibration == 0.0`) in `16/16`. **P4 SPLIT**: `lo` beats `old` (`z = +4.58`), whereas `hi` falls below `old`
+     (`old - hi = +9.55 +- 1.27, z = +7.52`) during its 3-epoch ETA. (Single platform macOS; Linux CI verification pending push.)

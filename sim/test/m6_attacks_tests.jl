@@ -395,7 +395,7 @@ function collude_world(; track_window, credence_rule = :record, advap, model_col
 end
 
 @testset "Model collusion (8.23): acceptance" begin
-    seeds = 1:24
+    seeds = 1:64
     red = [run_m3c(collude_world(; track_window = 0, advap = false); seed) for seed in seeds]
     grn = [run_m3c(collude_world(; track_window = 20, advap = true); seed) for seed in seeds]
     gap1(tr) = (idx = findall(==(1), tr.exec_agent); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
