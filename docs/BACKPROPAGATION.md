@@ -3279,3 +3279,15 @@ paired seeds `1:32` across the 2 × 2 factorial `:bf` vs `:status_quo` × `:stre
     diagnostic of `better_models_world` (`takeover_records = 100`, calibrated defaults) confirms total takeovers stay at ~2–3 per 800 steps under both
     `credence_rule = :record` (`mean = 2.75` for both `:decay` and `:window`) and `:normal` (`mean = 1.75` vs `2.0`), showing no significant takeover
     count difference once `takeover_records = 100` (8.58-b) and calibrated noise govern eligibility.
+
+L3.4 fix (2026-11-13): governance inside one continuous economy. `run_m3c` takes a `governor` (called every
+`governor_every` steps with the trace so far; it may return new governed values `pv`, `threshold`, `track_window`, applied
+from the next step), and `run_coupled(...; continuous = true)` runs one economy with governance at each epoch boundary, so
+beings, models, balances and records carry across epochs (the epoch mode stitched independent runs and reset them: the
+root cause the local agent diagnosed). Structural probe: a no-op governor leaves the run identical. Reading (8 seeds, no
+candidate on offer, so governance should change little): worst drop 3.61 plain economy, 5.08 epoch-reset, 3.79
+continuous; floor of understanding 4.15, 7.46, 3.36. The continuous mode tracks the plain economy; the epoch-reset mode
+does not (its floor is higher, an artefact of re-initialised epochs). The harmful candidate is still rejected at epoch 2
+in 8 of 8 seeds. Unexplained, to trace before any claim: with the harmful candidate offered and rejected, the continuous
+run's final floor is far higher (22.8) than with no candidate (3.4). `continuous` is off by default; the long-horizon
+battery should move to it once that is understood.

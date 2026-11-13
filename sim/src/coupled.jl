@@ -69,7 +69,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
                      candidate_threshold::Union{Nothing,Real} = nothing,
                      candidate_track_window::Union{Nothing,Integer} = nothing,
-                     m5_decisions::Integer = 0)
+                     m5_decisions::Integer = 0, continuous::Bool = false)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0, "m5_decisions must be non-negative")
     n_epochs = econ.toy.steps ÷ epoch
@@ -115,34 +115,22 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     # Pending decision from the end of epoch e-1 to be resolved by epoch e's measured outcome.
     pending_vote = nothing
 
-    for ep in 1:n_epochs
-        ep_init = ep == 1 ? min(econ.init_steps, epoch ÷ 2) : 0
-        p_ep = _with_econ_epoch(econ, pv_cur, epoch; threshold = th_cur, track_window = tw_cur,
-                                init_steps = ep_init, step_offset = (ep - 1) * epoch)
-        tr_ep = run_m3c(p_ep; seed = Int(hash((seed, :epoch, ep)) & 0x7fffffff))
-
-        # Stitch step-by-step deltas onto the running state trace.
-        du_fl = diff(tr_ep.floor_u)
-        dh_fl = diff(tr_ep.floor_h)
-        du_md = diff(tr_ep.median_u)
-        dh_md = diff(tr_ep.median_h)
-        du_pk = diff(tr_ep.peak_u)
-        for s in 1:epoch
-            push!(floor_u, floor_u[end] + du_fl[s])
-            push!(floor_h, floor_h[end] + dh_fl[s])
-            push!(median_u, median_u[end] + du_md[s])
-            push!(median_h, median_h[end] + dh_md[s])
-            push!(peak_u, peak_u[end] + du_pk[s])
-            push!(worst_drop, tr_ep.worst_drop[s + 1])
-        end
-
-        sp = success_pattern(tr_ep; from = max(1, ep_init + 1))
+    prev_rel = zeros(na, nd)
+    # One epoch's governance: resolve the pending decision by the measured outcome `sp`, then decide the next thresholds.
+    function govern_epoch!(ep, tr_ep, sp)
         push!(epoch_outcomes, sp)
         outcome_val = sp.floor_u + sp.floor_h
 
         # Accumulate economy reputation from the epoch's records, decayed across epochs.
         rate_g = decay_rate_for(1.0; λpos = econ.λpos, λneg = econ.λneg)
-        reputation .= reputation_decay.(reputation, Float64(epoch); rate = rate_g) .+ tr_ep.relevance_leaf[:, 1:nd]
+        if continuous   # one economy: add what its (already decayed) relevance gained since the last epoch
+            rel_now = tr_ep.relevance_leaf[:, 1:nd]
+            gain = rel_now .- reputation_decay.(prev_rel, Float64(epoch); rate = rate_g)
+            reputation .= reputation_decay.(reputation, Float64(epoch); rate = rate_g) .+ gain
+            prev_rel .= rel_now
+        else
+            reputation .= reputation_decay.(reputation, Float64(epoch); rate = rate_g) .+ tr_ep.relevance_leaf[:, 1:nd]
+        end
 
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
@@ -262,6 +250,42 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff))
                 append!(m5_trace, tr_m5.final_trace)
             end
+        end
+    end
+    if continuous
+        # L3.4: one continuous economy (beings, models, balances and records carry across epochs); governance acts through
+        # `run_m3c`'s governor at each epoch boundary and its thresholds apply from the next step.
+        tr_all = run_m3c(econ; seed = seed, governor_every = epoch, governor = (step, snap) -> begin
+            ep = step ÷ epoch
+            govern_epoch!(ep, snap, success_pattern(snap; from = max(1, step - epoch + 1)))
+            (pv = pv_cur, threshold = th_cur, track_window = tw_cur)
+        end)
+        floor_u, floor_h, median_u, median_h = tr_all.floor_u, tr_all.floor_h, tr_all.median_u, tr_all.median_h
+        peak_u, worst_drop = tr_all.peak_u, tr_all.worst_drop
+    else
+        for ep in 1:n_epochs
+            ep_init = ep == 1 ? min(econ.init_steps, epoch ÷ 2) : 0
+            p_ep = _with_econ_epoch(econ, pv_cur, epoch; threshold = th_cur, track_window = tw_cur,
+                                    init_steps = ep_init, step_offset = (ep - 1) * epoch)
+            tr_ep = run_m3c(p_ep; seed = Int(hash((seed, :epoch, ep)) & 0x7fffffff))
+
+            # Stitch step-by-step deltas onto the running state trace.
+            du_fl = diff(tr_ep.floor_u)
+            dh_fl = diff(tr_ep.floor_h)
+            du_md = diff(tr_ep.median_u)
+            dh_md = diff(tr_ep.median_h)
+            du_pk = diff(tr_ep.peak_u)
+            for s in 1:epoch
+                push!(floor_u, floor_u[end] + du_fl[s])
+                push!(floor_h, floor_h[end] + dh_fl[s])
+                push!(median_u, median_u[end] + du_md[s])
+                push!(median_h, median_h[end] + dh_md[s])
+                push!(peak_u, peak_u[end] + du_pk[s])
+                push!(worst_drop, tr_ep.worst_drop[s + 1])
+            end
+
+            sp = success_pattern(tr_ep; from = max(1, ep_init + 1))
+            govern_epoch!(ep, tr_ep, sp)
         end
     end
 

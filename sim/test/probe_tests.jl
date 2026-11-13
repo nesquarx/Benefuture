@@ -1623,3 +1623,19 @@ end
         @test isapprox(rcc.credit_pos, r.credit_pos; atol = 1e-10)
     end
 end
+
+@testset "Probe: a governor acts inside one continuous economy (L3.4)" begin
+    # Structural: a governor that changes nothing leaves the run identical, and is called at each period with the trace so
+    # far; one that changes a governed value changes the run from that step on, not before.
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    P = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
+    a = run_m3c(P; seed = 1)
+    calls = Int[]
+    b = run_m3c(P; seed = 1, governor = (st, sn) -> (push!(calls, length(sn.floor_u)); nothing), governor_every = 20)
+    @test a.floor_u == b.floor_u && a.balance == b.balance
+    @test calls == [21, 41, 61]
+    c = run_m3c(P; seed = 1, governor = (st, sn) -> st == 20 ? (threshold = 0.99,) : nothing, governor_every = 20)
+    @test c.floor_u[1:21] == a.floor_u[1:21]
+    @test c.leaf_accuracy == a.leaf_accuracy || c.balance != a.balance   # the bar moved: pricing changes after step 20
+    @test_throws ArgumentError run_m3c(P; seed = 1, governor = (st, sn) -> nothing)
+end

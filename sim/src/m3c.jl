@@ -395,8 +395,13 @@ the world's leaf), `stop_leaf` and `priced_leaf` (the network leaf holding the l
 classification or priced share, 0 if none), `costs`, `touched`, `valued_measured`. StandCoin
 lane: `lane_executed`, `lane_halted`, `lane_screened_out`, `lane_costs`, `cofunded`.
 """
-function run_m3c(p::M3cParams; seed)
+function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer = 0)
     t = p.toy
+    # Outside governance (L3.4): every `governor_every` steps `governor(step, snapshot)` may return new governed values
+    # `(pv, threshold, track_window)` (or `nothing`), applied from the next step, so governance acts inside one continuous
+    # economy and no state is reset between its epochs.
+    check(governor === nothing || governor_every >= 1, "a governor needs a positive period")
+    th_now, tw_now = Ref(p.threshold), Ref(p.track_window)
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
@@ -435,9 +440,9 @@ function run_m3c(p::M3cParams; seed)
     captured(c) = any(captured_uid[j] == c && j <= length(ltrue) && any(e.target == ltrue[j] for e in live(:capture)) for j in 1:lmax)
     function correction(a, c)
         h = get(track[a], c, nothing)
-        (p.track_window == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
+        (tw_now[] == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
         if p.accuracy_rule == :window || cur[] == 0
-            r = @view h[max(1, end - p.track_window + 1):end]
+            r = @view h[max(1, end - tw_now[] + 1):end]
             (mean(first, r), mean(last, r))
         else
             w = [2.0^(-(cur[] - s) / (c <= lmax ? hl_of(c) : hl_of(lmax + 1))) for s in track_step[a][c]]
@@ -725,7 +730,7 @@ function run_m3c(p::M3cParams; seed)
                 credence(v, sharp * u; cap = p.max_credence)
             end
         else
-            e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
+            e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
             if p.credence_rule == :record
                 # [P] (8.58-c): the share of the record's value errors below the prediction (an
                 # extremist scales its record by `sharp`)
@@ -762,9 +767,9 @@ function run_m3c(p::M3cParams; seed)
     # The ratchet (8.84): each leaf's bar never falls below what enough of its models have cleared.
     lfloor = zeros(lmax)
     function leaf_bar(j)
-        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(p.threshold, lfloor[j])
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_now[], lfloor[j])
         q = argmax(μ[:, j])
-        max(relative_bar(p.threshold, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
+        max(relative_bar(th_now[], p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
     end
     function ratchet!()
         for j in 1:nleaves()
@@ -1067,6 +1072,51 @@ function run_m3c(p::M3cParams; seed)
     top_trace = Vector{Float64}[]
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
+    function snapshot()
+        L = nleaves()
+        cols = [1:L; (lmax + 1):ncol]
+        own_rel = (rel_gain .+ rel_loss)[:, cols]
+        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
+                   h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
+                   relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
+                   relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
+                   reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
+                   withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
+                   lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+                   credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
+                   cofunder_credit = cofunder_credit[], interaction = interaction[],
+                   accolade_credit = accolade_credit[], contract_credit = contract_credit[],
+                   prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
+                   commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
+                   repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
+                   laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
+                   leaf_accuracy = [leaf_acc(k) for k in 1:L],
+                   leaf_records = [[(actor = r.actor, credence = r.credence, outcome = r.outcome, err = r.err, fixed = r.fixed)
+                                    for r in window_of(lhist[k])] for k in 1:L],
+                   advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
+                   advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
+                   advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
+                   takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
+                   takeovers_colluding = takeovers_colluding[], arrivals_colluding = arrivals_colluding[],
+                   explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+                   attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
+                   top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
+                   assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
+                   hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
+                   unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
+                   repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
+                   params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
+                   cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
+                   evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
+                   μ_init = copy(μ_boot[:, 1:L]), μ_rate = p.μ_rate,
+                   top_uids = [topm(j).uid for j in 1:L],
+                   accuracy_rule = p.accuracy_rule, acc_window = p.window, acc_halflife = p.acc_halflife,
+                   acc_rate_ref = p.acc_rate_ref, acc_mute = p.acc_mute, rate_halflife = p.rate_halflife,
+                   discount_spans = [copy(d) for d in discount_spans],
+                   upstream_depth = p.upstream_depth, max_upstream_degree = max_upstream_degree[],
+                   upstream_pos_by_degree = copy(upstream_pos_by_degree), upstream_neg_by_degree = copy(upstream_neg_by_degree),
+                   λpos = p.λpos, λneg = p.λneg, steps = t.steps))
+    end
     for step in 1:t.steps
         cur[] = step; update_rates!()
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
@@ -2001,7 +2051,7 @@ function run_m3c(p::M3cParams; seed)
                 rec = audit_log[b][audit_from[b]:end]
                 length(rec) >= p.adv_min_records || frivol || continue
                 # Per model, other actors' recent raw errors: what it errs on everyone.
-                w = max(p.track_window, p.adv_track_floor)
+                w = max(tw_now[], p.adv_track_floor)
                 peers_of(c) = vcat([track[k][c][max(1, end - w + 1):end] for k in 1:na if k != b && haskey(track[k], c)]...)
                 base = Dict(c => peers_of(c) for c in unique(first.(rec)))
                 mu(c, f) = isempty(base[c]) ? 0.0 : mean(f, base[c])
@@ -2192,50 +2242,16 @@ function run_m3c(p::M3cParams; seed)
             t = with_params(t, p.adapt ? pv_try : pv)
             gov.start[] = floors
         end
+        if governor !== nothing && step % governor_every == 0
+            g = governor(step, snapshot())
+            if g !== nothing
+                haskey(g, :pv) && g.pv !== nothing && (t = with_params(t, g.pv))
+                haskey(g, :threshold) && g.threshold !== nothing && (th_now[] = Float64(g.threshold))
+                haskey(g, :track_window) && g.track_window !== nothing && (tw_now[] = Int(g.track_window))
+            end
+        end
     end
-    L = nleaves()
-    cols = [1:L; (lmax + 1):ncol]
-    own_rel = (rel_gain .+ rel_loss)[:, cols]
-    merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
-               h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
-               relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
-               relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
-               withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
-               lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
-               credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
-               cofunder_credit = cofunder_credit[], interaction = interaction[],
-               accolade_credit = accolade_credit[], contract_credit = contract_credit[],
-               prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
-               commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
-               repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
-               laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
-               leaf_accuracy = [leaf_acc(k) for k in 1:L],
-               leaf_records = [[(actor = r.actor, credence = r.credence, outcome = r.outcome, err = r.err, fixed = r.fixed)
-                                for r in window_of(lhist[k])] for k in 1:L],
-               advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
-               advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
-               advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
-               takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               takeovers_colluding = takeovers_colluding[], arrivals_colluding = arrivals_colluding[],
-               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
-               attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
-               top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
-               assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
-               hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
-               unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
-               repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
-               params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
-               cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
-               evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
-               μ_init = copy(μ_boot[:, 1:L]), μ_rate = p.μ_rate,
-               top_uids = [topm(j).uid for j in 1:L],
-               accuracy_rule = p.accuracy_rule, acc_window = p.window, acc_halflife = p.acc_halflife,
-               acc_rate_ref = p.acc_rate_ref, acc_mute = p.acc_mute, rate_halflife = p.rate_halflife,
-               discount_spans = [copy(d) for d in discount_spans],
-               upstream_depth = p.upstream_depth, max_upstream_degree = max_upstream_degree[],
-               upstream_pos_by_degree = copy(upstream_pos_by_degree), upstream_neg_by_degree = copy(upstream_neg_by_degree),
-               λpos = p.λpos, λneg = p.λneg, steps = t.steps))
+    snapshot()
 end
 
 """
