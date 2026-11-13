@@ -3407,3 +3407,17 @@ assumption at fault: models must strengthen before backing currencies (8.135), a
 with no intervention. The L3.2 and 8.134 probes are to be re-measured on a warmed-up world. (4) Still open: a world that
 starts with immature models stays stuck (no currency, work halting in the StandCoin lane) for the whole run in 4 of 6
 seeds; the stall family (8.71, 8.133) again.
+
+8.136 ruling (author, 2026-11-13): "Immature domains (in fact immature anything) should run score only till it converges
+sufficiently before starting to fund work, till then existing/legacy systems should take up the burden, this is the
+repeating structure of RSI in Bf." Generalises 8.135: any new component (a domain, a metric model, a currency, a rule, a
+threshold candidate, an institution) runs in score-only mode, predicting and being measured without directing resources,
+until its record has converged enough; meanwhile the existing or legacy system keeps funding and deciding. Promotion is
+by convergence, not by a clock. This settles the stuck start in the L3.2 diagnosis: a world whose models are immature
+should not fall to a halting StandCoin lane; the incumbent arrangement (the status-quo institutions of the comparison
+arm, a parent or coarser model, the previous threshold) carries the work until the new models converge. To build: (a) a
+convergence test for score-only records (the existing `sequential_significant` / accuracy-stability machinery, not a
+fixed `init_steps`); (b) a legacy funder during score-only periods in M3c and in `run_coupled`; (c) the same shape for
+governance candidates: scored in shadow against the incumbent before adoption (the predict-measure-adapt loop of 8.134
+with the incumbent in force). "RSI" is recorded as the author wrote it; its expansion is to be confirmed. Candidate
+homes: L82, Progressive complexity, Measurement, Government, Benefuture (overview: the repeating structure).
