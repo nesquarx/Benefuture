@@ -246,8 +246,11 @@ comparative ones and welcome.
 
 **7.11 Open.** End-of-horizon conduct under no inheritance (B25). Expertise normalised within
 domain is proposed in Government but not yet in L113 or `Governance.Democracy`.
-Status: the expertise half is resolved by 8.22.1 (L113's Re/ΣRe term; Lean `relative_expertise` in
-`Governance.Democracy`); end-of-horizon conduct (B25) stays open.
+Status: resolved as a rule (both halves). The expertise half is resolved by 8.22.1 (L113's Re/ΣRe term;
+Lean `relative_expertise` in `Governance.Democracy`). End-of-horizon conduct (B25) is settled as a rule
+by 7.12 (author ruling): there is no financial inheritance, but (1) ideological and causal inheritance
+continue, and (2) the extended self (`Self«Sl»`) contains things and relations that outlast the being
+(`docs/SIM_CONJECTURES.md` B25; only the M8 simulation test of B25 remains unrun).
 
 **7.12 Self, lifespan and inheritance.** The self's harm horizon is the long-term window:
 `Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self
@@ -3210,8 +3213,216 @@ world balances barely feed back into real outcomes: currency is earned but littl
 StandCoin lane draws on balances), so an uncashable claim costs nothing here and the cap is cosmetic. The coupling the
 ruling protects (output bound to resource and time inputs) needs balances that buy resources and commission work
 (8.133 continued: generation pays work, extraction burns); that is the next step, before the cap can show an effect.
+8.133 step 3 design (2026-11-11): why the cap did not bite. M3c charges each executed action its resource cost from the
+actor's balance, but nothing requires the balance to be there first: balances may go negative and actions run anyway,
+so issued currency never competes for resources. The coupling to build: a budget constraint (an action executes only if
+its proposer's balance, plus pledges, covers its cost, as the StandCoin lane already requires) and resources that run
+out (`available`), so currency is a claim on scarce capacity. Red outcome to show first: with the constraint and no
+global RA, claims accumulate past capacity, and when holders spend, funded actions are refused for lack of resources
+(checks that cannot be cashed; metric: share of funded actions refused, and price spikes in `scarcity_cost`). With RA's
+issuance cap, refusals and spikes should fall without lowering the floors. Gaming to test with it: hoarding claims to
+corner capacity (artificial scarcity, the 8.133 withholder).
+8.133 step 3 (2026-11-11): budget constraint in M3c (`budget = true`, off by default): an action needs its proposer's
+currency for its resource cost, and available resources; a funded action refused for lack of resources is counted as
+uncashable and logged loudly. Scarce capacity (300), 240 steps, transactions on, issuance cap at horizon 50 against none,
+12 paired seeds: uncashable refusals −8.5 (se 10.8), floor of understanding +3.2 (se 1.9), floor of happiness +2.9
+(se 1.9); none significant at z = 2.25 (a 3-seed first reading suggested a doubling of the floor; it did not hold at 12).
+Direction favours the cap; precision insufficient. Next: seeds until stable, and the withholder/hoarding test.
+8.133 step 3 precision (2026-11-11): same comparison, seeds added by precision to the cap of 64 (se 0.73 did not reach
+the 0.5 tolerance). The issuance cap lifts the floor of understanding by 2.78 (se 0.73, z 3.8) and of happiness by 2.56
+(se 0.74, z 3.5): significant at z = 2 and z = 3. Uncashable refusals −5.5 (se 4.2): not significant. Reading: in a world
+where currency must buy scarce resources, binding issuance to deliverable capacity improves the floors, though the
+mechanism is not mainly fewer refused claims; next: trace where the floor gain comes from (which actions the cap
+defers), then the withholder/hoarding test.
+8.133 trace (2026-11-11; budget world, capacity 300, skills 0.2–0.8, 16 seeds): without the cap 185.5 actions executed,
+77.8 refused uncashable, 1.4 unfunded, floor 9.98; with the cap 219.7 executed, 35.6 uncashable, 30.5 unfunded, floor
+13.59. Executors' mean skill is unchanged (0.594 vs 0.596), so the gain is not better selection: the cap converts
+refusals at the resource stage (claims arriving at exhausted capacity) into refusals at the funding stage, and more work
+gets through in total (+34 actions). Reading: uncapped claims bunch demand on capacity; capped issuance spreads it.
+Withholder test design (next): one agent holds back part of capacity (supply hidden from RA's estimate), raising
+scarcity_cost; measure its gain against peers before discovery; on discovery (RA's supply estimate vs observed draws, or
+a BTS report) it repays the premium on every affected action, including others' supply, plus the reporter's reward (none
+on self-report); a three-member cartel where the first reporter nets positive. Red first: the withholder profits.
+8.133 withholder, red (2026-11-11): M3c option `supplier`/`supply_share`/`withhold` (a supplier paid its share of every
+action's resource cost; it may hide part of its supply, raising scarcity prices). Budget world, capacity 300, supplier
+owning half the capacity and hiding 60% of it, 48 paired seeds: the withholder's income rises by 76.6 (se 31.8,
+significant at z = 2); floor of understanding +0.5 (se 0.9, not significant). The exploit pays, as the ruling expects
+before discovery. Next: discovery (RA's supply estimate against observed availability, or a report) and repayment of the
+market-wide premium plus the reporter's reward, then the three-member cartel.
+8.133 withholder defense & cartels (2026-11-12): Lean reference rules `withhold_charge_ref` and `withhold_reward_ref`
+(`BenefutureReference/Adversarial.lean`, exported as `bf_withhold_charge`/`bf_withhold_reward` and wrapped as
+`withhold_charge`/`withhold_reward` in `sim/src/economy.jl`) implement full market-wide scarcity-premium clawback across
+all affected trades, zero reward on lone self-reports, and supply-cartel defection (first reporter repays its own liability
+share and receives own share + AdvAp bounty from other colluders). M3c (`sim/src/m3c.jl`) now tracks honest availability
+`available_honest` and per-buyer overpayment `buyer_overpay`, supports `supply_cartel::Vector{Int}` and
+`withhold_reporter::Int`, stops withholding upon AdvAp discovery, refunds buyers 100%, and settles rewards/clawbacks.
+Probes in `sim/test/probe_tests.jl` (budget world, `capacity = 300, regen = 0.20`) pass: red (`advap = false`, 32 seeds)
+profits significantly; external discovery (`advap = true`, 16 seeds) makes all buyers whole and nets negative for the
+withholder; lone self-report (`16` seeds) pays 0 reward and repays market-wide premium; 3-member cartel (`16` seeds) nets
+strictly positive for the first reporter (`withhold_agent_net[1] > 0`) and strictly negative for colluders.
 
-8.134 (review RV1, 2026-11-09; author: "good catch… they're inverse of each other") [P]: resource accounting reads in
+L3.3 & L3.4 Coupled Long-Horizon Battery & Root-Cause Diagnosis (2026-11-12): Recorded the sharded `long_horizon` battery results
+from commit `51006a9a9fe2c917a6d019667fb03d5eae7262f1` (`sim/battery/results/long_horizon.md`, `sim/battery/results/long_horizon.csv`,
+paired seeds `1:32` across the 2 × 2 factorial `:bf` vs `:status_quo` × `:stressed` vs `:unstressed` and the 800-step `open_885_better_models` sweep):
+(1) `20yr_coupled_gov` (`steps = 240, epoch = 20, m5_decisions = 1200`): `:bf` improves late-half governance accuracy over `:status_quo`
+    both stressed (`0.9572 vs 0.9548`, `+0.0024 ± 0.0007, z = +3.29`) and unstressed (`0.9570 vs 0.9550`, `+0.0020 ± 0.0007, z = +3.12`).
+(2) `100yr_century` (`steps = 1200, epoch = 25, m5_decisions = 1200`): `:bf` raises `floor_h` (`928.6542 vs 921.9642`, `+6.6900 ± 2.8990, z = +2.31`)
+    and `median_h` (`1277.7377 vs 1270.7819`, `+6.9558 ± 3.5464, z = +1.96` stressed; `1286.8120 vs 1279.9659`, `+6.8461 ± 3.3301, z = +2.06` unstressed),
+    and stressed `gov_acc` (`0.9551 vs 0.9540`, `+0.0010 ± 0.0005, z = +1.92`).
+(3) `10yr_coupled` (`steps = 120, epoch = 24, m5_decisions = 120`): economy floors are flat (`floor_u` `+0.1466 ± 1.0327, z = +0.14`) and
+    `worst_drop` slightly higher in `:bf` stressed (`27.5657 vs 26.8965`, `+0.6691 ± 0.1943, z = +3.44`), while the stress manipulation itself
+    drops floors strongly across all horizons (`z = -4.05` at 10yr, `-5.13` at 20yr, `-9.45` at 100yr).
+(4) Diagnosis of the `10yr_coupled` flatness (`sim/src/coupled.jl:119-122`): `run_coupled` starts each `24`- or `25`-step epoch by calling `run_m3c(p_ep; ...)`
+    from scratch (`ep_init = 12` in epoch 1 and `0` in epochs 2+) instead of continuing live M3c state. Each epoch therefore resets `mpool` accuracy
+    histories (leaving only 24–25 steps vs `:window = 100` and `ratchet_horizon * acc_halflife = 140`), resets agent balances/ledgers/AdvAp records,
+    and lets catastrophes hit freshly initialized epochs (`worst_drop` `8.14–116.65` in coupled `ep=24` vs `1.18–3.20` in continuous 120-step `run_m3c` on seeds 1–4).
+    Thread-resumable M3c state across `run_coupled` epochs is the candidate fix so economic memory matures continuously over 10–100yr horizons.
+(5) Diagnosis of `open_885_better_models` (`1:32` seeds on `51006a9`): `takeover_count_decay_vs_window` moved from `+12.27 ± 1.60` on build `5605704`
+    to `2.5938 vs 2.8125 (-0.2188 ± 0.2448, z = -0.89)` (`own_share +0.0342 ± 0.0225, z = +1.52`; `floor_u +51.6158 ± 34.5720, z = +1.49`). A 4-seed
+    diagnostic of `better_models_world` (`takeover_records = 100`, calibrated defaults) confirms total takeovers stay at ~2–3 per 800 steps under both
+    `credence_rule = :record` (`mean = 2.75` for both `:decay` and `:window`) and `:normal` (`mean = 1.75` vs `2.0`), showing no significant takeover
+    count difference once `takeover_records = 100` (8.58-b) and calibrated noise govern eligibility.
+
+L3.4 fix (2026-11-13): governance inside one continuous economy. `run_m3c` takes a `governor` (called every
+`governor_every` steps with the trace so far; it may return new governed values `pv`, `threshold`, `track_window`, applied
+from the next step), and `run_coupled(...; continuous = true)` runs one economy with governance at each epoch boundary, so
+beings, models, balances and records carry across epochs (the epoch mode stitched independent runs and reset them: the
+root cause the local agent diagnosed). Structural probe: a no-op governor leaves the run identical. Reading (8 seeds, no
+candidate on offer, so governance should change little): worst drop 3.61 plain economy, 5.08 epoch-reset, 3.79
+continuous; floor of understanding 4.15, 7.46, 3.36. The continuous mode tracks the plain economy; the epoch-reset mode
+does not (its floor is higher, an artefact of re-initialised epochs). The harmful candidate is still rejected at epoch 2
+in 8 of 8 seeds. Unexplained, to trace before any claim: with the harmful candidate offered and rejected, the continuous
+run's final floor is far higher (22.8) than with no candidate (3.4). `continuous` is off by default; the long-horizon
+battery should move to it once that is understood.
+L3.4 trace (2026-11-13): the unexplained floor is explained, and it changes what the L3.2 probe shows. In the continuous
+economy (6 seeds), lowering the eligibility bar to 0.5 with no track-record window for steps 26–50 only, then restoring
+both, ends with a floor of understanding of 22.4 against 5.1 for the plain run; the parameter vector plays no part
+(re-applying the bootstrap vector changes nothing). So the candidate the L3.2 probe calls harmful is harmful only while it
+is in force (floors fall during that epoch, which is why governance rejects it) and beneficial afterwards: a temporarily
+lower bar lets currencies qualify sooner, and the economy then grows from a higher base. Two consequences. (1) The L3.2
+probe's reading ("rejects a harmful candidate, floors hold") depended on the epoch-reset mode, where nothing carries
+over; in a continuous economy the same rejection is myopic: governance judges a candidate on the one epoch after
+adoption. (2) Open for the author: decisions should be resolved over the horizon their effects take (short-term harm
+accepted for long-term gain is the author's own rule for forced additions, 8.86, and for long-term value generally), so
+the resolution window is a governed threshold, and a temporary bootstrap bar for young currencies may be a real
+mechanism worth naming (candidate homes: L82 eligibility, Threshold of significance, SigThGv). Not built; `continuous`
+stays off by default until the probe is restated.
+
+8.134 ruling (author, 2026-11-13): "All measurements and ensuing decisions should be on a 'predict - measure - adapt'
+loop, with grace given for ETA, confidence and the predictions themselves." Every decision carries a prediction of its
+outcome with an expected time of arrival and a confidence; it is judged when the measurement is due, not before, within
+the grace its own stated ETA and confidence allow; then the rule or threshold adapts. This answers the L3.4 question: a
+governance candidate is resolved against its own predicted trajectory over its own stated horizon (a predicted
+short-term dip inside the stated confidence is not a failure), not on the single epoch after adoption. To build:
+candidates state (predicted outcome, ETA, confidence); resolution waits for the ETA; a result within the grace band
+counts as on track; missed predictions adapt the proposer's record. Candidate homes: L48/SigThGv, Government,
+Measurement, Decision.
+8.135 ruling (author, 2026-11-13): "MMs get to strengthen before becoming currencies, no need for leniency there unless
+a domain is under-measured, which is already built in." No temporary lower eligibility bar for young currencies: the
+proposal in the L3.4 trace is withdrawn. Metric models mature as score-only models before backing a currency (L82); the
+novel-domain floor (`novel_threshold`, `novel_floor`) already covers under-measured domains. The L3.4 observation stands
+only as a fact about that toy world (a lowered bar there raised later floors), not as a mechanism.
+
+8.134 build, step 1 (2026-11-13): predict - measure - adapt for governance candidates, continuous mode. Lean rules
+`prediction_on_track_ref` (measured >= predicted - confidence band) and `resolution_due_ref` (steps since adoption >= ETA
++ ETA grace), exported as `bf_prediction_on_track` and `bf_resolution_due` (Julia `prediction_on_track`, `resolution_due`).
+`run_coupled(...; continuous = true)` takes `candidate_prediction` (predicted change in floor_u + floor_h; none keeps the
+old one-epoch rule exactly), `candidate_eta` (epochs, default 1), `candidate_confidence` (band, default 0) and `eta_grace`
+(default 0). A held candidate is neither resolved nor replaced before ETA + grace; at resolution the outcome is the change
+in floor_u + floor_h over the whole window since adoption, kept if on track (it then stays adopted), else rejected with
+incumbent values restored; voters' records are scored at resolution. Not built yet: adapting the proposer's record to
+missed predictions, and predictions on anything but governance candidates. Probe (L3.2 world, continuous, 150 steps,
+4 seeds, prediction 0, band 0): final floor_u + floor_h with ETA 1 (rejected at epoch 2 in every seed) 37.6, 44.2, 47.8,
+48.4 (mean 44.5); with ETA 3 (kept in 3 of the 4 seeds shown; never resolved before epoch 4) 18.7, 17.7, 30.5, 35.5
+(mean 25.6); paired difference ETA 3 minus ETA 1 -18.9, standard error 2.8, n = 4. The hypothesis did not hold: judging at
+the stated ETA ends the run LOWER, not higher. Reading: the dip-then-gain of the L3.4 trace belongs to the candidate in
+force for one epoch only; kept permanently it is a net loss in this toy world, so the ETA rule does what it should (the
+candidate is not rejected early) and the rejection at ETA 1 was, by accident, the better outcome here. Parameters were
+not tuned; the probe asserts the measured direction. Six-seed exploration (same world): ETA 3 rejected at epoch 4 in one
+seed, never in the others; ETA 4 never. The run on 1 platform (Linux) only.
+
+8.134 build, step 2 (2026-11-13): candidate versus incumbent, proposer record. `run_coupled(...; continuous = true, candidate_vs_incumbent = true)`
+(needs `candidate_prediction`, now a predicted outcome PER EPOCH): (a) a candidate is eligible at the vote only if its prediction beats
+the incumbent's recorded mean (`inc_scores`) under `select_candidate` at z = `gov_z` with the record's standard error, and not at all
+until two incumbent records exist; (b) at resolution the measured change since adoption is divided by the epochs elapsed and judged
+by `prediction_on_track` against the candidate's OWN prediction. Each resolved prediction is returned as `prediction_record`
+(epoch, predicted, measured, on_track) with `prediction_calibration` (share on track, NaN when none resolved). Defaults and all
+other behaviour unchanged. Probe (L3.2 world, continuous, 150 steps, seeds 1:8, Linux; final floor_u + floor_h, mean +- se):
+no candidate 6.9 +- 2.6; (A) old rule, ETA 1, 44.4 +- 1.8; (B) 8.134 build, prediction 0 ETA 3, 27.6 +- 2.8; (C-low) honest low
+prediction -5, 8.2 +- 3.6; (C-high) dishonest high prediction 10, 19.0 +- 2.2. Adoption (epochs adopted): B 6 of 6 epochs in 7 seeds (kept, never rejected) and 3 in one (rejected at epoch 4), 0 in all 8 for C-low, 3 in all 8 for C-high (rejected at epoch 5 in 8 of 8, record
+shows measured below 10, calibration 0). Hypothesis (1) held: C-low never adopted (8 of 8) and equal to the no-candidate run in 6 of 8
+seeds; paired difference +1.2 +- 1.2 (equivalent within margin 5; in the other 2 seeds the no-candidate run adopts a random
+governance perturbation that the offer displaced). Hypothesis (2) held: adopted, missed, rejected, recorded. Not hypothesised, measured:
+the old rule ends far higher than C-low (paired +36.2 +- 4.6) and than C-high (+25.4 +- 3.4); B beats C-high by +8.6 +- 3.9 (not tested
+as a claim). The harmful candidate's one-epoch trial raises later floors (L3.4 trace), and the refinement forgoes that gain by never
+trialling a candidate that does not out-promise the incumbent; per 8.135 no bootstrap leniency is added. Not tuned. Not built: feeding
+`prediction_calibration` into the proposer's reputation (the native next step: reputation = record of winning choices, so a proposer
+whose predictions keep missing loses weight), the incumbent's own prediction being judged, and predictions beyond governance candidates.
+
+L3.2 world diagnosis (2026-11-13): why 25 steps of a lower bar lift the L3.2 probe world sixfold, and the finding that the lower bar never took effect. Measured by
+`run_m3c` with a `governor` (the L3.4 trace's setting: 8 agents, 4 leaves, half deceivers at skill -0.9, 150 steps, `init_steps = 5`; epoch = lowered values
+for steps 26-50, restored at 50), paired on seeds 1:6, Linux; the metric is the run's final `floor_u + floor_h` change, mean +- se. Scratch scripts were not
+kept in the repository. Predictions made before measuring: (1) threshold 0.5 carries the gain, track window 0 little (confidence 0.6); (2) the leaves qualify
+during the epoch and stay qualified (0.5); (3) a score-only warm-up of 25-50 steps with no lowered bar gives a similar gain (0.4). Results: (1) and (2) were
+wrong, (3) held.
+1. The lowered threshold is a no-op. Threshold 0.5 alone ends bit-for-bit identical to the unchanged run (10.0 +- 4.6, six seeds, same seed-by-seed values);
+   track window 0 alone equals both together (43.0 +- 2.0, paired +33.0 +- 5.5). The bar trace stays at 0.9 for all 150 steps in the "both" arm.
+   Mechanism: in `run_m3c`, `ratchet!` computes `lfloor[j] = ratchet_bar(accs, leaf_bar(j); ...)` where `leaf_bar(j) = max(th_now[], lfloor[j])`, and the Lean
+   `ratchet_bar_ref` returns at least its `bar` argument; so `lfloor` latches the initial 0.9 at step 1 and the bar can never fall, whatever the governor sets
+   afterwards. The ratchet is meant never to fall by its own rule (8.84), but here it also swallows any later lowering of the governed threshold (so does any
+   governance move of the bar mid-run). A permanent 0.5 set at construction does work (bar 0.5 throughout; 49.5 +- 5.6, paired +39.5 +- 4.6 against 10.0). So the
+   probe's "harmful candidate" in the epoch mode (which rebuilds the run with 0.5 at start) acts through the bar; in the continuous mode only the zero window acts.
+2. What matters is the track window (and, equivalently, a longer warm-up), through a stuck state, not through qualification. In the unchanged run four of
+   six seeds sit at accuracy about 0.2-0.55 for all 150 steps, with 0 leaves at the 0.9 bar, `lane_halted` 315-348 against 40-49 executions and only 45-54
+   assessed outcomes (the two seeds that escape late, near step 120, have 172-227 assessed outcomes). Work is stuck in the funded (StandCoin) lane: after the
+   5 score-only steps, work executes only when the proposer and experts can pay, the balances are poor, so it halts; with almost nothing executed there are few
+   assessed outcomes, so the models do not mature and no currency qualifies: a closed loop (the `degraded` log shows "domain currency -> StandCoin lane (no
+   qualified model can price it)" in every run). `novel_threshold` and `novel_floor` do not break it here (no leaf counts as novel in this world). Track window 0
+   (models stop correcting for deceivers' overstatement, so deceivers' plans look valuable and are funded) lets work flow: executions 185-341, halts 14-123,
+   assessed outcomes 368-474, mean accuracy rising to 0.69-0.92. During the epoch floors dip (-5.6 at step 50, which is why governance rejects it), then climb
+   as the models, trained on the volume of assessed outcomes, mature. Persistence: tw0 for steps 26-50 ends 43.0 +- 2.0; 26-75 33.2 +- 1.5; 51-75 31.3 +- 1.7;
+   101-125 8.1 +- 1.2 (no gain; base 10.0); tw0 from 26 on for good 27.7 +- 3.2 (one 25-step epoch is the best of these; the early window is what counts).
+3. A proper warm-up gives the same gain with no lowered bar and no deceiver-friendly window. `init_steps = 50`: 43.1 +- 1.9, paired +33.1 +- 4.6 (six of six
+   above 36), `lane_halted` 0-21, 44-50 score-only executions, accuracy 0.4-0.6 at step 50 and 0.8 by step 75. `init_steps = 25`: 36.5 +- 9.8 (bimodal: four seeds
+   43-60, two seeds 6-8), paired +26.5 +- 12.0. The 5-step warm-up is simply too short for models to mature, in line with 8.135.
+Recommendation: (a) restate the L3.2 probe world with a proper warm-up (`init_steps` of 50, or until the models' record count reaches `min_records`), since with
+it the world has no 6x gain to find and the harmful candidate's effect can be judged without a confound; the 8.134 steps 1-2 probe readings (ETA, incumbent
+comparison) were taken on this stuck baseline (about 7-10) and should be re-measured on the warmed-up one before they are quoted. (b) Treat `lfloor`'s
+self-reference as a code defect to fix after a red test: file `sim/src/m3c.jl`, `ratchet!` / `leaf_bar` (the ratchet's seed `leaf_bar(j)` includes the previous
+`lfloor`; it should start from the governed threshold alone and keep `lfloor` separate, or decay when the governed threshold is lowered; the choice is the
+author's, since 8.84 says the bar never falls by the ratchet). The L3.4 trace's "a temporarily lower bar lets currencies qualify sooner" is superseded: no
+qualification happened (the bar never moved); the gain came from the zero window and its volume of assessed outcomes. (c) The stuck state itself (no
+currency, no funded work, no records, no models) is the interesting world finding: score-only execution is the only thing that breaks it, so a long enough
+score-only phase, or a floor of score-only execution while no currency qualifies, is what the rules need; this is native (L82 maturity) and needs no leniency.
+Confidence: high for the ratchet latch (exact identity of arms, bar trace) and for the warm-up equivalence; moderate for the stuck-loop account (the assessed
+outcome counts and halts fit it, but I did not intervene on assessed outcomes directly). Unexplained: why a zero window (not just more executed work) leaves
+the floor higher than the dip suggests, i.e. whether the deceivers' executed plans are caught and repaired (convictions, advocate-ap) or merely outweighed;
+and the two bimodal seeds at `init_steps = 25`. Six seeds per arm; no significance threshold claimed beyond the paired effects shown.
+Lead's reading of the L3.2 world diagnosis (2026-11-13). (1) The "L3.4 trace" claim that a temporarily lower bar lets
+currencies qualify sooner is superseded: the bar never moved. (2) The latch is the ratified rule, not a defect: the bar for
+accuracy only rises (8.84), so a governance candidate that lowers the eligibility threshold is inert by design; the L3.2
+candidate's only live part was the track window. Candidates that lower the bar should be refused loudly at proposal rather
+than silently ignored (to build: a `degraded`-style notice). (3) The probe world's warm-up of 5 steps was the toy
+assumption at fault: models must strengthen before backing currencies (8.135), and a warm-up of 50 gives the same floors
+with no intervention. The L3.2 and 8.134 probes are to be re-measured on a warmed-up world. (4) Still open: a world that
+starts with immature models stays stuck (no currency, work halting in the StandCoin lane) for the whole run in 4 of 6
+seeds; the stall family (8.71, 8.133) again.
+
+8.136 ruling (author, 2026-11-13): "Immature domains (in fact immature anything) should run score only till it converges
+sufficiently before starting to fund work, till then existing/legacy systems should take up the burden, this is the
+repeating structure of RSI in Bf." Generalises 8.135: any new component (a domain, a metric model, a currency, a rule, a
+threshold candidate, an institution) runs in score-only mode, predicting and being measured without directing resources,
+until its record has converged enough; meanwhile the existing or legacy system keeps funding and deciding. Promotion is
+by convergence, not by a clock. This settles the stuck start in the L3.2 diagnosis: a world whose models are immature
+should not fall to a halting StandCoin lane; the incumbent arrangement (the status-quo institutions of the comparison
+arm, a parent or coarser model, the previous threshold) carries the work until the new models converge. To build: (a) a
+convergence test for score-only records (the existing `sequential_significant` / accuracy-stability machinery, not a
+fixed `init_steps`); (b) a legacy funder during score-only periods in M3c and in `run_coupled`; (c) the same shape for
+governance candidates: scored in shadow against the incumbent before adoption (the predict-measure-adapt loop of 8.134
+with the incumbent in force). "RSI" is recorded as the author wrote it; its expansion is to be confirmed. Candidate
+homes: L82, Progressive complexity, Measurement, Government, Benefuture (overview: the repeating structure).
+
+8.137 (review RV1, 2026-11-09; author: "good catch… they're inverse of each other") [P]: resource accounting reads in
 opposite directions in two lines. L83 defines it as cost per gain (`↓Cost / Δ↑(U, H)`, lower is better); L152 calls for
 innovation when it fails to rise, which is right only for gain per cost. The Lean (`allocation_step`,
 `Benefuture/Axioms/Antifragility.lean`) and ruling 8.133 (value per unit of each resource) read it as gain per cost, as
@@ -3222,7 +3433,7 @@ as gain per cost and leave L152 and the Lean unchanged. Reason: cost per gain, m
 `>=`) gives L151 and L152 one shape but keeps that misordering. Candidate homes: L83 (all three copies), Benefuture
 currency, Resource accounting. Pseudocode not edited.
 
-8.135 (author, 2026-11-09, on L151): a society with zero standing harm still needs intervention; the reviewer's reading
+8.138 (author, 2026-11-09, on L151): a society with zero standing harm still needs intervention; the reviewer's reading
 of `Ha(t + Δt) >= Ha(t)` at zero as a defect is withdrawn. Reading recorded for the sources: (a) stasis decays: novelty
 is 1 / frequency (L36) and is part of happiness (L37), so constant experience lowers happiness below the average of its
 window, which is harm (L54) (`stasis_happiness_falls`, `stasis_is_harm`, `Benefuture/Proposed/ReviewFindings.lean`); (b)
@@ -3233,7 +3444,7 @@ comment in `Antifragility.lean`. Checked with it: happiness harm is taken agains
 low early life does not hide later falls; understanding harm is taken against the running maximum of the whole history
 (`u_harm_ref`), as L54 states.
 
-8.136 (review RV1; author, 2026-11-09: "we'd need other measures of independence than just source consumption, like the
+8.139 (review RV1; author, 2026-11-09: "we'd need other measures of independence than just source consumption, like the
 processing it does; two models or clusters can consume the same sources, use completely different methods yet agree on
 the outcome") [P]: independence is assumed in five places and measured in three. The trust cascade (L162,
 `cascaded_required_trust`) halves required trust per cluster; model competition (L49), identity binding by two or more
@@ -3248,22 +3459,22 @@ look independent (caught late, 8.111); the rule must stay on errors, which noise
 part. Open for the author: is diversity of method rewarded as novelty, or only measured? Parsimony: this merges
 detectors and introduces none.
 
-8.137 (review RV1; author asked for more, 2026-11-09) [P]: the antifragility axioms state when something is needed,
+8.140 (review RV1; author asked for more, 2026-11-09) [P]: the antifragility axioms state when something is needed,
 not what follows; in the simulation only harm intervention has a trace. By parsimony each response should be a native
 mechanism. Reviewer's reading of the native responses, for the author to correct, with the gaming of each trigger:
 Harm_Intv (L151): harm not falling → sophont oversight, justice's repair, the Goal's lateral option; gamed by hiding
-harm, which "not falling" defeats (8.135). Rc_Innovation (L152): efficiency not rising → overflow's directed
+harm, which "not falling" defeats (8.138). Rc_Innovation (L152): efficiency not rising → overflow's directed
 investment, the commons reserve (8.133), novelty's priority; gamed by sandbagging efficiency to draw funds, and it
 spends without end at a physical limit unless Di_N_Balance (L159) takes over there (open for the author). CvCnt (L153):
 significant change → validation by the peak then and the average now over memory; gamed by many sub-threshold changes
-(8.138) and by choosing who counts as peak. Di_N_Balance (L159): low marginal value of spreading a good → the minority
+(8.141) and by choosing who counts as peak. Di_N_Balance (L159): low marginal value of spreading a good → the minority
 bonus (8.122) and novelty's priority; gamed by manufactured novelty. TrustMin (L162): a layer needs trust → adversarial
-clusters; gamed by collusion (8.136). Prog, SigThGv and AdvAp already have traces or tests. Proposal: one probe per
+clusters; gamed by collusion (8.139). Prog, SigThGv and AdvAp already have traces or tests. Proposal: one probe per
 axiom in `sim/test/probe_tests.jl`, each with three cases (the trigger fires and the native response restores; a
 noise-made false trigger costs a bounded amount; the gamed trigger pays less than honesty), and a ledger in
 `sim/README.md` (axiom, trigger rule, response, probe, status). Not built.
 
-8.138 (review RV1) [P]: L139 (`EmbeddedLaws … DynamicAp: ΔImp(ΔLw) < Th`) has no rule in Lean, the reference or the
+8.141 (review RV1) [P]: L139 (`EmbeddedLaws … DynamicAp: ΔImp(ΔLw) < Th`) has no rule in Lean, the reference or the
 simulation; `Law` carries only an `isEmbedded` flag. Stated: n adaptations each under the threshold drift at most n · Th
 (`bounded_adaptations_bound_drift`); the per-step bound alone bounds nothing, since enough half-threshold steps pass
 any limit (`sub_threshold_steps_pass_any_limit`). So embedded-law adaptation needs a bound over a span, which CvCnt's
@@ -3271,13 +3482,13 @@ validation (L153–154) supplies if the accumulated change since the last valida
 Proposed probe: slow drift through sub-threshold law changes; the validation blocks harmful drift and passes good
 change. Candidate homes: L139, Law, Civilization.
 
-8.139 (review RV1; author, 2026-11-09: "good idea") [P]: Anti-Corruption (L160) is proved only by construction
+8.142 (review RV1; author, 2026-11-09: "good idea") [P]: Anti-Corruption (L160) is proved only by construction
 (`good_strictly_easier_than_bad` defines bad effort as good effort plus positive friction). Its content is a measured
 claim: every known attack pays less than honesty. Proposal for the M6 owner: one table from the attack suite (attack,
 attacker's payoff less the honest payoff on the same seeds, interval, seeds), judged by `paired_effect`; an attack that
 pays is an open problem by that row. No new mechanism.
 
-8.140 (review RV1) [P]: further theorems stated in `Benefuture/Proposed/ReviewFindings.lean`, and gaps left as
+8.143 (review RV1) [P]: further theorems stated in `Benefuture/Proposed/ReviewFindings.lean`, and gaps left as
 proposals. Stated: a convex penalty is lighter on a harm split across identities, and assessment on the origin removes
 the gain (8.58-e; `split_harm_lightens_convex_penalty`, `origin_assessment_removes_split_gain`); confidence voting's
 logit (L115, absent from the Lean specification): even confidence weighs nothing, opposite confidences cancel, weight
@@ -3297,13 +3508,13 @@ construction in `docs/CLAIMS.md`, and §7 of `docs/pseudocode_lean_coherence_aud
 Articles (author: yes): Art's Formal reference rests on `art_value_nonneg` alone; either L126's success rule (intended
 effect against the distribution of actual effects) is formalised or the section says only the value sum is.
 
-8.141 (review RV1) [P]: line citations in §Af_Axioms have drifted. The sources' current lines are Harm_Intv L151,
+8.144 (review RV1) [P]: line citations in §Af_Axioms have drifted. The sources' current lines are Harm_Intv L151,
 Rc_Innovation L152, CvCnt L153, Di_N_Balance L159, AntiCorruption L160, TrustMin L162, while the Lean docstrings and
-earlier entries here cite L150, L151, L156 and L158 for them. Entries 8.134–8.140 use the current lines. Proposal: a
+earlier entries here cite L150, L151, L156 and L158 for them. Entries 8.137–8.143 use the current lines. Proposal: a
 checker that resolves each cited line to the term it names (as `tools/check_article_refs.py` does for theorems), or
 citations by term name only.
 
-8.142 (author ruling, 2026-11-10; closes 8.134) [R]: "flip RA 83". L83 now reads
+8.145 (author ruling, 2026-11-10; closes 8.137) [R]: "flip RA 83". L83 now reads
 `RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};`: resource accounting is gain per cost,
 higher is better, so L152 (`RA(t + Δt) <= RA(t) ⇒ NeedInnovation`) reads as written and matches L82, the Lean and 8.133.
 Applied to the three copies (`spec/Bf_Pseudocode.txt`, `Bf_Pseudocode.txt`, the block in `docs/articles/Benefuture.txt`,
@@ -3313,19 +3524,24 @@ wiki sync of Benefuture, and any article prose that still describes resource acc
 note, not acted on: `- Audit` now subtracts the audit's cost from the gain per cost; whether audit belongs inside the
 cost instead is open.
 
-8.143 (author, 2026-11-10; closes the question in 8.136): "Model novelty is rewarded, it's in the pseudocode, why would
+8.146 (author, 2026-11-10; closes the question in 8.139): "Model novelty is rewarded, it's in the pseudocode, why would
 a novel method not hit it?" A novel method earns through the novelty term models already compete on (L49, `N(m)`, and
-L51, `↑N(M)`); independence needs no reward of its own. So 8.136 only measures: the effective number of independent
+L51, `↑N(M)`); independence needs no reward of its own. So 8.139 only measures: the effective number of independent
 judges, from shared errors, with declared sources and methods as cold-start priors.
 
-8.144 (author rulings, 2026-11-10, on 8.137): the native response to each antifragility axiom. Rc_Innovation (L152):
+8.147 (author rulings, 2026-11-10, on 8.140): the native response to each antifragility axiom. Rc_Innovation (L152):
 overflow's directed investment, the commons reserve and novelty's priority (the reviewer's reading), and more funding
 into raising resource efficiency itself. CvCnt (L153): validation by the peak then and the average now; where it fails,
 Justice and a shift of funding to repair or reorient. Di_N_Balance (L159): the minority bonus and novelty's priority, and
 detection of monoculture that raises the novelty bonuses in the domain or subdomain concerned. TrustMin (L162):
 adversarial clusters, and verification against reality (the cascade's last term, `reqTt(ℝ)`). Harm_Intv (L151) as read
-in 8.137, not corrected. For the probes of 8.137: each asserts its response by outcome (efficiency recovers after funding
+in 8.140, not corrected. For the probes of 8.140: each asserts its response by outcome (efficiency recovers after funding
 shifts; a failed validation ends in repair or reorientation, not a stall; a detected monoculture's domain shows higher
 novelty bonuses and then variety; required trust falls with clusters and floors at what reality verifies). Still open
-from 8.137: what bounds innovation spending at a physical limit.
+from 8.140: what bounds innovation spending at a physical limit.
+
+
+8.148 (review RV1, 2026-11-13, numbering): entries 8.137–8.147 were written on 2026-11-09/10 as 8.134–8.144 on the
+review branch and renumbered at merge, because `main` had meanwhile used 8.134–8.136 for other rulings. Commit messages
+on that branch (303e867, df1fde0) carry the old numbers: old number + 3 = number here.
 

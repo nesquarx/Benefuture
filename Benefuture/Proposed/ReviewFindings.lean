@@ -1,7 +1,7 @@
 /-
   Benefuture.Proposed.ReviewFindings
   [P] Acceptance and counterexample theorems for gaps found in review (`docs/BACKPROPAGATION.md`
-  8.134–8.141). Each section names the pseudocode line it reads and the finding it states.
+  8.137–8.144). Each section names the pseudocode line it reads and the finding it states.
 
   1. Law drift (L139, EmbeddedLaws, `DynamicAp: ΔImp(ΔLw) < Th`): bounded adaptations bound the
      drift over n steps by n · Th; without a bound on n, sub-threshold steps pass any limit, which

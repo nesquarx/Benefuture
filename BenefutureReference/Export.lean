@@ -83,6 +83,12 @@ private def pairs (a b : FloatArray) : List (Float × Float) := a.data.toList.zi
 @[export bf_issuance_headroom] def issuanceHeadroom (claims deliverablePerStep horizon : Float) : Float :=
   issuance_headroom_ref claims deliverablePerStep horizon
 
+@[export bf_prediction_on_track] def predictionOnTrack (measured predicted confidenceBand : Float) : UInt8 :=
+  if prediction_on_track_ref measured predicted confidenceBand then 1 else 0
+
+@[export bf_resolution_due] def resolutionDue (stepsSinceAdoption eta etaGrace : USize) : UInt8 :=
+  if resolution_due_ref stepsSinceAdoption.toNat eta.toNat etaGrace.toNat then 1 else 0
+
 @[export bf_sequential_significant] def sequentialSignificant (mean sd : Float) (n n0 : USize) (z : Float) : UInt8 :=
   if sequential_significant_ref mean sd n.toNat n0.toNat z then 1 else 0
 
@@ -278,6 +284,18 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_birth_escrow] def birthEscrow (initial predicted : Float) (window : USize) (baseline : Float) : Float :=
   birth_escrow_ref initial predicted window.toNat baseline
 
+@[export bf_birth_accrued_escrow] def birthAccruedEscrow (initial predicted : Float) (window elapsed : USize) (baseline : Float) : Float :=
+  birth_accrued_escrow_ref initial predicted window.toNat elapsed.toNat baseline
+
+@[export bf_pending_escrow_loss] def pendingEscrowLoss (measuredSoFar accruedEscrow : Float) : Float :=
+  pending_escrow_loss_ref measuredSoFar accruedEscrow
+
+@[export bf_personhood] def personhoodExport (capacities : FloatArray) : Float :=
+  personhood_ref capacities.data
+
+@[export bf_base_vote] def baseVoteExport (baseVote personhood : Float) (sophont : UInt8) (forkShare : Float) : Float :=
+  base_vote_ref baseVote personhood (sophont != 0) forkShare
+
 -- Shapley sampling
 @[export bf_shapley_sampled] def shapleySampled (n m : USize) (perms vals : FloatArray) : FloatArray :=
   ⟨shapley_sampled_ref n.toNat m.toNat perms.data vals.data⟩
@@ -400,5 +418,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 -- 8.91 ruling: escrow exponential in discovered repeats
 @[export bf_repeat_escrow_credence] def repeatEscrowCredence (credence negShare : Float) (repeats : USize) (growth floorC : Float) : Float :=
   repeat_escrow_credence_ref credence negShare repeats.toNat growth floorC
+
+-- 8.133 ruling: artificial-scarcity supply withholding charge and AdvAp/cartel reward
+@[export bf_withhold_charge] def withholdCharge (marketPremium reward auditCost : Float) : Float :=
+  withhold_charge_ref marketPremium reward auditCost
+
+@[export bf_withhold_reward] def withholdReward (ownLiability remainingPremium advShare advFloor : Float)
+    (hasCoconspirators selfReport : UInt8) : Float :=
+  withhold_reward_ref ownLiability remainingPremium advShare advFloor (hasCoconspirators != 0) (selfReport != 0)
 
 end BenefutureReference.Export

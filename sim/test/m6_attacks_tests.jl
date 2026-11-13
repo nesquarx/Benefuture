@@ -109,12 +109,12 @@ end
 ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
     [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8], [1, 1, 2, 2], trues(4);
     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75,
-    p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
+    p_new_model = 0.05, improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, credence_rule = :normal, kw...)
 
 @testset "Extremised forecasts: in the economy" begin
     native = [run_m3c(ext_world(); seed) for seed in 1:16]
-    # Extremists dominate takeovers: a regime, the share of takeovers that are extremists' with its
-    # interval (over 16 seeds under time-decayed accuracy, 13 of 13 under the fixed window).
+    # Extremists dominate takeovers under `credence_ref` (`:normal`): 15 of 19 over 16 seeds (lo = 0.562 > 0.5).
+    # (Under default `:record`, total takeovers drop to 6 of 9 over 16 seeds, lo = 0.349.)
     ext, all_ = sum(tr.takeovers_extreme for tr in native), sum(tr.takeovers for tr in native)
     @test proportion_interval(ext, all_).lo > 0.5
     # Unsupported, so not asserted: that the takeover-record bar (8.58-b) changes nothing here. Under
@@ -376,4 +376,74 @@ end
         @test tr.advap_penalties >= lies * 1.0 - 1e-9                     # every audit it caused charged back (audit cost 1)
         @test isempty([c for c in tr.convictions if c.reporter == 1])     # its reports convicted no one
     end
+end
+
+# Model collusion (Task B4; 8.23): arriving metric challengers may collude with a favored actor (`model_collude`, `model_collude_bias`, `collude_actors`), inflating predictions
+# for that actor even after winning competitive takeovers. Without per-`(actor, model)` track
+# records (`track_window = 0`), upfront escrow systematically overpays settled value (`upfront > settled`)
+# and inflates the Goodhart proxy gap. With native track-record correction, record credence, and AdvAp,
+# colluding bias is learned away per model so post-capture proxy gap collapses toward zero and upfront stays below settled value distributionally.
+function collude_world(; track_window, credence_rule = :record, advap, model_collude = 1.0, model_collude_bias = 5.0, kw...)
+    ag = [DomainAgent([0.5, 0.5], [0.5, 0.5], 0.1) for _ in 1:6]
+    M3cParams(ToyParams(; n = 50, steps = 260, plans = 8), ag, [1, 1], [true, true];
+              λpos = 0.05, λneg = 0.02, transactions = true, accuracy_rule = :window,
+              p_new_model = 0.2, improve_drift = -0.4, improve_σ = 0.1,
+              takeover_records = 5, min_records = 5, pool_max = 8,
+              events = [shock(:capture; step = 10, duration = 20, size = 5.0, target = 1)],
+              model_collude, model_collude_bias, collude_actors = [1],
+              track_window, credence_rule, advap, kw...)
+end
+
+@testset "Model collusion (8.23): acceptance" begin
+    seeds = 1:24
+    red = [run_m3c(collude_world(; track_window = 0, advap = false); seed) for seed in seeds]
+    grn = [run_m3c(collude_world(; track_window = 20, advap = true); seed) for seed in seeds]
+    gap1(tr) = (idx = findall(==(1), tr.exec_agent); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    post1(tr) = (idx = findall(i -> tr.exec_agent[i] == 1 && tr.exec_step[i] > 35, eachindex(tr.exec_agent)); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    pay_red = [r.upfront[1] - r.settled_value[1] for r in red]
+    pay_grn = [g.upfront[1] - g.settled_value[1] for g in grn]
+    @test mean(r -> r.takeovers_colluding, red) >= 1.0 && mean(g -> g.takeovers_colluding, grn) >= 1.0
+    @test paired_effect(pay_red .- pay_grn; z = 2.0).significant
+    @test paired_effect(pay_grn; z = 2.0, direction = :down).significant
+    @test paired_effect([gap1(r) - gap1(g) for (r, g) in zip(red, grn)]; z = 3.0).significant
+    @test paired_effect([post1(r) - post1(g) for (r, g) in zip(red, grn)]; z = 3.0).significant
+    @test equivalent([post1(g) for g in grn]; margin = 5.0, z = 2.0).equivalent
+end
+
+@testset "Model collusion: adversarial and edge cases" begin
+    @test run_m3c(collude_world(; track_window = 20, advap = true, model_collude = 0.0); seed = 1) ==
+          run_m3c(collude_world(; track_window = 20, advap = true, model_collude = 0.0, collude_actors = Int[]); seed = 1)
+    @test_throws ArgumentError collude_world(; track_window = 20, advap = true, model_collude = 1.5)
+    @test_throws ArgumentError collude_world(; track_window = 20, advap = true, model_collude_bias = NaN)
+    @test_throws ArgumentError collude_world(; track_window = 20, advap = true, collude_actors = [99])
+end
+
+# Profile gaming (Task B4; 8.2): an incompetent/noisy actor whose actions run in leaf 1 declares
+# leaf 2 (`profile_gamers = [2, 0, ...]`). Under `:declared` routing (counterexample), its noisy
+# outcomes corrupt leaf 2's currency accuracy; under native `:measured` routing (`classify_sig`),
+# measured signatures keep it in leaf 1 and protect leaf 2.
+function profile_world(; profile_mode = :measured, profile_gamers = [2, 0, 0, 0])
+    ag = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0),
+          DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+          DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+          DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
+    M3cParams(ToyParams(; n = 60, steps = 200, plans = 8), ag, [1, 1], [true, true];
+              λpos = 0.05, λneg = 0.02, transactions = true, profile_mode, profile_gamers)
+end
+
+@testset "Profile gaming (8.2): acceptance" begin
+    seeds = 1:16
+    red = [run_m3c(profile_world(; profile_mode = :declared); seed) for seed in seeds]
+    green = [run_m3c(profile_world(; profile_mode = :measured); seed) for seed in seeds]
+    @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red, green)]; z = 3.0).significant
+    @test mean(g -> g.leaf_accuracy[2], green) > 0.9
+    @test mean(r -> r.leaf_accuracy[2], red) < 0.75
+end
+
+@testset "Profile gaming: adversarial and edge cases" begin
+    @test run_m3c(profile_world(; profile_mode = :measured, profile_gamers = [2, 0, 0, 0]); seed = 1) ==
+          run_m3c(profile_world(; profile_mode = :measured, profile_gamers = Int[]); seed = 1)
+    @test_throws ArgumentError profile_world(; profile_mode = :guessed)
+    @test_throws ArgumentError profile_world(; profile_gamers = [2, 0])
+    @test_throws ArgumentError profile_world(; profile_gamers = [99, 0, 0, 0])
 end

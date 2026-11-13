@@ -54,7 +54,7 @@ end
 const Tsmooth = ToyParams(n = 80, steps = 200, plans = 10, spread = 0.05)
 makers() = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
 passers() = [DomainAgent([0.0, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:3]
-cdp(agents; kw...) = M3cParams(Tsmooth, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+cdp(agents; kw...) = M3cParams(Tsmooth, agents, [1, 1, 2, 2], trues(4); LEGACY..., λpos = 0.05, λneg = 0.02, transactions = true,
                                causal_distribution = true, p_upstream = 1.0, kw...)
 
 @testset "Causal distribution: acceptance" begin
@@ -125,4 +125,64 @@ end
     @test carry_fee(2.0, true; accolade_rate = 0.05, contract_share = 0.2) ≈ 0.4
     @test carry_fee(-1.0, true; accolade_rate = 0.05, contract_share = 0.2) == 0  # no fee out of a loss
     @test_throws ArgumentError carry_fee(1.0, false; accolade_rate = 1.5, contract_share = 0.2)
+end
+
+@testset "Deep transaction trees (L95)" begin
+    Ts_deep = ToyParams(n = 30, steps = 200, plans = 6, spread = 0.05)
+    ag_deep = [DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.0], [1.0], 0.0)]
+
+    tr_sh = run_m3c(M3cParams(Ts_deep, ag_deep, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02,
+                              transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 3); seed = 42)
+    @test tr_sh.max_upstream_degree == 3
+    @test tr_sh.upstream_pos_by_degree[1] > tr_sh.upstream_pos_by_degree[2] > tr_sh.upstream_pos_by_degree[3] > 0
+
+    tr_fb25 = run_m3c(M3cParams(Ts_deep, ag_deep, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02,
+                                transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 3,
+                                attribution_σ = 2.0, traversal_decay = 0.25); seed = 42)
+    tr_fb75 = run_m3c(M3cParams(Ts_deep, ag_deep, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02,
+                                transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 3,
+                                attribution_σ = 2.0, traversal_decay = 0.75); seed = 42)
+    @test tr_fb25.fallback_outcomes > 0 && tr_fb25.max_upstream_degree == 3
+    @test tr_fb75.upstream_pos_by_degree[2] > tr_fb25.upstream_pos_by_degree[2] > 0
+    @test tr_fb75.upstream_pos_by_degree[3] > tr_fb25.upstream_pos_by_degree[3] > 0
+    @test_throws ArgumentError m3c(upstream_depth = 0)
+end
+
+@testset "Open log as universal source of truth (Step 5)" begin
+    Ts_log = ToyParams(n = 30, steps = 200, plans = 6, spread = 0.05)
+    ag_log = [DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.0], [1.0], 0.0)]
+    ag_form = [DomainAgent([0.6, 0.4, 0.4], [0.4, 0.3, 0.3], 0.0) for _ in 1:3]
+
+    runs = [
+        run_m3c(M3cParams(Ts_log, ag_log, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02, memory_loss = 0.0,
+                          transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 3,
+                          p_new_model = 0.1, takeover_records = 5, min_records = 5); seed = 42),
+        run_m3c(M3cParams(ToyParams(n = 30, steps = 160, plans = 6), ag_form, [1, 1, 2], [true, true, false];
+                          LEGACY..., λpos = 0.05, λneg = 0.02, memory_loss = 0.0, form_count = 4, form_radius = 1.5, max_new = 3,
+                          transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 3); seed = 9),
+        run_m3c(M3cParams(Ts_log, ag_log, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02, memory_loss = 0.0,
+                          events = [shock(:outage; step = 40, duration = 20)],
+                          transactions = true, causal_distribution = true, p_upstream = 1.0, upstream_depth = 2); seed = 11),
+        run_m3c(M3cParams(Ts_log, ag_log, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02, memory_loss = 0.0,
+                          advap = true, p_new_model = 0.1, takeover_records = 5, min_records = 5,
+                          deceit = [0.4, 0.0, 0.0], accuracy_rule = :decay); seed = 7),
+        run_m3c(M3cParams(Ts_log, ag_log, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02, memory_loss = 0.0,
+                          advap = true, p_new_model = 0.1, takeover_records = 5, min_records = 5,
+                          deceit = [0.4, 0.0, 0.0], accuracy_rule = :window); seed = 7),
+    ]
+    for tr in runs
+        hp, hn, rel = recount(tr)
+        @test isapprox(hp, tr.h_pos_own; atol = 1e-10)
+        @test isapprox(hn, tr.h_neg_own; atol = 1e-10)
+        @test isapprox(rel, tr.relevance_own; atol = 1e-10)
+        @test isapprox(recount_μ(tr), tr.μ; atol = 1e-10)
+        @test isapprox(recount_models(tr).leaf_accuracy, tr.leaf_accuracy; atol = 1e-10)
+        rcc = recount_cc(tr)
+        @test isapprox(rcc.credit_pos, tr.credit_pos; atol = 1e-10)
+        @test isapprox(rcc.credit_neg, tr.credit_neg; atol = 1e-10)
+        @test isapprox(rcc.upstream_pos, tr.upstream_pos; atol = 1e-10)
+        @test isapprox(rcc.upstream_neg, tr.upstream_neg; atol = 1e-10)
+        @test isapprox(rcc.upstream_pos_by_degree, tr.upstream_pos_by_degree; atol = 1e-10)
+        @test isapprox(rcc.upstream_neg_by_degree, tr.upstream_neg_by_degree; atol = 1e-10)
+    end
 end

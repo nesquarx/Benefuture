@@ -54,8 +54,8 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Ontology.Domain`, `Proposed.DomainHierarchy` | simulated | leaf shares, fuzzy parents, aggregation, learnt overlaps (M3c) |
 | `Ontology.Reputation` | simulated | hPos, hNeg, relevance by sign, recount from memory (M3–M3c) |
 | `Proposed.PopulationDirection` (G, D) | partial | a reference chooser over floors (`g_choose_ref`); accession admissibility and per-being protection (`accession_admissible_ref`); the full `goal_G` with D and Pareto filtering not yet |
-| `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c); identity and `Step` invariants not yet |
-| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; transaction trees one link deep; outcome-first causal distribution with Shapley shares and the traversal fallback (M3d); deeper chains not yet |
+| `Systems.Memory`, `Systems.State` | partial | append-only memory of executed and blocked actions (M3c), and universal open-log recounts (`recount`, `recount_μ`, `recount_models`, `recount_cc`) from logged sequences; identity and `Step` invariants not yet |
+| `Systems.Substrate`, `Systems.Pipeline` | partial | transactions logged with their quotes; multi-hop transaction trees up to `upstream_depth` links with degree of separation; outcome-first causal distribution with Shapley shares and degree-attenuated traversal fallback (`L95`, M3d) |
 | `Systems.TechnologyNetwork` | partial | Phase 1 score-only start (M3c); identity binding against whitewashing (M6, `binding_admits_ref`); privacy tiers not yet |
 | `Systems.Economy` | partial | overflow (M3b, M3c); baseline income not yet |
 | `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters, experimental design and the debatable escape (`select_candidate_ref`, `gauge_radius_ref`, `escape_accept_ref`; M4); the simulation's own gates not yet |
@@ -63,8 +63,8 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Governance.Adversarial` | partial | AdvAp's reports, audits, reward, liability and frivolous-report penalty (`advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`; M3c), revelation of a colluding bloc (M5); bounties on planted flaws not yet |
 | `Axioms.Antifragility` | partial | black swans with native fallbacks and recovery (M3f); its axioms as such not yet |
 | `Governance.ExternalHarm` | partial | the expected response exported (`ehr_expected_response_ref`, probe); external aggressors in a world not yet (M6) |
-| `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research (M7); graded personhood not yet |
-| `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`); merges, extended self, liability (M7, M8) not yet |
+| `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research, graded personhood & non-sophont moral standing (`personhood_ref`, `base_vote_ref`, `run_population_identities`) (M7) |
+| `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`), mid-run M3c forks/merges, and M7 population forks/merges (`run_population_identities`); extended self, deep social networks (M8) not yet |
 | `Subgoals.Justice` | partial | crime or accident by notice and duty, repair funded by penalties (M3e); restorative packages not yet |
 | `Subgoals.Freedom`, `Subgoals.Diversity`, `Epistemology.InfoHandling` | partial | freedom reported per plan (`fr_permissible_ref`, M7); diversity as split trials with novelty bonuses (M5, M6); information handling's ContentionMap and source verification by reputation (M5) |
 | `Subgoals.*` (others), `Epistemology.*` (others), `Ontology.Law`, `Systems.Enforcement` | not yet | art, morality, continuity, truth, law and enforcement (M6–M8) |
@@ -265,17 +265,23 @@ the union of all concerned currencies; it is tested with gaming agents (M6). Bas
 pricing (L143) needs beings who transact for basic needs themselves (M7).
 
 Transaction trees and outcome-first causal distribution (BACKPROPAGATION 8.16–8.18): an action
-may build on a recent output of another agent in its domain, carrying part of its effect. Each
+may build on a recent output of another agent in its domain, carrying part of its effect and
+propagating upstream lineage up to `upstream_depth` hops (with degree of separation tracking). Each
 being an action touches is an outcome, its assessed change in V. The causal-explanation model
 estimates each contributor's effect; contributors share each outcome Shapley-style (Lean
 `shapley_ref`) over coalition values (V of the members' summed effects, the actor's own effect
 counting only if the coalition can fund the action); positive shares are paid and negative shares
 penalised. Below the confidence threshold (`cc_assessed_ref`), the traversal fallback shares the
-outcome by net contribution and degree of separation (`traversal_shares_ref`). Tests: intermediaries
-who add nothing earn almost nothing while the makers upstream are paid; every outcome is fully
-distributed; a bad output is penalised through the losses it carries downstream; co-funders whose
-money was needed are credited; heavy attribution error switches distribution to the fallback; the
-books balance and reputation recounts exactly.
+outcome by net contribution and degree of separation (`traversal_shares_ref`, attenuated by
+`traversal_decay^degree`, L95). From the open log (`tr.memory`, `tr.evidence`, `tr.formations`),
+`recount`, `recount_μ`, `recount_models`, and `recount_cc` reconstruct reputation, overlap degrees
+(`μ`), model accuracy (`leaf_accuracy`), and causal distribution totals to machine precision when
+`memory_loss = 0`. Tests: intermediaries who add nothing earn almost nothing while the makers
+upstream are paid; every outcome is fully distributed; multi-hop degree-2+ upstream creators receive
+degree-attenuated credit under Shapley and L95 fallback; a bad output is penalised through the losses
+it carries downstream; co-funders whose money was needed are credited; heavy attribution error
+switches distribution to the fallback; the books balance and open-log recounts match incremental state
+across formations, outages, and adversarial-adaptation repairs/takeovers.
 
 ## M3e observations
 
@@ -553,17 +559,19 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   | Attack search: budget; population × iterations; search and held-out seeds | 1; 8 × 4; 1:2 and 11:14 | 1; 8 × 4; 1:3 and 11:16 |
 
 - **Convergence on 5019de0, repeated on 7177b3c and 14fa4e5** (traits-mode M7, the default since 8.112; identical readings): understanding floor and median settle at step 132 (worst 133) at n = 100; between-seed half-width under 10% from n = 20 (8.0%) to 2.5% at n = 300; floor gain 11.5 at n = 20 to 14.3 at n = 500. Sizing: n ≥ 20, steps ≥ 135 ([convergence](battery/results/convergence.md)).
-- **Latest readings** (realistic ranges, AdvAp on; economy on code 26b55f8, judged by the Goal's whole
-  success pattern, repeating its 9ceed47 and 98a12ee readings; governance on 72179c2 under the calibrated
+- **Latest readings** (realistic ranges, AdvAp on; economy on code 352a6b4 (with continuous Sobol and AK-MCS active-learning sections), judged by the Goal's whole
+  success pattern; governance on 72179c2 under the calibrated
   ranges (signal noise 2–6, ability scatter 0.5–1.5, hidden outcomes 0.7–0.1, delegation 0–0.4): no
   factor fails alone within twice its realistic top and no screened world fails; total-order indices
   ability scatter 0.71, signal noise 0.49, collusion 0.36, local noise 0.26, delegation 0.21, hidden
   outcomes 0.17, loyalty 0.06 (first-order intervals too wide to read at 64 rows). Economy on the
-  calibrated build, ff30b17, its screening and rays reproduced exactly on fd11d5a: 8% of 64 screened
-  worlds fail; alone, side harm fails at 0.31 of its realistic top, markers at 1.35, execution at
-  1.65, model error at 1.94, the rest not within 2; the side-harm boundary is a stall of the
-  currencies under the normal credence, removed by the record credence (8.66); its continuous
-  section is running on e85dc6d). Economy on 26b55f8: alone, only execution (1.40) and side harm (1.31) fail within twice their
+  calibrated build, ff30b17, its screening and rays reproduced on fd11d5a and completed on 352a6b4:
+  alone, only markers (1.44), execution (1.73) and side harm (1.94) fail within twice their realistic
+  tops, the rest not within 2; 6% of 64 screened worlds fail (severities up to 0.26); continuous Sobol
+  total-order indices (320 evaluations) rank guardians 0.88, execution 0.57, model error 0.46,
+  laundering 0.44, side harm 0.38, hazards 0.37, model bias 0.35, markers 0.33, classification 0.32,
+  deceit 0.22, inattention 0.21, outage 0.13, memory loss 0.10; AK-MCS active learning (10 of 2000
+  candidates) finds 0.0% estimated failing share, nearest margin +0.72). Economy on 26b55f8: alone, only execution (1.40) and side harm (1.31) fail within twice their
   realistic tops (capture no longer does); 2% of screened worlds fail, as under the floor-only
   criterion. Governance: no factor fails alone within 2 and no screened world fails, down
   from 12% without AdvAp. A run on 4d2338b crashed on an audit path the tests had missed (fixed, with a
@@ -1237,14 +1245,14 @@ for removal.
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
 | Framework insuring unassigned harm through the commons | Native, funding ruled (8.26.4), balance [OPEN] (8.26.7) | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
-| AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability | Native | L160; 8.38; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`; readers' vigilance and noisy reading are the world |
+| AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability; artificial-scarcity withholding discovery, market-wide buyer repayment, and cartel defection | Native | L160; 8.38, 8.133; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`, `withhold_charge_ref`, `withhold_reward_ref`; readers' vigilance and noisy reading are the world |
 | Freedom reported per plan, not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
 | A death valued by its foreclosed future over the long-term window, in the irreparable tier, scaled by the breakthrough scale; a life saved counting as one ended | Ruled, reading [P] | 8.47; L61, L70 (Ha_lt), L73; Lean `foreclosed_ref`, `life_value_ref`. Gaming: inflating a being's predicted growth inflates the value of saving it or the cost of ending it; growth comes from the same models and their records as any prediction |
 | The dead one threshold below the lowest level in G's floors | Introduced | toy convention for `removal_cannot_raise_floor`; any level at or below the bottom gives the same floors |
-| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement and the ratchet (tested), except before a causer's first settlement (8.54) |
-| Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; what a causer cannot pay falls to the commons (tallied as uncovered) |
+| Newborns in G's floors at the optimistic average when the pool is confident; outside ΣV | Ruled, reading [P] | 8.52; L74 (B(t)), `dist_score_ignores_absent`; Lean `optimistic_average_ref`, `birth_level_ref`. Gaming: over-optimistic models raise the level and cut the escrow; met by settlement, ratchet (`8.52`), and the pending-shortfall ledger (`8.54`, Lean `birth_accrued_escrow_ref`, `pending_escrow_loss_ref`, `pending_ledger = true`) before first settlement |
+| Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `birth_accrued_escrow_ref`, `pending_escrow_loss_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; pending deficit depresses credence inside the first window; what a causer cannot pay falls to the commons (tallied as uncovered) |
 | Baseline = the happiness floor at birth | Introduced | a reading of "what the baseline cannot cover"; a governed level could replace it |
-| Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | to replace with the economy's balances and teaching (M3c, `run_m7`) |
+| Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | composed with teaching and research in `run_population_world`; to replace with the economy's full currencies (M3c) |
 | Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |
@@ -1277,6 +1285,7 @@ for removal.
 | Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
 | Programme world (`run_programmes`): a probe world for priority tiers, one global chooser over four typed programmes | Introduced (probe only, 8.129) | Shows tiers deciding before tier-typed effects enter M7 and the replay; remove once M7 emits tier-typed changes. Gaming: a programme claiming a higher tier than it delivers (teachable that is tacit, paradigm that is incremental) is caught by the usual assessed outcomes and records |
 | `chain_spot_all` (spot audits even when chains agree) | Introduced, off (8.107 agreeable chains) | Tested against agreeable chains; did not help and once demoted an honest chain. Candidate for removal unless a later probe needs it. `chain_shade` is an attack parameter of the world, not a mechanism |
+| Status-quo institutional baseline (`run_status_quo`, `status_quo.jl`) | Introduced (baseline, 8.92; B/L3.1b) | Institutional comparison baseline (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6): procyclical credit multiplier and boom–bust contraction, regulatory capture drift and leniency, uncapped delegation, delayed enforcement, and statutory credit amnesia |
 
 ## Governed thresholds
 
@@ -1292,6 +1301,8 @@ ratified.
 | Environmental health block tolerance (8.118) | (relative 1e-6) | — | definitional |
 | Meta-research share of research and policy-estimate sharpening per outcome (traits world, 8.131–8.132) | `meta_share`, (halving) | 0 (off), 0.5 | judgment; swept, interior optimum ≈0.05 under shared misjudgement |
 | Issuance horizon: claims outstanding may reach this many steps of deliverable value (8.133, L83; `issuance_headroom_ref`) | (to wire) | 50 (placeholder) | judgment; to be governed |
+| Governance candidate's resolution (predict - measure - adapt, 8.134; `prediction_on_track_ref`, `resolution_due_ref`): ETA in epochs, ETA grace in epochs, confidence band on the predicted change in floor_u + floor_h | `candidate_eta`, `eta_grace`, `candidate_confidence` (`run_coupled`, continuous mode; prediction `candidate_prediction`, none = old one-epoch rule) | 1, 0, 0 (reproduce the one-epoch rule; a candidate states its own) | judgment; defaults are placeholders to be governed |
+| Candidate versus incumbent (8.134 refinement): eligibility needs its predicted per-epoch outcome above the incumbent's recorded mean by the significance rule (z = `gov_z`, at least 2 incumbent records); resolution compares measured per-epoch outcome with its own prediction | `candidate_vs_incumbent` (`run_coupled`, continuous mode, needs `candidate_prediction`) | off (false); no new numeric value, reuses `gov_z` and `candidate_confidence` | judgment; predict - measure - adapt applied to the incumbent |
 | Resource-accounting contraction rate when StandCoin work halts unfunded (8.71 (2), L83) | `ra_rate` | 0 (off) | judgment; first reading did not absorb the stall |
 | Meta leaf's adoption bar: measured gain must exceed this many measurement errors (8.132; L48) | `meta_th` | 1.0 | as `ToyParams.th` |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
@@ -1399,6 +1410,19 @@ Resolved (lifted into governed parameter defaults from `bootstrap_params()`):
 Ha_wt's κ = ½ and q = 1.5 and `HARM_SCHEDULE` (via `HaWt_params_ref`), Fr's confidence bar 0.9 and
 severity multipliers 1000/100/10/1/0.5 (`fr_permissible_params_ref`).
 
+### Status-quo baseline parameters (R6)
+
+Parameters of the status-quo institutional baseline (`StatusQuoParams` in `sim/src/status_quo.jl`), calibrated against empirical findings in `docs/CALIBRATION.md` §9 (R6; BACKPROPAGATION 8.92).
+
+| Parameter | Default | Represents; target | Source (confidence) |
+|---|---|---|---|
+| `crisis_hazard`, `crisis_depth`, `crisis_recovery` | 0.003, 0.15, 36 | Systemic banking/financial crisis monthly probability ($p_{\text{step}} = 1 - (1 - 0.035)^{1/12} \approx 0.003$), peak-to-trough output drop (0.09–0.25), and recovery time (24–48 steps) | Reinhart & Rogoff 2009 [RR09a, RR09b]; Laeven & Valencia 2013, 2020 [LV13, LV20] (high) |
+| `credit_window`, `credit_elasticity`, `bust_contraction`, `bust_threshold` | 60, 0.20, 0.25, 0.10 | 5-year rolling output window ($n_y = 12$, 60 monthly steps), credit multiplier elasticity on recent growth ($\eta = 0.20$), bust contraction ($c_{\text{bust}} = 0.25$), and credit gap trigger (+10 pp) | Schularick & Taylor 2012 [ST12]; Jordà, Schularick & Taylor 2013 [JST13]; Borio & Lowe 2002 [BL02]; Drehmann et al. 2011 [DBT11] (high) |
+| `reg_drift`, `leniency_factor` | 0.003, 0.50 | Regulatory capture drift rate toward incumbent preferences ($\delta_{\text{step}} = 0.003$ per monthly step) and audit scrutiny discount on captured firms | Stigler 1971 [STI71]; Dal Bó 2006 [DAL06]; Lucca, Seru & Trebbi 2014 [LST14]; Blanes i Vidal et al. 2012 [BVF12] (high) |
+| `delegation_cap`, `base_weight`, `expertise_weight` | 1.0, 1.0, 0.0 | One-person-one-vote equal weight with uncapped delegation ($N_{\text{eff}} \approx 2.5$–$5.5$) without expertise weighting | Laakso & Taagepera 1979 [LT79]; Taagepera & Shugart 1989 [TS89]; Kling et al. 2015 [KLI15]; Fritsch et al. 2024 [FMW24] (very high) |
+| `p_detect_step`, `enforcement_lag` | 0.015, 24 | Misconduct detection probability per monthly step ($p_{\text{detect, step}} \approx 0.015$) and legal/enforcement delay before clawbacks or penalties take effect (18–36 steps, median 24 steps) | Dyck, Morse & Zingales 2010, 2023 [DMZ10, DMZ23]; Bryant & Eckard 1991 [BE91]; Karpoff, Lee & Martin 2008 [KLM08] (high) |
+| `memory_window`, `accuracy_rule`, `escrow`, `single_currency` | 100, `:window`, 0.50, true | Flat rectangular sliding window dropping records older than 100 monthly steps (~8.3 years), fixed escrow without credence pricing, and single fiat currency | 15 U.S.C. § 1681c; Musto 2004 [MUS04]; Dobbie, Goldsmith-Pinkham, Mahoney & Song 2020 [DGMS20] (very high) |
+
 ## Noise
 
 Every step that can go wrong in reality has a noise parameter, drawn from its own random stream
@@ -1459,7 +1483,7 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | Hazard harm | `hazard_σ` | 1.0 as a CV (log-normal across beings); event size Pareto: `hazard_heavy` on, exponent `hazard_α` 2, median 1, capped at `hazard_cap` 20 medians | 0.5–2 (CV); α 1.5–2; off (`hazard_heavy` false): Gaussian, 0.2 | Invariant for natural hazards; 3.9, [CSN09] [CT20] [MAR21] (medium). The cap is a world bound (a Pareto of exponent 2 has no variance); the Gaussian shape is the limiting case. Catastrophes (`shock`) keep their stated size |
 | Hazards arising (world; battery factor): chance per step, share of beings threatened, harm per being | `p_hazard`, `hazard_share`, `hazard_size` | 0, 0.1, 1 | 0.05–0.3, not yet set, not yet set | Mixed; 3.9, [CLA18] [CT16] (medium for shape, low for rates). Rate is a battery factor; default stays 0, since a rate acts only with guardians, whose diligence is institution-dependent |
 | Side effects of actions (world; battery factor): chance per action, share of touched beings harmed, harm per being | `p_side`, `side_share`, `side_size` | 0.01, 0.3, 1 (size heavy-tailed like a random hazard) | 0.01–0.1, not yet set, not yet set | Mixed; 3.9, [DEV08] [BRE91] [LAN10] (medium). Simple domains 0.01, complex 0.05–0.1; the preventable share (`p_foresee`) is institution-dependent |
-| Actions building on another's recent output; how much of its effect they carry (M3c, world) | `p_upstream`, `β_upstream` | 0, 0.5 | not yet set |  |
+| Actions building on another's recent output; how much of its effect they carry; max hops propagated (M3c, world) | `p_upstream`, `β_upstream`, `upstream_depth` | 0, 0.5, 1 | not yet set |  |
 | Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | not yet set |  |
 | Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | not yet set |  |
 | Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | not yet set |  |

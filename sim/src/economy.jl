@@ -525,6 +525,45 @@ irreparable_equivalent(deaths, du, pop, base_u, base_h; compounding = 1.5, persi
 issuance_headroom(claims, deliverable_per_step, horizon) =
     ccall(sym(:bf_issuance_headroom), Float64, (Float64, Float64, Float64), Float64(claims), Float64(deliverable_per_step), Float64(horizon))
 
+"A measured outcome is on track when it reaches the prediction less the confidence band (Lean `prediction_on_track_ref`; 8.134)."
+prediction_on_track(measured, predicted, confidence_band) =
+    ccall(sym(:bf_prediction_on_track), UInt8, (Float64, Float64, Float64), Float64(measured), Float64(predicted), Float64(confidence_band)) == 1
+
+"A decision is judged once its ETA plus ETA grace has elapsed (Lean `resolution_due_ref`; 8.134)."
+resolution_due(steps_since_adoption, eta, eta_grace) =
+    ccall(sym(:bf_resolution_due), UInt8, (Csize_t, Csize_t, Csize_t), Csize_t(steps_since_adoption), Csize_t(eta), Csize_t(eta_grace)) == 1
+
 "Deliverable value per step: supply × regeneration rate × value per unit (Lean `deliverable_value_ref`; L83, 8.133)."
 deliverable_value(supply, regen_rate, unit_value) =
     ccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))
+
+"""
+    withhold_charge(market_premium, reward; audit_cost) -> charge
+
+What discovered artificial-scarcity supply withholding costs (Lean `withhold_charge_ref`; 8.133):
+the entire market-wide scarcity premium buyers overpaid across all trades, plus the AdvAp reporter
+reward and the audit cost.
+"""
+function withhold_charge(market_premium::Real, reward::Real; audit_cost::Real)
+    check(isfinite(market_premium) && isfinite(reward) && isfinite(audit_cost) && audit_cost >= 0,
+          "premium and reward finite; audit cost finite, non-negative")
+    ccall(sym(:bf_withhold_charge), Float64, (Float64, Float64, Float64),
+          Float64(market_premium), Float64(reward), Float64(audit_cost))
+end
+
+"""
+    withhold_reward(own_liability, remaining_premium; share, floor, has_coconspirators = false, self_report = false) -> reward
+
+AdvAp reward for reporting artificial-scarcity supply withholding (Lean `withhold_reward_ref`; 8.133):
+a lone self-reporter earns 0; a first reporter in a supply cartel recovers its own liability share
+plus the AdvAp bounty on the remaining colluders' share; an external reporter earns the bounty on
+the prevented harm.
+"""
+function withhold_reward(own_liability::Real, remaining_premium::Real;
+                         share::Real, floor::Real, has_coconspirators::Bool = false, self_report::Bool = false)
+    check(isfinite(own_liability) && isfinite(remaining_premium), "liabilities finite")
+    check(isfinite(share) && share >= 0 && isfinite(floor) && floor >= 0, "share and floor finite, non-negative")
+    ccall(sym(:bf_withhold_reward), Float64, (Float64, Float64, Float64, Float64, UInt8, UInt8),
+          Float64(own_liability), Float64(remaining_premium), Float64(share), Float64(floor),
+          UInt8(has_coconspirators), UInt8(self_report))
+end

@@ -110,6 +110,7 @@ struct M3cParams
     β_upstream::Float64     # how much of that output's effect per being the action carries
     recent_outputs::Int     # outputs kept per domain to build on
     attribution_σ::Float64  # metric models' error in separating an upstream output's part
+    upstream_depth::Int     # maximum hop depth of transaction trees (L95; 1 = direct parent only)
     # Contribution types (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype).
     accolade_rate::Float64  # share of a carried output's positive share earned by carrying it outside contract (governed)
     contract_share::Float64 # the same share when the carrying is contracted: paid as contract completion
@@ -223,6 +224,24 @@ struct M3cParams
     # outstanding stay within that many steps of deliverable value (`deliverable_value_ref` of capacity, regeneration and
     # base price; `issuance_headroom_ref`); value beyond the cap is not issued, logged loudly. Governed (0: off).
     ra_horizon::Float64
+    budget::Bool   # 8.133 step 3: actions need the proposer's currency for their cost and available resources (world; off: legacy)
+    # A resource supplier or supply cartel (8.133, gaming): agent `supplier` (or agents in
+    # `supply_cartel`) owns `supply_share` of capacity (split equally across cartel members) and is
+    # paid that share of every action's resource cost (generation pays work); it may hide
+    # `withhold` of its supply (artificial scarcity, raising scarcity prices; world, adversary).
+    # `withhold_reporter`: 0 lets an external AdvAp observer discover it; > 0 designates the
+    # reporter (either an external reporter, a self-reporting supplier, or a cartel first reporter).
+    supplier::Int
+    supply_share::Float64
+    withhold::Float64
+    supply_cartel::Vector{Int}
+    withhold_reporter::Int
+    # Model collusion & profile gaming under competing models (Task B4; 8.2, 8.23).
+    model_collude::Float64        # chance an arriving challenger belongs to a colluding model cartel (world)
+    model_collude_bias::Float64   # systematic upward bias added by a colluding model for `collude_actors`
+    collude_actors::Vector{Int}   # actors favored by colluding models (empty: all actors when collude triggers)
+    profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
+    profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
 end
 
 """
@@ -248,7 +267,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
                    causal_distribution::Bool = false, cc_threshold::Real = 0.6, traversal_decay::Real = 0.5, p_upstream::Real = 0.0, β_upstream::Real = 0.5, recent_outputs::Integer = 20,
-                   attribution_σ::Real = 0.1, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
+                   attribution_σ::Real = 0.1, upstream_depth::Integer = 1, accolade_rate::Real = 0.05, contract_share::Real = 0.2,
                    p_contracted::Real = 0.0, p_hazard::Real = 0.0, hazard_share::Real = 0.1, hazard_size::Real = 1.0,
                    hazard_σ::Real = CALIBRATED.hazard_σ, hazard_heavy::Bool = true, hazard_α::Real = CALIBRATED.hazard_α, hazard_cap::Real = CALIBRATED.hazard_cap, guardians = Int[], p_informed::Real = 0.8, diligence = Float64[],
                    repair_efficiency::Real = 0.0, p_side::Real = CALIBRATED.p_side, side_share::Real = 0.3, side_size::Real = 1.0,
@@ -265,7 +284,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    takeover_records::Integer = 100, p_extremist::Real = 0.0, extremise::Real = 0.5, whitewash = Float64[],
                    bind_miss::Real = 0.1, bind_clusters::Integer = 3, bind_threshold::Real = 0.5, bind_quorum::Integer = 2,
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
-                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0)
+                   slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
+                   model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -293,7 +313,12 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           isfinite(gov_gauge) && gov_gauge > 1 && isfinite(gov_z) && gov_z >= 0, "governance epoch positive, δ non-negative, two candidates and trials, gauge above 1")
     check(0 <= cc_threshold <= 1 && 0 < traversal_decay <= 1, "confidence threshold in [0, 1], traversal decay in (0, 1]")
     check(0 <= p_upstream <= 1 && isfinite(β_upstream) && β_upstream >= 0 && recent_outputs >= 1 &&
-          isfinite(attribution_σ) && attribution_σ >= 0, "upstream chance in [0, 1], strengths and noise non-negative")
+          isfinite(attribution_σ) && attribution_σ >= 0 && upstream_depth >= 1,
+          "upstream chance in [0, 1], strengths and noise non-negative, depth at least 1")
+    check(0 <= model_collude <= 1 && isfinite(model_collude_bias) && profile_mode in (:measured, :declared) &&
+          (isempty(collude_actors) || all(a -> 1 <= a <= length(agents), collude_actors)) &&
+          (isempty(profile_gamers) || (length(profile_gamers) == length(agents) && all(x -> 0 <= x <= nl + max_new + np + 1, profile_gamers))),
+          "model collusion in [0, 1], finite bias, valid profile mode and agent/leaf indices")
     check(isfinite(remeasure_σ) && remeasure_σ >= 0, "re-measurement noise non-negative")
     check(isempty(deceit) || (length(deceit) == length(agents) && all(isfinite, deceit)), "one finite deceit per agent")
     check(track_window >= 0 && 0 <= p_trace <= 1, "track record window non-negative, trace chance in [0, 1]")
@@ -324,6 +349,11 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "merges: step ≥ 1, absorbed and target distinct agents")
     check(isfinite(ra_rate) && 0 <= ra_rate < 1, "contraction rate in [0, 1)")
     check(isfinite(ra_horizon) && ra_horizon >= 0, "issuance horizon non-negative")
+    check(0 <= supplier <= length(agents) && 0 <= supply_share <= 1 && 0 <= withhold <= 1, "supplier an agent or 0; shares in [0, 1]")
+    check(all(i -> 1 <= i <= length(agents), supply_cartel) && length(unique(supply_cartel)) == length(supply_cartel),
+          "supply_cartel agents distinct and in 1..na")
+    check(!(supplier > 0 && !isempty(supply_cartel)), "specify supplier or supply_cartel, not both")
+    check(0 <= withhold_reporter <= length(agents), "withhold_reporter an agent or 0")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
     check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
@@ -334,7 +364,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               λpos, λneg, marker_σ, window, spread, classify_σ, parent_threshold, μ_min, leaf_threshold, temperature,
               σ_leaf, σ_branch, σ_coarse, n_learn, threshold, novel_threshold, coarse_threshold, max_credence, ratchet_k, ratchet_margin, ratchet_horizon, accuracy_rule, acc_halflife, acc_rate_ref, acc_mute, rate_halflife, Float64.(chain_attrib), chain_mode, isempty(chain_copy) ? zeros(Int, length(chain_attrib)) : Int.(chain_copy), chain_detect, Float64(chain_spot), isempty(chain_shade) ? zeros(length(chain_attrib)) : Float64.(chain_shade), chain_spot_all, adaptive_proposals, Float64(chain_z), ratchet_growth, novel_floor, scarcity_floor, actor_min_records, attest_min_records, adv_min_records, adv_track_floor, form_buffer, own_axis, bind_conf_compromised, bind_conf_affirm, bind_conf_deny, loud, credence_rule, min_records, μ_rate, μ_every, endowment,
               cost_per_touch, capacity, regen, overflow_base, overflow_factor, expert_share, form_count, form_radius, max_new, init_steps, transactions,
-              causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ,
+              causal_distribution, cc_threshold, traversal_decay, p_upstream, β_upstream, recent_outputs, attribution_σ, upstream_depth,
               accolade_rate, contract_share, p_contracted, p_hazard, hazard_share, hazard_size, hazard_σ, collect(Int, guardians), p_informed,
               isempty(diligence) ? fill(diligence_default, length(agents)) : collect(Float64, diligence), repair_efficiency, p_side, side_share,
               side_size, p_foresee, p_shock, shock_size, govern, adapt, gov_epoch, gov_δ, gov_candidates, gov_trials, gov_z, gov_gauge,
@@ -348,7 +378,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               explore_share, takeover_records, p_extremist, extremise,
               isempty(whitewash) ? zeros(length(agents)) : collect(Float64, whitewash), bind_miss, bind_clusters, bind_threshold, bind_quorum, collect(Int, bind_compromised), p_reveal, p_newcomer, attest_pooled, bind_weighted, bind_quorum_weight,
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
-              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon)
+              hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
+              model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -364,8 +395,13 @@ the world's leaf), `stop_leaf` and `priced_leaf` (the network leaf holding the l
 classification or priced share, 0 if none), `costs`, `touched`, `valued_measured`. StandCoin
 lane: `lane_executed`, `lane_halted`, `lane_screened_out`, `lane_costs`, `cofunded`.
 """
-function run_m3c(p::M3cParams; seed)
+function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer = 0)
     t = p.toy
+    # Outside governance (L3.4): every `governor_every` steps `governor(step, snapshot)` may return new governed values
+    # `(pv, threshold, track_window)` (or `nothing`), applied from the next step, so governance acts inside one continuous
+    # economy and no state is reset between its epochs.
+    check(governor === nothing || governor_every >= 1, "a governor needs a positive period")
+    th_now, tw_now = Ref(p.threshold), Ref(p.track_window)
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
@@ -404,9 +440,9 @@ function run_m3c(p::M3cParams; seed)
     captured(c) = any(captured_uid[j] == c && j <= length(ltrue) && any(e.target == ltrue[j] for e in live(:capture)) for j in 1:lmax)
     function correction(a, c)
         h = get(track[a], c, nothing)
-        (p.track_window == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
+        (tw_now[] == 0 || h === nothing || isempty(h) || captured(c)) && return (0.0, 0.0)
         if p.accuracy_rule == :window || cur[] == 0
-            r = @view h[max(1, end - p.track_window + 1):end]
+            r = @view h[max(1, end - tw_now[] + 1):end]
             (mean(first, r), mean(last, r))
         else
             w = [2.0^(-(cur[] - s) / (c <= lmax ? hl_of(c) : hl_of(lmax + 1))) for s in track_step[a][c]]
@@ -419,7 +455,8 @@ function run_m3c(p::M3cParams; seed)
     function fooled(pred, a, plan, c)
         cu, ch = correction(a, c)
         m = touched(plan)
-        d = deceit_now(a)
+        coll_d = (c in collude_uids && (isempty(p.collude_actors) || a in p.collude_actors)) ? p.model_collude_bias : 0.0
+        d = deceit_now(a) + coll_d
         (d == 0 && cu == 0 && ch == 0) ? pred :
             ToyPlan(pred.du .+ (d - cu) .* m, pred.dh .+ (d - ch) .* m)
     end
@@ -606,8 +643,8 @@ function run_m3c(p::M3cParams; seed)
     # leaf j's currency (the top model); a captured model is the top one when the capture begins.
     # `sharp` is the share of its uncertainty a model states: 1 honest, below 1 an extremist (a world
     # property of the model, M6), whose credences sit nearer 0 and 1 than its record supports.
-    Model = NamedTuple{(:uid, :scale, :bias, :sharp, :hist),Tuple{Int,Float64,Float64,Float64,Vector{Rec}}}
-    mpool = [Model[(uid = j, scale = 1.0, bias = lbias[j], sharp = 1.0, hist = lhist[j])] for j in 1:lmax]
+    Model = NamedTuple{(:uid, :scale, :bias, :sharp, :collude, :hist),Tuple{Int,Float64,Float64,Float64,Bool,Vector{Rec}}}
+    mpool = [Model[(uid = j, scale = 1.0, bias = lbias[j], sharp = 1.0, collude = false, hist = lhist[j])] for j in 1:lmax]
     top = ones(Int, lmax)
     topm(j) = mpool[j][top[j]]
     tkey(c) = c <= lmax ? topm(c).uid : c
@@ -615,7 +652,10 @@ function run_m3c(p::M3cParams; seed)
     irng = Xoshiro(hash((seed, :models)))
     takeovers, next_uid = Ref(0), Ref(10^6)  # challengers' track-record keys never meet a currency column
     takeovers_extreme, arrivals_extreme = Ref(0), Ref(0)
+    takeovers_colluding, arrivals_colluding = Ref(0), Ref(0)
+    collude_uids = Set{Int}()
     xtrng = Xoshiro(hash((seed, :extremist)))
+    collrng = Xoshiro(hash((seed, :model_collude)))
     # Accuracy over the recent window is the quality of a model's credences (Lean
     # `credence_accuracy_ref`); its uncertainty, which its credences come from, is the root mean
     # square of its recent value errors: its own track record. No record: no accuracy, a coin toss.
@@ -690,7 +730,7 @@ function run_m3c(p::M3cParams; seed)
                 credence(v, sharp * u; cap = p.max_credence)
             end
         else
-            e = a > 0 ? (@view actor_err[a][max(1, end - p.track_window + 1):end]) : Float64[]
+            e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
             if p.credence_rule == :record
                 # [P] (8.58-c): the share of the record's value errors below the prediction (an
                 # extremist scales its record by `sharp`)
@@ -727,9 +767,9 @@ function run_m3c(p::M3cParams; seed)
     # The ratchet (8.84): each leaf's bar never falls below what enough of its models have cleared.
     lfloor = zeros(lmax)
     function leaf_bar(j)
-        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(p.threshold, lfloor[j])
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_now[], lfloor[j])
         q = argmax(μ[:, j])
-        max(relative_bar(p.threshold, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
+        max(relative_bar(th_now[], p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
     end
     function ratchet!()
         for j in 1:nleaves()
@@ -795,12 +835,18 @@ function run_m3c(p::M3cParams; seed)
     reinvested = zeros(ncol)
     overflow_agent = zeros(na)  # what overflow skimmed from each agent (for reading who reinvests)
     # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
-    memory = NamedTuple{(:agent, :step, :signature, :measured, :profile, :parent_mem, :priced, :credits),
-                        Tuple{Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64},
-                              Vector{Tuple{Int,Float64,Float64}}}}[]
-    # Recent outputs per true domain that later actions may build on: (agent, effect per being on U, on H).
-    outputs = Dict{Int,Vector{Tuple{Int,Float64,Float64}}}()
+    log_seq = Ref(0)
+    next_seq!() = (log_seq[] += 1)
+    pending_scores = NamedTuple{(:col, :uid, :credence, :outcome, :step, :actor),Tuple{Int,Int,Float64,Float64,Int,Int}}[]
+    memory = NamedTuple{(:agent, :step, :seq, :signature, :measured, :profile, :obs_profile, :parent_mem, :priced, :credits, :up_degrees, :scores),
+                        Tuple{Int,Int,Int,Vector{Float64},Float64,Vector{Float64},Vector{Float64},Vector{Float64},Vector{Float64},
+                              Vector{Tuple{Int,Float64,Float64}},Vector{Int},
+                              Vector{NamedTuple{(:col, :uid, :credence, :outcome, :step, :actor),Tuple{Int,Int,Float64,Float64,Int,Int}}}}}[]
+    # Recent outputs per true domain that later actions may build on: (agent, effect per being on U, on H, upstream lineage).
+    outputs = Dict{Int,Vector{Tuple{Int,Float64,Float64,Vector{Tuple{Int,Float64,Float64,Int}}}}}()
     credit_pos, credit_neg, upstream_pos, upstream_neg = zeros(na), zeros(na), zeros(na), zeros(na)
+    upstream_pos_by_degree, upstream_neg_by_degree = zeros(p.upstream_depth), zeros(p.upstream_depth)
+    max_upstream_degree = Ref(0)
     cofunder_credit, interaction = Ref(0.0), Ref(0.0)
     accolade_credit, contract_credit = Ref(0.0), Ref(0.0)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
@@ -811,12 +857,23 @@ function run_m3c(p::M3cParams; seed)
              laundered = Ref(0), laundered_traced = Ref(0))
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
-    formations = NamedTuple{(:step, :leaf, :nearest_leaf, :eligible_step, :reused),Tuple{Int,Int,Int,Int,Bool}}[]
+    formations = NamedTuple{(:step, :seq, :leaf, :nearest_leaf, :eligible_step, :reused, :init_μ),Tuple{Int,Int,Int,Int,Int,Bool,Vector{Float64}}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
-    evidence = NamedTuple{(:signature, :profile, :parent_mem),NTuple{3,Vector{Float64}}}[]
+    evidence = NamedTuple{(:step, :seq, :signature, :profile, :obs_profile, :parent_mem),Tuple{Int,Int,Vector{Float64},Vector{Float64},Vector{Float64},Vector{Float64}}}[]
     available = p.capacity
+    available_honest = p.capacity
+    suppliers = p.supplier > 0 ? [p.supplier] : p.supply_cartel
+    wrng = Xoshiro(hash((seed, :withhold_advap)))
+    withhold_stopped = Ref(false)
+    buyer_overpay = zeros(na)
+    sup_scarcity_gain = zeros(na)
+    sup_clawback = zeros(na)
+    sup_reward = zeros(na)
+    withhold_totals = (premium = Ref(0.0), refunded = Ref(0.0), clawback = Ref(0.0), reward = Ref(0.0), discovered = Ref(0))
     price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
     ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
+    budget = (unfunded = Ref(0), uncashable = Ref(0))
+    supplier_income = Ref(0.0)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0))
     # Imperfect agents (8.31): each agent's choice-noise ceiling per true domain, inverse to its skill
     # there on average; its choices draw noise on their own stream.
@@ -851,7 +908,8 @@ function run_m3c(p::M3cParams; seed)
     attest_skill(c) = length(attest_out[c]) < p.attest_min_records ? 1.0 :
         p.attest_pooled ? choice_skill(attest_cred[c], fill(0.5, length(attest_out[c])), attest_out[c]) :
         class_balanced_skill(attest_cred[c], attest_out[c])
-    bind!(confs) = p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
+    bind!(confs) = p.bind_quorum == 0 ? true :
+                   p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
                    binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
     top_leaf(st) = (k = argmax(st); k <= lmax ? k : 0)
     function relevance_parents(a)
@@ -872,21 +930,25 @@ function run_m3c(p::M3cParams; seed)
         rel_gain[a, :] .+= reputation_decay.(gain, dt; rate = rate_gain)
         rel_loss[a, :] .-= reputation_decay.(loss, dt; rate = rate_loss)
     end
-    function credit!(step, c, st, measured, pm, pr, credits)
+    function credit!(step, c, st, measured, pm, pr, credits; up_degrees::Vector{Int} = Int[])
         # Without markers nothing is measured: the action is logged unmeasured, credited to no one.
+        sc_entries = isempty(pending_scores) ? eltype(pending_scores)[] : copy(pending_scores)
+        empty!(pending_scores)
         if blind[]
-            push!(memory, (agent = credits[1][1], step = step, signature = c, measured = NaN, profile = st,
-                           parent_mem = pm, priced = pr, credits = Tuple{Int,Float64,Float64}[]))
+            push!(memory, (agent = credits[1][1], step = step, seq = 0, signature = c, measured = NaN, profile = st,
+                           obs_profile = Float64[], parent_mem = pm, priced = pr, credits = Tuple{Int,Float64,Float64}[], up_degrees = Int[], scores = sc_entries))
             return
         end
+        sq = next_seq!()
+        obs_st = Float64[st[j] for j in 1:nleaves()]
         observe_membership!(st, pm)
         for (a, pos, neg) in credits
             apply_credit!(a, st, pos, neg)
             credit_pos[a] += pos; credit_neg[a] += neg
         end
         rand(nrng) < p.memory_loss && return  # lost before reaching memory: gone at the next recount
-        push!(memory, (agent = credits[1][1], step = step, signature = c, measured = measured, profile = st,
-                       parent_mem = pm, priced = pr, credits = credits))
+        push!(memory, (agent = credits[1][1], step = step, seq = sq, signature = c, measured = measured, profile = st,
+                       obs_profile = obs_st, parent_mem = pm, priced = pr, credits = credits, up_degrees = copy(up_degrees), scores = sc_entries))
     end
     # Every model on the classification path is scored against the outcome.
     function score!(st, pm, l, plan, seen, quoted, a)
@@ -913,17 +975,24 @@ function run_m3c(p::M3cParams; seed)
         for j in 1:nleaves()
             st[j] > 0 || continue
             rate_count[j] += 1
-            push!(lhist[j], sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, tkey(j)), quoted, j), tkey(j)))
+            rec_top = sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, tkey(j)), quoted, j), tkey(j))
+            push!(lhist[j], rec_top)
+            push!(pending_scores, (col = j, uid = tkey(j), credence = rec_top.credence, outcome = rec_top.outcome, step = rec_top.step, actor = rec_top.actor))
             # Every challenger in the pool is scored on the same logged action (the open log).
             for (k, m) in enumerate(mpool[j])
                 k == top[j] && continue
                 σm = leaf_σ(j, l) / topm(j).scale * m.scale
-                push!(m.hist, sc(j, fooled(predict(irng, MetricModel(mbias(j, m), σm), plan), a, plan, m.uid), m.uid, m.hist, m.sharp))
+                rec_m = sc(j, fooled(predict(irng, MetricModel(mbias(j, m), σm), plan), a, plan, m.uid), m.uid, m.hist, m.sharp)
+                push!(m.hist, rec_m)
+                push!(pending_scores, (col = j, uid = m.uid, credence = rec_m.credence, outcome = rec_m.outcome, step = rec_m.step, actor = rec_m.actor))
             end
         end
         for q in 1:np
-            pm[q] >= p.parent_threshold && (rate_count[lmax + q] += 1;
-                push!(phist[q], sc(col_parent(q), get(() -> fooled(predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), a, plan, col_parent(q)), quoted, col_parent(q)))))
+            pm[q] >= p.parent_threshold || continue
+            rate_count[lmax + q] += 1
+            rec_p = sc(col_parent(q), get(() -> fooled(predict(mrng, MetricModel(pb(q), parent_σ(q, l)), plan), a, plan, col_parent(q)), quoted, col_parent(q)))
+            push!(phist[q], rec_p)
+            push!(pending_scores, (col = -q, uid = -q, credence = rec_p.credence, outcome = rec_p.outcome, step = rec_p.step, actor = rec_p.actor))
         end
     end
     # Repair of an established deception (8.38): every unrepaired record of the actor is re-scored
@@ -944,15 +1013,29 @@ function run_m3c(p::M3cParams; seed)
     end
     function repair_records!(b, du, dh)
         overstated, n = 0.0, 0
-        for (hists, leafy) in (([(m.hist, m.sharp) for j in 1:lmax for m in mpool[j]], true), ([(h, 1.0) for h in phist], false)),
-            (h, sharp) in hists, i in eachindex(h)
+        repaired_cred = Dict{Tuple{Int,Int},Float64}()
+        for (hists, leafy) in (([(m.hist, m.sharp, m.uid) for j in 1:lmax for m in mpool[j]], true), ([(phist[q], 1.0, -q) for q in 1:np], false)),
+            (h, sharp, uid) in hists, i in eachindex(h)
             r = h[i]
             (r.actor == b && !r.fixed) || continue
             ou, oh = du - (r.corr[1] - r.peer_corr[1]), dh - (r.corr[2] - r.peer_corr[2])
             pr = ToyPlan(r.pr.du .- ou .* r.mask, r.pr.dh .- oh .* r.mask)
             v = plan_value(pr, t)
             leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0); n += 1)
-            h[i] = merge(r, (credence = cred(r.c, pr; hist = h, sharp), err = v - r.measured, pr = pr, fixed = true))
+            new_c = cred(r.c, pr; hist = h, sharp)
+            h[i] = merge(r, (credence = new_c, err = v - r.measured, pr = pr, fixed = true))
+            repaired_cred[(uid, i)] = new_c
+        end
+        if !isempty(repaired_cred)
+            occ = Dict{Int,Int}()
+            for m in memory, k in eachindex(m.scores)
+                sc_rec = m.scores[k]
+                c_occ = get(occ, sc_rec.uid, 0) + 1
+                occ[sc_rec.uid] = c_occ
+                if haskey(repaired_cred, (sc_rec.uid, c_occ))
+                    m.scores[k] = merge(sc_rec, (credence = repaired_cred[(sc_rec.uid, c_occ)],))
+                end
+            end
         end
         overstated, n   # the overstated value repaired, over n leaf records: every exploit, for the clawback (8.76)
     end
@@ -989,6 +1072,51 @@ function run_m3c(p::M3cParams; seed)
     top_trace = Vector{Float64}[]
     escape_result = Ref((tried = false, adopted = false, gains = 0.0, harms = 0.0, irreparable = 0, means = Float64[], ses = Float64[],
                          trial_leaves = falses(ntrue)))
+    function snapshot()
+        L = nleaves()
+        cols = [1:L; (lmax + 1):ncol]
+        own_rel = (rel_gain .+ rel_loss)[:, cols]
+        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
+                   h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
+                   relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
+                   relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
+                   reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
+                   withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
+                   lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
+                   credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
+                   cofunder_credit = cofunder_credit[], interaction = interaction[],
+                   accolade_credit = accolade_credit[], contract_credit = contract_credit[],
+                   prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
+                   commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
+                   repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
+                   laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
+                   leaf_accuracy = [leaf_acc(k) for k in 1:L],
+                   leaf_records = [[(actor = r.actor, credence = r.credence, outcome = r.outcome, err = r.err, fixed = r.fixed)
+                                    for r in window_of(lhist[k])] for k in 1:L],
+                   advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
+                   advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
+                   advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
+                   takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
+                   takeovers_colluding = takeovers_colluding[], arrivals_colluding = arrivals_colluding[],
+                   explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+                   attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
+                   top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
+                   assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
+                   hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
+                   unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
+                   repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
+                   params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
+                   cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
+                   evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
+                   μ_init = copy(μ_boot[:, 1:L]), μ_rate = p.μ_rate,
+                   top_uids = [topm(j).uid for j in 1:L],
+                   accuracy_rule = p.accuracy_rule, acc_window = p.window, acc_halflife = p.acc_halflife,
+                   acc_rate_ref = p.acc_rate_ref, acc_mute = p.acc_mute, rate_halflife = p.rate_halflife,
+                   discount_spans = [copy(d) for d in discount_spans],
+                   upstream_depth = p.upstream_depth, max_upstream_degree = max_upstream_degree[],
+                   upstream_pos_by_degree = copy(upstream_pos_by_degree), upstream_neg_by_degree = copy(upstream_neg_by_degree),
+                   λpos = p.λpos, λneg = p.λneg, steps = t.steps))
+    end
     for step in 1:t.steps
         cur[] = step; update_rates!()
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
@@ -1136,19 +1264,35 @@ function run_m3c(p::M3cParams; seed)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
         # Transaction trees: an action may build on a recent output of another agent in its domain,
-        # carrying β of that output's effect on each being it touches.
-        ups = Vector{Union{Nothing,Tuple{Int,ToyPlan}}}(nothing, length(own_plans))
+        # carrying β of that output's effect on each being it touches (up to `upstream_depth` hops).
+        ups = Vector{Union{Nothing,Vector{Tuple{Int,ToyPlan,Int}}}}(nothing, length(own_plans))
+        up_raw = [Tuple{Int,Float64,Float64,Int}[] for _ in eachindex(own_plans)]
         if p.p_upstream > 0
             for j in eachindex(own_plans)
-                pool = [o for o in get(outputs, leaves[j], Tuple{Int,Float64,Float64}[]) if o[1] != proposers[j]]
+                pool = [o for o in get(outputs, leaves[j], Tuple{Int,Float64,Float64,Vector{Tuple{Int,Float64,Float64,Int}}}[]) if o[1] != proposers[j]]
                 (isempty(pool) || rand(urng) >= p.p_upstream) && continue
-                ua, qu, qh = pool[rand(urng, 1:length(pool))]
+                ua, qu, qh, anc = pool[rand(urng, 1:length(pool))]
+                raw = Tuple{Int,Float64,Float64,Int}[(ua, p.β_upstream * qu, p.β_upstream * qh, 1)]
+                if p.upstream_depth > 1 && !isempty(anc)
+                    for (aa, aqu, aqh, ad) in anc
+                        ad + 1 <= p.upstream_depth && aa != proposers[j] || continue
+                        idx = findfirst(x -> x[1] == aa, raw)
+                        sdu, sqh = p.β_upstream * aqu, p.β_upstream * aqh
+                        if idx === nothing
+                            push!(raw, (aa, sdu, sqh, ad + 1))
+                        else
+                            old = raw[idx]
+                            raw[idx] = (aa, old[2] + sdu, old[3] + sqh, min(old[4], ad + 1))
+                        end
+                    end
+                end
+                up_raw[j] = raw
                 m = touched(own_plans[j])
-                ups[j] = (ua, ToyPlan(m .* (p.β_upstream * qu), m .* (p.β_upstream * qh)))
+                ups[j] = [(ag, ToyPlan(m .* qdu, m .* qdh), deg) for (ag, qdu, qdh, deg) in raw]
             end
         end
         plans = [ups[j] === nothing ? own_plans[j] :
-                 ToyPlan(own_plans[j].du .+ ups[j][2].du, own_plans[j].dh .+ ups[j][2].dh) for j in eachindex(own_plans)]
+                 ToyPlan(own_plans[j].du .+ sum(l -> l[2].du, ups[j]), own_plans[j].dh .+ sum(l -> l[2].dh, ups[j])) for j in eachindex(own_plans)]
         # Carry out action j by agent a; the outcome is measured by the markers.
         function perform!(j, a)
             own_done = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
@@ -1177,12 +1321,13 @@ function run_m3c(p::M3cParams; seed)
                     world.laundered[] += 1
                 end
             end
-            done = ups[j] === nothing ? own_done : ToyPlan(own_done.du .+ ups[j][2].du, own_done.dh .+ ups[j][2].dh)
+            done = ups[j] === nothing ? own_done :
+                   ToyPlan(own_done.du .+ sum(l -> l[2].du, ups[j]), own_done.dh .+ sum(l -> l[2].dh, ups[j]))
             seen = read_outcome(done)
             m = touched(own_plans[j])
             if p.p_upstream > 0 && any(m)
-                out = get!(outputs, leaves[j], Tuple{Int,Float64,Float64}[])
-                push!(out, (a, mean(own_done.du[m]), mean(own_done.dh[m])))
+                out = get!(outputs, leaves[j], Tuple{Int,Float64,Float64,Vector{Tuple{Int,Float64,Float64,Int}}}[])
+                push!(out, (a, mean(own_done.du[m]), mean(own_done.dh[m]), up_raw[j]))
                 length(out) > p.recent_outputs && popfirst!(out)
             end
             done, seen, plan_value(seen, t)
@@ -1199,22 +1344,23 @@ function run_m3c(p::M3cParams; seed)
         function credits_for(j, a, seen, measured; pledges = Tuple{Int,Float64}[], need = 0.0, own_pay = 0.0, late_σ = 0.0)
             p.causal_distribution || return [(a, max(measured, 0.0), min(measured, 0.0))]
             m = touched(plans[j])
-            up = ups[j] === nothing ? nothing :
-                ToyPlan(ups[j][2].du .+ m .* p.attribution_σ .* randn(arng, length(m)),
-                        ups[j][2].dh .+ m .* p.attribution_σ .* randn(arng, length(m)))
-            eff = up === nothing ? seen : ToyPlan(seen.du .- up.du, seen.dh .- up.dh)  # the actor's own effect
-            who = [a; first.(pledges); up === nothing ? Int[] : [ups[j][1]]]
+            up_links = ups[j] === nothing ? Tuple{Int,ToyPlan,Int}[] : ups[j]
+            nu = length(up_links)
+            up_ests = [ToyPlan(lnk[2].du .+ m .* p.attribution_σ .* randn(arng, length(m)),
+                               lnk[2].dh .+ m .* p.attribution_σ .* randn(arng, length(m))) for lnk in up_links]
+            eff = isempty(up_ests) ? seen : ToyPlan(seen.du .- sum(u -> u.du, up_ests), seen.dh .- sum(u -> u.dh, up_ests))  # the actor's own effect
+            who = [a; first.(pledges); [lnk[1] for lnk in up_links]]
             n, nf = length(who), length(pledges)
             funded(mask) = isodd(mask) && own_pay + sum((pledges[k][2] for k in 1:nf if mask & (1 << k) != 0); init = 0.0) >= need - 1e-9
-            hasup(mask) = up !== nothing && mask & (1 << (n - 1)) != 0
+            hasup(mask, r) = (mask & (1 << (nf + r))) != 0
             pos, neg = zeros(n), zeros(n)
             # Confidence falls with attribution error and, for a late measurement, its extra noise.
             if n <= 62 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
                 assessed_outcomes[] += 1
                 for b in findall(m)
                     # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream).
-                    v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + (hasup(mask) ? up.du[b] : 0.0),
-                                             (funded(mask) ? eff.dh[b] : 0.0) + (hasup(mask) ? up.dh[b] : 0.0), t)
+                    v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].du[b] : 0.0 for r in 1:nu); init = 0.0),
+                                             (funded(mask) ? eff.dh[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].dh[b] : 0.0 for r in 1:nu); init = 0.0), t)
                     φ = shapley_shares(v, n; rng = Xoshiro(hash((seed, :shapley, t, j, b))))
                     pos .+= max.(φ, 0.0); neg .+= min.(φ, 0.0)
                 end
@@ -1223,9 +1369,10 @@ function run_m3c(p::M3cParams; seed)
                 degrade!("Shapley causal distribution", "traversal shares", "attribution below the confidence gate or too many contributors")
                 # The substrate records what each link passed on: the upstream output as logged, the
                 # co-funders' payments, and the actor's outcome net of what it received.
-                rec = up === nothing ? 0.0 : max(sum(assessed_value(ups[j][2].du[b], ups[j][2].dh[b], t) for b in findall(m); init = 0.0), 0.0)
-                netc = [max(abs(measured) - rec, 0.0); last.(pledges); up === nothing ? Float64[] : [rec]]
-                share = traversal_shares(netc, [0.0; ones(n - 1)]; decay = p.traversal_decay)
+                recs = Float64[max(sum(assessed_value(up_links[r][2].du[b], up_links[r][2].dh[b], t) for b in findall(m); init = 0.0), 0.0) for r in 1:nu]
+                netc = [max(abs(measured) - sum(recs), 0.0); Float64[last(pl) for pl in pledges]; recs]
+                degs = [0.0; ones(nf); Float64[lnk[3] for lnk in up_links]]
+                share = traversal_shares(netc, degs; decay = p.traversal_decay)
                 pos .= max(measured, 0.0) .* share; neg .= min(measured, 0.0) .* share
             end
             P, N = sum(pos), sum(neg)
@@ -1235,24 +1382,37 @@ function run_m3c(p::M3cParams; seed)
             # Carrying the upstream output on: outside contract, a communicative contribution earning
             # an accolade; under contract, the contracted share, paid as completion of the contract.
             # Either comes out of the maker's positive share; losses stay with whoever caused them.
-            if up !== nothing && credits[n][2] > 0
-                hired = rand(krng) < p.p_contracted
-                fee = carry_fee(credits[n][2], hired; p.accolade_rate, p.contract_share)
-                credits[n] = (credits[n][1], credits[n][2] - fee, credits[n][3])
-                credits[1] = (credits[1][1], credits[1][2] + fee, credits[1][3])
-                (hired ? contract_credit : accolade_credit)[] += fee
+            for r in 1:nu
+                idx = 1 + nf + r
+                deg = up_links[r][3]
+                max_upstream_degree[] = max(max_upstream_degree[], deg)
+                if credits[idx][2] > 0
+                    hired = rand(krng) < p.p_contracted
+                    fee = carry_fee(credits[idx][2], hired; p.accolade_rate, p.contract_share)
+                    credits[idx] = (credits[idx][1], credits[idx][2] - fee, credits[idx][3])
+                    credits[1] = (credits[1][1], credits[1][2] + fee, credits[1][3])
+                    (hired ? contract_credit : accolade_credit)[] += fee
+                end
+                e, pp, nn = credits[idx]
+                upstream_pos[e] += pp; upstream_neg[e] += nn
+                deg <= length(upstream_pos_by_degree) && (upstream_pos_by_degree[deg] += pp; upstream_neg_by_degree[deg] += nn)
             end
             for (k, (e, pp, nn)) in enumerate(credits)
                 2 <= k <= 1 + nf && (cofunder_credit[] += pp + nn)
-                if up !== nothing && k == n
-                    upstream_pos[e] += pp; upstream_neg[e] += nn
-                end
             end
             credits
         end
         sigs = [true_sig[l] .+ p.spread .* randn(drng, dims) .+ p.classify_σ .* randn(crng, dims) for l in leaves]
         pms = [parent_mem(c) for c in sigs]
-        stops = [classify_sig(c) for c in sigs]
+        stops = map(eachindex(sigs)) do j
+            if p.profile_mode == :declared && !isempty(p.profile_gamers) && p.profile_gamers[proposers[j]] > 0
+                st = zeros(ncol)
+                st[p.profile_gamers[proposers[j]]] = 1.0
+                st
+            else
+                classify_sig(sigs[j])
+            end
+        end
         for j in 1:nleaves()
             if !leaf_ok(j) && length(mpool[j]) > 1
                 best_k = eval_challengers(j; only_if_eligible = true)
@@ -1261,15 +1421,26 @@ function run_m3c(p::M3cParams; seed)
                     lhist[j] = topm(j).hist
                     takeovers[] += 1
                     takeovers_extreme[] += topm(j).sharp != 1.0
+                    takeovers_colluding[] += topm(j).collude
                     degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
         end
         priced = [price_shares(st) for st in stops]
+        if !scoring_only
+            for j in eachindex(priced)
+                if any(k -> !leaf_ok(k) && stops[j][k] > 0.5 && priced[j][k] <= 0.5 &&
+                            any(q -> priced[j][lmax + q] > 0.5, 1:np), 1:nleaves())
+                    degrade!("leaf domain pricing", "eligible parent model by μ", "leaf model below eligibility bar (8.23)")
+                end
+            end
+        end
         unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
+        unit_cost_honest = price_scale[] * scarcity_cost(p.cost_per_touch, available_honest, p.capacity; floor_share = p.scarcity_floor)
         halted0, executed0 = lane.halted[], lane.executed[]
         costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
                  for (j, plan) in enumerate(plans)]
+        costs_honest = unit_cost > 0 ? costs .* (unit_cost_honest / unit_cost) : copy(costs)
         menu, menu_preds, offers, lane_queue = Int[], ToyPlan[], Dict{Int,Vector{Tuple{Int,Float64,ToyPlan,Float64}}}(), Int[]
         executed_j = falses(length(plans))
         for j in eachindex(plans)
@@ -1277,7 +1448,8 @@ function run_m3c(p::M3cParams; seed)
             if k > lmax && stops[j][k] > 0.5
                 push!(get!(buffers, k, Vector{Float64}[]), sigs[j])
                 length(buffers[k]) > p.form_buffer * p.form_count && popfirst!(buffers[k])
-                push!(evidence, (signature = sigs[j], profile = stops[j], parent_mem = pms[j]))
+                push!(evidence, (step = step, seq = next_seq!(), signature = sigs[j], profile = stops[j],
+                                 obs_profile = Float64[stops[j][k] for k in 1:nleaves()], parent_mem = pms[j]))
                 observe_membership!(stops[j], pms[j])
             end
             if scoring_only
@@ -1331,8 +1503,28 @@ function run_m3c(p::M3cParams; seed)
             # Local, not the step's: a deferred measurement must keep this action's own values.
             local a, plan, l, done, seen, measured, credits, minted, idx
             a, plan, l = proposers[j], plans[j], leaves[j]
+            # Budget constraint (8.133 step 3): the proposer must hold the currency for the action's resource cost, and the
+            # resources must be there; a funded action refused for lack of resources is a check that cannot be cashed.
+            if p.budget
+                if sum(max.(balance[a, :], 0.0)) < costs[j]
+                    budget.unfunded[] += 1; return
+                elseif available < count(touched(plan))
+                    budget.uncashable[] += 1
+                    degrade!("resources", "action refused", "funded claim but capacity exhausted (8.133)")
+                    return
+                end
+            end
             done, seen, measured = perform!(j, a)
             balance[a, root] -= priced[j][root] * costs[j]
+            if !isempty(suppliers)
+                per_sup_inc = p.supply_share * costs[j] / length(suppliers)
+                per_sup_extra = (!withhold_stopped[] && p.withhold > 0) ? p.supply_share * max(0.0, costs[j] - costs_honest[j]) / length(suppliers) : 0.0
+                for s_idx in suppliers
+                    balance[s_idx, root] += per_sup_inc
+                    sup_scarcity_gain[s_idx] += per_sup_extra
+                end
+                supplier_income[] += p.supply_share * costs[j]
+            end
             minted = 0.0
             if blind[]
                 # Measurement outage (L154 Progressive: degrade, fall back): paid by prediction
@@ -1363,7 +1555,8 @@ function run_m3c(p::M3cParams; seed)
                     tr.supply[idx] += delta  # the settlement mints or burns what the upfront did not
                     learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen_late)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
-                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
+                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late;
+                            up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
                 end)
             else
                 credits = credits_for(j, a, seen, measured)
@@ -1388,12 +1581,19 @@ function run_m3c(p::M3cParams; seed)
             # resource cost, less the harm; a measurement outage mints the upfront now, the settlement later.
             shares = sum(sh for (_, sh, _, _) in offers[j]; init = 0.0)
             cost_paid = (priced[j][root] + shares) * costs[j]
+            if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j]
+                overpay = (priced[j][root] + shares) * (costs[j] - costs_honest[j])
+                buyer_overpay[a] += overpay
+                withhold_totals.premium[] += overpay
+            end
             push!(tr.supply, blind[] ? minted - cost_paid :
                   supply_delta(shares * sum(x[2] for x in credits), cost_paid, -shares * sum(x[3] for x in credits)))
             blind[] || trial_outcome!(l, measured, seen)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
-            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits)
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits;
+                    up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
             available -= count(touched(plan))
+            available_honest -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
         end
@@ -1407,9 +1607,12 @@ function run_m3c(p::M3cParams; seed)
                 score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]), a)
                 learn!(a, plan, offers[j][1][3], seen)
                 executed!(j, a, step, offers[j][1][3], done)
-                credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits_for(j, a, seen, measured))
+                credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
+                        blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured);
+                        up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
                 lane.init_executed[] += 1
                 available -= count(touched(plan))
+                available_honest -= count(touched(plan))
                 s.u .+= done.du
                 s.h .+= done.dh
             end
@@ -1467,6 +1670,15 @@ function run_m3c(p::M3cParams; seed)
                 balance[e, root] -= g
                 lane.cofunded[] += g
             end
+            if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j] > 0
+                ratio = (costs[j] - costs_honest[j]) / costs[j]
+                buyer_overpay[a] += self_pay * ratio
+                withhold_totals.premium[] += self_pay * ratio
+                for (e, g) in pledges
+                    buyer_overpay[e] += g * ratio
+                    withhold_totals.premium[] += g * ratio
+                end
+            end
             done, seen, measured = perform!(j, a)
             executed!(j, a, step, pred, done)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
@@ -1477,7 +1689,8 @@ function run_m3c(p::M3cParams; seed)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pred), a)
             blind[] || learn!(a, plan, pred, seen)
             lane_credits = blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured; pledges, need, own_pay = self_pay)
-            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], lane_credits)
+            credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], lane_credits;
+                    up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
             tr.lane_supply[end] += burn_harm!(lane_credits, stops[j])
             if blind[]
                 push!(deferred, function ()
@@ -1486,11 +1699,13 @@ function run_m3c(p::M3cParams; seed)
                     push!(tr.lane_measured, measured_late)
                     score!(stops[j], pms[j], l, plan, seen_late, Dict(c => pred), a)
                     late = credits_for(j, a, seen_late, measured_late; pledges, need, own_pay = self_pay, late_σ = p.remeasure_σ)
-                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late)
+                    credit!(step, sigs[j], stops[j], measured_late, pms[j], priced[j], late;
+                            up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
                     push!(tr.lane_supply, burn_harm!(late, stops[j]))
                 end)
             end
             available -= count(touched(plan))
+            available_honest -= count(touched(plan))
             s.u .+= done.du
             s.h .+= done.dh
         end
@@ -1511,6 +1726,11 @@ function run_m3c(p::M3cParams; seed)
                 if bp !== nothing && balance[a, root] >= costs[j]
                     pred = fooled(bp[2], a, plan, tkey(bp[1]))
                     balance[a, root] -= costs[j]
+                    if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j]
+                        overpay = costs[j] - costs_honest[j]
+                        buyer_overpay[a] += overpay
+                        withhold_totals.premium[] += overpay
+                    end
                     done, seen, measured = perform!(j, a)
                     explored[] += 1
                     push!(tr.lane_costs, costs[j]); push!(tr.lane_measured, measured)
@@ -1519,11 +1739,13 @@ function run_m3c(p::M3cParams; seed)
                     score!(stops[j], pms[j], l, plan, seen, Dict(bp[1] => pred), a)
                     learn!(a, plan, pred, seen)
                     ex_credits = credits_for(j, a, seen, measured; need = costs[j], own_pay = costs[j])
-                    credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], ex_credits)
+                    credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], ex_credits;
+                            up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
                     tr.lane_supply[end] += burn_harm!(ex_credits, stops[j])
                     push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
                     push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
                     available -= count(touched(plan))
+                    available_honest -= count(touched(plan))
                     s.u .+= done.du
                     s.h .+= done.dh
                 end
@@ -1690,7 +1912,11 @@ function run_m3c(p::M3cParams; seed)
             s.u .+= rep.du; s.h .+= rep.dh
         end
         empty!(repairs)
-        available = min(p.capacity, max(0.0, available) + p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng)))
+        regen_amt = p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng))
+        available = min(p.capacity, max(0.0, available) + regen_amt)
+        available_honest = min(p.capacity, max(0.0, available_honest) + regen_amt)
+        (!isempty(suppliers) && !withhold_stopped[]) &&
+            (available = min(available, p.capacity * (1 - p.withhold * p.supply_share)))   # hidden supply
         # Global resource accounting (8.133): the step's net new issuance is capped at the headroom left under the horizon of
         # deliverable value; the excess is taken back pro rata from the identities whose balances rose this step (not issued).
         if p.ra_horizon > 0
@@ -1731,7 +1957,8 @@ function run_m3c(p::M3cParams; seed)
                 leaf = existing  # a leaf already there: reused, never duplicated
             end
             existing === nothing && (μ[:, leaf] .= [projection_membership(centroid, parent_sig[q]) for q in 1:np])
-            push!(formations, (step = step, leaf = leaf, nearest_leaf = ltrue[leaf], eligible_step = 0, reused = existing !== nothing))
+            push!(formations, (step = step, seq = next_seq!(), leaf = leaf, nearest_leaf = ltrue[leaf], eligible_step = 0, reused = existing !== nothing,
+                               init_μ = existing === nothing ? Vector{Float64}(μ[:, leaf]) : Float64[]))
             deleteat!(buf, near[best])
             formed = true
         end
@@ -1769,8 +1996,11 @@ function run_m3c(p::M3cParams; seed)
                     next_uid[] += 1
                     extreme = p.p_extremist > 0 && rand(xtrng) < p.p_extremist
                     arrivals_extreme[] += extreme
+                    coll = p.model_collude > 0 && rand(collrng) < p.model_collude
+                    arrivals_colluding[] += coll
+                    coll && push!(collude_uids, next_uid[])
                     push!(mpool[j], (uid = next_uid[], scale = scale,
-                                    bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, hist = Rec[]))
+                                    bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, collude = coll, hist = Rec[]))
                     if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
                         cands = [k for k in eachindex(mpool[j]) if k != top[j]]
                         scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
@@ -1784,6 +2014,7 @@ function run_m3c(p::M3cParams; seed)
                 if best_k != top[j]
                     top[j] = best_k; lhist[j] = topm(j).hist; takeovers[] += 1
                     takeovers_extreme[] += topm(j).sharp != 1.0
+                    takeovers_colluding[] += topm(j).collude
                     !old_ok && degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
                 end
             end
@@ -1820,7 +2051,7 @@ function run_m3c(p::M3cParams; seed)
                 rec = audit_log[b][audit_from[b]:end]
                 length(rec) >= p.adv_min_records || frivol || continue
                 # Per model, other actors' recent raw errors: what it errs on everyone.
-                w = max(p.track_window, p.adv_track_floor)
+                w = max(tw_now[], p.adv_track_floor)
                 peers_of(c) = vcat([track[k][c][max(1, end - w + 1):end] for k in 1:na if k != b && haskey(track[k], c)]...)
                 base = Dict(c => peers_of(c) for c in unique(first.(rec)))
                 mu(c, f) = isempty(base[c]) ? 0.0 : mean(f, base[c])
@@ -1907,6 +2138,69 @@ function run_m3c(p::M3cParams; seed)
                     end
                 end
             end
+            # Artificial-scarcity supply withholding discovery, full buyer repayment, and cartel defection (8.133).
+            if !isempty(suppliers) && p.withhold > 0 && !withhold_stopped[] && withhold_totals.premium[] > 0 && rand(wrng) < p.vigilance
+                ext = [i for i in 1:na if !(i in suppliers)]
+                reporter = p.withhold_reporter > 0 ? p.withhold_reporter : (isempty(ext) ? 0 : rand(wrng, ext))
+                if reporter > 0
+                    withhold_stopped[] = true
+                    withhold_totals.discovered[] += 1
+                    adv.reports[] += 1; adv.founded[] += 1; adv.established[] += 1; adv.audits[] += p.audit_cost
+                    P = withhold_totals.premium[]
+                    refunded = 0.0
+                    for b in 1:na
+                        buyer_overpay[b] > 0 || continue
+                        balance[b, root] += buyer_overpay[b]
+                        refunded += buyer_overpay[b]
+                        buyer_overpay[b] = 0.0
+                    end
+                    withhold_totals.refunded[] += refunded
+                    m = length(suppliers)
+                    self_rep = reporter in suppliers
+                    if !self_rep
+                        rew = withhold_reward(0.0, P; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = m > 1, self_report = false)
+                        chg = withhold_charge(P, rew; audit_cost = p.audit_cost)
+                        per = chg / m
+                        for s_idx in suppliers
+                            balance[s_idx, root] -= per
+                            sup_clawback[s_idx] += per
+                        end
+                        balance[reporter, root] += rew
+                        sup_reward[reporter] += rew
+                        adv.rewards[] += rew; adv.liability[] += chg; adv.net[] += rew - chg
+                        withhold_totals.clawback[] += chg; withhold_totals.reward[] += rew
+                    elseif m == 1
+                        rew = withhold_reward(P, 0.0; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = false, self_report = true)
+                        chg = withhold_charge(P, rew; audit_cost = 0.0)
+                        s_idx = suppliers[1]
+                        balance[s_idx, root] -= chg
+                        sup_clawback[s_idx] += chg
+                        adv.liability[] += chg; adv.net[] -= chg
+                        withhold_totals.clawback[] += chg
+                    else
+                        own_liab = P / m
+                        rem_prem = P - own_liab
+                        rew = withhold_reward(own_liab, rem_prem; share = p.adv_share, floor = p.adv_floor,
+                                              has_coconspirators = true, self_report = true)
+                        balance[reporter, root] -= own_liab
+                        sup_clawback[reporter] += own_liab
+                        others = [s_idx for s_idx in suppliers if s_idx != reporter]
+                        chg_others = withhold_charge(rem_prem, rew; audit_cost = p.audit_cost)
+                        per_other = chg_others / length(others)
+                        for s_idx in others
+                            balance[s_idx, root] -= per_other
+                            sup_clawback[s_idx] += per_other
+                        end
+                        balance[reporter, root] += rew
+                        sup_reward[reporter] += rew
+                        adv.rewards[] += rew; adv.liability[] += own_liab + chg_others; adv.net[] += rew - (own_liab + chg_others)
+                        withhold_totals.clawback[] += own_liab + chg_others; withhold_totals.reward[] += rew
+                    end
+                    available = max(available, available_honest)
+                end
+            end
         end
         blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
         record!()
@@ -1948,39 +2242,16 @@ function run_m3c(p::M3cParams; seed)
             t = with_params(t, p.adapt ? pv_try : pv)
             gov.start[] = floors
         end
+        if governor !== nothing && step % governor_every == 0
+            g = governor(step, snapshot())
+            if g !== nothing
+                haskey(g, :pv) && g.pv !== nothing && (t = with_params(t, g.pv))
+                haskey(g, :threshold) && g.threshold !== nothing && (th_now[] = Float64(g.threshold))
+                haskey(g, :track_window) && g.track_window !== nothing && (tw_now[] = Int(g.track_window))
+            end
+        end
     end
-    L = nleaves()
-    cols = [1:L; (lmax + 1):ncol]
-    own_rel = (rel_gain .+ rel_loss)[:, cols]
-    merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
-               h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
-               relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
-               relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
-               reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
-               credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
-               cofunder_credit = cofunder_credit[], interaction = interaction[],
-               accolade_credit = accolade_credit[], contract_credit = contract_credit[],
-               prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
-               commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
-               repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
-               laundered = world.laundered[], laundered_traced = world.laundered_traced[], upfront = agent_upfront, settled_value = agent_settled,
-               leaf_accuracy = [leaf_acc(k) for k in 1:L],
-               leaf_records = [[(actor = r.actor, credence = r.credence, outcome = r.outcome, err = r.err, fixed = r.fixed)
-                                for r in window_of(lhist[k])] for k in 1:L],
-               advap_reports = adv.reports[], advap_founded = adv.founded[], advap_established = adv.established[],
-               advap_rewards = adv.rewards[], advap_liability = adv.liability[], advap_penalties = adv.penalties[],
-               advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
-               takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
-               explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
-               attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
-               top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
-               assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
-               hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
-               unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
-               repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
-               params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
-               cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
-               λpos = p.λpos, λneg = p.λneg, steps = t.steps))
+    snapshot()
 end
 
 """
@@ -2001,4 +2272,114 @@ function recount(tr)
         rel[a, :] .+= reputation_decay.(gain, tr.steps - m.step; rate = rate_gain) .- reputation_decay.(loss, tr.steps - m.step; rate = rate_loss)
     end
     hp, hn, rel
+end
+
+"""
+    recount_μ(tr) -> Matrix{Float64}
+
+Domain overlap degrees recounted from the open log (`tr.memory`, `tr.evidence`, `tr.formations`),
+starting from `tr.μ_init` and replaying logged observations and formations in sequence order.
+"""
+function recount_μ(tr)
+    np, L = size(tr.μ_init)
+    μ = copy(tr.μ_init)
+    events = Tuple{Int,Int,Any}[]
+    for fm in tr.formations
+        !fm.reused && !isempty(fm.init_μ) && push!(events, (fm.seq, 1, fm))
+    end
+    for e in tr.evidence
+        push!(events, (e.seq, 2, (st = hasproperty(e, :obs_profile) ? e.obs_profile : e.profile, pm = e.parent_mem)))
+    end
+    for m in tr.memory
+        m.seq > 0 && push!(events, (m.seq, 2, (st = hasproperty(m, :obs_profile) ? m.obs_profile : m.profile, pm = m.parent_mem)))
+    end
+    sort!(events; by = first)
+    for (_, kind, payload) in events
+        if kind == 1
+            μ[:, payload.leaf] .= payload.init_μ
+        else
+            for j in eachindex(payload.st), q in 1:np
+                payload.st[j] > 0 && (μ[q, j] = membership_rolling(μ[q, j], payload.st[j], payload.pm[q]; rate = tr.μ_rate))
+            end
+        end
+    end
+    μ
+end
+
+"""
+    recount_models(tr) -> NamedTuple
+
+Model evaluation recounted from the open log (`tr.memory`), recovering per-domain transaction rates
+and model accuracies (`leaf_accuracy` for each leaf's final top model, `by_uid` across logged models).
+"""
+function recount_models(tr)
+    L = size(tr.μ, 2)
+    counts = zeros(Int, max(tr.steps, 1), L)
+    ScoreRec = NamedTuple{(:credence, :outcome, :step, :actor),Tuple{Float64,Float64,Int,Int}}
+    by_uid = Dict{Int,Vector{ScoreRec}}()
+    uid_col = Dict{Int,Int}()
+    for m in tr.memory
+        isempty(m.scores) && continue
+        sstep = m.scores[1].step
+        seen_cols = falses(L)
+        for s in m.scores
+            if 1 <= s.col <= L
+                uid_col[s.uid] = s.col
+                !seen_cols[s.col] && (seen_cols[s.col] = true; 1 <= sstep < tr.steps && (counts[sstep, s.col] += 1))
+            end
+            s.col > 0 && push!(get!(by_uid, s.uid, ScoreRec[]), (credence = s.credence, outcome = s.outcome, step = s.step, actor = s.actor))
+        end
+    end
+    d = 2.0^(-1 / tr.rate_halflife)
+    rate_sum, rate_norm = zeros(L), 0.0
+    for st in 1:tr.steps
+        c = st == 1 ? zeros(Int, L) : @view counts[st - 1, :]
+        rate_sum .= d .* rate_sum .+ (1 - d) .* c
+        rate_norm = d * rate_norm + (1 - d)
+    end
+    rates = rate_norm > 0 ? rate_sum ./ rate_norm : zeros(L)
+    hls = [decay_halflife(rates[j]; ref_rate = tr.acc_rate_ref, ref_halflife = tr.acc_halflife, mute = tr.acc_mute) for j in 1:L]
+    disc(x) = x.actor > 0 && any(s0 <= x.step <= s1 for (s0, s1) in tr.discount_spans[x.actor])
+    function eval_hist(h, hl)
+        isempty(h) && return 0.0
+        if tr.accuracy_rule == :window
+            w = @view h[max(1, end - tr.acc_window + 1):end]
+            return credence_accuracy([x.credence for x in w], [x.outcome for x in w])
+        end
+        issorted(h; by = x -> x.step) || sort!(h; by = x -> x.step)
+        i0 = searchsortedfirst(h, tr.steps - 40 * hl; by = x -> x isa Real ? x : x.step)
+        r = [x for x in @view(h[i0:end]) if !disc(x)]
+        isempty(r) ? 0.0 : decayed_accuracy([x.credence for x in r], [x.outcome for x in r], [tr.steps - x.step for x in r], hl)
+    end
+    leaf_acc = [eval_hist(get(by_uid, tr.top_uids[j], ScoreRec[]), hls[j]) for j in 1:L]
+    uid_acc = Dict{Int,Float64}(uid => eval_hist(h, hls[get(uid_col, uid, 1)]) for (uid, h) in by_uid)
+    (leaf_accuracy = leaf_acc, by_uid = uid_acc, rates = rates)
+end
+
+"""
+    recount_cc(tr) -> NamedTuple
+
+Causal distribution totals recounted from `tr.memory`, recovering `credit_pos`, `credit_neg`,
+`upstream_pos`, `upstream_neg`, `upstream_pos_by_degree`, and `upstream_neg_by_degree`.
+"""
+function recount_cc(tr)
+    na = size(tr.relevance_own, 1)
+    cpos, cneg, upos, uneg = zeros(na), zeros(na), zeros(na), zeros(na)
+    dpos, dneg = zeros(tr.upstream_depth), zeros(tr.upstream_depth)
+    for m in tr.memory
+        for (a, pos, neg) in m.credits
+            cpos[a] += pos; cneg[a] += neg
+        end
+        nu = length(m.up_degrees)
+        nu > 0 || continue
+        off = length(m.credits) - nu
+        for r in 1:nu
+            e, pp, nn = m.credits[off + r]
+            upos[e] += pp; uneg[e] += nn
+            deg = m.up_degrees[r]
+            1 <= deg <= length(dpos) && (dpos[deg] += pp; dneg[deg] += nn)
+        end
+    end
+    (credit_pos = cpos, credit_neg = cneg, upstream_pos = upos, upstream_neg = uneg,
+     upstream_pos_by_degree = dpos, upstream_neg_by_degree = dneg)
 end

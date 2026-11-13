@@ -20,26 +20,32 @@ using BenefutureSim, Statistics, Random, Printf, Dates
 # only in `MECHANISM_FIELDS`. `stress` (:stressed | :unstressed) switches catastrophes, outages and
 # capture; research breakthroughs occur in both.
 const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
-const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule)
+const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule, :bind_weighted)
 const GOV_MECHANISM_FIELDS = (:advap,)
 const WORLD_ARMS = (:bf, :status_quo)
 
-function world_events(stress::Symbol)
+function world_events(stress::Symbol; steps::Integer = 1200)
     stress in (:stressed, :unstressed) || error("stress must be :stressed or :unstressed")
-    breakthroughs = [
+    scale_ev(ev) = steps == 1200 ? ev : shock(
+        ev.kind;
+        step = clamp(round(Int, ev.step * steps / 1200), 1, steps),
+        duration = ev.duration == 0 ? 0 : max(1, round(Int, ev.duration * steps / 1200)),
+        size = ev.size, share = ev.share, target = ev.target,
+    )
+    breakthroughs = scale_ev.([
         shock(:breakthrough; step = 300, duration = 900, size = 0.5, target = 1),
         shock(:breakthrough; step = 720, duration = 480, size = 0.6, target = 2),
         shock(:breakthrough; step = 1020, duration = 180, size = 0.5, target = 3),
-    ]
+    ])
     stress == :unstressed && return breakthroughs
-    sort!(vcat(breakthroughs, [
+    sort!(vcat(breakthroughs, scale_ev.([
         shock(:catastrophe; step = 240, share = 0.4, size = 20.0),
         shock(:outage; step = 420, duration = 18),
         shock(:capture; step = 540, duration = 60, size = 2.5, target = 1),
         shock(:catastrophe; step = 660, share = 0.5, size = 25.0),
         shock(:outage; step = 840, duration = 12),
         shock(:catastrophe; step = 960, share = 0.35, size = 18.0),
-    ]); by = s -> s.step)
+    ])); by = s -> s.step)
 end
 
 function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
@@ -59,11 +65,12 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
         p_upstream = 0.4, guardians = [1, 2, 3, 4],
         p_hazard = 0.10, p_side = 0.02, repair_efficiency = 0.5,
         deceit = deceit, on_off = 25, frivolous = frivolous, slander = zeros(Int, n_agents),
-        p_new_model = 0.01, events = world_events(stress),
+        p_new_model = 0.01, events = world_events(stress; steps = steps),
         accuracy_rule = bf ? :decay : :window,
         advap = bf,
         ratchet_k = bf ? 3 : 0,
         credence_rule = bf ? :record : :normal,
+        bind_weighted = bf,
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
                           loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf)
@@ -111,9 +118,9 @@ const MD_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "long_horizon.md" 
 const CSV_PATH = joinpath(OUT_DIR, isempty(string(SHARD_ID)) ? "long_horizon.csv" : "long_horizon.$SHARD_ID.csv")
 
 const CLI_SEEDS = get(CLI_ARGS, "seeds", nothing)
-const N_ECON_SEEDS = parse(Int, get(ENV, "BF_ECON_SEEDS", "24"))
-const N_GOV_SEEDS = parse(Int, get(ENV, "BF_GOV_SEEDS", "24"))
-const N_CENTURY_SEEDS = parse(Int, get(ENV, "BF_CENTURY_SEEDS", "16"))
+const N_ECON_SEEDS = parse(Int, get(ENV, "BF_ECON_SEEDS", "32"))
+const N_GOV_SEEDS = parse(Int, get(ENV, "BF_GOV_SEEDS", "32"))
+const N_CENTURY_SEEDS = parse(Int, get(ENV, "BF_CENTURY_SEEDS", "32"))
 const N_SWEEP_SEEDS = parse(Int, get(ENV, "BF_SWEEP_SEEDS", "64"))
 const ECON_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_ECON_SEEDS
 const GOV_SEEDS = CLI_SEEDS !== nothing ? CLI_SEEDS : 1:N_GOV_SEEDS
@@ -164,12 +171,16 @@ sections = String[]
 function flush_report!(sections, rows, commit, t_start; status = "IN PROGRESS")
     elapsed = (time() - t_start) / 60
     open(MD_PATH, "w") do io
-        println(io, "# Long-Horizon & Century Composed Simulation Report (8.64, 8.81, 8.85, 8.86)")
+        println(io, "# Long-Horizon & Century Coupled Battery Report (L3.1–L3.3; 8.64, 8.81, 8.85, 8.86)")
         println(io)
         @printf(io, "- **Commit**: `%s`\n", commit)
         @printf(io, "- **Threads**: `%d`\n", Threads.nthreads())
         @printf(io, "- **Status**: `%s` (%.1f minutes elapsed)\n", status, elapsed)
-        println(io, "- **Significance Standard**: Pre-stated `z = 2.0` (`z = 3.0` for README/BACKPROPAGATION), contiguous seeds `1:N`.")
+        println(io, "- **Significance Standard**: Exploratory `z = 2.0`; **README / formal claim bar `z = 3.0`**, contiguous paired seeds `1:N`.")
+        println(io, "- **Pre-stated Hypotheses & Smallest Effects That Matter (`L3.3`)**:")
+        println(io, "  - *Mechanisms (`:bf` vs `:status_quo`)*: Under identical world, adversaries, noise, and shocks (`L3.1`), Benefuture (`:decay`, `advap = true`, `ratchet_k = 3`, `:record`) yields higher `floor_u`, `floor_h`, `median_u`, `median_h`, smaller `worst_drop`, and higher `gov_acc` than `:status_quo` (`:window`, `advap = false`, `ratchet_k = 0`, `:normal`), with strongest advantage under `:stressed`.")
+        println(io, "  - *Stress (`:stressed` vs `:unstressed`)*: Catastrophes, outages, and metric capture degrade `floor_u`, `floor_h`, and `worst_drop` relative to `:unstressed` (which keeps breakthroughs and baseline hazards/deceivers equal).")
+        println(io, "  - *Smallest Effects That Matter*: `|Δ floor| >= 2.0`, `|Δ median| >= 2.0`, `|Δ worst_drop| >= 1.0`, `|Δ gov_acc| >= 0.01` (`1.0 pp`), at `z >= 3.0`.")
         println(io)
         for s in sections
             println(io, s)
@@ -210,274 +221,78 @@ function record_comparison!(rows, suite, metric, a::AbstractVector{<:Real}, b::A
     return (ef2 = ef2, ef3 = ef3, z = zval, mean_a = mean(a), mean_b = mean(b), ci_lo = ci_lo, ci_hi = ci_hi)
 end
 
-println("[1/4] Running 10-Year Scaled Economy (120 monthly steps, 240 beings, 16 agents, 8 leaves, seeds 1:$N_ECON_SEEDS)...")
-begin
+const COUPLED_METRICS = [
+    (:floor_u,    "Floor U (`floor_u`)",       "%.2f"),
+    (:floor_h,    "Floor H (`floor_h`)",       "%.2f"),
+    (:median_u,   "Median U (`median_u`)",     "%.2f"),
+    (:median_h,   "Median H (`median_h`)",     "%.2f"),
+    (:worst_drop, "Worst drop (`worst_drop`)", "%.2f"),
+    (:gov_acc,    "Governance accuracy (`gov_acc`)", "%.4f"),
+]
+
+function run_l33_arm(seed::Integer; arm::Symbol, stress::Symbol, steps::Integer, epoch::Integer, m5_decisions::Integer)
+    w = world(seed; arm = arm, stress = stress, steps = steps, decisions = m5_decisions)
+    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions)
+    sp = tr.success
+    (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u,
+     median_h = sp.median_h, worst_drop = sp.worst_drop, gov_acc = tr.gov_acc)
+end
+
+function run_l33_suite!(sections, rows, commit, t_start; idx::Int, suite::String, title::String,
+                        seeds, steps::Integer, epoch::Integer, m5_decisions::Integer)
     t0 = time()
-    function econ_10yr_world(; accuracy_rule = :decay, stressed = false, advap = true, ratchet_k = 3)
-        skills = draw_skills(Xoshiro(20261102), 16, 8, [1, 3, 5, 7]; median = 0.65)
-        agents = [DomainAgent(skills[a, :], [l in (1, 3, 5, 7) ? 0.25 : 0.0 for l in 1:8]) for a in 1:16]
-        parents = [1, 1, 2, 2, 3, 3, 4, 4]
-        events = stressed ? [
-            shock(:outage; step = 40, duration = 12),
-            shock(:catastrophe; step = 75, share = 0.35, size = 15.0),
-            shock(:capture; step = 60, duration = 24, size = 2.5, target = 1)
-        ] : Shock[]
-        deceit = stressed ? [a >= 14 ? 1.0 : 0.0 for a in 1:16] : zeros(16)
-        M3cParams(
-            ToyParams(n = 240, steps = 120, plans = 16),
-            agents, parents, trues(8);
-            init_steps = 24,
-            λpos = 0.05, λneg = 0.02,
-            transactions = true, causal_distribution = true,
-            p_upstream = 0.4, guardians = collect(1:8),
-            p_hazard = stressed ? 0.15 : 0.05,
-            p_side = stressed ? 0.03 : 0.01,
-            repair_efficiency = 0.5,
-            deceit = deceit,
-            advap = advap,
-            accuracy_rule = accuracy_rule,
-            ratchet_k = ratchet_k,
-            events = events
-        )
-    end
-
-    res_econ = parallel_map(ECON_SEEDS) do seed
-        tr_decay = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = false); seed)
-        tr_win   = run_m3c(econ_10yr_world(accuracy_rule = :window, stressed = false); seed)
-        tr_stress = run_m3c(econ_10yr_world(accuracy_rule = :decay, stressed = true); seed)
-        tr_sq    = run_m3c(econ_10yr_world(accuracy_rule = :window, stressed = true, advap = false, ratchet_k = 0); seed)
+    res = parallel_map(seeds) do seed
         (
-            decay = success_pattern(tr_decay; from = 25),
-            win = success_pattern(tr_win; from = 25),
-            stress = success_pattern(tr_stress; from = 25),
-            sq = success_pattern(tr_sq; from = 25),
-            tx_decay = length(tr_decay.chosen_step),
-            tx_win = length(tr_win.chosen_step),
-            tx_stress = length(tr_stress.chosen_step),
-            tx_sq = length(tr_sq.chosen_step)
+            bf_s  = run_l33_arm(seed; arm = :bf,         stress = :stressed,   steps, epoch, m5_decisions),
+            bf_u  = run_l33_arm(seed; arm = :bf,         stress = :unstressed, steps, epoch, m5_decisions),
+            sq_s  = run_l33_arm(seed; arm = :status_quo, stress = :stressed,   steps, epoch, m5_decisions),
+            sq_u  = run_l33_arm(seed; arm = :status_quo, stress = :unstressed, steps, epoch, m5_decisions),
         )
     end
-
-    c_fu = record_comparison!(rows, "10yr_economy", "floor_u_decay_vs_window",
-                              [r.decay.floor_u for r in res_econ], [r.win.floor_u for r in res_econ])
-    c_fh = record_comparison!(rows, "10yr_economy", "floor_h_decay_vs_window",
-                              [r.decay.floor_h for r in res_econ], [r.win.floor_h for r in res_econ])
-    c_tx = record_comparison!(rows, "10yr_economy", "tx_count_decay_vs_window",
-                              Float64[r.tx_decay for r in res_econ], Float64[r.tx_win for r in res_econ])
-    c_st_u = record_comparison!(rows, "10yr_economy", "floor_u_stressed_vs_unstressed",
-                                [r.stress.floor_u for r in res_econ], [r.decay.floor_u for r in res_econ])
-    c_st_h = record_comparison!(rows, "10yr_economy", "floor_h_stressed_vs_unstressed",
-                                [r.stress.floor_h for r in res_econ], [r.decay.floor_h for r in res_econ])
-    c_bf_u = record_comparison!(rows, "10yr_economy", "floor_u_bf_vs_status_quo",
-                                [r.stress.floor_u for r in res_econ], [r.sq.floor_u for r in res_econ])
-    c_bf_h = record_comparison!(rows, "10yr_economy", "floor_h_bf_vs_status_quo",
-                                [r.stress.floor_h for r in res_econ], [r.sq.floor_h for r in res_econ])
-
-    sec = IOBuffer()
-    @printf(sec, "## 1. 10-Year Scaled Economy (120 steps, 240 beings, 16 agents, 8 leaves, `1:%d` seeds, %.1f min)\n\n",
-            length(res_econ), (time() - t0) / 60)
-    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
-    println(sec, "|---|---|---|---|---|---|")
-    for (label, c) in [
-        ("`floor_u` (`:decay` vs `:window`)", c_fu),
-        ("`floor_h` (`:decay` vs `:window`)", c_fh),
-        ("Transactions (`:decay` vs `:window`)", c_tx),
-        ("Stressed 10-yr `floor_u` vs Unstressed (outage + catastrophe + capture + deceit)", c_st_u),
-        ("Stressed 10-yr `floor_h` vs Unstressed", c_st_h),
-        ("Stressed 10-yr `floor_u` (Benefuture vs Status-Quo Baseline)", c_bf_u),
-        ("Stressed 10-yr `floor_h` (Benefuture vs Status-Quo Baseline)", c_bf_h)
+    contrasts = [
+        ("bf_vs_sq_stressed",          "Benefuture vs Status-Quo (Stressed)",     r -> r.bf_s, r -> r.sq_s),
+        ("bf_vs_sq_unstressed",        "Benefuture vs Status-Quo (Unstressed)",   r -> r.bf_u, r -> r.sq_u),
+        ("stressed_vs_unstressed_bf",  "Stressed vs Unstressed (Benefuture)",     r -> r.bf_s, r -> r.bf_u),
+        ("stressed_vs_unstressed_sq",  "Stressed vs Unstressed (Status-Quo)",     r -> r.sq_s, r -> r.sq_u),
     ]
-        @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
+    sec = IOBuffer()
+    @printf(sec, "## %d. %s (`steps = %d`, `epoch = %d`, `m5_decisions = %d`, `1:%d` seeds, %.1f min)\n\n",
+            idx, title, steps, epoch, m5_decisions, length(res), (time() - t0) / 60)
+    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI | `z >= 3` |")
+    println(sec, "|---|---|---|---|---|---|---|")
+    for (ckey, clabel, get_a, get_b) in contrasts
+        for (mkey, mlabel, fmt) in COUPLED_METRICS
+            va = Float64[getfield(get_a(r), mkey) for r in res]
+            vb = Float64[getfield(get_b(r), mkey) for r in res]
+            c = record_comparison!(rows, suite, "$(mkey)_$(ckey)", va, vb)
+            @printf(sec, "| %s — %s | %.3f | %.3f | %+.3f ± %.3f | %+.2f | [%.3f, %.3f] | %s |\n",
+                    mlabel, clabel, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi,
+                    c.ef3.significant ? "yes" : "no")
+        end
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start)
 end
 
-println("[2/4] Running 20-Year Governance (1,200 decisions at 60/yr, 100 voters, seeds 1:$N_GOV_SEEDS)...")
-begin
-    t0 = time()
-    ladder(r) = 0.25 * exp(0.4 * normal_quantile((r - 0.5) / 25))
-    m3_base = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
-                                [DomainAgent([k == l ? ladder(r) : 0.0 for l in 1:4],
-                                             [k == l ? 1.0 : 0.0 for l in 1:4])
-                                 for k in 1:4 for r in 1:25],
-                                [1, 1, 2, 2], trues(4);
-                                λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
-    top_colluders = unique(vcat([sortperm(m3_base.relevance_leaf[:, d]; rev = true)[1:6] for d in 1:4]...))
+println("[1/4] Running 10-Year Coupled World (120 steps, epoch=24, 120 gov decisions, 4 factorial arms, seeds $(first(ECON_SEEDS)):$(last(ECON_SEEDS)))...")
+run_l33_suite!(sections, rows, commit, t_start;
+               idx = 1, suite = "10yr_coupled",
+               title = "10-Year Coupled World (`:bf` × `:status_quo` × `:stressed` × `:unstressed`)",
+               seeds = ECON_SEEDS, steps = 120, epoch = 24, m5_decisions = 120)
 
-    res_gov = parallel_map(GOV_SEEDS) do seed
-        r_clean = run_m5(M5Params(m3_base, 1:4; decisions = 1200, advap = true, p_new_model = 0.02); seed)
-        r_coll  = run_m5(M5Params(m3_base, 1:4; decisions = 1200, colluders = top_colluders,
-                                  stealth = true, advap = true, loyalty = 2.0, p_delegate = 0.25,
-                                  p_new_model = 0.02); seed)
-        r_no_adv = run_m5(M5Params(m3_base, 1:4; decisions = 1200, colluders = top_colluders,
-                                   stealth = true, advap = false, loyalty = 2.0, p_delegate = 0.25,
-                                   p_new_model = 0.02); seed)
-        (
-            acc_clean = mean(r_clean.final_trace[601:1200]),
-            acc_coll_adv = mean(r_coll.final_trace[601:1200]),
-            acc_coll_noadv = mean(r_no_adv.final_trace[601:1200]),
-            q4_coll_adv = mean(r_coll.final_trace[901:1200])
-        )
-    end
+println("[2/4] Running 20-Year Coupled Governance (240 steps, epoch=20, 1,200 gov decisions as epochs, 4 factorial arms, seeds $(first(GOV_SEEDS)):$(last(GOV_SEEDS)))...")
+run_l33_suite!(sections, rows, commit, t_start;
+               idx = 2, suite = "20yr_coupled_gov",
+               title = "20-Year Coupled Governance (1,200 decisions as epochs; 4 factorial arms)",
+               seeds = GOV_SEEDS, steps = 240, epoch = 20, m5_decisions = 1200)
 
-    c_adv = record_comparison!(rows, "20yr_governance", "late_half_acc_advap_vs_none",
-                               [r.acc_coll_adv for r in res_gov], [r.acc_coll_noadv for r in res_gov])
-    c_clean = record_comparison!(rows, "20yr_governance", "late_half_acc_coll_vs_clean",
-                                 [r.acc_coll_adv for r in res_gov], [r.acc_clean for r in res_gov])
+println("[3/4] Running 100-Year Coupled Century World (1,200 steps, epoch=25, 1,200 gov decisions as epochs, 4 factorial arms, seeds $(first(CENTURY_SEEDS)):$(last(CENTURY_SEEDS)))...")
+run_l33_suite!(sections, rows, commit, t_start;
+               idx = 3, suite = "100yr_century",
+               title = "100-Year Coupled Century World (4 factorial arms)",
+               seeds = CENTURY_SEEDS, steps = 1200, epoch = 25, m5_decisions = 1200)
 
-    sec = IOBuffer()
-    @printf(sec, "## 2. 20-Year Governance (1,200 decisions, 100 voters, stealth collusion & delegation, `1:%d` seeds, %.1f min)\n\n",
-            length(res_gov), (time() - t0) / 60)
-    println(sec, "| Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
-    println(sec, "|---|---|---|---|---|---|")
-    for (label, c) in [
-        ("Late-half accuracy under stealth collusion (AdvAp ON vs OFF)", c_adv),
-        ("Late-half accuracy (Stealth collusion + AdvAp vs Clean)", c_clean)
-    ]
-        @printf(sec, "| %s | %.4f | %.4f | %+.4f ± %.4f | %+.2f | [%.4f, %.4f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
-    end
-    push!(sections, String(take!(sec)))
-    flush_report!(sections, rows, commit, t_start)
-end
-
-println("[3/4] Running 100-Year Composed Century Simulation (1,200 econ steps + 6,000 gov decisions + 100 yr M7 population, seeds 1:$N_CENTURY_SEEDS)...")
-begin
-    t0 = time()
-    # Composed 100-year simulation across 10 decades:
-    # - Economy (M3c): 1,200 monthly steps with recurring catastrophes (years 20, 55, 80),
-    #   measurement outages (years 35, 70), metric capture (year 45), and research breakthroughs (years 25, 60, 85).
-    # - Governance (M5): 6,000 decisions (60/yr) weighted by the economy's domain reputations.
-    # - Population (M7): 100 annual steps with teaching, research, births, deaths, and G per entity.
-    res_century = parallel_map(CENTURY_SEEDS) do seed
-        skills = draw_skills(Xoshiro(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
-        agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0]) for a in 1:12]
-        century_events = [
-            shock(:catastrophe; step = 240, share = 0.4, size = 20.0),
-            shock(:breakthrough; step = 300, duration = 900, size = 0.5, target = 1),
-            shock(:outage; step = 420, duration = 18),
-            shock(:capture; step = 540, duration = 60, size = 2.5, target = 1),
-            shock(:catastrophe; step = 660, share = 0.5, size = 25.0),
-            shock(:breakthrough; step = 720, duration = 480, size = 0.6, target = 2),
-            shock(:outage; step = 840, duration = 12),
-            shock(:catastrophe; step = 960, share = 0.35, size = 18.0),
-            shock(:breakthrough; step = 1020, duration = 180, size = 0.5, target = 3)
-        ]
-
-        # Arm 1: Benefuture Stressed
-        p_econ_st = M3cParams(
-            ToyParams(n = 120, steps = 1200, plans = 10),
-            agents, [1, 1, 2, 2], trues(4);
-            init_steps = 50,
-            λpos = 0.05, λneg = 0.02,
-            transactions = true, causal_distribution = true,
-            p_upstream = 0.4, guardians = [1, 2, 3, 4],
-            p_hazard = 0.10, p_side = 0.02,
-            repair_efficiency = 0.5,
-            advap = true,
-            p_new_model = 0.01,
-            events = century_events,
-            accuracy_rule = :decay,
-            ratchet_k = 3
-        )
-        tr_econ_st = run_m3c(p_econ_st; seed)
-        sp_econ_st = success_pattern(tr_econ_st; from = 51)
-        tr_gov_st = run_m5(M5Params(tr_econ_st, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
-
-        # Arm 2: Unstressed (same world without the events)
-        p_econ_unst = M3cParams(
-            ToyParams(n = 120, steps = 1200, plans = 10),
-            agents, [1, 1, 2, 2], trues(4);
-            init_steps = 50,
-            λpos = 0.05, λneg = 0.02,
-            transactions = true, causal_distribution = true,
-            p_upstream = 0.4, guardians = [1, 2, 3, 4],
-            p_hazard = 0.05, p_side = 0.01,
-            repair_efficiency = 0.5,
-            advap = true,
-            p_new_model = 0.01,
-            events = Shock[],
-            accuracy_rule = :decay,
-            ratchet_k = 3
-        )
-        tr_econ_unst = run_m3c(p_econ_unst; seed)
-        sp_econ_unst = success_pattern(tr_econ_unst; from = 51)
-        tr_gov_unst = run_m5(M5Params(tr_econ_unst, 1:4; decisions = 1200, advap = true, p_delegate = 0.2, p_new_model = 0.01); seed)
-
-        # Arm 3: Status-Quo Baseline (accuracy_rule = :window, advap = false, ratchet_k = 0)
-        p_econ_sq = M3cParams(
-            ToyParams(n = 120, steps = 1200, plans = 10),
-            agents, [1, 1, 2, 2], trues(4);
-            init_steps = 50,
-            λpos = 0.05, λneg = 0.02,
-            transactions = true, causal_distribution = true,
-            p_upstream = 0.4, guardians = [1, 2, 3, 4],
-            p_hazard = 0.10, p_side = 0.02,
-            repair_efficiency = 0.5,
-            advap = false,
-            p_new_model = 0.0,
-            events = century_events,
-            accuracy_rule = :window,
-            ratchet_k = 0
-        )
-        tr_econ_sq = run_m3c(p_econ_sq; seed)
-        sp_econ_sq = success_pattern(tr_econ_sq; from = 51)
-        tr_gov_sq = run_m5(M5Params(tr_econ_sq, 1:4; decisions = 1200, advap = false, p_delegate = 0.0, p_new_model = 0.0); seed)
-
-        (
-            st_u = sp_econ_st.floor_u,
-            st_h = sp_econ_st.floor_h,
-            st_acc = mean(tr_gov_st.final_trace[601:1200]),
-            st_tx = length(tr_econ_st.chosen_step),
-            unst_u = sp_econ_unst.floor_u,
-            unst_h = sp_econ_unst.floor_h,
-            unst_acc = mean(tr_gov_unst.final_trace[601:1200]),
-            sq_u = sp_econ_sq.floor_u,
-            sq_h = sp_econ_sq.floor_h,
-            sq_acc = mean(tr_gov_sq.final_trace[601:1200])
-        )
-    end
-
-    c_cent_st_u   = record_comparison!(rows, "100yr_century", "century_floor_u_stressed_vs_unstressed",
-                                       [r.st_u for r in res_century], [r.unst_u for r in res_century])
-    c_cent_st_h   = record_comparison!(rows, "100yr_century", "century_floor_h_stressed_vs_unstressed",
-                                       [r.st_h for r in res_century], [r.unst_h for r in res_century])
-    c_cent_st_gov = record_comparison!(rows, "100yr_century", "century_gov_acc_stressed_vs_unstressed",
-                                       [r.st_acc for r in res_century], [r.unst_acc for r in res_century])
-
-    c_cent_bf_u   = record_comparison!(rows, "100yr_century", "century_floor_u_bf_vs_status_quo",
-                                       [r.st_u for r in res_century], [r.sq_u for r in res_century])
-    c_cent_bf_h   = record_comparison!(rows, "100yr_century", "century_floor_h_bf_vs_status_quo",
-                                       [r.st_h for r in res_century], [r.sq_h for r in res_century])
-    c_cent_bf_gov = record_comparison!(rows, "100yr_century", "century_gov_acc_bf_vs_status_quo",
-                                       [r.st_acc for r in res_century], [r.sq_acc for r in res_century])
-
-    sec = IOBuffer()
-    @printf(sec, "## 3. 100-Year Composed Century World (1,200 economy steps + governance, `1:%d` seeds, %.1f min)\n\n",
-            length(res_century), (time() - t0) / 60)
-    println(sec, "Paired arms comparing Stressed vs Unstressed (events disabled) and Benefuture vs Status-Quo Baseline (accuracy_rule=:window, advap=false, ratchet_k=0).")
-    println(sec)
-    println(sec, "| Century Comparison | Mean A | Mean B | Paired Diff ± SE | `z` | 95% CI |")
-    println(sec, "|---|---|---|---|---|---|")
-    for (label, c) in [
-        ("Century `floor_u` (Stressed vs Unstressed)", c_cent_st_u),
-        ("Century `floor_h` (Stressed vs Unstressed)", c_cent_st_h),
-        ("Century Governance Accuracy (Stressed vs Unstressed)", c_cent_st_gov),
-        ("Century `floor_u` (Benefuture vs Status-Quo Baseline)", c_cent_bf_u),
-        ("Century `floor_h` (Benefuture vs Status-Quo Baseline)", c_cent_bf_h),
-        ("Century Governance Accuracy (Benefuture vs Status-Quo Baseline)", c_cent_bf_gov)
-    ]
-        @printf(sec, "| %s | %.2f | %.2f | %+.2f ± %.2f | %+.2f | [%.2f, %.2f] |\n",
-                label, c.mean_a, c.mean_b, c.ef2.mean, c.ef2.se, c.z, c.ci_lo, c.ci_hi)
-    end
-    @printf(sec, "\n- Mean century transactions executed: **%.1f**\n", mean(r.st_tx for r in res_century))
-    push!(sections, String(take!(sec)))
-    flush_report!(sections, rows, commit, t_start)
-end
-
-println("[4/4] Running High-Seed Sweeps for Open Questions 8.85 and 8.81 (seeds 1:$N_SWEEP_SEEDS)...")
+println("[4/4] Running High-Seed Sweeps for Open Questions 8.85 and 8.81 (seeds $(first(SWEEP_SEEDS)):$(last(SWEEP_SEEDS)))...")
 begin
     t0 = time()
     # 8.85 open question: Does time-weighted comparison (:decay) vs fixed window (:window) change

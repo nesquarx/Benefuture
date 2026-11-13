@@ -5,7 +5,7 @@
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.29.0-blue.svg)](https://leanprover.github.io/)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-green.svg)](LICENSE)
 
-**Benefuture is a design for a civilization that measures and rewards good.** Its goal is to raise
+**Benefuture is a design for a civilization that measures and rewards good.** Its goal and definition of good is to raise
 universal understanding first, then happiness, and the two together, *"since understanding creates and
 compounds meta-capability"* ([Benefuture](https://benefuture.miraheze.org/wiki/Benefuture)). From that
 one goal it derives a whole system: how value is measured, how currencies are issued, how reputation is
@@ -77,7 +77,7 @@ repository applies the same discipline to itself.
 [open problems](docs/OPEN_PROBLEMS.md) · [build, structure and reading order](docs/BUILD.md) ·
 [findings log](docs/BACKPROPAGATION.md) · [CLAUDE.md](CLAUDE.md) for agents
 
-Counts: 399 Lean theorems in 52 files (no `sorry`, axioms or `native_decide`); 129 C exports from the
+Counts: 414 Lean theorems in 53 files (no `sorry`, axioms or `native_decide`); 129 C exports from the
 Float reference; CI tiered (rules, units and probes on every code push; the full suite in 8 shards
 nightly). Definitions and aspects on the wiki are the author's; this repository's code, tests and much
 of its prose are AI-assisted under the author's direction.

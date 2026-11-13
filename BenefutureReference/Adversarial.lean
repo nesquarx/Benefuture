@@ -55,4 +55,24 @@ def caught_reward_ref (clawback n bonus : Float) : Float :=
 def false_report_charge_ref (harm reward auditCost : Float) : Float :=
   max 0.0 harm + max 0.0 reward + max 0.0 auditCost
 
+/-- Justice for artificial-scarcity supply withholding (author ruling 8.133): the withholder repays
+    the entire market-wide scarcity premium buyers overpaid across all trades (including others'
+    supply), plus any AdvAp reporter reward and audit cost. -/
+def withhold_charge_ref (marketPremium reward auditCost : Float) : Float :=
+  max 0.0 marketPremium + max 0.0 reward + max 0.0 auditCost
+
+/-- AdvAp reporter reward for discovering supply withholding (author ruling 8.133):
+    a lone withholder who self-reports earns 0; a first reporter in a supply cartel recovers its
+    own liability share plus the AdvAp bounty on the remaining colluders' liability; an external
+    reporter earns the AdvAp bounty on the prevented harm. -/
+def withhold_reward_ref (ownLiability remainingPremium advShare advFloor : Float)
+    (hasCoconspirators selfReport : Bool) : Float :=
+  if selfReport then
+    if hasCoconspirators then
+      max 0.0 ownLiability + advap_reward_ref 0.0 (max 0.0 remainingPremium) advShare advFloor
+    else
+      0.0
+  else
+    advap_reward_ref 0.0 (max 0.0 remainingPremium) advShare advFloor
+
 end BenefutureReference

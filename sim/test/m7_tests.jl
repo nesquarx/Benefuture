@@ -159,6 +159,8 @@ end
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.5) ≈ v["optimistic_average_1234_q0_5"]
     @test birth_level([1.0, 2.0, 3.0, 4.0]; q = 0.5, confidence = 0.7, threshold = 0.75, initial = 0.0) ≈ v["birth_level_unconfident"]
     @test birth_escrow(0.0, 4.0; window = 4, baseline = 2.0) ≈ v["birth_escrow_0_to_4_w4_base2"]
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 2, baseline = 2.0) ≈ v["birth_accrued_escrow_w4_e2"]
+    @test pending_escrow_loss(3.0, 1.0) ≈ v["pending_escrow_loss_m3_e1"]
     @test shortfall([1.0, 2.0, 3.0], 2.5) ≈ v["shortfall_123_base2_5"]
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.5) ≈ 3.0
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.0) ≈ 2.5
@@ -177,6 +179,9 @@ end
     @test_throws ArgumentError optimistic_average([1.0], 1.5)
     @test_throws ArgumentError birth_level([1.0]; q = 0.5, confidence = 1.5, threshold = 0.75, initial = 0.0)
     @test_throws ArgumentError birth_escrow(0.0, 4.0; window = 0, baseline = 2.0)
+    @test_throws ArgumentError birth_accrued_escrow(0.0, 4.0; window = 0, elapsed = 1, baseline = 2.0)
+    @test_throws ArgumentError birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = -1, baseline = 2.0)
+    @test_throws ArgumentError pending_escrow_loss(-1.0, 0.0)
     @test_throws ArgumentError shortfall([1.0, Inf], 2.0)
 end
 
@@ -326,4 +331,70 @@ end
     @test !isempty(t_tight.degraded)
     @test all(d.reason == :weak_accession_floor for d in t_tight.degraded)
     @test !isempty(t_tight.nha_bearers)
+end
+
+@testset "M7 D2: graded personhood, non-sophont moral standing, forks and merges (L71, 8.34, 8.35.5)" begin
+    vp = isdefined(@__MODULE__, :vectors) ? vectors("population") :
+        Dict("personhood_half" => 0.5, "base_vote_non_sophont" => 0.0, "base_vote_scaled_forked" => 0.75)
+    @test personhood(fill(0.5, 6)) ≈ vp["personhood_half"]
+    @test base_vote(1.0, 1.0, false) ≈ vp["base_vote_non_sophont"]
+    @test base_vote(2.0, 0.75, true; fork_share = 0.5) ≈ vp["base_vote_scaled_forked"]
+    p = ToyParams(n = 16, steps = 25, plans = 8)
+    soph = vcat(trues(12), falses(4))
+    caps = [i <= 12 ? fill(0.5, 6) : zeros(6) for i in 1:16]
+    # Maturing sophonts, 2-way fork of being 1 at step 8, merge back of children (17, 18) at step 16 with memory loss.
+    forks = [(step = 8, parent = 1, shares = [0.6, 0.4])]
+    merges = [(step = 16, a = 17, b = 18, memory_loss = 0.2)]
+    tr = run_population_identities(p; seed = 2, sophont = soph, capacities = caps,
+                                   maturation_rate = 0.02, fork_events = forks, merge_events = merges,
+                                   fork_rule = :split, harm_non_sophont_probe = true)
+    # Non-sophonts have 0 base vote throughout yet non-sophont-harming plans are rejected every step.
+    @test all(tr.base_votes[i] == 0.0 for i in 13:16)
+    @test tr.harm_non_sophont_rejected == p.steps
+    # Total base votes across live beings never jump discontinuously across the step-8 fork (within 1 step of maturation).
+    @test abs((tr.total_votes_trace[8] - tr.total_votes_trace[7]) - (tr.total_votes_trace[7] - tr.total_votes_trace[6])) < 1e-9
+    # Merged fork (17) is alive, (18) dormant, and merged share equals 1.0 (sum of 0.6 + 0.4).
+    @test tr.alive[17] && !tr.alive[18]
+    @test tr.shares[17] ≈ 1.0 atol = 1e-9
+    # Counterexample: unrelated full sophonts merging cannot stack base vote above 1.0.
+    tr_full = run_population_identities(ToyParams(n = 4, steps = 5, plans = 4); seed = 1,
+                                        merge_events = [(step = 2, a = 1, b = 2, memory_loss = 0.1)])
+    @test tr_full.shares[1] ≈ 1.0 && tr_full.base_votes[1] ≈ 1.0
+    @test tr_full.total_votes_trace[end] ≈ 3.0
+end
+
+@testset "M7 D3: pending escrow ratchet (8.54) and composed population world" begin
+    # 1. Within the first dependency window (steps = 15 < window = 20), zero births settle.
+    #    Pending-ledger accounting catches over-optimistic gamers before first settlement.
+    p_short = ToyParams(n = 30, steps = 15, plans = 6)
+    init = 1:p_short.n
+    unsettled_on = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2,
+                               gamer_bias = 20.0, gamer_models = 3, pending_ledger = true) for seed in 1:4]
+    unsettled_off = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2,
+                                gamer_bias = 20.0, gamer_models = 3, pending_ledger = false) for seed in 1:4]
+    @test any(any(t.gamer[init] .& (t.births_by[init] .> 0)) for t in unsettled_on)
+    for (tf, tl) in zip(unsettled_on, unsettled_off)
+        @test tf.settled == 0 && tl.settled == 0
+        g_made = tf.gamer[init] .& (tf.births_by[init] .> 0)
+        h_made = .!tf.gamer[init] .& (tf.births_by[init] .> 0)
+        any(g_made) && @test mean(tl.confidence[init][g_made]) ≈ 0.9
+        any(g_made) && @test mean(tf.confidence[init][g_made]) < 0.75
+        any(h_made) && @test mean(tf.confidence[init][h_made]) >= 0.75
+    end
+
+    # 2. Composed M7 world: research breakthroughs, peer teaching, births, and pending escrow together.
+    p_comp = ToyParams(n = 40, steps = 60, plans = 8)
+    ts = [run_population_world(p_comp; seed, p_research = 0.08, research_share = 0.12, p_birth = 0.05,
+                               gamers = 0.2, gamer_bias = 20.0, gamer_models = 3) for seed in 1:3]
+    for tr in ts
+        @test tr.spent > 0
+        @test tr.breakthroughs >= 1
+        @test tr.lessons_chosen >= 1
+        @test tr.births >= 1 && tr.settled >= 1
+        @test tr.floor_h[end] >= tr.floor_h[1] - 1e-6
+        @test tr.floor_u[end] >= tr.floor_u[1] - 1e-6
+        @test tr.uncovered < 0.02 * max(tr.measured, 1e-9)
+    end
+    @test_throws ArgumentError run_population_world(p_comp; seed = 1, p_birth = 1.5)
+    @test_throws ArgumentError run_population_world(p_comp; seed = 1, window = 0)
 end

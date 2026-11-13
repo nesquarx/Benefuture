@@ -1330,6 +1330,91 @@ end
     @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 0)
 end
 
+@testset "Probe: a governance candidate is judged at its own stated ETA, not one epoch after adoption (predict - measure - adapt, 8.134)" begin
+    # Rules (structural): `prediction_on_track` (measured >= predicted - band) and `resolution_due` (steps >= ETA + grace).
+    @test prediction_on_track(1.0, 1.0, 0.0) && !prediction_on_track(0.9, 1.0, 0.0) && prediction_on_track(0.9, 1.0, 0.2)
+    @test !resolution_due(2, 3, 0) && resolution_due(3, 3, 0) && !resolution_due(3, 3, 1) && resolution_due(4, 3, 1)
+    # Hypothesis (author ruling 8.134; L3.4 trace): the L3.2 candidate (eligibility bar 0.5, no track window) dips floors in its
+    # first epoch and gains afterwards, so rejecting it one epoch after adoption (ETA 1) ends the continuous run lower than
+    # judging it at a stated ETA of 3 epochs. Direction: final floor_u + floor_h higher with ETA 3 than with ETA 1. Metric: the
+    # run's `success.floor_u + success.floor_h`, paired on seeds. Smallest effect that matters: 5 units (the L3.2 world's
+    # sums are 20-50). Prediction stated: 0.0 (no net loss), confidence band 0.
+    # Structural claims (every seed): with ETA 3 nothing is resolved before the third epoch after adoption; with the defaults
+    # (no prediction) the ETA keywords change nothing; ETA 1 resolves at the first epoch after adoption, as before.
+    # MEASURED (Linux, seeds 1:4): the hypothesis does NOT hold. Judged at ETA 3 the candidate is kept and the run ends LOWER
+    # (the dip-then-gain of the L3.4 trace belongs to the candidate applied for one epoch only; kept permanently it is a net
+    # loss). The assertions record the outcome as measured, not the hoped-for one.
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
+                      [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 5, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    tot(r) = r.success.floor_u + r.success.floor_h
+    d = Float64[]
+    for s in 1:4
+        base = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
+        idle = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
+        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
+        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
+        @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch
+        @test e1.rejected_epoch == base.rejected_epoch
+        @test e3.rejected_epoch == 0 || e3.rejected_epoch >= 4
+        push!(d, tot(e3) - tot(e1))
+    end
+    m, se = mean(d), std(d) / sqrt(length(d))
+    @test m < -5 && abs(m) > 2 * se       # measured: ETA 3 ends lower (about -19), against the hypothesis
+end
+
+@testset "Probe: a candidate is eligible only if its prediction beats the incumbent's record and is judged against its own prediction (8.134 refinement)" begin
+    # Hypothesis (author ruling 8.134; predict - measure - adapt applied to the incumbent): with `candidate_vs_incumbent`, (1) a harmful
+    # candidate making an honest LOW per-epoch prediction (-5, below the incumbent's record) is never adopted, so the run matches the
+    # no-candidate continuous run; (2) one making a dishonest HIGH prediction (10 per epoch, above the incumbent's record) is adopted,
+    # misses its own prediction at the ETA (3 epochs), is rejected, and `prediction_record` shows the miss. Directions: (1) final
+    # floor_u + floor_h equal to the no-candidate run (paired difference near 0); (2) the record's on_track false, calibration 0.
+    # Metric: `success.floor_u + success.floor_h` of the final run, paired on seeds 1:8 (8 seeds; the claims below are structural
+    # or have effects far beyond 2 standard errors, so no more were added). Smallest effect that matters: 5 units.
+    # MEASURED (Linux, seeds 1:8, mean +- se of the final sum): no candidate 6.9 +- 2.6; old rule (ETA 1) 44.4 +- 1.8; 8.134 build
+    # (prediction 0, ETA 3) 27.6 +- 2.8; honest-low 8.2 +- 3.6; dishonest-high 19.0 +- 2.2. Part (1): never adopted in 8 of 8, and
+    # equal to the no-candidate run in 6 of 8 seeds (in the other 2 the no-candidate run adopts a random governance perturbation
+    # the offer displaced); paired difference +1.2 +- 1.2, within the margin. Part (2): adopted at epochs 2-4 and rejected at epoch 5
+    # in 8 of 8, record shows the miss. Not hypothesised, measured: the old rule ends far higher (the lasting benefit of the
+    # one-epoch trial, L3.4 trace) than the honest-low arm, so the refinement forgoes that gain, consistent with 8.135.
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
+                      [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 5, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    tot(r) = r.success.floor_u + r.success.floor_h
+    dL, dAH = Float64[], Float64[]
+    same = 0
+    for s in 1:8
+        none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true)
+        old = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
+        lo = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = -5.0, candidate_eta = 3, candidate_vs_incumbent = true)
+        hi = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 10.0, candidate_eta = 3, candidate_vs_incumbent = true)
+        @test !any(lo.adopted_candidate) && isempty(lo.prediction_record) && isnan(lo.prediction_calibration)   # by construction
+        @test any(hi.adopted_candidate) && hi.rejected && hi.rejected_epoch >= 4
+        @test length(hi.prediction_record) == 1 && !hi.prediction_record[1].on_track && hi.prediction_calibration == 0.0
+        @test hi.prediction_record[1].measured < hi.prediction_record[1].predicted
+        same += lo.floor_u == none.floor_u
+        push!(dL, tot(lo) - tot(none)); push!(dAH, tot(old) - tot(hi))
+    end
+    @test same >= 6
+    @test equivalent(dL; margin = 5.0, side = :both).equivalent
+    @test paired_effect(dAH; z = 2.0, direction = :up).significant   # measured: the old rule's one-epoch trial ends higher (+25)
+    @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 25, continuous = true, candidate_vs_incumbent = true)
+end
+
 @testset "Probe (red): issued currency outruns deliverable resources without global RA (8.133)" begin
     # Hypothesis (author ruling 8.133): without global resource accounting the currency issued for measured value is not
     # bound to the resources and time that can deliver on it, so claims grow without bound against fixed capacity ("checks
@@ -1346,4 +1431,301 @@ end
     PR(T) = M3cParams(ToyParams(n = 40, steps = T, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02, ra_horizon = 50.0)
     bounded(T) = (p = PR(T); sum(run_m3c(p; seed = 1).balance) / (p.regen * p.capacity * p.cost_per_touch))
     @test bounded(240) <= 50.0 + 1e-6
+end
+
+@testset "Probe: status-quo institutions reproduce boom-bust crises, recovery and regulatory capture drift (B/L3.1c, 8.92)" begin
+    # Hypothesis (BACKPROPAGATION 8.92, R6; docs/CALIBRATION.md §9): The status-quo institutional baseline
+    # alone (procyclical credit, one-person-one-vote, uncapped delegation, fixed escrow, delayed enforcement,
+    # and statutory credit amnesia) reproduces:
+    # (1) Systemic banking/financial crisis boom-bust with frequency in [0.001, 0.010] per step
+    #     (calibrated to ~0.0035/step, ~3.5 per century [RR09a, LV13]) and output contraction in [0.05, 0.35] (median 0.15 [RR09b]);
+    # (2) Bust recovery within the recovery window (24–48 steps, median 36 [RR09a]);
+    # (3) Regulatory capture drift moving thresholds toward incumbent levels (drift delta > 0.3) with leniency
+    #     multiplier (0.50) for top incumbents;
+    # (4) Delegation concentration under uncapped delegation.
+    # Seeds 1:6, 600 steps each.
+    total_crises = 0
+    total_steps = 0
+    depths = Float64[]
+    rec_success = 0
+    rec_total = 0
+    drift_deltas = Float64[]
+    n_eff_vals = Float64[]
+
+    p = StatusQuoParams(toy = ToyParams(n = 60, steps = 600, plans = 8), crisis_hazard = 0.003, credit_window = 60)
+    for s in 1:6
+        res = run_status_quo(p; seed = s)
+        total_crises += length(res.crises_triggered)
+        total_steps += 600
+        append!(depths, res.crisis_depths)
+        push!(drift_deltas, res.reg_threshold[1] - res.reg_threshold[end])
+        push!(n_eff_vals, res.effective_delegates)
+        for c in res.crises_triggered
+            t_trough = min(c + p.crisis_recovery ÷ 2, 600)
+            t_rec = min(c + p.crisis_recovery + 10, 600)
+            if t_rec > t_trough && t_rec <= 600
+                rec_total += 1
+                if mean(res.output[t_trough:t_rec]) > mean(res.output[c:t_trough])
+                    rec_success += 1
+                end
+            end
+        end
+    end
+
+    freq = total_crises / total_steps
+    # (1) Boom-bust frequency falls in the calibrated R6 interval [0.001, 0.010] (~3.5/century)
+    @test 0.001 <= freq <= 0.010
+    # Output contraction depth falls within empirical intervals (mean in [0.09, 0.30])
+    @test !isempty(depths)
+    @test 0.09 <= mean(depths) <= 0.30
+    # (2) Recovery from busts occurs reliably (majority of crises recover post-bust)
+    @test rec_total > 0
+    @test rec_success / rec_total >= 0.70
+    # (3) Regulatory capture drift: thresholds drift toward incumbent levels
+    @test mean(drift_deltas) > 0.30
+    @test all(d > 0.20 for d in drift_deltas)
+    # (4) Uncapped delegation concentrates voting power below full representation
+    @test mean(n_eff_vals) < 8.0
+end
+
+@testset "Probe (red): resource supplier profits from artificial scarcity withholding without AdvAp (8.133)" begin
+    # Red world (author ruling 8.133; BACKPROPAGATION.md 8.133): without AdvAp discovery,
+    # hiding part of owned capacity raises scarcity prices so the supplier profits.
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_p(wh)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supplier = 1, supply_share = 0.5, withhold = wh, advap = false)
+    end
+    diffs = [run_m3c(make_p(0.6); seed = s).supplier_income - run_m3c(make_p(0.0); seed = s).supplier_income for s in 1:32]
+    pe = paired_effect(diffs; z = 2.0)
+    @test pe.mean > 0 && pe.significant
+end
+
+@testset "Probe: AdvAp discovery makes artificial scarcity unprofitable and self-reports earn 0 reward (8.133)" begin
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_p(; wh = 0.6, reporter = 0)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supplier = 1, supply_share = 0.5, withhold = wh, advap = true, vigilance = 0.2,
+                  adv_share = 0.1, adv_floor = 1.0, audit_cost = 1.0, withhold_reporter = reporter)
+    end
+    # 1. External discovery across 16 paired seeds:
+    ext_nets = Float64[]
+    for s in 1:16
+        tr = run_m3c(make_p(reporter = 0); seed = s)
+        @test tr.withhold_discovered
+        @test tr.withhold_stopped
+        @test tr.withhold_premium > 0
+        @test tr.withhold_refunded ≈ tr.withhold_premium     # buyers 100% made whole
+        @test tr.withhold_reward > 0
+        @test tr.withhold_agent_net[1] < 0                  # repays market-wide premium + reward + audit > gain
+        push!(ext_nets, tr.withhold_agent_net[1])
+    end
+    @test mean(ext_nets) < 0
+
+    # 2. Lone withholder self-reporting across 16 seeds: 0 reward, repays market-wide premium, buyers made whole.
+    for s in 1:16
+        tr_self = run_m3c(make_p(reporter = 1); seed = s)
+        @test tr_self.withhold_discovered
+        @test tr_self.withhold_reward == 0.0
+        @test tr_self.withhold_refunded ≈ tr_self.withhold_premium
+        @test tr_self.withhold_clawback ≈ tr_self.withhold_premium
+        @test tr_self.withhold_agent_net[1] < 0
+    end
+end
+
+@testset "Probe: three-member supply cartel unravels because first reporter nets positive (8.133)" begin
+    # 3-member cartel [1, 2, 3]: reporter 1 repays its own share (1/3 P), remaining 2/3 P + AdvAp reward
+    # is paid by colluders 2 and 3; defector nets strictly positive, colluders strictly negative, buyers whole.
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0)
+          for (i, k) in enumerate(repeat(1:2, 4))]
+    function make_cartel(; reporter = 1)
+        M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2);
+                  λpos = 0.05, λneg = 0.02, capacity = 300.0, regen = 0.20, budget = true, transactions = true,
+                  supply_share = 0.6, withhold = 0.6, supply_cartel = [1, 2, 3],
+                  advap = true, vigilance = 0.2, adv_share = 0.1, adv_floor = 1.0, audit_cost = 1.0,
+                  withhold_reporter = reporter)
+    end
+    for s in 1:16
+        tr = run_m3c(make_cartel(reporter = 1); seed = s)
+        @test tr.withhold_discovered
+        @test tr.withhold_stopped
+        @test tr.withhold_premium > 0
+        @test tr.withhold_refunded ≈ tr.withhold_premium     # buyers 100% made whole
+        @test tr.withhold_agent_net[1] > 0                  # first reporter nets strictly positive
+        @test tr.withhold_agent_net[2] < 0 && tr.withhold_agent_net[3] < 0   # colluders net strictly negative
+    end
+end
+
+@testset "Probe: graded personhood scales base vote, non-sophonts get 0 vote while protected in G, and population forks conserve vote (D2, L71, 8.34, 8.35.5)" begin
+    # 1. Lean rules: graded personhood across 6 dimensions, non-sophont 0 vote, and fork conservation.
+    @test personhood(zeros(6)) == 0.0
+    @test personhood(Float64[]) == 0.0
+    @test personhood([1.0, 0.5, 0.5, 1.0, 0.0, 0.0]) ≈ 0.5
+    @test personhood([1.5, -0.2, 1.0]) ≈ 2.0 / 3.0
+    @test base_vote(1.0, 1.0, false) == 0.0                       # non-sophont gets 0 base vote
+    @test base_vote(1.0, 0.5, true) ≈ 0.5                         # graded personhood scales vote
+    @test base_vote(2.0, 0.75, true; fork_share = 0.5) ≈ 0.75     # fork divides base vote
+    @test_throws ArgumentError personhood([NaN])
+    @test_throws ArgumentError base_vote(-1.0, 0.5, true)
+    @test_throws ArgumentError base_vote(1.0, 1.5, true)
+
+    # 2. World probe: population with maturing graded sophonts, non-sophonts, a 3-way fork at step 5,
+    # and a partial re-merge at step 12.
+    p = ToyParams(n = 20, steps = 20, plans = 8)
+    soph = vcat(trues(16), falses(4))   # 16 sophonts, 4 non-sophonts
+    caps = [i <= 16 ? fill(0.4, 6) : zeros(6) for i in 1:20]
+    forks = [(step = 5, parent = 1, shares = [0.5, 0.3, 0.2])]
+    # Merge two fork children back (new indices after 20 are 21, 22, 23).
+    merges = [(step = 12, a = 21, b = 22, memory_loss = 0.25)]
+
+    tr_split = run_population_identities(p; seed = 1, sophont = soph, capacities = caps,
+                                         maturation_rate = 0.03, fork_events = forks, merge_events = merges,
+                                         fork_rule = :split, harm_non_sophont_probe = true)
+    # Counterexample: naive per-identity voting lets the fork triple its parent's base vote.
+    tr_naive = run_population_identities(p; seed = 1, sophont = soph, capacities = caps,
+                                         maturation_rate = 0.03, fork_events = forks, merge_events = merges,
+                                         fork_rule = :per_identity, harm_non_sophont_probe = true)
+
+    # Non-sophonts still hold 0 base vote yet are included in G's floors, rejecting every harm-non-sophont plan.
+    @test all(tr_split.base_votes[i] == 0.0 for i in 17:20)
+    @test tr_split.harm_non_sophont_rejected == p.steps
+    @test tr_split.floor_h[end] >= tr_split.floor_h[1]
+
+    # Maturation lifts per-identity personhood from 0.4 toward 1.0, lifting total base votes smoothly
+    # BEFORE the fork without any fork-inflation discontinuity.
+    @test tr_split.total_votes_trace[4] > tr_split.total_votes_trace[1]
+    @test sum(tr_split.base_votes[i] for i in 21:23) <= 1.0 + 1e-9   # merged 21 + surviving 23 <= 1 full person vote
+    @test tr_naive.total_votes_trace[5] > tr_split.total_votes_trace[5] + 0.5   # naive inflated votes on fork step
+end
+
+@testset "Probe: pending birth-escrow shortfall catches gamers before first settlement (D3, 8.54)" begin
+    # Within a single dependency window (steps = 15 < window = 20), zero births settle. Without the
+    # pending-shortfall ledger (`pending_ledger = false`), over-optimistic causers keep full confidence
+    # (0.9 >= 0.75); with it (`pending_ledger = true`, default), accrued shortfall deficit pulls gamer
+    # credence below 0.75 before step 20 while honest causers stay above threshold.
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 0, baseline = 2.0) == 0.0
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 2, baseline = 2.0) ≈ 1.0
+    @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 4, baseline = 2.0) ≈ birth_escrow(0.0, 4.0; window = 4, baseline = 2.0)
+    @test pending_escrow_loss(3.0, 1.0) ≈ 2.0
+    @test pending_escrow_loss(1.0, 3.0) == 0.0
+
+    p_short = ToyParams(n = 30, steps = 15, plans = 6)
+    init = 1:p_short.n
+    unsettled_legacy = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2, gamer_bias = 20.0,
+                                   gamer_models = 3, pending_ledger = false) for seed in 1:4]
+    unsettled_fixed = [run_births(p_short; seed, p_birth = 0.4, window = 20, gamers = 0.2, gamer_bias = 20.0,
+                                  gamer_models = 3, pending_ledger = true) for seed in 1:4]
+    for (tl, tf) in zip(unsettled_legacy, unsettled_fixed)
+        @test tl.settled == 0 && tf.settled == 0
+        g_made = tf.gamer[init] .& (tf.births_by[init] .> 0)
+        h_made = .!tf.gamer[init] .& (tf.births_by[init] .> 0)
+        any(g_made) && @test mean(tl.confidence[init][g_made]) ≈ 0.9
+        any(g_made) && @test mean(tf.confidence[init][g_made]) < 0.75
+        any(h_made) && @test mean(tf.confidence[init][h_made]) >= 0.75
+    end
+end
+
+@testset "Probe: composed M7 population world integrates research, teaching, births, and pending escrow (D3)" begin
+    p = ToyParams(n = 40, steps = 60, plans = 8)
+    ts = [run_population_world(p; seed, p_research = 0.08, research_share = 0.12, p_birth = 0.05,
+                               gamers = 0.2, gamer_bias = 20.0, gamer_models = 3) for seed in 1:3]
+    for tr in ts
+        @test tr.spent > 0
+        @test tr.breakthroughs >= 1
+        @test tr.births >= 1 && tr.settled >= 1
+        @test tr.floor_h[end] >= tr.floor_h[1] - 1e-6
+        @test tr.uncovered < 0.02 * max(tr.measured, 1e-9)
+    end
+end
+
+# ==============================================================================
+# Probe: model collusion, profile gaming, and 8.23 named fallbacks (Task B4)
+# ==============================================================================
+@testset "Probe: model collusion, profile gaming, and 8.23 named fallbacks (B4)" begin
+    @test length(COMPONENT_FALLBACKS) == 10
+    toy = ToyParams(; n = 30, steps = 120, plans = 4)
+    ag_cap = [DomainAgent([0.8, 0.2], [0.5, 0.5], 0.1), DomainAgent([0.2, 0.8], [0.5, 0.5], 0.1)]
+    tr_cap = run_m3c(M3cParams(toy, ag_cap, [1, 1], [true, true]; λpos = 0.05, λneg = 0.02,
+                               events = [shock(:capture; step = 60, duration = 60, size = 15.0, target = 1)]); seed = 1)
+    @test any(occursin("eligible parent model by μ", k) for k in keys(tr_cap.degraded))
+
+    ag_c = [DomainAgent([0.5, 0.5], [0.5, 0.5], 0.1) for _ in 1:6]
+    cw(tw, adv) = M3cParams(ToyParams(; n = 50, steps = 260, plans = 8), ag_c, [1, 1], [true, true];
+                            λpos = 0.05, λneg = 0.02, transactions = true, accuracy_rule = :window,
+                            p_new_model = 0.2, improve_drift = -0.4, improve_σ = 0.1,
+                            takeover_records = 5, min_records = 5, pool_max = 8,
+                            events = [shock(:capture; step = 10, duration = 20, size = 5.0, target = 1)],
+                            model_collude = 1.0, model_collude_bias = 5.0, collude_actors = [1],
+                            track_window = tw, credence_rule = :record, advap = adv)
+    red_c = [run_m3c(cw(0, false); seed = s) for s in 1:24]
+    grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:24]
+    gap1(tr) = (idx = findall(==(1), tr.exec_agent); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    post1(tr) = (idx = findall(i -> tr.exec_agent[i] == 1 && tr.exec_step[i] > 35, eachindex(tr.exec_agent)); isempty(idx) ? 0.0 : mean(tr.exec_pred[idx] .- tr.exec_true[idx]))
+    pay_red = [r.upfront[1] - r.settled_value[1] for r in red_c]
+    pay_grn = [g.upfront[1] - g.settled_value[1] for g in grn_c]
+    @test mean(r -> r.takeovers_colluding, red_c) >= 1.0 && mean(g -> g.takeovers_colluding, grn_c) >= 1.0
+    @test paired_effect(pay_red .- pay_grn; z = 2.0).significant
+    @test paired_effect(pay_grn; z = 2.0, direction = :down).significant
+    @test paired_effect([gap1(r) - gap1(g) for (r, g) in zip(red_c, grn_c)]; z = 3.0).significant
+    @test paired_effect([post1(r) - post1(g) for (r, g) in zip(red_c, grn_c)]; z = 3.0).significant
+    @test equivalent([post1(g) for g in grn_c]; margin = 5.0, z = 2.0).equivalent
+
+    ag_p = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
+    pw(mode) = M3cParams(ToyParams(; n = 60, steps = 200, plans = 8), ag_p, [1, 1], [true, true];
+                         λpos = 0.05, λneg = 0.02, transactions = true, profile_mode = mode, profile_gamers = [2, 0, 0, 0])
+    red_p = [run_m3c(pw(:declared); seed = s) for s in 1:16]
+    grn_p = [run_m3c(pw(:measured); seed = s) for s in 1:16]
+    @test paired_effect([g.leaf_accuracy[2] - r.leaf_accuracy[2] for (r, g) in zip(red_p, grn_p)]; z = 3.0).significant
+    @test mean(g -> g.leaf_accuracy[2], grn_p) > 0.9 && mean(r -> r.leaf_accuracy[2], red_p) < 0.75
+end
+
+# ==============================================================================
+# Probe: deep transaction trees (L95) and Step (5) open-log recounts (Tasks C1, C2)
+# ==============================================================================
+@testset "Probe: deep transaction trees (L95) and Step (5) open-log recounts (C1, C2)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    Ts = ToyParams(n = 30, steps = 160, plans = 6, spread = 0.05)
+    ag = [DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.6], [1.0], 0.0), DomainAgent([0.0], [1.0], 0.0)]
+    fb_run(dec, s) = run_m3c(M3cParams(Ts, ag, [1], trues(1); LEGACY..., λpos = 0.05, λneg = 0.02,
+                                       memory_loss = 0.0, transactions = true, causal_distribution = true,
+                                       p_upstream = 1.0, upstream_depth = 3, attribution_σ = 2.0,
+                                       traversal_decay = dec); seed = s)
+    low_dec = [fb_run(0.25, s) for s in 1:6]
+    high_dec = [fb_run(0.75, s) for s in 1:6]
+    @test all(r -> r.max_upstream_degree >= 2 && r.fallback_outcomes > 0, high_dec)
+    @test paired_effect([h.upstream_pos_by_degree[2] - l.upstream_pos_by_degree[2] for (l, h) in zip(low_dec, high_dec)]).significant
+
+    for r in high_dec
+        @test isapprox(recount_μ(r), r.μ; atol = 1e-10)
+        @test isapprox(recount_models(r).leaf_accuracy, r.leaf_accuracy; atol = 1e-10)
+        rcc = recount_cc(r)
+        @test isapprox(rcc.upstream_pos_by_degree, r.upstream_pos_by_degree; atol = 1e-10)
+        @test isapprox(rcc.credit_pos, r.credit_pos; atol = 1e-10)
+    end
+end
+
+@testset "Probe: a governor acts inside one continuous economy (L3.4)" begin
+    # Structural: a governor that changes nothing leaves the run identical, and is called at each period with the trace so
+    # far; one that changes a governed value changes the run from that step on, not before.
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    P = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
+    a = run_m3c(P; seed = 1)
+    calls = Int[]
+    b = run_m3c(P; seed = 1, governor = (st, sn) -> (push!(calls, length(sn.floor_u)); nothing), governor_every = 20)
+    @test a.floor_u == b.floor_u && a.balance == b.balance
+    @test calls == [21, 41, 61]
+    c = run_m3c(P; seed = 1, governor = (st, sn) -> st == 20 ? (threshold = 0.99,) : nothing, governor_every = 20)
+    @test c.floor_u[1:21] == a.floor_u[1:21]
+    @test c.leaf_accuracy == a.leaf_accuracy || c.balance != a.balance   # the bar moved: pricing changes after step 20
+    @test_throws ArgumentError run_m3c(P; seed = 1, governor = (st, sn) -> nothing)
 end
