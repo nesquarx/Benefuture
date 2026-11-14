@@ -3754,3 +3754,6 @@ L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14
   exposure arose and whether it followed the voter's own action after the announcement. Governed: the post hoc discount
   rate. Gaming to test: a voter manufacturing exposure (red: weight rises without discount); a genuinely impacted voter
   discovered late (must not lose weight).
+- 8.159 notation fix (2026-11-14): `Kn` and `Info` were undefined symbols; L116 now uses defined ones: `Informed :=
+  Demonstrated(U ∈ Dn) ∨ Exposed(Dn) ∈ Mem, !Ig_pays;` (understanding of the domain shown, or exposure to it recorded in
+  memory data, L134). Three copies edited together.
