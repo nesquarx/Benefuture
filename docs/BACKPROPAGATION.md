@@ -3609,3 +3609,11 @@ implemented and verified (`sim/src/m3c.jl`, `sim/src/coupled.jl`, `sim/test/prob
    - `m3c_tests.jl` (`49/49`), `calibrated_tests.jl` (`107/107`), `world_tests.jl` (`1027/1027`), `lake build` (`2066` jobs),
      `tools/check_article_refs.py` (`all article references found`), and `tools/check_readme_claims.py` (`all 177 named theorems found`)
      all pass. Note: full 8-shard nightly Julia sweep outside `{probe, m3c, calibrated, world}` was not re-run in `wt-8136`.
+
+L3.3/L3.4 continuous coupled battery (2026-11-14, pinned to `2a12ac4`, `continuous = true`, 337.5 min locally on 8 threads;
+`sim/battery/results/long_horizon.md`, `sim/battery/results/long_horizon.csv`, note `.md` prints `Commit: unknown` due to
+macOS x86_64 `xcrun` shim while `sim/battery/state/long_horizon.commit` records `2a12ac4`):
+- `10yr_coupled` (120 steps, epoch 24, 1:32 seeds): `floor_u` `+4.872 ± 2.731, z = +1.78` stressed (`+1.338 ± 0.983, z = +1.36` unstressed); stress penalty remains large (`worst_drop` `+26.642 ± 5.149, z = +5.17` Bf).
+- `20yr_coupled_gov` (240 steps, epoch 20, 1:32 seeds): `gov_acc` `+0.003 ± 0.001, z = +4.32` stressed (`+0.003125 ± 0.000724`); `+0.004 ± 0.001, z = +5.13` unstressed (`+0.003687 ± 0.000719`).
+- `100yr_century` (1,200 steps, epoch 25, 1:32 seeds, continuous M3c across epochs): Benefuture beats `:status_quo` at `z >= 3` on all floor/median outcomes — Stressed `floor_u` `1208.960` vs `816.957` (`+392.003 ± 76.357, z = +5.13`), `floor_h` `1200.817` vs `810.150` (`+390.667 ± 75.352, z = +5.18`), `median_u` `+403.130 ± 78.396, z = +5.14`, `median_h` `+403.328 ± 77.763, z = +5.19`; Unstressed `floor_u` `1212.652` vs `902.589` (`+310.064 ± 78.204, z = +3.96`), `floor_h` `+307.244 ± 78.095, z = +3.93`, `median_u` `+319.225 ± 80.630, z = +3.96`, `median_h` `+316.253 ± 80.937, z = +3.91`.
+- `open_885_better_models` (800 steps, 1:64 paired seeds): takeover regime `62/64` (96.9%) `:decay` vs `64/64` (100.0%) `:window`; takeover count `2.469` vs `2.891` (`-0.422 ± 0.144, z = -2.93`); own-currency pricing share `0.625` vs `0.555` (`+0.070 ± 0.015, z = +4.65`); `floor_u` growth `469.002` vs `413.054` (`+55.948 ± 24.543, z = +2.28`).
