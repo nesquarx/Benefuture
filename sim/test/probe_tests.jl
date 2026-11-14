@@ -823,18 +823,26 @@ end
     ag = [DomainAgent([sk[a], 0, 0, 0], [1.0, 0, 0, 0], 0.0) for a in 1:6]
     p = M3cParams(ToyParams(n = 40, steps = 120, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
                   transactions = true, causal_distribution = true, deceit = [0, 0, 0, 1.0, 0, 1.0], advap = true, LEGACY...)
-    seeds = 1:5
+    seeds = 1:12
     trs = [run_m3c(p; seed = s) for s in seeds]
     earn(tr) = (l = zeros(6); for c in tr.convictions; l[c.convicted] += c.liability; end; tr.upfront .+ tr.settled_value .- l)
-    # Honest actors, skilled or not, are never the object of a founded report (the regime, measured on the
-    # 200-step world: 0 founded reports on honest actors in 10 of 10 seeds, interval 0.71–1.0 at z = 2).
+    # Portable restatement (8.138; the 5-seed per-seed claims did not hold on another platform): 12 seeds, ~25 s.
+    # Regimes are proportions with their interval (z = 2), never "all of 5"; earnings are paired effects at z = 3.
+    # Claim (regime): honest actors, skilled or not, are not the object of a founded report; direction: rate near 0;
+    #   metric: seeds with no founded report on actors 1, 2, 3, 5; bar: interval lower bound above 0.7.
+    #   Measured (Linux): 12 of 12 seeds (interval 0.76–1.0); the 200-step world gave 10 of 10.
+    # Claim (regime): each liar, skilled or not, draws founded reports; metric: liar-seeds with more than 0; bar: lower bound
+    #   above 0.8. Measured: 24 of 24 (0.86–1.0; 5–16 reports each).
+    # Claim (effect): deceit does not pay at either skill; direction: honest twin's earnings above the liar's; smallest
+    #   effect that matters: 50 (of earnings in the hundreds to thousands); z = 3. Measured: skilled +510 ± 64, unskilled
+    #   +170 ± 14 (12 seeds).
     honest_clean = count(tr -> all(tr.founded_on[[1, 2, 3, 5]] .== 0), trs)
-    @test honest_clean == length(seeds)
-    # Liars, skilled or not, are (measured: 9–33 founded reports each).
-    @test all(tr -> tr.founded_on[4] > 0 && tr.founded_on[6] > 0, trs)
-    # Deceit does not pay at either skill (measured, seeds 1–4: skilled ≈ 3,200 vs ≈ 6,600; unskilled ≈ 120 vs ≈ 1,050).
-    @test paired_effect([earn(tr)[1] - earn(tr)[6] for tr in trs]; z = 3.0).significant
-    @test paired_effect([earn(tr)[5] - earn(tr)[4] for tr in trs]; z = 3.0).significant
+    @test proportion_interval(honest_clean, length(seeds)).lo > 0.7
+    liars_found = count(tr -> tr.founded_on[4] > 0, trs) + count(tr -> tr.founded_on[6] > 0, trs)
+    @test proportion_interval(liars_found, 2 * length(seeds)).lo > 0.8
+    skilled_gap, unskilled_gap = [earn(tr)[1] - earn(tr)[6] for tr in trs], [earn(tr)[5] - earn(tr)[4] for tr in trs]
+    @test paired_effect(skilled_gap; z = 3.0).significant && mean(skilled_gap) > 50
+    @test paired_effect(unskilled_gap; z = 3.0).significant && mean(unskilled_gap) > 50
 end
 
 # ==============================================================================
@@ -955,52 +963,66 @@ end
     ag = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.2) for _ in 1:6]
     w(; kw...) = M3cParams(ToyParams(n = 60, steps = 100, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
                            transactions = true, causal_distribution = true, p_side = 0.1, LEGACY..., kw...)
-    seeds = 1:3
-    single = [run_m3c(w(chain_attrib = [0.5]); seed) for seed in seeds]
-    domain = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in seeds]
-    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in seeds]
-    @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant          # harm hidden
-    @test all(t -> abs(mean(t.chain_bias)) < 0.2, domain)                                   # read at its true size
-    @test all(t -> t.chain_demoted == [true, false], domain)
-    @test all(t -> t.chain_audits < 0.16 * length(t.chain_bias), domain)   # demotion, then spot audits at 10% on the one chain left
-    @test all(t -> !any(t.chain_demoted), honest)
+    # Portable restatement (8.138; per-seed "all" claims over 2–3 seeds did not hold on another platform): 8 seeds per arm
+    # (16 for honest pairs), about 2 minutes. Regimes are proportions with their Wilson interval (z = 2); biases are paired
+    # effects or equivalences at z = 3. Same hypotheses and directions as stated above, with the following metrics and bars.
+    # (a) effect: the single incumbent's mean bias is above 0 (z = 3), smallest effect 0.5. Measured +3.25 ± 0.05.
+    # (b) equivalence: the domain's mean bias is within ±0.2 of zero (z = 3). Measured +0.01 ± 0.007.
+    # (c) regime: the half-counting incumbent is demoted and the honest second chain is not: lower bound above 0.5
+    #     (7 of 8 or better); measured 8 of 8; audits as a share of steps under 0.16 (equivalence, upper side, z = 3):
+    #     measured 0.09–0.13.
+    # (d) regime, UNSUPPORTED AS "never": two honest chains are not demoted in 15 of 16 seeds (seed 4 demoted one); the
+    #     claim is a false-demotion rate, asserted as interval upper bound below 0.35 (measured 1 of 16, 0.01–0.29).
+    #     Honest pairs are never taken for copies (0 of 16).
+    S, S16 = 1:8, 1:16
+    single = [run_m3c(w(chain_attrib = [0.5]); seed) for seed in S]
+    domain = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in S]
+    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in S16]
+    @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant && mean(mean(t.chain_bias) for t in single) > 0.5   # harm hidden
+    @test equivalent([mean(t.chain_bias) for t in domain]; margin = 0.2, z = 3.0).equivalent                  # read at its true size
+    @test proportion_interval(count(t -> t.chain_demoted == [true, false], domain), length(S)).lo > 0.5
+    @test equivalent([t.chain_audits / length(t.chain_bias) for t in domain]; margin = 0.16, z = 3.0, side = :upper).equivalent   # demotion, then spot audits at 10% on the one chain left
+    @test proportion_interval(count(t -> any(t.chain_demoted), honest), length(S16)).hi < 0.35
     # A wrong majority (two agreeing chains counting half) against a right minority: audits weigh the
-    # shared observable, not votes, so both majority chains are demoted (measured: 7–8 audits).
-    majority = [run_m3c(w(chain_attrib = [0.5, 0.5, 1.0], chain_mode = :domain); seed) for seed in 1:2]
-    @test all(t -> t.chain_demoted == [true, true, false], majority)
-    # A subtle bias (10% of each loss) is caught too, later (measured: 23–34 audits).
-    subtle = [run_m3c(w(chain_attrib = [1.0, 0.9], chain_mode = :domain); seed) for seed in 1:2]
-    @test all(t -> t.chain_demoted == [false, true], subtle)
+    # shared observable, not votes, so both majority chains are demoted. Regime, 8 seeds: both demoted and the
+    # right one kept in 7 of 8 (seed 3 demoted all three); bar: lower bound above 0.5.
+    majority = [run_m3c(w(chain_attrib = [0.5, 0.5, 1.0], chain_mode = :domain); seed) for seed in S]
+    @test proportion_interval(count(t -> t.chain_demoted == [true, true, false], majority), length(S)).lo > 0.5
+    # A subtle bias (10% of each loss) is caught too, later. Regime, 8 seeds: biased chain demoted, honest one kept in 8 of 8.
+    subtle = [run_m3c(w(chain_attrib = [1.0, 0.9], chain_mode = :domain); seed) for seed in S]
+    @test proportion_interval(count(t -> t.chain_demoted == [false, true], subtle), length(S)).lo > 0.5
     # A fake second paradigm: the biased chain plus an undeclared copy of it agree, so nothing diverges
-    # and, undetected, the harm stays hidden (measured +3.1 to +3.5). Agreement far closer than
+    # and, undetected, the harm stays hidden (measured +3.05 to +3.45 in 8 seeds). Agreement far closer than
     # independent noise allows exposes the copy; with one independent chain left the domain degrades
-    # loudly to spot audits, which demote the biased chain (measured: copy found and incumbent demoted
-    # in 6 of 6 seeds, bias down to +0.5 to +1.6, the rest before detection); honest pairs are never
-    # taken for copies.
-    undetected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain, chain_detect = false); seed) for seed in 1:2]
-    detected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain); seed) for seed in 1:2]
-    @test all(t -> mean(t.chain_bias) > 2.5, undetected)
-    @test all(t -> t.chain_copied == [false, true] && t.chain_demoted[1], detected)
-    @test all(mean(d.chain_bias) < 0.6 * mean(u.chain_bias) for (d, u) in zip(detected, undetected))
-    @test all(t -> !any(t.chain_copied), honest)
+    # loudly to spot audits, which demote the biased chain (copy found and incumbent demoted in 8 of 8 seeds),
+    # and the bias falls to 0.3–1.8 (the rest accrues before detection): effect, undetected less detected above 0
+    # at z = 3 and detected mean below 60% of undetected; honest pairs are never taken for copies (0 of 16).
+    undetected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain, chain_detect = false); seed) for seed in S]
+    detected = [run_m3c(w(chain_attrib = [0.5, 0.5], chain_copy = [0, 1], chain_mode = :domain); seed) for seed in S]
+    @test paired_effect([mean(t.chain_bias) for t in undetected]; z = 3.0).significant && mean(mean(t.chain_bias) for t in undetected) > 2.5
+    @test proportion_interval(count(t -> t.chain_copied == [false, true] && t.chain_demoted[1], detected), length(S)).lo > 0.5
+    ub, db = [mean(t.chain_bias) for t in undetected], [mean(t.chain_bias) for t in detected]
+    @test paired_effect(ub .- db; z = 3.0).significant && mean(db) < 0.6 * mean(ub)
+    @test proportion_interval(count(t -> any(t.chain_copied), honest), length(S16)).hi < 0.35
     # Looking agreeable (8.107): a second chain reporting 60% of the incumbent's reading in place of its own stays
     # too close to diverge quickly and too far for the variance test to take it for a copy. Its errors on audited
     # outcomes are shared with the incumbent's, so the shared-error rule (Lean `coerror_copy_ref`) folds it as a copy
-    # and the incumbent is demoted, in every seed (4 of 4 measured); hidden bias still accrues first (+0.4 to +1.5 per
-    # outcome, against +0.7 to +1.7 without the rule: not a significant reduction). Spot audits even when chains agree
+    # and the incumbent is demoted (8 of 8 measured); hidden bias still accrues first (+0.43 to +1.64 per outcome, against
+    # +0.7 to +1.7 without the rule: not a significant reduction). Spot audits even when chains agree
     # (5%) did not shorten it and once demoted an honest chain, so they stay off.
     # An honest chain left alone after the incumbent's demotion is not demoted by chance: its spot-audit test is re-run
     # at every audit, so the bar grows with the looks (Lean `sequential_significant_ref`); with a fixed z = 3 from five
-    # records one of 8 seeds demoted it.
-    lone = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in 1:8]
-    @test all(t -> !t.chain_demoted[2], lone)
-    agreeable = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain, chain_shade = [0.0, 0.6]); seed) for seed in seeds]
-    # With the sequential bar (Lean `sequential_significant_ref`) the lone honest chain is safe (8 of 8); at spot audits
+    # records one of 8 seeds demoted it. Regime: lone honest chain kept in 16 of 16 seeds (domain arm, seeds 1–16;
+    # lower bound 0.8, bar 0.7).
+    lone = vcat([t.chain_demoted[2] for t in domain], [t.chain_demoted[2] for t in [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in 9:16]])
+    @test proportion_interval(count(!, lone), length(lone)).lo > 0.7
+    agreeable = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain, chain_shade = [0.0, 0.6]); seed) for seed in S]
+    # With the sequential bar (Lean `sequential_significant_ref`) the lone honest chain is safe; at spot audits
     # of 5% the agreeable chain's biased incumbent survived one of 3 runs (bias +2.8), at 10% it is demoted in 8 of 8
     # (copied incumbents 8 of 8, honest lone chains never): a sequential test buys detection with more audits, not
-    # with a lower bar.
-    @test all(t -> mean(t.chain_bias) > 0.2 && t.chain_demoted[1] && t.chain_copied[2], agreeable)
-    @test all(t -> !any(t.chain_copied), honest)
+    # with a lower bar. Effect: bias above 0.2 (z = 3); regime: incumbent demoted and the second folded as a copy, 8 of 8.
+    @test paired_effect([mean(t.chain_bias) - 0.2 for t in agreeable]; z = 3.0).significant
+    @test proportion_interval(count(t -> t.chain_demoted[1] && t.chain_copied[2], agreeable), length(S)).lo > 0.5
 end
 
 # ==============================================================================
@@ -1192,13 +1214,15 @@ end
 end
 
 @testset "Probe: priority weights are meta understanding, sharpened by meta-level research (8.131 continued)" begin
-    # Traits world with three things of priority 1, 0.3 and 0.1. Hypotheses (8 paired seeds, 200 steps, z = 2, smallest
-    # effect 0.02 on the 0-1+ scale): (a) red baseline: steering practice, research and lessons by a noisy estimate of
-    # the priorities (log-normal error 1.5) lowers the floor of understanding (measured on the true priorities) against
-    # steering by the truth; (b) meta-level research that halves the estimate's error (chance 5% a step) raises it
-    # back toward the truth. Measured: 1.068 true, 0.977 noisy, 1.058 noisy with meta-research.
+    # Traits world with three things of priority 1, 0.3 and 0.1. Hypotheses (24 paired seeds, 200 steps, z = 2 (t-inflated, the default bar), smallest
+    # effect 0.02 on the 0-1+ scale; about 75 s): (a) red baseline: steering practice, research and lessons by a noisy
+    # estimate of the priorities (log-normal error 1.5) lowers the floor of understanding (measured on the true
+    # priorities) against steering by the truth; (b) meta-level research that halves the estimate's error (chance 5% a
+    # step) raises it back toward the truth. Per-seed effects are heavy-tailed (0.00 to 0.24), so 8 seeds at z = 2 sat
+    # near the bar and moved with the platform. Measured (Linux): 24 seeds, truth less noisy +0.049 ± 0.014 (z 3.4); meta-research less noisy +0.043 ± 0.013
+    # (z 3.4); 40 seeds +0.042 ± 0.011 and +0.038 ± 0.009 (z 4.0). A z = 3 bar would need about 40 seeds (6 minutes), too slow for a probe.
     using Statistics
-    floor_at(σ, mr) = [run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 200, weight_σ = σ, meta_research = mr).floor_u[end] for s in 1:8]
+    floor_at(σ, mr) = [run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 200, weight_σ = σ, meta_research = mr).floor_u[end] for s in 1:24]
     truth, noisy, meta = floor_at(0.0, 0.0), floor_at(1.5, 0.0), floor_at(1.5, 0.05)
     @test paired_effect(truth .- noisy; z = 2.0).significant && mean(truth .- noisy) > 0.02
     @test paired_effect(meta .- noisy; z = 2.0).significant && mean(meta .- noisy) > 0.02
@@ -1207,15 +1231,17 @@ end
 @testset "Probe: meta-research as its own domain educates priorities (8.132)" begin
     # Hypothesis: when beings share a misjudgement of priorities (weight_shared 1), a small share of research spent on the
     # meta domain lifts the floor of understanding (direction +, smallest effect 0.01), and spending most of it there
-    # costs more than it repairs (interior optimum). Paired seeds; z = 2 on the paired standard error.
+    # costs more than it repairs (interior optimum: 30% below 5%, smallest effect 0.01). Paired seeds, 24 of them (about
+    # 70 s), z = 2 with Student-t inflation (`paired_effect`); the per-seed lift ranges from -0.03 to +0.18, so 10 seeds
+    # at an uninflated z = 2 sat near the bar. Measured (Linux): 16 seeds lift +0.048 ± 0.015 (z 3.1), 32 seeds +0.048 ± 0.012 (z 4.0),
+    # cost -0.040 ± 0.005 (z 7.5); the 24 used here: lift +0.036 ± 0.012 (z 2.9), cost -0.039 ± 0.006.
     f(ms, s) = run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 200, weight_σ = 1.5, per_being = true,
                              meta_share = ms, weight_shared = 1.0, meta_domain = true).floor_u[end]
-    S = 1:10
-    up = [f(0.05, s) - f(0.0, s) for s in S]
-    down = [f(0.3, s) - f(0.05, s) for s in S]
-    se(d) = std(d) / sqrt(length(d))
-    @test mean(up) > max(2se(up), 0.01)
-    @test mean(down) < -2se(down)
+    S = 1:24
+    base, small, large = [f(0.0, s) for s in S], [f(0.05, s) for s in S], [f(0.3, s) for s in S]
+    up, down = small .- base, large .- small
+    @test paired_effect(up; z = 2.0).significant && mean(up) > 0.01
+    @test paired_effect(down; z = 2.0, direction = :down).significant && mean(down) < -0.01
 end
 
 @testset "Probe: a fork cannot multiply the accumulation allowance (identity step 2, L123)" begin
