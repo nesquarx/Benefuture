@@ -3692,3 +3692,31 @@ Superseded, obsolete or already built (resolved by principle, lead review pendin
 - 8.123 open question and DESIGN_PRINCIPLES §III "absolute count bar" → ruled by 8.124 (aggregate net expected irreparable harm, individual risk under the per-being gate); 8.127 (weigh the two excesses alike or lexicographically; trolley reading to confirm) → 8.127 confirmed (least net expected harm in one unit, lateral options first).
 - 8.130 and 8.131 open questions → their own rulings (8.130 ruling; 8.131 ruling and the bell-curve continuation).
 - L3.4 (resolution window, temporary bootstrap bar) → 8.134 (predict-measure-adapt) and 8.135 (bootstrap bar withdrawn).
+
+Author rulings on the open-item triage (2026-11-14):
+- 8.149 (closes 8.69/8.68) [R]: prediction accuracy is reputation's fourth component; to be written into L101/L113 and
+  the Reputation article (the simulation and `choice_skill_ref` already use it). Unblocks the weighted binding of 8.70.
+- 8.150 (closes 8.53-f/g) [R]: governed thresholds carry a scope; a decision is taken at the narrowest scope that bears a
+  governed share of its impact, wider scopes acting only beyond the freedom harm boundary (subsidiarity). Unblocks nested
+  scopes in M8.
+- 8.151 (closes 8.53-a) [R]: no floor on the impacted's share of decision weight for now; impact weight and the minority
+  bonus carry it; reopen if a probe shows experts outvoting those who bear a decision.
+- 8.152 (closes 8.47) [R]: doing and allowing do not differ as such. In the author's words: "being informed and the
+  counterfactuals matter, the severity also matters and the responsibility of the system matters, otherwise we trap
+  ourselves into an unending duty of lifting the floor and create a situation where staying ignorant is beneficial."
+  Reading: responsibility for a harm, whether by act or omission, scales with (i) being informed (an informed failure to
+  act is charged, an uninformed one is an accident, L115), (ii) the counterfactual (what would have happened without the
+  act or the omission), (iii) severity, and (iv) whose responsibility the outcome was (the system's duties are minimal,
+  8.46, so not every unlifted floor is a harm caused); and ignorance must not pay: failing to learn what one could and
+  should have known counts as being informed (wilful blindness is charged), so the rule never rewards staying
+  uninformed. Footbridge and organ-harvest cases follow from G with these four factors and the freedom gate, not from an
+  act/omission premium. Candidate homes: L96–L99 (causal distribution, informed vs not), L115, Harm, Justice, Duty.
+- 8.153 (closes 8.140/8.147) [R]: at a physical limit, innovation spending is bounded by resource accounting's allocation
+  by marginal value per cost across domains, with the governed research share (8.49); no separate cap.
+- 8.154 (closes 5.5) [R]: the generous tit-for-tat reading of EHR in the Lean (forgiveness grows with positive
+  reputation, overreaction with negative, forgiveness-biased when δ < α) is ratified.
+- 8.155 (closes the 8.145 note) [R]: in L83 the audit belongs inside the cost (an audit consumes resources and time), not
+  subtracted from the gain per cost: `Δ↑(U, H) / ↓(Cost + Audit)`; the three pseudocode copies to be edited together.
+Still open after this round: 5.6/SPEC_DIVERGENCES 3.2 (partition of unity per relation type: clarification requested),
+8.53-c (graduated sanctions wording: clarification requested), and the standing review of Section 7 source edits, the
+L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14)" await the lead's review.
