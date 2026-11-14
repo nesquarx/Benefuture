@@ -3747,3 +3747,10 @@ L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14
   one could and should have known counts as being informed; wilful blindness is charged") is withdrawn. Ignorance still
   does not pay, by a different route: an accident mandates the education that informs its contributor (8.157 iv), and
   that education is a recorded exposure, so a repeat is informed. Crime, Harm and DESIGN_PRINCIPLES updated.
+- 8.160 (author, 2026-11-14; closes the 8.158 open point) [R]: "Voluntary post hoc exposure should be discounted at a
+  governed rate, but not discovery of impactedness." Impact a voter takes on by choice after a decision is announced
+  (moving into its path to gain weight) enters `Sy` at a governed discount; impact that already existed and is only
+  discovered or measured later counts in full. The distinction is read from outputs: the impact model's record of when the
+  exposure arose and whether it followed the voter's own action after the announcement. Governed: the post hoc discount
+  rate. Gaming to test: a voter manufacturing exposure (red: weight rises without discount); a genuinely impacted voter
+  discovered late (must not lose weight).
