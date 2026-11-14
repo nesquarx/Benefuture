@@ -88,8 +88,9 @@ before an ad-hoc ruling is needed.
     choose least net expected harm, and log loudly** (`8.127`).
   * **Responsibility, not an act/omission premium:** Doing and allowing do not differ as such;
     responsibility scales with being informed, the counterfactual, severity and whose responsibility the
-    outcome was (the system's duties are minimal). Ignorance must not pay: failing to learn what one
-    could and should have known counts as being informed (`8.152`).
+    outcome was (the system's duties are minimal). Informed means demonstrated knowledge or a recorded
+    exposure to the information, never "should have known" (vague and exploitable; `8.159`); ignorance does not
+    pay because an accident mandates education, after which a repeat is informed (`8.152`, `8.157`).
 * **What breaks if violated:** Breeding/world-ranking paradoxes (`8.56`, `8.86`), status-quo veto of
   beneficial reforms (`8.99–8.100`), and silent default to a harmful inaction (`8.124`, `8.127`).
 

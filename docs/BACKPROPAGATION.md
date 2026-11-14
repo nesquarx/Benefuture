@@ -3741,3 +3741,9 @@ L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14
   reference already has the synergy function (`BenefutureReference/Functions.lean`), so `voting_weight` calls it; probe:
   decisions where those who bear the outcome know more, accuracy rising with κ, colluder resistance unchanged. Open:
   whether impact taken on after a decision is announced is discounted.
+- 8.159 (author, 2026-11-14; corrects the 8.152 reading) [R]: "informed in this case is demonstrated knowledge or at
+  least recorded as exposed to the info; should have known is vague and exploitable." L116 now reads `Informed :=
+  Demonstrated(Kn) ∨ Recorded(Exposed(Info)), !Ig_pays;` (three copies). The lead's 8.152 gloss ("failing to learn what
+  one could and should have known counts as being informed; wilful blindness is charged") is withdrawn. Ignorance still
+  does not pay, by a different route: an accident mandates the education that informs its contributor (8.157 iv), and
+  that education is a recorded exposure, so a repeat is informed. Crime, Harm and DESIGN_PRINCIPLES updated.

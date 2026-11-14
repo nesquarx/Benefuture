@@ -8,7 +8,7 @@ A crime occurs when a set of events which can be traced to be triggered by infor
 * Often [[person]]s can be held to a higher standard as criminals than [[being]]s and [[entity|entities]]. Entities, however autonomous, can transfer their criminality to the [[person]]s responsible for the existence of the entity.
 * Completed [[Education|infohazard education]] is evidence of being informed for harms within its scope.
 * When harm is caused without informed volition or informed inaction against a mandate or contract by any entity, it is called an accident.
-* Failing to learn what one could and should have known counts as being informed: wilful blindness is charged, so ignorance does not pay.
+* Being informed means demonstrated knowledge, or a recorded exposure to the information; vague standards such as "should have known" are not used, since they are exploitable. Ignorance does not pay because an accident mandates the education that would have informed its contributor, and once exposure is recorded, a repeat is informed.
 * An accident's cost to its contributor is bounded by their capacity, the [[administration]] carries the rest, and the contributor takes the [[education]] that would have made them informed.
 * A hazard one creates is direct harm: intent decides whether it is accident or crime, and repair happens either way.
 
