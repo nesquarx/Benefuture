@@ -3732,3 +3732,12 @@ L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14
   education that would have made them informed, consistent with 8.152 (ignorance must not pay).
 - Open-item triage A/B resolutions accepted by the lead (2026-11-14); 8.1, 8.57-b, 8.70 and 8.72 rest on principles by reading and are open to the author's correction.
 - Propagation of 8.149-8.157 (2026-11-14): pseudocode L83 `↓(Cost + Audit)`, L101 `PrAcc` in the reputation record, L116 `Informed := Known ∨ ShouldHaveKnown, !Ig_pays`, L117 `Rehabilitate(Escalate ← pattern(Re_-ve(Dn)))` and the causal-distribution line (L96) with the responsibility factors, the capacity cap on accidents and mandated education, in all three copies; articles Reputation, Justice, Crime, Harm, Government, Benefuture currency, Implementation prototype; Lean `RelationType` and the L83 quotations; records. Note: 8.157 (i) names L116, placed on L117 (the Justice line) because L116 is Crime.
+- 8.158 (author, 2026-11-14) [R]: impact and expertise combine through the corpus's own synergy formula (L13, `Sy`), not
+  an added term: vote weight = Base + Sy([Expert, Impacted]) with both components positive, so Φ₊ = w_E E^{q₊} +
+  w_I I^{q₊} + κ√(w_E w_I (E·I)^{q₊}). Impacted experts get the highest say through the cross term; an expert who is not
+  impacted, or an impacted non-expert, keeps a share; κ and q₊ are the governed values already in L13 (κ = 1, q₊ = 1.1).
+  Parsimony: the three ad hoc forms the lead offered (interaction, multiplicative, geometric) are dropped; the geometric
+  one was an unparametrised copy of L13. To build: L113 to read `Base_VW + Sy(Expert VW, Impacted VW)`; the Lean
+  reference already has the synergy function (`BenefutureReference/Functions.lean`), so `voting_weight` calls it; probe:
+  decisions where those who bear the outcome know more, accuracy rising with κ, colluder resistance unchanged. Open:
+  whether impact taken on after a decision is announced is discounted.
