@@ -1,6 +1,6 @@
 # Convergence & Population-Diversity Sizing Report
 
-- **Commit**: `435cd668ab3f4b770a2fe34c3684c18bb8606056`
+- **Commit**: `e6f2faa83220f875c4ac92221df75f2f5be51e03`
 - **Sharded Execution**: Consolidated across parallel shards
 - **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
 
