@@ -94,6 +94,10 @@ struct M5Params
     copiers::Vector{Int}       # voters who secretly replace their reading with `copy_leader`'s (an attack, 8.121; world)
     copy_leader::Int           # the voter they copy (0: none)
     dedupe::Bool               # count correlated ballots once: pairs agreeing far closer than independent noise allows (8.111, 8.121)
+    weight_synergy::Bool       # vote weight = Base + Sy(Expert, Impacted) through the L13 synergy (8.158); off: the sum (the earlier form)
+    posthoc_discount::Float64  # share of voluntary post hoc exposure not counted in the weight (8.160; governed)
+    posthoc_share::Float64     # share of voters who manufacture exposure to each decision after its announcement (adversary; world)
+    posthoc_impact::Float64    # the impact they raise theirs to (world)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -114,7 +118,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   echo_z::Real = 3.0, echo_min::Integer = 20, advice_stay::Real = 0.20, advice_avg::Real = 0.20,
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
                   misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[],
-                  copiers = Int[], copy_leader::Integer = 0, dedupe::Bool = true)
+                  copiers = Int[], copy_leader::Integer = 0, dedupe::Bool = true,
+                  weight_synergy::Bool = false, posthoc_discount::Real = 0.5, posthoc_share::Real = 0.0, posthoc_impact::Real = 1.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -145,6 +150,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           isfinite(advice_α) && isfinite(advice_β) && advice_α > 0 && advice_β > 0, "advice shares in [0, 1] summing to at most 1; Beta shapes positive")
     check(isfinite(misconception_σ) && misconception_σ >= 0, "misconception noise non-negative")
     check(ballot in (:vote, :credence_stated, :credence_calibrated) && (isempty(overconfidence) || length(overconfidence) == length(m3.agents)), "a ballot kind, one overconfidence per voter")
+    check(0 <= posthoc_discount <= 1 && 0 <= posthoc_share <= 1 && 0 <= posthoc_impact <= 1, "post hoc discount, share and impact in [0, 1]")
     check(model_capture === nothing || (model_capture.decision >= 1 && model_capture.duration >= 1 && model_capture.domain in domains),
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
@@ -158,7 +164,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              record_λpos, record_λneg, p_novel, info_handling, isempty(camp_bias) ? zeros(length(m3.agents)) : collect(Float64, camp_bias),
              source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
              advice_stay, advice_avg, advice_defer, advice_α, advice_β, ballot, isempty(overconfidence) ? ones(length(m3.agents)) : collect(Float64, overconfidence), Float64(misconception_σ),
-             collect(Int, copiers), Int(copy_leader), dedupe)
+             collect(Int, copiers), Int(copy_leader), dedupe,
+             weight_synergy, Float64(posthoc_discount), Float64(posthoc_share), Float64(posthoc_impact))
 end
 
 """
@@ -244,6 +251,9 @@ function run_m5(p::M5Params; seed)
     heard_own, heard_mine, heard_T = zeros(na), zeros(na), zeros(na)
     launders(j) = liar[j] && p.tag_lie == :omit && !flagged[j]
     misattributes(j) = liar[j] && p.tag_lie == :misattribute
+    # Voters who manufacture exposure (adversary): a share of the voters, on their own stream.
+    makers = Set(randperm(Xoshiro(hash((seed, :posthoc))), na)[1:round(Int, p.posthoc_share * na)])
+    maker_share = Float64[]  # their share of the total weight, per decision
     for n in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
@@ -252,17 +262,26 @@ function run_m5(p::M5Params; seed)
         apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
         rep = max.(reputation[:, k], 0.0)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
-        w = [voting_weight(p.base, p.expertise_weight, [1.0], [expertise[i]], p.impact_weight, p.focus[i, k];
-                           optional_below = p.optional_below)[1] for i in 1:na]
+        # Impact: the focus the voter has, and (adversary) the exposure a maker manufactures after the announcement, whose
+        # increment over its focus is voluntary post hoc (8.160); the weight counts that part discounted.
+        imp_vol(i) = i in makers ? (max(p.focus[i, k], p.posthoc_impact), max(0.0, p.posthoc_impact - p.focus[i, k])) : (p.focus[i, k], 0.0)
+        function vweight(i, e)
+            imp, vol = imp_vol(i)
+            p.weight_synergy && return voting_weight_sy(p.base, p.expertise_weight, [1.0], [e], p.impact_weight, imp;
+                                                        voluntary = vol, discount = p.posthoc_discount, optional_below = p.optional_below)[1]
+            voting_weight(p.base, p.expertise_weight, [1.0], [e], p.impact_weight, vol > 0 ? counted_impact(imp, vol, p.posthoc_discount) : imp;
+                          optional_below = p.optional_below)[1]
+        end
+        w = [vweight(i, expertise[i]) for i in 1:na]
         # Forks (L123): with a base vote per identity, each copy adds its base and impact weight and
         # votes with its origin; divided, the family holds the origin's single share.
         if p.fork_rule == :per_identity && p.fork_copies > 0
             for i in p.colluders
-                w[i] += p.fork_copies * voting_weight(p.base, p.expertise_weight, [1.0], [0.0], p.impact_weight, p.focus[i, k];
-                                                      optional_below = p.optional_below)[1]
+                w[i] += p.fork_copies * vweight(i, 0.0)
             end
         end
         total = sum(w)
+        push!(maker_share, isempty(makers) ? 0.0 : sum(w[i] for i in makers) / total)
         held = copy(w)
         delegated, received = falses(na), falses(na)
         for i in randperm(rng, na)
@@ -517,7 +536,7 @@ function run_m5(p::M5Params; seed)
      minds_changed = minds_trace, advice_weight = advw,
      weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
-     records = person_rec)
+     records = person_rec, maker_share = maker_share)
 end
 
 """

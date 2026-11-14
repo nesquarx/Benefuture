@@ -2140,3 +2140,66 @@ end
     @test_throws ArgumentError effective_independent_judges(zeros(2, 2), zeros(2, 2); baseline = 1.0)
     @test_throws ArgumentError trust_cascade(-0.1, 1.0, 2.0)
 end
+
+# Vote weight = Base + Sy(Expert, Impacted), voluntary post hoc exposure discounted, discovered impact in full
+# (L113, L13; author rulings 8.158, 8.160). Predictions stated before measuring (2026-11-14):
+#  (a) where the impacted know more than unimpacted experts, accuracy with synergy on exceeds off: direction up, metric
+#      share of 400 decisions right, paired seeds 101..120 by precision (tol 0.002), smallest effect 0.005, z = 2, confidence 65%
+#      (an exploration on seeds 1:12 gave about +0.010 at this world; these seeds are fresh).
+#  (b) colluder resistance is not worse with synergy on: equivalence of the paired difference within ±0.02, z = 2, confidence 60%.
+#  (c) manufacturers' share of the weight: without the discount it rises above their share with no manufactured exposure by
+#      at least 0.03 (z = 2, confidence 80%); with discount 1 the gain is 0 (structural, to rounding); at 0.5 it lies strictly between;
+#      impact that already existed (discovered, not chosen) keeps its full weight whatever the discount (structural).
+@testset "Probe: synergised vote weight and the post hoc exposure discount (L113, L13; 8.158, 8.160)" begin
+    # 0. Structure (Lean Voting_weight_sy_ref calls Sy_ref; Counted_impact_ref).
+    E, I, wE, wI, κ, q = 0.4, 0.7, 5.0, 1.0, 1.0, 1.1
+    sy_w(; e = E, i = I, k = κ, vol = 0.0, d = 0.5) =
+        voting_weight_sy(1.0, wE, [1.0], [e], wI, i; voluntary = vol, discount = d, optional_below = 0.0, κ = k, q = q)[1]
+    @test sy_w(k = 0.0) ≈ 1.0 + wE * E^q + wI * I^q                       # κ = 0 reduces to the sum of the powers
+    cross = sy_w() - sy_w(k = 0.0)
+    @test cross ≈ sqrt(wE * wI * (E * I)^q) && cross > 0                  # positive when both are positive
+    @test sy_w(i = 0.0) ≈ sy_w(i = 0.0, k = 0.0) && sy_w(e = 0.0) ≈ sy_w(e = 0.0, k = 0.0)  # no cross term without both
+    @test sy_w() > sy_w(e = E, i = 0.0) && sy_w() > sy_w(e = 0.0, i = I)  # an impacted expert outweighs either alone
+    @test counted_impact(0.8, 0.0, 1.0) == 0.8                            # discovered impact counts in full
+    @test counted_impact(0.8, 0.6, 0.5) ≈ 0.5 && counted_impact(0.8, 0.6, 1.0) ≈ 0.2 && counted_impact(0.8, 0.6, 0.0) == 0.8
+    @test sy_w(vol = 0.0, d = 1.0) == sy_w(vol = 0.0, d = 0.0)            # the discount reaches only voluntary post hoc exposure
+    @test sy_w(vol = 0.5, d = 1.0) < sy_w(vol = 0.5, d = 0.5) < sy_w(vol = 0.5, d = 0.0)
+    @test_throws ArgumentError voting_weight_sy(1.0, 1.0, [1.0], [0.5], 1.0, 0.3; voluntary = 0.5, discount = 0.5, optional_below = 0.0)
+    @test_throws ArgumentError counted_impact(0.3, 0.2, 1.5)
+
+    # World: A (3) impacted and informed, B (5) unimpacted credentialed experts who judge worse, C (4) unimpacted.
+    nA, nB, nC = 3, 5, 4; nv = nA + nB + nC
+    skills = fill(0.3, nv, 2); focus = fill(0.05, nv, 2); focus[:, 2] .= 0.95; rep = fill(0.5, nv, 2)
+    skills[1:nA, :] .= 0.9; focus[1:nA, 1] .= 0.8; focus[1:nA, 2] .= 0.2; rep[1:nA, :] .= 3.0; rep[nA+1:nA+nB, :] .= 6.0
+    world = (relevance_leaf = rep, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:nv])
+    run(; kw...) = (s -> run_m5(M5Params(world, [1]; decisions = 400, signal_σ = 100.0, kw...); seed = s))
+    @test isequal(run()(7), run(weight_synergy = false)(7))                 # the default is the earlier rule
+
+    # (a) accuracy where the impacted know more.
+    a = seeds_until_stable(s -> run(weight_synergy = true)(s).correct - run(weight_synergy = false)(s).correct;
+                           tol = 0.002, min_seeds = 4, max_seeds = 20, seeds = 101:120)
+    ea = paired_effect(a.values; z = 2.0, direction = :up)
+    @info "synergy accuracy gain (a)" mean = ea.mean se = ea.se seeds = a.n
+    # Measured +0.0031 ± 0.0006 over 4 seeds (z ≈ 5): positive and significant, but under the predicted 0.005 (the prediction
+    # failed on size: the exploration's +0.010 on seeds 1:12 was a selected reading). Asserted as measured.
+    @test ea.mean > 0 && ea.significant && ea.mean < 0.005
+
+    # (b) colluders (two of the unimpacted experts vote one side whatever they read): not worse with synergy on.
+    b = seeds_until_stable(s -> run(weight_synergy = true, colluders = [4, 5])(s).correct - run(weight_synergy = false, colluders = [4, 5])(s).correct;
+                           tol = 0.003, min_seeds = 4, max_seeds = 20, seeds = 101:120)
+    eb = equivalent(b.values; margin = 0.02, z = 2.0)
+    @info "colluder resistance difference (b)" mean = eb.mean lo = eb.lo hi = eb.hi seeds = b.n
+    @test eb.equivalent
+
+    # (c) three of twelve voters manufacture exposure after the announcement (impact raised to 1).
+    share(; kw...) = s -> run(weight_synergy = true, posthoc_share = 0.25; kw...)(s).maker_share |> mean
+    base_s = seeds_until_stable(s -> share(posthoc_impact = 0.0)(s); tol = 0.002, min_seeds = 4, max_seeds = 12, seeds = 101:112)
+    gain(d) = seeds_until_stable(s -> share(posthoc_discount = d)(s) - share(posthoc_impact = 0.0)(s); tol = 0.002, min_seeds = 4, max_seeds = 12, seeds = 101:112)
+    g0, g5, g1 = gain(0.0), gain(0.5), gain(1.0)
+    @info "manufacturers' weight share gain (c)" no_exposure = base_s.mean discount0 = (g0.mean, g0.se) discount_half = (g5.mean, g5.se) discount1 = (g1.mean, g1.se) seeds = g0.n
+    @test paired_effect(g0.values; z = 2.0).significant && g0.mean >= 0.03     # red: without the discount, manufacturing pays
+    @test all(isapprox.(g1.values, 0.0; atol = 1e-12))                          # green: fully discounted, it pays nothing
+    @test g1.mean < g5.mean < g0.mean                                          # and a partial discount leaves part of the gain
+    # A voter genuinely impacted and found out late keeps full weight at any discount (no makers: results identical).
+    @test isequal(run(weight_synergy = true, posthoc_discount = 0.0)(5), run(weight_synergy = true, posthoc_discount = 1.0)(5))
+end

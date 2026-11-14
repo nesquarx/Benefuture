@@ -156,6 +156,30 @@ def Voting_weight_ref (base : Float) (expertiseWeight : Float) (profile : List (
   (vw, vw < thOptional)
 
 /--
+  Impact counted in a vote's weight (8.160; L113 `voluntary post hoc ⇒ ↓`): the impact less the discounted share
+  that arose from voluntary post hoc exposure (moving into a decision's path after its announcement).
+  `voluntary` is clipped to [0, impact], `discount` to [0, 1]; impact that already existed and is only discovered
+  later is not part of `voluntary` and counts in full.
+-/
+def Counted_impact_ref (impact voluntary discount : Float) : Float :=
+  let v := if voluntary < 0.0 then 0.0 else if voluntary > impact then impact else voluntary
+  let d := if discount < 0.0 then 0.0 else if discount > 1.0 then 1.0 else discount
+  impact - d * v
+
+/--
+  Synergised voting weight (L113, 8.158, 8.160): Base + Sy([Expert, Impacted]) with both components positive,
+  by the L13 synergy function (`Sy_ref`, κ and q₊ governed there: κ = 1, q₊ = 1.1), so Φ₊ = w_E E^q + w_I I^q
+  + κ√(w_E w_I (E I)^q); the impact enters discounted for voluntary post hoc exposure (`Counted_impact_ref`).
+  Returns (weight, voteOptional).
+-/
+def Voting_weight_sy_ref (base expertiseWeight : Float) (profile : List (Float × Float))
+    (impactWeight impact voluntary discount thOptional kappa qPlus : Float) : Float × Bool :=
+  let expertise := sumFloat (profile.map (fun (w, r) => w * r))
+  let counted := Counted_impact_ref impact voluntary discount
+  let vw := base + Sy_ref [(expertise, expertiseWeight), (counted, impactWeight)] [] 0.5 kappa qPlus qPlus
+  (vw, vw < thOptional)
+
+/--
   [P] Domain-relative expertise (Government, discussion; PLAN: carry into L113 or reject): each
   voter's reputation in a domain as a share of the domain's total, so expertise weights sum to 1.
 -/

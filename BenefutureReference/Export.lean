@@ -257,6 +257,17 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (impactWeight impact thOptional : Float) : UInt8 :=
   if (Voting_weight_ref base expertiseWeight (pairs shares reps) impactWeight impact thOptional).2 then 1 else 0
 
+@[export bf_voting_weight_sy] def votingWeightSy (base expertiseWeight : Float) (shares reps : FloatArray)
+    (impactWeight impact voluntary discount thOptional kappa qPlus : Float) : Float :=
+  (Voting_weight_sy_ref base expertiseWeight (pairs shares reps) impactWeight impact voluntary discount thOptional kappa qPlus).1
+
+@[export bf_vote_optional_sy] def voteOptionalSy (base expertiseWeight : Float) (shares reps : FloatArray)
+    (impactWeight impact voluntary discount thOptional kappa qPlus : Float) : UInt8 :=
+  if (Voting_weight_sy_ref base expertiseWeight (pairs shares reps) impactWeight impact voluntary discount thOptional kappa qPlus).2 then 1 else 0
+
+@[export bf_counted_impact] def countedImpact (impact voluntary discount : Float) : Float :=
+  Counted_impact_ref impact voluntary discount
+
 @[export bf_accumulate_capped] def accumulateCapped (cap cur : Float) (ws : FloatArray) : Float :=
   accumulate_capped_ref cap cur ws.data.toList
 

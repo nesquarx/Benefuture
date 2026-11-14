@@ -20,7 +20,7 @@ export spearman, Agent, M2Params, run_m2
 export prediction_on_track, resolution_due, issuance_headroom, deliverable_value, withhold_charge, withhold_reward, effective_independent_judges, trust_cascade, profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood, COMPONENT_FALLBACKS
 export membership_rolling, accuracy, credence, credence_accuracy, record_credence, decayed_record_credence, decayed_rms, choice_skill, ratchet_bar, decay_halflife, decayed_accuracy, decayed_mean_se, currency_eligible, relative_bar, scarcity_cost, pinball_loss, quantile_score
-export voting_weight, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, heard_weights, neg_share, credence_score, M5Params, run_m5
+export voting_weight, voting_weight_sy, counted_impact, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, heard_weights, neg_share, credence_score, M5Params, run_m5
 export count_once, tagged_reading, tags_falsified, undisclosed_echo, echo_influence
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit, cached, code_hash, battery_methods, write_methods
 export CALIBRATED, draw_skills, lognormal_mean1, pareto_median1

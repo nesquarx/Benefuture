@@ -18,6 +18,33 @@ function voting_weight(base::Real, expertise_weight::Real, shares, reps, impact_
     w, opt
 end
 
+"""
+    voting_weight_sy(base, expertise_weight, shares, reps, impact_weight, impact; voluntary = 0, discount, optional_below,
+                     κ = 1.0, q = 1.1) -> (weight, optional)
+
+The synergised vote weight (L113; author rulings 8.158, 8.160; Lean `Voting_weight_sy_ref`): base + Sy([expertise, impact])
+by the L13 synergy function (κ = 1, q₊ = 1.1 as governed there), the part of `impact` that is `voluntary` post hoc
+exposure discounted by `discount`; impact discovered later, not chosen, counts in full.
+"""
+function voting_weight_sy(base::Real, expertise_weight::Real, shares, reps, impact_weight::Real, impact::Real;
+                          voluntary::Real = 0.0, discount::Real, optional_below::Real, κ::Real = 1.0, q::Real = 1.1)
+    check(profile_valid(shares) && length(reps) == length(shares) && all(isfinite, reps), "a decision profile and one reputation per domain")
+    check(all(x -> isfinite(x) && x >= 0, (base, expertise_weight, impact_weight, impact, voluntary, optional_below, κ)) && q > 0 && isfinite(q) &&
+          0 <= discount <= 1 && voluntary <= impact, "weights non-negative, voluntary exposure within the impact, discount in [0, 1]")
+    s, r = floatarray(shares), floatarray(reps)
+    w = ccall(sym(:bf_voting_weight_sy), Float64, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+              base, expertise_weight, s, r, impact_weight, impact, voluntary, discount, optional_below, κ, q)
+    opt = ccall(sym(:bf_vote_optional_sy), UInt8, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+                base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, voluntary, discount, optional_below, κ, q) == 1
+    w, opt
+end
+
+"The impact a vote's weight counts (Lean `Counted_impact_ref`; 8.160): the voluntary post hoc part discounted, the rest in full."
+function counted_impact(impact::Real, voluntary::Real, discount::Real)
+    check(all(x -> isfinite(x) && x >= 0, (impact, voluntary)) && voluntary <= impact && 0 <= discount <= 1, "voluntary within impact, discount in [0, 1]")
+    ccall(sym(:bf_counted_impact), Float64, (Float64, Float64, Float64), impact, voluntary, discount)
+end
+
 "Capped delegation (L114): a delegate accepts each further weight only while its total is under the cap."
 function accumulate_capped(cap::Real, current::Real, weights)
     check(all(isfinite, (cap, current)) && all(w -> isfinite(w) && w >= 0, weights), "finite cap and non-negative weights")
