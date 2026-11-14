@@ -2000,13 +2000,13 @@ end
 end
 
 @testset "Probe: Di_N_Balance raises novelty bonus on monoculture, bounds false triggers, and penalizes fake novelty (L159; 8.140, 8.147)" begin
-    # Hypotheses (16 paired seeds, M5 governance + outcome-settled proposals):
+    # Hypotheses (32 paired seeds for M5 diversity, 16 paired seeds for outcome-settled fake novelty):
     # 1. Trigger fires & restores (8.147): when monoculture (wrong consensus under zero `novelty_bonus`
-    #    at conviction = 2.4) locks decisions, Di_N_Balance detects low variety and raises `novelty_bonus`
+    #    at conviction = 2.4, p_apparent = 0.4) locks decisions, Di_N_Balance detects low variety and raises `novelty_bonus`
     #    (0.0 -> 0.9), increasing alternative take-up (`chosen_share`) and restoring `correct_after_hidden`
-    #    and overall `correct_after` (z = 3).
+    #    and overall `correct_after` (z = 3; 9.2σ–24.6σ across 8 tested `m3_div` seeds).
     # 2. Noise-made false trigger costs bounded amount: on an already right consensus (`colluders = Int[]`),
-    #    raising `novelty_bonus` keeps `correct_after` within ±0.02 (z = 3).
+    #    raising `novelty_bonus` keeps `correct_after` within ±0.02 (z = 3; worst bound ±0.0105 across 8 `m3_div` seeds).
     # 3. Gamed trigger pays less than honesty (8.140): manufacturing worthless/harmful "novel" plans
     #    (skill = -0.3) instead of honest work (skill = 0.6) yields strictly lower standing (z = 3).
     m3_div = run_m3c(M3cParams(ToyParams(n = 30, steps = 80, plans = 6),
@@ -2014,11 +2014,12 @@ end
                                             [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:8],
                                [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
     bloc = unique(vcat([sortperm(m3_div.relevance_leaf[:, d]; rev = true)[1:4] for d in 1:4]...))
-    S = 1:16
-    mono_lo = [run_m5(M5Params(m3_div, 1:4; decisions = 200, colluders = bloc, p_delegate = 0.8,
-                               stealth = true, diversity = true, novelty_bonus = 0.0, conviction = 2.4); seed = s) for s in S]
-    mono_hi = [run_m5(M5Params(m3_div, 1:4; decisions = 200, colluders = bloc, p_delegate = 0.8,
-                               stealth = true, diversity = true, novelty_bonus = 0.9, conviction = 2.4); seed = s) for s in S]
+    S32 = 1:32
+    S16 = 1:16
+    mono_lo = [run_m5(M5Params(m3_div, 1:4; decisions = 300, colluders = bloc, p_delegate = 0.8, p_apparent = 0.4,
+                               stealth = true, diversity = true, novelty_bonus = 0.0, conviction = 2.4); seed = s) for s in S32]
+    mono_hi = [run_m5(M5Params(m3_div, 1:4; decisions = 300, colluders = bloc, p_delegate = 0.8, p_apparent = 0.4,
+                               stealth = true, diversity = true, novelty_bonus = 0.9, conviction = 2.4); seed = s) for s in S32]
     @test paired_effect([mean(h.chosen_share) - mean(l.chosen_share) for (h, l) in zip(mono_hi, mono_lo)];
                         z = 3.0, direction = :up).significant
     @test paired_effect([h.correct_after_hidden - l.correct_after_hidden for (h, l) in zip(mono_hi, mono_lo)];
@@ -2026,10 +2027,10 @@ end
     @test paired_effect([h.correct_after - l.correct_after for (h, l) in zip(mono_hi, mono_lo)];
                         z = 3.0, direction = :up).significant
 
-    calm_lo = [run_m5(M5Params(m3_div, 1:4; decisions = 200, p_delegate = 0.8,
-                               diversity = true, novelty_bonus = 0.0, conviction = 2.4); seed = s) for s in S]
-    calm_hi = [run_m5(M5Params(m3_div, 1:4; decisions = 200, p_delegate = 0.8,
-                               diversity = true, novelty_bonus = 0.9, conviction = 2.4); seed = s) for s in S]
+    calm_lo = [run_m5(M5Params(m3_div, 1:4; decisions = 300, p_delegate = 0.8,
+                               diversity = true, novelty_bonus = 0.0, conviction = 2.4); seed = s) for s in S32]
+    calm_hi = [run_m5(M5Params(m3_div, 1:4; decisions = 300, p_delegate = 0.8,
+                               diversity = true, novelty_bonus = 0.9, conviction = 2.4); seed = s) for s in S32]
     @test equivalent([h.correct_after - l.correct_after for (h, l) in zip(calm_hi, calm_lo)];
                      margin = 0.02, z = 3.0, side = :both).equivalent
 
@@ -2042,8 +2043,8 @@ end
                           λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                           explore_share = 0.2, advap = true, LEGACY...)
     stand(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]
-    hn_runs = [run_m3c(cfg_n(ag_honest); seed = s) for s in S]
-    fk_runs = [run_m3c(cfg_n(ag_fake);   seed = s) for s in S]
+    hn_runs = [run_m3c(cfg_n(ag_honest); seed = s) for s in S16]
+    fk_runs = [run_m3c(cfg_n(ag_fake);   seed = s) for s in S16]
     @test paired_effect([stand(f, 6) - stand(h, 6) for (f, h) in zip(fk_runs, hn_runs)];
                         z = 3.0, direction = :down).significant
 end
