@@ -333,7 +333,7 @@ theorem currency_requires_qualified_model (c : Currency) :
 /-- 
   Resource Accounting (RA ∈ T):
   Corresponds to: Bf_Pseudocode.txt L83:
-  "RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};"
+  "RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓(Cost + Audit) ∧ ↓Usage{Rc, t};"
   Tracks physical resource consumption, the gain in understanding and happiness per unit of cost (higher is better;
   author ruling 8.145), and anti-corruption audit verification.
 -/

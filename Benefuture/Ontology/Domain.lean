@@ -172,7 +172,7 @@ structure LeafDomain where
   [R] Generic Partition of Unity:
   Memberships of an action or thing across leaf domains are non-negative shares summing to 1.
   Indexed generically by RelType.
-  SPEC-CHOICE: In the single-partition reading, RelType = Unit.
+  SPEC-CHOICE: the single-partition reading is RelType = Unit; ruling 8.156 indexes by `RelationType`.
 -/
 structure PartitionOfUnity (RelType : Type) (leaves : Finset LeafDomain) where
   share : RelType → LeafDomain → ℝ
@@ -182,6 +182,25 @@ structure PartitionOfUnity (RelType : Type) (leaves : Finset LeafDomain) where
 
 abbrev SinglePartitionOfUnity (leaves : Finset LeafDomain) :=
   PartitionOfUnity Unit leaves
+
+/-- [R] (author ruling 8.156) The relation types an action's domain memberships are indexed by:
+  causal (as a cause), structural (as part of an arrangement) and communicative (as speech). -/
+inductive RelationType
+  | causal
+  | structural
+  | communicative
+  deriving Repr, DecidableEq
+
+/-- [R] (8.156) The partition of unity per relation type: memberships sum to 1 within each type,
+  so an action may count fully as a cause in one domain and fully as speech in another, but never
+  twice within one type. `SinglePartitionOfUnity` is the one-type reading. -/
+abbrev RelationPartitionOfUnity (leaves : Finset LeafDomain) :=
+  PartitionOfUnity RelationType leaves
+
+/-- Within each relation type the memberships sum to 1 (no double count within a type). -/
+theorem relation_partition_sums_to_one {leaves : Finset LeafDomain}
+    (P : RelationPartitionOfUnity leaves) (r : RelationType) :
+    leaves.sum (fun l => P.share r l) = 1 := P.h_sum_one r
 
 /-- 
   [P] Parent Domain: A fuzzy set of leaf domains.

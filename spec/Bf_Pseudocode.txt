@@ -80,7 +80,7 @@ Benefuture«Bf» {
     Bad«Bd»(t) := (A, O) → Ha(t);
 
     C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i) ,compete(ΔV / (ΔResource«Rc» + Δt));
-    RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓Cost - Audit ∧ ↓Usage{Rc, t};
+    RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓(Cost + Audit) ∧ ↓Usage{Rc, t};
     ProbabilisticEscrow«PE»(CNet_i) : Pay_t0(C_i)(P(As(V, A, t_0) > 0)), hold(1 - P), Pay_gradual(As(V, A, t) | ∪MM_Me(CNet(relevantDn(A))));
     TransactionProposal«TP_k» := {A, E[ΔV | MM_k], PE(C_k)};
     TP_Gen(A) :: ∀c ∈ CNet(relevantDn(A)) : c → Gen(TP_{k_c}(A)):price_c=(MM_Me((Rc[],t[])→A|RA)-MM_Pr(V←A)+PE_hold);
@@ -93,12 +93,12 @@ Benefuture«Bf» {
     ΔC_i → ΔC_j iff ∃TP(A : Dn_i → Dn_j), !trading, !Arbitrage;
     CausalContribution«CC»(O_i, E_j) → [0, 1] ↔ MM_CE(TxLog),
       fallbk: CC = ∑_{traverse(TxTree(TxLogs(Tx_i, t < i, degOfSeparation_d, Dn_i, e)))} NetC_n(Tx_nj) / ∑ C_d;
-    CausalDistribution«CD» := (Reward«Rw», Penalize) ∝ CC + N_CCtype - PE_paid | DisputeResolution(Justice«J»);
+    CausalDistribution«CD» := (Reward«Rw», Penalize) ∝ CC + N_CCtype - PE_paid | DisputeResolution(Justice«J»), Responsibility(Informed, Counterfactual, Severity, Duty), Accident → Penalize ≤ Capacity, Ad(rest), Mandate(Ed);
     Cycle(C_i) :: CD(Gd) → ⊕Bal(E) ∧ ⊕Supply;
     Tx(A, TP) ↔ ΔBal(E);
     {CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha);
     Reputation«Re»(t, CD, Dn) := Σ(CC(U(Dn), H(Dn)) + N(Dn)),
-      Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;
+      Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, PrAcc, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;
 
     BalOvflw :: Bal(E, C_i) > AccumThresh(Re_E, Equity, G_Optim, Dn_i) ⇒ (DirectedAutoInvest(S = E, Dn_i)) ∧ ΔBal(E) = -(Bal - Thresh_i);
     Law«Lw» := Agreed(I), Ap, {prohibit,mandate,recommend};
@@ -113,8 +113,8 @@ Benefuture«Bf» {
     BfDm(D(Dn_i, j, k...)) := Base_VW + Expert(Σŵ_i·Re(Dn_i)/ΣRe(Dn_i) | Σŵ=1)VW + Impacted(Pr_Imp → Voter)VW, Delib!Inf←↓Tr, FractalScope, VW < Th ⇒ VoteOptional;
     LqdBfDm(D_n, Dn_k) := DelegateDnVote(S_i → S_j) if (Re_k(S_j) > Re_k(S_i) ∧ CumulativeVoteWeight(S_j) < Th_k ∧ Impacted_Wt_i_n < Th_b), temporary, bulkAudited, retractable;
     LqCfdBfDm(D_n) := LqdBfDm | Vote_i := Confidence«Cf»_i(Options), ¬Tie(top Cf_i); D_n ≈ Σ VW_i·PrAcc_i(Cf)·logit(Cf_i); Di, N(minority clusters) → VW↑;
-    Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract));
-    J := Repair(Ha) ∧ Prevent(Cr), Restorative;
+    Crime«Cr» := Ha | Informed(Volition ∨ Inaction(Lw_mandate ∨ Contract)), Informed := Known ∨ ShouldHaveKnown, !Ig_pays;
+    J := Repair(Ha) ∧ Prevent(Cr), Restorative, Rehabilitate(Escalate ← pattern(Re_-ve(Dn)));
     ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij + (α * ΣRe_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * ΣRe_-ve_j(Dn(Ha_i))) * P(Overreact) | (ContextAware ∧ Transparent);
 
     Liability«Lia» := (S > Pe) > Ad > (B, E) > T;

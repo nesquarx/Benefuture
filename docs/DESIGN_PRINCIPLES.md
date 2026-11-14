@@ -55,6 +55,10 @@ before an ad-hoc ruling is needed.
     (`8.25.1`, `8.96`). All measured harm—including StandCoin-lane work (`8.67`) and chosen-risk
     deaths (`8.130`)—is logged and charged. Global resource accounting (`RA`) is an estimating domain
     that keeps issuance bound to deliverable resources and time (`8.27`, `8.133`).
+  * **Scoped thresholds, partition per relation type:** Governed thresholds carry a scope; a decision is
+    taken at the narrowest scope that bears a governed share of its impact, wider scopes acting only
+    beyond the freedom harm boundary (subsidiarity, `8.150`). An action's domain memberships sum to 1
+    within each relation type (causal, structural, communicative), never twice within one type (`8.156`).
 * **What breaks if violated:** Halos/horns across domains (`8.79`), cashing in credibility across
   domains (`8.80`), wealth buying standing (`8.51`), sybil/fork allowances (`§8.131`), unpriced lane
   harm (`8.67`), and an unbacked *"vibe economy issuing checks it can't cash"* (`8.133`).
@@ -82,6 +86,10 @@ before an ad-hoc ruling is needed.
   * **Trolley & fail-loud:** Policy-level irreparable harm compares aggregate net expected harm across
     all options (`8.124`). When every option is blocked, **search for lateral options first, else
     choose least net expected harm, and log loudly** (`8.127`).
+  * **Responsibility, not an act/omission premium:** Doing and allowing do not differ as such;
+    responsibility scales with being informed, the counterfactual, severity and whose responsibility the
+    outcome was (the system's duties are minimal). Ignorance must not pay: failing to learn what one
+    could and should have known counts as being informed (`8.152`).
 * **What breaks if violated:** Breeding/world-ranking paradoxes (`8.56`, `8.86`), status-quo veto of
   beneficial reforms (`8.99–8.100`), and silent default to a harmful inaction (`8.124`, `8.127`).
 
@@ -127,6 +135,10 @@ before an ad-hoc ruling is needed.
     significant signed overstatements—never raw noise or isolated errors, and never to permanent
     exclusion below the harm boundary (`8.91` + addendum). Admit newcomers at defined entry points
     with progressive rights (`8.72`).
+  * **Graduated sanctions and bounded accidents:** Escalation follows repeated pattern; escrow
+    ratcheting is the graduated sanction and reputation penalties are proportional. An accident costs
+    its contributor no more than their capacity, the administration carries the rest, and the
+    contributor takes the education that would have made them informed (`8.157`).
 * **What breaks if violated:** Unpunished outage sabotage (`8.26.5`), profitable supply cartels
   (`8.133`), lingering corrupted model scores (`8.38.1`), and false-positive exclusion of high-variance
   honest agents (`8.91`).
@@ -192,12 +204,11 @@ Verify every new rule, domain, Lean theorem, simulation world, or replay before 
 ## III. Genuinely Open Design Choices Remaining
 
 Only these substantive design choices remain open in [`docs/BACKPROPAGATION.md`](BACKPROPAGATION.md):
-* **Formula details (`§5.5–5.6`, `§8.26.7`):** Exact form of `EHR` forgiveness/overreaction,
-  exponential vs. subtractive reputation decay / partition-of-unity scope, and how `RA` sets the
-  commons' balance share.
-* **Moral / risk boundary details (`§8.47`, `§8.123`):** Whether doing and allowing differ (trolley
-  switch vs. footbridge/organ-harvest variants), and whether policy-level irreparable harm needs an
-  absolute count bar beside per-being/net checks.
+* **Formula details (`§8.26.7`):** how `RA` sets the commons' balance share (the generous `EHR`
+  reading is ratified, `8.154`; decay is exponential; the partition of unity is per relation type,
+  `8.156`).
+* **Moral / risk boundary details:** none open: doing and allowing do not differ as such (`8.152`),
+  and policy-level irreparable harm is decided by aggregate net expected harm (`8.124`).
 * **Cold-start stall (`L3.2–L3.4`):** How an economy starting with immature models breaks the
   `no currency → no funded work → no records → no currency` loop without lowering ratified quality
   bars (e.g., whether a minimum score-only phase or floor is required by rule).

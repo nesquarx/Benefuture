@@ -22,7 +22,7 @@ The process of Justice must provide ways in which the harm to the victims can be
 * Providing resources that are equal to the estimated value of the harm.
 * Correcting the records a deception falsified, as well as the harm it caused.
 * If none of the above are possible, especially in the case of irreparable harm, materials and support that could enable the victim to try to reach the levels of benefuture goals they could have reached prior to the harm.
-The prime cost of the reparation is often to be borne by the criminals, enabled via [[enforcement]] and supported as much as possible by the [[administration]] where criminals come short.
+The prime cost of the reparation is often to be borne by the criminals, enabled via [[enforcement]] and supported as much as possible by the [[administration]] where criminals come short. What an accident costs its contributor is bounded by their capacity, and the administration carries the rest.
 
 ===Rehabilitation===
 The process of Justice must provide ways to prevent the same crime in the future, especially by the criminals of the current crime. This can take the shape of:
@@ -31,6 +31,8 @@ The process of Justice must provide ways to prevent the same crime in the future
 ** They can achieve nuanced [[understanding]] of their crime.
 ** Understand what they need to do to avoid committing the crime in the future.
 ** Depending upon their intent, are sufficiently dissuaded from pursuing such intents.
+* Accidents also mandate education: whoever contributed to an accident takes the education that would have made them informed.
+* Sanctions escalate by repeated pattern: a pattern of negative records in a domain raises the response, while a first or isolated lapse meets repair and education.
 * If the education fails, and the harm is [[significant]] or repeated, [[enforcement]] such that the criminals are forcibly restrained from committing a similar future crime while letting them contribute to society and forward the [[goals]] as much as possible.
 
 ==Discussion==

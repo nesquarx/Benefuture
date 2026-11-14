@@ -112,17 +112,17 @@ Per the Ground Rules:
 - **Identity Disambiguation**: To distinguish identical twins, digital clones, or behavioral mimics from the underlying individual, identity resolution requires history worldline / spacetime grounding (`thing_identity_pattern`).
 - **Identity Binding (`can_bind_id`, L132)**: An entity can only bind an identity pattern if confidence exceeds threshold and zero collision exists in the observed reality state.
 
-### 3.2 Share-Based Partition of Unity vs Independent Weights ([P], [OPEN])
+### 3.2 Share-Based Partition of Unity vs Independent Weights ([P], [R] 8.156)
 - **Source**: `Bf_Pseudocode.txt` L21-22, L113.
 - **Finding & Divergence**: If domains are assigned unconstrained independent weights in $[0, 1]$, an action spanning multiple overlapping domain labels can multiply its influence, reputation rewards, and voting weight without bound (domain gerrymandering / double-counting vulnerability).
 - **Lean Spec Choice**: Formulated `PartitionOfUnity` over `LeafDomain` where weights sum to 1 ($\sum_{l \in leaves} w_l = 1$). Proved `aggregate_no_double_count` and `aggregate_monotonicity` for parent domains.
-- **Status ([OPEN])**: Single vs Multi-RelType Partition of Unity. Whether a single partition of unity governs all relationships or separate partitions exist per relation type (causal, structural, communicative) is left open.
+- **Status ([R], ruling 8.156)**: the partition of unity is per relation type (causal, structural, communicative): memberships sum to 1 within each type. `PartitionOfUnity` was already generic in `RelType`; `RelationType`, `RelationPartitionOfUnity` and `relation_partition_sums_to_one` (`Benefuture/Ontology/Domain.lean`) now name the three types. Build debt: wiring the per-type index through the reputation and attribution structures that use a single share vector (`aggregate_no_double_count` already holds per type, being stated on one share vector).
 
 ### 3.3 Domain Hierarchy Knaster-Tarski Fixed Point ([P])
 - **Source**: `Bf_Pseudocode.txt` L21-22.
 - **Specification**: In `Benefuture.Proposed.DomainHierarchy`, fuzzy subsethood $S(x, y)$ over action relevance is modeled as a monotonic operator on a complete lattice. Theorem `hierarchy_fixed_point_exists` proves existence of a fixed-point hierarchy via Knaster-Tarski, resolving circularity in mutually interdependent domains without ad-hoc cutoffs.
 
-### 3.4 3-Component Reputation Architecture ([R], [P])
+### 3.4 3-Component Reputation Architecture ([R], [P]; fourth component ruled 8.149)
 - **Source**: `Bf_Pseudocode.txt` L101 ("!halo, !horn, !transfer"), L113 ("VW_expert"), L118 ("EHR").
 - **Specification**: Separated reputation into distinct state stores and views in `Benefuture/Ontology/Reputation.lean`:
   - `ReHistory`: Monotonic, append-only historical record ($hPos \ge 0, hNeg \ge 0$). Non-cancelling ledger.
@@ -130,7 +130,8 @@ Per the Ground Rules:
   - `Re`: Transparent query view synthesizing history, relevance, and retracted items.
 - **Anti-Halo Domain Isolation**: Proved theorem `anti_halo_domain_isolation` on `DecisionProfile` and `VW_expert`: a voter with zero relevance across a decision's leaf domain support receives exactly 0 expert voting weight, preventing cross-domain halo/horn leakage.
 - **Fork / Merge Conservation**: In `Benefuture/Ontology/Entity.lean`, proved `fork_conserves_per_domain_*` and `merge_conserves_per_domain_*`, ensuring splitting or merging entities cannot manufacture or destroy reputation history or currency.
-- **Exponential vs Subtractive Decay ([OPEN])**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision. The lazy cache of §4.3 ([R]) and the reference and simulation (`Rep_decay_ref`) use the exponential form; the sources still name neither (BACKPROPAGATION 5.6).
+- **Prediction accuracy ([R], 8.149)**: ruled a fourth reputation component (L101, L113); the Lean `Re` view carries three. Build debt: add the accuracy term to the `Re` view (the reference `choice_skill_ref` and the simulation already use it).
+- **Exponential vs Subtractive Decay ([R] exponential, 5.6)**: Provided both continuous exponential decay ($rel_0 \cdot \exp(-\lambda \Delta t)$) and linear bounded subtractive decay ($rel_0 - \lambda \Delta t$). Left open as a governance schedule decision. The lazy cache of §4.3 ([R]) and the reference and simulation (`Rep_decay_ref`) use the exponential form; the sources still name neither (BACKPROPAGATION 5.6).
 
 ---
 
