@@ -1,6 +1,6 @@
 /-
   BenefutureReference.Adversarial
-  Computable reference for adversarial adaptation (AdvAp, L160; `Governance.Adversarial`;
+  Computable reference for adversarial adaptation (AdvAp, L161; `Governance.Adversarial`;
   Adversarial adaptation article). Share, floor, audit cost and the frivolous threshold are
   governed thresholds.
 -/

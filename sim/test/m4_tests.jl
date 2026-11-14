@@ -1,4 +1,4 @@
-# Toy model M4: governed thresholds (SigThGv, L157; `Systems.ParamSpace` [R]). The parameter vector
+# Toy model M4: governed thresholds (SigThGv, L158; `Systems.ParamSpace` [R]). The parameter vector
 # starts at the bootstrap point; non-debatable parameters are perturbed: a candidate within δ of the
 # current vector in every governed field is adopted only if admissible (`perturb_step`). Adaptation
 # is experimental design (author ruling, BACKPROPAGATION 8.22): each round tries the incumbent and
@@ -78,7 +78,7 @@ end
     @test_throws ArgumentError gov(gov_gauge = 0.5)
 end
 
-# The debatable escape (L157 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2, 8.41). The
+# The debatable escape (L158 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2, 8.41). The
 # proposal: each leaf's status bar relative to the alternative its work would fall to (a qualified
 # parent's accuracy, up to the established bar, never below the coarse bar), against the absolute
 # bar. It is tried on a share of the domains for a limited time and compared by leaf and epoch;

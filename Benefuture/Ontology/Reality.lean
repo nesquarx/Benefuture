@@ -1,7 +1,7 @@
 /-
   Benefuture.Ontology.Reality
   Formalization of Reality (ℝ), the Universe (𝕌), and Simulations.
-  Corresponds to: Bf_Pseudocode.txt L16, L18, L22, L132 and Reality.txt / Simulation.txt
+  Corresponds to: Bf_Pseudocode.txt L16, L18, L22, L133 and Reality.txt / Simulation.txt
   "Reality«ℝ» := (Perceivable ∪ Changeable) ⊆ Universe«𝕌»;"
   "Id(T) := ∃!SubPattern(T):¬∃Id(ℝ-T),Disambiguate(Location(T) ∈ ℝ, History(T)), Id ≡ Dn : |Dn ∩ ℝ| = 1;"
   "Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;"
@@ -56,7 +56,7 @@ theorem reality_is_subset_of_universe (r : RealityTouchpoint) :
   Theoretical Non-Real Patterns in the Universe (𝕌 − ℝ):
   Patterns where isPerceivable = false ∧ isChangeable = false (such as one-shot games
   or solipsistic ungrounded abstractions).
-  Corresponds to: Bf_Pseudocode.txt L136 ("1shotGame ⊆ 𝕌 − ℝ").
+  Corresponds to: Bf_Pseudocode.txt L137 ("1shotGame ⊆ 𝕌 − ℝ").
 -/
 def is_outside_reality (u : UniversePattern) : Bool :=
   !u.isPerceivable && !u.isChangeable
@@ -146,7 +146,7 @@ theorem identity_pattern_is_identity (R : RealityState) (t : Thing) (ht : t ∈ 
 
 /- =========================================================================
    IDENTITY ESTIMATES AND BIND-ID
-   Corresponds to: Bf_Pseudocode.txt L132:
+   Corresponds to: Bf_Pseudocode.txt L133:
    "Agg(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindId(E, 1:1)"
    ========================================================================= -/
 
@@ -166,7 +166,7 @@ structure IdentityEstimate where
   isBound          : Bool := false
 
 /-- 
-  Predicate: Sufficient multi-cluster evidence to trigger BindId (L132).
+  Predicate: Sufficient multi-cluster evidence to trigger BindId (L133).
   Requires aggregation over ≥ 2 independent clusters and aggregate log score ≥ Th.
 -/
 def can_bind_id (est : IdentityEstimate) (th : ℝ) : Prop :=
@@ -308,7 +308,7 @@ theorem isolated_simulation_not_in_external_reality (st : SimulatedThing)
 /- =========================================================================
    LONG-TERM TIME CONTINUUM (lt ∈ T)
    "LongTerm«lt» := (t_maxRecord, 0, t_maxPr), time«t» ∈ lt, Sig(O_t) ∝ P(O_t) * |O_t|;"
-   Corresponds to: Bf_Pseudocode.txt L34, L164.
+   Corresponds to: Bf_Pseudocode.txt L34, L165.
    ========================================================================= -/
 
 inductive TemporalEra where

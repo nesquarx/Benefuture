@@ -2,7 +2,7 @@
 # Hazards arise in domains and harm beings unless prevented. A guardian bound by contract (a law
 # once communicated counts) is committed to prevent hazards in its domain when informed; not
 # acting is assessed against that committed action, so its harm falls to the guardian: a crime if
-# informed (L115: Informed(Volition ∨ Inaction)), an accident if not; penalties fund repair either
+# informed (L116: Informed(Volition ∨ Inaction)), an accident if not; penalties fund repair either
 # way. Unguarded hazards have no contributor: a bystander is not penalised. Actions may create
 # hazards as side effects: direct harm, a crime if foreseen, an accident if not, repaired either way.
 isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))  # the controlled world (limiting case)
@@ -57,7 +57,7 @@ end
     tr = run_m3c(hz(zeros(Int, 4)); seed = 3)
     @test tr.unattributed > 0 && tr.crimes == 0 && tr.accidents == 0 && tr.hazard_penalties == 0
     # The administration insures unassigned harm through the commons, to its capability (author
-    # rulings 8.22, 8.26; L119 Liability ranks it before beings). The commons is funded by resource
+    # rulings 8.22, 8.26; L120 Liability ranks it before beings). The commons is funded by resource
     # accounting: the resource costs paid for work. Repair never draws more than it holds; with no
     # resource costs it holds nothing and nothing is repaired; balance overflow does not feed it.
     rich = run_m3c(hz(zeros(Int, 4); repair_efficiency = 1.0, overflow_base = Inf); seed = 3)

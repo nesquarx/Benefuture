@@ -1,7 +1,7 @@
 /-
   Benefuture.Ontology.Law
   Formalization of Law (L ∈ T), Contracts (K ∈ T), and Sophont Legal Roles.
-  Corresponds to: Bf_Pseudocode.txt L3-7, L149-162, Law.txt, Contract.txt, and Enforcement.txt
+  Corresponds to: Bf_Pseudocode.txt L3-7, L104, L150-163, Law.txt, Contract.txt, and Enforcement.txt
 
   "S ⊆ Pe ⊆ B ⊆ E ⊆ T;"
   "So, M, C, A, O, D, I... ∈ T;"
@@ -38,7 +38,7 @@ inductive LegalRoleType where
 /-- 
   Law (L ∈ T, extends Thing):
   An interaction rule governing entities and persons to maximize universal Understanding and Happiness.
-  Corresponds to: Bf_Pseudocode.txt L3-7 ("Law«L» ∈ T").
+  Corresponds to: Bf_Pseudocode.txt L104 ("Law«Lw»").
 -/
 structure Law extends Thing where
   roleType     : LegalRoleType
@@ -60,7 +60,7 @@ def Law.mkSimple (id : String) (role : LegalRoleType) (mandatory : Bool) (dom : 
 /-- 
   Contract (K ∈ T, extends Thing):
   A documented commitment of multiple Persons/Entities committing to perform a set of interactions (Inputs → Outputs).
-  Corresponds to: Bf_Pseudocode.txt L71, L119 ("Contract«Ct»").
+  Corresponds to: Bf_Pseudocode.txt L71, L116 ("Contract").
 -/
 structure Contract extends Thing where
   signatories  : List Person := []
@@ -107,7 +107,7 @@ def is_automatically_enforced (l : Law) : Bool :=
 /-- 
   Liability Hierarchy:
   Liability«Lia» := (S > Pe) > Ad > (B, E) > T;
-  Corresponds to: Bf_Pseudocode.txt L119.
+  Corresponds to: Bf_Pseudocode.txt L120.
   Moral and legal liability increases strictly with awareness, agency, and goal alignment.
 -/
 inductive MoralAgentTier where

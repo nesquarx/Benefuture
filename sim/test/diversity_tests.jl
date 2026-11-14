@@ -1,4 +1,4 @@
-# The split trial (author rulings 8.30, 8.22.3; L158 Di_N_Balance): options tried side by side on
+# The split trial (author rulings 8.30, 8.22.3; L159 Di_N_Balance): options tried side by side on
 # shares of a scope (locales, domains), each unit's outcome measured with noise, compared by the
 # Lean significance rule (`select_candidate`). Reusable wherever alternatives are tried: decisions
 # (M5), debatable thresholds (M4), the pre-N sample.
@@ -24,7 +24,7 @@ end
     @test_throws ArgumentError split_trial(r, [0.0, 1.0], [0.5, 0.5]; units = 10, σ = -1.0, z = 2.0)
 end
 
-# The debatable escape (L157 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2): a
+# The debatable escape (L158 SigThGv: Debatable → LqdBfDm; author rulings 8.26.3, 8.38.2): a
 # proposal beyond the freedom range is tried on a share of the scope for a limited time, and
 # adopted only if it beats the incumbent by the significance rule, its gains exceed its harms, and
 # it caused no irreparable harm (Lean `escape_accept_ref`).

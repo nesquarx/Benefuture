@@ -111,7 +111,7 @@ struct M3cParams
     recent_outputs::Int     # outputs kept per domain to build on
     attribution_σ::Float64  # metric models' error in separating an upstream output's part
     upstream_depth::Int     # maximum hop depth of transaction trees (L95; 1 = direct parent only)
-    # Contribution types (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype).
+    # Contribution types (author ruling, BACKPROPAGATION 8.22; L96: CD ∝ CC + N_CCtype).
     accolade_rate::Float64  # share of a carried output's positive share earned by carrying it outside contract (governed)
     contract_share::Float64 # the same share when the carrying is contracted: paid as contract completion
     p_contracted::Float64   # chance a carrying is under contract
@@ -130,7 +130,7 @@ struct M3cParams
     p_foresee::Float64           # chance the actor foresaw the side effect
     p_shock::Float64             # chance a prevention shocks the beings it protects
     shock_size::Float64          # that shock's harm per being, on happiness
-    # Governed thresholds (M4; SigThGv, L157; `Systems.ParamSpace` [R]).
+    # Governed thresholds (M4; SigThGv, L158; `Systems.ParamSpace` [R]).
     govern::Bool                 # perturb the value parameters through SigThGv
     adapt::Bool                  # select by experiment (8.22) rather than a plain random walk
     gov_epoch::Int               # steps between governance steps (governed)
@@ -154,7 +154,7 @@ struct M3cParams
     choice_σ::Float64       # base ceiling of agents' choice noise, before skill (8.31; world)
     choice_gain::Float64    # how fast skill lowers that ceiling (8.31; world)
     ability_spread::Float64 # scatter of persons' ceilings around the skill trend (8.31; world)
-    # Adversarial adaptation (AdvAp, L160; author ruling 8.38): reports, audits, repair.
+    # Adversarial adaptation (AdvAp, L161; author ruling 8.38): reports, audits, repair.
     advap::Bool                  # agents report gaming they read in the log; audits examine and repair
     vigilance::Float64           # chance per step an agent reads another actor's record (world)
     adv_z::Float64               # standard errors an actor's overstatement must exceed for a founded report (governed)
@@ -587,10 +587,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     agent_upfront, agent_settled = zeros(na), zeros(na)  # escrow paid upfront, and the value settled (M6)
     track = [Dict{Int,Vector{Tuple{Float64,Float64}}}() for _ in 1:na]  # each model's past errors on each actor (8.29)
     track_step = [Dict{Int,Vector{Int}}() for _ in 1:na]
-    audit_log = [Tuple{Int,Float64,Float64}[] for _ in 1:na]          # and all of them in order, for audits (L160)
+    audit_log = [Tuple{Int,Float64,Float64}[] for _ in 1:na]          # and all of them in order, for audits (L161)
     actor_err = [Float64[] for _ in 1:na]               # and the value errors of its corrected estimates
     actor_err_step = [Int[] for _ in 1:na]
-    # AdvAp (L160): where an audit of each actor starts in its record, and each reporter's
+    # AdvAp (L161): where an audit of each actor starts in its record, and each reporter's
     # unfounded reports (steps).
     audit_from = ones(Int, na)
     unfounded = [Int[] for _ in 1:na]
@@ -1551,8 +1551,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             minted = 0.0
             if blind[]
-                # Measurement outage (L154 Progressive: degrade, fall back): paid by prediction
-                # alone, escrow's upfront (L86), with no settlement.
+                # Measurement outage (L155 Progressive: degrade, fall back): paid by prediction
+                # alone, escrow's upfront (L84), with no settlement.
                 credits = [(a, 0.0, 0.0)]
                 for (c, sh, pr, cr) in offers[j]
                     upfront = sh * cr * plan_value(pr, t)
@@ -1833,7 +1833,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         # Harm with no contributor: the administration insures it through the commons, to its
-        # capability (author rulings 8.22, 8.26; L119 Liability ranks it before beings). The commons
+        # capability (author rulings 8.22, 8.26; L120 Liability ranks it before beings). The commons
         # is funded by resource accounting: the resource costs paid for work (L83); escrow is not
         # pooled in this world. Repair is a transaction priced like any other (L86; 8.26): resource
         # cost less the predicted good its qualified currencies credit (`transaction_price`). That

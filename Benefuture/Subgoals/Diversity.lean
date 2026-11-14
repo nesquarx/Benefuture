@@ -1,7 +1,7 @@
 /-
   Benefuture.Subgoals.Diversity
   Formalization of Diversity (Di), Novelty (N), Culture (Cu), and the Anti-Monoculture Axiom.
-  Corresponds to: Bf_Pseudocode.txt L35-36, L124, L158, and Diversity.txt / Culture.txt
+  Corresponds to: Bf_Pseudocode.txt L35-36, L125, L159, and Diversity.txt / Culture.txt
   "Di_N_Balance := (MarginalΔV(Spread(Gd_i)) < Th) ⇒ Need(↑N ∧ ↓MonoCu_i), ∃i=Bf;"
 -/
 
@@ -16,7 +16,7 @@ open Benefuture.Ontology
 /-- 
   Culture (Cu ∈ T):
   Memetic pattern of beliefs, values, and behaviors in Reality.
-  Corresponds to: Bf_Pseudocode.txt L124:
+  Corresponds to: Bf_Pseudocode.txt L125:
   "Cu := Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd ⊆ Cu)), J(↓Bd ⊆ Cu);"
 -/
 structure Culture extends Thing where
@@ -86,7 +86,7 @@ theorem positive_frequency_strictly_diminishes_novelty (freq : Nat) (h_pos : fre
   omega
 
 /-- 
-  Anti-Monoculture Trigger (Di_N_Balance Axiom, L158):
+  Anti-Monoculture Trigger (Di_N_Balance Axiom, L159):
   If the marginal value spread of the dominant paradigm falls below threshold Th, alternatives
   are to be tried (even if the dominant paradigm is Benefuture itself). The trigger only flags the
   stagnation: by ruling 8.30.3 alternatives are subsidised (novelty bonuses) until some local body

@@ -248,7 +248,7 @@ proves. The reviewed claims, with their assumptions, are in [README.md](../READM
 - [`merge_conserves_per_domain_hPos`](../Benefuture/Ontology/Entity.lean#L450): THEOREM: Merge Conservation of Per-Domain hPos.
 - [`merge_conserves_per_domain_hNeg`](../Benefuture/Ontology/Entity.lean#L456): THEOREM: Merge Conservation of Per-Domain hNeg.
 - [`merge_conserves_per_domain_rel`](../Benefuture/Ontology/Entity.lean#L462): THEOREM: Merge Conservation of Per-Domain rel.
-- [`external_defense_guarantees_repairability`](../Benefuture/Ontology/Entity.lean#L524): THEOREM: `calculate_defensive_action` returns zero irreparable and irreversible damage. True by construction: the function hard-codes both fields to 0. It proves nothing about real responses to external harm (EHR, L117: TitForTat via reparable harm); it records the design requirement that the response be confined to reparable harm, not that any response meets it.
+- [`external_defense_guarantees_repairability`](../Benefuture/Ontology/Entity.lean#L524): THEOREM: `calculate_defensive_action` returns zero irreparable and irreversible damage. True by construction: the function hard-codes both fields to 0. It proves nothing about real responses to external harm (EHR, L118: TitForTat via reparable harm); it records the design requirement that the response be confined to reparable harm, not that any response meets it.
 - [`external_response_always_repairable`](../Benefuture/Ontology/Entity.lean#L530): (no docstring)
 
 ## Benefuture/Ontology/Law.lean
@@ -325,7 +325,7 @@ proves. The reviewed claims, with their assumptions, are in [README.md](../READM
 - [`stepwise_endpoint`](../Benefuture/Proposed/PopulationDirection.lean#L216): (no docstring)
 - [`stepwise_implies_min_holds`](../Benefuture/Proposed/PopulationDirection.lean#L223): [P] Stepwise monotone trajectories satisfy trajectory-level ↑min, whatever the cover.
 - [`tunnel_admissible_but_not_stepwise`](../Benefuture/Proposed/PopulationDirection.lean#L238): [P] THEOREM: A stepwise filter rejects NHa tunnels that trajectory-level ↑min admits. Hence Pareto filtering must compare trajectories over the horizon, not single steps.
-- [`nonclosing_tunnel_triggers_harm_intv`](../Benefuture/Proposed/PopulationDirection.lean#L256): [P] THEOREM: A tunnel still open at the horizon has triggered Harm_Intv at some step. Harm_Intv (L150) is the closure guard: an NHa gap that does not close cannot pass silently.
+- [`nonclosing_tunnel_triggers_harm_intv`](../Benefuture/Proposed/PopulationDirection.lean#L256): [P] THEOREM: A tunnel still open at the horizon has triggered Harm_Intv at some step. Harm_Intv (L151) is the closure guard: an NHa gap that does not close cannot pass silently.
 - [`ha_lt_closing_nha`](../Benefuture/Proposed/PopulationDirection.lean#L274): (no docstring)
 - [`ha_lt_nonclosing_counts`](../Benefuture/Proposed/PopulationDirection.lean#L277): (no docstring)
 - [`ha_lt_non_nha_counts`](../Benefuture/Proposed/PopulationDirection.lean#L280): (no docstring)

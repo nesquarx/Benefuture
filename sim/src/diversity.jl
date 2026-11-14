@@ -1,4 +1,4 @@
-# The split trial (author rulings 8.30, 8.22.3; L158 Di_N_Balance): alternatives tried side by side
+# The split trial (author rulings 8.30, 8.22.3; L159 Di_N_Balance): alternatives tried side by side
 # on shares of a scope (locales, domains, populations). Each unit's outcome is the option's value
 # plus measurement noise; the options are compared by the Lean significance rule
 # (`select_candidate_ref`). The world model is here; the comparison is the rule. Reusable wherever

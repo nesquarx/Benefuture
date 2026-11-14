@@ -24,7 +24,7 @@ open Benefuture.Math
 /- =========================================================================
    3.3 COMPONENT TYPING
    Distinct types for history and relevance to enforce correct consumer usage.
-   - EHR uses ReHistory (L117: Re_+ve, Re_-ve)
+   - EHR uses ReHistory (L118: Re_+ve, Re_-ve)
    - BfDm, LqdBfDm, BalOvflw, SourceVerify use ReRelevance
    ========================================================================= -/
 
@@ -179,7 +179,7 @@ def VW_expert {leaves : Finset LeafDomain} (dp : DecisionProfile leaves)
   leaves.sum (fun l => dp.weights l * f (relScores l).rel)
 
 /-- 
-  [R] External Harm Response (EHR, L117):
+  [R] External Harm Response (EHR, L118):
   TitForTat + α·Σ_d ŵ(Ha_i,d)·hPos(j,d)·P(Forgive) + δ·Σ_d ŵ(Ha_i,d)·hNeg(j,d)·P(Overreact).
   External aggressors carry statistical (low-precision) reputation with uncertainty.
 -/

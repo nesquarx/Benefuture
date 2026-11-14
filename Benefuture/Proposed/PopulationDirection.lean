@@ -2,7 +2,7 @@
   Benefuture.Proposed.PopulationDirection
   [P] Proposed population axiology by direction rather than by world-ranking.
   Corresponds to: Bf_Pseudocode.txt L54-55 (Ha, NHa), L62 (pushDistr), L68 (Bounds_B),
-  L74 (G), L135 (Fr), L150 (Harm_Intv).
+  L74 (G), L136 (Fr), L151 (Harm_Intv).
 
   Design decisions (from discussion with the framework author):
   1. Bf ranks actions, not worlds. V is per action; a being-level value exists only as an
@@ -200,7 +200,7 @@ theorem skew_direction_alone_permits_min_decline :
   rw [a2, a3, b2, b3, abs_of_neg (by norm_num), abs_of_neg (by norm_num)]
   norm_num
 
-/- --- 3. ↑min over a trajectory, with NHa tunnels (L55, L62, L150) --- -/
+/- --- 3. ↑min over a trajectory, with NHa tunnels (L55, L62, L151) --- -/
 
 /-- [P] Stepwise ↑min: min never dips at any step of the horizon. -/
 def stepwise_min_monotone (m : ℕ → ℝ) (h : ℕ) : Prop :=
@@ -245,13 +245,13 @@ theorem tunnel_admissible_but_not_stepwise :
   · have h0 := hs 0 (by norm_num)
     norm_num [tunnel_example] at h0
 
-/-- [P] Harm_Intv (L150) fires at step t when tunnel depth does not shrink (min does not rise). -/
+/-- [P] Harm_Intv (L151) fires at step t when tunnel depth does not shrink (min does not rise). -/
 def harm_intv_fires (m : ℕ → ℝ) (t : ℕ) : Prop :=
   m (t + 1) ≤ m t
 
 /--
   [P] THEOREM: A tunnel still open at the horizon has triggered Harm_Intv at some step.
-  Harm_Intv (L150) is the closure guard: an NHa gap that does not close cannot pass silently.
+  Harm_Intv (L151) is the closure guard: an NHa gap that does not close cannot pass silently.
 -/
 theorem nonclosing_tunnel_triggers_harm_intv (m : ℕ → ℝ) (h : ℕ) (hopen : m h < m 0) :
     ∃ t < h, harm_intv_fires m t := by

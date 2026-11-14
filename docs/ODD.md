@@ -297,8 +297,8 @@ success pattern against the clean world with no attack paying (`sim/battery/econ
 
 **6.4 Design concepts.**
 - *Basic principles*: L74 (G), L82 (currencies backed by top models above a bar), L84 (escrow), L86
-  (pricing), L94–L96 (causal contribution and distribution), L100–L103 (reputation, overflow), L115
-  (crime), L119 (liability), L145 (memory), L154 (progressive fallback), L157 (SigThGv), L160 (AdvAp).
+  (pricing), L94–L96 (causal contribution and distribution), L100–L103 (reputation, overflow), L116
+  (crime), L120 (liability), L146 (memory), L155 (progressive fallback), L158 (SigThGv), L161 (AdvAp).
 - *Emergence*: domain formation, learnt overlaps, eligibility patterns (the cliff of 8.32), wealth
   concentration, blockades of marginal domains by deceivers (8.37).
 - *Adaptation*: model adoption and takeover; μ learning; formation; parameter governance (M4).
@@ -338,7 +338,7 @@ governance (`admissible`, `perturb`, `select_candidate`, `gauge_radius`, `escape
 
 ## 7. M4: governed thresholds (settings of `run_m3c`)
 
-**7.1 Purpose and patterns.** Whether governing the value parameters by SigThGv (L157) inside the
+**7.1 Purpose and patterns.** Whether governing the value parameters by SigThGv (L158) inside the
 admissible region keeps outcomes stable (`Conj_ParamStability`), whether adaptation by experiment
 avoids confounds, and whether the debatable escape adopts only a proposal that proves better.
 **7.2–7.7.** Entities, schedule and submodels as §6, steps 1 and 16, with `govern = true` (and
@@ -451,7 +451,7 @@ lifting the rest, against which the quantile floor over the decision-time popula
 deaths as irreparable harm are checked (`fr_permissible_ref` marks it impermissible).
 
 **10.4 Design concepts.** *Basic principles*: L74 per entity (8.50); understanding shared, not moved
-(the teacher keeps its own, `u_sharing_gain_nonneg` in Lean); L151 Rc_Innovation. *Emergence*:
+(the teacher keeps its own, `u_sharing_gain_nonneg` in Lean); L152 Rc_Innovation. *Emergence*:
 frontier growth, concentration of understanding (top decile's share). *Objectives*: each entity's G
 on its own view. *Sensing*: noisy views. *Interaction*: lessons. *Stochasticity*: streams for
 reception, research, and views. *Observation*: success pattern, top decile's share, actions per step

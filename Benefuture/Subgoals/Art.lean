@@ -1,7 +1,7 @@
 /-
   Benefuture.Subgoals.Art
   Formalization of Art as aesthetic and cognitive transmission.
-  Corresponds to: Bf_Pseudocode.txt L125-126
+  Corresponds to: Bf_Pseudocode.txt L126-127
   "Art := E_i -> In((T_a = (Cx_a ∨ Reorg) <- (T_o ⊆ ℝ)), Cm(ΔAffect_St + ΔU)_p) : (B_j <- T_a) -> (ΔAffect_St(B_j) + U : U ≠ U(T_a))_q..."
   "V_a = (Tr_lvl(U) + N)_q"
 -/
@@ -26,7 +26,7 @@ instance : Coe Artwork Thing where
 /-- 
   Artistic Transmission (extends Thing):
   Artist communicates affective and cognitive shifts (ΔAffect + ΔU) to an Audience Being.
-  Corresponds to: Bf_Pseudocode.txt L125-126.
+  Corresponds to: Bf_Pseudocode.txt L126-127.
 -/
 structure ArtExperience extends Thing where
   artwork        : Artwork

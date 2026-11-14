@@ -137,7 +137,7 @@ def Parent_aggregate_ref (leafValues : List Float) (weights : List Float) : Floa
 
 /--
   Reference calculation of anti-collusion attenuation of cyclic review pairs (A → B, B → A).
-  Matches `attenuate_cyclic_reviews` (Governance.Incentives). Not EHR (L117, External Harm Response).
+  Matches `attenuate_cyclic_reviews` (Governance.Incentives). Not EHR (L118, External Harm Response).
 -/
 def cyclic_review_attenuate_ref (rawWeight : Float) (attenuation : Float) : Float :=
   let a := if attenuation < 0.0 then 0.0 else if attenuation > 1.0 then 1.0 else attenuation
@@ -208,7 +208,7 @@ def accumulate_capped_ref (cap : Float) : Float → List Float → Float
   | cur, [] => cur
   | cur, w :: ws => accumulate_capped_ref cap (if cur < cap then cur + w else cur) ws
 
-/- --- Freedom (L135, author's reading) --- -/
+/- --- Freedom (L136, author's reading) --- -/
 
 /-- Harm schedule weights for Ha_wt (L61). Matches `harmSchedule`. -/
 def harmSchedule_ref : List Float := [0.9, 0.7, 0.45, 0.15, 0.08, 0.04, 0.01]
@@ -283,7 +283,7 @@ def supply_delta_ref (good cost harm : Float) : Float :=
 def competition_efficiency_ref (dV cost dt : Float) : Float :=
   dV / (cost + dt)
 
-/- --- External Harm Response (L117) --- -/
+/- --- External Harm Response (L118) --- -/
 
 /-- p_F = min(1, α·Re₊). Matches `p_forgive`. -/
 def p_forgive_ref (alpha rePos : Float) : Float :=

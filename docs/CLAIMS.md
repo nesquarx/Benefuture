@@ -390,8 +390,7 @@ These confirm encoded rules:
 - **Extended self.** Harm to a coupled part of the extended self is harm to the being ([`defection_harms_extended_self`](../Benefuture/Subgoals/Morality.lean)).
 - **Infohazards.** Education inoculates against an infohazard ([`education_inoculates_infohazard`](../Benefuture/Epistemology/InfoHandling.lean)).
 - **Revelation.** Reporting beats exploiting because the bounty is defined above the gain ([`revelation_strictly_dominates`](../Benefuture/Governance/Adversarial.lean)).
-- **Triggers.** Antifragility and continuity triggers fire on their defining conditions ([`harm_growth_activates_intervention`](../Benefuture/Axioms/Antifragility.lean),
-  [`rising_harm_mandates_intervention`](../Benefuture/Subgoals/Continuity.lean)).
+- **Triggers & definitional unfoldings.** Antifragility and continuity triggers fire on their defining conditions ([`harm_growth_activates_intervention`](../Benefuture/Axioms/Antifragility.lean), [`efficiency_stagnation_triggers_innovation`](../Benefuture/Axioms/Antifragility.lean), [`rising_harm_mandates_intervention`](../Benefuture/Subgoals/Continuity.lean)); civilizational continuity, essential-good zero pricing, infohazard statement typing, and artwork non-negativity follow by unfolding their defining structures/predicates ([`valid_civilizational_continuity`](../Benefuture/Axioms/Antifragility.lean), [`baseline_income_guarantees_free_essentials`](../Benefuture/Systems/Economy.lean), [`infohazard_is_statement`](../Benefuture/Epistemology/InfoHandling.lean), [`art_value_nonneg`](../Benefuture/Subgoals/Art.lean)).
 - **Non-circular metric models,** given the empirical-marker requirement ([`metric_models_are_non_circular`](../Benefuture/Measurement/MetricModel.lean)).
 
 ### Negative and open results

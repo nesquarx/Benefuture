@@ -91,7 +91,7 @@ end
     @test_throws ArgumentError m3c(cc_threshold = 1.5)
 end
 
-# Contribution types (author ruling, BACKPROPAGATION 8.22; L95: CD ∝ CC + N_CCtype). Carrying another
+# Contribution types (author ruling, BACKPROPAGATION 8.22; L96: CD ∝ CC + N_CCtype). Carrying another
 # agent's output on, outside any contract, is a communicative contribution and earns an accolade, a
 # minor share of what the output carried; under contract it is paid as the contracted share, as
 # completion of the contract, not as contribution. Losses stay with whoever caused them.

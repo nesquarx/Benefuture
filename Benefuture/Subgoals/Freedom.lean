@@ -1,7 +1,7 @@
 /-
   Benefuture.Subgoals.Freedom
   Formalization of Freedom (Fr): Maximization of action capacity subject to non-harm.
-  Corresponds to: Bf_Pseudocode.txt L135, and Rights.txt / Philosophy.txt
+  Corresponds to: Bf_Pseudocode.txt L136, and Rights.txt / Philosophy.txt
   "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high);"
   Fr is a subgoal, reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8): G's choice is
   `Proposed.PopulationDirection.goal_G`.
@@ -23,7 +23,7 @@ open Benefuture.Axiology
 
 /--
   [Legacy] Certain-harm-only check: passes iff the profile carries no irreparable and no irreversible
-  harm. It reads the profile as harm known to occur, so it agrees with `fr_permissible` (L135) only
+  harm. It reads the profile as harm known to occur, so it agrees with `fr_permissible` (L136) only
   for certain irreparable or irreversible harm; it ignores the established long-term tier and does
   not price speculative harm by its probability (`remote_irreversible_chance_permitted` passes Fr
   with irreversible harm in the profile). Kept for the legacy freedom metric; Fr is `fr_permissible`.
@@ -32,7 +32,7 @@ noncomputable def is_action_freedom_permissible (_a : Action) (harm : HarmProfil
   harm.irreparable ≤ 0 && harm.irreversible ≤ 0
 
 /--
-  [Legacy] Freedom within Truth Boundaries (Fr(Tr)) (L133, L135), on the certain-harm-only check:
+  [Legacy] Freedom within Truth Boundaries (Fr(Tr)) (L134, L136), on the certain-harm-only check:
   1. No certain irreparable or irreversible harm: is_action_freedom_permissible a harm = true
   2. It does not actively degrade truth in Reality: delta_truth ≥ 0
 -/
@@ -41,7 +41,7 @@ noncomputable def is_action_freedom_within_truth (a : Action) (harm : HarmProfil
 
 /--
   THEOREM: The legacy certain-harm check fails any profile with positive irreversible harm. This
-  is a fact about `is_action_freedom_permissible` only: under Fr (`fr_permissible`, L135) an
+  is a fact about `is_action_freedom_permissible` only: under Fr (`fr_permissible`, L136) an
   irreversible harm blocks when established or when its expected severity exceeds Th_high, and a
   remote chance of it passes (`remote_irreversible_chance_permitted`).
 -/
@@ -63,7 +63,7 @@ theorem irreparable_harm_strictly_impermissible
   have h_not : ¬(harm.irreparable ≤ 0) := by linarith
   simp [h_not]
 
-/- --- Fr per L135, author's reading --- -/
+/- --- Fr per L136, author's reading --- -/
 
 /--
   [R] A predicted harm with the confidence that it occurs.
@@ -101,7 +101,7 @@ noncomputable def severity_score (hp : HarmProfile) (fp : FrParams) : ℝ :=
     fp.sevLongterm * hp.longterm + fp.sevPassing * hp.passing + fp.sevTimeLoss * hp.timeLoss
 
 /--
-  [R] Established severe harm (`Ha_Estd` in L135, author's reading): confidence at least thConf,
+  [R] Established severe harm (`Ha_Estd` in L136, author's reading): confidence at least thConf,
   and some harm at the long-term tier or worse.
 -/
 def established_severe (hf : HarmForecast) (fp : FrParams) : Prop :=
@@ -109,7 +109,7 @@ def established_severe (hf : HarmForecast) (fp : FrParams) : Prop :=
     (0 < hf.profile.irreparable ∨ 0 < hf.profile.irreversible ∨ 0 < hf.profile.longterm)
 
 /--
-  [R] Fr (L135): Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high).
+  [R] Fr (L136): Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high).
   Permissible iff the harm is not established-severe (`established_severe`: confidence ≥ thConf,
   some harm at the long-term tier or worse) and its expected severity confidence · severity_score
   stays within thHigh. Irreversible and irreparable harm block when established, or when their
@@ -206,7 +206,7 @@ theorem certain_irreversible_harm_blocks :
   NHa := Ha : Ha → ↑V > Ha.
   A transient harm whose downstream consequence generates strictly greater Value.
   
-  Pseudocode L135 defines Freedom:
+  Pseudocode L136 defines Freedom:
   Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high).
   Established irreversible harm is established-severe, so Fr blocks it.
 
@@ -268,7 +268,7 @@ theorem freedom_metric_monotone_with_permissible_action
 /-- 
   Freedom Scope (extends Thing):
   Grounded action set and capacity available to an agent in Reality.
-  Corresponds to: Bf_Pseudocode.txt L135 ("f_max(∃A, Imp, N, Po)").
+  Corresponds to: Bf_Pseudocode.txt L136 ("f_max(∃A, Imp, N, Po)").
 -/
 structure FreedomScope extends Thing where
   actions       : List Action := []
@@ -305,7 +305,7 @@ def is_freedom_within_truth (c : ActionHarmConstraint) (isTruthOriented : Bool) 
 /-- 
   Threshold Perturbation (extends Thing):
   Bounded epistemic calibration perturbation over a nominal metric threshold.
-  Corresponds to: Bf_Pseudocode.txt L157 ("SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ∈Fr));").
+  Corresponds to: Bf_Pseudocode.txt L158 ("SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ∈Fr));").
 -/
 structure ThresholdPerturbation extends Thing where
   nominalThreshold : Int

@@ -4,11 +4,11 @@
   Covers:
   - Liquid Democracy Delegation Graph and Acyclicity (L114)
   - Delegation Cap and Star-Topology Power Concentration [OPEN]
-  - Truth and Brier Score Strict Propriety (L34)
-  - Bounty & Anti-Cobra Incentive Compatibility (L157)
+  - Truth and Brier Score Strict Propriety (L27)
+  - Bounty & Anti-Cobra Incentive Compatibility (L158, L161)
   - Uncollateralized Exploit Vulnerability [OPEN]
-  - Anti-Collusion Cyclic Review Attenuation (L117)
-  Corresponds to: Bf_Pseudocode.txt L34, L114, L117, L157.
+  - Anti-Collusion Cyclic Review Attenuation (L118)
+  Corresponds to: Bf_Pseudocode.txt L27, L114, L118, L158, L161.
 -/
 
 import Mathlib.Data.Real.Basic
@@ -151,7 +151,7 @@ theorem brier_score_strictly_proper (p q : ℝ) (h_diff : p ≠ q) :
 
 /-!
   # 3. Bounty & Anti-Cobra Incentive Compatibility
-  Corresponds to: Bf_Pseudocode.txt L157, Adversarial adaptation.txt §Nuance 1.
+  Corresponds to: Bf_Pseudocode.txt L161, Adversarial adaptation.txt §Nuance 1.
 -/
 
 /--
@@ -209,7 +209,7 @@ structure UncollateralizedExploitVulnerability where
 
 /-!
   # 4. Anti-Collusion Cyclic Review Attenuation
-  Corresponds to: Bf_Pseudocode.txt L117 ("EHR", "!halo, !horn, !transfer").
+  Corresponds to: Bf_Pseudocode.txt L118 ("EHR", "!halo, !horn, !transfer").
 -/
 
 /--

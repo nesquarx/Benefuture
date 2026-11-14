@@ -1,6 +1,6 @@
 /-
   Benefuture.Proposed.RevelationGame
-  [P] "Revealing pays more than exploiting" (L160, AdvAp) as a relational, dominant-strategy
+  [P] "Revealing pays more than exploiting" (L161, AdvAp) as a relational, dominant-strategy
   statement in the style of Barthe et al. (2015, POPL, https://doi.org/10.1145/2676726.2677000):
   for every profile of the others' strategies, an agent who knows a flaw is strictly better off
   reporting it than exploiting it. Strengthens `Governance.revelation_strictly_dominates`, which
@@ -9,7 +9,7 @@
   The game: a set ι of agents who all know one flaw, each choosing to report or exploit.
   Reporters share the bounty (`bounty_reward`, gain + max(1, harm / 10)) equally, the worst case
   for a reporter. An exploiter is caught for certain once anyone else reports (the flaw is then
-  public): every gain is clawed back and a positive restitution charged (L160; Adversarial
+  public): every gain is clawed back and a positive restitution charged (L161; Adversarial
   adaptation, retroactive clawback). While no one else reports, the exploiter keeps its gain less
   an expected penalty that may depend arbitrarily on the whole profile, and may be zero.
 

@@ -5,7 +5,7 @@
 # Convergence (an evaluation criterion, not a rule): over the seeds' majority, the share of the last
 # half of decisions right in the end (after split trials and AdvAp's recounts) is at least
 # `ACCURACY`. Colluders are the most reputable experts of each domain, stealthy (defecting only where
-# outcomes stay hidden): the worst case. AdvAp (L160) is on; loyalty to the bloc is a factor.
+# outcomes stay hidden): the worst case. AdvAp (L161) is on; loyalty to the bloc is a factor.
 using BenefutureSim, Statistics, Random, Printf
 
 function parse_cli_args(args = ARGS)

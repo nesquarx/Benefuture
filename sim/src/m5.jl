@@ -46,7 +46,7 @@ struct M5Params
     ability_spread::Float64    # scatter of persons' noise ceilings around the expertise trend (8.31; world)
     fork_copies::Int           # copies each colluder forks into, voting alike (M6; world)
     fork_rule::Symbol          # :divided (forks share the social power, base vote included) or :per_identity ([OPEN])
-    # Adversarial adaptation (AdvAp, L160; 8.38): the manufactured prisoner's dilemma.
+    # Adversarial adaptation (AdvAp, L161; 8.38): the manufactured prisoner's dilemma.
     advap::Bool                # bloc members may reveal the bloc for a reward
     p_weigh::Float64           # chance a member weighs revealing after a hidden defection (world)
     collusion_gain::Float64    # what one hidden defection gains each member (world)
@@ -67,14 +67,14 @@ struct M5Params
     record_λpos::Float64       # decay of a source's rights in the rolling net its weight reads (governed; L101)
     record_λneg::Float64       # and of its wrongs, no faster (8.29)
     p_novel::Float64           # chance a source with a weaker record brings input novel to the listener (world; 8.44)
-    info_handling::Bool        # the social network exposes every source in the domain, weighed by record (L133 IH; 8.44)
+    info_handling::Bool        # the social network exposes every source in the domain, weighed by record (L134 IH; 8.44)
     camp_bias::Vector{Float64} # per agent, an honest paradigm's systematic lean (world: contention among experts)
-    # Source tags (L133 IH; author rulings 8.45, 8.60): readings count each origin once; votes keep full weight.
+    # Source tags (L134 IH; author rulings 8.45, 8.60): readings count each origin once; votes keep full weight.
     source_tags::Bool          # readings carry their origins' tags and count each once (8.45); no weight passes on (8.60)
     rounds::Int                # times readings pass on before the vote (world)
     tag_liars::Vector{Int}     # agents gaming the tags (M6; world)
     tag_lie::Symbol            # :misattribute (claim every origin backs one side) or :omit (republish what was heard as one's own)
-    tag_audit::Bool            # AdvAp reads tags against the log and audits outputs for undisclosed echoes (L160)
+    tag_audit::Bool            # AdvAp reads tags against the log and audits outputs for undisclosed echoes (L161)
     echo_margin::Float64       # agreement beyond independence an echo audit tolerates (governed)
     echo_z::Float64            # standard errors beyond it that flag an undisclosed echo (governed)
     echo_min::Int              # outputs an echo audit needs (governed)
@@ -254,7 +254,7 @@ function run_m5(p::M5Params; seed)
         expertise = p.relative_expertise ? relative_reputation(rep) : rep
         w = [voting_weight(p.base, p.expertise_weight, [1.0], [expertise[i]], p.impact_weight, p.focus[i, k];
                            optional_below = p.optional_below)[1] for i in 1:na]
-        # Forks (L122): with a base vote per identity, each copy adds its base and impact weight and
+        # Forks (L123): with a base vote per identity, each copy adds its base and impact weight and
         # votes with its origin; divided, the family holds the origin's single share.
         if p.fork_rule == :per_identity && p.fork_copies > 0
             for i in p.colluders
@@ -311,7 +311,7 @@ function run_m5(p::M5Params; seed)
                 mine = lo(person_rec[i, k])
                 hear(w) = heard(w, mine, w >= mine ? false : rand(nrng) < p.p_novel)  # Lean `heard_ref`
                 own = max(mine, p.own_floor)  # one's own reading counts, at least a little
-                # The social network's information handling (L133 IH: SourceVerify by Re(Dn), and a
+                # The social network's information handling (L134 IH: SourceVerify by Re(Dn), and a
                 # ContentionMap) exposes every source on each side of the question, weighed by its
                 # record; without it, a voter hears its contacts.
                 srcs = p.info_handling ? contention_map(i) : contacts[i]
@@ -384,7 +384,7 @@ function run_m5(p::M5Params; seed)
         # Diversity: a share of locales tries the option not chosen; when the split trial settles
         # the comparison, the decision's optimality becomes apparent, which no one foresaw.
         decided = sign(tally) == 0 ? 1.0 : sign(tally)
-        # Diversity (L158): the option not chosen stays available, subsidised by a novelty bonus.
+        # Diversity (L159): the option not chosen stays available, subsidised by a novelty bonus.
         # Each locale knows the decision and reads the options for itself; it departs when its own
         # reading opposes the decision by more than its conviction margin, which the bonus lowers.
         # No one is assigned to the alternative.
@@ -453,7 +453,7 @@ function run_m5(p::M5Params; seed)
                 end
             end
         end
-        # AdvAp (L160): where the bloc defected unseen, each member may weigh revealing it. The
+        # AdvAp (L161): where the bloc defected unseen, each member may weigh revealing it. The
         # reward exceeds its share of the bloc's gain (`advap_reward_ref`); it reveals when the
         # reward beats that share and its loyalty, by its own noisy judgement (8.31). Established
         # (`p_trace`), the revelation is repaired in full: the bloc's votes are struck from every
@@ -558,7 +558,7 @@ beta_draw(rng, a, b) = (x = gamma_draw(rng, a); x / (x + gamma_draw(rng, b)))
     tagged_deliberation(p, na, k, total, held, delegated, signal, published, pub, wm0, person_w, srcs, wc, wm,
                         own, mine, launders, misattributes, bloc, rng) -> NamedTuple
 
-Deliberation with source tags (L133 IH; author ruling on 8.45). Round one: each voter hears its
+Deliberation with source tags (L134 IH; author ruling on 8.45). Round one: each voter hears its
 sources (`srcs`, weighed `wc`) and the domain's models (`wm`), each tagged by origin (persons by
 index, models after them). Each further round, every source re-emits the tags it holds; a listener
 adds them, weighing each origin by its own view of the origin's record (no novelty draw: novel input

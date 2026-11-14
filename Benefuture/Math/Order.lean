@@ -1,7 +1,7 @@
 /-
   Benefuture.Math.Order
   Specification of core parameter governance and priority hierarchies over ℝ.
-  Corresponds to: Bf_Pseudocode.txt L11-14, L25, L101, L155.
+  Corresponds to: Bf_Pseudocode.txt L11-14, L25, L101, L158.
   
   Params«Pm» := 1 > α > β > γ > δ...;
   (x_1 > x_2 > ... > x_n) := [(x_i, Pm_i)];
@@ -17,7 +17,7 @@ def SCALE : Int := 1000000
 
 /-- 
   [R] All governed parameters in one record, governed by Significant Threshold Governance (SigThGv).
-  Corresponds to: Bf_Pseudocode.txt L11, L13, L14, L25, L101, L155.
+  Corresponds to: Bf_Pseudocode.txt L11, L13, L14, L25, L101, L158.
 -/
 structure GovParams where
   -- Core priority hierarchy: 1 > α > β > γ > δ > 0 (L11)
@@ -56,7 +56,7 @@ structure GovParams where
   -- equal rates (the reduction to M2) stay representable; `Systems.ParamSpace.Admissible` is strict.
   h_lambda_minus_le_plus : lambda_minus ≤ lambda_plus
 
-  -- Significance and governance thresholds (L25, L155)
+  -- Significance and governance thresholds (L25, L158)
   th_sig             : ℝ
   th_gov             : ℝ
   h_th_sig_pos       : 0 < th_sig

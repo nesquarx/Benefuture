@@ -2,7 +2,7 @@
   Benefuture.Epistemology.InfoHandling
   Formalization of InfoHazards (IHz), Critical Thinking (CrT), Education (Ed),
   and Epistemic Information Handling (IH).
-  Corresponds to: Bf_Pseudocode.txt L127-134, and Education.txt / Technology Network.txt
+  Corresponds to: Bf_Pseudocode.txt L128-134, and Education.txt / Technology Network.txt
 -/
 
 import Benefuture.Epistemology.Truth
@@ -18,7 +18,7 @@ open Benefuture.Ontology
   A statement that, in the absence of requisite background context 
   and epistemic inoculation, produces harm or epistemological corruption:
   (U_i ∧ ¬U_recipient → Harm) ∨ (U_i ∧ U_recipient → ↓Tr_lvl)
-  Corresponds to: Bf_Pseudocode.txt L127 ("InfoHazards«IHz»").
+  Corresponds to: Bf_Pseudocode.txt L128 ("InfoHazards«IHz»").
 -/
 structure InfoHazard extends Statement where
   prerequisiteEd   : Nat  -- Level of education required to process safely without harm
@@ -43,7 +43,7 @@ def InfoHazard.mkSimple (id content : String) (dom : Domain) (preReq : Nat) (har
   Education Profile of a Person (extends Thing):
   Measures metacognition, critical thinking (CrT), emotional quotient (EQ), 
   and infohazard inoculation level.
-  Corresponds to: Bf_Pseudocode.txt L128-132.
+  Corresponds to: Bf_Pseudocode.txt L130-132.
 -/
 structure EducationProfile extends Thing where
   person           : Person

@@ -223,7 +223,7 @@ theorem expertise_share_zero_of_no_reputation {ι κ : Type*} (leaves : Finset �
 
 /--
   [P] Governed coefficients of BfDm's vote weight (L113): base, expertise and impact weights.
-  Thresholds to be governed (SigThGv, L157), not constants of the rule.
+  Thresholds to be governed (SigThGv, L158), not constants of the rule.
 -/
 structure VoteWeightParams where
   base_weight        : ℝ

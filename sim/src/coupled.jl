@@ -1,4 +1,4 @@
-# Coupled economy and governance (L3.2; L113 BfDm, L114 LqdBfDm, L157 SigThGv, L74 Goal).
+# Coupled economy and governance (L3.2; L113 BfDm, L114 LqdBfDm, L158 SigThGv, L74 Goal).
 #
 # Steps an M3c economy in epochs of `epoch` steps. At each epoch end:
 # (a) governance decides on the economy's governed thresholds through the existing M4 path

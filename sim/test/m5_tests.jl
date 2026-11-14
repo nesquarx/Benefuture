@@ -134,7 +134,7 @@ end
 
 # Contention (author, on 8.44): experts divided, the voters listening to all and judging through the
 # network's information handling (its ContentionMap surfaces the most reputable sources on each side,
-# L133) and their own limited expertise, with diversity (L158) trying the option not chosen. The top
+# L134) and their own limited expertise, with diversity (L159) trying the option not chosen. The top
 # experts of each domain split into two camps of equal standing; one camp's paradigm leans to one
 # option (an honest systematic bias), so on contested questions they disagree.
 @testset "M5 contention among experts" begin
@@ -156,7 +156,7 @@ end
     @test_throws ArgumentError M5Params(m3, 1:4; camp_bias = [1.0])
 end
 
-# Source tags (author ruling on 8.45; L133 IH): echoes must not count information many times. Each
+# Source tags (author ruling on 8.45; L134 IH): echoes must not count information many times. Each
 # reading carries the tags of the sources it came from; a listener hearing several contacts that
 # repeat one source hears it once, and an echo of the listener itself is not a source. Tags inform;
 # they move no weight (author ruling 8.60): every voter votes or delegates with its full expertise and

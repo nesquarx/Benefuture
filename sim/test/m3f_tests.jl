@@ -1,8 +1,8 @@
-# Catastrophes and black swans (author rulings, BACKPROPAGATION 8.22.4, 8.23; L142 Af, L150
-# Harm_Intv, L154 Progressive). Shocks are world events. Benefuture must keep acting through each,
+# Catastrophes and black swans (author rulings, BACKPROPAGATION 8.22.4, 8.23; L143 Af, L151
+# Harm_Intv, L155 Progressive). Shocks are world events. Benefuture must keep acting through each,
 # falling back to simpler means where a capability is lost, and recover when it returns:
 # - a measurement outage: no markers, so settlement falls back to escrow's prediction-based upfront
-#   (L86), G screens on the last observation, and actions are logged unmeasured;
+#   (L84), G screens on the last observation, and actions are logged unmeasured;
 # - a catastrophe: one large hazard;
 # - metric capture: a leaf's model turns biased; scoring costs it eligibility and pricing falls back
 #   to its parents (L82, fallback by μ);

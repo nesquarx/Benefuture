@@ -1,6 +1,6 @@
 /-
   BenefutureReference.Sources
-  Source tags in information handling (L133 IH; author ruling on 8.45): a reading carries the tags
+  Source tags in information handling (L134 IH; author ruling on 8.45): a reading carries the tags
   of the sources it came from, so an echo never passes for a source. A listener hearing several
   contacts that repeat one origin hears it once, and an echo of the listener itself is not a source.
   Tags inform; they move no voting weight (author ruling 8.60: every voter votes or delegates with its

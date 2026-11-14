@@ -3,7 +3,7 @@
 # low end of an invariant factor's range (8.33), the Benefuture-plausible value of an institution-
 # dependent one (vigilance, diligence, accounting, audit errors); 1 the realistic bad end, or the
 # status quo for an institution-dependent factor; rays run to 2 (stress beyond the range). No attack at 0.
-# AdvAp (L160) is on, its frictions factors;
+# AdvAp (L161) is on, its frictions factors;
 # rays run to 2. Convergence (an evaluation criterion, not a rule): the Goal's success pattern (L74)
 # after the score-only start, by the seeds' vote: the floors and medians of understanding and
 # happiness each grow by at least `GROWTH` of the clean world's, the peak of understanding ends no

@@ -33,7 +33,7 @@ end
 
 # Classification (L22, Domain: causal grounding, external classification): currency metric models
 # match an action's measured causal signature to the domains'; with no match it goes to StandCoin,
-# the unspecialized currency, flagged for adjudication. Overflow (L100): a balance above its
+# the unspecialized currency, flagged for adjudication. Overflow (L103): a balance above its
 # accumulation threshold is reinvested in its domain.
 @testset "Classification and overflow: acceptance" begin
     # Profile over D domains plus StandCoin last; the nearest matched domain weighs most.

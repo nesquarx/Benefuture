@@ -133,7 +133,7 @@ theorem composition_attack_exhaustion (budget : DifferentialPrivacyBudget)
 
 /-- 
   Phased Implementation Model:
-  Corresponds to: Implementation prototype.txt L49-74 & Bf_Pseudocode.txt L152.
+  Corresponds to: Implementation prototype.txt L49-74 & Bf_Pseudocode.txt L141.
   - Phase 1 (ScoreOnly) : Metric model calibration, non-tradable social scores, no TP currency minting.
   - Phase 2 (Parallel)  : Parallel testing alongside legacy fiat, learning and parameter calibration.
   - Phase 3 (FullActive): Active multi-currency ecosystem, autonomous transaction proposals and escrow.

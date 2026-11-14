@@ -32,7 +32,7 @@ structure SimTrace where
   bestMMAccuracy     : ℕ → ℝ
   /-- |latent − observed| for the flourishing variables (Systems.State, Goodhart gap). -/
   latentObsGap       : ℕ → ℝ
-  /-- Best available payoff from exploiting a flaw, and from revealing it (AdvAp, L160). -/
+  /-- Best available payoff from exploiting a flaw, and from revealing it (AdvAp, L161). -/
   exploitPayoff      : ℕ → ℝ
   revealPayoff       : ℕ → ℝ
   /-- Predicted and realised trajectory-level change in min U (↑min, L62). -/
@@ -58,7 +58,7 @@ def Conj_GoodhartReduction (tr : SimTrace) (w : ℕ) : Prop :=
   ∀ t, tr.latentObsGap (t + w) ≤ tr.latentObsGap t
 
 /--
-  [CONJ] Gaming resistance (AdvAp, L160): revealing a flaw pays at least as much as exploiting it,
+  [CONJ] Gaming resistance (AdvAp, L161): revealing a flaw pays at least as much as exploiting it,
   at every step.
 -/
 def Conj_GamingResistance (tr : SimTrace) : Prop :=
@@ -94,7 +94,7 @@ def Conj_NoRepugnantDrift (tr : SimTrace) (w : ℕ) (ε : ℝ) : Prop :=
   ∀ t, tr.meanH t - ε ≤ tr.meanH (t + w)
 
 /--
-  [CONJ] Parameter stability under SigThGv (L157): governed parameters settle; each tracked
+  [CONJ] Parameter stability under SigThGv (L158): governed parameters settle; each tracked
   field eventually moves by less than ε per step.
 -/
 def Conj_ParamStability (tr : SimTrace) (fields : List (ParamVector → ℝ)) : Prop :=

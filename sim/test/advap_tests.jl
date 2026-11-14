@@ -1,4 +1,4 @@
-# Adversarial adaptation (AdvAp, L160; Adversarial adaptation article; Lean
+# Adversarial adaptation (AdvAp, L161; Adversarial adaptation article; Lean
 # `Governance.Adversarial`): revealing successful gaming pays more than exploiting it, the reward and
 # the audit are charged down the exploit's causal chain, and good-faith reports cost nothing unless
 # they form a frivolous pattern. Rules in the Lean reference (`BenefutureReference.Adversarial`).

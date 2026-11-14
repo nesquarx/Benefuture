@@ -329,7 +329,7 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_class_balanced_skill] def classBalancedSkill (credences outcomes : FloatArray) : Float :=
   class_balanced_skill_ref credences.data outcomes.data
 
--- EHR (L117): the expected response to an external harm h
+-- EHR (L118): the expected response to an external harm h
 @[export bf_ehr_expected_response] def ehrExpectedResponse (alpha delta margin h rePos reNeg : Float) : Float :=
   ehr_expected_response_ref alpha delta margin h rePos reNeg
 
@@ -426,5 +426,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_withhold_reward] def withholdReward (ownLiability remainingPremium advShare advFloor : Float)
     (hasCoconspirators selfReport : UInt8) : Float :=
   withhold_reward_ref ownLiability remainingPremium advShare advFloor (hasCoconspirators != 0) (selfReport != 0)
+
+-- 8.139 / 8.146 / L162: effective independent judges and trust cascade
+@[export bf_effective_independent_judges] def effectiveIndependentJudges
+    (both either priorSim : FloatArray) (n : USize) (minEither baseline : Float) : Float :=
+  effective_independent_judges_ref both.data either.data priorSim.data n.toNat minEither baseline
+
+@[export bf_trust_cascade] def trustCascade (sharedFloor unmitigated effClusters : Float) : Float :=
+  trust_cascade_ref sharedFloor unmitigated effClusters
 
 end BenefutureReference.Export

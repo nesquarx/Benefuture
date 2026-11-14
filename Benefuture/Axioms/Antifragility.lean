@@ -11,7 +11,7 @@
   8. AdvAp         : Bounty reward strictly dominates private exploit gain, driving systemic adaptation
   9. TrustMin      : Minimization and distribution of required trust down to Reality (ℝ)
   
-  Corresponds to: Bf_Pseudocode.txt L149-162, and System Design.txt / Adversarial adaptation.txt
+  Corresponds to: Bf_Pseudocode.txt L150-163, and System Design.txt / Adversarial adaptation.txt
 -/
 
 import Benefuture.Math.Order
@@ -72,7 +72,7 @@ def ehr_step (s : EHRState) (nextHarm : Int) : EHRState :=
 /-- 
   Civilizational Epoch Harm Intervention Evaluation:
   Directly grounded in CivilizationalEpoch primitives from Subgoals.Continuity.
-  Corresponds to: Bf_Pseudocode.txt L150.
+  Corresponds to: Bf_Pseudocode.txt L151.
 -/
 def requires_intervention_epoch (prev next : CivilizationalEpoch) : Bool :=
   next.harmLevel ≥ prev.harmLevel
@@ -295,7 +295,7 @@ def effort_bad (baseEffort restorativeFriction auditBurden : Int) : Int :=
   [P] Design requirement: Anti-Corruption Choice Architecture.
   Restorative debit friction must be strictly positive (`ac_friction_pos_assumption : 0 < restorativeFriction`)
   and audit burden non-negative for Good to be strictly easier than Bad: Effort(Good) < Effort(Bad).
-  Corresponds to: Bf_Pseudocode.txt L156 (§Af_Axioms: AntiCorruption).
+  Corresponds to: Bf_Pseudocode.txt L160 (§Af_Axioms: AntiCorruption).
 -/
 structure AntiCorruptionDesignRequirement where
   restorativeFriction : Int

@@ -2,7 +2,7 @@
   Benefuture.Measurement.Threshold
   Formalization of Threshold of Significance (Th ∈ T), Graded Significance, 
   Contextual Normalization, and Significant Threshold Governance (SigThGv).
-  Corresponds to: Bf_Pseudocode.txt L25, L48, L157, L171, and Threshold of significance.txt
+  Corresponds to: Bf_Pseudocode.txt L25, L48, L158, L171, and Threshold of significance.txt
   
   "Threshold«Th»(Pm_i, Context«Cx») := (Pm_i ≥ Th_Cx) ⇒ Sig(Pm, Cx), (graded, multidimensional, nuanced);"
   "SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ ∈ Fr));"
@@ -85,7 +85,7 @@ def norm_assessment (delta : Int) (th : Threshold) : Int :=
   Significant Threshold Governance Mode (SigThGv):
   Debatable thresholds are put to Liquid Benefuture Democracy (LqdBfDm);
   non-debatable thresholds undergo controlled evolutionary perturbation (Perturb(Th ± δ ∈ Fr)).
-  Corresponds to: Bf_Pseudocode.txt L157, Threshold of significance.txt L9.
+  Corresponds to: Bf_Pseudocode.txt L158, Threshold of significance.txt L9.
 -/
 inductive ThresholdGovMode where
   | LiquidDemocracyDebate : ThresholdGovMode

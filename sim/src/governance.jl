@@ -70,7 +70,7 @@ function credence_score(credence::Real, outcome::Real)
     ccall(sym(:bf_credence_score), Float64, (Float64, Float64), credence, outcome)
 end
 
-# Source tags (L133 IH; author ruling on 8.45): `BenefutureReference.Sources`.
+# Source tags (L134 IH; author ruling on 8.45): `BenefutureReference.Sources`.
 side_ok(x) = x == -1 || x == 0 || x == 1
 function check_tags(ids, ws)
     check(length(ids) == length(ws), "one weight per tag")

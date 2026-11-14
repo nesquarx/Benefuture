@@ -315,7 +315,7 @@ theorem fork_conserves_social_capital (op : ForkOperation) :
 
 /-- 
   Merge Operation Record:
-  Corresponds to: Bf_Pseudocode.txt L123:
+  Corresponds to: Bf_Pseudocode.txt L124:
   "Merge(Ids[]) → (Σ(SoPo_i, N) → EstNew(Id));"
   Consolidates multiple constituent identities into a new consolidated entity,
   summing their social positions (currency, reputation) and novelty.
@@ -518,7 +518,7 @@ def calculate_external_defense (incomingHarm : Int) (forgiveness : Int) : (Int �
 /--
   THEOREM: `calculate_defensive_action` returns zero irreparable and irreversible damage. True by
   construction: the function hard-codes both fields to 0. It proves nothing about real responses
-  to external harm (EHR, L117: TitForTat via reparable harm); it records the design requirement
+  to external harm (EHR, L118: TitForTat via reparable harm); it records the design requirement
   that the response be confined to reparable harm, not that any response meets it.
 -/
 theorem external_defense_guarantees_repairability (incoming forgiveness : Int) :

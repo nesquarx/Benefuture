@@ -4,7 +4,7 @@
   1. Primary: Enforcement by Design (Automated systemic debits & smart contracts)
   2. Secondary: Persuasive Non-Violent Influence
   3. Tertiary: Forcible Restraint (Strictly audited, bounded by Justice)
-  Corresponds to: Enforcement.txt, Law.txt, Justice.txt, and Bf_Pseudocode.txt L159-162
+  Corresponds to: Enforcement.txt, Law.txt, Justice.txt, and Bf_Pseudocode.txt L160-162
 -/
 
 import Benefuture.Math.Order

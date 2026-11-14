@@ -1,7 +1,7 @@
 /-
   Benefuture.Governance.ExternalHarm
   [R] External Harm Response (EHR), over ℝ.
-  Corresponds to: Bf_Pseudocode.txt L117; Life in benefuture.txt (External Harm Response Protocol);
+  Corresponds to: Bf_Pseudocode.txt L118; Life in benefuture.txt (External Harm Response Protocol);
   Critique addressal.txt ("External harm response is naive about asymmetric conflict").
   "ExternalHaResponse«EHR»(Ha_i, Aggressor(E_!Bf)_j) := TitForTat(viaReparableHa)_ij
      + (α * Re_+ve_j(Dn(Ha_i))) * P(Forgive) + (δ * Re_-ve_j(Dn(Ha_i))) * P(Overreact)

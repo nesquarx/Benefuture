@@ -41,13 +41,13 @@ def classify_ref (dists : Array Float) (threshold temperature : Float) : Array F
     (w.map (· / s)).push 0.0
 
 /--
-  Accumulation threshold of a balance in one domain (L100: AccumThresh(Re, ...)): a base plus a
+  Accumulation threshold of a balance in one domain (L103: AccumThresh(Re, ...)): a base plus a
   share of the entity's positive relevance there. Equity and goal terms come with governance.
 -/
 def accumulation_threshold_ref (base factor relevance : Float) : Float :=
   base + factor * max relevance 0.0
 
-/-- Balance overflow (L100): the part of a balance above its threshold, reinvested in the domain. -/
+/-- Balance overflow (L103): the part of a balance above its threshold, reinvested in the domain. -/
 def overflow_ref (balance threshold : Float) : Float := max (balance - threshold) 0.0
 
 /-!

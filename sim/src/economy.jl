@@ -184,11 +184,11 @@ function traversal_shares(net_contribution, degree; decay::Real)
                       floatarray(net_contribution), floatarray(degree), decay))
 end
 
-"Crime (L115): harm through informed volition or informed inaction against a committed action; else accident."
+"Crime (L116): harm through informed volition or informed inaction against a committed action; else accident."
 is_crime(informed::Bool, volition::Bool, breached_duty::Bool) =
     ccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1
 
-# The governed parameter space (`Systems.ParamSpace` [R]; L157 SigThGv), in the order of `ParamVector`.
+# The governed parameter space (`Systems.ParamSpace` [R]; L158 SigThGv), in the order of `ParamVector`.
 const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, :lambda, :kappa_value, :kappa_harm,
                       :q_harm, :nu, :h_param, :lambda_plus, :lambda_minus, :th_sig, :th_gov, :fr_thConf, :fr_thHigh,
                       :sev_irreparable, :sev_irreversible, :sev_longterm, :sev_passing, :sev_timeLoss, :h_window,
@@ -329,7 +329,7 @@ end
 """
     advap_reward(exploit_gain, prevented_harm; share, floor) -> reward
 
-The reward for revealing successful gaming (AdvAp, L160; Lean `advap_reward_ref`): the exploit's
+The reward for revealing successful gaming (AdvAp, L161; Lean `advap_reward_ref`): the exploit's
 gain to a single entity plus `share` of the harm the revelation prevents, at least `floor`.
 """
 function advap_reward(exploit_gain::Real, prevented_harm::Real; share::Real, floor::Real)
@@ -566,4 +566,38 @@ function withhold_reward(own_liability::Real, remaining_premium::Real;
     ccall(sym(:bf_withhold_reward), Float64, (Float64, Float64, Float64, Float64, UInt8, UInt8),
           Float64(own_liability), Float64(remaining_premium), Float64(share), Float64(floor),
           UInt8(has_coconspirators), UInt8(self_report))
+end
+
+"""
+    effective_independent_judges(both, either; prior = zeros(size(both)...), min_either = 10, baseline = 0.25) -> Float64
+
+Effective number of independent judges from settled shared-error counts `both` and `either`
+(`n × n` matrices) with cold-start declared source/method similarity `prior` used only where
+`either < min_either` (Lean `effective_independent_judges_ref`; 8.139, 8.146).
+"""
+function effective_independent_judges(both::AbstractMatrix, either::AbstractMatrix;
+                                      prior::AbstractMatrix = zeros(size(both)...),
+                                      min_either::Real = 10.0, baseline::Real = 0.25)
+    n = size(both, 1)
+    check(size(both) == (n, n) && size(either) == (n, n) && size(prior) == (n, n),
+          "both, either and prior must be square matrices of identical size")
+    check(isfinite(min_either) && min_either >= 0 && isfinite(baseline) && 0 <= baseline < 1,
+          "min_either non-negative, baseline in [0, 1)")
+    flat(M) = floatarray([Float64(M[i, j]) for i in 1:n for j in 1:n])
+    ccall(sym(:bf_effective_independent_judges), Float64,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t, Float64, Float64),
+          flat(both), flat(either), flat(prior), Csize_t(n), Float64(min_either), Float64(baseline))
+end
+
+"""
+    trust_cascade(shared_floor, unmitigated, eff_clusters) -> Float64
+
+Required trust at a layer: halves per effectively independent cluster and floors at `shared_floor`
+(reality/shared-error floor, Lean `trust_cascade_ref`; L162, 8.139).
+"""
+function trust_cascade(shared_floor::Real, unmitigated::Real, eff_clusters::Real)
+    check(isfinite(shared_floor) && shared_floor >= 0 && isfinite(unmitigated) && unmitigated >= 0 &&
+          isfinite(eff_clusters) && eff_clusters >= 0, "trust cascade inputs finite and non-negative")
+    ccall(sym(:bf_trust_cascade), Float64, (Float64, Float64, Float64),
+          Float64(shared_floor), Float64(unmitigated), Float64(eff_clusters))
 end

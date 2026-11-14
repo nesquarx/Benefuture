@@ -2,7 +2,7 @@
   Benefuture.Systems.ParamSpace
   [R] The Bf parameter space: every governed parameter, its bootstrap default, admissibility
   (ranges and cross-parameter constraints the proved theorems rely on), and SigThGv governance.
-  Corresponds to: Bf_Pseudocode.txt L11, L13-14, L25, L54, L61, L73, L101, L114, L135, L155, L157.
+  Corresponds to: Bf_Pseudocode.txt L11, L13-14, L25, L54, L61, L73, L101, L114, L136, L158.
   "SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ ∈ Fr));"
 
   Parameters start from bootstrap defaults (Bf system-design bootstrap) and are thereafter governed
@@ -45,10 +45,10 @@ structure ParamVector where
   -- Reputation decay (L101)
   lambda_plus      : ℝ
   lambda_minus     : ℝ
-  -- Significance and governance thresholds (L25, L155)
+  -- Significance and governance thresholds (L25, L158)
   th_sig           : ℝ
   th_gov           : ℝ
-  -- Freedom (L135)
+  -- Freedom (L136)
   fr_thConf        : ℝ
   fr_thHigh        : ℝ
   sev_irreparable  : ℝ
@@ -59,7 +59,7 @@ structure ParamVector where
   -- H-harm rolling window (L54) and delegation cap Th_k as a share of total weight (L114)
   h_window         : ℕ
   deleg_cap        : ℝ
-  -- EHR overreaction margin (L117)
+  -- EHR overreaction margin (L118)
   ehr_margin       : ℝ
   -- Weight of the assessed distribution term in G (L62, L74): w_D in Sy(V, As(pushDistr))
   dist_weight      : ℝ
@@ -91,10 +91,10 @@ structure Admissible (pv : ParamVector) : Prop where
   lambda_minus_pos   : 0 < pv.lambda_minus
   -- Mistakes decay slower than wins (author ruling, BACKPROPAGATION 8.29: ledger asymmetry)
   lambda_minus_lt    : pv.lambda_minus < pv.lambda_plus
-  -- L25, L155
+  -- L25, L158
   th_sig_pos         : 0 < pv.th_sig
   th_gov_pos         : 0 < pv.th_gov
-  -- L135: confidence threshold in (0, 1]; positive ceiling; severities positive and ordered
+  -- L136: confidence threshold in (0, 1]; positive ceiling; severities positive and ordered
   fr_thConf_pos      : 0 < pv.fr_thConf
   fr_thConf_le_one   : pv.fr_thConf ≤ 1
   fr_thHigh_pos      : 0 < pv.fr_thHigh
@@ -158,13 +158,13 @@ noncomputable def ParamVector.toFrParams (pv : ParamVector) : FrParams :=
     sevIrreparable := pv.sev_irreparable, sevIrreversible := pv.sev_irreversible,
     sevLongterm := pv.sev_longterm, sevPassing := pv.sev_passing, sevTimeLoss := pv.sev_timeLoss }
 
-/-- [R] EHR parameters of a parameter vector (L117): α and δ from L11, overreaction margin. -/
+/-- [R] EHR parameters of a parameter vector (L118): α and δ from L11, overreaction margin. -/
 noncomputable def ParamVector.toEHRParams (pv : ParamVector) : EHRParams :=
   { alpha := pv.alpha, delta := pv.delta, margin := pv.ehr_margin }
 
-/- --- SigThGv governance (L157) --- -/
+/- --- SigThGv governance (L158) --- -/
 
-/-- [R] SigThGv modes (L157): debatable parameters by LqdBfDm, others by controlled perturbation. -/
+/-- [R] SigThGv modes (L158): debatable parameters by LqdBfDm, others by controlled perturbation. -/
 inductive GovMode where
   | debatable    : GovMode
   | perturbation : GovMode
@@ -204,7 +204,7 @@ theorem governed_params_admissible (qs : List ParamVector) :
   gov_run_preserves qs bootstrapParams bootstrap_admissible
 
 /--
-  [R] Controlled perturbation (L157: Perturb(Th ± δ ∈ Fr)): a candidate is adopted only if it is
+  [R] Controlled perturbation (L158: Perturb(Th ± δ ∈ Fr)): a candidate is adopted only if it is
   admissible and every governed field moves by at most δ.
 -/
 noncomputable def perturb_step (fields : List (ParamVector → ℝ)) (δ : ℝ)

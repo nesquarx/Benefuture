@@ -137,7 +137,7 @@ theorem essential_goods_guaranteed_floor (good : BaselineGood)
 
 /-- 
   Sophont Baseline Income (SB ∈ T):
-  Corresponds to: Bf_Pseudocode.txt L143:
+  Corresponds to: Bf_Pseudocode.txt L144:
   "S_BaselnIncm«SB»(C_i) := ∀Pe : ensure(maslow123) ← price_c(A → maslow123 | Fr) ≲ 0 ∨ Sig∃(C_i) via(RA);"
   Guarantees that essential survival and baseline flourishing goods are priced at or below zero.
 -/

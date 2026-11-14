@@ -16,7 +16,7 @@ on invented worlds (`sim/README.md`, Noise and Governed thresholds).
   simulation result has been validated. Data enters in three roles:
   - **Calibration target**: a world parameter (a skill distribution, a noise size, a chance) is set
     from data instead of a first guess. Governed thresholds are never calibrated from data in this
-    sense: they are the framework's own choices, governed by SigThGv (L157).
+    sense: they are the framework's own choices, governed by SigThGv (L158).
   - **Validation target**: a pattern the calibrated simulation should reproduce without being fitted
     to it (a stylised fact, a distribution shape, a response to a shock). Held-out patterns only.
   - **Noise range**: the realistic range a battery sweeps (`sim/README.md`, Noise), replacing a first
@@ -150,7 +150,7 @@ outages (`shock`, `sim/src/m3c.jl`), irreparable harm (`irreparable_loss`).
   **[403]**. Occupational injury rates by country and sector. *Maps:* a second `p_side` calibration
   across domains (work as an action with side effects on the actor).
 - **UCDP conflict data**, https://ucdp.uu.se/downloads/. Organised violence events and deaths
-  worldwide since 1989. *Maps:* calibration of external aggressors for EHR (L117; `Governance.ExternalHarm`,
+  worldwide since 1989. *Maps:* calibration of external aggressors for EHR (L118; `Governance.ExternalHarm`,
   not yet simulated). *Access:* CC BY 4.0 **[unverified]**.
 
 ## 4. Deaths and births (M7)
@@ -434,7 +434,7 @@ readers' `vigilance` (0.05; 0.01–0.3), `pattern_attention`, `stake_attention`,
 ## 10. Deliberation, contention and echoes
 
 Simulation objects: voters' contacts `n_contacts` (5; 0–20), `p_novel` (0.05), information handling's
-ContentionMap (L133), `camp_bias` (0; 0–2), source weights by record (`source_weight_ref`), the echo
+ContentionMap (L134), `camp_bias` (0; 0–2), source weights by record (`source_weight_ref`), the echo
 finding (8.45), `p_apparent` (0.7; 0.2–1).
 
 - **X Community Notes public data**, https://communitynotes.x.com/guide/en/under-the-hood/download-data

@@ -295,6 +295,42 @@ def copies_ref (diffs : Array Float) (minN : Nat) (below : Float) : Bool := Id.r
 def coerror_copy_ref (both either minEither medShare floorShare margin : Float) : Bool :=
   either >= minEither && either > 0.0 && both / either >= floorShare && both / either >= medShare + margin
 
+/-- Effective number of independent judges (8.139, 8.146): pairwise shared errors on settled outcomes
+  (`both` / `either`, once `either >= minEither`) lower independence above `baseline`, while agreement
+  on correct outcomes (`either` small or zero, or `both / either <= baseline`) never does. Before a
+  record exists (`either < minEither`), declared source and method priors (`priorSim` in [0, 1]) fill
+  the gap, ignored once outcomes accrue. Each judge `j` contributes `1 / (1 + ∑_{i ≠ j} sim(i, j))`,
+  so `k` exact error-copies collapse to `1` and `n` judges using different methods on the same sources
+  with independent errors stay at `n`. -/
+def effective_independent_judges_ref (both either priorSim : Array Float) (n : Nat)
+    (minEither baseline : Float) : Float := Id.run do
+  if n == 0 then return 0.0
+  let mut neff := 0.0
+  for i in [0:n] do
+    let mut sumSim := 0.0
+    for j in [0:n] do
+      if i != j then
+        let idx := i * n + j
+        let b := both.getD idx 0.0
+        let e := either.getD idx 0.0
+        let p := priorSim.getD idx 0.0
+        let sim :=
+          if e >= minEither && e > 0.0 then
+            let share := b / e
+            if share <= baseline || baseline >= 1.0 then 0.0
+            else min 1.0 ((share - baseline) / (1.0 - baseline))
+          else
+            max 0.0 (min 1.0 p)
+        sumSim := sumSim + sim
+    neff := neff + 1.0 / (1.0 + sumSim)
+  return neff
+
+/-- Trust cascade (L162 TrustMin, 8.139): required trust halves per effectively independent cluster
+  and floors at `sharedFloor` (shared/reality error floor, `reqTt(ℝ)`), never below it. -/
+def trust_cascade_ref (sharedFloor unmitigated effClusters : Float) : Float :=
+  let nEff := if effClusters > 0.0 then effClusters else 0.0
+  sharedFloor + unmitigated * Float.pow 2.0 (-nEff)
+
 /-- A test re-run at every new record (repeated looks) must not fire by chance as the record grows: a signed error's
   mean is significant only beyond `z * sqrt(1 + ln(n / n0))` standard errors, a bar that equals `z` at the minimum
   record `n0` and grows slowly with each look (an iterated-logarithm-style boundary), so a genuine bias, whose

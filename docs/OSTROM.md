@@ -78,11 +78,11 @@ are bounded where the resource is.
 *Ostrom:* rules fit local social and environmental conditions.
 
 **How Benefuture meets it.** Competing metric models specialise by domain and context (L82; Domain,
-Aspects, "Measurement"); embedded laws adapt dynamically (L138 `EmbeddedLaws(C, MM) | DynamicAp`);
-thresholds are perturbed within the freedom range and debated where debatable (L157 SigThGv);
+Aspects, "Measurement"); embedded laws adapt dynamically (L139 `EmbeddedLaws(C, MM) | DynamicAp`);
+thresholds are perturbed within the freedom range and debated where debatable (L158 SigThGv);
 governance operates at every scale (L113 `FractalScope`; Government, Aspects, "Fractal Scope"); the
-diversity axiom keeps alternatives alive locally (L158); progressive strategies degrade and enhance
-by context (L154). In the simulation the debatable escape tries a proposal on a share of the
+diversity axiom keeps alternatives alive locally (L159); progressive strategies degrade and enhance
+by context (L155). In the simulation the debatable escape tries a proposal on a share of the
 domains before adopting it everywhere (`escape_accept_ref`, M4), and split trials run per locale
 (M5).
 
@@ -101,7 +101,7 @@ its own value within the freedom range.
 `CD ∝ CC + N_CCtype − PE_paid`), and every action pays its resource cost less the good it is predicted
 to do (L86); supply follows measured good less resources and harm (L97, L99; Benefuture currency,
 "Currency supply is endogenous"); overflow reinvests accumulation beyond need (L103); a baseline
-income keeps basic needs priced at or below zero (L143 S_BaselnIncm). The simulation demonstrates
+income keeps basic needs priced at or below zero (L144 S_BaselnIncm). The simulation demonstrates
 proportional sharing (Shapley shares with intermediaries earning nearly nothing, M3d) and the
 overflow trade-off between reinvestment and spread of wealth (M5 readings).
 
@@ -122,7 +122,7 @@ resource earns what depleting it would cost.
 and impact-weighted direct democracy (L113), with those impacted weighted by predicted impact and
 those above a weight obliged to vote (Government, Aspects; ruling 8.46: voting above a threshold is a
 duty); delegation is temporary, audited and retractable (L114); debatable thresholds go to the vote
-(L157). The simulation runs L113 and L114 through the Lean reference (`voting_weight_ref`,
+(L158). The simulation runs L113 and L114 through the Lean reference (`voting_weight_ref`,
 `accumulate_capped_ref`, M5).
 
 **Gaps.** Expertise weight (default 5) exceeds impact weight (default 1) in the simulation, and the
@@ -137,12 +137,12 @@ the share reported as a decision's output.
 
 *Ostrom:* monitors who audit behaviour are accountable to the users or are the users.
 
-**How Benefuture meets it.** Every executed action and outcome is logged immutably (L145 Mem, the
+**How Benefuture meets it.** Every executed action and outcome is logged immutably (L146 Mem, the
 behavioural transaction substrate); voting records and assessments are public (Government,
 "Transparency and Accountability"); users themselves monitor and are paid to reveal gaming more than
-exploiting it would gain (L160 AdvAp; Adversarial adaptation); the monitors (justice, enforcement,
+exploiting it would gain (L161 AdvAp; Adversarial adaptation); the monitors (justice, enforcement,
 administration) are under the same anti-corruption scrutiny (Justice, Enforcement and Administration,
-Discussion; L159). The simulation runs AdvAp with users as readers of the open log (`vigilance`,
+Discussion; L160). The simulation runs AdvAp with users as readers of the open log (`vigilance`,
 attention following ledger patterns and stakes; M6), audits by significance and cause, and repair of
 falsified records.
 
@@ -158,8 +158,8 @@ wrongful penalties (`docs/DATA.md` §9).
 *Ostrom:* the condition of the resource is monitored.
 
 **How Benefuture meets it.** Metric models and markers monitor understanding and happiness, the
-ultimate resources (L82, L145–L146); resource accounting tracks usage (L83); the antifragility axioms
-require intervention when harm rises and innovation when resource cost rises (L150 Harm_Intv, L151
+ultimate resources (L82, L146–L147); resource accounting tracks usage (L83); the antifragility axioms
+require intervention when harm rises and innovation when resource cost rises (L151 Harm_Intv, L152
 Rc_Innovation).
 
 **Gaps.** Physical resource stocks are monitored only through the costs actions pay; the stock's
@@ -198,7 +198,7 @@ mandate or contract (L115); accidents are not crimes.
   (`frivolous_threshold`); delegations are withdrawn from delegates whose records fall below the
   audit threshold (L114).
 - *Against outsiders*: the external harm response is tit-for-tat with forgiveness weighted by the
-  aggressor's positive reputation and overreaction weighted by its negative reputation (L117 EHR),
+  aggressor's positive reputation and overreaction weighted by its negative reputation (L118 EHR),
   closer to Ostrom's graduated logic than anything internal.
 
 **Where it does not.**
@@ -260,10 +260,10 @@ past a pattern as AdvAp reports are.
 
 **How Benefuture meets it.** Governance is fractal, from a family to a civilisation (L113
 `FractalScope`); "It is *not* a ruling body, but a facilitator of societal self-governance"
-(Government, introduction); diversity keeps minority alternatives alive (L158; split trials in M5);
-freedom is maximised within the harm boundary (L135); rollout is phased beside legacy institutions
-with informed consent (L140; Implementation prototype, Scenario, starting with a receptive regional
-government). Toward outsiders, EHR (L117) is context-aware and transparent.
+(Government, introduction); diversity keeps minority alternatives alive (L159; split trials in M5);
+freedom is maximised within the harm boundary (L136); rollout is phased beside legacy institutions
+with informed consent (L141; Implementation prototype, Scenario, starting with a receptive regional
+government). Toward outsiders, EHR (L118) is context-aware and transparent.
 
 **Gaps.** The corpus does not say when a scope's own rules need no approval from a wider scope. Read
 literally, every rule at every scale is subject to the same Goal and the same governed thresholds,

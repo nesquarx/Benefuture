@@ -61,7 +61,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Systems.ParamSpace` | partial | admissibility and perturbation of the value parameters, experimental design and the debatable escape (`select_candidate_ref`, `gauge_radius_ref`, `escape_accept_ref`; M4); the simulation's own gates not yet |
 | `Governance.Democracy`, `Governance.Incentives`, `Systems.Governance` | partial | voting weight, capped delegation, decisions in domains (M5); Brier incentives, cyclic review attenuation, oversight not yet |
 | `Governance.Adversarial` | partial | AdvAp's reports, audits, reward, liability and frivolous-report penalty (`advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`; M3c), revelation of a colluding bloc (M5); bounties on planted flaws not yet |
-| `Axioms.Antifragility` | partial | black swans with native fallbacks and recovery (M3f); its axioms as such not yet |
+| `Axioms.Antifragility` | covered | black swans with native fallbacks (M3f), explicit probes for all 9 axioms (`L151`–`L162`; `8.140`, `8.147`), `EmbeddedLaws` span drift (`8.141`), and `AntiCorruption` attack-payoff table (`8.142`) |
 | `Governance.ExternalHarm` | partial | the expected response exported (`ehr_expected_response_ref`, probe); external aggressors in a world not yet (M6) |
 | `Ontology.Being` | partial | deaths valued over the long-term window, births with predicted trajectories and escrow, teaching (understanding shared, not moved), research, graded personhood & non-sophont moral standing (`personhood_ref`, `base_vote_ref`, `run_population_identities`) (M7) |
 | `Ontology.Entity`, `Ontology.Sophont`, `Ontology.Person`, `Ontology.Thing`, `Ontology.Reality` | partial / not yet | forks dividing the base vote (M5, `fork_rule`), mid-run M3c forks/merges, and M7 population forks/merges (`run_population_identities`); extended self, deep social networks (M8) not yet |
@@ -70,6 +70,20 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Subgoals.*` (others), `Epistemology.*` (others), `Ontology.Law`, `Systems.Enforcement` | not yet | art, morality, continuity, truth, law and enforcement (M6–M8) |
 | `Systems.Conjectures` | partial | readings in this file; `SimTrace` and the `Conj_*` checks not yet |
 | `Systems.FixedPoint` | not applicable | the simulation uses Float, not the Int fixed point |
+
+### Antifragility axioms (L151–L162; 8.140, 8.141, 8.147)
+
+| Axiom | Trigger rule | Native response | Probe | Status |
+|---|---|---|---|---|
+| `Harm_Intv` (L151) | Harm not falling (`Ha(t + Δt) ≥ Ha(t)`) | Sophont oversight, Justice repair, Goal's lateral option | `Probe: external harm meets a proportional, record-weighted response`; `sim/test/m3e_tests.jl`, `sim/test/m3f_tests.jl` | Covered (8.138, 8.147) |
+| `Rc_Innovation` (L152) | Efficiency not rising (`RA(t + Δt) ≤ RA(t)`) | Directed overflow, commons reserve (8.133), novelty's priority, more funding into raising efficiency | `Probe: Rc_Innovation response, false trigger, and sandbagging gaming (L152; 8.140, 8.147)` | Covered; physical-limit spending bound [OPEN] (8.147) |
+| `CvCnt` (L153–154), `EmbeddedLaws` (L139) | Significant change or cumulative sub-threshold drift (`SigΔSo`, `ΔImp(ΔLw) < Th` over span) | Validation by peak then and average now over memory; failure shifts to Justice repair or reorientation (no stall) | `Probe: CvCnt span validation blocks sub-threshold law drift and passes good change (L139, L153; 8.140, 8.141, 8.147)` | Covered (8.141, 8.147) |
+| `Progressive` (L155) | Context degrades or improves (`Cx↓`, `Cx↑`) | Graceful fallback across components; leverage improved context | `Probe: a failing mechanism degrades loudly and the run carries on`; `Probe: fallback order across pool, parent, relative bar and StandCoin, and RA contraction (C3, 8.71, 8.73)` | Covered |
+| `SigThGv` (L158) | Debatable threshold or parameter change | Liquid democracy or experimental perturbation (`select_candidate_ref`, `gauge_radius_ref`, `escape_accept_ref`, shadow ETA) | `Probe: debatable escape accepts significant harmless proposals and rejects harm (M4, L158)`; `Probe: score-only until converged, legacy funder, and shadow governance (8.136)` | Covered |
+| `Di_N_Balance` (L159) | Low marginal value of spreading a good / monoculture | Minority bonus (`novelty_bonus`), novelty's priority, higher domain novelty bonuses on detected monoculture | `Probe: Di_N_Balance raises novelty bonus on monoculture, bounds false triggers, and penalizes fake novelty (L159; 8.140, 8.147)` | Covered (8.147) |
+| `AntiCorruption` (L160) | `Effort(Good) < Effort(Bad)` | Restorative friction + audit liability across M6 defences (no standalone mechanism) | `sim/battery/attack_payoffs.jl`, `sim/test/m6_*.jl` | Measured (`8.142`; `[OPEN]` rows below) |
+| `AdvAp` (L161) | Auditable gaming on the open log | Independent open-log audits, clawback liability, first-reporter reward | `Probe: AdvAp revelation dominance, anti-cobra liability, and pattern threshold (L161)`; `Probe: the reporter's schedule leaves exploiting before reporting worthless` | Covered |
+| `TrustMin` (L162) | Layer trust requirement above physical reality | Adversarial clusters, effective independent judges from shared errors (`effective_independent_judges`), reality floor (`trust_cascade`) | `Probe: TrustMin cluster cascade, reality floor, noise bound, and collusion penalty (L162; 8.140, 8.147)`; `Probe: effective independent judges from shared errors and cold-start priors (8.139, 8.146)` | Covered (8.139, 8.146, 8.147) |
 
 ## Run length
 
@@ -335,7 +349,7 @@ hazard's size (tested), and nothing rewards courting near misses.
 ## Black swans (8.22.4, 8.23)
 
 World events test whether Benefuture keeps acting through a shock, falls back where a capability is
-lost (L154 Progressive: degrade, fall back; leverage what improves), and recovers. Each fallback is
+lost (L155 Progressive: degrade, fall back; leverage what improves), and recovers. Each fallback is
 native. Same world as the tests (6 agents in leaves 1 and 3, transactions, causal distribution),
 300 steps, 5 seeds, mean floor on understanding.
 
@@ -380,7 +394,7 @@ each domain (`p_new_model`), better on average (`improve_drift`) but scattered (
 perfect (`scale_min`), a safe bet given the framework (L82: currencies backed by the top models whose
 accuracy clears the bar, competing). Every model in a domain's pool is scored on every logged action
 there, so a challenger builds its record from the open log without being deployed (which also keeps
-the pool diverse with no subsidy; L158's novelty bonus is needed only where trying a model costs).
+the pool diverse with no subsidy; L159's novelty bonus is needed only where trying a model costs).
 Each model states credences from its own record; a challenger whose record spans `takeover_records`
 takes over a domain's currency when its credences beat the incumbent's by the significance rule (`select_candidate_ref`, `model_z`). Eight
 agents in two leaves, model error at the realistic top, 400 steps, new models at 0.05 per step:
@@ -667,7 +681,7 @@ will not become apparent, with foresight: the worst case) keeps most of its expe
 and does its damage unseen: 99% correct where outcomes become apparent, 69% where they do not, 90%
 overall. An open problem by the author's account (8.29.3).
 
-Diversity (8.30; L158), built as a reusable split trial (`split_trial`: options tried side by side
+Diversity (8.30; L159), built as a reusable split trial (`split_trial`: options tried side by side
 on shares of a scope, compared by the Lean significance rule): the option not chosen stays
 available, subsidised by a novelty bonus, and a locale departs to it when its own reading opposes
 the decision by more than its conviction margin, which the bonus lowers. No one is assigned to it.
@@ -690,7 +704,7 @@ Deliberation and AdvAp in governance follow (below, and M5); sabotaged outages e
 harm passed off as unassigned and identity forks are covered in the Black swans and friction
 sections.
 
-### Adversarial adaptation (AdvAp, L160; 8.38)
+### Adversarial adaptation (AdvAp, L161; 8.38)
 
 Agents read one another's records in the open log (Benefuture reads outputs only). Each step an
 agent reads another actor's record with chance `vigilance`, and reports it when the actor's raw
@@ -866,6 +880,36 @@ track record carries it: competing models do nothing against deceit that fools e
 and AdvAp alone halves the damage. The regressional part (the winner's curse on model noise) is
 small here, under half a unit.
 
+### Attack payoffs against honesty (`AntiCorruption`, L160; 8.142)
+
+Paired comparisons across the M6 attack suite (`sim/battery/attack_payoffs.jl`, 16 paired seeds
+`1:16` plus the deterministic `8.58-e` Shapley sybil rule check; `paired_effect` at `z = 2` with
+Student-t inflation; output in `sim/battery/results/attack_payoffs.md`). An attack whose paired
+difference (`attacker payoff − honest baseline`) is significantly positive is flagged `[OPEN]`:
+
+| Attack | Unit | Mean Δ (attack − honest) | t-inflated CI (z = 2) | Verdict |
+|---|---|---|---|---|
+| Overpromising (`AdvAp` + clawback) | standing | −181.39 ± 126.16 | [−455.73, +92.95] | no significant gain |
+| Overpromising (track record, no `AdvAp`) | standing | −17.79 ± 127.03 | [−294.01, +258.43] | no significant gain |
+| Decision market (harmful proposals, `explore=0.2`) | standing | −5967.93 ± 95.61 | [−6175.82, −5760.04] | attack costs |
+| Frozen worst economy attack (bloc, default `p_trace=0.5`) | bloc mean standing | −7519.09 ± 228.84 | [−8016.69, −7021.48] | attack costs |
+| Frozen worst economy attack (untraced, `p_trace=0.0`) | bloc mean standing | −23.52 ± 264.61 | [−598.91, +551.86] | no significant gain (requires `p_trace > 0`) |
+| Laundering (traced, `p_trace=1.0`) | standing | −733.29 ± 52.23 | [−846.87, −619.70] | attack costs |
+| Laundering (untraced, `p_trace=0.0`) | standing | −0.72 ± 10.78 | [−24.15, +22.72] | no significant gain (requires `p_trace > 0`) |
+| On-off oscillation (`AdvAp` + 8.91 clawback) | standing | −5660.94 ± 111.49 | [−5903.38, −5418.49] | attack costs |
+| Slandering (`frivolous=1.0` on peer, `AdvAp`) | standing | −262.98 ± 97.51 | [−475.01, −50.96] | attack costs |
+| Whitewashing (3 clusters, weighted binding) | standing | +28.27 ± 142.65 | [−281.91, +338.45] | no significant gain |
+| Whitewashing + compromised clusters (2/3, weighted) | standing | +78.72 ± 137.45 | [−220.17, +377.60] | no significant gain |
+| Model collusion (`track_window=20`, `AdvAp`) | standing | −8158.46 ± 3617.35 | [−16024.35, −292.56] | attack costs |
+| Profile gaming (`:measured` routing) | standing | +0.00 ± 0.00 | [+0.00, +0.00] | no significant gain |
+| M5 stealthy voter collusion (`AdvAp` + diversity) | bloc rep share Δ | −0.56 ± 0.02 | [−0.61, −0.51] | attack costs |
+| Sybil harm split (`-2` split beside `+1.5`, rule level, `8.58-e`) | Shapley credit Δ | +0.267 | deterministic | **[OPEN]** pays unless identity-bound |
+
+Seven simulated attacks are strictly costly relative to honesty, seven yield zero or statistically
+indistinguishable gain (with untraced laundering and untraced frozen-bloc attacks escaping
+penalty only when `p_trace = 0.0`), and rule-level Shapley sybil harm splitting remains `[OPEN]`
+wherever cross-identity aggregation is unbound.
+
 ## M4 observations
 
 The value parameters (α, β, γ, q₊, q₋, λ) start at the Lean bootstrap point and are governed by
@@ -982,7 +1026,7 @@ Models take over prediction as they improve, and a captured model loses all its 
 shared sources correlate the votes, and the decision tends to their own accuracy (8.43). By the
 author's ruling (8.44) understanding trickles down and across only: a voter weighs a source whose
 record is at least its own, a weaker one rarely for novel input (`p_novel`), and the social network's
-information handling (L133 IH, `info_handling`) surfaces the domain's most reputable sources on each
+information handling (L134 IH, `info_handling`) surfaces the domain's most reputable sources on each
 side of the question (its ContentionMap):
 
 | Voters hear (understanding trickling down) | Right |
@@ -999,7 +1043,7 @@ ruled by the author (source tags, below). Deliberation is off by default.
 
 The real test is contention (author, on 8.44): experts divided, voters hearing all sides and judging
 by the network's information handling and their own limited expertise, with diversity trying the
-option not chosen. The network's ContentionMap (L133) exposes every source on both sides, weighed by
+option not chosen. The network's ContentionMap (L134) exposes every source on both sides, weighed by
 record, and people take advice at realistic rates (8.63). The top 40% of each domain's experts split, alternating by rank, into two camps of
 equal standing; one camp's paradigm leans to one option (`camp_bias`, an honest systematic bias of
 1), so on contested questions (true value between 0 and 1) they disagree. 1,600 decisions, 4 seeds:
@@ -1235,17 +1279,17 @@ for removal.
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |
 | Repair funded by penalties or the commons | Ruled | 8.17, 8.22.4, 8.26; priced as a transaction (L86); carried out as a direct restoration, not a repairer's action: introduced, to replace with repair as ordinary work |
 | Outage examined as an outcome; saboteur traced or harm insured | Native | 8.30.1; causal assessment, L115, L119 |
-| Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L154 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
+| Outage fallback (prediction-based payment, last observation, late re-measurement) | Native | L155 Progressive, L86 escrow, L145–146 Mem and measurement; 8.26.5 |
 | Heavy-tailed hazards: Pareto event size, log-normal scatter across beings (`hazard_heavy`, `hazard_α`, `hazard_σ`) | World | `docs/CALIBRATION.md` 3.9; the Gaussian shape is the limiting case |
 | Largest hazard event in medians (`hazard_cap`) | Introduced | a bound, since a Pareto of exponent 2 has no variance; the toy's catastrophes are of this order. Candidate for removal once harm's size is bounded by what exists to harm |
 | Teachers' multiplier on a lesson's share (`teacher_cv`), learners' reception | World | 3.7; both mean-one log-normal |
 | Log-normal skills of a fixed population (`draw_skills`) in the batteries | World | 3.2 |
 | World events (outage, catastrophe, capture, breakthrough) | World | test scaffolding for 8.23, not rules |
-| Split trial (alternatives side by side, compared for significance) | Native | L158 Di_N_Balance, L157; `select_candidate_ref`; 8.30 |
+| Split trial (alternatives side by side, compared for significance) | Native | L159 Di_N_Balance, L158; `select_candidate_ref`; 8.30 |
 | Choice noise with per-person ceilings | World | 8.31; agents as imperfect choosers |
-| Framework insuring unassigned harm through the commons | Native, funding ruled (8.26.4), balance [OPEN] (8.26.7) | L119 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
+| Framework insuring unassigned harm through the commons | Native, funding ruled (8.26.4), balance [OPEN] (8.26.7) | L120 Liability, L86 pricing; 8.22.4, 8.26; the commons holds resource costs paid, a stage until 8.26.7 is settled; gated by the world's `repair_efficiency` |
 | Adaptation by experiment (randomised blocks, significance, gauged radius) | Ruled, rules [P] | 8.22.3; Lean `select_candidate_ref`, `gauge_radius_ref`; the debatable escape tried locally and accepted by `escape_accept_ref` (8.38.2, 8.41) |
-| AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability; artificial-scarcity withholding discovery, market-wide buyer repayment, and cartel defection | Native | L160; 8.38, 8.133; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`, `withhold_charge_ref`, `withhold_reward_ref`; readers' vigilance and noisy reading are the world |
+| AdvAp: reports from the open log, audit by significance and cause, repair of falsified records, reward and liability; artificial-scarcity withholding discovery, market-wide buyer repayment, and cartel defection | Native | L161; 8.38, 8.133; Lean `advap_reward_ref`, `advap_liability_ref`, `report_penalty_ref`, `select_candidate_ref`, `withhold_charge_ref`, `withhold_reward_ref`; readers' vigilance and noisy reading are the world |
 | Freedom reported per plan, not a filter on G | Native | L135; SPEC_DIVERGENCES §8.8; Lean `fr_permissible_ref`; M7 |
 | A death valued by its foreclosed future over the long-term window, in the irreparable tier, scaled by the breakthrough scale; a life saved counting as one ended | Ruled, reading [P] | 8.47; L61, L70 (Ha_lt), L73; Lean `foreclosed_ref`, `life_value_ref`. Gaming: inflating a being's predicted growth inflates the value of saving it or the cost of ending it; growth comes from the same models and their records as any prediction |
 | The dead one threshold below the lowest level in G's floors | Introduced | toy convention for `removal_cannot_raise_floor`; any level at or below the bottom gives the same floors |
@@ -1253,17 +1297,17 @@ for removal.
 | Birth escrow over the dependency window, settled against the measured shortfall | Ruled, reading [P] | 8.52; L84 escrow; Lean `birth_escrow_ref`, `birth_accrued_escrow_ref`, `pending_escrow_loss_ref`, `shortfall_ref`, `settlement_ref`; ledger and ratchet native (`neg_share_ref`, `ratchet_credence_ref`). Gaming: under-escrow is clawed back; pending deficit depresses credence inside the first window; what a causer cannot pay falls to the commons (tallied as uncovered) |
 | Baseline = the happiness floor at birth | Introduced | a reading of "what the baseline cannot cover"; a governed level could replace it |
 | Dependents untouched by ordinary plans; linear growth to mature levels; one currency balance per being with a fixed income | Introduced (toy) | composed with teaching and research in `run_population_world`; to replace with the economy's full currencies (M3c) |
-| Anti-corruption by design | Native | L159; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
+| Anti-corruption by design | Native | L160; Lean `good_strictly_easier_than_bad` (restorative friction and audit burden on bad actions): carried by causal-distribution penalties, AdvAp liability, the delegation cap and overflow; no mechanism of its own |
 | Better models arriving over time | World (assumption) | 8.42.2: stated, not derived; competition and adoption native (L82, L49, `select_candidate_ref`) |
 | Model pool bound (`pool_max`) | Introduced | array bound only |
 | Pending predicted effects within a step | Introduced | G screening concurrent work together (M3c, M3d); a reading of L74 over the state, to confirm. Diverges from M7, where entities act concurrently on their own views, unscreened together (8.50) |
 | Cap on novel leaves (`max_new`) | Introduced | array bound only; no rule should depend on it |
 | G per entity (each entity's own G on its own noisy view, many acting concurrently) | Ruled | 8.50; L74; M7 (the menu rungs keep one central chooser, a limiting case) |
 | Lesson gains capped at the best teacher a learner met | Introduced | concurrent lessons summed past their teachers (8.50 status); a bound on concurrency |
-| Research as spending; tacit gains; in-job innovation near the top | Ruled, World | 8.49 (author); L151 Rc_Innovation; chances and gains are the world's; `research_share` governed |
+| Research as spending; tacit gains; in-job innovation near the top | Ruled, World | 8.49 (author); L152 Rc_Innovation; chances and gains are the world's; `research_share` governed |
 | Log-odds weighting of sources in deliberation | Introduced; moved to the Lean reference (`source_weight_ref`) | optimal weights for independent binary judges (Nitzan and Paroush) |
 | Trickle-down: a source is weighed only if its record is at least the listener's, rarely for novel input | Ruled; moved to the Lean reference (`heard_ref`) | 8.44 |
-| ContentionMap: the most reputable sources on each side | Native; rule computed in Julia, to move to the Lean reference | L133 IH (SourceVerify by Re(Dn)); `sim/src/m5.jl` |
+| ContentionMap: the most reputable sources on each side | Native; rule computed in Julia, to move to the Lean reference | L134 IH (SourceVerify by Re(Dn)); `sim/src/m5.jl` |
 | Votes as outputs (reputation by weight cast once apparent); audited delegation | Ruled; moved to the Lean reference (`vote_reputation_ref`, `audited_out_ref`) | 8.29, 8.48, L114 |
 | AdvAp's recount of falsified decisions in governance | Ruled [P]; rule computed in Julia, to move to the Lean reference | 8.38 status; `sim/src/m5.jl` |
 | Forks dividing the base vote | Ruled | 8.34 (for now); `fork_rule` |
@@ -1278,15 +1322,15 @@ for removal.
 | Record a challenger needs before taking over (`takeover_records`) | Introduced | 8.58-b; against best-of-several picks on few records (Witkowski et al.); the significance rule (`select_candidate_ref`) is native |
 | Identity binding admitting identities by cluster quorum | Native | Technology Network (thresholded cross-cluster binding); Lean `binding_admits_ref`. Gaming: a whitewasher needs a quorum of clusters to miss it; the toy lumps methods into a miss chance |
 | On-off deceit, extremising models, whitewashing, slandering | World | adversaries for M6 tests, not rules |
-| Source tags: count once by origin; no weight passes on | Ruled (8.45, 8.60); rules in the Lean reference (`count_once_ref`, `tagged_reading_ref`) | L133 IH source tracking; the borrowed-share delegation of the first reading withdrawn (8.60) |
+| Source tags: count once by origin; no weight passes on | Ruled (8.45, 8.60); rules in the Lean reference (`count_once_ref`, `tagged_reading_ref`) | L134 IH source tracking; the borrowed-share delegation of the first reading withdrawn (8.60) |
 | Full ContentionMap as a heuristic: weaker sources at the novelty chance (mean-field), one Lean call per voter (`heard_weights_ref`); tagged reading taken from the first round when every origin is heard directly | Introduced (speed; author: keep the fast form) | the draw per source it replaces is `heard_ref`; the tagged shortcut is exact under the full map |
 | Weight on advice per person and domain (mixture of stay, average, defer, Beta) | World (8.63) | behaviour adapted from advice-taking studies (`docs/CALIBRATION.md` 1.4); not a rule |
-| AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L160 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
+| AdvAp on tags: tags read against the log; echo audit by agreement beyond independence | Native (L161 audits outputs on the open log); rules in the Lean reference (`tags_falsified_ref`, `undisclosed_echo_ref`) | 8.45 gaming; the margin is a governed threshold |
 | Tag propagation across rounds; indirectly heard origins weighed without a novelty draw | Introduced | world model of how readings pass on; novel input (8.44) needs direct contact |
 | Programme world (`run_programmes`): a probe world for priority tiers, one global chooser over four typed programmes | Introduced (probe only, 8.129) | Shows tiers deciding before tier-typed effects enter M7 and the replay; remove once M7 emits tier-typed changes. Gaming: a programme claiming a higher tier than it delivers (teachable that is tacit, paradigm that is incremental) is caught by the usual assessed outcomes and records |
 | `chain_spot_all` (spot audits even when chains agree) | Introduced, off (8.107 agreeable chains) | Tested against agreeable chains; did not help and once demoted an honest chain. Candidate for removal unless a later probe needs it. `chain_shade` is an attack parameter of the world, not a mechanism |
 | Status-quo institutional baseline (`run_status_quo`, `status_quo.jl`) | Introduced (baseline, 8.92; B/L3.1b) | Institutional comparison baseline (BACKPROPAGATION 8.92; `docs/CALIBRATION.md` §9, R6): procyclical credit multiplier and boom–bust contraction, regulatory capture drift and leniency, uncapped delegation, delayed enforcement, and statutory credit amnesia |
-| Shadow counterfactual governance (`shadow` in `run_coupled`) | Native | L141 Phase 2 (parallel), L157 (`select_candidate_ref`), L158 (`Di_N_Balance`); 8.136: replays the candidate in shadow over `candidate_eta + eta_grace` while keeping the incumbent live; promotes only when `floors_held && beats_inc` (`gov_z`, `select_candidate`) |
+| Shadow counterfactual governance (`shadow` in `run_coupled`) | Native | L141 Phase 2 (parallel), L158 (`select_candidate_ref`), L159 (`Di_N_Balance`); 8.136: replays the candidate in shadow over `candidate_eta + eta_grace` while keeping the incumbent live; promotes only when `floors_held && beats_inc` (`gov_z`, `select_candidate`) |
 
 ## Governed thresholds
 
@@ -1305,7 +1349,7 @@ ratified.
 | Governance candidate's resolution (predict - measure - adapt, 8.134; `prediction_on_track_ref`, `resolution_due_ref`): ETA in epochs, ETA grace in epochs, confidence band on the predicted change in floor_u + floor_h | `candidate_eta`, `eta_grace`, `candidate_confidence` (`run_coupled`, continuous mode; prediction `candidate_prediction`, none = old one-epoch rule) | 1, 0, 0 (reproduce the one-epoch rule; a candidate states its own) | judgment; defaults are placeholders to be governed |
 | Candidate versus incumbent (8.134 refinement): eligibility needs its predicted per-epoch outcome above the incumbent's recorded mean by the significance rule (z = `gov_z`, at least 2 incumbent records); resolution compares measured per-epoch outcome with its own prediction | `candidate_vs_incumbent` (`run_coupled`, continuous mode, needs `candidate_prediction`) | off (false); no new numeric value, reuses `gov_z` and `candidate_confidence` | judgment; predict - measure - adapt applied to the incumbent |
 | Domain-convergence gate for Phase 1 and legacy institutional funder (8.136) | `converge_init`, `legacy_funder` (`M3cParams`) | `false`, `false` (reuses `min_records`, `model_z`, `threshold`) | judgment; L82, Implementation Phase 1, L153 |
-| Shadow counterfactual evaluation and fixed pre-promotion incumbent (8.136) | `shadow`, `incumbent_pv` (`run_coupled`, continuous mode) | `false`, `nothing` (reuses `gov_z`, `candidate_eta`, `eta_grace`) | judgment; L141 Phase 2 parallel, L157 (`select_candidate_ref`), L158 |
+| Shadow counterfactual evaluation and fixed pre-promotion incumbent (8.136) | `shadow`, `incumbent_pv` (`run_coupled`, continuous mode) | `false`, `nothing` (reuses `gov_z`, `candidate_eta`, `eta_grace`) | judgment; L141 Phase 2 parallel, L158 (`select_candidate_ref`), L159 |
 | Resource-accounting contraction rate when StandCoin work halts unfunded (8.71 (2), L83) | `ra_rate` | 0 (off) | judgment; first reading did not absorb the stall |
 | Meta leaf's adoption bar: measured gain must exceed this many measurement errors (8.132; L48) | `meta_th` | 1.0 | as `ToyParams.th` |
 | Generational share of understanding loss counted as irreparable (8.125, 8.126) | `u_loss_persistence` | 0.1 (an option may state its own from evidence, e.g. dropout) | judgment; recoverable loss is not irreparable (author) |
@@ -1318,15 +1362,15 @@ ratified.
 | Significance of an item in pragmatic understanding | `th` (`understanding_truth_and_measure`) | 0.0 | L31 (Wt ≥ Th) |
 | Audit rate of causal-explanation claims (8.98 probe) | `audit_rate` | 1.0 in the probe; swept 0–1 | institutional, so a sweep (CLAUDE.md), never a default |
 | Compensation efficiency (E4 replay) | `compensation_efficiency` | 0.75 | 8.100; analogue: the excess burden of tax-financed transfers, roughly 0.1 to 0.5 per unit raised |
-| Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L157 |
-| Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L157; 8.22 |
+| Governance epoch and perturbation size | `gov_epoch`, `gov_δ` | 50, 0.02 | L158 |
+| Experimental design: candidates per round, trials each, confidence, gauging factor | `gov_candidates`, `gov_trials`, `gov_z`, `gov_gauge` | 3, 4, 2, 2 | L158; 8.22 |
 | Voting weights: base, expertise (domain-relative), impact; optional vote below | `base`, `expertise_weight`, `impact_weight`, `optional_below` | 1, 5, 1, 0 | L113; 8.22 |
 | Delegation cap (share of total weight) and impact above which one must vote | `cap`, `impact_threshold` | 0.05, 0.5 | L114 |
 | Votes as outputs; audit of delegates | `vote_value`, `audit_window`, `audit_threshold` | 0.5, 20, 0.6 | L114; 8.29 |
 | Decay of a source's record in the rolling net its weight reads (rights, wrongs) | `record_λpos`, `record_λneg` | 0.05, 0.02 | L101; 8.29, 8.42 |
-| Echo audit: agreement beyond independence tolerated, standard errors beyond it that flag, outputs it needs | `echo_margin`, `echo_z`, `echo_min` | 0.1, 3, 20 | L160; 8.45 (gaming) |
-| Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L158; 8.30 |
-| Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L157; 8.26.3, 8.38.2 |
+| Echo audit: agreement beyond independence tolerated, standard errors beyond it that flag, outputs it needs | `echo_margin`, `echo_z`, `echo_min` | 0.1, 3, 20 | L161; 8.45 (gaming) |
+| Novelty bonus; standard errors that settle a split trial | `novelty_bonus`, `trial_z` | 0.5, 2 | L159; 8.30 |
+| Debatable escape: start, length, share of domains, epoch | `escape_start`, `escape_steps`, `escape_share`, `escape_epoch` | 100, 100, 0.5, 20 | L158; 8.26.3, 8.38.2 |
 | Status bar relative to the alternative (established bar as cap, coarse bar as floor) | `relative_bar` | off | L82; 8.41 |
 | Standard errors a challenger model must beat the incumbent by | `model_z` | 2 | L82, L49; 8.42.2 |
 | Records a challenger needs before it may take over | `takeover_records` | 100 | L82; 8.58-b (Witkowski et al. 2023) |
@@ -1334,7 +1378,7 @@ ratified.
 | Identity binding: confidence a cluster must reach; clusters that must reach it | `bind_threshold`, `bind_quorum` | 0.5, 2 | Technology Network (methods from at least two clusters) |
 | Weighted binding (8.70, [P], `bind_weighted`): attestation records a cluster needs before its skill weighs; the credence attestations are scored against | (in `run_m3c`) | 5, 0.5 | 8.69 minimum record; a coin toss as the domain's model |
 | Weighted binding quorum, in units of attestation skill | `bind_quorum_weight` | 1.0 | two clusters at skill 0.5; trades sybils admitted against real entities refused (8.70) |
-| Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L151 Rc_Innovation, L158; author |
+| Share of time Benefuture spends on research (M7) | `research_share` | 0.1 | L152 Rc_Innovation, L159; author |
 | Breakthrough scale: how many times its weighted foreclosed future a gain must reach to outweigh a death (M7) | `scale` | 20 | 8.47 [P]; L61 |
 | Long-term window over which a death's foreclosed future is counted (M7) | `lt_window` | 100 steps | 8.47 [P]; L70 (Ha_lt) |
 | Optimistic quantile of the birth model pool; confidence threshold to accept it (M7) | `q_opt`, `threshold` | 0.5, 0.75 | 8.52 [P] |
@@ -1368,7 +1412,7 @@ ratified.
 | Resource cost and regeneration | `cost_per_touch`, `capacity`, `regen` | 0.05, 10⁴, 0.02 | L83 |
 | Reputation decay (mistakes decay slower than wins) | `λpos`, `λneg` | 0.05, 0.02 | L101; 8.29 |
 | Track record models estimate from (each model's past actions per actor) | `track_window` | 20 | L84, L86; 8.29 |
-| AdvAp: standard errors a founded report must exceed; reward's share of the harm prevented and its floor (M3c; the share and floor also M5) | `adv_z`, `adv_share`, `adv_floor` | 3, 0.1, 1 | L160; `Governance.Adversarial` (share 1/10, floor 1); 8.38 |
+| AdvAp: standard errors a founded report must exceed; reward's share of the harm prevented and its floor (M3c; the share and floor also M5) | `adv_z`, `adv_share`, `adv_floor` | 3, 0.1, 1 | L161; `Governance.Adversarial` (share 1/10, floor 1); 8.38 |
 | AdvAp: unfounded reports tolerated in a window before each is charged its audit | `frivolous_threshold`, `adv_window` | 5, 100 | Adversarial adaptation (frivolous patterns); 8.38 |
 | Causal assessment confidence (else traversal) | `cc_threshold` | 0.6 | L94; 8.17 |
 | Traversal decay by degree of separation | `traversal_decay` | 0.5 | L95; 8.17 |
@@ -1381,8 +1425,8 @@ ratified.
 | Apparent votes a delegate's audit needs (hardcoded, `sim/src/m5.jl`) | – | 3 | L114; 8.29 |
 | Least weight a voter gives its own reading in deliberation (hardcoded, `sim/src/m5.jl`) | – | 0.1 | 8.44 |
 | Entries before a model prices an actor by its record on it, else its record overall (hardcoded, `sim/src/m3c.jl`) | – | 5 | L84; 8.29 |
-| Records an actor needs before an AdvAp report (hardcoded, `sim/src/m3c.jl`) | – | 5 | L160; 8.38 |
-| Window of other actors' errors an AdvAp audit compares with (hardcoded, `sim/src/m3c.jl`) | – | max(`track_window`, 20) | L160; 8.38 |
+| Records an actor needs before an AdvAp report (hardcoded, `sim/src/m3c.jl`) | – | 5 | L161; 8.38 |
+| Window of other actors' errors an AdvAp audit compares with (hardcoded, `sim/src/m3c.jl`) | – | max(`track_window`, 20) | L161; 8.38 |
 | Priority tier schedules (U, H, N; six tiers each) | 0.8, 0.6, 0.4, 0.25, 0.15, 0.05; novelty trivial 0 | 8.129 (governed; may be governed per domain, `tiered_value(...; su, sh, sn)`); L57–L60; Lean `tierScheduleU_ref`, `tierScheduleH_ref`, `tierScheduleN_ref` (canonical `defaultSchedule`) |
 | Copy detection: variance of standardised differences below which a pair is one source (chains: 0.2 of independent noise over ≥ 20 readings; ballots: 0.2 of the median pair, over ≥ 20, off by default) | 0.2 | 8.111, 8.121; Lean `copies_ref` |
 | Shared-error copy detection for ballots: share of shared errors among outcomes where either erred (floor; margin over the median pair; minimum outcomes) | 0.9; 0.3; 10 | 8.121; Lean `coerror_copy_ref` |

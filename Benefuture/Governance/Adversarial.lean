@@ -1,7 +1,7 @@
 /-
   Benefuture.Governance.Adversarial
   Formalization of Adversarial Adaptation (AdvAp) and Manufactured Revelation Dominance.
-  Corresponds to: Bf_Pseudocode.txt L160, and Adversarial adaptation.txt
+  Corresponds to: Bf_Pseudocode.txt L161, and Adversarial adaptation.txt
   
   "AdvAp := Rw(SuccessfulGaming(Sys), dissent(Fact)) | Rw > GainIndividualExploit → (↑reveal, ↓exploit) → ↑U(Sys) ∧ Ap(Sys);"
   

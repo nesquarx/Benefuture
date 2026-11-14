@@ -138,12 +138,12 @@ theorem accident_requires_pure_restitution_without_punitive_friction (acc : Acci
   omega
 
 /-- 
-  Ontological Classification of a Harmful Action (L115: Cr := Ha | Informed(Volition ∨
+  Ontological Classification of a Harmful Action (L116: Cr := Ha | Informed(Volition ∨
   Inaction(Lw_mandate ∨ Contract))):
   A harmful event constitutes a Crime (Cr) iff it was committed with verified epistemic awareness
   (isInformed = true) and either intentional volition (hasVolition = true) or inaction against a
   law's mandate or a contract (breachedDuty = true). Otherwise, it is an Accident.
-  Corresponds to: Bf_Pseudocode.txt L115 & Crime.txt L9.
+  Corresponds to: Bf_Pseudocode.txt L116 & Crime.txt L9.
 -/
 def is_crime_classification (isInformed : Bool) (hasVolition : Bool) (breachedDuty : Bool := false) : Bool :=
   isInformed && (hasVolition || breachedDuty)
@@ -151,7 +151,7 @@ def is_crime_classification (isInformed : Bool) (hasVolition : Bool) (breachedDu
 /-- 
   THEOREM: Crime and Accident Invariants are Mutually Exclusive.
   No harmful event is both classified a Crime (informed, and volition or breach of a law's
-  mandate or contract, L115) and meets the Accident condition (uninformed, or neither volition
+  mandate or contract, L116) and meets the Accident condition (uninformed, or neither volition
   nor breached duty).
 -/
 theorem crime_and_accident_mutually_exclusive (isInformed hasVolition breachedDuty : Bool) :
@@ -211,7 +211,7 @@ theorem absence_of_notice_is_accident (proceeded : Bool) :
   cases proceeded <;> rfl
 
 /--
-  THEOREM: Informed inaction against a committed action is a crime (L115: Informed(Volition ∨
+  THEOREM: Informed inaction against a committed action is a crime (L116: Informed(Volition ∨
   Inaction)). A driver bound by traffic law who sees the pedestrian and does not brake.
 -/
 theorem informed_inaction_under_duty_is_crime :

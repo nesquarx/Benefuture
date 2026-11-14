@@ -77,7 +77,7 @@ end
 """
     fr_permissible(irreparable, irreversible, longterm, passing, time_loss; confidence, th_conf, th_high, severities) -> Bool
 
-The freedom gate on an action's predicted harm by kind (L135; Lean `fr_permissible_ref`): established
+The freedom gate on an action's predicted harm by kind (L136; Lean `fr_permissible_ref`): established
 harm (predicted with confidence at least `th_conf`, long-term or worse) is impermissible, and so is harm
 whose confidence times severity is too high.
 """

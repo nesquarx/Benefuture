@@ -123,7 +123,7 @@ Per the Ground Rules:
 - **Specification**: In `Benefuture.Proposed.DomainHierarchy`, fuzzy subsethood $S(x, y)$ over action relevance is modeled as a monotonic operator on a complete lattice. Theorem `hierarchy_fixed_point_exists` proves existence of a fixed-point hierarchy via Knaster-Tarski, resolving circularity in mutually interdependent domains without ad-hoc cutoffs.
 
 ### 3.4 3-Component Reputation Architecture ([R], [P])
-- **Source**: `Bf_Pseudocode.txt` L101 ("!halo, !horn, !transfer"), L113 ("VW_expert"), L117 ("EHR").
+- **Source**: `Bf_Pseudocode.txt` L101 ("!halo, !horn, !transfer"), L113 ("VW_expert"), L118 ("EHR").
 - **Specification**: Separated reputation into distinct state stores and views in `Benefuture/Ontology/Reputation.lean`:
   - `ReHistory`: Monotonic, append-only historical record ($hPos \ge 0, hNeg \ge 0$). Non-cancelling ledger.
   - `ReRelevance`: Current time-decayed domain competence ($rel \in [0, 1]$).
@@ -240,7 +240,7 @@ Per the Ground Rules:
 - **Resolution**: Sy's inputs are As outputs in threshold units. `significant_assessment_preserves_loss_aversion`: every significant input has magnitude ≥ 1, where $m^{q_+} \le m^{q_-}$. The inversion lives only below the significance threshold.
 
 ### 7.3 Weighted vs Lexical Harm Resolved by Fr (resolves §2.4, [P])
-- **Source**: L61 (Ha_wt is a Sy-weighted sum), L135 (Fr excludes irreversible harm).
+- **Source**: L61 (Ha_wt is a Sy-weighted sum), L136 (Fr excludes irreversible harm).
 - **Resolution**: Both readings hold, at different layers. Fr removes irreversible and irreparable harm lexically before any weighting (`choose_plan_sound`, §6.1); Ha_wt weights the remaining tiers. No finite quantity of passing harm is ever traded against an irreversible one inside an admissible choice. *(Superseded in §8.8: Fr is a subgoal; Ha_wt's convexity carries this in G.)*
 
 ### 7.4 Delegation Cap from L114 (resolves §4.5 cap, [R])
@@ -252,7 +252,7 @@ Per the Ground Rules:
 - Added `Sy_signed_ref`, `HaWt_ref`, and population operators matching `Benefuture.Proposed.PopulationDirection`: `skew_key_ref`, `population_novelty_ref`, `effective_types_ref`, `pareto_front_ref`, `accumulate_capped_ref`.
 - `Escrow_split_ref` took a protocol overhead that L84 does not specify; removed (upfront = nominal·P, hold = nominal·(1 − P)).
 - `Voting_weight_ref` now takes the decision profile (Σŵ·Re, L113), the Government.txt coefficients (base, expertise, impact weights) and returns whether the vote is optional (VW < Th, L113). The base weight came from Government.txt, L113 then being silent on it; L113 now carries `Base_VW` and the domain-relative expertise term Re/ΣRe (BACKPROPAGATION 5.3, 8.22.1; `relative_reputation_ref`).
-- `EHR_attenuate_ref` was misnamed: it implements cyclic-review attenuation (`attenuate_cyclic_reviews`), not EHR (L117). Renamed `cyclic_review_attenuate_ref`.
+- `EHR_attenuate_ref` was misnamed: it implements cyclic-review attenuation (`attenuate_cyclic_reviews`), not EHR (L118). Renamed `cyclic_review_attenuate_ref`.
 - Vectors: `assessment.json` and `value.json` regenerated with `defaultGovParams`; new `population.json`. Values agree with the Lean theorems (e.g. skew key −81/128 → −1.0646; novelty of 5 copies = 1).
 
 ### 7.6 Pseudocode Copies
@@ -264,8 +264,8 @@ Per the Ground Rules:
 
 - **EHR**: resolved in §8.7.
 
-### 7.8 Fr per the Author's Reading of L135 ([R] reading, [P] parameters)
-- **Source**: L135 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
+### 7.8 Fr per the Author's Reading of L136 ([R] reading, [P] parameters)
+- **Source**: L136 `Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd ∨ Pr(P·severity>Th_high) ∨ irreversible)`. Author: Fr blocks established (not speculative) harm at long-term severity or worse, at high enough confidence; a mild chance of passing or time-loss harm does not block. Parameters chosen to match longtermist common sense.
 - **Divergence fixed**: the previous Fr blocked any non-zero irreversible harm at any probability, which would block nearly every action.
 - **Lean Spec Choice**: `HarmForecast` (profile + confidence), `FrParams`, `severity_score`, `established_severe`, `fr_permissible` (now `Fr`). Defaults: established at confidence 0.9; expected-severity ceiling 1; severities 1000 / 100 / 10 / 1 / 0.5 (irreparable / irreversible / long-term / passing / time loss).
 - **Proved**: `fr_permissible_spec`, `established_severe_blocks`, `probable_severe_harm_blocks`; with defaults, `mild_passing_chance_permitted` (50% passing harm), `speculative_catastrophe_blocks` (1% irreparable), `remote_irreversible_chance_permitted` (0.1% irreversible), `certain_longterm_harm_blocks`.
@@ -276,7 +276,7 @@ Per the Ground Rules:
 - **Bias as a graded, separate claim (decision)**: bias covers malice, but also doom-scrolling dopamine and drug-induced stupor. MMs attach to each source a `BiasClaim` (degree b, confidence c, both in [0, 1]); measured intensity stays raw and `bias_mitigation` = −Σ c·b·intensity is a separate term, as L37 writes it. Reasons: measurement (Me, L48) and model claims are different kinds; a separate claim can be audited, contested by competing MMs and revised (L49–52) without touching what was measured; graded claims fit graded bias. Bias is claimed independently of tier: peak-tier sources are already down-weighted by L59, and are not discounted again for being peaks.
 - **Lean Spec Choice**: `BiasClaim`, `HappinessSource`, `positive_integral`, `bias_mitigation`, `happiness_score`; `rolling_average`, `h_harm`, `u_harm`.
 - **Proved**: `happiness_score_eq` (each source counts (1 − c·b)), `happiness_score_nonneg`, `unclaimed_source_counts_fully`, `fully_biased_contributes_nothing` (malice with full confidence adds nothing; the victim's Ha still counts, so harm for pleasure is net negative), `more_bias_less_happiness`; `forgetting_is_harm`, `u_at_max_no_harm`, `h_at_or_above_average_no_harm`, `coming_down_not_harm` (window [1,1,1,5], H 5 → 2). `withholding_incurs_no_harm` (Proposed) uses these reference points.
-- **Parameters, not open questions ([R])**: the rolling-window length and the weights that aggregate competing MMs' bias claims (from MM competition results, L49) are parameters. They start from bootstrap defaults (Bf system-design bootstrap) and are then governed by SigThGv (L157). The spec defines the space; simulation explores values.
+- **Parameters, not open questions ([R])**: the rolling-window length and the weights that aggregate competing MMs' bias claims (from MM competition results, L49) are parameters. They start from bootstrap defaults (Bf system-design bootstrap) and are then governed by SigThGv (L158). The spec defines the space; simulation explores values.
 
 ---
 

@@ -808,10 +808,10 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
         lt_u = Float64.(get(opt, "lt_end_u", u_after))
         lt_h = Float64.(get(opt, "lt_end_h", h_after))
 
-        # Freedom gate (L135) on irreparable and passing harms
+        # Freedom gate (L136) on irreparable and passing harms
         total_irr = sum(irr)
         total_nha = sum(nha)
-        # The freedom gate is per being (L135): the probability that a member of some group suffers
+        # The freedom gate is per being (L136): the probability that a member of some group suffers
         # irreparable harm, expected irreparable harms over the group's population. Inaction is judged the
         # same way (author ruling on 8.47, 2026-11-06): where inaction risks irreparable harm and the
         # decider is informed (every scenario-priced option is informed: its risk comes from the as-of

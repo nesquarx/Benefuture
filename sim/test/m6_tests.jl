@@ -2,7 +2,7 @@
 # exploit is tested against the native mechanisms before any defence is built; a failure is a
 # finding, screened and reported, not patched.
 # - Overpromising: an agent whose plans fool every metric model upward (`deceit`, a world
-#   property). Escrow (L86) pays upfront only accuracy × prediction and settles against the measured
+#   property). Escrow (L84) pays upfront only accuracy × prediction and settles against the measured
 #   outcome, so the deceit is clawed back; models price each actor's actions by its track record
 #   (author ruling 8.29), and mistakes decay slower than wins.
 # - Relay farming: agents who add nothing and carry others' outputs to collect accolades. The drain
@@ -57,7 +57,7 @@ end
     @test_throws ArgumentError six(track_window = -1)
 end
 
-# Adversarial adaptation (AdvAp, L160; author ruling 8.38): agents read one another's records in
+# Adversarial adaptation (AdvAp, L161; author ruling 8.38): agents read one another's records in
 # the open log and report an actor whose estimates run significantly high; an audit tests the
 # record (the significance rule, `select_candidate_ref`) and examines its cause (`p_trace`). An
 # established deception is repaired in full: the model records it falsified are re-scored on the
@@ -166,7 +166,7 @@ end
     stealthy = [run_m5(M5Params(w, 1:4; decisions = 800, colluders = bloc30, p_delegate = 0.8, stealth = true, diversity = false); seed) for seed in seeds]
     @test mean(r.bloc_expertise[end] for r in stealthy) > mean(r.bloc_expertise[1] for r in stealthy) / 2
     @test mean(r.correct_apparent for r in stealthy) > 0.95 && mean(r.correct_hidden for r in stealthy) < mean(r.correct_apparent for r in stealthy) - 0.15
-    # Diversity (8.30; L158): the option not chosen stays available, subsidised by a novelty bonus,
+    # Diversity (8.30; L159): the option not chosen stays available, subsidised by a novelty bonus,
     # and locales take it up by their own reading past a conviction margin; no one is assigned to it.
     # When the split trial settles the comparison the decision's optimality becomes apparent, which
     # the bloc cannot foresee, and an alternative proved better is adopted (the stochastic escape).
@@ -188,7 +188,7 @@ end
     @test_throws ArgumentError M5Params(w, 1:4; audit_threshold = -0.1)
 end
 
-# Collusion under AdvAp (L160; the manufactured prisoner's dilemma of Adversarial adaptation; 8.38):
+# Collusion under AdvAp (L161; the manufactured prisoner's dilemma of Adversarial adaptation; 8.38):
 # after each hidden defection a bloc member may weigh revealing the bloc (`p_weigh`), and reveals
 # when the reward (`advap_reward_ref`, more than its share of the bloc's gain) beats that share and
 # its loyalty, by its own noisy judgement (8.31). An established revelation is repaired in full: the
@@ -246,7 +246,7 @@ end
     @test_throws ArgumentError eight(launder = [zeros(7); 1.5])
 end
 
-# Identity forks (L122: Fork splits social power; Being: near-identical patterns are a domain
+# Identity forks (L123: Fork splits social power; Being: near-identical patterns are a domain
 # pattern, not identities). A forker that votes one side splits into copies voting alike. If the
 # base vote weight is part of the social power a fork divides, forking gains nothing; if each
 # identity gets its own base vote, copies multiply it (a sybil attack). [OPEN] which the corpus

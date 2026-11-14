@@ -162,10 +162,10 @@ theorem checkpoint_sound (cache : RepCache) (t t' : ℝ) (h_le : cache.lastUpdat
 
 /-!
   # 4.2 State, Event, and Step Relation
-  Corresponds to: Bf_Pseudocode.txt L25, L26, L101, L113, L132, L155, L157.
+  Corresponds to: Bf_Pseudocode.txt L25, L26, L101, L113, L133, L146, L158.
 -/
 
-/-- Ledger entry in the append-only memory history (L155). -/
+/-- Ledger entry in the append-only memory history (L146). -/
 structure TxRecord where
   txId      : String
   timestamp : ℝ
@@ -391,7 +391,7 @@ inductive StepStar : State → State → Prop where
 -/
 
 /--
-  [R] INVARIANT (a) Mem (L155): Append-Only Memory.
+  [R] INVARIANT (a) Mem (L146): Append-Only Memory.
   Past transaction records are permanently preserved and cannot be overwritten or modified.
   Expressed as list prefix / sublist preservation: s.history is a suffix of s'.history.
 -/
@@ -452,7 +452,7 @@ theorem step_preserves_mem (s s' : State) (ev : Event) (h : Step s ev s') :
     rw [h_hist]; rfl
 
 /--
-  [R] INVARIANT (b) Id (L132): Identity Injectivity / Uniqueness.
+  [R] INVARIANT (b) Id (L133): Identity Injectivity / Uniqueness.
   No duplicate active identities exist in the system.
 -/
 def Invariant_Id (s : State) : Prop :=
@@ -595,7 +595,7 @@ theorem step_preserves_escrow_soundness (s s' : State) (ev : Event)
     rw [hesc] at he; exact h_inv e he
 
 /--
-  [R] INVARIANT (e) BalOvflw (L26):
+  [R] INVARIANT (e) BalOvflw (L103):
   Individual balance is bounded by Th_bal via automatic treasury spill.
 -/
 def Invariant_BalOvflw (s : State) (thBal : ℝ) : Prop :=

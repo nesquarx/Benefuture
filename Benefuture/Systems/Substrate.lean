@@ -39,7 +39,7 @@ def BehavioralTx.mkSimple (id actorId actionId : String) (t : Nat) (rc : Int) (i
   Transaction Tree Node (TxTree, extends Thing):
   Tracks upstream dependency chains for Shapley-style value-added attribution.
   Net value added = OutputValue - UpstreamInputsConsumed.
-  Corresponds to: Bf_Pseudocode.txt L94 ("TxTree").
+  Corresponds to: Bf_Pseudocode.txt L95 ("TxTree").
 -/
 structure TxTreeNode extends Thing where
   entityId        : String

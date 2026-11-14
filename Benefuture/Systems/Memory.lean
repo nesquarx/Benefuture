@@ -1,7 +1,7 @@
 /-
   Benefuture.Systems.Memory
   Formalization of Record (Rec ∈ T) and Immutable Memory (Mem ∈ T).
-  Corresponds to: Bf_Pseudocode.txt L136, L145, L152, and System Design.txt
+  Corresponds to: Bf_Pseudocode.txt L137, L146, L153, and System Design.txt
   
   "Mem := Immutable {State(t), A(t), O(t), SigRlvCx(t)[], ...}, 
    ∀x ∈ {Exec(A) ∪ O} : Sys → Log(Tx(x)) → BehavioralTxnSubstrate«BTS»;"
@@ -24,7 +24,7 @@ open Benefuture.Epistemology
   Immutable Behavioral Record (Rec ∈ T):
   Binds the systemic state at time t, executed actions, observed outcomes, 
   and significant context into a single cryptographically linked transaction record.
-  Corresponds to: Bf_Pseudocode.txt L145.
+  Corresponds to: Bf_Pseudocode.txt L146.
 -/
 structure MemoryRecord extends Thing where
   timestamp       : Int
@@ -44,7 +44,7 @@ instance : Coe MemoryRecord Thing where
 /-- 
   Immutable Memory Store (Mem ∈ T):
   The unbroken, append-only behavioral ledger of a Being, Sophont, or Civilization.
-  Corresponds to: Bf_Pseudocode.txt L145, L152.
+  Corresponds to: Bf_Pseudocode.txt L146, L153.
 -/
 structure ImmutableMemory extends Thing where
   records         : List MemoryRecord
