@@ -593,18 +593,15 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   worlds): no failing world; total-order indices signal noise 0.54, ability scatter 0.47, local noise 0.26,
   hidden outcomes 0.17, delegation 0.17, collusion 0.16, loyalty 0.06; the margin barely varies (variance
   3e-5), so first-order indices are noise.
-- **Governed-threshold perturbation** (code 9c0a09a; `sim/battery/thresholds.jl`, results in
-  `sim/battery/results/thresholds.md`): 12 M3c thresholds × 4 scales, 6 seeds, paired against defaults in
-  the economy world at moderate stress with two deceivers. Raising the parent bar (`coarse_threshold`)
-  to 0.99 collapses every floor and median (−46 to −50): coarse models then never qualify. Lowering the
-  leaf bar (`threshold`) to 0.675 or 0.45 (identical results) raises floor growth of understanding (+7.3);
-  lowering the audit's minimum record (`adv_min_records`) to 2 or 4 raises floors (+5.6 to +11);
-  `max_credence` 0.98 raises floor happiness (+5.2). With 48 arms at z = 2, two or three false
-  positives are expected; none replicated on fresh seeds 7–18 (`thresholds_replication.md`: no reading
-  significant for any of the four), so the defaults stand and the screen's candidates were noise.
-  Inert here (no change in any reading at any scale): `model_z`, `adv_z`, `ratchet_horizon`,
-  `actor_min_records`, `min_records`, and `max_credence` above its default; each needs a world where
-  it binds before it can be governed by evidence.
+- **Governed-threshold perturbation** (code 9c0a09a and redesigned `3fe3331`; `sim/battery/thresholds.jl`,
+  results in `sim/battery/results/thresholds.md`): on 9c0a09a (12 M3c thresholds × 4 scales, 6 seeds,
+  z = 2), lowering `threshold` to 0.675/0.45, `adv_min_records` to 2/4, or `max_credence` to 0.98
+  appeared positive, but none replicated on fresh seeds (`thresholds_replication.md`: 0/4 significant).
+  On `3fe3331` (precision-guided 6–24 seeds per arm, t-inflated z = 3.0, two-stage screen +
+  confirmation; 46 distinct arms, 139.4 min), **0 arms were flagged** and 0 passed Stage 1: only
+  raising `threshold` to 0.99 (`floor h −8.52−`) and `coarse_threshold` to 0.99 (`−60.48−` to `−64.10−`)
+  were `worse`, while all 44 remaining arms had `no effect` (`model_z`, `adv_z`, `ratchet_horizon`,
+  `actor_min_records`, `min_records` inert at all scales tested, leaving each default standing).
 - **Attack search** (commit 7063060; population 8 × 4 iterations, budget 1): no strategy found fails
   either world. Economy: the worst, a bloc of three with deceit 0.92 and laundering 0.83, takes the
   margin to 0.57 on held-out seeds (the bloc ends with negative wealth relative to honest agents);

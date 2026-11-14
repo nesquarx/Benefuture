@@ -1,55 +1,56 @@
 # Governed-threshold perturbation battery
 
-Build: commit a6802da. Seeds 1:6; 300 steps; run time 92.0 minutes.
-World: the economy battery's, noise at moderate severity, two deceivers at full size, AdvAp on. Each cell: mean paired difference from the default (arm − default); + / − significant at z = 2. Harm and the deceivers' advantage are better when lower. 'candidate' = some reading better and none worse: for the author, after replication on fresh seeds.
+Build: commit 3fe3331. 300 steps; run time 139.4 minutes; 46 distinct arms, 0 flagged.
 
-| Threshold | Setting | Floor u | Floor h | Median u | Median h | Harm peak | Deceivers' advantage | Verdict |
-|---|---|---|---|---|---|---|---|---|
-| `threshold` | 0.5× → 0.45 | 7.32+ | 8.63 | 7.33 | 6.33 | 0.13 | -4.48 | candidate |
-| `threshold` | 0.75× → 0.675 | 7.32+ | 8.63 | 7.33 | 6.33 | 0.13 | -4.48 | candidate |
-| `threshold` | 1.1× → 0.99 | -0.85 | -1.72 | 2.42 | -0.70 | 0.30 | -23.45 | no effect |
-| `threshold` | 1.1× → 0.99 | -0.85 | -1.72 | 2.42 | -0.70 | 0.30 | -23.45 | no effect |
-| `coarse_threshold` | 0.5× → 0.375 | 1.77 | 1.97 | 1.80 | 2.60 | 0.06 | 0.22 | no effect |
-| `coarse_threshold` | 0.75× → 0.562 | 1.77 | 1.97 | 1.80 | 2.60 | 0.06 | 0.22 | no effect |
-| `coarse_threshold` | 1.32× → 0.99 | -42.80 | -41.74 | -43.73 | -43.73 | 0.13 | -1.02 | no effect |
-| `coarse_threshold` | 1.32× → 0.99 | -42.80 | -41.74 | -43.73 | -43.73 | 0.13 | -1.02 | no effect |
-| `model_z` | 0.5× → 1.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `model_z` | 0.75× → 1.5 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `model_z` | 1.5× → 3.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `model_z` | 2.0× → 4.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `max_credence` | 0.99× → 0.98 | 0.65 | 5.19+ | 1.93 | 2.33 | 0.42 | 6.41 | candidate |
-| `max_credence` | 0.997× → 0.987 | 1.06 | 2.25 | 3.38 | 1.44 | -0.06 | -2.34 | no effect |
-| `max_credence` | 1.003× → 0.993 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -0.00 | no effect |
-| `max_credence` | 1.005× → 0.995 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `ratchet_growth` | 0.5× → 0.5 | 2.27 | 7.73 | 5.64 | 8.38 | 0.21 | 0.78 | no effect |
-| `ratchet_growth` | 0.75× → 0.75 | 2.70 | 3.97 | 2.62 | 4.19 | -0.01 | 4.38 | no effect |
-| `ratchet_growth` | 1.5× → 1.5 | 5.34 | 4.48 | 4.77 | 4.51 | 0.08 | -2.32 | no effect |
-| `ratchet_growth` | 2.0× → 2.0 | -3.52 | -3.79 | -1.98 | 0.51 | 0.37 | -6.14 | no effect |
-| `adv_z` | 0.5× → 1.5 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `adv_z` | 0.75× → 2.25 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `adv_z` | 1.5× → 4.5 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `adv_z` | 2.0× → 6.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `acc_halflife` | 0.5× → 3.5 | 7.17 | 7.14 | 6.43 | 6.08 | 0.18 | 2.77 | no effect |
-| `acc_halflife` | 0.75× → 5.25 | 3.06 | 2.85 | 0.27 | 3.17 | -0.05 | -8.79 | no effect |
-| `acc_halflife` | 1.5× → 10.5 | 0.23 | 1.19 | -0.43 | 4.23 | -0.03 | -2.06 | no effect |
-| `acc_halflife` | 2.0× → 14.0 | 8.29 | 9.00 | 7.57 | 7.43 | 0.18 | 7.11 | no effect |
-| `ratchet_horizon` | 0.5× → 10.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `ratchet_horizon` | 0.75× → 15.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `ratchet_horizon` | 1.5× → 30.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `ratchet_horizon` | 2.0× → 40.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `actor_min_records` | 0.4× → 2.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `actor_min_records` | 0.8× → 4.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `actor_min_records` | 1.6× → 8.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `actor_min_records` | 2.0× → 10.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `adv_min_records` | 0.4× → 2.0 | 11.02+ | 10.03 | 9.38+ | 9.55+ | 0.20 | -5.44 | candidate |
-| `adv_min_records` | 0.8× → 4.0 | 7.69+ | 5.60+ | 4.64 | 6.04 | 0.31 | -3.73 | candidate |
-| `adv_min_records` | 1.6× → 8.0 | 5.98+ | 6.82 | 5.44 | 7.30+ | 0.03 | 3.15 | candidate |
-| `adv_min_records` | 2.0× → 10.0 | 3.22 | 4.47 | 4.00 | 5.67 | 0.02 | 4.98 | no effect |
-| `pattern_attention` | 0.5× → 4.5 | 7.92 | 6.08 | 6.48 | 8.04 | 0.01 | -3.93 | no effect |
-| `pattern_attention` | 0.75× → 6.75 | -0.58 | 1.90 | 0.72 | 4.00 | 0.22 | -1.52 | no effect |
-| `pattern_attention` | 1.5× → 13.5 | -0.08 | 3.36 | 0.86 | 1.72 | 0.13 | -7.65 | no effect |
-| `pattern_attention` | 2.0× → 18.0 | 2.41 | 1.67 | 2.19 | 1.72 | 0.09 | -10.00 | no effect |
-| `min_records` | 0.5× → 5.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `min_records` | 0.8× → 8.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `min_records` | 1.5× → 15.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
-| `min_records` | 2.0× → 20.0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect |
+Seeds and bars: seeds by precision per arm (stop when the t-inflated standard error of the paired floor-u difference is at most 1.5, 6 to 24 seeds; * = cap reached without that precision); stage 1 screen on seeds 1..; every verdict at z = 3.0, Student-t inflated. Two-stage rule: a screen candidate is re-measured on the disjoint fresh seeds 1001.. (default re-run on them) and is FLAGGED only if the confirmation is also a candidate.
+
+World: the economy battery's, noise at moderate severity, two deceivers at full size, AdvAp on. Each cell: mean paired difference from the default (arm − default); + / − significant at z = 3.0. Harm and the deceivers' advantage are better when lower. Candidate = some reading better and none worse. Stage 2 cells: floor u / floor h / median u / median h / harm / deceivers' advantage.
+
+| Threshold | Setting | Seeds | Floor u | Floor h | Median u | Median h | Harm peak | Deceivers' advantage | Screen | Confirm seeds | Confirm cells | Result |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `threshold` | 0.5× → 0.45 | 24* | 1.63 | 1.26 | 2.46 | 2.16 | 0.10 | 3.55 | no effect | – | – | no effect |
+| `threshold` | 0.75× → 0.675 | 24* | 1.63 | 1.26 | 2.46 | 2.16 | 0.10 | 3.55 | no effect | – | – | no effect |
+| `threshold` | 1.1× → 0.99 | 24* | -8.04 | -8.52− | -7.96 | -7.51 | 0.04 | -18.65 | worse | – | – | worse |
+| `coarse_threshold` | 0.5× → 0.375 | 17 | 1.13 | -1.17 | 2.18 | -0.57 | -0.04 | 1.75 | no effect | – | – | no effect |
+| `coarse_threshold` | 0.75× → 0.562 | 17 | 1.13 | -1.17 | 2.18 | -0.57 | -0.04 | 1.75 | no effect | – | – | no effect |
+| `coarse_threshold` | 1.32× → 0.99 | 24* | -60.48− | -61.04− | -64.10− | -63.36− | -0.08 | -7.08 | worse | – | – | worse |
+| `model_z` | 0.5× → 1.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `model_z` | 0.75× → 1.5 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `model_z` | 1.5× → 3.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `model_z` | 2.0× → 4.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `max_credence` | 0.99× → 0.98 | 24 | 0.46 | 0.11 | 0.89 | 1.54 | -0.11 | -0.28 | no effect | – | – | no effect |
+| `max_credence` | 0.997× → 0.987 | 6 | 0.22 | 0.62 | -0.64 | 0.55 | -0.03 | 3.11 | no effect | – | – | no effect |
+| `max_credence` | 1.003× → 0.993 | 6 | 1.00 | -0.43 | 0.76 | -0.47 | 0.00 | -0.26 | no effect | – | – | no effect |
+| `max_credence` | 1.005× → 0.995 | 6 | 1.00 | -0.43 | 0.76 | -0.47 | 0.00 | -0.26 | no effect | – | – | no effect |
+| `ratchet_growth` | 0.5× → 0.5 | 6 | -0.57 | -1.02 | -1.30 | 0.11 | -0.03 | 3.48 | no effect | – | – | no effect |
+| `ratchet_growth` | 0.75× → 0.75 | 6 | -0.78 | -1.64 | -0.66 | -0.44 | 0.00 | 0.37 | no effect | – | – | no effect |
+| `ratchet_growth` | 1.5× → 1.5 | 20 | -3.17 | -2.27 | -2.76 | -1.46 | -0.24 | -4.72 | no effect | – | – | no effect |
+| `ratchet_growth` | 2.0× → 2.0 | 18 | -3.36 | -2.19 | -2.62 | -2.17 | -0.19 | -8.68 | no effect | – | – | no effect |
+| `adv_z` | 0.5× → 1.5 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `adv_z` | 0.75× → 2.25 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `adv_z` | 1.5× → 4.5 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `adv_z` | 2.0× → 6.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `acc_halflife` | 0.5× → 3.5 | 24* | -0.97 | -0.58 | 0.15 | 2.30 | -0.06 | 1.30 | no effect | – | – | no effect |
+| `acc_halflife` | 0.75× → 5.25 | 24* | -0.56 | -0.86 | -0.57 | -0.65 | -0.01 | 1.81 | no effect | – | – | no effect |
+| `acc_halflife` | 1.5× → 10.5 | 24* | 2.88 | 1.77 | 2.24 | 2.64 | -0.09 | -3.52 | no effect | – | – | no effect |
+| `acc_halflife` | 2.0× → 14.0 | 24* | -0.94 | -1.73 | -0.03 | 1.12 | 0.15 | 4.08 | no effect | – | – | no effect |
+| `ratchet_horizon` | 0.5× → 10.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `ratchet_horizon` | 0.75× → 15.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `ratchet_horizon` | 1.5× → 30.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `ratchet_horizon` | 2.0× → 40.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `actor_min_records` | 0.4× → 2.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `actor_min_records` | 0.8× → 4.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `actor_min_records` | 1.6× → 8.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `actor_min_records` | 2.0× → 10.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `adv_min_records` | 0.4× → 2.0 | 24* | -2.71 | -3.86 | -3.11 | -2.36 | -0.16 | -4.91 | no effect | – | – | no effect |
+| `adv_min_records` | 0.8× → 4.0 | 24* | -2.84 | -2.01 | -1.15 | -0.19 | 0.02 | -3.00 | no effect | – | – | no effect |
+| `adv_min_records` | 1.6× → 8.0 | 23 | 0.00 | 1.63 | 0.37 | 1.02 | -0.10 | 2.57 | no effect | – | – | no effect |
+| `adv_min_records` | 2.0× → 10.0 | 24* | -0.17 | 1.04 | 0.68 | 2.59 | 0.06 | 1.74 | no effect | – | – | no effect |
+| `pattern_attention` | 0.5× → 4.5 | 24* | 2.43 | 2.93 | 1.92 | 3.08 | 0.05 | 0.72 | no effect | – | – | no effect |
+| `pattern_attention` | 0.75× → 6.75 | 24* | 1.02 | -1.55 | 0.39 | 1.95 | 0.04 | 0.83 | no effect | – | – | no effect |
+| `pattern_attention` | 1.5× → 13.5 | 16 | 2.28 | 1.34 | 2.80 | 2.36 | 0.03 | -1.43 | no effect | – | – | no effect |
+| `pattern_attention` | 2.0× → 18.0 | 24* | -0.70 | 1.45 | 0.78 | 1.70 | 0.09 | -2.27 | no effect | – | – | no effect |
+| `min_records` | 0.5× → 5.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `min_records` | 0.8× → 8.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `min_records` | 1.5× → 15.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
+| `min_records` | 2.0× → 20.0 | 6 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | no effect | – | – | no effect |
