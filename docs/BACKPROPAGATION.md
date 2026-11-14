@@ -3720,3 +3720,13 @@ Author rulings on the open-item triage (2026-11-14):
 Still open after this round: 5.6/SPEC_DIVERGENCES 3.2 (partition of unity per relation type: clarification requested),
 8.53-c (graduated sanctions wording: clarification requested), and the standing review of Section 7 source edits, the
 L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14)" await the lead's review.
+- 8.156 (closes 5.6 / SPEC_DIVERGENCES 3.2) [R]: the partition of unity is per relation type (causal, structural,
+  communicative): an action's domain memberships sum to 1 within each type, so it may count fully as a cause in one
+  domain and fully as speech in another, but never twice within one type. Lean `PartitionOfUnity` to be indexed by
+  relation type; `aggregate_no_double_count` then holds per type.
+- 8.157 (closes 8.53-c) [R]: all three parts adopted, plus one: (i) L116 states escalation by repeated pattern
+  (`Rehabilitate(Escalate ← pattern(Re_-ve(Dn)))`); (ii) what an uninformed harm (an accident, L115) costs its contributor
+  is bounded by their capacity, the administration carrying the rest (L119 or L96); (iii) the Implementation article's
+  sentence is corrected (escrow ratcheting is the graduated sanction; reputation penalties are proportional); and (iv)
+  accidents also mandate education ("Accidents also mandate education", author): an accident's contributor takes the
+  education that would have made them informed, consistent with 8.152 (ignorance must not pay).
