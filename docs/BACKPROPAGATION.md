@@ -3757,3 +3757,267 @@ L83 flip and the wiki sync. The A/B resolutions in "Open-item triage (2026-11-14
 - 8.159 notation fix (2026-11-14): `Kn` and `Info` were undefined symbols; L116 now uses defined ones: `Informed :=
   Demonstrated(U ∈ Dn) ∨ Exposed(Dn) ∈ Mem, !Ig_pays;` (understanding of the domain shown, or exposure to it recorded in
   memory data, L134). Three copies edited together.
+
+- Pseudocode symbol check (2026-11-14) [OPEN]: `tools/check_pseudocode.py` lists every capitalised identifier or word applied as a function (`word(`) that no `Name«Abbr»`, `:=`/`::` left side or label defines. It is report-only in CI (warning annotation) until the author rules what counts as common parlance (allow-list in the tool) and which to define or reword. Found today: 262 symbols. The ones introduced by recent edits, for ruling: L96 `Responsibility`, `Counterfactual` (also L122), `Severity`, `Duty` (also L122), `Capacity` (also L110, L131); L117 `pattern`. Most others are descriptive vocabulary in the original lines (e.g. `Perceivable`, `Resilience`, `Penalize`, `Decentralized`); the author may rule these notation, not symbols, in which case a baseline or a wider allow-list applies. Full list (symbol: lines):
+  - Perceivable: L16
+  - Changeable: L16
+  - InfoPattern: L17
+  - org: L17
+  - spctime: L17
+  - SubPattern: L18
+  - Disambiguate: L18
+  - Location: L18
+  - History: L18, L28
+  - Process: L19
+  - Inputs: L19
+  - ClassificationPattern: L22
+  - RelType: L22
+  - Wt: L22, L31, L114
+  - CausalStructure: L22
+  - NaturalOverlap: L22
+  - Nested: L22
+  - Preferences: L23
+  - Proper: L27
+  - Explain: L28
+  - Complement: L28
+  - Subsum: L28
+  - MapFit: L31
+  - X: L31
+  - MetaCapability: L32
+  - Variety: L35
+  - Resilience: L35, L157
+  - Frequency: L36
+  - Positive: L37
+  - BiasMitigation: L37
+  - EvoFitnessAttractor: L37
+  - Objective: L43
+  - Verifiable: L43
+  - Testable: L44
+  - PerceivableProxies: L46
+  - Estd: L46, L50, L61, L136, L141
+  - Novel: L46
+  - Bias: L47
+  - Kind: L47
+  - Compete: L49
+  - Corr: L50
+  - Declared: L51
+  - Range: L51
+  - Confounders: L51
+  - Audits: L51
+  - IncrementalApprox: L51
+  - OpenSource: L51
+  - ExperimentalDesign: L51
+  - PoV: L60
+  - Irreparable: L61
+  - Irreversible: L61
+  - Input: L66
+  - Lifespan: L68
+  - fuzzy: L70
+  - Fuzzy: L71
+  - SelfAwareness: L71
+  - Empathy: L71
+  - Memory: L71, L137
+  - Planning: L71
+  - Precommit: L76
+  - via: L77, L144
+  - TopModels: L82
+  - Acc: L82
+  - compete: L82
+  - Cost: L83
+  - Audit: L83
+  - Usage: L83
+  - CNet: L84, L86
+  - Pay: L84
+  - hold: L84
+  - Trigger: L88, L147
+  - Compose: L89
+  - Actor: L89
+  - Timeout: L89
+  - Default: L89
+  - Auto: L89
+  - Log: L90, L146
+  - Arbitrage: L93
+  - TxLog: L94, L173
+  - traverse: L95
+  - TxTree: L95
+  - TxLogs: L95
+  - NetC: L95
+  - Penalize: L96
+  - CCtype: L96, L122
+  - DisputeResolution: L96
+  - Responsibility: L96
+  - Counterfactual: L96, L122
+  - Severity: L96
+  - Duty: L96, L122
+  - Accident: L96
+  - Capacity: L96, L110, L131
+  - Mandate: L96
+  - Bal: L97, L99, L103
+  - Supply: L97, L99
+  - Disputed: L99
+  - OncePer: L99
+  - Decay: L101
+  - recount: L101
+  - AccumThresh: L103
+  - Equity: L103
+  - Optim: L103
+  - DirectedAutoInvest: L103
+  - Thresh: L103
+  - Agreed: L104
+  - Safeguards: L105
+  - Infra: L106, L133
+  - Control: L111
+  - Others: L111
+  - BfDm: L113, L174
+  - Base: L113
+  - Expert: L113
+  - Impacted: L113, L114
+  - Voter: L113
+  - Delib: L113
+  - FractalScope: L113
+  - VoteOptional: L113
+  - DelegateDnVote: L114
+  - CumulativeVoteWeight: L114
+  - Options: L115
+  - Tie: L115
+  - Volition: L116
+  - Inaction: L116
+  - Demonstrated: L116
+  - Exposed: L116
+  - Repair: L117
+  - Prevent: L117
+  - Restorative: L117
+  - Rehabilitate: L117
+  - Escalate: L117
+  - pattern: L117
+  - Aggressor: L118
+  - TitForTat: L118
+  - Forgive: L118
+  - Overreact: L118
+  - ContextAware: L118
+  - Transparent: L118
+  - Proportional: L121
+  - DueProcess: L121
+  - Decentralized: L121, L133
+  - Acknowledge: L122
+  - Merit: L122
+  - Fork: L123
+  - Split: L123
+  - SoPo: L123, L124
+  - New: L123
+  - Ids: L123, L124
+  - LiabilityOverflow: L123
+  - Merge: L124
+  - EstNew: L124
+  - Memetic: L125
+  - Beliefs: L125
+  - Values: L125
+  - Behaviors: L125
+  - Respect: L125
+  - Inter: L125
+  - Multi: L125
+  - adopt: L125
+  - Reorg: L126
+  - Artwork: L127
+  - Artist: L127
+  - Audience: L127
+  - match: L127
+  - Dist: L127
+  - RlvCx: L128
+  - EQ: L131
+  - Inoculate: L131
+  - UniversalAccess: L131
+  - Cluster: L133
+  - Tech: L133, L182, L183
+  - Core: L133
+  - DataShare: L133
+  - Security: L133
+  - OpnSrc: L133
+  - Facilitate: L133
+  - Cybersecurity: L133
+  - Privacy: L133
+  - DiffPrivGenericQ: L133
+  - IHzGatedPII: L133
+  - Agg: L133
+  - LogIdMl: L133
+  - BindId: L133
+  - Categorize: L134
+  - Opinion: L134
+  - SourceVerify: L134
+  - FactCheck: L134
+  - ContentionMap: L134
+  - ManageAccess: L134
+  - Provide: L134
+  - EnsurePath: L134
+  - Access: L134
+  - Censor: L134
+  - RcCreation: L138
+  - Distribution: L138
+  - Sustainable: L138
+  - Equitable: L138
+  - PhasedRollout: L141
+  - DataCollection: L141
+  - OptOut: L141
+  - Basic: L141
+  - Active: L141
+  - Deep: L141
+  - Phase1: L141
+  - ScoreOnly: L141
+  - Phase2: L141
+  - InformedConsent: L141
+  - SafetyNet: L142
+  - Intervention: L142
+  - Correction: L142
+  - SysSec: L142
+  - Ethics: L142
+  - RiskMitigation: L143
+  - Redundancy: L143
+  - FailSafes: L143
+  - ensure: L144
+  - Immutable: L146
+  - State: L146
+  - SigRlvCx: L146
+  - Exec: L146
+  - NeedIntervention: L151
+  - NeedInnovation: L152
+  - HaΔ: L153
+  - Lineage: L153
+  - Coherent: L153
+  - SigΔSo: L154
+  - Validate: L154
+  - peak: L154
+  - examine: L154
+  - Agree: L154
+  - Strategy: L155, L156
+  - Perform: L155
+  - Maintain: L156
+  - Degraded: L156
+  - Fallback: L156
+  - Leverage: L156
+  - Improved: L156
+  - Enhanced: L156
+  - Holographic: L157
+  - Fractal: L157
+  - Debatable: L158
+  - Perturb: L158
+  - MarginalΔV: L159
+  - Spread: L159
+  - Need: L159
+  - MonoCu: L159
+  - Easier: L160
+  - DistributedPo: L160
+  - SuccessfulGaming: L161
+  - dissent: L161
+  - GainIndividualExploit: L161
+  - Min: L162
+  - Eval: L182
+  - Weigh: L182
+  - BaseRisk: L182
+  - Extrapolation: L183
+  - ApCy: L183
+  - Critical: L185
+  - Fair: L185
+  - philosophy: L185
+  - Act: L185
+  - Rule: L185
+  - OptimisticNihilism: L185

@@ -1,0 +1,35 @@
+name: Pseudocode check
+
+# Cheap (stdlib Python, seconds); runs on the paths that change the pseudocode or its checkers, including
+# docs/articles/Benefuture.txt, which the docs-only filter of the other workflows would skip.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'spec/**'
+      - 'Bf_Pseudocode.txt'
+      - 'docs/articles/Benefuture.txt'
+      - 'tools/check_pseudocode*.py'
+      - '.github/workflows/pseudocode_check.yml'
+  pull_request:
+    paths:
+      - 'spec/**'
+      - 'Bf_Pseudocode.txt'
+      - 'docs/articles/Benefuture.txt'
+      - 'tools/check_pseudocode*.py'
+      - '.github/workflows/pseudocode_check.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pseudocode-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Copy identity and line citations block; undefined symbols are report-only (warning annotation)
+      # until the author rules on the listed symbols (docs/BACKPROPAGATION.md), then drop the flag.
+      - name: Check pseudocode
+        run: python3 tools/check_pseudocode.py --symbols-report-only
