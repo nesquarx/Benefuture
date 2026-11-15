@@ -4054,3 +4054,35 @@ Documentation sweep, status lines (2026-11-15; statuses only, earlier entries un
   first principles. What must always be designated (`Name«Abbr»`) is an ambiguous abbreviation. The symbol check is
   therefore narrowed to undesignated abbreviations (short capitalised or mixed-case tokens such as `Re`, `CC`, `Pr_Imp`),
   not ordinary words; it can then become blocking.
+
+### Undesignated abbreviations (2026-11-15)
+
+`tools/check_pseudocode.py`, narrowed per 8.162, reports these tokens of `spec/Bf_Pseudocode.txt` as abbreviations
+(or compounds containing one) with no `Name«Abbr»` designation. An abbreviation is a camel-case or `_`-split component
+that is not an ordinary word: under five letters and not on the short-word list, or without a lower-case vowel, or all
+capitals (rule in the tool's docstring; no system dictionary, so CI and local runs agree). For the author to designate
+(`Name«Abbr»`), rename or rule as common parlance (allow-list); the check stays report-only until then, then the flag
+comes off the workflow. `X` (L31) is a bound variable of the sum rather than an abbreviation and may simply be allowed.
+
+  - Wt: L22, L31, L114
+  - X: L31
+  - EvoFitnessAttractor: L37
+  - Estd: L46, L50, L61, L136, L141
+  - Corr: L50
+  - Acc: L82
+  - Bal: L97, L99, L103
+  - Ids: L123, L124
+  - EstNew: L124
+  - Dist: L127
+  - EQ: L131
+  - Tech: L133, L182, L183
+  - OpnSrc: L133
+  - DiffPrivGenericQ: L133
+  - IHzGatedPII: L133
+  - Agg: L133
+  - BindId: L133
+  - OptOut: L141
+  - SysSec: L142
+  - Exec: L146
+  - MonoCu: L159
+  - Eval: L182

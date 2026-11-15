@@ -8,7 +8,17 @@ Blocking checks (exit 1 on failure):
   2. Line citations: tools/check_pseudocode_lines.py passes.
 Symbol check (exit 1 on findings unless --symbols-report-only, which prints them and emits a GitHub
 warning annotation instead):
-  3. Every symbol used is defined somewhere in the pseudocode.
+  3. Every abbreviation used is designated somewhere in the pseudocode (author ruling 8.162: ordinary
+     English words may appear undefined; ambiguous abbreviations must always be designated `Name«Abbr»`).
+
+What counts as an abbreviation (deterministic, no system dictionary, so CI and local runs agree): a
+capitalised identifier is split at `_` and then at camel-case boundaries (`TxLog` -> `Tx`, `Log`;
+`IHzGatedPII` -> `I`, `Hz`, `Gated`, `PII`). A component is an ordinary word when it has at least five letters,
+contains a lower-case vowel and is not all capitals, or when it is on SHORT_WORDS (an explicit list of ordinary
+English words shorter than five letters). Every other component (`Re`, `CC`, `Wt`, `Estd`, `Rlv`, `Cx`, `X`) is
+an abbreviation and is reported unless it is designated (see below) or on ALLOW. The rule is conservative: a
+five-letter-plus abbreviation that looks like a word passes, and a short word missing from SHORT_WORDS is
+reported (add it there). Lower-case tokens are never abbreviations here.
 
 How definitions are found: `Name«Abbr»` defines both Name and Abbr; the head of the left side of `:=` and
 `::` defines a symbol; a statement-initial `Name:` label and a `§Section` define a symbol. Subscripted and
@@ -41,6 +51,16 @@ ALLOW = {
     # URL and metadata fragments
     "URL",
 }
+# Ordinary English words shorter than five letters that the pseudocode uses; see the docstring. Add a word
+# only if it is an ordinary word, never an abbreviation.
+SHORT_WORDS = {
+    "Info", "Sub", "Type", "Map", "Fit", "Meta", "Bias", "Kind", "Open", "Self", "Top", "Cost", "Net", "Pay",
+    "Auto", "Log", "Logs", "Tree", "Duty", "Once", "Per", "Base", "Vote", "Tie", "For", "Due", "Fork", "New",
+    "Core", "Data", "Path", "Fact", "Deep", "Only", "Risk", "Fail", "Need", "Gain", "Fair", "Act", "Rule",
+    "Out", "Tit", "Tat", "Min", "Max", "Fix", "Set", "Get", "Add", "Use", "Run", "Key", "Pool", "Test", "Goal",
+    "Rate", "Rank", "Time", "Task", "Role", "Plan", "Mode", "Loss", "Gap", "Law", "Pact", "Name", "List",
+}
+CAMEL = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z0-9]+")
 GREEK = re.compile(r"^[Α-Ωα-ω]")
 
 IDENT = re.compile(r"[A-Za-zΑ-Ωα-ω§][A-Za-z0-9Α-Ωα-ω]*")
@@ -51,6 +71,22 @@ DEF_LABEL = re.compile(r"^\s*([A-Za-z§][A-Za-z0-9_]*)\s*:\s*[{A-Za-z(]", re.M)
 
 def parts(tok: str) -> list[str]:
     return [p for p in re.split(r"_", tok) if p]
+
+
+def is_abbreviation(comp: str) -> bool:
+    """True for a camel-case component that is not an ordinary word (see the module docstring)."""
+    if comp in SHORT_WORDS or comp.isdigit():
+        return False
+    ordinary = len(comp) >= 5 and any(ch in "aeiouy" for ch in comp) and not comp.isupper()
+    return not ordinary
+
+
+def abbreviations_in(sym: str, defined: set[str]) -> list[str]:
+    """Undesignated abbreviation components of an undefined symbol."""
+    if not (sym[0].isupper() or sym[0] == "§"):
+        return []
+    comps = CAMEL.findall(re.sub(r"[ΑΩα-ω]", " ", sym.lstrip("§")))
+    return [c for c in comps if is_abbreviation(c) and c not in defined]
 
 
 def pseudo_block(text: str) -> str | None:
@@ -117,8 +153,9 @@ def undefined_symbols(lines: list[str]) -> dict[str, list[int]]:
             else:
                 continue
             for c in cands:
-                if c not in defined and n not in found.setdefault(c, []):
-                    found[c].append(n)
+                if c not in defined and abbreviations_in(c, defined):
+                    if n not in found.setdefault(c, []):
+                        found[c].append(n)
     return {k: v for k, v in found.items() if v}
 
 
@@ -130,14 +167,14 @@ def main() -> int:
     lines = SPEC.read_text().splitlines()
     und = undefined_symbols(lines)
     if und:
-        print(f"undefined symbols ({len(und)}), symbol: pseudocode lines")
+        print(f"undesignated abbreviations ({len(und)}), symbol: pseudocode lines")
         for sym in sorted(und, key=lambda s: und[s][0]):
             print(f"  {sym}: " + ", ".join(f"L{n}" for n in und[sym]))
         if report_only:
-            print(f"::warning::pseudocode: {len(und)} symbols used but never defined (report-only; "
+            print(f"::warning::pseudocode: {len(und)} abbreviations used but never designated (report-only; "
                   f"see docs/BACKPROPAGATION.md)")
     else:
-        print("all pseudocode symbols are defined")
+        print("all pseudocode abbreviations are designated")
     if blocking:
         return 1
     return 1 if (und and not report_only) else 0
