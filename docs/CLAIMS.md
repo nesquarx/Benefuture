@@ -264,10 +264,12 @@ Economy, reputation and domains
   Confident predicted value above cost makes the price negative ([`price_negative_when_value_exceeds_cost`](../Benefuture/Economy/Pricing.lean)).
 - Settling transaction pricing on measured outcomes removes gains from prediction overstatement or confidence gaming ([`transaction_settlement_removes_overstatement_gain`](../Benefuture/Economy/Pricing.lean)).
 - At a parent domain, aggregated value never exceeds the value an action carried ([`aggregate_no_double_count`](../Benefuture/Ontology/Domain.lean)),
+  including within any `RelationType` (`causal`, `structural`, `communicative`) under `RelationPartitionOfUnity` ([`aggregate_no_double_count_per_relation`](../Benefuture/Ontology/Domain.lean), [`relation_conservation_per_type`](../Benefuture/Ontology/Domain.lean)),
   and parents with larger degrees aggregate more ([`aggregate_monotonicity`](../Benefuture/Ontology/Domain.lean)).
 - Reputation:
+  - carries prediction accuracy (`PrAcc`) as its fourth component in `re_view` ([`re_view_prAcc_eq`](../Benefuture/Ontology/Reputation.lean));
   - summed over leaf domains, equals the attributed contribution when every action's shares sum to 1
-    ([`conservation_positive`](../Benefuture/Ontology/Reputation.lean), [`conservation_negative`](../Benefuture/Ontology/Reputation.lean));
+    ([`conservation_positive`](../Benefuture/Ontology/Reputation.lean), [`conservation_negative`](../Benefuture/Ontology/Reputation.lean)), and likewise per `RelationType` without double-counting at parents ([`conservation_positive_per_relation`](../Benefuture/Ontology/Reputation.lean), [`conservation_negative_per_relation`](../Benefuture/Ontology/Reputation.lean), [`aggregate_hPos_per_relation_no_double_count`](../Benefuture/Ontology/Reputation.lean));
   - leaves untouched any domain outside an action's profile ([`reputation_locality`](../Benefuture/Ontology/Reputation.lean));
   - gives nothing for zero causal contribution ([`reputation_no_transfer`](../Benefuture/Ontology/Reputation.lean));
   - keeps a history that never decreases as memory grows ([`hPos_nondecreasing_on_append`](../Benefuture/Ontology/Reputation.lean)).
@@ -601,7 +603,7 @@ networks and propagation (M8) ([SIM_CONJECTURES](SIM_CONJECTURES.md), [PLAN](PLA
 
 ##  Epistemic scope: what is proved, what is simulated, what is open
 
-**(a) Deductive guarantees (Lean 4).** The 415 theorems in [`Benefuture/`](Benefuture) and the 12
+**(a) Deductive guarantees (Lean 4).** The 422 theorems in [`Benefuture/`](Benefuture) and the 12
 bridge theorems in [`BenefutureTest/`](../BenefutureTest) hold for the definitions as written. Designs
 tagged [P] live in `Benefuture/Proposed/`. Behavioural claims are stated as `Conj_*` in
 [Benefuture/Systems/Conjectures.lean](../Benefuture/Systems/Conjectures.lean) and are unproved. No

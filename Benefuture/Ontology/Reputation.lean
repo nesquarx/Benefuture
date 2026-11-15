@@ -1,10 +1,10 @@
 /-
   Benefuture.Ontology.Reputation
-  [R] Formalization of Domain-Specific 3-Component Reputation:
-  Re(E, d) = { hPos : ℝ≥0, hNeg : ℝ≥0, rel : ℝ }
+  [R] Formalization of Domain-Specific 4-Component Reputation:
+  Re(E, d) = { hPos : ℝ≥0, hNeg : ℝ≥0, prAcc : ℝ, rel : ℝ }
   Corresponds to: Bf_Pseudocode.txt L100-101, L113-114, L117.
   "Reputation«Re»(t, CD, Dn) := Σ(CC(U(Dn), H(Dn)) + N(Dn)),"
-  "Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;"
+  "Re(E, Dn) = [ΣRe_+ve, ΣRe_-ve, PrAcc, Relevance := Re_net - Decay]_Dn ← recount(Mem), ∄Re(E, ¬Dn), !halo, !horn, !transfer;"
 -/
 
 import Mathlib.Data.Real.Basic
@@ -46,14 +46,22 @@ structure ReHistory where
 structure ReRelevance where
   rel : ℝ
 
+/--
+  [R] Prediction accuracy component of domain reputation (author ruling 8.149; L101 `PrAcc`).
+  Captures proper-scored calibration history in domain d and unblocks weighted binding (8.70).
+-/
+structure RePredictionAccuracy where
+  prAcc : ℝ
+
 /-- 
-  [R] Complete 3-Component Reputation view for an Entity in a Leaf Domain.
-  Re(E, d) = [hPos, hNeg, rel]_d.
+  [R] Complete 4-Component Reputation view for an Entity in a Leaf Domain.
+  Re(E, d) = [hPos, hNeg, prAcc, rel]_d (author ruling 8.149; L101).
   Includes compensating retracted counter hRetracted so hPos and hNeg never decrease.
 -/
 structure Re where
   history    : ReHistory
   relevance  : ReRelevance
+  prAcc      : RePredictionAccuracy := { prAcc := 0 }
   hRetracted : ℝ := 0
   hRetracted_nonneg : 0 ≤ hRetracted := by linarith
 
@@ -139,7 +147,8 @@ theorem compute_hNeg_nonneg (mem : List AttributedAction) (eId : String) (d : Le
   [R] Reputation View: Derived from Mem, never a State field.
 -/
 noncomputable def re_view (mem : List AttributedAction) (eId : String) (d : LeafDomain) (t : ℝ)
-    (lambdaPos lambdaNeg : ℝ) (retracted : ℝ := 0) (h_ret_nonneg : 0 ≤ retracted := by linarith) : Re := {
+    (lambdaPos lambdaNeg : ℝ) (predAcc : ℝ := 0) (retracted : ℝ := 0)
+    (h_ret_nonneg : 0 ≤ retracted := by linarith) : Re := {
   history := {
     hPos := compute_hPos mem eId d,
     hNeg := compute_hNeg mem eId d,
@@ -148,6 +157,9 @@ noncomputable def re_view (mem : List AttributedAction) (eId : String) (d : Leaf
   },
   relevance := {
     rel := compute_rel mem eId d t lambdaPos lambdaNeg
+  },
+  prAcc := {
+    prAcc := predAcc
   },
   hRetracted := retracted,
   hRetracted_nonneg := h_ret_nonneg
@@ -322,5 +334,131 @@ theorem exp_decay_strictly_decreasing (lam : ℝ) (h_lam : 0 < lam) (t1 t2 : ℝ
     Real.exp (-lam * t2) < Real.exp (-lam * t1) := by
   apply Real.exp_lt_exp.mpr
   nlinarith
+
+/--
+  THEOREM (author ruling 8.149): `re_view` exposes prediction accuracy (`PrAcc`) as the fourth
+  component of the reputation view alongside `history`, `relevance`, and `hRetracted`.
+-/
+theorem re_view_prAcc_eq (mem : List AttributedAction) (eId : String) (d : LeafDomain) (t : ℝ)
+    (lp ln predAcc retracted : ℝ) (h_ret_nonneg : 0 ≤ retracted) :
+    (re_view mem eId d t lp ln predAcc retracted h_ret_nonneg).prAcc.prAcc = predAcc :=
+  rfl
+
+/--
+  [R] Per-relation attributed positive history (author ruling 8.156):
+  each action supplies a `RelationPartitionOfUnity leaves` so its share vector sums to 1 within
+  each `RelationType` (`causal`, `structural`, `communicative`), keeping shares independent across types.
+-/
+def compute_hPos_rel {leaves : Finset LeafDomain}
+    (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) (d : LeafDomain) : ℝ :=
+  (actions.map (fun a => (partitions a).share r d * (a.causalContribution eId * a.positiveContribution))).sum
+
+/--
+  [R] Per-relation attributed negative infractions (author ruling 8.156).
+-/
+def compute_hNeg_rel {leaves : Finset LeafDomain}
+    (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) (d : LeafDomain) : ℝ :=
+  (actions.map (fun a => (partitions a).share r d * (a.causalContribution eId * a.negativeContribution))).sum
+
+/-- Non-negativity of per-relation `hPos`. -/
+theorem compute_hPos_rel_nonneg {leaves : Finset LeafDomain}
+    (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) (d : LeafDomain) :
+    0 ≤ compute_hPos_rel actions partitions r eId d := by
+  unfold compute_hPos_rel
+  induction actions with
+  | nil => simp
+  | cons head tail ih =>
+    simp only [List.map_cons, List.sum_cons]
+    have h_prod : 0 ≤ (partitions head).share r d * (head.causalContribution eId * head.positiveContribution) := by
+      apply mul_nonneg ((partitions head).h_nonneg r d)
+      exact mul_nonneg (head.h_cc_nonneg eId) head.h_pos_nonneg
+    linarith
+
+/--
+  THEOREM (author ruling 8.156): Conservation of Positive Attributed Contributions Per Relation Type.
+  Within any relation type `r`, summing `compute_hPos_rel` across all leaf domains equals the total
+  attributed positive contribution.
+-/
+theorem conservation_positive_per_relation {leaves : Finset LeafDomain}
+    (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) :
+    leaves.sum (fun l => compute_hPos_rel actions partitions r eId l) =
+    (actions.map (fun a => a.causalContribution eId * a.positiveContribution)).sum := by
+  induction actions with
+  | nil =>
+    simp only [compute_hPos_rel, List.map_nil, List.sum_nil]
+    simp
+  | cons head tail ih =>
+    unfold compute_hPos_rel
+    simp only [List.map_cons, List.sum_cons]
+    rw [Finset.sum_add_distrib]
+    have h_head_term :
+        leaves.sum (fun l => (partitions head).share r l * (head.causalContribution eId * head.positiveContribution)) =
+        head.causalContribution eId * head.positiveContribution := by
+      rw [← Finset.sum_mul, (partitions head).h_sum_one r, one_mul]
+    rw [h_head_term]
+    have h_tail_eq :
+        leaves.sum (fun l => (tail.map (fun a => (partitions a).share r l * (a.causalContribution eId * a.positiveContribution))).sum) =
+        leaves.sum (fun l => compute_hPos_rel tail partitions r eId l) := rfl
+    rw [h_tail_eq, ih]
+
+/--
+  THEOREM (author ruling 8.156): Conservation of Negative Attributed Infractions Per Relation Type.
+  Within any relation type `r`, summing `compute_hNeg_rel` across all leaf domains equals the total
+  attributed negative infractions.
+-/
+theorem conservation_negative_per_relation {leaves : Finset LeafDomain}
+    (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) :
+    leaves.sum (fun l => compute_hNeg_rel actions partitions r eId l) =
+    (actions.map (fun a => a.causalContribution eId * a.negativeContribution)).sum := by
+  induction actions with
+  | nil =>
+    simp only [compute_hNeg_rel, List.map_nil, List.sum_nil]
+    simp
+  | cons head tail ih =>
+    unfold compute_hNeg_rel
+    simp only [List.map_cons, List.sum_cons]
+    rw [Finset.sum_add_distrib]
+    have h_head_term :
+        leaves.sum (fun l => (partitions head).share r l * (head.causalContribution eId * head.negativeContribution)) =
+        head.causalContribution eId * head.negativeContribution := by
+      rw [← Finset.sum_mul, (partitions head).h_sum_one r, one_mul]
+    rw [h_head_term]
+    have h_tail_eq :
+        leaves.sum (fun l => (tail.map (fun a => (partitions a).share r l * (a.causalContribution eId * a.negativeContribution))).sum) =
+        leaves.sum (fun l => compute_hNeg_rel tail partitions r eId l) := rfl
+    rw [h_tail_eq, ih]
+
+/--
+  THEOREM (author ruling 8.156): No Double Counting in Parent-Domain Per-Relation History.
+  Aggregating `compute_hPos_rel` at any parent domain `p` within relation type `r` cannot exceed
+  the total attributed positive contribution.
+-/
+theorem aggregate_hPos_per_relation_no_double_count {leaves : Finset LeafDomain}
+    (p : ParentDomain leaves) (actions : List AttributedAction)
+    (partitions : AttributedAction → RelationPartitionOfUnity leaves)
+    (r : RelationType) (eId : String) :
+    aggregate_at_parent p (fun l => compute_hPos_rel actions partitions r eId l) ≤
+    (actions.map (fun a => a.causalContribution eId * a.positiveContribution)).sum := by
+  unfold aggregate_at_parent
+  have h_le :
+      leaves.sum (fun l => p.μ l * compute_hPos_rel actions partitions r eId l) ≤
+      leaves.sum (fun l => compute_hPos_rel actions partitions r eId l) := by
+    apply Finset.sum_le_sum
+    intro l _
+    have h_nonneg := compute_hPos_rel_nonneg actions partitions r eId l
+    have h_mu := p.h_μ_bound l
+    nlinarith
+  rw [conservation_positive_per_relation actions partitions r eId] at h_le
+  exact h_le
 
 end Benefuture.Ontology

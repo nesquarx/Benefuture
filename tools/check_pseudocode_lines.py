@@ -20,7 +20,7 @@ TERM_MARKERS = {
     "Domain": ("Domain«Dn»",),
     "Sentience": ("Sentience«St»",),
     "Threshold": ("Threshold«Th»",),
-    "PrAcc": ("PrAcc(",),
+    "PrAcc": ("PrAcc(", "PrAcc,"),
     "CausalExplanation": ("CausalExplanation«CE»",),
     "Understanding": ("Understanding«U»",),
     "Sapience": ("Sapience«Sp»",),

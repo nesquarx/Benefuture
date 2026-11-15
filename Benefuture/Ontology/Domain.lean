@@ -244,6 +244,25 @@ theorem aggregate_no_double_count {leaves : Finset LeafDomain} (p : ParentDomain
     rw [h_one, ← Finset.sum_mul, h_sum, one_mul]
   linarith
 
+/--
+  THEOREM (author ruling 8.156): No Double Counting Within Any Relation Type.
+  Under `RelationPartitionOfUnity` (memberships indexed by `RelationType` summing to 1 per type),
+  for any single unit of value `v ≥ 0` in relation type `r`, the aggregate measured at any
+  parent domain `p` cannot exceed `v`, while memberships across distinct relation types stay independent.
+-/
+theorem aggregate_no_double_count_per_relation {leaves : Finset LeafDomain} (p : ParentDomain leaves)
+    (P : RelationPartitionOfUnity leaves) (r : RelationType) (v : ℝ) (hv : 0 ≤ v) :
+    leaves.sum (fun l => p.μ l * (P.share r l * v)) ≤ v :=
+  aggregate_no_double_count p (P.share r) (P.h_nonneg r) (P.h_sum_one r) v hv
+
+/--
+  THEOREM (author ruling 8.156): Within each relation type `r`, attributed shares sum to total value `v`.
+-/
+theorem relation_conservation_per_type {leaves : Finset LeafDomain}
+    (P : RelationPartitionOfUnity leaves) (r : RelationType) (v : ℝ) :
+    leaves.sum (fun l => P.share r l * v) = v := by
+  rw [← Finset.sum_mul, P.h_sum_one r, one_mul]
+
 /-- 
   THEOREM: Monotonicity of Parent Aggregates.
   If child domain c has degrees μ_c pointwise less than or equal to parent domain p,
