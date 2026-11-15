@@ -4047,3 +4047,10 @@ Documentation sweep, status lines (2026-11-15; statuses only, earlier entries un
   - Act: L185
   - Rule: L185
   - OptimisticNihilism: L185
+- 8.161 (author, 2026-11-15) [R]: entities (organisations, AIs, other non-person actors) are actors in their own right,
+  but liability and credit flow from an entity to the persons responsible for it, by causal distribution. Answers the
+  ontology question; candidate homes: Entity, Causal distribution, Responsibility.
+- 8.162 (author, 2026-11-15) [R]: plain English words may appear in the pseudocode; it does not derive every word from
+  first principles. What must always be designated (`Name«Abbr»`) is an ambiguous abbreviation. The symbol check is
+  therefore narrowed to undesignated abbreviations (short capitalised or mixed-case tokens such as `Re`, `CC`, `Pr_Imp`),
+  not ordinary words; it can then become blocking.
