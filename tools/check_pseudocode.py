@@ -50,12 +50,19 @@ ALLOW = {
     "Energy", "Matter",
     # URL and metadata fragments
     "URL",
+    # author ruling 8.163 (2026-11-15): unambiguous or common parlance, used directly
+    "X",      # bound variable of the sum at L31
+    "Tech",   # technology
+    "Eval",   # evaluate
+    "Exec",   # execute
+    "OptOut", # opt out
+    "PII",    # personally identifiable information
 }
 # Ordinary English words shorter than five letters that the pseudocode uses; see the docstring. Add a word
 # only if it is an ordinary word, never an abbreviation.
 SHORT_WORDS = {
     "Info", "Sub", "Type", "Map", "Fit", "Meta", "Bias", "Kind", "Open", "Self", "Top", "Cost", "Net", "Pay",
-    "Auto", "Log", "Logs", "Tree", "Duty", "Once", "Per", "Base", "Vote", "Tie", "For", "Due", "Fork", "New",
+    "Bind", "Mono", "Auto", "Log", "Logs", "Tree", "Duty", "Once", "Per", "Base", "Vote", "Tie", "For", "Due", "Fork", "New",
     "Core", "Data", "Path", "Fact", "Deep", "Only", "Risk", "Fail", "Need", "Gain", "Fair", "Act", "Rule",
     "Out", "Tit", "Tat", "Min", "Max", "Fix", "Set", "Get", "Add", "Use", "Run", "Key", "Pool", "Test", "Goal",
     "Rate", "Rank", "Time", "Task", "Role", "Plan", "Mode", "Loss", "Gap", "Law", "Pact", "Name", "List",

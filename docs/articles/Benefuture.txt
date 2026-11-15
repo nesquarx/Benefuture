@@ -31,7 +31,7 @@ Benefuture«Bf» {
     I := Process(T ← Inputs → Outputs«Ou» ↔ ℝ ∨ T);
     O := Significant«Sig» perceived Δℝ ← I;
     A := Ou → O;
-    Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Wt)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;
+    Domain«Dn»:=ClassificationPattern(ℝ),Dn(T):=[(Dn_i,RelType,Weight«Wt»)]|ΣWt=1,CausalStructure,NaturalOverlap,Nested(fuzzy),Rel(Dn_i,Dn_j)←Mem !declared;
     Sentience«St» := SubjectiveExperience«Se» + Preferences;
 
     Threshold«Th»(Pm_i, Context«Cx») := (Pm_i ≥ Th_Cx) ⇒ Sig(Pm, Cx), (graded, multidimensional, nuanced);
@@ -46,7 +46,7 @@ Benefuture«Bf» {
     LongTerm«lt» := (t_maxRecord, 0, t_maxPr), time«t» ∈ lt, Sig(O_t) ∝ P(O_t) * |O_t|;
     Diversity«Di» := Balance(order, chaos) → Variety(System«Sys») → Resilience + Innovation;
     Novelty«N»(x) := 1 / Frequency(x|ℝ);
-    Happiness«H»(t) := ∫Positive(Se(St(t))) dSt + BiasMitigation + N(Se), EvoFitnessAttractor, noisy;
+    Happiness«H»(t) := ∫Positive(Se(St(t))) dSt + BiasMitigation + N(Se), EvolutionaryFitnessAttractor, noisy;
 
     Ignorance«Ig»(Dn) := ¬∃U ∈ Dn;
     Truth«Tr» := Statement ≡ ℝ;
@@ -55,11 +55,11 @@ Benefuture«Bf» {
     Fact«F» := Objective ∧ Verifiable;
     Hypothesis«Hy» := Testable;
 
-    M := PerceivableProxies(U, H, ...) ∈ ℝ, Estd, Novel;
+    M := PerceivableProxies(U, H, ...) ∈ ℝ, Established«Estd», Novel;
     Measurement«Me» := {Ml_i} | Ml_i → Me(U_value, H_value, M, N) ⊕ Meta(Bias, Kind);
     Assess«As»(x, A, t) := Norm((t ≤ t_0 ? Pr : Me)(x ← A) - Pr(x ← ¬A | Mem_ctrl) | Th_Cx), ¬A := ∄Ou(actor);
     MetricMl«MM» := {Ml_i, m[] ⊆ M, Dn[]} ⇄ Compete(max Sy(As(PrAcc(Ml_i), adopt, t) > CorrSc(m) > CE(m) > N(m))),
-                        CorrSc(m) := Avg_j[Ŝy(Corr(m, M_¬j)[]) - Ŝy(Corr(m_j, M_¬j)[])] | M := M_Estd(Dn), Corr ≥ Th
+                        CorrSc(m) := Avg_j[Ŝy(Correlation«Corr»(m, M_¬j)[]) - Ŝy(Corr(m_j, M_¬j)[])] | M := M_Estd(Dn), Corr ≥ Th
                         | ({Declared(Range, Confounders), Adversarial«Adv»Audits, IncrementalApprox(ℝ), OpenSource, ↑N(M), ExperimentalDesign → discover_Value«V», !loop, !herd}),
                         MM:(Pr, Me, reason, adapt«Ap»), m≠Ou←MM_any;
 
@@ -91,7 +91,7 @@ Benefuture«Bf» {
     Good«Gd»(t) := ↑V(t);
     Bad«Bd»(t) := (A, O) → Ha(t);
 
-    C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Acc>Th, Dn_i) ,compete(ΔV / (ΔResource«Rc» + Δt));
+    C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Accuracy>Th, Dn_i) ,compete(ΔV / (ΔResource«Rc» + Δt));
     RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓(Cost + Audit) ∧ ↓Usage{Rc, t};
     ProbabilisticEscrow«PE»(CNet_i) : Pay_t0(C_i)(P(As(V, A, t_0) > 0)), hold(1 - P), Pay_gradual(As(V, A, t) | ∪MM_Me(CNet(relevantDn(A))));
     TransactionProposal«TP_k» := {A, E[ΔV | MM_k], PE(C_k)};
@@ -106,7 +106,7 @@ Benefuture«Bf» {
     CausalContribution«CC»(O_i, E_j) → [0, 1] ↔ MM_CE(TxLog),
       fallbk: CC = ∑_{traverse(TxTree(TxLogs(Tx_i, t < i, degOfSeparation_d, Dn_i, e)))} NetC_n(Tx_nj) / ∑ C_d;
     CausalDistribution«CD» := (Reward«Rw», Penalize) ∝ CC + N_CCtype - PE_paid | DisputeResolution(Justice«J»), Responsibility(Informed, Counterfactual, Severity, Duty), Accident → Penalize ≤ Capacity, Ad(rest), Mandate(Ed);
-    Cycle(C_i) :: CD(Gd) → ⊕Bal(E) ∧ ⊕Supply;
+    Cycle(C_i) :: CD(Gd) → ⊕Balance«Bal»(E) ∧ ⊕Supply;
     Tx(A, TP) ↔ ΔBal(E);
     {CD(Bd) | J(Ha) iff Disputed ∨ RA(Rc, t)} → ⊖Bal(E) ∧ ⊖Supply, OncePer(Ha);
     Reputation«Re»(t, CD, Dn) := Σ(CC(U(Dn), H(Dn)) + N(Dn)),
@@ -132,17 +132,17 @@ Benefuture«Bf» {
     Liability«Lia» := (S > Pe) > Ad > (B, E) > T;
     Enforcement«En» := Inf(Pe, G), Proportional, DueProcess, Decentralized;
     Accolade«Aco» := N_CCtype(Acknowledge(Gd > Duty)), Merit iff ¬Counterfactual(Gd);
-    Fork(Id(E_i))→(Split_Dn(SoPo_i:C,Re,...)→New(Ids[i,j]),LiabilityOverflow←CD,N=|i-j|,ΣRA);
-    Merge(Ids[])→(Σ(SoPo_i,N)→EstNew(Id));
+    Fork(Id(E_i))→(Split_Dn(SoPo_i:C,Re,...)→New(Identities«Ids»[i,j]),LiabilityOverflow←CD,N=|i-j|,ΣRA);
+    Merge(Ids[])→(Σ(SoPo_i,N)→EstablishNew(Id));
     Cu := Memetic(Beliefs, Values, Behaviors), Respect, (Inter, Multi)cultural, Lw(adopt(Gd ⊆ Cu)), J(↓Bd ⊆ Cu);
     Art := E_i -> In((T_a = (Cx_a ∨ Reorg) <- (T_o ⊆ ℝ)), Cm(ΔAffect_St + ΔU)_p) : (B_j <- T_a) -> (ΔAffect_St(B_j) + U : U ≠ U(T_a))_q,
-      T_a := Artwork, E_i := Artist, B_j := Audience, Imp_art = |q|, Success := match(p, Dist(q)), V_a = (Tr_lvl(U) + N)_q, ∃Art : i=j ∨ o=a;
+      T_a := Artwork, E_i := Artist, B_j := Audience, Imp_art = |q|, Success := match(p, Distribution(q)), V_a = (Tr_lvl(U) + N)_q, ∃Art : i=j ∨ o=a;
     InfoHazard«IHz» := Statement_i : ∃RlvCx_j : (U_i ¬U_j → Ha) ∨ (U_i ∧ U_j → ↓Tr_lvl_i);
 
     CriticalThinking«CrT» := (↑U(Tr_lvls, I(Tr_lvls)) | Sp) → ↑InfoHandling«IH»;
-    Education«Ed» := ↑Capacity(U, H), CrT, ↑EQ, Inoculate(IHz), UniversalAccess;
+    Education«Ed» := ↑Capacity(U, H), CrT, ↑EmotionalIntelligence, Inoculate(IHz), UniversalAccess;
     SoNet«SN»:=Sys(Cm(Pe[]))→So(I,Ed,Cu)|TechNetwork«TN»;
-    TN := Decentralized(Cluster[] : ∩Tech = Core(DataShare, Security)) ∧ OpnSrc(Infra) → Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DiffPrivGenericQ,2wayVisSpecificQ,IHzGatedPII,transparentAccess), Agg(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindId(E, 1:1);
+    TN := Decentralized(Cluster[] : ∩Tech = Core(DataShare, Security)) ∧ OpenSource(Infra) → Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DifferentiallyPrivateGenericQuery,2wayVisibleSpecificQuery,InfoHazardGatedPII,transparentAccess), Aggregate(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindIdentity(E, 1:1);
     IH(TN) := Categorize(Tr_lvls, Opinion, F, Hy...) → SourceVerify(Re(Dn) / Ig(Dn)) + FactCheck(MemoryData«Mem») + ContentionMap + ManageAccess(IHz, (preReq(Ed), Provide(Ed), EnsurePath(Ed → Access) ← Ed | Freedom«Fr»(Tr)), !Censor);
 
     Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high);
@@ -151,7 +151,7 @@ Benefuture«Bf» {
     EmbeddedLaws«EL»(C, MM) | DynamicAp: ΔImp(ΔLw) < Th;
 
     Implementation«Im» := PhasedRollout, DataCollection{OptOut, Basic, Active, Deep}, Phase1(ScoreOnly(!(TP, C)), M_Estd, MM_Ap), Phase2(parallel, learn, Ap, update), InformedConsent;
-    SophontOversight«SO»(Sys_i) := SafetyNet, Intervention(Intv), Correction, viaS_Sig_Re(Dn_i + SysSec + Ethics);
+    SophontOversight«SO»(Sys_i) := SafetyNet, Intervention(Intv), Correction, viaS_Sig_Re(Dn_i + SystemSecurity + Ethics);
     Af := RiskMitigation←(PE + MM + SO + TN(IH)) + Prog(Redundancy, FailSafes) + Axioms + EHR;
     S_BaselnIncm«SB»(C_i) := ∀Pe : ensure(maslow123) ← price_c(A → maslow123 | Fr) ≲ 0 ∨ Sig∃(C_i) via(RA);
 
@@ -168,7 +168,7 @@ Benefuture«Bf» {
       ((Cx↓ → Maintain(CG(G), Degraded(Cx), Fallback(Strategy))) ∧ (Cx↑ → Leverage(Improved(Cx), Enhanced(O(G))))),
       ↑(Resilience, Po_So)(Holographic, Fractal);
     SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ∈Fr));
-    Di_N_Balance := (MarginalΔV(Spread(Gd_i)) < Th) ⇒ Need(↑N ∧ ↓MonoCu_i), ∃i=Bf;
+    Di_N_Balance := (MarginalΔV(Spread(Gd_i)) < Th) ⇒ Need(↑N ∧ ↓MonoCulture_i), ∃i=Bf;
     AntiCorruption«AC» := (Easier(Gd) > Easier(Bd), DistributedPo) -> ↓Cr(Po_e ⊆ E);
     AdvAp := Rw(SuccessfulGaming(Sys), dissent(Fact)) | Rw > GainIndividualExploit → (↑reveal, ↓exploit) → ↑U(Sys) ∧ Ap(Sys);
     Trust«Tt»Min := Tt∈(0,1), ↓reqTt(Sys_layer_i), distrReqTt(layer_j:i⊂j∨Adv(i,j)), cascade→reqTt(ℝ);

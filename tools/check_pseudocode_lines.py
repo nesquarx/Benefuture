@@ -80,7 +80,7 @@ TERM_MARKERS = {
     "CriticalThinking": ("CriticalThinking«CrT»",),
     "Education": ("Education«Ed»",),
     "SoNet": ("SoNet«SN»",),
-    "BindId": ("BindId(",),
+    "BindId": ("BindIdentity(",),
     "TN": ("TN :=",),
     "ContentionMap": ("ContentionMap",),
     "IH": ("IH(TN)",),

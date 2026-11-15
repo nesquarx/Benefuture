@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Copy identity and line citations block; undesignated abbreviations (ruling 8.162) are report-only
-      # (warning annotation) until the author designates the ones listed under "Undesignated abbreviations
-      # (2026-11-15)" in docs/BACKPROPAGATION.md, then drop the flag.
+      # Copy identity, line citations and undesignated abbreviations (rulings 8.162, 8.163) all block.
       - name: Check pseudocode
-        run: python3 tools/check_pseudocode.py --symbols-report-only
+        run: python3 tools/check_pseudocode.py
