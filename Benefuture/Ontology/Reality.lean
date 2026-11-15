@@ -147,7 +147,7 @@ theorem identity_pattern_is_identity (R : RealityState) (t : Thing) (ht : t ∈ 
 /- =========================================================================
    IDENTITY ESTIMATES AND BIND-ID
    Corresponds to: Bf_Pseudocode.txt L133:
-   "Agg(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindId(E, 1:1)"
+   "Aggregate(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindIdentity(E, 1:1)"
    ========================================================================= -/
 
 /-- Evidence logged from a decentralized network cluster. -/
@@ -156,7 +156,7 @@ structure ClusterEvidence where
   logScore  : ℝ
 
 /-- 
-  [R] Identity Estimate before BindId:
+  [R] Identity Estimate before BindIdentity:
   Before binding, identity is an uncertain distribution over candidate records.
   Unbound records carry only statistical reputation (consistent with opt-out tier).
 -/
@@ -166,7 +166,7 @@ structure IdentityEstimate where
   isBound          : Bool := false
 
 /-- 
-  Predicate: Sufficient multi-cluster evidence to trigger BindId (L133).
+  Predicate: Sufficient multi-cluster evidence to trigger BindIdentity (L133).
   Requires aggregation over ≥ 2 independent clusters and aggregate log score ≥ Th.
 -/
 def can_bind_id (est : IdentityEstimate) (th : ℝ) : Prop :=
@@ -174,7 +174,7 @@ def can_bind_id (est : IdentityEstimate) (th : ℝ) : Prop :=
   (est.clusterEvidences.map (·.logScore)).sum ≥ th
 
 /-- 
-  [R] BindId operation:
+  [R] BindIdentity operation:
   Binds an entity record 1:1 to a singleton identity once threshold evidence is met.
 -/
 def bind_id (est : IdentityEstimate) (boundId : String) : IdentityEstimate := {
@@ -183,7 +183,7 @@ def bind_id (est : IdentityEstimate) (boundId : String) : IdentityEstimate := {
   isBound := true
 }
 
-/-- THEOREM: BindId yields a singleton candidate list with probability 1. -/
+/-- THEOREM: BindIdentity yields a singleton candidate list with probability 1. -/
 theorem bind_id_yields_singleton (est : IdentityEstimate) (boundId : String) :
     (bind_id est boundId).candidateIds = [(boundId, 1.0)] := rfl
 
