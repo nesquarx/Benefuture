@@ -7,12 +7,12 @@
 ```
 Benefuture/
 ├── Bf_Pseudocode.txt            # pseudocode copy (identical to spec/ and the block in Benefuture.txt)
-├── Benefuture/                  # Lean spec over ℝ (Mathlib): 52 files, 399 theorems
+├── Benefuture/                  # Lean spec over ℝ (Mathlib): 53 files, 415 theorems
 │   ├── Math/ Ontology/ Measurement/ Epistemology/ Axiology/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
-├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 114 C exports
+├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 147 C exports
 ├── BenefutureTest/              # ℚ oracles proved = spec, interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/
