@@ -4086,3 +4086,75 @@ comes off the workflow. `X` (L31) is a bound variable of the sum rather than an 
   - Exec: L146
   - MonoCu: L159
   - Eval: L182
+
+## Threshold sensitivity, wide sweep (2026-11-15)
+
+Question (author): "not improvable" can mean (a) a local optimum, where perturbations hurt, or (b) the threshold barely
+matters, where perturbations do nothing; (b) needs larger moves, and a threshold inert even at extremes is not acting on
+the system and must be explained. The battery's "no effect" (`sim/battery/results/thresholds.md`, build 3fe3331, 44 of 46
+arms) is non-significance at z = 3, mostly at the 24-seed cap, so it separates neither.
+
+Prediction (written before measuring, confidence 0.6): most of the 44 are inert because their mechanism is off or never
+triggered in the battery's world; a few are a flat optimum; none improvable.
+
+Method. World and readings are the battery's (`sim/battery/thresholds.jl`: economy world, noise severity 0.5, two deceivers,
+AdvAp on, 300 steps); the scratch driver re-ran it at HEAD a14de2f (the simulation changed after 3fe3331, so single-arm means
+differ from the battery's file; the exact-zero arms reproduce). Paired on the same seeds as the default, z = 3 Student-t
+inflated (`paired_effect`, `equivalent`). Step 1: the 44 "no effect" arms on the seeds the battery used, equivalence margin
+±2 floor-u points. Step 2: four wide arms per threshold (48 arms, extremes of the valid range or two decades; seeds by
+precision, 6 to 24, tolerance 1.5). Arms that looked better were re-run on fresh seeds 1001 to 1024. Step 3: one-seed traces on
+an instrumented copy of `sim/src` kept in scratch (counters only, repository untouched).
+
+### Step 1: equivalence at the battery's step sizes (44 arms)
+
+- Equivalent within ±2 on floor u and floor h: 22 of 44. Twenty-one are bit-identical to the default on all six readings in
+  every seed (`model_z` ×4, `adv_z` ×4, `ratchet_horizon` ×4, `actor_min_records` ×4, `min_records` ×4, `max_credence`
+  0.995), so they are inert by construction, not by statistics; `max_credence` 0.993 is identical on floor u and h only.
+- Inconclusive: 22 of 44 (`threshold`, `coarse_threshold`, `ratchet_growth`, `acc_halflife`, `adv_min_records`,
+  `pattern_attention`, `max_credence` 0.98 and 0.987). Half-widths of the 3-standard-error interval on floor u are 3.5 to 13.6
+  points at 6 to 24 seeds, none under the margin of 2. The paired standard deviation is about 10 points, so a margin of 2
+  needs roughly 240 seeds per arm: the margin is not detectable at the achieved precision, which is why the battery's "no
+  effect" for these carries no equivalence claim.
+
+### Step 2 and 3: wide sweep and causes (12 thresholds)
+
+Default in parentheses; "n" is seeds used per arm; cells are floor-u change (points) unless stated.
+
+| Threshold | Classification | Evidence | Reason and code location |
+|---|---|---|---|
+| `model_z` (2) | inert at extremes | 0, 0.5, 8, 30: bit-identical on all readings, 6 seeds each | Feature off: read only in `eval_challengers` (`m3c.jl` 811, `select_candidate`), which needs a pool of more than one model, and in the `converge_init` gate (`m3c.jl` 1133 to 1139, off). The world has `p_new_model = 0`, so every pool holds one model; probe: `select_candidate` reached 0 times in 300 steps |
+| `ratchet_horizon` (20) | inert at extremes | 1, 5, 80, 300: bit-identical, 6 seeds | Shadowed by the ratchet's own gate: `ratchet!` (`m3c.jl` 780 to 788) passes the models older than the horizon to `ratchet_bar_ref` (`Domains.lean` 247 to 251), which holds the bar unless at least `ratchet_k` = 3 models clear it; the pool has one model (probe: at most 1 model enters the ratchet in 2400 calls) and the bar stays 0.9 |
+| `actor_min_records` (5) | inert at extremes | 1, 2, 25, 200: bit-identical, 6 seeds | Acts but nothing downstream: it switches the credence of a quote between the actor's own record and the model's overall record (`cred`, `m3c.jl` 718 to 729); the quote's only consumer is the affordability test (`m3c.jl` 1496, 1501 to 1503). Probe: with 200 instead of 5, 1254 of 5432 quote credences move by more than 0.001 (up to 0.47), yet the affordability failures are 324 in both and every reading is identical: balances never decide admission differently |
+| `min_records` (10) | inert at extremes | 1, 3, 40, 300: bit-identical, 6 seeds | Feature off: read only in the novel branch of `currency_eligible_ref` (`Domains.lean` 269 to 271), the `converge_init` gate (`m3c.jl` 1133) and the pool-drop rule (`m3c.jl` 2072, needs `p_new_model` above 0). The world has no novel leaf (probe: 0 novel eligibility checks of 46,396) |
+| `adv_z` (3) | inert over 0 to 8; at 30 inconclusive | 0, 0.5, 8: bit-identical (6 seeds); 30: +1.9 [-4.7, 8.5], n = 24, not significant | Shadowed by the world's statistics, not a code gate: the audit statistic (`m3c.jl` 2131 to 2134) is bimodal on seed 1, honest readers at -14 to -12.7 and deceivers at +18 to +53, with none between, so any bar from -12 to 18 selects the same reports (70 of 70 founded). A bar of 30 drops reports to 48 and affordability failures from 324 to 6, so it acts, but no effect is shown |
+| `max_credence` (0.99) | sensitive: low side hurts; high side inert | 0.5: -244 [-249, -240], all readings worse, deceivers' advantage up (n = 24); 0.8: +2.3 [-4.8, 9.3]; 0.95: +2.8, floor h and median h up at the screen, not replicated on seeds 1001 to 1024 (+2.1 [-3.4, 7.5]); 0.999: bit-identical, 6 seeds | High side acts but does not move any reading: 0.999 changes leaf accuracy in the fourth decimal and AdvAp reads (568 against 576) but never crosses a gate (bars 0.9; accuracies 0.94 and 0.96). The cap is read in `cred` (`m3c.jl` 719 to 746) and the escrow floor (`m3c.jl` 755). Low side: a cap of 0.5 collapses credences to the coin toss and every currency fails its bar |
+| `coarse_threshold` (0.75) | sensitive: high side hurts; low side inconclusive | 1.0: -66.5 [-98, -35], all four u and h readings worse (n = 24); 0.9: +2.8 [-3.9, 9.4]; 0.1 and 0.4: bit-identical to each other, -1.3 [-4.8, 2.2]; battery 0.99: -60 | Cliff between 0.9 and 0.99: parents stop qualifying and fallback pricing starves. Below 0.4 identical readings mean the gate is never crossed there (parent accuracy stays above it; inferred from the identity, not traced). Read in `parent_ok` (`m3c.jl` 792) and `leaf_bar` (`m3c.jl` 776) |
+| `threshold` (0.9) | sensitive: high side hurts (battery); low side inconclusive | 0.2: +2.2 [-4.3, 8.6], 0.6: +1.8 [-4.5, 8.2], 0.95: -4.2 [-11.4, 2.9], 1.0: -5.8 [-16.4, 4.9] (n = 24, none significant at HEAD); battery 0.99: floor h -8.5, significant, old build | Read in `leaf_bar` (`m3c.jl` 774 to 776). Acts only for the two leaves with records (leaves 2 and 4 hold no records and price through their parents; leaf 1 is below 0.9 in 19 percent of steps, leaf 3 in 29 percent). The high-side harm is not re-confirmed at HEAD |
+| `ratchet_growth` (1) | sensitive: high side trades floors for deceivers' advantage; low side inconclusive | 0 and 0.1: +1.3 and +2.1, half-widths 5.5 and 6.2; 4 and 16 on fresh seeds 1001 to 1024: floor u -6.8 [-13.9, 0.3] and -8.7 [-18.3, 0.9], floor h, median u, median h significantly lower; deceivers' advantage -12.7 (not significant) and -28.2 (significant) | Escrow for an actor with established deceptions (`repeat_escrow_credence`, `m3c.jl` 755) works through the same affordability gate as above: higher growth prices deceivers out of work and lowers their advantage but lowers everyone's floor. Not improvable: the screen's "better" reading (advantage down) comes with lower floors and medians |
+| `pattern_attention` (9) | sensitive: high side trades floors for deceivers' advantage; low side inconclusive | 0: +2.6 [-3.9, 9.1]; 0.9: floor h +7.0 at the screen, not replicated (+1.1 [-4.3, 6.5]); 36: -6.1, medians and advantage lower; 90: -8.5 [-16.3, -0.7], u, h, medians all significantly lower and advantage -17.9 (fresh seeds) | Read in the AdvAp reader's chance (`m3c.jl` 2110). Higher attention concentrates audits on negative-ledger actors; as with `ratchet_growth` the advantage falls with the floors |
+| `adv_min_records` (5) | inconclusive | 1 and 2 bit-identical to each other; 25: +4.3 (h, medians up at screen) and 200: +3.1, both not replicated on seeds 1001 to 1024 (-0.8 [-7.3, 5.6], +1.4 [-5.3, 8.1]) | Acts (`m3c.jl` 2118; the audit statistic needs two records, so 1 and 2 coincide). No effect is shown at 24 seeds (half-widths 5.5 to 7.3) |
+| `acc_halflife` (7) | inconclusive | 0.7, 1.75, 28, 140: +0.5, +2.9, +2.3, +1.2, half-widths 6.0 to 7.4, n = 24 | Acts (`hl_of`, `m3c.jl` 694). A 200-fold range with no significant effect is not an equivalence: ±6 is not excluded |
+
+Classes: inert at extremes 4 (`model_z`, `ratchet_horizon`, `actor_min_records`, `min_records`), plus `adv_z` inert over 0
+to 8; sensitive in one direction 5 (`max_credence` low, `coarse_threshold` high, `threshold` high (battery only),
+`ratchet_growth` high, `pattern_attention` high); optimum region (worse on both sides) 0; inconclusive 2 (`acc_halflife`,
+`adv_min_records`); improvable 0. All 8 arms that looked better were re-run on fresh seeds: none replicated as an
+improvement, and the three high-side ones (`ratchet_growth` 4 and 16, `pattern_attention` 36 and 90) lowered floors and
+medians significantly while lowering the deceivers' advantage.
+
+Reading for the author's question. Four thresholds (and `adv_z` below 30) are case (b) in the strong form: they do not
+affect the system in the economy battery's world, each for a named reason, and a wider sweep could not change that. Two
+reasons are world features the battery never switches on (one-model pools, no novel leaf), so those thresholds are untested
+rather than tuned. Five thresholds sit at the edge of a cliff on one side and are flat or unmeasured on the other, which is
+not evidence of an interior optimum (case (a) needs both sides worse; none showed it). Two are acting but too noisy to
+call. Nothing is improvable here. A decisive test of the inert group needs worlds that switch the mechanisms on:
+`p_new_model` above 0 with `ratchet_k` at most the pool size (`model_z`, `ratchet_horizon`, pool-drop `min_records`),
+novel domains (`min_records`), and a world where balances bind on quotes (`actor_min_records`).
+
+Outcome against prediction. Right on the main claim in kind: the inert thresholds are inert because of switched-off or
+unreachable mechanisms (22 of 44 arms are bit-identical, 4 thresholds inert at extremes), but not "most": half of the
+arms are inconclusive rather than inert, and no threshold turned out a flat optimum. None improvable: confirmed, and the
+two apparent improvements are trade-offs. Compute: about 1,600 simulation runs (about 19 s each, four processes in parallel),
+roughly 2.5 hours of wall time, plus three one-seed instrumented traces. Scratch scripts are not in the repository.
+Confidence in the cause attributions: high for `model_z`, `ratchet_horizon`, `min_records` (counters read 0), medium-high
+for `actor_min_records` and `adv_z` (counters and one seed), low for the `coarse_threshold` low side (inferred).
