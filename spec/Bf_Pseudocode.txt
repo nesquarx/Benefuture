@@ -156,7 +156,7 @@ Benefuture«Bf» {
       ((Cx↓ → Maintain(CG(G), Degraded(Cx), Fallback(Strategy))) ∧ (Cx↑ → Leverage(Improved(Cx), Enhanced(O(G))))),
       ↑(Resilience, Po_So)(Holographic, Fractal);
     SigThGv := Ap(Th ∈ Debatable? LqdBfDm : Perturb(Th ± δ∈Fr));
-    Di_N_Balance := (MarginalΔV(Spread(Gd_i)) < Th) ⇒ Need(↑N ∧ ↓MonoCulture_i), ∃i=Bf;
+    Di_N_Balance := (MarginalΔV(Spread(Gd_i)) < Th) ⇒ Need(↑N ∧ ↓MonoCu_i), ∃i=Bf;
     AntiCorruption«AC» := (Easier(Gd) > Easier(Bd), DistributedPo) -> ↓Cr(Po_e ⊆ E);
     AdvAp := Rw(SuccessfulGaming(Sys), dissent(Fact)) | Rw > GainIndividualExploit → (↑reveal, ↓exploit) → ↑U(Sys) ∧ Ap(Sys);
     Trust«Tt»Min := Tt∈(0,1), ↓reqTt(Sys_layer_i), distrReqTt(layer_j:i⊂j∨Adv(i,j)), cascade→reqTt(ℝ);
