@@ -119,7 +119,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
                   misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[],
                   copiers = Int[], copy_leader::Integer = 0, dedupe::Bool = true,
-                  weight_synergy::Bool = false, posthoc_discount::Real = 0.5, posthoc_share::Real = 0.0, posthoc_impact::Real = 1.0)
+                  weight_synergy::Bool = true, posthoc_discount::Real = 0.5, posthoc_share::Real = 0.0, posthoc_impact::Real = 1.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")

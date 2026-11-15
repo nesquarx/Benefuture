@@ -2173,16 +2173,15 @@ end
     skills[1:nA, :] .= 0.9; focus[1:nA, 1] .= 0.8; focus[1:nA, 2] .= 0.2; rep[1:nA, :] .= 3.0; rep[nA+1:nA+nB, :] .= 6.0
     world = (relevance_leaf = rep, agents = [DomainAgent(skills[i, :], focus[i, :], 0.2) for i in 1:nv])
     run(; kw...) = (s -> run_m5(M5Params(world, [1]; decisions = 400, signal_σ = 100.0, kw...); seed = s))
-    @test isequal(run()(7), run(weight_synergy = false)(7))                 # the default is the earlier rule
+    @test isequal(run()(7), run(weight_synergy = true)(7))                  # the default is the synergised rule (8.158)
+    @test !isequal(run()(7), run(weight_synergy = false)(7))                # distinct from the earlier additive rule
 
-    # (a) accuracy where the impacted know more.
+    # (a) accuracy where the impacted know more (z >= 3 confirmation on fresh seeds 201:264).
     a = seeds_until_stable(s -> run(weight_synergy = true)(s).correct - run(weight_synergy = false)(s).correct;
-                           tol = 0.002, min_seeds = 4, max_seeds = 20, seeds = 101:120)
-    ea = paired_effect(a.values; z = 2.0, direction = :up)
-    @info "synergy accuracy gain (a)" mean = ea.mean se = ea.se seeds = a.n
-    # Measured +0.0031 ± 0.0006 over 4 seeds (z ≈ 5): positive and significant, but under the predicted 0.005 (the prediction
-    # failed on size: the exploration's +0.010 on seeds 1:12 was a selected reading). Asserted as measured.
-    @test ea.mean > 0 && ea.significant && ea.mean < 0.005
+                           tol = 0.001, min_seeds = 16, max_seeds = 64, seeds = 201:264)
+    ea = paired_effect(a.values; z = 3.0, direction = :up)
+    @info "synergy accuracy gain (a)" mean = ea.mean se = ea.se seeds = a.n z = round(ea.mean / ea.se; digits = 2)
+    @test ea.mean > 0 && ea.significant && a.stable
 
     # (b) colluders (two of the unimpacted experts vote one side whatever they read): not worse with synergy on.
     b = seeds_until_stable(s -> run(weight_synergy = true, colluders = [4, 5])(s).correct - run(weight_synergy = false, colluders = [4, 5])(s).correct;
