@@ -4158,3 +4158,6 @@ two apparent improvements are trade-offs. Compute: about 1,600 simulation runs (
 roughly 2.5 hours of wall time, plus three one-seed instrumented traces. Scratch scripts are not in the repository.
 Confidence in the cause attributions: high for `model_z`, `ratchet_horizon`, `min_records` (counters read 0), medium-high
 for `actor_min_records` and `adv_z` (counters and one seed), low for the `coarse_threshold` low side (inferred).
+- 8.163 (author, 2026-11-15) [R]: abbreviations in the pseudocode that are unambiguous or common parlance are used
+  directly; any other abbreviation is declared (`Name«Abbr»`) at its first use, or written as the full word if it is
+  used only once. Applies to the 22 flagged in "Undesignated abbreviations (2026-11-15)"; the symbol check then blocks.
