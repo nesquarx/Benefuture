@@ -188,6 +188,20 @@ end
 is_crime(informed::Bool, volition::Bool, breached_duty::Bool) =
     ccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1
 
+"""
+    accident_split(harm, capacity) -> (contributor, admin)
+
+Causal distribution capacity cap for an accident (Lean `accident_contributor_ref`,
+`accident_admin_ref`; L96, author ruling 8.157 ii): the contributor pays at most `capacity`,
+and the administration carries the rest (`contributor + admin == harm`).
+"""
+function accident_split(harm::Real, capacity::Real)
+    check(isfinite(harm) && harm >= 0 && isfinite(capacity) && capacity >= 0,
+          "harm and capacity must be finite and non-negative")
+    (ccall(sym(:bf_accident_contributor), Float64, (Float64, Float64), harm, capacity),
+     ccall(sym(:bf_accident_admin), Float64, (Float64, Float64), harm, capacity))
+end
+
 # The governed parameter space (`Systems.ParamSpace` [R]; L158 SigThGv), in the order of `ParamVector`.
 const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, :lambda, :kappa_value, :kappa_harm,
                       :q_harm, :nu, :h_param, :lambda_plus, :lambda_minus, :th_sig, :th_gov, :fr_thConf, :fr_thHigh,

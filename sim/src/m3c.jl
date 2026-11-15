@@ -244,6 +244,8 @@ struct M3cParams
     profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
     converge_init::Bool           # hold score-only Phase 1 until a domain converges (`currency_eligible` + `sequential_significant`; 8.136)
     legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
+    accident_cap::Bool            # L96 / 8.157 ii: bound accident contributor's penalty by its capacity, administration carrying the rest
+    mandate_education::Bool       # L96, L116 / 8.157 iv, 8.159: accidents mandate education (recorded exposure), making repeats informed
 end
 
 """
@@ -288,7 +290,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
-                   converge_init::Bool = false, legacy_funder::Bool = false)
+                   converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -383,7 +385,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, legacy_funder)
+              converge_init, legacy_funder, accident_cap, mandate_education)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -856,9 +858,11 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
+             educations = Ref(0), accident_capped = Ref(0), accident_admin_rest = Ref(0.0), accident_admin_paid = Ref(0.0),
              prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0), commons_spent = Ref(0.0),
              insured = Ref(0.0), self_funded = Ref(0.0), repair_cost = Ref(0.0), outage_harm = Ref(0.0), sabotage_traced = Ref(0),
              laundered = Ref(0), laundered_traced = Ref(0))
+    educated = Set{Tuple{Int,Int}}()
     repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :seq, :leaf, :nearest_leaf, :eligible_step, :reused, :init_μ),Tuple{Int,Int,Int,Int,Int,Bool,Vector{Float64}}}[]
@@ -1112,6 +1116,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                    assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
                    hazards = world.hazards[], prevented = world.prevented[], crimes = world.crimes[], accidents = world.accidents[],
+                   educations = world.educations[], accident_capped = world.accident_capped[],
+                   accident_admin_rest = world.accident_admin_rest[], accident_admin_paid = world.accident_admin_paid[],
                    unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                    repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
                    params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
@@ -1328,7 +1334,12 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     side = ToyPlan(-sz .* hit, -sz .* hit)
                     own_done = ToyPlan(own_done.du .+ side.du, own_done.dh .+ side.dh)
                     world.side_hazards[] += 1
-                    is_crime(rand(srng) < p.p_foresee, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    side_crime = is_crime(rand(srng) < p.p_foresee || (p.mandate_education && (a, leaves[j]) in educated), true, false)
+                    side_crime ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    if !side_crime && p.mandate_education && !((a, leaves[j]) in educated)
+                        push!(educated, (a, leaves[j]))
+                        world.educations[] += 1
+                    end
                     if p.repair_efficiency > 0
                         push!(repairs, ToyPlan(-p.repair_efficiency .* side.du, -p.repair_efficiency .* side.dh))
                         world.repaired[] += p.repair_efficiency * abs(plan_value(side, t))
@@ -1897,7 +1908,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    sz .* max.(0.0, 1 .+ p.hazard_σ .* randn(hrng, t.n))
             harm = ToyPlan(-hit .* size, -hit .* size)
             g = isempty(p.guardians) ? 0 : p.guardians[l]
-            informed = g > 0 && rand(hrng) < p.p_informed
+            informed = (g > 0 && rand(hrng) < p.p_informed) || (p.mandate_education && (g, l) in educated)
             if informed && rand(hrng) < p.diligence[g]
                 world.prevented[] += 1
                 # A prevention is the guardian's action, nothing special (author rulings 8.22, 8.24):
@@ -1931,15 +1942,36 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     if g == 0
                         insure!(harm, hit, measured, l)
                     else
-                        is_crime(informed, false, true) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                        crime = is_crime(informed, false, true)
+                        crime ? (world.crimes[] += 1) : (world.accidents[] += 1)
                         sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
                         st, pm = classify_sig(sig), parent_mem(sig)
                         φ = measured  # its one contributor's whole share, assessed against the committed action
                         credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
                         world.hazard_penalties[] += -φ
                         if !scoring_only
-                            balance[g, :] .+= split_signed(st, φ)[1]
-                            world.hazard_debits[] += -φ
+                            harm_mag = max(0.0, -φ)
+                            if !crime && p.accident_cap && harm_mag > 0
+                                cap = sum(max.(balance[g, :], 0.0))
+                                contrib_pay, admin_rest = accident_split(harm_mag, cap)
+                                if admin_rest > 0
+                                    world.accident_capped[] += 1
+                                    world.accident_admin_rest[] += admin_rest
+                                    avail_commons = max(0.0, sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[])
+                                    paid = min(avail_commons, admin_rest)
+                                    world.commons_spent[] += paid
+                                    world.accident_admin_paid[] += paid
+                                end
+                                balance[g, :] .+= split_signed(st, -contrib_pay)[1]
+                                world.hazard_debits[] += contrib_pay
+                            else
+                                balance[g, :] .+= split_signed(st, φ)[1]
+                                world.hazard_debits[] += -φ
+                            end
+                        end
+                        if !crime && p.mandate_education && !((g, l) in educated)
+                            push!(educated, (g, l))
+                            world.educations[] += 1
                         end
                         if p.repair_efficiency > 0
                             push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))

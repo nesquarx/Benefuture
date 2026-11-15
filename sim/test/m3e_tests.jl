@@ -39,17 +39,25 @@ end
     # An informed guardian who does not act commits a crime each time, and is penalised.
     tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = [0.0, 1, 1, 1]); seed = 1)
     @test tr.crimes == tr.hazards > 0 && tr.accidents == 0 && tr.credit_neg[1] < 0
-    # Uninformed, the same harm is an accident: still penalised, to fund repair.
-    tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0); seed = 1)
-    @test tr.accidents == tr.hazards > 0 && tr.crimes == 0 && tr.credit_neg[1] < 0
+    # Uninformed, without mandated education the same harm stays an accident across repeats, penalised to fund repair.
+    tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0, mandate_education = false); seed = 1)
+    @test tr.accidents == tr.hazards > 0 && tr.crimes == 0 && tr.educations == 0 && tr.credit_neg[1] < 0
+    # Default (`mandate_education = true`): first accident mandates education (`Mandate(Ed)`), so repeats are informed.
+    tr_ed = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0, diligence = ones(4)); seed = 1)
+    @test 1 <= tr_ed.educations == tr_ed.accidents <= 4 && tr_ed.prevented > 0 && tr_ed.crimes == 0
     # Penalties fund repair: with full repair efficiency, the harm repaired equals the harm penalised.
     tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0, repair_efficiency = 1.0); seed = 1)
     @test tr.repaired ≈ tr.hazard_penalties > 0
-    # Created hazards: foreseen ones are crimes, unforeseen ones accidents; their actors are penalised.
+    # Created hazards: foreseen ones are crimes, unforeseen ones accidents (and educate repeats when mandated).
     tr = run_m3c(hz(zeros(Int, 4); p_hazard = 0.0, p_side = 1.0, p_foresee = 1.0); seed = 2)
     @test tr.side_hazards > 0 && tr.crimes == tr.side_hazards && tr.accidents == 0
-    tr = run_m3c(hz(zeros(Int, 4); p_hazard = 0.0, p_side = 1.0, p_foresee = 0.0); seed = 2)
+    tr = run_m3c(hz(zeros(Int, 4); p_hazard = 0.0, p_side = 1.0, p_foresee = 0.0, mandate_education = false); seed = 2)
     @test tr.accidents == tr.side_hazards > 0 && tr.crimes == 0
+    tr_side_ed = run_m3c(hz(zeros(Int, 4); p_hazard = 0.0, p_side = 1.0, p_foresee = 0.0); seed = 2)
+    @test 1 <= tr_side_ed.educations == tr_side_ed.accidents < tr_side_ed.side_hazards && tr_side_ed.crimes > 0
+    # Accident capacity cap (`accident_cap = true`, default): small-endowment guardian's debit is bounded by capacity; admin carries rest.
+    cap_tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0, diligence = zeros(4), mandate_education = false, endowment = 0.5, hazard_size = 3.0, hazard_share = 0.8, repair_efficiency = 1.0); seed = 3)
+    @test cap_tr.accident_capped > 0 && cap_tr.accident_admin_rest > 0 && cap_tr.hazard_debits < cap_tr.hazard_penalties && cap_tr.repaired ≈ cap_tr.hazard_penalties
 end
 
 @testset "M3e: adversarial and edge cases" begin

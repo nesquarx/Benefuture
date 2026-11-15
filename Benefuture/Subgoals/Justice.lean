@@ -6,6 +6,8 @@
   "J := Repair(Ha) ∧ Prevent(Cr), Restorative;"
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Benefuture.Ontology.Thing
 import Benefuture.Ontology.Person
 
@@ -236,6 +238,63 @@ theorem uninformed_breach_is_accident (hasVolition breachedDuty : Bool) :
 
 abbrev Cr := Crime
 abbrev J := RestorativePackage
+
+/-- Causal distribution penalty capacity cap for an accident (L96:
+    `Accident → Penalize ≤ Capacity, Ad(rest), Mandate(Ed)`, author ruling 8.157 ii):
+    the contributor's penalty share is bounded by their capacity. -/
+noncomputable def accident_contributor (harm cap : ℝ) : ℝ :=
+  min harm cap
+
+/-- Remainder of an accidental harm carried by the administration (`Ad(rest)`; L96,
+    author ruling 8.157 ii). -/
+noncomputable def accident_admin (harm cap : ℝ) : ℝ :=
+  harm - min harm cap
+
+/-- Conservation of accidental harm across contributor and administration:
+    `accident_contributor harm cap + accident_admin harm cap = harm`. -/
+theorem accident_split_conserves (harm cap : ℝ) :
+    accident_contributor harm cap + accident_admin harm cap = harm := by
+  unfold accident_contributor accident_admin
+  ring
+
+/-- The contributor's share of an accident never exceeds their capacity `cap`. -/
+theorem accident_contributor_le_cap (harm cap : ℝ) :
+    accident_contributor harm cap ≤ cap := by
+  unfold accident_contributor
+  exact min_le_right harm cap
+
+/-- Both shares of a non-negative accident within non-negative capacity are non-negative. -/
+theorem accident_split_nonneg (harm cap : ℝ) (hh : 0 ≤ harm) (hc : 0 ≤ cap) :
+    0 ≤ accident_contributor harm cap ∧ 0 ≤ accident_admin harm cap := by
+  unfold accident_contributor accident_admin
+  exact ⟨le_min hh hc, sub_nonneg.mpr (min_le_left harm cap)⟩
+
+/-- When an accident fits within capacity, the contributor pays all of it and
+    the administration carries zero. -/
+theorem accident_within_cap (harm cap : ℝ) (hle : harm ≤ cap) :
+    accident_contributor harm cap = harm ∧ accident_admin harm cap = 0 := by
+  unfold accident_contributor accident_admin
+  simp [min_eq_left hle]
+
+/-- When an accident exceeds capacity, the contributor pays exactly `cap` and
+    the administration carries the excess `harm - cap`. -/
+theorem accident_over_cap (harm cap : ℝ) (hge : cap ≤ harm) :
+    accident_contributor harm cap = cap ∧ accident_admin harm cap = harm - cap := by
+  unfold accident_contributor accident_admin
+  simp [min_eq_right hge]
+
+/-- Recorded exposure from mandated education after an accident (`Mandate(Ed)`, L96;
+    `Informed := ∃ I ∈ Mem | I ∈ U(Ha(Outcome))`, L116, author rulings 8.157 iv, 8.159). -/
+def post_education_informed (wasInformed mandatedEd : Bool) : Bool :=
+  wasInformed || mandatedEd
+
+/-- Mandating education after an accident makes any repeat breach (`hasVolition` or
+    `breachedDuty`) informed and therefore classified as a crime (8.157 iv, 8.159). -/
+theorem mandated_education_informs_repeat (wasInformed hasVolition breachedDuty : Bool)
+    (h_breach : hasVolition = true ∨ breachedDuty = true) :
+    is_crime_classification (post_education_informed wasInformed true) hasVolition breachedDuty = true := by
+  unfold is_crime_classification post_education_informed
+  rcases h_breach with h | h <;> simp [h]
 
 end Benefuture.Subgoals
 

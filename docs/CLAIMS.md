@@ -314,6 +314,10 @@ Causal distribution (`Benefuture.Proposed.OutcomeDistribution`, [P])
 - Informed inaction against a committed action is a crime (L115). Inaction without one is not; an
   uninformed breach is an accident ([`informed_inaction_under_duty_is_crime`](../Benefuture/Subgoals/Justice.lean),
   [`inaction_without_duty_is_not_crime`](../Benefuture/Subgoals/Justice.lean), [`uninformed_breach_is_accident`](../Benefuture/Subgoals/Justice.lean)).
+  An accident's contributor penalty is bounded by their capacity with the administration carrying
+  the rest ([`accident_split_conserves`](../Benefuture/Subgoals/Justice.lean), [`accident_contributor_le_cap`](../Benefuture/Subgoals/Justice.lean)),
+  and mandated education records exposure so any repeat breach is informed and classified as a crime
+  ([`mandated_education_informs_repeat`](../Benefuture/Subgoals/Justice.lean); verified end-to-end in M3c at `z ≥ 3`).
 
 Governance and incentives
 - The Brier score is strictly proper ([`brier_score_strictly_proper`](../Benefuture/Governance/Incentives.lean);
@@ -603,7 +607,7 @@ networks and propagation (M8) ([SIM_CONJECTURES](SIM_CONJECTURES.md), [PLAN](PLA
 
 ##  Epistemic scope: what is proved, what is simulated, what is open
 
-**(a) Deductive guarantees (Lean 4).** The 422 theorems in [`Benefuture/`](Benefuture) and the 12
+**(a) Deductive guarantees (Lean 4).** The 428 theorems in [`Benefuture/`](Benefuture) and the 12
 bridge theorems in [`BenefutureTest/`](../BenefutureTest) hold for the definitions as written. Designs
 tagged [P] live in `Benefuture/Proposed/`. Behavioural claims are stated as `Conj_*` in
 [Benefuture/Systems/Conjectures.lean](../Benefuture/Systems/Conjectures.lean) and are unproved. No

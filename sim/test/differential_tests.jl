@@ -114,4 +114,8 @@ fin(xs...) = all(isfinite, xs)
                        (P, V) -> size(P, 2) >= 1 && size(V) == (size(P, 1) + 1, size(P, 2)) && all(isfinite, V) &&
                                  all(k -> sort(P[:, k]) == 1:size(P, 1), 1:size(P, 2)),
                        shapley_sampled, sampled_oracle) == (guard = 0, value = 0)
+    @test differential(:accident_split, r -> (hostile(r), hostile(r)),
+                       (h, c) -> fin(h, c) && h >= 0 && c >= 0,
+                       (h, c) -> collect(accident_split(h, c)),
+                       (h, c) -> [min(h, c), h - min(h, c)]) == (guard = 0, value = 0)
 end

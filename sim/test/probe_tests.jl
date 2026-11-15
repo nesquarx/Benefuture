@@ -2202,3 +2202,75 @@ end
     # A voter genuinely impacted and found out late keeps full weight at any discount (no makers: results identical).
     @test isequal(run(weight_synergy = true, posthoc_discount = 0.0)(5), run(weight_synergy = true, posthoc_discount = 1.0)(5))
 end
+
+@testset "Probe: accident capacity cap and mandated education (L96, L116; 8.157 ii/iv, 8.159)" begin
+    # 0. Structural acceptance & bounds on Lean `accident_split` (`accident_contributor_ref`, `accident_admin_ref`).
+    @test accident_split(3.0, 5.0) == (3.0, 0.0)
+    @test accident_split(5.0, 5.0) == (5.0, 0.0)
+    @test accident_split(12.0, 4.0) == (4.0, 8.0)
+    @test accident_split(7.0, 0.0) == (0.0, 7.0)
+    @test all(h -> sum(accident_split(h, 4.0)) ≈ h, (0.0, 1.5, 4.0, 19.3))
+    @test_throws ArgumentError accident_split(-0.1, 1.0)
+    @test_throws ArgumentError accident_split(1.0, -0.1)
+    @test_throws ArgumentError accident_split(NaN, 1.0)
+
+    tp = ToyParams(n = 30, steps = 80, plans = 4)
+    agents = [DomainAgent([0.6, 0.6, 0.6, 0.6], fill(0.25, 4), 0.1) for _ in 1:4]
+    acc_world(; kw...) = M3cParams(tp, agents, [1, 1, 2, 2], trues(4);
+                                   λpos = 0.05, λneg = 0.02, transactions = true,
+                                   causal_distribution = true, init_steps = 0,
+                                   LEGACY..., p_side = 0.0, kw...)
+
+    # 1. Capacity cap (`accident_cap`, 8.157 ii): uninformed large hazards against a small-endowment guardian.
+    cap_off(s) = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 0.0, diligence = zeros(4),
+                                    p_hazard = 0.6, hazard_share = 0.6, hazard_size = 2.0,
+                                    endowment = 0.5, repair_efficiency = 1.0,
+                                    accident_cap = false, mandate_education = false); seed = s)
+    cap_on(s) = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 0.0, diligence = zeros(4),
+                                   p_hazard = 0.6, hazard_share = 0.6, hazard_size = 2.0,
+                                   endowment = 0.5, repair_efficiency = 1.0,
+                                   accident_cap = true, mandate_education = false); seed = s)
+    seeds_c = 101:112
+    r_off, r_on = cap_off.(seeds_c), cap_on.(seeds_c)
+    @test all(tr -> tr.accident_capped == 0 && tr.accident_admin_rest == 0.0, r_off)
+    @test all(tr -> tr.accident_capped > 0 && tr.accident_admin_rest > 0.0, r_on)
+    @test all(tr -> tr.hazard_debits < tr.hazard_penalties, r_on)
+    @test all(tr -> isapprox(tr.hazard_debits + tr.accident_admin_rest, tr.hazard_penalties; atol = 1e-6), r_on)
+    @test all(tr -> tr.repaired ≈ tr.hazard_penalties, r_on)
+    deb_diff = paired_effect([tr.hazard_debits for tr in r_on] .- [tr.hazard_debits for tr in r_off]; z = 3.0, direction = :down)
+    bal_diff = paired_effect([sum(tr.balance[1, :]) for tr in r_on] .- [sum(tr.balance[1, :]) for tr in r_off]; z = 3.0)
+    @test deb_diff.significant && deb_diff.mean < 0
+    @test bal_diff.significant && bal_diff.mean > 0
+
+    # Crimes (`p_informed = 1.0`) are never capacity-capped.
+    cr_tr = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 1.0, diligence = zeros(4),
+                              p_hazard = 0.6, hazard_share = 0.6, hazard_size = 2.0,
+                              endowment = 0.5, accident_cap = true); seed = 101)
+    @test cr_tr.crimes > 0 && cr_tr.accidents == 0 && cr_tr.accident_capped == 0 && cr_tr.hazard_debits ≈ cr_tr.hazard_penalties
+
+    # 2. Mandated education (`mandate_education`, 8.157 iv / 8.159):
+    # (a) Diligent guardian without initial notice (`p_informed = 0.0`, diligence = 1.0): first accident mandates education,
+    # making repeats in each domain informed and prevented (`accidents <= 4`, `educations == accidents`).
+    ed_off(s) = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 0.0, diligence = ones(4),
+                                   p_hazard = 0.6, accident_cap = true, mandate_education = false); seed = s)
+    ed_on(s) = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 0.0, diligence = ones(4),
+                                  p_hazard = 0.6, accident_cap = true, mandate_education = true); seed = s)
+    seeds_e = 101:108
+    e_off, e_on = ed_off.(seeds_e), ed_on.(seeds_e)
+    @test all(tr -> tr.prevented == 0 && tr.educations == 0 && tr.accidents > 4, e_off)
+    @test all(tr -> 1 <= tr.educations == tr.accidents <= 4 && tr.prevented > 0 && tr.crimes == 0, e_on)
+    prev_gain = paired_effect([tr.prevented for tr in e_on] .- [tr.prevented for tr in e_off]; z = 3.0)
+    @test prev_gain.significant && prev_gain.mean > 0
+
+    # (b) Negligent guardian or creator after education (`diligence = 0.0` / `p_foresee = 0.0`): repeat breach is informed (crime).
+    neg_on = run_m3c(acc_world(guardians = [1, 1, 1, 1], p_informed = 0.0, diligence = zeros(4),
+                               p_hazard = 0.6, mandate_education = true); seed = 101)
+    @test 1 <= neg_on.educations == neg_on.accidents <= 4 && neg_on.crimes > 0
+    side_off = run_m3c(acc_world(guardians = zeros(Int, 4), p_hazard = 0.0, p_side = 1.0, p_foresee = 0.0,
+                                 mandate_education = false); seed = 102)
+    side_on = run_m3c(acc_world(guardians = zeros(Int, 4), p_hazard = 0.0, p_side = 1.0, p_foresee = 0.0,
+                                mandate_education = true); seed = 102)
+    @test side_off.accidents == side_off.side_hazards > 0 && side_off.crimes == 0 && side_off.educations == 0
+    @test side_on.educations == side_on.accidents < side_on.side_hazards && side_on.crimes > 0 &&
+          side_on.crimes + side_on.accidents == side_on.side_hazards
+end

@@ -446,4 +446,11 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_trust_cascade] def trustCascade (sharedFloor unmitigated effClusters : Float) : Float :=
   trust_cascade_ref sharedFloor unmitigated effClusters
 
+-- 8.157 (ii) / L96: accident contributor penalty capped at capacity; administration carries rest
+@[export bf_accident_contributor] def accidentContributor (harm cap : Float) : Float :=
+  accident_contributor_ref harm cap
+
+@[export bf_accident_admin] def accidentAdmin (harm cap : Float) : Float :=
+  accident_admin_ref harm cap
+
 end BenefutureReference.Export

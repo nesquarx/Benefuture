@@ -12,4 +12,14 @@ namespace BenefutureReference
 def is_crime_ref (isInformed hasVolition breachedDuty : Bool) : Bool :=
   isInformed && (hasVolition || breachedDuty)
 
+/-- Contributor's share of an uninformed harm (accident), bounded by their capacity
+    (`Penalize ≤ Capacity`, L96; author ruling 8.157 ii). Assumes `harm ≥ 0`, `cap ≥ 0`. -/
+def accident_contributor_ref (harm cap : Float) : Float :=
+  if harm <= cap then harm else cap
+
+/-- Remainder of an uninformed harm carried by the administration (`Ad(rest)`, L96;
+    author ruling 8.157 ii). Assumes `harm ≥ 0`, `cap ≥ 0`. -/
+def accident_admin_ref (harm cap : Float) : Float :=
+  if harm <= cap then 0.0 else harm - cap
+
 end BenefutureReference

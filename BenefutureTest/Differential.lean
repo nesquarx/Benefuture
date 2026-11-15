@@ -41,6 +41,7 @@ import Benefuture.Governance.Incentives
 import Benefuture.Governance.ExternalHarm
 import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
+import Benefuture.Subgoals.Justice
 import Benefuture.Axiology.Priorities
 import Benefuture.Proposed.OutcomeDistribution
 import Benefuture.Proposed.ShapleySampling
@@ -169,6 +170,15 @@ theorem votingWeightQ_spec (base expWt : ℚ) (profile : List (ℚ × ℚ)) (imp
   simp only [List.map_map, Function.comp_def]
   push_cast
   rfl
+
+def accidentContributorQ (harm cap : ℚ) : ℚ := min harm cap
+def accidentAdminQ (harm cap : ℚ) : ℚ := harm - min harm cap
+theorem accidentContributorQ_spec (harm cap : ℚ) :
+    (accidentContributorQ harm cap : ℝ) = Benefuture.Subgoals.accident_contributor harm cap := by
+  simp [accidentContributorQ, Benefuture.Subgoals.accident_contributor, Rat.cast_min]
+theorem accidentAdminQ_spec (harm cap : ℚ) :
+    (accidentAdminQ harm cap : ℝ) = Benefuture.Subgoals.accident_admin harm cap := by
+  simp [accidentAdminQ, Benefuture.Subgoals.accident_admin, Rat.cast_sub, Rat.cast_min]
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -544,6 +554,12 @@ def runAll : IO Unit := do
     let (lo, hi) := credenceBoundsQ (pred / 4) (unc / 4) cap
     let f := credence_ref (ratToFloat (pred / 4)) (ratToFloat (unc / 4)) (ratToFloat cap)
     (inInterval f lo hi 1e-5, g)
+  checkAll "accident_split" 400 19 fun g =>
+    let (harm, g) := g.dyadicNonneg
+    let (cap, g) := g.dyadicNonneg
+    let c := accident_contributor_ref (ratToFloat harm) (ratToFloat cap)
+    let a := accident_admin_ref (ratToFloat harm) (ratToFloat cap)
+    (close c (accidentContributorQ harm cap) && close a (accidentAdminQ harm cap), g)
 
 #eval runAll
 
