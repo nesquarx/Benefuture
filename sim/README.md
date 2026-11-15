@@ -597,11 +597,18 @@ relaunch interrupted ones at session start, and flag a finished run once for rec
   results in `sim/battery/results/thresholds.md`): on 9c0a09a (12 M3c thresholds × 4 scales, 6 seeds,
   z = 2), lowering `threshold` to 0.675/0.45, `adv_min_records` to 2/4, or `max_credence` to 0.98
   appeared positive, but none replicated on fresh seeds (`thresholds_replication.md`: 0/4 significant).
-  On `3fe3331` (precision-guided 6–24 seeds per arm, t-inflated z = 3.0, two-stage screen +
+  On `3fe3331` (economy world, precision-guided 6–24 seeds per arm, t-inflated z = 3.0, two-stage screen +
   confirmation; 46 distinct arms, 139.4 min), **0 arms were flagged** and 0 passed Stage 1: only
   raising `threshold` to 0.99 (`floor h −8.52−`) and `coarse_threshold` to 0.99 (`−60.48−` to `−64.10−`)
   were `worse`, while all 44 remaining arms had `no effect` (`model_z`, `adv_z`, `ratchet_horizon`,
   `actor_min_records`, `min_records` inert at all scales tested, leaving each default standing).
+  In the follow-up **active world** (`--world=active`, `sim/battery/results/thresholds_active.md`;
+  53.3 min across 7 workers on `fd82bae`, adding model churn `p_new_model = 0.15`, `pool_max = 5 >= ratchet_k = 3`,
+  novel leaf `form_count = 15`, `budget = true` with `endowment = 4.5`, graded deceit `[0..0, 0.2, 0.4, 0.7]`,
+  and achievable-precision `Equiv ±Δ` reporting), **0 of 46 arms were flagged** (`threshold 0.99` and
+  `coarse_threshold 0.99` stayed `worse`; 3 Stage-1 `adv_z`/`pattern_attention` candidates did not confirm on
+  fresh seeds; `min_records`, `adv_z`, `model_z 0.5×`, `ratchet_horizon 0.5×–0.75×`, and `actor_min_records 1.6×–2.0×`
+  moved within reported `±Δ` bounds, and `sim/test/probe_tests.jl` verifies `z = 3.0` actuation for all five).
 - **Attack search** (commit 7063060; population 8 × 4 iterations, budget 1): no strategy found fails
   either world. Economy: the worst, a bloc of three with deceit 0.92 and laundering 0.83, takes the
   margin to 0.57 on held-out seeds (the bloc ends with negative wealth relative to honest agents);
@@ -1471,7 +1478,7 @@ Parameters of the status-quo institutional baseline (`StatusQuoParams` in `sim/s
 | `p_detect_step`, `enforcement_lag` | 0.015, 24 | Misconduct detection probability per monthly step ($p_{\text{detect, step}} \approx 0.015$) and legal/enforcement delay before clawbacks or penalties take effect (18–36 steps, median 24 steps) | Dyck, Morse & Zingales 2010, 2023 [DMZ10, DMZ23]; Bryant & Eckard 1991 [BE91]; Karpoff, Lee & Martin 2008 [KLM08] (high) |
 | `memory_window`, `accuracy_rule`, `escrow`, `single_currency` | 100, `:window`, 0.50, true | Flat rectangular sliding window dropping records older than 100 monthly steps (~8.3 years), fixed escrow without credence pricing, and single fiat currency | 15 U.S.C. § 1681c; Musto 2004 [MUS04]; Dobbie, Goldsmith-Pinkham, Mahoney & Song 2020 [DGMS20] (very high) |
 
-Inert thresholds (wide sweep, 2026-11-15; `docs/BACKPROPAGATION.md`, "Threshold sensitivity, wide sweep"): in the economy battery's world `model_z`, `ratchet_horizon`, `min_records` and `actor_min_records` change nothing even at extremes (`model_z` 0 to 30, `ratchet_horizon` 1 to 300, `min_records` 1 to 300, `actor_min_records` 1 to 200), and `adv_z` changes nothing from 0 to 8. Reasons: `model_z` and `ratchet_horizon` act only on pools of several models (`p_new_model = 0` gives one-model pools, below `ratchet_k` = 3); `min_records` acts only on novel domains and the convergence gate (none here); `actor_min_records` only moves a quote's credence, which only feeds an affordability test that never decides differently; `adv_z` sits inside a gap between honest and deceiving audit statistics. They are untested rather than tuned: a world that switches those mechanisms on is needed before governing them.
+Inert thresholds (wide sweep, 2026-11-15; `docs/BACKPROPAGATION.md`, "Threshold sensitivity, wide sweep"): in the economy battery's world `model_z`, `ratchet_horizon`, `min_records` and `actor_min_records` change nothing even at extremes (`model_z` 0 to 30, `ratchet_horizon` 1 to 300, `min_records` 1 to 300, `actor_min_records` 1 to 200), and `adv_z` changes nothing from 0 to 8. Reasons: `model_z` and `ratchet_horizon` act only on pools of several models (`p_new_model = 0` gives one-model pools, below `ratchet_k` = 3); `min_records` acts only on novel domains and the convergence gate (none here); `actor_min_records` only moves a quote's credence, which only feeds an affordability test that never decides differently; `adv_z` sits inside a gap between honest and deceiving audit statistics. Follow-up active-world probes (`sim/test/probe_tests.jl`) verify `z = 3.0` actuation for all five, and running `julia --project=sim sim/battery/thresholds.jl --world=active` (`sim/battery/results/thresholds_active.md`) confirms 0 of 46 arms flagged with defaults standing.
 
 ## Noise
 

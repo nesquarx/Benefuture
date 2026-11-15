@@ -2274,3 +2274,55 @@ end
     @test side_on.educations == side_on.accidents < side_on.side_hazards && side_on.crimes > 0 &&
           side_on.crimes + side_on.accidents == side_on.side_hazards
 end
+
+@testset "Probe: active-world actuation of model_z, ratchet_horizon, actor_min_records, min_records, and adv_z" begin
+    # The wide sweep in the economy battery found these 5 thresholds inert only because that world
+    # never activated their code paths (PLAN § Threshold battery world that exercises every threshold).
+    ag4 = [DomainAgent([0.6, 0, 0.6, 0], [0.5, 0, 0.5, 0], 0.1) for _ in 1:4]
+
+    # 1. `model_z`: controls challenger takeovers in `eval_challengers` when `p_new_model > 0`.
+    w_mz(mz) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag4, [1, 1, 2, 2], trues(4);
+                         λpos = 0.05, λneg = 0.02, transactions = true, LEGACY...,
+                         p_new_model = 0.25, pool_max = 4, takeover_records = 5, improve_drift = -0.25, model_z = mz)
+    mz_lo = [run_m3c(w_mz(0.1); seed = s).takeovers for s in 1:16]
+    mz_hi = [run_m3c(w_mz(20.0); seed = s).takeovers for s in 1:16]
+    @test all(==(0), mz_hi) && count(>(0), mz_lo) > 0
+    @test paired_effect(Float64.(mz_lo .- mz_hi); z = 3.0).significant
+
+    # 2. `ratchet_horizon`: controls sustained-operation lock-in when pool size >= `ratchet_k`.
+    w_rh(rh) = M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag4, [1, 1, 2, 2], trues(4);
+                         λpos = 0.05, λneg = 0.02, transactions = true, LEGACY...,
+                         p_new_model = 0.35, pool_max = 5, ratchet_k = 2, takeover_records = 5,
+                         threshold = 0.65, ratchet_margin = 0.02, ratchet_horizon = rh)
+    rh_lo = [run_m3c(w_rh(1.0); seed = s).leaf_bars[1] for s in 1:8]
+    rh_hi = [run_m3c(w_rh(50.0); seed = s).leaf_bars[1] for s in 1:8]
+    @test all(==(0.65), rh_hi) && all(>(0.65), rh_lo)
+    @test paired_effect(rh_lo .- rh_hi; z = 3.0).significant
+
+    # 3. `actor_min_records`: cuts an overstating actor's upfront escrow (`upfront`) once its record clears the gate.
+    ag_dec = [DomainAgent([0.6, 0, 0, 0], [1, 0, 0, 0], 0.1) for _ in 1:4]
+    w_amr(amr) = M3cParams(ToyParams(n = 20, steps = 120, plans = 6), ag_dec, [1, 1, 2, 2], trues(4);
+                           λpos = 0.05, λneg = 0.02, transactions = true, LEGACY...,
+                           credence_rule = :record, deceit = [0.0, 0.0, 0.0, 1.5], advap = false,
+                           endowment = 2.0, cost_per_touch = 0.6, init_steps = 20, actor_min_records = amr)
+    up_lo = [run_m3c(w_amr(1); seed = s).upfront[4] for s in 1:24]
+    up_hi = [run_m3c(w_amr(500); seed = s).upfront[4] for s in 1:24]
+    @test all(up_hi .>= up_lo) && paired_effect(up_hi .- up_lo; z = 3.0).significant
+
+    # 4. `min_records`: delays eligibility of a newly formed novel domain until score-only records reach the bar.
+    ag5 = [DomainAgent([0.6, 0, 0, 0, 0.6], [0.5, 0, 0, 0, 0.5], 0.0) for _ in 1:4]
+    w_mr(mr) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag5, [1, 1, 2, 2, 1], Bool[true, true, true, true, false];
+                         λpos = 0.05, λneg = 0.02, transactions = true, LEGACY..., form_count = 6, min_records = mr)
+    mr_lo = [run_m3c(w_mr(1); seed = s).formations[1].eligible_step for s in 1:8]
+    mr_hi = [let f = run_m3c(w_mr(60); seed = s).formations[1]; f.eligible_step == 0 ? 999 : f.eligible_step; end for s in 1:8]
+    @test all(mr_hi .> mr_lo) && paired_effect(Float64.(mr_hi .- mr_lo); z = 3.0).significant
+
+    # 5. `adv_z`: governs founded AdvAp reports under non-bimodal moderate deceit.
+    ag6 = [DomainAgent([0.6, 0, 0, 0], [1, 0, 0, 0], 0.1) for _ in 1:6]
+    w_az(az) = M3cParams(ToyParams(n = 24, steps = 120, plans = 6), ag6, [1, 1, 2, 2], trues(4);
+                         λpos = 0.05, λneg = 0.02, transactions = true, LEGACY...,
+                         advap = true, deceit = [0.0, 0.0, 0.0, 0.0, 0.2, 0.2], marker_σ = 0.3, adv_min_records = 5, adv_z = az)
+    az_lo = [run_m3c(w_az(0.5); seed = s).advap_founded for s in 1:12]
+    az_hi = [run_m3c(w_az(8.0); seed = s).advap_founded for s in 1:12]
+    @test all(az_lo .> az_hi) && paired_effect(Float64.(az_lo .- az_hi); z = 3.0).significant
+end
