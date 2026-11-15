@@ -55,7 +55,7 @@ ALLOW = {
     "Tech",   # technology
     "Eval",   # evaluate
     "Exec",   # execute
-    "OptOut", # opt out
+    "OptOut", "EQ", # opt out
     "PII",    # personally identifiable information
 }
 # Ordinary English words shorter than five letters that the pseudocode uses; see the docstring. Add a word

@@ -128,7 +128,7 @@ Benefuture«Bf» {
     InfoHazard«IHz» := Statement_i : ∃RlvCx_j : (U_i ¬U_j → Ha) ∨ (U_i ∧ U_j → ↓Tr_lvl_i);
 
     CriticalThinking«CrT» := (↑U(Tr_lvls, I(Tr_lvls)) | Sp) → ↑InfoHandling«IH»;
-    Education«Ed» := ↑Capacity(U, H), CrT, ↑EmotionalIntelligence, Inoculate(IHz), UniversalAccess;
+    Education«Ed» := ↑Capacity(U, H), CrT, ↑EQ, Inoculate(IHz), UniversalAccess;
     SoNet«SN»:=Sys(Cm(Pe[]))→So(I,Ed,Cu)|TechNetwork«TN»;
     TN := Decentralized(Cluster[] : ∩Tech = Core(DataShare, Security)) ∧ OpenSource(Infra) → Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DifferentiallyPrivateGenericQuery,2wayVisibleSpecificQuery,InfoHazardGatedPII,transparentAccess), Aggregate(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindIdentity(E, 1:1);
     IH(TN) := Categorize(Tr_lvls, Opinion, F, Hy...) → SourceVerify(Re(Dn) / Ig(Dn)) + FactCheck(MemoryData«Mem») + ContentionMap + ManageAccess(IHz, (preReq(Ed), Provide(Ed), EnsurePath(Ed → Access) ← Ed | Freedom«Fr»(Tr)), !Censor);
