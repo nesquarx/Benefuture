@@ -2326,3 +2326,43 @@ end
     az_hi = [run_m3c(w_az(8.0); seed = s).advap_founded for s in 1:12]
     @test all(az_lo .> az_hi) && paired_effect(Float64.(az_lo .- az_hi); z = 3.0).significant
 end
+
+# 8.115 newcomer entry (`open_entry`, `entrants`): when skilled deceivers are priced out by AdvAp
+# and escrow in a closed economy, dormant newcomer slots pass `bind!` on unmet/refused proposals,
+# replace lost execution, and lift `floor_u` at z = 3.0 without restoring the deceivers' advantage.
+@testset "Probe: 8.115 open entry replaces priced-out deceivers via bound newcomers" begin
+    skills0 = draw_skills(Xoshiro(20261031), 8, 4, [1, 3]; median = 0.6)
+    skills4 = vcat(skills0, draw_skills(Xoshiro(20261115), 4, 4, [1, 3]; median = 0.6))
+    function run_entry_probe(sq::Bool, open_entry::Bool, seed::Int)
+        entrants = open_entry ? 4 : 0
+        na = 8 + entrants
+        sk = open_entry ? skills4 : skills0
+        agents = [DomainAgent(sk[a, :], [0.5, 0, 0.5, 0], 0.3) for a in 1:na]
+        deceit = vcat([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0], zeros(entrants))
+        inst = sq ? (vigilance = 0.001, cost_σ = 0.3, memory_loss = 0.1, p_false_trace = 0.05, p_informed = 0.6, dil = 0.4, advap = false) :
+                    (vigilance = 0.1, cost_σ = 0.05, memory_loss = 0.0, p_false_trace = 0.005, p_informed = 0.95, dil = 0.95, advap = true)
+        p = M3cParams(ToyParams(n = 40, steps = 250, plans = 10), agents, [1, 1, 2, 2], trues(4);
+                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                      p_upstream = 0.5, guardians = [1, 2, 3, 4], diligence = fill(inst.dil, na),
+                      p_informed = inst.p_informed, p_foresee = 1.0, repair_efficiency = 0.5,
+                      deceit = deceit, advap = inst.advap, vigilance = inst.vigilance, cost_σ = inst.cost_σ,
+                      memory_loss = inst.memory_loss, p_false_trace = inst.p_false_trace,
+                      adaptive_proposals = true, open_entry = open_entry, entrants = entrants,
+                      events = [shock(:capture; step = 100, duration = 150, size = 1.5, target = 1)],
+                      LEGACY...)
+        tr = run_m3c(p; seed = seed)
+        sp = success_pattern(tr; from = 51)
+        standing(i) = sum(tr.balance[i, :]) + tr.overflow_agent[i]
+        adv = (mean(standing(i) for i in 7:8) - mean(standing(i) for i in 1:6)) / (tr.endowed / 8)
+        (entries = tr.entries, exec = Float64(length(tr.chosen_agent)), floor_u = sp.floor_u, adv = adv)
+    end
+    seeds = 1:12
+    closed = [run_entry_probe(false, false, s) for s in seeds]
+    opened = [run_entry_probe(false, true, s) for s in seeds]
+    sq_open = [run_entry_probe(true, true, s) for s in seeds]
+    @test all(r.entries == 0 for r in closed)
+    @test all(r.entries > 0 for r in opened)
+    @test paired_effect([o.exec - c.exec for (c, o) in zip(closed, opened)]; z = 3.0).significant
+    @test paired_effect([o.floor_u - c.floor_u for (c, o) in zip(closed, opened)]; z = 3.0).significant
+    @test paired_effect([s.adv - o.adv for (o, s) in zip(opened, sq_open)]; z = 3.0).significant
+end

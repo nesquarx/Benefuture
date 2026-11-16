@@ -246,6 +246,8 @@ struct M3cParams
     legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
     accident_cap::Bool            # L96 / 8.157 ii: bound accident contributor's penalty by its capacity, administration carrying the rest
     mandate_education::Bool       # L96, L116 / 8.157 iv, 8.159: accidents mandate education (recorded exposure), making repeats informed
+    open_entry::Bool              # 8.115: unmet live proposals admit dormant entrants (via `bind!`) and re-offer the slot by market weight
+    entrants::Int                 # 8.115: trailing slots in `agents` initially dormant until admitted via open entry
 end
 
 """
@@ -290,7 +292,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
-                   converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true)
+                   converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
+                   open_entry::Bool = false, entrants::Integer = 0)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -345,6 +348,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(0 <= bind_miss <= 1 && bind_clusters >= 0 && 0 <= bind_threshold <= 1 && bind_quorum >= 0,
           "binding miss and threshold in [0, 1], clusters and quorum non-negative")
     check(all(c -> 1 <= c <= bind_clusters, bind_compromised) && 0 <= p_reveal <= 1 && 0 <= p_newcomer <= 1 && bind_quorum_weight >= 0, "compromised clusters among the clusters; reveal and newcomer chances in [0, 1]")
+    check(0 <= entrants < length(agents), "entrants in 0..length(agents)-1")
     check(isempty(slander) || (length(slander) == length(agents) && all(r -> 0 <= slander[r] <= length(agents) && slander[r] != r, eachindex(slander))),
           "one slander target per agent: another agent, or 0")
     check(on_off >= 0, "on-off period non-negative")
@@ -385,7 +389,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, legacy_funder, accident_cap, mandate_education)
+              converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -836,6 +840,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     for f in p.forks
         dormant[f[3]] = true; balance[f[3], :] .= 0.0; base_share[f[3]] = 0.0; act_share[f[3]] = 0.0
     end
+    for e in (na - p.entrants + 1):na
+        dormant[e] = true; balance[e, :] .= 0.0; base_share[e] = 0.0; act_share[e] = 0.0; propose_w[e] = 0.0
+    end
+    entries_admitted = Ref(0)
     endowed = sum(balance)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
     reinvested = zeros(ncol)
@@ -1111,7 +1119,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    advap_net = adv.net[], advap_audits = adv.audits[], escape = escape_result[],
                    takeovers = takeovers[], takeovers_extreme = takeovers_extreme[], arrivals_extreme = arrivals_extreme[],
                    takeovers_colluding = takeovers_colluding[], arrivals_colluding = arrivals_colluding[],
-                   explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[],
+                   explored = explored[], deceptions = copy(deceptions), bar_trace = bar_trace, acc_trace = acc_trace, rate_trace = rate_trace, leaf_bars = [leaf_bar(j) for j in 1:nleaves()], convictions = convictions, slanderers = findall(slanderers), reports_by = reports_by, founded_on = founded_on, chain_bias = chain_bias, chain_audits = chain_audits[], chain_demoted = copy(chain_demoted), chain_copied = copy(chain_copied), identities_admitted = ids.admitted[], identities_linked = ids.linked[], identities_revealed = ids.revealed[], newcomers = ids.newcomers[], newcomers_refused = ids.newcomers_refused[], entries = entries_admitted[],
                    attestation_skill = [attest_skill(c) for c in 1:p.bind_clusters], id_since = id_since,
                    top_scale = [topm(j).scale for j in 1:L], top_trace = top_trace,
                    assessed_outcomes = assessed_outcomes[], fallback_outcomes = fallback_outcomes[],
@@ -1289,7 +1297,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         proposers = p.adaptive_proposals ? [pick(rng, propose_w .* act_share ./ sum(propose_w .* act_share)) for _ in 1:t.plans] :
-                    isempty(p.forks) && isempty(p.merges) ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
+                    isempty(p.forks) && isempty(p.merges) && p.entrants == 0 ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
         last_props[] = proposers; last_exec[] = length(tr.exec_agent)
         leaves = [pick(drng, p.agents[a].focus) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
@@ -1499,20 +1507,72 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 degrade!("domain currency", "StandCoin lane", "no qualified model can price it")
                 continue
             end
-            quotes = Tuple{Int,Float64,ToyPlan,Float64}[]
-            for c in 1:(root - 1)
-                priced[j][c] > 0 || continue
-                σ, b = c <= lmax ? (leaf_σ(c, leaves[j]), lb(c)) : (parent_σ(c - lmax, leaves[j]), pb(c - lmax))
-                pred = fooled(predict(mrng, MetricModel(b, σ), plans[j]), proposers[j], plans[j], tkey(c))
-                push!(quotes, (c, priced[j][c], pred, cred(c, pred, proposers[j])))  # escrow pays by credence (L84)
+            function price_proposal(jj, aa)
+                qs = Tuple{Int,Float64,ToyPlan,Float64}[]
+                for c in 1:(root - 1)
+                    priced[jj][c] > 0 || continue
+                    σ, b = c <= lmax ? (leaf_σ(c, leaves[jj]), lb(c)) : (parent_σ(c - lmax, leaves[jj]), pb(c - lmax))
+                    pred = fooled(predict(mrng, MetricModel(b, σ), plans[jj]), aa, plans[jj], tkey(c))
+                    push!(qs, (c, priced[jj][c], pred, cred(c, pred, aa)))  # escrow pays by credence (L84)
+                end
+                pr = zeros(ncol)
+                pr[root] = priced[jj][root] * costs[jj]
+                for (c, sh, prp, cr) in qs
+                    pr[c] = sh * transaction_price(costs[jj], plan_value(prp, t), cr)
+                end
+                ok = all(pr[c] <= 0 || pr[c] <= balance[aa, c] for c in 1:ncol)
+                (ok = ok, quotes = qs)
             end
-            price = zeros(ncol)
-            price[root] = priced[j][root] * costs[j]
-            for (c, sh, pr, cr) in quotes
-                price[c] = sh * transaction_price(costs[j], plan_value(pr, t), cr)
+            res = price_proposal(j, proposers[j])
+            if !res.ok && p.open_entry
+                if p.entrants > 0
+                    ek = findfirst(e -> dormant[e], (na - p.entrants + 1):na)
+                    if ek !== nothing
+                        e = (na - p.entrants) + ek
+                        confs = [c in p.bind_compromised ? p.bind_conf_compromised : rand(wrng) < p.bind_miss ? p.bind_conf_deny : p.bind_conf_affirm for c in 1:p.bind_clusters]
+                        ids.newcomers[] += 1
+                        if bind!(confs)
+                            dormant[e] = false
+                            for c in [1:nleaves(); col_parent.(1:np); root]
+                                balance[e, c] = p.endowment
+                            end
+                            base_share[e] = 1.0; act_share[e] = 1.0; propose_w[e] = 1.0
+                            entries_admitted[] += 1
+                        else
+                            ids.newcomers_refused[] += 1
+                        end
+                        push!(unrevealed, (confs, 1.0))
+                    end
+                end
+                w_act = p.adaptive_proposals ? (propose_w .* act_share) : act_share
+                if sum(w_act) > 0
+                    a2 = pick(rng, w_act ./ sum(w_act))
+                    if a2 != proposers[j]
+                        proposers[j] = a2
+                        own_plans[j] = plan_with_mean(rng, skill(a2, leaves[j]), t)
+                        if ups[j] !== nothing
+                            raw2 = filter(x -> x[1] != a2, up_raw[j])
+                            if isempty(raw2)
+                                ups[j] = nothing
+                                plans[j] = own_plans[j]
+                            else
+                                m2 = touched(own_plans[j])
+                                ups[j] = [(ag, ToyPlan(m2 .* qdu, m2 .* qdh), deg) for (ag, qdu, qdh, deg) in raw2]
+                                plans[j] = ToyPlan(own_plans[j].du .+ sum(l -> l[2].du, ups[j]), own_plans[j].dh .+ sum(l -> l[2].dh, ups[j]))
+                            end
+                        else
+                            plans[j] = own_plans[j]
+                        end
+                        nt2 = count(touched(plans[j]))
+                        ce2 = exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[a2])
+                        costs[j] = unit_cost * nt2 * ce2
+                        costs_honest[j] = unit_cost > 0 ? costs[j] * (unit_cost_honest / unit_cost) : costs[j]
+                        res = price_proposal(j, a2)
+                    end
+                end
             end
-            all(price[c] <= 0 || price[c] <= balance[proposers[j], c] for c in 1:ncol) || continue
-            push!(menu, j); push!(menu_preds, quotes[argmax([q[2] for q in quotes])][3]); offers[j] = quotes
+            res.ok || continue
+            push!(menu, j); push!(menu_preds, res.quotes[argmax([q[2] for q in res.quotes])][3]); offers[j] = res.quotes
         end
         rel_gain .= reputation_decay.(rel_gain, 1.0; rate = rate_gain)
         rel_loss .= reputation_decay.(rel_loss, 1.0; rate = rate_loss)
