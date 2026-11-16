@@ -356,6 +356,99 @@ abbrev C := Currency
 abbrev PE := ProbabilisticEscrow
 abbrev TP := TransactionProposal
 
+/-- Resource accounting's estimated value per unit of `(Cost + Audit)` (L83, author rulings
+    8.133 & 8.155): measured `U`/`H` value delivered divided by physical resource cost plus
+    verification/audit cost; falls back to `fallback` when total cost is non-positive. -/
+noncomputable def ra_value_per_cost (measuredGain resourceCost auditCost fallback : ℝ) : ℝ :=
+  let totalCost := resourceCost + max 0 auditCost
+  if 0 < totalCost then measuredGain / totalCost else fallback
+
+/-- Higher audit cost cannot raise net efficiency `Δ(U, H) / (Cost + Audit)` on non-negative
+    gains (`L83`, ruling 8.155). -/
+theorem ra_value_per_cost_audit_antitone
+    (measuredGain resourceCost audit₁ audit₂ fallback : ℝ)
+    (h_gain : 0 ≤ measuredGain) (h_rc : 0 < resourceCost) (ha : audit₁ ≤ audit₂) :
+    ra_value_per_cost measuredGain resourceCost audit₂ fallback ≤
+      ra_value_per_cost measuredGain resourceCost audit₁ fallback := by
+  unfold ra_value_per_cost
+  have h1 : 0 < resourceCost + max 0 audit₁ := by linarith [le_max_left 0 audit₁]
+  have h2 : 0 < resourceCost + max 0 audit₂ := by linarith [le_max_left 0 audit₂]
+  simp only [h1, h2, ↓reduceIte]
+  exact div_le_div_of_nonneg_left h_gain h1 (by linarith [max_le_max_left 0 ha])
+
+/-- Value per `(Cost + Audit)` is monotone in measured outcome gain when total cost is positive. -/
+theorem ra_value_per_cost_monotone_gain
+    (gain₁ gain₂ resourceCost auditCost fallback : ℝ)
+    (h_pos : 0 < resourceCost + max 0 auditCost) (hg : gain₁ ≤ gain₂) :
+    ra_value_per_cost gain₁ resourceCost auditCost fallback ≤
+      ra_value_per_cost gain₂ resourceCost auditCost fallback := by
+  unfold ra_value_per_cost
+  simp only [h_pos, ↓reduceIte]
+  exact div_le_div_of_nonneg_right hg h_pos.le
+
+/-- Commons reserve target estimated by resource accounting for progressive-complexity fallbacks
+    (`8.133` continued): expected fallback repair need times fallback occurrence rate over the
+    governed reserve horizon. -/
+def ra_commons_reserve (expectedNeed fallbackRate horizon : ℝ) : ℝ :=
+  max 0 expectedNeed * max 0 fallbackRate * max 0 horizon
+
+/-- Commons reserve target is always non-negative. -/
+theorem ra_commons_reserve_nonneg (expectedNeed fallbackRate horizon : ℝ) :
+    0 ≤ ra_commons_reserve expectedNeed fallbackRate horizon := by
+  unfold ra_commons_reserve
+  positivity
+
+/-- Commons reserve target grows monotonically in expected need, fallback rate, and horizon. -/
+theorem ra_commons_reserve_monotone
+    {n₁ n₂ r₁ r₂ h₁ h₂ : ℝ} (hn : n₁ ≤ n₂) (hr : r₁ ≤ r₂) (hh : h₁ ≤ h₂) :
+    ra_commons_reserve n₁ r₁ h₁ ≤ ra_commons_reserve n₂ r₂ h₂ := by
+  unfold ra_commons_reserve
+  have hn0 : 0 ≤ max 0 n₁ := le_max_left _ _
+  have hr0 : 0 ≤ max 0 r₁ := le_max_left _ _
+  have hh0 : 0 ≤ max 0 h₁ := le_max_left _ _
+  have hm_n : max 0 n₁ ≤ max 0 n₂ := max_le_max_left 0 hn
+  have hm_r : max 0 r₁ ≤ max 0 r₂ := max_le_max_left 0 hr
+  have hm_h : max 0 h₁ ≤ max 0 h₂ := max_le_max_left 0 hh
+  exact mul_le_mul (mul_le_mul hm_n hm_r hr0 (le_trans hn0 hm_n)) hm_h hh0
+    (mul_nonneg (le_trans hn0 hm_n) (le_trans hr0 hm_r))
+
+/-- Resource-accounting contraction multiplier (`8.71 (2)` / `8.133`): equals `1` when claims stay
+    within deliverable capacity, and contracts baseline pricing and spending toward `minScale`
+    proportionally to fractional overshoot above capacity. -/
+noncomputable def ra_contraction_factor (claims deliverableCap rate minScale : ℝ) : ℝ :=
+  if claims ≤ deliverableCap ∨ deliverableCap ≤ 0 then 1
+  else max minScale (1 - rate * min 1 ((claims - deliverableCap) / deliverableCap))
+
+/-- Within deliverable capacity (or without positive cap), no contraction applies. -/
+theorem ra_contraction_within_cap
+    (claims deliverableCap rate minScale : ℝ)
+    (h_ok : claims ≤ deliverableCap ∨ deliverableCap ≤ 0) :
+    ra_contraction_factor claims deliverableCap rate minScale = 1 := by
+  unfold ra_contraction_factor
+  simp [h_ok]
+
+/-- For `minScale ≤ 1` and non-negative `rate`, the contraction multiplier remains within
+    `[minScale, 1]`. -/
+theorem ra_contraction_bounds
+    (claims deliverableCap rate minScale : ℝ)
+    (h_m1 : minScale ≤ 1) (h_r0 : 0 ≤ rate) :
+    minScale ≤ ra_contraction_factor claims deliverableCap rate minScale ∧
+      ra_contraction_factor claims deliverableCap rate minScale ≤ 1 := by
+  unfold ra_contraction_factor
+  by_cases h_ok : claims ≤ deliverableCap ∨ deliverableCap ≤ 0
+  · simp [h_ok, h_m1]
+  · simp only [h_ok, ↓reduceIte]
+    have h_gt : deliverableCap < claims := lt_of_not_ge (fun h => h_ok (Or.inl h))
+    have h_cap_pos : 0 < deliverableCap := lt_of_not_ge (fun h => h_ok (Or.inr h))
+    have h_frac_nn : 0 ≤ (claims - deliverableCap) / deliverableCap :=
+      div_nonneg (sub_nonneg.mpr h_gt.le) h_cap_pos.le
+    have h_min_nn : 0 ≤ min 1 ((claims - deliverableCap) / deliverableCap) :=
+      le_min zero_le_one h_frac_nn
+    have h_prod_nn : 0 ≤ rate * min 1 ((claims - deliverableCap) / deliverableCap) :=
+      mul_nonneg h_r0 h_min_nn
+    refine ⟨le_max_left _ _, max_le h_m1 ?_⟩
+    linarith
+
 end Benefuture.Economy
 
 

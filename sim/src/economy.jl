@@ -586,6 +586,43 @@ deliverable_value(supply, regen_rate, unit_value) =
     ccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))
 
 """
+    ra_value_per_cost(measured_gain, resource_cost; audit_cost = 0.0, fallback = resource_cost) -> value_per_cost
+
+Resource accounting's estimated value per unit of `(Cost + Audit)` (Lean `ra_value_per_cost_ref`;
+L83, rulings 8.133 & 8.155): measured `U`/`H` value delivered divided by `resource_cost + max(0, audit_cost)`.
+"""
+function ra_value_per_cost(measured_gain::Real, resource_cost::Real; audit_cost::Real = 0.0, fallback::Real = resource_cost)
+    check(all(isfinite, (measured_gain, resource_cost, audit_cost, fallback)), "RA inputs must be finite")
+    ccall(sym(:bf_ra_value_per_cost), Float64, (Float64, Float64, Float64, Float64),
+          Float64(measured_gain), Float64(resource_cost), Float64(audit_cost), Float64(fallback))
+end
+
+"""
+    ra_commons_reserve(expected_need, fallback_rate; horizon = 1.0) -> reserve_target
+
+Commons reserve target estimated by resource accounting for progressive-complexity fallbacks
+(Lean `ra_commons_reserve_ref`; 8.133): `max(0, expected_need) * max(0, fallback_rate) * max(0, horizon)`.
+"""
+function ra_commons_reserve(expected_need::Real, fallback_rate::Real; horizon::Real = 1.0)
+    check(all(isfinite, (expected_need, fallback_rate, horizon)), "RA reserve inputs must be finite")
+    ccall(sym(:bf_ra_commons_reserve), Float64, (Float64, Float64, Float64),
+          Float64(expected_need), Float64(fallback_rate), Float64(horizon))
+end
+
+"""
+    ra_contraction_factor(claims, deliverable_cap; rate = 0.0, min_scale = 0.1) -> factor
+
+Resource-accounting contraction multiplier (Lean `ra_contraction_factor_ref`; 8.71 (2) & 8.133):
+`1.0` inside deliverable capacity, otherwise contracts baseline pricing and spending toward `min_scale`.
+"""
+function ra_contraction_factor(claims::Real, deliverable_cap::Real; rate::Real = 0.0, min_scale::Real = 0.1)
+    check(all(isfinite, (claims, deliverable_cap, rate, min_scale)) && 0 <= rate <= 1 && 0 <= min_scale <= 1,
+          "RA contraction inputs finite, rate & min_scale in [0, 1]")
+    ccall(sym(:bf_ra_contraction_factor), Float64, (Float64, Float64, Float64, Float64),
+          Float64(claims), Float64(deliverable_cap), Float64(rate), Float64(min_scale))
+end
+
+"""
     withhold_charge(market_premium, reward; audit_cost) -> charge
 
 What discovered artificial-scarcity supply withholding costs (Lean `withhold_charge_ref`; 8.133):

@@ -139,4 +139,22 @@ fin(xs...) = all(isfinite, xs)
                            esc = (pm == 0 || ce < pm) ? 0 : ce - pm + 1
                            esc == 0 ? b : max(ms, b * dec^esc)
                        end) == (guard = 0, value = 0)
+    @test differential(:ra_value_per_cost,
+                       r -> (rand(r) < 0.1 ? hostile(r) : 20 * rand(r) - 5, rand(r) < 0.1 ? hostile(r) : 5 * rand(r) - 0.5,
+                             rand(r) < 0.1 ? hostile(r) : 3 * rand(r) - 0.5, rand(r) < 0.1 ? hostile(r) : 2 * rand(r)),
+                       (mg, rc, ac, fb) -> fin(mg, rc, ac, fb),
+                       (mg, rc, ac, fb) -> ra_value_per_cost(mg, rc; audit_cost = ac, fallback = fb),
+                       (mg, rc, ac, fb) -> (tc = rc + max(0.0, ac); tc > 0 ? mg / tc : fb)) == (guard = 0, value = 0)
+    @test differential(:ra_commons_reserve,
+                       r -> (rand(r) < 0.1 ? hostile(r) : 10 * rand(r) - 1, rand(r) < 0.1 ? hostile(r) : 2 * rand(r) - 0.2,
+                             rand(r) < 0.1 ? hostile(r) : 8 * rand(r) - 1),
+                       (en, fr, hz) -> fin(en, fr, hz),
+                       (en, fr, hz) -> ra_commons_reserve(en, fr; horizon = hz),
+                       (en, fr, hz) -> max(0.0, en) * max(0.0, fr) * max(0.0, hz)) == (guard = 0, value = 0)
+    @test differential(:ra_contraction_factor,
+                       r -> (rand(r) < 0.1 ? hostile(r) : 10 * rand(r), rand(r) < 0.1 ? hostile(r) : 6 * rand(r) - 0.5,
+                             rand(r) < 0.1 ? hostile(r) : rand(r), rand(r) < 0.1 ? hostile(r) : rand(r)),
+                       (cl, cap, rt, ms) -> fin(cl, cap, rt, ms) && 0 <= rt <= 1 && 0 <= ms <= 1,
+                       (cl, cap, rt, ms) -> ra_contraction_factor(cl, cap; rate = rt, min_scale = ms),
+                       (cl, cap, rt, ms) -> (cl <= cap || cap <= 0) ? 1.0 : max(ms, 1.0 - rt * min(1.0, (cl - cap) / cap))) == (guard = 0, value = 0)
 end

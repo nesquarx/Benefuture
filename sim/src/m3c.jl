@@ -252,6 +252,11 @@ struct M3cParams
     sanction_pattern_min::Int     # minimum negative/crime records in a domain before repeated-pattern escalation begins (8.157 i)
     sanction_restraint_decay::Float64 # proposal-share decay per repeat offense above `sanction_pattern_min`
     sanction_min_share::Float64   # minimum participation share retained under rehabilitative restraint (Justice.txt)
+    ra_domain::Bool               # 8.133 / 8.155 / L83: RA estimating domain (unit value, supply/regen, allocation, reserve)
+    ra_alloc_weight::Float64      # weight in prioritizing domains by RA estimated Δ↑(U, H) / ↓(Cost + Audit) (8.133, 8.153)
+    ra_reserve_horizon::Float64   # steps of expected fallback need provisioned into protected commons reserve (8.133 d)
+    ra_spend_contract::Bool       # contract discretionary spending alongside baseline pricing when claims exceed capacity
+    ra_audit_per_step::Vector{Float64} # per-true-leaf audit resource burden consumed in RA's L83 `(Cost + Audit)` estimate (8.155)
 end
 
 """
@@ -298,7 +303,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
                    converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
                    open_entry::Bool = false, entrants::Integer = 0,
-                   sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1)
+                   sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
+                   ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[])
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -366,6 +372,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "merges: step ≥ 1, absorbed and target distinct agents")
     check(isfinite(ra_rate) && 0 <= ra_rate < 1, "contraction rate in [0, 1)")
     check(isfinite(ra_horizon) && ra_horizon >= 0, "issuance horizon non-negative")
+    check(isfinite(ra_alloc_weight) && ra_alloc_weight >= 0 && isfinite(ra_reserve_horizon) && ra_reserve_horizon >= 0 &&
+          (isempty(ra_audit_per_step) || (length(ra_audit_per_step) == nl && all(x -> isfinite(x) && x >= 0, ra_audit_per_step))),
+          "RA allocation weight, reserve horizon, and audit costs must be non-negative")
     check(0 <= supplier <= length(agents) && 0 <= supply_share <= 1 && 0 <= withhold <= 1, "supplier an agent or 0; shares in [0, 1]")
     check(all(i -> 1 <= i <= length(agents), supply_cartel) && length(unique(supply_cartel)) == length(supply_cartel),
           "supply_cartel agents distinct and in 1..na")
@@ -398,7 +407,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
               converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
-              sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share))
+              sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
+              ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -906,6 +916,18 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     withhold_totals = (premium = Ref(0.0), refunded = Ref(0.0), clawback = Ref(0.0), reward = Ref(0.0), discovered = Ref(0))
     price_scale = Ref(1.0)   # resource-accounting contraction (8.71)
     ra_withheld = Ref(0.0)   # value not issued for lack of deliverable capacity (8.133)
+    # 8.133 / 8.155 / L83 RA estimating domain state (estimator separated from actuators; 8.26.7)
+    ra_unit_value = fill(max(p.cost_per_touch, 1e-6), ntrue)
+    ra_domain_audit = zeros(ntrue)
+    ra_supply_est = Ref(p.capacity)
+    ra_regen_est = Ref(p.regen)
+    ra_need_est = Ref(0.0)
+    ra_fallback_rate_est = Ref(0.0)
+    commons_reserve = Ref(0.0)
+    reserve_held = Ref(0.0)
+    reserve_target = Ref(0.0)
+    spend_scale = Ref(1.0)
+    ra_audit_costs = Ref(0.0)
     budget = (unfunded = Ref(0), uncashable = Ref(0))
     supplier_income = Ref(0.0)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0), legacy_executed = Ref(0))
@@ -1123,6 +1145,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                    relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
                    reinvested = reinvested[cols], overflow_agent = overflow_agent, ra_withheld = ra_withheld[], budget_unfunded = budget.unfunded[], budget_uncashable = budget.uncashable[], supplier_income = supplier_income[],
+                   ra_unit_value = copy(ra_unit_value), ra_supply_est = ra_supply_est[], ra_regen_est = ra_regen_est[],
+                   ra_alloc = (s_uv = sum(ra_unit_value); s_uv > 0 ? ra_unit_value ./ s_uv : fill(1.0 / ntrue, ntrue)),
+                   ra_reserve_target = reserve_target[], ra_reserve_balance = commons_reserve[],
+                   ra_spend_scale = spend_scale[], ra_price_scale = price_scale[], ra_audit_costs = ra_audit_costs[],
                    withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
                    lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                    legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[],
@@ -1185,6 +1211,11 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         end
         scoring_only = p.converge_init ? !econ_converged[] : step <= p.init_steps
         bal0 = p.ra_horizon > 0 ? copy(balance) : balance
+        step_fallback_need = Ref(0.0); step_fallback_events = Ref(0)
+        reserve_target[] = (p.ra_domain && p.ra_reserve_horizon > 0) ?
+                           ra_commons_reserve(ra_need_est[], ra_fallback_rate_est[]; horizon = p.ra_reserve_horizon) : 0.0
+        reserve_cap = (p.ra_domain && p.ra_reserve_horizon > 0 && p.cost_per_touch > 0) ?
+                      min(0.4 * p.capacity, reserve_target[] / p.cost_per_touch) : 0.0
         for (fs, fa, fslot, fx) in p.forks
             fs == step || continue
             for c in 1:ncol
@@ -1524,8 +1555,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 end
             end
         end
-        unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor)
-        unit_cost_honest = price_scale[] * scarcity_cost(p.cost_per_touch, available_honest, p.capacity; floor_share = p.scarcity_floor)
+        unit_cost = price_scale[] * scarcity_cost(p.cost_per_touch, max(0.0, available), p.capacity; floor_share = p.scarcity_floor)
+        unit_cost_honest = price_scale[] * scarcity_cost(p.cost_per_touch, max(0.0, available_honest), p.capacity; floor_share = p.scarcity_floor)
         halted0, executed0 = lane.halted[], lane.executed[]
         costs = [unit_cost * count(touched(plan)) * exp(p.cost_σ * randn(nrng)) * (1 - p.launder_saving * p.launder[proposers[j]])
                  for (j, plan) in enumerate(plans)]
@@ -1655,10 +1686,13 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             a, plan, l = proposers[j], plans[j], leaves[j]
             # Budget constraint (8.133 step 3): the proposer must hold the currency for the action's resource cost, and the
             # resources must be there; a funded action refused for lack of resources is a check that cannot be cashed.
+            if p.ra_domain && p.ra_spend_contract && spend_scale[] < 1.0 && rand(nrng) >= spend_scale[]
+                budget.unfunded[] += 1; return
+            end
             if p.budget
                 if sum(max.(balance[a, :], 0.0)) < costs[j]
                     budget.unfunded[] += 1; return
-                elseif available < count(touched(plan))
+                elseif available < count(touched(plan)) + reserve_cap
                     budget.uncashable[] += 1
                     degrade!("resources", "action refused", "funded claim but capacity exhausted (8.133)")
                     return
@@ -1731,6 +1765,11 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             # resource cost, less the harm; a measurement outage mints the upfront now, the settlement later.
             shares = sum(sh for (_, sh, _, _) in offers[j]; init = 0.0)
             cost_paid = (priced[j][root] + shares) * costs[j]
+            if p.ra_domain && p.ra_reserve_horizon > 0 && commons_reserve[] < reserve_target[]
+                prov = min(cost_paid, reserve_target[] - commons_reserve[])
+                commons_reserve[] += prov
+                reserve_held[] += prov
+            end
             if !withhold_stopped[] && p.withhold > 0 && costs[j] > costs_honest[j]
                 overpay = (priced[j][root] + shares) * (costs[j] - costs_honest[j])
                 buyer_overpay[a] += overpay
@@ -1740,6 +1779,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                   supply_delta(shares * sum(x[2] for x in credits), cost_paid, -shares * sum(x[3] for x in credits)))
             blind[] || trial_outcome!(l, measured, seen)
             score!(stops[j], pms[j], l, plan, seen, Dict(c => pr for (c, _, pr, _) in offers[j]), a)
+            if p.ra_domain && !blind[]
+                bg_aud = isempty(p.ra_audit_per_step) ? 0.0 : p.ra_audit_per_step[l]
+                adv_aud = min(ra_domain_audit[l], p.audit_cost)
+                ra_domain_audit[l] -= adv_aud
+                aud_total = bg_aud + adv_aud
+                ra_audit_costs[] += aud_total
+                vpc = ra_value_per_cost(measured, costs[j]; audit_cost = aud_total, fallback = p.cost_per_touch)
+                ra_unit_value[l] = 0.9 * ra_unit_value[l] + 0.1 * max(0.0, vpc)
+            end
             credit!(step, sigs[j], stops[j], measured, pms[j], priced[j], credits;
                     up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
             available -= count(touched(plan))
@@ -1810,7 +1858,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         elseif p.transactions
             # Every proposal is a transaction: screened by G, executed if paid for (L86-L89).
-            for (k, j) in enumerate(menu)
+            # When RA domain allocation (`ra_alloc_weight > 0`) is enabled, scarce resources prioritize domains with highest estimated Δ↑(U, H) / ↓(Cost + Audit) (8.133, 8.153, 8.155).
+            ord = if p.ra_domain && p.ra_alloc_weight > 0 && step > 10 && length(menu) > 1
+                uv_max = max(maximum(ra_unit_value), 1e-12)
+                sortperm(eachindex(menu); by = k -> -(p.ra_alloc_weight * ra_unit_value[leaves[menu[k]]] / uv_max), alg = MergeSort)
+            else
+                eachindex(menu)
+            end
+            for k in ord
+                j = menu[k]
                 choose(screened(), [menu_preds[k]], t) == 2 || continue
                 accept!(menu_preds[k])
                 execute_priced!(j)
@@ -1970,14 +2026,24 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         function insure!(harm, hit, measured, l)
             world.unattributed[] += -measured
             p.repair_efficiency > 0 || return
-            need = scarcity_cost(p.cost_per_touch, available, p.capacity; floor_share = p.scarcity_floor) * count(hit)
+            need = scarcity_cost(p.cost_per_touch, max(0.0, available), p.capacity; floor_share = p.scarcity_floor) * count(hit)
+            step_fallback_need[] += need; step_fallback_events[] += 1
             sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
             st = classify_sig(sig)
             # Only a qualified currency prices the repair (8.35.4); with none, it costs its full resource cost.
             bp = best_prediction(price_shares(st), l, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
             price = bp === nothing ? need : transaction_price(need, plan_value(bp[2], t), cred(bp[1], bp[2]))
             own = clamp(need - max(price, 0.0), 0.0, need)
-            spend = min(sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[], clamp(price, 0.0, need))
+            major_fallback = blind[] || !isempty(degraded) || count(hit) >= max(2, round(Int, 0.35 * t.n))
+            unreserved_commons = max(0.0, sum(tr.costs) + sum(tr.lane_costs) - world.commons_spent[] -
+                                     (p.ra_domain && p.ra_reserve_horizon > 0 ? reserve_held[] : 0.0))
+            cap_commons = unreserved_commons + (p.ra_domain && p.ra_reserve_horizon > 0 && major_fallback ? commons_reserve[] : 0.0)
+            spend = min(cap_commons, clamp(price, 0.0, need))
+            if p.ra_domain && p.ra_reserve_horizon > 0 && major_fallback && commons_reserve[] > 0
+                from_res = min(commons_reserve[], max(0.0, spend - unreserved_commons))
+                commons_reserve[] = max(0.0, commons_reserve[] - from_res)
+                reserve_held[] = max(0.0, reserve_held[] - from_res)
+            end
             f = p.repair_efficiency * min(own + spend, need) / need
             if f > 0
                 push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
@@ -2132,11 +2198,25 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         available_honest = min(p.capacity, max(0.0, available_honest) + regen_amt)
         (!isempty(suppliers) && !withhold_stopped[]) &&
             (available = min(available, p.capacity * (1 - p.withhold * p.supply_share)))   # hidden supply
-        # Global resource accounting (8.133): the step's net new issuance is capped at the headroom left under the horizon of
-        # deliverable value; the excess is taken back pro rata from the identities whose balances rose this step (not issued).
+        # Global resource accounting (8.133): update RA estimating domain (`ra_supply_est`, `ra_regen_est`, fallback
+        # demand & rate) from observed world signals, bound net new issuance against estimated deliverable value over
+        # `ra_horizon`, and contract baseline pricing + discretionary spending (`ra_spend_contract`) when claims overshoot.
+        if p.ra_domain
+            ra_supply_est[] = 0.9 * ra_supply_est[] + 0.1 * max(0.0, available)
+            ra_regen_est[] = 0.9 * ra_regen_est[] + 0.1 * (p.capacity > 0 ? regen_amt / p.capacity : 0.0)
+            ra_need_est[] = 0.9 * ra_need_est[] + 0.1 * step_fallback_need[]
+            ra_fallback_rate_est[] = 0.9 * ra_fallback_rate_est[] + 0.1 * min(1.0, Float64(step_fallback_events[]))
+        end
+        est_cap = if p.ra_horizon > 0
+            uv_cap = p.ra_domain ? max(p.cost_per_touch, mean(ra_unit_value)) : p.cost_per_touch
+            cap_sup = p.ra_domain && step > 10 ? ra_supply_est[] : p.capacity
+            cap_reg = p.ra_domain && step > 10 ? ra_regen_est[] : p.regen
+            p.ra_horizon * deliverable_value(cap_sup, cap_reg, uv_cap)
+        else
+            0.0
+        end
         if p.ra_horizon > 0
-            cap = p.ra_horizon * deliverable_value(p.capacity, p.regen, p.cost_per_touch)
-            over = sum(balance) - max(cap, sum(bal0))
+            over = sum(balance) - max(est_cap, sum(bal0))
             if over > 0
                 rise = max.(balance .- bal0, 0.0); tot = sum(rise)
                 tot > 0 && (balance .-= rise .* min(1.0, over / tot))
@@ -2145,11 +2225,19 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         if p.ra_rate > 0
-            if lane.halted[] - halted0 > lane.executed[] - executed0
-                price_scale[] *= 1 - p.ra_rate
-                degrade!("resource prices", "contracted baseline pricing", "StandCoin work halting unfunded (8.71)")
+            stalled_lane = lane.halted[] - halted0 > lane.executed[] - executed0
+            over_claims = p.ra_domain && p.ra_spend_contract && p.ra_horizon > 0 && sum(balance) > est_cap
+            if stalled_lane || over_claims
+                cf = over_claims ? ra_contraction_factor(sum(balance), est_cap; rate = p.ra_rate, min_scale = 0.25) : (1 - p.ra_rate)
+                price_scale[] = stalled_lane ? price_scale[] * (1 - p.ra_rate) : min(price_scale[], cf)
+                if p.ra_spend_contract
+                    spend_scale[] = min(spend_scale[], cf)
+                    commons_reserve[] *= max(0.5, cf)
+                end
+                degrade!("resource prices", "contracted baseline pricing & spending", "StandCoin halt or claims over capacity (8.71, 8.133)")
             else
                 price_scale[] = min(1.0, price_scale[] / (1 - p.ra_rate))
+                p.ra_spend_contract && (spend_scale[] = min(1.0, spend_scale[] / (1 - p.ra_rate)))
             end
         end
         # Formation of novel leaves from clustered blockages; then memory is reclassified.
@@ -2280,6 +2368,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 frivol || (ok && (m - m0) / sqrt(se^2 + se0^2) + choice_noise(xrng, choice_caps[r, lb_]) > p.adv_z) || continue
                 adv.reports[] += 1; reports_by[r] += 1
                 adv.audits[] += p.audit_cost
+                1 <= lb_ <= ntrue && (ra_domain_audit[lb_] += p.audit_cost)
                 founded = ok && select_candidate([m0, m], [se0, se]; z = p.adv_z) == 2
                 sig = true_sig[lb_]
                 st = price_shares(classify_sig(sig))

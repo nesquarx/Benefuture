@@ -464,4 +464,14 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   rehabilitate_restraint_ref baseShare crimeEvents.toUInt64.toNat
     patternMin.toUInt64.toNat stepDecay minShare
 
+-- 8.133 & 8.155 / L83: RA estimating domain value per (cost + audit), commons reserve, contraction factor
+@[export bf_ra_value_per_cost] def raValuePerCost (measuredGain resourceCost auditCost fallback : Float) : Float :=
+  ra_value_per_cost_ref measuredGain resourceCost auditCost fallback
+
+@[export bf_ra_commons_reserve] def raCommonsReserve (expectedNeed fallbackRate horizon : Float) : Float :=
+  ra_commons_reserve_ref expectedNeed fallbackRate horizon
+
+@[export bf_ra_contraction_factor] def raContractionFactor (claims deliverableCap rate minScale : Float) : Float :=
+  ra_contraction_factor_ref claims deliverableCap rate minScale
+
 end BenefutureReference.Export

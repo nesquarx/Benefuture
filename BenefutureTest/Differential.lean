@@ -204,6 +204,56 @@ theorem rehabilitateRestraintQ_spec (baseShare : ℚ) (crimeEvents patternMin : 
   by_cases h : Benefuture.Subgoals.pattern_escalation_repeats crimeEvents patternMin = 0 <;>
     simp [h, Rat.cast_max]
 
+def raValuePerCostQ (measuredGain resourceCost auditCost fallback : ℚ) : ℚ :=
+  let totalCost := resourceCost + max 0 auditCost
+  if 0 < totalCost then measuredGain / totalCost else fallback
+
+theorem raValuePerCostQ_spec (measuredGain resourceCost auditCost fallback : ℚ) :
+    (raValuePerCostQ measuredGain resourceCost auditCost fallback : ℝ) =
+      Benefuture.Economy.ra_value_per_cost measuredGain resourceCost auditCost fallback := by
+  unfold raValuePerCostQ Benefuture.Economy.ra_value_per_cost
+  by_cases h : (0 : ℚ) < resourceCost + max 0 auditCost
+  · have hr : (0 : ℝ) < (resourceCost : ℝ) + max 0 (auditCost : ℝ) := by
+      have : ((0 : ℚ) : ℝ) < ((resourceCost + max 0 auditCost : ℚ) : ℝ) := Rat.cast_lt.mpr h
+      simpa [Rat.cast_add, Rat.cast_max] using this
+    simp [h, hr, Rat.cast_div, Rat.cast_add, Rat.cast_max]
+  · have hr : ¬ ((0 : ℝ) < (resourceCost : ℝ) + max 0 (auditCost : ℝ)) := by
+      intro hpos
+      apply h
+      have : ((0 : ℚ) : ℝ) < ((resourceCost + max 0 auditCost : ℚ) : ℝ) := by
+        simpa [Rat.cast_add, Rat.cast_max] using hpos
+      exact Rat.cast_lt.mp this
+    simp [h, hr]
+
+def raCommonsReserveQ (expectedNeed fallbackRate horizon : ℚ) : ℚ :=
+  max 0 expectedNeed * max 0 fallbackRate * max 0 horizon
+
+theorem raCommonsReserveQ_spec (expectedNeed fallbackRate horizon : ℚ) :
+    (raCommonsReserveQ expectedNeed fallbackRate horizon : ℝ) =
+      Benefuture.Economy.ra_commons_reserve expectedNeed fallbackRate horizon := by
+  simp [raCommonsReserveQ, Benefuture.Economy.ra_commons_reserve, Rat.cast_mul, Rat.cast_max]
+
+def raContractionFactorQ (claims deliverableCap rate minScale : ℚ) : ℚ :=
+  if claims ≤ deliverableCap ∨ deliverableCap ≤ 0 then 1
+  else max minScale (1 - rate * min 1 ((claims - deliverableCap) / deliverableCap))
+
+theorem raContractionFactorQ_spec (claims deliverableCap rate minScale : ℚ) :
+    (raContractionFactorQ claims deliverableCap rate minScale : ℝ) =
+      Benefuture.Economy.ra_contraction_factor claims deliverableCap rate minScale := by
+  unfold raContractionFactorQ Benefuture.Economy.ra_contraction_factor
+  by_cases h : claims ≤ deliverableCap ∨ deliverableCap ≤ 0
+  · have hr : (claims : ℝ) ≤ (deliverableCap : ℝ) ∨ (deliverableCap : ℝ) ≤ 0 := by
+      rcases h with h1 | h2
+      · exact Or.inl (by exact_mod_cast h1)
+      · exact Or.inr (by exact_mod_cast h2)
+    simp [h, hr]
+  · have hr : ¬ ((claims : ℝ) ≤ (deliverableCap : ℝ) ∨ (deliverableCap : ℝ) ≤ 0) := by
+      intro hor; apply h
+      rcases hor with h1 | h2
+      · exact Or.inl (by exact_mod_cast h1)
+      · exact Or.inr (by exact_mod_cast h2)
+    simp [h, hr, Rat.cast_max, Rat.cast_sub, Rat.cast_mul, Rat.cast_min, Rat.cast_div]
+
 /-! ## Interval-bound oracles for nonlinear functions -/
 
 /-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
@@ -611,6 +661,40 @@ def runAll : IO Unit := do
     let minShare : ℚ := (m0 : ℚ) / 200
     let f := rehabilitate_restraint_ref (ratToFloat baseShare) cr pmin (ratToFloat stepDecay) (ratToFloat minShare)
     let q := rehabilitateRestraintQ baseShare cr pmin stepDecay minShare
+    (close f q, g)
+  checkAll "ra_value_per_cost" 400 22 fun g =>
+    let (g0, g) := g.below 129
+    let (r0, g) := g.below 65
+    let (a0, g) := g.below 65
+    let (fb0, g) := g.below 33
+    let gain : ℚ := ((g0 : ℚ) - 32) / 8
+    let rc : ℚ := ((r0 : ℚ) - 4) / 8
+    let ac : ℚ := ((a0 : ℚ) - 4) / 8
+    let fb : ℚ := (fb0 : ℚ) / 16
+    let f := ra_value_per_cost_ref (ratToFloat gain) (ratToFloat rc) (ratToFloat ac) (ratToFloat fb)
+    let q := raValuePerCostQ gain rc ac fb
+    (close f q, g)
+  checkAll "ra_commons_reserve" 400 23 fun g =>
+    let (n0, g) := g.below 100
+    let (r0, g) := g.below 33
+    let (h0, g) := g.below 65
+    let need : ℚ := ((n0 : ℚ) - 10) / 8
+    let fRate : ℚ := ((r0 : ℚ) - 4) / 32
+    let hor : ℚ := ((h0 : ℚ) - 4) / 8
+    let f := ra_commons_reserve_ref (ratToFloat need) (ratToFloat fRate) (ratToFloat hor)
+    let q := raCommonsReserveQ need fRate hor
+    (close f q, g)
+  checkAll "ra_contraction_factor" 400 24 fun g =>
+    let (c0, g) := g.below 129
+    let (d0, g) := g.below 65
+    let (r0, g) := g.below 33
+    let (m0, g) := g.below 17
+    let claims : ℚ := (c0 : ℚ) / 16
+    let cap : ℚ := ((d0 : ℚ) - 4) / 16
+    let rate : ℚ := (r0 : ℚ) / 32
+    let minScale : ℚ := (m0 : ℚ) / 32
+    let f := ra_contraction_factor_ref (ratToFloat claims) (ratToFloat cap) (ratToFloat rate) (ratToFloat minScale)
+    let q := raContractionFactorQ claims cap rate minScale
     (close f q, g)
 
 #eval runAll

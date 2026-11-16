@@ -374,3 +374,27 @@ def resolution_due_ref (stepsSinceAdoption eta etaGrace : Nat) : Bool :=
     it that regenerates each step, and the value one unit delivers (from measured outcomes; at first its base price). -/
 def deliverable_value_ref (supply regenRate unitValue : Float) : Float :=
   supply * regenRate * unitValue
+
+/-- Resource accounting's estimated value per unit of `(Cost + Audit)` (L83, author rulings 8.133 & 8.155):
+    measured `U`/`H` value gain divided by `resourceCost + max 0 auditCost`, with `fallback` when non-positive. -/
+def ra_value_per_cost_ref (measuredGain resourceCost auditCost fallback : Float) : Float :=
+  let totalCost := resourceCost + (if auditCost > 0.0 then auditCost else 0.0)
+  if totalCost > 0.0 then measuredGain / totalCost else fallback
+
+/-- Commons reserve target estimated by resource accounting for progressive-complexity fallbacks (8.133):
+    expected fallback repair need times fallback occurrence rate over the reserve horizon. -/
+def ra_commons_reserve_ref (expectedNeed fallbackRate horizon : Float) : Float :=
+  let n := if expectedNeed > 0.0 then expectedNeed else 0.0
+  let r := if fallbackRate > 0.0 then fallbackRate else 0.0
+  let h := if horizon > 0.0 then horizon else 0.0
+  n * r * h
+
+/-- Resource-accounting contraction multiplier (8.71 / 8.133): `1.0` inside deliverable capacity, otherwise
+    contracts toward `minScale` proportionally to overshoot above `deliverableCap`. -/
+def ra_contraction_factor_ref (claims deliverableCap rate minScale : Float) : Float :=
+  if claims <= deliverableCap || deliverableCap <= 0.0 then 1.0
+  else
+    let frac := (claims - deliverableCap) / deliverableCap
+    let clampedFrac := if frac < 1.0 then frac else 1.0
+    let scaled := 1.0 - rate * clampedFrac
+    if scaled > minScale then scaled else minScale

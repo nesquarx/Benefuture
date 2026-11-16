@@ -2428,3 +2428,50 @@ end
     @test paired_effect([o.off_exec - p.off_exec for (o, p) in zip(off, pat)]; z = 3.0).significant
     @test all(p.off_exec > 0 for p in pat)  # min_share > 0 lets actor still contribute honestly
 end
+
+# 8.133, 8.153 & 8.155 (L83 `Δ↑(U, H) / ↓(Cost + Audit)`): RA estimating domain, cross-domain allocation,
+# commons reserve provisioning for progressive-complexity fallbacks, and contraction of baseline pricing & spending.
+@testset "Probe: RA estimating domain allocation (L83; 8.133, 8.153, 8.155)" begin
+    # High-yield low-audit domain (leaf 1) vs lower-yield high-audit domain (leaf 2) under scarce budgeted capacity.
+    # RA estimates Δ(U,H)/(Cost+Audit) online (`ra_unit_value`, `ra_audit_per_step`), reallocates scarce capacity
+    # (`ra_alloc_weight`), and lifts understanding floor at z >= 3.0 (`1:16` paired seeds).
+    ag10 = [DomainAgent([0.9, 0.15], [0.5, 0.5], 0.0) for _ in 1:6]
+    p10(ra_on, aud1) = M3cParams(ToyParams(n = 30, steps = 160, plans = 12), ag10, [1, 1], trues(2);
+                                  λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                                  init_steps = 20, budget = true, endowment = 100.0, capacity = 50.0, regen = 0.25,
+                                  cost_per_touch = 0.2, ra_domain = true, ra_alloc_weight = ra_on ? 1.0 : 0.0,
+                                  ra_audit_per_step = [aud1, 4.0], LEGACY...)
+    off10 = [run_m3c(p10(false, 0.0); seed = s) for s in 1:16]
+    on10  = [run_m3c(p10(true,  0.0); seed = s) for s in 1:16]
+    hi10  = [run_m3c(p10(true, 10.0); seed = s) for s in 1:16]
+    @test paired_effect([r.ra_unit_value[1] - r.ra_unit_value[2] for r in on10]; z = 3.0).significant
+    @test paired_effect([a.ra_unit_value[1] - b.ra_unit_value[1] for (a, b) in zip(on10, hi10)]; z = 3.0).significant
+    @test all(r -> r.ra_audit_costs > 0 && r.ra_alloc[1] > r.ra_alloc[2], on10)
+    @test paired_effect([count(==(1), a.true_leaf) / length(a.true_leaf) - count(==(1), b.true_leaf) / length(b.true_leaf)
+                         for (a, b) in zip(on10, off10)]; z = 3.0).significant
+    @test paired_effect([success_pattern(a; from = 21).floor_u - success_pattern(b; from = 21).floor_u
+                         for (a, b) in zip(on10, off10)]; z = 3.0).significant
+    @test paired_effect([sum(a.valued_measured) - sum(b.valued_measured) for (a, b) in zip(on10, off10)]; z = 3.0).significant
+end
+
+@testset "Probe: RA commons reserve and spending contraction under fallback shock (8.133, 8.71)" begin
+    # Under scarce capacity, high hazard burn, and an unattributed catastrophe shock (step 80), RA commons reserve
+    # + pricing/spending contraction protects physical capacity and commons solvency so emergency repair fraction rises
+    # (`insured / repair_cost`), uncashable claims drop, and emergency scarcity repair cost drops (`1:16` paired seeds, z >= 3.0).
+    ag11 = [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:6]
+    p11(res_on) = M3cParams(ToyParams(n = 40, steps = 110, plans = 8), ag11, [1, 1], trues(2);
+                            λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                            budget = true, endowment = 250.0, capacity = 30.0, regen = 0.4, cost_per_touch = 0.5, scarcity_floor = 0.01,
+                            p_hazard = 0.35, hazard_share = 0.15, hazard_size = 2.0, repair_efficiency = 1.0, guardians = Int[],
+                            events = [shock(:catastrophe; step = 80, share = 0.6, size = 15.0)],
+                            ra_horizon = 5.0, ra_rate = 0.2, ra_domain = true,
+                            ra_reserve_horizon = res_on ? 12.0 : 0.0, ra_spend_contract = res_on, LEGACY...)
+    r_off = [run_m3c(p11(false); seed = s) for s in 1:16]
+    r_on  = [run_m3c(p11(true);  seed = s) for s in 1:16]
+    frac(r) = r.repair_cost > 0 ? r.insured / r.repair_cost : 1.0
+    @test all(r -> r.ra_reserve_target > 0 && r.ra_reserve_balance > 0 && r.ra_spend_scale < 1.0 && r.ra_price_scale < 1.0, r_on)
+    @test paired_effect([frac(a) - frac(b) for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
+    @test paired_effect([(sum(a.costs) - a.commons_spent) - (sum(b.costs) - b.commons_spent) for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
+    @test paired_effect([Float64(b.budget_uncashable - a.budget_uncashable) for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
+    @test paired_effect([b.repair_cost - a.repair_cost for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
+end
