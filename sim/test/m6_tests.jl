@@ -261,8 +261,15 @@ end
     sybil = run_m5(M5Params(w, 1:4; decisions = 400, colluders = [forker], fork_copies = 200, fork_rule = :per_identity); seed = 1)
     @test divided.correct ≈ plain.correct atol = 0.01           # dividing social power: forking gains nothing
     @test sybil.correct < plain.correct - 0.1                   # a base vote per identity: copies capture
+    bound_sybil = run_m5(M5Params(w, 1:4; decisions = 400, colluders = [forker], fork_copies = 200, fork_rule = :per_identity,
+                                  bind_weighted = true, bind_clusters = 3, bind_quorum_weight = 1.0); seed = 1)
+    @test bound_sybil.sybil_forks_blocked > bound_sybil.sybil_forks_admitted
+    @test bound_sybil.correct > sybil.correct + 0.1
     @test_throws ArgumentError M5Params(w, 1:4; fork_rule = :maybe)
     @test_throws ArgumentError M5Params(w, 1:4; fork_copies = -1)
+    @test_throws ArgumentError M5Params(w, 1:4; bind_clusters = 0)
+    @test_throws ArgumentError M5Params(w, 1:4; bind_compromised = [4], bind_clusters = 3)
+    @test_throws ArgumentError M5Params(w, 1:4; p_sybil_attempt = 1.5)
 end
 
 # The reporter's schedule (author ruling 8.76): a deceiver reported by someone else has every exploit

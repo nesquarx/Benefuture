@@ -367,12 +367,13 @@ Governance and incentives
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).
 
 Bridge to the reference ([`BenefutureTest/Differential.lean`](../BenefutureTest/Differential.lean))
-- The bridge chain is ℝ specification = ℚ oracle (proved, 20 `*_spec` theorems) ≈ Float reference
+- The bridge chain is ℝ specification = ℚ oracle (proved, 21 `*_spec` theorems) ≈ Float reference
   (tested within 1e-9 relative on dyadic inputs).
   - Rules covered: `supply_delta`, `competition_efficiency`, `rolling_average`, `accumulate_capped`,
     `p_forgive`, `p_overreact`, `severity_score`, `Voting_weight`, exact and sampled Shapley,
     `recordCredence`, `accident_split`, `sanction_escrow_credence`, `rehabilitate_restraint`,
-    `ra_value_per_cost`, `ra_commons_reserve`, `ra_contraction_factor`, and `responsibility_factor`.
+    `ra_value_per_cost`, `ra_commons_reserve`, `ra_contraction_factor`, `responsibility_factor`,
+    and `binding_admits_weighted`.
   - Interval-bound oracles enclose the nonlinear rules (`Rep_decay`, `shapley_sample_count`, `phi`,
     `normal_cdf`, `credence`).
   - ℤ specifications are compared directly (`bounty_reward`, `upfront_payment`).

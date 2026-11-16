@@ -2536,3 +2536,35 @@ end
     @test all(r -> r.educations == 0, uninf_no_ed) && all(r -> r.educations >= 1, uninf_ed)
     @test paired_effect([e.hazard_debits - n.hazard_debits for (n, e) in zip(uninf_no_ed, uninf_ed)]; z = 3.0).significant
 end
+
+# 8.70 / 8.149 / L18 (M5 TN cluster weighted identity binding): compromised TN clusters force
+# unweighted count-rule sybil `:per_identity` forks and capture M5 votes (`bind_weighted = false`);
+# weighted class-balanced binding zeroes compromised clusters' say once revealed, blocks sybils,
+# and defeats pooled easy-majority newcomer camouflage (`1:16` paired seeds, z = 3.0).
+@testset "Probe: M5 weighted TN identity binding defeats compromised clusters and newcomer camouflage (8.70)" begin
+    w14 = run_m3c(M3cParams(ToyParams(n = 80, steps = 200, plans = 10),
+                            [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 24 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                             for k in 1:4 for r in 1:25], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    p14(bw) = M5Params(w14, 1:4; decisions = 250, colluders = [1], fork_copies = 150, fork_rule = :per_identity,
+                       bind_quorum = 2, bind_clusters = 3, bind_compromised = [1, 2],
+                       bind_quorum_weight = 0.5, bind_weighted = bw, p_reveal = 0.1, attest_min_records = 5)
+    unw = [run_m5(p14(false); seed = s) for s in 1:16]
+    wgt = [run_m5(p14(true);  seed = s) for s in 1:16]
+    @test all(r -> r.sybil_forks_blocked == 0 && r.sybil_forks_admitted > 1000, unw)
+    @test all(r -> r.attestation_skill[1] < 0 && r.attestation_skill[2] < 0 && r.attestation_skill[3] > 0 &&
+                   r.sybil_forks_blocked > r.sybil_forks_admitted, wgt)
+    @test paired_effect([a.correct - b.correct for (a, b) in zip(wgt, unw)]; z = 3.0).significant
+    @test paired_effect([Float64(b.sybil_forks_admitted - a.sybil_forks_admitted) for (a, b) in zip(wgt, unw)]; z = 3.0).significant
+
+    p15(pooled) = M5Params(w14, 1:4; decisions = 500, colluders = 1:35, fork_copies = 3, fork_rule = :per_identity,
+                           bind_quorum = 2, bind_clusters = 5, bind_compromised = [1, 2],
+                           bind_quorum_weight = 1.0, bind_weighted = true, attest_pooled = pooled,
+                           p_newcomer = 0.9, p_reveal = 0.05, p_sybil_attempt = 0.002, attest_min_records = 5)
+    pol = [run_m5(p15(true);  seed = s) for s in 1:16]
+    bal = [run_m5(p15(false); seed = s) for s in 1:16]
+    @test all(r -> r.attestation_skill[1] > 0 && r.attestation_skill[2] > 0, pol)
+    @test all(r -> r.attestation_skill[1] < 0 && r.attestation_skill[2] < 0 && all(r.attestation_skill[3:5] .> 0), bal)
+    @test paired_effect([a.correct - b.correct for (a, b) in zip(bal, pol)]; z = 3.0).significant
+    @test paired_effect([Float64(b.sybil_forks_admitted - a.sybil_forks_admitted) for (a, b) in zip(bal, pol)]; z = 3.0).significant
+    @test mean(r.newcomers_admitted / max(1, r.newcomers_admitted + r.newcomers_refused) for r in bal) >= 0.85
+end

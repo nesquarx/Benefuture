@@ -8,6 +8,7 @@
   Corresponds to: Technology Network.txt, System Design.txt, and Bf_Pseudocode.txt L17-19
 -/
 
+import Mathlib.Data.Real.Basic
 import Benefuture.Math.Order
 import Benefuture.Ontology.Thing
 import Benefuture.Ontology.Entity
@@ -237,6 +238,109 @@ instance : Coe SocialNetwork Thing where
 
 abbrev SN := SocialNetwork
 abbrev TN := IdentityBinding
+
+/-! ## Weighted Cross-Cluster Identity Binding (`8.70`, `L18`) -/
+
+/-- Weighted attestation say summed across clusters meeting confidence `threshold` (`8.70`).
+    Each cluster's skill weight is clipped to `[0, 1]`, so non-positive skill gives zero say. -/
+noncomputable def weighted_attestation_say (threshold : ℝ) : List ℝ → List ℝ → ℝ
+  | c :: cs, w :: ws =>
+    (if c ≥ threshold then max 0 (min 1 w) else 0) + weighted_attestation_say threshold cs ws
+  | _, _ => 0
+
+/-- Weighted identity binding admission predicate (`8.70`, `L18`). -/
+noncomputable def binding_admits_weighted_spec
+    (confs weights : List ℝ) (threshold quorumWeight : ℝ) : Prop :=
+  weighted_attestation_say threshold confs weights ≥ quorumWeight
+
+/-- Weighted attestation say is always non-negative regardless of cluster skills. -/
+theorem weighted_attestation_say_nonneg
+    (threshold : ℝ) (confs weights : List ℝ) :
+    0 ≤ weighted_attestation_say threshold confs weights := by
+  induction confs generalizing weights with
+  | nil => simp [weighted_attestation_say]
+  | cons c cs ih =>
+    cases weights with
+    | nil => simp [weighted_attestation_say]
+    | cons w ws =>
+      unfold weighted_attestation_say
+      refine add_nonneg ?_ (ih ws)
+      split_ifs <;> simp
+
+/-- Every cluster with non-positive attestation skill (`w ≤ 0`) contributes zero say even if its
+    reported confidence meets `threshold`. -/
+theorem weighted_attestation_say_zero_of_nonpos
+    (threshold : ℝ) (confs weights : List ℝ) (hw : ∀ w ∈ weights, w ≤ 0) :
+    weighted_attestation_say threshold confs weights = 0 := by
+  induction confs generalizing weights with
+  | nil => simp [weighted_attestation_say]
+  | cons c cs ih =>
+    cases weights with
+    | nil => simp [weighted_attestation_say]
+    | cons w ws =>
+      unfold weighted_attestation_say
+      have hw0 : w ≤ 0 := hw w List.mem_cons_self
+      have ih_ws : weighted_attestation_say threshold cs ws = 0 :=
+        ih ws (fun x hx => hw x (List.mem_cons_of_mem w hx))
+      have hterm : (if c ≥ threshold then max (0 : ℝ) (min 1 w) else 0) = 0 := by
+        split_ifs
+        · exact max_eq_left (le_trans (min_le_right 1 w) hw0)
+        · rfl
+      rw [hterm, ih_ws, add_zero]
+
+/-- Weighted attestation say is monotone in cluster skills pointwise (`8.70`). -/
+theorem weighted_attestation_say_mono_weights
+    (threshold : ℝ) (confs : List ℝ) {w₁ w₂ : List ℝ} (h : List.Forall₂ (· ≤ ·) w₁ w₂) :
+    weighted_attestation_say threshold confs w₁ ≤
+      weighted_attestation_say threshold confs w₂ := by
+  induction confs generalizing w₁ w₂ with
+  | nil => simp [weighted_attestation_say]
+  | cons c cs ih =>
+    cases h with
+    | nil => simp [weighted_attestation_say]
+    | cons hhd htl =>
+      unfold weighted_attestation_say
+      refine add_le_add ?_ (ih htl)
+      split_ifs
+      · exact max_le_max_left 0 (min_le_min_left 1 hhd)
+      · exact le_rfl
+
+/-- Higher quorum weights never admit an identity that a lower quorum weight rejected (`8.70`). -/
+theorem binding_admits_weighted_antitone_quorum
+    (confs weights : List ℝ) (threshold : ℝ) {q₁ q₂ : ℝ} (hq : q₁ ≤ q₂)
+    (hadm : binding_admits_weighted_spec confs weights threshold q₂) :
+    binding_admits_weighted_spec confs weights threshold q₁ :=
+  le_trans hq hadm
+
+/-- Weighted attestation say splits additively across aligned cluster sub-lists. -/
+theorem weighted_attestation_say_append
+    (threshold : ℝ) (c₁ c₂ w₁ w₂ : List ℝ) (h1 : c₁.length = w₁.length) :
+    weighted_attestation_say threshold (c₁ ++ c₂) (w₁ ++ w₂) =
+      weighted_attestation_say threshold c₁ w₁ + weighted_attestation_say threshold c₂ w₂ := by
+  induction c₁ generalizing w₁ with
+  | nil =>
+    cases w₁ with
+    | nil => simp [weighted_attestation_say]
+    | cons _ _ => simp at h1
+  | cons c cs ih =>
+    cases w₁ with
+    | nil => simp at h1
+    | cons w ws =>
+      simp only [List.length_cons, Nat.succ.injEq] at h1
+      simp only [List.cons_append, weighted_attestation_say, ih ws h1, add_assoc]
+
+/-- Colluding compromised clusters whose class-balanced skill is non-positive (`≤ 0`) add zero say
+    and cannot push honest clusters past `quorumWeight` (`8.70`). -/
+theorem compromised_nonpos_cannot_force_quorum
+    (threshold quorumWeight : ℝ) (cComp wComp cHon wHon : List ℝ)
+    (hlen : cComp.length = wComp.length)
+    (hcomp : ∀ w ∈ wComp, w ≤ 0)
+    (hhon : weighted_attestation_say threshold cHon wHon < quorumWeight) :
+    ¬ binding_admits_weighted_spec (cComp ++ cHon) (wComp ++ wHon) threshold quorumWeight := by
+  unfold binding_admits_weighted_spec
+  rw [weighted_attestation_say_append threshold cComp cHon wComp wHon hlen,
+      weighted_attestation_say_zero_of_nonpos threshold cComp wComp hcomp, zero_add]
+  exact not_le_of_gt hhon
 
 end Benefuture.Systems
 

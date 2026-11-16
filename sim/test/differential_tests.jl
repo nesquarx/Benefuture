@@ -168,4 +168,16 @@ fin(xs...) = all(isfinite, xs)
                            rw = (!act && !duty) ? 0.0 : (inf ? 1.0 : clamp(acc, 0.0, 1.0))
                            rw * clamp(cf, 0.0, 1.0) * max(0.0, sev)
                        end) == (guard = 0, value = 0)
+    @test differential(:binding_admits_weighted,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           confs = [rand(r) < 0.05 ? hostile(r) : 1.2 * rand(r) - 0.1 for _ in 1:k]
+                           weights = [rand(r) < 0.05 ? hostile(r) : 3.0 * rand(r) - 1.5 for _ in 1:k]
+                           th = rand(r) < 0.05 ? hostile(r) : 1.2 * rand(r) - 0.1
+                           qw = rand(r) < 0.05 ? hostile(r) : 4.0 * rand(r) - 0.2
+                           (confs, weights, th, qw)
+                       end,
+                       (confs, weights, th, qw) -> all(c -> isfinite(c) && 0 <= c <= 1, confs) && all(isfinite, weights) && isfinite(th) && 0 <= th <= 1 && isfinite(qw) && qw >= 0,
+                       binding_admits_weighted,
+                       (confs, weights, th, qw) -> sum((clamp(w, 0.0, 1.0) for (c, w) in zip(confs, weights) if c >= th); init = 0.0) >= qw) == (guard = 0, value = 0)
 end

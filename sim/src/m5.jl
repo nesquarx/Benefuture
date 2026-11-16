@@ -98,6 +98,23 @@ struct M5Params
     posthoc_discount::Float64  # share of voluntary post hoc exposure not counted in the weight (8.160; governed)
     posthoc_share::Float64     # share of voters who manufacture exposure to each decision after its announcement (adversary; world)
     posthoc_impact::Float64    # the impact they raise theirs to (world)
+    # Technology Network cluster identity binding (8.70, L18; [P] B2 M5 wiring): gates `:per_identity`
+    # sybil/fork votes and newcomers across `bind_clusters` clusters weighed by class-balanced attestation skill.
+    bind_weighted::Bool
+    bind_clusters::Int
+    bind_threshold::Float64
+    bind_quorum::Int
+    bind_quorum_weight::Float64
+    bind_miss::Float64
+    bind_compromised::Vector{Int}
+    bind_conf_compromised::Float64
+    bind_conf_affirm::Float64
+    bind_conf_deny::Float64
+    attest_min_records::Int
+    attest_pooled::Bool
+    p_newcomer::Float64
+    p_reveal::Float64
+    p_sybil_attempt::Float64
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -119,7 +136,12 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   advice_defer::Real = 0.05, advice_α::Real = 2.0, advice_β::Real = 3.0,
                   misconception_σ::Real = 0.0, ballot::Symbol = :vote, overconfidence = Float64[],
                   copiers = Int[], copy_leader::Integer = 0, dedupe::Bool = true,
-                  weight_synergy::Bool = true, posthoc_discount::Real = 0.5, posthoc_share::Real = 0.0, posthoc_impact::Real = 1.0)
+                  weight_synergy::Bool = true, posthoc_discount::Real = 0.5, posthoc_share::Real = 0.0, posthoc_impact::Real = 1.0,
+                  bind_weighted::Bool = false, bind_clusters::Integer = 3, bind_threshold::Real = 0.75,
+                  bind_quorum::Integer = 0, bind_quorum_weight::Real = 1.0, bind_miss::Real = 0.1,
+                  bind_compromised = Int[], bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9,
+                  bind_conf_deny::Real = 0.1, attest_min_records::Integer = 5, attest_pooled::Bool = false,
+                  p_newcomer::Real = 0.0, p_reveal::Real = 0.05, p_sybil_attempt::Real = 1.0)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -155,6 +177,11 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           "a model capture names a decision, a duration and a domain decided in")
     check(all(x -> isfinite(x) && x >= 0, (collusion_gain, loyalty, adv_share, adv_floor, audit_cost)),
           "gain, loyalty, share, floor and audit cost non-negative")
+    check(bind_clusters >= 1 && 0 <= bind_threshold <= 1 && bind_quorum >= 0 && isfinite(bind_quorum_weight) && bind_quorum_weight >= 0 &&
+          0 <= bind_miss <= 1 && attest_min_records >= 1 && 0 <= p_newcomer <= 1 && 0 <= p_reveal <= 1 && 0 <= p_sybil_attempt <= 1 &&
+          all(c -> 1 <= c <= bind_clusters, bind_compromised) &&
+          all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny)),
+          "TN binding clusters >= 1, quorum/weight non-negative, compromised clusters in 1..bind_clusters, chances/confidences in [0, 1]")
     M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
              p_apparent, vote_value, audit_window, audit_threshold, audit_min_records, pool_max, own_floor, stealth,
@@ -165,7 +192,11 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              source_tags, rounds, collect(Int, tag_liars), tag_lie, tag_audit, echo_margin, echo_z, echo_min,
              advice_stay, advice_avg, advice_defer, advice_α, advice_β, ballot, isempty(overconfidence) ? ones(length(m3.agents)) : collect(Float64, overconfidence), Float64(misconception_σ),
              collect(Int, copiers), Int(copy_leader), dedupe,
-             weight_synergy, Float64(posthoc_discount), Float64(posthoc_share), Float64(posthoc_impact))
+             weight_synergy, Float64(posthoc_discount), Float64(posthoc_share), Float64(posthoc_impact),
+             bind_weighted, Int(bind_clusters), Float64(bind_threshold), Int(bind_quorum), Float64(bind_quorum_weight),
+             Float64(bind_miss), collect(Int, bind_compromised), Float64(bind_conf_compromised),
+             Float64(bind_conf_affirm), Float64(bind_conf_deny), Int(attest_min_records), attest_pooled,
+             Float64(p_newcomer), Float64(p_reveal), Float64(p_sybil_attempt))
 end
 
 """
@@ -254,6 +285,43 @@ function run_m5(p::M5Params; seed)
     # Voters who manufacture exposure (adversary): a share of the voters, on their own stream.
     makers = Set(randperm(Xoshiro(hash((seed, :posthoc))), na)[1:round(Int, p.posthoc_share * na)])
     maker_share = Float64[]  # their share of the total weight, per decision
+    # Technology Network cluster attestation state (8.70, L18): separate stream preserves baselines when off.
+    tnrng = Xoshiro(hash((seed, :tn_bind)))
+    tn_active = p.bind_quorum > 0 || p.bind_weighted
+    attest_cred = [Float64[] for _ in 1:p.bind_clusters]
+    attest_out = [Float64[] for _ in 1:p.bind_clusters]
+    tn_unrevealed = Tuple{Vector{Float64},Float64}[]
+    active_sybils = [Vector{Float64}[] for _ in 1:na]
+    attest_skill(c) = length(attest_out[c]) < p.attest_min_records ? 1.0 :
+        p.attest_pooled ? choice_skill(attest_cred[c], fill(0.5, length(attest_out[c])), attest_out[c]) :
+        class_balanced_skill(attest_cred[c], attest_out[c])
+    tn_weights = ones(p.bind_clusters)
+    tn_dirty = false
+    function refresh_tn_weights!()
+        tn_dirty || return
+        for c in 1:p.bind_clusters
+            tn_weights[c] = attest_skill(c)
+        end
+        tn_dirty = false
+    end
+    function score_attest!(confs, outcome)
+        for c in eachindex(confs)
+            push!(attest_cred[c], confs[c])
+            push!(attest_out[c], outcome)
+        end
+        tn_dirty = true
+        length(attest_out[1]) == p.attest_min_records && refresh_tn_weights!()
+    end
+    tn_bind!(confs) = p.bind_weighted ?
+        binding_admits_weighted(confs, tn_weights, p.bind_threshold, p.bind_quorum_weight) :
+        binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
+    function attest_confs(is_real::Bool)
+        [c in p.bind_compromised ? p.bind_conf_compromised :
+         (is_real ? (rand(tnrng) < p.bind_miss ? p.bind_conf_deny : p.bind_conf_affirm) :
+                    (rand(tnrng) < p.bind_miss ? p.bind_conf_affirm : p.bind_conf_deny))
+         for c in 1:p.bind_clusters]
+    end
+    sybil_admitted, sybil_blocked, newcomers_adm, newcomers_ref = 0, 0, 0, 0
     for n in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
@@ -273,11 +341,64 @@ function run_m5(p::M5Params; seed)
                           optional_below = p.optional_below)[1]
         end
         w = [vweight(i, expertise[i]) for i in 1:na]
-        # Forks (L123): with a base vote per identity, each copy adds its base and impact weight and
-        # votes with its origin; divided, the family holds the origin's single share.
+        # Technology Network revelations and honest newcomers (8.70, L18)
+        if tn_active
+            if p.p_reveal > 0 && !isempty(tn_unrevealed)
+                keep = trues(length(tn_unrevealed))
+                for idx in eachindex(tn_unrevealed)
+                    if rand(tnrng) < p.p_reveal
+                        confs, out = tn_unrevealed[idx]
+                        score_attest!(confs, out)
+                        keep[idx] = false
+                    end
+                end
+                deleteat!(tn_unrevealed, .!keep)
+            end
+            refresh_tn_weights!()
+            if p.p_newcomer > 0 && rand(tnrng) < p.p_newcomer
+                confs = attest_confs(true)
+                if tn_bind!(confs)
+                    newcomers_adm += 1
+                    push!(tn_unrevealed, (confs, 1.0))
+                else
+                    newcomers_ref += 1
+                end
+            end
+        end
+        # Forks (L123) and Sybil identity binding (8.70): with a base vote per identity, each copy
+        # seeks TN binding (`p_sybil_attempt` per open slot) and retains a persistent vote seat until
+        # revealed (`p_reveal`), after which compromised clusters lose say under weighted class-balanced
+        # binding; divided, the family holds the origin's single share.
         if p.fork_rule == :per_identity && p.fork_copies > 0
             for i in p.colluders
-                w[i] += p.fork_copies * vweight(i, 0.0)
+                if tn_active
+                    if p.p_reveal > 0 && !isempty(active_sybils[i])
+                        keep_s = trues(length(active_sybils[i]))
+                        for sidx in eachindex(active_sybils[i])
+                            if rand(tnrng) < p.p_reveal
+                                score_attest!(active_sybils[i][sidx], 0.0)
+                                keep_s[sidx] = false
+                            end
+                        end
+                        deleteat!(active_sybils[i], .!keep_s)
+                    end
+                    refresh_tn_weights!()
+                    deficit = p.fork_copies - length(active_sybils[i])
+                    for _ in 1:deficit
+                        p.p_sybil_attempt < 1.0 && rand(tnrng) >= p.p_sybil_attempt && continue
+                        confs = attest_confs(false)
+                        if tn_bind!(confs)
+                            sybil_admitted += 1
+                            push!(active_sybils[i], confs)
+                        else
+                            sybil_blocked += 1
+                            score_attest!(confs, 0.0)
+                        end
+                    end
+                    w[i] += length(active_sybils[i]) * vweight(i, 0.0)
+                else
+                    w[i] += p.fork_copies * vweight(i, 0.0)
+                end
             end
         end
         total = sum(w)
@@ -522,6 +643,7 @@ function run_m5(p::M5Params; seed)
             end
         end
     end
+    tn_active && refresh_tn_weights!()
     after_all, after_hidden = count(right_now), count(right_now .& hidden_flag)
     (correct = correct / p.decisions, max_share = max_share, max_single = max_single, bloc_expertise = bloc_expertise,
      correct_apparent = tally_apparent[1] / max(tally_apparent[2], 1), correct_hidden = tally_hidden[1] / max(tally_hidden[2], 1),
@@ -536,7 +658,10 @@ function run_m5(p::M5Params; seed)
      minds_changed = minds_trace, advice_weight = advw,
      weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
-     records = person_rec, maker_share = maker_share)
+     records = person_rec, maker_share = maker_share,
+     sybil_forks_admitted = sybil_admitted, sybil_forks_blocked = sybil_blocked,
+     newcomers_admitted = newcomers_adm, newcomers_refused = newcomers_ref,
+     attestation_skill = tn_active ? copy(tn_weights) : Float64[])
 end
 
 """

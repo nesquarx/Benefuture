@@ -42,6 +42,7 @@ import Benefuture.Governance.ExternalHarm
 import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
 import Benefuture.Subgoals.Justice
+import Benefuture.Systems.TechnologyNetwork
 import Benefuture.Axiology.Priorities
 import Benefuture.Proposed.OutcomeDistribution
 import Benefuture.Proposed.ShapleySampling
@@ -267,6 +268,42 @@ theorem responsibilityFactorQ_spec (isAct isInformed hasDuty : Bool) (cf sev acc
   unfold responsibilityFactorQ Benefuture.Subgoals.responsibility_factor
   cases isAct <;> cases isInformed <;> cases hasDuty <;>
     simp [Rat.cast_mul, Rat.cast_min, Rat.cast_max]
+
+def weightedAttestationSayQ (threshold : ℚ) : List ℚ → List ℚ → ℚ
+  | c :: cs, w :: ws =>
+    (if c ≥ threshold then max 0 (min 1 w) else 0) + weightedAttestationSayQ threshold cs ws
+  | _, _ => 0
+
+theorem weightedAttestationSayQ_spec (threshold : ℚ) (confs weights : List ℚ) :
+    (weightedAttestationSayQ threshold confs weights : ℝ) =
+      Benefuture.Systems.weighted_attestation_say (threshold : ℝ)
+        (confs.map (fun q : ℚ => (q : ℝ))) (weights.map (fun q : ℚ => (q : ℝ))) := by
+  induction confs generalizing weights with
+  | nil => simp [weightedAttestationSayQ, Benefuture.Systems.weighted_attestation_say]
+  | cons c cs ih =>
+    cases weights with
+    | nil => simp [weightedAttestationSayQ, Benefuture.Systems.weighted_attestation_say]
+    | cons w ws =>
+      unfold weightedAttestationSayQ Benefuture.Systems.weighted_attestation_say
+      simp only [List.map_cons, Rat.cast_add, ih ws]
+      by_cases hc : c ≥ threshold
+      · have hcr : (c : ℝ) ≥ (threshold : ℝ) := Rat.cast_le.mpr hc
+        simp [hc, hcr, Rat.cast_max, Rat.cast_min]
+      · have hcr : ¬ ((c : ℝ) ≥ (threshold : ℝ)) := by exact_mod_cast hc
+        simp [hc, hcr]
+
+def bindingAdmitsWeightedQ (confs weights : List ℚ) (threshold quorumWeight : ℚ) : Bool :=
+  decide (weightedAttestationSayQ threshold confs weights ≥ quorumWeight)
+
+theorem bindingAdmitsWeightedQ_spec (confs weights : List ℚ) (threshold quorumWeight : ℚ) :
+    bindingAdmitsWeightedQ confs weights threshold quorumWeight = true ↔
+      Benefuture.Systems.binding_admits_weighted_spec
+        (confs.map (fun q : ℚ => (q : ℝ))) (weights.map (fun q : ℚ => (q : ℝ)))
+        (threshold : ℝ) (quorumWeight : ℝ) := by
+  unfold bindingAdmitsWeightedQ Benefuture.Systems.binding_admits_weighted_spec
+  rw [← weightedAttestationSayQ_spec]
+  simp only [decide_eq_true_eq]
+  exact ⟨fun h => Rat.cast_le.mpr h, fun h => Rat.cast_le.mp h⟩
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -724,6 +761,23 @@ def runAll : IO Unit := do
     let f := responsibility_factor_ref isAct isInf hasDuty (ratToFloat cf) (ratToFloat sev) (ratToFloat acc)
     let q := responsibilityFactorQ isAct isInf hasDuty cf sev acc
     (close f q, g)
+  checkAll "binding_admits_weighted" 400 26 fun g =>
+    let (c0, g) := g.below 17
+    let (c1, g) := g.below 17
+    let (c2, g) := g.below 17
+    let (w0, g) := g.below 33
+    let (w1, g) := g.below 33
+    let (w2, g) := g.below 33
+    let (th0, g) := g.below 17
+    let (qw0, g) := g.below 33
+    let confs : List ℚ := [(c0 : ℚ) / 16, (c1 : ℚ) / 16, (c2 : ℚ) / 16]
+    let weights : List ℚ := [((w0 : ℚ) - 12) / 16, ((w1 : ℚ) - 12) / 16, ((w2 : ℚ) - 12) / 16]
+    let th : ℚ := (th0 : ℚ) / 16
+    let qw : ℚ := (qw0 : ℚ) / 16
+    let f := binding_admits_weighted_ref (Array.mk (confs.map ratToFloat))
+               (Array.mk (weights.map ratToFloat)) (ratToFloat th) (ratToFloat qw)
+    let q := bindingAdmitsWeightedQ confs weights th qw
+    (f == q, g)
 
 #eval runAll
 
