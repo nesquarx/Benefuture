@@ -1,0 +1,15 @@
+suite,comparison,n,mean,se,z_raw,significant_z3
+R1_sparse,gain_nv_12,32,0.256042,0.006936,36.916,true
+R1_sparse,gain_nv_48,32,0.293542,0.006403,45.847,true
+R1_sparse,gain_nv_120,32,0.289583,0.008445,34.290,true
+R1_sparse,gain_nv_240,32,0.293958,0.005127,57.335,true
+R1_sparse,growth_240_minus_12,32,0.037917,0.008532,4.444,true
+R2_collusion_residual,advap_recovery,64,0.011849,0.000877,13.512,true
+R2_collusion_residual,collusion_residual,64,-0.001979,0.000620,-3.193,false
+R3_m3c_scale,floor_u_80_vs_40,32,-1.887059,0.963999,-1.958,false
+R3_m3c_scale,floor_u_160_vs_40,32,60.007641,1.067198,56.229,true
+R3_m3c_scale,floor_u_240_vs_40,32,104.124959,1.689421,61.634,true
+R3_m3c_scale,per_being_240_vs_40,32,-1.646604,0.018912,-87.064,false
+R4_m7_scale,floor_u_100_vs_20,32,1.975161,0.241002,8.196,true
+R4_m7_scale,floor_u_300_vs_20,32,2.680714,0.253909,10.558,true
+R4_m7_scale,floor_u_500_vs_20,32,2.722092,0.249330,10.918,true
