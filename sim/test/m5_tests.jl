@@ -384,4 +384,15 @@ ld_world(skills, rep) = (agents = [DomainAgent([s, 0.0], [0.0, 1.0], 0.0) for s 
     fr = run_m5(M5Params(flat, [1]; decisions = 50, p_delegate = 1.0, cap = 1.0, diversity = false, vote_value = 0.0); seed = 1)
     @test fr.max_share == fr.max_single && fr.weight_gap < 1e-9
     @test capd.weight_gap < 1e-9 && sup.weight_gap < 1e-9
+
+    # Nested threshold scopes (8.150 / 8.53-f/g): rule invariants and parameter validation
+    @test deciding_scope([0.85, 1.0], [true, true]; share_min = 0.8) == 1
+    @test deciding_scope([0.75, 1.0], [true, true]; share_min = 0.8) == 2
+    @test deciding_scope([0.95, 1.0], [false, true]; share_min = 0.8) == 2
+    @test deciding_scope([0.6, 0.85, 1.0], [true, true, true]; share_min = 0.8) == 2
+    @test_throws ArgumentError deciding_scope(Float64[], Bool[])
+    @test_throws ArgumentError deciding_scope([0.9], [true, true])
+    @test_throws ArgumentError M5Params(kmp, [1]; nested_scopes = true, scope_locals = Int[])
+    @test_throws ArgumentError M5Params(kmp, [1]; nested_scopes = true, scope_share_min = 1.5, scope_locals = [1])
+    @test_throws ArgumentError M5Params(kmp, [1]; nested_scopes = true, scope_local_share = -0.1, scope_locals = [1])
 end

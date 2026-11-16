@@ -115,6 +115,11 @@ struct M5Params
     p_newcomer::Float64
     p_reveal::Float64
     p_sybil_attempt::Float64
+    nested_scopes::Bool
+    scope_share_min::Float64
+    scope_local_share::Float64
+    scope_within_harm::Bool
+    scope_locals::Vector{Int}
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -141,7 +146,9 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   bind_quorum::Integer = 0, bind_quorum_weight::Real = 1.0, bind_miss::Real = 0.1,
                   bind_compromised = Int[], bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9,
                   bind_conf_deny::Real = 0.1, attest_min_records::Integer = 5, attest_pooled::Bool = false,
-                  p_newcomer::Real = 0.0, p_reveal::Real = 0.05, p_sybil_attempt::Real = 1.0)
+                  p_newcomer::Real = 0.0, p_reveal::Real = 0.05, p_sybil_attempt::Real = 1.0,
+                  nested_scopes::Bool = false, scope_share_min::Real = 0.8, scope_local_share::Real = 1.0,
+                  scope_within_harm::Bool = true, scope_locals = Int[])
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -182,6 +189,11 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
           all(c -> 1 <= c <= bind_clusters, bind_compromised) &&
           all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny)),
           "TN binding clusters >= 1, quorum/weight non-negative, compromised clusters in 1..bind_clusters, chances/confidences in [0, 1]")
+    scope_locals_vec = collect(Int, scope_locals)
+    check(0 <= scope_share_min <= 1 && 0 <= scope_local_share <= 1 &&
+          all(i -> 1 <= i <= length(agents), scope_locals_vec) &&
+          (!nested_scopes || !isempty(scope_locals_vec)),
+          "nested scope shares in [0, 1], scope_locals valid and non-empty when nested_scopes is enabled")
     M5Params(Float64.(reputation === nothing ? m3.relevance_leaf : reputation), skills, focus, domains, base, expertise_weight, impact_weight, optional_below,
              decisions, signal_σ, skill_gain, p_delegate, cap, impact_threshold, relative_expertise, collect(Int, colluders),
              p_apparent, vote_value, audit_window, audit_threshold, audit_min_records, pool_max, own_floor, stealth,
@@ -196,7 +208,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              bind_weighted, Int(bind_clusters), Float64(bind_threshold), Int(bind_quorum), Float64(bind_quorum_weight),
              Float64(bind_miss), collect(Int, bind_compromised), Float64(bind_conf_compromised),
              Float64(bind_conf_affirm), Float64(bind_conf_deny), Int(attest_min_records), attest_pooled,
-             Float64(p_newcomer), Float64(p_reveal), Float64(p_sybil_attempt))
+             Float64(p_newcomer), Float64(p_reveal), Float64(p_sybil_attempt),
+             nested_scopes, Float64(scope_share_min), Float64(scope_local_share), scope_within_harm, scope_locals_vec)
 end
 
 """
@@ -220,6 +233,7 @@ function run_m5(p::M5Params; seed)
     share_when_right, share_when_wrong = Float64[], Float64[]
     na = size(p.skills, 1)
     correct, max_share, max_single, bloc_expertise = 0, Float64[], Float64[], Float64[]
+    local_decs, escalated_decs = 0, 0
     cal_rec = [Tuple{Float64,Float64}[] for _ in 1:size(p.skills, 1)]   # (stated log-odds, outcome sign) per voter (8.121)
     # Correlated ballots (8.121, 8.111): each pair's recent standardised reading differences; a pair agreeing far closer
     # than independent noise allows (Lean `copies_ref`) is one judgment counted twice, and the later voter's ballot is
@@ -517,6 +531,16 @@ function run_m5(p::M5Params; seed)
         ballot_w(i) = p.ballot == :vote ? vote(i) : p.ballot == :credence_stated ? stated(i) : cal_k(i) * stated(i)
         bw(i) = p.ballot == :vote ? held[i] * vote(i) : cfd_ballot_weight(held[i], p.ballot == :credence_stated ? 1.0 : cal_k(i), stated(i))
         tally = tag_tally === nothing || p.ballot != :vote ? sum((bw(i) for i in 1:na if !delegated[i] && !folded[i]); init = 0.0) : tag_tally
+        if p.nested_scopes
+            sc = deciding_scope([p.scope_local_share, 1.0], [p.scope_within_harm, true]; share_min = p.scope_share_min)
+            if sc == 1
+                local_decs += 1
+                local_tally = sum((bw(i) for i in p.scope_locals if !delegated[i] && !folded[i]); init = 0.0)
+                local_tally != 0.0 && (tally = local_tally)
+            else
+                escalated_decs += 1
+            end
+        end
         correct += sign(tally) == sign(truth)
         push!(correct_trace, sign(tally) == sign(truth))
         t = apparent ? tally_apparent : tally_hidden
@@ -661,7 +685,8 @@ function run_m5(p::M5Params; seed)
      records = person_rec, maker_share = maker_share,
      sybil_forks_admitted = sybil_admitted, sybil_forks_blocked = sybil_blocked,
      newcomers_admitted = newcomers_adm, newcomers_refused = newcomers_ref,
-     attestation_skill = tn_active ? copy(tn_weights) : Float64[])
+     attestation_skill = tn_active ? copy(tn_weights) : Float64[],
+     local_decisions = local_decs, escalated_decisions = escalated_decs)
 end
 
 """

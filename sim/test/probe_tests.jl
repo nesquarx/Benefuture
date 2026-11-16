@@ -2568,3 +2568,47 @@ end
     @test paired_effect([Float64(b.sybil_forks_admitted - a.sybil_forks_admitted) for (a, b) in zip(bal, pol)]; z = 3.0).significant
     @test mean(r.newcomers_admitted / max(1, r.newcomers_admitted + r.newcomers_refused) for r in bal) >= 0.85
 end
+
+# 8.150 / 8.53-f/g (nested threshold scopes & subsidiarity by impact):
+# (a) When impact stays within freedom harm and >= scope_share_min inside a local scope,
+#     deciding_scope resolves locally and avoids outsider misconception drag;
+# (b) When impact spills below scope_share_min OR crosses freedom harm, deciding_scope
+#     escalates to the outer scope and overrides biased local colluders (`1:16` paired seeds, z = 3.0).
+@testset "Probe: nested threshold scopes & subsidiarity isolate local decisions and escalate spillover or harm breaches (8.150)" begin
+    # 10 local domain-1 specialists vs 90 non-specialist outsiders carrying correlated misconceptions
+    agents_loc = vcat(
+        [DomainAgent([0.85, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], 0.0) for _ in 1:10],
+        [DomainAgent([0.05, 0.8, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], 0.0) for _ in 1:90]
+    )
+    rep_loc = hcat(vcat(fill(1.0, 10), fill(0.1, 90)), fill(0.1, 100), fill(0.1, 100), fill(0.1, 100))
+    m3_loc = (agents = agents_loc, relevance_leaf = rep_loc)
+
+    # (a) Internalized (0.9 >= 0.8) & within harm: global voting fails under outsider misconceptions; local scope stays accurate.
+    p_glob = M5Params(m3_loc, [1]; decisions = 120, diversity = false, misconception_σ = 1.5, expertise_weight = 0.5, nested_scopes = false)
+    p_lcl  = M5Params(m3_loc, [1]; decisions = 120, diversity = false, misconception_σ = 1.5, expertise_weight = 0.5,
+                      nested_scopes = true, scope_share_min = 0.8, scope_local_share = 0.9, scope_within_harm = true, scope_locals = 1:10)
+    r_glob = [run_m5(p_glob; seed = s) for s in 1:16]
+    r_lcl  = [run_m5(p_lcl;  seed = s) for s in 1:16]
+    @test all(r -> r.local_decisions == 0 && r.escalated_decisions == 0, r_glob)
+    @test all(r -> r.local_decisions == 120 && r.escalated_decisions == 0, r_lcl)
+    @test paired_effect([a.correct - b.correct for (a, b) in zip(r_lcl, r_glob)]; z = 3.0).significant
+
+    # (b) Externalized spillover (0.4 < 0.8) or freedom-harm breach (within_harm = false) with colluding local subset:
+    #     stuck at local scope would be captured by the 7 local colluders; escalation overrides them at the outer scope.
+    agents_esc = [DomainAgent([0.85, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], 0.0) for _ in 1:60]
+    m3_esc = (agents = agents_esc, relevance_leaf = hcat(ones(60), fill(0.1, 60), fill(0.1, 60), fill(0.1, 60)))
+    p_stuck  = M5Params(m3_esc, [1]; decisions = 120, diversity = false, colluders = 1:7, p_apparent = 0.0,
+                        nested_scopes = true, scope_share_min = 0.0, scope_local_share = 0.4, scope_within_harm = true, scope_locals = 1:10)
+    p_spill  = M5Params(m3_esc, [1]; decisions = 120, diversity = false, colluders = 1:7, p_apparent = 0.0,
+                        nested_scopes = true, scope_share_min = 0.8, scope_local_share = 0.4, scope_within_harm = true, scope_locals = 1:10)
+    p_breach = M5Params(m3_esc, [1]; decisions = 120, diversity = false, colluders = 1:7, p_apparent = 0.0,
+                        nested_scopes = true, scope_share_min = 0.8, scope_local_share = 0.95, scope_within_harm = false, scope_locals = 1:10)
+    r_stuck  = [run_m5(p_stuck;  seed = s) for s in 1:16]
+    r_spill  = [run_m5(p_spill;  seed = s) for s in 1:16]
+    r_breach = [run_m5(p_breach; seed = s) for s in 1:16]
+    @test all(r -> r.escalated_decisions == 0, r_stuck)
+    @test all(r -> r.local_decisions == 0 && r.escalated_decisions == 120, r_spill)
+    @test all(r -> r.local_decisions == 0 && r.escalated_decisions == 120, r_breach)
+    @test paired_effect([a.correct - b.correct for (a, b) in zip(r_spill,  r_stuck)]; z = 3.0).significant
+    @test paired_effect([a.correct - b.correct for (a, b) in zip(r_breach, r_stuck)]; z = 3.0).significant
+end

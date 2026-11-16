@@ -180,4 +180,19 @@ fin(xs...) = all(isfinite, xs)
                        (confs, weights, th, qw) -> all(c -> isfinite(c) && 0 <= c <= 1, confs) && all(isfinite, weights) && isfinite(th) && 0 <= th <= 1 && isfinite(qw) && qw >= 0,
                        binding_admits_weighted,
                        (confs, weights, th, qw) -> sum((clamp(w, 0.0, 1.0) for (c, w) in zip(confs, weights) if c >= th); init = 0.0) >= qw) == (guard = 0, value = 0)
+    @test differential(:deciding_scope,
+                       r -> begin
+                           n = rand(r, 1:6)
+                           shares = [rand(r) < 0.05 ? hostile(r) : 1.4 * rand(r) - 0.2 for _ in 1:n]
+                           wh = rand(r, Bool, n)
+                           smin = rand(r) < 0.05 ? hostile(r) : 1.2 * rand(r) - 0.1
+                           (shares, wh, smin)
+                       end,
+                       (shares, wh, smin) -> !isempty(shares) && length(shares) == length(wh) && all(isfinite, shares) && isfinite(smin),
+                       (shares, wh, smin) -> deciding_scope(shares, wh; share_min = smin),
+                       (shares, wh, smin) -> begin
+                           n = length(shares)
+                           idx = findfirst(i -> wh[i] && shares[i] >= smin, 1:(n - 1))
+                           idx === nothing ? n : idx
+                       end) == (guard = 0, value = 0)
 end

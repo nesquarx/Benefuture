@@ -285,4 +285,95 @@ theorem admissible_forgiveness_bias (pv : ParamVector) (h : Admissible pv) (r : 
       linarith [h.delta_lt_gamma, h.gamma_lt_beta, h.beta_lt_alpha])
     hcap
 
+/-! ## Scoped Thresholds and Subsidiarity by Impact (`8.150`, `8.53-f/g`) -/
+
+/-- Narrowest-first subsidiarity lookup (`8.150`, `8.53-f/g`): given ordered scopes from narrowest
+    to widest paired as `(impactShare, withinFreedomHarm)`, returns the narrowest 0-based index
+    bearing at least `shareMin` of predicted impact within the freedom harm boundary, escalating
+    to the outermost available scope if every inner scope has spillover or breaches freedom harm. -/
+noncomputable def deciding_scope_from (k : ℕ) : List (ℝ × Bool) → ℝ → ℕ
+  | [], _ => k
+  | [_], _ => k
+  | (s, w) :: rest, shareMin =>
+    haveI := Classical.propDecidable (w = true ∧ shareMin ≤ s)
+    if w = true ∧ shareMin ≤ s then k else deciding_scope_from (k + 1) rest shareMin
+
+/-- Subsidiarity rule selecting the deciding scope index (`8.150`, `8.53-f/g`). -/
+noncomputable def deciding_scope (scopes : List (ℝ × Bool)) (shareMin : ℝ) : ℕ :=
+  deciding_scope_from 0 scopes shareMin
+
+theorem deciding_scope_from_ge (k : ℕ) (scopes : List (ℝ × Bool)) (shareMin : ℝ) :
+    k ≤ deciding_scope_from k scopes shareMin := by
+  induction scopes generalizing k with
+  | nil => simp [deciding_scope_from]
+  | cons sw rest ih =>
+    cases rest with
+    | nil => simp [deciding_scope_from]
+    | cons _ _ =>
+      unfold deciding_scope_from
+      split_ifs
+      · exact le_rfl
+      · exact Nat.le_trans (Nat.le_succ k) (ih (k + 1))
+
+/-- Local autonomy (`8.150`, `8.53-f`): when the narrowest scope stays within the freedom harm
+    boundary (`true`) and bears at least `shareMin` of impact, it decides without wider approval. -/
+theorem local_decides_when_internalized_and_safe
+    (s₀ : ℝ) (rest : List (ℝ × Bool)) (shareMin : ℝ) (hs : shareMin ≤ s₀) :
+    deciding_scope ((s₀, true) :: rest) shareMin = 0 := by
+  unfold deciding_scope
+  cases rest with
+  | nil => simp [deciding_scope_from]
+  | cons _ _ =>
+    unfold deciding_scope_from
+    have hcond : true = true ∧ shareMin ≤ s₀ := ⟨rfl, hs⟩
+    rw [if_pos hcond]
+
+/-- Spillover escalation (`8.150`, `8.53-g`): when predicted local impact share falls below
+    `shareMin`, the narrowest scope cannot decide locally when an outer scope exists. -/
+theorem spillover_escalates_beyond_local
+    (s₀ : ℝ) (w₀ : Bool) (sw₁ : ℝ × Bool) (rest : List (ℝ × Bool)) (shareMin : ℝ)
+    (hs : s₀ < shareMin) :
+    1 ≤ deciding_scope ((s₀, w₀) :: sw₁ :: rest) shareMin := by
+  unfold deciding_scope deciding_scope_from
+  have hcond : ¬ (w₀ = true ∧ shareMin ≤ s₀) := fun h => not_le_of_gt hs h.2
+  rw [if_neg hcond]
+  exact deciding_scope_from_ge 1 (sw₁ :: rest) shareMin
+
+/-- Freedom harm-boundary escalation (`8.150`, `8.53-f`): whenever effects exceed the freedom
+    harm boundary (`false`), a wider containing scope intervenes regardless of impact share. -/
+theorem harm_boundary_breach_escalates
+    (s₀ : ℝ) (sw₁ : ℝ × Bool) (rest : List (ℝ × Bool)) (shareMin : ℝ) :
+    1 ≤ deciding_scope ((s₀, false) :: sw₁ :: rest) shareMin := by
+  unfold deciding_scope deciding_scope_from
+  have hcond : ¬ (false = true ∧ shareMin ≤ s₀) := by simp
+  rw [if_neg hcond]
+  exact deciding_scope_from_ge 1 (sw₁ :: rest) shareMin
+
+/-- Monotonicity in `shareMin` (`8.150`): raising the impact-localization bar never pulls a
+    decision inward to a narrower scope. -/
+theorem deciding_scope_from_mono_share_min
+    (k : ℕ) (scopes : List (ℝ × Bool)) {m₁ m₂ : ℝ} (hm : m₁ ≤ m₂) :
+    deciding_scope_from k scopes m₁ ≤ deciding_scope_from k scopes m₂ := by
+  induction scopes generalizing k with
+  | nil => simp [deciding_scope_from]
+  | cons sw rest ih =>
+    cases rest with
+    | nil => simp [deciding_scope_from]
+    | cons sw₁ tl =>
+      unfold deciding_scope_from
+      by_cases h₂ : sw.2 = true ∧ m₂ ≤ sw.1
+      · have h₁ : sw.2 = true ∧ m₁ ≤ sw.1 := ⟨h₂.1, le_trans hm h₂.2⟩
+        rw [if_pos h₁, if_pos h₂]
+      · rw [if_neg h₂]
+        by_cases h₁ : sw.2 = true ∧ m₁ ≤ sw.1
+        · rw [if_pos h₁]
+          exact Nat.le_trans (Nat.le_succ k) (deciding_scope_from_ge (k + 1) (sw₁ :: tl) m₂)
+        · rw [if_neg h₁]
+          exact ih (k + 1)
+
+theorem deciding_scope_monotone_in_share_min
+    (scopes : List (ℝ × Bool)) {m₁ m₂ : ℝ} (hm : m₁ ≤ m₂) :
+    deciding_scope scopes m₁ ≤ deciding_scope scopes m₂ :=
+  deciding_scope_from_mono_share_min 0 scopes hm
+
 end Benefuture.Systems

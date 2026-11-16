@@ -362,18 +362,25 @@ Governance and incentives
     at every admissible point ([`admissible_forgiveness_bias`](../Benefuture/Systems/ParamSpace.lean)).
 - Every parameter vector reachable from the bootstrap by governance steps is admissible ([`governed_params_admissible`](../Benefuture/Systems/ParamSpace.lean)).
   n perturbations move a parameter by at most n·δ ([`perturb_run_drift`](../Benefuture/Systems/ParamSpace.lean)).
+- Scoped thresholds & subsidiarity by impact (`8.150`, `8.53-f/g`): `deciding_scope` in
+  [Benefuture/Systems/ParamSpace.lean](../Benefuture/Systems/ParamSpace.lean) resolves decisions at the narrowest
+  scope inside the freedom harm boundary that bears at least `shareMin` of predicted impact
+  ([`local_decides_when_internalized_and_safe`](../Benefuture/Systems/ParamSpace.lean)), escalates when local impact
+  share spills below `shareMin` ([`spillover_escalates_beyond_local`](../Benefuture/Systems/ParamSpace.lean)) or effects
+  breach the freedom harm boundary ([`harm_boundary_breach_escalates`](../Benefuture/Systems/ParamSpace.lean)), and is
+  monotone in `shareMin` ([`deciding_scope_monotone_in_share_min`](../Benefuture/Systems/ParamSpace.lean)).
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).
 
 Bridge to the reference ([`BenefutureTest/Differential.lean`](../BenefutureTest/Differential.lean))
-- The bridge chain is ℝ specification = ℚ oracle (proved, 21 `*_spec` theorems) ≈ Float reference
+- The bridge chain is ℝ specification = ℚ oracle (proved, 22 `*_spec` theorems) ≈ Float reference
   (tested within 1e-9 relative on dyadic inputs).
   - Rules covered: `supply_delta`, `competition_efficiency`, `rolling_average`, `accumulate_capped`,
     `p_forgive`, `p_overreact`, `severity_score`, `Voting_weight`, exact and sampled Shapley,
     `recordCredence`, `accident_split`, `sanction_escrow_credence`, `rehabilitate_restraint`,
     `ra_value_per_cost`, `ra_commons_reserve`, `ra_contraction_factor`, `responsibility_factor`,
-    and `binding_admits_weighted`.
+    `binding_admits_weighted`, and `deciding_scope`.
   - Interval-bound oracles enclose the nonlinear rules (`Rep_decay`, `shapley_sample_count`, `phi`,
     `normal_cdf`, `credence`).
   - ℤ specifications are compared directly (`bounty_reward`, `upfront_payment`).
@@ -561,6 +568,14 @@ Governance and thresholds
   time, against 73.8% with neither ([deliberation](../sim/README.md#clean-deliberation-and-better-models-in-governance-8422-843)).
 - **Parameter governance.** Governed parameters stay admissible under SigThGv. Adaptation run as
   experimental design shifts only on significant gains ([m4_tests](../sim/test/m4_tests.jl)).
+- **Scoped thresholds & subsidiarity by impact (`8.150`, `8.53-f/g`).** In M5 with opt-in
+  `nested_scopes` backed by Lean `deciding_scope_ref`, localized impacts inside the freedom harm
+  boundary (`scope_local_share = 0.9 >= 0.8`) stay local (`120/120` decisions) and lift accuracy over
+  flat global voting under outsider `misconception_σ = 1.5` (`0.9932` vs `0.7557`, paired
+  `+0.2375 ± 0.0105`, `16` seeds, `z = 3`), while spillovers (`0.4 < 0.8`) and freedom-harm breaches
+  (`scope_within_harm = false`) both escalate (`120/120` to the containing scope) and override a
+  7-member local colluding enclave (`1.000` vs `0.512`, `+0.4880 ± 0.0100`, `16` seeds, `z = 3`)
+  ([probe](../sim/test/probe_tests.jl)).
 - **The debatable escape** (L157) trial machinery works: gains exceed harms and nothing is irreparable
   in every seed. Adoption of the relative bar in the low-skill world is unsupported under the current
   build (0 of 16 seeds) and recorded open ([debatable escape](../sim/README.md#the-debatable-escape-8263-8382-841)).

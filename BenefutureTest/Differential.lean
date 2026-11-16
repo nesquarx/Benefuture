@@ -43,6 +43,7 @@ import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
 import Benefuture.Subgoals.Justice
 import Benefuture.Systems.TechnologyNetwork
+import Benefuture.Systems.ParamSpace
 import Benefuture.Axiology.Priorities
 import Benefuture.Proposed.OutcomeDistribution
 import Benefuture.Proposed.ShapleySampling
@@ -304,6 +305,41 @@ theorem bindingAdmitsWeightedQ_spec (confs weights : List ℚ) (threshold quorum
   rw [← weightedAttestationSayQ_spec]
   simp only [decide_eq_true_eq]
   exact ⟨fun h => Rat.cast_le.mpr h, fun h => Rat.cast_le.mp h⟩
+
+def decidingScopeFromQ (k : ℕ) : List (ℚ × Bool) → ℚ → ℕ
+  | [], _ => k
+  | [_], _ => k
+  | (s, w) :: rest, shareMin =>
+    if w && decide (shareMin ≤ s) then k else decidingScopeFromQ (k + 1) rest shareMin
+
+def decidingScopeQ (scopes : List (ℚ × Bool)) (shareMin : ℚ) : ℕ :=
+  decidingScopeFromQ 0 scopes shareMin
+
+theorem decidingScopeFromQ_spec (k : ℕ) (scopes : List (ℚ × Bool)) (shareMin : ℚ) :
+    decidingScopeFromQ k scopes shareMin =
+      Benefuture.Systems.deciding_scope_from k
+        (scopes.map (fun sw => ((sw.1 : ℝ), sw.2))) (shareMin : ℝ) := by
+  induction scopes generalizing k with
+  | nil => simp [decidingScopeFromQ, Benefuture.Systems.deciding_scope_from]
+  | cons sw rest ih =>
+    cases rest with
+    | nil => simp [decidingScopeFromQ, Benefuture.Systems.deciding_scope_from]
+    | cons sw₁ tl =>
+      unfold decidingScopeFromQ Benefuture.Systems.deciding_scope_from
+      simp only [List.map_cons, ih (k + 1)]
+      by_cases hw : sw.2 = true
+      · by_cases hs : shareMin ≤ sw.1
+        · have hsr : (shareMin : ℝ) ≤ (sw.1 : ℝ) := Rat.cast_le.mpr hs
+          simp [hw, hs, hsr]
+        · have hsr : ¬ ((shareMin : ℝ) ≤ (sw.1 : ℝ)) := by exact_mod_cast hs
+          simp [hw, hs, hsr]
+      · simp [hw]
+
+theorem decidingScopeQ_spec (scopes : List (ℚ × Bool)) (shareMin : ℚ) :
+    decidingScopeQ scopes shareMin =
+      Benefuture.Systems.deciding_scope
+        (scopes.map (fun sw => ((sw.1 : ℝ), sw.2))) (shareMin : ℝ) :=
+  decidingScopeFromQ_spec 0 scopes shareMin
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -777,6 +813,22 @@ def runAll : IO Unit := do
     let f := binding_admits_weighted_ref (Array.mk (confs.map ratToFloat))
                (Array.mk (weights.map ratToFloat)) (ratToFloat th) (ratToFloat qw)
     let q := bindingAdmitsWeightedQ confs weights th qw
+    (f == q, g)
+  checkAll "deciding_scope" 400 27 fun g =>
+    let (s0, g) := g.below 17
+    let (s1, g) := g.below 17
+    let (s2, g) := g.below 17
+    let (b0, g) := g.below 8
+    let (m0, g) := g.below 17
+    let shares : List ℚ := [(s0 : ℚ) / 16, (s1 : ℚ) / 16, (s2 : ℚ) / 16]
+    let w0 := b0 % 2 == 1
+    let w1 := (b0 / 2) % 2 == 1
+    let w2 := (b0 / 4) % 2 == 1
+    let within : List Bool := [w0, w1, w2]
+    let withinF : List Float := [if w0 then 1.0 else 0.0, if w1 then 1.0 else 0.0, if w2 then 1.0 else 0.0]
+    let m : ℚ := (m0 : ℚ) / 16
+    let f := deciding_scope_ref (Array.mk (shares.map ratToFloat)) (Array.mk withinF) (ratToFloat m)
+    let q := decidingScopeQ (shares.zip within) m
     (f == q, g)
 
 #eval runAll

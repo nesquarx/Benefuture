@@ -480,4 +480,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   responsibility_factor_ref (isAct != 0) (isInformed != 0) (hasDuty != 0)
     counterfactualRatio severityScale accidentFactor
 
+-- 8.150 / 8.53-f/g: scoped thresholds & subsidiarity by impact
+@[export bf_deciding_scope] def decidingScope
+    (shares withinHarm : FloatArray) (shareMin : Float) : UInt64 :=
+  (deciding_scope_ref shares.data withinHarm.data shareMin).toUInt64
+
 end BenefutureReference.Export

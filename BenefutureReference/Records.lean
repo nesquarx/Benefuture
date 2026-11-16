@@ -398,3 +398,14 @@ def ra_contraction_factor_ref (claims deliverableCap rate minScale : Float) : Fl
     let clampedFrac := if frac < 1.0 then frac else 1.0
     let scaled := 1.0 - rate * clampedFrac
     if scaled > minScale then scaled else minScale
+
+/-- Nested threshold scopes & subsidiarity by impact (`8.150`, `8.53-f/g`): returns the narrowest
+    0-based scope index `i` where `withinHarm[i]` is true (`≥ 0.5`) and `shares[i] ≥ shareMin`,
+    escalating to `n - 1` (last available outer scope) if all inner scopes fail either condition. -/
+def deciding_scope_ref (shares withinHarm : Array Float) (shareMin : Float) : Nat := Id.run do
+  let n := min shares.size withinHarm.size
+  if n <= 1 then return 0
+  for i in [0 : n - 1] do
+    if withinHarm[i]! >= 0.5 && shares[i]! >= shareMin then
+      return i
+  return n - 1

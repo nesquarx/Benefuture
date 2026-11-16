@@ -394,6 +394,21 @@ function perturb(cur, cand, fields; δ::Real)
 end
 
 """
+    deciding_scope(shares, within_harm; share_min = 0.8) -> Int
+
+Narrowest 1-based scope index `i` where `within_harm[i]` holds and `shares[i] >= share_min`,
+escalating to `length(shares)` (the outermost available scope) if any inner scope fails either check
+(nested threshold scopes & subsidiarity by impact, L113/L135/L158; 8.150; Lean `deciding_scope_ref`).
+"""
+function deciding_scope(shares, within_harm; share_min::Real = 0.8)
+    check(!isempty(shares) && length(shares) == length(within_harm), "non-empty shares and matching harm flags")
+    check(all(isfinite, shares) && isfinite(share_min), "shares and share_min finite")
+    wh = Float64[x ? 1.0 : 0.0 for x in within_harm]
+    Int(ccall(sym(:bf_deciding_scope), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+              floatarray(shares), floatarray(wh), Float64(share_min))) + 1
+end
+
+"""
     advap_reward(exploit_gain, prevented_harm; share, floor) -> reward
 
 The reward for revealing successful gaming (AdvAp, L161; Lean `advap_reward_ref`): the exploit's
