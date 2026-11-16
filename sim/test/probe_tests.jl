@@ -2381,3 +2381,50 @@ end
     @test paired_effect([o.floor_u - c.floor_u for (c, o) in zip(closed, opened)]; z = 3.0).significant
     @test paired_effect([s.adv - o.adv for (o, s) in zip(opened, sq_open)]; z = 3.0).significant
 end
+
+# 8.157 (i) & (iii) (L117 `Rehabilitate(Escalate <- pattern(Re_-ve(Dn)))`): isolated lapses (< pattern_min)
+# meet restorative repair + education with zero escalation; repeated domain negative/crime patterns
+# escalate escrow and restrain repeat offender proposals in that domain (keeping honest domains untouched
+# and preserving >= min_share honest participation).
+@testset "Probe: sanction escalation and rehabilitative restraint on repeated domain patterns (L117; 8.157 i & iii)" begin
+    # 0. Lean reference bounds: isolated lapse == baseline; repeat pattern monotonically reduces upfront credence & share >= floor/min_share.
+    @test sanction_escrow_credence(0.9, 0.1, 0, 2, 3; growth = 1.0, floor = 0.01) ≈
+          repeat_escrow_credence(0.9, 0.1, 0; growth = 1.0, floor = 0.01)
+    @test sanction_escrow_credence(0.9, 0.1, 0, 3, 3; growth = 1.0, floor = 0.01) <
+          sanction_escrow_credence(0.9, 0.1, 0, 2, 3; growth = 1.0, floor = 0.01)
+    @test sanction_escrow_credence(0.9, 0.1, 0, 50, 3; growth = 1.0, floor = 0.01) >= 0.01
+    @test rehabilitate_restraint(1.0, 2, 3; decay = 0.7, min_share = 0.1) == 1.0
+    @test rehabilitate_restraint(1.0, 3, 3; decay = 0.7, min_share = 0.1) ≈ 0.7
+    @test rehabilitate_restraint(1.0, 50, 3; decay = 0.7, min_share = 0.1) == 0.1
+    @test_throws ArgumentError sanction_escrow_credence(1.1, 0.1, 0, 3, 3)
+    @test_throws ArgumentError rehabilitate_restraint(1.0, 3, 3; decay = 1.2)
+
+    # 1. M3c paired-seed world (`1:12` seeds, z = 3.0): an informed agent committing repeated foresight side-crimes
+    # in leaf 1 (`sanction_pattern_min = 3`) vs isolated threshold above crime count (`sanction_pattern_min = 200`):
+    # escalation triggers (`sanction_escalations > 0`, `sanction_restraints > 0`), reduces repeat offender proposals,
+    # and raises floor_u vs `sanction_escalate = false` / non-escalated baseline without blocking honest agent work.
+    ag = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:3])
+    function run_sanction(escalate::Bool, pmin::Int, seed::Int)
+        p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), ag, [1, 1], trues(2);
+                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                      guardians = [1, 2], p_informed = 1.0, diligence = [0.0, 1.0, 1.0, 1.0],
+                      p_hazard = 0.35, hazard_share = 0.25, hazard_size = 1.0, repair_efficiency = 1.0,
+                      endowment = 50.0, sanction_escalate = escalate, sanction_pattern_min = pmin,
+                      sanction_restraint_decay = 0.6, sanction_min_share = 0.1, LEGACY...)
+        tr = run_m3c(p; seed = seed)
+        sp = success_pattern(tr; from = 20)
+        offender_exec = count(==(1), tr.chosen_agent)
+        (esc = Float64(tr.sanction_escalations), rest = Float64(tr.sanction_restraints),
+         off_exec = Float64(offender_exec), floor_u = sp.floor_u)
+    end
+    iso  = [run_sanction(true, 200, s) for s in 1:12]  # below pattern threshold: isolated-lapse regime
+    off  = [run_sanction(false, 3, s) for s in 1:12]
+    pat  = [run_sanction(true, 3, s) for s in 1:12]
+    @test all(r -> r.esc == 0 && r.rest == 0, iso)
+    @test all(r -> r.esc == 0 && r.rest == 0, off)
+    @test all(r -> r.esc > 0 && r.rest > 0, pat)
+    @test paired_effect([p.esc - o.esc for (o, p) in zip(off, pat)]; z = 3.0).significant
+    @test paired_effect([p.rest - o.rest for (o, p) in zip(off, pat)]; z = 3.0).significant
+    @test paired_effect([o.off_exec - p.off_exec for (o, p) in zip(off, pat)]; z = 3.0).significant
+    @test all(p.off_exec > 0 for p in pat)  # min_share > 0 lets actor still contribute honestly
+end

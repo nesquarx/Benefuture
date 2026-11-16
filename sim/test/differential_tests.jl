@@ -118,4 +118,25 @@ fin(xs...) = all(isfinite, xs)
                        (h, c) -> fin(h, c) && h >= 0 && c >= 0,
                        (h, c) -> collect(accident_split(h, c)),
                        (h, c) -> [min(h, c), h - min(h, c)]) == (guard = 0, value = 0)
+    @test differential(:sanction_escrow_credence,
+                       r -> (rand(r) < 0.1 ? hostile(r) : rand(r), rand(r) < 0.1 ? hostile(r) : rand(r),
+                             rand(r, -2:5), rand(r, -2:10), rand(r, -1:5), rand(r) < 0.1 ? hostile(r) : 2.5 * rand(r),
+                             rand(r) < 0.1 ? hostile(r) : 0.6 * rand(r)),
+                       (c, ns, d, ne, pm, g, fl) -> fin(c, ns, g, fl) && 0 <= c <= 1 && 0 <= ns <= 1 &&
+                                                     d >= 0 && ne >= 0 && pm >= 0 && g >= 0 && 0 < fl <= 0.5,
+                       (c, ns, d, ne, pm, g, fl) -> sanction_escrow_credence(c, ns, d, ne, pm; growth = g, floor = fl),
+                       (c, ns, d, ne, pm, g, fl) -> begin
+                           esc = d + ((pm == 0 || ne < pm) ? 0 : ne - pm + 1)
+                           max(fl, (0.5 + (c - 0.5) * (1 - ns)) / (1 + g)^esc)
+                       end) == (guard = 0, value = 0)
+    @test differential(:rehabilitate_restraint,
+                       r -> (rand(r) < 0.1 ? hostile(r) : 2.0 * rand(r), rand(r, -2:10), rand(r, -1:5),
+                             rand(r) < 0.1 ? hostile(r) : 1.2 * rand(r), rand(r) < 0.1 ? hostile(r) : 1.2 * rand(r)),
+                       (b, ce, pm, dec, ms) -> fin(b, dec, ms) && b >= 0 && ce >= 0 && pm >= 0 &&
+                                               0 <= dec <= 1 && 0 <= ms <= b,
+                       (b, ce, pm, dec, ms) -> rehabilitate_restraint(b, ce, pm; decay = dec, min_share = ms),
+                       (b, ce, pm, dec, ms) -> begin
+                           esc = (pm == 0 || ce < pm) ? 0 : ce - pm + 1
+                           esc == 0 ? b : max(ms, b * dec^esc)
+                       end) == (guard = 0, value = 0)
 end

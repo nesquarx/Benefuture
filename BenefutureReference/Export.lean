@@ -453,4 +453,15 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_accident_admin] def accidentAdmin (harm cap : Float) : Float :=
   accident_admin_ref harm cap
 
+-- 8.157 (i) / L117: sanction escrow escalation & rehabilitative restraint by repeated negative/crime pattern
+@[export bf_sanction_escrow_credence] def sanctionEscrowCredence
+    (cred negShare deceptions domNegEvents patternMin growth floorC : Float) : Float :=
+  sanction_escrow_credence_ref cred negShare deceptions.toUInt64.toNat
+    domNegEvents.toUInt64.toNat patternMin.toUInt64.toNat growth floorC
+
+@[export bf_rehabilitate_restraint] def rehabilitateRestraint
+    (baseShare crimeEvents patternMin stepDecay minShare : Float) : Float :=
+  rehabilitate_restraint_ref baseShare crimeEvents.toUInt64.toNat
+    patternMin.toUInt64.toNat stepDecay minShare
+
 end BenefutureReference.Export

@@ -180,6 +180,30 @@ theorem accidentAdminQ_spec (harm cap : ℚ) :
     (accidentAdminQ harm cap : ℝ) = Benefuture.Subgoals.accident_admin harm cap := by
   simp [accidentAdminQ, Benefuture.Subgoals.accident_admin, Rat.cast_sub, Rat.cast_min]
 
+def sanctionEscrowCredenceQ (cred negShare : ℚ) (deceptions domNegEvents patternMin : Nat)
+    (growth floorC : ℚ) : ℚ :=
+  let esc := deceptions + Benefuture.Subgoals.pattern_escalation_repeats domNegEvents patternMin
+  max floorC ((1 / 2 + (cred - 1 / 2) * (1 - negShare)) * (1 / (1 + growth)) ^ esc)
+
+theorem sanctionEscrowCredenceQ_spec (cred negShare : ℚ) (deceptions domNegEvents patternMin : Nat)
+    (growth floorC : ℚ) :
+    (sanctionEscrowCredenceQ cred negShare deceptions domNegEvents patternMin growth floorC : ℝ) =
+      Benefuture.Subgoals.sanction_escrow_credence cred negShare deceptions domNegEvents patternMin growth floorC := by
+  simp [sanctionEscrowCredenceQ, Benefuture.Subgoals.sanction_escrow_credence, Rat.cast_max]
+
+def rehabilitateRestraintQ (baseShare : ℚ) (crimeEvents patternMin : Nat)
+    (stepDecay minShare : ℚ) : ℚ :=
+  let esc := Benefuture.Subgoals.pattern_escalation_repeats crimeEvents patternMin
+  if esc = 0 then baseShare else max minShare (baseShare * stepDecay ^ esc)
+
+theorem rehabilitateRestraintQ_spec (baseShare : ℚ) (crimeEvents patternMin : Nat)
+    (stepDecay minShare : ℚ) :
+    (rehabilitateRestraintQ baseShare crimeEvents patternMin stepDecay minShare : ℝ) =
+      Benefuture.Subgoals.rehabilitate_restraint baseShare crimeEvents patternMin stepDecay minShare := by
+  unfold rehabilitateRestraintQ Benefuture.Subgoals.rehabilitate_restraint
+  by_cases h : Benefuture.Subgoals.pattern_escalation_repeats crimeEvents patternMin = 0 <;>
+    simp [h, Rat.cast_max]
+
 /-! ## Interval-bound oracles for nonlinear functions -/
 
 /-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
@@ -560,6 +584,34 @@ def runAll : IO Unit := do
     let c := accident_contributor_ref (ratToFloat harm) (ratToFloat cap)
     let a := accident_admin_ref (ratToFloat harm) (ratToFloat cap)
     (close c (accidentContributorQ harm cap) && close a (accidentAdminQ harm cap), g)
+  checkAll "sanction_escrow_credence" 400 20 fun g =>
+    let (c0, g) := g.below 101
+    let (n0, g) := g.below 101
+    let (dec, g) := g.below 6
+    let (neg, g) := g.below 12
+    let (pmin, g) := g.below 6
+    let (gr0, g) := g.below 10
+    let (fl0, g) := g.below 50
+    let cred : ℚ := (c0 : ℚ) / 100
+    let negShare : ℚ := (n0 : ℚ) / 100
+    let growth : ℚ := (gr0 : ℚ) / 4
+    let floorC : ℚ := (fl0 : ℚ) / 1000
+    let f := sanction_escrow_credence_ref (ratToFloat cred) (ratToFloat negShare) dec neg pmin
+      (ratToFloat growth) (ratToFloat floorC)
+    let q := sanctionEscrowCredenceQ cred negShare dec neg pmin growth floorC
+    (close f q, g)
+  checkAll "rehabilitate_restraint" 400 21 fun g =>
+    let (b0, g) := g.below 101
+    let (cr, g) := g.below 12
+    let (pmin, g) := g.below 6
+    let (d0, g) := g.below 101
+    let (m0, g) := g.below 50
+    let baseShare : ℚ := (b0 : ℚ) / 100
+    let stepDecay : ℚ := (d0 : ℚ) / 100
+    let minShare : ℚ := (m0 : ℚ) / 200
+    let f := rehabilitate_restraint_ref (ratToFloat baseShare) cr pmin (ratToFloat stepDecay) (ratToFloat minShare)
+    let q := rehabilitateRestraintQ baseShare cr pmin stepDecay minShare
+    (close f q, g)
 
 #eval runAll
 

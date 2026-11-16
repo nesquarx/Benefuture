@@ -202,6 +202,40 @@ function accident_split(harm::Real, capacity::Real)
      ccall(sym(:bf_accident_admin), Float64, (Float64, Float64), harm, capacity))
 end
 
+"""
+    sanction_escrow_credence(credence, neg_share, deceptions, dom_neg_events, pattern_min; growth = 1.0, floor = 0.01) -> credence
+
+Graduated escrow credence combining permanent `deceptions` and repeated domain negative
+reputation pattern (`Lean sanction_escrow_credence_ref`; L117, author ruling 8.157 i & iii).
+Below `pattern_min`, isolated lapses add zero escalation beyond `deceptions`.
+"""
+function sanction_escrow_credence(credence::Real, neg_share::Real, deceptions::Integer, dom_neg_events::Integer, pattern_min::Integer;
+                                  growth::Real = 1.0, floor::Real = 0.01)
+    check(0 <= credence <= 1 && 0 <= neg_share <= 1 && deceptions >= 0 && dom_neg_events >= 0 && pattern_min >= 0 &&
+          isfinite(growth) && growth >= 0 && isfinite(floor) && 0 < floor <= 0.5,
+          "credence and share in [0, 1]; counts >= 0; growth >= 0; floor in (0, 0.5]")
+    ccall(sym(:bf_sanction_escrow_credence), Float64,
+          (Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+          credence, neg_share, Float64(deceptions), Float64(dom_neg_events), Float64(pattern_min), growth, floor)
+end
+
+"""
+    rehabilitate_restraint(base_share, crime_events, pattern_min; decay = 0.7, min_share = 0.1) -> share
+
+Domain-scoped rehabilitative proposal restraint for repeated crime patterns (`Prevent(Cr)`,
+L117; Lean `rehabilitate_restraint_ref`, author ruling 8.157 i). Returns `base_share` below
+`pattern_min` and decays toward `min_share` on repeat offenses.
+"""
+function rehabilitate_restraint(base_share::Real, crime_events::Integer, pattern_min::Integer;
+                                decay::Real = 0.7, min_share::Real = 0.1)
+    check(isfinite(base_share) && base_share >= 0 && crime_events >= 0 && pattern_min >= 0 &&
+          isfinite(decay) && 0 <= decay <= 1 && isfinite(min_share) && 0 <= min_share <= base_share,
+          "base_share >= 0; counts >= 0; decay in [0, 1]; min_share in [0, base_share]")
+    ccall(sym(:bf_rehabilitate_restraint), Float64,
+          (Float64, Float64, Float64, Float64, Float64),
+          base_share, Float64(crime_events), Float64(pattern_min), decay, min_share)
+end
+
 # The governed parameter space (`Systems.ParamSpace` [R]; L158 SigThGv), in the order of `ParamVector`.
 const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, :lambda, :kappa_value, :kappa_harm,
                       :q_harm, :nu, :h_param, :lambda_plus, :lambda_minus, :th_sig, :th_gov, :fr_thConf, :fr_thHigh,

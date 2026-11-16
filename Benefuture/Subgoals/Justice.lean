@@ -296,5 +296,95 @@ theorem mandated_education_informs_repeat (wasInformed hasVolition breachedDuty 
   unfold is_crime_classification post_education_informed
   rcases h_breach with h | h <;> simp [h]
 
+/-- Repeated-pattern escalation count from negative domain reputation events (`pattern(Re_-ve(Dn))`;
+    L117 `Rehabilitate(Escalate ← pattern(Re_-ve(Dn)))`, author ruling 8.157 i).
+    An isolated lapse (`domNegEvents < patternMin`) triggers zero escalation (`0`), while once the
+    pattern threshold `patternMin > 0` is reached the escalation count steps `1, 2, ...`. -/
+def pattern_escalation_repeats (domNegEvents patternMin : Nat) : Nat :=
+  if patternMin = 0 ∨ domNegEvents < patternMin then 0 else domNegEvents - patternMin + 1
+
+/-- Isolated or below-threshold negative events cause zero sanction escalation (8.157 i). -/
+theorem isolated_lapse_zero_escalation (domNegEvents patternMin : Nat)
+    (h_lt : domNegEvents < patternMin) :
+    pattern_escalation_repeats domNegEvents patternMin = 0 := by
+  unfold pattern_escalation_repeats
+  simp [h_lt]
+
+/-- Once negative domain events reach a positive pattern threshold, escalation triggers strictly. -/
+theorem repeated_pattern_escalates (domNegEvents patternMin : Nat)
+    (h_pos : 0 < patternMin) (h_ge : patternMin ≤ domNegEvents) :
+    0 < pattern_escalation_repeats domNegEvents patternMin := by
+  unfold pattern_escalation_repeats
+  have hne : patternMin ≠ 0 := Nat.ne_of_gt h_pos
+  have hnotlt : ¬ domNegEvents < patternMin := Nat.not_lt.mpr h_ge
+  simp [hne, hnotlt]
+
+/-- Pattern escalation count is monotone non-decreasing in negative domain event count. -/
+theorem pattern_escalation_monotone (a b patternMin : Nat) (hle : a ≤ b) :
+    pattern_escalation_repeats a patternMin ≤ pattern_escalation_repeats b patternMin := by
+  unfold pattern_escalation_repeats
+  by_cases hp : patternMin = 0
+  · simp [hp]
+  · by_cases ha : a < patternMin
+    · simp [hp, ha]
+    · have hb : ¬ b < patternMin := fun h => ha (Nat.lt_of_le_of_lt hle h)
+      simp only [hp, ha, hb, false_or, ↓reduceIte]
+      omega
+
+/-- Graduated sanction escrow credence from permanent deception count plus repeated domain negative
+    pattern (`8.157 i`, `8.157 iii`: escrow ratcheting is the graduated sanction, while reputation
+    penalties remain proportional to assessed harm). Floored at `floorC` so honest future work is
+    never excluded (`< patternMin` matches baseline `repeat_escrow_credence`). -/
+noncomputable def sanction_escrow_credence (cred negShare : ℝ)
+    (deceptions domNegEvents patternMin : Nat) (growth floorC : ℝ) : ℝ :=
+  let esc := deceptions + pattern_escalation_repeats domNegEvents patternMin
+  max floorC ((1 / 2 + (cred - 1 / 2) * (1 - negShare)) * (1 / (1 + growth)) ^ esc)
+
+/-- Domain-scoped rehabilitative restraint (`Prevent(Cr)` / L117; Justice §Rehabilitation): isolated
+    crime/negative events keep full participation (`baseShare`), while repeated criminal patterns
+    scale proposal weight by `stepDecay ^ esc` down to a positive floor `minShare` so actors can
+    still contribute honestly. -/
+noncomputable def rehabilitate_restraint (baseShare : ℝ) (crimeEvents patternMin : Nat)
+    (stepDecay minShare : ℝ) : ℝ :=
+  let esc := pattern_escalation_repeats crimeEvents patternMin
+  if esc = 0 then baseShare else max minShare (baseShare * stepDecay ^ esc)
+
+theorem isolated_lapse_no_restraint (baseShare : ℝ) (crimeEvents patternMin : Nat)
+    (stepDecay minShare : ℝ) (h_lt : crimeEvents < patternMin) :
+    rehabilitate_restraint baseShare crimeEvents patternMin stepDecay minShare = baseShare := by
+  unfold rehabilitate_restraint
+  simp [isolated_lapse_zero_escalation crimeEvents patternMin h_lt]
+
+theorem sanction_escrow_ge_floor (cred negShare : ℝ) (deceptions domNegEvents patternMin : Nat)
+    (growth floorC : ℝ) :
+    floorC ≤ sanction_escrow_credence cred negShare deceptions domNegEvents patternMin growth floorC := by
+  unfold sanction_escrow_credence
+  exact le_max_left _ _
+
+theorem sanction_escrow_monotone_in_pattern (cred negShare : ℝ)
+    (deceptions a b patternMin : Nat) (growth floorC : ℝ)
+    (hcred0 : 0 ≤ cred) (hns0 : 0 ≤ negShare) (hns1 : negShare ≤ 1)
+    (hg : 0 ≤ growth) (hle : a ≤ b) :
+    sanction_escrow_credence cred negShare deceptions b patternMin growth floorC ≤
+      sanction_escrow_credence cred negShare deceptions a patternMin growth floorC := by
+  unfold sanction_escrow_credence
+  apply max_le_max_left floorC
+  have hbase : 0 ≤ 1 / 2 + (cred - 1 / 2) * (1 - negShare) := by nlinarith
+  apply mul_le_mul_of_nonneg_left _ hbase
+  have hdiv_nonneg : 0 ≤ 1 / (1 + growth) := by positivity
+  have hdiv_le_one : 1 / (1 + growth) ≤ 1 := by
+    rw [div_le_one (by linarith)]
+    linarith
+  exact pow_le_pow_of_le_one hdiv_nonneg hdiv_le_one
+    (Nat.add_le_add_left (pattern_escalation_monotone a b patternMin hle) deceptions)
+
+theorem rehabilitate_restraint_ge_min (baseShare : ℝ) (crimeEvents patternMin : Nat)
+    (stepDecay minShare : ℝ) (hmin : minShare ≤ baseShare) :
+    minShare ≤ rehabilitate_restraint baseShare crimeEvents patternMin stepDecay minShare := by
+  unfold rehabilitate_restraint
+  by_cases h0 : pattern_escalation_repeats crimeEvents patternMin = 0
+  · simp [h0, hmin]
+  · simp [h0]
+
 end Benefuture.Subgoals
 

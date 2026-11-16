@@ -58,6 +58,12 @@ end
     # Accident capacity cap (`accident_cap = true`, default): small-endowment guardian's debit is bounded by capacity; admin carries rest.
     cap_tr = run_m3c(hz([1, 1, 1, 1]; p_informed = 0.0, diligence = zeros(4), mandate_education = false, endowment = 0.5, hazard_size = 3.0, hazard_share = 0.8, repair_efficiency = 1.0); seed = 3)
     @test cap_tr.accident_capped > 0 && cap_tr.accident_admin_rest > 0 && cap_tr.hazard_debits < cap_tr.hazard_penalties && cap_tr.repaired ≈ cap_tr.hazard_penalties
+    # Sanction escalation on repeated negative/crime patterns (L117, 8.157 i): off leaves 0 escalations/restraints;
+    # on escalates escrow & restrains repeat crimes once `sanction_pattern_min` is crossed.
+    tr_noesc = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = [0.0, 1, 1, 1], sanction_escalate = false); seed = 1)
+    tr_esc = run_m3c(hz([1, 1, 1, 1]; p_informed = 1.0, diligence = [0.0, 1, 1, 1], sanction_escalate = true, sanction_pattern_min = 3); seed = 1)
+    @test tr_noesc.sanction_escalations == 0 && tr_noesc.sanction_restraints == 0
+    @test tr_esc.crimes >= 3 && tr_esc.sanction_escalations > 0 && tr_esc.sanction_restraints > 0
 end
 
 @testset "M3e: adversarial and edge cases" begin

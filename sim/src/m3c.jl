@@ -248,6 +248,10 @@ struct M3cParams
     mandate_education::Bool       # L96, L116 / 8.157 iv, 8.159: accidents mandate education (recorded exposure), making repeats informed
     open_entry::Bool              # 8.115: unmet live proposals admit dormant entrants (via `bind!`) and re-offer the slot by market weight
     entrants::Int                 # 8.115: trailing slots in `agents` initially dormant until admitted via open entry
+    sanction_escalate::Bool       # L117 / 8.157 i: escalate sanctions (escrow & repeat-crime restraint) on repeated domain negative pattern
+    sanction_pattern_min::Int     # minimum negative/crime records in a domain before repeated-pattern escalation begins (8.157 i)
+    sanction_restraint_decay::Float64 # proposal-share decay per repeat offense above `sanction_pattern_min`
+    sanction_min_share::Float64   # minimum participation share retained under rehabilitative restraint (Justice.txt)
 end
 
 """
@@ -293,7 +297,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
                    converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
-                   open_entry::Bool = false, entrants::Integer = 0)
+                   open_entry::Bool = false, entrants::Integer = 0,
+                   sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -349,6 +354,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           "binding miss and threshold in [0, 1], clusters and quorum non-negative")
     check(all(c -> 1 <= c <= bind_clusters, bind_compromised) && 0 <= p_reveal <= 1 && 0 <= p_newcomer <= 1 && bind_quorum_weight >= 0, "compromised clusters among the clusters; reveal and newcomer chances in [0, 1]")
     check(0 <= entrants < length(agents), "entrants in 0..length(agents)-1")
+    check(sanction_pattern_min >= 0 && isfinite(sanction_restraint_decay) && 0 <= sanction_restraint_decay <= 1 &&
+          isfinite(sanction_min_share) && 0 <= sanction_min_share <= 1,
+          "sanction_pattern_min >= 0, restraint decay and min_share in [0, 1]")
     check(isempty(slander) || (length(slander) == length(agents) && all(r -> 0 <= slander[r] <= length(agents) && slander[r] != r, eachindex(slander))),
           "one slander target per agent: another agent, or 0")
     check(on_off >= 0, "on-off period non-negative")
@@ -389,7 +397,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants))
+              converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
+              sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -753,12 +762,18 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         a > 0 || return cr
-        # Discovered deception (author ruling on 8.91): each deception an audit establishes adds to the
-        # actor's permanent deception record, and escrow rises exponentially in that count (the upfront
-        # credence halves per repeat at the default growth); never below the credence floor, so the actor
-        # is not excluded and settlement still pays what it delivers. Luck and honest mistakes are never
-        # established as deception, so they never raise it.
-        repeat_escrow_credence(cr, ledger_neg_share(a), deceptions[a]; growth = p.ratchet_growth, floor = 1 - p.max_credence)
+        # Discovered deception (author ruling on 8.91) & repeated domain negative patterns (`8.157 i`, L117):
+        # each permanent deception and repeated negative-record pattern in domain `c` raises escrow
+        # exponentially via `sanction_escrow_credence`, while isolated lapses (`< sanction_pattern_min`)
+        # add zero escalation and direct reputation penalties stay proportional (`8.157 iii`).
+        dom_neg = (p.sanction_escalate && 1 <= c <= ncol &&
+                   (dom_crime_events[a, c] >= p.sanction_pattern_min ||
+                    (dom_neg_events[a, c] >= p.sanction_pattern_min &&
+                     dom_neg_events[a, c] >= dom_pos_events[a, c] && h_neg[a, c] > h_pos[a, c]))) ?
+                  max(dom_crime_events[a, c], dom_neg_events[a, c]) : 0
+        dom_neg >= p.sanction_pattern_min && (sanction_escalations[] += 1)
+        sanction_escrow_credence(cr, ledger_neg_share(a), deceptions[a], dom_neg, p.sanction_pattern_min;
+                                 growth = p.ratchet_growth, floor = 1 - p.max_credence)
     end
     # The reputation ledgers (L101) carry patterns of mistakes and uncovered deception as well as
     # of success: an actor's negative share of its ledgers, whose entries never decay (only the
@@ -846,6 +861,9 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     entries_admitted = Ref(0)
     endowed = sum(balance)
     h_pos, h_neg, rel_gain, rel_loss = zeros(na, ncol), zeros(na, ncol), zeros(na, ncol), zeros(na, ncol)
+    dom_pos_events, dom_neg_events, dom_crime_events = zeros(Int, na, ncol), zeros(Int, na, ncol), zeros(Int, na, ncol)
+    sanction_escalations, sanction_restraints = Ref(0), Ref(0)
+    jrng = Xoshiro(hash((seed, :justice)))
     reinvested = zeros(ncol)
     overflow_agent = zeros(na)  # what overflow skimmed from each agent (for reading who reinvests)
     # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
@@ -947,6 +965,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         _, gain, _ = split_signed(st, pos)
         _, _, loss = split_signed(st, neg)
         h_pos[a, :] .+= gain; h_neg[a, :] .+= loss
+        for c in 1:ncol
+            gain[c] > loss[c] && (dom_pos_events[a, c] += 1)
+            loss[c] > gain[c] && (dom_neg_events[a, c] += 1)
+        end
         rel_gain[a, :] .+= reputation_decay.(gain, dt; rate = rate_gain)
         rel_loss[a, :] .-= reputation_decay.(loss, dt; rate = rate_loss)
     end
@@ -1067,7 +1089,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         for e in eachindex(evidence)
             evidence[e] = merge(evidence[e], (profile = classify_sig(evidence[e].signature),))
         end
-        h_pos .= 0; h_neg .= 0; rel_gain .= 0; rel_loss .= 0
+        h_pos .= 0; h_neg .= 0; rel_gain .= 0; rel_loss .= 0; dom_pos_events .= 0; dom_neg_events .= 0
         for m in memory, (a, pos, neg) in m.credits
             m.step >= id_since[a] || continue  # an abandoned identity's records are not the new one's
             apply_credit!(a, m.profile, pos, neg; dt = step - m.step)
@@ -1128,6 +1150,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    accident_admin_rest = world.accident_admin_rest[], accident_admin_paid = world.accident_admin_paid[],
                    unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                    repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
+                   sanction_escalations = sanction_escalations[], sanction_restraints = sanction_restraints[],
                    params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
                    cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                    evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
@@ -1176,8 +1199,24 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 if p.fork_rule == :split
                     h_pos[fa, c], h_pos[fslot, c] = fork_split(h_pos[fa, c], [1 - fx, fx])
                     h_neg[fa, c], h_neg[fslot, c] = fork_split(h_neg[fa, c], [1 - fx, fx])
+                    n_pe = dom_pos_events[fa, c]
+                    if n_pe > 0
+                        go_pe = round(Int, n_pe * fx)
+                        dom_pos_events[fslot, c] = go_pe; dom_pos_events[fa, c] = n_pe - go_pe
+                    end
+                    n_ne = dom_neg_events[fa, c]
+                    if n_ne > 0
+                        go_ne = count(_ -> rand(frng) < fx, 1:n_ne)
+                        dom_neg_events[fslot, c] = go_ne; dom_neg_events[fa, c] = n_ne - go_ne
+                    end
+                    n_ce = dom_crime_events[fa, c]
+                    if n_ce > 0
+                        go_ce = count(_ -> rand(frng) < fx, 1:n_ce)
+                        dom_crime_events[fslot, c] = go_ce; dom_crime_events[fa, c] = n_ce - go_ce
+                    end
                 else
                     h_pos[fslot, c] = h_pos[fa, c]; h_neg[fslot, c] = h_neg[fa, c]
+                    dom_pos_events[fslot, c] = dom_pos_events[fa, c]; dom_neg_events[fslot, c] = dom_neg_events[fa, c]; dom_crime_events[fslot, c] = dom_crime_events[fa, c]
                 end
             end
             if p.fork_rule == :split
@@ -1213,8 +1252,12 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             for c in 1:ncol
                 balance[mt, c] += naive ? max(balance[mb, c], 0.0) : balance[mb, c]; balance[mb, c] = 0.0
                 h_pos[mt, c] += h_pos[mb, c]; h_neg[mt, c] += naive ? 0.0 : h_neg[mb, c]
+                dom_pos_events[mt, c] += dom_pos_events[mb, c]
+                dom_neg_events[mt, c] += naive ? 0 : dom_neg_events[mb, c]
+                dom_crime_events[mt, c] += naive ? 0 : dom_crime_events[mb, c]
                 rel_gain[mt, c] += rel_gain[mb, c]; rel_loss[mt, c] += rel_loss[mb, c]
                 h_pos[mb, c] = h_neg[mb, c] = rel_gain[mb, c] = rel_loss[mb, c] = 0.0
+                dom_pos_events[mb, c] = dom_neg_events[mb, c] = dom_crime_events[mb, c] = 0
             end
             for (mdl, v) in track[mb]
                 append!(get!(track[mt], mdl, Tuple{Float64,Float64}[]), v); append!(get!(track_step[mt], mdl, Int[]), track_step[mb][mdl])
@@ -1255,7 +1298,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 ids.admitted[] += 1
                 id_since[a] = step
                 empty!(track[a]); empty!(track_step[a]); empty!(actor_err[a]); empty!(actor_err_step[a]); empty!(audit_log[a]); audit_from[a] = 1; empty!(unfounded[a])
-                h_pos[a, :] .= 0; h_neg[a, :] .= 0; rel_gain[a, :] .= 0; rel_loss[a, :] .= 0
+                h_pos[a, :] .= 0; h_neg[a, :] .= 0; rel_gain[a, :] .= 0; rel_loss[a, :] .= 0; dom_pos_events[a, :] .= 0; dom_neg_events[a, :] .= 0; dom_crime_events[a, :] .= 0
             else
                 ids.linked[] += 1
                 score_attest!(confs, 0.0)  # linked: the identity was the same entity
@@ -1345,7 +1388,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     own_done = ToyPlan(own_done.du .+ side.du, own_done.dh .+ side.dh)
                     world.side_hazards[] += 1
                     side_crime = is_crime(rand(srng) < p.p_foresee || (p.mandate_education && (a, leaves[j]) in educated), true, false)
-                    side_crime ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    c_side = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : leaves[j]
+                    side_crime ? (world.crimes[] += 1; plan_value(own_done, t) < 0 && (dom_crime_events[a, c_side] += 1)) : (world.accidents[] += 1)
                     if !side_crime && p.mandate_education && !((a, leaves[j]) in educated)
                         push!(educated, (a, leaves[j]))
                         world.educations[] += 1
@@ -1524,6 +1568,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 end
                 ok = all(pr[c] <= 0 || pr[c] <= balance[aa, c] for c in 1:ncol)
                 (ok = ok, quotes = qs)
+            end
+            c_prop = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : leaves[j]
+            if p.sanction_escalate && dom_crime_events[proposers[j], c_prop] >= p.sanction_pattern_min
+                rehab_sh = rehabilitate_restraint(1.0, dom_crime_events[proposers[j], c_prop], p.sanction_pattern_min;
+                                                  decay = p.sanction_restraint_decay, min_share = p.sanction_min_share)
+                if rand(jrng) > rehab_sh
+                    sanction_restraints[] += 1
+                    continue
+                end
             end
             res = price_proposal(j, proposers[j])
             if !res.ok && p.open_entry
@@ -1941,9 +1994,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             measured = plan_value(observed_plan(hrng, harm, σ), t)
             traced = cause > 0 && rand(hrng) < p.p_trace
             if traced
-                is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
                 sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
                 st, pm = classify_sig(sig), parent_mem(sig)
+                c_ex = top_leaf(st) > 0 ? top_leaf(st) : l
+                is_crime(true, true, false) ? (world.crimes[] += 1; dom_crime_events[cause, c_ex] += 1) : (world.accidents[] += 1)
                 credit!(cur[], sig, st, measured, pm, price_shares(st), [(cause, 0.0, measured)])
                 world.hazard_penalties[] += -measured
                 if cur[] > p.init_steps
@@ -2005,9 +2059,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         insure!(harm, hit, measured, l)
                     else
                         crime = is_crime(informed, false, true)
-                        crime ? (world.crimes[] += 1) : (world.accidents[] += 1)
                         sig = true_sig[l] .+ p.spread .* randn(hrng, dims)
                         st, pm = classify_sig(sig), parent_mem(sig)
+                        c_haz = top_leaf(st) > 0 ? top_leaf(st) : l
+                        crime ? (world.crimes[] += 1; dom_crime_events[g, c_haz] += 1) : (world.accidents[] += 1)
                         φ = measured  # its one contributor's whole share, assessed against the committed action
                         credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
                         world.hazard_penalties[] += -φ
@@ -2238,6 +2293,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                             pen = false_report_charge(0.0, 0.0, p.audit_cost)
                             balance[r, :] .+= split_signed(st, -pen)[1]
                             adv.penalties[] += pen; adv.net[] -= pen; world.crimes[] += 1
+                            top_leaf(st) > 0 && (dom_crime_events[r, top_leaf(st)] += 1)
                             credit!(step, sig, classify_sig(sig), -pen, parent_mem(sig), st, [(r, 0.0, -pen)])
                         else
                             pending_lies[r] += 1
@@ -2247,7 +2303,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     adv.established[] += 1
                     deceptions[b] += 1   # the actor's permanent deception record (8.91 ruling)
                     push!(discount_spans[b], (last_audit[b], cur[])); last_audit[b] = cur[]
-                    is_crime(true, true, false) ? (world.crimes[] += 1) : (world.accidents[] += 1)
+                    is_crime(true, true, false) ? (world.crimes[] += 1; top_leaf(st) > 0 && (dom_crime_events[b, top_leaf(st)] += 1)) : (world.accidents[] += 1)
                     # The overstatement repaired is estimated from all the actor's records, so each
                     # further audit sharpens it rather than repairing by a few records' noise.
                     allrec = audit_log[b]
@@ -2290,7 +2346,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         pen += (length(unfounded[r]) - 1 + pending_lies[r]) * false_report_charge(0.0, 0.0, p.audit_cost)
                         pending_lies[r] = 0
                     end
-                    pen > 0 && (world.crimes[] += 1)
+                    pen > 0 && (world.crimes[] += 1; top_leaf(st) > 0 && (dom_crime_events[r, top_leaf(st)] += 1))
                     if pen > 0
                         balance[r, :] .+= split_signed(st, -pen)[1]
                         adv.penalties[] += pen; adv.net[] -= pen

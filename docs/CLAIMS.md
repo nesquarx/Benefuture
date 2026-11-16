@@ -47,7 +47,7 @@ The bridge works in two links:
   casting ([`supplyQ_spec`](../BenefutureTest/Differential.lean), [`cappedQ_spec`](../BenefutureTest/Differential.lean),
   [`shapleyQ_spec`](../BenefutureTest/Differential.lean), [`sampledQ_spec`](../BenefutureTest/Differential.lean),
   [`recordCredenceQ_spec`](../BenefutureTest/Differential.lean), [`votingWeightQ_spec`](../BenefutureTest/Differential.lean)
-  and others; 12 theorems).
+  and others; 16 theorems).
 - **ℚ to Float, tested.** The Float reference is tested against those oracles on generated dyadic
   inputs to 1e-9 relative.
 
@@ -367,11 +367,11 @@ Governance and incentives
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).
 
 Bridge to the reference ([`BenefutureTest/Differential.lean`](../BenefutureTest/Differential.lean))
-- The bridge chain is ℝ specification = ℚ oracle (proved, 12 `*_spec` theorems) ≈ Float reference
+- The bridge chain is ℝ specification = ℚ oracle (proved, 16 `*_spec` theorems) ≈ Float reference
   (tested within 1e-9 relative on dyadic inputs).
   - Rules covered: `supply_delta`, `competition_efficiency`, `rolling_average`, `accumulate_capped`,
-    `p_forgive`, `p_overreact`, `severity_score`, `Voting_weight`, exact and sampled Shapley, and
-    `recordCredence`.
+    `p_forgive`, `p_overreact`, `severity_score`, `Voting_weight`, exact and sampled Shapley,
+    `recordCredence`, `accident_split`, `sanction_escrow_credence`, and `rehabilitate_restraint`.
   - Interval-bound oracles enclose the nonlinear rules (`Rep_decay`, `shapley_sample_count`, `phi`,
     `normal_cdf`, `credence`).
   - ℤ specifications are compared directly (`bounty_reward`, `upfront_payment`).
@@ -607,7 +607,7 @@ networks and propagation (M8) ([SIM_CONJECTURES](SIM_CONJECTURES.md), [PLAN](PLA
 
 ##  Epistemic scope: what is proved, what is simulated, what is open
 
-**(a) Deductive guarantees (Lean 4).** The 428 theorems in [`Benefuture/`](Benefuture) and the 12
+**(a) Deductive guarantees (Lean 4).** The 435 theorems in [`Benefuture/`](Benefuture) and the 16
 bridge theorems in [`BenefutureTest/`](../BenefutureTest) hold for the definitions as written. Designs
 tagged [P] live in `Benefuture/Proposed/`. Behavioural claims are stated as `Conj_*` in
 [Benefuture/Systems/Conjectures.lean](../Benefuture/Systems/Conjectures.lean) and are unproved. No
