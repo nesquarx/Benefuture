@@ -79,6 +79,8 @@ function map_workers(seeds, modes, workers::Int)
     proj = abspath(joinpath(@__DIR__, ".."))
     julia = Base.julia_cmd()[1]
     res = Vector{Any}(undef, length(seeds))
+    pt = progress_tracker(joinpath(@__DIR__, "state", "status_quo_economy.progress"), "status_quo_economy", length(seeds); interval = 300.0)
+    done_n = 0
     next_i = 1
     active = Tuple{Int, Base.Process, String}[]
     try
@@ -100,8 +102,11 @@ function map_workers(seeds, modes, workers::Int)
             success(proc) || error("worker failed on seed $(seeds[i])")
             res[i] = open(deserialize, out_p)
             rm(out_p; force = true)
+            done_n += 1
+            progress_tick!(pt, done_n, "seed $(seeds[i]) done")
         end
     finally
+        progress_finish!(pt, done_n == length(seeds) ? "completed" : "stopped early")
         for (_, proc, _) in active
             process_running(proc) && kill(proc)
         end

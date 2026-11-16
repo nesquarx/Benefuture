@@ -205,6 +205,8 @@ if 1 <= SINGLE_CASE <= length(CASES)
     run_worker_case(SINGLE_CASE)
 else
     mkpath(OUT)
+    pt = progress_tracker(joinpath(@__DIR__, "state", "attack_payoffs.progress"), "attack_payoffs", length(CASES); interval = 300.0)
+    done_cnt = Threads.Atomic{Int}(0)
     rows = if WORKERS > 1
         seeds_arg = "$(first(SEEDS)):$(last(SEEDS))"
         proj = dirname(@__DIR__)
@@ -213,11 +215,14 @@ else
             run(cmd)
             r = parse_row_tsv(row_tsv_path(k))
             rm(row_tsv_path(k); force = true)
+            c = Threads.atomic_add!(done_cnt, 1) + 1
+            progress_tick!(pt, c, r.name)
             r
         end
     else
-        [run_worker_case(k) for k in eachindex(CASES)]
+        [let r = run_worker_case(k); progress_tick!(pt, k, r.name); r; end for k in eachindex(CASES)]
     end
+    progress_finish!(pt, "completed")
     sybil_d = sybil_harm_split_delta()
     elapsed = time() - t0
 

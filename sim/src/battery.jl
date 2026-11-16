@@ -355,3 +355,81 @@ function write_methods(label, m, names; reading_note, screen_fail_rate, minutes,
         end
     end
 end
+
+"""
+    ProgressTracker
+
+Periodic progress file writer for simulations running more than 5 minutes.
+Writes atomic status snapshots (`done/total`, elapsed minutes, ETA, latest note) to `path`
+at start, every `interval` seconds (default `300.0` = 5 minutes via background `Timer` plus
+`progress_tick!`), and on `progress_finish!`.
+"""
+mutable struct ProgressTracker
+    path::String
+    label::String
+    total::Int
+    done::Int
+    t0::Float64
+    last_write::Float64
+    interval::Float64
+    note::String
+    lock::ReentrantLock
+    timer::Union{Nothing,Timer}
+end
+
+function write_progress_snapshot(pt::ProgressTracker; status::String = "RUNNING")
+    mkpath(dirname(abspath(pt.path)))
+    elapsed = (time() - pt.t0) / 60.0
+    frac = pt.total > 0 ? clamp(pt.done / pt.total, 0.0, 1.0) : 0.0
+    eta_str = (pt.done > 0 && pt.total > pt.done) ?
+        @sprintf("%.1f min", elapsed * (pt.total - pt.done) / pt.done) : "–"
+    tmp = pt.path * ".tmp." * string(getpid())
+    open(tmp, "w") do io
+        println(io, "label: $(pt.label)")
+        println(io, "status: $status")
+        println(io, "updated_utc: $(Libc.strftime("%Y-%m-%dT%H:%M:%SZ", round(Int, time())))")
+        println(io, @sprintf("progress: %d / %d (%.1f%%)", pt.done, pt.total, 100 * frac))
+        println(io, @sprintf("elapsed: %.1f min | eta: %s", elapsed, eta_str))
+        isempty(pt.note) || println(io, "latest: $(pt.note)")
+    end
+    mv(tmp, pt.path; force = true)
+    pt.last_write = time()
+end
+
+function progress_tracker(path::AbstractString, label::AbstractString, total::Integer; interval::Real = 300.0)
+    t0 = time()
+    pt = ProgressTracker(String(path), String(label), Int(total), 0, t0, t0, Float64(interval), "started", ReentrantLock(), nothing)
+    lock(pt.lock) do
+        write_progress_snapshot(pt; status = "RUNNING")
+    end
+    if pt.interval > 0
+        pt.timer = Timer(pt.interval; interval = pt.interval) do _
+            lock(pt.lock) do
+                pt.timer === nothing && return
+                write_progress_snapshot(pt; status = "RUNNING")
+            end
+        end
+    end
+    pt
+end
+
+function progress_tick!(pt::ProgressTracker, done::Integer, note::AbstractString = "")
+    lock(pt.lock) do
+        pt.done = Int(done)
+        isempty(note) || (pt.note = String(note))
+        if (time() - pt.last_write) >= pt.interval || (pt.total > 0 && pt.done >= pt.total)
+            write_progress_snapshot(pt; status = (pt.total > 0 && pt.done >= pt.total) ? "FINALIZING" : "RUNNING")
+        end
+    end
+end
+
+function progress_finish!(pt::ProgressTracker, note::AbstractString = "completed")
+    lock(pt.lock) do
+        t = pt.timer
+        pt.timer = nothing
+        t !== nothing && close(t)
+        pt.done = max(pt.done, pt.total)
+        isempty(note) || (pt.note = String(note))
+        write_progress_snapshot(pt; status = "DONE")
+    end
+end

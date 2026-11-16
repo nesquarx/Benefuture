@@ -273,8 +273,10 @@ function run_l33_suite!(sections, rows, commit, t_start; idx::Int, suite::String
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start)
+    progress_tick!(LH_PROGRESS, idx, "$(title) done")
 end
 
+const LH_PROGRESS = progress_tracker(joinpath(@__DIR__, "state", "long_horizon.progress"), "long_horizon", 4; interval = 300.0)
 println("[1/4] Running 10-Year Coupled World (120 steps, epoch=24, 120 gov decisions, 4 factorial arms, seeds $(first(ECON_SEEDS)):$(last(ECON_SEEDS)))...")
 run_l33_suite!(sections, rows, commit, t_start;
                idx = 1, suite = "10yr_coupled",
@@ -355,6 +357,7 @@ begin
     end
     push!(sections, String(take!(sec)))
     flush_report!(sections, rows, commit, t_start; status = "COMPLETED")
+    progress_finish!(LH_PROGRESS, "completed")
 end
 
 println("Long-horizon simulation suite completed cleanly in $(round((time() - t_start)/60, digits=1)) minutes.")

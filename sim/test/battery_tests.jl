@@ -80,3 +80,17 @@ end
     @test b([0.7]) === true && cached(sev -> error("not replayed"), "b"; dir)([0.7]) === true
     @test length(code_hash()) == 64 && occursin(code_hash()[1:12], only(filter(startswith("t-"), readdir(dir))))
 end
+
+@testset "battery: periodic progress file writer" begin
+    dir = mktempdir()
+    p = joinpath(dir, "sim.progress")
+    pt = progress_tracker(p, "unit-sim", 4; interval = 0.05)
+    @test isfile(p) && occursin("status: RUNNING", read(p, String))
+    progress_tick!(pt, 2, "halfway")
+    sleep(0.08)
+    s = read(p, String)
+    @test occursin("progress: 2 / 4 (50.0%)", s) && occursin("latest: halfway", s)
+    progress_finish!(pt, "all done")
+    sf = read(p, String)
+    @test occursin("status: DONE", sf) && occursin("progress: 4 / 4 (100.0%)", sf) && occursin("latest: all done", sf)
+end
