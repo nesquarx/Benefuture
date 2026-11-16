@@ -1802,6 +1802,21 @@ end
     @test !rn.converged && rn.converge_step == 0 && rn.legacy_executed > 0 && rn.lane_halted == 0
     @test all(==(P_noise.endowment), rn.balance)
 
+    # Sparse-focus known leaves (zero-focus known leaves must not deadlock active leaves' convergence, while noisy active leaves still stay score-only).
+    ag_sparse = [DomainAgent([0.5, 0.0, 0.5, 0.0], [0.5, 0.0, 0.5, 0.0], 0.0) for _ in 1:8]
+    P_sparse_ok = M3cParams(ToyParams(n = 40, steps = 100, plans = 6), ag_sparse, [1, 1, 2, 2], trues(4);
+                            λpos = 0.05, λneg = 0.02, transactions = true, init_steps = 5,
+                            min_records = 12, threshold = 0.85, model_z = 2.0,
+                            converge_init = true, legacy_funder = true)
+    P_sparse_bad = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag_sparse, [1, 1, 2, 2], trues(4);
+                             λpos = 0.05, λneg = 0.02, transactions = true, init_steps = 5,
+                             min_records = 12, threshold = 0.99, marker_σ = 10.0, σ_leaf = 10.0,
+                             converge_init = true, legacy_funder = true)
+    sp_ok = [run_m3c(P_sparse_ok; seed = s) for s in 1:8]
+    sp_bad = run_m3c(P_sparse_bad; seed = 1)
+    @test all(c -> c.converged && c.converge_step > 5 && c.legacy_executed > 0, sp_ok)
+    @test !sp_bad.converged && sp_bad.converge_step == 0 && sp_bad.legacy_executed > 0
+
     # Governance part (b + c): same converged economy (`econ_8136`), varying only `shadow`.
     ag_c = vcat(
         [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4],

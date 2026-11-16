@@ -1152,8 +1152,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 sd = std(sk)
                 sd <= 0.0 ? mean(sk) > 0.0 : sequential_significant(mean(sk), sd, n; n0 = n0, z = p.model_z)
             end
-            known_leaves = [j for j in 1:nleaves() if !lnovel[j]]
-            if !isempty(known_leaves) && all(j -> domain_converged(lhist[j], leaf_ok(j)), known_leaves)
+            active_known = [j for j in 1:nleaves() if !lnovel[j] && (
+                any(a -> !dormant[a] && ltrue[j] <= length(p.agents[a].focus) && p.agents[a].focus[ltrue[j]] > 0.0, 1:na) ||
+                !isempty(lhist[j]))]
+            if !isempty(active_known) && all(j -> domain_converged(lhist[j], leaf_ok(j)), active_known)
                 econ_converged[] = true
                 converge_step[] = step
             end

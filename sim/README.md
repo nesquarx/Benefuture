@@ -1281,7 +1281,7 @@ for removal.
 | Preventions as ordinary recorded actions | Native | L97, L145; 8.24 (replaced a duty payment) |
 | Hazard penalty of a lone contributor | Native | its whole outcome; a one-player Shapley call removed |
 | Carrying fee (accolade or contract share) | Native, basis [P] | L96 N_CCtype, L121; gaming check in 8.22 |
-| Score-only start, eligibility thresholds, and legacy Phase-1 funder | Native | Implementation Phase 1, L82; 8.136: `converge_init` holds models score-only until `domain_converged` (`currency_eligible` + `sequential_significant`, L153), `legacy_funder` runs status-quo work separately from Bf balances |
+| Score-only start, eligibility thresholds, and legacy Phase-1 funder | Native | Implementation Phase 1, L82; 8.136: `converge_init` holds models score-only until active known leaves (`active_known`: non-zero agent focus or non-empty records) pass `domain_converged` (`currency_eligible` + `sequential_significant`, L153), `legacy_funder` runs status-quo work separately from Bf balances |
 | Overlaps as rolling averages; formation from blockages | Ruled | 8.6, 8.12 |
 | StandCoin lane at full cost, co-funding experts | Ruled | 8.8; `expert_share` is governed |
 | Normalised reputation in votes | Ruled | 8.21, 8.22 |

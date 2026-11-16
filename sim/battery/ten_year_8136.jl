@@ -18,8 +18,8 @@ ENV["BF_WORLD_ONLY"] = "1"
 include(joinpath(@__DIR__, "long_horizon.jl"))
 
 const COMMIT = readchomp(`git rev-parse --short HEAD`)
-const OUT_MD = joinpath(@__DIR__, "results", "ten_year_8136.md")
-const OUT_CSV = joinpath(@__DIR__, "results", "ten_year_8136.csv")
+out_md(tag::AbstractString) = joinpath(@__DIR__, "results", isempty(tag) ? "ten_year_8136.md" : "ten_year_8136_$(tag).md")
+out_csv(tag::AbstractString) = joinpath(@__DIR__, "results", isempty(tag) ? "ten_year_8136.csv" : "ten_year_8136_$(tag).csv")
 
 const STEPS = 120
 const EPOCH = 24
@@ -161,7 +161,7 @@ function paired_stats(a::AbstractVector{<:Real}, b::AbstractVector{<:Real}; z::R
      sig_dn = dn.significant, sig = sig)
 end
 
-function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_SEEDS, stopped_early = false)
+function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_SEEDS, stopped_early = false, tag::AbstractString = "")
     s_stress = [r.stressed for r in rows]
     s_unstress = [r.unstressed for r in rows]
     n = length(rows)
@@ -180,6 +180,8 @@ function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_
     println(md, "## Pre-registered Predictions (stated before running)")
     println(md, "- **P5 (confidence 0.6)**: The 10-year `floor_u` difference (`:bf_8136` minus `:status_quo`) becomes significant at `z >= 3` (`z * t_inflation`).")
     println(md, "- **P6 (confidence 0.7)**: The early dip in the first two years (`steps 1..24`) shrinks under `:bf_8136` relative to `:bf_base` (and `:status_quo`).")
+    println(md, "- **P8 (confidence 0.85, active-leaf unblocked)**: With `domain_converged` gating on active known leaves (`m3c.jl`), `:bf_8136` exits the `0/64` sparse-focus deadlock and converges on a majority (`> 50%`) of seeds before step 120.")
+    println(md, "- **P9 (confidence 0.55, live graduation)**: Dynamic graduation around `converge_step` preserves the Y1–2 early-dip reduction (`< bf_base`) while finishing higher or indistinguishable vs warmup-matched `:sq_leg50` over 10 years.")
     println(md, "- **Diagnostic on failure**: If P5 fails, inspect the year-by-year trajectory (`Years 1..10`) to identify where Benefuture diverges (no tuning).")
     println(md)
 
@@ -213,6 +215,7 @@ function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_
         ("bf8136_vs_bfbase",   ":bf_8136 vs :bf_base",    r -> r.bf_8136,  r -> r.bf_base),
         ("bfbase_vs_sq",       ":bf_base vs :status_quo", r -> r.bf_base,  r -> r.sq),
         ("bfleg50_vs_sqleg50", ":bf_leg50 vs :sq_leg50",  r -> r.bf_leg50, r -> r.sq_leg50),
+        ("bf8136_vs_sqleg50",  ":bf_8136 vs :sq_leg50",   r -> r.bf_8136,  r -> r.sq_leg50),
     ]
 
     for (slabel, arr) in (("Stressed", s_stress), ("Unstressed", s_unstress))
@@ -245,7 +248,7 @@ function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_
     ]
     println(md, "## P6: Early-Dip Comparisons (First Two Years, `steps 1..24`)\n")
     for (slabel, arr) in (("Stressed", s_stress), ("Unstressed", s_unstress))
-        for (ckey, clabel, ga, gb) in comps[[1, 2, 4]]
+        for (ckey, clabel, ga, gb) in comps[[1, 2, 4, 5]]
             @printf(md, "### %s — %s\n\n", clabel, slabel)
             println(md, "| Early Metric | Mean A | Mean B | Paired Diff ± SE | `z` (req `z*t`) | 99.7% t-CI | Sig (`z>=3`) |")
             println(md, "|---|---|---|---|---|---|---|")
@@ -307,13 +310,14 @@ function write_report(rows, elapsed_min; min_seeds = MIN_SEEDS, max_seeds = MAX_
         println(md)
     end
 
-    open(OUT_MD, "w") do io; write(io, String(take!(md))); end
-    open(OUT_CSV, "w") do io; foreach(r -> println(io, r), csv_rows); end
+    open(out_md(tag), "w") do io; write(io, String(take!(md))); end
+    open(out_csv(tag), "w") do io; foreach(r -> println(io, r), csv_rows); end
 end
 
 function main()
     workers = 7
     min_s, max_s = MIN_SEEDS, MAX_SEEDS
+    tag = ""
     i = 1
     while i <= length(ARGS)
         if ARGS[i] == "--workers" && i < length(ARGS); workers = parse(Int, ARGS[i+1]); i += 2
@@ -322,6 +326,8 @@ function main()
         elseif startswith(ARGS[i], "--max="); max_s = parse(Int, split(ARGS[i], "=", limit = 2)[2]); i += 1
         elseif ARGS[i] == "--min" && i < length(ARGS); min_s = parse(Int, ARGS[i+1]); i += 2
         elseif startswith(ARGS[i], "--min="); min_s = parse(Int, split(ARGS[i], "=", limit = 2)[2]); i += 1
+        elseif ARGS[i] == "--tag" && i < length(ARGS); tag = ARGS[i+1]; i += 2
+        elseif startswith(ARGS[i], "--tag="); tag = split(ARGS[i], "=", limit = 2)[2]; i += 1
         else; i += 1
         end
     end
@@ -340,7 +346,7 @@ function main()
         n = length(all_rows)
         st_s = paired_stats([r.stressed.bf_8136.floor_u for r in all_rows], [r.stressed.sq.floor_u for r in all_rows])
         st_u = paired_stats([r.unstressed.bf_8136.floor_u for r in all_rows], [r.unstressed.sq.floor_u for r in all_rows])
-        write_report(all_rows, (time() - t0) / 60; min_seeds = min_s, max_seeds = max_s, stopped_early = false)
+        write_report(all_rows, (time() - t0) / 60; min_seeds = min_s, max_seeds = max_s, stopped_early = false, tag = tag)
         @printf("[n=%d] stressed diff=%.3f ± %.3f (t-SE=%.3f, z=%.2f); unstressed diff=%.3f ± %.3f (t-SE=%.3f, z=%.2f)\n",
                 n, st_s.diff, st_s.se, st_s.se_t, st_s.z, st_u.diff, st_u.se, st_u.se_t, st_u.z)
         flush(stdout)
@@ -353,8 +359,8 @@ function main()
         append!(all_rows, map_workers(collect(next_seed:batch_end), workers))
         next_seed = batch_end + 1
     end
-    write_report(all_rows, (time() - t0) / 60; min_seeds = min_s, max_seeds = max_s, stopped_early = stopped_early)
-    println("Done in $(round((time() - t0) / 60; digits = 1)) min -> $OUT_MD")
+    write_report(all_rows, (time() - t0) / 60; min_seeds = min_s, max_seeds = max_s, stopped_early = stopped_early, tag = tag)
+    println("Done in $(round((time() - t0) / 60; digits = 1)) min -> $(out_md(tag))")
 end
 
 if !isempty(ARGS) && ARGS[1] == "--worker"
