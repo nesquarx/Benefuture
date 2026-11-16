@@ -474,4 +474,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_ra_contraction_factor] def raContractionFactor (claims deliverableCap rate minScale : Float) : Float :=
   ra_contraction_factor_ref claims deliverableCap rate minScale
 
+-- 8.152 / 8.159 / L96: four-factor responsibility reading (Informed, Counterfactual, Severity, Duty)
+@[export bf_responsibility_factor] def responsibilityFactor
+    (isAct isInformed hasDuty : UInt8) (counterfactualRatio severityScale accidentFactor : Float) : Float :=
+  responsibility_factor_ref (isAct != 0) (isInformed != 0) (hasDuty != 0)
+    counterfactualRatio severityScale accidentFactor
+
 end BenefutureReference.Export

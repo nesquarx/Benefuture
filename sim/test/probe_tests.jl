@@ -2475,3 +2475,64 @@ end
     @test paired_effect([Float64(b.budget_uncashable - a.budget_uncashable) for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
     @test paired_effect([b.repair_cost - a.repair_cost for (a, b) in zip(r_on, r_off)]; z = 3.0).significant
 end
+
+# 8.152 & 8.159 (L96 `Responsibility(Informed, Counterfactual, Severity, Duty)`): four-factor
+# responsibility reading gives equal debit for informed doing vs allowing under duty, exempts
+# bystander omissions, zeros zero-counterfactual attribution, attenuates uninformed accidents,
+# and lets mandated education close the ignorance exemption on repeat hazards (`!Ig_pays`).
+@testset "Probe: Responsibility four-factor reading, doing/allowing parity, and bystander exemption (L96; 8.152)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag12 = [DomainAgent([1.0], [1.0], 0.0)]
+    t12 = ToyParams(n = 10, steps = 10, plans = 1)
+    base12(; kw...) = M3cParams(t12, ag12, [1], trues(1); LEGACY...,
+                                λpos = 0.05, λneg = 0.02, init_steps = 0, transactions = true,
+                                causal_distribution = true, marker_σ = 0.0, remeasure_σ = 0.0,
+                                hazard_σ = 0.0, sanction_escalate = false, accident_cap = false,
+                                mandate_education = false, responsibility_reading = true,
+                                responsibility_accident_factor = 0.25, kw...)
+    r_act   = run_m3c(base12(p_trace = 1.0, responsibility_counterfactual = 1.0, responsibility_severity = 1.0,
+                             events = [shock(:outage; step = 3, share = 1.0, size = 2.0, target = 1)]); seed = 7)
+    r_omit  = run_m3c(base12(guardians = [1], diligence = [0.0], p_informed = 1.0,
+                             responsibility_counterfactual = 1.0, responsibility_severity = 1.0,
+                             events = [shock(:catastrophe; step = 3, share = 1.0, size = 2.0)]); seed = 7)
+    r_byst  = run_m3c(base12(guardians = Int[],
+                             responsibility_counterfactual = 1.0, responsibility_severity = 1.0,
+                             events = [shock(:catastrophe; step = 3, share = 1.0, size = 2.0)]); seed = 7)
+    r_cf0   = run_m3c(base12(guardians = [1], diligence = [0.0], p_informed = 1.0,
+                             responsibility_counterfactual = 0.0, responsibility_severity = 1.0,
+                             events = [shock(:catastrophe; step = 3, share = 1.0, size = 2.0)]); seed = 7)
+    r_uninf = run_m3c(base12(guardians = [1], diligence = [0.0], p_informed = 0.0,
+                             responsibility_counterfactual = 1.0, responsibility_severity = 1.0,
+                             events = [shock(:catastrophe; step = 3, share = 1.0, size = 2.0)]); seed = 7)
+    @test r_act.responsibility_credits == 1 && r_omit.responsibility_credits == 1
+    @test r_act.hazard_penalties > 0
+    @test r_act.hazard_penalties ≈ r_omit.hazard_penalties atol = 1e-9
+    @test r_act.hazard_debits ≈ r_omit.hazard_debits atol = 1e-9
+    @test r_byst.bystander_omissions_exempted == 1 && r_byst.hazard_penalties == 0.0 && r_byst.hazard_debits == 0.0
+    @test r_cf0.hazard_penalties == 0.0 && r_cf0.hazard_debits == 0.0
+    @test r_uninf.hazard_penalties ≈ 0.25 * r_omit.hazard_penalties atol = 1e-9
+    @test r_uninf.hazard_debits < r_omit.hazard_debits
+end
+
+@testset "Probe: Responsibility counterfactual/severity scaling and mandated education removing ignorance exemption (8.152, 8.159)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag13 = [DomainAgent([0.8], [1.0], 0.0)]
+    t13 = ToyParams(n = 20, steps = 40, plans = 4)
+    p13(cf, sev, pinf, mand) = M3cParams(t13, ag13, [1], trues(1); LEGACY...,
+                                         λpos = 0.05, λneg = 0.02, init_steps = 0, transactions = true,
+                                         causal_distribution = true, guardians = [1], diligence = [0.0],
+                                         p_informed = pinf, p_hazard = 0.5, hazard_share = 0.5, hazard_size = 2.0,
+                                         mandate_education = mand, accident_cap = false, sanction_escalate = false,
+                                         responsibility_reading = true, responsibility_counterfactual = cf,
+                                         responsibility_severity = sev, responsibility_accident_factor = 0.25)
+    lo_cf = [run_m3c(p13(0.3, 1.0, 1.0, false); seed = s) for s in 1:16]
+    hi_cf = [run_m3c(p13(1.0, 1.0, 1.0, false); seed = s) for s in 1:16]
+    lo_sv = [run_m3c(p13(1.0, 0.5, 1.0, false); seed = s) for s in 1:16]
+    hi_sv = [run_m3c(p13(1.0, 2.0, 1.0, false); seed = s) for s in 1:16]
+    uninf_no_ed = [run_m3c(p13(1.0, 1.0, 0.0, false); seed = s) for s in 1:16]
+    uninf_ed    = [run_m3c(p13(1.0, 1.0, 0.0, true);  seed = s) for s in 1:16]
+    @test paired_effect([h.hazard_debits - l.hazard_debits for (l, h) in zip(lo_cf, hi_cf)]; z = 3.0).significant
+    @test paired_effect([h.hazard_debits - l.hazard_debits for (l, h) in zip(lo_sv, hi_sv)]; z = 3.0).significant
+    @test all(r -> r.educations == 0, uninf_no_ed) && all(r -> r.educations >= 1, uninf_ed)
+    @test paired_effect([e.hazard_debits - n.hazard_debits for (n, e) in zip(uninf_no_ed, uninf_ed)]; z = 3.0).significant
+end

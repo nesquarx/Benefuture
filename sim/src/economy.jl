@@ -236,6 +236,25 @@ function rehabilitate_restraint(base_share::Real, crime_events::Integer, pattern
           base_share, Float64(crime_events), Float64(pattern_min), decay, min_share)
 end
 
+"""
+    responsibility_factor(is_act, is_informed, has_duty, counterfactual_ratio;
+                          severity_scale = 1.0, accident_factor = 0.5) -> factor
+
+Four-factor responsibility weight for causal distribution (`Responsibility(Informed, Counterfactual,
+Severity, Duty)`, L96; Lean `responsibility_factor_ref`, author rulings 8.152 & 8.159).
+Doing (`is_act = true`) and allowing (`is_act = false`) share parity when informed under duty;
+bystander omissions (`!is_act && !has_duty`) return `0.0`.
+"""
+function responsibility_factor(is_act::Bool, is_informed::Bool, has_duty::Bool, counterfactual_ratio::Real;
+                               severity_scale::Real = 1.0, accident_factor::Real = 0.5)
+    check(all(isfinite, (counterfactual_ratio, severity_scale, accident_factor)),
+          "responsibility inputs must be finite")
+    ccall(sym(:bf_responsibility_factor), Float64,
+          (UInt8, UInt8, UInt8, Float64, Float64, Float64),
+          UInt8(is_act), UInt8(is_informed), UInt8(has_duty),
+          Float64(counterfactual_ratio), Float64(severity_scale), Float64(accident_factor))
+end
+
 # The governed parameter space (`Systems.ParamSpace` [R]; L158 SigThGv), in the order of `ParamVector`.
 const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, :lambda, :kappa_value, :kappa_harm,
                       :q_harm, :nu, :h_param, :lambda_plus, :lambda_minus, :th_sig, :th_gov, :fr_thConf, :fr_thHigh,

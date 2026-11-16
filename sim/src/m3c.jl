@@ -257,6 +257,10 @@ struct M3cParams
     ra_reserve_horizon::Float64   # steps of expected fallback need provisioned into protected commons reserve (8.133 d)
     ra_spend_contract::Bool       # contract discretionary spending alongside baseline pricing when claims exceed capacity
     ra_audit_per_step::Vector{Float64} # per-true-leaf audit resource burden consumed in RA's L83 `(Cost + Audit)` estimate (8.155)
+    responsibility_reading::Bool  # L96 / 8.152 / 8.159: scale harm causal attribution by Responsibility(Informed, Counterfactual, Severity, Duty)
+    responsibility_counterfactual::Float64 # counterfactual harm share in [0, 1] attributable to act or breach of duty
+    responsibility_severity::Float64       # severity scale >= 0 in four-factor responsibility weight
+    responsibility_accident_factor::Float64 # attenuated factor in [0, 1] for uninformed accidents before mandated education
 end
 
 """
@@ -304,7 +308,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
                    open_entry::Bool = false, entrants::Integer = 0,
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
-                   ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[])
+                   ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
+                   responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -375,6 +380,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(isfinite(ra_alloc_weight) && ra_alloc_weight >= 0 && isfinite(ra_reserve_horizon) && ra_reserve_horizon >= 0 &&
           (isempty(ra_audit_per_step) || (length(ra_audit_per_step) == nl && all(x -> isfinite(x) && x >= 0, ra_audit_per_step))),
           "RA allocation weight, reserve horizon, and audit costs must be non-negative")
+    check(isfinite(responsibility_counterfactual) && 0 <= responsibility_counterfactual <= 1 &&
+          isfinite(responsibility_severity) && responsibility_severity >= 0 &&
+          isfinite(responsibility_accident_factor) && 0 <= responsibility_accident_factor <= 1,
+          "responsibility counterfactual & accident factor in [0, 1], severity non-negative")
     check(0 <= supplier <= length(agents) && 0 <= supply_share <= 1 && 0 <= withhold <= 1, "supplier an agent or 0; shares in [0, 1]")
     check(all(i -> 1 <= i <= length(agents), supply_cartel) && length(unique(supply_cartel)) == length(supply_cartel),
           "supply_cartel agents distinct and in 1..na")
@@ -408,7 +417,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
               converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
-              ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step))
+              ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
+              responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -928,6 +938,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     reserve_target = Ref(0.0)
     spend_scale = Ref(1.0)
     ra_audit_costs = Ref(0.0)
+    responsibility_credits_applied = Ref(0)
+    bystander_omissions_exempted = Ref(0)
     budget = (unfunded = Ref(0), uncashable = Ref(0))
     supplier_income = Ref(0.0)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0), legacy_executed = Ref(0))
@@ -1149,6 +1161,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    ra_alloc = (s_uv = sum(ra_unit_value); s_uv > 0 ? ra_unit_value ./ s_uv : fill(1.0 / ntrue, ntrue)),
                    ra_reserve_target = reserve_target[], ra_reserve_balance = commons_reserve[],
                    ra_spend_scale = spend_scale[], ra_price_scale = price_scale[], ra_audit_costs = ra_audit_costs[],
+                   responsibility_credits = responsibility_credits_applied[], bystander_omissions_exempted = bystander_omissions_exempted[],
                    withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
                    lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
                    legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[],
@@ -2064,11 +2077,17 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 st, pm = classify_sig(sig), parent_mem(sig)
                 c_ex = top_leaf(st) > 0 ? top_leaf(st) : l
                 is_crime(true, true, false) ? (world.crimes[] += 1; dom_crime_events[cause, c_ex] += 1) : (world.accidents[] += 1)
-                credit!(cur[], sig, st, measured, pm, price_shares(st), [(cause, 0.0, measured)])
-                world.hazard_penalties[] += -measured
+                rw = p.responsibility_reading ?
+                     responsibility_factor(true, true, true, p.responsibility_counterfactual;
+                                           severity_scale = p.responsibility_severity,
+                                           accident_factor = p.responsibility_accident_factor) : 1.0
+                eff_measured = measured * rw
+                p.responsibility_reading && (responsibility_credits_applied[] += 1)
+                credit!(cur[], sig, st, eff_measured, pm, price_shares(st), [(cause, 0.0, eff_measured)])
+                world.hazard_penalties[] += -eff_measured
                 if cur[] > p.init_steps
-                    balance[cause, :] .+= split_signed(st, measured)[1]
-                    world.hazard_debits[] += -measured
+                    balance[cause, :] .+= split_signed(st, eff_measured)[1]
+                    world.hazard_debits[] += -eff_measured
                 end
                 if p.repair_efficiency > 0
                     push!(repairs, ToyPlan(p.repair_efficiency .* -harm.du, p.repair_efficiency .* -harm.dh))
@@ -2122,6 +2141,12 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 measure!(l, g) do σ
                     measured = plan_value(observed_plan(hrng, harm, σ), t)
                     if g == 0
+                        if p.responsibility_reading
+                            rw_byst = responsibility_factor(false, true, false, p.responsibility_counterfactual;
+                                                            severity_scale = p.responsibility_severity,
+                                                            accident_factor = p.responsibility_accident_factor)
+                            rw_byst == 0.0 && (bystander_omissions_exempted[] += 1)
+                        end
                         insure!(harm, hit, measured, l)
                     else
                         crime = is_crime(informed, false, true)
@@ -2129,8 +2154,13 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         st, pm = classify_sig(sig), parent_mem(sig)
                         c_haz = top_leaf(st) > 0 ? top_leaf(st) : l
                         crime ? (world.crimes[] += 1; dom_crime_events[g, c_haz] += 1) : (world.accidents[] += 1)
-                        φ = measured  # its one contributor's whole share, assessed against the committed action
-                        credit!(step, sig, st, measured, pm, price_shares(st), [(g, 0.0, φ)])
+                        rw = p.responsibility_reading ?
+                             responsibility_factor(false, informed, true, p.responsibility_counterfactual;
+                                                   severity_scale = p.responsibility_severity,
+                                                   accident_factor = p.responsibility_accident_factor) : 1.0
+                        p.responsibility_reading && (responsibility_credits_applied[] += 1)
+                        φ = measured * rw  # weighted by four-factor responsibility (L96; 8.152)
+                        credit!(step, sig, st, φ, pm, price_shares(st), [(g, 0.0, φ)])
                         world.hazard_penalties[] += -φ
                         if !scoring_only
                             harm_mag = max(0.0, -φ)

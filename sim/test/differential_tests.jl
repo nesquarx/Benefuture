@@ -157,4 +157,15 @@ fin(xs...) = all(isfinite, xs)
                        (cl, cap, rt, ms) -> fin(cl, cap, rt, ms) && 0 <= rt <= 1 && 0 <= ms <= 1,
                        (cl, cap, rt, ms) -> ra_contraction_factor(cl, cap; rate = rt, min_scale = ms),
                        (cl, cap, rt, ms) -> (cl <= cap || cap <= 0) ? 1.0 : max(ms, 1.0 - rt * min(1.0, (cl - cap) / cap))) == (guard = 0, value = 0)
+    @test differential(:responsibility_factor,
+                       r -> (rand(r, Bool), rand(r, Bool), rand(r, Bool),
+                             rand(r) < 0.1 ? hostile(r) : 1.5 * rand(r) - 0.25,
+                             rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r) - 0.25,
+                             rand(r) < 0.1 ? hostile(r) : 1.5 * rand(r) - 0.25),
+                       (act, inf, duty, cf, sev, acc) -> fin(cf, sev, acc),
+                       (act, inf, duty, cf, sev, acc) -> responsibility_factor(act, inf, duty, cf; severity_scale = sev, accident_factor = acc),
+                       (act, inf, duty, cf, sev, acc) -> begin
+                           rw = (!act && !duty) ? 0.0 : (inf ? 1.0 : clamp(acc, 0.0, 1.0))
+                           rw * clamp(cf, 0.0, 1.0) * max(0.0, sev)
+                       end) == (guard = 0, value = 0)
 end

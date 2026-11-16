@@ -46,4 +46,18 @@ def rehabilitate_restraint_ref (baseShare : Float) (crimeEvents patternMin : Nat
     let scaled := baseShare * Float.pow stepDecay esc.toFloat
     if scaled >= minShare then scaled else minShare
 
+/-- Four-factor responsibility weight for causal distribution (`L96`, rulings 8.152 & 8.159).
+    Matches `Benefuture.Subgoals.responsibility_factor`. -/
+def responsibility_factor_ref (isAct isInformed hasDuty : Bool)
+    (counterfactualRatio severityScale accidentFactor : Float) : Float :=
+  let clamp01 (x : Float) : Float :=
+    let nn := if x > 0.0 then x else 0.0
+    if nn < 1.0 then nn else 1.0
+  let roleWeight :=
+    if !isAct && !hasDuty then 0.0
+    else if isInformed then 1.0
+    else clamp01 accidentFactor
+  let sevNN := if severityScale > 0.0 then severityScale else 0.0
+  roleWeight * clamp01 counterfactualRatio * sevNN
+
 end BenefutureReference

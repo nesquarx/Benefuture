@@ -254,6 +254,20 @@ theorem raContractionFactorQ_spec (claims deliverableCap rate minScale : ℚ) :
       · exact Or.inr (by exact_mod_cast h2)
     simp [h, hr, Rat.cast_max, Rat.cast_sub, Rat.cast_mul, Rat.cast_min, Rat.cast_div]
 
+def responsibilityFactorQ (isAct isInformed hasDuty : Bool) (cf sev acc : ℚ) : ℚ :=
+  let roleWeight : ℚ :=
+    if !isAct && !hasDuty then 0
+    else if isInformed then 1
+    else min 1 (max 0 acc)
+  roleWeight * min 1 (max 0 cf) * max 0 sev
+
+theorem responsibilityFactorQ_spec (isAct isInformed hasDuty : Bool) (cf sev acc : ℚ) :
+    (responsibilityFactorQ isAct isInformed hasDuty cf sev acc : ℝ) =
+      Benefuture.Subgoals.responsibility_factor isAct isInformed hasDuty cf sev acc := by
+  unfold responsibilityFactorQ Benefuture.Subgoals.responsibility_factor
+  cases isAct <;> cases isInformed <;> cases hasDuty <;>
+    simp [Rat.cast_mul, Rat.cast_min, Rat.cast_max]
+
 /-! ## Interval-bound oracles for nonlinear functions -/
 
 /-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
@@ -695,6 +709,20 @@ def runAll : IO Unit := do
     let minScale : ℚ := (m0 : ℚ) / 32
     let f := ra_contraction_factor_ref (ratToFloat claims) (ratToFloat cap) (ratToFloat rate) (ratToFloat minScale)
     let q := raContractionFactorQ claims cap rate minScale
+    (close f q, g)
+  checkAll "responsibility_factor" 400 25 fun g =>
+    let (b0, g) := g.below 8
+    let (cf0, g) := g.below 49
+    let (s0, g) := g.below 65
+    let (a0, g) := g.below 49
+    let isAct := b0 % 2 == 1
+    let isInf := (b0 / 2) % 2 == 1
+    let hasDuty := (b0 / 4) % 2 == 1
+    let cf : ℚ := ((cf0 : ℚ) - 8) / 32
+    let sev : ℚ := ((s0 : ℚ) - 4) / 16
+    let acc : ℚ := ((a0 : ℚ) - 8) / 32
+    let f := responsibility_factor_ref isAct isInf hasDuty (ratToFloat cf) (ratToFloat sev) (ratToFloat acc)
+    let q := responsibilityFactorQ isAct isInf hasDuty cf sev acc
     (close f q, g)
 
 #eval runAll

@@ -386,5 +386,71 @@ theorem rehabilitate_restraint_ge_min (baseShare : ℝ) (crimeEvents patternMin 
   · simp [h0, hmin]
   · simp [h0]
 
+/-- Four-factor responsibility weight for causal distribution (`L96`, author rulings 8.152 & 8.159):
+    `Responsibility(Informed, Counterfactual, Severity, Duty)`. Doing (`isAct = true`) and allowing
+    (`isAct = false`) share parity when informed under a duty (`isInformed && hasDuty`); omissions
+    by an un-obligated bystander (`!isAct && !hasDuty`) carry zero responsibility (minimal duties,
+    8.46); uninformed accidents scale by attenuated `accidentFactor ∈ [0, 1]`. -/
+noncomputable def responsibility_factor (isAct isInformed hasDuty : Bool)
+    (counterfactualRatio severityScale accidentFactor : ℝ) : ℝ :=
+  let roleWeight : ℝ :=
+    if !isAct && !hasDuty then 0
+    else if isInformed then 1
+    else min 1 (max 0 accidentFactor)
+  roleWeight * min 1 (max 0 counterfactualRatio) * max 0 severityScale
+
+/-- Doing and allowing parity (author ruling 8.152): for an informed actor under a duty, causing
+    a harm actively and failing to prevent it carry identical responsibility. -/
+theorem doing_allowing_parity_when_informed_duty
+    (cf sev acc : ℝ) :
+    responsibility_factor true true true cf sev acc =
+      responsibility_factor false true true cf sev acc := by
+  unfold responsibility_factor
+  simp
+
+/-- Minimal-duty bystander safeguard (8.46, 8.152): an un-obligated bystander's omission carries
+    zero responsibility regardless of awareness or severity. -/
+theorem bystander_omission_zero_responsibility
+    (inf : Bool) (cf sev acc : ℝ) :
+    responsibility_factor false inf false cf sev acc = 0 := by
+  unfold responsibility_factor
+  simp
+
+/-- Zero counterfactual effect incurs zero responsibility (harm that would have happened anyway). -/
+theorem zero_counterfactual_zero_responsibility
+    (isAct isInformed hasDuty : Bool) {cf : ℝ} (hcf : cf ≤ 0) (sev acc : ℝ) :
+    responsibility_factor isAct isInformed hasDuty cf sev acc = 0 := by
+  unfold responsibility_factor
+  have hm : max 0 cf = 0 := max_eq_left hcf
+  simp [hm]
+
+/-- Responsibility factor is always non-negative. -/
+theorem responsibility_nonneg
+    (isAct isInformed hasDuty : Bool) (cf sev acc : ℝ) :
+    0 ≤ responsibility_factor isAct isInformed hasDuty cf sev acc := by
+  unfold responsibility_factor
+  refine mul_nonneg (mul_nonneg ?_ (le_min zero_le_one (le_max_left _ _))) (le_max_left _ _)
+  cases isAct <;> cases isInformed <;> cases hasDuty <;> simp [le_min zero_le_one (le_max_left _ _)]
+
+/-- Responsibility is monotonically non-decreasing in severity. -/
+theorem responsibility_monotone_in_severity
+    (isAct isInformed hasDuty : Bool) (cf acc : ℝ) {sev₁ sev₂ : ℝ} (hsev : sev₁ ≤ sev₂) :
+    responsibility_factor isAct isInformed hasDuty cf sev₁ acc ≤
+      responsibility_factor isAct isInformed hasDuty cf sev₂ acc := by
+  unfold responsibility_factor
+  refine mul_le_mul_of_nonneg_left (max_le_max_left 0 hsev) ?_
+  refine mul_nonneg ?_ (le_min zero_le_one (le_max_left _ _))
+  cases isAct <;> cases isInformed <;> cases hasDuty <;> simp [le_min zero_le_one (le_max_left _ _)]
+
+/-- Being informed never carries less responsibility than being uninformed (`!Ig_pays`, 8.152 / 8.159). -/
+theorem informed_ge_uninformed_responsibility
+    (isAct hasDuty : Bool) (cf sev acc : ℝ) :
+    responsibility_factor isAct false hasDuty cf sev acc ≤
+      responsibility_factor isAct true hasDuty cf sev acc := by
+  unfold responsibility_factor
+  refine mul_le_mul_of_nonneg_right
+    (mul_le_mul_of_nonneg_right ?_ (le_min zero_le_one (le_max_left _ _))) (le_max_left _ _)
+  cases isAct <;> cases hasDuty <;> simp
+
 end Benefuture.Subgoals
 
