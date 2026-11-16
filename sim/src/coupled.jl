@@ -447,5 +447,6 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      converge_step = continuous ? tr_all.converge_step : 0,
      legacy_executed = continuous ? tr_all.legacy_executed : 0,
      shadow_promoted = shadow_promoted,
-     degraded = degraded)
+     degraded = degraded,
+     econ_trace = continuous ? tr_all : nothing)
 end
