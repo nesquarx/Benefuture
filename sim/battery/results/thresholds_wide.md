@@ -1,12 +1,12 @@
-# Governed-threshold perturbation battery (active world) (wide grid, 8.161)
+# Governed-threshold perturbation battery (active world) (wide grid, 8.164)
 
 Build: commit 70052b6. World: active. Grid: wide. 300 steps; run time 82.9 minutes; 71 distinct arms, 1 flagged.
 
-Seeds and bars: seeds by precision per arm (stop when the t-inflated standard error of the paired floor-u difference is at most 1.5, 6 to 24 seeds; * = cap reached without that precision); stage 1 screen on seeds 1..; every verdict at z = 3.0, Student-t inflated. Two-stage rule: a screen candidate is re-measured on the disjoint fresh seeds 1001.. (default re-run on them) and is FLAGGED only if the confirmation is also a candidate. For no-effect / inconsequential arms, `Equiv ±Δ` states the smallest achievable floor-u equivalence bound (`equivalent` at z = 3.0). `Touch` checks whether internal mechanism counters or outputs moved on any seed vs default (8.161).
+Seeds and bars: seeds by precision per arm (stop when the t-inflated standard error of the paired floor-u difference is at most 1.5, 6 to 24 seeds; * = cap reached without that precision); stage 1 screen on seeds 1..; every verdict at z = 3.0, Student-t inflated. Two-stage rule: a screen candidate is re-measured on the disjoint fresh seeds 1001.. (default re-run on them) and is FLAGGED only if the confirmation is also a candidate. For no-effect / inconsequential arms, `Equiv ±Δ` states the smallest achievable floor-u equivalence bound (`equivalent` at z = 3.0). `Touch` checks whether internal mechanism counters or outputs moved on any seed vs default (8.164).
 
 World (active): economy battery + model churn (`p_new_model = 0.15`, `pool_max = 5 >= ratchet_k = 3`, `takeover_records = 20`), novel leaf formation (`form_count = 15`), binding budgets (`budget = true`, `endowment = 4.5`, `cost_per_touch = 0.75`), and a graded deceiver mix (`[0..0, 0.2, 0.4, 0.7]`). Each cell: mean paired difference from the default (arm − default); + / − significant at z = 3.0. Harm and the deceivers' advantage are better when lower. Candidate = some reading better and none worse; tradeoff = some reading better and another worse. Stage 2 cells: floor u / floor h / median u / median h / harm / deceivers' advantage.
 
-## Per-threshold classification (Author Ruling 8.161)
+## Per-threshold classification (Author Ruling 8.164)
 
 | Threshold | Default | Touched arms | Worse/tradeoff low | Worse/tradeoff high | Classification |
 |---|---|---|---|---|---|

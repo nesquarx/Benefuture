@@ -1,11 +1,11 @@
-# Governed-threshold perturbation battery (plan: sensitivity map, later optimisation; author 2026-11-06, ruling 8.161).
+# Governed-threshold perturbation battery (plan: sensitivity map, later optimisation; author 2026-11-06, ruling 8.164).
 # Run: julia -t auto --project=sim sim/battery/thresholds.jl [--world=economy|active] [--grid=standard|wide] [--workers=N] [--arms=N] [--max=N] [--steps=N]
 # One threshold at a time is scaled across SCALES, everything else at its default, in the economy
 # battery's world (or `--world=active`, which switches on model churn `p_new_model > 0` with pool >= ratchet_k,
 # novel domain formation, binding `budget = true`, and a continuous deceiver mix per docs/PLAN.md).
 # Each arm is paired with the default on the same seeds; readings track BOTH outputs (the Goal's L74
 # success pattern + deceivers' advantage) AND mechanism touches (`takeovers`, `formations`, `leaf_bars`,
-# `advap_audits`, `advap_established`, `advap_reports`, `lane_executed`, `explored`) per author ruling 8.161
+# `advap_audits`, `advap_established`, `advap_reports`, `lane_executed`, `explored`) per author ruling 8.164
 # to separate `local_optimum` vs `one_sided_cliff`/`tradeoff_frontier` vs `inconsequential` (untouched).
 # Design (2026-11-14, after six screen candidates all failed to replicate on fresh seeds): (1) seeds by
 # precision per arm (`seeds_until_stable` on the paired floor-u difference, tolerance TOL, MIN_SEEDS to
@@ -210,14 +210,14 @@ else
             WORLD == "active" ? "thresholds_active.md" : "thresholds.md"
     out = joinpath(@__DIR__, "results", fname)
     open(out, "w") do io
-        println(io, "# Governed-threshold perturbation battery$(WORLD == "active" ? " (active world)" : "")$(GRID == "wide" ? " (wide grid, 8.161)" : "")\n")
+        println(io, "# Governed-threshold perturbation battery$(WORLD == "active" ? " (active world)" : "")$(GRID == "wide" ? " (wide grid, 8.164)" : "")\n")
         println(io, "Build: commit $(BUILD). World: $(WORLD). Grid: $(GRID). $(STEPS) steps; run time $(round((time() - t0) / 60; digits = 1)) minutes; $(length(ARMS)) distinct arms, $(flagged) flagged.\n")
-        println(io, "Seeds and bars: seeds by precision per arm (stop when the t-inflated standard error of the paired floor-u difference is at most $(TOL), $(MIN_SEEDS) to $(MAX_SEEDS) seeds; * = cap reached without that precision); stage 1 screen on seeds 1..; every verdict at z = $(Z), Student-t inflated. Two-stage rule: a screen candidate is re-measured on the disjoint fresh seeds $(CONFIRM_FIRST).. (default re-run on them) and is FLAGGED only if the confirmation is also a candidate. For no-effect / inconsequential arms, `Equiv ±Δ` states the smallest achievable floor-u equivalence bound (`equivalent` at z = $(Z)). `Touch` checks whether internal mechanism counters or outputs moved on any seed vs default (8.161).\n")
+        println(io, "Seeds and bars: seeds by precision per arm (stop when the t-inflated standard error of the paired floor-u difference is at most $(TOL), $(MIN_SEEDS) to $(MAX_SEEDS) seeds; * = cap reached without that precision); stage 1 screen on seeds 1..; every verdict at z = $(Z), Student-t inflated. Two-stage rule: a screen candidate is re-measured on the disjoint fresh seeds $(CONFIRM_FIRST).. (default re-run on them) and is FLAGGED only if the confirmation is also a candidate. For no-effect / inconsequential arms, `Equiv ±Δ` states the smallest achievable floor-u equivalence bound (`equivalent` at z = $(Z)). `Touch` checks whether internal mechanism counters or outputs moved on any seed vs default (8.164).\n")
         world_desc = WORLD == "active" ?
             "World (active): economy battery + model churn (`p_new_model = 0.15`, `pool_max = 5 >= ratchet_k = 3`, `takeover_records = 20`), novel leaf formation (`form_count = 15`), binding budgets (`budget = true`, `endowment = 4.5`, `cost_per_touch = 0.75`), and a graded deceiver mix (`[0..0, 0.2, 0.4, 0.7]`)." :
             "World: the economy battery's, noise at moderate severity, two deceivers at full size, AdvAp on."
         println(io, "$world_desc Each cell: mean paired difference from the default (arm − default); + / − significant at z = $(Z). Harm and the deceivers' advantage are better when lower. Candidate = some reading better and none worse; tradeoff = some reading better and another worse. Stage 2 cells: floor u / floor h / median u / median h / harm / deceivers' advantage.\n")
-        println(io, "## Per-threshold classification (Author Ruling 8.161)\n")
+        println(io, "## Per-threshold classification (Author Ruling 8.164)\n")
         println(io, "| Threshold | Default | Touched arms | Worse/tradeoff low | Worse/tradeoff high | Classification |")
         println(io, "|---|---|---|---|---|---|")
         for (f, _) in THRESHOLDS

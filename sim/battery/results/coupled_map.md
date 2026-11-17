@@ -16,7 +16,7 @@
 | `600` (`50yr`) | `:bf_closed - :sq_closed` | +61.56 ± 40.83 (`1.51`, no) | +60.82 ± 40.97 (`1.48`, no) | +64.91 ± 42.59 | -0.0027 ± 0.0020 | 8.00 |
 | `600` (`50yr`) | `:bf_open - :sq_closed` | +134.65 ± 40.27 (`3.34`, yes) | +137.15 ± 40.64 (`3.37`, yes) | +141.14 ± 42.41 | +0.0088 ± 0.0053 | 8.00 |
 
-## 2. Composed 50-Year Coupled Governed-Threshold Map (`600` steps, `epoch = 25`, `1:16` seeds, `8.161` touch check)
+## 2. Composed 50-Year Coupled Governed-Threshold Map (`600` steps, `epoch = 25`, `1:16` seeds, `8.164` touch check)
 | Threshold | Setting | Touch | `floor_u` Δ | `floor_h` Δ | `median_u` Δ | `harm` Δ | `adv` Δ | Verdict |
 |---|---|---|---|---|---|---|---|---|
 | `ratchet_horizon` | `5` | yes (audits 66) | -4.45 | -6.38 | -6.09 | -1.53 | -75.98 | no effect |

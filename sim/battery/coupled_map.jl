@@ -1,4 +1,4 @@
-# Continuous-Coupled Break-Even + 8.115 Open-Entry & 8.161 Governed-Threshold Map (PLAN.md item 2; OPEN_PROBLEMS lines 38-39).
+# Continuous-Coupled Break-Even + 8.115 Open-Entry & 8.164 Governed-Threshold Map (PLAN.md item 2; OPEN_PROBLEMS lines 38-39).
 # Uses OS subprocesses (`--workers=N`) so Lean FFI (libbfref.dylib) is never shared across OS threads.
 # Writes periodic 5-minute progress snapshots to `sim/battery/state/coupled_map.progress`.
 # Run: julia --project=sim sim/battery/coupled_map.jl [--workers=8]
@@ -198,7 +198,7 @@ else
         end
         println(md)
 
-        println(md, "## 2. Composed 50-Year Coupled Governed-Threshold Map (`600` steps, `epoch = 25`, `1:16` seeds, `8.161` touch check)")
+        println(md, "## 2. Composed 50-Year Coupled Governed-Threshold Map (`600` steps, `epoch = 25`, `1:16` seeds, `8.164` touch check)")
         println(md, "| Threshold | Setting | Touch | `floor_u` Δ | `floor_h` Δ | `median_u` Δ | `harm` Δ | `adv` Δ | Verdict |")
         println(md, "|---|---|---|---|---|---|---|---|---|")
         TOUCH_CM = (:takeovers, :audits, :established, :bars, :lane)
