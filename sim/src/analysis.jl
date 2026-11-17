@@ -75,3 +75,36 @@ function pattern_margin(sp, clean; growth::Real, harm::Real)
               peak_u = sp.peak_u / clean.peak_u, worst_drop = (harm - sp.worst_drop / clean.worst_drop) / (harm - 1))
     (margin = minimum(values(slacks)), slacks = slacks)
 end
+
+"""
+    progressive_metrics(tr, intact; event_step) -> NamedTuple
+
+Measure a progressive-complexity perturbation against a paired intact baseline from `event_step`:
+`dip_u` / `dip_h` (deepest floor shortfall relative to intact after `event_step`), `end_diff_u` /
+`end_diff_h`, `recovery_step` (first step after the deepest `floor_u` dip where `floor_u` recovers
+within `1.0` unit or `90%` of post-event intact growth; `0` if unrecovered), `recovery_time`
+(`max(0, recovery_step - event_step)` if recovered else `0`), and sorted `degraded` keys.
+"""
+function progressive_metrics(tr, intact; event_step::Integer)
+    n = min(length(tr.floor_u), length(intact.floor_u))
+    check(1 <= event_step < n, "event_step must fall inside the trace")
+    du = [tr.floor_u[t] - intact.floor_u[t] for t in 1:n]
+    dh = [tr.floor_h[t] - intact.floor_h[t] for t in 1:n]
+    post = (event_step + 1):n
+    rel_min = argmin(@view du[post])
+    dip_idx = event_step + rel_min
+    dip_u = du[dip_idx]
+    dip_h = minimum(@view dh[post])
+    rec = 0
+    for t in (dip_idx + 1):n
+        g_int = intact.floor_u[t] - intact.floor_u[event_step]
+        g_tr = tr.floor_u[t] - tr.floor_u[event_step]
+        if du[t] >= -1.0 || (g_int > 0 && g_tr >= 0.9 * g_int)
+            rec = t
+            break
+        end
+    end
+    (dip_u = dip_u, dip_h = dip_h, end_diff_u = du[end], end_diff_h = dh[end],
+     recovery_step = rec, recovery_time = rec > 0 ? rec - event_step : 0,
+     degraded_keys = sort!(collect(keys(tr.degraded))))
+end

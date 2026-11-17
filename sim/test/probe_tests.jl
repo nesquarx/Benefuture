@@ -2611,3 +2611,105 @@ end
     @test paired_effect([a.correct - b.correct for (a, b) in zip(r_spill,  r_stuck)]; z = 3.0).significant
     @test paired_effect([a.correct - b.correct for (a, b) in zip(r_breach, r_stuck)]; z = 3.0).significant
 end
+
+# Progressive-complexity probes (`PLAN.md` L67):
+# 1. Capability removals (leaf models -> parent -> StandCoin, plus legacy fallback) engage the coarser fallback
+#    loudly (`degraded`), preserve the economy without silent crashes, and StandCoin loss deepens the dip more
+#    than parent fallback (`1:16` paired seeds, z = 3.0).
+# 2. Capability additions (better vs worse model class, finer vs noisier measurement, new viable vs noisy domain,
+#    and mid-run rule addition in shadow `8.136`) enter score-only and promote on convergence while worse
+#    additions are never promoted (`0/16` seeds, z = 3.0).
+@testset "Probe: progressive capability removals engage coarser fallback loudly (PLAN.md L67)" begin
+    ag = [DomainAgent([k == l ? 0.6 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for _ in 1:4]
+    T = ToyParams(n = 40, steps = 120, plans = 6)
+    base_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+               init_steps = 25, min_records = 10, threshold = 0.80, coarse_threshold = 0.60, cost_per_touch = 0.15)
+    p_intact = M3cParams(T, ag, [1, 1], trues(2); base_kw...)
+    p_leaf   = M3cParams(T, ag, [1, 1], trues(2); base_kw...,
+                         events = [shock(:remove_leaf_models; step = 50, duration = 35, target = 1)])
+    p_sc     = M3cParams(T, ag, [1, 1], trues(2); base_kw...,
+                         events = [shock(:remove_leaf_models; step = 50, duration = 35, target = 0),
+                                   shock(:remove_parent_models; step = 50, duration = 35, target = 0)])
+    p_leg    = M3cParams(T, ag, [1, 1], trues(2); base_kw...,
+                         events = [shock(:legacy_only; step = 55, duration = 20)])
+
+    r_int = [run_m3c(p_intact; seed = s) for s in 1:16]
+    r_lf  = [run_m3c(p_leaf;   seed = s) for s in 1:16]
+    r_sc  = [run_m3c(p_sc;     seed = s) for s in 1:16]
+    r_leg = [run_m3c(p_leg;    seed = s) for s in 1:16]
+
+    m_lf = [progressive_metrics(a, b; event_step = 50) for (a, b) in zip(r_lf, r_int)]
+    m_sc = [progressive_metrics(a, b; event_step = 50) for (a, b) in zip(r_sc, r_int)]
+
+    @test proportion_interval(count(r -> any(k -> occursin("leaf domain pricing", k), keys(r.degraded)), r_lf), 16).lo > 0.7
+    @test all(r -> any(k -> occursin("StandCoin", k), keys(r.degraded)), r_sc)
+    @test all(r -> any(k -> occursin("legacy institutions only", k), keys(r.degraded)) && r.legacy_executed > 0, r_leg)
+    # Full leaf+parent removal routes heavily into StandCoin (lane_executed + lane_halted) relative to parent fallback at z = 3.0.
+    @test paired_effect([Float64((b.lane_executed + b.lane_halted) - (a.lane_executed + a.lane_halted)) for (a, b) in zip(r_lf, r_sc)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([a.floor_u[end] - b.floor_u[end] for (a, b) in zip(r_lf, r_sc)]; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: progressive capability additions promote better and reject worse (PLAN.md L67, 8.136)" begin
+    # Mixed-outcome domain (skill = 0.35, σ_leaf = 0.85) with long enough decay horizon (`acc_halflife = 25.0`)
+    # cleanly separates a sharper model class (`size = 0.1`) from coarse noise (`8.136` score-only promotion),
+    # while a worse model class (`size = 4.0`) never promotes.
+    ag_m = [DomainAgent([0.35, 0.35], [1.0, 0.0], 0.0) for _ in 1:8]
+    ag_d = [DomainAgent([0.6, 0.6], [1.0, 0.0], 0.0) for _ in 1:8]
+    T = ToyParams(n = 80, steps = 200, plans = 10)
+    T_m = ToyParams(n = 80, steps = 240, plans = 10)
+    m_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 20, model_z = 2.0,
+            acc_halflife = 25.0, threshold = 0.65, coarse_threshold = 0.65,
+            σ_leaf = 0.85, marker_σ = 0.3, bias_σ = 0.0, σ_branch = 0.85, σ_coarse = 0.9)
+    p_good_m = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw...,
+                         events = [shock(:add_model_class; step = 55, size = 0.1, target = 1)])
+    p_bad_m  = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw...,
+                         events = [shock(:add_model_class; step = 55, size = 4.0, target = 1)])
+    f_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
+            threshold = 0.65, coarse_threshold = 0.65, σ_leaf = 0.35, marker_σ = 0.5, σ_branch = 0.5, σ_coarse = 0.6)
+    p_good_f = M3cParams(T, ag_d, [1, 1], [true, false]; f_kw...,
+                         events = [shock(:add_finer_measurement; step = 55, size = 0.1)])
+    p_bad_f  = M3cParams(T, ag_d, [1, 1], [true, false]; f_kw...,
+                         events = [shock(:add_finer_measurement; step = 55, size = 4.0)])
+    d_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
+            threshold = 0.75, σ_leaf = 0.2, marker_σ = 0.2, σ_branch = 0.4, σ_coarse = 0.6)
+    p_good_d = M3cParams(T, ag_d, [1, 1], [true, false]; d_kw...,
+                         events = [shock(:add_domain; step = 55, target = 2, share = 0.5, size = 1.0)])
+    p_bad_d  = M3cParams(T, ag_d, [1, 1], [true, false]; d_kw...,
+                         events = [shock(:add_domain; step = 55, target = 2, share = 0.5, size = 10.0)])
+
+    r_gm = [run_m3c(p_good_m; seed = s) for s in 1:16]
+    r_bm = [run_m3c(p_bad_m;  seed = s) for s in 1:16]
+    r_gf = [run_m3c(p_good_f; seed = s) for s in 1:16]
+    r_bf = [run_m3c(p_bad_f;  seed = s) for s in 1:16]
+    r_gd = [run_m3c(p_good_d; seed = s) for s in 1:16]
+    r_bd = [run_m3c(p_bad_d;  seed = s) for s in 1:16]
+
+    @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm), 16).lo > 0.7
+    @test all(r -> !r.added_capabilities[1].promoted, r_bm)
+    @test paired_effect([b.top_scale[1] - g.top_scale[1] for (g, b) in zip(r_gm, r_bm)]; z = 3.0, direction = :up).significant
+    @test proportion_interval(count(r -> r.added_capabilities[1].promoted && r.eff_marker_σ < p_good_f.marker_σ, r_gf), 16).lo > 0.7
+    @test all(r -> !r.added_capabilities[1].promoted && r.eff_marker_σ == p_bad_f.marker_σ, r_bf)
+    @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gd), 16).lo > 0.7
+    @test all(r -> !r.added_capabilities[1].promoted, r_bd)
+
+    # Coupled mid-run rule addition (add_rule_epoch = 3, shadow = true) vs baseline:
+    par_timid = copy(bootstrap_params())
+    par_timid[1] = 0.25; par_timid[2] = 0.20; par_timid[3] = 0.15; par_timid[4] = 0.05
+    par_timid[6] = 1.05; par_timid[7] = 50.0; par_timid[8] = 1.0
+    gov(tr) = M5Params(tr, 1:1; decisions = 1, p_delegate = 0.2)
+    econ_rule = M3cParams(ToyParams(n = 40, steps = 280, plans = 6), ag_d, [1, 1], [true, false];
+                          λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                          init_steps = 5, min_records = 8, threshold = 0.70, model_z = 2.0, endowment = 20.0,
+                          converge_init = true, legacy_funder = true)
+    rc_none = [run_coupled(econ_rule, gov; seed = s, epoch = 40, continuous = true,
+                           incumbent_pv = par_timid, shadow = true) for s in 1:8]
+    rc_add  = [run_coupled(econ_rule, gov; seed = s, epoch = 40, continuous = true,
+                           incumbent_pv = par_timid, candidate_pv = bootstrap_params(),
+                           candidate_prediction = 0.0, candidate_eta = 2, shadow = true, add_rule_epoch = 3) for s in 1:8]
+    @test all(r -> r.shadow_promoted && r.promotion_epoch >= 5 && r.promotion_time >= 2, rc_add)
+    @test paired_effect([a.success.floor_u - b.success.floor_u for (a, b) in zip(rc_add, rc_none)]; z = 3.0, direction = :up).significant
+end

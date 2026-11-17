@@ -79,9 +79,10 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_vs_incumbent::Bool = false,
                      shadow::Bool = false,
                      incumbent_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
+                     add_rule_epoch::Integer = 0,
                      loud::Bool = econ.loud)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
-    check(m5_decisions >= 0, "m5_decisions must be non-negative")
+    check(m5_decisions >= 0 && add_rule_epoch >= 0, "m5_decisions and add_rule_epoch must be non-negative")
     check(candidate_eta >= 1 && eta_grace >= 0 && candidate_confidence >= 0, "eta at least 1, grace and confidence band non-negative")
     check(!shadow || continuous, "shadow requires continuous = true")
     # Predict - measure - adapt (8.134, continuous mode): the candidate states a predicted change in floor_u + floor_h over its
@@ -174,6 +175,16 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
 
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
+
+        ep_start = (ep - 1) * epoch + 1
+        ep_end = ep * epoch
+        if any(e -> e.kind == :freeze_governance && e.step <= ep_end && ep_start <= e.step + max(1, e.duration) - 1, econ.events)
+            degrade!("governance", "frozen", "progressive removal: governance frozen", ep)
+            push!(adopted_candidate, shadow_promoted && kept)
+            push!(params_trace, copy(pv_cur)); push!(thresholds_trace, th_cur); push!(track_windows_trace, tw_cur)
+            pending_vote = nothing
+            return
+        end
 
         # 8.136: evaluate a pending shadow candidate once its ETA (+ grace) resolves while incumbent stayed live.
         if shadow && shadow_pending[] !== nothing
@@ -319,7 +330,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         end
 
         # Form the perturbation candidate through M4 (`perturb`).
-        cand_pv = if candidate_pv !== nothing
+        cand_active = add_rule_epoch <= 0 || ep >= add_rule_epoch
+        cand_pv = if cand_active && candidate_pv !== nothing
             perturb(pv_inc, candidate_pv, COUPLED_GOV_FIELDS; δ = max(econ.gov_δ, maximum(abs.(candidate_pv .- pv_inc))))
         else
             c = copy(pv_cur)
@@ -328,12 +340,12 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             end
             perturb(pv_cur, c, COUPLED_GOV_FIELDS; δ = econ.gov_δ)
         end
-        cand_th = candidate_threshold === nothing ? th_inc : max(th_cur, Float64(candidate_threshold))
-        cand_tw = candidate_track_window === nothing ? tw_inc : Int(candidate_track_window)
+        cand_th = cand_active && candidate_threshold !== nothing ? max(th_cur, Float64(candidate_threshold)) : th_inc
+        cand_tw = cand_active && candidate_track_window !== nothing ? Int(candidate_track_window) : tw_inc
 
         # Voters receive noisy signals; once coupled outcome evidence shows the candidate failed, voters' signals reflect that record.
         caps = ability_caps(arng, max.(gp.skills, 0.0); base = gp.signal_σ, gain = gp.skill_gain, spread = gp.ability_spread)
-        has_offer = candidate_pv !== nothing || (candidate_threshold !== nothing && !th_lowered) || candidate_track_window !== nothing
+        has_offer = cand_active && (candidate_pv !== nothing || (candidate_threshold !== nothing && !th_lowered) || candidate_track_window !== nothing)
         prior_signal = if coupled && rejected
             -2.0
         elseif has_offer
@@ -346,7 +358,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             (i in gp.colluders) ? 1.0 : (s_i >= 0 ? 1.0 : -1.0)
         end for i in 1:na]
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)
-        chose_cand = tally > 0 && !(coupled && rejected)
+        chose_cand = cand_active && tally > 0 && !(coupled && rejected)
         if chose_cand && cvi   # eligible only if its predicted per-epoch outcome beats the incumbent's measured record by the significance rule
             chose_cand = length(inc_scores) >= 2 &&
                 select_candidate([mean(inc_scores), Float64(candidate_prediction)], [std(inc_scores) / sqrt(length(inc_scores)), 0.0]; z = econ.gov_z) == 2
@@ -447,6 +459,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      converge_step = continuous ? tr_all.converge_step : 0,
      legacy_executed = continuous ? tr_all.legacy_executed : 0,
      shadow_promoted = shadow_promoted,
+     promotion_epoch = shadow_promoted ? adopt_ep : 0,
+     promotion_time = shadow_promoted ? (add_rule_epoch > 0 ? adopt_ep - add_rule_epoch : adopt_ep) : 0,
      degraded = degraded,
      econ_trace = continuous ? tr_all : nothing)
 end

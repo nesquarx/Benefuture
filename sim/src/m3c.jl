@@ -266,13 +266,20 @@ end
 """
     shock(kind; step, duration = 1, size = 0.0, share = 0.0, target = 0) -> Shock
 
-A world event (catastrophes and black swans; author rulings 8.22, 8.23): `:outage` (no markers
-for `duration` steps), `:catastrophe` (one hazard at `step` harming each being with chance `share`
-by `size`), `:capture` (leaf `target`'s model biased by `size` for `duration` steps),
-`:breakthrough` (agent `target`'s skill raised by `size` for `duration` steps).
+A world event (catastrophes, black swans, and progressive-complexity capability shifts; author
+rulings 8.22, 8.23, 8.136):
+- World shocks: `:outage`, `:catastrophe`, `:capture`, `:breakthrough`.
+- Capability removals: `:remove_leaf_models`, `:remove_parent_models`, `:cap_pool_one`,
+  `:single_chain`, `:disable_advap`, `:freeze_governance`, `:lose_binding`, `:legacy_only`.
+- Capability additions (entering score-only, promoted on convergence): `:add_model_class`,
+  `:add_finer_measurement`, `:add_domain`.
 """
 function shock(kind::Symbol; step::Integer, duration::Integer = 1, size::Real = 0.0, share::Real = 0.0, target::Integer = 0)
-    check(kind in (:outage, :catastrophe, :capture, :breakthrough), "kind: outage, catastrophe, capture or breakthrough")
+    check(kind in (:outage, :catastrophe, :capture, :breakthrough,
+                   :remove_leaf_models, :remove_parent_models, :cap_pool_one,
+                   :single_chain, :disable_advap, :freeze_governance, :lose_binding, :legacy_only,
+                   :add_model_class, :add_finer_measurement, :add_domain),
+          "unsupported shock kind: $kind")
     check(step >= 1 && duration >= 1 && isfinite(size) && 0 <= share <= 1, "step and duration positive, size finite, share in [0, 1]")
     (kind = kind, step = Int(step), duration = Int(duration), size = Float64(size), share = Float64(share), target = Int(target))
 end
@@ -390,7 +397,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(!(supplier > 0 && !isempty(supply_cartel)), "specify supplier or supply_cartel, not both")
     check(0 <= withhold_reporter <= length(agents), "withhold_reporter an agent or 0")
     check(all(e -> e.kind != :outage || 0 <= e.target <= length(agents), events), "an outage's saboteur is an agent, or 0")
-    check(all(e -> e.kind != :capture || 1 <= e.target <= length(leaf_parent), events) &&
+    check(all(e -> !(e.kind in (:capture, :add_domain)) || 1 <= e.target <= length(leaf_parent), events) &&
           all(e -> e.kind != :breakthrough || 1 <= e.target <= length(agents), events), "shock targets: a true leaf or an agent")
     check(λneg <= λpos, "losses must decay no faster than gains (author ruling 8.29)")
     check(n_learn > 0 && 0 < μ_rate <= 1 && capacity > 0 && regen <= 1, "learning scale, prior strength and capacity positive")
@@ -504,14 +511,20 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # consumes the first chain's reading; `:domain` consumes the measurement domain's reading: chains of
     # separate paradigms pooled (no shared markers), and where they diverge beyond `chain_z` combined
     # standard errors, an audit re-reads the outcome on the shared observable (the full loss).
+    eff_marker_σ = Ref(p.marker_σ)
+    has_finer_meas = any(e -> e.kind == :add_finer_measurement, p.events)
+    finer_rng = has_finer_meas ? Xoshiro(hash((seed, :finer_meas))) : mrng
+    finer_last_done = Ref(ToyPlan(zeros(t.n), zeros(t.n)))
+    finer_action_scored = Ref(false)
     attributed(pl, a) = ToyPlan(ifelse.(pl.du .< 0, a .* pl.du, pl.du), ifelse.(pl.dh .< 0, a .* pl.dh, pl.dh))
     function read_outcome(done)
         K = length(p.chain_attrib)
+        msig = eff_marker_σ[]
         reads = ToyPlan[]
         for k in 1:K
             j = p.chain_copy[k]
-            push!(reads, j == 0 ? observed_plan(mrng, attributed(done, p.chain_attrib[k]), p.marker_σ) :
-                         ToyPlan(reads[j].du .+ 0.01p.marker_σ .* randn(mrng, length(done.du)), reads[j].dh .+ 0.01p.marker_σ .* randn(mrng, length(done.dh))))
+            push!(reads, j == 0 ? observed_plan(mrng, attributed(done, p.chain_attrib[k]), msig) :
+                         ToyPlan(reads[j].du .+ 0.01msig .* randn(mrng, length(done.du)), reads[j].dh .+ 0.01msig .* randn(mrng, length(done.dh))))
         end
         # Looking agreeable (an attack): a chain reports a share of chain 1's reading in place of its own, staying
         # too close to diverge but too far to be taken for a copy.
@@ -519,9 +532,14 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             sh = p.chain_shade[k]; sh > 0 || continue
             reads[k] = ToyPlan((1 - sh) .* reads[k].du .+ sh .* reads[1].du, (1 - sh) .* reads[k].dh .+ sh .* reads[1].dh)
         end
+        if !isempty(live(:single_chain))
+            K > 1 && degrade!("measurement domain", "single chain", "measurement chains reduced to 1 (progressive removal)")
+            push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t))
+            return reads[1]
+        end
         (p.chain_mode == :single || K == 1) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
         # A reading's own noise, estimated from independent draws on the chains' stream (never the world's).
-        se = max(1e-9, std([plan_value(observed_plan(crng, done, p.marker_σ), t) for _ in 1:8]))
+        se = max(1e-9, std([plan_value(observed_plan(crng, done, msig), t) for _ in 1:8]))
         # Undeclared copying (8.107): independent chains carry independent noise, so the standardised
         # difference of two readings has variance near 2; a pair agreeing far closer (below 0.2) is one
         # chain counted twice, and the later one is folded into the earlier (overlap 1).
@@ -540,7 +558,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             # shared observable score the one that is left, and demote it if it errs one way.
             degrade!("measurement domain", "spot audits", "fewer than two independent chains")
             chain_audits[] += 1
-            audit = observed_plan(mrng, done, p.marker_σ)
+            audit = observed_plan(mrng, done, msig)
             if !isempty(chs)
                 k = chs[1]; push!(chain_serr[k], (vals[1] - plan_value(audit, t)) / se)
                 x = chain_serr[k]
@@ -552,7 +570,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         isempty(chs) && (push!(chain_bias, plan_value(reads[1], t) - plan_value(done, t)); return reads[1])
         out = if length(chs) > 1 && (chains_diverge(vals, fill(se, length(chs)); z = p.chain_z) || (p.chain_spot_all && rand(mrng) < p.chain_spot))
             chain_audits[] += 1
-            audit = observed_plan(mrng, done, p.marker_σ)
+            audit = observed_plan(mrng, done, msig)
             # Chains are scored against audits (cross-chain scoring): a chain whose audited error exceeds
             # the best chs chain's by `chain_z` combined standard errors is demoted from the pool.
             for (i, k) in enumerate(chs); push!(chain_err[k], abs(vals[i] - plan_value(audit, t))); end
@@ -634,6 +652,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     slanderers = falses(na)  # reporters whose frivolous pattern has been detected (a lie detected)
     reports_by = zeros(Int, na)  # reports filed, per reporter
     propose_w = ones(na); last_props = Ref(Int[]); last_exec = Ref(0)  # proposal weights (8.115)
+    agent_focus = [Float64.(a.focus) for a in p.agents]
     chain_bias = Float64[]; chain_audits = Ref(0); chain_err = [Float64[] for _ in p.chain_attrib]; crng = Xoshiro(hash((seed, :chains))); chain_demoted = falses(length(p.chain_attrib)); chain_copied = falses(length(p.chain_attrib)); chain_copies = Ref(0); chain_serr = [Float64[] for _ in p.chain_attrib]; chain_pair = Dict((k, l) => Float64[] for k in eachindex(p.chain_attrib) for l in eachindex(p.chain_attrib) if k < l); chain_co = Dict{Tuple{Int,Int},Vector{Int}}()  # measured less true value of each outcome read; audits by divergence (8.107)
     founded_on = zeros(Int, na)  # founded reports, per audited actor (trace only)
     pending_lies = zeros(Int, na)  # untraced founded reports before detection: charged back if the reporter is found lying (8.82)
@@ -693,6 +712,14 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     takeovers_extreme, arrivals_extreme = Ref(0), Ref(0)
     takeovers_colluding, arrivals_colluding = Ref(0), Ref(0)
     collude_uids = Set{Int}()
+    added_uids = Set{Int}()
+    domain_score_only = falses(lmax)
+    added_models = NamedTuple{(:add_step, :target, :size, :uid, :promoted, :promoted_step),
+                              Tuple{Int,Int,Float64,Int,Base.RefValue{Bool},Base.RefValue{Int}}}[]
+    added_domains = NamedTuple{(:add_step, :target, :leaf, :size, :promoted, :promoted_step),
+                               Tuple{Int,Int,Int,Float64,Base.RefValue{Bool},Base.RefValue{Int}}}[]
+    finer_meas_cands = NamedTuple{(:uid, :add_step, :σ, :size, :diffs, :promoted, :promoted_step),
+                                  Tuple{Int,Int,Float64,Float64,Vector{Float64},Base.RefValue{Bool},Base.RefValue{Int}}}[]
     xtrng = Xoshiro(hash((seed, :extremist)))
     collrng = Xoshiro(hash((seed, :model_collude)))
     # Accuracy over the recent window is the quality of a model's credences (Lean
@@ -801,7 +828,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     ledger_neg_share(a) = neg_share(sum(h_pos[a, :]), sum(h_neg[a, :]))  # Lean `neg_share_ref`
     # A domain is marginal where its leaf model is near or below its status bar (8.42.1).
     function marginal(b)
-        l = argmax(p.agents[b].focus)
+        l = argmax(agent_focus[b])
         l <= nleaves() && leaf_acc(l) < leaf_bar(l) + p.marginal_margin
     end
     # The status bar: absolute, or relative to the alternative the leaf's work would fall to (8.41),
@@ -828,10 +855,14 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         end
     end
     bar_trace = Float64[]; acc_trace = Vector{Float64}[]; rate_trace = Vector{Float64}[]
-    leaf_ok(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
-                                   novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
-    parent_ok(q) = currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
-                                     novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
+    removed_leaf(j) = any(e -> e.target == 0 || e.target == j, live(:remove_leaf_models))
+    removed_parent(q) = any(e -> e.target == 0 || e.target == q, live(:remove_parent_models))
+    pool_capped(j) = any(e -> e.target == 0 || e.target == j, live(:cap_pool_one))
+    leaf_ok_raw(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
+                                       novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
+    leaf_ok(j) = !removed_leaf(j) && !domain_score_only[j] && leaf_ok_raw(j)
+    parent_ok(q) = !removed_parent(q) && currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
+                                                             novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
     function eval_challengers(j; only_if_eligible = false)
         ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records &&
                        (!only_if_eligible || currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
@@ -980,9 +1011,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     attest_skill(c) = length(attest_out[c]) < p.attest_min_records ? 1.0 :
         p.attest_pooled ? choice_skill(attest_cred[c], fill(0.5, length(attest_out[c])), attest_out[c]) :
         class_balanced_skill(attest_cred[c], attest_out[c])
-    bind!(confs) = p.bind_quorum == 0 ? true :
-                   p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
-                   binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
+    function bind!(confs)
+        p.bind_quorum == 0 && return true
+        if !isempty(live(:lose_binding))
+            degrade!("identity binding", "unbound admission", "cluster binding lost (progressive removal)")
+            return true
+        end
+        p.bind_weighted ? binding_admits_weighted(confs, [attest_skill(c) for c in 1:p.bind_clusters], p.bind_threshold, p.bind_quorum_weight) :
+                          binding_admits(confs, p.bind_threshold; quorum = p.bind_quorum)
+    end
     top_leaf(st) = (k = argmax(st); k <= lmax ? k : 0)
     function relevance_parents(a)
         mine = rel_gain[a, :] .+ rel_loss[a, :]
@@ -1054,6 +1091,24 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             rec_top = sc(j, get(() -> fooled(predict(mrng, MetricModel(lb(j), leaf_σ(j, l)), plan), a, plan, tkey(j)), quoted, j), tkey(j))
             push!(lhist[j], rec_top)
             push!(pending_scores, (col = j, uid = tkey(j), credence = rec_top.credence, outcome = rec_top.outcome, step = rec_top.step, actor = rec_top.actor))
+            if has_finer_meas && !finer_action_scored[] && !isempty(finer_meas_cands)
+                finer_action_scored[] = true
+                v_pred = plan_value(rec_top.pr, t)
+                for cand in finer_meas_cands
+                    cand.promoted[] && continue
+                    c_seen = observed_plan(finer_rng, finer_last_done[], cand.σ)
+                    push!(cand.diffs, (v_pred - plan_value(c_seen, t))^2 - (v_pred - measured)^2)
+                    n0_f = max(p.min_records, p.takeover_records)
+                    if length(cand.diffs) >= n0_f
+                        md = mean(cand.diffs); sd = std(cand.diffs)
+                        if md < 0.0 && (sd <= 0.0 || sequential_significant(-md, sd, length(cand.diffs); n0 = n0_f, z = p.model_z))
+                            cand.promoted[] = true
+                            cand.promoted_step[] = cur[]
+                            eff_marker_σ[] = min(eff_marker_σ[], cand.σ)
+                        end
+                    end
+                end
+            end
             # Every challenger in the pool is scored on the same logged action (the open log).
             for (k, m) in enumerate(mpool[j])
                 k == top[j] && continue
@@ -1200,28 +1255,102 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    discount_spans = [copy(d) for d in discount_spans],
                    upstream_depth = p.upstream_depth, max_upstream_degree = max_upstream_degree[],
                    upstream_pos_by_degree = copy(upstream_pos_by_degree), upstream_neg_by_degree = copy(upstream_neg_by_degree),
+                   eff_marker_σ = eff_marker_σ[],
+                   added_capabilities = vcat(
+                       [(kind = :model_class, add_step = m.add_step, target = m.target, size = m.size,
+                         promoted = m.promoted[], promoted_step = m.promoted_step[],
+                         promotion_time = m.promoted[] ? m.promoted_step[] - m.add_step : 0) for m in added_models],
+                       [(kind = :finer_measurement, add_step = c.add_step, target = 0, size = c.size,
+                         promoted = c.promoted[], promoted_step = c.promoted_step[],
+                         promotion_time = c.promoted[] ? c.promoted_step[] - c.add_step : 0) for c in finer_meas_cands],
+                       [(kind = :domain, add_step = d.add_step, target = d.target, size = d.size,
+                         promoted = d.promoted[], promoted_step = d.promoted_step[],
+                         promotion_time = d.promoted[] ? d.promoted_step[] - d.add_step : 0) for d in added_domains]),
                    λpos = p.λpos, λneg = p.λneg, steps = t.steps))
     end
     for step in 1:t.steps
         cur[] = step; update_rates!()
+        for ev in p.events
+            ev.step == step || continue
+            if ev.kind == :add_model_class
+                j_t = ev.target == 0 ? 1 : clamp(ev.target, 1, nleaves())
+                next_uid[] += 1
+                uid = next_uid[]
+                sc = ev.size > 0 ? Float64(ev.size) : 0.4
+                push!(added_uids, uid)
+                push!(mpool[j_t], (uid = uid, scale = sc, bias = 0.0, sharp = 1.0, collude = false, hist = Rec[]))
+                push!(added_models, (add_step = step, target = j_t, size = sc, uid = uid, promoted = Ref(false), promoted_step = Ref(0)))
+                if length(mpool[j_t]) > p.pool_max
+                    cands = [k for k in eachindex(mpool[j_t]) if k != top[j_t] && !(mpool[j_t][k].uid in added_uids)]
+                    if !isempty(cands)
+                        scored = [k for k in cands if length(mpool[j_t][k].hist) >= p.min_records]
+                        drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j_t][k].hist, hl_of(j_t)) for k in scored])]
+                        deleteat!(mpool[j_t], drop); drop < top[j_t] && (top[j_t] -= 1)
+                    end
+                end
+            elseif ev.kind == :add_finer_measurement
+                next_uid[] += 1
+                sc = ev.size > 0 ? Float64(ev.size) : 0.25
+                push!(finer_meas_cands, (uid = next_uid[], add_step = step, σ = sc * p.marker_σ, size = sc,
+                                         diffs = Float64[], promoted = Ref(false), promoted_step = Ref(0)))
+            elseif ev.kind == :add_domain && nleaves() < lmax && !(ev.target in ltrue)
+                push!(lsig, true_sig[ev.target]); push!(ltrue, ev.target); push!(lnovel, true)
+                j_new = nleaves()
+                lp_new = p.leaf_parent[ev.target]
+                if lp_new > 0
+                    μ[:, j_new] .= 0.0; μ[lp_new, j_new] = 1.0
+                else
+                    μ[:, j_new] .= 1.0 / np
+                end
+                if ev.size > 0 && ev.size != 1.0
+                    mpool[j_new][1] = merge(mpool[j_new][1], (scale = Float64(ev.size),))
+                end
+                domain_score_only[j_new] = true
+                push!(added_domains, (add_step = step, target = ev.target, leaf = j_new, size = ev.size, promoted = Ref(false), promoted_step = Ref(0)))
+                if ev.share > 0
+                    for a in 1:na
+                        agent_focus[a] .*= (1 - ev.share)
+                        agent_focus[a][ev.target] += ev.share
+                    end
+                end
+            end
+        end
+        for j in 1:nleaves()
+            pool_capped(j) || continue
+            degrade!("model pool", "single incumbent", "pool capacity reduced to 1 (progressive removal)")
+            if length(mpool[j]) > 1
+                mpool[j] = Model[topm(j)]
+                top[j] = 1
+            end
+        end
+        n0_conv = max(p.min_records, 2)
+        function domain_converged(h, ok)
+            n = length(h)
+            ok && n >= n0_conv || return false
+            sk = Float64[1.0 - (x.credence - x.outcome)^2 / 0.25 for x in h]
+            sd = std(sk)
+            sd <= 0.0 ? mean(sk) > 0.0 : sequential_significant(mean(sk), sd, n; n0 = n0_conv, z = p.model_z)
+        end
+        for d in added_domains
+            d.promoted[] && continue
+            if domain_converged(lhist[d.leaf], leaf_ok_raw(d.leaf))
+                domain_score_only[d.leaf] = false
+                lnovel[d.leaf] = false
+                d.promoted[] = true
+                d.promoted_step[] = step
+            end
+        end
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
         if p.converge_init && !econ_converged[]
-            n0 = max(p.min_records, 2)
-            function domain_converged(h, ok)
-                n = length(h)
-                ok && n >= n0 || return false
-                sk = Float64[1.0 - (x.credence - x.outcome)^2 / 0.25 for x in h]
-                sd = std(sk)
-                sd <= 0.0 ? mean(sk) > 0.0 : sequential_significant(mean(sk), sd, n; n0 = n0, z = p.model_z)
-            end
             active_known = [j for j in 1:nleaves() if !lnovel[j] && (
-                any(a -> !dormant[a] && ltrue[j] <= length(p.agents[a].focus) && p.agents[a].focus[ltrue[j]] > 0.0, 1:na) ||
+                any(a -> !dormant[a] && ltrue[j] <= length(agent_focus[a]) && agent_focus[a][ltrue[j]] > 0.0, 1:na) ||
                 !isempty(lhist[j]))]
             if !isempty(active_known) && all(j -> domain_converged(lhist[j], leaf_ok(j)), active_known)
                 econ_converged[] = true
                 converge_step[] = step
             end
         end
+        force_legacy = !isempty(live(:legacy_only))
         scoring_only = p.converge_init ? !econ_converged[] : step <= p.init_steps
         bal0 = p.ra_horizon > 0 ? copy(balance) : balance
         step_fallback_need = Ref(0.0); step_fallback_events = Ref(0)
@@ -1388,7 +1517,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         proposers = p.adaptive_proposals ? [pick(rng, propose_w .* act_share ./ sum(propose_w .* act_share)) for _ in 1:t.plans] :
                     isempty(p.forks) && isempty(p.merges) && p.entrants == 0 ? rand(rng, 1:na, t.plans) : [pick(rng, act_share ./ sum(act_share)) for _ in 1:t.plans]
         last_props[] = proposers; last_exec[] = length(tr.exec_agent)
-        leaves = [pick(drng, p.agents[a].focus) for a in proposers]
+        leaves = [pick(drng, agent_focus[a]) for a in proposers]
         own_plans = [plan_with_mean(rng, skill(a, l), t) for (a, l) in zip(proposers, leaves)]
         # Transaction trees: an action may build on a recent output of another agent in its domain,
         # carrying β of that output's effect on each being it touches (up to `upstream_depth` hops).
@@ -1456,6 +1585,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             done = ups[j] === nothing ? own_done :
                    ToyPlan(own_done.du .+ sum(l -> l[2].du, ups[j]), own_done.dh .+ sum(l -> l[2].dh, ups[j]))
+            if has_finer_meas
+                finer_last_done[] = done
+                finer_action_scored[] = false
+            end
             seen = read_outcome(done)
             m = touched(own_plans[j])
             if p.p_upstream > 0 && any(m)
@@ -1585,7 +1718,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                                  obs_profile = Float64[stops[j][k] for k in 1:nleaves()], parent_mem = pms[j]))
                 observe_membership!(stops[j], pms[j])
             end
-            if scoring_only
+            if scoring_only || force_legacy
                 bp = best_prediction(stops[j], leaves[j], plans[j])
                 bp === nothing && continue
                 bp = (bp[1], fooled(bp[2], proposers[j], plans[j], tkey(bp[1])))
@@ -1808,9 +1941,13 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             s.u .+= done.du
             s.h .+= done.dh
         end
-        if scoring_only && p.legacy_funder
-            # Author ruling 8.136 (Phase 1): immature domain/economy uses legacy institutional funder separately from Bf balances.
-            degrade!("score-only phase (Phase 1)", "legacy institutional funder (status-quo screen)", "models immature: awaiting convergence")
+        if (scoring_only && p.legacy_funder) || force_legacy
+            # Author ruling 8.136 (Phase 1): immature domain/economy or progressive legacy fallback uses status-quo funder separately from Bf balances.
+            if force_legacy
+                degrade!("Benefuture allocation", "legacy institutions only", "fallback to legacy institutions (progressive removal)")
+            else
+                degrade!("score-only phase (Phase 1)", "legacy institutional funder (status-quo screen)", "models immature: awaiting convergence")
+            end
             leg_th[] = max(0.5, leg_th[] - 0.003 * (leg_th[] - 0.5))
             f = choose(obs, menu_preds, t)
             j_f = f > 1 ? menu[f - 1] : 0
@@ -2207,7 +2344,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 s.u .+= harm.du; s.h .+= harm.dh
                 saboteur = e.target
                 push!(deferred, function ()
-                    r = examine!(harm, hit, saboteur, saboteur > 0 ? argmax(p.agents[saboteur].focus) : 1, p.marker_σ + p.remeasure_σ)
+                    r = examine!(harm, hit, saboteur, saboteur > 0 ? argmax(agent_focus[saboteur]) : 1, p.marker_σ + p.remeasure_σ)
                     world.outage_harm[] += -r.measured
                     world.sabotage_traced[] += r.traced
                 end)
@@ -2322,34 +2459,39 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         # Better models over time (8.42.2): a new model may arrive in each domain, its error relative
         # to the incumbent's drawn around an assumed improvement, never perfect; a challenger takes
         # over when its credences beat the incumbent's by the significance rule (L82, L49).
-        if p.p_new_model > 0
-            for j in 1:nleaves()
-                if rand(irng) < p.p_new_model
-                    scale = max(p.scale_min, topm(j).scale * exp(p.improve_drift + p.improve_σ * randn(irng)))
-                    next_uid[] += 1
-                    extreme = p.p_extremist > 0 && rand(xtrng) < p.p_extremist
-                    arrivals_extreme[] += extreme
-                    coll = p.model_collude > 0 && rand(collrng) < p.model_collude
-                    arrivals_colluding[] += coll
-                    coll && push!(collude_uids, next_uid[])
-                    push!(mpool[j], (uid = next_uid[], scale = scale,
-                                    bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, collude = coll, hist = Rec[]))
-                    if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
-                        cands = [k for k in eachindex(mpool[j]) if k != top[j]]
-                        scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
-                        drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j][k].hist, hl_of(j)) for k in scored])]
-                        deleteat!(mpool[j], drop); drop < top[j] && (top[j] -= 1)
+        for j in 1:nleaves()
+            if p.p_new_model > 0 && !pool_capped(j) && rand(irng) < p.p_new_model
+                scale = max(p.scale_min, topm(j).scale * exp(p.improve_drift + p.improve_σ * randn(irng)))
+                next_uid[] += 1
+                extreme = p.p_extremist > 0 && rand(xtrng) < p.p_extremist
+                arrivals_extreme[] += extreme
+                coll = p.model_collude > 0 && rand(collrng) < p.model_collude
+                arrivals_colluding[] += coll
+                coll && push!(collude_uids, next_uid[])
+                push!(mpool[j], (uid = next_uid[], scale = scale,
+                                bias = p.bias_σ * randn(irng), sharp = extreme ? p.extremise : 1.0, collude = coll, hist = Rec[]))
+                if length(mpool[j]) > p.pool_max  # drop the least accurate challenger with a record, else the oldest
+                    cands = [k for k in eachindex(mpool[j]) if k != top[j] && !(mpool[j][k].uid in added_uids)]
+                    isempty(cands) && (cands = [k for k in eachindex(mpool[j]) if k != top[j]])
+                    scored = [k for k in cands if length(mpool[j][k].hist) >= p.min_records]
+                    drop = isempty(scored) ? first(cands) : scored[argmin([acc_of(mpool[j][k].hist, hl_of(j)) for k in scored])]
+                    deleteat!(mpool[j], drop); drop < top[j] && (top[j] -= 1)
+                end
+            end
+            length(mpool[j]) > 1 || continue
+            old_ok = leaf_ok(j)
+            best_k = eval_challengers(j; only_if_eligible = false)
+            if best_k != top[j]
+                top[j] = best_k; lhist[j] = topm(j).hist; takeovers[] += 1
+                takeovers_extreme[] += topm(j).sharp != 1.0
+                takeovers_colluding[] += topm(j).collude
+                for m in added_models
+                    if !m.promoted[] && m.uid == topm(j).uid
+                        m.promoted[] = true
+                        m.promoted_step[] = step
                     end
                 end
-                length(mpool[j]) > 1 || continue
-                old_ok = leaf_ok(j)
-                best_k = eval_challengers(j; only_if_eligible = false)
-                if best_k != top[j]
-                    top[j] = best_k; lhist[j] = topm(j).hist; takeovers[] += 1
-                    takeovers_extreme[] += topm(j).sharp != 1.0
-                    takeovers_colluding[] += topm(j).collude
-                    !old_ok && degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
-                end
+                !old_ok && degrade!("incumbent leaf model", "qualified challenger in pool", "incumbent fell below bar (8.73)")
             end
         end
         push!(top_trace, [topm(j).scale for j in 1:nleaves()])
@@ -2360,7 +2502,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         # rule and examines the cause: established, the deception is repaired (its falsified records
         # re-scored) and its reward and audit are charged to the deceiver; a report that proves
         # unfounded costs nothing in good faith, its audit only past a frivolous pattern.
-        if p.advap && !blind[] && !scoring_only && na > 1
+        if p.advap && !isempty(live(:disable_advap)) && !blind[] && !scoring_only && !force_legacy && na > 1
+            degrade!("AdvAp", "suspended", "adversarial adaptation disabled (progressive removal)")
+        end
+        if p.advap && isempty(live(:disable_advap)) && !blind[] && !scoring_only && !force_legacy && na > 1
             # Who reads whom (world: attention follows incentives, not a rule; 8.42.1). The ledgers
             # are open and AdvAp pays more than exploiting, so a reader's attention goes where a
             # report is likelier to be founded, actors whose ledgers show a negative pattern
@@ -2373,7 +2518,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     push!(reads, (r, p.slander[r] > 0 ? p.slander[r] : rand(vrng, [k for k in 1:na if k != r]), true))
                 for b in 1:na
                     b == r && continue
-                    stake = marginal(b) ? p.agents[r].focus[argmax(p.agents[b].focus)] : 0.0
+                    stake = marginal(b) ? agent_focus[r][argmax(agent_focus[b])] : 0.0
                     chance = p.vigilance / (na - 1) * (1 + p.pattern_attention * ledger_neg_share(b)) * (1 + p.stake_attention * stake)
                     rand(vrng) < chance && push!(reads, (r, b, false))
                 end
@@ -2393,7 +2538,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 cen = vcat([[(x[1] + x[2]) / 2 - (mu(c, first) + mu(c, last)) / 2 for x in base[c]] for c in keys(base)]...)
                 stat(x) = (isempty(x) ? 0.0 : mean(x), length(x) < 2 ? Inf : max(std(x), 1e-12) / sqrt(length(x)))
                 (m, se), (m0, se0) = stat((res_u .+ res_h) ./ 2), stat(cen)
-                lb_ = argmax(p.agents[b].focus)
+                lb_ = argmax(agent_focus[b])
                 ok = isfinite(se) && isfinite(se0)
                 frivol || (ok && (m - m0) / sqrt(se^2 + se0^2) + choice_noise(xrng, choice_caps[r, lb_]) > p.adv_z) || continue
                 adv.reports[] += 1; reports_by[r] += 1
@@ -2537,14 +2682,16 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 end
             end
         end
-        blind[] || (obs = ToyState(observe(mrng, s.u, p.marker_σ), observe(mrng, s.h, p.marker_σ)))  # else the last observation
+        blind[] || (obs = ToyState(observe(mrng, s.u, eff_marker_σ[]), observe(mrng, s.h, eff_marker_σ[])))  # else the last observation
         record!()
         # SigThGv's perturbation branch (L157). Without adaptation, a random walk: each epoch a
         # candidate within δ is adopted if admissible. With adaptation, experimental design (8.22):
         # each round tries the incumbent and perturbed candidates, interleaved, `gov_trials` epochs
         # each in randomised blocks, observing the outcome they aim to improve (the observed floors' movement, free of
         # the parameters tuned), then shifts to the best only if it wins by `gov_z` standard errors (`select_candidate`).
-        if p.govern && step >= p.init_steps && (step - p.init_steps) % p.gov_epoch == 0
+        if p.govern && !isempty(live(:freeze_governance)) && step >= p.init_steps && (step - p.init_steps) % p.gov_epoch == 0
+            degrade!("governance", "frozen", "governance adaptation disabled (progressive removal)")
+        elseif p.govern && step >= p.init_steps && (step - p.init_steps) % p.gov_epoch == 0
             floors = (floor_quantile(obs.u, t.q), floor_quantile(obs.h, t.q))
             if !p.adapt
                 step > p.init_steps && (pv = candidate(pv); push!(gov.params, copy(pv)))
