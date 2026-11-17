@@ -29,7 +29,7 @@ open BenefutureReference
 -- Exported functions take every argument owned (a borrow annotation is not honoured on export),
 -- so reading consumes a reference: the caller takes one (`lean_inc_ref`) before each read.
 @[export bf_fa_size] def faSize (a : FloatArray) : USize := a.size.toUSize
-@[export bf_fa_get] def faGet (a : FloatArray) (i : USize) : Float := a.data.getD i.toNat 0.0
+@[export bf_fa_get] def faGet (a : FloatArray) (i : USize) : Float := if h : i.toNat < a.size then a.uget i h else 0.0
 /-- Releases an array returned to the caller: the argument is owned, so the call consumes it. -/
 @[export bf_fa_drop] def faDrop (_ : FloatArray) : UInt8 := 0
 

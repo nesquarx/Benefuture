@@ -8,13 +8,13 @@ A vote's weight (L113): base + expertise weight × Σ share × reputation over t
 profile + impact weight × impact; voting is optional below the threshold.
 """
 function voting_weight(base::Real, expertise_weight::Real, shares, reps, impact_weight::Real, impact::Real;
-                       optional_below::Real)
+                       optional_below::Real, need_optional::Bool = true)
     check(profile_valid(shares) && length(reps) == length(shares) && all(isfinite, reps), "a decision profile and one reputation per domain")
     check(all(x -> isfinite(x) && x >= 0, (base, expertise_weight, impact_weight, impact, optional_below)), "weights non-negative")
     w = ccall(sym(:bf_voting_weight), Float64, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
               base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, optional_below)
-    opt = ccall(sym(:bf_vote_optional), UInt8, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
-                base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, optional_below) == 1
+    opt = need_optional && ccall(sym(:bf_vote_optional), UInt8, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
+                                 base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, optional_below) == 1
     w, opt
 end
 
@@ -27,15 +27,16 @@ by the L13 synergy function (κ = 1, q₊ = 1.1 as governed there), the part of 
 exposure discounted by `discount`; impact discovered later, not chosen, counts in full.
 """
 function voting_weight_sy(base::Real, expertise_weight::Real, shares, reps, impact_weight::Real, impact::Real;
-                          voluntary::Real = 0.0, discount::Real, optional_below::Real, κ::Real = 1.0, q::Real = 1.1)
+                          voluntary::Real = 0.0, discount::Real, optional_below::Real, κ::Real = 1.0, q::Real = 1.1,
+                          need_optional::Bool = true)
     check(profile_valid(shares) && length(reps) == length(shares) && all(isfinite, reps), "a decision profile and one reputation per domain")
     check(all(x -> isfinite(x) && x >= 0, (base, expertise_weight, impact_weight, impact, voluntary, optional_below, κ)) && q > 0 && isfinite(q) &&
           0 <= discount <= 1 && voluntary <= impact, "weights non-negative, voluntary exposure within the impact, discount in [0, 1]")
     s, r = floatarray(shares), floatarray(reps)
     w = ccall(sym(:bf_voting_weight_sy), Float64, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
               base, expertise_weight, s, r, impact_weight, impact, voluntary, discount, optional_below, κ, q)
-    opt = ccall(sym(:bf_vote_optional_sy), UInt8, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
-                base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, voluntary, discount, optional_below, κ, q) == 1
+    opt = need_optional && ccall(sym(:bf_vote_optional_sy), UInt8, (Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+                                 base, expertise_weight, floatarray(shares), floatarray(reps), impact_weight, impact, voluntary, discount, optional_below, κ, q) == 1
     w, opt
 end
 

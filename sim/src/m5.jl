@@ -239,13 +239,23 @@ function run_m5(p::M5Params; seed)
     # than independent noise allows (Lean `copies_ref`) is one judgment counted twice, and the later voter's ballot is
     # folded into the earlier one (counted once).
     pair_d = Dict{Tuple{Int,Int},Vector{Float64}}(); folded = falses(size(p.skills, 1)); folds = Ref(0)
-    # Shared errors on known outcomes (8.121): per pair, outcomes where both erred and where either erred.
-    co_both = zeros(Int, size(p.skills, 1), size(p.skills, 1)); co_either = zeros(Int, size(p.skills, 1), size(p.skills, 1))
-    wrong_k = falses(size(p.skills, 1)); seen_k = falses(size(p.skills, 1))
+    # Shared errors on known outcomes (8.121): compact per-voter bitmasks avoid O(na^2) dense allocation.
+    use_coerror = p.dedupe && p.ballot != :vote
+    n_words = use_coerror ? cld(p.decisions, 64) : 0
+    seen_words = use_coerror ? zeros(UInt64, n_words, na) : Matrix{UInt64}(undef, 0, 0)
+    wrong_words = use_coerror ? zeros(UInt64, n_words, na) : Matrix{UInt64}(undef, 0, 0)
+    wrong_cnt = use_coerror ? zeros(Int, na) : Int[]
+    wrong_k = use_coerror ? falses(na) : falses(0)
+    seen_k = use_coerror ? falses(na) : falses(0)
     tally_apparent, tally_hidden = [0, 0], [0, 0]  # (correct, decided)
     # Votes are outputs (author ruling 8.29): reputation moves with each apparent decision, and
     # each agent's recent apparent votes per domain are its audited record (L114).
     reputation = copy(p.reputation)
+    nd_all = size(p.reputation, 2)
+    rep_dirty = trues(nd_all)
+    cached_rep = Vector{Vector{Float64}}(undef, nd_all)
+    cached_exp = Vector{Vector{Float64}}(undef, nd_all)
+    cached_order = Vector{Vector{Int}}(undef, nd_all)
     scale = [sum(max.(p.reputation[:, k], 0.0)) / size(p.reputation, 1) for k in axes(p.reputation, 2)]
     record = [Bool[] for _ in 1:na, _ in axes(p.reputation, 2)]
     # The delegate audit (L114; Lean `audited_out_ref`), over a delegate's recent apparent votes.
@@ -257,7 +267,8 @@ function run_m5(p::M5Params; seed)
     right_now, hidden_flag = Bool[], Bool[]
     adv = (established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0), gain_forgone = Ref(0.0), recounted = Ref(0))
     function record_vote!(i, k, right, held_i, total)
-        reputation[i, k] += vote_reputation(right, p.vote_value, scale[k], na, held_i, total)  # Lean `vote_reputation_ref`
+        delta = vote_reputation(right, p.vote_value, scale[k], na, held_i, total)  # Lean `vote_reputation_ref`
+        delta != 0.0 && (reputation[i, k] += delta; rep_dirty[k] = true)
         push!(record[i, k], right)
         length(record[i, k]) > max(p.audit_window, 1) && popfirst!(record[i, k])
     end
@@ -342,17 +353,24 @@ function run_m5(p::M5Params; seed)
         push!(truth_trace, truth)
         misconception = p.misconception_σ > 0 ? p.misconception_σ * randn(mrng) : 0.0
         apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
-        rep = max.(reputation[:, k], 0.0)
-        expertise = p.relative_expertise ? relative_reputation(rep) : rep
+        if rep_dirty[k]
+            cached_rep[k] = max.(reputation[:, k], 0.0)
+            cached_exp[k] = p.relative_expertise ? relative_reputation(cached_rep[k]) : cached_rep[k]
+            cached_order[k] = sortperm(cached_rep[k]; rev = true)
+            rep_dirty[k] = false
+        end
+        rep = cached_rep[k]
+        expertise = cached_exp[k]
         # Impact: the focus the voter has, and (adversary) the exposure a maker manufactures after the announcement, whose
         # increment over its focus is voluntary post hoc (8.160); the weight counts that part discounted.
         imp_vol(i) = i in makers ? (max(p.focus[i, k], p.posthoc_impact), max(0.0, p.posthoc_impact - p.focus[i, k])) : (p.focus[i, k], 0.0)
         function vweight(i, e)
             imp, vol = imp_vol(i)
-            p.weight_synergy && return voting_weight_sy(p.base, p.expertise_weight, [1.0], [e], p.impact_weight, imp;
-                                                        voluntary = vol, discount = p.posthoc_discount, optional_below = p.optional_below)[1]
-            voting_weight(p.base, p.expertise_weight, [1.0], [e], p.impact_weight, vol > 0 ? counted_impact(imp, vol, p.posthoc_discount) : imp;
-                          optional_below = p.optional_below)[1]
+            p.weight_synergy && return voting_weight_sy(p.base, p.expertise_weight, (1.0,), (e,), p.impact_weight, imp;
+                                                        voluntary = vol, discount = p.posthoc_discount, optional_below = p.optional_below,
+                                                        need_optional = false)[1]
+            voting_weight(p.base, p.expertise_weight, (1.0,), (e,), p.impact_weight, vol > 0 ? counted_impact(imp, vol, p.posthoc_discount) : imp;
+                          optional_below = p.optional_below, need_optional = false)[1]
         end
         w = [vweight(i, expertise[i]) for i in 1:na]
         # Technology Network revelations and honest newcomers (8.70, L18)
@@ -419,11 +437,21 @@ function run_m5(p::M5Params; seed)
         push!(maker_share, isempty(makers) ? 0.0 : sum(w[i] for i in makers) / total)
         held = copy(w)
         delegated, received = falses(na), falses(na)
+        order = p.p_delegate > 0 ? cached_order[k] : Int[]
+        elig = p.p_delegate > 0 ? (p.audit_window > 0 ? [j for j in order if !out_of_audit(j, k)] : order) : Int[]
+        cap_limit = p.cap * total
+        elig_head = 1
+        nelig = length(elig)
         for i in randperm(rng, na)
-            (received[i] || p.focus[i, k] >= p.impact_threshold || rand(rng) >= p.p_delegate) && continue
-            for j in sortperm(rep; rev = true)
-                (j == i || delegated[j] || rep[j] <= rep[i] || out_of_audit(j, k)) && continue
-                after = accumulate_capped(p.cap * total, held[j], [w[i]])
+            (received[i] || p.focus[i, k] >= p.impact_threshold || rand(rng) >= p.p_delegate || w[i] == 0.0) && continue
+            while elig_head <= nelig && (delegated[elig[elig_head]] || held[elig[elig_head]] >= cap_limit)
+                elig_head += 1
+            end
+            for idx in elig_head:nelig
+                j = elig[idx]
+                rep[j] <= rep[i] && break
+                (j == i || delegated[j] || held[j] >= cap_limit) && continue
+                after = accumulate_capped(cap_limit, held[j], (w[i],))
                 if after > held[j]
                     held[j] = after; held[i] -= w[i]; delegated[i] = true; received[j] = true
                     break
@@ -572,7 +600,7 @@ function run_m5(p::M5Params; seed)
         end
         push!(right_now, decided == sign(truth)); push!(hidden_flag, !apparent)
         push!(max_share, maximum(cast) / total); push!(max_single, maximum(w) / total)
-        isempty(p.colluders) || push!(bloc_expertise, sum(relative_reputation(rep)[p.colluders]))
+        isempty(p.colluders) || push!(bloc_expertise, sum((p.relative_expertise ? expertise : relative_reputation(rep))[p.colluders]))
         # Afterwards, the decision's optimality may become apparent: each vote is then credited or
         # debited by the weight it cast, and enters its voter's audited record.
         if revealed
@@ -580,24 +608,56 @@ function run_m5(p::M5Params; seed)
                 delegated[i] && continue
                 record_vote!(i, k, vote(i) == sign(truth), held[i], total)
                 p.ballot == :vote || push!(cal_rec[i], (stated(i) / 10, sign(truth)))   # calibration record (8.121), log-odds scaled
-                p.dedupe && p.ballot != :vote && (wrong_k[i] = sign(stated(i)) != sign(truth); seen_k[i] = true)
+                use_coerror && (wrong_k[i] = sign(stated(i)) != sign(truth); seen_k[i] = true)
             end
-            if p.dedupe && p.ballot != :vote
+            if use_coerror
                 # Shared errors on this known outcome; every tenth decision, a pair erring together far more than the
                 # typical pair (Lean `coerror_copy_ref`) is one judgment counted twice: the later ballot is folded.
-                for i in 1:na, j in (i + 1):na
-                    (seen_k[i] && seen_k[j]) || continue
-                    (wrong_k[i] || wrong_k[j]) && (co_either[i, j] += 1)
-                    (wrong_k[i] && wrong_k[j]) && (co_both[i, j] += 1)
+                widx = (n - 1) >>> 6 + 1
+                bit = UInt64(1) << ((n - 1) & 63)
+                @inbounds for i in 1:na
+                    seen_k[i] || continue
+                    seen_words[widx, i] |= bit
+                    if wrong_k[i]
+                        wrong_words[widx, i] |= bit
+                        wrong_cnt[i] += 1
+                    end
                 end
                 fill!(seen_k, false); fill!(wrong_k, false)
-                if n % 10 == 0
-                    shares = [co_both[i, j] / co_either[i, j] for i in 1:na for j in (i + 1):na if co_either[i, j] >= 10]
-                    if !isempty(shares)
-                        med = median(shares)
-                        for i in 1:na, j in (i + 1):na
+                if n % 10 == 0 && maximum(wrong_cnt) >= 5
+                    n_zero = 0
+                    nz_shares = Float64[]
+                    candidates = Tuple{Int,Int,Int,Int}[]
+                    @inbounds for i in 1:na
+                        wi_tot = wrong_cnt[i]
+                        for j in (i + 1):na
+                            wi_tot + wrong_cnt[j] < 10 && continue
+                            both, either = 0, 0
+                            for w in 1:widx
+                                bs = seen_words[w, i] & seen_words[w, j]
+                                wi = wrong_words[w, i] & bs
+                                wj = wrong_words[w, j] & bs
+                                both += count_ones(wi & wj)
+                                either += count_ones(wi | wj)
+                            end
+                            either < 10 && continue
+                            if both == 0
+                                n_zero += 1
+                            else
+                                push!(nz_shares, both / either)
+                                (folded[i] || folded[j]) || push!(candidates, (i, j, both, either))
+                            end
+                        end
+                    end
+                    total_sh = n_zero + length(nz_shares)
+                    if total_sh > 0
+                        sort!(nz_shares)
+                        k1 = (total_sh + 1) >>> 1; k2 = (total_sh + 2) >>> 1
+                        val1 = k1 <= n_zero ? 0.0 : nz_shares[k1 - n_zero]
+                        med = k1 == k2 ? val1 : 0.5 * (val1 + (k2 <= n_zero ? 0.0 : nz_shares[k2 - n_zero]))
+                        for (i, j, b, e) in candidates
                             (folded[i] || folded[j]) && continue
-                            coerror_copy(co_both[i, j], co_either[i, j]; med_share = med) && (folded[j] = true; folds[] += 1)
+                            coerror_copy(b, e; med_share = med) && (folded[j] = true; folds[] += 1)
                         end
                     end
                 end

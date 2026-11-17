@@ -73,8 +73,12 @@ end
 "An array returned by Lean, read (each read consumes a reference, taken first) and released."
 function lean_floats(a::Ptr{Cvoid})
     lock(SYMS_LOCK) do
-        n = ccall(sym(:bf_fa_size), Csize_t, (Ptr{Cvoid},), lean_inc!(a))
-        xs = [ccall(sym(:bf_fa_get), Float64, (Ptr{Cvoid}, Csize_t), lean_inc!(a), i) for i in 0:(Int(n) - 1)]
+        n = Int(ccall(sym(:bf_fa_size), Csize_t, (Ptr{Cvoid},), lean_inc!(a)))
+        p_get = sym(:bf_fa_get)
+        xs = Vector{Float64}(undef, n)
+        for i in 0:(n - 1)
+            xs[i + 1] = ccall(p_get, Float64, (Ptr{Cvoid}, Csize_t), lean_inc!(a), i)
+        end
         ccall(sym(:bf_fa_drop), UInt8, (Ptr{Cvoid},), a)
         xs
     end

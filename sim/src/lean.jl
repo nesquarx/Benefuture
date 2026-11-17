@@ -85,8 +85,9 @@ end
 "Build a Lean `FloatArray`; ownership passes to the Lean call that receives it."
 function floatarray(xs)
     a = ccall(sym(:bf_fa_mk), Ptr{Cvoid}, (Csize_t,), length(xs))
+    p_push = sym(:bf_fa_push)
     for x in xs
-        a = ccall(sym(:bf_fa_push), Ptr{Cvoid}, (Ptr{Cvoid}, Float64), a, Float64(x))
+        a = ccall(p_push, Ptr{Cvoid}, (Ptr{Cvoid}, Float64), a, Float64(x))
     end
     a
 end
