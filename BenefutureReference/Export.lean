@@ -500,4 +500,14 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   end_of_horizon_score_ref ownRemaining (alive != 0) couplings.data deltas.data
     causalShare delayedOutcome ideologicalShare ideologicalGain
 
+@[export bf_end_of_horizon_predicted_score] def endOfHorizonPredictedScore
+    (immediateOwn futureOwn : Float) (aliveAtOutcome : UInt8) (couplings deltas : FloatArray)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : Float) : Float :=
+  end_of_horizon_predicted_score_ref immediateOwn futureOwn (aliveAtOutcome != 0)
+    couplings.data deltas.data causalShare delayedOutcome ideologicalShare ideologicalGain
+
+@[export bf_ihz_access_risk] def ihzAccessRisk
+    (clearance reqEd potentialHarm : Float) : Float :=
+  ihz_access_risk_ref clearance reqEd potentialHarm
+
 end BenefutureReference.Export

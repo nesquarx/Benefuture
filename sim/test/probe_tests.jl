@@ -2748,6 +2748,9 @@ end
     @test all(bf -> bf.inherited_wealth == 0.0 && bf.posthumous_cd_events > 0 && bf.posthumous_re_updates > 0, r_bf)
     @test paired_effect([f.eol_excess - bf.eol_excess for (f, bf) in zip(r_fin, r_bf)];
                         z = 3.0, direction = :up).significant
+    @test paired_effect([f.eol_excess - e.eol_excess for (f, e) in zip(r_fin, r_ext)];
+                        z = 3.0, direction = :up).significant
+    @test equivalent([e.eol_excess for e in r_ext]; margin = 0.03, z = 3.0).equivalent
     @test paired_effect([f.eol_defect_rate - bf.eol_defect_rate for (f, bf) in zip(r_fin, r_bf)];
                         z = 3.0, direction = :up).significant
     @test paired_effect([bf.eol_legacy_invests - f.eol_legacy_invests for (f, bf) in zip(r_fin, r_bf)];
@@ -2761,4 +2764,30 @@ end
     @test paired_effect([o.defect_rate - b.defect_rate for (o, b) in zip(n_one, n_bf)]; z = 3.0, direction = :up).significant
     @test paired_effect([f.eol_excess - b.eol_excess for (f, b) in zip(n_fin, n_bf)]; z = 3.0, direction = :up).significant
     @test equivalent([b.eol_excess for b in n_bf]; margin = 0.03, z = 3.0).equivalent
+end
+
+@testset "Probe: M8 InfoHazard gated access without censorship & Truth-level value (P25, B21, L127)" begin
+    seeds = 1:16
+    r_gate = [run_m8_ihz(M8IhzParams(mode = :gated_ihz, seed = s)) for s in seeds]
+    r_open = [run_m8_ihz(M8IhzParams(mode = :open_ungated, seed = s)) for s in seeds]
+    r_cens = [run_m8_ihz(M8IhzParams(mode = :censored, seed = s)) for s in seeds]
+
+    # Preserves legitimate Freedom(Tr) / high truth-level utility against censorship AND avoids
+    # uninoculated accidental exposure harm vs open ungated (`z = 3.0`)
+    @test all(c -> c.useful_access == 0.0, r_cens)
+    @test paired_effect([g.useful_access - c.useful_access for (g, c) in zip(r_gate, r_cens)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([g.useful_access - o.useful_access for (g, o) in zip(r_gate, r_open)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([o.accidental_harm - g.accidental_harm for (g, o) in zip(r_gate, r_open)];
+                        z = 3.0, direction = :up).significant
+
+    # B21 deterrence: education notice establishes `Informed = true`, turning misuse into informed crime
+    @test paired_effect([o.misuse_rate - g.misuse_rate for (g, o) in zip(r_gate, r_open)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([o.attacker_net - g.attacker_net for (g, o) in zip(r_gate, r_open)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([o.notification_lag - g.notification_lag for (g, o) in zip(r_gate, r_open)];
+                        z = 3.0, direction = :up).significant
+    @test all(g -> g.attacker_net <= 0.0, r_gate)
 end

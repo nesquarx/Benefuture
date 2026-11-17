@@ -188,6 +188,44 @@ theorem end_of_horizon_dead_defection_neg
     mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) h_id
   linarith
 
+/-- Decision-time prediction across an action's horizon (`7.12`, `B25`):
+    `immediateOwn` counts at choice time while alive, `futureOwn` is gated on whether
+    the actor expects to remain alive at the predicted outcome time (`aliveAtOutcome`),
+    whereas `extended_self_feedback` on coupled targets (`Self«Sl»`) plus posthumous CD
+    and ideological legacy continue even when `aliveAtOutcome = false`. -/
+noncomputable def end_of_horizon_predicted_score
+    (immediateOwn futureOwn : ℝ) (aliveAtOutcome : Bool)
+    (couplings deltas : List ℝ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ) : ℝ :=
+  immediateOwn +
+  (if aliveAtOutcome then futureOwn else 0) +
+  extended_self_feedback couplings deltas +
+  max 0 causalShare * delayedOutcome +
+  max 0 ideologicalShare * ideologicalGain
+
+theorem end_of_horizon_predicted_drops_future_own
+    (immediateOwn future₁ future₂ : ℝ) (couplings deltas : List ℝ)
+    (cs dOut is_ iGain : ℝ) :
+    end_of_horizon_predicted_score immediateOwn future₁ false couplings deltas cs dOut is_ iGain =
+      end_of_horizon_predicted_score immediateOwn future₂ false couplings deltas cs dOut is_ iGain := by
+  simp [end_of_horizon_predicted_score]
+
+theorem predicted_harm_after_lifespan_detracts
+    (immediateOwn futureOwn c d : ℝ) (cs ds : List ℝ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ)
+    (hc : 0 < c) (hd : d < 0) (h_rest : ∀ x ∈ ds, x ≤ 0)
+    (h_cd : delayedOutcome ≤ 0) (h_id : ideologicalGain ≤ 0) :
+    end_of_horizon_predicted_score immediateOwn futureOwn false (c :: cs) (d :: ds)
+      causalShare delayedOutcome ideologicalShare ideologicalGain < immediateOwn := by
+  unfold end_of_horizon_predicted_score
+  simp only [Bool.false_eq_true, ↓reduceIte, add_zero]
+  have hfb := extended_self_feedback_neg_of_harm c d cs ds hc hd h_rest
+  have h1 : max 0 causalShare * delayedOutcome ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) h_cd
+  have h2 : max 0 ideologicalShare * ideologicalGain ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) h_id
+  linarith
+
 abbrev Mr := InteractionConsequence
 
 end Benefuture.Subgoals

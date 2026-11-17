@@ -236,4 +236,32 @@ fin(xs...) = all(isfinite, xs)
                        (own, alive, c, d, csh, do_, ish, ig) -> (alive ? own : 0.0) +
                            sum(clamp(ci, 0.0, 1.0) * di for (ci, di) in zip(c, d); init = 0.0) +
                            max(0.0, csh) * do_ + max(0.0, ish) * ig) == (guard = 0, value = 0)
+    @test differential(:end_of_horizon_predicted_score,
+                       r -> begin
+                           k = rand(r, 0:4)
+                           imm = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           fut = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           alive_out = rand(r, Bool)
+                           c = [rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25 for _ in 1:k]
+                           d = [rand(r) < 0.05 ? hostile(r) : 8.0 * randn(r) for _ in 1:k]
+                           csh = rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25
+                           do_ = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           ish = rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25
+                           ig = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           (imm, fut, alive_out, c, d, csh, do_, ish, ig)
+                       end,
+                       (imm, fut, alive_out, c, d, csh, do_, ish, ig) -> isfinite(imm) && isfinite(fut) &&
+                           length(c) == length(d) && all(isfinite, c) && all(isfinite, d) &&
+                           all(isfinite, (csh, do_, ish, ig)),
+                       (imm, fut, alive_out, c, d, csh, do_, ish, ig) -> end_of_horizon_predicted_score(
+                           imm, fut, alive_out, c, d; causal_share = csh, delayed_outcome = do_,
+                           ideological_share = ish, ideological_gain = ig),
+                       (imm, fut, alive_out, c, d, csh, do_, ish, ig) -> imm + (alive_out ? fut : 0.0) +
+                           sum(clamp(ci, 0.0, 1.0) * di for (ci, di) in zip(c, d); init = 0.0) +
+                           max(0.0, csh) * do_ + max(0.0, ish) * ig) == (guard = 0, value = 0)
+    @test differential(:ihz_access_risk,
+                       r -> (hostile(r), hostile(r), hostile(r)),
+                       (clr, req, harm) -> all(isfinite, (clr, req, harm)),
+                       (clr, req, harm) -> ihz_access_risk(clr, req; potential_harm = harm),
+                       (clr, req, harm) -> clr >= req ? 0.0 : max(0.0, harm)) == (guard = 0, value = 0)
 end

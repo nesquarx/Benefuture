@@ -57,6 +57,46 @@ function end_of_horizon_score(own_remaining::Real, alive::Bool, couplings, delta
           Float64(ideological_share), Float64(ideological_gain))
 end
 
+"""
+    end_of_horizon_predicted_score(immediate_own, future_own, alive_at_outcome, couplings, deltas;
+                                   causal_share = 0.0, delayed_outcome = 0.0,
+                                   ideological_share = 0.0, ideological_gain = 0.0) -> Float64
+
+Decision-time prediction across an action's horizon (`7.12`, `B25`, M8; Lean
+`end_of_horizon_predicted_score_ref`): `immediate_own` accrues at choice time while alive,
+`future_own` counts only if `alive_at_outcome`, and `extended_self_feedback(couplings, deltas)`
+plus posthumous CD and ideological legacy remain active even past predicted death.
+"""
+function end_of_horizon_predicted_score(immediate_own::Real, future_own::Real,
+                                        alive_at_outcome::Bool, couplings, deltas;
+                                        causal_share::Real = 0.0, delayed_outcome::Real = 0.0,
+                                        ideological_share::Real = 0.0, ideological_gain::Real = 0.0)
+    check(isfinite(immediate_own) && isfinite(future_own) &&
+          length(couplings) == length(deltas) &&
+          all(isfinite, couplings) && all(isfinite, deltas) &&
+          all(isfinite, (causal_share, delayed_outcome, ideological_share, ideological_gain)),
+          "finite inputs and equal-length couplings and deltas")
+    ccall(sym(:bf_end_of_horizon_predicted_score), Float64,
+          (Float64, Float64, UInt8, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+          Float64(immediate_own), Float64(future_own), UInt8(alive_at_outcome ? 1 : 0),
+          floatarray(couplings), floatarray(deltas),
+          Float64(causal_share), Float64(delayed_outcome),
+          Float64(ideological_share), Float64(ideological_gain))
+end
+
+"""
+    ihz_access_risk(clearance, req_ed; potential_harm) -> Float64
+
+Residual InfoHazard exposure risk (`L127`, `B21`, M8; Lean `ihz_access_risk_ref`):
+`0.0` once `clearance >= req_ed`, otherwise `max(0.0, potential_harm)`.
+"""
+function ihz_access_risk(clearance::Real, req_ed::Real; potential_harm::Real)
+    check(all(isfinite, (clearance, req_ed, potential_harm)),
+          "finite clearance, req_ed and potential_harm")
+    ccall(sym(:bf_ihz_access_risk), Float64, (Float64, Float64, Float64),
+          Float64(clearance), Float64(req_ed), Float64(potential_harm))
+end
+
 # ---- Network world (`M8`) ----
 
 Base.@kwdef struct M8Params
@@ -283,17 +323,19 @@ function run_m8(p::M8Params = M8Params())
             ideo_sh = use_cd ? ((use_legacy_b25 || alive_at_delay) ? 0.40 : 0.0) : 0.0
             eval_cvec = use_extended ? cvec : zeros(Float64, length(cvec))
 
-            coop_eval = end_of_horizon_score(p.coop_gain, true, eval_cvec, d_coop;
-                                             causal_share = causal_sh,
-                                             delayed_outcome = p.delayed_legacy_gain,
-                                             ideological_share = ideo_sh,
-                                             ideological_gain = p.delayed_legacy_gain) +
+            coop_eval = end_of_horizon_predicted_score(p.coop_gain, 0.4, alive_at_delay,
+                                                       eval_cvec, d_coop;
+                                                       causal_share = causal_sh,
+                                                       delayed_outcome = p.delayed_legacy_gain,
+                                                       ideological_share = ideo_sh,
+                                                       ideological_gain = p.delayed_legacy_gain) +
                         p.choice_noise * randn(rng)
-            def_eval = end_of_horizon_score(p.defect_loot, true, eval_cvec, d_def;
-                                            causal_share = causal_sh,
-                                            delayed_outcome = -p.defect_harm,
-                                            ideological_share = ideo_sh,
-                                            ideological_gain = -0.5 * p.defect_harm) +
+            def_eval = end_of_horizon_predicted_score(p.defect_loot, 0.0, alive_at_delay,
+                                                      eval_cvec, d_def;
+                                                      causal_share = causal_sh,
+                                                      delayed_outcome = -p.defect_harm,
+                                                      ideological_share = ideo_sh,
+                                                      ideological_gain = -0.5 * p.defect_harm) +
                        p.choice_noise * randn(rng)
 
             chose_defect = is_opportunist[i] ? (def_eval > coop_eval) : false
@@ -376,5 +418,114 @@ function run_m8(p::M8Params = M8Params())
         hub_proxy_net = mean(hub_proxy_nets),
         top_influence_share = mean(top_share_trace),
         advap_reports = advap_reports,
+    )
+end
+
+# ---- M8 Epistemic Gating (`IHz`, `Truth_lvl`, `B21`, `PLAN.md` L71) ----
+
+Base.@kwdef struct M8IhzParams
+    n::Int = 24
+    steps::Int = 80
+    mode::Symbol = :gated_ihz          # :gated_ihz | :open_ungated | :censored
+    req_ed::Float64 = 1.0
+    edu_cost::Float64 = 0.25
+    hazard_harm::Float64 = 6.0
+    legit_value::Float64 = 1.8
+    misuse_gain::Float64 = 2.4
+    truth_level_mean::Float64 = 0.85
+    attacker_frac::Float64 = 0.25
+    audit_rate::Float64 = 0.70
+    accident_factor::Float64 = 0.20
+    cf_ratio::Float64 = 1.0
+    choice_noise::Float64 = 0.25
+    seed::Int = 1
+end
+
+"""
+    run_m8_ihz(p::M8IhzParams = M8IhzParams())
+
+Simulate gated access to InfoHazards (`IHz`, `L127`) and Truth-level-weighted claims (`L133`, `B21`):
+- `:censored` blocks access for everyone (zero misuse, zero legitimate value: fails `Freedom(Tr)`).
+- `:open_ungated` leaves hazards ungated without educational inoculation (`ihz_access_risk > 0`) and
+  lets malicious actors plead non-informed accident mitigation (`responsibility_factor` discount).
+- `:gated_ihz` ensures an open educational path (`clearance >= req_ed`), driving uninoculated
+  accidental harm near zero while preserving high-truth-level legitimate utility and logging
+  educational notice (`Informed = true`) so deliberate misuse pays full informed crime liability.
+"""
+function run_m8_ihz(p::M8IhzParams = M8IhzParams())
+    rng = Xoshiro(p.seed)
+    check(p.n >= 4 && p.steps >= 1 && p.req_ed >= 0 && p.hazard_harm >= 0 &&
+          0 <= p.attacker_frac <= 1 && 0 <= p.audit_rate <= 1,
+          "valid IHz gate parameters")
+    n_att = round(Int, p.attacker_frac * p.n)
+    is_attacker = [ i <= n_att for i in 1:p.n ]
+    clearance = [ rand(rng) < 0.25 ? p.req_ed : 0.3 * p.req_ed * rand(rng) for _ in 1:p.n ]
+    informed = [ clearance[i] >= p.req_ed for i in 1:p.n ]
+
+    useful_access = 0.0
+    accidental_harm = 0.0
+    misuse_count = 0
+    misuse_trials = 0
+    attacker_nets = Float64[]
+    notif_lags = Float64[]
+    educated_count = 0
+
+    for _ in 1:p.steps
+        tr_lvl = clamp(p.truth_level_mean + 0.1 * randn(rng), 0.1, 1.0)
+        for i in 1:p.n
+            if p.mode == :censored
+                # Material deleted/censored: no misuse, no accidental harm, no legitimate access
+                continue
+            elseif is_attacker[i]
+                misuse_trials += 1
+                if p.mode == :gated_ihz && clearance[i] < p.req_ed
+                    # Unblocked path via education: attacker completes prerequisite course, which
+                    # logs `Informed` intent in the TN record (`B21`).
+                    clearance[i] = p.req_ed
+                    informed[i] = true
+                    educated_count += 1
+                end
+                is_inf = (p.mode == :gated_ihz) && informed[i]
+                expected_fine = p.audit_rate *
+                    responsibility_factor(true, is_inf, true, p.cf_ratio;
+                                          severity_scale = p.hazard_harm,
+                                          accident_factor = p.accident_factor)
+                ev = p.misuse_gain - expected_fine - (p.mode == :gated_ihz ? p.edu_cost : 0.0) +
+                     p.choice_noise * randn(rng)
+                if ev > 0.0
+                    misuse_count += 1
+                    caught = rand(rng) < p.audit_rate
+                    pen = caught ? responsibility_factor(true, is_inf, true, p.cf_ratio;
+                                                         severity_scale = p.hazard_harm,
+                                                         accident_factor = p.accident_factor) : 0.0
+                    push!(attacker_nets, p.misuse_gain - pen)
+                    # Gated TN access log notifies affected targets much faster than unlogged access
+                    push!(notif_lags, (p.mode == :gated_ihz ? 1.5 : 8.5) + 0.5 * abs(randn(rng)))
+                else
+                    push!(attacker_nets, 0.0)
+                end
+            else
+                # Legitimate researcher / citizen
+                if p.mode == :gated_ihz && clearance[i] < p.req_ed
+                    clearance[i] = p.req_ed
+                    informed[i] = true
+                    educated_count += 1
+                end
+                eff_clr = p.mode == :gated_ihz ? clearance[i] : clearance[i]
+                risk = ihz_access_risk(eff_clr, p.req_ed; potential_harm = 0.5 * p.hazard_harm)
+                accidental_harm += risk
+                useful_access += p.legit_value * tr_lvl - risk - (p.mode == :gated_ihz ? 0.05 * p.edu_cost : 0.0)
+            end
+        end
+    end
+
+    (
+        mode = p.mode,
+        useful_access = useful_access,
+        accidental_harm = accidental_harm,
+        misuse_rate = misuse_trials > 0 ? misuse_count / misuse_trials : 0.0,
+        attacker_net = isempty(attacker_nets) ? 0.0 : mean(attacker_nets),
+        notification_lag = isempty(notif_lags) ? 0.0 : mean(notif_lags),
+        educated_count = educated_count,
     )
 end

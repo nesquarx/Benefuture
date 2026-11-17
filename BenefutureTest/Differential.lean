@@ -43,6 +43,7 @@ import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
 import Benefuture.Subgoals.Justice
 import Benefuture.Subgoals.Morality
+import Benefuture.Epistemology.InfoHandling
 import Benefuture.Ontology.Entity
 import Benefuture.Systems.TechnologyNetwork
 import Benefuture.Systems.ParamSpace
@@ -410,6 +411,40 @@ theorem endOfHorizonScoreQ_spec
   unfold endOfHorizonScoreQ Benefuture.Subgoals.end_of_horizon_score
   rw [← extendedSelfFeedbackQ_spec]
   cases alive <;> simp
+
+def endOfHorizonPredictedScoreQ
+    (immediateOwn futureOwn : ℚ) (aliveAtOutcome : Bool) (couplings deltas : List ℚ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℚ) : ℚ :=
+  immediateOwn +
+  (if aliveAtOutcome then futureOwn else 0) +
+  extendedSelfFeedbackQ couplings deltas +
+  max 0 causalShare * delayedOutcome +
+  max 0 ideologicalShare * ideologicalGain
+
+theorem endOfHorizonPredictedScoreQ_spec
+    (immediateOwn futureOwn : ℚ) (aliveAtOutcome : Bool) (couplings deltas : List ℚ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℚ) :
+    (endOfHorizonPredictedScoreQ immediateOwn futureOwn aliveAtOutcome couplings deltas
+      causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ) =
+      Benefuture.Subgoals.end_of_horizon_predicted_score immediateOwn futureOwn aliveAtOutcome
+        (couplings.map (↑)) (deltas.map (↑))
+        causalShare delayedOutcome ideologicalShare ideologicalGain := by
+  unfold endOfHorizonPredictedScoreQ Benefuture.Subgoals.end_of_horizon_predicted_score
+  rw [← extendedSelfFeedbackQ_spec]
+  cases aliveAtOutcome <;> simp
+
+def ihzAccessRiskQ (clearance reqEd potentialHarm : ℚ) : ℚ :=
+  if clearance ≥ reqEd then 0 else max 0 potentialHarm
+
+theorem ihzAccessRiskQ_spec (clearance reqEd potentialHarm : ℚ) :
+    (ihzAccessRiskQ clearance reqEd potentialHarm : ℝ) =
+      Benefuture.Epistemology.ihz_access_risk_real clearance reqEd potentialHarm := by
+  unfold ihzAccessRiskQ Benefuture.Epistemology.ihz_access_risk_real
+  by_cases h : clearance ≥ reqEd
+  · have h' : (clearance : ℝ) ≥ (reqEd : ℝ) := by exact_mod_cast h
+    simp [h, h']
+  · have h' : ¬ ((clearance : ℝ) ≥ (reqEd : ℝ)) := by exact_mod_cast h
+    simp [h, h']
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -945,6 +980,42 @@ def runAll : IO Unit := do
       (Array.mk (cs.map ratToFloat)) (Array.mk (ds.map ratToFloat))
       (ratToFloat cShare) (ratToFloat dOut) (ratToFloat iShare) (ratToFloat iGain)
     let q := endOfHorizonScoreQ own alive cs ds cShare dOut iShare iGain
+    (close f q, g)
+  checkAll "end_of_horizon_predicted_score" 400 31 fun g =>
+    let (im0, g) := g.below 65
+    let (fu0, g) := g.below 65
+    let (a0, g) := g.below 2
+    let (c0, g) := g.below 33
+    let (c1, g) := g.below 33
+    let (d0, g) := g.below 65
+    let (d1, g) := g.below 65
+    let (cs0, g) := g.below 33
+    let (do0, g) := g.below 65
+    let (is0, g) := g.below 33
+    let (ig0, g) := g.below 65
+    let imm : ℚ := ((im0 : ℚ) - 16) / 8
+    let fut : ℚ := ((fu0 : ℚ) - 16) / 8
+    let aliveOut := a0 == 1
+    let cs : List ℚ := [((c0 : ℚ) - 8) / 16, ((c1 : ℚ) - 8) / 16]
+    let ds : List ℚ := [((d0 : ℚ) - 32) / 8, ((d1 : ℚ) - 32) / 8]
+    let cShare : ℚ := ((cs0 : ℚ) - 8) / 16
+    let dOut : ℚ := ((do0 : ℚ) - 32) / 8
+    let iShare : ℚ := ((is0 : ℚ) - 8) / 16
+    let iGain : ℚ := ((ig0 : ℚ) - 32) / 8
+    let f := end_of_horizon_predicted_score_ref (ratToFloat imm) (ratToFloat fut) aliveOut
+      (Array.mk (cs.map ratToFloat)) (Array.mk (ds.map ratToFloat))
+      (ratToFloat cShare) (ratToFloat dOut) (ratToFloat iShare) (ratToFloat iGain)
+    let q := endOfHorizonPredictedScoreQ imm fut aliveOut cs ds cShare dOut iShare iGain
+    (close f q, g)
+  checkAll "ihz_access_risk" 400 32 fun g =>
+    let (cl0, g) := g.below 65
+    let (rq0, g) := g.below 65
+    let (ph0, g) := g.below 65
+    let clearance : ℚ := ((cl0 : ℚ) - 16) / 8
+    let reqEd : ℚ := ((rq0 : ℚ) - 16) / 8
+    let harm : ℚ := ((ph0 : ℚ) - 16) / 8
+    let f := ihz_access_risk_ref (ratToFloat clearance) (ratToFloat reqEd) (ratToFloat harm)
+    let q := ihzAccessRiskQ clearance reqEd harm
     (close f q, g)
 
 #eval runAll

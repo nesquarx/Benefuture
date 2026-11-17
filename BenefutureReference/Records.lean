@@ -442,3 +442,21 @@ def end_of_horizon_score_ref
   let cs := if causalShare > 0.0 then causalShare else 0.0
   let is_ := if ideologicalShare > 0.0 then ideologicalShare else 0.0
   own + extended_self_feedback_ref couplings deltas + cs * delayedOutcome + is_ * ideologicalGain
+
+/-- Decision-time prediction across an action's horizon (`7.12`, `B25`, M8):
+    `immediateOwn` always counts while choosing; `futureOwn` is gated on `aliveAtOutcome`;
+    `extended_self_feedback_ref`, posthumous CD, and ideological legacy remain active. -/
+def end_of_horizon_predicted_score_ref
+    (immediateOwn futureOwn : Float) (aliveAtOutcome : Bool)
+    (couplings deltas : Array Float)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : Float) : Float :=
+  let fut := if aliveAtOutcome then futureOwn else 0.0
+  let cs := if causalShare > 0.0 then causalShare else 0.0
+  let is_ := if ideologicalShare > 0.0 then ideologicalShare else 0.0
+  immediateOwn + fut + extended_self_feedback_ref couplings deltas + cs * delayedOutcome + is_ * ideologicalGain
+
+/-- Residual InfoHazard exposure risk (`L127`, `B21`, M8):
+    `0.0` once `clearance ≥ reqEd`, else `max 0.0 potentialHarm`. -/
+def ihz_access_risk_ref (clearance reqEd potentialHarm : Float) : Float :=
+  if clearance >= reqEd then 0.0
+  else if potentialHarm > 0.0 then potentialHarm else 0.0

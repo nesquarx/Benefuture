@@ -5,6 +5,8 @@
   Corresponds to: Bf_Pseudocode.txt L128-134, and Education.txt / Technology Network.txt
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Benefuture.Epistemology.Truth
 import Benefuture.Ontology.Person
 
@@ -84,5 +86,32 @@ theorem education_inoculates_infohazard (ihz : InfoHazard) (ed : EducationProfil
   unfold access_harm_risk can_safely_access
   simp [h_cleared]
 
+/-! ## Real-Valued InfoHazard Gate Exposure Risk (`L127`, `B21`, M8) -/
+
+/-- Residual exposure risk from encountering gated material requiring `reqEd` at `clearance` (`L127`):
+    `0` once cleared (`clearance ≥ reqEd`), otherwise `max 0 potentialHarm`. -/
+noncomputable def ihz_access_risk_real (clearance reqEd potentialHarm : ℝ) : ℝ :=
+  if clearance ≥ reqEd then 0 else max 0 potentialHarm
+
+theorem ihz_access_risk_real_nonneg (clearance reqEd potentialHarm : ℝ) :
+    0 ≤ ihz_access_risk_real clearance reqEd potentialHarm := by
+  unfold ihz_access_risk_real
+  split_ifs
+  · exact le_refl 0
+  · exact le_max_left 0 _
+
+theorem ihz_access_risk_real_zero_when_cleared (clearance reqEd potentialHarm : ℝ)
+    (h : clearance ≥ reqEd) :
+    ihz_access_risk_real clearance reqEd potentialHarm = 0 := by
+  unfold ihz_access_risk_real
+  simp [h]
+
+theorem ihz_access_risk_real_pos_when_uncleared (clearance reqEd potentialHarm : ℝ)
+    (h_unclear : clearance < reqEd) (h_harm : 0 < potentialHarm) :
+    0 < ihz_access_risk_real clearance reqEd potentialHarm := by
+  unfold ihz_access_risk_real
+  have hnot : ¬ (clearance ≥ reqEd) := by linarith
+  simp only [hnot, ↓reduceIte]
+  exact lt_of_lt_of_le h_harm (le_max_right 0 _)
 
 end Benefuture.Epistemology

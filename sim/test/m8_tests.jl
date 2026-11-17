@@ -37,6 +37,26 @@ using Statistics
                                ideological_share = 0.3, ideological_gain = -1.0) ≈ -4.3
     @test_throws ArgumentError end_of_horizon_score(NaN, true, [0.5], [1.0])
     @test_throws ArgumentError end_of_horizon_score(1.0, true, [0.5], [1.0, 2.0])
+
+    # 4. Prediction-time horizon & extended self past predicted death (`7.12`, `B25`):
+    # `immediate_own` stays at choice time; predicted `future_own` drops when `alive_at_outcome = false`,
+    # while extended-self harm predicted on community after death still lowers score strictly below `immediate_own`.
+    pred_dead_ext = end_of_horizon_predicted_score(2.0, 5.0, false, [0.6], [-5.0])
+    pred_alive_ext = end_of_horizon_predicted_score(2.0, 5.0, true, [0.6], [-5.0])
+    @test pred_dead_ext ≈ -1.0
+    @test pred_dead_ext < 2.0
+    @test pred_alive_ext ≈ 4.0
+    @test end_of_horizon_predicted_score(2.0, 99.0, false, [0.6], [-5.0]) ≈ pred_dead_ext
+    @test_throws ArgumentError end_of_horizon_predicted_score(NaN, 1.0, false, [0.5], [1.0])
+    @test_throws ArgumentError end_of_horizon_predicted_score(1.0, 1.0, false, [0.5], [1.0, 2.0])
+
+    # 5. InfoHazard access risk (`L127`, `B21`):
+    @test ihz_access_risk(1.0, 1.0; potential_harm = 5.0) == 0.0
+    @test ihz_access_risk(1.5, 1.0; potential_harm = 5.0) == 0.0
+    @test ihz_access_risk(0.8, 1.0; potential_harm = 5.0) ≈ 5.0
+    @test ihz_access_risk(0.8, 1.0; potential_harm = -2.0) == 0.0
+    @test_throws ArgumentError ihz_access_risk(NaN, 1.0; potential_harm = 5.0)
+    @test_throws ArgumentError ihz_access_risk(0.5, 1.0; potential_harm = Inf)
 end
 
 @testset "M8 world invariants: B25 zero financial inheritance, posthumous attribution & power dispersion" begin
@@ -49,9 +69,20 @@ end
 
     # Pure structural response to coupling removal & finite-horizon truncation
     one_shot = run_m8(M8Params(mode = :one_shot, seed = 7))
+    ext_only = run_m8(M8Params(mode = :extended_only, seed = 7))
     finite = run_m8(M8Params(mode = :finite_no_legacy, seed = 7))
     bf = run_m8(M8Params(mode = :bf, seed = 7))
     @test one_shot.defect_rate > bf.defect_rate
     @test finite.eol_excess > bf.eol_excess
+    @test finite.eol_excess > ext_only.eol_excess
+
+    # IHz gating eliminates uninoculated exposure risk without censoring legitimate research
+    gated = run_m8_ihz(M8IhzParams(mode = :gated_ihz, seed = 7))
+    open_u = run_m8_ihz(M8IhzParams(mode = :open_ungated, seed = 7))
+    cens = run_m8_ihz(M8IhzParams(mode = :censored, seed = 7))
+    @test gated.accidental_harm == 0.0
+    @test open_u.accidental_harm > 0.0
+    @test cens.useful_access == 0.0
+    @test gated.useful_access > cens.useful_access
 end
 
