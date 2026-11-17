@@ -1,0 +1,7 @@
+rung,n,n_seeds,metric,mean,se,z_raw,significant_z3,sec_per_seed
+M3c,80,16,floor_u_gain,55.670284,0.504646,110.316,true,12.16
+M3c,1000,16,floor_u_gain,46.969522,0.610962,76.878,true,29.71
+M3c,10000,16,floor_u_gain,31.812201,0.500053,63.618,true,154.00
+M5_sparse,80,16,wisdom_gain,0.289583,0.012064,24.004,true,0.34
+M5_sparse,1000,16,wisdom_gain,0.305208,0.011047,27.628,true,3.66
+M5_sparse,10000,16,wisdom_gain,0.286458,0.012658,22.630,true,336.73
