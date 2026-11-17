@@ -74,13 +74,13 @@ end
         idx = [5(d - 1) + r for r in 1:5]
         inverted[idx, d] = reverse(sort(inverted[idx, d]))
     end
-    heavy(rep, seed) = run_m5(M5Params(m3, 1:4; decisions = 2000, signal_σ = 40.0, ability_spread = 1.0, p_apparent = 0.4,
+    heavy(rep, seed) = run_m5(M5Params(m3, 1:4; decisions = 4000, signal_σ = 40.0, ability_spread = 1.0, p_apparent = 0.4,
                                        diversity = false, reputation = rep); seed)
     truth_runs = [heavy(nothing, seed) for seed in 1:16]
     wrong_runs = [heavy(inverted, seed) for seed in 1:16]
     window(runs, r) = mean(mean(tr.correct_trace[r]) for tr in runs)
-    @test window(wrong_runs, 1:100) < window(wrong_runs, 1601:2000) - 0.01
-    @test equivalent([mean(w.correct_trace[1601:2000]) - mean(t.correct_trace[1601:2000]) for (w, t) in zip(wrong_runs, truth_runs)]; margin = 0.03).equivalent
+    @test window(wrong_runs, 1:100) < window(wrong_runs, 3601:4000) - 0.01
+    @test equivalent([mean(w.correct_trace[3601:4000]) - mean(t.correct_trace[3601:4000]) for (w, t) in zip(wrong_runs, truth_runs)]; margin = 0.03).equivalent
 end
 
 @testset "M5: adversarial and edge cases" begin
