@@ -264,4 +264,19 @@ fin(xs...) = all(isfinite, xs)
                        (clr, req, harm) -> all(isfinite, (clr, req, harm)),
                        (clr, req, harm) -> ihz_access_risk(clr, req; potential_harm = harm),
                        (clr, req, harm) -> clr >= req ? 0.0 : max(0.0, harm)) == (guard = 0, value = 0)
+    @test differential(:art_success_score,
+                       r -> begin
+                           k = rand(r, 0:5)
+                           p = [rand(r) < 0.05 ? hostile(r) : 2.0 * rand(r) - 0.5 for _ in 1:k]
+                           q = [rand(r) < 0.05 ? hostile(r) : 2.0 * rand(r) - 0.5 for _ in 1:k]
+                           (p, q)
+                       end,
+                       (p, q) -> length(p) == length(q) && all(isfinite, p) && all(isfinite, q),
+                       art_success_score,
+                       (p, q) -> max(0.0, 1.0 - sum(abs(pi - qi) for (pi, qi) in zip(p, q); init = 0.0) / 2.0)) == (guard = 0, value = 0)
+    @test differential(:art_surplus_value,
+                       r -> (hostile(r), hostile(r)),
+                       (u, nov) -> isfinite(u) && isfinite(nov),
+                       art_surplus_value,
+                       (u, nov) -> max(0.0, u) + max(0.0, nov)) == (guard = 0, value = 0)
 end

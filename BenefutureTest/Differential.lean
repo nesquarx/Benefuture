@@ -43,6 +43,7 @@ import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
 import Benefuture.Subgoals.Justice
 import Benefuture.Subgoals.Morality
+import Benefuture.Subgoals.Art
 import Benefuture.Epistemology.InfoHandling
 import Benefuture.Ontology.Entity
 import Benefuture.Systems.TechnologyNetwork
@@ -445,6 +446,43 @@ theorem ihzAccessRiskQ_spec (clearance reqEd potentialHarm : ℚ) :
     simp [h, h']
   · have h' : ¬ ((clearance : ℝ) ≥ (reqEd : ℝ)) := by exact_mod_cast h
     simp [h, h']
+
+def artDistributionL1LossQ : List ℚ → List ℚ → ℚ
+  | p :: ps, q :: qs => |p - q| + artDistributionL1LossQ ps qs
+  | _, _ => 0
+
+theorem artDistributionL1LossQ_spec (intent reception : List ℚ) :
+    (artDistributionL1LossQ intent reception : ℝ) =
+      Benefuture.Subgoals.art_distribution_l1_loss (intent.map (↑)) (reception.map (↑)) := by
+  induction intent generalizing reception with
+  | nil => simp [artDistributionL1LossQ, Benefuture.Subgoals.art_distribution_l1_loss]
+  | cons p ps ih =>
+    cases reception with
+    | nil => simp [artDistributionL1LossQ, Benefuture.Subgoals.art_distribution_l1_loss]
+    | cons q qs =>
+      simp only [artDistributionL1LossQ, List.map_cons,
+        Benefuture.Subgoals.art_distribution_l1_loss, Rat.cast_add, Rat.cast_abs, Rat.cast_sub, ih qs]
+
+def artSuccessScoreQ (intent reception : List ℚ) : ℚ :=
+  max 0 (1 - artDistributionL1LossQ intent reception / 2)
+
+theorem artSuccessScoreQ_spec (intent reception : List ℚ) :
+    (artSuccessScoreQ intent reception : ℝ) =
+      Benefuture.Subgoals.art_success_score (intent.map (↑)) (reception.map (↑)) := by
+  unfold artSuccessScoreQ Benefuture.Subgoals.art_success_score
+  rw [← artDistributionL1LossQ_spec]
+  push_cast
+  rfl
+
+def artSurplusValueQ (truthDeltaU novelty : ℚ) : ℚ :=
+  max 0 truthDeltaU + max 0 novelty
+
+theorem artSurplusValueQ_spec (truthDeltaU novelty : ℚ) :
+    (artSurplusValueQ truthDeltaU novelty : ℝ) =
+      Benefuture.Subgoals.art_surplus_value truthDeltaU novelty := by
+  unfold artSurplusValueQ Benefuture.Subgoals.art_surplus_value
+  push_cast
+  rfl
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -1016,6 +1054,26 @@ def runAll : IO Unit := do
     let harm : ℚ := ((ph0 : ℚ) - 16) / 8
     let f := ihz_access_risk_ref (ratToFloat clearance) (ratToFloat reqEd) (ratToFloat harm)
     let q := ihzAccessRiskQ clearance reqEd harm
+    (close f q, g)
+  checkAll "art_success_score" 400 33 fun g =>
+    let (p0, g) := g.below 17
+    let (p1, g) := g.below 17
+    let (p2, g) := g.below 17
+    let (q0, g) := g.below 17
+    let (q1, g) := g.below 17
+    let (q2, g) := g.below 17
+    let ps : List ℚ := [(p0 : ℚ) / 16, (p1 : ℚ) / 16, (p2 : ℚ) / 16]
+    let qs : List ℚ := [(q0 : ℚ) / 16, (q1 : ℚ) / 16, (q2 : ℚ) / 16]
+    let f := art_success_score_ref (Array.mk (ps.map ratToFloat)) (Array.mk (qs.map ratToFloat))
+    let q := artSuccessScoreQ ps qs
+    (close f q, g)
+  checkAll "art_surplus_value" 400 34 fun g =>
+    let (u0, g) := g.below 65
+    let (n0, g) := g.below 65
+    let u : ℚ := ((u0 : ℚ) - 16) / 8
+    let nov : ℚ := ((n0 : ℚ) - 16) / 8
+    let f := art_surplus_value_ref (ratToFloat u) (ratToFloat nov)
+    let q := artSurplusValueQ u nov
     (close f q, g)
 
 #eval runAll

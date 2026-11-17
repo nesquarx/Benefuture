@@ -2791,3 +2791,29 @@ end
                         z = 3.0, direction = :up).significant
     @test all(g -> g.attacker_net <= 0.0, r_gate)
 end
+
+@testset "Probe: M8 Art spread matching & Culture Di_N monoculture escape (P26–P27, L125–127, L158, 7.13)" begin
+    seeds = 1:16
+    r_art = [run_m8_art(M8ArtParams(seed = s)) for s in seeds]
+    r_mono = [run_m8_culture(M8CultureParams(mode = :no_diversity_bonus, seed = s)) for s in seeds]
+    r_div = [run_m8_culture(M8CultureParams(mode = :bf_culture, seed = s)) for s in seeds]
+
+    # P26 (Art, `Success := match(p, Dist(q))`, `V_a = Tr_lvl(ΔU) + N`):
+    # Distribution matching separates divisive open works from blank zero-mean works where mean-only
+    # scoring conflates them, and surplus value separates original art from propaganda & forgeries.
+    @test paired_effect([a.dist_separation for a in r_art]; z = 3.0, direction = :up).significant
+    @test paired_effect([a.mean_conflation for a in r_art]; z = 3.0, direction = :up).significant
+    @test paired_effect([a.orig_surplus - a.prop_surplus for a in r_art]; z = 3.0, direction = :up).significant
+    @test paired_effect([a.orig_surplus - a.forg_surplus for a in r_art]; z = 3.0, direction = :up).significant
+
+    # P27 (Culture `Di_N`, `L158–159`): inverse-frequency style novelty + unforced exploration break
+    # local-minimum cultural monoculture (`monoculture_share` drops, entropy & cultural value rise).
+    @test paired_effect([m.monoculture_share - d.monoculture_share for (m, d) in zip(r_mono, r_div)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([d.mean_culture_value - m.mean_culture_value for (m, d) in zip(r_mono, r_div)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([d.style_entropy - m.style_entropy for (m, d) in zip(r_mono, r_div)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([d.superior_style_share - m.superior_style_share for (m, d) in zip(r_mono, r_div)];
+                        z = 3.0, direction = :up).significant
+end

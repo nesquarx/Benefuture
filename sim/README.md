@@ -36,7 +36,7 @@ assumptions it still makes, and graduates to them.
 | M5 | Governance: decisions in domains voted with L113 weights (base, domain expertise, impact) and L114 capped liquid delegation (Lean `Voting_weight_ref`, `accumulate_capped_ref`), reputations from an M3c run, normalised within each domain (author ruling 8.22); next, debate on debatable thresholds feeding SigThGv, the uncertainty margin on floors if ratified | `Conj_DelegationDispersed`, B11, B23 | first pass done |
 | M6 | Malicious and gaming agents: inflating measured outcomes, profile gaming, exploit against reveal with bounties and clawbacks, model collusion, Sybil attempts against identity binding, informed falsehood, external aggressors | `Conj_GamingResistance`, `Conj_AdversarialRobustness`, `Conj_GoodhartReduction`, B1–B5, B18, B21 | first pass under way (overpromising, colluding and stealthy voters, AdvAp, laundering, sabotaged outages, forks; decision-market gap, extremised forecasts, whitewashing, on-off, slandering, sybils, Goodhart curve) |
 | M7 | Population change: births, deaths, forks; teaching that shares understanding; research; G per entity (8.50) | `Conj_NoRepugnantDrift`, B15, B17, B19 | deaths (8.47), teaching, research, G per entity, births (8.52), accession & forced additions (8.86) done; forks pending |
-| M8 | Networks; extended-self morality (`defection_harms_extended_self`), multi-hop influence liability & concentration control, end-of-lifespan zero property inheritance with continuing `Self«Sl»`, posthumous `CD`/`Re` & ideological inheritance | B25 | done (networks/B25/morality/influence `P22–P24`; truth/art pending) |
+| M8 | Networks; extended-self morality (`defection_harms_extended_self`), multi-hop influence liability & concentration control, end-of-lifespan zero property inheritance with continuing `Self«Sl»`, posthumous `CD`/`Re` & ideological inheritance; `IHz` gated access; Art reception spread & `Di_N` culture diversity | B21, B25 | done (networks/B21/B25/IHz/Art/Culture `P22–P27`; multi-hop truth/rumor pending) |
 
 ## Coverage of the specification
 
@@ -69,7 +69,8 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Subgoals.Freedom`, `Subgoals.Diversity`, `Epistemology.InfoHandling` | partial | freedom reported per plan (`fr_permissible_ref`, M7); diversity as split trials with novelty bonuses (M5, M6); information handling's ContentionMap and source verification by reputation (M5) |
 | `Subgoals.Morality` | partial | extended-self feedback (`extended_self_feedback_ref`), prediction-time `B25` evaluation (`end_of_horizon_score_ref`, `end_of_horizon_predicted_score_ref`), and M8 network defection/legacy probes (`P22`, `P24`, `m8.jl`) |
 | `Epistemology.InfoHandling` | partial | InfoHazard educational gate (`ihz_access_risk_ref`) paired with `responsibility_factor` (`Informed = true`) & `Truth_lvl` access without censorship (`run_m8_ihz`, `P25`, `B21`, `L127`) |
-| `Subgoals.*` (others), `Epistemology.*` (others), `Ontology.Law`, `Systems.Enforcement` | not yet | art, continuity, multi-hop truth-level propagation, law and enforcement (M6–M8) |
+| `Subgoals.Art` | partial | reception spread match (`art_success_score_ref`), surplus value (`art_surplus_value_ref`), and `Di_N` cultural monoculture escape (`run_m8_art`, `run_m8_culture`, `P26–P27`) |
+| `Subgoals.*` (others), `Epistemology.*` (others), `Ontology.Law`, `Systems.Enforcement` | not yet | continuity, multi-hop truth-level propagation, law and enforcement (M6–M8) |
 | `Systems.Conjectures` | partial | readings in this file; `SimTrace` and the `Conj_*` checks not yet |
 | `Systems.FixedPoint` | not applicable | the simulation uses Float, not the Int fixed point |
 

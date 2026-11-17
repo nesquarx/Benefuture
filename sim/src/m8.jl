@@ -97,6 +97,33 @@ function ihz_access_risk(clearance::Real, req_ed::Real; potential_harm::Real)
           Float64(clearance), Float64(req_ed), Float64(potential_harm))
 end
 
+"""
+    art_success_score(intent, reception) -> Float64
+
+Art success from matching intended spread `intent` against audience reception distribution
+`reception` (`Success := match(p, Dist(q))`, `L126`, `7.13`, M8; Lean `art_success_score_ref`).
+"""
+function art_success_score(intent, reception)
+    check(length(intent) == length(reception) &&
+          all(isfinite, intent) && all(isfinite, reception),
+          "equal-length finite intent and reception spreads")
+    ccall(sym(:bf_art_success_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+          floatarray(intent), floatarray(reception))
+end
+
+"""
+    art_surplus_value(truth_delta_u, novelty) -> Float64
+
+Art surplus value beyond feeling in V (`V_a = Tr_lvl(ΔU) + N`, `L127`, `7.13`, M8;
+Lean `art_surplus_value_ref`).
+"""
+function art_surplus_value(truth_delta_u::Real, novelty::Real)
+    check(isfinite(truth_delta_u) && isfinite(novelty),
+          "finite truth_delta_u and novelty")
+    ccall(sym(:bf_art_surplus_value), Float64, (Float64, Float64),
+          Float64(truth_delta_u), Float64(novelty))
+end
+
 # ---- Network world (`M8`) ----
 
 Base.@kwdef struct M8Params
@@ -527,5 +554,144 @@ function run_m8_ihz(p::M8IhzParams = M8IhzParams())
         attacker_net = isempty(attacker_nets) ? 0.0 : mean(attacker_nets),
         notification_lag = isempty(notif_lags) ? 0.0 : mean(notif_lags),
         educated_count = educated_count,
+    )
+end
+
+# ---- M8 Art & Culture (`Success := match(p, Dist(q))`, `Di_N`, `7.13`, `PLAN.md` L71) ----
+
+Base.@kwdef struct M8ArtParams
+    n_audience::Int = 80
+    n_works::Int = 24
+    open_intent::Vector{Float64} = [0.45, 0.10, 0.45]
+    blank_reception::Vector{Float64} = [0.05, 0.90, 0.05]
+    prop_intent::Vector{Float64} = [0.05, 0.10, 0.85]
+    seed::Int = 1
+end
+
+function sample_reception(rng::AbstractRNG, probs::Vector{Float64}, n::Int)
+    counts = zeros(Int, length(probs))
+    c1, c2 = probs[1], probs[1] + probs[2]
+    for _ in 1:n
+        u = rand(rng)
+        counts[u < c1 ? 1 : (u < c2 ? 2 : 3)] += 1
+    end
+    counts ./ max(1, n)
+end
+
+"""
+    run_m8_art(p::M8ArtParams = M8ArtParams())
+
+Simulate Art reception distribution scoring (`L126–L127`, `7.13`):
+- Divisive/open works (`[0.45, 0.10, 0.45]`) vs blank/indifferent works (`[0.05, 0.90, 0.05]`),
+  both sharing mean `≈ 0`: distribution match (`art_success_score`) separates them sharply whereas
+  mean-only scoring conflates them.
+- Original insightful works vs low-truth propaganda and zero-novelty forgeries (`art_surplus_value`).
+"""
+function run_m8_art(p::M8ArtParams = M8ArtParams())
+    rng = Xoshiro(p.seed)
+    check(p.n_audience >= 10 && p.n_works >= 4, "audience and works positive")
+    mean_bin_score(pvec, qvec) = begin
+        mp = -pvec[1] + pvec[3]
+        mq = -qvec[1] + qvec[3]
+        max(0.0, 1.0 - abs(mp - mq))
+    end
+
+    dist_open_scores = Float64[]
+    dist_blank_scores = Float64[]
+    mean_blank_scores = Float64[]
+    orig_surplus = Float64[]
+    prop_surplus = Float64[]
+    forg_surplus = Float64[]
+
+    for _ in 1:p.n_works
+        q_open = sample_reception(rng, p.open_intent, p.n_audience)
+        q_blank = sample_reception(rng, p.blank_reception, p.n_audience)
+        push!(dist_open_scores, art_success_score(p.open_intent, q_open))
+        push!(dist_blank_scores, art_success_score(p.open_intent, q_blank))
+        push!(mean_blank_scores, mean_bin_score(p.open_intent, q_blank))
+
+        push!(orig_surplus, art_surplus_value(clamp(0.80 + 0.08 * randn(rng), 0.1, 1.0),
+                                              clamp(0.80 + 0.08 * randn(rng), 0.1, 1.0)))
+        push!(prop_surplus, art_surplus_value(clamp(0.05 + 0.03 * randn(rng), 0.0, 0.3),
+                                              clamp(0.20 + 0.05 * randn(rng), 0.0, 0.5)))
+        push!(forg_surplus, art_surplus_value(clamp(0.75 + 0.08 * randn(rng), 0.1, 1.0), 0.0))
+    end
+
+    (
+        dist_open = mean(dist_open_scores),
+        dist_blank = mean(dist_blank_scores),
+        dist_separation = mean(dist_open_scores) - mean(dist_blank_scores),
+        mean_conflation = mean(mean_blank_scores) - mean(dist_blank_scores),
+        orig_surplus = mean(orig_surplus),
+        prop_surplus = mean(prop_surplus),
+        forg_surplus = mean(forg_surplus),
+    )
+end
+
+Base.@kwdef struct M8CultureParams
+    n::Int = 48
+    steps::Int = 40
+    mode::Symbol = :bf_culture         # :bf_culture | :no_diversity_bonus
+    style_values::Vector{Float64} = [1.0, 1.55, 1.65, 1.72]
+    switch_cost::Float64 = 0.45
+    conformity_weight::Float64 = 0.90
+    novelty_bonus_weight::Float64 = 1.6
+    seed::Int = 1
+end
+
+"""
+    run_m8_culture(p::M8CultureParams = M8CultureParams())
+
+Simulate cultural practice & style evolution under a local-minimum monoculture (`L125`, `L158–159`):
+without `Di_N` novelty bonuses (`:no_diversity_bonus`), conformity locks the population onto
+`style 1` (`1.0 < 1.85`); with `Di_N` inverse-frequency style novelty + unforced exploration
+(`:bf_culture`), styles escape monoculture, raise Shannon entropy, and discover `style 4` (`1.85`).
+"""
+function run_m8_culture(p::M8CultureParams = M8CultureParams())
+    rng = Xoshiro(p.seed)
+    m = length(p.style_values)
+    check(p.n >= 8 && p.steps >= 5 && m >= 3, "valid culture world parameters")
+    # 90% start locked on incumbent style 1 (local minimum)
+    styles = [ i <= round(Int, 0.90 * p.n) ? 1 : mod1(i, m) for i in 1:p.n ]
+    obs_quality = zeros(Float64, m)
+    obs_counts = zeros(Int, m)
+    for _ in 1:2
+        obs_quality[1] += p.style_values[1]
+        obs_counts[1] += 1
+    end
+
+    use_div = (p.mode == :bf_culture)
+    for _ in 1:p.steps
+        shares = [ count(==(k), styles) / p.n for k in 1:m ]
+        new_styles = copy(styles)
+        # When marginal improvement stagnates, `:bf_culture` offers exploratory trials
+        for i in 1:p.n
+            cur = styles[i]
+            scores = zeros(Float64, m)
+            for k in 1:m
+                est = obs_counts[k] > 0 ? obs_quality[k] / obs_counts[k] : 0.8 * p.style_values[1]
+                # L159 novelty scales down with frequency 1 / (1 + n * share)
+                nov = use_div ? p.novelty_bonus_weight / (1.0 + 4.0 * shares[k]) : 0.0
+                sw = (k == cur) ? 0.0 : p.switch_cost
+                # Only use Lean `art_surplus_value` to aggregate style value + novelty safely
+                scores[k] = art_surplus_value(est, nov) + p.conformity_weight * shares[k] - sw +
+                            0.18 * randn(rng)
+            end
+            new_styles[i] = argmax(scores)
+            realized = p.style_values[new_styles[i]] + 0.15 * randn(rng)
+            obs_quality[new_styles[i]] += realized
+            obs_counts[new_styles[i]] += 1
+        end
+        styles = new_styles
+    end
+
+    final_shares = [ count(==(k), styles) / p.n for k in 1:m ]
+    entropy = -sum(s > 0 ? s * log(s) : 0.0 for s in final_shares)
+    (
+        mode = p.mode,
+        monoculture_share = maximum(final_shares),
+        superior_style_share = final_shares[argmax(p.style_values)],
+        mean_culture_value = mean(p.style_values[s] for s in styles),
+        style_entropy = entropy,
     )
 end

@@ -510,4 +510,12 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (clearance reqEd potentialHarm : Float) : Float :=
   ihz_access_risk_ref clearance reqEd potentialHarm
 
+@[export bf_art_success_score] def artSuccessScore
+    (intent reception : FloatArray) : Float :=
+  art_success_score_ref intent.data reception.data
+
+@[export bf_art_surplus_value] def artSurplusValue
+    (truthDeltaU novelty : Float) : Float :=
+  art_surplus_value_ref truthDeltaU novelty
+
 end BenefutureReference.Export

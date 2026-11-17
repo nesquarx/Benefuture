@@ -57,6 +57,16 @@ using Statistics
     @test ihz_access_risk(0.8, 1.0; potential_harm = -2.0) == 0.0
     @test_throws ArgumentError ihz_access_risk(NaN, 1.0; potential_harm = 5.0)
     @test_throws ArgumentError ihz_access_risk(0.5, 1.0; potential_harm = Inf)
+
+    # 6. Art reception match & surplus value (`7.13`, `L126-L127`):
+    @test art_success_score([0.45, 0.10, 0.45], [0.45, 0.10, 0.45]) ≈ 1.0
+    @test art_success_score([0.45, 0.10, 0.45], [0.0, 1.0, 0.0]) ≈ 0.10
+    @test art_success_score([1.0, 0.0], [0.0, 1.0]) == 0.0
+    @test art_surplus_value(0.8, 0.6) ≈ 1.4
+    @test art_surplus_value(-0.5, 0.6) ≈ 0.6
+    @test_throws ArgumentError art_success_score([0.5], [0.5, 0.5])
+    @test_throws ArgumentError art_success_score([NaN], [1.0])
+    @test_throws ArgumentError art_surplus_value(NaN, 0.5)
 end
 
 @testset "M8 world invariants: B25 zero financial inheritance, posthumous attribution & power dispersion" begin
@@ -84,5 +94,15 @@ end
     @test open_u.accidental_harm > 0.0
     @test cens.useful_access == 0.0
     @test gated.useful_access > cens.useful_access
+
+    # Art spread separation & Di_N cultural monoculture escape
+    art = run_m8_art(M8ArtParams(seed = 7))
+    @test art.dist_open > art.dist_blank
+    @test art.orig_surplus > art.prop_surplus
+    @test art.orig_surplus > art.forg_surplus
+    c_mono = run_m8_culture(M8CultureParams(mode = :no_diversity_bonus, seed = 7))
+    c_div = run_m8_culture(M8CultureParams(mode = :bf_culture, seed = 7))
+    @test c_div.monoculture_share < c_mono.monoculture_share
+    @test c_div.mean_culture_value > c_mono.mean_culture_value
 end
 

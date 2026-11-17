@@ -460,3 +460,19 @@ def end_of_horizon_predicted_score_ref
 def ihz_access_risk_ref (clearance reqEd potentialHarm : Float) : Float :=
   if clearance >= reqEd then 0.0
   else if potentialHarm > 0.0 then potentialHarm else 0.0
+
+/-- Art success from matching intended spread `intent` against realised reception spread
+    `reception` (`Success := match(p, Dist(q))`, `L126`, `7.13`, M8): `max 0 (1 - Σ |p_k - q_k| / 2)`. -/
+def art_success_score_ref (intent reception : Array Float) : Float := Id.run do
+  let n := min intent.size reception.size
+  let mut l1 := 0.0
+  for i in [0 : n] do
+    l1 := l1 + Float.abs (intent[i]! - reception[i]!)
+  let s := 1.0 - l1 / 2.0
+  return (if s > 0.0 then s else 0.0)
+
+/-- Art surplus value beyond feeling in V (`V_a = Tr_lvl(ΔU) + N`, `L127`, `7.13`, M8). -/
+def art_surplus_value_ref (truthDeltaU novelty : Float) : Float :=
+  let u := if truthDeltaU > 0.0 then truthDeltaU else 0.0
+  let n := if novelty > 0.0 then novelty else 0.0
+  u + n
