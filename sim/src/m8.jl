@@ -1,0 +1,380 @@
+# Toy model M8: social & interdependence networks, multi-hop influence liability & concentration
+# control, extended-self morality (`defection_harms_extended_self`), and end-of-horizon conduct
+# under zero financial inheritance (`B25` / author ruling `7.12`: `Self«Sl»`, posthumous CD,
+# recounted Re, and causal/ideological inheritance continue after `t_end`).
+
+# ---- Rules (Lean reference, `BenefutureReference.Records` & `Subgoals.Morality` / `Ontology.Entity`) ----
+
+"""
+    extended_self_feedback(couplings, deltas) -> Float64
+
+Net feedback transmitted through the actor's extended-self couplings (`L136`, `7.12`, M8;
+Lean `extended_self_feedback_ref`): `Σ max(0, min(1, couplings[k])) * deltas[k]`.
+"""
+function extended_self_feedback(couplings, deltas)
+    check(length(couplings) == length(deltas) &&
+          all(isfinite, couplings) && all(isfinite, deltas),
+          "equal-length finite couplings and deltas")
+    ccall(sym(:bf_extended_self_feedback), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+          floatarray(couplings), floatarray(deltas))
+end
+
+"""
+    propagated_liability(direct_harm, controls) -> Float64
+
+Multi-hop upstream causal liability (`L8`, `7.14`, M8; Lean `propagated_liability_ref`):
+`direct_harm * Π clamp₀₁(controls[j])` when `direct_harm > 0`, else `0.0`.
+"""
+function propagated_liability(direct_harm::Real, controls)
+    check(isfinite(direct_harm) && all(isfinite, controls),
+          "finite direct_harm and controls")
+    ccall(sym(:bf_propagated_liability), Float64, (Float64, Ptr{Cvoid}),
+          Float64(direct_harm), floatarray(controls))
+end
+
+"""
+    end_of_horizon_score(own_remaining, alive, couplings, deltas;
+                         causal_share = 0.0, delayed_outcome = 0.0,
+                         ideological_share = 0.0, ideological_gain = 0.0) -> Float64
+
+End-of-horizon consequential evaluation (`7.12`, `B25`, M8; Lean `end_of_horizon_score_ref`):
+no financial inheritance at death; `own_remaining` counts only while `alive`, whereas
+`extended_self_feedback(couplings, deltas)`, `max(0, causal_share) * delayed_outcome`, and
+`max(0, ideological_share) * ideological_gain` continue.
+"""
+function end_of_horizon_score(own_remaining::Real, alive::Bool, couplings, deltas;
+                              causal_share::Real = 0.0, delayed_outcome::Real = 0.0,
+                              ideological_share::Real = 0.0, ideological_gain::Real = 0.0)
+    check(isfinite(own_remaining) && length(couplings) == length(deltas) &&
+          all(isfinite, couplings) && all(isfinite, deltas) &&
+          all(isfinite, (causal_share, delayed_outcome, ideological_share, ideological_gain)),
+          "finite inputs and equal-length couplings and deltas")
+    ccall(sym(:bf_end_of_horizon_score), Float64,
+          (Float64, UInt8, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+          Float64(own_remaining), UInt8(alive ? 1 : 0),
+          floatarray(couplings), floatarray(deltas),
+          Float64(causal_share), Float64(delayed_outcome),
+          Float64(ideological_share), Float64(ideological_gain))
+end
+
+# ---- Network world (`M8`) ----
+
+Base.@kwdef struct M8Params
+    n::Int = 16
+    steps::Int = 120
+    lifespan::Int = 40
+    horizon_window::Int = 8
+    delay_lag::Int = 10
+    degree::Int = 4
+    coupling_mean::Float64 = 0.35
+    influence_mean::Float64 = 0.45
+    mode::Symbol = :bf                   # :bf | :extended_only | :one_shot | :uncontrolled_hub | :finite_no_legacy
+    delegation_cap::Float64 = 0.20
+    overflow_cap::Float64 = 40.0
+    advap_share::Float64 = 0.25
+    defect_loot::Float64 = 1.6
+    defect_harm::Float64 = 6.0
+    coop_gain::Float64 = 1.0
+    coop_shared::Float64 = 1.8
+    delayed_legacy_gain::Float64 = 2.4
+    opportunist_frac::Float64 = 0.5
+    choice_noise::Float64 = 0.15
+    hub_exploit_gain::Float64 = 2.5
+    hub_proxy_harm::Float64 = 8.0
+    proxy_hops::Int = 3
+    proxy_control::Float64 = 0.65
+    seed::Int = 1
+end
+
+struct DelayedCausalEvent
+    due_step::Int
+    actor_id::Int
+    origin_gen::Int
+    harm_or_gain::Float64
+    is_harm::Bool
+    causal_heirs::Vector{Int}
+    ideological_heirs::Vector{Int}
+end
+
+"""
+    run_m8(p::M8Params = M8Params())
+
+Simulate an `n`-being network world over `steps` ticks testing three M8 claims (`docs/PLAN.md` L68–73):
+1. Extended-self morality (`defection_harms_extended_self`): network couplings turn external harm
+   into self-harm against cooperative baselines.
+2. Multi-hop influence propagation & concentration control (`propagated_liability`, capped delegation,
+   overflow reinvestment, AdvAp reporting) vs an uncontrolled hub with proxy exploitation.
+3. End-of-horizon conduct (`B25`, `7.12`): zero financial inheritance (`inherited_wealth == 0`),
+   while continuing `Self«Sl»`, posthumous `CD` / recounted `Re`, and ideological inheritance remove
+   end-of-life defection spikes vs `:finite_no_legacy`.
+"""
+function run_m8(p::M8Params = M8Params())
+    rng = Xoshiro(p.seed)
+    n = p.n
+    check(n >= 4 && p.steps >= 1 && p.lifespan >= 4 && p.horizon_window >= 1,
+          "valid network size and horizon parameters")
+
+    use_extended = p.mode in (:bf, :extended_only, :uncontrolled_hub)
+    use_cd = p.mode in (:bf, :uncontrolled_hub, :finite_no_legacy)
+    use_influence_liability = p.mode in (:bf, :extended_only, :one_shot, :finite_no_legacy)
+    use_power_caps = p.mode != :uncontrolled_hub
+    use_legacy_b25 = p.mode in (:bf, :extended_only, :uncontrolled_hub)
+
+    # Per-slot state across overlapping finite lifespans
+    birth_step = [ -mod(round(Int, (i - 1) * p.lifespan / n), p.lifespan) for i in 1:n ]
+    death_step = [ birth_step[i] + p.lifespan for i in 1:n ]
+    gen_id = ones(Int, n)
+    reputation = [ 2.0 + 0.3 * rand(rng) for _ in 1:n ]
+    balance = zeros(Float64, n)
+    overflow_total = 0.0
+    inherited_wealth = 0.0
+
+    # Role: opportunists test whether defection or proxy extraction pays
+    is_opportunist = [ i <= round(Int, p.opportunist_frac * n) for i in 1:n ]
+    hub_actor = 1
+
+    # Directed extended-self coupling matrix & ideological / causal successor graph
+    couplings = zeros(Float64, n, n)
+    if use_extended
+        for i in 1:n
+            targets = filter(!=(i), 1:n)
+            perm = randperm(rng, length(targets))
+            for k in 1:min(p.degree, length(perm))
+                j = targets[perm[k]]
+                couplings[i, j] = clamp(p.coupling_mean * (0.6 + 0.8 * rand(rng)), 0.05, 0.95)
+            end
+        end
+    end
+
+    # Directed delegation/influence preferences toward high-reputation nodes (node 1 starts highest
+    # to stress concentration in `:uncontrolled_hub`)
+    reputation[hub_actor] = use_power_caps ? 2.5 : 8.0
+    delegate_target = zeros(Int, n)
+    for i in 1:n
+        if i != hub_actor
+            delegate_target[i] = (rand(rng) < (use_power_caps ? 0.45 : 0.90)) ? hub_actor : mod1(i + 1, n)
+        end
+    end
+
+    delayed_queue = DelayedCausalEvent[]
+
+    coop_nets = Float64[]
+    defect_nets = Float64[]
+    mid_defects = 0
+    mid_trials = 0
+    eol_defects = 0
+    eol_trials = 0
+    eol_legacy_invests = 0
+    posthumous_cd_events = 0
+    posthumous_re_updates = 0
+    total_harm = 0.0
+    hub_proxy_nets = Float64[]
+    advap_reports = 0
+    top_share_trace = Float64[]
+
+    for t in 1:p.steps
+        # 1. Process lifespan transitions: zero financial inheritance, keep ideological & CD links
+        for i in 1:n
+            if t >= death_step[i]
+                # Explicitly no financial inheritance: accumulated estate does not pass to successor
+                inherited_wealth += 0.0
+                overflow_total += max(0.0, balance[i])
+                balance[i] = 0.0
+                birth_step[i] = t
+                death_step[i] = t + p.lifespan
+                gen_id[i] += 1
+                # Ideological / knowledge inheritance resets reputation partially from mentor record
+                # while keeping causal history linked; property balance starts at 0.
+                reputation[i] = use_legacy_b25 ? max(0.5, 0.4 * reputation[i]) : 1.0
+                if use_extended
+                    targets = filter(!=(i), 1:n)
+                    perm = randperm(rng, length(targets))
+                    couplings[i, :] .= 0.0
+                    for k in 1:min(p.degree, length(perm))
+                        couplings[i, targets[perm[k]]] = clamp(p.coupling_mean * (0.6 + 0.8 * rand(rng)), 0.05, 0.95)
+                    end
+                end
+            end
+        end
+
+        # 2. Deliver due delayed causal distribution events (including posthumous CD & recounted Re)
+        still_pending = DelayedCausalEvent[]
+        for ev in delayed_queue
+            if ev.due_step <= t
+                posthumous = (gen_id[ev.actor_id] != ev.origin_gen)
+                if posthumous && use_legacy_b25
+                    posthumous_cd_events += 1
+                    posthumous_re_updates += 1
+                end
+                if use_legacy_b25 || !posthumous
+                    delta = ev.is_harm ? -ev.harm_or_gain : ev.harm_or_gain
+                    reputation[ev.actor_id] = max(0.0, reputation[ev.actor_id] + 0.15 * delta)
+                    if !isempty(ev.causal_heirs)
+                        share = delta / length(ev.causal_heirs)
+                        for h in ev.causal_heirs
+                            balance[h] += 0.35 * share
+                        end
+                    end
+                    if !ev.is_harm && !isempty(ev.ideological_heirs)
+                        share = 0.25 * ev.harm_or_gain / length(ev.ideological_heirs)
+                        for h in ev.ideological_heirs
+                            reputation[h] += 0.1 * share
+                        end
+                    end
+                end
+            else
+                push!(still_pending, ev)
+            end
+        end
+        delayed_queue = still_pending
+
+        # 3. Governance / influence weight distribution & concentration check
+        rel_rep = relative_reputation(max.(0.1, reputation))
+        raw_weights = [ voting_weight(1.0, 1.0, [1.0], [max(0.0, rel_rep[i])], 0.0, 0.0;
+                                      optional_below = 0.0, need_optional = false)[1] for i in 1:n ]
+        if use_power_caps
+            total_w = sum(raw_weights)
+            eff_w = copy(raw_weights)
+            cap = max(1e-6, p.delegation_cap * total_w)
+            deleg_pool = zeros(Float64, n)
+            for i in 1:n
+                d = delegate_target[i]
+                if d != i && d >= 1
+                    avail = accumulate_capped(cap, deleg_pool[d], [0.5 * raw_weights[i]])
+                    added = avail - deleg_pool[d]
+                    deleg_pool[d] = avail
+                    eff_w[i] -= added
+                    eff_w[d] += added
+                end
+            end
+        else
+            eff_w = copy(raw_weights)
+            for i in 1:n
+                d = delegate_target[i]
+                if d != i && d >= 1
+                    shift = 0.85 * eff_w[i]
+                    eff_w[i] -= shift
+                    eff_w[d] += shift
+                end
+            end
+        end
+        push!(top_share_trace, maximum(eff_w) / max(1e-12, sum(eff_w)))
+
+        # 4. Per-being decisions (cooperate vs defect; delayed legacy action near EOL)
+        for i in 1:n
+            rem = death_step[i] - t
+            near_eol = rem <= p.horizon_window
+            alive_at_delay = rem > p.delay_lag
+            cvec = Float64[]
+            d_coop = Float64[]
+            d_def = Float64[]
+            heirs = Int[]
+            for j in 1:n
+                if j != i && couplings[i, j] > 0
+                    push!(cvec, couplings[i, j])
+                    push!(d_coop, p.coop_shared / max(1, p.degree))
+                    push!(d_def, -p.defect_harm / max(1, p.degree))
+                    push!(heirs, j)
+                end
+            end
+            # Even when couplings are zero (one-shot / finite_no_legacy baselines), evaluate
+            # Lean rule directly so both arms share one code path.
+            causal_sh = use_cd ? ((use_legacy_b25 || alive_at_delay) ? 0.55 : 0.0) : 0.0
+            ideo_sh = use_cd ? ((use_legacy_b25 || alive_at_delay) ? 0.40 : 0.0) : 0.0
+            eval_cvec = use_extended ? cvec : zeros(Float64, length(cvec))
+
+            coop_eval = end_of_horizon_score(p.coop_gain, true, eval_cvec, d_coop;
+                                             causal_share = causal_sh,
+                                             delayed_outcome = p.delayed_legacy_gain,
+                                             ideological_share = ideo_sh,
+                                             ideological_gain = p.delayed_legacy_gain) +
+                        p.choice_noise * randn(rng)
+            def_eval = end_of_horizon_score(p.defect_loot, true, eval_cvec, d_def;
+                                            causal_share = causal_sh,
+                                            delayed_outcome = -p.defect_harm,
+                                            ideological_share = ideo_sh,
+                                            ideological_gain = -0.5 * p.defect_harm) +
+                       p.choice_noise * randn(rng)
+
+            chose_defect = is_opportunist[i] ? (def_eval > coop_eval) : false
+
+            if near_eol
+                eol_trials += 1
+                chose_defect && (eol_defects += 1)
+                !chose_defect && (eol_legacy_invests += 1)
+            else
+                mid_trials += 1
+                chose_defect && (mid_defects += 1)
+            end
+
+            if chose_defect
+                # Realized network impact (physical couplings transmit external harm whenever network exists)
+                ext_c = (p.mode == :one_shot) ? zeros(Float64, length(cvec)) : cvec
+                realized_ext = extended_self_feedback(ext_c, d_def)
+                cd_back = causal_sh * (-p.defect_harm)
+                realized_net = p.defect_loot + realized_ext + cd_back
+                push!(defect_nets, realized_net)
+                balance[i] += p.defect_loot + (use_extended ? realized_ext : 0.0)
+                total_harm += p.defect_harm
+                push!(delayed_queue, DelayedCausalEvent(t + p.delay_lag, i, gen_id[i], p.defect_harm,
+                                                        true, heirs, heirs))
+            else
+                ext_c = (p.mode == :one_shot) ? zeros(Float64, length(cvec)) : cvec
+                realized_ext = extended_self_feedback(ext_c, d_coop)
+                cd_gain = (causal_sh + ideo_sh) * p.delayed_legacy_gain
+                realized_net = p.coop_gain + realized_ext + cd_gain
+                push!(coop_nets, realized_net)
+                balance[i] += p.coop_gain
+                reputation[i] += 0.1
+                push!(delayed_queue, DelayedCausalEvent(t + p.delay_lag, i, gen_id[i], p.delayed_legacy_gain,
+                                                        false, heirs, heirs))
+            end
+
+            if use_power_caps && balance[i] > p.overflow_cap
+                ov = balance[i] - p.overflow_cap
+                overflow_total += ov
+                balance[i] = p.overflow_cap
+            end
+        end
+
+        # 5. Multi-hop hub proxy exploitation attempt (direct harm on controller is 0; subordinate
+        # chain causes `harm_t`). Under Bf, `propagated_liability` + AdvAp whistleblowers
+        # turn proxy harm back onto the hub.
+        ctrls = [ clamp(p.proxy_control + 0.06 * randn(rng), 0.1, 0.95) for _ in 1:p.proxy_hops ]
+        harm_t = max(0.0, p.hub_proxy_harm + 1.0 * randn(rng))
+        gain_t = max(0.0, p.hub_exploit_gain + 0.25 * randn(rng))
+        liab = use_influence_liability ? propagated_liability(harm_t, ctrls) : 0.0
+        adv_bounty = use_power_caps ? advap_reward(0.0, harm_t; share = p.advap_share, floor = 0.25) : 0.0
+        adv_charge = use_power_caps ? advap_liability(adv_bounty; audit_cost = 0.2) : 0.0
+        hub_net = gain_t - liab - (use_influence_liability ? adv_charge : 0.0)
+        push!(hub_proxy_nets, hub_net)
+        if use_power_caps && use_influence_liability && harm_t > 0
+            advap_reports += 1
+        end
+    end
+
+    mean_coop = isempty(coop_nets) ? 0.0 : mean(coop_nets)
+    mean_def = isempty(defect_nets) ? (p.defect_loot - p.defect_harm) : mean(defect_nets)
+    eol_rate = eol_trials > 0 ? eol_defects / eol_trials : 0.0
+    mid_rate = mid_trials > 0 ? mid_defects / mid_trials : 0.0
+    total_defect_rate = (eol_defects + mid_defects) / max(1, eol_trials + mid_trials)
+    (
+        mode = p.mode,
+        coop_net = mean_coop,
+        defect_net = mean_def,
+        coop_advantage = mean_coop - mean_def,
+        defect_rate = total_defect_rate,
+        eol_defect_rate = eol_rate,
+        mid_defect_rate = mid_rate,
+        eol_excess = eol_rate - mid_rate,
+        eol_legacy_invests = eol_legacy_invests,
+        posthumous_cd_events = posthumous_cd_events,
+        posthumous_re_updates = posthumous_re_updates,
+        inherited_wealth = inherited_wealth,
+        overflow_total = overflow_total,
+        total_harm = total_harm,
+        hub_proxy_net = mean(hub_proxy_nets),
+        top_influence_share = mean(top_share_trace),
+        advap_reports = advap_reports,
+    )
+end

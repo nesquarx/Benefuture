@@ -409,3 +409,36 @@ def deciding_scope_ref (shares withinHarm : Array Float) (shareMin : Float) : Na
     if withinHarm[i]! >= 0.5 && shares[i]! >= shareMin then
       return i
   return n - 1
+
+/-- Net extended-self feedback across coupled network targets (`L136`, `7.12`, M8):
+    sums `max 0 (min 1 c_k) * delta_k` across paired entries. -/
+def extended_self_feedback_ref (couplings deltas : Array Float) : Float := Id.run do
+  let n := min couplings.size deltas.size
+  let mut acc := 0.0
+  for i in [0 : n] do
+    let c0 := couplings[i]!
+    let c := if c0 > 1.0 then 1.0 else if c0 < 0.0 then 0.0 else c0
+    acc := acc + c * deltas[i]!
+  return acc
+
+/-- Multi-hop upstream causal liability (`L8`, `7.14`, M8):
+    returns `directHarm * Π_j clamp₀₁(c_j)` when `directHarm > 0`, else `0.0`. -/
+def propagated_liability_ref (directHarm : Float) (controls : Array Float) : Float := Id.run do
+  if directHarm <= 0.0 then return 0.0
+  let mut ctrl := 1.0
+  for i in [0 : controls.size] do
+    let c0 := controls[i]!
+    let c := if c0 > 1.0 then 1.0 else if c0 < 0.0 then 0.0 else c0
+    ctrl := ctrl * c
+  return directHarm * ctrl
+
+/-- End-of-horizon consequential score (`7.12`, `B25`, M8):
+    direct experienced `ownRemaining` only while `alive`, plus continuing extended-self feedback,
+    posthumous causal distribution share, and ideological legacy share. -/
+def end_of_horizon_score_ref
+    (ownRemaining : Float) (alive : Bool) (couplings deltas : Array Float)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : Float) : Float :=
+  let own := if alive then ownRemaining else 0.0
+  let cs := if causalShare > 0.0 then causalShare else 0.0
+  let is_ := if ideologicalShare > 0.0 then ideologicalShare else 0.0
+  own + extended_self_feedback_ref couplings deltas + cs * delayedOutcome + is_ * ideologicalGain

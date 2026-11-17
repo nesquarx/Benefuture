@@ -2713,3 +2713,52 @@ end
     @test all(r -> r.shadow_promoted && r.promotion_epoch >= 5 && r.promotion_time >= 2, rc_add)
     @test paired_effect([a.success.floor_u - b.success.floor_u for (a, b) in zip(rc_add, rc_none)]; z = 3.0, direction = :up).significant
 end
+
+# ---- M8 Networks: Extended Self Morality, Multi-Hop Influence Liability & End-of-Horizon B25 ----
+
+@testset "Probe: M8 extended-self morality, multi-hop influence control & B25 end-of-horizon (P22–P24)" begin
+    seeds = 1:16
+    r_one = [run_m8(M8Params(mode = :one_shot, seed = s)) for s in seeds]
+    r_ext = [run_m8(M8Params(mode = :extended_only, seed = s)) for s in seeds]
+    r_hub = [run_m8(M8Params(mode = :uncontrolled_hub, seed = s)) for s in seeds]
+    r_fin = [run_m8(M8Params(mode = :finite_no_legacy, seed = s)) for s in seeds]
+    r_bf  = [run_m8(M8Params(mode = :bf, seed = s)) for s in seeds]
+
+    # P22 (Morality, `defection_harms_extended_self`): pure uncoupled one-shot lets opportunists
+    # extract positive defection loot (`defect_rate` high); extended-self network couplings flip
+    # defection net negative and crush defection vs `:one_shot` (`z = 3.0`).
+    @test paired_effect([b.defect_rate - e.defect_rate for (b, e) in zip(r_one, r_ext)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([e.coop_advantage - b.coop_advantage for (b, e) in zip(r_one, r_ext)];
+                        z = 3.0, direction = :up).significant
+    @test all(e -> e.coop_net > e.defect_net, r_ext)
+
+    # P23 (Power & Influence, `7.14`, L8/L114): multi-hop `propagated_liability` + capped delegation +
+    # overflow + AdvAp disperse hub concentration and make multi-hop proxy exploitation unprofitable.
+    @test paired_effect([h.top_influence_share - bf.top_influence_share for (h, bf) in zip(r_hub, r_bf)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([h.hub_proxy_net - bf.hub_proxy_net for (h, bf) in zip(r_hub, r_bf)];
+                        z = 3.0, direction = :up).significant
+    @test all(bf -> bf.hub_proxy_net < 0 && bf.advap_reports > 0, r_bf)
+    @test all(h -> h.hub_proxy_net > 0, r_hub)
+
+    # P24 (`B25`, `7.12` End-of-horizon conduct): zero financial inheritance (`inherited_wealth == 0`),
+    # while continuing `Self«Sl»`, posthumous CD, recounted Re, and ideological transmission eliminate
+    # finite-horizon end-of-life defection spikes vs `:finite_no_legacy`.
+    @test all(bf -> bf.inherited_wealth == 0.0 && bf.posthumous_cd_events > 0 && bf.posthumous_re_updates > 0, r_bf)
+    @test paired_effect([f.eol_excess - bf.eol_excess for (f, bf) in zip(r_fin, r_bf)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([f.eol_defect_rate - bf.eol_defect_rate for (f, bf) in zip(r_fin, r_bf)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([bf.eol_legacy_invests - f.eol_legacy_invests for (f, bf) in zip(r_fin, r_bf)];
+                        z = 3.0, direction = :up).significant
+    @test equivalent([bf.eol_excess for bf in r_bf]; margin = 0.03, z = 3.0).equivalent
+
+    # Heavy choice-noise stress check (P22/P24 remain robust when decisions carry σ = 0.70 noise)
+    n_one = [run_m8(M8Params(mode = :one_shot, choice_noise = 0.70, coupling_mean = 0.25, seed = s)) for s in seeds]
+    n_fin = [run_m8(M8Params(mode = :finite_no_legacy, choice_noise = 0.70, coupling_mean = 0.25, seed = s)) for s in seeds]
+    n_bf  = [run_m8(M8Params(mode = :bf, choice_noise = 0.70, coupling_mean = 0.25, seed = s)) for s in seeds]
+    @test paired_effect([o.defect_rate - b.defect_rate for (o, b) in zip(n_one, n_bf)]; z = 3.0, direction = :up).significant
+    @test paired_effect([f.eol_excess - b.eol_excess for (f, b) in zip(n_fin, n_bf)]; z = 3.0, direction = :up).significant
+    @test equivalent([b.eol_excess for b in n_bf]; margin = 0.03, z = 3.0).equivalent
+end

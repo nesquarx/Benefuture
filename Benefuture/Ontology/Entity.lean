@@ -12,6 +12,8 @@
   "E(t) := T ↔ I(t) + Sp > 0;"
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Benefuture.Ontology.Thing
 import Benefuture.Ontology.Reality
 import Benefuture.Ontology.Domain
@@ -531,6 +533,70 @@ theorem external_response_always_repairable (incoming forgiveness : Int) :
     (calculate_external_defense incoming forgiveness).2 = true := by
   dsimp [calculate_external_defense, calculate_defensive_action]
   rfl
+
+/-! ## Multi-Hop Influence Propagation & Liability (M8, `L8`, `7.14`) -/
+
+/-- Effective control factor along a multi-hop delegation/influence chain `[c₁, c₂, …]`
+    where each hop control is clamped to `[0, 1]`. -/
+noncomputable def propagated_control : List ℝ → ℝ
+  | [] => 1
+  | c :: cs => max 0 (min 1 c) * propagated_control cs
+
+/-- Multi-hop upstream causal liability (`L8`, M8 extension of `calculate_influencer_liability`):
+    an influencer directing downstream entities across control chain `controls` incurs
+    attenuated causal liability `directHarm * Π_j clamp₀₁(c_j)` whenever `directHarm > 0`. -/
+noncomputable def propagated_liability (directHarm : ℝ) (controls : List ℝ) : ℝ :=
+  if directHarm ≤ 0 then 0 else directHarm * propagated_control controls
+
+theorem propagated_control_nonneg (controls : List ℝ) :
+    0 ≤ propagated_control controls := by
+  induction controls with
+  | nil => simp [propagated_control]
+  | cons c cs ih =>
+    unfold propagated_control
+    exact mul_nonneg (le_max_left 0 _) ih
+
+theorem propagated_control_le_one (controls : List ℝ) :
+    propagated_control controls ≤ 1 := by
+  induction controls with
+  | nil => simp [propagated_control]
+  | cons c cs ih =>
+    unfold propagated_control
+    have h0 : 0 ≤ max (0 : ℝ) (min 1 c) := le_max_left 0 _
+    have h1 : max (0 : ℝ) (min 1 c) ≤ 1 := max_le (by norm_num) (min_le_left 1 c)
+    nlinarith [propagated_control_nonneg cs]
+
+theorem propagated_liability_nonneg (directHarm : ℝ) (controls : List ℝ) :
+    0 ≤ propagated_liability directHarm controls := by
+  unfold propagated_liability
+  split_ifs with h
+  · exact le_refl 0
+  · exact mul_nonneg (le_of_not_ge h) (propagated_control_nonneg controls)
+
+theorem propagated_liability_le_harm (directHarm : ℝ) (controls : List ℝ)
+    (h_nonneg : 0 ≤ directHarm) :
+    propagated_liability directHarm controls ≤ directHarm := by
+  unfold propagated_liability
+  split_ifs with h
+  · linarith
+  · have h1 := propagated_control_le_one controls
+    nlinarith
+
+theorem propagated_liability_pos (directHarm : ℝ) (controls : List ℝ)
+    (h_harm : 0 < directHarm) (h_ctrl : ∀ c ∈ controls, 0 < c) :
+    0 < propagated_liability directHarm controls := by
+  unfold propagated_liability
+  have hnot : ¬ directHarm ≤ 0 := by linarith
+  simp only [hnot, ↓reduceIte]
+  refine mul_pos h_harm ?_
+  induction controls with
+  | nil => simp [propagated_control]
+  | cons c cs ih =>
+    unfold propagated_control
+    have hc : 0 < c := h_ctrl c (List.Mem.head cs)
+    have hc_clamp : 0 < max (0 : ℝ) (min 1 c) :=
+      lt_of_lt_of_le (lt_min (by norm_num) hc) (le_max_right _ _)
+    exact mul_pos hc_clamp (ih (fun x hx => h_ctrl x (List.Mem.tail c hx)))
 
 abbrev E := Entity
 abbrev I := Interaction

@@ -485,4 +485,19 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (shares withinHarm : FloatArray) (shareMin : Float) : UInt64 :=
   (deciding_scope_ref shares.data withinHarm.data shareMin).toUInt64
 
+-- M8 (`7.12`, `7.14`, `B25`): extended-self feedback, multi-hop influence liability, end-of-horizon score
+@[export bf_extended_self_feedback] def extendedSelfFeedback
+    (couplings deltas : FloatArray) : Float :=
+  extended_self_feedback_ref couplings.data deltas.data
+
+@[export bf_propagated_liability] def propagatedLiability
+    (directHarm : Float) (controls : FloatArray) : Float :=
+  propagated_liability_ref directHarm controls.data
+
+@[export bf_end_of_horizon_score] def endOfHorizonScore
+    (ownRemaining : Float) (alive : UInt8) (couplings deltas : FloatArray)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : Float) : Float :=
+  end_of_horizon_score_ref ownRemaining (alive != 0) couplings.data deltas.data
+    causalShare delayedOutcome ideologicalShare ideologicalGain
+
 end BenefutureReference.Export

@@ -250,7 +250,7 @@ Status: resolved as a rule (both halves). The expertise half is resolved by 8.22
 Lean `relative_expertise` in `Governance.Democracy`). End-of-horizon conduct (B25) is settled as a rule
 by 7.12 (author ruling): there is no financial inheritance, but (1) ideological and causal inheritance
 continue, and (2) the extended self (`Self«Sl»`) contains things and relations that outlast the being
-(`docs/SIM_CONJECTURES.md` B25; only the M8 simulation test of B25 remains unrun).
+(`docs/SIM_CONJECTURES.md` B25; now tested in M8 simulation `m8-extended-self-and-b25`, `sim/src/m8.jl` + `probe_tests.jl` `P24`).
 
 **7.12 Self, lifespan and inheritance.** The self's harm horizon is the long-term window:
 `Self«Sl» : ∃fuzzy(max(T ∈ ℝ) : Ha(Sl) = Ha_lt(B))` (all three pseudocode copies), so the self
@@ -4308,3 +4308,16 @@ Implemented mid-run progressive-complexity world events (`shock` kinds in `sim/s
 - **Local verification (Julia `1.13.4`):** `BF_TIER=fast` (`probe_tests.jl` `1059/1059` + all 10 fast files) and `BF_SHARD=5` (`107 + 369 + 204`) exited `0`; full `fast` + `full (1..8)` CI confirmation awaits push.
 
 - Renumbering (2026-11-17): the threshold-classification ruling the local agent recorded as 8.161 is 8.164 (8.161 is the entities ruling, 2026-11-15); references updated in records, battery scripts and results.
+
+### M8 Networks: Extended Self Morality, Multi-Hop Influence Liability & End-of-Horizon `B25` (`m8-extended-self-and-b25`, 2026-11-17)
+
+Implemented the first M8 network tier spanning extended-self couplings, multi-hop upstream influence liability & power dispersion, and end-of-horizon `B25` / `7.12` continuity:
+- **Lean specifications & differential bridges (`Benefuture`, `BenefutureReference`, `BenefutureTest`, `469` theorems total, `159` C exports, `30` differential suites):**
+  - `Benefuture/Ontology/Entity.lean`: formalized `propagated_control` and `propagated_liability` with 5 proofs (`propagated_control_nonneg`, `propagated_control_le_one`, `propagated_liability_nonneg`, `propagated_liability_le_harm`, `propagated_liability_pos`).
+  - `Benefuture/Subgoals/Morality.lean`: formalized `extended_self_feedback` and `end_of_horizon_score` with 5 proofs (`extended_self_feedback_zero_couplings`, `extended_self_feedback_nonpos`, `extended_self_feedback_neg_of_harm`, `end_of_horizon_dead_drops_own`, `end_of_horizon_dead_defection_neg`).
+  - `BenefutureReference/{Records,Export}.lean` & `BenefutureTest/Differential.lean`: added `extended_self_feedback_ref`, `propagated_liability_ref`, `end_of_horizon_score_ref`, C exports `bf_*`, `ℚ_spec` bridge theorems (`extendedSelfFeedbackQ_spec`, `propagatedControlQ_spec`, `propagatedLiabilityQ_spec`, `endOfHorizonScoreQ_spec`), and `400/400` differential cases agreeing across all 3 rules (`400/400` in Julia `differential_tests.jl` as well).
+- **M8 network world & `z = 3.0` probes (`sim/src/m8.jl`, `sim/test/{m8_tests,probe_tests,runtests}.jl`, `1:16` paired seeds):**
+  - **`P22` (Morality, `defection_harms_extended_self`):** uncoupled `:one_shot` opportunists defect (`defect_rate = 0.499`), whereas `:extended_only` network couplings drive defection to `0.0` (`coop_advantage +6.6299 ± 0.0027`), holding under heavy choice noise (`σ = 0.70`: `0.3630 -> 0.0`, `z = 193.78`).
+  - **`P23` (Power & Influence, `7.14`, L8/L114):** multi-hop `propagated_liability` + capped delegation + overflow + AdvAp disperse hub concentration (`top_influence_share 0.8459 -> 0.2464`, `-0.5995 ± 0.0114`, `z = 52.39`) and make 3-hop proxy extraction unprofitable (`hub_proxy_net +2.4959 -> -1.9053`, `-4.4012 ± 0.0152`, `z = 289.81`).
+  - **`P24` (`B25`, `7.12` End-of-horizon conduct):** with zero financial property inheritance everywhere (`inherited_wealth == 0.0`), continuing `Self«Sl»`, posthumous `CD` / recounted `Re`, and ideological inheritance remove the finite-horizon end-of-life defection spike seen in `:finite_no_legacy` (`eol_excess +0.4681 ± 0.0003` -> `0.0000`, `equivalent ± 0.03`; `+0.3451 ± 0.0036` under `choice_noise = 0.70`, `eol_legacy_invests +191.69 ± 0.12`).
+- **Verification scope:** `lake build` (`2066` jobs), `lake build BenefutureTest` (`2019` jobs), `BenefutureReference:shared` (`28` jobs), Python doc/theorem checks (`theorem_index.py`, `check_readme_claims.py`, `check_article_refs.py`, `check_pseudocode_lines.py`), and Julia `1.13.4` `BF_TIER=fast` (`probe_tests.jl` `1074/1074`, `m8_tests.jl` `26/26`, `differential_tests.jl` `24/24`, all 12 fast files), `BF_SHARD=2` (`m6_attacks_tests.jl` `109/109`, `m8_tests.jl` `26/26`), and `BF_SHARD=8` (`world_tests.jl` `1191/1191`) plus Julia `1.11.3` `m8_tests.jl` (`26/26`) exited `0`; full GitHub Actions CI (`fast` + `full 1..8`) runs on push.

@@ -25,6 +25,7 @@ export count_once, tagged_reading, tags_falsified, undisclosed_echo, echo_influe
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit, cached, code_hash, battery_methods, write_methods, ProgressTracker, progress_tracker, progress_tick!, progress_finish!
 export CALIBRATED, draw_skills, lognormal_mean1, pareto_median1
 export run_m7, teaching_plan, personhood, base_vote, run_population_identities, run_population_world
+export extended_self_feedback, propagated_liability, end_of_horizon_score, M8Params, run_m8
 export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth_escrow, birth_accrued_escrow, pending_escrow_loss, accession_admissible, Newborn, PopPlan, pop_value, pop_choose, run_births
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, recount_μ, recount_models, recount_cc, Shock, shock, run_coupled, StatusQuoParams, run_status_quo
 export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, load_case_records, HistoricalCaseRecord, replay_decision, evaluate_replay_suite, replay_baselines, replay_scores, replay_sensitivity, replay_rule_battery, replay_credence, replay_credence_stats, contrast_check, QuantileForecastRecord, QuantileStore, replay_quantile_forecasts, load_archive_store, window_scores, rolling_report
@@ -53,6 +54,7 @@ include("m5.jl")
 include("coupled.jl")
 include("status_quo.jl")
 include("m7.jl")
+include("m8.jl")
 include("programmes.jl")
 include("counterfactual.jl")
 include("replay.jl")

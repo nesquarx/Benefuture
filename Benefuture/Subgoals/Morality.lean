@@ -5,6 +5,8 @@
   "Morality«Mr» := U(P(∃I(Sl↔ℝ) : CC(I → O(Sl)) = 0) ≈ 0 | Memory(Sl) ⊆ O(Sl)), 1shotGame ⊆ 𝕌 − ℝ;"
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Benefuture.Ontology.Being
 import Benefuture.Ontology.Reality
 
@@ -99,6 +101,92 @@ theorem interaction_permanently_in_memory (memHistory : List String) (interactio
     memory_records_interaction (interactionId :: memHistory) interactionId := by
   unfold memory_records_interaction
   exact List.Mem.head memHistory
+
+/-! ## Real-Valued Extended Self Feedback & End-of-Horizon Score (`7.12`, `B25`, M8) -/
+
+/-- Net extended-self feedback transmitted across coupled targets `[(c_k, Δ_k)]` (`L136`, `7.12`):
+    each coupling weight `c` is clamped to `[0, 1]` and multiplies target outcome delta `d`. -/
+noncomputable def extended_self_feedback : List ℝ → List ℝ → ℝ
+  | c :: cs, d :: ds => max 0 (min 1 c) * d + extended_self_feedback cs ds
+  | _, _ => 0
+
+/-- Total consequential score across a being's horizon (`7.12`, `B25`):
+    - No financial property inheritance when `alive = false`; lifespan bounds experienced `ownRemaining`.
+    - Extended self (`Self«Sl»`) couplings continue to transmit coupled outcomes.
+    - Posthumous Causal Distribution (`CD`) and ideological inheritance keep attributing delayed
+      causal outcomes and ideological legacy gains to the actor's record and heirs. -/
+noncomputable def end_of_horizon_score
+    (ownRemaining : ℝ) (alive : Bool) (couplings deltas : List ℝ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ) : ℝ :=
+  (if alive then ownRemaining else 0) +
+  extended_self_feedback couplings deltas +
+  max 0 causalShare * delayedOutcome +
+  max 0 ideologicalShare * ideologicalGain
+
+theorem extended_self_feedback_zero_couplings (couplings deltas : List ℝ)
+    (h_zero : ∀ c ∈ couplings, c ≤ 0) :
+    extended_self_feedback couplings deltas = 0 := by
+  induction couplings generalizing deltas with
+  | nil => simp [extended_self_feedback]
+  | cons c cs ih =>
+    cases deltas with
+    | nil => simp [extended_self_feedback]
+    | cons d ds =>
+      unfold extended_self_feedback
+      have hc : c ≤ 0 := h_zero c (List.Mem.head cs)
+      have hmin : min (1 : ℝ) c ≤ 0 := min_le_of_right_le hc
+      have hmax : max (0 : ℝ) (min 1 c) = 0 := max_eq_left hmin
+      rw [hmax, zero_mul, zero_add]
+      exact ih ds (fun x hx => h_zero x (List.Mem.tail c hx))
+
+theorem extended_self_feedback_nonpos (couplings deltas : List ℝ)
+    (h_harm : ∀ d ∈ deltas, d ≤ 0) :
+    extended_self_feedback couplings deltas ≤ 0 := by
+  induction couplings generalizing deltas with
+  | nil => simp [extended_self_feedback]
+  | cons c cs ih =>
+    cases deltas with
+    | nil => simp [extended_self_feedback]
+    | cons d ds =>
+      unfold extended_self_feedback
+      have h1 : max (0 : ℝ) (min 1 c) * d ≤ 0 :=
+        mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) (h_harm d (List.Mem.head ds))
+      have h2 := ih ds (fun x hx => h_harm x (List.Mem.tail d hx))
+      linarith
+
+theorem extended_self_feedback_neg_of_harm
+    (c d : ℝ) (cs ds : List ℝ) (hc : 0 < c) (hd : d < 0)
+    (h_rest : ∀ x ∈ ds, x ≤ 0) :
+    extended_self_feedback (c :: cs) (d :: ds) < 0 := by
+  unfold extended_self_feedback
+  have hc_pos : 0 < max (0 : ℝ) (min 1 c) :=
+    lt_of_lt_of_le (lt_min (by norm_num) hc) (le_max_right _ _)
+  have hhead : max (0 : ℝ) (min 1 c) * d < 0 := mul_neg_of_pos_of_neg hc_pos hd
+  have htail := extended_self_feedback_nonpos cs ds h_rest
+  linarith
+
+theorem end_of_horizon_dead_drops_own
+    (own₁ own₂ : ℝ) (couplings deltas : List ℝ)
+    (cs dOut is_ iGain : ℝ) :
+    end_of_horizon_score own₁ false couplings deltas cs dOut is_ iGain =
+      end_of_horizon_score own₂ false couplings deltas cs dOut is_ iGain := by
+  simp [end_of_horizon_score]
+
+theorem end_of_horizon_dead_defection_neg
+    (ownRemaining c d : ℝ) (cs ds : List ℝ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ)
+    (hc : 0 < c) (hd : d < 0) (h_rest : ∀ x ∈ ds, x ≤ 0)
+    (h_cd : delayedOutcome ≤ 0) (h_id : ideologicalGain ≤ 0) :
+    end_of_horizon_score ownRemaining false (c :: cs) (d :: ds)
+      causalShare delayedOutcome ideologicalShare ideologicalGain < 0 := by
+  unfold end_of_horizon_score
+  simp only [Bool.false_eq_true, ↓reduceIte, zero_add]
+  have hfb := extended_self_feedback_neg_of_harm c d cs ds hc hd h_rest
+  have h1 : max 0 causalShare * delayedOutcome ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) h_cd
+  have h2 : max 0 ideologicalShare * ideologicalGain ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos (le_max_left 0 _) h_id
+  linarith
 
 abbrev Mr := InteractionConsequence
 

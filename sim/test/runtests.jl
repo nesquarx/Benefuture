@@ -59,15 +59,15 @@ failed = String[]
 # Tiers (CLAUDE.md, Verification): BF_TIER=fast runs the rule, unit and probe files (every push);
 # anything else runs every file (nightly on main, on demand, and locally before pushing a change to
 # the simulation or the Lean rules).
-const ALL_FILES = ["value_tests.jl", "goal_tests.jl", "m0_tests.jl", "m1_tests.jl", "analysis_tests.jl", "economy_tests.jl", "m2_tests.jl", "domain_tests.jl", "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "m3_tests.jl", "m3b_tests.jl", "m3c_tests.jl", "m3d_tests.jl", "m3e_tests.jl", "m3f_tests.jl", "friction_tests.jl", "diversity_tests.jl", "advap_tests.jl", "m6_tests.jl", "attack_tests.jl", "friction_m3c_tests.jl", "models_tests.jl", "m6_attacks_tests.jl", "battery_tests.jl", "methods_tests.jl", "m4_tests.jl", "m5_tests.jl", "m7_tests.jl", "calibrated_tests.jl", "probe_tests.jl", "replay_tests.jl", "world_tests.jl"]
+const ALL_FILES = ["value_tests.jl", "goal_tests.jl", "m0_tests.jl", "m1_tests.jl", "analysis_tests.jl", "economy_tests.jl", "m2_tests.jl", "domain_tests.jl", "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "m3_tests.jl", "m3b_tests.jl", "m3c_tests.jl", "m3d_tests.jl", "m3e_tests.jl", "m3f_tests.jl", "friction_tests.jl", "diversity_tests.jl", "advap_tests.jl", "m6_tests.jl", "attack_tests.jl", "friction_m3c_tests.jl", "models_tests.jl", "m6_attacks_tests.jl", "battery_tests.jl", "methods_tests.jl", "m4_tests.jl", "m5_tests.jl", "m7_tests.jl", "m8_tests.jl", "calibrated_tests.jl", "probe_tests.jl", "replay_tests.jl", "world_tests.jl"]
 const FAST_FILES = ["value_tests.jl", "goal_tests.jl", "analysis_tests.jl", "economy_tests.jl", "domain_tests.jl",
                     "shapley_tests.jl", "shapley_sampling_tests.jl", "differential_tests.jl", "methods_tests.jl",
-                    "battery_tests.jl", "probe_tests.jl"]
+                    "battery_tests.jl", "m8_tests.jl", "probe_tests.jl"]
 @assert FAST_FILES ⊆ ALL_FILES
 
 const SHARDS = [
     ["m5_tests.jl"],
-    ["m6_attacks_tests.jl"],
+    ["m6_attacks_tests.jl", "m8_tests.jl"],
     ["probe_tests.jl"],
     ["models_tests.jl", "m4_tests.jl"],
     ["calibrated_tests.jl", "m7_tests.jl", "replay_tests.jl"],

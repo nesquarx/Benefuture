@@ -195,4 +195,45 @@ fin(xs...) = all(isfinite, xs)
                            idx = findfirst(i -> wh[i] && shares[i] >= smin, 1:(n - 1))
                            idx === nothing ? n : idx
                        end) == (guard = 0, value = 0)
+    @test differential(:extended_self_feedback,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           c = [rand(r) < 0.05 ? hostile(r) : 2.0 * rand(r) - 0.5 for _ in 1:k]
+                           d = [rand(r) < 0.05 ? hostile(r) : 10.0 * randn(r) for _ in 1:k]
+                           (c, d)
+                       end,
+                       (c, d) -> length(c) == length(d) && all(isfinite, c) && all(isfinite, d),
+                       extended_self_feedback,
+                       (c, d) -> sum(clamp(ci, 0.0, 1.0) * di for (ci, di) in zip(c, d); init = 0.0)) == (guard = 0, value = 0)
+    @test differential(:propagated_liability,
+                       r -> begin
+                           k = rand(r, 0:5)
+                           h = rand(r) < 0.1 ? hostile(r) : 8.0 * rand(r) - 2.0
+                           cs = [rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25 for _ in 1:k]
+                           (h, cs)
+                       end,
+                       (h, cs) -> isfinite(h) && all(isfinite, cs),
+                       propagated_liability,
+                       (h, cs) -> h <= 0 ? 0.0 : h * prod(clamp(c, 0.0, 1.0) for c in cs; init = 1.0)) == (guard = 0, value = 0)
+    @test differential(:end_of_horizon_score,
+                       r -> begin
+                           k = rand(r, 0:4)
+                           own = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           alive = rand(r, Bool)
+                           c = [rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25 for _ in 1:k]
+                           d = [rand(r) < 0.05 ? hostile(r) : 8.0 * randn(r) for _ in 1:k]
+                           csh = rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25
+                           do_ = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           ish = rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25
+                           ig = rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r)
+                           (own, alive, c, d, csh, do_, ish, ig)
+                       end,
+                       (own, alive, c, d, csh, do_, ish, ig) -> isfinite(own) && length(c) == length(d) &&
+                           all(isfinite, c) && all(isfinite, d) && all(isfinite, (csh, do_, ish, ig)),
+                       (own, alive, c, d, csh, do_, ish, ig) -> end_of_horizon_score(own, alive, c, d;
+                           causal_share = csh, delayed_outcome = do_,
+                           ideological_share = ish, ideological_gain = ig),
+                       (own, alive, c, d, csh, do_, ish, ig) -> (alive ? own : 0.0) +
+                           sum(clamp(ci, 0.0, 1.0) * di for (ci, di) in zip(c, d); init = 0.0) +
+                           max(0.0, csh) * do_ + max(0.0, ish) * ig) == (guard = 0, value = 0)
 end

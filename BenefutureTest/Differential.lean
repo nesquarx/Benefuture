@@ -42,6 +42,8 @@ import Benefuture.Governance.ExternalHarm
 import Benefuture.Governance.Adversarial
 import Benefuture.Subgoals.Freedom
 import Benefuture.Subgoals.Justice
+import Benefuture.Subgoals.Morality
+import Benefuture.Ontology.Entity
 import Benefuture.Systems.TechnologyNetwork
 import Benefuture.Systems.ParamSpace
 import Benefuture.Axiology.Priorities
@@ -340,6 +342,74 @@ theorem decidingScopeQ_spec (scopes : List (ℚ × Bool)) (shareMin : ℚ) :
       Benefuture.Systems.deciding_scope
         (scopes.map (fun sw => ((sw.1 : ℝ), sw.2))) (shareMin : ℝ) :=
   decidingScopeFromQ_spec 0 scopes shareMin
+
+def extendedSelfFeedbackQ : List ℚ → List ℚ → ℚ
+  | c :: cs, d :: ds => max 0 (min 1 c) * d + extendedSelfFeedbackQ cs ds
+  | _, _ => 0
+
+theorem extendedSelfFeedbackQ_spec (couplings deltas : List ℚ) :
+    (extendedSelfFeedbackQ couplings deltas : ℝ) =
+      Benefuture.Subgoals.extended_self_feedback (couplings.map (↑)) (deltas.map (↑)) := by
+  induction couplings generalizing deltas with
+  | nil => simp [extendedSelfFeedbackQ, Benefuture.Subgoals.extended_self_feedback]
+  | cons c cs ih =>
+    cases deltas with
+    | nil => simp [extendedSelfFeedbackQ, Benefuture.Subgoals.extended_self_feedback]
+    | cons d ds =>
+      simp only [extendedSelfFeedbackQ, List.map_cons,
+        Benefuture.Subgoals.extended_self_feedback, Rat.cast_add, Rat.cast_mul, ih ds]
+      congr 2
+      push_cast
+      rfl
+
+def propagatedControlQ : List ℚ → ℚ
+  | [] => 1
+  | c :: cs => max 0 (min 1 c) * propagatedControlQ cs
+
+theorem propagatedControlQ_spec (controls : List ℚ) :
+    (propagatedControlQ controls : ℝ) =
+      Benefuture.Ontology.propagated_control (controls.map (↑)) := by
+  induction controls with
+  | nil => simp [propagatedControlQ, Benefuture.Ontology.propagated_control]
+  | cons c cs ih =>
+    simp only [propagatedControlQ, List.map_cons,
+      Benefuture.Ontology.propagated_control, Rat.cast_mul, ih]
+    congr 1
+    push_cast
+    rfl
+
+def propagatedLiabilityQ (directHarm : ℚ) (controls : List ℚ) : ℚ :=
+  if directHarm ≤ 0 then 0 else directHarm * propagatedControlQ controls
+
+theorem propagatedLiabilityQ_spec (directHarm : ℚ) (controls : List ℚ) :
+    (propagatedLiabilityQ directHarm controls : ℝ) =
+      Benefuture.Ontology.propagated_liability directHarm (controls.map (↑)) := by
+  unfold propagatedLiabilityQ Benefuture.Ontology.propagated_liability
+  by_cases h : directHarm ≤ 0
+  · have h' : (directHarm : ℝ) ≤ 0 := by exact_mod_cast h
+    simp [h, h']
+  · have h' : ¬ ((directHarm : ℝ) ≤ 0) := by exact_mod_cast h
+    simp [h, h', propagatedControlQ_spec]
+
+def endOfHorizonScoreQ
+    (ownRemaining : ℚ) (alive : Bool) (couplings deltas : List ℚ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℚ) : ℚ :=
+  (if alive then ownRemaining else 0) +
+  extendedSelfFeedbackQ couplings deltas +
+  max 0 causalShare * delayedOutcome +
+  max 0 ideologicalShare * ideologicalGain
+
+theorem endOfHorizonScoreQ_spec
+    (ownRemaining : ℚ) (alive : Bool) (couplings deltas : List ℚ)
+    (causalShare delayedOutcome ideologicalShare ideologicalGain : ℚ) :
+    (endOfHorizonScoreQ ownRemaining alive couplings deltas
+      causalShare delayedOutcome ideologicalShare ideologicalGain : ℝ) =
+      Benefuture.Subgoals.end_of_horizon_score ownRemaining alive
+        (couplings.map (↑)) (deltas.map (↑))
+        causalShare delayedOutcome ideologicalShare ideologicalGain := by
+  unfold endOfHorizonScoreQ Benefuture.Subgoals.end_of_horizon_score
+  rw [← extendedSelfFeedbackQ_spec]
+  cases alive <;> simp
 
 /-! ## Interval-bound oracles for nonlinear functions -/
 
@@ -830,6 +900,52 @@ def runAll : IO Unit := do
     let f := deciding_scope_ref (Array.mk (shares.map ratToFloat)) (Array.mk withinF) (ratToFloat m)
     let q := decidingScopeQ (shares.zip within) m
     (f == q, g)
+  checkAll "extended_self_feedback" 400 28 fun g =>
+    let (c0, g) := g.below 33
+    let (c1, g) := g.below 33
+    let (c2, g) := g.below 33
+    let (d0, g) := g.below 65
+    let (d1, g) := g.below 65
+    let (d2, g) := g.below 65
+    let cs : List ℚ := [((c0 : ℚ) - 8) / 16, ((c1 : ℚ) - 8) / 16, ((c2 : ℚ) - 8) / 16]
+    let ds : List ℚ := [((d0 : ℚ) - 32) / 8, ((d1 : ℚ) - 32) / 8, ((d2 : ℚ) - 32) / 8]
+    let f := extended_self_feedback_ref (Array.mk (cs.map ratToFloat)) (Array.mk (ds.map ratToFloat))
+    let q := extendedSelfFeedbackQ cs ds
+    (close f q, g)
+  checkAll "propagated_liability" 400 29 fun g =>
+    let (h0, g) := g.below 65
+    let (c0, g) := g.below 33
+    let (c1, g) := g.below 33
+    let (c2, g) := g.below 33
+    let harm : ℚ := ((h0 : ℚ) - 16) / 8
+    let cs : List ℚ := [((c0 : ℚ) - 8) / 16, ((c1 : ℚ) - 8) / 16, ((c2 : ℚ) - 8) / 16]
+    let f := propagated_liability_ref (ratToFloat harm) (Array.mk (cs.map ratToFloat))
+    let q := propagatedLiabilityQ harm cs
+    (close f q, g)
+  checkAll "end_of_horizon_score" 400 30 fun g =>
+    let (o0, g) := g.below 65
+    let (a0, g) := g.below 2
+    let (c0, g) := g.below 33
+    let (c1, g) := g.below 33
+    let (d0, g) := g.below 65
+    let (d1, g) := g.below 65
+    let (cs0, g) := g.below 33
+    let (do0, g) := g.below 65
+    let (is0, g) := g.below 33
+    let (ig0, g) := g.below 65
+    let own : ℚ := ((o0 : ℚ) - 16) / 8
+    let alive := a0 == 1
+    let cs : List ℚ := [((c0 : ℚ) - 8) / 16, ((c1 : ℚ) - 8) / 16]
+    let ds : List ℚ := [((d0 : ℚ) - 32) / 8, ((d1 : ℚ) - 32) / 8]
+    let cShare : ℚ := ((cs0 : ℚ) - 8) / 16
+    let dOut : ℚ := ((do0 : ℚ) - 32) / 8
+    let iShare : ℚ := ((is0 : ℚ) - 8) / 16
+    let iGain : ℚ := ((ig0 : ℚ) - 32) / 8
+    let f := end_of_horizon_score_ref (ratToFloat own) alive
+      (Array.mk (cs.map ratToFloat)) (Array.mk (ds.map ratToFloat))
+      (ratToFloat cShare) (ratToFloat dOut) (ratToFloat iShare) (ratToFloat iGain)
+    let q := endOfHorizonScoreQ own alive cs ds cShare dOut iShare iGain
+    (close f q, g)
 
 #eval runAll
 
