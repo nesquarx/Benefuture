@@ -18,9 +18,17 @@ Enforcement is to influence the [[output]]s of all [[person]]s toward the [[goal
 * For most governments, their enforcement arms are of a policing nature, benefuture's enforcement expectations are more widespread and design oriented than policing oriented.
 * In parenting, there are measures of enforcement which tries to enforce eusocial goals into children's behaviours. It can also go wrong in the same ways societal enforcement can.
 
+==Discussion==
+===Responsive regulation and architectural prevention===
+Criminology and regulatory theory have repeatedly found that relying primarily on heavy post-hoc punishment breeds evasion, enforcement abuse, and high social overhead. Ayres and Braithwaite's model of ''responsive regulation'' proposes a pyramid in which the vast majority of compliance is secured at the base through architectural design, education, and aligned incentives, escalating to coercive incapacitation only when dialogue and restorative repair fail.<ref>Ayres, I., & Braithwaite, J. (1992). [https://openlibrary.org/works/OL1964526W ''Responsive Regulation: Transcending the Deregulation Debate''] (Chapter 2, "The Benign Big Gun"). Oxford University Press.</ref>
+
+Similarly, in mechanism design, Hurwicz characterized an institution as ''incentive compatible'' when self-interested or local decision-making naturally implements the social goal without heavy policing.<ref>Hurwicz, L. (1973). [https://www.jstor.org/stable/1817047 The Design of Mechanisms for Resource Allocation]. ''The American Economic Review'', 63(2), 1–30.</ref> Benefuture ranks enforcement mechanisms in that exact order: automated architectural prevention and [[Anti-Corruption|anti-corruption by design]] come first because they eliminate residual [[harm]] without coercive force, while any forcible restraint requires independent audit (`unaudited_forcible_restraint_rejected`) and must remain strictly non-retributive.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Unaudited forcible restraint is rejected, and enforcement by automated design eliminates residual harm ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Enforcement.lean <code>EnforcementAction</code>, <code>is_permissible_enforcement</code>, <code>unaudited_forcible_restraint_rejected</code>, <code>automated_design_eliminates_residual_harm</code>]).
 * Anti-corruption design makes good strictly easier than bad ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>good_strictly_easier_than_bad</code>]).
 
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

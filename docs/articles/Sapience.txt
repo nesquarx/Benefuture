@@ -10,8 +10,17 @@ Sapience is the ability to [[understanding|understand]] any [[thing]] and maximi
 * Sapience is often correlated to intelligence in [[being]]s.
 * Problem solving ability, reasoning ability, resource management, etc. are some key outcomes of sufficient sapience.
 
+==Discussion==
+===Internal models and predictive regulation===
+Where [[sentience]] concerns felt experience and preference, ''sapience'' concerns conceptual understanding and predictive inference.<ref>Brandom, R. B. (1994). [https://openlibrary.org/works/OL1897635W ''Making It Explicit: Reasoning, Representing, and Discursive Commitment''] (Chapter 1, pp. 4–8). Harvard University Press.</ref> In cybernetics, Conant and Ashby's ''Good Regulator Theorem'' proves that any effective regulator of a system must contain a homomorphic model of that system capable of predicting how candidate actions alter its states.<ref>Conant, R. C., & Ashby, W. R. (1970). [https://doi.org/10.1080/00207727008920220 Every Good Regulator of a System Must Be a Model of That System]. ''International Journal of Systems Science'', 1(2), 89–97.</ref> Modern cognitive science and neuroscience reach a parallel conclusion through predictive processing, characterizing intelligence as the continual refinement of generative world-models to minimize prediction error across action and perception.<ref>Clark, A. (2013). [https://doi.org/10.1017/S0140525X12000477 Whatever Next? Predictive Brains, Situated Agents, and the Future of Cognitive Science]. ''Behavioral and Brain Sciences'', 36(3), 181–204.</ref>
+
+Benefuture makes this link explicit: sapience is not static encyclopedic recall, but the joint capacity to [[understanding|understand]] causal structure in [[reality]] and to translate that model into calibrated [[prediction]]s and goal-advancing [[decision]]s.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Sapience combines understanding and prediction accuracy, and its index is bounded ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Prediction.lean <code>Sapience</code>, <code>sapience_index</code>, <code>sapience_index_bounded</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>SapienceProfile</code>]).
 * Prediction skill from choices and credence accuracy ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Domains.lean <code>choice_skill_ref</code>, <code>credence_accuracy_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

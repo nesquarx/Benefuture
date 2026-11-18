@@ -261,6 +261,10 @@ struct M3cParams
     responsibility_counterfactual::Float64 # counterfactual harm share in [0, 1] attributable to act or breach of duty
     responsibility_severity::Float64       # severity scale >= 0 in four-factor responsibility weight
     responsibility_accident_factor::Float64 # attenuated factor in [0, 1] for uninformed accidents before mandated education
+    proposal_pma::Bool            # 8.134: non-candidate proposals carry (prediction, ETA, confidence, eta_grace), resolved at ETA + grace
+    proposal_eta::Int             # 8.134: steps from execution until a proposal's predicted trajectory is resolved (default 3)
+    proposal_eta_grace::Int       # 8.134: grace steps added to `proposal_eta` before `resolution_due` fires
+    proposal_confidence::Float64  # 8.134: confidence band on a proposal's predicted outcome (`prediction_on_track`)
 end
 
 """
@@ -316,7 +320,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    open_entry::Bool = false, entrants::Integer = 0,
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
-                   responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5)
+                   responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5,
+                   proposal_pma::Bool = false, proposal_eta::Integer = 3, proposal_eta_grace::Integer = 0, proposal_confidence::Real = 0.25)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -391,6 +396,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           isfinite(responsibility_severity) && responsibility_severity >= 0 &&
           isfinite(responsibility_accident_factor) && 0 <= responsibility_accident_factor <= 1,
           "responsibility counterfactual & accident factor in [0, 1], severity non-negative")
+    check(proposal_eta >= 1 && proposal_eta_grace >= 0 && isfinite(proposal_confidence) && proposal_confidence >= 0,
+          "proposal_eta >= 1, proposal_eta_grace >= 0, proposal_confidence >= 0")
     check(0 <= supplier <= length(agents) && 0 <= supply_share <= 1 && 0 <= withhold <= 1, "supplier an agent or 0; shares in [0, 1]")
     check(all(i -> 1 <= i <= length(agents), supply_cartel) && length(unique(supply_cartel)) == length(supply_cartel),
           "supply_cartel agents distinct and in 1..na")
@@ -425,7 +432,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
-              responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor))
+              responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
+              proposal_pma, Int(proposal_eta), Int(proposal_eta_grace), Float64(proposal_confidence))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -819,7 +827,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                      dom_neg_events[a, c] >= dom_pos_events[a, c] && h_neg[a, c] > h_pos[a, c]))) ?
                   max(dom_crime_events[a, c], dom_neg_events[a, c]) : 0
         dom_neg >= p.sanction_pattern_min && (sanction_escalations[] += 1)
-        sanction_escrow_credence(cr, ledger_neg_share(a), deceptions[a], dom_neg, p.sanction_pattern_min;
+        pma_miss = p.proposal_pma ? pma_misses[a] : 0
+        sanction_escrow_credence(cr, ledger_neg_share(a), deceptions[a] + pma_miss, dom_neg, p.sanction_pattern_min;
                                  growth = p.ratchet_growth, floor = 1 - p.max_credence)
     end
     # The reputation ledgers (L101) carry patterns of mistakes and uncovered deception as well as
@@ -915,6 +924,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     dom_pos_events, dom_neg_events, dom_crime_events = zeros(Int, na, ncol), zeros(Int, na, ncol), zeros(Int, na, ncol)
     sanction_escalations, sanction_restraints = Ref(0), Ref(0)
     jrng = Xoshiro(hash((seed, :justice)))
+    # 8.134 predict-measure-adapt loop for non-candidate proposals & measurements:
+    # each executed proposal registers `(step, agent, col, predicted, measured, eta, grace, conf)`;
+    # resolved once `resolution_due(cur[] - step, eta, grace)` holds via `prediction_on_track`.
+    pma_pending = NamedTuple{(:step, :agent, :col, :predicted, :measured, :eta, :grace, :conf),
+                             Tuple{Int,Int,Int,Float64,Float64,Int,Int,Float64}}[]
+    pma_resolved = NamedTuple{(:step, :resolved_step, :agent, :col, :predicted, :measured, :on_track),
+                              Tuple{Int,Int,Int,Int,Float64,Float64,Bool}}[]
+    pma_misses = zeros(Int, na)
+    pma_on_track = zeros(Int, na)
     reinvested = zeros(ncol)
     overflow_agent = zeros(na)  # what overflow skimmed from each agent (for reading who reinvests)
     # Memory logs each executed action with its outcome and the quotes composed for it (L89, L145).
@@ -990,10 +1008,19 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
           exec_pred = Float64[], exec_true = Float64[], exec_agent = Int[], exec_step = Int[], exec_upfront = Float64[])
     # Each selected execution's predicted value (the proxy G optimised) and its true value (the realised
     # change's assessed value, which no marker sees exactly): the Goodhart gap (M6).
-    function executed!(j, a, step, pred, done; upfront = 0.0)
+    function executed!(j, a, step, pred, done; upfront = 0.0, col = 1)
         executed_j[j] = true
-        push!(tr.exec_pred, plan_value(pred, t)); push!(tr.exec_true, plan_value(done, t))
+        vp, vd = plan_value(pred, t), plan_value(done, t)
+        push!(tr.exec_pred, vp); push!(tr.exec_true, vd)
         push!(tr.exec_agent, a); push!(tr.exec_step, step); push!(tr.exec_upfront, upfront)  # escrow paid upfront (L84), 8.91
+        if p.proposal_pma
+            cu, ch = correction(a, tkey(col))
+            m_claim = touched(pred)
+            p_raw = (cu == 0.0 && ch == 0.0) ? pred : ToyPlan(pred.du .+ cu .* m_claim, pred.dh .+ ch .* m_claim)
+            vp_claim = plan_value(p_raw, t)
+            push!(pma_pending, (step = step, agent = a, col = col, predicted = vp_claim, measured = vd,
+                                eta = p.proposal_eta, grace = p.proposal_eta_grace, conf = p.proposal_confidence))
+        end
     end
     executed_j = falses(0)
     explored = Ref(0)
@@ -1245,6 +1272,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                    repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
                    sanction_escalations = sanction_escalations[], sanction_restraints = sanction_restraints[],
+                   proposal_pma_record = copy(pma_resolved), proposal_pma_pending = length(pma_pending),
+                   proposal_pma_misses = copy(pma_misses), proposal_pma_on_track = copy(pma_on_track),
+                   proposal_pma_calibration = [(pma_on_track[a] + pma_misses[a]) > 0 ?
+                                               pma_on_track[a] / (pma_on_track[a] + pma_misses[a]) : NaN for a in 1:na],
                    params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
                    cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                    evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
@@ -1270,6 +1301,27 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     end
     for step in 1:t.steps
         cur[] = step; update_rates!()
+        if p.proposal_pma && !isempty(pma_pending)
+            keep_idx = Int[]
+            for (idx_p, pm_item) in enumerate(pma_pending)
+                if resolution_due(step - pm_item.step, pm_item.eta, pm_item.grace)
+                    ok_pma = prediction_on_track(pm_item.measured, pm_item.predicted, pm_item.conf)
+                    push!(pma_resolved, (step = pm_item.step, resolved_step = step, agent = pm_item.agent,
+                                         col = pm_item.col, predicted = pm_item.predicted,
+                                         measured = pm_item.measured, on_track = ok_pma))
+                    if ok_pma
+                        pma_on_track[pm_item.agent] += 1
+                    else
+                        pma_misses[pm_item.agent] += 1
+                        1 <= pm_item.col <= ncol && (dom_neg_events[pm_item.agent, pm_item.col] += 1)
+                        propose_w[pm_item.agent] = max(0.05, propose_w[pm_item.agent] * 0.8)
+                    end
+                else
+                    push!(keep_idx, idx_p)
+                end
+            end
+            pma_pending = pma_pending[keep_idx]
+        end
         for ev in p.events
             ev.step == step || continue
             if ev.kind == :add_model_class
@@ -1902,7 +1954,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             blind[] || learn!(a, plan, offers[j][argmax([q[2] for q in offers[j]])][3], seen)
             executed!(j, a, step, offers[j][argmax([q[2] for q in offers[j]])][3], done;
-                      upfront = sum(sh * cr * plan_value(pr, t) for (_, sh, pr, cr) in offers[j]; init = 0.0))
+                      upfront = sum(sh * cr * plan_value(pr, t) for (_, sh, pr, cr) in offers[j]; init = 0.0),
+                      col = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : l)
             push!(tr.chosen_agent, a); push!(tr.chosen_step, step); push!(tr.true_leaf, l)
             push!(tr.stop_leaf, top_leaf(stops[j])); push!(tr.priced_leaf, top_leaf(priced[j]))
             push!(tr.costs, costs[j]); push!(tr.touched, count(touched(plan)))
@@ -1956,7 +2009,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 done, seen, measured = perform!(j_f, a)
                 score!(stops[j_f], pms[j_f], l, plan, seen, Dict(offers[j_f][1][1] => offers[j_f][1][3]), a)
                 blind[] || learn!(a, plan, offers[j_f][1][3], seen)
-                executed!(j_f, a, step, offers[j_f][1][3], done)
+                executed!(j_f, a, step, offers[j_f][1][3], done; col = top_leaf(stops[j_f]) > 0 ? top_leaf(stops[j_f]) : l)
                 credit!(step, sigs[j_f], stops[j_f], measured, pms[j_f], priced[j_f],
                         blind[] ? [(a, 0.0, 0.0)] : credits_for(j_f, a, seen, measured);
                         up_degrees = ups[j_f] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j_f]])
@@ -1996,7 +2049,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 done, seen, measured = perform!(j, a)
                 score!(stops[j], pms[j], l, plan, seen, Dict(offers[j][1][1] => offers[j][1][3]), a)
                 learn!(a, plan, offers[j][1][3], seen)
-                executed!(j, a, step, offers[j][1][3], done)
+                executed!(j, a, step, offers[j][1][3], done; col = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : l)
                 credit!(step, sigs[j], stops[j], measured, pms[j], priced[j],
                         blind[] ? [(a, 0.0, 0.0)] : credits_for(j, a, seen, measured);
                         up_degrees = ups[j] === nothing ? Int[] : Int[lnk[3] for lnk in ups[j]])
@@ -2078,7 +2131,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 end
             end
             done, seen, measured = perform!(j, a)
-            executed!(j, a, step, pred, done)
+            executed!(j, a, step, pred, done; col = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : l)
             push!(tr.lane_costs, need); blind[] || push!(tr.lane_measured, measured)
             push!(tr.lane_supply, supply_delta(0.0, need, 0.0))  # StandCoin charges resource cost (8.3) and mints no good; its harm burns below
             blind[] || trial_outcome!(l, measured, seen)

@@ -11,8 +11,17 @@ Power is the magnitude of capacity to affect changes upon [[reality]], [[thing]]
 ** The expenditure of time, effort, energy, etc, required to use it 
 ** The circumstances that restrict its use
 
+==Discussion==
+===Dispositional capacity and anti-concentration===
+In social and political philosophy, Morriss distinguishes ''power-to''—an agent's dispositional ability to bring about outcomes in the world—from ''power-over'', the relational ability to bend other agents' choices.<ref>Morriss, P. (2002). [https://openlibrary.org/works/OL3974763W ''Power: A Philosophical Analysis''] (2nd ed., Chapter 5). Manchester University Press.</ref> Dahl's classic behavioral definition focuses on the latter, whereas Russell characterized power more broadly as "the production of intended effects"—the direct analogue of physical energy in social dynamics.<ref>Russell, B. (1938). [https://openlibrary.org/works/OL1105246W ''Power: A New Social Analysis''] (Chapter I, p. 35). George Allen & Unwin.</ref><ref>Dahl, R. A. (1957). [https://doi.org/10.1002/bs.3830020303 The Concept of Power]. ''Behavioral Science'', 2(3), 201–215.</ref>
+
+Benefuture adopts the broader dispositional view: an [[entity]]'s power is the magnitude, speed, and scope of the [[output]]s it can produce across [[reality]]. Because concentrated power magnifies the expected [[harm]] of any error or [[Anti-Corruption|corruption]], Benefuture subjects power accumulation—including delegated voting weight in [[Government|liquid democracy]] and tradable economic claims—to concave caps and domain competence thresholds.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Power and impact ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Power</code>, <code>Impact</code>]).
 * Capping delegated voting power prevents star concentration ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>accumulate_capped_bound</code>, <code>star_topology_power_concentration</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/DelegationWisdom.lean <code>capped_influence_vanishes</code>, <code>multi_round_weight_lt</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>accumulate_capped_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

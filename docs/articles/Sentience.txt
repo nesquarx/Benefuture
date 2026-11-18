@@ -5,6 +5,12 @@ Sentience is the quality of an [[entity]] exhibiting [[preference]]s and a thres
 * We assume the threshold of consciousness required to be deemed a sentient being to be at a level where it [[understanding|understands]] itself sufficiently to engage in [[civilization]]. This is soft threshold, there are more detailed [[person#Sentience_thresholds|thresholds]] for personhood.
 * Sentient entities can be assumed to hold a level of agency and intent and may be held responsible for their [[interaction]]s.
 
+==Discussion==
+===Phenomenal valence and precautionary protection===
+In the philosophy of mind, Nagel framed phenomenal consciousness around whether "there is something that it is like to be" an organism—a subjective point of view from which experiences are felt.<ref>Nagel, T. (1974). [https://doi.org/10.2307/2183914 What Is It Like to Be a Bat?]. ''The Philosophical Review'', 83(4), 435–450.</ref> In moral philosophy from Bentham onward, it is specifically ''valenced'' sentience—the capacity to experience states as positive or negative, preferred or avoided ("Can they suffer?")—that grounds protection against [[harm]].<ref>Bentham, J. (1789). [https://www.gutenberg.org/ebooks/56463 ''An Introduction to the Principles of Morals and Legislation''] (Chapter XVII, §1, note). T. Payne and Son.</ref>
+
+Because subjective experience is inferred across diverse biological and synthetic architectures from behavioral, physiological, and structural indicators, Birch argues for a ''precautionary framework'' in animal and artificial sentience law: when credible markers indicate a non-trivial probability of valenced experience, protective thresholds should apply rather than awaiting apodictic certainty.<ref>Birch, J. (2017). [https://doi.org/10.1017/S0953820817000121 Animal Sentience and the Precautionary Principle]. ''Animal Sentience'', 2(16), 1.</ref> Benefuture operationalizes this through graded [[Person|personhood]] thresholds on sentience and by measuring [[happiness]] through integrated behavioral, physiological, and preference-satisfaction channels.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Sentience and preferences on a being ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Being.lean <code>Preference</code>, <code>Sentience</code>, <code>Being</code>]).
@@ -12,4 +18,4 @@ The rules on this page as written in Benefuture's code ([https://github.com/nesq
 
 === References ===
 <references />
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

@@ -13,8 +13,17 @@ Interaction is the process of a [[thing]] (interactor) taking [[input]]s and pro
 * '''Consumption''' and '''Excretion''', to sustain a being.
 * '''[[Communication]]''', to convey information to another [[entity]].
 
+==Discussion==
+===Causal processes and physical information transfer===
+In the philosophy of science, Salmon distinguished genuine causal processes from pseudo-processes by their ability to transmit a conserved physical quantity or structural ''mark'' from one spacetime region to another.<ref>Salmon, W. C. (1984). [https://openlibrary.org/works/OL2796608W ''Scientific Explanation and the Causal Structure of the World''] (Chapter 5). Princeton University Press.</ref> Landauer's principle in statistical physics establishes the converse bridge for information: because information is always physically instantiated ("information is physical"), every transfer, copy, or erasure of an informational state requires a physical interaction between systems.<ref>Landauer, R. (1991). [https://doi.org/10.1063/1.881299 Information is Physical]. ''Physics Today'', 44(5), 23–29.</ref>
+
+Benefuture treats ''interaction'' as the directed primitive connecting an acting [[entity]]'s [[output]] to a receiving [[thing]]'s [[input]]. Beyond physics, cumulative interaction weights also define the topology of a [[being]]'s [[Being#Self|extended self]] and the channels along which [[Benefuture currency#Causal Distribution|causal distribution]] and legal liability flow; because every interaction leaves a trace in the [[Technology Network|civilizational memory]], there are no anonymous one-shot defection games.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Interaction, input, output, and outcome ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Interaction</code>, <code>Input</code>, <code>Output</code>, <code>Outcome</code>]).
 * Permanence of every interaction in memory and non-existence of one-shot harmful games in reality ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Morality.lean <code>interaction_permanently_in_memory</code>, <code>no_one_shot_harmful_games</code>]).
-<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

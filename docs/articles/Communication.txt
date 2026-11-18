@@ -10,8 +10,17 @@ Communication for an [[entity]] (communicator) is to produce [[output]]s specifi
 * Outputing patterns with specific pre-agreed meanings.
 * Speaking, writing, signing to somebody in a common language.
 
+==Discussion==
+===Signal fidelity, semantic alignment, and common ground===
+Shannon's mathematical theory of communication separated the engineering problem of reproducing a signal across a noisy channel from the semantic problem of whether the receiver interprets the signal as intended.<ref>Shannon, C. E. (1948). [https://doi.org/10.1002/j.1538-7305.1948.tb01338.x A Mathematical Theory of Communication]. ''Bell System Technical Journal'', 27(3), 379–423.</ref> In the philosophy of language, Grice and Lewis showed that semantic communication relies on shared conventions and mutual recognition of communicative intent—built up from precursor regularities that already mean the same thing to both parties.<ref>Lewis, D. K. (1969). [https://openlibrary.org/works/OL3508914W ''Convention: A Philosophical Study''] (Chapter IV). Harvard University Press.</ref><ref>Grice, H. P. (1957). [https://doi.org/10.2307/2182440 Meaning]. ''The Philosophical Review'', 66(3), 377–388.</ref>
+
+Because one mind cannot directly inspect another's internal representation, Benefuture defines communicative success operationally: communication succeeds to the degree that the communicatee's descriptions and [[prediction]]s about the subject match the communicator's [[understanding]], while provenance tags (`tagged_reading_ref`, `count_once_ref`) ensure that repeated relays of a single message are not mistaken for independent evidence.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Communication aligns the understanding of communicator and communicatee ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>Communication</code>, <code>Cm</code>]).
 * Source provenance, counting repeated origins once, and flagging undisclosed echoes ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>tagged_reading_ref</code>, <code>count_once_ref</code>, <code>tags_falsified_ref</code>, <code>undisclosed_echo_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

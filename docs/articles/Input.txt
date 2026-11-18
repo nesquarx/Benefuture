@@ -16,8 +16,17 @@ Input is the process of a [[thing]] absorbing information, energy, or matter fro
 * A change in temperature or pressure in the environment causing a being to react.
 * Colliding with another object and taking damage.
 
+==Discussion==
+===Information intake and source independence===
+Bateson famously defined elementary information as "a difference which makes a difference" to a receiving system.<ref>Bateson, G. (1972). [https://openlibrary.org/works/OL53864W ''Steps to an Ecology of Mind''] (p. 453). Chandler Publishing Company.</ref> In cybernetics and perceptual psychology, an ''input'' is not every physical event in the ambient environment, but specifically the boundary perturbations and signals that couple to an [[entity]]'s internal state.<ref>Ashby, W. R. (1956). [https://openlibrary.org/works/OL1183948W ''An Introduction to Cybernetics''] (Chapter 4). Chapman & Hall.</ref>
+
+When inputs carry epistemic claims through [[communication]], classic social epistemology shows that treating correlated echoes of a single origin as independent witnesses produces cascading overconfidence.<ref>Bikhchandani, S., Hirshleifer, D., & Welch, I. (1992). [https://doi.org/10.1086/261849 A Theory of Fads, Fashion, Custom, and Cultural Change as Informational Cascades]. ''Journal of Political Economy'', 100(5), 992–1026.</ref> Benefuture therefore tags informational inputs with their provenance so repeated readings of the same root source are counted once rather than mistaken for independent confirmation.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Input, interaction, and communication ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Input</code>, <code>Interaction</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>Communication</code>]).
 * Source-tagged readings and deduplicating repeated inputs from the same root source ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>tagged_reading_ref</code>, <code>count_once_ref</code>]).
-----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes; the formal reference is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: This article is 20% AI compiled with 80% human notes; the discussion and formal reference are AI written.</small>

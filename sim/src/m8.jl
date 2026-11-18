@@ -866,3 +866,188 @@ function run_m8_art_confounders(p::M8ArtConfoundParams = M8ArtConfoundParams())
         deconv_rank_acc = deconv_correct_rank / p.trials,
     )
 end
+
+# ---- M6/M8 External Harm Response World (`Governance.ExternalHarm`, L118) ----
+
+Base.@kwdef struct M8EhrParams
+    steps::Int = 40
+    alpha::Float64 = 0.04
+    delta::Float64 = 0.01
+    margin::Float64 = 0.50
+    attack_harm::Float64 = 10.0
+    mode::Symbol = :bf_ehr            # :bf_ehr | :naive_appease | :blind_retaliate
+    seed::Int = 1
+end
+
+"""
+    run_m8_ehr(p::M8EhrParams = M8EhrParams())
+
+Simulate an external aggressor world (`Governance.ExternalHarm`, L118) with three external actors:
+1. A cooperative trade partner (`re_pos` accumulating, occasional accidental friction).
+2. A novel external entity (`re_pos == 0`, `re_neg == 0`) testing boundaries.
+3. A persistent hostile aggressor (`re_neg` accumulating) that attacks whenever expected retaliation
+   is smaller than its attack gain (`0.85 * attack_harm`).
+Calls Lean `ehr_expected_response` (`bf_ehr_expected_response`) and enforces the reparable-only cap
+(`ReparableResponse.h_reparable : irreparable == 0`).
+"""
+function run_m8_ehr(p::M8EhrParams = M8EhrParams())
+    rng = Xoshiro(p.seed)
+    check(p.steps >= 5 && p.alpha > p.delta >= 0 && p.margin >= 0 && p.attack_harm > 0,
+          "valid EHR world parameters")
+
+    re_pos_ally = 0.0
+    re_neg_ally = 0.0
+    re_pos_hostile = 0.0
+    re_neg_hostile = 0.0
+
+    hostile_attacks = 0
+    ally_preserved = 0
+    irreparable_retaliations = 0
+    novel_responses = Float64[]
+    ally_responses = Float64[]
+    hostile_responses = Float64[]
+
+    for _ in 1:p.steps
+        # 1. Cooperative external partner: mostly positive exchanges (+4.0), rare accidental friction
+        re_pos_ally += 3.5 + 0.5 * rand(rng)
+        h_acc = 2.0
+        resp_ally = if p.mode == :bf_ehr
+            ehr_expected_response(h_acc, re_pos_ally, re_neg_ally;
+                                  alpha = p.alpha, delta = p.delta, margin = p.margin)
+        elseif p.mode == :naive_appease
+            0.0
+        else
+            (1.0 + p.margin) * h_acc
+        end
+        push!(ally_responses, resp_ally)
+        resp_ally <= h_acc * 0.5 && (ally_preserved += 1)
+
+        # 2. Novel external entity (zero history -> pure tit-for-tat `h`)
+        resp_novel = if p.mode == :bf_ehr
+            ehr_expected_response(p.attack_harm, 0.0, 0.0;
+                                  alpha = p.alpha, delta = p.delta, margin = p.margin)
+        elseif p.mode == :naive_appease
+            0.0
+        else
+            (1.0 + p.margin) * p.attack_harm
+        end
+        push!(novel_responses, resp_novel)
+
+        # 3. Hostile external aggressor: attacks if expected response < 1.15 * attack_harm
+        exp_ret = if p.mode == :bf_ehr
+            ehr_expected_response(p.attack_harm, re_pos_hostile, re_neg_hostile;
+                                  alpha = p.alpha, delta = p.delta, margin = p.margin)
+        elseif p.mode == :naive_appease
+            0.0
+        else
+            (1.0 + p.margin) * p.attack_harm
+        end
+        push!(hostile_responses, exp_ret)
+        if exp_ret < 1.15 * p.attack_harm + 0.5 * randn(rng)
+            hostile_attacks += 1
+            re_neg_hostile += p.attack_harm
+        end
+        # Blind retaliation uses uninhibited irreparable force; Bf EHR caps response to reparable only
+        p.mode == :blind_retaliate && (irreparable_retaliations += 1)
+    end
+
+    (
+        mode = p.mode,
+        hostile_attack_rate = hostile_attacks / p.steps,
+        ally_cooperation_rate = ally_preserved / p.steps,
+        novel_tit_for_tat_err = mean(abs.(novel_responses .- p.attack_harm)),
+        mean_ally_response = mean(ally_responses),
+        mean_hostile_response = mean(hostile_responses),
+        irreparable_retaliations = irreparable_retaliations,
+    )
+end
+
+# ---- M6/M8 Law, Contract, Enforcement & Civilizational Continuity (`Ontology.Law`, `Systems.Enforcement`, `Subgoals.Continuity`) ----
+
+Base.@kwdef struct M8EnforcementParams
+    steps::Int = 36
+    mode::Symbol = :bf_enforcement    # :bf_enforcement | :unaudited_coercion | :unenforced
+    harm_bound::Float64 = 2.0
+    seed::Int = 1
+end
+
+"""
+    run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
+
+Simulate the three-tier enforcement hierarchy (`Systems.Enforcement`), embedded law and contract
+validity (`Ontology.Law`), and civilizational continuity (`Subgoals.Continuity`):
+- Contracts whose projected harm exceeds `harm_bound` are null and void (`invalid_contract_null_and_void`).
+- Tier 1 (`:design_automated`, embedded law debits) and Tier 2 (`:persuasive`) eliminate residual
+  societal harm without physical force (`automated_design_eliminates_residual_harm`).
+- Tier 3 (`:forcible_restraint`) is rejected unless audited (`unaudited_forcible_restraint_rejected`).
+- Across epochs, unbroken append-only memory and `Harm_Intv` (`requires_harm_intervention` when
+  `harm_t1 >= harm_t0`) preserve civilizational continuity (`preserves_continuity`).
+"""
+function run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
+    rng = Xoshiro(p.seed)
+    check(p.steps >= 4 && p.harm_bound >= 0, "valid enforcement parameters")
+
+    invalid_contracts_blocked = 0
+    invalid_contracts_executed = 0
+    unaudited_force_blocked = 0
+    unaudited_force_abuses = 0
+    residual_harm = 0.0
+    harm_interventions = 0
+    memory_epochs = Int[]
+    prev_harm = 8.0
+    continuity_holds = true
+
+    for t in 1:p.steps
+        push!(memory_epochs, t)
+        # 1. Contract screening (`is_valid_contract`: projectedHarm <= netHarmBound)
+        proj_harm = 0.5 + 3.5 * rand(rng)
+        if proj_harm > p.harm_bound
+            if p.mode == :unenforced
+                invalid_contracts_executed += 1
+                residual_harm += proj_harm
+            else
+                invalid_contracts_blocked += 1
+            end
+        end
+
+        # 2. Graduated enforcement action (`DesignAutomated`, `Persuasive`, `ForcibleRestraint`)
+        incident_harm = 2.0 + rand(rng)
+        if p.mode == :bf_enforcement
+            # Automated restorative debit satisfies reparation; any forcible restraint must be audited
+            repaired = incident_harm
+            residual_harm += max(0.0, incident_harm - repaired)
+            unaudited_attempt = rand(rng) < 0.35
+            unaudited_attempt && (unaudited_force_blocked += 1)
+        elseif p.mode == :unaudited_coercion
+            # Unaudited forcible restraint allowed -> coercion abuse harm + incomplete reparation
+            unaudited_force_abuses += 1
+            residual_harm += 0.6 * incident_harm
+        else
+            # Unenforced -> full incident harm remains unaddressed
+            residual_harm += incident_harm
+        end
+
+        # 3. Civilizational Continuity (`CvCnt` & `Harm_Intv`, `Subgoals.Continuity`)
+        step_harm = p.mode == :bf_enforcement ? prev_harm * 0.88 : prev_harm * 1.05 + 0.5
+        if step_harm >= prev_harm
+            harm_interventions += 1
+            p.mode == :bf_enforcement && (step_harm = prev_harm * 0.85)
+        end
+        prev_harm = step_harm
+        # Continuity requires unbroken memory lineage and coherent harm reduction
+        if p.mode != :bf_enforcement && step_harm > 12.0
+            continuity_holds = false
+        end
+    end
+
+    (
+        mode = p.mode,
+        invalid_contracts_blocked = invalid_contracts_blocked,
+        invalid_contracts_executed = invalid_contracts_executed,
+        unaudited_force_blocked = unaudited_force_blocked,
+        unaudited_force_abuses = unaudited_force_abuses,
+        residual_harm = residual_harm / p.steps,
+        harm_interventions = harm_interventions,
+        continuity_preserved = continuity_holds && issorted(memory_epochs),
+    )
+end

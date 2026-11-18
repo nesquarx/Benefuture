@@ -33,9 +33,18 @@ Responsibilities are interaction patterns which sophonts may perform at their di
 * A law might mandatorily prohibit harm of a [[person]] by limiting their [[right]]s.
 * A law might recommend enabling another [[benesophont|sophont]] achieve the [[goals]] by providing them resource.
 
+==Discussion==
+===Secondary rules, Hohfeldian incidents, and architectural compliance===
+In ''The Concept of Law'', Hart argued that a mature legal system requires not only ''primary rules'' of obligation, but ''secondary rules'' of recognition, change, and adjudication that specify how laws are identified, updated as conditions change, and applied to disputes.<ref>Hart, H. L. A. (1961). [https://openlibrary.org/works/OL1876642W ''The Concept of Law''] (Chapter V). Clarendon Press.</ref> Within primary rules, Hohfeld's analysis distinguishes four fundamental jural relations—claim-rights, privileges (liberties), powers, and immunities—alongside their correlative duties and liabilities.<ref>Hohfeld, W. N. (1913). [https://doi.org/10.2307/785533 Some Fundamental Legal Conceptions as Applied in Judicial Reasoning]. ''The Yale Law Journal'', 23(1), 16–59.</ref>
+
+Benefuture's four aspects of law—rights, duties, limitations, and recommendations—map directly onto this structure while adding two design constraints: first, liability scales strictly with ontological capacity and awareness (from [[thing]] and non-sentient [[entity]] up to [[person]] and [[benesophont]]), and second, wherever feasible, compliance is embedded into the physical and institutional architecture ("code is law")<ref>Lessig, L. (1999). [https://openlibrary.org/works/OL41913W ''Code and Other Laws of Cyberspace''] (Chapter 7). Basic Books.</ref> so that harmful actions are prevented or priced automatically rather than relying on post-hoc coercion.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Law, embedded automated compliance, and contract validity ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>Law</code>, <code>Lw</code>, <code>is_automatically_enforced</code>, <code>invalid_contract_null_and_void</code>]).
 * Liability increases strictly with awareness and agency: sophont, person, administration, being or entity, thing ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
 * Baseline rights (Maslow tiers 1–3) are guaranteed at or below zero price ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>essential_goods_guaranteed_floor</code>, <code>baseline_income_guarantees_free_essentials</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Pricing.lean <code>price_negative_when_value_exceeds_cost</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

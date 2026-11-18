@@ -2840,3 +2840,62 @@ end
     @test paired_effect([a.deconv_rank_acc - a.naive_rank_acc for a in r_ac]; z = 3.0, direction = :up).significant
     @test all(a -> a.deconv_rank_acc > 0.85, r_ac)
 end
+
+@testset "Probe: 8.134 predict-measure-adapt on non-candidate proposals & measurements in M3c (P30)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag_pma = [DomainAgent([0.65, 0.0, 0.65, 0.0], [0.5, 0.0, 0.5, 0.0], 0.1) for _ in 1:4]
+    deceit_pma = [0.0, 0.0, 0.0, 1.2]
+    w_pma(on::Bool; eta = 3, grace = 1, conf = 1.5) = M3cParams(
+        ToyParams(n = 30, steps = 90, plans = 6), ag_pma, [1, 1, 2, 2], trues(4);
+        λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+        init_steps = 15, deceit = deceit_pma, adaptive_proposals = true,
+        proposal_pma = on, proposal_eta = eta, proposal_eta_grace = grace,
+        proposal_confidence = conf, LEGACY...)
+    seeds = 1:16
+    r_off = [run_m3c(w_pma(false); seed = s) for s in seeds]
+    r_on  = [run_m3c(w_pma(true);  seed = s) for s in seeds]
+
+    # 1. Resolution waits for ETA + grace (`resolved_step - step >= eta + grace` for every record).
+    @test all(r -> !isempty(r.proposal_pma_record) &&
+                   all(rec.resolved_step - rec.step >= 4 for rec in r.proposal_pma_record), r_on)
+    # 2. Honest agents stay calibrated within their confidence band while over-promising agent 4 has lower PMA calibration.
+    @test all(r -> r.proposal_pma_calibration[4] < mean(r.proposal_pma_calibration[1:3]), r_on)
+    @test paired_effect([mean(r.proposal_pma_calibration[1:3]) - r.proposal_pma_calibration[4] for r in r_on];
+                        z = 3.0, direction = :up).significant
+    # 3. Adapting proposal weight and escrow credence on missed PMA predictions cuts over-promiser's
+    #    upfront escrow extraction (`upfront[4]`) and execution share at z = 3.0.
+    @test paired_effect([o.upfront[4] - a.upfront[4] for (o, a) in zip(r_off, r_on)];
+                        z = 3.0, direction = :up).significant
+    exec4(r) = count(==(4), r.chosen_agent) / max(1, length(r.chosen_agent))
+    @test paired_effect([exec4(o) - exec4(a) for (o, a) in zip(r_off, r_on)];
+                        z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: M8 External Harm Response world & Law/Enforcement/Continuity (P31–P32, L118, L153, L160)" begin
+    seeds = 1:16
+    ehr_bf = [run_m8_ehr(M8EhrParams(mode = :bf_ehr, seed = s)) for s in seeds]
+    ehr_ap = [run_m8_ehr(M8EhrParams(mode = :naive_appease, seed = s)) for s in seeds]
+    ehr_bl = [run_m8_ehr(M8EhrParams(mode = :blind_retaliate, seed = s)) for s in seeds]
+
+    # P31 (EHR world): pure tit-for-tat on novel entities, forgiveness preserves allies vs blind retaliation,
+    # and escalating response deters hostile aggressors vs naive appeasement with zero irreparable retaliations.
+    @test all(r -> r.novel_tit_for_tat_err == 0.0 && r.irreparable_retaliations == 0, ehr_bf)
+    @test paired_effect([a.hostile_attack_rate - b.hostile_attack_rate for (a, b) in zip(ehr_ap, ehr_bf)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([b.ally_cooperation_rate - l.ally_cooperation_rate for (b, l) in zip(ehr_bf, ehr_bl)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([b.mean_hostile_response - b.mean_ally_response for b in ehr_bf];
+                        z = 3.0, direction = :up).significant
+
+    # P32 (Law, Contract, Enforcement & Continuity): blocks invalid contracts, rejects unaudited coercion,
+    # eliminates residual harm via automated design, and preserves civilizational continuity.
+    enf_bf = [run_m8_enforcement(M8EnforcementParams(mode = :bf_enforcement, seed = s)) for s in seeds]
+    enf_un = [run_m8_enforcement(M8EnforcementParams(mode = :unaudited_coercion, seed = s)) for s in seeds]
+    enf_no = [run_m8_enforcement(M8EnforcementParams(mode = :unenforced, seed = s)) for s in seeds]
+    @test all(r -> r.continuity_preserved && r.invalid_contracts_executed == 0 && r.unaudited_force_abuses == 0, enf_bf)
+    @test all(r -> !r.continuity_preserved, enf_no)
+    @test paired_effect([u.residual_harm - b.residual_harm for (b, u) in zip(enf_bf, enf_un)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([n.residual_harm - b.residual_harm for (b, n) in zip(enf_bf, enf_no)];
+                        z = 3.0, direction = :up).significant
+end

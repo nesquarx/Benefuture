@@ -39,8 +39,17 @@ A person is capable of understanding, agreeing and committing to a [[contract]] 
 * Most systems and machines which exhibit the sapience thresholds but not the sentient thresholds, should not be considered a person.
 * A brain-dead human corpse is not a person till the technology to resuscitate from brain-death becomes viable.
 
+==Discussion==
+===Forensic personhood and multi-criteria moral status===
+Locke famously characterized ''person'' as "a forensic term, appropriating actions and their merit; and so belongs only to intelligent agents, capable of a law, and happiness, and misery."<ref>Locke, J. (1689). [https://www.gutenberg.org/ebooks/10615 ''An Essay Concerning Human Understanding''] (Book II, Chapter XXVII, §26). Thomas Basset.</ref> Frankfurt later refined this distinction by separating ''wantons''—beings that merely pursue first-order desires—from ''persons'', who form reflective second-order volitions about which desires and goals they endorse.<ref>Frankfurt, H. G. (1971). [https://doi.org/10.2307/2024717 Freedom of the Will and the Concept of a Person]. ''The Journal of Philosophy'', 68(1), 5–20.</ref>
+
+At the same time, grounding moral standing solely in full Lockean rationality leaves out infants, non-human animals, and emerging minds. Multi-criteria accounts of moral status, such as Warren's, argue that sentience, emotional capacity, self-awareness, and reasoning each contribute Along graded dimensions rather than a single binary switch.<ref>Warren, M. A. (1997). [https://doi.org/10.1093/acprof:oso/9780198250401.001.0001 ''Moral Status: Obligations to Persons and Other Living Things'']. Oxford University Press.</ref> Benefuture separates protective standing from civic liability across those dimensions: any [[being]] exceeding the [[threshold of significance]] of [[sentience]] or [[sapience]] is a person entitled to protection from [[harm]] and the baseline floor of essential goods, while only those who also self-regulate in alignment with [[morality]] qualify as [[benesophont]]s bearing full autonomous rights and the highest tier of legal liability.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
 * Personhood capacities, ontological inclusion, and the liability ordering across persons, beings, and entities ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Person.lean <code>PersonhoodCapacities</code>, <code>Person</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>ontological_liability_ordering</code>]).
 * Every person is guaranteed the baseline floor of essential goods ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Systems/Economy.lean <code>essential_goods_guaranteed_floor</code>, <code>baseline_income_guarantees_free_essentials</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

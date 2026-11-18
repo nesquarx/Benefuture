@@ -7,8 +7,17 @@ A contract or agreement is a documented statement of multiple [[entity|entities]
 * A contract can have a number of algorithmic and mathematical clauses based on inputs and outputs.
 * A contract that goes against the [[law]]s or [[proof|proven]] to negatively affect the [[goals]] of the enforcing administration is deemed invalid.
 * Any [[harm]] caused by an invalid contract goes through the process of [[justice]].
+==Discussion==
+===Incomplete contracts, externalities, and escrow settlement===
+In economic theory, Hart and Moore showed that real-world contracts are inevitably ''incomplete'': because parties cannot foresee or specify every future contingency at signing time, governance rules must determine how unforeseen outcomes and residual claims are resolved when reality unfolds.<ref>Hart, O., & Moore, J. (1988). [https://doi.org/10.2307/1911054 Incomplete Contracts and Renegotiation]. ''Econometrica'', 56(4), 755–785.</ref> At the same time, standard contract law refuses to enforce agreements whose execution imposes uncompensated negative externalities or violates public policy.<ref>Shavell, S. (2004). [https://openlibrary.org/works/OL3324505W ''Foundations of Economic Analysis of Law''] (Chapter 13, pp. 320–324). Harvard University Press.</ref>
+
+Benefuture addresses both problems through two mechanisms: first, any contract proven to violate [[law]] or cause net [[harm]] against the [[Benefuture goals|goals]] is automatically null and void (`invalid_contract_null_and_void`), routing any resulting harm through [[justice]]; second, payments under uncertainty are held in confidence-weighted escrow (`Escrow_split_ref`) and settled as measured [[outcome]]s arrive, aligning private contractual performance with verified long-term value.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Contract validity and nullity when harm exceeds the contract's bound ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>Contract</code>, <code>is_valid_contract</code>, <code>invalid_contract_null_and_void</code>]).
 * Probabilistic escrow conserves the nominal payment and settles against measured outcomes ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>escrow_conservation</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>Escrow_split_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Economy.lean <code>settlement_ref</code>, <code>cause_settlement_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

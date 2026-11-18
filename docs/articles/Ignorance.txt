@@ -1,8 +1,17 @@
 [[Category:Benefuture]][[Category:Definitions]]
 Ignorance is a lack of [[significant]] [[understanding]] required to take a [[decision]].
 
+==Discussion==
+===Knightian uncertainty, decision relevance, and escrow===
+In economics and epistemology, Knight distinguished measurable ''risk'' (where outcome probabilities are well-calibrated) from genuine ''uncertainty'' or ''ignorance'', where the agent lacks a validated model of the domain.<ref>Knight, F. H. (1921). [https://openlibrary.org/works/OL65359W ''Risk, Uncertainty and Profit''] (Part III, Chapter VII). Houghton Mifflin.</ref> Because no finite mind can know every domain, Smithson and modern decision theory emphasize that ignorance is always indexed to a specific decision context: lack of knowledge matters only to the extent that the domain is relevant to the [[decision]] at hand.<ref>Smithson, M. (1989). [https://doi.org/10.1007/978-1-4612-3628-3 ''Ignorance and Uncertainty: Emerging Paradigms''] (Chapter 1). Springer-Verlag.</ref>
+
+Benefuture formalizes domain ignorance as [[understanding]] falling below the [[threshold of significance]] for a relevant decision (`is_domain_ignorant`). When an action proceeds under ignorance or low confidence, its claimed value is held in escrow (`zero_confidence_escrow_blackout`, `Escrow_split_ref`) until empirical measurements resolve the outcome, and any accidental [[harm]] caused through ignorance mandates the [[education]] required to prevent recurrence.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Domain ignorance when understanding falls below the threshold of significance, and contextual relevance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>is_domain_ignorant</code>, <code>Ig</code>, <code>calculate_relevance</code>]).
 * Unmeasured uncertainty holds full escrow until evidence arrives ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>zero_confidence_escrow_blackout</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Domains.lean <code>credence_ref</code>, <code>record_credence_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>Escrow_split_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition of this article is 100% human written; the discussion and formal reference are AI-written.</small>

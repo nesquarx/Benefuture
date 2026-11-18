@@ -49,8 +49,11 @@ def main():
     refs = {}
     for r in idx:
         if r.get("doi_or_url"): refs.setdefault(r["reference"], r["doi_or_url"])
+    delta = 0
     for ref, link in refs.items():
-        if ref in out and out[ref].get("abstract"): continue
+        if ref in out and out[ref].get("link") == link and out[ref].get("source") in ("fetched", "missing"):
+            continue
+        delta += 1
         c = None
         m = re.search(r"doi\.org/(10\.\S+)", link)
         if m:
@@ -68,5 +71,5 @@ def main():
         time.sleep(0.15)
     json.dump(out, open(out_p, "w"), indent=1, ensure_ascii=False, sort_keys=True)
     n = len(out); k = sum(1 for v in out.values() if v.get("abstract"))
-    print(f"{k}/{n} linked references with content; {n-k} missing")
+    print(f"checked {delta} delta references ({k}/{n} linked references with content; {n-k} missing)")
 main()

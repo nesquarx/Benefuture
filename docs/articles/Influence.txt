@@ -19,9 +19,17 @@ Influence is usually achieved via manipulation of an entity's inputs to modify t
 *Influence via leverage
 **Via affecting or promise to affect [[Thing|things]] that the entity values highly (people and possessions)
 
+==Discussion==
+===Relational power, persuasion, and shared liability===
+Where [[power]] is the general capacity to produce outputs, ''influence'' is relational: Dahl defined $A$'s influence over $B$ by the counterfactual difference $A$'s actions make to the probability of $B$'s choices.<ref>Dahl, R. A. (1957). [https://doi.org/10.1002/bs.3830020303 The Concept of Power]. ''Behavioral Science'', 2(3), 201–215.</ref> Lukes added that influence operates not only through overt coercion or incentives, but also by shaping another agent's beliefs, agenda, and perceived options.<ref>Lukes, S. (2005). [https://openlibrary.org/works/OL1881562W ''Power: A Radical View''] (2nd ed., Chapter 1). Palgrave Macmillan.</ref>
+
+In law and moral philosophy, Hart and Honoré showed that causal responsibility is not extinguished merely because a second agent acts between the instigator and the final outcome; when an influencer induces, directs, or deceives another into causing [[harm]], responsibility distributes across the chain.<ref>Hart, H. L. A., & Honoré, T. (1985). [https://doi.org/10.1093/acprof:oso/9780198254744.001.0001 ''Causation in the Law''] (2nd ed., Chapter VI). Clarendon Press.</ref> Benefuture formalizes this symmetrically: positive influence that expands another's [[understanding]] or capabilities earns [[Benefuture currency#Causal Distribution|causal credit]], while harmful or deceptive influence shares liability in proportion to control (`propagated_liability`).
+
 == Formal reference ==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
-* Influence, good influence, and shared liability proportional to control ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Influence</code>, <code>is_good_influence</code>, <code>influencer_shares_positive_liability</code>, <code>full_control_shares_full_liability</code>]).
+* Influence, good influence, and shared liability proportional to control ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Influence</code>, <code>is_good_influence</code>, <code>influencer_shares_positive_liability</code>, <code>full_control_shares_full_liability</code>, <code>propagated_liability</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>propagated_liability_ref</code>]).
 * Persuasive and truth-degrading influence in deliberation, and source deduplication ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>truth_degradation_excluded_from_freedom_tr</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>count_once_ref</code>, <code>undisclosed_echo_ref</code>]).
 
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+==References==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

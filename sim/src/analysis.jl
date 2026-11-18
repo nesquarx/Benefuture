@@ -108,3 +108,96 @@ function progressive_metrics(tr, intact; event_step::Integer)
      recovery_step = rec, recovery_time = rec > 0 ? rec - event_step : 0,
      degraded_keys = sort!(collect(keys(tr.degraded))))
 end
+
+# ---- SimTrace and Conj_* checks (`Benefuture/Systems/Conjectures.lean`) ----
+
+"""
+    SimTrace
+
+Simulation trace record mirroring `Benefuture.Systems.SimTrace` (`Conjectures.lean`).
+"""
+Base.@kwdef struct SimTrace
+    params::Vector{Vector{Float64}} = [bootstrap_params()]
+    min_u::Vector{Float64} = Float64[]
+    min_h::Vector{Float64} = Float64[]
+    median_u::Vector{Float64} = Float64[]
+    median_h::Vector{Float64} = Float64[]
+    aggregate_value::Vector{Float64} = Float64[]
+    reality_scope::Vector{Float64} = Float64[]
+    adversary_share::Float64 = 0.0
+    adopted_mm_accuracy::Vector{Float64} = Float64[]
+    best_mm_accuracy::Vector{Float64} = Float64[]
+    latent_obs_gap::Vector{Float64} = Float64[]
+    exploit_payoff::Vector{Float64} = Float64[]
+    reveal_payoff::Vector{Float64} = Float64[]
+    predicted_min_u_gain::Vector{Float64} = Float64[]
+    realised_min_u_gain::Vector{Float64} = Float64[]
+    max_delegate_share::Vector{Float64} = Float64[]
+    mean_h::Vector{Float64} = Float64[]
+end
+
+"MM competition converges (`Conj_MMCompetitionConverges`, L49): best minus adopted accuracy stays below `ε` from `from_step` onward."
+function conj_mm_competition_converges(tr::SimTrace; ε::Real = 0.05, from_step::Integer = max(1, length(tr.adopted_mm_accuracy) ÷ 2))
+    n = min(length(tr.adopted_mm_accuracy), length(tr.best_mm_accuracy))
+    check(n >= 1 && 1 <= from_step <= n && ε > 0, "valid trace window and positive ε")
+    all(tr.best_mm_accuracy[t] - tr.adopted_mm_accuracy[t] < ε for t in from_step:n)
+end
+
+"Goodhart reduction (`Conj_GoodhartReduction`, L49–52): latent–observed gap does not grow over window `w`."
+function conj_goodhart_reduction(tr::SimTrace; w::Integer = 1, tol::Real = 0.0)
+    n = length(tr.latent_obs_gap)
+    check(n > w >= 1 && tol >= 0, "window w inside trace and non-negative tolerance")
+    all(tr.latent_obs_gap[t + w] <= tr.latent_obs_gap[t] + tol for t in 1:(n - w))
+end
+
+"Gaming resistance (`Conj_GamingResistance`, L161): revealing a flaw pays at least as much as exploiting it at every step."
+function conj_gaming_resistance(tr::SimTrace)
+    n = min(length(tr.exploit_payoff), length(tr.reveal_payoff))
+    check(n >= 1, "non-empty payoff series")
+    all(tr.exploit_payoff[t] <= tr.reveal_payoff[t] for t in 1:n)
+end
+
+"Robustness to adversaries (`Conj_AdversarialRobustness`): below `f_star`, aggregate value stays positive and reality scope does not contract."
+function conj_adversarial_robustness(tr::SimTrace; f_star::Real = 0.5)
+    check(0 < f_star <= 1, "f_star in (0, 1]")
+    tr.adversary_share >= f_star && return true
+    n = min(length(tr.aggregate_value), length(tr.reality_scope) - 1)
+    check(n >= 1, "at least one step and two scope readings")
+    all(tr.aggregate_value[t] > 0 && tr.reality_scope[t] <= tr.reality_scope[t + 1] for t in 1:n)
+end
+
+"Prediction fidelity for ↑min (`Conj_MinTracksPrediction`, L62): realised min-U gain tracks predicted within `η`."
+function conj_min_tracks_prediction(tr::SimTrace; η::Real = 0.5)
+    n = min(length(tr.predicted_min_u_gain), length(tr.realised_min_u_gain))
+    check(n >= 1 && η >= 0, "non-empty series and non-negative η")
+    all(abs(tr.realised_min_u_gain[t] - tr.predicted_min_u_gain[t]) <= η for t in 1:n)
+end
+
+"Floors rise (`Conj_FloorsRise`, L62): over every window of length `w`, `min_u` and `min_h` do not fall."
+function conj_floors_rise(tr::SimTrace; w::Integer = 1, tol::Real = 1e-12)
+    n = min(length(tr.min_u), length(tr.min_h))
+    check(n > w >= 1 && tol >= 0, "window w inside trace")
+    all(tr.min_u[t] - tol <= tr.min_u[t + w] && tr.min_h[t] - tol <= tr.min_h[t + w] for t in 1:(n - w))
+end
+
+"No repugnant drift (`Conj_NoRepugnantDrift`): mean H never drops by more than `ε` over window `w`."
+function conj_no_repugnant_drift(tr::SimTrace; w::Integer = 1, ε::Real = 0.1)
+    n = length(tr.mean_h)
+    check(n > w >= 1 && ε >= 0, "window w inside trace and non-negative ε")
+    all(tr.mean_h[t] - ε <= tr.mean_h[t + w] for t in 1:(n - w))
+end
+
+"Parameter stability (`Conj_ParamStability`, L158): governed fields move by less than `ε` per step from `from_step` onward."
+function conj_param_stability(tr::SimTrace; fields = 1:length(PARAM_FIELDS), ε::Real = 0.05, from_step::Integer = max(1, (length(tr.params) - 1) ÷ 2))
+    n = length(tr.params) - 1
+    check(n >= 1 && 1 <= from_step <= n && ε > 0, "at least two parameter vectors and positive ε")
+    all(abs(tr.params[t + 1][f] - tr.params[t][f]) < ε for t in from_step:n for f in fields)
+end
+
+"Delegation stays dispersed (`Conj_DelegationDispersed`, L114): largest delegate share stays at or below `deleg_cap + margin`."
+function conj_delegation_dispersed(tr::SimTrace; margin::Real = 0.02)
+    n = min(length(tr.max_delegate_share), length(tr.params))
+    check(n >= 1 && margin >= 0, "non-empty delegate series and non-negative margin")
+    cap_idx = findfirst(==(:deleg_cap), PARAM_FIELDS)
+    all(tr.max_delegate_share[t] <= tr.params[t][cap_idx] + margin + 1e-12 for t in 1:n)
+end

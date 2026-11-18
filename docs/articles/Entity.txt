@@ -11,8 +11,21 @@ An entity is a [[thing]] which can perform [[interaction]]s and exhibits any amo
 * All [[being]]s are entities.
 * A collective group of beings operating under certain regulations can behave as a non-sentient entity, such as a corporation. In that case, the beings comprising it are treated as beings, but not the entity.
 
+==Discussion==
+===Minimal agency and corporate actors===
+In the philosophy of information and artificial intelligence, Floridi and Sanders propose that agency should be defined at a clear ''level of abstraction'' by three criteria: interactivity (responding to stimuli from an environment), autonomy (changing state without direct external compulsion), and adaptability—deliberately separating agency from consciousness or moral personhood.<ref>Floridi, L., & Sanders, J. W. (2004). [https://doi.org/10.1023/B:MIND.0000035461.63578.9d On the Morality of Artificial Agents]. ''Minds and Machines'', 14(3), 349–379.</ref> List and Pettit extend this structural view to collective bodies, showing that corporations, committees, and states qualify as genuine institutional agents when they aggregate inputs into coherent outputs over time.<ref>List, C., & Pettit, P. (2011). [https://doi.org/10.1093/acprof:oso/9780199591565.001.0001 ''Group Agency: The Possibility, Design, and Status of Corporate Agents'']. Oxford University Press.</ref>
+
+Benefuture's category of ''entity'' captures this minimal interactive layer: any [[thing]] that takes [[input]]s and produces [[output]]s—whether an atom, a software process, a biological organism, or a corporation—is an entity. Because non-sentient entities cannot experience [[harm]], they have no intrinsic moral standing of their own; instead, control and [[Law|liability]] propagate through the interaction graph from non-sentient entities and tools back to the [[person]]s and [[benesophont]]s who direct them.
+
+===In simulation===
+* When an agent creates or controls a subordinate entity—such as a company or an automated tool—that causes downstream harm, propagating liability along the control graph assigns responsibility to the controlling agent rather than leaving it trapped behind a judgement-proof shell ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Entity and the ontological inclusion chain ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Entity</code>, <code>Interaction</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Sophont.lean <code>master_ontological_inclusion_chain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>ontological_liability_ordering</code>]).
+* Control and liability propagation across corporate or tool chains ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>propagated_control</code>, <code>propagated_liability</code>, <code>propagated_liability_le_harm</code>, <code>propagated_liability_pos</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>propagated_liability_ref</code>]).
 * Fork and merge conservation, and external harm response ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>fork_conserves_social_capital</code>, <code>merge_conserves_reputation</code>, <code>external_response_always_repairable</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>fork_split_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

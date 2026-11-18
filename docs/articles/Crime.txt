@@ -12,9 +12,18 @@ A crime occurs when a set of events which can be traced to be triggered by infor
 * An accident's cost to its contributor is bounded by their capacity, the [[administration]] carries the rest, and the contributor takes the [[education]] that would have made them informed.
 * A hazard one creates is direct harm: intent decides whether it is accident or crime, and repair happens either way.
 
+==Discussion==
+===Mens rea, reckless endangerment, and restorative repair===
+Anglo-American and continental criminal jurisprudence have long rested on the maxim ''actus non facit reum nisi mens sit rea''—an act does not make a person guilty of a crime unless the mind is also culpable—graduating culpability from purpose and knowledge to recklessness and negligence.<ref>Hart, H. L. A. (1968). [https://openlibrary.org/works/OL1876645W ''Punishment and Responsibility: Essays in the Philosophy of Law''] (Chapter II, "Legal Responsibility and Excuses"). Clarendon Press.</ref> However, because subjective ''mens rea'' is difficult to observe directly, legal theory increasingly grounds culpability in whether the actor had fair notice and a recorded opportunity to avoid the risk.<ref>Alexander, L., & Ferzan, K. K. (2009). [https://doi.org/10.1017/CBO9780511804595 ''Crime and Culpability: A Theory of Criminal Law''] (Chapter 2). Cambridge University Press.</ref>
+
+Benefuture replaces speculative inquiry into hidden mental states with an auditable epistemic test: a harmful action or breach of [[duty]] is a ''crime'' if and only if the actor acted voluntarily while informed (by demonstrated [[understanding]] or a recorded prior warning), and an ''accident'' otherwise. In both cases, victim restitution and restorative repair come first; the distinction governs whether the response is mandatory [[education]] to close an [[ignorance]] gap (for accidents) or [[Justice|rehabilitative restraint]] and escrow ratcheting (for crimes).
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Crime and accident are mutually exclusive; verified informed volition or an ignored warning is a crime, while uninformed or involuntary action is an accident ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>crime_and_accident_mutually_exclusive</code>, <code>verified_informed_volition_is_crime</code>, <code>warning_ignored_constitutes_crime</code>, <code>uninformed_action_is_accident</code>, <code>involuntary_action_is_accident</code>]).
 * Informed inaction under a duty from a contract or communicated law is a crime; inaction without a duty is not, and an uninformed breach is an accident ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Justice.lean <code>informed_inaction_under_duty_is_crime</code>, <code>inaction_without_duty_is_not_crime</code>, <code>uninformed_breach_is_accident</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Justice.lean <code>is_crime_ref</code>]).
 * Liability scales with ontological capacity ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Law.lean <code>liability_hierarchy_order</code>, <code>ontological_liability_ordering</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

@@ -11,8 +11,17 @@ In [[benefuture]] terms, '''good''' [[Output|outputs]] and [[Outcome|outcomes]] 
 * Generally, a notion of objective or universal good or bad is meaningless without the context, in the context of benefuture, the subject is all known beings and the goals are the [[benefuture goals]].
 * To speak of a theoretical quantitative process, the calculated value of good for an output or outcome as measured against it not being performed or observed, is the numerical outcome the utility function of Value discussed in the goals.
 
+== Discussion ==
+===Relational value and counterfactual assessment===
+In metaethics, Foot and Thomson argued against treating "good" as a free-floating property detached from any subject or standard; just as "good knife" or "good roots" is relative to a function or organism, ''good'' and ''bad'' are inherently relational—good or bad ''for'' an entity relative to its goals.<ref>Foot, P. (2001). [https://doi.org/10.1093/0198235089.001.0001 ''Natural Goodness''] (Chapter 2). Clarendon Press.</ref><ref>Thomson, J. J. (2008). [https://openlibrary.org/works/OL16516590W ''Normativity''] (Chapter I, "Goodness"). Open Court.</ref>
+
+At the civilizational scale, Benefuture fixes the context explicitly: the subject is the set of all known [[being]]s, and the goals are the [[benefuture goals]] of expanding [[understanding]] and [[happiness]]. Quantitatively, the goodness or badness of an [[output]] or [[outcome]] is evaluated counterfactually—measuring the value trajectory against the baseline in which the action was not performed—analogous to Broome's teleological structure of comparative betterness across worlds.<ref>Broome, J. (1991). [https://openlibrary.org/works/OL1868121W ''Weighing Goods: Equality, Uncertainty and Time''] (Chapter 1). Basil Blackwell.</ref>
+
 == Formal reference ==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Good increases value and bad causes harm ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axiology/Value.lean <code>value_on_being</code>, <code>is_good</code>, <code>is_bad</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>V_ref</code>]).
 * Good mints currency and bad burns it ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Economy/Currency.lean <code>value_creation_expands_supply</code>, <code>harm_penalty_contracts_supply</code>]); anti-corruption design makes good strictly easier than bad ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>good_strictly_easier_than_bad</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+== References ==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

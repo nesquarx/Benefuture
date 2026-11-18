@@ -122,5 +122,21 @@ end
     ac = run_m8_art_confounders(M8ArtConfoundParams(seed = 7))
     @test ac.deconv_error < ac.naive_error
     @test ac.deconv_rank_acc > ac.naive_rank_acc
+
+    # EHR external aggressor world + Law/Enforcement/Continuity world
+    ehr_bf = run_m8_ehr(M8EhrParams(mode = :bf_ehr, seed = 7))
+    ehr_ap = run_m8_ehr(M8EhrParams(mode = :naive_appease, seed = 7))
+    ehr_bl = run_m8_ehr(M8EhrParams(mode = :blind_retaliate, seed = 7))
+    @test ehr_bf.novel_tit_for_tat_err == 0.0
+    @test ehr_bf.hostile_attack_rate < ehr_ap.hostile_attack_rate
+    @test ehr_bf.ally_cooperation_rate > ehr_bl.ally_cooperation_rate
+    @test ehr_bf.irreparable_retaliations == 0 && ehr_bl.irreparable_retaliations > 0
+
+    enf_bf = run_m8_enforcement(M8EnforcementParams(mode = :bf_enforcement, seed = 7))
+    enf_un = run_m8_enforcement(M8EnforcementParams(mode = :unaudited_coercion, seed = 7))
+    enf_no = run_m8_enforcement(M8EnforcementParams(mode = :unenforced, seed = 7))
+    @test enf_bf.continuity_preserved && !enf_no.continuity_preserved
+    @test enf_bf.unaudited_force_abuses == 0 && enf_un.unaudited_force_abuses > 0
+    @test enf_bf.residual_harm < enf_un.residual_harm < enf_no.residual_harm
 end
 

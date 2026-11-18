@@ -10,8 +10,17 @@ An outcome is a set of changes happening in [[reality]] as perceived by an [[ent
 * An [[entity]] performs certain [[output]]s to bring forth the outcome of increased [[understanding]] obtained by certain [[person]]s.
 * A [[civilization]] undertaking a complex geological landscaping to avoid the outcome of a natural disaster.
 
+==Discussion==
+===Acts, states, and counterfactual causation===
+In Savage's foundational framework for decision theory, an agent chooses an ''act'' (an [[output]]), nature resolves the background ''state of the world'', and the pair jointly determines a ''consequence'' or ''outcome'' upon which value is defined.<ref>Savage, L. J. (1954). [https://openlibrary.org/works/OL4498501W ''The Foundations of Statistics''] (Chapter 2). John Wiley & Sons.</ref> In causal inference, Pearl formalizes the effect of an action through counterfactual structural models—comparing the outcome under intervention against the baseline outcome had the intervention not occurred.<ref>Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 7). Cambridge University Press.</ref>
+
+Benefuture combines both perspectives: an outcome is never judged in isolation as a raw state of the world, but is [[Measurement#Assessment|assessed]] as the counterfactual difference between the trajectory of [[understanding]], [[happiness]], and [[Diversity|novelty]] that follows the output and the trajectory that would have occurred without it, settled against measured reality so overstating predictions yields no gain.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
 * Outcome, action, and long-term outcome significance ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Outcome</code>, <code>Action</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Reality.lean <code>outcome_significance</code>, <code>outcome_significance_nonneg</code>]).
 * Settling on measured outcomes removes the gain from overstating predictions ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Proposed/PopulationDirection.lean <code>settlement_removes_overstatement_gain</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Economy.lean <code>cause_settlement_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

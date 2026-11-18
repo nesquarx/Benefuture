@@ -12,10 +12,17 @@ Proof is demonstrating the [[truth]] of a statement by mathematical, logical, or
 
 * If a statement does not generate any falsifiable, testable, or verifiable scenarios, then it is unprovable and is irrelevant for [[decision]] making. <ref name="Popper1959"/>  <ref name="Kuhn1962">Kuhn, T. S. (1962). *The structure of scientific revolutions*. University of Chicago Press. https://openlibrary.org/works/OL3259254W</ref>
 
+==Discussion==
+===Deductive certainty, out-of-sample prediction, and proper scoring===
+While mathematical and logical proofs establish deductive entailment from explicit axioms, empirical science operates by abductive inference and severe testing: as Lakatos argued, a research programme is ''progressive'' rather than degenerating only when its models generate novel, out-of-sample predictions that survive empirical confrontation, rather than merely accommodating past observations.<ref>Lakatos, I. (1970). ''Falsification and the Methodology of Scientific Research Programmes''. In I. Lakatos & A. Musgrave (Eds.), [https://doi.org/10.1017/CBO9781139171434.009 ''Criticism and the Growth of Knowledge''] (pp. 91–196). Cambridge University Press.</ref>
+
+To evaluate probabilistic claims before and after empirical tests resolve, Brier introduced a quadratic scoring rule under which an agent maximizes expected score if and only if they report their true calibrated probability (`brier_score_strictly_proper`).<ref>Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2 Verification of Forecasts Expressed in Terms of Probability]. ''Monthly Weather Review'', 78(1), 1–3.</ref> Benefuture combines both standards: formal invariants are verified deductively in Lean, while empirical models and agent forecasts are scored by out-of-sample causal prediction and strictly proper credence calibration.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]).
 * Verifiable facts, testable hypotheses, and causal explanation quality ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>Fact</code>, <code>Hypothesis</code>, <code>CausalExplanation</code>, <code>causal_model_strictly_dominates_blackbox</code>]).
 * Scoring probabilistic forecasts by the Brier score is strictly proper ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>brier_score_strictly_proper</code>]).
 
+==References==
 <references />
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

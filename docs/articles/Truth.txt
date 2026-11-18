@@ -9,8 +9,21 @@ A statement is said to be true if it can be [[proof|proven]] to be valid in [[re
 * The level of truth and its context is an important metadata about any statement.
 * Source of information can help estimate the level of truth, but not decide it.
 * Unprovable statements cannot be considered as truth of any kind.
+==Discussion==
+===Correspondence, pragmatism, and weakest-link chains===
+Philosophy of truth has long contrasted ''correspondence'' theories—which define truth as structural fidelity between a statement and reality<ref>Tarski, A. (1944). [https://doi.org/10.2307/2102968 The Semantic Conception of Truth: and the Foundations of Semantics]. ''Philosophy and Phenomenological Research'', 4(3), 341–376.</ref>—with ''pragmatic'' theories, which judge a belief by the verifiable predictions and successful actions it enables.<ref>Peirce, C. S. (1878). [https://en.wikisource.org/wiki/Popular_Science_Monthly/Volume_12/January_1878/Illustrations_of_the_Logic_of_Science_II How to Make Our Ideas Clear]. ''Popular Science Monthly'', 12, 286–302.</ref> Benefuture unifies the two: because [[reality]] is known through [[interaction]], a model's level of truth is measured by how accurately and invariantly its causal structure predicts outcomes across untested interventions, strictly dominating a black-box curve fit of equal historical accuracy.<ref>Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 1). Cambridge University Press.</ref>
+
+When a conclusion depends on a chain of inferences or premises, Theophrastus's classical ''pejorem'' rule in modal logic holds that a conclusion is no stronger than its weakest premise (''conclusio sequitur partem debiliorem'').<ref>Kneale, W., & Kneale, M. (1962). [https://openlibrary.org/works/OL1370838W ''The Development of Logic''] (Chapter II, §5, p. 101). Clarendon Press.</ref> Benefuture enforces this weakest-link bound on epistemic propagation (`chain_truth_level`): any statement derived from a chain of claims inherits at most the minimum provable truth level of its links, preventing speculative or falsified premises from laundering themselves into high-confidence conclusions.
+
+===In simulation===
+* Propagating the weakest-link truth bound across multi-hop citation chains prevents downstream agents from adopting conclusions built on an upstream fabrication, reducing false-claim adoption from 100% to 0% and cutting population belief error by more than 96% ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * A causal model strictly dominates a black box of equal fit; causal explanation adds to understanding; pragmatic fit amplifies ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>causal_model_strictly_dominates_blackbox</code>, <code>causal_explanation_enhances_understanding</code>, <code>pragmatic_fit_amplification</code>]).
+* Weakest-link truth propagation across inference chains ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Epistemology/Truth.lean <code>chain_truth_level</code>, <code>chain_truth_level_le_clamped_base</code>, <code>chain_truth_level_mono_base</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>chain_truth_level_ref</code>]).
 * Scoring forecasts by the Brier score is strictly proper: honest credences maximise expected score ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Incentives.lean <code>brier_score_strictly_proper</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition and aspects of this article are 100% human written; the discussion and formal reference are AI-written.</small>

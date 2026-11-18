@@ -12,8 +12,17 @@ An output is an action, when a [[thing]] causes changes in [[reality]]. Usually 
 * A [[thing]] changing its position to change the position of things around it.
 * A [[being]] excreting as part of its process of existence.
 
+==Discussion==
+===Action theory and observable traces===
+In the philosophy of action, Davidson argued that an agent's actions are events that are intentional under an immediate description (such as moving one's hand or uttering a sentence) and then ripple outward through causal chains to produce wider consequences that the agent may or may not have foreseen.<ref>Davidson, D. (1980). [https://doi.org/10.1093/0199246270.001.0001 ''Essays on Actions and Events''] (Essay 3, "Agency", pp. 43–61). Clarendon Press.</ref> Benefuture captures this distinction by separating ''output''—the immediate physical or informational emission of an [[entity]]—from [[outcome]], the resulting state change across [[reality]].
+
+Because internal intentions and hidden mental states cannot be verified across arbitrary biological and synthetic minds, all evaluation in Benefuture—from [[Benesophont|benesophont]] standing and [[freedom]] gating to [[Benefuture currency#Causal Distribution|causal distribution]]—attaches to an entity's observable outputs and the counterfactual outcomes they generate.
+
 ==Formal reference==
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Output, intent, and action ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Ontology/Entity.lean <code>Output</code>, <code>Intent</code>, <code>Action</code>]).
 * Freedom is the maximisation of permissible outputs within the harm boundary ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>fr_permissible_spec</code>, <code>freedom_metric_monotone_with_permissible_action</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>fr_permissible_ref</code>]).
-<small>AI Disclaimer: This article is 100% human written, except the formal reference, which is AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

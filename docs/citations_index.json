@@ -1,5 +1,32 @@
 [
  {
+  "article": "Accolade",
+  "section": "Discussion",
+  "subsection": "Supererogation, marginal contribution, and Goodhart resistance",
+  "name": "",
+  "reference": "Urmson, J. O. (1958). ''Saints and Heroes''. In A. I. Melden (Ed.), [https://openlibrary.org/works/OL4907340W ''Essays in Moral Philosophy''] (pp. 198–216). University of Washington Press.",
+  "supports": "ussion== ===Supererogation, marginal contribution, and Goodhart resistance=== In moral philosophy, Urmson introduced the modern analysis of ''supererogation''—actions that are praiseworthy and valuable beyond the call of strict duty, yet neither obligatory nor already compensated by prior agreement.",
+  "doi_or_url": "https://openlibrary.org/works/OL4907340W"
+ },
+ {
+  "article": "Accolade",
+  "section": "Discussion",
+  "subsection": "Supererogation, marginal contribution, and Goodhart resistance",
+  "name": "",
+  "reference": "Shapley, L. S. (1953). ''A Value for n-Person Games''. In H. W. Kuhn & A. W. Tucker (Eds.), [https://openlibrary.org/works/OL4417976W ''Contributions to the Theory of Games''] (Vol. II, pp. 307–317). Princeton University Press.",
+  "supports": "In mechanism design and cooperative game theory, rewarding an agent by their counterfactual marginal contribution—what would not have occurred had the agent not stepped in, as in the Shapley value or Vickrey–Clarke–Groves pivot mechanism—aligns individual incentives with total social value.",
+  "doi_or_url": "https://openlibrary.org/works/OL4417976W"
+ },
+ {
+  "article": "Accolade",
+  "section": "Discussion",
+  "subsection": "Supererogation, marginal contribution, and Goodhart resistance",
+  "name": "",
+  "reference": "Goodhart, C. A. E. (1984). ''Problems of Monetary Management: The U.K. Experience''. In [https://doi.org/10.1007/978-1-349-17295-5_4 ''Monetary Theory and Practice''] (pp. 91–121). Palgrave Macmillan.",
+  "supports": "At the same time, Goodhart's law warns that any simple proxy target ceases to be a good measure once agents optimize to game it.",
+  "doi_or_url": "https://doi.org/10.1007/978-1-349-17295-5_4"
+ },
+ {
   "article": "Adversarial adaptation",
   "section": "Aspects",
   "subsection": "",
@@ -97,6 +124,60 @@
   "reference": "Duchamp, M. (1917, replica 1964). [https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573 ''Fountain'']. Tate.",
   "supports": "===Found and implicit art=== Duchamp's readymade, a manufactured urinal submitted to an exhibition, made recontextualisation the whole of the work;",
   "doi_or_url": "https://www.tate.org.uk/art/artworks/duchamp-fountain-t07573"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "Autopoiesis, 4D spacetime worms, and branching identity",
+  "name": "",
+  "reference": "Maturana, H. R., & Varela, F. J. (1980). [https://doi.org/10.1007/978-94-009-8947-4 ''Autopoiesis and Cognition: The Realization of the Living'']. D. Reidel Publishing Company.",
+  "supports": "is, 4D spacetime worms, and branching identity=== Biological and systems accounts of agency ground ''being'' in self-maintaining organization—what Maturana and Varela termed ''autopoiesis'', where an organism continuously regenerates the boundary and processes that sustain it against entropic decay.",
+  "doi_or_url": "https://doi.org/10.1007/978-94-009-8947-4"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "Autopoiesis, 4D spacetime worms, and branching identity",
+  "name": "",
+  "reference": "Lewis, D. K. (1983). ''Survival and Identity''. In [https://doi.org/10.1093/0195032047.003.0005 ''Philosophical Papers''] (Vol. I, pp. 55–77). Oxford University Press.",
+  "supports": "imensionalist'' (perdurance) view in metaphysics—developed by Quine, Lewis, and Sider—in which a persisting being is a four-dimensional ''spacetime worm'' composed of causally and psychologically connected temporal stages, rather than a static object that must remain unchanged from moment to moment.",
+  "doi_or_url": "https://doi.org/10.1093/0195032047.003.0005"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "Autopoiesis, 4D spacetime worms, and branching identity",
+  "name": "",
+  "reference": "Sider, T. (2001). [https://doi.org/10.1093/019924443X.001.0001 ''Four-Dimensionalism: An Ontology of Persistence and Time'']. Clarendon Press.",
+  "supports": "imensionalist'' (perdurance) view in metaphysics—developed by Quine, Lewis, and Sider—in which a persisting being is a four-dimensional ''spacetime worm'' composed of causally and psychologically connected temporal stages, rather than a static object that must remain unchanged from moment to moment.",
+  "doi_or_url": "https://doi.org/10.1093/019924443X.001.0001"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "Autopoiesis, 4D spacetime worms, and branching identity",
+  "name": "",
+  "reference": "Locke, J. (1689). [https://www.gutenberg.org/ebooks/10615 ''An Essay Concerning Human Understanding''] (Book II, Chapter XXVII). Thomas Basset.",
+  "supports": "Viewing identity as a 4D spacetime trajectory also resolves the puzzles of psychological continuity",
+  "doi_or_url": "https://www.gutenberg.org/ebooks/10615"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "Autopoiesis, 4D spacetime worms, and branching identity",
+  "name": "",
+  "reference": "Parfit, D. (1984). [https://doi.org/10.1093/019824908X.001.0001 ''Reasons and Persons''] (Part Three). Clarendon Press.",
+  "supports": "As Parfit and Lewis showed, when a trajectory splits into two branches or two trajectories merge, they share an overlapping 4D segment of history while diverging thereafter (\"Relation R\").",
+  "doi_or_url": "https://doi.org/10.1093/019824908X.001.0001"
+ },
+ {
+  "article": "Being",
+  "section": "Discussion",
+  "subsection": "The extended self",
+  "name": "",
+  "reference": "Clark, A., & Chalmers, D. (1998). [https://doi.org/10.1093/analys/58.1.7 The Extended Mind]. ''Analysis'', 58(1), 7–19.",
+  "supports": "===The extended self=== Clark and Chalmers famously argued for the ''extended mind'': when an external tool, notebook, or environment is reliably coupled to an agent's cognitive loop, it functions as part of that agent's mind rather than mere external scaffolding.",
+  "doi_or_url": "https://doi.org/10.1093/analys/58.1.7"
  },
  {
   "article": "Benefuture currency",
@@ -477,6 +558,33 @@
   "doi_or_url": "https://openlibrary.org/works/OL15829966W"
  },
  {
+  "article": "Benesophont",
+  "section": "Discussion",
+  "subsection": "Moral agency, practical wisdom, and substrate independence",
+  "name": "",
+  "reference": "Aristotle (c. 340 BCE). [https://classics.mit.edu/Aristotle/nicomachaen.6.vi.html ''Nicomachean Ethics'', Book VI, Chapter 12 (1144a)]. Translated by W. D. Ross.",
+  "supports": "This mirrors Aristotle's distinction between mere cleverness (''deinotes'', instrumental skill in achieving any target) and practical wisdom (''phronesis'', deliberation aligned with the flourishing of the whole community),",
+  "doi_or_url": "https://classics.mit.edu/Aristotle/nicomachaen.6.vi.html"
+ },
+ {
+  "article": "Benesophont",
+  "section": "Discussion",
+  "subsection": "Moral agency, practical wisdom, and substrate independence",
+  "name": "",
+  "reference": "Rawls, J. (1993). [https://openlibrary.org/works/OL2009261W ''Political Liberalism''] (Lecture II, §1, pp. 48–54). Columbia University Press.",
+  "supports": "ving any target) and practical wisdom (''phronesis'', deliberation aligned with the flourishing of the whole community), as well as Rawls's pairing of the ''rational'' (capacity to pursue a conception of the good) with the ''reasonable'' (readiness to propose and abide by fair terms of cooperation).",
+  "doi_or_url": "https://openlibrary.org/works/OL2009261W"
+ },
+ {
+  "article": "Benesophont",
+  "section": "Discussion",
+  "subsection": "Moral agency, practical wisdom, and substrate independence",
+  "name": "",
+  "reference": "Samuelson, P. A. (1938). [https://doi.org/10.2307/2548836 A Note on the Pure Theory of Consumer's Behaviour]. ''Economica'', 5(17), 61–71.",
+  "supports": "Crucially, because internal mental states cannot be directly inspected across diverse biological and artificial minds, Benefuture evaluates benesophont standing strictly through observable [[output]]s—analogous to Samuelson's revealed preference criterion in economics,",
+  "doi_or_url": "https://doi.org/10.2307/2548836"
+ },
+ {
   "article": "Citations",
   "section": "",
   "subsection": "Happiness improves understanding and its effects",
@@ -510,7 +618,70 @@
   "name": "",
   "reference": "(Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244)",
   "supports": "* '''Being Creative Makes You Happier:''' This study explores the positive effect of creativity on subjective well-being.",
-  "doi_or_url": "https://doi.org/10.1002/jocb.347"
+  "doi_or_url": "https://doi.org/10.3390/ijerph18147244"
+ },
+ {
+  "article": "Communication",
+  "section": "Discussion",
+  "subsection": "Signal fidelity, semantic alignment, and common ground",
+  "name": "",
+  "reference": "Shannon, C. E. (1948). [https://doi.org/10.1002/j.1538-7305.1948.tb01338.x A Mathematical Theory of Communication]. ''Bell System Technical Journal'', 27(3), 379–423.",
+  "supports": "==Discussion== ===Signal fidelity, semantic alignment, and common ground=== Shannon's mathematical theory of communication separated the engineering problem of reproducing a signal across a noisy channel from the semantic problem of whether the receiver interprets the signal as intended.",
+  "doi_or_url": "https://doi.org/10.1002/j.1538-7305.1948.tb01338.x"
+ },
+ {
+  "article": "Communication",
+  "section": "Discussion",
+  "subsection": "Signal fidelity, semantic alignment, and common ground",
+  "name": "",
+  "reference": "Lewis, D. K. (1969). [https://openlibrary.org/works/OL3508914W ''Convention: A Philosophical Study''] (Chapter IV). Harvard University Press.",
+  "supports": "In the philosophy of language, Grice and Lewis showed that semantic communication relies on shared conventions and mutual recognition of communicative intent—built up from precursor regularities that already mean the same thing to both parties.",
+  "doi_or_url": "https://openlibrary.org/works/OL3508914W"
+ },
+ {
+  "article": "Communication",
+  "section": "Discussion",
+  "subsection": "Signal fidelity, semantic alignment, and common ground",
+  "name": "",
+  "reference": "Grice, H. P. (1957). [https://doi.org/10.2307/2182440 Meaning]. ''The Philosophical Review'', 66(3), 377–388.",
+  "supports": "In the philosophy of language, Grice and Lewis showed that semantic communication relies on shared conventions and mutual recognition of communicative intent—built up from precursor regularities that already mean the same thing to both parties.",
+  "doi_or_url": "https://doi.org/10.2307/2182440"
+ },
+ {
+  "article": "Contract",
+  "section": "Discussion",
+  "subsection": "Incomplete contracts, externalities, and escrow settlement",
+  "name": "",
+  "reference": "Hart, O., & Moore, J. (1988). [https://doi.org/10.2307/1911054 Incomplete Contracts and Renegotiation]. ''Econometrica'', 56(4), 755–785.",
+  "supports": "ent=== In economic theory, Hart and Moore showed that real-world contracts are inevitably ''incomplete'': because parties cannot foresee or specify every future contingency at signing time, governance rules must determine how unforeseen outcomes and residual claims are resolved when reality unfolds.",
+  "doi_or_url": "https://doi.org/10.2307/1911054"
+ },
+ {
+  "article": "Contract",
+  "section": "Discussion",
+  "subsection": "Incomplete contracts, externalities, and escrow settlement",
+  "name": "",
+  "reference": "Shavell, S. (2004). [https://openlibrary.org/works/OL3324505W ''Foundations of Economic Analysis of Law''] (Chapter 13, pp. 320–324). Harvard University Press.",
+  "supports": "At the same time, standard contract law refuses to enforce agreements whose execution imposes uncompensated negative externalities or violates public policy.",
+  "doi_or_url": "https://openlibrary.org/works/OL3324505W"
+ },
+ {
+  "article": "Crime",
+  "section": "Discussion",
+  "subsection": "Mens rea, reckless endangerment, and restorative repair",
+  "name": "",
+  "reference": "Hart, H. L. A. (1968). [https://openlibrary.org/works/OL1876645W ''Punishment and Responsibility: Essays in the Philosophy of Law''] (Chapter II, \"Legal Responsibility and Excuses\"). Clarendon Press.",
+  "supports": " repair=== Anglo-American and continental criminal jurisprudence have long rested on the maxim ''actus non facit reum nisi mens sit rea''—an act does not make a person guilty of a crime unless the mind is also culpable—graduating culpability from purpose and knowledge to recklessness and negligence.",
+  "doi_or_url": "https://openlibrary.org/works/OL1876645W"
+ },
+ {
+  "article": "Crime",
+  "section": "Discussion",
+  "subsection": "Mens rea, reckless endangerment, and restorative repair",
+  "name": "",
+  "reference": "Alexander, L., & Ferzan, K. K. (2009). [https://doi.org/10.1017/CBO9780511804595 ''Crime and Culpability: A Theory of Criminal Law''] (Chapter 2). Cambridge University Press.",
+  "supports": "However, because subjective ''mens rea'' is difficult to observe directly, legal theory increasingly grounds culpability in whether the actor had fair notice and a recorded opportunity to avoid the risk.",
+  "doi_or_url": "https://doi.org/10.1017/CBO9780511804595"
  },
  {
   "article": "Culture",
@@ -529,6 +700,33 @@
   "reference": "S. Kirby, H. Cornish, & K. Smith, Cumulative cultural evolution in the laboratory: An experimental approach to the origins of structure in human language, ''Proc. Natl. Acad. Sci. U.S.A.'' 105 (31) 10681-10686, [https://doi.org/10.1073/pnas.0707835105&#x20;(2008). https://doi.org/10.1073/pnas.0707835105 (2008).]",
   "supports": "Benefuture values cultural heritage and recognizes the importance of preserving traditions, languages",
   "doi_or_url": "https://doi.org/10.1073/pnas.0707835105&#x20;(2008"
+ },
+ {
+  "article": "Decision",
+  "section": "Discussion",
+  "subsection": "Bounded rationality and inaction as a choice",
+  "name": "",
+  "reference": "von Neumann, J., & Morgenstern, O. (1944). [https://openlibrary.org/works/OL3963222W ''Theory of Games and Economic Behavior'']. Princeton University Press.",
+  "supports": "==Discussion== ===Bounded rationality and inaction as a choice=== Classical decision theory models choice as selecting from an available set of actions the option that maximizes expected value under the agent's beliefs.",
+  "doi_or_url": "https://openlibrary.org/works/OL3963222W"
+ },
+ {
+  "article": "Decision",
+  "section": "Discussion",
+  "subsection": "Bounded rationality and inaction as a choice",
+  "name": "",
+  "reference": "Simon, H. A. (1955). [https://doi.org/10.2307/1884852 A Behavioral Model of Rational Choice]. ''The Quarterly Journal of Economics'', 69(1), 99–118.",
+  "supports": "Because real agents face finite time, attention, and computational capacity, Simon introduced ''bounded rationality'': deliberation is itself a costly resource, so an agent must decide when further search costs more than the expected improvement in the chosen action.",
+  "doi_or_url": "https://doi.org/10.2307/1884852"
+ },
+ {
+  "article": "Decision",
+  "section": "Discussion",
+  "subsection": "Bounded rationality and inaction as a choice",
+  "name": "",
+  "reference": "Samuelson, W., & Zeckhauser, R. (1988). [https://doi.org/10.1007/BF00055564 Status Quo Bias in Decision Making]. ''Journal of Risk and Uncertainty'', 1(1), 7–59.",
+  "supports": "Benefuture incorporates both insights: every decision includes ''no output'' (inaction) inside the option set—so omission and commission are evaluated by the same counterfactual standard rather than privileged by status-quo bias",
+  "doi_or_url": "https://doi.org/10.1007/BF00055564"
  },
  {
   "article": "Diversity",
@@ -711,6 +909,42 @@
   "doi_or_url": "https://doi.org/10.1038/s41467-025-57205-x"
  },
  {
+  "article": "Enforcement",
+  "section": "Discussion",
+  "subsection": "Responsive regulation and architectural prevention",
+  "name": "",
+  "reference": "Ayres, I., & Braithwaite, J. (1992). [https://openlibrary.org/works/OL1964526W ''Responsive Regulation: Transcending the Deregulation Debate''] (Chapter 2, \"The Benign Big Gun\"). Oxford University Press.",
+  "supports": "Ayres and Braithwaite's model of ''responsive regulation'' proposes a pyramid in which the vast majority of compliance is secured at the base through architectural design, education, and aligned incentives, escalating to coercive incapacitation only when dialogue and restorative repair fail.",
+  "doi_or_url": "https://openlibrary.org/works/OL1964526W"
+ },
+ {
+  "article": "Enforcement",
+  "section": "Discussion",
+  "subsection": "Responsive regulation and architectural prevention",
+  "name": "",
+  "reference": "Hurwicz, L. (1973). [https://www.jstor.org/stable/1817047 The Design of Mechanisms for Resource Allocation]. ''The American Economic Review'', 63(2), 1–30.",
+  "supports": "Similarly, in mechanism design, Hurwicz characterized an institution as ''incentive compatible'' when self-interested or local decision-making naturally implements the social goal without heavy policing.",
+  "doi_or_url": "https://www.jstor.org/stable/1817047"
+ },
+ {
+  "article": "Entity",
+  "section": "Discussion",
+  "subsection": "Minimal agency and corporate actors",
+  "name": "",
+  "reference": "Floridi, L., & Sanders, J. W. (2004). [https://doi.org/10.1023/B:MIND.0000035461.63578.9d On the Morality of Artificial Agents]. ''Minds and Machines'', 14(3), 349–379.",
+  "supports": "ropose that agency should be defined at a clear ''level of abstraction'' by three criteria: interactivity (responding to stimuli from an environment), autonomy (changing state without direct external compulsion), and adaptability—deliberately separating agency from consciousness or moral personhood.",
+  "doi_or_url": "https://doi.org/10.1023/B:MIND.0000035461.63578.9d"
+ },
+ {
+  "article": "Entity",
+  "section": "Discussion",
+  "subsection": "Minimal agency and corporate actors",
+  "name": "",
+  "reference": "List, C., & Pettit, P. (2011). [https://doi.org/10.1093/acprof:oso/9780199591565.001.0001 ''Group Agency: The Possibility, Design, and Status of Corporate Agents'']. Oxford University Press.",
+  "supports": "List and Pettit extend this structural view to collective bodies, showing that corporations, committees, and states qualify as genuine institutional agents when they aggregate inputs into coherent outputs over time.",
+  "doi_or_url": "https://doi.org/10.1093/acprof:oso/9780199591565.001.0001"
+ },
+ {
   "article": "Freedom",
   "section": "Discussion",
   "subsection": "Positive freedom, weighed",
@@ -772,6 +1006,33 @@
   "reference": "Mill, J. S. (1859). [https://www.gutenberg.org/ebooks/34901 ''On Liberty'']. John W. Parker and Son.",
   "supports": "===Speech and truth=== Mill also argued that false opinions have value, since truth stays alive by colliding with error.",
   "doi_or_url": "https://www.gutenberg.org/ebooks/34901"
+ },
+ {
+  "article": "Good and Bad",
+  "section": "Discussion",
+  "subsection": "Relational value and counterfactual assessment",
+  "name": "",
+  "reference": "Foot, P. (2001). [https://doi.org/10.1093/0198235089.001.0001 ''Natural Goodness''] (Chapter 2). Clarendon Press.",
+  "supports": "taethics, Foot and Thomson argued against treating \"good\" as a free-floating property detached from any subject or standard; just as \"good knife\" or \"good roots\" is relative to a function or organism, ''good'' and ''bad'' are inherently relational—good or bad ''for'' an entity relative to its goals.",
+  "doi_or_url": "https://doi.org/10.1093/0198235089.001.0001"
+ },
+ {
+  "article": "Good and Bad",
+  "section": "Discussion",
+  "subsection": "Relational value and counterfactual assessment",
+  "name": "",
+  "reference": "Thomson, J. J. (2008). [https://openlibrary.org/works/OL16516590W ''Normativity''] (Chapter I, \"Goodness\"). Open Court.",
+  "supports": "taethics, Foot and Thomson argued against treating \"good\" as a free-floating property detached from any subject or standard; just as \"good knife\" or \"good roots\" is relative to a function or organism, ''good'' and ''bad'' are inherently relational—good or bad ''for'' an entity relative to its goals.",
+  "doi_or_url": "https://openlibrary.org/works/OL16516590W"
+ },
+ {
+  "article": "Good and Bad",
+  "section": "Discussion",
+  "subsection": "Relational value and counterfactual assessment",
+  "name": "",
+  "reference": "Broome, J. (1991). [https://openlibrary.org/works/OL1868121W ''Weighing Goods: Equality, Uncertainty and Time''] (Chapter 1). Basil Blackwell.",
+  "supports": "Quantitatively, the goodness or badness of an [[output]] or [[outcome]] is evaluated counterfactually—measuring the value trajectory against the baseline in which the action was not performed—analogous to Broome's teleological structure of comparative betterness across worlds.",
+  "doi_or_url": "https://openlibrary.org/works/OL1868121W"
  },
  {
   "article": "Government",
@@ -957,7 +1218,7 @@
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "",
-  "name": "FujiwaraEtAl2018",
+  "name": "LeeEtAl2021",
   "reference": "Lee, C.-W., Lin, L.-C., & Hung, H.-C. (2021). Art and Cultural Participation and Life Satisfaction in Adults: The Role of Physical Health, Mental Health, and Interpersonal Relationships. ''Frontiers in Public Health'', 8, 582342. https://doi.org/10.3389/fpubh.2020.582342",
   "supports": "Engaging with art and culture has also been linked to increased life satisfaction, mediated by physical and mental health and strong interpersonal relationships",
   "doi_or_url": "https://doi.org/10.3389/fpubh.2020.582342"
@@ -975,10 +1236,10 @@
   "article": "Happiness",
   "section": "Discussion",
   "subsection": "",
-  "name": "AcarRunco2019",
+  "name": "TanEtAl2021",
   "reference": "Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244",
   "supports": "Even the act of being creative itself can enhance subjective well-being",
-  "doi_or_url": "https://doi.org/10.1002/jocb.347"
+  "doi_or_url": "https://doi.org/10.3390/ijerph18147244"
  },
  {
   "article": "Happiness",
@@ -1206,6 +1467,51 @@
   "doi_or_url": "http://www.govindicators.org/"
  },
  {
+  "article": "Harm",
+  "section": "Discussion",
+  "subsection": "Counterfactual comparative harm, reference points, and offence",
+  "name": "",
+  "reference": "Feinberg, J. (1984). [https://doi.org/10.1093/0195046641.001.0001 ''Harm to Others: The Moral Limits of the Criminal Law''] (Vol. 1, Chapter 1). Oxford University Press.",
+  "supports": "eing's trajectory following an interaction against the trajectory it would have occupied had the interaction not occurred—while distinguishing genuine harm from ''mere offence'' (disgust, shock, or displeasure at another's peaceful beliefs or lifestyle), which cannot justify restricting [[freedom]].",
+  "doi_or_url": "https://doi.org/10.1093/0195046641.001.0001"
+ },
+ {
+  "article": "Harm",
+  "section": "Discussion",
+  "subsection": "Counterfactual comparative harm, reference points, and offence",
+  "name": "",
+  "reference": "Feinberg, J. (1985). [https://doi.org/10.1093/0195052153.001.0001 ''Offense to Others: The Moral Limits of the Criminal Law''] (Vol. 2, Chapter 7). Oxford University Press.",
+  "supports": "eing's trajectory following an interaction against the trajectory it would have occupied had the interaction not occurred—while distinguishing genuine harm from ''mere offence'' (disgust, shock, or displeasure at another's peaceful beliefs or lifestyle), which cannot justify restricting [[freedom]].",
+  "doi_or_url": "https://doi.org/10.1093/0195052153.001.0001"
+ },
+ {
+  "article": "Harm",
+  "section": "Discussion",
+  "subsection": "Counterfactual comparative harm, reference points, and offence",
+  "name": "",
+  "reference": "Kahneman, D., & Tversky, A. (1979). [https://doi.org/10.2307/1914185 Prospect Theory: An Analysis of Decision under Risk]. ''Econometrica'', 47(2), 263–291.",
+  "supports": "Behavioral decision theory adds that losses are evaluated relative to reference points and weigh more heavily than commensurate gains.",
+  "doi_or_url": "https://doi.org/10.2307/1914185"
+ },
+ {
+  "article": "Ignorance",
+  "section": "Discussion",
+  "subsection": "Knightian uncertainty, decision relevance, and escrow",
+  "name": "",
+  "reference": "Knight, F. H. (1921). [https://openlibrary.org/works/OL65359W ''Risk, Uncertainty and Profit''] (Part III, Chapter VII). Houghton Mifflin.",
+  "supports": "==Discussion== ===Knightian uncertainty, decision relevance, and escrow=== In economics and epistemology, Knight distinguished measurable ''risk'' (where outcome probabilities are well-calibrated) from genuine ''uncertainty'' or ''ignorance'', where the agent lacks a validated model of the domain.",
+  "doi_or_url": "https://openlibrary.org/works/OL65359W"
+ },
+ {
+  "article": "Ignorance",
+  "section": "Discussion",
+  "subsection": "Knightian uncertainty, decision relevance, and escrow",
+  "name": "",
+  "reference": "Smithson, M. (1989). [https://doi.org/10.1007/978-1-4612-3628-3 ''Ignorance and Uncertainty: Emerging Paradigms''] (Chapter 1). Springer-Verlag.",
+  "supports": "Because no finite mind can know every domain, Smithson and modern decision theory emphasize that ignorance is always indexed to a specific decision context: lack of knowledge matters only to the extent that the domain is relevant to the [[decision]] at hand.",
+  "doi_or_url": "https://doi.org/10.1007/978-1-4612-3628-3"
+ },
+ {
   "article": "Implementation prototype",
   "section": "",
   "subsection": "",
@@ -1229,7 +1535,7 @@
   "subsection": "",
   "name": "",
   "reference": "Wilson, D.S., Ostrom, E., & Cox, M.E. (2013). Generalizing the core design principles for the efficacy of groups. ''Journal of Economic Behavior & Organization'', 90, S21-S32. https://doi.org/10.1016/j.jebo.2012.12.010",
-  "supports": "e currency#Transaction Mechanics|escrow]] mechanisms), conflict resolution ([[Justice]] system, dispute resolution), recognized rights to organize (self-governing local [[Administration|administrations]]), and nested enterprises (fractal [[Government|governance]] from local to civilizational scale).",
+  "supports": "[reputation]] penalties are proportional to the harm), conflict resolution ([[Justice]] system, dispute resolution), recognized rights to organize (self-governing local [[Administration|administrations]]), and nested enterprises (fractal [[Government|governance]] from local to civilizational scale).",
   "doi_or_url": "https://doi.org/10.1016/j.jebo.2012.12.010"
  },
  {
@@ -1296,6 +1602,78 @@
   "doi_or_url": ""
  },
  {
+  "article": "Influence",
+  "section": "Discussion",
+  "subsection": "Relational power, persuasion, and shared liability",
+  "name": "",
+  "reference": "Dahl, R. A. (1957). [https://doi.org/10.1002/bs.3830020303 The Concept of Power]. ''Behavioral Science'', 2(3), 201–215.",
+  "supports": "==Discussion== ===Relational power, persuasion, and shared liability=== Where [[power]] is the general capacity to produce outputs, ''influence'' is relational: Dahl defined $A$'s influence over $B$ by the counterfactual difference $A$'s actions make to the probability of $B$'s choices.",
+  "doi_or_url": "https://doi.org/10.1002/bs.3830020303"
+ },
+ {
+  "article": "Influence",
+  "section": "Discussion",
+  "subsection": "Relational power, persuasion, and shared liability",
+  "name": "",
+  "reference": "Lukes, S. (2005). [https://openlibrary.org/works/OL1881562W ''Power: A Radical View''] (2nd ed., Chapter 1). Palgrave Macmillan.",
+  "supports": "Lukes added that influence operates not only through overt coercion or incentives, but also by shaping another agent's beliefs, agenda, and perceived options.",
+  "doi_or_url": "https://openlibrary.org/works/OL1881562W"
+ },
+ {
+  "article": "Influence",
+  "section": "Discussion",
+  "subsection": "Relational power, persuasion, and shared liability",
+  "name": "",
+  "reference": "Hart, H. L. A., & Honoré, T. (1985). [https://doi.org/10.1093/acprof:oso/9780198254744.001.0001 ''Causation in the Law''] (2nd ed., Chapter VI). Clarendon Press.",
+  "supports": "aw and moral philosophy, Hart and Honoré showed that causal responsibility is not extinguished merely because a second agent acts between the instigator and the final outcome; when an influencer induces, directs, or deceives another into causing [[harm]], responsibility distributes across the chain.",
+  "doi_or_url": "https://doi.org/10.1093/acprof:oso/9780198254744.001.0001"
+ },
+ {
+  "article": "Input",
+  "section": "Discussion",
+  "subsection": "Information intake and source independence",
+  "name": "",
+  "reference": "Bateson, G. (1972). [https://openlibrary.org/works/OL53864W ''Steps to an Ecology of Mind''] (p. 453). Chandler Publishing Company.",
+  "supports": "==Discussion== ===Information intake and source independence=== Bateson famously defined elementary information as \"a difference which makes a difference\" to a receiving system.",
+  "doi_or_url": "https://openlibrary.org/works/OL53864W"
+ },
+ {
+  "article": "Input",
+  "section": "Discussion",
+  "subsection": "Information intake and source independence",
+  "name": "",
+  "reference": "Ashby, W. R. (1956). [https://openlibrary.org/works/OL1183948W ''An Introduction to Cybernetics''] (Chapter 4). Chapman & Hall.",
+  "supports": "In cybernetics and perceptual psychology, an ''input'' is not every physical event in the ambient environment, but specifically the boundary perturbations and signals that couple to an [[entity]]'s internal state.",
+  "doi_or_url": "https://openlibrary.org/works/OL1183948W"
+ },
+ {
+  "article": "Input",
+  "section": "Discussion",
+  "subsection": "Information intake and source independence",
+  "name": "",
+  "reference": "Bikhchandani, S., Hirshleifer, D., & Welch, I. (1992). [https://doi.org/10.1086/261849 A Theory of Fads, Fashion, Custom, and Cultural Change as Informational Cascades]. ''Journal of Political Economy'', 100(5), 992–1026.",
+  "supports": "When inputs carry epistemic claims through [[communication]], classic social epistemology shows that treating correlated echoes of a single origin as independent witnesses produces cascading overconfidence.",
+  "doi_or_url": "https://doi.org/10.1086/261849"
+ },
+ {
+  "article": "Interaction",
+  "section": "Discussion",
+  "subsection": "Causal processes and physical information transfer",
+  "name": "",
+  "reference": "Salmon, W. C. (1984). [https://openlibrary.org/works/OL2796608W ''Scientific Explanation and the Causal Structure of the World''] (Chapter 5). Princeton University Press.",
+  "supports": "==Discussion== ===Causal processes and physical information transfer=== In the philosophy of science, Salmon distinguished genuine causal processes from pseudo-processes by their ability to transmit a conserved physical quantity or structural ''mark'' from one spacetime region to another.",
+  "doi_or_url": "https://openlibrary.org/works/OL2796608W"
+ },
+ {
+  "article": "Interaction",
+  "section": "Discussion",
+  "subsection": "Causal processes and physical information transfer",
+  "name": "",
+  "reference": "Landauer, R. (1991). [https://doi.org/10.1063/1.881299 Information is Physical]. ''Physics Today'', 44(5), 23–29.",
+  "supports": "Landauer's principle in statistical physics establishes the converse bridge for information: because information is always physically instantiated (\"information is physical\"), every transfer, copy, or erasure of an informational state requires a physical interaction between systems.",
+  "doi_or_url": "https://doi.org/10.1063/1.881299"
+ },
+ {
   "article": "Justice",
   "section": "Aspects",
   "subsection": "Reparation",
@@ -1303,6 +1681,33 @@
   "reference": "Zehr, H. (1990). ''Changing Lenses: A New Focus for Crime and Justice''. Herald Press. https://openlibrary.org/works/OL3246202W",
   "supports": "===Reparation=== The process of Justice must provide ways in which the harm to the victims can be repaired, mitigated, ameliorated",
   "doi_or_url": "https://openlibrary.org/works/OL3246202W"
+ },
+ {
+  "article": "Law",
+  "section": "Discussion",
+  "subsection": "Secondary rules, Hohfeldian incidents, and architectural compliance",
+  "name": "",
+  "reference": "Hart, H. L. A. (1961). [https://openlibrary.org/works/OL1876642W ''The Concept of Law''] (Chapter V). Clarendon Press.",
+  "supports": "chitectural compliance=== In ''The Concept of Law'', Hart argued that a mature legal system requires not only ''primary rules'' of obligation, but ''secondary rules'' of recognition, change, and adjudication that specify how laws are identified, updated as conditions change, and applied to disputes.",
+  "doi_or_url": "https://openlibrary.org/works/OL1876642W"
+ },
+ {
+  "article": "Law",
+  "section": "Discussion",
+  "subsection": "Secondary rules, Hohfeldian incidents, and architectural compliance",
+  "name": "",
+  "reference": "Hohfeld, W. N. (1913). [https://doi.org/10.2307/785533 Some Fundamental Legal Conceptions as Applied in Judicial Reasoning]. ''The Yale Law Journal'', 23(1), 16–59.",
+  "supports": "Within primary rules, Hohfeld's analysis distinguishes four fundamental jural relations—claim-rights, privileges (liberties), powers, and immunities—alongside their correlative duties and liabilities.",
+  "doi_or_url": "https://doi.org/10.2307/785533"
+ },
+ {
+  "article": "Law",
+  "section": "Discussion",
+  "subsection": "Secondary rules, Hohfeldian incidents, and architectural compliance",
+  "name": "",
+  "reference": "Lessig, L. (1999). [https://openlibrary.org/works/OL41913W ''Code and Other Laws of Cyberspace''] (Chapter 7). Basic Books.",
+  "supports": "g two design constraints: first, liability scales strictly with ontological capacity and awareness (from [[thing]] and non-sentient [[entity]] up to [[person]] and [[benesophont]]), and second, wherever feasible, compliance is embedded into the physical and institutional architecture (\"code is law\")",
+  "doi_or_url": "https://openlibrary.org/works/OL41913W"
  },
  {
   "article": "Measurement",
@@ -1435,6 +1840,42 @@
   "section": "Discussion",
   "subsection": "Place among moral theories",
   "name": "",
+  "reference": "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed.). Cambridge University Press.",
+  "supports": "In this sense, it reconstructs ''karma'' without metaphysics through a causal- and decision-theoretic lens: actions propagate along structural causal paths,",
+  "doi_or_url": "https://doi.org/10.1017/CBO9780511803161"
+ },
+ {
+  "article": "Morality",
+  "section": "Discussion",
+  "subsection": "Place among moral theories",
+  "name": "",
+  "reference": "Chockler, H., & Halpern, J. Y. (2004). [https://doi.org/10.1613/jair.1430 Responsibility and Blame: A Structural-Model Approach]. ''Journal of Artificial Intelligence Research'', 22, 93–115.",
+  "supports": "In this sense, it reconstructs ''karma'' without metaphysics through a causal- and decision-theoretic lens: actions propagate along structural causal paths, accrue quantifiable responsibility across networks,",
+  "doi_or_url": "https://doi.org/10.1613/jair.1430"
+ },
+ {
+  "article": "Morality",
+  "section": "Discussion",
+  "subsection": "Place among moral theories",
+  "name": "",
+  "reference": "Keown, D. (1996). [https://doi.org/10.1111/j.1467-9795.1996.tb00446.x Karma, Character, and Consequentialism]. ''Journal of Religious Ethics'', 24(2), 329–350.",
+  "supports": "In this sense, it reconstructs ''karma'' without metaphysics through a causal- and decision-theoretic lens: actions propagate along structural causal paths, accrue quantifiable responsibility across networks, and return reflexively through character formation",
+  "doi_or_url": "https://doi.org/10.1111/j.1467-9795.1996.tb00446.x"
+ },
+ {
+  "article": "Morality",
+  "section": "Discussion",
+  "subsection": "Place among moral theories",
+  "name": "",
+  "reference": "Nowak, M. A., & Sigmund, K. (2005). [https://doi.org/10.1038/nature04131 Evolution of indirect reciprocity]. ''Nature'', 437(7068), 1291–1298.",
+  "supports": "is sense, it reconstructs ''karma'' without metaphysics through a causal- and decision-theoretic lens: actions propagate along structural causal paths, accrue quantifiable responsibility across networks, and return reflexively through character formation and reputation-mediated indirect reciprocity.",
+  "doi_or_url": "https://doi.org/10.1038/nature04131"
+ },
+ {
+  "article": "Morality",
+  "section": "Discussion",
+  "subsection": "Place among moral theories",
+  "name": "",
   "reference": "Hume, D. (1739–40). [https://www.gutenberg.org/ebooks/4705 ''A Treatise of Human Nature''], Book 3, Part 2.",
   "supports": "Like Hume's justice, the morality is completed by conventions that make it pay:",
   "doi_or_url": "https://www.gutenberg.org/ebooks/4705"
@@ -1456,6 +1897,60 @@
   "reference": "Parfit, D. (1984). [https://openlibrary.org/isbn/019824908X ''Reasons and Persons''], Part III. Oxford University Press.",
   "supports": "Parfit reached impartiality by weakening the self until others mattered as much;",
   "doi_or_url": "https://openlibrary.org/isbn/019824908X"
+ },
+ {
+  "article": "Outcome",
+  "section": "Discussion",
+  "subsection": "Acts, states, and counterfactual causation",
+  "name": "",
+  "reference": "Savage, L. J. (1954). [https://openlibrary.org/works/OL4498501W ''The Foundations of Statistics''] (Chapter 2). John Wiley & Sons.",
+  "supports": "= ===Acts, states, and counterfactual causation=== In Savage's foundational framework for decision theory, an agent chooses an ''act'' (an [[output]]), nature resolves the background ''state of the world'', and the pair jointly determines a ''consequence'' or ''outcome'' upon which value is defined.",
+  "doi_or_url": "https://openlibrary.org/works/OL4498501W"
+ },
+ {
+  "article": "Outcome",
+  "section": "Discussion",
+  "subsection": "Acts, states, and counterfactual causation",
+  "name": "",
+  "reference": "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 7). Cambridge University Press.",
+  "supports": "In causal inference, Pearl formalizes the effect of an action through counterfactual structural models—comparing the outcome under intervention against the baseline outcome had the intervention not occurred.",
+  "doi_or_url": "https://doi.org/10.1017/CBO9780511803161"
+ },
+ {
+  "article": "Output",
+  "section": "Discussion",
+  "subsection": "Action theory and observable traces",
+  "name": "",
+  "reference": "Davidson, D. (1980). [https://doi.org/10.1093/0199246270.001.0001 ''Essays on Actions and Events''] (Essay 3, \"Agency\", pp. 43–61). Clarendon Press.",
+  "supports": "the philosophy of action, Davidson argued that an agent's actions are events that are intentional under an immediate description (such as moving one's hand or uttering a sentence) and then ripple outward through causal chains to produce wider consequences that the agent may or may not have foreseen.",
+  "doi_or_url": "https://doi.org/10.1093/0199246270.001.0001"
+ },
+ {
+  "article": "Person",
+  "section": "Discussion",
+  "subsection": "Forensic personhood and multi-criteria moral status",
+  "name": "",
+  "reference": "Locke, J. (1689). [https://www.gutenberg.org/ebooks/10615 ''An Essay Concerning Human Understanding''] (Book II, Chapter XXVII, §26). Thomas Basset.",
+  "supports": "==Discussion== ===Forensic personhood and multi-criteria moral status=== Locke famously characterized ''person'' as \"a forensic term, appropriating actions and their merit; and so belongs only to intelligent agents, capable of a law, and happiness, and misery.\"",
+  "doi_or_url": "https://www.gutenberg.org/ebooks/10615"
+ },
+ {
+  "article": "Person",
+  "section": "Discussion",
+  "subsection": "Forensic personhood and multi-criteria moral status",
+  "name": "",
+  "reference": "Frankfurt, H. G. (1971). [https://doi.org/10.2307/2024717 Freedom of the Will and the Concept of a Person]. ''The Journal of Philosophy'', 68(1), 5–20.",
+  "supports": " belongs only to intelligent agents, capable of a law, and happiness, and misery.\" Frankfurt later refined this distinction by separating ''wantons''—beings that merely pursue first-order desires—from ''persons'', who form reflective second-order volitions about which desires and goals they endorse.",
+  "doi_or_url": "https://doi.org/10.2307/2024717"
+ },
+ {
+  "article": "Person",
+  "section": "Discussion",
+  "subsection": "Forensic personhood and multi-criteria moral status",
+  "name": "",
+  "reference": "Warren, M. A. (1997). [https://doi.org/10.1093/acprof:oso/9780198250401.001.0001 ''Moral Status: Obligations to Persons and Other Living Things'']. Oxford University Press.",
+  "supports": "Multi-criteria accounts of moral status, such as Warren's, argue that sentience, emotional capacity, self-awareness, and reasoning each contribute Along graded dimensions rather than a single binary switch.",
+  "doi_or_url": "https://doi.org/10.1093/acprof:oso/9780198250401.001.0001"
  },
  {
   "article": "Philosophy",
@@ -2169,6 +2664,51 @@
   "doi_or_url": "https://openlibrary.org/works/OL1133700W"
  },
  {
+  "article": "Power",
+  "section": "Discussion",
+  "subsection": "Dispositional capacity and anti-concentration",
+  "name": "",
+  "reference": "Morriss, P. (2002). [https://openlibrary.org/works/OL3974763W ''Power: A Philosophical Analysis''] (2nd ed., Chapter 5). Manchester University Press.",
+  "supports": "==Discussion== ===Dispositional capacity and anti-concentration=== In social and political philosophy, Morriss distinguishes ''power-to''—an agent's dispositional ability to bring about outcomes in the world—from ''power-over'', the relational ability to bend other agents' choices.",
+  "doi_or_url": "https://openlibrary.org/works/OL3974763W"
+ },
+ {
+  "article": "Power",
+  "section": "Discussion",
+  "subsection": "Dispositional capacity and anti-concentration",
+  "name": "",
+  "reference": "Russell, B. (1938). [https://openlibrary.org/works/OL1105246W ''Power: A New Social Analysis''] (Chapter I, p. 35). George Allen & Unwin.",
+  "supports": "Dahl's classic behavioral definition focuses on the latter, whereas Russell characterized power more broadly as \"the production of intended effects\"—the direct analogue of physical energy in social dynamics.",
+  "doi_or_url": "https://openlibrary.org/works/OL1105246W"
+ },
+ {
+  "article": "Power",
+  "section": "Discussion",
+  "subsection": "Dispositional capacity and anti-concentration",
+  "name": "",
+  "reference": "Dahl, R. A. (1957). [https://doi.org/10.1002/bs.3830020303 The Concept of Power]. ''Behavioral Science'', 2(3), 201–215.",
+  "supports": "Dahl's classic behavioral definition focuses on the latter, whereas Russell characterized power more broadly as \"the production of intended effects\"—the direct analogue of physical energy in social dynamics.",
+  "doi_or_url": "https://doi.org/10.1002/bs.3830020303"
+ },
+ {
+  "article": "Progressive complexity",
+  "section": "",
+  "subsection": "Discussion",
+  "name": "",
+  "reference": "Simon, H. A. (1962). [https://www.jstor.org/stable/985254 The Architecture of Complexity]. ''Proceedings of the American Philosophical Society'', 106(6), 467–482.",
+  "supports": "In complex-systems theory, Simon showed that ''nearly decomposable'' hierarchical systems evolve far faster and survive shocks far better than monolithic ones because when a high-level coupling fails, stable lower-level subsystems continue operating rather than collapsing back to raw components.",
+  "doi_or_url": "https://www.jstor.org/stable/985254"
+ },
+ {
+  "article": "Progressive complexity",
+  "section": "",
+  "subsection": "Discussion",
+  "name": "",
+  "reference": "Avizienis, A., Laprie, J.-C., Randell, B., & Landwehr, C. (2004). [https://doi.org/10.1109/TDSC.2004.2 Basic Concepts and Taxonomy of Dependable and Secure Computing]. ''IEEE Transactions on Dependable and Secure Computing'', 1(1), 11–33.",
+  "supports": "In dependable computing, Avizienis formalized ''graceful degradation'' and fault tolerance as the ability of a system to maintain core safety and functionality at reduced fidelity when sensors, bandwidth, or compute degrade.",
+  "doi_or_url": "https://doi.org/10.1109/TDSC.2004.2"
+ },
+ {
   "article": "Proof",
   "section": "Aspects",
   "subsection": "",
@@ -2214,6 +2754,60 @@
   "doi_or_url": "https://openlibrary.org/works/OL3259254W"
  },
  {
+  "article": "Proof",
+  "section": "Discussion",
+  "subsection": "Deductive certainty, out-of-sample prediction, and proper scoring",
+  "name": "",
+  "reference": "Lakatos, I. (1970). ''Falsification and the Methodology of Scientific Research Programmes''. In I. Lakatos & A. Musgrave (Eds.), [https://doi.org/10.1017/CBO9781139171434.009 ''Criticism and the Growth of Knowledge''] (pp. 91–196). Cambridge University Press.",
+  "supports": "cal science operates by abductive inference and severe testing: as Lakatos argued, a research programme is ''progressive'' rather than degenerating only when its models generate novel, out-of-sample predictions that survive empirical confrontation, rather than merely accommodating past observations.",
+  "doi_or_url": "https://doi.org/10.1017/CBO9781139171434.009"
+ },
+ {
+  "article": "Proof",
+  "section": "Discussion",
+  "subsection": "Deductive certainty, out-of-sample prediction, and proper scoring",
+  "name": "",
+  "reference": "Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2 Verification of Forecasts Expressed in Terms of Probability]. ''Monthly Weather Review'', 78(1), 1–3.",
+  "supports": "To evaluate probabilistic claims before and after empirical tests resolve, Brier introduced a quadratic scoring rule under which an agent maximizes expected score if and only if they report their true calibrated probability (`brier_score_strictly_proper`).",
+  "doi_or_url": "https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2"
+ },
+ {
+  "article": "Reality",
+  "section": "Discussion",
+  "subsection": "Structural realism and interactive criterion",
+  "name": "",
+  "reference": "Plato (c. 360 BCE). ''Sophist'', 247d–e. Translated by B. Jowett. [https://classics.mit.edu/Plato/sophist.html MIT Internet Classics Archive].",
+  "supports": "==Discussion== ===Structural realism and interactive criterion=== What counts as real has divided metaphysics since Plato's ''Sophist'', where the Eleatic Stranger proposes the ''eleatic principle'': to be real is to possess causal power—the capacity to affect or be affected.",
+  "doi_or_url": "https://classics.mit.edu/Plato/sophist.html"
+ },
+ {
+  "article": "Reality",
+  "section": "Discussion",
+  "subsection": "Structural realism and interactive criterion",
+  "name": "",
+  "reference": "Ladyman, J., & Ross, D. (2007). [https://doi.org/10.1093/acprof:oso/9780199276196.001.0001 ''Every Thing Must Go: Metaphysics Naturalized'']. Oxford University Press.",
+  "supports": "In contemporary philosophy of science, ontic structural realism argues that what physics discovers is not an unobservable substratum of intrinsic natures, but the web of modal and causal relations among spacetime patterns.",
+  "doi_or_url": "https://doi.org/10.1093/acprof:oso/9780199276196.001.0001"
+ },
+ {
+  "article": "Reality",
+  "section": "Discussion",
+  "subsection": "Structural realism and interactive criterion",
+  "name": "",
+  "reference": "Chalmers, D. J. (2022). [https://openlibrary.org/isbn/9780393635805 ''Reality+: Virtual Worlds and the Problems of Philosophy'']. W. W. Norton & Company.",
+  "supports": "Similarly, Chalmers argues in ''Reality+'' that virtual or simulated environments whose causal and informational structure couples to conscious experiencers are genuine parts of reality rather than mere fictions.",
+  "doi_or_url": "https://openlibrary.org/isbn/9780393635805"
+ },
+ {
+  "article": "Reality",
+  "section": "Discussion",
+  "subsection": "Structural realism and interactive criterion",
+  "name": "",
+  "reference": "Nozick, R. (1974). [https://openlibrary.org/works/OL2634276W ''Anarchy, State, and Utopia''] (pp. 42–45). Basic Books.",
+  "supports": "Benefuture draws the line by causal coupling: a bridged simulation that exchanges inputs and outputs with the wider universe is part of reality, whereas a hermetically isolated simulation is not; and retreating inward into closed experience factories",
+  "doi_or_url": "https://openlibrary.org/works/OL2634276W"
+ },
+ {
   "article": "Reputation",
   "section": "Aspects",
   "subsection": "",
@@ -2221,6 +2815,33 @@
   "reference": "Rozin, P., & Royzman, E. B. (2001). [https://doi.org/10.1207/S15327957PSPR0504_2 Negativity bias, negativity dominance, and contagion]. ''Personality and Social Psychology Review'', ''5''(4), 296–320.",
   "supports": "* '''Ledger asymmetry:''' Negative and positive reputation are summed separately and do not cancel each other",
   "doi_or_url": "https://doi.org/10.1207/S15327957PSPR0504_2"
+ },
+ {
+  "article": "Sapience",
+  "section": "Discussion",
+  "subsection": "Internal models and predictive regulation",
+  "name": "",
+  "reference": "Brandom, R. B. (1994). [https://openlibrary.org/works/OL1897635W ''Making It Explicit: Reasoning, Representing, and Discursive Commitment''] (Chapter 1, pp. 4–8). Harvard University Press.",
+  "supports": "==Discussion== ===Internal models and predictive regulation=== Where [[sentience]] concerns felt experience and preference, ''sapience'' concerns conceptual understanding and predictive inference.",
+  "doi_or_url": "https://openlibrary.org/works/OL1897635W"
+ },
+ {
+  "article": "Sapience",
+  "section": "Discussion",
+  "subsection": "Internal models and predictive regulation",
+  "name": "",
+  "reference": "Conant, R. C., & Ashby, W. R. (1970). [https://doi.org/10.1080/00207727008920220 Every Good Regulator of a System Must Be a Model of That System]. ''International Journal of Systems Science'', 1(2), 89–97.",
+  "supports": "In cybernetics, Conant and Ashby's ''Good Regulator Theorem'' proves that any effective regulator of a system must contain a homomorphic model of that system capable of predicting how candidate actions alter its states.",
+  "doi_or_url": "https://doi.org/10.1080/00207727008920220"
+ },
+ {
+  "article": "Sapience",
+  "section": "Discussion",
+  "subsection": "Internal models and predictive regulation",
+  "name": "",
+  "reference": "Clark, A. (2013). [https://doi.org/10.1017/S0140525X12000477 Whatever Next? Predictive Brains, Situated Agents, and the Future of Cognitive Science]. ''Behavioral and Brain Sciences'', 36(3), 181–204.",
+  "supports": "Modern cognitive science and neuroscience reach a parallel conclusion through predictive processing, characterizing intelligence as the continual refinement of generative world-models to minimize prediction error across action and perception.",
+  "doi_or_url": "https://doi.org/10.1017/S0140525X12000477"
  },
  {
   "article": "Sentience",
@@ -2239,6 +2860,33 @@
   "reference": "Goff, Philip, William Seager, and Sean Allen-Hermanson, \"Panpsychism\", ''The Stanford Encyclopedia of Philosophy'' (Summer 2022 Edition), Edward N. Zalta (ed.), https://plato.stanford.edu/archives/sum2022/entries/panpsychism/",
   "supports": "A sentient entity is called a [[Being]] ==Aspects== * The definition of consciousness is still evolving, but we assume a panpsychic",
   "doi_or_url": "https://plato.stanford.edu/archives/sum2022/entries/panpsychism/"
+ },
+ {
+  "article": "Sentience",
+  "section": "Discussion",
+  "subsection": "Phenomenal valence and precautionary protection",
+  "name": "",
+  "reference": "Nagel, T. (1974). [https://doi.org/10.2307/2183914 What Is It Like to Be a Bat?]. ''The Philosophical Review'', 83(4), 435–450.",
+  "supports": "==Discussion== ===Phenomenal valence and precautionary protection=== In the philosophy of mind, Nagel framed phenomenal consciousness around whether \"there is something that it is like to be\" an organism—a subjective point of view from which experiences are felt.",
+  "doi_or_url": "https://doi.org/10.2307/2183914"
+ },
+ {
+  "article": "Sentience",
+  "section": "Discussion",
+  "subsection": "Phenomenal valence and precautionary protection",
+  "name": "",
+  "reference": "Bentham, J. (1789). [https://www.gutenberg.org/ebooks/56463 ''An Introduction to the Principles of Morals and Legislation''] (Chapter XVII, §1, note). T. Payne and Son.",
+  "supports": "In moral philosophy from Bentham onward, it is specifically ''valenced'' sentience—the capacity to experience states as positive or negative, preferred or avoided (\"Can they suffer?\")—that grounds protection against [[harm]].",
+  "doi_or_url": "https://www.gutenberg.org/ebooks/56463"
+ },
+ {
+  "article": "Sentience",
+  "section": "Discussion",
+  "subsection": "Phenomenal valence and precautionary protection",
+  "name": "",
+  "reference": "Birch, J. (2017). [https://doi.org/10.1017/S0953820817000121 Animal Sentience and the Precautionary Principle]. ''Animal Sentience'', 2(16), 1.",
+  "supports": "m behavioral, physiological, and structural indicators, Birch argues for a ''precautionary framework'' in animal and artificial sentience law: when credible markers indicate a non-trivial probability of valenced experience, protective thresholds should apply rather than awaiting apodictic certainty.",
+  "doi_or_url": "https://doi.org/10.1017/S0953820817000121"
  },
  {
   "article": "System Design",
@@ -2419,6 +3067,132 @@
   "reference": "Nussbaum, M. C. (2011). ''Creating Capabilities: The Human Development Approach''. Harvard University Press. https://doi.org/10.4159/harvard.9780674061200",
   "supports": "=== Capability Grounding === The multi-currency, multi-metric approach parallels capability theory in welfare economics",
   "doi_or_url": "https://doi.org/10.4159/harvard.9780674061200"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Wheeler, J. A. (1990). ''Information, Physics, Quantum: The Search for Links''. In W. H. Zurek (Ed.), [https://openlibrary.org/works/OL2204224W ''Complexity, Entropy, and the Physics of Information''] (pp. 3–28). Addison-Wesley.",
+  "supports": "In physics, Wheeler's ''it from bit'' thesis proposes that every item of the physical world—every particle, field of force, and the spacetime continuum itself—derives its existence and identity from the informational distinctions registered by interactions.",
+  "doi_or_url": "https://openlibrary.org/works/OL2204224W"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Dennett, D. C. (1991). [https://doi.org/10.2307/2027085 Real Patterns]. ''The Journal of Philosophy'', 88(1), 27–51.",
+  "supports": "In philosophy of science, Dennett's account of ''real patterns'' likewise holds that an object, process, or abstract state exists as a distinct item to the extent that tracking its pattern compresses description and supports prediction better than listing raw microphysical coordinates.",
+  "doi_or_url": "https://doi.org/10.2307/2027085"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Quine, W. V. O. (1960). [https://openlibrary.org/works/OL2664673W ''Word and Object''] (§36, p. 171). MIT Press.",
+  "supports": "Quine similarly observed that a physical object is simply the material content of any portion of spacetime, however scattered or heterogeneous, while concepts and numbers are higher-order patterns individuated by the criteria of identity a theory supplies (\"no entity without identity\").",
+  "doi_or_url": "https://openlibrary.org/works/OL2664673W"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Quine, W. V. O. (1969). [https://doi.org/10.7312/quin92204 ''Ontological Relativity and Other Essays''] (p. 23). Columbia University Press.",
+  "supports": "Quine similarly observed that a physical object is simply the material content of any portion of spacetime, however scattered or heterogeneous, while concepts and numbers are higher-order patterns individuated by the criteria of identity a theory supplies (\"no entity without identity\").",
+  "doi_or_url": "https://doi.org/10.7312/quin92204"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Wheeler, J. A. (1990). ''Information, Physics, Quantum: The Search for Links''. In W. H. Zurek (Ed.), [https://openlibrary.org/works/OL2204224W ''Complexity, Entropy, and the Physics of Information''] (pp. 3–28). Addison-Wesley.",
+  "supports": "In physics, Wheeler's ''it from bit'' thesis proposes that every item of the physical world—every particle, field of force, and the spacetime continuum itself—derives its existence and identity from the informational distinctions registered by interactions.",
+  "doi_or_url": "https://openlibrary.org/works/OL2204224W"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Dennett, D. C. (1991). [https://doi.org/10.2307/2027085 Real Patterns]. ''The Journal of Philosophy'', 88(1), 27–51.",
+  "supports": "In philosophy of science, Dennett's account of ''real patterns'' likewise holds that an object, process, or abstract state exists as a distinct item to the extent that tracking its pattern compresses description and supports prediction better than listing raw microphysical coordinates.",
+  "doi_or_url": "https://doi.org/10.2307/2027085"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Quine, W. V. O. (1960). [https://openlibrary.org/works/OL2664673W ''Word and Object''] (§36, p. 171). MIT Press.",
+  "supports": "Quine similarly observed that a physical object is simply the material content of any portion of spacetime, however scattered or heterogeneous, while concepts and numbers are higher-order patterns individuated by the criteria of identity a theory supplies (\"no entity without identity\").",
+  "doi_or_url": "https://openlibrary.org/works/OL2664673W"
+ },
+ {
+  "article": "Thing",
+  "section": "Discussion",
+  "subsection": "It from bit, real patterns, and individuation",
+  "name": "",
+  "reference": "Quine, W. V. O. (1969). [https://doi.org/10.7312/quin92204 ''Ontological Relativity and Other Essays''] (p. 23). Columbia University Press.",
+  "supports": "Quine similarly observed that a physical object is simply the material content of any portion of spacetime, however scattered or heterogeneous, while concepts and numbers are higher-order patterns individuated by the criteria of identity a theory supplies (\"no entity without identity\").",
+  "doi_or_url": "https://doi.org/10.7312/quin92204"
+ },
+ {
+  "article": "Threshold of significance",
+  "section": "Discussion",
+  "subsection": "Evolutionary operation and adaptive policy experiments",
+  "name": "",
+  "reference": "Box, G. E. P. (1957). [https://doi.org/10.2307/2985505 Evolutionary Operation: A Method for Increasing Industrial Productivity]. ''Applied Statistics'', 6(2), 81–101.",
+  "supports": "ather than holding industrial or institutional parameters frozen at an initial guess, a running system introduces small, controlled perturbations within safe operating bounds, measures the resulting performance, and shifts the operating point only when evidence clears a statistical significance bar.",
+  "doi_or_url": "https://doi.org/10.2307/2985505"
+ },
+ {
+  "article": "Threshold of significance",
+  "section": "Discussion",
+  "subsection": "Evolutionary operation and adaptive policy experiments",
+  "name": "",
+  "reference": "Campbell, D. T. (1969). [https://doi.org/10.1037/h0027982 Reforms as Experiments]. ''American Psychologist'', 24(4), 409–429.",
+  "supports": "At the public-policy level, Campbell similarly advocated the ''experimenting society'', treating policy thresholds as testable hypotheses evaluated through bounded field trials rather than untouchable dogmas.",
+  "doi_or_url": "https://doi.org/10.1037/h0027982"
+ },
+ {
+  "article": "Truth",
+  "section": "Discussion",
+  "subsection": "Correspondence, pragmatism, and weakest-link chains",
+  "name": "",
+  "reference": "Tarski, A. (1944). [https://doi.org/10.2307/2102968 The Semantic Conception of Truth: and the Foundations of Semantics]. ''Philosophy and Phenomenological Research'', 4(3), 341–376.",
+  "supports": "==Discussion== ===Correspondence, pragmatism, and weakest-link chains=== Philosophy of truth has long contrasted ''correspondence'' theories—which define truth as structural fidelity between a statement and reality",
+  "doi_or_url": "https://doi.org/10.2307/2102968"
+ },
+ {
+  "article": "Truth",
+  "section": "Discussion",
+  "subsection": "Correspondence, pragmatism, and weakest-link chains",
+  "name": "",
+  "reference": "Peirce, C. S. (1878). [https://en.wikisource.org/wiki/Popular_Science_Monthly/Volume_12/January_1878/Illustrations_of_the_Logic_of_Science_II How to Make Our Ideas Clear]. ''Popular Science Monthly'', 12, 286–302.",
+  "supports": "nce, pragmatism, and weakest-link chains=== Philosophy of truth has long contrasted ''correspondence'' theories—which define truth as structural fidelity between a statement and reality—with ''pragmatic'' theories, which judge a belief by the verifiable predictions and successful actions it enables.",
+  "doi_or_url": "https://en.wikisource.org/wiki/Popular_Science_Monthly/Volume_12/January_1878/Illustrations_of_the_Logic_of_Science_II"
+ },
+ {
+  "article": "Truth",
+  "section": "Discussion",
+  "subsection": "Correspondence, pragmatism, and weakest-link chains",
+  "name": "",
+  "reference": "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 1). Cambridge University Press.",
+  "supports": "Benefuture unifies the two: because [[reality]] is known through [[interaction]], a model's level of truth is measured by how accurately and invariantly its causal structure predicts outcomes across untested interventions, strictly dominating a black-box curve fit of equal historical accuracy.",
+  "doi_or_url": "https://doi.org/10.1017/CBO9780511803161"
+ },
+ {
+  "article": "Truth",
+  "section": "Discussion",
+  "subsection": "Correspondence, pragmatism, and weakest-link chains",
+  "name": "",
+  "reference": "Kneale, W., & Kneale, M. (1962). [https://openlibrary.org/works/OL1370838W ''The Development of Logic''] (Chapter II, §5, p. 101). Clarendon Press.",
+  "supports": "When a conclusion depends on a chain of inferences or premises, Theophrastus's classical ''pejorem'' rule in modal logic holds that a conclusion is no stronger than its weakest premise (''conclusio sequitur partem debiliorem'').",
+  "doi_or_url": "https://openlibrary.org/works/OL1370838W"
  },
  {
   "article": "Understanding",
@@ -2833,5 +3607,23 @@
   "reference": "World Bank. (Various years). ''Worldwide Governance Indicators''. http://www.govindicators.org/",
   "supports": "** World Governance Indicators.",
   "doi_or_url": "http://www.govindicators.org/"
+ },
+ {
+  "article": "Untruth",
+  "section": "Discussion",
+  "subsection": "Deceptive implicature and epistemic calibration",
+  "name": "",
+  "reference": "Grice, H. P. (1989). [https://openlibrary.org/works/OL1897631W ''Studies in the Way of Words''] (Chapter 2, \"Logic and Conversation\", pp. 22–40). Harvard University Press.",
+  "supports": "ature and epistemic calibration=== Philosophy of language and ethics distinguish outright falsehoods from deceptive implicatures—statements that are literally true in isolation (such as \"everyone who drinks water dies\") yet pragmatically mislead a listener into inferring a false causal relationship.",
+  "doi_or_url": "https://openlibrary.org/works/OL1897631W"
+ },
+ {
+  "article": "Untruth",
+  "section": "Discussion",
+  "subsection": "Deceptive implicature and epistemic calibration",
+  "name": "",
+  "reference": "Bok, S. (1978). [https://openlibrary.org/works/OL1102124W ''Lying: Moral Choice in Public and Private Life''] (Chapter I). Pantheon Books.",
+  "supports": "ature and epistemic calibration=== Philosophy of language and ethics distinguish outright falsehoods from deceptive implicatures—statements that are literally true in isolation (such as \"everyone who drinks water dies\") yet pragmatically mislead a listener into inferring a false causal relationship.",
+  "doi_or_url": "https://openlibrary.org/works/OL1102124W"
  }
 ]

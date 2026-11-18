@@ -11,6 +11,11 @@ An untruth or a lie is a statement which claims a certain level of [[truth]] but
 * A statement like ''everyone who drinks water, dies'' is true as a sequence of unrelated events, but it implies a cause and effect which has provably a very low correlation, there lies the deception.
 
 ==Discussion==
+===Deceptive implicature and epistemic calibration===
+Philosophy of language and ethics distinguish outright falsehoods from deceptive implicatures—statements that are literally true in isolation (such as "everyone who drinks water dies") yet pragmatically mislead a listener into inferring a false causal relationship.<ref>Grice, H. P. (1989). [https://openlibrary.org/works/OL1897631W ''Studies in the Way of Words''] (Chapter 2, "Logic and Conversation", pp. 22–40). Harvard University Press.</ref><ref>Bok, S. (1978). [https://openlibrary.org/works/OL1102124W ''Lying: Moral Choice in Public and Private Life''] (Chapter I). Pantheon Books.</ref>
+
+Benefuture captures both forms under a single quantitative definition: an ''untruth'' is any gap between the advertised level of [[truth]] (or implied causal correlation) of a statement and its [[proof|provable]] level, whenever that gap can sway a [[decision]]. Because honest inquiry requires room for tentative hypotheses that later turn out to be wrong, Benefuture penalizes only overstated certainty and fabricated provenance (`malicious_fabrication_penalized`, `tags_falsified_ref`), while good-faith dissent stated at its actual credence incurs zero penalty (`good_faith_dissent_zero_penalty`).
+
 ===In simulation===
 * Deceit is read apart from skill: over 10 seeds, founded audit reports land only on actors who overstate their claims, never on honest ones of either high or low skill, and deceit roughly halves a skilled liar's earnings and cuts an unskilled liar's by about nine-tenths against honest peers ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
 
@@ -18,4 +23,7 @@ An untruth or a lie is a statement which claims a certain level of [[truth]] but
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Malicious fabrication is penalised while good-faith dissent incurs zero penalty ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Governance/Adversarial.lean <code>malicious_fabrication_penalized</code>, <code>good_faith_dissent_zero_penalty</code>]); degrading truth is excluded from freedom ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Subgoals/Freedom.lean <code>truth_degradation_excluded_from_freedom_tr</code>]).
 * Flagging falsified truth-level tags and undisclosed echoes, and ratcheting escrow on repeated overstatement ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Sources.lean <code>tags_falsified_ref</code>, <code>undisclosed_echo_ref</code>]; [https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Records.lean <code>persistence_ref</code>, <code>escalated_credence_ref</code>, <code>repeat_escrow_credence_ref</code>]).
-----<small>AI Disclaimer: This article is 100% human written, except the simulation notes and formal reference, which are AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>

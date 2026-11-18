@@ -38,3 +38,64 @@ end
     @test success_pattern(tr; from = 3).floor_u == 1.5
     @test_throws ArgumentError success_pattern(tr; from = 4)
 end
+
+@testset "SimTrace and Conj_* checks (`Benefuture/Systems/Conjectures.lean`)" begin
+    pv = bootstrap_params()
+    pv2 = copy(pv); pv2[1] += 0.005
+    tr_good = SimTrace(
+        params = [pv, pv2, pv2],
+        min_u = [1.0, 1.5, 2.2],
+        min_h = [1.0, 1.4, 2.0],
+        median_u = [2.0, 2.5, 3.1],
+        median_h = [2.0, 2.4, 3.0],
+        aggregate_value = [1.2, 1.5],
+        reality_scope = [10.0, 10.5, 11.0],
+        adversary_share = 0.2,
+        adopted_mm_accuracy = [0.70, 0.88, 0.91],
+        best_mm_accuracy = [0.85, 0.90, 0.92],
+        latent_obs_gap = [0.40, 0.30, 0.20],
+        exploit_payoff = [1.0, 0.5, 0.0],
+        reveal_payoff = [2.5, 2.0, 1.5],
+        predicted_min_u_gain = [0.5, 0.7],
+        realised_min_u_gain = [0.48, 0.68],
+        max_delegate_share = [0.04, 0.05, 0.05],
+        mean_h = [2.0, 2.3, 2.7],
+    )
+    @test conj_mm_competition_converges(tr_good; ε = 0.05, from_step = 2)
+    @test conj_goodhart_reduction(tr_good; w = 1)
+    @test conj_gaming_resistance(tr_good)
+    @test conj_adversarial_robustness(tr_good; f_star = 0.5)
+    @test conj_min_tracks_prediction(tr_good; η = 0.1)
+    @test conj_floors_rise(tr_good; w = 1)
+    @test conj_no_repugnant_drift(tr_good; w = 1, ε = 0.05)
+    @test conj_param_stability(tr_good; ε = 0.02, from_step = 1)
+    @test conj_delegation_dispersed(tr_good; margin = 0.01)
+
+    # Counterexamples: each conjecture rejects a violating trace
+    tr_bad = SimTrace(
+        params = [pv, (p3 = copy(pv); p3[1] += 0.25; p3)],
+        min_u = [2.0, 1.0],
+        min_h = [2.0, 1.0],
+        aggregate_value = [-0.5],
+        reality_scope = [10.0, 9.0],
+        adversary_share = 0.2,
+        adopted_mm_accuracy = [0.50, 0.50],
+        best_mm_accuracy = [0.90, 0.90],
+        latent_obs_gap = [0.20, 0.50],
+        exploit_payoff = [5.0],
+        reveal_payoff = [1.0],
+        predicted_min_u_gain = [1.0],
+        realised_min_u_gain = [0.0],
+        max_delegate_share = [0.40, 0.40],
+        mean_h = [3.0, 2.0],
+    )
+    @test !conj_mm_competition_converges(tr_bad; ε = 0.05, from_step = 1)
+    @test !conj_goodhart_reduction(tr_bad; w = 1)
+    @test !conj_gaming_resistance(tr_bad)
+    @test !conj_adversarial_robustness(tr_bad; f_star = 0.5)
+    @test !conj_min_tracks_prediction(tr_bad; η = 0.1)
+    @test !conj_floors_rise(tr_bad; w = 1)
+    @test !conj_no_repugnant_drift(tr_bad; w = 1, ε = 0.05)
+    @test !conj_param_stability(tr_bad; ε = 0.02, from_step = 1)
+    @test !conj_delegation_dispersed(tr_bad; margin = 0.01)
+end

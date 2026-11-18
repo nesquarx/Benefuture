@@ -19,6 +19,11 @@ A threshold of significance is an understood and agreed upon value beyond which 
 * A literal threshold, a line drawn in a water reservoir above which the water level is considered sufficient for use and not requiring refilling.
 
 ==Discussion==
+===Evolutionary operation and adaptive policy experiments===
+In statistical experimental design, Box introduced ''Evolutionary Operation'' (EVOP): rather than holding industrial or institutional parameters frozen at an initial guess, a running system introduces small, controlled perturbations within safe operating bounds, measures the resulting performance, and shifts the operating point only when evidence clears a statistical significance bar.<ref>Box, G. E. P. (1957). [https://doi.org/10.2307/2985505 Evolutionary Operation: A Method for Increasing Industrial Productivity]. ''Applied Statistics'', 6(2), 81–101.</ref> At the public-policy level, Campbell similarly advocated the ''experimenting society'', treating policy thresholds as testable hypotheses evaluated through bounded field trials rather than untouchable dogmas.<ref>Campbell, D. T. (1969). [https://doi.org/10.1037/h0027982 Reforms as Experiments]. ''American Psychologist'', 24(4), 409–429.</ref>
+
+Benefuture unifies both regimes: within a threshold's [[freedom]]-safe range, small continuous perturbations test whether an alternative value improves [[understanding]] and [[happiness]] by at least $z$ combined standard errors (`select_candidate_ref`); when a proposed shift crosses into potential [[harm]] territory, it requires a [[Government|liquid-democracy]] vote authorizing a time- and scope-limited trial before any civilization-wide adoption.
+
 ===In simulation===
 * Governed parameters stay within their admissible bounds under perturbation and only shift when a candidate outperforms the incumbent by z combined standard errors; within ±0.02 per epoch, system outcomes remain stable ([https://github.com/nesquarx/Benefuture/blob/main/docs/CLAIMS.md the claims record]).
 
@@ -26,4 +31,7 @@ A threshold of significance is an understood and agreed upon value beyond which 
 The rules on this page as written in Benefuture's code ([https://github.com/nesquarx/Benefuture Benefuture on GitHub]): the proofs in Lean, and the Lean reference functions that the [[Simulation|simulation]] calls.
 * Governed thresholds: debatable ones go to debate, others are perturbed only within freedom and stay positive ([https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Axioms/Antifragility.lean <code>threshold_governance_soundness</code>]; [https://github.com/nesquarx/Benefuture/blob/main/Benefuture/Measurement/Threshold.lean <code>perturbed_threshold_remains_positive</code>]).
 * A challenger replaces an incumbent only when it beats it by z combined standard errors ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/ParamSpace.lean <code>select_candidate_ref</code>]); assessment divides by the threshold ([https://github.com/nesquarx/Benefuture/blob/main/BenefutureReference/Functions.lean <code>As_ref</code>]).
-<small>AI Disclaimer: This article is</small> <small>100% human written, except the simulation notes and formal reference, which are AI written.</small>
+
+==References==
+<references/>
+----<small>AI Disclaimer: The definition, aspects and examples of this article are 100% human written; the discussion and formal reference are AI-written.</small>
