@@ -463,15 +463,28 @@ and kinds, breakthroughs, innovations, research spent.
 
 ---
 
+## 11. M8: networks, extended-self morality, infohazards, art/culture, truth chains, EHR & enforcement (`sim/src/m8.jl`)
+
+**11.1 Purpose and patterns.** Stylized network and domain-specific test worlds exercising Lean rules that require multi-hop couplings, distribution matching, or multi-actor institutional state beyond M3c/M5/M7:
+- `run_m8` (`M8Params`): extended-self defection vs cooperation (`P22`), multi-hop `propagated_liability` & hub dispersion (`P23`), and finite-horizon `B25` conduct under zero financial inheritance (`end_of_horizon_score`, `end_of_horizon_predicted_score`, `P24`).
+- `run_m8_ihz` (`M8IhzParams`): educational InfoHazard gating (`ihz_access_risk`) vs ungated open access and censorship (`P25`, `B21`).
+- `run_m8_art`, `run_m8_art_confounders`, `run_m8_culture`: art reception simplex matching (`art_success_score`), `art_surplus_value`, two-context linear confounder deconvolution (`shock`/`hype`), and `Di_N` inverse-frequency style diversity breaking conformity monoculture (`P26–P27`, `P29`).
+- `run_m8_truth` (`M8TruthParams`): multi-hop `chain_truth_level` attenuation composed with `count_once` origin deduplication against echoed false rumors (`P28`).
+- `run_m8_ehr` (`M8EhrParams`) and `run_m8_enforcement` (`M8EnforcementParams`): cooperative ally preservation vs hostile deterrence (`ehr_expected_response`, `P31`), and contract harm-bound screening + three-tier enforcement (`DesignAutomated`, `Persuasive`, audited `ForcibleRestraint`) + `CvCnt` continuity (`P32`).
+
+**11.2 Design concepts & observation.** Each sub-world keeps rules in Lean (`BenefutureReference`) via `ccall` (`bf_extended_self_feedback`, `bf_propagated_liability`, `bf_end_of_horizon_score`, `bf_end_of_horizon_predicted_score`, `bf_ihz_access_risk`, `bf_art_success_score`, `bf_art_surplus_value`, `bf_chain_truth_level`, `bf_ehr_expected_response`) while varying only the institutional/network topology and comparing modes paired by seed in `sim/test/m8_tests.jl` and `sim/test/probe_tests.jl` (`P22–P32`).
+
+## 12. Composed economy–governance–conjectures (`sim/src/coupled.jl`, `sim/src/analysis.jl`)
+
+- **Continuous-coupled M3c + M5 + M4 (`run_coupled(..., continuous = true)`):** Runs persistent `M3c` economic state (`econ_trace` passed across epochs via `state`) alongside `M5` reputation-weighted governance decisions (`gov_trace`) and `M4` threshold governance (`thresholds`), with optional `8.134` shadow/ETA candidate resolution (`candidate_eta`, `eta_grace`, `candidate_confidence`, `shadow`), `8.136` domain-convergence gating (`converge_init`, `legacy_funder`), and progressive-complexity shocks (`progressive_metrics`).
+- **Conjecture verification (`SimTrace`, `build_sim_trace`):** `build_sim_trace(rc)` extracts a composed `SimTrace` directly from a continuous `run_coupled` trajectory and evaluates all 9 `Conj_*` checks (`conj_mm_competition_converges` .. `conj_delegation_dispersed`, `P33`).
+
+---
+
 ## What the ODD shows
 
-- **No input data anywhere.** Every rung runs on invented worlds; the parameters marked "world" in
-  `sim/README.md` are the calibration surface (`docs/DATA.md`).
-- **The rungs do not compose.** M7's population and G per entity do not run inside M3c's economy or
-  M5's governance; M5 reads reputations from a finished M3c run rather than running beside it; the
-  economy's chooser is still one central G screening proposals (the limiting case 8.50 retires).
-- **Agents are fixed types.** No agent learns a strategy, enters or leaves (outside M7's research and
-  teaching); attackers are given, not optimised.
-- **No space and no networks** beyond M5's fixed random contacts and M3c's domain network (M8).
-- **One resource stock and one commons** for the whole economy (§6.2), which matters for the Ostrom
-  audit (`docs/OSTROM.md`, principles 1b and 2b).
+- **Most rungs still run on synthetic worlds; empirical adapters remain separate.** `dataset_adapters.jl` (`COVID-19` Forecast Hub, `M4`, Stack Exchange, Wikipedia reverts) and historical/prospective `E4`/`E5` replay (`replay.jl`, `33` E4 + `6` E5 cases) validate specific components on real data, while the dynamical M0–M8 batteries themselves remain synthetic calibration surfaces (`docs/DATA.md`).
+- **M7 population dynamics and M8 specialized network worlds do not yet run inside the live continuous `M3c + M5` economy loop.** `run_coupled(..., continuous = true)` composes `M3c`, `M4`, and `M5` (`build_sim_trace`, `P33`), whereas M7 (`run_m7`, `run_births`) and M8 (`run_m8*`) still run as separate worlds, and M3c/M7 choice remains simpler than full `goal_G` with distribution `D`.
+- **Agents use parametric behavioural rules** rather than open-ended strategy learning (attackers are scripted strategies or cross-entropy-searched parameter vectors).
+- **Space is still absent** beyond network graphs in M3c (domain overlap), M5 (deliberation contacts), and M8 (multi-hop influence/truth/extended-self graphs).
+- **One resource stock and one commons** for the whole economy (§6.2; paired with online `ra_domain` yield/reserve estimation in `m3c.jl`), which matters for the Ostrom audit (`docs/OSTROM.md`, principles 1b and 2b).

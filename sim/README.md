@@ -1239,18 +1239,20 @@ Tested in a 4-part probe (`sim/test/probe_tests.jl`, `sim/test/m7_tests.jl`):
 3. **Newcomer majority:** Newcomers outnumber residents (folding the repugnant-start run); uplift still raises newcomers while protecting residents.
 4. **Fallback:** When accession is too large to satisfy the strong per-being reading, G sets `degraded = true` and falls back to combined floors without stalling (`goal_G_accession`, `accession_fallback_never_stalls`).
 
-## Historical decision replay as-of (E4)
+## Historical decision replay as-of (E4 & E5)
 
 Pre-registered historical counterfactual evaluation engine (`docs/REPLAY_PREREG.md`, `sim/src/replay.jl`,
-`sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`, 26/26 tests passing). Replays historical decisions
-as-of the decision time across four case studies:
-- Challenger launch (1986, aerospace engineering risk under low temperatures)
-- FDA thalidomide review (1960, pharmaceutical regulatory safety bar)
-- Ragusa quarantine (1377, public health isolation in pre-modern setting)
-- Semmelweis obstetric clinic (1847, puerperal fever and antiseptic practice)
+`sim/src/counterfactual.jl`, `sim/test/replay_tests.jl`) covering **33 historical & contrast E4 cases**
+(`cases/*.toml`, including the 12 primary set cases, Round 2 in `docs/E4_ROUND2.md`, and 6 priority-tier
+contrast cases) plus **6 prospective E5 cases** committed before replay (`cases/e5/*.toml`, logged in
+`docs/E5_REPORTS.md`, `docs/E5_RUNS.md`, `docs/E5_FORECASTS.md`: `who_pabs_annex_2027`,
+`fomc_january_2027`, `eu_grids_package_2026`, `eu_cohesion_policy_post2027`, `fda_zrostudirsen_2027`,
+and `imo_net_zero_framework_2026`).
 
-Uses frozen governed defaults with competing counterfactual estimators (synthetic control, difference-in-differences,
-matched controls) and outcome-by-agreement cell analysis.
+Uses frozen governed defaults, a 17-config coarse-to-fine rule-set battery (`replay_rule_battery`),
+single-magnitude sensitivity flip checks (`replay_sensitivity`), precision-scaled joint credence
+draws (`replay_credence`), competing counterfactual estimators (synthetic control,
+difference-in-differences, matched controls), and outcome-by-agreement cell analysis.
 
 ## Overnight long-horizon & century simulation suite
 
@@ -1361,6 +1363,7 @@ ratified.
 | Four-factor responsibility reading (`responsibility_factor_ref`; `L96`, 8.152, 8.159) | `responsibility_reading`, `responsibility_counterfactual`, `responsibility_severity`, `responsibility_accident_factor` (`M3cParams`; opt-in `false` by default) | `false`, `1.0`, `1.0`, `0.5` | judgment; uninformed accident attenuation & baseline off until governed (`P12`/`P13`) |
 | M5 TN weighted identity binding (`binding_admits_weighted_ref`, `class_balanced_skill_ref`; `L18`, `8.70`, `8.149`) | `bind_weighted`, `bind_clusters`, `bind_threshold`, `bind_quorum`, `bind_quorum_weight`, `attest_min_records`, `attest_pooled` (`M5Params`; opt-in off by default) | `false`, `3`, `0.75`, `0`, `1.0`, `5`, `false` | judgment & L18; `bind_quorum = 0 && !bind_weighted` preserves legacy `:per_identity` baselines until governed (`P14`/`P15`) |
 | Governance candidate's resolution (predict - measure - adapt, 8.134; `prediction_on_track_ref`, `resolution_due_ref`): ETA in epochs, ETA grace in epochs, confidence band on the predicted change in floor_u + floor_h | `candidate_eta`, `eta_grace`, `candidate_confidence` (`run_coupled`, continuous mode; prediction `candidate_prediction`, none = old one-epoch rule) | 1, 0, 0 (reproduce the one-epoch rule; a candidate states its own) | judgment; defaults are placeholders to be governed |
+| Non-candidate proposal predict–measure–adapt (`8.134` in `M3c`): ETA in steps, grace in steps, confidence band (`prediction_on_track_ref`, `resolution_due_ref`) | `proposal_pma`, `proposal_eta`, `proposal_eta_grace`, `proposal_confidence` (`M3cParams`; opt-in `false` by default, `P30`) | `false`, `2`, `1`, `0.95` | judgment; adapts `sanction_escrow_credence` & proposal weight on missed ETAs |
 | Candidate versus incumbent (8.134 refinement): eligibility needs its predicted per-epoch outcome above the incumbent's recorded mean by the significance rule (z = `gov_z`, at least 2 incumbent records); resolution compares measured per-epoch outcome with its own prediction | `candidate_vs_incumbent` (`run_coupled`, continuous mode, needs `candidate_prediction`) | off (false); no new numeric value, reuses `gov_z` and `candidate_confidence` | judgment; predict - measure - adapt applied to the incumbent |
 | Domain-convergence gate for Phase 1 and legacy institutional funder (8.136) | `converge_init`, `legacy_funder` (`M3cParams`) | `false`, `false` (reuses `min_records`, `model_z`, `threshold`) | judgment; L82, Implementation Phase 1, L153 |
 | Shadow counterfactual evaluation and fixed pre-promotion incumbent (8.136) | `shadow`, `incumbent_pv` (`run_coupled`, continuous mode) | `false`, `nothing` (reuses `gov_z`, `candidate_eta`, `eta_grace`) | judgment; L141 Phase 2 parallel, L158 (`select_candidate_ref`), L159 |

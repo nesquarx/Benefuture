@@ -13,16 +13,18 @@ Benefuture/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
 ├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 164 C exports
-├── BenefutureTest/              # ℚ oracles proved = spec, interval-bound oracles, checked at build time
+├── BenefutureTest/              # ℚ oracles proved = spec (34 `*_spec`, 35 suites), interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
+├── cases/                       # 33 E4 historical & contrast cases; 6 E5 prospective cases in cases/e5/
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/
-├── docs/                        # articles/ (wiki source), BACKPROPAGATION, DESIGN_PRINCIPLES,
-│                                #   SPEC_DIVERGENCES, PLAN, CALIBRATION, DATA, ODD, OSTROM, SOTA,
-│                                #   THEOREM_INDEX, CODING_STYLE
+├── docs/                        # articles/ (wiki source), CLAIMS, OPEN_PROBLEMS, BACKPROPAGATION,
+│                                #   DESIGN_PRINCIPLES, SPEC_DIVERGENCES, SIM_CONJECTURES, PLAN, BUILD,
+│                                #   CALIBRATION, DATA, ODD, OSTROM, SOTA, REPLAY_PREREG, E4_ROUND2,
+│                                #   E5_CANDIDATES, E5_REPORTS, E5_RUNS, E5_FORECASTS, THEOREM_INDEX, CODING_STYLE
 ├── sim/                         # Julia package BenefutureSim
-│   ├── src/                     # world model, rungs M0–M8, battery.jl (threaded, cached), methods.jl
-│   ├── test/                    # acceptance and adversarial suites, probes, differential tests
-│   └── battery/                 # economy, governance, attack, convergence and long_horizon batteries (sharded on GitHub runners via battery.yml); results/
+│   ├── src/                     # world model, rungs M0–M8, coupled, status_quo, replay, analysis (`SimTrace`), battery.jl
+│   ├── test/                    # acceptance and adversarial suites, probes (`P1–P33`), differential, replay tests
+│   └── battery/                 # economy, governance, attack, convergence, progressive, thresholds, and long_horizon batteries; results/
 ├── tools/                       # setup/, battery/ (launcher, hooks), bench/, wiki_sync/, extraction/,
 │                                #   bf-graph/, check_readme_claims.py, theorem_index.py
 ├── COORDINATION.md              # multi-agent task registry
