@@ -28,6 +28,7 @@ What is checked as a use: capitalised identifiers and abbreviations (Latin, firs
 `Δ`-prefixed ones with their base) and lower-case words directly applied as functions, `word(`. Other
 lower-case words (adjectives, camelCase verbs such as `onExec`) are prose-like labels and not checked.
 Reported, not guessed: a symbol is listed unless it is defined or on the allow-list below."""
+from __future__ import annotations
 import pathlib
 import re
 import subprocess

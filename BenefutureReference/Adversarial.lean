@@ -75,4 +75,17 @@ def withhold_reward_ref (ownLiability remainingPremium advShare advFloor : Float
   else
     advap_reward_ref 0.0 (max 0.0 remainingPremium) advShare advFloor
 
+/-- AdvAp governance recount (`8.38`, `L161`): strikes falsified votes (`active[j] == 0.0`) from a
+    recorded decision tally and returns whether the recounted honest outcome matches `truth`'s sign
+    (`honest = ∑_{active[j] ≠ 0} held[j] * votes[j]`; exact zero tie resolves to `+1.0`). -/
+def advap_recount_correct_ref (held votes active : Array Float) (truth : Float) : Bool := Id.run do
+  let n := min (min held.size votes.size) active.size
+  let mut honest := 0.0
+  for j in [0:n] do
+    if active[j]! != 0.0 then
+      honest := honest + held[j]! * votes[j]!
+  let decided := if honest < 0.0 then -1.0 else 1.0
+  let truthSign := if truth > 0.0 then 1.0 else if truth < 0.0 then -1.0 else 0.0
+  return decided == truthSign
+
 end BenefutureReference

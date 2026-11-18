@@ -77,7 +77,7 @@ repository applies the same discipline to itself.
 [open problems](docs/OPEN_PROBLEMS.md) · [build, structure and reading order](docs/BUILD.md) ·
 [findings log](docs/BACKPROPAGATION.md) · [CLAUDE.md](CLAUDE.md) for agents
 
-Counts: 483 Lean theorems in 53 files (no `sorry`, axioms or `native_decide`); 164 C exports from the
+Counts: 483 Lean theorems in 53 files (no `sorry`, axioms or `native_decide`); 166 C exports from the
 Float reference; CI tiered (rules, units and probes on every code push; the full suite in 8 shards
 nightly). Definitions and aspects on the wiki are the author's; this repository's code, tests and much
 of its prose are AI-assisted under the author's direction.

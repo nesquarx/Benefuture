@@ -58,3 +58,34 @@ Open:
   but it does not support that claim.
 - Uses marked "related" (96) cite a general work for a specific claim the content does not show; the
   dataset home pages and broad books are the bulk.
+
+## Discussion section link mismatches (2026-11-18)
+
+Running `tools/wiki/fetch_abstracts.py` after fixing macOS SSL (`_USE_CURL` fallback) over the newly
+added `==Discussion==` `<ref>` delta (`84` linked uses, recorded in `docs/citations_relevance.json`)
+flagged **28 mismatched URLs** (27 Open Library `/works/OL...W` IDs pointing to unrelated works and
+1 wrong Econometrica DOI). These are recorded as `"verdict": "mismatch"` in `docs/citations_relevance.json`;
+`docs/articles/*.txt` was left untouched while `==Discussion==` is under author review:
+
+- **Hart & Moore (1988)** (`Contract`): `https://doi.org/10.2307/1911054` resolves to Hart & Mas-Colell (1989) *"Potential, Value, and Consistency"*, not *"Incomplete Contracts and Renegotiation"*.
+- **27 Open Library work IDs (`openlibrary.org/works/OL...W`)** resolving to unrelated titles:
+  - `Accolade`: Urmson (1958) `OL4907340W` (*Tamrā nok khao Chawā...*), Shapley (1953) `OL4417976W` (*Mind over motor*)
+  - `Benesophont`: Rawls (1993) `OL2009261W` (*Pensioner soiuznogo znacheniia*)
+  - `Communication`: Lewis (1969) `OL3508914W` (*Freshwater Fish*)
+  - `Contract`: Shavell (2004) `OL3324505W` (*The 2007-2012 World Outlook for Non-Electric Oil Forced Warm Air Furnaces...*)
+  - `Crime`: Hart (1968) `OL1876645W` (*The Gulf between us*)
+  - `Decision`: von Neumann & Morgenstern (1944) `OL3963222W` (*Gunpowder Valley*)
+  - `Enforcement`: Ayres & Braithwaite (1992) `OL1964526W` (*A national sample survey*)
+  - `Good and Bad`: Thomson (2008) `OL16516590W` (*Waithayamahidon*), Broome (1991) `OL1868121W` (*Impacts of heavy axle loads...*)
+  - `Ignorance`: Knight (1921) `OL65359W` (*Monsieur Pamplemousse on vacation*)
+  - `Influence`: Lukes (2005) `OL1881562W` (*David Johnson Passed Through Here*)
+  - `Input`: Bateson (1972) `OL53864W` (*Michel de Montaigne*), Ashby (1956) `OL1183948W` (*Late arrival*)
+  - `Interaction`: Salmon (1984) `OL2796608W` (*Aspetti istituzionali della giungla retributiva*)
+  - `Law`: Hart (1961) `OL1876642W` (*The Religious Thought of Chu Hsi*), Lessig (1999) `OL41913W` (*Malpractice in Maggody*)
+  - `Outcome`: Savage (1954) `OL4498501W` (*Elementi di economia e tecnica del credito*)
+  - `Power`: Morriss (2002) `OL3974763W` (*Usin g Novell DOS 7*), Russell (1938) `OL1105246W` (*Ursache, Grund und Zweck*)
+  - `Reality`: Nozick (1974) `OL2634276W` (*The African studies companion*)
+  - `Sapience`: Brandom (1994) `OL1897635W` (*Readings in aging and death*)
+  - `Thing`: Wheeler / Zurek (1990) `OL2204224W` (*Sovetskoe monumental'noe iskusstvo*), Quine (1960) `OL2664673W` (*Nur eine kleine Insel*)
+  - `Truth`: Kneale & Kneale (1962) `OL1370838W` (*Farloyrene vegn*)
+  - `Untruth`: Grice (1989) `OL1897631W` (*Brain disorders in the elderly*), Bok (1978) `OL1102124W` (*The more I see of men ..*)

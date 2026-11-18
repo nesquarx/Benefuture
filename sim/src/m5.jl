@@ -481,10 +481,10 @@ function run_m5(p::M5Params; seed)
             published = [(live_cap && m.id == cap_id[]) ? 1.0 : sign(truth + m.σ * randn(nrng)) for m in mods[k]]
             pub(j) = (j in p.colluders && defect) ? 1.0 : sign(signal[j])  # what a person publishes
             wm0 = [lo(m.rec) for m in mods[k]]
-            ranked = sortperm(reputation[:, k]; rev = true)
+            ranked = contention_map(reputation[:, k])
             # IH's ContentionMap exposes every source in the domain on both sides, each weighed by its
             # record (author, on 8.45: all expert sources, not the few most reputable).
-            contention_map(i) = filter(!=(i), ranked)
+            contention_map_for(i) = filter(!=(i), ranked)
             pw = p.info_handling ? [lo(person_rec[j, k]) for j in 1:na] : Float64[]  # every source's weight, read once
             reading = zeros(na); wsum, wmod = 0.0, 0.0
             for i in 1:na
@@ -496,7 +496,7 @@ function run_m5(p::M5Params; seed)
                 # The social network's information handling (L134 IH: SourceVerify by Re(Dn), and a
                 # ContentionMap) exposes every source on each side of the question, weighed by its
                 # record; without it, a voter hears its contacts.
-                srcs = p.info_handling ? contention_map(i) : contacts[i]
+                srcs = p.info_handling ? contention_map_for(i) : contacts[i]
                 # The full map heard in one call (Lean `heard_weights_ref`): weaker sources at the
                 # novelty chance, a mean-field shortcut; a few contacts keep a draw each.
                 wc = p.info_handling ? heard_weights(pw[srcs], mine, p.p_novel) : [hear(lo(person_rec[j, k])) for j in srcs]
@@ -696,8 +696,8 @@ function run_m5(p::M5Params; seed)
                 adv.rewards[] += reward; adv.gain_forgone[] += gain
                 adv.liability[] += advap_liability(reward; audit_cost = p.audit_cost)
                 for d in falsified
-                    honest = sum(d.held[j] * d.votes[j] for j in 1:na if !d.delegated[j] && !(j in p.colluders); init = 0.0)
-                    fixed = (honest == 0 ? 1.0 : sign(honest)) == sign(d.truth)
+                    active = [!d.delegated[j] && !(j in p.colluders) for j in 1:na]
+                    fixed = advap_recount_correct(d.held, d.votes, active, d.truth)
                     adv.recounted[] += fixed != right_now[d.n]
                     right_now[d.n] = fixed
                     for j in p.colluders

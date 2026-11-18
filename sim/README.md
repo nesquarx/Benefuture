@@ -1321,9 +1321,9 @@ for removal.
 | Research as spending; tacit gains; in-job innovation near the top | Ruled, World | 8.49 (author); L152 Rc_Innovation; chances and gains are the world's; `research_share` governed |
 | Log-odds weighting of sources in deliberation | Introduced; moved to the Lean reference (`source_weight_ref`) | optimal weights for independent binary judges (Nitzan and Paroush) |
 | Trickle-down: a source is weighed only if its record is at least the listener's, rarely for novel input | Ruled; moved to the Lean reference (`heard_ref`) | 8.44 |
-| ContentionMap: the most reputable sources on each side | Native; rule computed in Julia, to move to the Lean reference | L134 IH (SourceVerify by Re(Dn)); `sim/src/m5.jl` |
+| ContentionMap: the most reputable sources on each side | Native; moved to the Lean reference (`contention_map_ref`) | L134 IH (SourceVerify by Re(Dn)); `sim/src/m5.jl` |
 | Votes as outputs (reputation by weight cast once apparent); audited delegation | Ruled; moved to the Lean reference (`vote_reputation_ref`, `audited_out_ref`) | 8.29, 8.48, L114 |
-| AdvAp's recount of falsified decisions in governance | Ruled [P]; rule computed in Julia, to move to the Lean reference | 8.38 status; `sim/src/m5.jl` |
+| AdvAp's recount of falsified decisions in governance | Ruled [P]; moved to the Lean reference (`advap_recount_correct_ref`) | 8.38 status; `sim/src/m5.jl` |
 | Forks dividing the base vote | Ruled | 8.34 (for now); `fork_rule` |
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |

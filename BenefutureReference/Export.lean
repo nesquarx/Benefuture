@@ -522,4 +522,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (baseLevel : Float) (hops : FloatArray) : Float :=
   chain_truth_level_ref baseLevel hops.data
 
+-- Parsimony cleanup (`sim/README.md` L1322-1324): ContentionMap & AdvAp governance recount
+@[export bf_contention_map] def contentionMap
+    (reputations : FloatArray) (selfIdx : USize) : FloatArray :=
+  ⟨contention_map_ref reputations.data selfIdx.toNat⟩
+
+@[export bf_advap_recount_correct] def advapRecountCorrect
+    (held votes active : FloatArray) (truth : Float) : UInt8 :=
+  if advap_recount_correct_ref held.data votes.data active.data truth then 1 else 0
+
 end BenefutureReference.Export

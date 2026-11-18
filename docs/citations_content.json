@@ -77,16 +77,31 @@
   "title": "The Connected Discourses of the Buddha"
  },
  "(Kim, E. S., & Jang, S. N. (2015). Art and cultural participation and life satisfaction in adults: The role of physical health, mental health, and interpersonal relationships. ''Journal of Arts Management, Law, and Society'', ''45''(2), 103–118. https://doi.org/10.1080/00928510.2015.1021541)": {
+  "checked": true,
   "link": "https://doi.org/10.1080/00928510.2015.1021541",
   "source": "missing"
  },
  "(Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analysis. ''Aging & Mental Health'', ''22''(10), 1312–1320. https://doi.org/10.1080/13607827.2017.1354820)": {
+  "checked": true,
   "link": "https://doi.org/10.1080/13607827.2017.1354820",
   "source": "missing"
  },
  "(Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244)": {
+  "abstract": "The impact of happiness on creativity is well-established. However, little is known about the effect of creativity on well-being. Two studies were thus conducted to examine the impact of creativity on subjective well-being. In the first study, 256 undergraduate students (Study 1a) and 291 working adults (Study 1b) self-reported their creativity, stress, and subjective well-being. Hierarchical multiple regression analysis showed a positive relationship between creativity and subjective well-being after controlling the effect of self-perceived stress and demographics in both samples. Study 2 then employed an experimental design to examine the causal relationship between creativity and subjective well-being. Half of the 68 undergraduates underwent a creativity priming task followed by a divergent thinking test as well as self-reported stress and subjective well-being. The priming task was found to boost creative performance in the pilot study (Study 2a) and the actual study (Study 2b). Moreover, after controlling the effect of self-perceived stress, ANCOVA analysis showed that participants receiving the priming reported higher subjective well-being scores than their counterparts in the control group. The overall findings not only shed light on the facilitative effect of creativity on subjective well-being but also highlight the necessity of considering the reciprocal relationship of the two constructs in future research.",
+  "checked": true,
+  "concepts": [
+   "Creativity",
+   "Psychology",
+   "Subjective well-being",
+   "Happiness",
+   "Social psychology",
+   "Developmental psychology",
+   "Task (project management)",
+   "Priming (agriculture)"
+  ],
   "link": "https://doi.org/10.3390/ijerph18147244",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Being Creative Makes You Happier: The Positive Effect of Creativity on Subjective Well-Being"
  },
  "Achinstein, P. (2001). *The book of evidence*. Oxford University Press. https://doi.org/10.1093/0195143892.001.0001": {
   "abstract": "Abstract What is required for a fact to be evidence for a hypothesis? In this book Achinstein introduces four concepts of evidence, which he calls potential, veridical, epistemic‐situation, and subjective. He defines the last three by reference to the first, and then characterizes potential evidence using a new objective epistemic interpretation of probability. The resulting theory is used to provide solutions to four ”paradoxes of evidence” (grue, ravens, lottery, and old evidence) and to a series of questions, including whether explanations or predictions furnish more evidential weight; whether individual hypotheses or only entire theoretical systems can receive evidential support (the Duhem‐Quine problem); and what counts as a scientific discovery and what evidence it requires. Two historical scientific cases are examined using the theory of evidence developed: Jean Perrin's argument for molecules (did he have noncircular evidence for their existence?), and J.J. Thomson's argument for electrons (what sort of evidence did this argument provide?).",
@@ -157,8 +172,21 @@
   "title": "The Book of Knowledge"
  },
  "Alexander, L., & Ferzan, K. K. (2009). [https://doi.org/10.1017/CBO9780511804595 ''Crime and Culpability: A Theory of Criminal Law''] (Chapter 2). Cambridge University Press.": {
+  "abstract": "This book presents a comprehensive overview of what the criminal law would look like if organised around the principle that those who deserve punishment should receive punishment commensurate with, but no greater than, that which they deserve. Larry Alexander and Kimberly Kessler Ferzan argue that desert is a function of the actor's culpability, and that culpability is a function of the risks of harm to protected interests that the actor believes he is imposing and his reasons for acting in the face of those risks. The authors deny that resultant harms, as well as unperceived risks, affect the actor's desert. They thus reject punishment for inadvertent negligence as well as for intentions or preparatory acts that are not risky. Alexander and Ferzan discuss the reasons for imposing risks that negate or mitigate culpability, the individuation of crimes, and omissions.",
+  "checked": true,
+  "concepts": [
+   "Culpability",
+   "Punishment (psychology)",
+   "Harm",
+   "Desert (philosophy)",
+   "Criminology",
+   "Criminal law",
+   "Law and economics",
+   "Law"
+  ],
   "link": "https://doi.org/10.1017/CBO9780511804595",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Crime and Culpability: A Theory of Criminal Law"
  },
  "Ali, A., Ambler, G., Strydom, A., Rai, D., Cooper, C., McManus, S., Hassiotis, A., … '''The relationship between happiness and intelligent quotient: The contribution of socio-economic and clinical factors.''' ''Psychological Medicine, 43''(6), 1303-1312. https://doi.org/10.1017/S0033291712002139": {
   "abstract": "BACKGROUND: Happiness and higher intelligent quotient (IQ) are independently related to positive health outcomes. However, there are inconsistent reports about the relationship between IQ and happiness. The aim was to examine the association between IQ and happiness and whether it is mediated by social and clinical factors. Method The authors analysed data from the 2007 Adult Psychiatric Morbidity Survey in England. The participants were adults aged 16 years or over, living in private households in 2007. Data from 6870 participants were included in the study. Happiness was measured using a validated question on a three-point scale. Verbal IQ was estimated using the National Adult Reading Test and both categorical and continuous IQ was analysed. RESULTS: Happiness is significantly associated with IQ. Those in the lowest IQ range (70-99) reported the lowest levels of happiness compared with the highest IQ group (120-129). Mediation analysis using the continuous IQ variable found dependency in activities of daily living, income, health and neurotic symptoms were strong mediators of the relationship, as they reduced the association between happiness and IQ by 50%. CONCLUSIONS: Those with lower IQ are less happy than those with higher IQ. Interventions that target modifiable variables such as income (e.g. through enhancing education and employment opportunities) and neurotic symptoms (e.g. through better detection of mental health problems) may improve levels of happiness in the lower IQ groups.",
@@ -293,8 +321,12 @@
   "title": "Capital-Labor Substitution and Economic Efficiency"
  },
  "Ashby, W. R. (1956). [https://openlibrary.org/works/OL1183948W ''An Introduction to Cybernetics''] (Chapter 4). Chapman & Hall.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL1183948W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Late arrival"
  },
  "Atkinson, A. B. (1970). On the measurement of inequality. ''Journal of Economic Theory'', 2(3), 244–263. https://doi.org/10.1016/0022-0531(70)90039-6": {
   "abstract": "",
@@ -345,8 +377,21 @@
   "title": "Meditations"
  },
  "Avizienis, A., Laprie, J.-C., Randell, B., & Landwehr, C. (2004). [https://doi.org/10.1109/TDSC.2004.2 Basic Concepts and Taxonomy of Dependable and Secure Computing]. ''IEEE Transactions on Dependable and Secure Computing'', 1(1), 11–33.": {
+  "abstract": "This paper gives the main definitions relating to dependability, a generic concept including a special case of such attributes as reliability, availability, safety, integrity, maintainability, etc. Security brings in concerns for confidentiality, in addition to availability and integrity. Basic definitions are given first. They are then commented upon, and supplemented by additional definitions, which address the threats to dependability and security (faults, errors, failures), their attributes, and the means for their achievement (fault prevention, fault tolerance, fault removal, fault forecasting). The aim is to explicate a set of general concepts, of relevance across a wide range of situations and, therefore, helping communication and cooperation among a number of scientific and technical communities, including ones that are concentrating on particular types of system, of system failures, or of causes of system failures.",
+  "checked": true,
+  "concepts": [
+   "Dependability",
+   "Computer science",
+   "Maintainability",
+   "Confidentiality",
+   "Fault tolerance",
+   "Computer security",
+   "Relevance (law)",
+   "Reliability (semiconductor)"
+  ],
   "link": "https://doi.org/10.1109/TDSC.2004.2",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Basic concepts and taxonomy of dependable and secure computing"
  },
  "Axelrod, R. (1984). ''The Evolution of Cooperation''. Basic Books. https://openlibrary.org/works/OL2620286W": {
   "abstract": "This widely praised and much-discussed book explores how cooperation can emerge in a world of self-seeking egoists whether superpowers, businesses, or individuals when there is no central authority to police their actions",
@@ -385,8 +430,15 @@
   "title": "The Evolution of Cooperation"
  },
  "Ayres, I., & Braithwaite, J. (1992). [https://openlibrary.org/works/OL1964526W ''Responsive Regulation: Transcending the Deregulation Debate''] (Chapter 2, \"The Benign Big Gun\"). Oxford University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Public opinion",
+   "Sentences (Criminal procedure)"
+  ],
   "link": "https://openlibrary.org/works/OL1964526W",
-  "source": "missing"
+  "source": "missing",
+  "title": "A national sample survey"
  },
  "Baiocchi, G. (2005). ''Militants and Citizens: The Politics of Participatory Democracy in Porto Alegre''. Stanford University Press. https://doi.org/10.1515/9781503625129": {
   "abstract": "Brazil’s democracy has frequently been described as unconsolidated, its citizens as apathetic and uninterested in politics. But in Porto Alegre, a host city to the World Social Forum, thousands of ordinary citizens participate in local governance, making binding decisions on urban policy on a daily basis. While there has been immense attention paid to the practice of participatory democracy in Porto Alegre, this is the first book to examine the politics, culture, and day-to-day activities of its citizens. Drawing on the rich tradition of urban ethnography and political theory, the book argues that Porto Alegre’s importance may lie not just with its effective governance, but with its new political logic, namely a greater access to government functions and government officials for traditionally disenfranchised citizens. In an age characterized by seemingly strong voter apathy, this study has global implications. The author shows that in the discussions on the failings of democracy in industrialized countries like the United States, most people may be missing what is central to civic engagement—unimpeded access to government.",
@@ -415,12 +467,17 @@
   "title": "Why does the Cognitive Reflection Test (sometimes) predict utilitarian moral judgment (and other things)?"
  },
  "Bartlett, M. S., Littlewort, G., Frank, M., & Movellan, J. R. (2006). Automatic recognition of facial expression: A survey. ''IEEE Transactions on human-machine systems'', ''36''(1), 15-35. https://doi.org/10.1109/TSMCC.2005.859029": {
+  "checked": true,
   "link": "https://doi.org/10.1109/TSMCC.2005.859029",
   "source": "missing"
  },
  "Bateson, G. (1972). [https://openlibrary.org/works/OL53864W ''Steps to an Ecology of Mind''] (p. 453). Chandler Publishing Company.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL53864W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Michel de Montaigne"
  },
  "Bell, C. (1914). [https://www.gutenberg.org/ebooks/16917 ''Art'']. Chatto and Windus.": {
   "link": "https://www.gutenberg.org/ebooks/16917",
@@ -460,10 +517,24 @@
   "title": "Four essays on liberty"
  },
  "Bikhchandani, S., Hirshleifer, D., & Welch, I. (1992). [https://doi.org/10.1086/261849 A Theory of Fads, Fashion, Custom, and Cultural Change as Informational Cascades]. ''Journal of Political Economy'', 100(5), 992–1026.": {
+  "abstract": "An informational cascade occurs when it is optimal for an individual, having observed the actions of those ahead of him, to follow the behavior of the preceding individual without regard to his own information. We argue that localized conformity of behavior and the fragility of mass behaviors can be explained by informational cascades.",
+  "checked": true,
+  "concepts": [
+   "Conformity",
+   "Information cascade",
+   "Fragility",
+   "Cascade",
+   "Psychology",
+   "Cognitive psychology",
+   "Social psychology",
+   "Engineering"
+  ],
   "link": "https://doi.org/10.1086/261849",
-  "source": "missing"
+  "source": "fetched",
+  "title": "A Theory of Fads, Fashion, Custom, and Cultural Change as Informational Cascades"
  },
  "Birch, J. (2017). [https://doi.org/10.1017/S0953820817000121 Animal Sentience and the Precautionary Principle]. ''Animal Sentience'', 2(16), 1.": {
+  "checked": true,
   "link": "https://doi.org/10.1017/S0953820817000121",
   "source": "missing"
  },
@@ -509,8 +580,15 @@
   "source": "missing"
  },
  "Bok, S. (1978). [https://openlibrary.org/works/OL1102124W ''Lying: Moral Choice in Public and Private Life''] (Chapter I). Pantheon Books.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Legends and stories",
+   "Dogs"
+  ],
   "link": "https://openlibrary.org/works/OL1102124W",
-  "source": "missing"
+  "source": "missing",
+  "title": "The more I see of men .."
  },
  "Borgatti, S. P., Everett, M. G., & Johnson, J. C. (2018). ''Analyzing social networks''. Sage publications. https://openlibrary.org/works/OL20578711W": {
   "abstract": "\"Written by a stellar team of experts, Analyzing Social Networks is a practical book on how to collect, visualize, analyze and interpret social network data with a particular emphasis on the use of the software tools UCINET and Netdraw. The book includes a clear and detailed introduction to the fundamental concepts of network analyses, including centrality, subgroups, equivalence and network structure, as well as cross-cutting chapters that helpfully show how to apply network concepts to different kinds of networks. Written using simple language and notation with few equations, this book masterfully covers the research process, including: The initial design stage - Data collection and manipulation - Measuring key variables - Exploration of structure - Hypothesis testing - Interpretation. This is an essential resource for students, researchers and practitioners across the social sciences who want to use network analysis as part of their research.\"--Publisher's website.",
@@ -589,8 +667,21 @@
   "title": "Superintelligence"
  },
  "Box, G. E. P. (1957). [https://doi.org/10.2307/2985505 Evolutionary Operation: A Method for Increasing Industrial Productivity]. ''Applied Statistics'', 6(2), 81–101.": {
+  "abstract": "The book is about the philosophy and practice of evolutionary operation (EVOP), a simple but powerful statistical tool with wide application in industry. Experience has long shown that statistical methods, sometimes quite sophisticated in character, can be of great value in improving the efficiency of laboratory and pilot-plant investigations made by specially trained chemists and engineers. What originally motivated the introduction of EVOP, however, was the idea that the widespread and daily use of simple statistical design and analysis during routine production by process operatives themselves could reap rewards. (Author)",
+  "checked": true,
+  "concepts": [
+   "Productivity",
+   "Operations research",
+   "Econometrics",
+   "Engineering",
+   "Computer science",
+   "Industrial engineering",
+   "Economics",
+   "Macroeconomics"
+  ],
   "link": "https://doi.org/10.2307/2985505",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Evolutionary Operation: A Method for Increasing Industrial Productivity"
  },
  "Boyce, M. (1975). ''A History of Zoroastrianism''. Brill. https://openlibrary.org/works/OL2976951W": {
   "abstract": "",
@@ -613,8 +704,12 @@
   "title": "A history of Zoroastrianism"
  },
  "Brandom, R. B. (1994). [https://openlibrary.org/works/OL1897635W ''Making It Explicit: Reasoning, Representing, and Discursive Commitment''] (Chapter 1, pp. 4–8). Harvard University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL1897635W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Readings in aging and death"
  },
  "Brennan, J. (2016). ''Against Democracy''. Princeton University Press. https://openlibrary.org/works/OL20228215W": {
   "abstract": "\"Most people believe democracy is a uniquely just form of government. They believe people have the right to an equal share of political power. And they believe that political participation is good for us - it empowers us, helps us get what we want, and tends to make us smarter, more virtuous, and more caring for one another. These are some of our most cherished ideas about democracy. But, Jason Brennan says, they are all wrong. In this trenchant book, Brennan argues that democracy should be judged by its results - and the results are not good enough. Just as defendants have a right to a fair trial, citizens have a right to competent government. But democracy is the rule of the ignorant and the irrational, and it all too often falls short. Furthermore, no one has a fundamental right to any share of political power, and exercising political power does most of us little good. On the contrary, a wide range of social science research shows that political participation and democratic deliberation actually tend to make people worse - more irrational, biased, and mean. Given this grim picture, Brennan argues that a new system of government - epistocracy, the rule of the knowledgeable, may be better than democracy, and that it's time to experiment and find out\"--Jacket sleeve.",
@@ -637,20 +732,45 @@
   "title": "Against Democracy"
  },
  "Brier, G. W. (1950). Verification of forecasts expressed in terms of probability. ''Monthly Weather Review'', ''78''(1), 1-3. https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2": {
+  "checked": true,
   "link": "https://doi.org/10.1175/1520-0493(1950)078%3C0001:vofeit%3E2.0.co;2",
   "source": "missing"
  },
  "Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2 Verification of forecasts expressed in terms of probability]. ''Monthly Weather Review'', 78(1), 1–3.": {
+  "checked": true,
   "link": "https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2",
   "source": "missing"
  },
  "Brier, G. W. (1950). [https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2 Verification of Forecasts Expressed in Terms of Probability]. ''Monthly Weather Review'', 78(1), 1–3.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Meteorology",
+   "Computer science",
+   "Climatology",
+   "Mathematics",
+   "Statistics",
+   "Geology",
+   "Geography"
+  ],
   "link": "https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2",
-  "source": "missing"
+  "source": "missing",
+  "title": "VERIFICATION OF FORECASTS EXPRESSED IN TERMS OF PROBABILITY"
  },
  "Broome, J. (1991). [https://openlibrary.org/works/OL1868121W ''Weighing Goods: Equality, Uncertainty and Time''] (Chapter 1). Basil Blackwell.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Axles",
+   "Railroad cars",
+   "Maintenance and repair",
+   "Loads",
+   "Railroad trains",
+   "Railroad tracks"
+  ],
   "link": "https://openlibrary.org/works/OL1868121W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Impacts of heavy axle loads on light density lines in the State of Washington"
  },
  "Buckels, E. E., Jones, D. N., & Paulhus, D. L. (2013). Behavioral confirmation of everyday sadism. ''Psychological Science'', ''24''(11), 2201–2209. https://doi.org/10.1177/0956797613490749": {
   "abstract": "Past research on socially aversive personalities has focused on subclinical psychopathy, subclinical narcissism, and Machiavellianism-the \"Dark Triad\" of personality. In the research reported here, we evaluated whether an everyday form of sadism should be added to that list. Acts of apparent cruelty were captured using two laboratory procedures, and we showed that such behavior could be predicted with two measures of sadistic personality. Study 1 featured a bug-killing paradigm. As expected, sadists volunteered to kill bugs at greater rates than did nonsadists. Study 2 examined willingness to harm an innocent victim. When aggression was easy, sadism and Dark Triad measures predicted unprovoked aggression. However, only sadists were willing to work for the opportunity to hurt an innocent person. In both studies, sadism emerged as an independent predictor of behavior reflecting an appetite for cruelty. Together, these findings support the construct validity of everyday sadism and its incorporation into a new \"Dark Tetrad\" of personality.",
@@ -701,8 +821,15 @@
   "title": "Predicting real-world outcomes: Critical thinking ability is a better predictor of life decisions than intelligence"
  },
  "Campbell, D. T. (1969). [https://doi.org/10.1037/h0027982 Reforms as Experiments]. ''American Psychologist'', 24(4), 409–429.": {
+  "abstract": "Nach Campbell gibt es fur die Mehrzahl sozialer Pragramme noch immer keine interpretierbaren Evaluationen. Sein Artikel befast sich mit den Grunden dafur und versucht Wege aufzuzeigen, wie dies geandert werden konnte. Problem: Fur viele Reformen wird abgestimmt, als sei bereits sicher, das die gewunschte Wirkung auftritt. Zeigen die Ergebnisse spater etwas anderes an, last dies den Politiker unglaubwurdig wirken. Losungsvorschlag: Der Autor wunscht sich eine Politik, in der das Augenmerk nicht mehr auf die einzelnen Programme gerichtet ist, sondern auf die dahinter liegenden Probleme. Ziel sollte es sein, das Problem zu beseitigen. Wirkt ein bestimmtes Programm nicht, so konnten weitere Methoden ausprobiert werden.",
+  "checked": true,
+  "concepts": [
+   "Psychology",
+   "Political science"
+  ],
   "link": "https://doi.org/10.1037/h0027982",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Reforms as experiments."
  },
  "Camus, A. (1942). ''The Myth of Sisyphus''. Gallimard. https://openlibrary.org/works/OL1230690W": {
   "abstract": "One of the most influential works of this century, this is a crucial exposition of existentialist thought. Influenced by works such as Don Juan and the novels of Kafka, these essays begin with a meditation on suicide: the question of living or not living in an absurd universe devoid of order or meaning. With lyric eloquence, Camus posits a way out of despair, reaffirming the value of personal existence, and the possibility of life lived with dignity and authenticity.--From publisher description.",
@@ -725,8 +852,18 @@
   "title": "The Myth of Sisyphus and Other Essays"
  },
  "Chalmers, D. J. (2022). [https://openlibrary.org/isbn/9780393635805 ''Reality+: Virtual Worlds and the Problems of Philosophy'']. W. W. Norton & Company.": {
+  "abstract": "A leading philosopher takes a mind-bending journey through virtual worlds, illuminating the nature of reality and our place within it.\r\n\r\nVirtual reality is genuine reality; that’s the central thesis of Reality+. In a highly original work of “technophilosophy,” David J. Chalmers gives a compelling analysis of our technological future. He argues that virtual worlds are not second-class worlds, and that we can live a meaningful life in virtual reality. We may even be in a virtual world already.\r\n\r\nAlong the way, Chalmers conducts a grand tour of big ideas in philosophy and science. He uses virtual reality technology to offer a new perspective on long-established philosophical questions. How do we know that there’s an external world? Is there a god? What is the nature of reality? What’s the relation between mind and body? How can we lead a good life? All of these questions are illuminated or transformed by Chalmers’ mind-bending analysis.\r\n\r\nStudded with illustrations that bring philosophical issues to life, Reality+ is a major statement that will shape discussion of philosophy, science, and technology for years to come.",
+  "checked": true,
+  "concepts": [
+   "Nonfiction",
+   "Philosophy",
+   "Technology",
+   "Reality",
+   "Virtual reality"
+  ],
   "link": "https://openlibrary.org/isbn/9780393635805",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Reality+"
  },
  "Chi, M. T. H., Feltovich, P. J., & Glaser, R. (1981). '''Categorization and representation of physics problems by experts and novices.''' ''Cognitive Science, 5''(2), 121–152. https://doi.org/10.1207/s15516709cog0502_2": {
   "abstract": "The representation of physics problems in relation to the organization of physics knowledge is investigated in experts and novices. Four experiments examine (a) the existence of problem categories as a basis for representation; (b) differences in the categories used by experts and novices; (c) differences in the knowledge associated with the categories; and (d) features in the problems that contribute to problem categorization and representation. Results from sorting tasks and protocols reveal that experts and novices begin their problem representations with specifiably different problem categories, and completion of the representations depends on the knowledge associated with the categories. For, the experts initially abstract physics principles to approach and solve a problem representation, whereas novices base their representation and approaches on the problem's literal features.",
@@ -745,6 +882,7 @@
   "title": "Categorization and Representation of Physics Problems by Experts and Novices*"
  },
  "Chockler, H., & Halpern, J. Y. (2004). [https://doi.org/10.1613/jair.1430 Responsibility and Blame: A Structural-Model Approach]. ''Journal of Artificial Intelligence Research'', 22, 93–115.": {
+  "checked": true,
   "link": "https://doi.org/10.1613/jair.1430",
   "source": "missing"
  },
@@ -777,8 +915,21 @@
   "title": "Connected"
  },
  "Clark, A. (2013). [https://doi.org/10.1017/S0140525X12000477 Whatever Next? Predictive Brains, Situated Agents, and the Future of Cognitive Science]. ''Behavioral and Brain Sciences'', 36(3), 181–204.": {
+  "abstract": "Brains, it has recently been argued, are essentially prediction machines. They are bundles of cells that support perception and action by constantly attempting to match incoming sensory inputs with top-down expectations or predictions. This is achieved using a hierarchical generative model that aims to minimize prediction error within a bidirectional cascade of cortical processing. Such accounts offer a unifying model of perception and action, illuminate the functional role of attention, and may neatly capture the special contribution of cortical processing to adaptive success. This target article critically examines this \"hierarchical prediction machine\" approach, concluding that it offers the best clue yet to the shape of a unified science of mind and action. Sections 1 and 2 lay out the key elements and implications of the approach. Section 3 explores a variety of pitfalls and challenges, spanning the evidential, the methodological, and the more properly conceptual. The paper ends (sections 4 and 5) by asking how such approaches might impact our more general vision of mind, experience, and agency.",
+  "checked": true,
+  "concepts": [
+   "Situated",
+   "Cognitive science",
+   "Cognition",
+   "Psychology",
+   "Computer science",
+   "Cognitive psychology",
+   "Neuroscience",
+   "Artificial intelligence"
+  ],
   "link": "https://doi.org/10.1017/S0140525X12000477",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Whatever next? Predictive brains, situated agents, and the future of cognitive science"
  },
  "Clark, A. E., Flèche, S., Layard, R., Powdthavee, N., & Ward, G. (2018). '''''The origins of happiness'''''. Princeton University Press. https://doi.org/10.2307/j.ctvc77dgq": {
   "abstract": "This chapter summarizes the main findings on what determines happiness. These are expressed in numerical form, because there is no way to compare the importance of different things except by using numbers. The chapter's measure of happiness throughout is life-satisfaction, measured on a scale of 0 to 10. That is, like all other estimates in this book, an average effect across many people, some of whom will suffer more and others less. But from a policy point of view the average is a good place to start. The chapter describes how these findings have been reached. It also illustrates the massive range of issues covered, with a few key findings about what determines happiness.",
@@ -797,8 +948,17 @@
   "title": "The Origins of Happiness"
  },
  "Clark, A., & Chalmers, D. (1998). [https://doi.org/10.1093/analys/58.1.7 The Extended Mind]. ''Analysis'', 58(1), 7–19.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Library science",
+   "Art",
+   "Art history",
+   "Computer science"
+  ],
   "link": "https://doi.org/10.1093/analys/58.1.7",
-  "source": "missing"
+  "source": "missing",
+  "title": "The Extended Mind"
  },
  "Cohen, W. L., & Levinthal, D. A. (1990). '''Absorptive Capacity: A New Perspective on Learning and Innovation.''' ''Administrative Science Quarterly, 35''(1), 128-152. https://doi.org/10.2307/2393553": {
   "abstract": "Wesley M. Cohen, Daniel A. Levinthal, Absorptive Capacity: A New Perspective on Learning and Innovation, Administrative Science Quarterly, Vol. 35, No. 1, Special Issue: Technology, Organizations, and Innovation (Mar., 1990), pp. 128-152",
@@ -816,8 +976,21 @@
   "title": "Absorptive Capacity: A New Perspective on Learning and Innovation"
  },
  "Conant, R. C., & Ashby, W. R. (1970). [https://doi.org/10.1080/00207727008920220 Every Good Regulator of a System Must Be a Model of That System]. ''International Journal of Systems Science'', 1(2), 89–97.": {
+  "abstract": "The design of a complex regulator often includes the making of a model of the system to be regulated. The making of such a model has hitherto been regarded as optional, as merely one of many possible ways. In this paper a theorem is presented which shows, under very broad conditions, that any regulator that is maximally both successful and simple must be isomorphic with the system being regulated. (The exact assumptions are given.) Making a model is thus necessary. The theorem has the interesting corollary that the living brain, so far as it is to be successful and efficient as a regulator for survival, must proceed, in learning, by the formation of a model (or models) of its environment.",
+  "checked": true,
+  "concepts": [
+   "Regulator",
+   "Corollary",
+   "Simple (philosophy)",
+   "Master regulator",
+   "Computer science",
+   "Control theory (sociology)",
+   "Mathematics",
+   "Mathematical economics"
+  ],
   "link": "https://doi.org/10.1080/00207727008920220",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Every good regulator of a system must be a model of that system †"
  },
  "Confucius. (2003). ''Analects''. (E. Slingerland, Trans.). Hackett. (Original work c. 500 BCE). https://openlibrary.org/works/OL15092211W": {
   "abstract": "This edition goes beyond others that largely leave readers to their own devices in understanding this cryptic work, by providing an entrée into the text that parallels the traditional Chinese way of approaching it: alongside Slingerland's exquisite rendering of the work are his translations of a selection of classic Chinese commentaries that shed light on difficult passages, provide historical and cultural context, and invite the reader to ponder a range of interpretations. The ideal student edition, this volume also includes a general introduction, notes, multiple appendices--including a glossary of technical terms, references to modern Western scholarship that point the way for further study, and an annotated bibliography. --Publisher description.",
@@ -833,8 +1006,12 @@
   "title": "Confucius analects"
  },
  "Confucius. (c. 475 BCE). ''The Analects'' (Book 12, Ch. 22). (A. Waley, Trans., 1938). Vintage Books. https://openlibrary.org/works/OL27033818W": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL27033818W",
-  "source": "missing"
+  "source": "missing",
+  "title": "The Analects"
  },
  "Cornell University, INSEAD, & World Intellectual Property Organization. (Various years). ''The Global Innovation Index''. https://www.globalinnovationindex.org/": {
   "link": "https://www.globalinnovationindex.org/",
@@ -864,6 +1041,7 @@
   "title": "Reasons and the Good"
  },
  "Critchley, H. D. (2002). Electrodermal activity. ''Physiological Measurement'', ''23''(3), R23–R39. https://doi.org/10.1088/0967-3334/23/3/R23": {
+  "checked": true,
   "link": "https://doi.org/10.1088/0967-3334/23/3/R23",
   "source": "missing"
  },
@@ -900,8 +1078,21 @@
   "title": "Validity and Reliability of the Experience-Sampling Method"
  },
  "Dahl, R. A. (1957). [https://doi.org/10.1002/bs.3830020303 The Concept of Power]. ''Behavioral Science'', 2(3), 201–215.": {
+  "abstract": "What is “power”? Most people have an intuitive notion of what it means. But scientists have not yet formulated a statement of the concept of power that is rigorous enough to be of use in the systematic study of this important social phenomenon. Power is here defined in terms of a relation between people, and is expressed in simple symbolic notation. From this definition is developed a statement of power comparability, or the relative degree of power held by two or more persons. With these concepts it is possible for example, to rank members of the United States Senate according to their “power” over legislation on foreign policy and on tax and fiscal policy.",
+  "checked": true,
+  "concepts": [
+   "Comparability",
+   "Statement (logic)",
+   "Power (physics)",
+   "Notation",
+   "Relation (database)",
+   "Rank (graph theory)",
+   "Legislation",
+   "Simple (philosophy)"
+  ],
   "link": "https://doi.org/10.1002/bs.3830020303",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The concept of power"
  },
  "Darling-Hammond, L., & Adamson, F. (2014). ''Beyond the bubble test: How performance assessments support 21st century learning''. Jossey-Bass. https://openlibrary.org/works/OL20347321W": {
   "abstract": "",
@@ -914,12 +1105,27 @@
   "title": "Beyond the Bubble Test"
  },
  "Davidson, D. (1980). [https://doi.org/10.1093/0199246270.001.0001 ''Essays on Actions and Events''] (Essay 3, \"Agency\", pp. 43–61). Clarendon Press.": {
+  "abstract": "Abstract This volume collects Davidson's seminal contributions to the philosophy of mind and the philosophy of action. Its overarching thesis is that the ordinary concept of causality we employ to render physical processes intelligible should also be employed in describing and explaining human action. In the first of three subsections into which the papers are thematically organized, Davidson uses causality to give novel analyses of acting for a reason, of intending, weakness of will, and freedom of will. The second section provides the formal and ontological framework for those analyses. In particular, the logical form and attending ontology of action sentences and causal statements is explored. To uphold the analyses, Davidson urges us to accept the existence of non‐recurrent particulars, events, along with that of persons and other objects. The final section employs this ontology of events to provide an anti‐reductionist answer to the mind/matter debate that Davidson labels ‘anomalous monism’. Events enter causal relations regardless of how we describe them but can, for the sake of different explanatory purposes, be subsumed under mutually irreducible descriptions, claims Davidson. Events qualify as mental if caused and rationalized by reasons, but can be so described only if we subsume them under considerations that are not amenable to codification into strict laws. We abandon those considerations, collectively labelled the ‘constitutive ideal of rationality’, if we want to explain the physical occurrence of those very same events; in which case we have to describe them as governed by strict laws. The impossibility of intertranslating the two idioms by means of psychophysical laws blocks any analytically reductive relation between them. The mental and the physical would thus disintegrate were it not for causality, which is operative in both realms through a shared ontology of events.",
+  "checked": true,
+  "concepts": [
+   "History"
+  ],
   "link": "https://doi.org/10.1093/0199246270.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Essays on Actions and Events"
  },
  "Dennett, D. C. (1991). [https://doi.org/10.2307/2027085 Real Patterns]. ''The Journal of Philosophy'', 88(1), 27–51.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Analytic philosophy",
+   "Contemporary philosophy",
+   "Philosophy",
+   "Epistemology"
+  ],
   "link": "https://doi.org/10.2307/2027085",
-  "source": "missing"
+  "source": "missing",
+  "title": "Real Patterns"
  },
  "Deutsch, D. (2011). ''The Beginning of Infinity: Explanations That Transform the World''. Viking Press. https://openlibrary.org/works/OL4325174W": {
   "abstract": "\"A bold and all-embracing exploration of the nature and progress of knowledge from one of today's great thinkers.  Throughout history, mankind has struggled to understand life's mysteries, from the mundane to the seemingly miraculous. In this important new book, David Deutsch, an award-winning pioneer in the field of quantum computation, argues that explanations have a fundamental place in the universe. They have unlimited scope and power to cause change, and the quest to improve them is the basic regulating principle not only of science but of all successful human endeavor. This stream of ever improving explanations has infinite reach, according to Deutsch: we are subject only to the laws of physics, and they impose no upper boundary to what we can eventually understand, control, and achieve.  In his previous book, The Fabric of Reality, Deutsch describe the four deepest strands of existing knowledge-the theories of evolution, quantum physics, knowledge, and computation-arguing jointly they reveal a unified fabric of reality. In this new book, he applies that worldview to a wide range of issues and unsolved problems, from creativity and free will to the origin and future of the human species. Filled with startling new conclusions about human choice, optimism, scientific explanation, and the evolution of culture, The Beginning of Infinity is a groundbreaking book that will become a classic of its kind\"--",
@@ -956,6 +1162,7 @@
   "title": "Theory of valuation"
  },
  "Diener, E., Emmons, R. A., Larsen, R. J., & Smith, C. (1985). The Satisfaction with Life Scale. ''Journal of personality assessment'', ''49''(1), 71-75. https://doi.org/10.1037/0022-3514.49.1.71": {
+  "checked": true,
   "link": "https://doi.org/10.1037/0022-3514.49.1.71",
   "source": "missing"
  },
@@ -1085,12 +1292,38 @@
   "title": "Democratic Authority"
  },
  "Feinberg, J. (1984). [https://doi.org/10.1093/0195046641.001.0001 ''Harm to Others: The Moral Limits of the Criminal Law''] (Vol. 1, Chapter 1). Oxford University Press.": {
+  "abstract": "Abstract Harm to Others is the first volume in a four‐volume work entitled The Moral Limits of the Criminal Law that addresses the question, What acts may the state rightly make criminal? Feinberg identifies four liberty‐limiting, or coercion‐legitimizing, principles, each of which is the subject of a volume of his book. In the first volume, Feinberg looks at the principle of harm to others – or the harm principle – which John Stuart Mill identified as the only liberty‐limiting principle. The other principles that Feinberg considers in subsequent volumes are (1) the offense principle: it is necessary to prevent hurt or offense (as opposed to harm) to others; (2) legal paternalism: it is necessary to prevent harm to the actor herself; and (3) legal moralism: it is necessary to prevent immoral conduct whether or not it harms anyone. As a thinker who favors liberalism, Feinberg rejects legal paternalism and legal moralism, maintaining that the harm principle and the offense principle exhaust the class of morally relevant reasons for criminal prohibitions. Feinberg's examination of the harm principle begins with an account of the concept of harm and its relation to other concepts like interests, wants, hurts, offenses, rights, and consent. After addressing difficult examples such as moral harm, vicious harm, prenatal harm, and posthumous harm, Feinberg considers both the moral status of a failure to prevent harm and the problems related to assessing, comparing, and imputing harms.",
+  "checked": true,
+  "concepts": [
+   "Harm principle",
+   "Harm",
+   "Paternalism",
+   "Coercion (linguistics)",
+   "Criminal law",
+   "Morality",
+   "Law",
+   "Political science"
+  ],
   "link": "https://doi.org/10.1093/0195046641.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The Moral Limits of the Criminal Law Volume 1: Harm to Others"
  },
  "Feinberg, J. (1985). [https://doi.org/10.1093/0195052153.001.0001 ''Offense to Others: The Moral Limits of the Criminal Law''] (Vol. 2, Chapter 7). Oxford University Press.": {
+  "abstract": "Abstract This book is the second in a four-volume work entitled The Moral Limits of Criminal Law, which examines the acts that the state may make criminal. It focuses on the issue of offense, presenting a detailed analysis of offensive behavior and how it is more a nuisance than a menace. It identifies the different kinds of offenses and the standards for evaluating their seriousness. The issue of obscenity is analyzed within the context of pornography and the Constitution. Obscene words, their functions, and social and legal implications are also discussed.",
+  "checked": true,
+  "concepts": [
+   "Seriousness",
+   "Pornography",
+   "Criminal law",
+   "Law",
+   "Offensive",
+   "Context (archaeology)",
+   "Criminology",
+   "Constitution"
+  ],
   "link": "https://doi.org/10.1093/0195052153.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The Moral Limits of the Criminal Law: Volume 2: Offense to Others"
  },
  "Feldman J. (2016). '''The simplicity principle in perception and cognition.''' ''Wiley interdisciplinary reviews. Cognitive science'', 7(5), 330–340. https://doi.org/10.1002/wcs.1406": {
   "abstract": "The simplicity principle, traditionally referred to as Occam's razor, is the idea that simpler explanations of observations should be preferred to more complex ones. In recent decades the principle has been clarified via the incorporation of modern notions of computation and probability, allowing a more precise understanding of how exactly complexity minimization facilitates inference. The simplicity principle has found many applications in modern cognitive science, in contexts as diverse as perception, categorization, reasoning, and neuroscience. In all these areas, the common idea is that the mind seeks the simplest available interpretation of observations- or, more precisely, that it balances a bias toward simplicity with a somewhat opposed constraint to choose models consistent with perceptual or cognitive observations. This brief tutorial surveys some of the uses of the simplicity principle across cognitive science, emphasizing how complexity minimization in a number of forms has been incorporated into probabilistic models of inference. WIREs Cogn Sci 2016, 7:330-340. doi: 10.1002/wcs.1406 For further resources related to this article, please visit the WIREs website.",
@@ -1109,12 +1342,38 @@
   "title": "The simplicity principle in perception and cognition"
  },
  "Floridi, L., & Sanders, J. W. (2004). [https://doi.org/10.1023/B:MIND.0000035461.63578.9d On the Morality of Artificial Agents]. ''Minds and Machines'', 14(3), 349–379.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Morality",
+   "Epistemology",
+   "Abstraction",
+   "Moral responsibility",
+   "Philosophy of mind",
+   "Computer science",
+   "Psychology",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.1023/B:MIND.0000035461.63578.9d",
-  "source": "missing"
+  "source": "missing",
+  "title": "On the Morality of Artificial Agents"
  },
  "Foot, P. (2001). [https://doi.org/10.1093/0198235089.001.0001 ''Natural Goodness''] (Chapter 2). Clarendon Press.": {
+  "abstract": "Abstract Philippa Foot sets out a naturalistic theory of ethics, which she calls ‘natural normativity’ and which is radically opposed to the subjectivist, non‐naturalism tradition deriving from David Hume and to be found in G. E. Moore and modern theories of ethics influenced by Moore, such as emotivism and prescriptivism. Natural normativity involves a special form of evaluation that predicates goodness and defect to living things qua living things, and Foot argues that this is the form of evaluation in moral judgements. Moral evaluations thus share a conceptual structure with evaluations of the characteristics and operations of living things, and can only be understood in these terms. The thesis of the book, then, is that vice is a natural defect, and virtue goodness of will; therefore propositions to do with goodness or badness in human character and action are not to be understood in psychological terms. In Ch. 1, Foot discusses and criticizes the subjectivism and non‐cognitivism that has dominated the past 60 years of analytical moral philosophy. Ch. 2 provides a sketch of an account of natural normativity in plants and animals, while Ch. 3 applies this to human beings, including a discussion of Elizabeth Anscombe's discussion of promising. Ch. 4 exhibits the constraint that this account of natural normativity imparts to any adequate view of practical rationality. Ch. 5 attempts to dissolve any meaningful distinction between the domain of practical rationality and the domain of morality. Ch. 6 deals with the connection between goodness and happiness, while Ch. 7 discusses Nietzsche's immoralism.",
+  "checked": true,
+  "concepts": [
+   "Epistemology",
+   "Subjectivism",
+   "Rationality",
+   "Morality",
+   "Philosophy",
+   "Naturalism",
+   "Natural (archaeology)",
+   "Happiness"
+  ],
   "link": "https://doi.org/10.1093/0198235089.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Natural Goodness"
  },
  "Fowler Jr, F. J. (2013). ''Survey research methods''. Sage publications. https://openlibrary.org/works/OL17630185W": {
   "abstract": "Author Floyd Fowler provides students and researchers who want to collect, analyze, or read about survey data with a sound basis for evaluating how each aspect of a survey can affect its precision, accuracy, and credibility.",
@@ -1135,8 +1394,17 @@
   "title": "Survey Research Methods"
  },
  "Frankfurt, H. G. (1971). [https://doi.org/10.2307/2024717 Freedom of the Will and the Concept of a Person]. ''The Journal of Philosophy'', 68(1), 5–20.": {
+  "abstract": "What philosophers have lately come to accept as analysis of the concept of a person is not actually analysis of that concept at all. Strawson, whose usage represents the current standard, identifies the concept of a person as “the concept of a type of entity such that both predicates ascribing states of consciousness and predicates ascribing corporeal characteristics...are equally applicable to a single individual of that single type.”1 But there are many entities besides persons that have both mental and physical properties. As it happens—though it seems extraordinary that this should be so—there is no common English word for the type of entity Strawson has in mind, a type that includes not only human beings but animals of various lesser species as well. Still, this hardly justifies the misappropriation of a valuable philosophical term.",
+  "checked": true,
+  "concepts": [
+   "Analytic philosophy",
+   "Epistemology",
+   "Contemporary philosophy",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.2307/2024717",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Freedom of the Will and the Concept of a Person"
  },
  "Fredrickson B. L. (2004). The broaden-and-build theory of positive emotions. *Philosophical transactions of the Royal Society of London. Series B, Biological sciences, 359*(1449), 1367–1378. https://doi.org/10.1098/rstb.2004.1512": {
   "abstract": "The broaden-and-build theory describes the form and function of a subset of positive emotions, including joy, interest, contentment and love. A key proposition is that these positive emotions broaden an individual's momentary thought-action repertoire: joy sparks the urge to play, interest sparks the urge to explore, contentment sparks the urge to savour and integrate, and love sparks a recurring cycle of each of these urges within safe, close relationships. The broadened mindsets arising from these positive emotions are contrasted to the narrowed mindsets sparked by many negative emotions (i.e. specific action tendencies, such as attack or flee). A second key proposition concerns the consequences of these broadened mindsets: by broadening an individual's momentary thought-action repertoire--whether through play, exploration or similar activities--positive emotions promote discovery of novel and creative actions, ideas and social bonds, which in turn build that individual's personal resources; ranging from physical and intellectual resources, to social and psychological resources. Importantly, these resources function as reserves that can be drawn on later to improve the odds of successful coping and survival. This chapter reviews the latest empirical evidence supporting the broaden-and-build theory and draws out implications the theory holds for optimizing health and well-being.",
@@ -1250,8 +1518,14 @@
   "title": "Citation Indexes for Science"
  },
  "Gauthier, D. (1986). [https://openlibrary.org/isbn/0198249926 ''Morals by Agreement'']. Oxford University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Ethics."
+  ],
   "link": "https://openlibrary.org/isbn/0198249926",
-  "source": "missing"
+  "source": "missing",
+  "title": "Morals by agreement"
  },
  "Gibbard, A. (1973). Manipulation of voting schemes: A general result. ''Econometrica'', ''41''(4), 587-601. https://doi.org/10.2307/1914083": {
   "abstract": "It has been conjectured that no system of can preclude strategic voting-the securing by a voter of an outcome he prefers through misrepresentation of his preferences. In this paper, for all significant systems of in which chance plays no role, the conjecture is verified. To prove the conjecture, a more general theorem in game theory is proved: a gameform is a game without utilities attached to outcomes; only a trivial game form, it is shown, can guarantee that whatever the utilities of the players may be, each player will have a dominant pure strategy. I SHALL PROVE in this paper that any non-dictatorial scheme with at least three possible outcomes is subject to individual manipulation. By a voting I mean any scheme which makes a community's choice depend entirely on individuals' professed preferences among the alternatives. An individual manipulates the scheme if, by misrepresenting his preferences, he secures an outcome he prefers to the outcome-the choice the community would make if he expressed his true preferences. The result on schemes follows from a theorem I shall prove which covers schemes of a more general kind. Let a gameform be any scheme which makes an outcome depend on individual actions of some specified sort, which I shall call strategies. A scheme, then, is a game form in which a strategy is a profession of preferences, but many game forms are not schemes. Call a strategy dominant for someone if, whatever anyone else does, it achieves his goals at least as well as would any alternative strategy. Only trivial game forms, I shall show, ensure that each individual, no matter what his preferences are, will have available a dominant strategy. Hence in particular, no non-trivial scheme guarantees that honest expression of preferences is a dominant strategy. These results are spelled out and proved in Section 3. The theorems in this paper should come as no surprise. It is well-known that many schemes in common use are subject to individual manipulation. Consider a rank-order scheme: each voter reports his preferences among the alternatives by ranking them on a ballot; first place on a ballot gives an alternative four votes, second place three, third place two, and fourth place one. The alternative with the greatest total number of votes wins. Here is a case in which an individual can manipulate the scheme. There are three voters and four alternatives; voter a ranks the alternatives in order xyzw on his ballot; voter b in order wxyz; and voter c's true preference ordering is wxyz. If c votes honestly, then, the winner is his second choice, x, with ten points. If c pretends that x is his last choice by giving his preference ordering as wyzx, then x gets only eight points, and c's first choice, w, wins with nine points. Thus c does best to misrepresent his",
@@ -1336,8 +1610,21 @@
   "title": "Epistemology and cognition"
  },
  "Goodhart, C. A. E. (1984). ''Problems of Monetary Management: The U.K. Experience''. In [https://doi.org/10.1007/978-1-349-17295-5_4 ''Monetary Theory and Practice''] (pp. 91–121). Palgrave Macmillan.": {
+  "abstract": "In 1971 the monetary authorities 1 in the UK adopted a new approach to monetary management, a change of policy announced and described in several papers on competition and credit control. The subsequent experience of trying to operate this revised system has, however, been troublesome and at times unhappy. The purpose here is to examine certain aspects of recent monetary developments in order to illustrate a number of more general analytical themes which may have relevance among several countries.",
+  "checked": true,
+  "concepts": [
+   "Monetary policy",
+   "Relevance (law)",
+   "Order (exchange)",
+   "Competition (biology)",
+   "Economics",
+   "Control (management)",
+   "Monetary hegemony",
+   "Monetary economics"
+  ],
   "link": "https://doi.org/10.1007/978-1-349-17295-5_4",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Problems of Monetary Management: The UK Experience"
  },
  "Goodin, R. E. (2007). Enfranchising all affected interests, and its alternatives. ''Philosophy & Public Affairs'', ''35''(1), 40–68. https://doi.org/10.1111/j.1088-4963.2007.00098.x": {
   "abstract": "",
@@ -1398,12 +1685,37 @@
   "title": "An axiomatic approach to the concept of interaction among players in cooperative games"
  },
  "Grice, H. P. (1957). [https://doi.org/10.2307/2182440 Meaning]. ''The Philosophical Review'', 66(3), 377–388.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Meaning (existential)",
+   "Philosophy",
+   "Epistemology",
+   "Linguistics"
+  ],
   "link": "https://doi.org/10.2307/2182440",
-  "source": "missing"
+  "source": "missing",
+  "title": "Meaning"
  },
  "Grice, H. P. (1989). [https://openlibrary.org/works/OL1897631W ''Studies in the Way of Words''] (Chapter 2, \"Logic and Conversation\", pp. 22–40). Harvard University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Bibliography",
+   "Geriatric psychiatry",
+   "Senile dementia",
+   "Bibliographie",
+   "Cerveau",
+   "Brain Diseases",
+   "Gériatrie",
+   "Aged",
+   "Vieillissement",
+   "Brain, diseases",
+   "Geriatrics"
+  ],
   "link": "https://openlibrary.org/works/OL1897631W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Brain disorders in the elderly"
  },
  "Grossman, M. (2006). '''Education and nonmarket outcomes. In E. A. Hanushek & F. Welch (Eds.)''', ''Handbook of the economics of education'' (Vol. 1, pp. 577-633). Elsevier. https://doi.org/10.1016/S1574-0692(06)01010-5": {
   "abstract": "",
@@ -1506,20 +1818,70 @@
   "title": "Moral Thinking"
  },
  "Hart, H. L. A. (1961). [https://openlibrary.org/works/OL1876642W ''The Concept of Law''] (Chapter V). Clarendon Press.": {
+  "abstract": "\"Recognized as one of the greatest philosophers in classical China, Chu Hsi (1130-1200) is known in the West primarily through translations of one of his many works, the Chin-ssu Lu. In this volume, Julia Ching offers the first book-length examination of Chu Hsi's religious thought, based on extensive reading of both primary and secondary sources.\"--Jacket.",
+  "checked": true,
+  "concepts": [
+   "Religion",
+   "Néo-confucianisme",
+   "Chu, hsi, 1130-1200",
+   "Views on religion"
+  ],
   "link": "https://openlibrary.org/works/OL1876642W",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The Religious Thought of Chu Hsi"
  },
  "Hart, H. L. A. (1968). [https://openlibrary.org/works/OL1876645W ''Punishment and Responsibility: Essays in the Philosophy of Law''] (Chapter II, \"Legal Responsibility and Excuses\"). Clarendon Press.": {
+  "abstract": "\"On the second day of the Gulf War, Marine pilot Lt. Col. Cliff Acree was shot down behind Iraqi lines. As squadron commander, Cliff was a potential gold mine of classified information that the Iraqis desperately needed. During his forty-eight days of captivity, he was singled out for mistreatment that included brutal beatings, torture, and starvation. Throughout it all, he refused to put his fellow Marines at risk by complying with Iraqi demands.\".\n\n\"Back home, Cliff's wife, Cindy, was suddenly thrust into an international media storm when his battered face was broadcast on the world's television screens. Dealing with politicians, Hollywood celebrities, and other concerned people around the world, she stood poised before the public eye and became an effective advocate for the war's POW/MIA families. Cindy appeared strong, but she feared that she would never see Cliff alive again.\".\n\n\"After seven long months apart, with the war finally over, Cliff and Cindy joyously reunited on the tarmac at Andrews Air Force Base as a grateful nation applauded their loyalty and courage.\"--BOOK JACKET.",
+  "checked": true,
+  "concepts": [
+   "Prisoners of war",
+   "Aerial operations, American",
+   "Persian Gulf War, 1991",
+   "Prisoner's spouses",
+   "Personal narratives, American",
+   "American Personal narratives",
+   "American Aerial operations",
+   "Biography",
+   "Prisoners' spouses",
+   "BIOGRAPHY & AUTOBIOGRAPHY",
+   "Historical",
+   "HISTORY"
+  ],
   "link": "https://openlibrary.org/works/OL1876645W",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The Gulf between us"
  },
  "Hart, H. L. A., & Honoré, T. (1985). [https://doi.org/10.1093/acprof:oso/9780198254744.001.0001 ''Causation in the Law''] (2nd ed., Chapter VI). Clarendon Press.": {
+  "abstract": "Abstract This text is an updated and extended second edition supporting the findings of its well-known predecessor which claimed that courts employ common-sense notions of causation in determining legal responsibility.",
+  "checked": true,
+  "concepts": [
+   "Causation",
+   "Law",
+   "Political science",
+   "Philosophy",
+   "Law and economics",
+   "Sociology"
+  ],
   "link": "https://doi.org/10.1093/acprof:oso/9780198254744.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Causation in the Law"
  },
  "Hart, O., & Moore, J. (1988). [https://doi.org/10.2307/1911054 Incomplete Contracts and Renegotiation]. ''Econometrica'', 56(4), 755–785.": {
+  "abstract": "Let P be a real-valued function defined on the space of cooperative games with transferable utility, satisfying the following condition: In every game, the marginal contributions of all players (according to P) are efficient (i.e., add up to the worth of the grand coalition). It is proved that there exists just one such function P--called the potential--and moreover that the resulting payoff vector coincides with the Shapley value. The potential approach yields other characterizations for the value; in particular, in terms of a new internal consistency property. Further results deal with weighted values and with the nontransferable utility case. Copyright 1989 by The Econometric Society.",
+  "checked": true,
+  "concepts": [
+   "Consistency (knowledge bases)",
+   "Value (mathematics)",
+   "Mathematics",
+   "Mathematical economics",
+   "Statistics",
+   "Economics",
+   "Econometrics",
+   "Discrete mathematics"
+  ],
   "link": "https://doi.org/10.2307/1911054",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Potential, Value, and Consistency"
  },
  "Hayek, F. A. (1968/2002). Competition as a Discovery Procedure. ''Quarterly Journal of Austrian Economics'', 5(3), 9–23. https://doi.org/10.1007/s12113-002-1029-0": {
   "abstract": "",
@@ -1633,8 +1995,18 @@
   "source": "missing"
  },
  "Hohfeld, W. N. (1913). [https://doi.org/10.2307/785533 Some Fundamental Legal Conceptions as Applied in Judicial Reasoning]. ''The Yale Law Journal'', 23(1), 16–59.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Political science",
+   "Law",
+   "Epistemology",
+   "Psychology",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.2307/785533",
-  "source": "missing"
+  "source": "missing",
+  "title": "Some Fundamental Legal Conceptions as Applied in Judicial Reasoning"
  },
  "Hong, L., & Page, S. E. (2001). Problem solving by heterogeneous agents. ''Journal of Economic Theory'', ''97''(1), 123–163. https://doi.org/10.1006/jeth.2000.2709": {
   "abstract": "",
@@ -1819,8 +2191,19 @@
   "title": "Prospect Theory: An Analysis of Decision under Risk"
  },
  "Kahneman, D., & Tversky, A. (1979). [https://doi.org/10.2307/1914185 Prospect Theory: An Analysis of Decision under Risk]. ''Econometrica'', 47(2), 263–291.": {
+  "abstract": "This paper presents a critique of expected utility theory as a descriptive model of decision making under risk, and develops an alternative model, called prospect theory. Choices among risky prospects exhibit several pervasive effects that are inconsistent with the basic tenets of utility theory. In particular, people underweight outcomes that are merely probable in comparison with outcomes that are obtained with certainty. This tendency, called the certainty effect, contributes to risk aversion in choices involving sure gains and to risk seeking in choices involving sure losses. In addition, people generally discard components that are shared by all prospects under consideration. This tendency, called the isolation effect, leads to inconsistent preferences when the same choice is presented in different forms. An alternative theory of choice is developed, in which value is assigned to gains and losses rather than to final assets and in which probabilities are replaced by decision weights. The value function is normally concave for gains, commonly convex for losses, and is generally steeper for losses than for gains. Decision weights are generally lower than the corresponding probabilities, except in the range of low prob-abilities. Overweighting of low probabilities may contribute to the attractiveness of both insurance and gambling. 1.",
+  "checked": true,
+  "concepts": [
+   "Decision theory",
+   "Economics",
+   "Prospect theory",
+   "Econometrics",
+   "Mathematical economics",
+   "Microeconomics"
+  ],
   "link": "https://doi.org/10.2307/1914185",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Prospect Theory: An Analysis of Decision under Risk"
  },
  "Kang, M. J., Hsu, M., Krajbich, I. M., Loewenstein, G., McClure, S. M., Wang, J. T., & Camerer, C. F. (2009). The Wick in the Candle of Learning: Epistemic Curiosity Activates Reward Circuitry. ''Psychological Science'', 20(8), 963–973. https://doi.org/10.1111/j.1467-9280.2009.02402.x": {
   "abstract": "Curiosity has been described as a desire for learning and knowledge, but its underlying mechanisms are not well understood. We scanned subjects with functional magnetic resonance imaging while they read trivia questions. The level of curiosity when reading questions was correlated with activity in caudate regions previously suggested to be involved in anticipated reward. This finding led to a behavioral study, which showed that subjects spent more scarce resources (either limited tokens or waiting time) to find out answers when they were more curious. The functional imaging also showed that curiosity increased activity in memory areas when subjects guessed incorrectly, which suggests that curiosity may enhance memory for surprising new information. This prediction about memory enhancement was confirmed in a behavioral study: Higher curiosity in an initial session was correlated with better recall of surprising answers 1 to 2 weeks later.",
@@ -1887,6 +2270,7 @@
   "title": "Decisions with multiple objectives"
  },
  "Keown, D. (1996). [https://doi.org/10.1111/j.1467-9795.1996.tb00446.x Karma, Character, and Consequentialism]. ''Journal of Religious Ethics'', 24(2), 329–350.": {
+  "checked": true,
   "link": "https://doi.org/10.1111/j.1467-9795.1996.tb00446.x",
   "source": "missing"
  },
@@ -1927,12 +2311,30 @@
   "source": "missing"
  },
  "Kneale, W., & Kneale, M. (1962). [https://openlibrary.org/works/OL1370838W ''The Development of Logic''] (Chapter II, §5, p. 101). Clarendon Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL1370838W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Farloyrene vegn"
  },
  "Knight, F. H. (1921). [https://openlibrary.org/works/OL65359W ''Risk, Uncertainty and Profit''] (Part III, Chapter VII). Houghton Mifflin.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Fiction",
+   "Aristide Pamplemousse (Fictitious character)",
+   "Gastronomy",
+   "Russians",
+   "Large type books",
+   "Fiction, mystery & detective, general",
+   "Pamplemousse, aristide (fictitious character), fiction",
+   "Fiction, humorous",
+   "France, fiction"
+  ],
   "link": "https://openlibrary.org/works/OL65359W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Monsieur Pamplemousse on vacation"
  },
  "Koetke, J., Schumann, K., Porter, T., & Smilo-Morgan, I. (2023). Fallibility salience increases intellectual humility: Implications for people's willingness to investigate political misinformation. ''Personality and Social Psychology Bulletin'', ''49''(5), 806–820. https://doi.org/10.1177/01461672221080979": {
   "abstract": "The spread of online political misinformation has ramifications for political polarization, trust in political systems, and the functioning of democracy. In this paper, we advance findings on investigative behaviors—actions aimed at determining the veracity of information encountered online—in response to political misinformation. Across three preregistered studies (N = 889), we find that investigative behaviors increase accuracy discernment of political misinformation (Study 1), that intellectual humility reliably predicts investigative behaviors in this context (Study 2), and test a novel fallibility salience manipulation to increase intellectual humility (Study 3). We discuss implications of these findings for reducing the impacts of political misinformation.",
@@ -2006,12 +2408,35 @@
   "title": "On Information and Sufficiency"
  },
  "Ladyman, J., & Ross, D. (2007). [https://doi.org/10.1093/acprof:oso/9780199276196.001.0001 ''Every Thing Must Go: Metaphysics Naturalized'']. Oxford University Press.": {
+  "abstract": "In this book, the authors argue that the only kind of metaphysics that can contribute to objective knowledge is one based specifically on contemporary science as it really is, and not on philosophers' a priori intuitions, common sense, or simplifications of science.",
+  "checked": true,
+  "concepts": [
+   "Metaphysics",
+   "Epistemology",
+   "Causation",
+   "Ontic",
+   "Empiricism",
+   "Philosophy of science",
+   "Philosophy",
+   "Scientific realism"
+  ],
   "link": "https://doi.org/10.1093/acprof:oso/9780199276196.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Every Thing Must Go"
  },
  "Lakatos, I. (1970). ''Falsification and the Methodology of Scientific Research Programmes''. In I. Lakatos & A. Musgrave (Eds.), [https://doi.org/10.1017/CBO9781139171434.009 ''Criticism and the Growth of Knowledge''] (pp. 91–196). Cambridge University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Engineering ethics",
+   "Management science",
+   "Computer science",
+   "Psychology",
+   "Engineering"
+  ],
   "link": "https://doi.org/10.1017/CBO9781139171434.009",
-  "source": "missing"
+  "source": "missing",
+  "title": "Falsification and the Methodology of Scientific Research Programmes"
  },
  "Lakatos, I. (1970). Falsification and the Methodology of Scientific Research Programmes. In I. Lakatos & A. Musgrave (Eds.), ''Criticism and the Growth of Knowledge'' (pp. 91–196). Cambridge University Press. https://doi.org/10.1017/cbo9781139171434.009": {
   "abstract": "",
@@ -2043,8 +2468,21 @@
   "title": "The Methodology of Scientific Research Programmes"
  },
  "Landauer, R. (1991). [https://doi.org/10.1063/1.881299 Information is Physical]. ''Physics Today'', 44(5), 23–29.": {
+  "abstract": "Thermodynamics arose in the 19th century out of the attempt to understand the performance limits of steam engines in a way that would anticipate all further inventions. Claude Shannon, after World War II, analyzed the limits of the communications channel. It is no surprise, then, that shortly after the emergence of modern digital computing, similar questions appeared in that field. It was not hard to associate a logic gate with a degree of freedom, then to associate kT with that, and presume that this energy has to be dissipated at every step. Similarly, it seemed obvious to many that the uncertainty principle, ΔEΔt∼ℏ, could be used to calculate a required minimal energy involvement, and therefore energy loss, for very short Δt.",
+  "checked": true,
+  "concepts": [
+   "Surprise",
+   "Energy (signal processing)",
+   "Channel (broadcasting)",
+   "Computer science",
+   "Theoretical physics",
+   "Physics",
+   "Mathematical economics",
+   "Statistical physics"
+  ],
   "link": "https://doi.org/10.1063/1.881299",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Information is Physical"
  },
  "Lee, C.-W., Lin, L.-C., & Hung, H.-C. (2021). Art and Cultural Participation and Life Satisfaction in Adults: The Role of Physical Health, Mental Health, and Interpersonal Relationships. ''Frontiers in Public Health'', 8, 582342. https://doi.org/10.3389/fpubh.2020.582342": {
   "abstract": "Many different forms of art and cultural participation, for example, visiting museums and galleries, have received increasing attention as an important new focus for public health. While a growing body of evidence suggests that art and cultural participation enhance human health and well-being in the West, the research is just in the infancy in the East. The purpose of this study was to explore the effects of art and cultural participation of museums and galleries on life satisfaction intervened and controlled by physical and mental health and interpersonal relationships and individual's background. This study adopted large-sample data from the seventh period of the Taiwan Social Change Survey. The sample population comprised 2,034 adult participants, involving 1,042 males and 992 females. The average age of the respondents was 47.67 ± 17.48 years. The results showed that individuals aged 30-64 years with an average monthly income between NT$20,000-NT$40,000 had a higher frequency of art and cultural participation of museums and galleries. Women under 29 years reported better life satisfaction. Individuals with a higher frequency of art and cultural participation of museums and galleries affected life satisfaction not only directly but also indirectly through interpersonal relationships, particularly among women and the elderly. Individuals who visited museums and galleries more frequently had greater life satisfaction and higher frequency of interpersonal contact. This was particularly evident in older females. Art and cultural participation of museums and galleries directly affected individual's life satisfaction and indirectly affected it via interpersonal relationships after controlling for gender, age, and monthly income. These findings indicate that visiting museums and galleries can enhance the frequency of interpersonal interactions and life satisfaction.",
@@ -2080,8 +2518,25 @@
   "title": "Aprender a Hablar Ciencia/ Talking Science"
  },
  "Lessig, L. (1999). [https://openlibrary.org/works/OL41913W ''Code and Other Laws of Cyberspace''] (Chapter 7). Basic Books.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Fiction",
+   "Rehabilitation centers",
+   "Police",
+   "Maggody (Ark. : Imaginary place)",
+   "Arly Hanks (Fictitious character)",
+   "Policewomen",
+   "Police chiefs",
+   "Large type books",
+   "Fiction, mystery & detective, general",
+   "Fiction, humorous, general",
+   "Hanks, arly (fictitious character), fiction",
+   "Maggody (ark. : imaginary place), fiction"
+  ],
   "link": "https://openlibrary.org/works/OL41913W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Malpractice in Maggody"
  },
  "Lewandowsky, S., & van der Linden, S. (2021). Countering misinformation and fake news through inoculation and prebunking. ''European Review of Social Psychology'', ''32''(2), 348–384. https://doi.org/10.1080/10463283.2021.1876983": {
   "abstract": "There has been increasing concern with the growing infusion of misinformation, or “fake news”, into public discourse and politics in many western democracies. Our article first briefly reviews the current state of the literature on conventional countermeasures to misinformation. We then explore proactive measures to prevent misinformation from finding traction in the first place that is based on the psychological theory of “inoculation”. Inoculation rests on the idea that if people are forewarned that they might be misinformed and are exposed to weakened examples of the ways in which they might be misled, they will become more immune to misinformation. We review a number of techniques that can boost people’s resilience to misinformation, ranging from general warnings to more specific instructions about misleading (rhetorical) techniques. We show that based on the available evidence, inoculation appears to be a promising avenue to help protect people from misinformation and “fake news”.",
@@ -2100,12 +2555,32 @@
   "title": "Countering Misinformation and Fake News Through Inoculation and Prebunking"
  },
  "Lewis, D. K. (1969). [https://openlibrary.org/works/OL3508914W ''Convention: A Philosophical Study''] (Chapter IV). Harvard University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Freshwater fishes",
+   "Identification"
+  ],
   "link": "https://openlibrary.org/works/OL3508914W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Freshwater Fish (American Nature Guides)"
  },
  "Lewis, D. K. (1983). ''Survival and Identity''. In [https://doi.org/10.1093/0195032047.003.0005 ''Philosophical Papers''] (Vol. I, pp. 55–77). Oxford University Press.": {
+  "abstract": "Abstract Prompted by Derek Parfit's early work on personal identity, Lewis advances the view that persons are best regarded as suitably related aggregates of person‐stages. Parfit argues that what matters in survival is either identity or mental continuity and connectedness; that the two cannot both be what matters in survival (because the former is a one‐one relation and does not admit of degree, whereas the latter can admit of degree and may be a one‐many or many‐one relation); and that what matters in survival is not identity. Contra Parfit, Lewis contends that the opposition is a false one, since it obscures the fact that mental continuity and connectedness is a relation between two person‐stages (i.e., time‐slices of continuant persons), whereas identity is a relation between temporally extended continuant persons with stages at different times. The postscript includes both Lewis’ rejoinder to Parfit's objections, as well as a further defense of person‐stages.",
+  "checked": true,
+  "concepts": [
+   "Social connectedness",
+   "Relation (database)",
+   "Identity (music)",
+   "Opposition (politics)",
+   "Epistemology",
+   "Personal identity",
+   "Survival of the fittest",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.1093/0195032047.003.0005",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Survival and Identity"
  },
  "Lin, J. (1991). Divergence measures based on the Shannon entropy. ''IEEE Transactions on Information Theory'', 37(1), 145–151. https://doi.org/10.1109/18.61115": {
   "abstract": "A novel class of information-theoretic divergence measures based on the Shannon entropy is introduced. Unlike the well-known Kullback divergences, the new measures do not require the condition of absolute continuity to be satisfied by the probability distributions involved. More importantly, their close relationship with the variational distance and the probability of misclassification error are established in terms of bounds. These bounds are crucial in many applications of divergence measures. The measures are also well characterized by the properties of nonnegativity, finiteness, semiboundedness, and boundedness.>",
@@ -2124,8 +2599,19 @@
   "title": "Divergence measures based on the Shannon entropy"
  },
  "List, C., & Pettit, P. (2011). [https://doi.org/10.1093/acprof:oso/9780199591565.001.0001 ''Group Agency: The Possibility, Design, and Status of Corporate Agents'']. Oxford University Press.": {
+  "abstract": "Are companies, churches, and states genuine agents? How do we explain their behaviour? Can we treat them as accountable for their actions? List and Pettit offer arguments, grounded in work on social choice, economics, and philosophy, to show there really are group agents, over and above the individual agents who compose them.",
+  "checked": true,
+  "concepts": [
+   "Agency (philosophy)",
+   "Group (periodic table)",
+   "Sociology",
+   "Social science",
+   "Physics",
+   "Quantum mechanics"
+  ],
   "link": "https://doi.org/10.1093/acprof:oso/9780199591565.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Group Agency"
  },
  "Locke, J. (1689). [https://www.gutenberg.org/ebooks/10615 ''An Essay Concerning Human Understanding''] (Book II, Chapter XXVII). Thomas Basset.": {
   "link": "https://www.gutenberg.org/ebooks/10615",
@@ -2136,12 +2622,17 @@
   "source": "missing"
  },
  "Lorenz, E. N. (1963). [https://doi.org/10.1175/1520-0469(1963)020%3C0130:DNF%3E2.0.CO;2 Deterministic Nonperiodic Flow]. ''Journal of the Atmospheric Sciences'', 20(2), 130–141.": {
+  "checked": true,
   "link": "https://doi.org/10.1175/1520-0469(1963)020%3C0130:DNF%3E2.0.CO;2",
   "source": "missing"
  },
  "Lukes, S. (2005). [https://openlibrary.org/works/OL1881562W ''Power: A Radical View''] (2nd ed., Chapter 1). Palgrave Macmillan.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL1881562W",
-  "source": "missing"
+  "source": "missing",
+  "title": "David Johnson Passed Through Here"
  },
  "Lyons, N. (Ed.). (1998). ''With portfolio in hand''. Teachers College Press. https://openlibrary.org/works/OL18025057W": {
   "abstract": "\"Portfolios can easily become elaborate paper collections, glitzy scrapbooks that teachers keep. With Portfolio in Hand presents instead the evolution of a different concept of the teaching portfolio as the warrant of a new kind of professional teacher. Not simply the result of efforts to reform teacher testing, the teaching portfolio attempts to capture and document the complex mindfulness of competent and effective teachers. In this book, the tensions of portfolios are explored - whether portfolios serve personal or public needs, whether they are used for teacher evaluation or professional development - using current portfolio practices at teacher education institutions from Maine to California. The text also includes hands-on guidance to help teachers prepare useful portfolios.\"--Jacket.",
@@ -2160,6 +2651,7 @@
   "title": "With portfolio in hand"
  },
  "Lyubomirsky, S., & Lepper, H. S. (1999). A measure of subjective happiness: Preliminary psychometric data. ''Social indicators research'', ''46''(1), 137-155. https://doi.org/10.1023/A:1008950211807": {
+  "checked": true,
   "link": "https://doi.org/10.1023/A:1008950211807",
   "source": "missing"
  },
@@ -2237,8 +2729,21 @@
   "title": "Principles of Microeconomics (with Xtra!)"
  },
  "Maturana, H. R., & Varela, F. J. (1980). [https://doi.org/10.1007/978-94-009-8947-4 ''Autopoiesis and Cognition: The Realization of the Living'']. D. Reidel Publishing Company.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Autopoiesis",
+   "Epistemology",
+   "Cognition",
+   "Cognitive systems",
+   "Work (physics)",
+   "Living systems",
+   "Cognitive science",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.1007/978-94-009-8947-4",
-  "source": "missing"
+  "source": "missing",
+  "title": "Autopoiesis and Cognition"
  },
  "Mercer, N. (2008). Talk and the development of reasoning and understanding. ''Human Development'', ''51''(1), 90–100. https://doi.org/10.1159/000113158": {
   "abstract": "Wertsch’s clarification of Vygotsky’s claims about the role of social interaction in the development of children’s thinking made an important contribution to educational research. Revisiting that clarification, I suggest that ‘talk’ instead of ‘speech’ best describes Vygotsky’s concern with the functional dynamics of dialogue rather than the language system. Reviewing research on teacher-pupil interaction and collaborative activity amongst peers, I then consider what evidence has now emerged to support Vygotsky’s claims. The article ends with a brief summary of the current state of our understanding about the role of spoken dialogue in learning and development.",
@@ -2332,10 +2837,18 @@
   "title": "Emergence of cooperation due to opponent-specific responses in Prisoner’s Dilemma"
  },
  "Morriss, P. (2002). [https://openlibrary.org/works/OL3974763W ''Power: A Philosophical Analysis''] (2nd ed., Chapter 5). Manchester University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Novell DOS",
+   "Operating systems (Computers)"
+  ],
   "link": "https://openlibrary.org/works/OL3974763W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Usin g Novell DOS 7"
  },
  "Murphy, A. H., & Winkler, R. L. (1987). A general framework for forecast verification. ''Monthly Weather Review'', 115(7), 1330–1338. https://doi.org/10.1175/1520-0493(1987)115%3C1330:agfffv%3E2.0.co;2": {
+  "checked": true,
   "link": "https://doi.org/10.1175/1520-0493(1987)115%3C1330:agfffv%3E2.0.co;2",
   "source": "missing"
  },
@@ -2372,8 +2885,17 @@
   "title": "Ecology, Community and Lifestyle"
  },
  "Nagel, T. (1974). [https://doi.org/10.2307/2183914 What Is It Like to Be a Bat?]. ''The Philosophical Review'', 83(4), 435–450.": {
+  "abstract": "Consciousness is what makes the mind-body problem really intractable. Perhaps that is why current discussions of the problem give it little attention or get it obviously wrong. The recent wave of reductionist euphoria has produced several analyses of mental phenomena and mental concepts designed to explain the possibility of some variety of materialism, psychophysical identification, or reduction. But the problems dealt with are those common to this type of reduction and other types, and what makes the mind-body problem unique, and unlike the water-H2O problem or the Turing machine-IBM machine problem or the lightning-electrical discharge problem or the gene-DNA problem or the oak tree-hydrocarbon problem, is ignored.",
+  "checked": true,
+  "concepts": [
+   "Contemporary philosophy",
+   "General interest",
+   "Philosophy",
+   "Epistemology"
+  ],
   "link": "https://doi.org/10.2307/2183914",
-  "source": "missing"
+  "source": "fetched",
+  "title": "What Is It Like to Be a Bat?"
  },
  "Nash, J. (1951). Non-cooperative games. ''Annals of Mathematics'', 54(2), 286-295. https://doi.org/10.2307/1969529": {
   "abstract": "",
@@ -2432,8 +2954,21 @@
   "title": "Five Rules for the Evolution of Cooperation"
  },
  "Nowak, M. A., & Sigmund, K. (2005). [https://doi.org/10.1038/nature04131 Evolution of indirect reciprocity]. ''Nature'', 437(7068), 1291–1298.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Reciprocity (cultural anthropology)",
+   "Judgement",
+   "Reputation",
+   "Natural selection",
+   "Strong reciprocity",
+   "Morality",
+   "Selection (genetic algorithm)",
+   "Altruism (biology)"
+  ],
   "link": "https://doi.org/10.1038/nature04131",
-  "source": "missing"
+  "source": "missing",
+  "title": "Evolution of indirect reciprocity"
  },
  "Nozick, R. (1974). ''Anarchy, State, and Utopia''. Basic Books. https://openlibrary.org/works/OL3336954W": {
   "abstract": "**Anarchy, State, and Utopia** is a 1974 book by the American political philosopher Robert Nozick. It won the 1975 US National Book Award in category Philosophy and Religion, has been translated into 11 languages, and was named one of the \"100 most influential books since the war\" (1945–1995) by the UK *Times Literary Supplement*.\r\n\r\nIn opposition to *A Theory of Justice* (1971) by John Rawls, and in debate with Michael Walzer,[3] Nozick argues in favor of a minimal state, \"limited to the narrow functions of protection against force, theft, fraud, enforcement of contracts, and so on.\" When a state takes on more responsibilities than these, Nozick argues, rights will be violated. To support the idea of the minimal state, Nozick presents an argument that illustrates how the minimalist state arises naturally from anarchy and how any expansion of state power past this minimalist threshold is unjustified. \r\n\r\n(Source: [Wikipedia](https://en.wikipedia.org/wiki/Anarchy,_State,_and_Utopia))",
@@ -2456,8 +2991,19 @@
   "title": "Anarchy, State, and Utopia"
  },
  "Nozick, R. (1974). [https://openlibrary.org/works/OL2634276W ''Anarchy, State, and Utopia''] (pp. 42–45). Basic Books.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Study and teaching",
+   "Handbooks, manuals",
+   "Étude et enseignement",
+   "Guides, manuels",
+   "Afrikastudies",
+   "Bibliography"
+  ],
   "link": "https://openlibrary.org/works/OL2634276W",
-  "source": "missing"
+  "source": "missing",
+  "title": "The African studies companion"
  },
  "Nussbaum, M. C. (2000). ''Women and Human Development: The Capabilities Approach''. Cambridge University Press. https://openlibrary.org/works/OL25675444W": {
   "abstract": "",
@@ -2577,12 +3123,29 @@
   "title": "Reasons and Persons"
  },
  "Parfit, D. (1984). [https://doi.org/10.1093/019824908X.001.0001 ''Reasons and Persons''] (Part Three). Clarendon Press.": {
+  "abstract": "Abstract This book has four loosely connected parts. Part One discusses some ways in which theories about morality and rationality can be self‐defeating. Such theories give us certain aims, but also tell us to act in ways that frustrate these aims. If these theories are revised, these objections can be partly met. Part Two discusses the relations between what a single person can rationally want or do at different times, and what different people can rationally want or do. I also discuss the rationality of four attitudes to time: temporal neutrality, and the three kinds of bias towards the present, the near, and the future. Part Three discusses personal identity, or what is involved in our continuing to exist throughout our lives. Most of us, I argue, have certain beliefs about this subject that are false, but hard to give up. If we accept these claims, they may change some of our emotions or attitudes, and we should revise some of our beliefs about both rationality and morality. Part Four discusses our obligations to future generations, and some related questions about what would be better or worse futures for mankind. The most difficult question here, which I fail to answer, is about the relative importance of the number of people who will exist, and the quality of life of these people.",
+  "checked": true,
+  "concepts": [
+   "Rationality",
+   "Morality",
+   "Subject (documents)",
+   "Identity (music)",
+   "Personal identity",
+   "Epistemology",
+   "Moral philosophy",
+   "Sociology"
+  ],
   "link": "https://doi.org/10.1093/019824908X.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "11. Reasons and Persons"
  },
  "Parfit, D. (1984). [https://openlibrary.org/isbn/019824908X ''Reasons and Persons''], Part III. Oxford University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/isbn/019824908X",
-  "source": "missing"
+  "source": "missing",
+  "title": "Reasons and Persons"
  },
  "Pattanaik, P. K., & Xu, Y. (1990). [https://www.jstor.org/stable/40723933 On Ranking Opportunity Sets in Terms of Freedom of Choice]. ''Recherches Économiques de Louvain'', 56(3/4), 383–390.": {
   "link": "https://www.jstor.org/stable/40723933",
@@ -2605,16 +3168,55 @@
   "title": "Causality"
  },
  "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed.). Cambridge University Press.": {
+  "abstract": "Written by one of the preeminent researchers in the field, this book provides a comprehensive exposition of modern analysis of causation. It shows how causality has grown from a nebulous concept into a mathematical theory with significant applications in the fields of statistics, artificial intelligence, economics, philosophy, cognitive science, and the health and social sciences. Judea Pearl presents and unifies the probabilistic, manipulative, counterfactual, and structural approaches to causation and devises simple mathematical tools for studying the relationships between causal connections and statistical associations. Cited in more than 2,100 scientific publications, it continues to liberate scientists from the traditional molds of statistical thinking. In this revised edition, Judea Pearl elucidates thorny issues, answers readers' questions, and offers a panoramic view of recent advances in this field of research. Causality will be of interest to students and professionals in a wide variety of fields. Dr Judea Pearl has received the 2011 Rumelhart Prize for his leading research in Artificial Intelligence (AI) and systems from The Cognitive Science Society.",
+  "checked": true,
+  "concepts": [
+   "Causation",
+   "Counterfactual thinking",
+   "Pearl",
+   "Causality (physics)",
+   "Counterfactual conditional",
+   "Exposition (narrative)",
+   "Field (mathematics)",
+   "Epistemology"
+  ],
   "link": "https://doi.org/10.1017/CBO9780511803161",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Causality: Models, Reasoning, and Inference"
  },
  "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 1). Cambridge University Press.": {
+  "abstract": "Written by one of the preeminent researchers in the field, this book provides a comprehensive exposition of modern analysis of causation. It shows how causality has grown from a nebulous concept into a mathematical theory with significant applications in the fields of statistics, artificial intelligence, economics, philosophy, cognitive science, and the health and social sciences. Judea Pearl presents and unifies the probabilistic, manipulative, counterfactual, and structural approaches to causation and devises simple mathematical tools for studying the relationships between causal connections and statistical associations. Cited in more than 2,100 scientific publications, it continues to liberate scientists from the traditional molds of statistical thinking. In this revised edition, Judea Pearl elucidates thorny issues, answers readers' questions, and offers a panoramic view of recent advances in this field of research. Causality will be of interest to students and professionals in a wide variety of fields. Dr Judea Pearl has received the 2011 Rumelhart Prize for his leading research in Artificial Intelligence (AI) and systems from The Cognitive Science Society.",
+  "checked": true,
+  "concepts": [
+   "Causation",
+   "Counterfactual thinking",
+   "Pearl",
+   "Causality (physics)",
+   "Counterfactual conditional",
+   "Exposition (narrative)",
+   "Field (mathematics)",
+   "Epistemology"
+  ],
   "link": "https://doi.org/10.1017/CBO9780511803161",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Causality: Models, Reasoning, and Inference"
  },
  "Pearl, J. (2009). [https://doi.org/10.1017/CBO9780511803161 ''Causality: Models, Reasoning, and Inference''] (2nd ed., Chapter 7). Cambridge University Press.": {
+  "abstract": "Written by one of the preeminent researchers in the field, this book provides a comprehensive exposition of modern analysis of causation. It shows how causality has grown from a nebulous concept into a mathematical theory with significant applications in the fields of statistics, artificial intelligence, economics, philosophy, cognitive science, and the health and social sciences. Judea Pearl presents and unifies the probabilistic, manipulative, counterfactual, and structural approaches to causation and devises simple mathematical tools for studying the relationships between causal connections and statistical associations. Cited in more than 2,100 scientific publications, it continues to liberate scientists from the traditional molds of statistical thinking. In this revised edition, Judea Pearl elucidates thorny issues, answers readers' questions, and offers a panoramic view of recent advances in this field of research. Causality will be of interest to students and professionals in a wide variety of fields. Dr Judea Pearl has received the 2011 Rumelhart Prize for his leading research in Artificial Intelligence (AI) and systems from The Cognitive Science Society.",
+  "checked": true,
+  "concepts": [
+   "Causation",
+   "Counterfactual thinking",
+   "Pearl",
+   "Causality (physics)",
+   "Counterfactual conditional",
+   "Exposition (narrative)",
+   "Field (mathematics)",
+   "Epistemology"
+  ],
   "link": "https://doi.org/10.1017/CBO9780511803161",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Causality: Models, Reasoning, and Inference"
  },
  "Peirce, C. S. (1878). [https://en.wikisource.org/wiki/Popular_Science_Monthly/Volume_12/January_1878/Illustrations_of_the_Logic_of_Science_II How to Make Our Ideas Clear]. ''Popular Science Monthly'', 12, 286–302.": {
   "link": "https://en.wikisource.org/wiki/Popular_Science_Monthly/Volume_12/January_1878/Illustrations_of_the_Logic_of_Science_II",
@@ -2651,8 +3253,21 @@
   "title": "Republicanism"
  },
  "Phan, K. L., Wager, T. D., Taylor, S. F., & Liberzon, I. (2002). Functional neuroimaging studies of human emotion: a meta-analysis of emotion activation and regulation. ''NeuroImage'', ''16''(2), 331–342. https://doi.org/10.1006/nimg.2002.1087": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Sadness",
+   "Disgust",
+   "Psychology",
+   "Functional magnetic resonance imaging",
+   "Insula",
+   "Amygdala",
+   "Anterior cingulate cortex",
+   "Cognitive psychology"
+  ],
   "link": "https://doi.org/10.1006/nimg.2002.1087",
-  "source": "missing"
+  "source": "missing",
+  "title": "Functional Neuroanatomy of Emotion: A Meta-Analysis of Emotion Activation Studies in PET and fMRI"
  },
  "Phan, K. L., Wager, T. D., Taylor, S. F., & Liberzon, I. (2002). Functional neuroimaging studies of human emotion: a meta-analysis of emotion activation and regulation. ''NeuroImage'', ''16''(2), 331–342. https://doi.org/10.1006/nimg.2002.1127": {
   "abstract": "",
@@ -2754,12 +3369,26 @@
   "title": "Bowling Alone"
  },
  "Quine, W. V. O. (1960). [https://openlibrary.org/works/OL2664673W ''Word and Object''] (§36, p. 171). MIT Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL2664673W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Nur eine kleine Insel"
  },
  "Quine, W. V. O. (1969). [https://doi.org/10.7312/quin92204 ''Ontological Relativity and Other Essays''] (p. 23). Columbia University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Theory of relativity",
+   "Epistemology",
+   "Theoretical physics",
+   "Philosophy",
+   "Physics"
+  ],
   "link": "https://doi.org/10.7312/quin92204",
-  "source": "missing"
+  "source": "missing",
+  "title": "Ontological Relativity and Other Essays"
  },
  "Rawls, J. (1955). Two Concepts of Rules. ''The Philosophical Review'', 64(1), 3–32. https://doi.org/10.2307/2182230": {
   "abstract": "",
@@ -2776,8 +3405,21 @@
   "title": "Two Concepts of Rules"
  },
  "Rawls, J. (1993). [https://openlibrary.org/works/OL2009261W ''Political Liberalism''] (Lecture II, §1, pp. 48–54). Columbia University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Politics and government",
+   "Heads of state",
+   "Biography",
+   "Philosophers",
+   "Portraits",
+   "Russian Philosophy",
+   "Philosophy",
+   "Russian Authors"
+  ],
   "link": "https://openlibrary.org/works/OL2009261W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Pensioner soi͡u︡znogo znachenii͡a︡"
  },
  "Rissanen, J. (1978). Modeling by shortest data description. ''Automatica'', 14(5), 465–471. https://doi.org/10.1016/0005-1098(78)90005-5": {
   "abstract": "",
@@ -2854,6 +3496,7 @@
   "title": "Endogenous Technological Change"
  },
  "Roozenbeek, J., van der Linden, S., & Nygren, T. (2020). Prebunking interventions based on \"inoculation\" theory can reduce susceptibility to misinformation across cultures. ''The Harvard Kennedy School (HKS) Misinformation Review'', ''1''(2). https://doi.org/10.37016/mr-2020-008": {
+  "checked": true,
   "link": "https://doi.org/10.37016/mr-2020-008",
   "source": "missing"
  },
@@ -2874,8 +3517,14 @@
   "title": "Negativity Bias, Negativity Dominance, and Contagion"
  },
  "Russell, B. (1938). [https://openlibrary.org/works/OL1105246W ''Power: A New Social Analysis''] (Chapter I, p. 35). George Allen & Unwin.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Causation"
+  ],
   "link": "https://openlibrary.org/works/OL1105246W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Ursache, Grund und Zweck"
  },
  "Ryan, R. M., & Deci, E. L. (2001). '''On happiness and human potentials: A review of research on hedonic and eudaimonic well-being.''' ''Annual Review of Psychology, 52''(1), 141–166.https://doi.org/10.1146/annurev.psych.52.1.141": {
   "abstract": "Well-being is a complex construct that concerns optimal experience and functioning. Current research on well-being has been derived from two general perspectives: the hedonic approach, which focuses on happiness and defines well-being in terms of pleasure attainment and pain avoidance; and the eudaimonic approach, which focuses on meaning and self-realization and defines well-being in terms of the degree to which a person is fully functioning. These two views have given rise to different research foci and a body of knowledge that is in some areas divergent and in others complementary. New methodological developments concerning multilevel modeling and construct comparisons are also allowing researchers to formulate new questions for the field. This review considers research from both perspectives concerning the nature of well-being, its antecedents, and its stability across time and culture.",
@@ -2894,6 +3543,7 @@
   "title": "On Happiness and Human Potentials: A Review of Research on Hedonic and Eudaimonic Well-Being"
  },
  "S. Kirby, H. Cornish, & K. Smith, Cumulative cultural evolution in the laboratory: An experimental approach to the origins of structure in human language, ''Proc. Natl. Acad. Sci. U.S.A.'' 105 (31) 10681-10686, [https://doi.org/10.1073/pnas.0707835105&#x20;(2008). https://doi.org/10.1073/pnas.0707835105 (2008).]": {
+  "checked": true,
   "link": "https://doi.org/10.1073/pnas.0707835105&#x20;(2008",
   "source": "missing"
  },
@@ -2918,16 +3568,49 @@
   "title": "Cosmos"
  },
  "Salmon, W. C. (1984). [https://openlibrary.org/works/OL2796608W ''Scientific Explanation and the Causal Structure of the World''] (Chapter 5). Princeton University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Wages",
+   "Addresses, essays, lectures"
+  ],
   "link": "https://openlibrary.org/works/OL2796608W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Aspetti istituzionali della giungla retributiva"
  },
  "Samuelson, P. A. (1938). [https://doi.org/10.2307/2548836 A Note on the Pure Theory of Consumer's Behaviour]. ''Economica'', 5(17), 61–71.": {
+  "abstract": "FROM its very beginning the theory of consumer's choice has marched steadily towards greater generality, sloughing off at successive stages unnecessarily restrictive conditions. From the time of Gossen to our own day we have seen the removal of (a) the assumption of linearity of marginal utility; (b) the assumption of independence of utilities; (c) the assumption of the measurability of utility in a cardinal sense; and (d) even the assumption of an integrable field of preference elements.. The discrediting of utility as a. psychological concept robbed it of its only possible virtue as an explanation -of human behaviour in other than a circular sense, revealing its emptiness as even a construction. As a result the most modern theory confines itself to an analysis of indifference elements, budgetary equilibrium being defined by equivalence of price ratios to respective indifference slopes. Consistently applied, however, the modern criticism turns back on itself and cuts deeply. For just as we do not claim to know by introspection the behaviour of utility, many will argue we cannot know the behaviour of ratios of marginal utilities or of indifference directions. Why should one believe in the increasing rate of marginal substitution, except in so far as it leads to the type of demand functions in the market which seem plausible ? Even on the advanced front we are confronted with this dilemma -either the argument with respect to indifference varieties is circular or to many people inadmissible (at least without further demonstration). Hence, despite the fact that the notion of utility has been repudiated or ignored by modern theory, it is clear that much of even the most modern analysis shows vestigial traces of the utility concept. Thus, to any person not",
+  "checked": true,
+  "concepts": [
+   "Introspection",
+   "Economics",
+   "Generality",
+   "Marginal utility",
+   "Dilemma",
+   "Argument (complex analysis)",
+   "Virtue",
+   "Mathematical economics"
+  ],
   "link": "https://doi.org/10.2307/2548836",
-  "source": "missing"
+  "source": "fetched",
+  "title": "A Note on the Pure Theory of Consumer's Behaviour"
  },
  "Samuelson, W., & Zeckhauser, R. (1988). [https://doi.org/10.1007/BF00055564 Status Quo Bias in Decision Making]. ''Journal of Risk and Uncertainty'', 1(1), 7–59.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Status quo",
+   "Status quo bias",
+   "Nothing",
+   "Positive economics",
+   "Economics",
+   "Prospect theory",
+   "Public economics",
+   "Actuarial science"
+  ],
   "link": "https://doi.org/10.1007/BF00055564",
-  "source": "missing"
+  "source": "missing",
+  "title": "Status quo bias in decision making"
  },
  "Sartre, J.-P. (1946). ''Existentialism is a Humanism''. Yale University Press, 2007. https://openlibrary.org/works/OL1161181W": {
   "abstract": "\"It was to correct common misconceptions about his thought that Sartre accepted an invitation to speak on October 29, 1945, at the Club Maintenant in Paris. The unstated objective of his lecture (\"Existentialism Is a Humanism\") was to expound his philosophy as a form of \"existentialism,\" a term much bandied about at the time. Sartre asserted that existentialism was essentially a doctrine for philosophers, though, ironically, he was about to make it accessible to a general audience. The published text of his lecture quickly became one of the bibles of existentialism and made Sartre an international celebrity.\" \"The idea of freedom occupies the center of Sartre's doctrine. Man, born into an empty, godless universe, is nothing to begin with. He creates his essence - his self, his being - through the choices he freely makes (\"existence precedes essence\"). Were it not for the contingency of his death, he would never end. Choosing to be this or that is to affirm the value of what we choose. In choosing, therefore, we commit not only ourselves but all of mankind.\" \"This edition of Existentialism Is a Humanism is a translation of the 1996 French edition, which includes Arlette Elkaim-Sartre's introduction and a Q & A with Sartre about his lecture. Paired with \"Existentialism Is a Humanism\" is another seminal Sartre text, his commentary on Camus's The Stranger. In her foreword, intended for an American audience, acclaimed Sartre biographer Annie Cohen-Solal offers an assessment of both works.\"--Jacket.",
@@ -2969,8 +3652,15 @@
   "title": "The foundations of statistics"
  },
  "Savage, L. J. (1954). [https://openlibrary.org/works/OL4498501W ''The Foundations of Statistics''] (Chapter 2). John Wiley & Sons.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Banks and banking",
+   "Credit"
+  ],
   "link": "https://openlibrary.org/works/OL4498501W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Elementi di economia e tecnica del credito"
  },
  "Schelling, T. C. (1960). ''The Strategy of Conflict''. Harvard University Press. https://openlibrary.org/works/OL2259845W": {
   "abstract": "Explores the international politics of threat, or, deterrence.",
@@ -3088,12 +3778,33 @@
   "title": "Upadeśasāhaśrī"
  },
  "Shannon, C. E. (1948). [https://doi.org/10.1002/j.1538-7305.1948.tb01338.x A Mathematical Theory of Communication]. ''Bell System Technical Journal'', 27(3), 379–423.": {
+  "abstract": "The recent development of various methods of modulation such as PCM and PPM which exchange bandwidth for signal-to-noise ratio has intensified the interest in a general theory of communication. A basis for such a theory is contained in the important papers of Nyquist1and Hartley2on this subject. In the present paper we will extend the theory to include a number of new factors, in particular the effect of noise in the channel, and the savings possible due to the statistical structure of the original message and due to the nature of the final destination of the information.",
+  "checked": true,
+  "concepts": [
+   "Bandwidth (computing)",
+   "Computer science",
+   "Nyquist–Shannon sampling theorem",
+   "Channel (broadcasting)",
+   "Communication theory",
+   "Mathematics",
+   "Algorithm",
+   "Theoretical computer science"
+  ],
   "link": "https://doi.org/10.1002/j.1538-7305.1948.tb01338.x",
-  "source": "missing"
+  "source": "fetched",
+  "title": "A Mathematical Theory of Communication"
  },
  "Shapley, L. S. (1953). ''A Value for n-Person Games''. In H. W. Kuhn & A. W. Tucker (Eds.), [https://openlibrary.org/works/OL4417976W ''Contributions to the Theory of Games''] (Vol. II, pp. 307–317). Princeton University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Accidents",
+   "Prevention",
+   "Traffic accidents"
+  ],
   "link": "https://openlibrary.org/works/OL4417976W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Mind over motor"
  },
  "Shapley, L. S. (1953). A Value for n-Person Games. In H. W. Kuhn & A. W. Tucker (Eds.), ''Contributions to the Theory of Games'' (Vol. 2, pp. 307-317). Princeton University Press. https://doi.org/10.1515/9781400881970-018": {
   "abstract": "",
@@ -3108,16 +3819,41 @@
   "title": "17. A Value for n-Person Games"
  },
  "Shavell, S. (2004). [https://openlibrary.org/works/OL3324505W ''Foundations of Economic Analysis of Law''] (Chapter 13, pp. 320–324). Harvard University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL3324505W",
-  "source": "missing"
+  "source": "missing",
+  "title": "The 2007-2012 World Outlook for Non-Electric Oil Forced Warm Air Furnaces and Humidifiers with 150,001 BTU Bonnet Output and over"
  },
  "Sider, T. (2001). [https://doi.org/10.1093/019924443X.001.0001 ''Four-Dimensionalism: An Ontology of Persistence and Time'']. Clarendon Press.": {
+  "abstract": "Abstract According to ‘four‐dimensionalism’, temporally extended things are composed of temporal parts. Most four‐dimensionalists identify ordinary continuants—the persisting objects ordinary language quantifies over and names—with aggregates of temporal parts (‘space‐time worms’), but an attractive alternate version of four‐dimensionalism identifies ordinary continuants with instantaneous temporal slices and accounts for temporal predication using temporal counterpart theory. Arguments for four‐dimensionalism include the following: (1) Either substantivalism or relationalism about space‐time is true, but given substantivalism one might as well identify continuants with regions of space‐time, which have temporal parts, or with instantaneous slices of space‐time, whereas relationalism about space‐time cannot be made to work without temporal parts. (2) It can never be vague how many objects exist; if temporal parts do not exist, then a restrictive account of which filled regions of space‐time contain objects must be given, but no such account can be given that is plausible and non‐vague. (3) Four‐dimensionalism—especially the alternate, counterpart‐theoretic version—provides the most satisfying overall account of the ‘paradoxes of material constitution’, in which numerically distinct material objects (e.g. statues and lumps of clay) apparently share exactly the same parts. Objections to four‐dimensionalism (involving, e.g., motion in homogeneous substances and de re modal properties) may be answered. While logically independent of the question of four‐dimensionalism, the book also defends related theses, including (1) a robust meta‐ontology according to which unrestricted existence‐statements are non‐vague, non‐analytic, and uninfected by human convention; (2) the B‐theory of time (the opposite of presentism); (3) unrestricted composition; and (4) counterpart theory (both modal and temporal).",
+  "checked": true,
+  "concepts": [
+   "Space (punctuation)",
+   "Spacetime",
+   "Ontology",
+   "Homogeneous",
+   "Epistemology",
+   "Computer science",
+   "Mathematics",
+   "Linguistics"
+  ],
   "link": "https://doi.org/10.1093/019924443X.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Four-Dimensionalism: An Ontology of Persistence and Time"
  },
  "Sider, T. (2001). [https://openlibrary.org/isbn/019924443X ''Four-Dimensionalism: An Ontology of Persistence and Time'']. Oxford University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Fourth dimension",
+   "Space and time",
+   "Time"
+  ],
   "link": "https://openlibrary.org/isbn/019924443X",
-  "source": "missing"
+  "source": "missing",
+  "title": "Four-Dimensionalism"
  },
  "Sidgwick, H. (1907). ''The Methods of Ethics'' (7th ed.). Macmillan. https://openlibrary.org/works/OL1073633W": {
   "abstract": "",
@@ -3129,12 +3865,23 @@
   "title": "The methods of ethics"
  },
  "Siemens, G. (2013). Learning analytics: The dawn of a learning health system. ''American educational research journal'', ''50''(5), 1068-1089. https://doi.org/10.3102/0002831213485277": {
+  "checked": true,
   "link": "https://doi.org/10.3102/0002831213485277",
   "source": "missing"
  },
  "Simon, H. A. (1955). [https://doi.org/10.2307/1884852 A Behavioral Model of Rational Choice]. ''The Quarterly Journal of Economics'', 69(1), 99–118.": {
+  "abstract": "Introduction, 99. — I. Some general features of rational choice, 100.— II. The essential simplifications, 103. — III. Existence and uniqueness of solutions, 111. — IV. Further comments on dynamics, 113. — V. Conclusion, 114. — Appendix, 115.",
+  "checked": true,
+  "concepts": [
+   "Uniqueness",
+   "Mathematical economics",
+   "Mathematics",
+   "Computer science",
+   "Mathematical analysis"
+  ],
   "link": "https://doi.org/10.2307/1884852",
-  "source": "missing"
+  "source": "fetched",
+  "title": "A BEHAVIORAL MODEL OF RATIONAL CHOICE"
  },
  "Simon, H. A. (1962). [https://www.jstor.org/stable/985254 The Architecture of Complexity]. ''Proceedings of the American Philosophical Society'', 106(6), 467–482.": {
   "link": "https://www.jstor.org/stable/985254",
@@ -3165,8 +3912,21 @@
   "source": "missing"
  },
  "Smithson, M. (1989). [https://doi.org/10.1007/978-1-4612-3628-3 ''Ignorance and Uncertainty: Emerging Paradigms''] (Chapter 1). Springer-Verlag.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Deci-",
+   "Ignorance",
+   "Variety (cybernetics)",
+   "Epistemology",
+   "Psychology",
+   "Philosophy",
+   "Computer science",
+   "Political science"
+  ],
   "link": "https://doi.org/10.1007/978-1-4612-3628-3",
-  "source": "missing"
+  "source": "missing",
+  "title": "Ignorance and Uncertainty"
  },
  "Soares, N., Fallenstein, B., Yudkowsky, E., & Armstrong, S. (2015). Corrigibility. ''AAAI Workshop on AI and Ethics''. https://intelligence.org/files/Corrigibility.pdf": {
   "link": "https://intelligence.org/files/Corrigibility.pdf",
@@ -3187,6 +3947,7 @@
   "title": "A formal theory of inductive inference. Part I"
  },
  "Sonke, M. C., Lee, J., & Bradt, J. (2018). Associations between participation in community arts groups and aspects of wellbeing in older adults in the United States: a propensity score matching analysis. Aging & Mental 2 Health, 22(10), 1312–1320. https://doi.org/10.1080/13607827.2017.1354820": {
+  "checked": true,
   "link": "https://doi.org/10.1080/13607827.2017.1354820",
   "source": "missing"
  },
@@ -3285,10 +4046,12 @@
   "title": "Classroom Assessment for Student Learning"
  },
  "Strathern, M. (1997). \"Improving ratings\": audit in the British university system. ''European Review'', 5(3), 305–321 https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4": {
+  "checked": true,
   "link": "https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4",
   "source": "missing"
  },
  "Strathern, M. (1997). 'Improving ratings': Audit in the British University system. ''European Review'', ''5''(3), 305-321. https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4": {
+  "checked": true,
   "link": "https://doi.org/10.1002/(sici)1234-981x(199707)5:3%3C305::aid-euro184%3E3.0.co;2-4",
   "source": "missing"
  },
@@ -3394,12 +4157,38 @@
   "title": "Antifragile"
  },
  "Tan, C.-Y., Chuah, C.-Q., Lee, S.-T., & Tan, C.-S. (2021). Being creative makes you happier: The positive effect of creativity on subjective well-being. ''International Journal of Environmental Research and Public Health'', ''18''(14), 7244. https://doi.org/10.3390/ijerph18147244": {
+  "abstract": "The impact of happiness on creativity is well-established. However, little is known about the effect of creativity on well-being. Two studies were thus conducted to examine the impact of creativity on subjective well-being. In the first study, 256 undergraduate students (Study 1a) and 291 working adults (Study 1b) self-reported their creativity, stress, and subjective well-being. Hierarchical multiple regression analysis showed a positive relationship between creativity and subjective well-being after controlling the effect of self-perceived stress and demographics in both samples. Study 2 then employed an experimental design to examine the causal relationship between creativity and subjective well-being. Half of the 68 undergraduates underwent a creativity priming task followed by a divergent thinking test as well as self-reported stress and subjective well-being. The priming task was found to boost creative performance in the pilot study (Study 2a) and the actual study (Study 2b). Moreover, after controlling the effect of self-perceived stress, ANCOVA analysis showed that participants receiving the priming reported higher subjective well-being scores than their counterparts in the control group. The overall findings not only shed light on the facilitative effect of creativity on subjective well-being but also highlight the necessity of considering the reciprocal relationship of the two constructs in future research.",
+  "checked": true,
+  "concepts": [
+   "Creativity",
+   "Psychology",
+   "Subjective well-being",
+   "Happiness",
+   "Social psychology",
+   "Developmental psychology",
+   "Task (project management)",
+   "Priming (agriculture)"
+  ],
   "link": "https://doi.org/10.3390/ijerph18147244",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Being Creative Makes You Happier: The Positive Effect of Creativity on Subjective Well-Being"
  },
  "Tarski, A. (1944). [https://doi.org/10.2307/2102968 The Semantic Conception of Truth: and the Foundations of Semantics]. ''Philosophy and Phenomenological Research'', 4(3), 341–376.": {
+  "abstract": "X is true if, and only if, p. [...] we shall call a definition of truth “adequate” if all these equivalences follow from it. [...] The definition of truth which was outlined above [...] implies all equivalences of the form (T). In this connnection it is important to notice that the conditions for the material adequacy of the definition determine uniquely the extension of the term “true.” Therefore, every definition of truth which is materially adequate would necessarily be equivalent to that actually constructed. The semantic conception of truth gives us, so to speak, no possibility of choice between variaous non-equivalent definitions of this notion..",
+  "checked": true,
+  "concepts": [
+   "Semantics (computer science)",
+   "Semantic theory of truth",
+   "Philosophy",
+   "Epistemology",
+   "Cognitive science",
+   "Linguistics",
+   "Computer science",
+   "Psychology"
+  ],
   "link": "https://doi.org/10.2307/2102968",
-  "source": "missing"
+  "source": "fetched",
+  "title": "The Semantic Conception of Truth: and the Foundations of Semantics"
  },
  "Task Force of the European Society of Cardiology and the North American Society of Pacing and Electrophysiology. (1996). Heart rate variability: standards of measurement, physiological interpretation, and clinical use. ''Circulation'', ''93''(5), 1043–1065. https://doi.org/10.1161/01.cir.93.5.1043": {
   "abstract": "",
@@ -3445,8 +4234,12 @@
   "title": "How to detect consciousness in people, animals and maybe even AI"
  },
  "Thomson, J. J. (2008). [https://openlibrary.org/works/OL16516590W ''Normativity''] (Chapter I, \"Goodness\"). Open Court.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL16516590W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Waithayamahidon"
  },
  "Tolstoy, L. (1897). [https://www.gutenberg.org/ebooks/64908 ''What Is Art?''] (A. Maude, Trans.).": {
   "link": "https://www.gutenberg.org/ebooks/64908",
@@ -3566,8 +4359,17 @@
   "source": "missing"
  },
  "Urmson, J. O. (1958). ''Saints and Heroes''. In A. I. Melden (Ed.), [https://openlibrary.org/works/OL4907340W ''Essays in Moral Philosophy''] (pp. 198–216). University of Washington Press.": {
+  "abstract": "Practical treatise for breeders on habits of various cats, partridges, and Javanese highland fowls.",
+  "checked": true,
+  "concepts": [
+   "Birds",
+   "Cats",
+   "Partridges",
+   "Poetry"
+  ],
   "link": "https://openlibrary.org/works/OL4907340W",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Tamrā nok khao Chawā, nok krathā, tamrā mǣo"
  },
  "Walzer, M. (1983). ''Spheres of Justice: A Defense of Pluralism and Equality''. Basic Books. https://openlibrary.org/works/OL3350245W": {
   "abstract": "",
@@ -3590,8 +4392,16 @@
   "title": "Spheres of Justice"
  },
  "Warren, M. A. (1997). [https://doi.org/10.1093/acprof:oso/9780198250401.001.0001 ''Moral Status: Obligations to Persons and Other Living Things'']. Oxford University Press.": {
+  "abstract": "With this volume, Mary Anne Warren argues that no single property will suffice as a sole criterion for having moral status, and puts forward seven basic principles which, in her opinion, establish moral status.",
+  "checked": true,
+  "concepts": [
+   "Psychology",
+   "Sociology",
+   "Philosophy"
+  ],
   "link": "https://doi.org/10.1093/acprof:oso/9780198250401.001.0001",
-  "source": "missing"
+  "source": "fetched",
+  "title": "Moral Status"
  },
  "Wasserman, S., & Faust, K. (1994). ''Social network analysis: Methods and applications''. Cambridge university press. https://doi.org/10.1017/cbo9780511815478": {
   "abstract": "Social network analysis is used widely in the social and behavioral sciences, as well as in economics, marketing, and industrial engineering. The social network perspective focuses on relationships among social entities and is an important addition to standard social and behavioral research, which is primarily concerned with attributes of the social units. Social Network Analysis: Methods and Applications reviews and discusses methods for the analysis of social networks with a focus on applications of these methods to many substantive examples. It is a reference book that can be used by those who want a comprehensive review of network methods, or by researchers who have gathered network data and want to find the most appropriate method by which to analyze it. It is also intended for use as a textbook as it is the first book to provide comprehensive coverage of the methodology and applications of the field.",
@@ -3610,8 +4420,15 @@
   "title": "Social Network Analysis"
  },
  "Wheeler, J. A. (1990). ''Information, Physics, Quantum: The Search for Links''. In W. H. Zurek (Ed.), [https://openlibrary.org/works/OL2204224W ''Complexity, Entropy, and the Physics of Information''] (pp. 3–28). Addison-Wesley.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [
+   "Art",
+   "Monuments"
+  ],
   "link": "https://openlibrary.org/works/OL2204224W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Sovetskoe monumentalʹnoe iskusstvo"
  },
  "Whitehead, A. N. (1929). ''Process and Reality''. Macmillan. https://openlibrary.org/works/OL1133700W": {
   "abstract": "",
@@ -3796,7 +4613,11 @@
   "title": "Theory of Games and Economic Behavior"
  },
  "von Neumann, J., & Morgenstern, O. (1944). [https://openlibrary.org/works/OL3963222W ''Theory of Games and Economic Behavior'']. Princeton University Press.": {
+  "abstract": "",
+  "checked": true,
+  "concepts": [],
   "link": "https://openlibrary.org/works/OL3963222W",
-  "source": "missing"
+  "source": "missing",
+  "title": "Gunpowder Valley"
  }
 }

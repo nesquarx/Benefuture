@@ -12,7 +12,7 @@ Benefuture/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
-├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 164 C exports
+├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 166 C exports
 ├── BenefutureTest/              # ℚ oracles proved = spec (34 `*_spec`, 35 suites), interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── cases/                       # 33 E4 historical & contrast cases; 6 E5 prospective cases in cases/e5/

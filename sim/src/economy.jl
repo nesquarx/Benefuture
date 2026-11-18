@@ -427,6 +427,23 @@ function advap_liability(reward::Real; audit_cost::Real)
 end
 
 """
+    advap_recount_correct(held, votes, active, truth) -> Bool
+
+AdvAp governance recount (`8.38`, `L161`; Lean `advap_recount_correct_ref`): sums `held[j] * votes[j]`
+over indices where `active[j]`, and returns whether the recounted outcome matches `sign(truth)`
+(exact zero honest tally resolves to `+1.0`).
+"""
+function advap_recount_correct(held, votes, active, truth::Real)
+    check(length(held) == length(votes) == length(active) &&
+          all(isfinite, held) && all(isfinite, votes) && isfinite(truth),
+          "equal-length finite held weights, votes, active flags, and finite truth")
+    act = Float64[x == true || (x isa Real && x != 0) ? 1.0 : 0.0 for x in active]
+    ccall(sym(:bf_advap_recount_correct), UInt8,
+          (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+          floatarray(held), floatarray(votes), floatarray(act), Float64(truth)) == 1
+end
+
+"""
     report_penalty(unfounded, threshold; audit_cost) -> penalty
 
 What an unfounded report costs its reporter (Lean `report_penalty_ref`): nothing in good faith,

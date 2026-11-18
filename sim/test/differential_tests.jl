@@ -289,4 +289,30 @@ fin(xs...) = all(isfinite, xs)
                        (b, hs) -> isfinite(b) && all(isfinite, hs),
                        chain_truth_level,
                        (b, hs) -> clamp(b, 0.0, 1.0) * prod(clamp(h, 0.0, 1.0) for h in hs; init = 1.0)) == (guard = 0, value = 0)
+    @test differential(:contention_map,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           reps = [rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.2 ? 1.0 : 5.0 * randn(r)) for _ in 1:k]
+                           self = rand(r, -1:(k + 1))
+                           (reps, self)
+                       end,
+                       (reps, self) -> all(isfinite, reps) && 0 <= self <= length(reps),
+                       (reps, self) -> Float64.(contention_map(reps; self = self)),
+                       (reps, self) -> Float64.(filter(!=(self), sortperm(reps; rev = true)))) == (guard = 0, value = 0)
+    @test differential(:advap_recount_correct,
+                       r -> begin
+                           k = rand(r, 1:6)
+                           h = [rand(r) < 0.05 ? hostile(r) : 3.0 * rand(r) for _ in 1:k]
+                           v = [rand(r) < 0.5 ? 1.0 : -1.0 for _ in 1:k]
+                           act = [rand(r, Bool) ? 1.0 : 0.0 for _ in 1:k]
+                           tr = rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.5 ? 1.2 : -1.2)
+                           (h, v, act, tr)
+                       end,
+                       (h, v, act, tr) -> length(h) == length(v) == length(act) &&
+                           all(isfinite, h) && all(isfinite, v) && isfinite(tr),
+                       (h, v, act, tr) -> advap_recount_correct(h, v, act, tr),
+                       (h, v, act, tr) -> begin
+                           hon = sum(h[j] * v[j] for j in eachindex(h) if act[j] != 0.0; init = 0.0)
+                           (hon == 0 ? 1.0 : sign(hon)) == sign(tr)
+                       end) == (guard = 0, value = 0)
 end

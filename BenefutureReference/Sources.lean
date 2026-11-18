@@ -39,4 +39,19 @@ def undisclosed_echo_ref (agree n aSelf aSrc margin z : Float) : Bool :=
   let e' := min (e + margin) 0.999999
   n > 0.0 && (agree - n * e') / Float.sqrt (n * e' * (1.0 - e')) > z
 
+/-- ContentionMap (`L134` IH: SourceVerify by Re(Dn), 8.45): orders all sources `1..n` descending by
+    domain reputation (breaking exact ties by smaller 1-based index), optionally omitting `selfIdx`
+    (1-based; pass `0` to keep all sources). -/
+def contention_map_ref (reputations : Array Float) (selfIdx : Nat) : Array Float := Id.run do
+  let n := reputations.size
+  let mut pairs : Array (Nat × Float) := Array.mkEmpty n
+  for idx in [0:n] do
+    pairs := pairs.push (idx + 1, reputations[idx]!)
+  let sorted := pairs.qsort fun a b => a.2 > b.2 || (a.2 == b.2 && a.1 < b.1)
+  let mut out : Array Float := Array.mkEmpty n
+  for p in sorted do
+    if selfIdx == 0 || p.1 != selfIdx then
+      out := out.push p.1.toFloat
+  return out
+
 end BenefutureReference

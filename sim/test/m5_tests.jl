@@ -396,3 +396,24 @@ ld_world(skills, rep) = (agents = [DomainAgent([s, 0.0], [0.0, 1.0], 0.0) for s 
     @test_throws ArgumentError M5Params(kmp, [1]; nested_scopes = true, scope_share_min = 1.5, scope_locals = [1])
     @test_throws ArgumentError M5Params(kmp, [1]; nested_scopes = true, scope_local_share = -0.1, scope_locals = [1])
 end
+
+@testset "M5: ContentionMap and AdvAp recount (Lean reference)" begin
+    # ContentionMap sorts 1-based source indices descending by reputation (ties by smaller index), omitting `self`.
+    @test contention_map([0.2, 0.9, 0.5, 0.0, 0.8]) == [2, 5, 3, 1, 4]
+    @test contention_map([0.2, 0.9, 0.5, 0.8]; self = 3) == [2, 4, 1]
+    @test contention_map([0.0, 0.0]; self = 1) == [2]
+    @test contention_map(Float64[]) == Int[]
+    @test_throws ArgumentError contention_map([NaN, 1.0])
+    @test_throws ArgumentError contention_map([0.5]; self = 2)
+
+    # AdvAp recount sums signed `held[j] * votes[j]` over `active` voters and checks `sign(truth)` (`0` tally -> `+1`).
+    @test advap_recount_correct([3.0, 1.0, 2.0], [1.0, -1.0, 1.0], [true, true, true], 1.0)
+    @test !advap_recount_correct([3.0, 1.0, 2.0], [-1.0, 1.0, -1.0], [true, true, true], 1.0)
+    # Exact 0.0 honest tally resolves to +1.0 (matches +1.0 truth, mismatches -1.0 truth).
+    @test advap_recount_correct([2.0, 2.0], [1.0, -1.0], [true, true], 1.0)
+    @test !advap_recount_correct([2.0, 2.0], [1.0, -1.0], [true, true], -1.0)
+    # Inactive/excluded voters (e.g. colluders) are omitted from the recount.
+    @test advap_recount_correct([10.0, 2.0, 1.0], [-1.0, 1.0, 1.0], [false, true, true], 1.0)
+    @test_throws ArgumentError advap_recount_correct([1.0], [1.0, -1.0], [true], 1.0)
+    @test_throws ArgumentError advap_recount_correct([NaN], [1.0], [true], 1.0)
+end

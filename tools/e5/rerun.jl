@@ -2,7 +2,7 @@
 # (REPLAY_PREREG §8, lifecycle: every run logged, none replaced). Run: julia --project=sim tools/e5/rerun.jl
 using BenefutureSim, Dates
 root = joinpath(@__DIR__, "..", "..")
-h = readchomp(Cmd(`bash -c "cat sim/src/replay.jl BenefutureReference/*.lean | sha256sum | cut -c1-16"`; dir = root))
+h = code_hash()[1:16]
 commit = readchomp(Cmd(`git rev-parse --short HEAD`; dir = root))
 log = joinpath(root, "docs", "E5_RUNS.md")
 isfile(log) || write(log, "# E5 run log\n\nOne row per case per run (REPLAY_PREREG §8, lifecycle); rows are appended, never edited.\n\n| Date | Commit | Code hash | Case | Suggestion | Rule-set battery | Magnitude flips | Credence (magnitudes × rule sets) |\n|---|---|---|---|---|---|---|---|\n")

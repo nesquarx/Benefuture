@@ -137,3 +137,18 @@ function undisclosed_echo(agree::Real, n::Real, a_self::Real, a_src::Real; margi
     check(0 <= a_self <= 1 && 0 <= a_src <= 1 && 0 <= margin < 1 && isfinite(z), "accuracies in [0, 1], margin in [0, 1), finite z")
     ccall(sym(:bf_undisclosed_echo), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64), agree, n, a_self, a_src, margin, z) == 1
 end
+
+"""
+    contention_map(reputations; self = 0) -> Vector{Int}
+
+ContentionMap (`L134` IH: SourceVerify by Re(Dn), 8.45; Lean `contention_map_ref`): returns
+1-based source indices ordered descending by domain reputation (breaking ties by smaller index),
+optionally omitting `self` (`self = 0` keeps all sources).
+"""
+function contention_map(reputations; self::Integer = 0)
+    check(all(isfinite, reputations) && 0 <= self <= length(reputations),
+          "finite reputations and valid 1-based self index (or 0)")
+    isempty(reputations) && return Int[]
+    Int.(lean_floats(ccall(sym(:bf_contention_map), Ptr{Cvoid}, (Ptr{Cvoid}, Csize_t),
+                           floatarray(reputations), self)))
+end
