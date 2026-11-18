@@ -1275,7 +1275,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    proposal_pma_record = copy(pma_resolved), proposal_pma_pending = length(pma_pending),
                    proposal_pma_misses = copy(pma_misses), proposal_pma_on_track = copy(pma_on_track),
                    proposal_pma_calibration = [(pma_on_track[a] + pma_misses[a]) > 0 ?
-                                               pma_on_track[a] / (pma_on_track[a] + pma_misses[a]) : NaN for a in 1:na],
+                                               pma_on_track[a] / (pma_on_track[a] + pma_misses[a]) : 0.0 for a in 1:na],
                    params = gov.params, tried = gov.tried, rounds = gov.rounds[], shifts = gov.shifts[], radii = gov.radii, agents = p.agents,
                    cofunded = lane.cofunded[], memory = [merge(m, (profile = m.profile[cols],)) for m in memory],
                    evidence = [merge(e, (profile = e.profile[cols],)) for e in evidence],
