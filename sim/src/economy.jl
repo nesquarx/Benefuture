@@ -169,6 +169,46 @@ function shapley_shares(val, n::Integer; rng::AbstractRNG, exact_max::Integer = 
     shapley_sampled(perms, vals)
 end
 
+"""
+    bound_shapley_shares(val, identities; rng, weights, exact_max, ε, δ) -> shares
+
+Fork-family (bound-identity) Shapley shares (`B27`, `8.58-e`): contributors sharing the same
+bound identity entry in `identities` act as a single player in the coalition game defined by
+`val(raw_mask)`, and each bound family's Shapley share is conserved across its members (split
+equally by default, or proportionally to non-negative `weights`). Eliminates false-name harm
+splitting (`+0.267 -> 0.0`) while leaving every co-contributor's share identical to the unsplit game.
+"""
+function bound_shapley_shares(val, identities; rng::AbstractRNG = Xoshiro(0),
+                              weights = nothing, exact_max::Integer = SHAPLEY_EXACT_MAX,
+                              ε::Real = SHAPLEY_ε, δ::Real = SHAPLEY_δ)
+    n = length(identities)
+    check(0 <= n <= 62, "at most 62 contributors (coalitions are 62-bit masks)")
+    n == 0 && return Float64[]
+    weights !== nothing && check(length(weights) == n && all(w -> isfinite(w) && w >= 0, weights),
+                                 "weights must be finite and non-negative per contributor")
+    uids = unique(identities)
+    k = length(uids)
+    cluster_of = [findfirst(==(id), uids) for id in identities]
+    lift(cmask) = sum((1 << (i - 1)) for i in 1:n if (cmask & (1 << (cluster_of[i] - 1))) != 0; init = 0)
+    cluster_shares = shapley_shares(cmask -> val(lift(cmask)), k; rng, exact_max, ε, δ)
+    shares = zeros(Float64, n)
+    for c in 1:k
+        members = findall(==(c), cluster_of)
+        wsum = weights === nothing ? 0.0 : sum(w -> Float64(w), @view weights[members])
+        if weights === nothing || wsum == 0.0
+            each = cluster_shares[c] / length(members)
+            for i in members
+                shares[i] = each
+            end
+        else
+            for i in members
+                shares[i] = cluster_shares[c] * (Float64(weights[i]) / wsum)
+            end
+        end
+    end
+    shares
+end
+
 "Whether contributions come from the causal assessment (confident enough) rather than traversal (L94)."
 function cc_assessed(confidence::Real; threshold::Real)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (confidence, threshold)), "confidence and threshold in [0, 1]")

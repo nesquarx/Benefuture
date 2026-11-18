@@ -133,12 +133,12 @@ function m5_reputation_delta(; seed, advap)
     r.bloc_expertise[end] - r.bloc_expertise[1]
 end
 
-function sybil_harm_split_delta()
+function sybil_harm_split_delta(; bound::Bool = false)
     V(x) = sign(x) * abs(x)^1.5
-    game(effs) = [V(sum((effs[k] for k in eachindex(effs) if mask & (1 << (k - 1)) != 0); init = 0.0))
-                  for mask in 0:(2^length(effs) - 1)]
-    φ_split = shapley(game([-1.0, -1.0, 1.5]))
-    φ_honest = shapley(game([-2.0, 1.5]))
+    val(effs) = mask -> V(sum((effs[k] for k in eachindex(effs) if mask & (1 << (k - 1)) != 0); init = 0.0))
+    φ_honest = shapley_shares(val([-2.0, 1.5]), 2; rng = Xoshiro(0))
+    φ_split = bound ? bound_shapley_shares(val([-1.0, -1.0, 1.5]), [1, 1, 2]; rng = Xoshiro(0)) :
+                      shapley_shares(val([-1.0, -1.0, 1.5]), 3; rng = Xoshiro(0))
     (φ_split[1] + φ_split[2]) - φ_honest[1]
 end
 
@@ -224,6 +224,7 @@ else
     end
     progress_finish!(pt, "completed")
     sybil_d = sybil_harm_split_delta()
+    sybil_bound_d = sybil_harm_split_delta(; bound = true)
     elapsed = time() - t0
 
     outpath = joinpath(OUT, "attack_payoffs.md")
@@ -237,7 +238,8 @@ else
             println(io, @sprintf("| %s | %s | %+.2f ± %.2f | [%+.2f, %+.2f] | %d | %s |",
                                  r.name, r.unit, r.mean, r.se, r.lo, r.hi, r.n, r.verdict))
         end
-        println(io, @sprintf("| Sybil harm split (-2 split beside +1.5 co-contributor, rule level, 8.58-e) | Shapley credit Δ | %+.3f | deterministic (no noise) | rule | [OPEN] attack pays unless identity-bound |", sybil_d))
+        println(io, @sprintf("| Sybil harm split (-2 split beside +1.5 co-contributor, unbound, 8.58-e) | Shapley credit Δ | %+.3f | deterministic (no noise) | rule | [OPEN] unbound prerequisite only |", sybil_d))
+        println(io, @sprintf("| Sybil harm split (identity-bound fork family via `bound_shapley_shares`, B27/8.58-e) | Shapley credit Δ | %+.3f | deterministic (no noise) | rule | attack neutralised |", sybil_bound_d))
     end
     println("Wrote ", outpath, " in ", round(elapsed; digits = 1), "s")
 end

@@ -2922,3 +2922,123 @@ end
     @test all(tr -> conj_param_stability(tr; ε = 0.05), traces)
     @test all(tr -> conj_delegation_dispersed(tr; margin = 0.02), traces)
 end
+
+@testset "Probe: B27 / 8.58-e fork-family bound_shapley_shares defeats Sybil harm splitting (P34)" begin
+    V(x) = sign(x) * abs(x)^1.5
+    val(effs) = mask -> V(sum((effs[k] for k in eachindex(effs) if mask & (1 << (k - 1)) != 0); init = 0.0))
+
+    # Red / counterexample: without identity binding, splitting -2 into (-1, -1) beside +1.5
+    # shifts ~+0.267 away from the honest co-contributor.
+    φ_honest = shapley_shares(val([-2.0, 1.5]), 2; rng = Xoshiro(0))
+    φ_unbound = shapley_shares(val([-1.0, -1.0, 1.5]), 3; rng = Xoshiro(0))
+    unbound_gain = (φ_unbound[1] + φ_unbound[2]) - φ_honest[1]
+    @test unbound_gain > 0.25
+
+    # Acceptance: binding the two forks to identity cluster 1 removes the gain to 0.0 identically
+    # and restores the co-contributor's exact unsplit share.
+    φ_bound = bound_shapley_shares(val([-1.0, -1.0, 1.5]), [1, 1, 2]; rng = Xoshiro(0))
+    @test (φ_bound[1] + φ_bound[2]) ≈ φ_honest[1] atol = 1e-12
+    @test φ_bound[3] ≈ φ_honest[2] atol = 1e-12
+    @test sum(φ_bound) ≈ V(-0.5) atol = 1e-12
+
+    # Multi-fork & weighted intra-family split invariants: arbitrary m-way split still sums to φ_honest[1].
+    φ_5 = bound_shapley_shares(val([-0.5, -0.5, -0.5, -0.5, 1.5]), [:a, :a, :a, :a, :b];
+                               weights = [1.0, 2.0, 3.0, 4.0, 1.0], rng = Xoshiro(0))
+    @test sum(φ_5[1:4]) ≈ φ_honest[1] atol = 1e-12
+    @test φ_5[4] ≈ 4 * φ_5[1] atol = 1e-12
+    @test φ_5[5] ≈ φ_honest[2] atol = 1e-12
+
+    # Sampling regime (14 clusters > SHAPLEY_EXACT_MAX across 17 nominal entries): cluster pooling
+    # preserves exact coalition counts on the pooled game.
+    eff_big = vcat(fill(-0.5, 4), fill(0.15, 13))
+    @test_throws ArgumentError bound_shapley_shares(val([1.0, 2.0]), [1, 2]; weights = [-1.0, 1.0])
+    φ_big = bound_shapley_shares(val(eff_big), vcat(fill(1, 4), collect(2:14)); rng = Xoshiro(42))
+    @test sum(φ_big) ≈ V(sum(eff_big)) atol = 0.15
+    @test all(isfinite, φ_big)
+end
+
+@testset "Probe: B20 counterfactual ¬A pessimism detection & novel-action cohort lag (P35)" begin
+    # A dishonest/pessimistic model understates unexecuted ¬A by -δ_pess = -0.60 while matching
+    # the executed A outcome accurately. Reading only A misses the bias; matched peer cohort records
+    # on ¬A detect it sequentially at z = 3.0 and drive credence down, with measurable lag for novel actions.
+    steps = 80
+    σ = 0.25
+    δ_pess = 0.60
+    base_cred = 0.90
+    seeds = 1:16
+
+    function sim_b20(seed; cohort_delay::Int, use_cohort::Bool)
+        rng = Xoshiro(hash((:b20, seed, cohort_delay, use_cohort)))
+        a_res = Float64[]
+        cohort_res = Float64[]
+        det_step = steps + 1
+        inflated_count = 0
+        for t in 1:steps
+            err_A = σ * randn(rng)
+            push!(a_res, err_A)
+            if use_cohort && t > cohort_delay
+                # Peer cohort runs ¬A, yielding unbiased ¬A residual against model's -δ_pess bias.
+                push!(cohort_res, δ_pess + σ * randn(rng))
+            end
+            detected = false
+            if length(cohort_res) >= 4
+                m = mean(cohort_res)
+                se = max(std(cohort_res), 1e-6) / sqrt(length(cohort_res))
+                detected = select_candidate([0.0, m], [1e-6, se]; z = 3.0) == 2
+            end
+            if detected && det_step > steps
+                det_step = t
+            end
+            if !detected
+                inflated_count += 1
+            end
+        end
+        # Negative error share against threshold σ: only cohort records register ¬A misses.
+        misses = count(>(1.5 * σ), cohort_res)
+        total = length(a_res) + length(cohort_res)
+        cr = ratchet_credence(base_cred, neg_share(Float64(total - misses), Float64(misses)))
+        (detected = det_step <= steps, lag = Float64(det_step), credence = cr, inflated = Float64(inflated_count))
+    end
+
+    r_meas   = [sim_b20(s; cohort_delay = 0,  use_cohort = false) for s in seeds]
+    r_cohort = [sim_b20(s; cohort_delay = 0,  use_cohort = true)  for s in seeds]
+    r_novel  = [sim_b20(s; cohort_delay = 12, use_cohort = true)  for s in seeds]
+
+    @test all(r -> !r.detected && r.credence == base_cred, r_meas)
+    @test all(r -> r.detected && r.credence < base_cred, r_cohort)
+    @test all(r -> r.detected && r.lag > 12, r_novel)
+    @test paired_effect([m.credence - c.credence for (m, c) in zip(r_meas, r_cohort)]; z = 3.0, direction = :up).significant
+    @test paired_effect([m.inflated - c.inflated for (m, c) in zip(r_meas, r_cohort)]; z = 3.0, direction = :up).significant
+    @test paired_effect([n.lag - c.lag for (n, c) in zip(r_novel, r_cohort)]; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: B23 weighted vote manipulation becomes visible and costly over time (P36)" begin
+    w3 = M3cParams(ToyParams(n = 20, steps = 40, plans = 4),
+                   [DomainAgent([0.65, 0.65], [0.5, 0.5], 0.05) for _ in 1:20],
+                   [1, 2], trues(2); λpos = 0.05, λneg = 0.02, init_steps = 10)
+    m3 = run_m3c(w3; seed = 1)
+    seeds = 1:16
+
+    r_static = [run_m5(M5Params(m3, [1, 2]; decisions = 300, colluders = 1:5, p_delegate = 0.5,
+                                vote_value = 0.0, stealth = false, advap = false); seed = s) for s in seeds]
+    r_overt  = [run_m5(M5Params(m3, [1, 2]; decisions = 300, colluders = 1:5, p_delegate = 0.5,
+                                stealth = false, advap = true); seed = s) for s in seeds]
+    r_st_off = [run_m5(M5Params(m3, [1, 2]; decisions = 300, colluders = 1:5, p_delegate = 0.5,
+                                stealth = true, advap = false); seed = s) for s in seeds]
+    r_st_on  = [run_m5(M5Params(m3, [1, 2]; decisions = 300, colluders = 1:5, p_delegate = 0.5,
+                                stealth = true, advap = true); seed = s) for s in seeds]
+
+    exp_drop(r) = r.bloc_expertise[1] - r.bloc_expertise[end]
+    # Static unpenalised manipulation is never exposed (`advap_established == 0`).
+    @test all(r -> r.advap_established == 0, r_static)
+    # Overt manipulation with weighted outcome-scoring + AdvAp visibly exposes the bloc & slashes expertise.
+    @test all(r -> exp_drop(r) > 0.05 && r.advap_established >= 6, r_overt)
+    @test paired_effect([exp_drop(o) - exp_drop(s) for (o, s) in zip(r_overt, r_static)]; z = 3.0, direction = :up).significant
+    # Even stealthy colluders (defecting only when hidden) are exposed by AdvAp and lose significantly
+    # more expertise than under outcome-scoring alone at z = 3.0.
+    @test all(r -> r.advap_established >= 6, r_st_on)
+    @test paired_effect([Float64(on.advap_established - off.advap_established) for (on, off) in zip(r_st_on, r_st_off)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([exp_drop(on) - exp_drop(off) for (on, off) in zip(r_st_on, r_st_off)];
+                        z = 3.0, direction = :up).significant
+end

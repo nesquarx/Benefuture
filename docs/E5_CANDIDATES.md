@@ -34,6 +34,12 @@ Build order: `random.Random(20261109).shuffle` over the list as written.
 | 2 | technology | Artemis III crewed Earth-orbit test flight, late 2027: go or no-go given as-of anomaly records (a Challenger-shaped decision; date not yet fixed, so watch-listed until it is) | [source](https://news.cgtn.com/news/2026-02-28/NASA-postpones-crewed-lunar-landing-to-2028-adds-new-Artemis-mission-1L7FeQ4wPXG/p.html) | watch-listed: date not fixed (criterion 5) |
 | 3 | environment | IMO Net-Zero Framework, resumed extraordinary MEPC session, 4 December 2026 (adopt as agreed with its carbon price; adopt without the pricing element; adjourn again) | [source](https://gcaptain.com/imo-climate-talks-stay-alive-as-carbon-plan-survives-u-s-pushback-at-mepc-84/) | built and reported (docs/E5_REPORTS.md); built out of seeded order only by skipping the watch-listed Artemis case |
 
+# Round 4 (drawn 2026-11-18, closing the Education gap)
+
+| Order | Family | Decision | Source | Status |
+|---|---|---|---|---|
+| 1 | education | England DfE statutory guidance & secondary regulations for Children Not in School (CNIS) under the *Children's Wellbeing and Schools Act 2026* (consultation closes 3 February 2027, final response & commencement framework Spring 2027: enact full compulsory local-authority register + withdrawal consent + pre-withdrawal meeting pilots; enact compulsory register only without consent/pilot hurdles; retain strengthened voluntary EHE guidance without statutory register powers) | [source](https://www.gov.uk/government/consultations/children-not-in-school-statutory-guidance) | registered (awaiting build from as-of sources and commit before replay) |
+
 ## Contrast candidates for priority tiers (8.129, 2026-11-08)
 
 Cases chosen because their options are close in size but differ in the kind of change they make for the same
