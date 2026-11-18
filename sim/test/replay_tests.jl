@@ -388,6 +388,17 @@ end
     c = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "fomc_january_2027.toml"))
     a = replay_credence(c; seed = 1); b = replay_credence(c; seed = 2)
     @test all(abs(get(a, k, 0.0) - get(b, k, 0.0)) <= 0.06 for k in union(keys(a), keys(b)))
+
+    # Round 1 prospective E5 cases 5 and 6 (EU Grids Package and EU post-2027 Cohesion Policy)
+    c_grids = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "eu_grids_package_2026.toml"))
+    r_grids = replay_decision(c_grids)
+    @test !r_grids.void && r_grids.chosen_option == "adopt_binding_grids_package+compensated"
+    @test replay_rule_battery(load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "eu_grids_package_2026.toml"))).shares["adopt_binding_grids_package"] == 1.0
+
+    c_coh = load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "eu_cohesion_policy_post2027.toml"))
+    r_coh = replay_decision(c_coh)
+    @test !r_coh.void && r_coh.chosen_option == "place_based_performance_and_capacity+compensated"
+    @test replay_rule_battery(load_replay_case(joinpath(@__DIR__, "..", "..", "cases", "e5", "eu_cohesion_policy_post2027.toml"))).shares["place_based_performance_and_capacity"] > 0.90
 end
 
 @testset "Replay: environmental health harm counts deaths (a death takes understanding and happiness to zero)" begin

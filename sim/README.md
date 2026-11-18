@@ -72,7 +72,7 @@ some of its rules or a simplified stand-in; not yet: no simulated counterpart):
 | `Subgoals.Art` | partial | reception spread match (`art_success_score_ref`), surplus value (`art_surplus_value_ref`), paired-context confounder deconvolution, and `Di_N` cultural monoculture escape (`run_m8_art`, `run_m8_art_confounders`, `run_m8_culture`, `P26–P27`, `P29`) |
 | `Epistemology.Truth` | partial | multi-hop `chain_truth_level_ref` + `count_once` rumor deduplication (`run_m8_truth`, `P28`) |
 | `Subgoals.Continuity`, `Ontology.Law`, `Systems.Enforcement` | simulated | contract harm-bound screening (`is_valid_contract`), three-tier enforcement (`DesignAutomated` restorative debits, `Persuasive`, audited-only `ForcibleRestraint`), and `CvCnt` / `Harm_Intv` continuity (`run_m8_enforcement`, `P32`) |
-| `Systems.Conjectures` | simulated | `SimTrace` and all 9 `Conj_*` checks (`conj_mm_competition_converges`, `conj_goodhart_reduction`, `conj_gaming_resistance`, `conj_adversarial_robustness`, `conj_min_tracks_prediction`, `conj_floors_rise`, `conj_no_repugnant_drift`, `conj_param_stability`, `conj_delegation_dispersed` in `analysis.jl`) |
+| `Systems.Conjectures` | simulated | `SimTrace`, `build_sim_trace(rc)` over composed continuous-coupled runs (`run_coupled(..., continuous = true)`), and all 9 `Conj_*` checks (`conj_mm_competition_converges`, `conj_goodhart_reduction`, `conj_gaming_resistance`, `conj_adversarial_robustness`, `conj_min_tracks_prediction`, `conj_floors_rise`, `conj_no_repugnant_drift`, `conj_param_stability`, `conj_delegation_dispersed` in `analysis.jl` and `P33` in `probe_tests.jl`) |
 | `Systems.FixedPoint` | not applicable | the simulation uses Float, not the Int fixed point |
 
 ### Antifragility axioms (L151–L162; 8.140, 8.141, 8.147)
