@@ -518,4 +518,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (truthDeltaU novelty : Float) : Float :=
   art_surplus_value_ref truthDeltaU novelty
 
+@[export bf_chain_truth_level] def chainTruthLevel
+    (baseLevel : Float) (hops : FloatArray) : Float :=
+  chain_truth_level_ref baseLevel hops.data
+
 end BenefutureReference.Export

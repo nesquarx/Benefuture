@@ -279,4 +279,14 @@ fin(xs...) = all(isfinite, xs)
                        (u, nov) -> isfinite(u) && isfinite(nov),
                        art_surplus_value,
                        (u, nov) -> max(0.0, u) + max(0.0, nov)) == (guard = 0, value = 0)
+    @test differential(:chain_truth_level,
+                       r -> begin
+                           k = rand(r, 0:5)
+                           b = rand(r) < 0.1 ? hostile(r) : 1.5 * rand(r) - 0.25
+                           hs = [rand(r) < 0.05 ? hostile(r) : 1.5 * rand(r) - 0.25 for _ in 1:k]
+                           (b, hs)
+                       end,
+                       (b, hs) -> isfinite(b) && all(isfinite, hs),
+                       chain_truth_level,
+                       (b, hs) -> clamp(b, 0.0, 1.0) * prod(clamp(h, 0.0, 1.0) for h in hs; init = 1.0)) == (guard = 0, value = 0)
 end

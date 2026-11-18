@@ -45,6 +45,7 @@ import Benefuture.Subgoals.Justice
 import Benefuture.Subgoals.Morality
 import Benefuture.Subgoals.Art
 import Benefuture.Epistemology.InfoHandling
+import Benefuture.Epistemology.Truth
 import Benefuture.Ontology.Entity
 import Benefuture.Systems.TechnologyNetwork
 import Benefuture.Systems.ParamSpace
@@ -481,6 +482,17 @@ theorem artSurplusValueQ_spec (truthDeltaU novelty : ℚ) :
     (artSurplusValueQ truthDeltaU novelty : ℝ) =
       Benefuture.Subgoals.art_surplus_value truthDeltaU novelty := by
   unfold artSurplusValueQ Benefuture.Subgoals.art_surplus_value
+  push_cast
+  rfl
+
+def chainTruthLevelQ (baseLevel : ℚ) (hops : List ℚ) : ℚ :=
+  max 0 (min 1 baseLevel) * propagatedControlQ hops
+
+theorem chainTruthLevelQ_spec (baseLevel : ℚ) (hops : List ℚ) :
+    (chainTruthLevelQ baseLevel hops : ℝ) =
+      Benefuture.Epistemology.chain_truth_level baseLevel (hops.map (↑)) := by
+  unfold chainTruthLevelQ Benefuture.Epistemology.chain_truth_level
+  rw [← propagatedControlQ_spec]
   push_cast
   rfl
 
@@ -1074,6 +1086,16 @@ def runAll : IO Unit := do
     let nov : ℚ := ((n0 : ℚ) - 16) / 8
     let f := art_surplus_value_ref (ratToFloat u) (ratToFloat nov)
     let q := artSurplusValueQ u nov
+    (close f q, g)
+  checkAll "chain_truth_level" 400 35 fun g =>
+    let (b0, g) := g.below 33
+    let (h0, g) := g.below 33
+    let (h1, g) := g.below 33
+    let (h2, g) := g.below 33
+    let b : ℚ := ((b0 : ℚ) - 8) / 16
+    let hs : List ℚ := [((h0 : ℚ) - 8) / 16, ((h1 : ℚ) - 8) / 16, ((h2 : ℚ) - 8) / 16]
+    let f := chain_truth_level_ref (ratToFloat b) (Array.mk (hs.map ratToFloat))
+    let q := chainTruthLevelQ b hs
     (close f q, g)
 
 #eval runAll

@@ -67,6 +67,15 @@ using Statistics
     @test_throws ArgumentError art_success_score([0.5], [0.5, 0.5])
     @test_throws ArgumentError art_success_score([NaN], [1.0])
     @test_throws ArgumentError art_surplus_value(NaN, 0.5)
+
+    # 7. Multi-hop chain truth level (`Tr_lvl`, `L133`):
+    @test chain_truth_level(0.9, Float64[]) ≈ 0.9
+    @test chain_truth_level(0.8, [0.5, 0.5]) ≈ 0.2
+    @test chain_truth_level(-0.3, [0.9]) == 0.0
+    @test chain_truth_level(1.8, [2.0, 0.5]) ≈ 0.5
+    @test chain_truth_level(0.9, [0.8, -0.1]) == 0.0
+    @test_throws ArgumentError chain_truth_level(NaN, [0.5])
+    @test_throws ArgumentError chain_truth_level(0.5, [0.5, Inf])
 end
 
 @testset "M8 world invariants: B25 zero financial inheritance, posthumous attribution & power dispersion" begin
@@ -104,5 +113,14 @@ end
     c_div = run_m8_culture(M8CultureParams(mode = :bf_culture, seed = 7))
     @test c_div.monoculture_share < c_mono.monoculture_share
     @test c_div.mean_culture_value > c_mono.mean_culture_value
+
+    # Multi-hop truth propagation + art confounder deconvolution
+    tr_bf = run_m8_truth(M8TruthParams(mode = :bf_truth, seed = 7))
+    tr_nv = run_m8_truth(M8TruthParams(mode = :untagged_naive, seed = 7))
+    @test tr_bf.false_adoption < tr_nv.false_adoption
+    @test tr_bf.belief_error < tr_nv.belief_error
+    ac = run_m8_art_confounders(M8ArtConfoundParams(seed = 7))
+    @test ac.deconv_error < ac.naive_error
+    @test ac.deconv_rank_acc > ac.naive_rank_acc
 end
 

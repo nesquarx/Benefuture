@@ -476,3 +476,9 @@ def art_surplus_value_ref (truthDeltaU novelty : Float) : Float :=
   let u := if truthDeltaU > 0.0 then truthDeltaU else 0.0
   let n := if novelty > 0.0 then novelty else 0.0
   u + n
+
+/-- Multi-hop propagated truth level (`Tr_lvl`, `L133`, M8):
+    `clamp01(baseLevel) * Π clamp01(hops[j])`. -/
+def chain_truth_level_ref (baseLevel : Float) (hops : Array Float) : Float :=
+  let b := if baseLevel > 1.0 then 1.0 else if baseLevel < 0.0 then 0.0 else baseLevel
+  if b <= 0.0 then 0.0 else propagated_liability_ref b hops

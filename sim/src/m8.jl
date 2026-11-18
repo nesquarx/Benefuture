@@ -124,6 +124,19 @@ function art_surplus_value(truth_delta_u::Real, novelty::Real)
           Float64(truth_delta_u), Float64(novelty))
 end
 
+"""
+    chain_truth_level(base_level, hops) -> Float64
+
+Multi-hop propagated truth level (`Tr_lvl`, `L133`, M8; Lean `chain_truth_level_ref`):
+`clamp₀₁(base_level) * Π clamp₀₁(hops[j])`.
+"""
+function chain_truth_level(base_level::Real, hops)
+    check(isfinite(base_level) && all(isfinite, hops),
+          "finite base_level and hop reliabilities")
+    ccall(sym(:bf_chain_truth_level), Float64, (Float64, Ptr{Cvoid}),
+          Float64(base_level), floatarray(hops))
+end
+
 # ---- Network world (`M8`) ----
 
 Base.@kwdef struct M8Params
@@ -693,5 +706,163 @@ function run_m8_culture(p::M8CultureParams = M8CultureParams())
         superior_style_share = final_shares[argmax(p.style_values)],
         mean_culture_value = mean(p.style_values[s] for s in styles),
         style_entropy = entropy,
+    )
+end
+
+# ---- M8 Multi-Hop Truth Propagation & Art Hidden Convolving Factors (`PLAN.md` L71–72) ----
+
+Base.@kwdef struct M8TruthParams
+    n::Int = 24
+    steps::Int = 30
+    mode::Symbol = :bf_truth           # :bf_truth | :untagged_naive
+    echo_copies::Int = 6
+    true_origins::Int = 2
+    true_base_level::Float64 = 0.90
+    rumor_base_level::Float64 = 0.30
+    noise_σ::Float64 = 0.12
+    seed::Int = 1
+end
+
+"""
+    run_m8_truth(p::M8TruthParams = M8TruthParams())
+
+Simulate multi-hop epistemic propagation over an M8 social network (`L133–134`, `PLAN.md` L72`):
+- True signals come from distinct verified origins (`true_base_level`, high chain reliability).
+- False rumors (`rumor_base_level`, low intermediary reliability) arrive across `echo_copies`
+  redundant multi-hop forwarders carrying the same origin id.
+- `:untagged_naive` counts every repeated rumor path unattenuated; `:bf_truth` applies Lean
+  `chain_truth_level` across hops plus `count_once` origin deduplication (`Sources.lean`).
+"""
+function run_m8_truth(p::M8TruthParams = M8TruthParams())
+    rng = Xoshiro(p.seed)
+    check(p.n >= 4 && p.steps >= 1 && p.echo_copies >= 1 && p.true_origins >= 1,
+          "valid truth propagation parameters")
+    use_bf = (p.mode == :bf_truth)
+
+    false_adoptions = 0
+    belief_errors = Float64[]
+    verified_correct = 0
+    total_obs = 0
+
+    for _ in 1:p.steps
+        for _ in 1:p.n
+            total_obs += 1
+            origin_ids = Float64[]
+            chain_ws = Float64[]
+            sides = Float64[]
+            # Verified true origins (short, high-reliability chains)
+            for oid in 1:p.true_origins
+                push!(origin_ids, Float64(oid))
+                hops = [clamp(0.90 + 0.04 * randn(rng), 0.2, 1.0),
+                        clamp(0.90 + 0.04 * randn(rng), 0.2, 1.0)]
+                base = clamp(p.true_base_level + p.noise_σ * randn(rng), 0.05, 1.0)
+                w = use_bf ? chain_truth_level(base, hops) : 0.8
+                push!(chain_ws, w)
+                push!(sides, 1.0 + 0.1 * randn(rng))
+            end
+            # Echoed false rumor sharing one origin ID (`true_origins + 1`) across `echo_copies`
+            rumor_oid = Float64(p.true_origins + 1)
+            for _ in 1:p.echo_copies
+                push!(origin_ids, rumor_oid)
+                hops = [clamp(0.45 + 0.08 * randn(rng), 0.05, 0.95) for _ in 1:3]
+                base = clamp(p.rumor_base_level + p.noise_σ * randn(rng), 0.05, 0.95)
+                w = use_bf ? chain_truth_level(base, hops) : 0.65
+                push!(chain_ws, w)
+                push!(sides, -1.0 + 0.1 * randn(rng))
+            end
+
+            dedup_ws = use_bf ? count_once(origin_ids, chain_ws) : chain_ws
+            tot_w = max(1e-12, sum(dedup_ws))
+            belief = sum(w * s for (w, s) in zip(dedup_ws, sides)) / tot_w
+            push!(belief_errors, abs(1.0 - clamp(belief, -1.0, 1.0)))
+            belief < 0.0 && (false_adoptions += 1)
+            belief > 0.25 && (verified_correct += 1)
+        end
+    end
+
+    (
+        mode = p.mode,
+        false_adoption = false_adoptions / max(1, total_obs),
+        belief_error = mean(belief_errors),
+        verified_truth_accuracy = verified_correct / max(1, total_obs),
+    )
+end
+
+Base.@kwdef struct M8ArtConfoundParams
+    n_audience::Int = 160
+    trials::Int = 24
+    alpha_high::Float64 = 0.62
+    alpha_low::Float64 = 0.12
+    seed::Int = 1
+end
+
+"""
+    run_m8_art_confounders(p::M8ArtConfoundParams = M8ArtConfoundParams())
+
+Evaluate `art_success_score` when hidden audience-state confounders (`shock` on Work A, `hype` on
+mismatched Work B) distort single-context reception (`PLAN.md` L71: "after hidden convolving
+factors"). Across two differentially-exposed contexts `(α_high, α_low)`, linear deconvolution of the
+shared baseline context recovers A's higher intent match above naive single-context scoring.
+"""
+function run_m8_art_confounders(p::M8ArtConfoundParams = M8ArtConfoundParams())
+    rng = Xoshiro(p.seed)
+    check(p.n_audience >= 20 && p.trials >= 4 && 0 < p.alpha_low < p.alpha_high < 0.9,
+          "valid art confounder parameters")
+
+    # Work A: truly matches open intent `[0.45, 0.10, 0.45]`, exposed to neutral shock `[0.10, 0.80, 0.10]`
+    intent_A = [0.45, 0.10, 0.45]
+    true_A = [0.45, 0.10, 0.45]
+    conf_A = [0.05, 0.90, 0.05]
+
+    # Work B: claims celebratory intent `[0.10, 0.10, 0.80]`, intrinsic mediocre `[0.20, 0.65, 0.15]`,
+    # artificially boosted in its showcase by hype confounder `[0.05, 0.05, 0.90]`
+    intent_B = [0.10, 0.10, 0.80]
+    true_B = [0.20, 0.65, 0.15]
+    conf_B = [0.05, 0.05, 0.90]
+
+    oracle_A = art_success_score(intent_A, true_A)
+    oracle_B = art_success_score(intent_B, true_B)
+
+    naive_l1 = Float64[]
+    deconv_l1 = Float64[]
+    naive_correct_rank = 0
+    deconv_correct_rank = 0
+
+    deconv_est(q_hi, q_lo) = begin
+        # Pair of mixtures: q_hi = (1-αh)*true + αh*conf, q_lo = (1-αl)*true + αl*conf
+        # Eliminating `conf`: true = (αh * q_lo - αl * q_hi) / (αh - αl)
+        raw = (p.alpha_high .* q_lo .- p.alpha_low .* q_hi) ./ (p.alpha_high - p.alpha_low)
+        cl = max.(0.0, raw)
+        s = sum(cl)
+        s > 0 ? cl ./ s : fill(1.0 / length(cl), length(cl))
+    end
+
+    for _ in 1:p.trials
+        mix_A_hi = (1 - p.alpha_high) .* true_A .+ p.alpha_high .* conf_A
+        mix_A_lo = (1 - p.alpha_low) .* true_A .+ p.alpha_low .* conf_A
+        mix_B_hi = (1 - p.alpha_high) .* true_B .+ p.alpha_high .* conf_B
+        mix_B_lo = (1 - p.alpha_low) .* true_B .+ p.alpha_low .* conf_B
+
+        qA_hi = sample_reception(rng, mix_A_hi, p.n_audience)
+        qA_lo = sample_reception(rng, mix_A_lo, p.n_audience)
+        qB_hi = sample_reception(rng, mix_B_hi, p.n_audience)
+        qB_lo = sample_reception(rng, mix_B_lo, p.n_audience)
+
+        naive_score_A = art_success_score(intent_A, qA_hi)
+        naive_score_B = art_success_score(intent_B, qB_hi)
+        deconv_score_A = art_success_score(intent_A, deconv_est(qA_hi, qA_lo))
+        deconv_score_B = art_success_score(intent_B, deconv_est(qB_hi, qB_lo))
+
+        push!(naive_l1, (abs(naive_score_A - oracle_A) + abs(naive_score_B - oracle_B)) / 2.0)
+        push!(deconv_l1, (abs(deconv_score_A - oracle_A) + abs(deconv_score_B - oracle_B)) / 2.0)
+        naive_score_A > naive_score_B && (naive_correct_rank += 1)
+        deconv_score_A > deconv_score_B && (deconv_correct_rank += 1)
+    end
+
+    (
+        naive_error = mean(naive_l1),
+        deconv_error = mean(deconv_l1),
+        naive_rank_acc = naive_correct_rank / p.trials,
+        deconv_rank_acc = deconv_correct_rank / p.trials,
     )
 end

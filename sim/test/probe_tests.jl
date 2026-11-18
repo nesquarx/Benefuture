@@ -2817,3 +2817,26 @@ end
     @test paired_effect([d.superior_style_share - m.superior_style_share for (m, d) in zip(r_mono, r_div)];
                         z = 3.0, direction = :up).significant
 end
+
+@testset "Probe: M8 multi-hop truth propagation & Art hidden convolving factors (P28–P29, PLAN L71–72)" begin
+    seeds = 1:16
+    r_tr_bf = [run_m8_truth(M8TruthParams(mode = :bf_truth, seed = s)) for s in seeds]
+    r_tr_nv = [run_m8_truth(M8TruthParams(mode = :untagged_naive, seed = s)) for s in seeds]
+    r_ac = [run_m8_art_confounders(M8ArtConfoundParams(seed = s)) for s in seeds]
+
+    # P28 (Truth propagation + origin deduplication): chain truth attenuation + `count_once`
+    # suppress echoed false-rumor capture (`false_adoption` & `belief_error` drop, verified accuracy rises).
+    @test paired_effect([n.false_adoption - b.false_adoption for (b, n) in zip(r_tr_bf, r_tr_nv)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([n.belief_error - b.belief_error for (b, n) in zip(r_tr_bf, r_tr_nv)];
+                        z = 3.0, direction = :up).significant
+    @test paired_effect([b.verified_truth_accuracy - n.verified_truth_accuracy for (b, n) in zip(r_tr_bf, r_tr_nv)];
+                        z = 3.0, direction = :up).significant
+    @test all(b -> b.false_adoption < 0.05 && b.verified_truth_accuracy > 0.90, r_tr_bf)
+
+    # P29 (Art hidden convolving factors): paired-context deconvolution removes showcase hype / shock
+    # confounders, cutting `art_success_score` error and restoring artwork quality ranking (`z = 3.0`).
+    @test paired_effect([a.naive_error - a.deconv_error for a in r_ac]; z = 3.0, direction = :up).significant
+    @test paired_effect([a.deconv_rank_acc - a.naive_rank_acc for a in r_ac]; z = 3.0, direction = :up).significant
+    @test all(a -> a.deconv_rank_acc > 0.85, r_ac)
+end

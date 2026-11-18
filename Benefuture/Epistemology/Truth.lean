@@ -6,6 +6,8 @@
   Corresponds to: Bf_Pseudocode.txt L27-33, L39-45, L66, and Epistemology taxonomy.
 -/
 
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 import Benefuture.Math.Order
 import Benefuture.Ontology.Thing
 import Benefuture.Ontology.Entity
@@ -258,6 +260,38 @@ theorem pragmatic_fit_amplification (asmt : PragmaticAssessment)
   have h_mul2 : asmt.mapFit * (((asmt.ceBonus * asmt.prAcc) / SCALE * (SCALE - asmt.complexity)) / SCALE) ≥ 0 :=
     Int.mul_nonneg h_fit_ge h_div1
   exact Int.ediv_nonneg h_mul2 (by decide)
+
+/-! ## Multi-Hop Truth-Level Propagation (`Tr_lvl`, `L133`, M8) -/
+
+/-- Communicated truth level across a multi-hop transmission chain (`L133`, M8):
+    clamps origin `baseLevel` to `[0, 1]` and attenuates across each intermediary's
+    verification reliability (`propagated_control`). -/
+noncomputable def chain_truth_level (baseLevel : ℝ) (hopReliabilities : List ℝ) : ℝ :=
+  max 0 (min 1 baseLevel) * propagated_control hopReliabilities
+
+theorem chain_truth_level_nonneg (baseLevel : ℝ) (hops : List ℝ) :
+    0 ≤ chain_truth_level baseLevel hops :=
+  mul_nonneg (le_max_left 0 _) (propagated_control_nonneg hops)
+
+theorem chain_truth_level_le_clamped_base (baseLevel : ℝ) (hops : List ℝ) :
+    chain_truth_level baseLevel hops ≤ max 0 (min 1 baseLevel) := by
+  unfold chain_truth_level
+  have hb : 0 ≤ max 0 (min 1 baseLevel) := le_max_left 0 _
+  have hc := propagated_control_le_one hops
+  nlinarith
+
+theorem chain_truth_level_le_one (baseLevel : ℝ) (hops : List ℝ) :
+    chain_truth_level baseLevel hops ≤ 1 := by
+  have h1 := chain_truth_level_le_clamped_base baseLevel hops
+  have h2 : max (0 : ℝ) (min 1 baseLevel) ≤ 1 := max_le (by norm_num) (min_le_left 1 baseLevel)
+  linarith
+
+theorem chain_truth_level_mono_base (a b : ℝ) (hops : List ℝ) (hab : a ≤ b) :
+    chain_truth_level a hops ≤ chain_truth_level b hops := by
+  unfold chain_truth_level
+  have ha_le : max (0 : ℝ) (min 1 a) ≤ max (0 : ℝ) (min 1 b) :=
+    max_le_max (le_refl 0) (min_le_min (le_refl 1) hab)
+  exact mul_le_mul_of_nonneg_right ha_le (propagated_control_nonneg hops)
 
 abbrev Tr := Statement
 abbrev Tr_lvl := TruthLevel
