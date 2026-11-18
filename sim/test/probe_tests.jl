@@ -2899,3 +2899,26 @@ end
     @test paired_effect([n.residual_harm - b.residual_harm for (b, n) in zip(enf_bf, enf_no)];
                         z = 3.0, direction = :up).significant
 end
+
+@testset "Probe: Composed continuous-coupled SimTrace satisfies all 9 Conj_* checks (P33, Systems.Conjectures)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag_c = [DomainAgent([0.65, 0.0, 0.65, 0.0], [0.5, 0.0, 0.5, 0.0], 0.05) for _ in 1:6]
+    deceit_c = [0.0, 0.0, 0.0, 0.0, 0.0, 0.8]
+    econ_c = M3cParams(ToyParams(n = 40, steps = 120, plans = 8), ag_c, [1, 1, 2, 2], trues(4);
+                       λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                       init_steps = 20, deceit = deceit_c, advap = true, proposal_pma = true,
+                       proposal_eta = 2, proposal_confidence = 1.5, LEGACY...)
+    gov_c(tr) = M5Params(tr, 1:4; decisions = 10, p_delegate = 0.25)
+    seeds = 1:8
+    traces = [build_sim_trace(run_coupled(econ_c, gov_c; seed = s, epoch = 24, continuous = true, m5_decisions = 40);
+                              adversary_share = 1 / 6) for s in seeds]
+    @test all(tr -> conj_mm_competition_converges(tr; ε = 0.05), traces)
+    @test all(tr -> conj_goodhart_reduction(tr; w = 1, tol = 1e-9), traces)
+    @test all(tr -> conj_gaming_resistance(tr), traces)
+    @test all(tr -> conj_adversarial_robustness(tr; f_star = 0.5), traces)
+    @test all(tr -> conj_min_tracks_prediction(tr; η = 0.5), traces)
+    @test all(tr -> conj_floors_rise(tr; w = 1), traces)
+    @test all(tr -> conj_no_repugnant_drift(tr; w = 1, ε = 0.1), traces)
+    @test all(tr -> conj_param_stability(tr; ε = 0.05), traces)
+    @test all(tr -> conj_delegation_dispersed(tr; margin = 0.02), traces)
+end

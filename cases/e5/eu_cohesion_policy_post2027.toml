@@ -1,0 +1,151 @@
+# E5 current-decision case (REPLAY_PREREG §8), registered 2026-11-18; round 1 (sixth in seeded order,
+# docs/E5_CANDIDATES.md). Decision: European Union post-2027 Cohesion Policy legislative package (2028-2034
+# Multiannual Financial Framework Cohesion & Regional Development regulations, consultations open 2026,
+# Council/EP legislative decision window 2027).
+# Options as reported in the 9th Cohesion Report (European Commission, March 2024) and High-Level Group on
+# the Future of Cohesion Policy (February 2024):
+# (1) place-based regional allocation with performance milestones & rule-of-law/institutional-capacity
+#     conditionalities (the High-Level Group recommendation);
+# (2) centralized national-plan cash transfers modeled on the Recovery and Resilience Facility (RRF) with weak
+#     sub-national regional ring-fencing; or
+# (3) status-quo input-based absorption reimbursement without institutional-capacity milestones.
+# Magnitudes (judgment, stated from the 9th Cohesion Report 2024 and Becker, Egger & von Ehrlich 2010/2013
+# JPubE/AEJ empirical evaluations of EU Objective 1 regional transfers): ~EUR 392 billion cohesion envelope;
+# Objective 1 / less-developed regions (~125 million people in regions <75% EU average GDP/capita) gain +1.2 to
+# +1.6 percentage points annual GDP/productivity and human-capital training when transfers are paired with high
+# regional institutional quality, whereas regions with weak absorption/governance show near-zero productivity
+# return and higher procurement leakage without capacity conditionalities.
+
+id = "eu_cohesion_policy_post2027"
+title = "EU Post-2027 Cohesion Policy: place-based performance & capacity conditionality, centralized national plans, or status-quo input reimbursement"
+family = "economy"
+era = "2026-2027"
+tier = "full"
+decision_date = "2026-11-18"
+decision_makers = ["European Commission, Council of the European Union, and European Parliament"]
+actual_choice = "pending"
+actual_outcome_class = "pending"
+primary_or_held_out = "e5"
+
+# Priority tiers (8.129): less_developed_regions = poor (floor + teachable/meta), transition_and_more_developed_regions = pop, cohesion_admin_and_local_authorities = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0.4, 0.2, 0, 0.4, 0], [0, 0, 0, 1, 0, 0], [0, 0.5, 0.5, 0, 0, 0]]
+h = [[0, 0, 0.3, 0.7, 0, 0], [0, 0, 0.5, 0, 0.5, 0], [0, 0, 1, 0, 0, 0]]
+
+[[sources]]
+id = "eu_cohesion_evaluation_record"
+title = "EU Cohesion Policy and RRF evaluations (9th Cohesion Report 2024; High-Level Group Report Feb 2024; ECA Special Report 2023 on RRF vs Cohesion absorption; Becker, Egger & von Ehrlich 2010/2013)"
+as_of_date = "2026-11-18"
+url = "https://doi.org/10.1016/j.jpubeco.2010.06.006"
+notes = "Empirical evaluations of Objective 1 regional convergence and institutional capacity conditioning."
+
+[[groups]]
+id = "less_developed_regions"
+name = "Populations in less-developed EU regions (<75% of EU average GDP per capita, about 125 million), in thousands"
+population = 125000
+baseline_u = 42.0
+baseline_h = 44.0
+
+[[groups]]
+id = "transition_and_more_developed_regions"
+name = "Populations in transition and more-developed EU regions (about 323 million), in thousands"
+population = 323000
+baseline_u = 62.0
+baseline_h = 65.0
+
+[[groups]]
+id = "cohesion_admin_and_local_authorities"
+name = "Regional managing authorities, municipal planners, and implementation workforce (about 1.2 million), in thousands"
+population = 1200
+baseline_u = 60.0
+baseline_h = 58.0
+
+[[options]]
+id = "status_quo_input_reimbursement"
+name = "Continue status-quo input-based absorption reimbursement without capacity milestones"
+source = "eu_cohesion_evaluation_record"
+known_date = "2024-03-27"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0, 0.0]
+pred_dh = [0.0, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "low_capacity_leakage_and_lag"
+environmental_health = false
+p_chain = ["unconditioned_transfers_stalled_in_low_governance_regions"]
+du = [-0.15, -0.02, 0.0]
+dh = [-0.20, -0.05, 0.0]
+irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "baseline_convergence"
+p_chain = []
+complement = true
+
+[[options]]
+id = "centralized_national_plan_model"
+name = "Shift to centralized national-plan cash transfers (RRF-style) without sub-national regional ring-fencing"
+source = "eu_cohesion_evaluation_record"
+known_date = "2024-02-20"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [-0.05, 0.12, -0.10]
+pred_dh = [-0.10, 0.15, -0.10]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "capital_city_concentration_leaves_lagging_regions_behind"
+environmental_health = false
+p_chain = ["centralized_national_plans_underfunded_lagging_regions"]
+du = [-0.25, 0.15, -0.20]
+dh = [-0.30, 0.18, -0.15]
+irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "balanced_national_disbursement"
+p_chain = []
+complement = true
+du = [0.15, 0.10, 0.0]
+dh = [0.10, 0.12, -0.05]
+
+[[options]]
+id = "place_based_performance_and_capacity"
+name = "Adopt place-based regional ring-fencing with institutional-capacity building and performance milestones"
+source = "eu_cohesion_evaluation_record"
+known_date = "2024-02-20"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.45, 0.08, 0.25]
+pred_dh = [0.40, 0.04, -0.10]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "conditioned_place_based_convergence_succeeds"
+environmental_health = false
+p_chain = ["conditioned_place_based_transfers_raised_regional_convergence"]
+du = [0.60, 0.10, 0.30]
+dh = [0.55, 0.06, -0.08]
+irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "compliance_friction_only"
+p_chain = []
+complement = true
+du = [0.05, 0.0, 0.05]
+dh = [-0.05, -0.04, -0.15]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "place_based_performance_and_capacity"
+methods = ["placeholder: scored when the outcome is known"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]

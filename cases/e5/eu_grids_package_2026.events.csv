@@ -1,0 +1,8 @@
+event,trial_id,date,occurred,citation_with_page
+eu_binding_energy_package_accelerated_deployment,TEN-E-PCI-fast-track-2013,2020-12-31,1,"TEN-E Regulation 347/2013 Projects of Common Interest: cut median cross-border permitting time to ~3.5 years where applied (ACER monitoring)"
+eu_binding_energy_package_accelerated_deployment,REPowerEU-permitting-2022,2024-06-30,1,"Council Regulation 2022/2577 emergency permitting: solar and grid connection approvals rose >40% in 2023-2024"
+eu_binding_energy_package_accelerated_deployment,TEN-E-revised-2022,2025-06-30,1,"Revised TEN-E Regulation 2022/869 offshore and smart-grid corridors met first commissioning milestones"
+eu_binding_energy_package_accelerated_deployment,Interconnection-target-2020,2021-12-31,0,"2020 10% interconnection target left 8 member states below 10% due to national permitting delays"
+voluntary_grid_guidance_missed_target,Nonbinding-interconnection-2018,2021-12-31,1,"Non-binding 2018 interconnection roadmap failed to clear national permitting backlogs in 8 member states"
+voluntary_grid_guidance_missed_target,Voluntary-queue-guidelines-2022,2024-12-31,1,"Non-binding Commission guidance on grid connection queues left >400 GW stuck in first-come-first-served queues (IEA 2023 / Ember 2024)"
+voluntary_grid_guidance_missed_target,ENTSO-E-TYNDP-voluntary-2020,2023-12-31,0,"Around a third of TYNDP projects proceeded on schedule without mandatory intervention"

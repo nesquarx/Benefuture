@@ -1,0 +1,5 @@
+source_id,record_id,issue_date,resolution_date,as_of_date,predicted,outcome,citation_with_page
+eu_grid_and_permitting_record,REC-tene-2013,2020-12-31,2020-12-31,2020-12-31,1.0,1.0,"ACER TEN-E PCI monitoring report 2020"
+eu_grid_and_permitting_record,REC-repowereu-2022,2024-06-30,2024-06-30,2024-06-30,1.0,1.0,"Council Regulation 2022/2577 permitting acceleration review 2024"
+eu_grid_and_permitting_record,REC-red3-2023,2025-07-01,2025-07-01,2025-07-01,1.0,1.0,"Renewable Energy Directive III fast-track zone implementation 2025"
+eu_grid_and_permitting_record,REC-interconn-2020,2021-12-31,2021-12-31,2021-12-31,0.0,0.0,"EU 10% electricity interconnection 2020 target review (missed by 8 member states)"

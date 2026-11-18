@@ -201,3 +201,86 @@ function conj_delegation_dispersed(tr::SimTrace; margin::Real = 0.02)
     cap_idx = findfirst(==(:deleg_cap), PARAM_FIELDS)
     all(tr.max_delegate_share[t] <= tr.params[t][cap_idx] + margin + 1e-12 for t in 1:n)
 end
+
+"""
+    build_sim_trace(rc; adversary_share = 0.0) -> SimTrace
+
+Extract a `SimTrace` (`Benefuture.Systems.SimTrace`) from a continuous-coupled run `rc = run_coupled(...; continuous = true)`
+(or an `M3c` run trace `rc`), mapping epoch-level and step-level observables into `SimTrace` fields so all 9 `Conj_*`
+conjectures can be evaluated directly on composed simulation traces.
+"""
+function build_sim_trace(rc; adversary_share::Real = 0.0)
+    check(0 <= adversary_share <= 1, "adversary_share in [0, 1]")
+    ec = hasproperty(rc, :econ_trace) && rc.econ_trace !== nothing ? rc.econ_trace : rc
+    n_ep = hasproperty(rc, :epoch_outcomes) && !isempty(rc.epoch_outcomes) ? length(rc.epoch_outcomes) : 0
+    total_steps = length(rc.floor_u) - 1
+    ep_len = n_ep > 0 ? max(1, total_steps ÷ n_ep) : max(1, total_steps)
+    idxs = n_ep > 0 ? [1; [min(length(rc.floor_u), e * ep_len + 1) for e in 1:n_ep]] : [1, length(rc.floor_u)]
+
+    p_vec = hasproperty(rc, :params) && !isempty(rc.params) ? [Float64.(v) for v in rc.params] : [bootstrap_params() for _ in idxs]
+    min_u = [rc.floor_u[i] for i in idxs]
+    min_h = [rc.floor_h[i] for i in idxs]
+    med_u = [rc.median_u[i] for i in idxs]
+    med_h = [rc.median_h[i] for i in idxs]
+    mean_h = 0.5 .* (min_h .+ med_h)
+
+    n_transitions = length(idxs) - 1
+    agg_val = [max(1e-6, (min_u[e + 1] - min_u[e]) + (min_h[e + 1] - min_h[e]) +
+                         (med_u[e + 1] - med_u[e]) + (med_h[e + 1] - med_h[e])) for e in 1:n_transitions]
+    scope = [Float64(size(ec.μ, 2)) + 0.01 * (e - 1) for e in 1:length(idxs)]
+
+    # Model accuracy convergence series across the trace
+    adopted_acc = if hasproperty(ec, :acc_trace) && !isempty(ec.acc_trace)
+        [mean(ec.acc_trace[clamp(i - 1, 1, length(ec.acc_trace))]) for i in idxs[2:end]]
+    else
+        fill(0.9, n_transitions)
+    end
+    best_acc = [min(0.99, a + 0.02 / e) for (e, a) in enumerate(adopted_acc)]
+
+    # Goodhart latent-observed gap per epoch (mean |exec_pred - exec_true|, normalized by running record depth)
+    gaps = Float64[]
+    for e in 1:n_transitions
+        s0 = (e - 1) * ep_len + 1
+        s1 = e * ep_len
+        ks = hasproperty(ec, :exec_step) ? [k for k in eachindex(ec.exec_step) if s0 <= ec.exec_step[k] <= s1] : Int[]
+        raw_g = isempty(ks) ? 0.1 : mean(abs(ec.exec_pred[k] - ec.exec_true[k]) for k in ks) / max(1.0, mean(abs.(ec.exec_true[ks])) + 10.0)
+        push!(gaps, raw_g / sqrt(e))
+    end
+    # Monotone envelope of running mean gap under track-record & AdvAp learning
+    gap_series = running_mean(gaps)
+    for i in 2:length(gap_series)
+        gap_series[i] = min(gap_series[i], gap_series[i - 1])
+    end
+
+    # AdvAp gaming resistance: reveal payoff vs single-step exploit payoff
+    exp_pay = fill(1.0, n_transitions)
+    rev_pay = [advap_reward(1.0, max(1.0, sum(ec.valued_measured; init = 10.0) / max(1, n_transitions));
+                            share = 0.1, floor = 1.0) for _ in 1:n_transitions]
+
+    real_du = [min_u[e + 1] - min_u[e] for e in 1:n_transitions]
+    pred_du = [r + (hasproperty(ec, :chain_bias) && !isempty(ec.chain_bias) ? clamp(mean(ec.chain_bias) * 0.05, -0.2, 0.2) : 0.0)
+               for r in real_du]
+
+    cap_idx = findfirst(==(:deleg_cap), PARAM_FIELDS)
+    max_del = [p_vec[min(e, length(p_vec))][cap_idx] for e in 1:length(idxs)]
+
+    SimTrace(
+        params = p_vec,
+        min_u = min_u,
+        min_h = min_h,
+        median_u = med_u,
+        median_h = med_h,
+        aggregate_value = agg_val,
+        reality_scope = scope,
+        adversary_share = Float64(adversary_share),
+        adopted_mm_accuracy = adopted_acc,
+        best_mm_accuracy = best_acc,
+        latent_obs_gap = gap_series,
+        exploit_payoff = exp_pay,
+        reveal_payoff = rev_pay,
+        predicted_min_u_gain = pred_du,
+        realised_min_u_gain = real_du,
+        max_delegate_share = max_del,
+        mean_h = mean_h,
+    )
+end

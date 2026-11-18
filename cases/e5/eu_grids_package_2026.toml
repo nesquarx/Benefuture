@@ -1,0 +1,141 @@
+# E5 current-decision case (REPLAY_PREREG §8), registered 2026-11-18; round 1 (fifth in seeded order,
+# docs/E5_CANDIDATES.md). Decision: European Grids Package legislative approval in the European Parliament
+# plenary vote expected December 2026 (following the European Commission's 2023 EU Action Plan for Grids and
+# the 2026 legislative package on cross-border transmission permitting, anticipatory grid investment, and
+# congested queue reform).
+# Options as reported: (1) adopt the binding package with fast-track cross-border permitting and anticipatory
+# investment tariffs; (2) adopt a voluntary coordination and non-binding guidance package without overriding
+# national permitting bottlenecks; or (3) reject/defer the package (leaving status-quo national permitting and
+# first-come-first-served grid queues).
+# Magnitudes (judgment, stated from IEA 2023 Electricity Grids and Secure Energy Transitions and Ember 2024
+# European grid queue records): over 400 GW of wind and solar sit in European connection queues; cutting the
+# fossil generation tail by accelerating grid connection of queued renewables by ~120 TWh/yr over 2027-2035
+# avoids roughly 350 Mt CO2 and concurrent coal/gas PM2.5/NOx air pollution (~4.2 thousand excess premature
+# deaths across the EU population over the window; EEA air quality mortality estimates, judgment), while up-front
+# anticipatory grid tariffs add ~0.15 happiness cost to grid ratepayers/utilities before congestion savings arrive.
+
+id = "eu_grids_package_2026"
+title = "EU Grids Package: binding permitting & anticipatory investment, voluntary guidance, or defer (EP plenary, December 2026)"
+family = "technology"
+era = "2026"
+tier = "full"
+decision_date = "2026-11-18"
+decision_makers = ["European Parliament and Council of the European Union"]
+actual_choice = "pending"
+actual_outcome_class = "pending"
+primary_or_held_out = "e5"
+
+# Priority tiers (8.129): eu_households = pop, vulnerable_energy_poor = poor, grid_and_clean_tech_workforce = work.
+# u: [peak, teachable, meta, median, floor, undirected]; h: [eudaimonic, shareable, satisficing, baseline, median, peak].
+[tiers]
+u = [[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 1, 0, 0, 0, 0]]
+h = [[0, 0, 0.5, 0, 0.5, 0], [0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0]]
+
+[[sources]]
+id = "eu_grid_and_permitting_record"
+title = "EU energy infrastructure and permitting packages (TEN-E Regulation 2013 & 2022 PCI fast-track, REPowerEU emergency permitting Regulation 2022/2577, and non-binding 2018 grid interconnection guidance)"
+as_of_date = "2026-11-18"
+url = "https://doi.org/10.1787/66c36778-en"
+notes = "Outcomes from IEA (2023) Electricity Grids and Secure Energy Transitions and EU PCI implementation monitoring reports."
+
+[[groups]]
+id = "eu_households"
+name = "EU general population outside energy-poor households (about 400 million), in thousands"
+population = 400000
+baseline_u = 60.0
+baseline_h = 65.0
+
+[[groups]]
+id = "vulnerable_energy_poor"
+name = "Energy-poor and pollution-exposed EU households (about 48 million; Eurostat ~10.6% unable to keep home adequately warm), in thousands"
+population = 48000
+baseline_u = 45.0
+baseline_h = 45.0
+
+[[groups]]
+id = "grid_and_clean_tech_workforce"
+name = "Transmission operators, grid equipment and renewable engineering workforce (about 1.5 million), in thousands"
+population = 1500
+baseline_u = 65.0
+baseline_h = 62.0
+
+[[options]]
+id = "defer_no_package"
+name = "Defer/reject the package: status-quo national permitting and first-come-first-served connection queues"
+source = "eu_grid_and_permitting_record"
+known_date = "2026-09-01"
+is_inaction = true
+scope_delta = 0.0
+pred_du = [0.0, 0.0, 0.0]
+pred_dh = [0.0, 0.0, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [1.89, 1.26, 0.0]
+
+[[options.scenarios]]
+name = "binding_package_would_have_cleared_queue"
+environmental_health = true
+p_chain = ["eu_binding_energy_package_accelerated_deployment"]
+du = [-0.01, -0.02, -0.10]
+dh = [-0.05, -0.15, -0.10]
+irreparable = [2.52, 1.68, 0.0]
+
+[[options.scenarios]]
+name = "status_quo_clears_anyway"
+p_chain = []
+complement = true
+
+[[options]]
+id = "adopt_voluntary_coordination"
+name = "Adopt voluntary grid coordination and non-binding permitting guidance"
+source = "eu_grid_and_permitting_record"
+known_date = "2026-09-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.01, 0.0, 0.05]
+pred_dh = [-0.02, -0.05, 0.0]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [1.26, 0.84, 0.0]
+
+[[options.scenarios]]
+name = "voluntary_falls_short_of_binding"
+environmental_health = true
+p_chain = ["voluntary_grid_guidance_missed_target"]
+du = [0.0, -0.01, 0.0]
+dh = [-0.03, -0.08, 0.0]
+irreparable = [1.89, 1.26, 0.0]
+
+[[options.scenarios]]
+name = "voluntary_delivers_partial_gain"
+p_chain = []
+complement = true
+du = [0.02, 0.01, 0.10]
+dh = [-0.01, 0.0, 0.05]
+
+[[options]]
+id = "adopt_binding_grids_package"
+name = "Adopt binding fast-track cross-border permitting, queue reform, and anticipatory grid investment"
+source = "eu_grid_and_permitting_record"
+known_date = "2026-09-01"
+is_inaction = false
+scope_delta = 0.0
+pred_du = [0.03, 0.02, 0.25]
+pred_dh = [-0.05, 0.05, -0.15]
+pred_nha = [0.0, 0.0, 0.0]
+pred_irreparable = [0.0, 0.0, 0.0]
+
+[[options.scenarios]]
+name = "tariff_and_execution_costs"
+p_chain = []
+complement = true
+du = [0.03, 0.02, 0.25]
+dh = [-0.05, 0.05, -0.15]
+
+[counterfactual]
+actual_floor_u_delta = 0.0
+actual_floor_h_delta = 0.0
+actual_irreparable = 0.0
+alt_option = "adopt_binding_grids_package"
+methods = ["placeholder: scored when the outcome is known"]
+est_floor_u_delta_diff = [0.0]
+est_floor_h_delta_diff = [0.0]
+est_irreparable_diff = [0.0]
