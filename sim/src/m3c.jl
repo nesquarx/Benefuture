@@ -1676,10 +1676,12 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             if n <= 62 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
                 assessed_outcomes[] += 1
                 for b in findall(m)
-                    # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream).
+                    # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream),
+                    # pooling bound/duplicate identities into one player (`bound_shapley_shares`, B27).
                     v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].du[b] : 0.0 for r in 1:nu); init = 0.0),
                                              (funded(mask) ? eff.dh[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].dh[b] : 0.0 for r in 1:nu); init = 0.0), t)
-                    φ = shapley_shares(v, n; rng = Xoshiro(hash((seed, :shapley, t, j, b))))
+                    srng = Xoshiro(hash((seed, :shapley, t, j, b)))
+                    φ = allunique(who) ? shapley_shares(v, n; rng = srng) : bound_shapley_shares(v, who; rng = srng)
                     pos .+= max.(φ, 0.0); neg .+= min.(φ, 0.0)
                 end
             else

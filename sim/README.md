@@ -1551,9 +1551,9 @@ across beings in `ToyParams.spread` (the source measures sites, not beings).
 | Hazards arising (world; battery factor): chance per step, share of beings threatened, harm per being | `p_hazard`, `hazard_share`, `hazard_size` | 0, 0.1, 1 | 0.05–0.3, not yet set, not yet set | Mixed; 3.9, [CLA18] [CT16] (medium for shape, low for rates). Rate is a battery factor; default stays 0, since a rate acts only with guardians, whose diligence is institution-dependent |
 | Side effects of actions (world; battery factor): chance per action, share of touched beings harmed, harm per being | `p_side`, `side_share`, `side_size` | 0.01, 0.3, 1 (size heavy-tailed like a random hazard) | 0.01–0.1, not yet set, not yet set | Mixed; 3.9, [DEV08] [BRE91] [LAN10] (medium). Simple domains 0.01, complex 0.05–0.1; the preventable share (`p_foresee`) is institution-dependent |
 | Actions building on another's recent output; how much of its effect they carry; max hops propagated (M3c, world) | `p_upstream`, `β_upstream`, `upstream_depth` | 0, 0.5, 1 | not yet set |  |
-| Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | not yet set |  |
-| Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | not yet set |  |
-| Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | not yet set |  |
+| Records over which a novel leaf's model error falls from coarse to leaf level (M3c, world) | `n_learn` | 20 | 3–14 | `E2` empirical range (`14` weeks COVID Hub, `3` answers Stack Exchange; governed default `20`; `docs/CALIBRATION.md`) |
+| Agents' starting balance per currency (M3b, M3c, world) | `endowment` | 5 | currency units — no external scale (log-SD 0–1) | Equal endowments by default; initial log-SD 0–1 swept (`docs/CALIBRATION.md`) |
+| Share of beings a random plan touches; scatter of its mean effect (M0 menus, world) | `ToyParams.touch`, `ToyParams.shift` | 0.05–0.3, 0.5 | synthetic menu topology | Replaced by M3c/M7 worlds |
 | A guardian learning of a hazard in time | `p_informed` | 0.8 | 0.95–0.6 | Institution-dependent: swept (3.2), never a default; the placeholder 0.8 stays |
 | A guardian acting on a known duty | `diligence` | 0.95 | 0.95–0.4 | Institution-dependent: swept (3.2), never a default; the placeholder 0.95 stays |
 | An actor foreseeing a side effect | `p_foresee` | 0.5 | 0.7–0.25 | Mixed; the preventable share is institution-dependent (3.2): swept |
