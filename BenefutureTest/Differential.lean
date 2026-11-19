@@ -496,6 +496,40 @@ theorem chainTruthLevelQ_spec (baseLevel : ℚ) (hops : List ℚ) :
   push_cast
   rfl
 
+def advapRecountTallyQ : List (ℚ × ℚ × Bool) → ℚ
+  | [] => 0
+  | (h, v, a) :: rest => (if a then h * v else 0) + advapRecountTallyQ rest
+
+theorem advapRecountTallyQ_spec (entries : List (ℚ × ℚ × Bool)) :
+    (advapRecountTallyQ entries : ℝ) =
+      Benefuture.Governance.advap_recount_tally
+        (entries.map fun e => ((e.1 : ℝ), (e.2.1 : ℝ), e.2.2)) := by
+  induction entries with
+  | nil => simp [advapRecountTallyQ, Benefuture.Governance.advap_recount_tally]
+  | cons hd tl ih =>
+      rcases hd with ⟨h, v, a⟩
+      cases a <;>
+        simp [advapRecountTallyQ, Benefuture.Governance.advap_recount_tally, ih]
+
+def advapRecountQ (entries : List (ℚ × ℚ × Bool)) (truth : ℚ) : Bool :=
+  if 0 ≤ advapRecountTallyQ entries then decide (0 < truth) else decide (truth < 0)
+
+theorem advapRecountQ_spec (entries : List (ℚ × ℚ × Bool)) (truth : ℚ) :
+    advapRecountQ entries truth =
+      Benefuture.Governance.advap_recount_correct
+        (entries.map fun e => ((e.1 : ℝ), (e.2.1 : ℝ), e.2.2)) (truth : ℝ) := by
+  unfold advapRecountQ Benefuture.Governance.advap_recount_correct
+  rw [← advapRecountTallyQ_spec]
+  have h1 : decide (0 ≤ (advapRecountTallyQ entries : ℝ)) = decide (0 ≤ advapRecountTallyQ entries) := by
+    simp [Rat.cast_nonneg]
+  have h2 : decide ((0 : ℝ) < (truth : ℝ)) = decide (0 < truth) := by
+    simp [Rat.cast_pos]
+  have h3 : decide ((truth : ℝ) < 0) = decide (truth < 0) := by
+    simp [Rat.cast_lt_zero]
+  rw [h2, h3]
+  by_cases h : 0 ≤ advapRecountTallyQ entries <;>
+    simp [h, show (0 : ℝ) ≤ (advapRecountTallyQ entries : ℝ) ↔ 0 ≤ advapRecountTallyQ entries from Rat.cast_nonneg]
+
 /-! ## Interval-bound oracles for nonlinear functions -/
 
 /-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
@@ -1097,6 +1131,38 @@ def runAll : IO Unit := do
     let f := chain_truth_level_ref (ratToFloat b) (Array.mk (hs.map ratToFloat))
     let q := chainTruthLevelQ b hs
     (close f q, g)
+  checkAll "advap_recount_correct" 400 36 fun g =>
+    let (h0, g) := g.below 33
+    let (h1, g) := g.below 33
+    let (h2, g) := g.below 33
+    let (v0, g) := g.below 33
+    let (v1, g) := g.below 33
+    let (v2, g) := g.below 33
+    let (b0, g) := g.below 8
+    let (tr0, g) := g.below 33
+    let hs : List ℚ := [(h0 : ℚ) / 16, (h1 : ℚ) / 16, (h2 : ℚ) / 16]
+    let vs : List ℚ := [((v0 : ℚ) - 16) / 8, ((v1 : ℚ) - 16) / 8, ((v2 : ℚ) - 16) / 8]
+    let a0 := b0 % 2 == 1
+    let a1 := (b0 / 2) % 2 == 1
+    let a2 := (b0 / 4) % 2 == 1
+    let actQ : List Bool := [a0, a1, a2]
+    let actF : List Float := [if a0 then 1.0 else 0.0, if a1 then 1.0 else 0.0, if a2 then 1.0 else 0.0]
+    let tr : ℚ := ((tr0 : ℚ) - 16) / 8
+    let entries := (hs.zip vs).zip actQ |>.map fun ((h, v), a) => (h, v, a)
+    let f := advap_recount_correct_ref (Array.mk (hs.map ratToFloat))
+      (Array.mk (vs.map ratToFloat)) (Array.mk actF) (ratToFloat tr)
+    let q := advapRecountQ entries tr
+    (f == q, g)
+  checkAll "contention_map" 400 37 fun g =>
+    let (r0, g) := g.below 65
+    let (r1, g) := g.below 65
+    let (r2, g) := g.below 65
+    let (r3, g) := g.below 65
+    let (self0, g) := g.below 5
+    let reps : List ℚ := [((r0 : ℚ) - 16) / 8, ((r1 : ℚ) - 16) / 8, ((r2 : ℚ) - 16) / 8, ((r3 : ℚ) - 16) / 8]
+    let f := contention_map_ref (Array.mk (reps.map ratToFloat)) self0
+    let q := Benefuture.Governance.contention_map_rank reps self0
+    (f.toList == q.map Nat.toFloat, g)
 
 #eval runAll
 

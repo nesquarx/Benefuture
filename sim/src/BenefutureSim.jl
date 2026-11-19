@@ -10,7 +10,7 @@ module BenefutureSim
 export phi, net_synergy, squashed_synergy
 export tiered_value, tier_schedules, run_programmes, meta_multiplier
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_permissible
-export floor_quantile, g_choose
+export floor_quantile, g_choose, g_choose_dist
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth, success_pattern, pattern_margin, progressive_metrics, SimTrace, build_sim_trace, conj_mm_competition_converges, conj_goodhart_reduction, conj_gaming_resistance, conj_adversarial_robustness, conj_min_tracks_prediction, conj_floors_rise, conj_no_repugnant_drift, conj_param_stability, conj_delegation_dispersed

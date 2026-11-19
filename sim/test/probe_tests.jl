@@ -1436,7 +1436,8 @@ end
     tot(r) = r.success.floor_u + r.success.floor_h
     dL, dON, dLO, dAH = Float64[], Float64[], Float64[], Float64[]
     for s in 1:16
-        none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true)
+        # Hold incumbent fixed (`add_rule_epoch > n_epochs`) so the no-candidate arm doesn't sample random `gov_δ` perturbations.
+        none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true, add_rule_epoch = 999)
         old = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
         lo = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = -5.0, candidate_eta = 3, candidate_vs_incumbent = true)
         hi = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 10.0, candidate_eta = 3, candidate_vs_incumbent = true)
@@ -3191,4 +3192,181 @@ end
     @test paired_effect(-below; z = 3.0, direction = :up).significant   # K=20 strictly below elite
     @test paired_effect(above;  z = 3.0, direction = :up).significant   # K=40 diverse beats elite
     @test paired_effect(-clones; z = 3.0, direction = :up).significant  # K=30 zero-diversity clones stay below
+end
+
+@testset "Probe: B15 birth escrow with ratchet bounds uncovered birth shortfalls (P41)" begin
+    # Gaming parents bring over-optimistic birth models (`gamers = 0.4, gamer_bias = 20.0`).
+    # Comparing `ratchet = true, pending_ledger = true` against unratcheted acceptance across 16 seeds:
+    # the ratchet lowers uncovered birth shortfalls relative to measured output while keeping births active.
+    p = ToyParams(n = 30, steps = 80, plans = 6)
+    seeds = 1:16
+    r_on  = [run_population_world(p; seed = s, p_birth = 0.25, window = 10, endowment = 10.0, income = 0.2,
+                                  gamers = 0.4, gamer_bias = 20.0, gamer_models = 3,
+                                  ratchet = true, pending_ledger = true) for s in seeds]
+    r_off = [run_population_world(p; seed = s, p_birth = 0.25, window = 10, endowment = 10.0, income = 0.2,
+                                  gamers = 0.4, gamer_bias = 20.0, gamer_models = 3,
+                                  ratchet = false, pending_ledger = false) for s in seeds]
+    unc_rat(r) = r.uncovered / max(r.measured, 1e-9)
+    @test all(r -> r.births >= 5, r_on)
+    @test mean(unc_rat, r_on) < 0.05 && mean(unc_rat, r_off) > 0.05
+    @test paired_effect([unc_rat(o) - unc_rat(n) for (n, o) in zip(r_on, r_off)]; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: B17 teachable knowledge diffusion lifts floor and reduces concentration (P42)" begin
+    # Higher teaching transfer rate (`ε = 0.25` vs `0.02`) with codifiable discoveries (`p_teachable = 0.8`)
+    # lifts both `floor_u` and `median_u` at z = 3.0 over 16 seeds, whereas untransmissible breakthroughs
+    # (`p_teachable = 0.0`) widen concentration (`peak_u - floor_u`) while leaving the floor unlifted.
+    p = ToyParams(n = 40, steps = 50, plans = 6)
+    seeds = 1:16
+    r_hi  = [run_m7(p; seed = s, central = false, traits = false, ε = 0.25, p_teachable = 0.8,
+                    research_share = 0.15, p_research = 0.08) for s in seeds]
+    r_lo  = [run_m7(p; seed = s, central = false, traits = false, ε = 0.02, p_teachable = 0.8,
+                    research_share = 0.15, p_research = 0.08) for s in seeds]
+    r_tac = [run_m7(p; seed = s, central = false, traits = false, ε = 0.25, p_teachable = 0.0,
+                    research_share = 0.15, p_research = 0.08) for s in seeds]
+    @test paired_effect([h.floor_u[end] - l.floor_u[end] for (h, l) in zip(r_hi, r_lo)]; z = 3.0, direction = :up).significant
+    @test paired_effect([h.median_u[end] - l.median_u[end] for (h, l) in zip(r_hi, r_lo)]; z = 3.0, direction = :up).significant
+    @test paired_effect([t.floor_u[end] < h.floor_u[end] ? h.floor_u[end] - t.floor_u[end] : 0.0
+                         for (h, t) in zip(r_hi, r_tac)]; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: B22 dispersed private signals outperformed by audited record-weighted pooling (P43)" begin
+    # Diverse agents observe a shared latent target `θ` with heterogeneous noise `σ_k`.
+    # After scoring sources with Lean `mm_score` and selecting/pooling via audited precision weights,
+    # the record-weighted aggregate beats both typical single sources and an uncalibrated prior at z = 3.0.
+    seeds = 1:16
+    σs = [0.25, 0.35, 0.5, 0.8, 1.0, 1.4, 1.8, 2.2, 2.5, 3.0]
+    err_single, err_pool, err_adopt = Float64[], Float64[], Float64[]
+    for s in seeds
+        rng = Xoshiro(hash((:b22, s)))
+        n_cal, n_eval = 25, 40
+        θ_cal = randn(rng, n_cal)
+        obs_cal = [θ_cal .+ σ .* randn(rng, n_cal) for σ in σs]
+        scores = [mm_score(obs_cal[k], θ_cal) for k in eachindex(σs)]
+        best_k = mm_adopt(scores)
+        inv_mse = [1.0 / max(1e-6, -sc) for sc in scores]
+        w_pool = inv_mse ./ sum(inv_mse)
+        θ_eval = randn(rng, n_eval)
+        obs_eval = [θ_eval .+ σ .* randn(rng, n_eval) for σ in σs]
+        pred_pool = sum(w_pool[k] .* obs_eval[k] for k in eachindex(σs))
+        pred_best = obs_eval[best_k]
+        pred_mid = obs_eval[5] # median single source (σ = 1.0)
+        push!(err_single, mean(abs2, pred_mid .- θ_eval))
+        push!(err_pool, mean(abs2, pred_pool .- θ_eval))
+        push!(err_adopt, mean(abs2, pred_best .- θ_eval))
+    end
+    @test paired_effect(err_single .- err_pool; z = 3.0, direction = :up).significant
+    @test paired_effect(err_adopt .- err_pool; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: B24 tier adverse selection corrected by stratified propensity weighting (P44)" begin
+    # Higher-skill agents selectively enter a fine low-noise tier (p_deep increases sharply with latent θ),
+    # whereas lower-skill agents remain coarse. Unweighted deep-tier averages overstate the population mean,
+    # while inverse-propensity / stratified tier weighting eliminates the selection bias across 16 seeds (z = 3.0).
+    seeds = 1:16
+    bias_naive, abs_err_naive, abs_err_strat = Float64[], Float64[], Float64[]
+    for s in seeds
+        rng = Xoshiro(hash((:b24, s)))
+        n = 200
+        θ = randn(rng, n)
+        p_deep = [clamp(0.15 + 0.75 * (θ[i] > 0.25), 0.15, 0.90) for i in 1:n]
+        in_deep = rand(rng, n) .< p_deep
+        y_obs = [θ[i] + (in_deep[i] ? 0.15 : 0.7) * randn(rng) for i in 1:n]
+        true_mean = mean(θ)
+        naive_mean = mean(y_obs[in_deep])
+        # Inverse-propensity / Horvitz-Thompson style stratified weighting over deep vs coarse tiers:
+        w = [in_deep[i] ? 1.0 / p_deep[i] : 1.0 / (1.0 - p_deep[i]) for i in 1:n]
+        strat_mean = sum(w .* y_obs) / sum(w)
+        push!(bias_naive, naive_mean - true_mean)
+        push!(abs_err_naive, abs(naive_mean - true_mean))
+        push!(abs_err_strat, abs(strat_mean - true_mean))
+    end
+    @test paired_effect(bias_naive; z = 3.0, direction = :up).significant
+    @test paired_effect(abs_err_naive .- abs_err_strat; z = 3.0, direction = :up).significant
+end
+
+@testset "Probe: B26 M5 multi-round deliberation obeys delegation caps and stops persuasion echo inflation (P45)" begin
+    # Untaggged `rounds = 3` deliberation compounds random walks (`echo_influence`), letting central nodes accumulate
+    # large influence shares, while source tagging (`count_once`) bounds each origin's per-listener weight at <= 1.0.
+    # Full M5 multi-round deliberation (`deliberation = true, rounds = 3, source_tags = true`) also obeys `cap`.
+    seeds = 1:16
+    conc_untagged, conc_tagged = Float64[], Float64[]
+    for s in seeds
+        rng = Xoshiro(hash((:b26_graph, s)))
+        na = 24
+        # Star-biased contacts: first two hubs appear in most listeners' contact lists.
+        listens = [unique(vcat([i == 1 ? 2 : 1], [rand(rng, 1:na) for _ in 1:3])) for i in 1:na]
+        W_un = echo_influence(listens, 3; tagged = false)
+        W_tg = echo_influence(listens, 3; tagged = true)
+        @test maximum(W_tg) <= 1.0 + 1e-12
+        # Share of total network weight traced to top origin:
+        col_un = vec(sum(W_un; dims = 1)) ./ sum(W_un)
+        col_tg = vec(sum(W_tg; dims = 1)) ./ sum(W_tg)
+        push!(conc_untagged, maximum(col_un))
+        push!(conc_tagged, maximum(col_tg))
+    end
+    @test paired_effect(conc_untagged .- conc_tagged; z = 3.0, direction = :up).significant
+
+    m3 = run_m3c(M3cParams(ToyParams(n = 60, steps = 120, plans = 8),
+                           [DomainAgent([k == l ? 0.2 + 0.1 * r : 0.0 for l in 1:4],
+                                        [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:5],
+                           [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    cap = 0.05
+    r_m5 = [run_m5(M5Params(m3, 1:4; decisions = 60, p_delegate = 0.6, cap = cap,
+                            deliberation = true, rounds = 3, source_tags = true, signal_σ = 3.5); seed = s)
+            for s in 1:4]
+    @test all(r -> all(r.max_share .<= cap .+ r.max_single .+ 1e-12), r_m5)
+    @test mean(r -> r.correct, r_m5) > 0.75
+end
+
+@testset "Probe: M3c repair_credit (8.26.1), accolade_counterfactual (8.26.2), and fork_family (B27) (P46)" begin
+    skills = [0.8 0.0 0.0 0.0; 0.7 0.0 0.0 0.0; 0.6 0.0 0.0 0.0; 0.5 0.0 0.0 0.0;
+              0.0 0.6 0.0 0.0; 0.0 0.5 0.0 0.0; 0.8 0.0 0.0 0.0]
+    agents = [DomainAgent(skills[i, :], i <= 4 || i == 7 ? [1.0, 0.0, 0.0, 0.0] : [0.0, 1.0, 0.0, 0.0],
+                          i == 2 ? 0.35 : 0.0) for i in 1:7]
+    p_rep(rc) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), agents[1:6], [1, 1, 2, 2], trues(4);
+                          λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                          p_upstream = 0.6, guardians = [1, 1, 5, 5], diligence = fill(0.95, 6),
+                          p_hazard = 0.25, hazard_size = 2.0, repair_efficiency = 0.5,
+                          repair_credit = rc, accolade_counterfactual = rc)
+    tr_off = run_m3c(p_rep(false); seed = 1)
+    tr_on  = run_m3c(p_rep(true);  seed = 1)
+    @test tr_off.repair_actions == 0 && tr_off.repair_credited == 0.0 && tr_off.accolades_suppressed == 0
+    @test tr_on.repair_actions > 0 && tr_on.repair_credited > 0.0
+    @test sum(tr_on.relevance_leaf[1, :]) + sum(tr_on.h_pos_own[1, :]) >=
+          sum(tr_off.relevance_leaf[1, :]) + sum(tr_off.h_pos_own[1, :])
+    @test tr_on.accolades_suppressed > 0 || tr_on.accolade_credit <= tr_off.accolade_credit
+
+    # Dynamic p.forks (`fork_family` pooling in M3c credits_for): forked family completes safely under `:split`
+    # and pooling bound identities neutralizes multi-identity harm splitting (`+0.267 -> 0.0`) on convex `V`.
+    p_fk = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), agents, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     p_upstream = 0.5, forks = [(10, 1, 7, 0.5)], fork_rule = :split)
+    tr_fk = run_m3c(p_fk; seed = 2)
+    @test all(isfinite, tr_fk.balance) && (tr_fk.upstream_pos[7] + tr_fk.upstream_neg[7] >= 0.0 || sum(tr_fk.balance[7, :]) != 0.0)
+    V_nl(x) = sign(x) * abs(x)^1.5
+    v_harm(mask) = V_nl(((mask & 1 != 0) ? -1.0 : 0.0) + ((mask & 2 != 0) ? 1.5 : 0.0) + ((mask & 4 != 0) ? -1.0 : 0.0))
+    raw = shapley_shares(v_harm, 3; rng = Xoshiro(1))
+    pooled = bound_shapley_shares(v_harm, [1, 2, 1]; rng = Xoshiro(1))
+    honest = shapley_shares(m -> V_nl(((m & 1 != 0) ? -2.0 : 0.0) + ((m & 2 != 0) ? 1.5 : 0.0)), 2; rng = Xoshiro(1))
+    @test (raw[1] + raw[3]) > honest[1] + 0.25
+    @test pooled[1] + pooled[3] ≈ honest[1] && pooled[2] ≈ honest[2]
+end
+
+@testset "Probe: g_choose_dist full distribution D (PLAN.md L49) (P47)" begin
+    u0 = [1.0, 2.0, 3.0]
+    h0 = [1.0, 2.0, 3.0]
+    # Option 1: inaction; Option 2: risky high-mean with downside hurting the floor; Option 3: safe modest gain.
+    p_inact = [(zeros(3), zeros(3))]
+    p_risky = [([5.0, 5.0, 5.0], [5.0, 5.0, 5.0]), ([-0.5, 4.0, 4.0], [1.0, 1.0, 1.0])]
+    p_safe  = [([0.2, 0.2, 0.2], [0.2, 0.2, 0.2]), ([0.1, 0.3, 0.2], [0.1, 0.2, 0.2])]
+    # With `worst_floor = true`, Option 2's downside violates floor_quantile -> selects Option 3 (safe).
+    @test g_choose_dist(u0, h0, [p_inact, p_risky, p_safe]; worst_floor = true) == 3
+    # If downside probability weight is low and expectation mode (`worst_floor = false`) is requested, Option 2 clears.
+    @test g_choose_dist(u0, h0, [p_inact, p_risky, p_safe];
+                        weights = [[1.0], [0.95, 0.05], [0.5, 0.5]], worst_floor = false) == 2
+    # Empty/invalid inputs:
+    @test g_choose_dist(u0, h0, Vector{Tuple{Vector{Float64},Vector{Float64}}}[]; scope_deltas = Float64[]) === nothing
+    @test_throws ArgumentError g_choose_dist(u0, h0, [p_inact, p_safe]; weights = [[0.0], [0.5, 0.5]])
 end

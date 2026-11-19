@@ -265,6 +265,8 @@ struct M3cParams
     proposal_eta::Int             # 8.134: steps from execution until a proposal's predicted trajectory is resolved (default 3)
     proposal_eta_grace::Int       # 8.134: grace steps added to `proposal_eta` before `resolution_due` fires
     proposal_confidence::Float64  # 8.134: confidence band on a proposal's predicted outcome (`prediction_on_track`)
+    repair_credit::Bool           # 8.26.1: credit physical repairs as a repairer's recorded action (without clearing offender debit)
+    accolade_counterfactual::Bool # 8.26.2: award outside-contract carrying accolades only when carrier's counterfactual eff > 0
 end
 
 """
@@ -321,7 +323,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
                    responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5,
-                   proposal_pma::Bool = false, proposal_eta::Integer = 3, proposal_eta_grace::Integer = 0, proposal_confidence::Real = 0.25)
+                   proposal_pma::Bool = false, proposal_eta::Integer = 3, proposal_eta_grace::Integer = 0, proposal_confidence::Real = 0.25,
+                   repair_credit::Bool = false, accolade_counterfactual::Bool = false)
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -433,7 +436,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
-              proposal_pma, Int(proposal_eta), Int(proposal_eta_grace), Float64(proposal_confidence))
+              proposal_pma, Int(proposal_eta), Int(proposal_eta_grace), Float64(proposal_confidence),
+              repair_credit, accolade_counterfactual)
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -912,6 +916,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # accumulation allowance (`base_share`) splits at a fork like its balance (identity step 2, L123).
     frng = Xoshiro(hash((seed, :fork))); fork_records = Ref(0)
     dormant = falses(na); base_share = ones(na); act_share = ones(na)   # act_share: capacity to propose, social power too
+    fork_family = collect(1:na)
     for f in p.forks
         dormant[f[3]] = true; balance[f[3], :] .= 0.0; base_share[f[3]] = 0.0; act_share[f[3]] = 0.0
     end
@@ -950,15 +955,16 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     max_upstream_degree = Ref(0)
     cofunder_credit, interaction = Ref(0.0), Ref(0.0)
     accolade_credit, contract_credit = Ref(0.0), Ref(0.0)
+    accolades_suppressed = Ref(0)
     assessed_outcomes, fallback_outcomes = Ref(0), Ref(0)
     world = (hazards = Ref(0), prevented = Ref(0), crimes = Ref(0), accidents = Ref(0), unattributed = Ref(0.0),
              hazard_penalties = Ref(0.0), hazard_debits = Ref(0.0), repaired = Ref(0.0), side_hazards = Ref(0),
              educations = Ref(0), accident_capped = Ref(0), accident_admin_rest = Ref(0.0), accident_admin_paid = Ref(0.0),
              prevention_records = Ref(0), prevention_measured = Ref(0.0), shocks = Ref(0), commons_spent = Ref(0.0),
              insured = Ref(0.0), self_funded = Ref(0.0), repair_cost = Ref(0.0), outage_harm = Ref(0.0), sabotage_traced = Ref(0),
-             laundered = Ref(0), laundered_traced = Ref(0))
+             laundered = Ref(0), laundered_traced = Ref(0), repair_actions = Ref(0), repair_credited = Ref(0.0))
     educated = Set{Tuple{Int,Int}}()
-    repairs = ToyPlan[]  # restorations funded by penalties, applied at the end of the step
+    repairs = Tuple{ToyPlan,Int,Int}[]  # (restoration plan, true_leaf, repairer_agent) funded by penalties, applied at step end
     buffers = Dict{Int,Vector{Vector{Float64}}}()
     formations = NamedTuple{(:step, :seq, :leaf, :nearest_leaf, :eligible_step, :reused, :init_μ),Tuple{Int,Int,Int,Int,Int,Bool,Vector{Float64}}}[]
     # Blocked proposals, logged as classification evidence (L88, L145).
@@ -1250,6 +1256,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                    cofunder_credit = cofunder_credit[], interaction = interaction[],
                    accolade_credit = accolade_credit[], contract_credit = contract_credit[],
+                   accolades_suppressed = accolades_suppressed[],
+                   repair_actions = world.repair_actions[], repair_credited = world.repair_credited[],
                    prevention_records = world.prevention_records[], prevention_measured = world.prevention_measured[], shocks = world.shocks[],
                    commons_spent = world.commons_spent[], insured = world.insured[], self_funded = world.self_funded[],
                    repair_cost = world.repair_cost[], outage_harm = world.outage_harm[], sabotage_traced = world.sabotage_traced[],
@@ -1466,6 +1474,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             if p.fork_rule == :split
                 base_share[fa], base_share[fslot] = fork_split(base_share[fa], [1 - fx, fx])
                 act_share[fa], act_share[fslot] = fork_split(act_share[fa], [1 - fx, fx])
+                fork_family[fslot] = fork_family[fa]
             else
                 base_share[fslot] = 1.0; act_share[fslot] = 1.0   # the exploit: the fork gets a full allowance and capacity of its own
             end
@@ -1490,6 +1499,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             append!(actor_err[mt], actor_err[mb]); append!(actor_err_step[mt], actor_err_step[mb]); append!(audit_log[mt], audit_log[mb][audit_from[mb]:end])
             empty!(track[mb]); empty!(track_step[mb]); empty!(actor_err[mb]); empty!(actor_err_step[mb]); empty!(audit_log[mb]); audit_from[mb] = 1
             base_share[mt] += base_share[mb]; act_share[mt] += act_share[mb]; base_share[mb] = act_share[mb] = 0.0
+            fork_family[mb] = fork_family[mt]
             dormant[mb] = true
         end
         # The debatable escape (L157; 8.26.3, 8.38.2): domain experts decide its scale, a share of
@@ -1620,7 +1630,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         world.educations[] += 1
                     end
                     if p.repair_efficiency > 0
-                        push!(repairs, ToyPlan(-p.repair_efficiency .* side.du, -p.repair_efficiency .* side.dh))
+                        g_rep = !isempty(p.guardians) && p.guardians[leaves[j]] > 0 && p.guardians[leaves[j]] != a ? p.guardians[leaves[j]] : 0
+                        push!(repairs, (ToyPlan(-p.repair_efficiency .* side.du, -p.repair_efficiency .* side.dh), leaves[j], g_rep))
                         world.repaired[] += p.repair_efficiency * abs(plan_value(side, t))
                     end
                 end
@@ -1676,12 +1687,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             if n <= 62 && cc_assessed(accuracy(-(p.attribution_σ^2 + late_σ^2)); threshold = p.cc_threshold)
                 assessed_outcomes[] += 1
                 for b in findall(m)
-                    # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream),
-                    # pooling bound/duplicate identities into one player (`bound_shapley_shares`, B27).
+                    # Exact Shapley up to SHAPLEY_EXACT_MAX contributors, sampled beyond (own stream);
+                    # pool forked siblings linked in `fork_family` (`bound_shapley_shares`, B27).
                     v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].du[b] : 0.0 for r in 1:nu); init = 0.0),
                                              (funded(mask) ? eff.dh[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].dh[b] : 0.0 for r in 1:nu); init = 0.0), t)
                     srng = Xoshiro(hash((seed, :shapley, t, j, b)))
-                    φ = allunique(who) ? shapley_shares(v, n; rng = srng) : bound_shapley_shares(v, who; rng = srng)
+                    who_fam = fork_family[who]
+                    φ = length(unique(who_fam)) < length(unique(who)) ?
+                        bound_shapley_shares(v, who_fam; rng = srng) :
+                        shapley_shares(v, n; rng = srng)
                     pos .+= max.(φ, 0.0); neg .+= min.(φ, 0.0)
                 end
             else
@@ -1708,10 +1722,14 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 max_upstream_degree[] = max(max_upstream_degree[], deg)
                 if credits[idx][2] > 0
                     hired = rand(krng) < p.p_contracted
-                    fee = carry_fee(credits[idx][2], hired; p.accolade_rate, p.contract_share)
-                    credits[idx] = (credits[idx][1], credits[idx][2] - fee, credits[idx][3])
-                    credits[1] = (credits[1][1], credits[1][2] + fee, credits[1][3])
-                    (hired ? contract_credit : accolade_credit)[] += fee
+                    if !hired && p.accolade_counterfactual && plan_value(eff, t) <= 0.0
+                        accolades_suppressed[] += 1
+                    else
+                        fee = carry_fee(credits[idx][2], hired; p.accolade_rate, p.contract_share)
+                        credits[idx] = (credits[idx][1], credits[idx][2] - fee, credits[idx][3])
+                        credits[1] = (credits[1][1], credits[1][2] + fee, credits[1][3])
+                        (hired ? contract_credit : accolade_credit)[] += fee
+                    end
                 end
                 e, pp, nn = credits[idx]
                 upstream_pos[e] += pp; upstream_neg[e] += nn
@@ -2251,7 +2269,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             f = p.repair_efficiency * min(own + spend, need) / need
             if f > 0
-                push!(repairs, ToyPlan(-f .* harm.du, -f .* harm.dh))
+                g_rep = !isempty(p.guardians) && 1 <= l <= length(p.guardians) && p.guardians[l] > 0 ? p.guardians[l] : 0
+                push!(repairs, (ToyPlan(-f .* harm.du, -f .* harm.dh), l, g_rep))
                 world.commons_spent[] += spend
                 world.self_funded[] += min(own, need)
                 world.repair_cost[] += need
@@ -2282,7 +2301,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     world.hazard_debits[] += -eff_measured
                 end
                 if p.repair_efficiency > 0
-                    push!(repairs, ToyPlan(p.repair_efficiency .* -harm.du, p.repair_efficiency .* -harm.dh))
+                    g_rep = !isempty(p.guardians) && 1 <= l <= length(p.guardians) && p.guardians[l] > 0 && p.guardians[l] != cause ? p.guardians[l] : 0
+                    push!(repairs, (ToyPlan(p.repair_efficiency .* -harm.du, p.repair_efficiency .* -harm.dh), l, g_rep))
                     world.repaired[] += p.repair_efficiency * -measured
                 end
             else
@@ -2379,7 +2399,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                             world.educations[] += 1
                         end
                         if p.repair_efficiency > 0
-                            push!(repairs, ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh))
+                            push!(repairs, (ToyPlan(-p.repair_efficiency .* harm.du, -p.repair_efficiency .* harm.dh), l, g))
                             world.repaired[] += p.repair_efficiency * -φ
                         end
                     end
@@ -2411,8 +2431,20 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             blind[] ? push!(deferred, () -> settle(p.marker_σ + p.remeasure_σ)) : settle(p.marker_σ)
         end
         empty!(pending_launder)
-        for rep in repairs
+        for (rep, rep_leaf, rep_actor) in repairs
             s.u .+= rep.du; s.h .+= rep.dh
+            if p.repair_credit && rep_actor > 0
+                rv = max(0.0, plan_value(rep, t))
+                if rv > 0
+                    j_rep = findfirst(==(rep_leaf), ltrue)
+                    c_rep = j_rep === nothing ? root : j_rep
+                    rel_gain[rep_actor, c_rep] += rv
+                    h_pos[rep_actor, c_rep] += rv
+                    dom_pos_events[rep_actor, c_rep] += 1
+                    world.repair_actions[] += 1
+                    world.repair_credited[] += rv
+                end
+            end
         end
         empty!(repairs)
         regen_amt = p.regen * p.capacity * max(0.0, 1 + p.regen_σ * randn(nrng))

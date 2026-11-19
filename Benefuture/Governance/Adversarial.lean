@@ -12,6 +12,8 @@
 
 import Benefuture.Math.Order
 import Benefuture.Ontology.Thing
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
@@ -278,6 +280,88 @@ theorem self_report_beats_caught (e bonus audit : ℤ) (n m : ℕ) (he : 0 ≤ e
     (ha : 0 ≤ audit) (hpos : 0 < e + bonus + audit) :
     caught_net e bonus audit m < self_report_net e bonus n := by
   rw [self_report_net_constant]; unfold caught_net; linarith
+
+/-!
+  ## AdvAp governance recount (8.38, L161) and ContentionMap ordering (L134 IH)
+-/
+
+/-- Net weighted tally over active (non-colluding) voters in an AdvAp recount. -/
+noncomputable def advap_recount_tally (entries : List (ℝ × ℝ × Bool)) : ℝ :=
+  (entries.filterMap fun e => if e.2.2 then some (e.1 * e.2.1) else none).sum
+
+/-- AdvAp recount agrees with `truth` iff `advap_recount_tally` (tie `≥ 0` -> `+1`) matches
+    strict `truth` sign (`0 < truth` for `+1`, `truth < 0` for `-1`, `false` at `truth = 0`). -/
+noncomputable def advap_recount_correct (entries : List (ℝ × ℝ × Bool)) (truth : ℝ) : Bool :=
+  if 0 ≤ advap_recount_tally entries then decide (0 < truth) else decide (truth < 0)
+
+theorem advap_recount_tally_nil : advap_recount_tally [] = 0 := by
+  simp [advap_recount_tally]
+
+theorem advap_recount_ignores_inactive (h v : ℝ) (rest : List (ℝ × ℝ × Bool)) :
+    advap_recount_tally ((h, v, false) :: rest) = advap_recount_tally rest := by
+  simp [advap_recount_tally]
+
+theorem advap_recount_zero_tally (truth : ℝ) :
+    advap_recount_correct [] truth = decide (0 < truth) := by
+  simp [advap_recount_correct, advap_recount_tally]
+
+/-- Insert `(r, idx)` keeping descending reputation and ascending index on ties. -/
+def insertDescByScore (x : ℚ × ℕ) : List (ℚ × ℕ) → List (ℚ × ℕ)
+  | [] => [x]
+  | y :: ys =>
+      if x.1 > y.1 || (x.1 == y.1 && x.2 < y.2) then x :: y :: ys
+      else y :: insertDescByScore x ys
+
+/-- Sort 1-based source entries descending by reputation (ties by smaller index), omitting `selfIdx`. -/
+def contention_map_rank (reputations : List ℚ) (selfIdx : ℕ) : List ℕ :=
+  let pairs := (reputations.zipIdx 1).filter fun p => p.2 != selfIdx
+  (pairs.foldr insertDescByScore []).map Prod.snd
+
+theorem insertDescByScore_length (x : ℚ × ℕ) (xs : List (ℚ × ℕ)) :
+    (insertDescByScore x xs).length = xs.length + 1 := by
+  induction xs with
+  | nil => simp [insertDescByScore]
+  | cons y ys ih =>
+      unfold insertDescByScore
+      split_ifs <;> simp [ih]
+
+theorem insertDescByScore_mem (x p : ℚ × ℕ) (xs : List (ℚ × ℕ)) :
+    p ∈ insertDescByScore x xs ↔ p = x ∨ p ∈ xs := by
+  induction xs with
+  | nil => simp [insertDescByScore]
+  | cons y ys ih =>
+      unfold insertDescByScore
+      split_ifs
+      · simp [List.mem_cons]
+      · simp [List.mem_cons, ih, or_left_comm]
+
+theorem foldr_insertDescByScore_length (xs : List (ℚ × ℕ)) :
+    (xs.foldr insertDescByScore []).length = xs.length := by
+  induction xs with
+  | nil => rfl
+  | cons y ys ih => simp [List.foldr, insertDescByScore_length, ih]
+
+theorem contention_map_omits_self (reputations : List ℚ) (selfIdx : ℕ) :
+    selfIdx ∉ contention_map_rank reputations selfIdx := by
+  intro hmem
+  unfold contention_map_rank at hmem
+  rw [List.mem_map] at hmem
+  rcases hmem with ⟨p, hp, hpi⟩
+  have hin : ∀ xs : List (ℚ × ℕ), p ∈ xs.foldr insertDescByScore [] → p ∈ xs := by
+    intro xs h
+    induction xs with
+    | nil => simp at h
+    | cons y ys ih =>
+        dsimp [List.foldr] at h
+        rw [insertDescByScore_mem] at h
+        rcases h with rfl | h'
+        · exact List.mem_cons_self
+        · exact List.mem_cons_of_mem _ (ih h')
+  have h1 := hin _ hp
+  rw [List.mem_filter] at h1
+  have hne : (p.2 != selfIdx) = true := h1.2
+  rw [hpi] at hne
+  simp at hne
 
 end Benefuture.Governance
 
