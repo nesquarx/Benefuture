@@ -110,6 +110,22 @@ function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
 end
 
 """
+    eb_credence(predicted, err_var, prior_mean, prior_var; cap = 0.99) -> probability
+
+Empirical-Bayes calibrated credence (Spike D2, L84, `8.58-c`; Lean `eb_credence_ref`): shrinks
+`predicted` toward the empirical domain outcome prior `(prior_mean, prior_var)` given model
+error variance `err_var`, then evaluates normal credence using the posterior variance within
+`[1 − cap, cap]`.
+"""
+function eb_credence(predicted::Real, err_var::Real, prior_mean::Real, prior_var::Real; cap::Real = 0.99)
+    check(all(isfinite, (predicted, err_var, prior_mean, prior_var)) && err_var >= 0 && prior_var >= 0,
+          "finite prediction/prior and non-negative variances")
+    check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
+    ccall(sym(:bf_eb_credence), Float64, (Float64, Float64, Float64, Float64, Float64),
+          predicted, err_var, prior_mean, prior_var, cap)
+end
+
+"""
     decay_halflife(rate; ref_rate, ref_halflife, mute) -> steps
 
 The half-life over which a domain's accuracy is averaged (Lean `decay_halflife_ref`; author ruling

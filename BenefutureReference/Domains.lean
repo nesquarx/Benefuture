@@ -331,4 +331,20 @@ def quantile_score_ref (quantiles predictions outcomes : Array Float) (scale : F
   let mean_loss := tot / n.toFloat
   return 1.0 / (1.0 + mean_loss / scale)
 
+/--
+  Empirical-Bayes calibrated credence (Spike D2, L84, `8.58-c`): shrinks `predicted` toward
+  the domain's empirical outcome prior `(priorMean, priorVar)` given model error variance `errVar`
+  before evaluating normal CDF credence within `[1 - cap, cap]`.
+-/
+def eb_credence_ref (predicted errVar priorMean priorVar cap : Float) : Float :=
+  let w :=
+    if priorVar ≤ 0.0 then 0.0
+    else if errVar ≤ 0.0 then 1.0
+    else priorVar / (priorVar + errVar)
+  let postMean := w * predicted + (1.0 - w) * priorMean
+  let postVar :=
+    if priorVar ≤ 0.0 || errVar ≤ 0.0 then 0.0
+    else priorVar * errVar / (priorVar + errVar)
+  credence_ref postMean (Float.sqrt postVar) cap
+
 end BenefutureReference

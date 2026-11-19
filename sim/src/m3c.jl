@@ -86,7 +86,7 @@ struct M3cParams
     bind_conf_affirm::Float64  # confidence a cluster states when its methods affirm (world, M6)
     bind_conf_deny::Float64    # confidence a cluster states when its methods deny (world, M6)
     loud::Bool                 # warn once per kind of degradation (the trace records them either way)
-    credence_rule::Symbol      # :normal (credence_ref over the record's RMS error) or :record ([P], record_credence_ref)
+    credence_rule::Symbol      # :normal (credence_ref over RMS error), :record ([P], record_credence_ref), or :eb ([P], eb_credence_ref)
     min_records::Int
     μ_rate::Float64
     μ_every::Int
@@ -333,8 +333,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
     check(all(1 <= l <= nl && 1 <= p <= np && 0 < w <= 1 for (l, p, w) in overlaps), "overlaps name a leaf, a parent and a weight in (0, 1]")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && temperature > 0, "thresholds in range, temperature positive")
     check(form_count >= 1 && max_new >= 0 && window >= 1 && min_records >= 0 && μ_every >= 1 && init_steps >= 0, "counts must be positive")
-    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && ratchet_growth >= 0 && !isempty(chain_attrib) && all(x -> 0 <= x <= 1, chain_attrib) && chain_mode in (:single, :domain) && chain_z > 0 && 0 <= chain_spot <= 1 && (isempty(chain_copy) || (length(chain_copy) == length(chain_attrib) && all(k -> 0 <= chain_copy[k] < k, eachindex(chain_copy)))) && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record),
-          "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal or :record")
+    check(0 <= expert_share <= 1 && 0 < threshold <= 1 && 0 < novel_threshold <= 1 && 0 < coarse_threshold <= 1 && 0.5 <= max_credence < 1 && ratchet_k >= 0 && 0 <= ratchet_margin <= 1 && ratchet_horizon >= 1 && accuracy_rule in (:decay, :window) && acc_halflife > 0 && acc_rate_ref > 0 && 0 <= acc_mute <= 1 && rate_halflife > 0 && ratchet_growth >= 0 && !isempty(chain_attrib) && all(x -> 0 <= x <= 1, chain_attrib) && chain_mode in (:single, :domain) && chain_z > 0 && 0 <= chain_spot <= 1 && (isempty(chain_copy) || (length(chain_copy) == length(chain_attrib) && all(k -> 0 <= chain_copy[k] < k, eachindex(chain_copy)))) && 0 <= novel_floor <= 1 && 0 < scarcity_floor <= 1 && actor_min_records >= 1 && attest_min_records >= 1 && adv_min_records >= 1 && adv_track_floor >= 1 && form_buffer >= 1 && own_axis >= 0 && all(x -> 0 <= x <= 1, (bind_conf_compromised, bind_conf_affirm, bind_conf_deny, diligence_default)) && credence_rule in (:normal, :record, :eb),
+          "shares and thresholds in (0, 1]; credence cap in [0.5, 1); credence rule :normal, :record, or :eb")
     check(all(x -> isfinite(x) && x >= 0, (λpos, λneg, marker_σ, spread, classify_σ, leaf_threshold, σ_leaf, σ_branch, σ_coarse,
                                              endowment, cost_per_touch, regen, overflow_factor, form_radius)),
           "rates, noises, thresholds and costs must be non-negative")
@@ -441,6 +441,20 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
+
+function _robust_loc_scale(xs)
+    n = length(xs)
+    n == 0 && return (0.0, 0.0)
+    n == 1 && return (Float64(xs[1]), 0.0)
+    s = sort(collect(Float64, xs))
+    k = n >= 10 ? floor(Int, 0.1 * n) : 0
+    mid = @view s[(k + 1):(n - k)]
+    loc = mean(mid)
+    med = median(s)
+    mad_σ = 1.4826 * median(abs.(s .- med))
+    v_trim = length(mid) >= 2 ? mean((x - loc)^2 for x in mid) : 0.0
+    (loc, mad_σ > 0 ? mad_σ^2 : v_trim)
+end
 
 """
     run_m3c(p; seed) -> NamedTuple
@@ -786,7 +800,42 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # estimate from track record), once it has a few entries; before that, from its record overall.
     function cred(c, pred, a = 0; hist = nothing, sharp = c <= lmax ? topm(c).sharp : 1.0)
         v = plan_value(pred, t)
-        cr = if p.accuracy_rule == :decay
+        cr = if p.credence_rule == :eb
+            h_use = hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax])
+            if p.accuracy_rule == :decay
+                hl = hl_of(c)
+                i0 = isempty(h_use) ? 1 : searchsortedfirst(h_use, cur[] - 40 * hl; by = x -> x isa Real ? x : x.step)
+                r_use = isempty(h_use) ? h_use : [x for x in @view(h_use[i0:end]) if !discounted(x)]
+                if length(r_use) < p.min_records
+                    if a > 0 && length(actor_err[a]) >= p.actor_min_records
+                        decayed_record_credence(v, sharp .* actor_err[a], [Float64(cur[] - s) for s in actor_err_step[a]], hl; cap = p.max_credence)
+                    elseif isempty(h_use)
+                        record_credence(v, Float64[]; cap = p.max_credence)
+                    else
+                        decayed_record_credence(v, [sharp * x.err for x in h_use], [Float64(cur[] - x.step) for x in h_use], hl; cap = p.max_credence)
+                    end
+                else
+                    μ0, τ2 = _robust_loc_scale([x.measured for x in r_use])
+                    errs = (a > 0 && length(actor_err[a]) >= p.actor_min_records) ?
+                        (@view actor_err[a][max(1, end - p.window + 1):end]) : [x.err for x in r_use]
+                    eb, σ2 = _robust_loc_scale(errs)
+                    eb_credence(v - eb, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
+                end
+            else
+                r_use = window_of(h_use)
+                if length(r_use) < p.min_records
+                    e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
+                    errs = length(e) >= p.actor_min_records ? e : [x.err for x in r_use]
+                    record_credence(v, sharp .* errs; cap = p.max_credence)
+                else
+                    μ0, τ2 = _robust_loc_scale([x.measured for x in r_use])
+                    e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
+                    errs = length(e) >= p.actor_min_records ? e : [x.err for x in r_use]
+                    eb, σ2 = _robust_loc_scale(errs)
+                    eb_credence(v - eb, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
+                end
+            end
+        elseif p.accuracy_rule == :decay
             hl = c <= lmax ? hl_of(c) : hl_of(c)
             if p.credence_rule == :record
                 if a > 0 && length(actor_err[a]) >= p.actor_min_records

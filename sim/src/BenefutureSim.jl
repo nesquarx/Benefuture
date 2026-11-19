@@ -10,7 +10,7 @@ module BenefutureSim
 export phi, net_synergy, squashed_synergy
 export tiered_value, tier_schedules, run_programmes, meta_multiplier
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_permissible
-export floor_quantile, g_choose, g_choose_dist
+export floor_quantile, tail_floor, g_choose, g_choose_lexical_fr, g_choose_dist
 export ToyParams, ToyState, ToyPlan, toy_state, choose, run_m0, floors_rise, assessed_value
 export mm_score, mm_adopt, MetricModel, M1Params, run_m1
 export running_mean, settling_step, ci_halfwidth, success_pattern, pattern_margin, progressive_metrics, SimTrace, build_sim_trace, conj_mm_competition_converges, conj_goodhart_reduction, conj_gaming_resistance, conj_adversarial_robustness, conj_min_tracks_prediction, conj_floors_rise, conj_no_repugnant_drift, conj_param_stability, conj_delegation_dispersed
@@ -19,7 +19,7 @@ export escrow_split, reputation_decay, resource_cost, transaction_price, supply_
 export spearman, Agent, M2Params, run_m2
 export prediction_on_track, resolution_due, issuance_headroom, deliverable_value, ra_value_per_cost, ra_commons_reserve, ra_contraction_factor, withhold_charge, withhold_reward, effective_independent_judges, trust_cascade, profile_valid, attribute, decay_rate_for, classify, accumulation_threshold, overflow
 export projection_membership, classify_network, fallback_network, aggregate_at_parent, subsethood, COMPONENT_FALLBACKS
-export membership_rolling, accuracy, credence, credence_accuracy, record_credence, decayed_record_credence, decayed_rms, choice_skill, ratchet_bar, decay_halflife, decayed_accuracy, decayed_mean_se, currency_eligible, relative_bar, scarcity_cost, pinball_loss, quantile_score
+export membership_rolling, accuracy, credence, credence_accuracy, record_credence, decayed_record_credence, decayed_rms, eb_credence, choice_skill, ratchet_bar, decay_halflife, decayed_accuracy, decayed_mean_se, currency_eligible, relative_bar, scarcity_cost, pinball_loss, quantile_score
 export voting_weight, voting_weight_sy, counted_impact, accumulate_capped, relative_reputation, vote_reputation, audited_out, source_weight, heard, heard_weights, contention_map, neg_share, credence_score, M5Params, run_m5
 export count_once, tagged_reading, tags_falsified, undisclosed_echo, echo_influence
 export split_trial, ability_caps, choice_noise, latin_hypercube, normal_quantile, gaussian_hypercube, ray_boundary, screen, battery, write_results, current_commit, cached, code_hash, battery_methods, write_methods, ProgressTracker, progress_tracker, progress_tick!, progress_finish!

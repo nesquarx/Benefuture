@@ -7,13 +7,13 @@
 ```
 Benefuture/
 ├── Bf_Pseudocode.txt            # pseudocode copy (identical to spec/ and the block in Benefuture.txt)
-├── Benefuture/                  # Lean spec over ℝ (Mathlib): 53 files, 490 theorems
+├── Benefuture/                  # Lean spec over ℝ (Mathlib): 53 files, 510 theorems
 │   ├── Math/ Ontology/ Measurement/ Epistemology/ Axiology/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,
 │                                #   delegation wisdom, revelation game, record credence, domain hierarchy
-├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 166 C exports
-├── BenefutureTest/              # ℚ oracles proved = spec (36 `*_spec`, 38 suites), interval-bound oracles, checked at build time
+├── BenefutureReference/         # Float reference (no Mathlib): 12 files; Export.lean holds 169 C exports
+├── BenefutureTest/              # ℚ oracles proved = spec (41 `*_spec`, 40 suites), interval-bound oracles, checked at build time
 ├── Main.lean                    # `lake exe benefuture`: regenerates spec/vectors
 ├── cases/                       # 33 E4 historical & contrast cases; 6 E5 prospective cases in cases/e5/
 ├── spec/                        # Bf_Pseudocode.txt (source of truth), vectors/ (12 JSON), extracted/
@@ -23,7 +23,7 @@ Benefuture/
 │                                #   E5_CANDIDATES, E5_REPORTS, E5_RUNS, E5_FORECASTS, THEOREM_INDEX, CODING_STYLE
 ├── sim/                         # Julia package BenefutureSim
 │   ├── src/                     # world model, rungs M0–M8, coupled, status_quo, replay, analysis (`SimTrace`), battery.jl
-│   ├── test/                    # acceptance and adversarial suites, probes (`P1–P47`), differential, replay tests
+│   ├── test/                    # acceptance and adversarial suites, probes (`P1–P50`), differential, replay tests
 │   └── battery/                 # economy, governance, attack, convergence, progressive, thresholds, and long_horizon batteries; results/
 ├── tools/                       # setup/, battery/ (launcher, hooks), bench/, wiki_sync/, extraction/,
 │                                #   bf-graph/, check_readme_claims.py, theorem_index.py

@@ -47,11 +47,18 @@ end
                                [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                                threshold = 1.0, novel_threshold = 1.0, coarse_threshold = 1.0, form_count = 10^6, init_steps = 5,
                                endowment = 50.0, kw...)
-    clean, harmed = run_m3c(world(p_side = 0.0); seed = 1), run_m3c(world(p_side = 1.0, side_share = 1.0); seed = 1)
-    @test clean.lane_executed > 0 && harmed.side_hazards > 0
+    seeds = 1:32
+    clean  = [run_m3c(world(p_side = 0.0); seed) for seed in seeds]
+    harmed = [run_m3c(world(p_side = 1.0, side_share = 1.0); seed) for seed in seeds]
+    @test all(tr -> tr.lane_executed > 0, clean) && all(tr -> tr.side_hazards > 0, harmed)
     spent(tr) = (tr.endowed - sum(tr.balance) - sum(tr.reinvested)) / max(tr.lane_executed, 1)  # currency gone per lane action
-    @test spent(harmed) > spent(clean) + 0.1          # acceptance: harmful lane work costs its doers more than its resources
-    @test sum(harmed.balance) + sum(harmed.reinvested) - harmed.endowed ≈ sum(harmed.supply; init = 0.0) + sum(harmed.lane_supply) atol = 1e-6
+    # Distributional acceptance over 32 paired seeds (heavy-tailed Pareto side harm can leave an occasional single
+    # seed with few executed lane actions and mild draws, e.g. seed 1 under Julia 1.13 --check-bounds=auto):
+    # harmful lane work costs its doers significantly more than clean resource cost (`z = 3.0` on log1p scale, Wilson lo > 0.5).
+    @test paired_effect(log1p.(spent.(harmed)) .- log1p.(spent.(clean)); z = 3.0).significant
+    @test proportion_interval(count(spent(h) > spent(c) + 0.1 for (c, h) in zip(clean, harmed)), length(seeds)).lo > 0.5
+    @test all(h -> isapprox(sum(h.balance) + sum(h.reinvested) - h.endowed,
+                            sum(h.supply; init = 0.0) + sum(h.lane_supply); atol = 1e-6), harmed)
 end
 
 # Progressive degradation, loudly (CLAUDE.md, Verification): a measurement outage substitutes
@@ -3371,4 +3378,149 @@ end
     # Empty/invalid inputs:
     @test g_choose_dist(u0, h0, Vector{Tuple{Vector{Float64},Vector{Float64}}}[]; scope_deltas = Float64[]) === nothing
     @test_throws ArgumentError g_choose_dist(u0, h0, [p_inact, p_safe]; weights = [[0.0], [0.5, 0.5]])
+end
+
+# Spike D1: Tail-sensitive floor (`tail → Me`, L74, 8.56) eliminating the Sadistic Conclusion
+# on forced additions without surrendering `removal_cannot_raise_floor` or Repugnant Conclusion
+# rejection.
+@testset "Probe: Spike D1 tail_floor blocks Sadistic Conclusion on forced additions (8.56, L74) (P48)" begin
+    p = ToyParams(n = 50, plans = 2)
+    seeds = 1:16
+    newborns(level, k) = [Newborn(fill(level, 5), fill(level, 5); confidence = 0.9) for _ in 1:k]
+    function stake(k)
+        j = zeros(p.n)
+        j[1:min(k, p.n)] .= 0.5 * k / min(k, p.n)
+        j
+    end
+    red_picks = Int[]
+    green_picks = Int[]
+    high_base_blocked = Int[]
+    repugnant_rejected = Int[]
+    removal_blocked = Int[]
+    for seed in seeds
+        s = toy_state(p, Xoshiro(seed))
+        mild = PopPlan(zeros(p.n), stake(30); births = newborns(1.0, 30))
+        sad_redirect = PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))
+        sad_huge = PopPlan(zeros(p.n), stake(1000); births = newborns(-5.0, 3))
+        push!(red_picks, pop_choose(s, [sad_redirect], p; course = mild, use_tail_floor = false))
+        push!(green_picks, pop_choose(s, [sad_huge], p; course = mild, use_tail_floor = true))
+        s_high = ToyState(fill(100.0, p.n) .+ 0.2 .* randn(Xoshiro(seed + 100), p.n),
+                          fill(100.0, p.n) .+ 0.2 .* randn(Xoshiro(seed + 200), p.n))
+        push!(high_base_blocked, pop_choose(s_high, [sad_huge], p; course = mild, use_tail_floor = true))
+        good = median(s.u) + 1.0
+        push!(repugnant_rejected, pop_choose(s, [PopPlan(zeros(p.n), stake(200); births = newborns(0.5, 200)),
+                                                PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p;
+                                             use_tail_floor = true))
+        worst2 = sortperm(s.u)[1:2]
+        du_rem = fill(3.0, p.n); dh_rem = fill(3.0, p.n)
+        du_rem[worst2] .= 0.0; dh_rem[worst2] .= 0.0
+        push!(removal_blocked, pop_choose(s, [PopPlan(du_rem, dh_rem; deaths = worst2)], p; use_tail_floor = true))
+    end
+    @test count(==(2), red_picks) == length(seeds)   # red: quantile floor permits sadistic redirect (3 at -5 > 30 at +1)
+    @test proportion_interval(count(==(1), green_picks), length(seeds)).lo > 0.75
+    @test count(==(1), green_picks) == length(seeds)
+    @test count(==(1), high_base_blocked) == length(seeds)
+    @test count(==(3), repugnant_rejected) == length(seeds)
+    @test count(==(1), removal_blocked) == length(seeds)
+end
+
+# Spike D2: Empirical-Bayes credence (`eb_credence`, L84, `8.58-c`) eliminates extremist takeover
+# dominance on `ext_world` without stalling under heavy-tailed side harm (`calibrated_tests.jl`).
+@testset "Probe: Spike D2 Empirical-Bayes credence (eb_credence) closes extremist takeover dominance without heavy-tail stalls (8.58-c, L84) (P49)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ext_world(; kw...) = M3cParams(ToyParams(n = 80, steps = 400, plans = 10),
+        [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:8],
+        [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+        LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75, p_new_model = 0.05,
+        improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, credence_rule = :normal, kw...)
+
+    ts_n = [run_m3c(ext_world(credence_rule = :normal); seed) for seed in 1:16]
+    ts_eb = [run_m3c(ext_world(credence_rule = :eb); seed) for seed in 1:16]
+    ext_n, tot_n = sum(tr.takeovers_extreme for tr in ts_n), sum(tr.takeovers for tr in ts_n)
+    ext_eb, tot_eb = sum(tr.takeovers_extreme for tr in ts_eb), sum(tr.takeovers for tr in ts_eb)
+    @test tot_n > 0 && proportion_interval(ext_n, tot_n).lo > 0.5   # red: :normal lets extremists dominate takeovers
+    ext_eb_lo = tot_eb > 0 ? proportion_interval(ext_eb, tot_eb).lo : 0.0
+    @test !(ext_eb_lo > 0.5)
+    @test ext_eb < ext_n ÷ 2
+    @test mean(mean(tr.leaf_accuracy[[1, 3]]) for tr in ts_eb) >=
+          mean(mean(tr.leaf_accuracy[[1, 3]]) for tr in ts_n) - 0.01
+
+    hon_n = [run_m3c(ext_world(credence_rule = :normal, p_extremist = 0.0); seed) for seed in 1:2]
+    hon_eb = [run_m3c(ext_world(credence_rule = :eb, p_extremist = 0.0); seed) for seed in 1:2]
+    mid_n = [r for tr in hon_n for j in (1, 3) for r in tr.leaf_records[j] if 0.5 <= r.credence < 0.9]
+    mid_eb = [r for tr in hon_eb for j in (1, 3) for r in tr.leaf_records[j] if 0.5 <= r.credence < 0.9]
+    gap_n = mean(r.outcome for r in mid_n) - mean(r.credence for r in mid_n)
+    gap_eb = mean(r.outcome for r in mid_eb) - mean(r.credence for r in mid_eb)
+    @test gap_n > 0.1                                             # red: honest :normal credences underconfident mid-range
+    @test abs(gap_eb) < abs(gap_n) && abs(gap_eb) < 0.1           # green: empirical prior closes mid-range underconfidence
+
+    skills = draw_skills(Xoshiro(20261031), 8, 4, [1, 3]; median = 0.6)
+    agents = [DomainAgent(skills[a, :], [0.5, 0, 0.5, 0], CALIBRATED.sloppiness) for a in 1:8]
+    ht_world(rule) = M3cParams(ToyParams(n = 80, steps = 300, plans = 10), agents, [1, 1, 2, 2], trues(4);
+        λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, p_upstream = 0.5,
+        guardians = [1, 2, 3, 4], diligence = fill(0.95, 8), p_foresee = 1.0, repair_efficiency = 0.5,
+        advap = true, marker_σ = 0.1, bias_σ = 0.1, classify_σ = 0.05, spread = 0.05, cost_σ = 0.05,
+        regen_σ = 0.3, attribution_σ = 0.1, p_hazard = 0.05, p_informed = 0.95, vigilance = 0.1,
+        p_false_trace = 0.005, p_side = 0.01 + 0.09 * 0.6, credence_rule = rule)
+    ht_seeds = 1:32
+    ht_nrm = [run_m3c(ht_world(:normal); seed) for seed in ht_seeds]
+    ht_eb = [run_m3c(ht_world(:eb); seed) for seed in ht_seeds]
+    growth(tr) = success_pattern(tr; from = 51).floor_u
+    stalled(tr) = tr.lane_halted > 500 && minimum(tr.leaf_accuracy[[1, 3]]) < 0.75
+    @test paired_effect(growth.(ht_eb) .- growth.(ht_nrm); z = 3.0).significant
+    @test paired_effect(Float64.(getfield.(ht_nrm, :lane_halted)) .- Float64.(getfield.(ht_eb, :lane_halted)); z = 3.0).significant
+    @test paired_effect(Float64.(stalled.(ht_nrm)) .- Float64.(stalled.(ht_eb)); z = 3.0).significant
+    @test proportion_interval(count(!stalled, ht_eb), length(ht_seeds)).lo > 0.70
+    @test proportion_interval(count(t -> t.lane_halted <= 20, ht_eb), length(ht_seeds)).lo > 0.60
+end
+
+# Spike D3: Tragic-choice-safe two-stage lexical rights guard (`goal_G_lexical_fr`, L55, L136).
+@testset "Probe: Spike D3 lexical Fr guard stops Archimedean override without tragic-choice paralysis (P50)" begin
+    seeds = 1:16
+    p = ToyParams(n = 500, plans = 2)
+    red_choices = Int[]
+    lex_choices = Tuple{Union{Int,Nothing},Bool}[]
+    lex_no_alt = Tuple{Union{Int,Nothing},Bool}[]
+    tragic_choices = Tuple{Union{Int,Nothing},Bool}[]
+    for seed in seeds
+        rng = Xoshiro(hash((seed, :D3)))
+        n = p.n
+        u0 = 5.0 .+ 0.5 .* randn(rng, n)
+        h0 = 5.0 .+ 0.5 .* randn(rng, n)
+        fu0, fh0, pu0 = floor_quantile(u0, p.q), floor_quantile(h0, p.q), maximum(u0)
+        # Plan 2: 1 victim suffers irreversible harm (-2.0 u/h -> value loss + 1 unit irreversible harm in Fr),
+        # while N-1 unaffected recipients receive tiny passing gains (+0.25..+0.35 >= 0) keeping floors >= 0.
+        s0 = ToyState(u0, h0)
+        du_viol = 0.25 .+ 0.1 .* rand(rng, n); du_viol[1] = 0.0
+        dh_viol = fill(0.1, n); dh_viol[1] = 0.0
+        du_viol_val = copy(du_viol); dh_viol_val = copy(dh_viol)
+        du_viol_val[1] = -2.0; dh_viol_val[1] = -2.0
+        v_viol = pop_value(s0, PopPlan(du_viol_val, dh_viol_val), p)
+        fr_viol = Bool(ccall(BenefutureSim.sym(:bf_fr_permissible), UInt8,
+                             (Float64, Float64, Float64, Float64, Float64, Float64),
+                             0.0, 1.0, 0.0, 0.0, 0.0, 1.0) == 1)
+        @test !fr_viol
+        # Plan 3: modest Fr-permissible uplift (smaller aggregate than violator's N-1 gains).
+        du_safe = fill(0.05, n); dh_safe = fill(0.05, n)
+        v_safe = pop_value(s0, PopPlan(du_safe, dh_safe), p)
+        fr_safe = Bool(ccall(BenefutureSim.sym(:bf_fr_permissible), UInt8,
+                             (Float64, Float64, Float64, Float64, Float64, Float64),
+                             0.0, 0.0, 0.0, 0.5, 0.0, 0.5) == 1)
+        @test fr_safe && 0.0 < v_safe < v_viol
+        vals = [0.0, v_viol, v_safe]
+        dsc = zeros(3)
+        dmu = [0.0, floor_quantile(u0 .+ du_viol, p.q) - fu0, floor_quantile(u0 .+ du_safe, p.q) - fu0]
+        dmh = [0.0, floor_quantile(h0 .+ dh_viol, p.q) - fh0, floor_quantile(h0 .+ dh_safe, p.q) - fh0]
+        dpu = [0.0, maximum(u0 .+ du_viol) - pu0, maximum(u0 .+ du_safe) - pu0]
+        push!(red_choices, something(g_choose(vals, dsc, dmu, dmh, dpu), 0))
+        push!(lex_choices, g_choose_lexical_fr(vals, dsc, dmu, dmh, dpu, [true, fr_viol, fr_safe]))
+        push!(lex_no_alt, g_choose_lexical_fr(vals[1:2], dsc[1:2], dmu[1:2], dmh[1:2], dpu[1:2], [true, fr_viol]))
+        # Tragic choice / omission catastrophe: inaction also fails Fr (omission duty 8.152); Stage 2 falls back without stalling.
+        push!(tragic_choices, g_choose_lexical_fr([0.0, 2.5 + rand(rng)], zeros(2), zeros(2), zeros(2), zeros(2), [false, false]))
+    end
+    @test count(==(2), red_choices) == length(seeds)
+    @test count(==((3, false)), lex_choices) == length(seeds)
+    @test count(==((1, false)), lex_no_alt) == length(seeds)
+    @test count(==((2, true)), tragic_choices) == length(seeds)
+    @test proportion_interval(count(==((3, false)), lex_choices), length(seeds)).lo > 0.75
 end

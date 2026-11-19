@@ -106,4 +106,83 @@ theorem recordCredence_one_error (cap v a b : ℝ) (l₁ l₂ : List ℝ) :
   rw [← sub_div, abs_div, abs_of_pos hpos]
   exact div_le_div_of_nonneg_right (recordScore_one_error v a b l₁ l₂) hpos.le
 
+/- --- Spike D2: Empirical-Bayes normal-normal posterior shrinkage (`eb_credence`, L84, 8.58-c) --- -/
+
+/-- [P] Empirical-Bayes precision weight `τ² / (τ² + σ²)` in `[0, 1]` shrinking a model's
+    prediction toward the domain's empirical outcome prior when error variance is positive. -/
+noncomputable def eb_shrink_weight (priorVar errVar : ℝ) : ℝ :=
+  if priorVar ≤ 0 then 0 else if errVar ≤ 0 then 1 else priorVar / (priorVar + errVar)
+
+/-- [P] Empirical-Bayes posterior mean `w · predicted + (1 - w) · priorMean`. -/
+noncomputable def eb_posterior_mean (predicted priorMean priorVar errVar : ℝ) : ℝ :=
+  let w := eb_shrink_weight priorVar errVar
+  w * predicted + (1 - w) * priorMean
+
+/-- [P] Empirical-Bayes posterior variance `(τ² · σ²) / (τ² + σ²)` (zero if either is non-positive). -/
+noncomputable def eb_posterior_var (priorVar errVar : ℝ) : ℝ :=
+  if priorVar ≤ 0 ∨ errVar ≤ 0 then 0 else priorVar * errVar / (priorVar + errVar)
+
+/-- THEOREM (Spike D2): Shrinkage weight lies in `[0, 1]`. -/
+theorem eb_shrink_weight_bounds (pVar eVar : ℝ) :
+    0 ≤ eb_shrink_weight pVar eVar ∧ eb_shrink_weight pVar eVar ≤ 1 := by
+  unfold eb_shrink_weight
+  split_ifs with hp he
+  · norm_num
+  · norm_num
+  · have hp' : 0 < pVar := lt_of_not_ge hp
+    have he' : 0 < eVar := lt_of_not_ge he
+    exact ⟨div_nonneg hp'.le (by linarith), (div_le_one (by linarith)).mpr (by linarith)⟩
+
+/-- THEOREM (Spike D2): Posterior mean always lies between `predicted` and `priorMean`. -/
+theorem eb_posterior_mean_between (pred pMean pVar eVar : ℝ) :
+    min pred pMean ≤ eb_posterior_mean pred pMean pVar eVar ∧
+      eb_posterior_mean pred pMean pVar eVar ≤ max pred pMean := by
+  obtain ⟨hw0, hw1⟩ := eb_shrink_weight_bounds pVar eVar
+  unfold eb_posterior_mean
+  dsimp only
+  constructor
+  · have h1 : min pred pMean ≤ pred := min_le_left _ _
+    have h2 : min pred pMean ≤ pMean := min_le_right _ _
+    nlinarith
+  · have h1 : pred ≤ max pred pMean := le_max_left _ _
+    have h2 : pMean ≤ max pred pMean := le_max_right _ _
+    nlinarith
+
+/-- THEOREM (Spike D2): Posterior mean rises monotonically with `predicted`. -/
+theorem eb_posterior_mean_mono {pred₁ pred₂ : ℝ} (h : pred₁ ≤ pred₂)
+    (pMean pVar eVar : ℝ) :
+    eb_posterior_mean pred₁ pMean pVar eVar ≤ eb_posterior_mean pred₂ pMean pVar eVar := by
+  unfold eb_posterior_mean
+  obtain ⟨hw0, _⟩ := eb_shrink_weight_bounds pVar eVar
+  linarith [mul_le_mul_of_nonneg_left h hw0]
+
+/-- THEOREM (Spike D2): Posterior variance is always non-negative. -/
+theorem eb_posterior_var_nonneg (pVar eVar : ℝ) :
+    0 ≤ eb_posterior_var pVar eVar := by
+  unfold eb_posterior_var
+  split_ifs with h
+  · exact le_rfl
+  · push Not at h
+    exact div_nonneg (mul_nonneg h.1.le h.2.le) (by linarith)
+
+/-- THEOREM (Spike D2): Posterior variance never exceeds model error variance `eVar ≥ 0`. -/
+theorem eb_posterior_var_le_errVar (pVar eVar : ℝ) (he : 0 ≤ eVar) :
+    eb_posterior_var pVar eVar ≤ eVar := by
+  unfold eb_posterior_var
+  split_ifs with h
+  · exact he
+  · push Not at h
+    rw [div_le_iff₀ (by linarith)]
+    nlinarith [h.1, h.2]
+
+/-- THEOREM (Spike D2): When both prior and error variances are positive, incorporating the
+    domain prior strictly lowers predictive variance below prior-free `eVar`. -/
+theorem eb_posterior_var_strict_lt_errVar (pVar eVar : ℝ) (hp : 0 < pVar) (he : 0 < eVar) :
+    eb_posterior_var pVar eVar < eVar := by
+  unfold eb_posterior_var
+  have hnot : ¬ (pVar ≤ 0 ∨ eVar ≤ 0) := by push Not; exact ⟨hp, he⟩
+  simp only [hnot, ↓reduceIte]
+  rw [div_lt_iff₀ (by linarith)]
+  nlinarith
+
 end Benefuture.Proposed

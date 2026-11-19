@@ -161,6 +161,24 @@ end
     @test_throws ArgumentError record_credence(0.0, base; cap = 0.4)
 end
 
+@testset "Empirical-Bayes credence (Spike D2): acceptance and adversarial cases" begin
+    # Zero error variance or infinite prior -> matches predicted direction cleanly.
+    @test eb_credence(1.0, 0.0, 2.0, 1.0) == 0.99
+    @test eb_credence(-1.0, 0.0, 2.0, 1.0) ≈ 0.01
+    # Zero prior variance shrinks completely to the prior mean with zero posterior variance.
+    @test eb_credence(-5.0, 1.0, 2.0, 0.0) == 0.99
+    @test eb_credence(5.0, 1.0, -2.0, 0.0) ≈ 0.01
+    # Capable domain prior (μ₀ = 1.5, τ² = 1.0, σ² = 1.0): lifts positive-prior credences over prior-free normal.
+    @test eb_credence(0.5, 1.0, 1.5, 1.0) > credence(0.5, 1.0)
+    # Monotone in predicted value and lies within [1 - cap, cap].
+    cs = [eb_credence(v, 1.0, 0.5, 1.0; cap = 0.95) for v in -3.0:0.5:3.0]
+    @test issorted(cs) && all(0.05 <= c <= 0.95 for c in cs)
+    @test_throws ArgumentError eb_credence(NaN, 1.0, 0.0, 1.0)
+    @test_throws ArgumentError eb_credence(0.0, -0.1, 0.0, 1.0)
+    @test_throws ArgumentError eb_credence(0.0, 1.0, 0.0, -0.1)
+    @test_throws ArgumentError eb_credence(0.0, 1.0, 0.0, 1.0; cap = 0.4)
+end
+
 # Author ruling 8.23: every component consuming a model, measurement, or record names its simpler
 # fallback, and when a leaf model drops below eligibility bar, pricing falls back to parent models
 # and logs the degradation loudly.

@@ -13,6 +13,20 @@ function floor_quantile(levels, q::Real)
 end
 
 """
+    tail_floor(levels, q) -> Float64
+
+Tail-sensitive floor (`tail → Me`, Spike D1, L74, `8.56`; Lean `tail_floor_ref`): if any level
+lies below neutral (`< 0`), returns the total negative shortfall `∑ min(0, x)` so high levels
+cannot mask suffering lives; otherwise returns the lower `q`-tail CVaR (mean of the bottom
+`max(1, ceil(q * n))` levels).
+"""
+function tail_floor(levels, q::Real)
+    check(all(isfinite, levels), "levels must be finite")
+    check(isfinite(q) && 0 <= q <= 1, "q must lie in [0, 1]")
+    ccall(sym(:bf_tail_floor), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), q)
+end
+
+"""
     g_choose(values, d_scope, d_min_u, d_min_h, d_max_u) -> Union{Int,Nothing}
 
 Index (1-based) of the admissible plan of highest value, first on ties; a plan is admissible
@@ -27,6 +41,29 @@ function g_choose(values, d_scope, d_min_u, d_min_h, d_max_u)
     i = ccall(sym(:bf_g_choose), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
               a[1], a[2], a[3], a[4], a[5])
     i == length(values) ? nothing : Int(i) + 1
+end
+
+"""
+    g_choose_lexical_fr(values, d_scope, d_min_u, d_min_h, d_max_u, fr_ok) -> (Union{Int,Nothing}, Bool)
+
+Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, Spike D3, L55, L136;
+Lean `g_choose_lexical_fr_ref`): Stage 1 selects the highest-value plan among those that are both
+G-admissible and Fr-permissible (`fr_ok = true`), returning `(index, false)`. When no plan clears
+Stage 1 (true tragic choice or omission catastrophe), Stage 2 falls back to unconstrained `g_choose`
+and returns `(index, true)`.
+"""
+function g_choose_lexical_fr(values, d_scope, d_min_u, d_min_h, d_max_u, fr_ok)
+    cols = (values, d_scope, d_min_u, d_min_h, d_max_u)
+    check(allequal(length.(cols)) && length(fr_ok) == length(values), "all columns and fr_ok must have one entry per plan")
+    check(all(c -> all(isfinite, c), cols), "entries must be finite")
+    a = map(floatarray, cols)
+    f = floatarray(Float64.(Bool.(fr_ok)))
+    res = lean_floats(ccall(sym(:bf_g_choose_lexical_fr), Ptr{Cvoid},
+                            (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+                            a[1], a[2], a[3], a[4], a[5], f))
+    idx = round(Int, res[1])
+    deg = res[2] > 0.5
+    (idx == length(values) ? nothing : idx + 1, deg)
 end
 
 """

@@ -53,6 +53,7 @@ import Benefuture.Axiology.Priorities
 import Benefuture.Proposed.OutcomeDistribution
 import Benefuture.Proposed.ShapleySampling
 import Benefuture.Proposed.RecordCredence
+import Benefuture.Proposed.PopulationDirection
 import BenefutureReference
 
 namespace BenefutureTest
@@ -530,6 +531,143 @@ theorem advapRecountQ_spec (entries : List (ℚ × ℚ × Bool)) (truth : ℚ) :
   by_cases h : 0 ≤ advapRecountTallyQ entries <;>
     simp [h, show (0 : ℝ) ≤ (advapRecountTallyQ entries : ℝ) ↔ 0 ≤ advapRecountTallyQ entries from Rat.cast_nonneg]
 
+def tailFloorQ (xs : List ℚ) (k : ℕ) : ℚ :=
+  if xs.isEmpty then 0
+  else if xs.any (fun x => decide (x < 0)) then
+    (xs.map fun x => min 0 x).sum
+  else
+    let m := min (max 1 k) xs.length
+    ((Benefuture.Proposed.sortList xs).take m).sum / (m : ℚ)
+
+private lemma cast_min0_sum : ∀ xs : List ℚ,
+    (((xs.map fun x => min 0 x).sum : ℚ) : ℝ) = ((xs.map (Rat.cast : ℚ → ℝ)).map fun x => min 0 x).sum
+  | [] => by simp
+  | a :: t => by simp only [List.map_cons, List.sum_cons, Rat.cast_add, Rat.cast_min, Rat.cast_zero, cast_min0_sum t]
+
+private lemma cast_list_sum' : ∀ xs : List ℚ, ((xs.sum : ℚ) : ℝ) = (xs.map (Rat.cast : ℚ → ℝ)).sum
+  | [] => by simp
+  | a :: t => by simp only [List.sum_cons, List.map_cons, Rat.cast_add, cast_list_sum' t]
+
+theorem tailFloorQ_spec (xs : List ℚ) (k : ℕ) :
+    (tailFloorQ xs k : ℝ) = Benefuture.Proposed.tail_floor (xs.map (↑)) k := by
+  have hany : ∀ l : List ℚ,
+      (l.map (Rat.cast : ℚ → ℝ)).any (fun x => decide (x < 0)) =
+        l.any (fun x => decide (x < 0)) := by
+    intro l; induction l with
+    | nil => rfl
+    | cons a t ih =>
+      simp only [List.map_cons, List.any_cons, ih]
+      congr 1
+      by_cases h : a < 0
+      · simp only [h, Rat.cast_lt_zero.mpr h, decide_true]
+      · simp only [h, show ¬ (a : ℝ) < 0 from fun hc => h (Rat.cast_lt_zero.mp hc), decide_false]
+  cases xs with
+  | nil => simp [tailFloorQ, Benefuture.Proposed.tail_floor]
+  | cons a t =>
+    by_cases hn : (a :: t).any (fun x => decide (x < 0))
+    · have lhs_eq : tailFloorQ (a :: t) k = ((a :: t).map fun x => min 0 x).sum := by
+        unfold tailFloorQ; simp only [List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte, hn]
+      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k =
+          (((a :: t).map (Rat.cast : ℚ → ℝ)).map fun x => min 0 x).sum := by
+        unfold Benefuture.Proposed.tail_floor
+        simp only [List.map_cons, List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte]
+        rw [← List.map_cons, hany, hn]; simp
+      rw [lhs_eq, rhs_eq, cast_min0_sum]
+    · have hnF : (a :: t).any (fun x => decide (x < 0)) = false := by
+        cases h : (a :: t).any (fun x => decide (x < 0)) <;> simp_all
+      have lhs_eq : tailFloorQ (a :: t) k =
+          ((Benefuture.Proposed.sortList (a :: t)).take (min (max 1 k) (a :: t).length)).sum /
+            ((min (max 1 k) (a :: t).length : ℕ) : ℚ) := by
+        unfold tailFloorQ; simp only [List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte, hnF]
+      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k =
+          ((Benefuture.Proposed.sortList ((a :: t).map (Rat.cast : ℚ → ℝ))).take
+            (min (max 1 k) (a :: t).length)).sum /
+            ((min (max 1 k) (a :: t).length : ℕ) : ℝ) := by
+        unfold Benefuture.Proposed.tail_floor
+        simp only [List.map_cons, List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte]
+        rw [← List.map_cons, hany, hnF]; simp
+      rw [lhs_eq, rhs_eq, Rat.cast_div, Rat.cast_natCast, cast_list_sum']
+      rw [List.map_take, Benefuture.Proposed.map_sortList (Rat.cast : ℚ → ℝ) (fun _ _ => Rat.cast_lt.mpr) (a :: t)]
+
+def ebShrinkWeightQ (priorVar errVar : ℚ) : ℚ :=
+  if priorVar ≤ 0 then 0 else if errVar ≤ 0 then 1 else priorVar / (priorVar + errVar)
+
+theorem ebShrinkWeightQ_spec (pVar eVar : ℚ) :
+    (ebShrinkWeightQ pVar eVar : ℝ) = Benefuture.Proposed.eb_shrink_weight pVar eVar := by
+  unfold ebShrinkWeightQ Benefuture.Proposed.eb_shrink_weight
+  by_cases hp : pVar ≤ 0
+  · simp [hp, show (pVar : ℝ) ≤ 0 from by exact_mod_cast hp]
+  · have hpR : ¬ (pVar : ℝ) ≤ 0 := by exact_mod_cast hp
+    by_cases he : eVar ≤ 0
+    · simp [hp, hpR, he, show (eVar : ℝ) ≤ 0 from by exact_mod_cast he]
+    · have heR : ¬ (eVar : ℝ) ≤ 0 := by exact_mod_cast he
+      simp [hp, hpR, he, heR, Rat.cast_div, Rat.cast_add]
+
+def ebPosteriorMeanQ (predicted priorMean priorVar errVar : ℚ) : ℚ :=
+  let w := ebShrinkWeightQ priorVar errVar
+  w * predicted + (1 - w) * priorMean
+
+theorem ebPosteriorMeanQ_spec (pred pMean pVar eVar : ℚ) :
+    (ebPosteriorMeanQ pred pMean pVar eVar : ℝ) =
+      Benefuture.Proposed.eb_posterior_mean pred pMean pVar eVar := by
+  unfold ebPosteriorMeanQ Benefuture.Proposed.eb_posterior_mean
+  dsimp only
+  rw [Rat.cast_add, Rat.cast_mul, Rat.cast_mul, Rat.cast_sub, Rat.cast_one, ebShrinkWeightQ_spec]
+
+def ebPosteriorVarQ (priorVar errVar : ℚ) : ℚ :=
+  if priorVar ≤ 0 ∨ errVar ≤ 0 then 0 else priorVar * errVar / (priorVar + errVar)
+
+theorem ebPosteriorVarQ_spec (pVar eVar : ℚ) :
+    (ebPosteriorVarQ pVar eVar : ℝ) = Benefuture.Proposed.eb_posterior_var pVar eVar := by
+  unfold ebPosteriorVarQ Benefuture.Proposed.eb_posterior_var
+  by_cases h : pVar ≤ 0 ∨ eVar ≤ 0
+  · have hR : (pVar : ℝ) ≤ 0 ∨ (eVar : ℝ) ≤ 0 := by
+      rcases h with hp | he
+      · exact Or.inl (by exact_mod_cast hp)
+      · exact Or.inr (by exact_mod_cast he)
+    simp [h]
+  · have hR : ¬ ((pVar : ℝ) ≤ 0 ∨ (eVar : ℝ) ≤ 0) := fun hr => h (by
+      rcases hr with hp | he
+      · exact Or.inl (by exact_mod_cast hp)
+      · exact Or.inr (by exact_mod_cast he))
+    simp [h, Rat.cast_div, Rat.cast_mul, Rat.cast_add]
+
+def gChooseLexicalFrQ (entries : List (ℚ × Bool × Bool)) : ℕ × Bool :=
+  match Benefuture.Proposed.bestIdxAux none
+      ((if (Benefuture.Proposed.stage1Of entries).isEmpty then
+          Benefuture.Proposed.stage2Of entries
+        else Benefuture.Proposed.stage1Of entries).map fun x => (x.1.1, x.2)) with
+  | none => (entries.length, (Benefuture.Proposed.stage1Of entries).isEmpty)
+  | some (_, i) => (i, (Benefuture.Proposed.stage1Of entries).isEmpty)
+
+theorem gChooseLexicalFrQ_spec (entries : List (ℚ × Bool × Bool)) :
+    gChooseLexicalFrQ entries =
+      Benefuture.Proposed.lexical_fr_index (entries.map fun (v, a, f) => ((v : ℝ), a, f)) := by
+  unfold gChooseLexicalFrQ Benefuture.Proposed.lexical_fr_index
+  rw [Benefuture.Proposed.stage1Of_cast, Benefuture.Proposed.stage2Of_cast, List.length_map]
+  have hem : ∀ l : List ((ℚ × Bool × Bool) × ℕ),
+      (l.map fun ((v, a, f), i) => (((v : ℝ), a, f), i)).isEmpty = l.isEmpty := fun l => by cases l <;> rfl
+  rw [hem]
+  have hst : (if (Benefuture.Proposed.stage1Of entries).isEmpty then
+      (Benefuture.Proposed.stage2Of entries).map fun ((v, a, f), i) => (((v : ℝ), a, f), i)
+    else (Benefuture.Proposed.stage1Of entries).map fun ((v, a, f), i) => (((v : ℝ), a, f), i)) =
+      (if (Benefuture.Proposed.stage1Of entries).isEmpty then Benefuture.Proposed.stage2Of entries else Benefuture.Proposed.stage1Of entries).map
+        fun ((v, a, f), i) => (((v : ℝ), a, f), i) := by split_ifs <;> rfl
+  rw [hst, List.map_map]
+  have hcomp : ((fun x : (ℝ × Bool × Bool) × ℕ => (x.1.1, x.2)) ∘
+      fun ((v, a, f), i) => (((v : ℝ), a, f), i)) =
+      (fun (x : ℚ × ℕ) => ((x.1 : ℝ), x.2)) ∘ (fun x : (ℚ × Bool × Bool) × ℕ => (x.1.1, x.2)) := by
+    funext ⟨⟨v, a, f⟩, i⟩; rfl
+  rw [hcomp, ← List.map_map]
+  have hm := @Benefuture.Proposed.bestIdxAux_map ℚ ℝ _ _ _ _ (Rat.cast) (fun _ _ => Rat.cast_lt)
+    ((if (Benefuture.Proposed.stage1Of entries).isEmpty then Benefuture.Proposed.stage2Of entries else Benefuture.Proposed.stage1Of entries).map
+      fun x => (x.1.1, x.2)) none
+  simp only [Option.map_none] at hm
+  rw [← hm]
+  cases @Benefuture.Proposed.bestIdxAux ℚ _ _ none
+      ((if (Benefuture.Proposed.stage1Of entries).isEmpty then Benefuture.Proposed.stage2Of entries else Benefuture.Proposed.stage1Of entries).map
+        fun x => (x.1.1, x.2)) <;> rfl
+
 /-! ## Interval-bound oracles for nonlinear functions -/
 
 /-- Rational square root bounds via Heron's method. For S ≥ 0, returns (lo, hi) such that lo ≤ √S ≤ hi. -/
@@ -660,6 +798,19 @@ def credenceBoundsQ (predicted uncertainty cap : ℚ) : ℚ × ℚ :=
   else
     let (nLo, nHi) := normalCdfBoundsQ (predicted / uncertainty)
     (max (1 - cap) (min cap nLo), max (1 - cap) (min cap nHi))
+
+def ebCredenceBoundsQ (predicted errVar priorMean priorVar cap : ℚ) : ℚ × ℚ :=
+  let postMean := ebPosteriorMeanQ predicted priorMean priorVar errVar
+  let postVar := ebPosteriorVarQ priorVar errVar
+  if postVar ≤ 0 then
+    credenceBoundsQ postMean 0 cap
+  else
+    let (stdLo, stdHi) := sqrtBoundsQ postVar
+    if stdLo ≤ 0 then (1 - cap, cap)
+    else
+      let (lo1, hi1) := credenceBoundsQ (postMean / stdLo) 1 cap
+      let (lo2, hi2) := credenceBoundsQ (postMean / stdHi) 1 cap
+      (min lo1 lo2, max hi1 hi2)
 
 /-! ## Generated inputs -/
 
@@ -1163,6 +1314,76 @@ def runAll : IO Unit := do
     let f := contention_map_ref (Array.mk (reps.map ratToFloat)) self0
     let q := Benefuture.Governance.contention_map_rank reps self0
     (f.toList == q.map Nat.toFloat, g)
+  checkAll "tail_floor" 400 38 fun g => Id.run do
+    let (nExp, g) := g.below 4
+    let (hasNegFlag, g) := g.below 2
+    let (useEmpty, g) := g.below 20
+    let mut g := g
+    if useEmpty == 0 then
+      let f := BenefutureReference.tail_floor_ref #[] 0.1
+      let q := tailFloorQ [] 1
+      return (close f q, g)
+    let n := 2 ^ nExp
+    let mut xs : List ℚ := []
+    for _ in [0:n] do
+      let (x0, g') := g.below 65
+      g := g'
+      let x : ℚ := if hasNegFlag == 0 then ((x0 : ℚ) / 4) else (((x0 : ℚ) - 16) / 4)
+      xs := xs ++ [x]
+    let (k, g') := g.below (n + 1)
+    let qArg : ℚ := (k : ℚ) / (n : ℚ)
+    let f := BenefutureReference.tail_floor_ref (Array.mk (xs.map ratToFloat)) (ratToFloat qArg)
+    let q := tailFloorQ xs k
+    (close f q, g')
+  checkAll "eb_credence" 400 39 fun g =>
+    let (pred, g) := g.dyadic
+    let (eVar, g) := g.dyadicNonneg
+    let (pMean, g) := g.dyadic
+    let (pVar, g) := g.dyadicNonneg
+    let (cap0, g) := g.below 49
+    let cap : ℚ := ((cap0 : ℚ) + 51) / 100
+    let (lo, hi) := ebCredenceBoundsQ (pred / 4) (eVar / 4) (pMean / 4) (pVar / 4) cap
+    let f := BenefutureReference.eb_credence_ref (ratToFloat (pred / 4)) (ratToFloat (eVar / 4))
+      (ratToFloat (pMean / 4)) (ratToFloat (pVar / 4)) (ratToFloat cap)
+    (inInterval f lo hi 1e-5, g)
+  checkAll "g_choose_lexical_fr" 400 40 fun g => Id.run do
+    let (n, g) := g.below 5
+    let mut g := g
+    let mut vals : List ℚ := []
+    let mut dSc : List ℚ := []
+    let mut dMU : List ℚ := []
+    let mut dMH : List ℚ := []
+    let mut dPU : List ℚ := []
+    let mut frBs : List Bool := []
+    let mut entries : List (ℚ × Bool × Bool) := []
+    for _ in [0:n] do
+      let (v0, g1) := g.below 33
+      let (a0, g2) := g1.below 3
+      let (b0, g3) := g2.below 3
+      let (c0, g4) := g3.below 3
+      let (d0, g5) := g4.below 3
+      let (f0, g6) := g5.below 2
+      g := g6
+      let v : ℚ := ((v0 : ℚ) - 16) / 4
+      let s1 : ℚ := (a0 : ℚ) - 1
+      let s2 : ℚ := (b0 : ℚ) - 1
+      let s3 : ℚ := (c0 : ℚ) - 1
+      let s4 : ℚ := (d0 : ℚ) - 1
+      let fr := f0 == 1
+      let adm := s1 ≥ 0 && s2 ≥ 0 && s3 ≥ 0 && s4 ≥ 0
+      vals := vals ++ [v]
+      dSc := dSc ++ [s1]
+      dMU := dMU ++ [s2]
+      dMH := dMH ++ [s3]
+      dPU := dPU ++ [s4]
+      frBs := frBs ++ [fr]
+      entries := entries ++ [(v, adm, fr)]
+    let (fIdx, fDeg) := BenefutureReference.g_choose_lexical_fr_ref
+      (Array.mk (vals.map ratToFloat)) (Array.mk (dSc.map ratToFloat))
+      (Array.mk (dMU.map ratToFloat)) (Array.mk (dMH.map ratToFloat))
+      (Array.mk (dPU.map ratToFloat)) (Array.mk frBs)
+    let (qIdx, qDeg) := gChooseLexicalFrQ entries
+    (fIdx == qIdx && fDeg == qDeg, g)
 
 #eval runAll
 

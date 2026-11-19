@@ -246,7 +246,8 @@ and peak against the course's, over the decision-time population (the dead one t
 lowest level in any world, a toy convention) plus each world's newborns at their `birth_level`.
 """
 function pop_choose(s::ToyState, plans, p::ToyParams; course::Union{Nothing,PopPlan} = nothing, q_opt::Real = 0.5,
-                    threshold::Real = 0.75, lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0)
+                    threshold::Real = 0.75, lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0,
+                    use_tail_floor::Bool = false)
     n = length(s.u)
     course === nothing && (course = PopPlan(zeros(n), zeros(n)))
     worlds = [course; collect(PopPlan, plans)]
@@ -256,7 +257,8 @@ function pop_choose(s::ToyState, plans, p::ToyParams; course::Union{Nothing,PopP
     bottom_u, bottom_h = lo(1) - p.th, lo(2) - p.th
     fl = map(levels) do (u, h)
         uu, hh = replace(u, NaN => bottom_u), replace(h, NaN => bottom_h)
-        (floor_quantile(uu, p.q), floor_quantile(hh, p.q), maximum(uu))
+        f_fn = use_tail_floor ? tail_floor : floor_quantile
+        (f_fn(uu, p.q), f_fn(hh, p.q), maximum(uu))
     end
     values = [0.0; [pop_value(s, w, p; course, lt_window, growth, scale) for w in worlds[2:end]]]
     i = g_choose(values, zeros(length(worlds)), [f[1] - fl[1][1] for f in fl], [f[2] - fl[1][2] for f in fl], [f[3] - fl[1][3] for f in fl])

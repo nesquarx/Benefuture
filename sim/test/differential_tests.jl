@@ -315,4 +315,66 @@ fin(xs...) = all(isfinite, xs)
                            hon = sum(h[j] * v[j] for j in eachindex(h) if act[j] != 0.0; init = 0.0)
                            (hon == 0 ? 1.0 : sign(hon)) == sign(tr)
                        end) == (guard = 0, value = 0)
+    @test differential(:tail_floor,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           xs = [rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.5 ? 5.0 * rand(r) : 6.0 * randn(r)) for _ in 1:k]
+                           q = rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.2 ? (rand(r) < 0.5 ? 0.0 : 1.0) : 1.4 * rand(r) - 0.2)
+                           (xs, q)
+                       end,
+                       (xs, q) -> all(isfinite, xs) && isfinite(q) && 0 <= q <= 1,
+                       tail_floor,
+                       (xs, q) -> begin
+                           isempty(xs) && return 0.0
+                           any(<(0.0), xs) && return sum(min(0.0, x) for x in xs)
+                           s = sort(collect(Float64, xs))
+                           m = max(1, min(ceil(Int, clamp(q, 0.0, 1.0) * length(s)), length(s)))
+                           mean(s[1:m])
+                       end) == (guard = 0, value = 0)
+    @test differential(:eb_credence,
+                       r -> (rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r),
+                             rand(r) < 0.05 ? hostile(r) : 4.0 * rand(r) - 0.2,
+                             rand(r) < 0.05 ? hostile(r) : 6.0 * randn(r),
+                             rand(r) < 0.05 ? hostile(r) : 4.0 * rand(r) - 0.2,
+                             rand(r) < 0.05 ? hostile(r) : 0.4 + 0.7 * rand(r)),
+                       (pr, ev, pm, pv, cp) -> all(isfinite, (pr, ev, pm, pv, cp)) && ev >= 0 && pv >= 0 && 0.5 <= cp <= 1,
+                       (pr, ev, pm, pv, cp) -> eb_credence(pr, ev, pm, pv; cap = cp),
+                       (pr, ev, pm, pv, cp) -> begin
+                           w = pv <= 0 ? 0.0 : (ev <= 0 ? 1.0 : pv / (pv + ev))
+                           pm_post = w * pr + (1 - w) * pm
+                           pv_post = (pv <= 0 || ev <= 0) ? 0.0 : pv * ev / (pv + ev)
+                           credence(pm_post, sqrt(pv_post); cap = cp)
+                       end) == (guard = 0, value = 0)
+    @test differential(:g_choose_lexical_fr,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           vals = [rand(r) < 0.05 ? hostile(r) : 5.0 * randn(r) for _ in 1:k]
+                           dsc = [rand(r) < 0.05 ? hostile(r) : (rand(r, Bool) ? 0.0 : 2.0 * randn(r)) for _ in 1:k]
+                           dmu = [rand(r) < 0.05 ? hostile(r) : (rand(r, Bool) ? 0.0 : 2.0 * randn(r)) for _ in 1:k]
+                           dmh = [rand(r) < 0.05 ? hostile(r) : (rand(r, Bool) ? 0.0 : 2.0 * randn(r)) for _ in 1:k]
+                           dpu = [rand(r) < 0.05 ? hostile(r) : (rand(r, Bool) ? 0.0 : 2.0 * randn(r)) for _ in 1:k]
+                           frok = rand(r, Bool, k)
+                           if rand(r) < 0.05 && k > 0
+                               dsc = dsc[1:max(0, k - 1)]
+                           end
+                           (vals, dsc, dmu, dmh, dpu, frok)
+                       end,
+                       (vals, dsc, dmu, dmh, dpu, frok) -> allequal(length.((vals, dsc, dmu, dmh, dpu, frok))) &&
+                           all(c -> all(isfinite, c), (vals, dsc, dmu, dmh, dpu)),
+                       (vals, dsc, dmu, dmh, dpu, frok) -> begin
+                           i, deg = g_choose_lexical_fr(vals, dsc, dmu, dmh, dpu, frok)
+                           [i === nothing ? 0.0 : Float64(i), deg ? 1.0 : 0.0]
+                       end,
+                       (vals, dsc, dmu, dmh, dpu, frok) -> begin
+                           adm = [dsc[i] >= 0 && dmu[i] >= 0 && dmh[i] >= 0 && dpu[i] >= 0 for i in eachindex(vals)]
+                           s1 = [i for i in eachindex(vals) if adm[i] && frok[i]]
+                           if !isempty(s1)
+                               best = s1[argmax([vals[i] for i in s1])]
+                               [Float64(best), 0.0]
+                           else
+                               s2 = [i for i in eachindex(vals) if adm[i]]
+                               best = isempty(s2) ? 0.0 : Float64(s2[argmax([vals[i] for i in s2])])
+                               [best, 1.0]
+                           end
+                       end) == (guard = 0, value = 0)
 end

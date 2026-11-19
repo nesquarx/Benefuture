@@ -41,4 +41,49 @@ def g_choose_ref (values dScope dMinU dMinH dMaxU : Array Float) : Nat := Id.run
   | none => values.size
   | some (i, _) => i
 
+/--
+  Tail-sensitive floor (`tail → Me`, Spike D1, L74, `8.56`):
+  if any being stands below neutral (`< 0`), returns the total negative shortfall `∑ min(0, x)`
+  so unaffected lives above neutral cannot mask a negative life; otherwise returns the mean
+  of the bottom `max 1 (min rank n)` sorted levels (CVaR over the bottom q-tail).
+-/
+def tail_floor_ref (xs : Array Float) (q : Float) : Float := Id.run do
+  let n := xs.size
+  if n == 0 then return 0.0
+  let mut hasNeg := false
+  let mut negSum := 0.0
+  for i in [0:n] do
+    let x := xs[i]!
+    if x < 0.0 then
+      hasNeg := true
+      negSum := negSum + x
+  if hasNeg then return negSum
+  let sorted := xs.qsort (· < ·)
+  let qc := if q < 0.0 then 0.0 else if q > 1.0 then 1.0 else q
+  let rank := (qc * n.toFloat).ceil.toUInt64.toNat
+  let m := max 1 (min rank n)
+  let mut s := 0.0
+  for i in [0:m] do
+    s := s + sorted[i]!
+  return s / m.toFloat
+
+/--
+  Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, Spike D3, L55, L136):
+  returns `(index, degraded)` where `index = values.size` when no plan is G-admissible.
+  Stage 1 restricts to plans that are both G-admissible and Fr-permissible (`degraded = false`).
+  When no such plan exists (true tragic choice or omission catastrophe), Stage 2 falls back to
+  unconstrained `g_choose_ref` (`degraded = true`).
+-/
+def g_choose_lexical_fr_ref (values dScope dMinU dMinH dMaxU : Array Float) (frOk : Array Bool) :
+    Nat × Bool := Id.run do
+  let mut best : Option (Nat × Float) := none
+  for i in [0:values.size] do
+    if g_admissible_ref dScope[i]! dMinU[i]! dMinH[i]! dMaxU[i]! && frOk.getD i false then
+      match best with
+      | none => best := some (i, values[i]!)
+      | some (_, v) => if values[i]! > v then best := some (i, values[i]!)
+  match best with
+  | some (i, _) => (i, false)
+  | none => (g_choose_ref values dScope dMinU dMinH dMaxU, true)
+
 end BenefutureReference

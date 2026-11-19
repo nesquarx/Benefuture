@@ -291,6 +291,11 @@ end
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(30); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan) == 2
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(3); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
+    # Spike D1 (tail_floor): blocks the sadistic redirect regardless of causer stake while preserving Repugnant Conclusion rejection.
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = true) == 1
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(1000); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = true) == 1
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(200); births = newborns(0.5, 200)),
+                         PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p; use_tail_floor = true) == 3
 end
 
 @testset "M7 accession: forced additions and uplift (8.86)" begin

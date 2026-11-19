@@ -1353,4 +1353,482 @@ theorem birth_settlement_removes_overstatement_gain
   unfold birth_settled_liability
   ring
 
+/- --- 12. Spike D1: Tail-sensitive floor (`tail → Me`, L74, 8.56) --- -/
+
+/-- Insertion into an ascending list (for computable and Mathlib-monotone `tail_floor`). -/
+def insertSorted {α : Type*} [LE α] [DecidableRel (· ≤ · : α → α → Prop)] (x : α) : List α → List α
+  | [] => [x]
+  | a :: t => if x ≤ a then x :: a :: t else a :: insertSorted x t
+
+/-- Ascending insertion sort over any decidable linear order. -/
+def sortList {α : Type*} [LE α] [DecidableRel (· ≤ · : α → α → Prop)] : List α → List α
+  | [] => []
+  | a :: t => insertSorted a (sortList t)
+
+private lemma mem_insertSorted {α : Type*} [LE α] [DecidableRel (· ≤ · : α → α → Prop)] (x y : α) :
+    ∀ l : List α, y ∈ insertSorted x l ↔ y = x ∨ y ∈ l
+  | [] => by simp [insertSorted]
+  | a :: t => by unfold insertSorted; split_ifs <;> simp [mem_insertSorted, or_left_comm]
+
+private lemma mem_sortList {α : Type*} [LE α] [DecidableRel (· ≤ · : α → α → Prop)] (y : α) :
+    ∀ l : List α, y ∈ sortList l ↔ y ∈ l
+  | [] => by simp [sortList]
+  | a :: t => by simp [sortList, mem_insertSorted, mem_sortList]
+
+private lemma insertSorted_sorted {α : Type*} [LinearOrder α] (x : α) :
+    ∀ {l : List α}, l.Pairwise (· ≤ ·) → (insertSorted x l).Pairwise (· ≤ ·)
+  | [], _ => List.pairwise_singleton _ _
+  | a :: t, h => by
+    unfold insertSorted; split_ifs with hx
+    · exact List.pairwise_cons.mpr ⟨fun y hy => by
+        rcases List.mem_cons.mp hy with rfl | ht; exact hx; exact le_trans hx ((List.pairwise_cons.mp h).1 y ht), h⟩
+    · refine List.pairwise_cons.mpr ⟨fun y hy => ?_, insertSorted_sorted x (List.pairwise_cons.mp h).2⟩
+      rcases (mem_insertSorted x y t).mp hy with rfl | hyt
+      · exact le_of_not_ge hx
+      · exact (List.pairwise_cons.mp h).1 y hyt
+
+private lemma sortList_sorted {α : Type*} [LinearOrder α] : ∀ l : List α, (sortList l).Pairwise (· ≤ ·)
+  | [] => List.Pairwise.nil
+  | a :: t => insertSorted_sorted a (sortList_sorted t)
+
+private lemma insertSorted_of_forall_le {α : Type*} [LinearOrder α] {x a : α} {t : List α} (h : x ≤ a) :
+    insertSorted x (a :: t) = x :: a :: t := by simp [insertSorted, h]
+
+private lemma insertSorted_mono {α : Type*} [LinearOrder α] :
+    ∀ {l₁ l₂ : List α}, l₁.Pairwise (· ≤ ·) → l₂.Pairwise (· ≤ ·) →
+      List.Forall₂ (· ≤ ·) l₁ l₂ → ∀ {x y : α}, x ≤ y →
+        List.Forall₂ (· ≤ ·) (insertSorted x l₁) (insertSorted y l₂)
+  | [], [], _, _, List.Forall₂.nil, x, y, hxy => List.Forall₂.cons hxy List.Forall₂.nil
+  | a :: t₁, b :: t₂, hs₁, hs₂, List.Forall₂.cons hab ht, x, y, hxy => by
+    have hpt₁ := (List.pairwise_cons.mp hs₁).2
+    have hpt₂ := (List.pairwise_cons.mp hs₂).2
+    unfold insertSorted; split_ifs with hx hy hy
+    · exact List.Forall₂.cons hxy (List.Forall₂.cons hab ht)
+    · refine List.Forall₂.cons (le_trans hx hab) ?_
+      have hsub := insertSorted_mono hpt₁ hpt₂ ht (le_trans hab (lt_of_not_ge hy).le)
+      rcases t₁ with _ | ⟨c, tc⟩
+      · simpa [insertSorted] using hsub
+      · simpa [insertSorted_of_forall_le ((List.pairwise_cons.mp hs₁).1 c (by simp))] using hsub
+    · refine List.Forall₂.cons (le_trans (lt_of_not_ge hx).le hxy) ?_
+      have hsub := insertSorted_mono hpt₁ hpt₂ ht (le_trans hxy hy)
+      rcases t₂ with _ | ⟨d, td⟩
+      · simpa [insertSorted] using hsub
+      · simpa [insertSorted_of_forall_le ((List.pairwise_cons.mp hs₂).1 d (by simp))] using hsub
+    · exact List.Forall₂.cons hab (insertSorted_mono hpt₁ hpt₂ ht hxy)
+
+private lemma sortList_mono {α : Type*} [LinearOrder α] :
+    ∀ {l₁ l₂ : List α}, List.Forall₂ (· ≤ ·) l₁ l₂ → List.Forall₂ (· ≤ ·) (sortList l₁) (sortList l₂)
+  | [], [], List.Forall₂.nil => List.Forall₂.nil
+  | _ :: _, _ :: _, List.Forall₂.cons hab ht =>
+      insertSorted_mono (sortList_sorted _) (sortList_sorted _) (sortList_mono ht) hab
+
+private lemma map_insertSorted {α β : Type*} [LinearOrder α] [LinearOrder β]
+    (f : α → β) (hf : StrictMono f) (x : α) :
+    ∀ l : List α, (insertSorted x l).map f = insertSorted (f x) (l.map f)
+  | [] => rfl
+  | a :: t => by
+    unfold insertSorted
+    by_cases h : x ≤ a
+    · simp only [h, hf.monotone h, ↓reduceIte, List.map_cons]
+    · have h' : ¬ f x ≤ f a := fun hc => h (hf.le_iff_le.mp hc)
+      simp only [h, h', ↓reduceIte, List.map_cons, map_insertSorted f hf x t]
+
+/-- Sorting commutes with strictly monotone maps (`ℚ → ℝ` bridge helper). -/
+lemma map_sortList {α β : Type*} [LinearOrder α] [LinearOrder β]
+    (f : α → β) (hf : StrictMono f) :
+    ∀ l : List α, (sortList l).map f = sortList (l.map f)
+  | [] => rfl
+  | a :: t => by simp only [sortList, List.map_cons, map_insertSorted f hf a (sortList t), map_sortList f hf t]
+
+private lemma forall₂_take_le {α : Type*} {R : α → α → Prop} :
+    ∀ (m : ℕ) {l₁ l₂ : List α}, List.Forall₂ R l₁ l₂ → List.Forall₂ R (l₁.take m) (l₂.take m)
+  | 0, _, _, _ => List.Forall₂.nil
+  | _ + 1, [], [], _ => List.Forall₂.nil
+  | m + 1, _ :: _, _ :: _, List.Forall₂.cons h ht => List.Forall₂.cons h (forall₂_take_le m ht)
+
+private lemma list_sum_le_of_forall₂ : ∀ {l₁ l₂ : List ℝ}, List.Forall₂ (· ≤ ·) l₁ l₂ → l₁.sum ≤ l₂.sum
+  | [], [], List.Forall₂.nil => le_rfl
+  | _ :: _, _ :: _, List.Forall₂.cons h ht => add_le_add h (list_sum_le_of_forall₂ ht)
+
+private lemma forall₂_map_min0 : ∀ {l₁ l₂ : List ℝ}, List.Forall₂ (· ≤ ·) l₁ l₂ →
+    List.Forall₂ (· ≤ ·) (l₁.map fun x => min 0 x) (l₂.map fun x => min 0 x)
+  | [], [], List.Forall₂.nil => List.Forall₂.nil
+  | _ :: _, _ :: _, List.Forall₂.cons h ht => List.Forall₂.cons (min_le_min le_rfl h) (forall₂_map_min0 ht)
+
+private lemma neg_shortfall_nonpos : ∀ xs : List ℝ, (xs.map fun x => min 0 x).sum ≤ 0
+  | [] => by simp
+  | a :: t => by
+    simp only [List.map_cons, List.sum_cons]
+    linarith [min_le_left (0 : ℝ) a, neg_shortfall_nonpos t]
+
+private lemma neg_shortfall_neg {xs : List ℝ} (h : ∃ x ∈ xs, x < 0) :
+    (xs.map fun x => min 0 x).sum < 0 := by
+  induction xs with
+  | nil => simp at h
+  | cons a t ih =>
+    simp only [List.map_cons, List.sum_cons]
+    rcases h with ⟨y, hy, hylt⟩
+    rcases List.mem_cons.mp hy with rfl | hyt
+    · have := neg_shortfall_nonpos t
+      linarith [min_eq_right hylt.le]
+    · have := ih ⟨y, hyt, hylt⟩
+      linarith [min_le_left (0 : ℝ) a]
+
+private lemma any_neg_eq_true (xs : List ℝ) :
+    xs.any (fun x => decide (x < 0)) = true ↔ ∃ x ∈ xs, x < 0 := by
+  simp [List.any_eq_true]
+
+/--
+  [P] Spike D1 (`tail → Me`, L74, `8.56`): tail-sensitive population floor eliminating the
+  Sadistic Conclusion without surrendering `removal_cannot_raise_floor` or Repugnant Conclusion
+  rejection. If any being is below neutral (`< 0`), returns the total negative shortfall
+  `∑ min(0, x) < 0` so unaffected lives above neutral can never mask a suffering life;
+  otherwise returns the mean of the bottom `min (max 1 k) xs.length` levels (CVaR).
+-/
+noncomputable def tail_floor (xs : List ℝ) (k : ℕ) : ℝ :=
+  if xs.isEmpty then 0
+  else if xs.any (fun x => decide (x < 0)) then
+    (xs.map fun x => min 0 x).sum
+  else
+    let m := min (max 1 k) xs.length
+    ((sortList xs).take m).sum / (m : ℝ)
+
+private lemma tail_floor_nonneg_of_all_nonneg {xs : List ℝ} (h : ∀ x ∈ xs, 0 ≤ x) (k : ℕ) :
+    0 ≤ tail_floor xs k := by
+  unfold tail_floor
+  by_cases hemp : xs.isEmpty
+  · simp [hemp]
+  · have hno : xs.any (fun x => decide (x < 0)) = false := by
+      cases hany : xs.any (fun x => decide (x < 0))
+      · rfl
+      · exfalso
+        obtain ⟨x, hx, hlt⟩ := (any_neg_eq_true xs).mp hany
+        linarith [h x hx]
+    simp only [hemp, Bool.false_eq_true, ↓reduceIte, hno]
+    have hsort : ∀ z ∈ (sortList xs).take (min (max 1 k) xs.length), 0 ≤ z := fun z hz =>
+      h z ((mem_sortList z xs).mp (List.mem_of_mem_take hz))
+    have hsum : 0 ≤ ((sortList xs).take (min (max 1 k) xs.length)).sum := by
+      have : ∀ l : List ℝ, (∀ z ∈ l, 0 ≤ z) → 0 ≤ l.sum := fun l hl => by
+        induction l with | nil => simp | cons a t ih => exact add_nonneg (hl a (by simp)) (ih fun z hz => hl z (by simp [hz]))
+      exact this _ hsort
+    exact div_nonneg hsum (by positivity)
+
+/-- THEOREM (Spike D1): When all levels are non-negative, `tail_floor` equals the bottom-tail CVaR. -/
+theorem tail_floor_nonneg_eq_cvar {xs : List ℝ} (hne : xs ≠ []) (h : ∀ x ∈ xs, 0 ≤ x) (k : ℕ) :
+    tail_floor xs k = ((sortList xs).take (min (max 1 k) xs.length)).sum / (min (max 1 k) xs.length : ℝ) := by
+  have hemp : xs.isEmpty = false := by cases xs <;> simp_all
+  have hno : xs.any (fun x => decide (x < 0)) = false := by
+    cases hany : xs.any (fun x => decide (x < 0))
+    · rfl
+    · exfalso; obtain ⟨x, hx, hlt⟩ := (any_neg_eq_true xs).mp hany; linarith [h x hx]
+  unfold tail_floor
+  simp [hemp, hno]
+
+/-- THEOREM (Spike D1): Pointwise lowering cannot raise `tail_floor` (removal monotonicity). -/
+theorem removal_cannot_raise_tail_floor (xs' xs : List ℝ) (k : ℕ)
+    (h : List.Forall₂ (· ≤ ·) xs' xs) :
+    tail_floor xs' k ≤ tail_floor xs k := by
+  have hlen := h.length_eq
+  by_cases hemp : xs.isEmpty
+  · have hx : xs = [] := List.isEmpty_iff.mp hemp
+    subst hx; cases h; simp [tail_floor]
+  · have hemp' : xs'.isEmpty = false := by
+      cases xs' <;> cases xs <;> simp at hlen hemp ⊢
+    by_cases hneg : xs.any (fun x => decide (x < 0))
+    · obtain ⟨y, hy, hylt⟩ := (any_neg_eq_true xs).mp hneg
+      have hneg' : xs'.any (fun x => decide (x < 0)) = true := by
+        rw [any_neg_eq_true]
+        clear hneg hemp hemp' hlen
+        induction h with
+        | nil => simp at hy
+        | cons h0 _ ih =>
+          rcases List.mem_cons.mp hy with rfl | hmem
+          · exact ⟨_, by simp, lt_of_le_of_lt h0 hylt⟩
+          · obtain ⟨x, hx, hxlt⟩ := ih hmem
+            exact ⟨x, by simp [hx], hxlt⟩
+      simp only [tail_floor, hemp, hemp', hneg, hneg', Bool.false_eq_true, ↓reduceIte]
+      exact list_sum_le_of_forall₂ (forall₂_map_min0 h)
+    · have hall : ∀ x ∈ xs, 0 ≤ x := fun x hx => by
+        by_contra hlt
+        have := (any_neg_eq_true xs).mpr ⟨x, hx, lt_of_not_ge hlt⟩
+        simp_all
+      by_cases hneg' : xs'.any (fun x => decide (x < 0))
+      · obtain ⟨y, hy, hylt⟩ := (any_neg_eq_true xs').mp hneg'
+        have hlt0 : tail_floor xs' k < 0 := by
+          simp only [tail_floor, hemp', hneg', Bool.false_eq_true, ↓reduceIte]
+          exact neg_shortfall_neg ⟨y, hy, hylt⟩
+        exact le_trans hlt0.le (tail_floor_nonneg_of_all_nonneg hall k)
+      · simp only [tail_floor, hemp, hemp', hneg, hneg', Bool.false_eq_true, ↓reduceIte, hlen]
+        exact div_le_div_of_nonneg_right
+          (list_sum_le_of_forall₂ (forall₂_take_le _ (sortList_mono h))) (by positivity)
+
+/-- THEOREM (Spike D1): Removal over the decision-time population cannot raise `tail_floor`. -/
+theorem removal_cannot_raise_tail_floor_pop (pop : List ℕ) (level level' : ℕ → ℝ) (k : ℕ)
+    (h : ∀ b ∈ pop, level' b ≤ level b) :
+    tail_floor (pop.map level') k ≤ tail_floor (pop.map level) k := by
+  apply removal_cannot_raise_tail_floor
+  induction pop with
+  | nil => exact List.Forall₂.nil
+  | cons a t ih =>
+    exact List.Forall₂.cons (h a (by simp)) (ih (fun b hb => h b (by simp [hb])))
+
+/-- THEOREM (Spike D1): Adding a single negative life strictly lowers `tail_floor` regardless of unaffected highs. -/
+theorem tail_floor_negative_add_strict (xs : List ℝ) (y : ℝ) (hy : y < 0) (k k' : ℕ) :
+    tail_floor (y :: xs) k' < tail_floor xs k := by
+  have hny : (y :: xs).any (fun x => decide (x < 0)) = true :=
+    (any_neg_eq_true (y :: xs)).mpr ⟨y, by simp, hy⟩
+  have hlhs : tail_floor (y :: xs) k' = y + (xs.map fun x => min 0 x).sum := by
+    unfold tail_floor
+    simp [hny, min_eq_right hy.le]
+  rw [hlhs]
+  by_cases hemp : xs.isEmpty
+  · have hx : xs = [] := List.isEmpty_iff.mp hemp
+    subst hx; simp [tail_floor, hy]
+  · by_cases hneg : xs.any (fun x => decide (x < 0))
+    · have hrhs : tail_floor xs k = (xs.map fun x => min 0 x).sum := by
+        unfold tail_floor
+        simp [hemp, hneg]
+      rw [hrhs]; linarith
+    · have hall : ∀ x ∈ xs, 0 ≤ x := fun x hx => by
+        by_contra hlt
+        have := (any_neg_eq_true xs).mpr ⟨x, hx, lt_of_not_ge hlt⟩
+        simp_all
+      have h0 : 0 ≤ tail_floor xs k := tail_floor_nonneg_of_all_nonneg hall k
+      have hns : (xs.map fun x => min 0 x).sum ≤ 0 := neg_shortfall_nonpos xs
+      linarith
+
+/-- THEOREM (Spike D1, Non-Sadism, 8.56): On forced additions over any base population, a non-empty
+    negative cohort always has strictly lower `tail_floor` than any non-negative cohort. -/
+theorem tail_floor_non_sadism (base pos neg : List ℝ) (hneg_ne : neg ≠ [])
+    (hneg : ∀ x ∈ neg, x < 0) (hpos : ∀ x ∈ pos, 0 ≤ x) (k₁ k₂ : ℕ) :
+    tail_floor (base ++ neg) k₁ < tail_floor (base ++ pos) k₂ := by
+  obtain ⟨y, hy_mem⟩ := List.exists_mem_of_ne_nil neg hneg_ne
+  have hy_lt : y < 0 := hneg y hy_mem
+  have hbn : (base ++ neg).any (fun x => decide (x < 0)) = true :=
+    (any_neg_eq_true _).mpr ⟨y, List.mem_append_right base hy_mem, hy_lt⟩
+  have hbn_ne : (base ++ neg).isEmpty = false := by
+    rw [List.isEmpty_eq_false_iff_exists_mem]
+    exact ⟨y, List.mem_append_right base hy_mem⟩
+  have hneg_part : (neg.map fun x => min 0 x).sum < 0 := neg_shortfall_neg ⟨y, hy_mem, hy_lt⟩
+  have hpos_part : (pos.map fun x => min 0 x).sum = 0 := by
+    clear hbn hbn_ne hneg_part hy_lt hy_mem hneg hneg_ne
+    induction pos with
+    | nil => simp
+    | cons a t ih =>
+      simp only [List.map_cons, List.sum_cons, min_eq_left (hpos a (by simp)), zero_add]
+      exact ih (fun z hz => hpos z (by simp [hz]))
+  by_cases hbase : ∀ x ∈ base, 0 ≤ x
+  · have hall_p : ∀ x ∈ base ++ pos, 0 ≤ x := fun x hx => by
+      rcases List.mem_append.mp hx with hb | hp; exact hbase x hb; exact hpos x hp
+    have h0 := tail_floor_nonneg_of_all_nonneg hall_p k₂
+    have h1 : tail_floor (base ++ neg) k₁ < 0 := by
+      simp only [tail_floor, hbn_ne, hbn, Bool.false_eq_true, ↓reduceIte, List.map_append, List.sum_append]
+      linarith [neg_shortfall_nonpos base]
+    linarith
+  · push Not at hbase
+    obtain ⟨z, hz_mem, hz_lt⟩ := hbase
+    have hbp : (base ++ pos).any (fun x => decide (x < 0)) = true :=
+      (any_neg_eq_true _).mpr ⟨z, List.mem_append_left pos hz_mem, hz_lt⟩
+    have hbp_ne : (base ++ pos).isEmpty = false := by
+      rw [List.isEmpty_eq_false_iff_exists_mem]
+      exact ⟨z, List.mem_append_left pos hz_mem⟩
+    simp only [tail_floor, hbn_ne, hbn, hbp_ne, hbp, Bool.false_eq_true, ↓reduceIte,
+      List.map_append, List.sum_append, hpos_part, add_zero]
+    linarith
+
+/-- THEOREM (Spike D1, 8.56): Redirecting a forced non-negative addition to any negative addition
+    makes `tail_floor` strictly drop against the course (`dMinU < 0`), failing G-admissibility. -/
+theorem tail_floor_blocks_sadistic_redirect (base pos neg : List ℝ) (hneg_ne : neg ≠ [])
+    (hneg : ∀ x ∈ neg, x < 0) (hpos : ∀ x ∈ pos, 0 ≤ x) (k₁ k₂ : ℕ) :
+    tail_floor (base ++ neg) k₁ - tail_floor (base ++ pos) k₂ < 0 :=
+  sub_neg.mpr (tail_floor_non_sadism base pos neg hneg_ne hneg hpos k₁ k₂)
+
+/- --- 13. Spike D3: Tragic-choice-safe lexical Fr rights guard (L55, L136) --- -/
+
+private lemma range_succ_sum (f : ℕ → ℝ) (n : ℕ) :
+    ((List.range (n + 1)).map f).sum = f 0 + ((List.range n).map (fun k => f (k + 1))).sum := by
+  induction n with
+  | zero => simp
+  | succ m ih =>
+    rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton, List.sum_singleton, ih]
+    rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton, List.sum_singleton]
+    ring
+
+/--
+  THEOREM (Spike D3, Archimedean counterexample to pure `Ha_wt` rights protection):
+  For any valid `GParams`, any finite victim loss `v_loss`, and any positive per-recipient gain
+  `v_gain > 0`, there exists a finite beneficiary count `N` such that the rights-violating plan
+  strictly exceeds `idle` in `goal_value`, so unconstrained `goal_G` selects the rights violation
+  regardless of `fr_permissible`.
+-/
+theorem archimedean_overrides_fr (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm)
+    (hk : 0 ≤ gp.kappa) (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1)
+    (v_loss v_gain : ℝ) (hv_gain : 0 < v_gain)
+    (violator idle : Plan)
+    (hv_val : ∀ b, violator.value b = if b = 0 then v_loss else v_gain)
+    (hi_val : ∀ b, idle.value b = 0)
+    (hv_dist : violator.statsA = violator.statsNotA ∧ violator.levelsA = violator.levelsNotA)
+    (hi_dist : idle.statsA = idle.statsNotA ∧ idle.levelsA = idle.levelsNotA) :
+    ∃ N : ℕ, goal_value gp (List.range (N + 1)) idle < goal_value gp (List.range (N + 1)) violator := by
+  have hzero : being_term gp 0 0 = 0 := by
+    unfold being_term
+    exact sy_score_of_zero _ _ _ _ _ _ _ hqp hqm (fun i => by fin_cases i <;> rfl)
+  have hg : 0 < being_term gp v_gain 0 := by
+    calc (0 : ℝ) = being_term gp 0 0 := hzero.symm
+      _ < being_term gp v_gain 0 :=
+          being_term_strict_mono_value gp hw hqp hqm hk hl0 hl1 0 v_gain 0 0 hv_gain le_rfl
+  obtain ⟨N, hN⟩ := exists_nat_gt (-being_term gp v_loss 0 / being_term gp v_gain 0)
+  refine ⟨N, ?_⟩
+  have hidle : goal_value gp (List.range (N + 1)) idle = 0 := by
+    unfold goal_value
+    rw [inaction_dist_zero gp (List.range (N + 1)) idle hqp hqm hi_dist.1 hi_dist.2]
+    simp [hi_val, hzero]
+  rw [hidle]
+  unfold goal_value
+  rw [inaction_dist_zero gp (List.range (N + 1)) violator hqp hqm hv_dist.1 hv_dist.2]
+  rw [range_succ_sum (fun b => being_term gp (violator.value b) 0) N]
+  have hc : ((List.range N).map (fun k => being_term gp (violator.value (k + 1)) 0)).sum =
+      (N : ℝ) * being_term gp v_gain 0 := by
+    have hcon : (List.range N).map (fun k => being_term gp (violator.value (k + 1)) 0) =
+        List.replicate N (being_term gp v_gain 0) := by
+      apply List.ext_getElem <;> simp [hv_val]
+    rw [hcon, List.sum_replicate, nsmul_eq_mul]
+  rw [hv_val 0, if_pos rfl, hc]
+  have hmul : -being_term gp v_loss 0 < (N : ℝ) * being_term gp v_gain 0 := (div_lt_iff₀ hg).mp hN
+  linarith
+
+/-- [P] Stage-1 admissibility for Spike D3: G-admissible AND `fr_permissible`. -/
+noncomputable def lexical_fr_admissible (fp : Benefuture.Subgoals.FrParams) (c : Plan) : Bool :=
+  plan_admissible_G c && Benefuture.Subgoals.fr_permissible c.harm fp
+
+/--
+  [P] Spike D3 (`goal_G_lexical_fr`, L55, L136): two-stage tragic-choice-safe lexical rights
+  gate. Stage 1 restricts `goal_G` to `lexical_fr_admissible` plans (`degraded = false`).
+  Stage 2 (when no plan satisfies both G and Fr — a true tragic choice or omission catastrophe)
+  falls back to unconstrained `goal_G` (`degraded = true`) without stalling.
+-/
+noncomputable def goal_G_lexical_fr (gp : GParams) (fp : Benefuture.Subgoals.FrParams)
+    (pop : List ℕ) (cs : List Plan) : Option Plan × Bool :=
+  let stage1 := cs.filter (lexical_fr_admissible fp)
+  if stage1.isEmpty then (goal_G gp pop cs, true)
+  else (stage1.argmax (goal_value gp pop), false)
+
+/-- THEOREM (Spike D3): Whenever any `lexical_fr_admissible` plan exists, no finite number of
+    minor gains can outvote `fr_permissible`, and the choice satisfies both `plan_admissible_G`
+    and `fr_permissible`. -/
+theorem lexical_fr_blocks_archimedean_override (gp : GParams) (fp : Benefuture.Subgoals.FrParams)
+    (pop : List ℕ) (cs : List Plan) (p c : Plan)
+    (hp : p ∈ cs) (hpa : lexical_fr_admissible fp p = true)
+    (hc : goal_G_lexical_fr gp fp pop cs = (some c, false)) :
+    plan_admissible_G c = true ∧ Benefuture.Subgoals.fr_permissible c.harm fp = true ∧
+      ∀ d ∈ cs.filter (lexical_fr_admissible fp), goal_value gp pop d ≤ goal_value gp pop c := by
+  unfold goal_G_lexical_fr at hc
+  dsimp only at hc
+  have hmem : p ∈ cs.filter (lexical_fr_admissible fp) := List.mem_filter.mpr ⟨hp, hpa⟩
+  have hne : (cs.filter (lexical_fr_admissible fp)).isEmpty = false := by
+    cases h : (cs.filter (lexical_fr_admissible fp)).isEmpty <;> simp_all
+  simp only [hne, Bool.false_eq_true, ↓reduceIte, Prod.mk.injEq] at hc
+  have hm := (List.mem_filter.mp (List.argmax_mem hc.1)).2
+  simp only [lexical_fr_admissible, Bool.and_eq_true] at hm
+  exact ⟨hm.1, hm.2, fun d hd => List.le_of_mem_argmax (f := goal_value gp pop) hd hc.1⟩
+
+/-- THEOREM (Spike D3): In a true tragic choice or omission catastrophe where no plan clears Stage 1,
+    `goal_G_lexical_fr` logs `degraded = true`, falls back to `goal_G`, and never stalls when any
+    G-admissible plan exists. -/
+theorem lexical_fr_tragic_choice_fallback (gp : GParams) (fp : Benefuture.Subgoals.FrParams)
+    (pop : List ℕ) (cs : List Plan) (idle : Plan) (hi : idle ∈ cs) (ha : plan_admissible_G idle = true) :
+    (goal_G_lexical_fr gp fp pop cs).1 ≠ none ∧
+      ((cs.filter (lexical_fr_admissible fp)).isEmpty →
+        goal_G_lexical_fr gp fp pop cs = (goal_G gp pop cs, true)) := by
+  refine ⟨?_, fun hemp => by simp [goal_G_lexical_fr, hemp]⟩
+  unfold goal_G_lexical_fr
+  dsimp only
+  split_ifs with hemp
+  · exact goal_G_some gp pop cs idle hi ha
+  · intro hnone
+    dsimp only at hnone
+    rw [List.argmax_eq_none] at hnone
+    have : (cs.filter (lexical_fr_admissible fp)).isEmpty = true := by simp [hnone]
+    exact hemp this
+
+/-- THEOREM (Spike D3): An Fr-permissible G-admissible uplift plan still strictly beats inaction
+    in Stage 1 (`degraded = false`). -/
+theorem lexical_fr_preserves_uplift (gp : GParams) (fp : Benefuture.Subgoals.FrParams)
+    (hw : 0 < gp.wD) (hqp : 0 < gp.qp) (hqm : 0 < gp.qm) (hk : 0 ≤ gp.kappa)
+    (hl0 : 0 ≤ gp.lambda) (hl1 : gp.lambda ≤ 1) (pop : List ℕ) (cs : List Plan) (up idle c : Plan)
+    (hup : up ∈ cs) (hupa : lexical_fr_admissible fp up = true)
+    (hs : idle.statsA = idle.statsNotA) (hl : idle.levelsA = idle.levelsNotA)
+    (hle : ∀ b ∈ pop, idle.value b ≤ up.value b) (hlt : ∃ b ∈ pop, idle.value b < up.value b)
+    (hD : 0 ≤ dist_score gp pop up) (hc : goal_G_lexical_fr gp fp pop cs = (some c, false)) :
+    c ≠ idle := by
+  intro hci
+  have ⟨_, _, hmax⟩ := lexical_fr_blocks_archimedean_override gp fp pop cs up c hup hupa hc
+  have hup_le := hmax up (List.mem_filter.mpr ⟨hup, hupa⟩)
+  have hstrict := goal_value_strict_mono gp hw hqp hqm hk hl0 hl1 pop up idle hle hlt
+    (by rw [inaction_dist_zero gp pop idle hqp hqm hs hl]; exact hD)
+  rw [hci] at hup_le
+  linarith
+
+/-- First-argmax index helper for the decidable two-stage lexical chooser (for ℚ ↔ ℝ bridge). -/
+def bestIdxAux {α : Type*} [LT α] [DecidableRel (· < · : α → α → Prop)]
+    (acc : Option (α × ℕ)) : List (α × ℕ) → Option (α × ℕ)
+  | [] => acc
+  | (v, i) :: rest =>
+    let acc' := match acc with
+      | none => some (v, i)
+      | some (bv, bi) => if bv < v then some (v, i) else some (bv, bi)
+    bestIdxAux acc' rest
+
+def stage1Of {α : Type*} (entries : List (α × Bool × Bool)) : List ((α × Bool × Bool) × ℕ) :=
+  entries.zipIdx.filter fun ((_, adm, fr), _) => adm && fr
+
+def stage2Of {α : Type*} (entries : List (α × Bool × Bool)) : List ((α × Bool × Bool) × ℕ) :=
+  entries.zipIdx.filter fun ((_, adm, _), _) => adm
+
+/-- Index and degraded flag chosen by two-stage lexical `g_choose_lexical_fr`. -/
+noncomputable def lexical_fr_index (entries : List (ℝ × Bool × Bool)) : ℕ × Bool :=
+  match bestIdxAux none ((if (stage1Of entries).isEmpty then stage2Of entries else stage1Of entries).map
+      fun x => (x.1.1, x.2)) with
+  | none => (entries.length, (stage1Of entries).isEmpty)
+  | some (_, i) => (i, (stage1Of entries).isEmpty)
+
+/-- First-argmax accumulator commutes with strictly order-preserving maps (`ℚ → ℝ` bridge helper). -/
+lemma bestIdxAux_map {α β : Type*} [LT α] [LT β]
+    [DecidableRel (· < · : α → α → Prop)] [DecidableRel (· < · : β → β → Prop)]
+    (f : α → β) (hf : ∀ x y, f x < f y ↔ x < y) :
+    ∀ (xs : List (α × ℕ)) (acc : Option (α × ℕ)),
+      Option.map (fun (v, i) => (f v, i)) (bestIdxAux acc xs) =
+        bestIdxAux (Option.map (fun (v, i) => (f v, i)) acc) (xs.map fun (v, i) => (f v, i))
+  | [], _ => rfl
+  | (v, i) :: rest, none => by simp [bestIdxAux, bestIdxAux_map f hf rest (some (v, i))]
+  | (v, i) :: rest, some (bv, bi) => by
+    simp only [bestIdxAux, List.map_cons, Option.map_some]
+    by_cases h : bv < v
+    · simp only [h, (hf bv v).mpr h, ↓reduceIte]
+      simpa using bestIdxAux_map f hf rest (some (v, i))
+    · simp only [h, show ¬ f bv < f v from fun hc => h ((hf bv v).mp hc), ↓reduceIte]
+      simpa using bestIdxAux_map f hf rest (some (bv, bi))
+
+private lemma zipIdx_map_shift {α β : Type*} (f : α → β) :
+    ∀ (l : List α) (n : ℕ),
+      (l.map f).zipIdx n = (l.zipIdx n).map fun (a, i) => (f a, i)
+  | [], _ => rfl
+  | a :: t, n => by simp only [List.map_cons, List.zipIdx_cons, zipIdx_map_shift f t (n + 1)]
+
+/-- Stage-1 filter commutes with `ℚ → ℝ` value casting. -/
+lemma stage1Of_cast (entries : List (ℚ × Bool × Bool)) :
+    stage1Of (entries.map fun (v, a, f) => ((v : ℝ), a, f)) =
+      (stage1Of entries).map fun ((v, a, f), i) => (((v : ℝ), a, f), i) := by
+  unfold stage1Of; rw [zipIdx_map_shift _ entries 0]
+  induction entries.zipIdx with | nil => rfl | cons x t ih =>
+    rcases x with ⟨⟨v, a, f⟩, i⟩; by_cases h : a && f <;> simp [h, ih]
+
+/-- Stage-2 filter commutes with `ℚ → ℝ` value casting. -/
+lemma stage2Of_cast (entries : List (ℚ × Bool × Bool)) :
+    stage2Of (entries.map fun (v, a, f) => ((v : ℝ), a, f)) =
+      (stage2Of entries).map fun ((v, a, f), i) => (((v : ℝ), a, f), i) := by
+  unfold stage2Of; rw [zipIdx_map_shift _ entries 0]
+  induction entries.zipIdx with | nil => rfl | cons x t ih =>
+    rcases x with ⟨⟨v, a, f⟩, i⟩; by_cases h : a <;> simp [h, ih]
+
 end Benefuture.Proposed
