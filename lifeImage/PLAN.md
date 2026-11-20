@@ -62,6 +62,23 @@ cache (a shared prefix).
   the gold sets show drift (score-only until converged, 8.136).
 - Measured: hit rate per task type and per rebuild, reported with each run.
 
+**The graph as cached context, in place of fine-tuning** (author, 2026-11-20). Until a model can be fine-tuned, the
+graph itself is what the classifier learns from, held in context:
+
+- **Context packs.** Each release serialises the graph into compact packs (id, label, parents, short aliases; a
+  description only where labels collide), with reviewed gold examples as few-shot cases. One coarse pack (always
+  loaded) and one pack per sector (and per subtree where a sector is too large); a pack has a token budget.
+- **The cache follows the hierarchy.** A prompt is instructions, then the coarse pack, then a sector pack, then the
+  cards: each layer a stable prefix, versioned with the basemap, so it stays valid for a whole release.
+- **Route, then classify.** Cards are routed first against the coarse pack (cheap), grouped by sector, and each
+  sector's cards classified in one batch that reads its pack once. Batching by sector is what makes the reuse
+  reliable for subagents, whose separate sessions may not share a provider cache.
+- **The packs are the classifier's weights until there are weights.** A better graph is a better classifier with no
+  training step.
+
+**Every answer is future training data.** Task inputs, answers, votes, escalations and author reviews are kept, so the
+packs' behaviour can later be distilled into a fine-tuned small classifier, or a model trained on the graph.
+
 ### Toward an embedding engine (ruled: the map can turn into, or feed, an embedding engine)
 
 - **The sparse vector is native.** A domain profile is weights over domain ids summing to 1 (Benefuture L22): a point
@@ -73,7 +90,12 @@ cache (a shared prefix).
   (labels, aliases, descriptions), graph (parents, overlaps) and co-occurrence. The card keeps what each needs.
 - **Hyperbolic fit.** Poincaré embeddings place general concepts near the centre and specific ones toward the rim
   of a disc, in few dimensions, which is the image's own geometry; a higher-dimensional ball could be the engine and
-  the image its anchored two-dimensional view (angles fixed by the basemap, the rest learnt). To test, not assumed.
+  the image its anchored two-dimensional view (angles fixed by the basemap, the rest learnt). For the engine, to test.
+- **Toward concept-model weights** (author, 2026-11-20: the graph may become analogous to Large Concept Model
+  weights). Large Concept Models model language over sentence-level embeddings rather than tokens; the graph would be
+  an explicit, named, versioned concept space, a codebook of ids over a continuous space. What to keep now so that
+  path stays open: raw co-occurrence statistics (not only the weights derived from them), multilingual labels and
+  aliases, evidence rows as an entity-to-concept corpus, and every task answer with its input.
 - **Similarity finds; it never credits.** Nearness may retrieve and classify; it must not move reputation between
   domains (Benefuture L101: no transfer, no halo).
 
@@ -155,6 +177,9 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 8. **Domain profiles as vectors.** L22's `Dn(T)` with weights summing to 1 is a sparse simplex vector; classifying an
    action into domains (`relevantDn(A)`, L86) is retrieval in that space. A similarity space also invites
    reputation to leak to nearby domains; L101's no-transfer rule should say it holds for similarity too.
+9. **The graph as memory.** L22 learns domain relations from memory (`Rel ← Mem`); a graph that serves as context
+   packs now and as concept-model weights later is that memory made operational, and a candidate concrete form for
+   how metric models classify actions into domains.
 
 ## Decided
 
@@ -162,7 +187,11 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
   API runner may replace them later behind the same task-file interface.
 - **[R] Gold sets** (author, 2026-11-20): model-drafted labels, reviewed by the author.
 - **[R] AI tasks optimised for maximum cache hit** (author, 2026-11-20).
-- **[R] The domain map built so it can turn into, or feed, an embedding engine** (author, 2026-11-20).
+- **[R] The domain map built so it can turn into, or feed, an embedding engine** (author, 2026-11-20), and in time
+  become analogous to Large Concept Model weights.
+- **[R] The graph serves as cached classifier context until fine-tuning is possible** (author, 2026-11-20).
+- **[R] The visual shape is expected to come out right by construction** (author, 2026-11-20); layout is not a risk
+  to plan around.
 
 ## Open
 
