@@ -4,6 +4,7 @@ Two parts, per `docs/CODING_STYLE.md` §7. Read Part 2 every turn; read Part 1 o
 
 ## Part 2: Direction and next steps
 
+- **Life Image (author, 2026-11-20):** a separate subproject in `lifeImage/` (own workflows, releases, and a real domain graph as basemap); design only, not started (`lifeImage/DESIGN.md`).
 - **Pseudocode check (2026-11-14):** `tools/check_pseudocode.py` (CI: `.github/workflows/pseudocode_check.yml`) blocks on copy identity (three copies) and line citations; undefined symbols are report-only until the author rules (`docs/BACKPROPAGATION.md`), then drop `--symbols-report-only`.
 - **Next steps (author, 2026-11-08):** an update that names what is next starts on it in the same turn or arms a two-minute self-reminder to continue.
 - **Formal links in articles (author, 2026-11-08):** core articles get a Formal reference section (Lean theorems and reference functions on GitHub) and an In simulation discussion subsection; started with Harm and Freedom, then Benefuture goals, Understanding, Happiness, Measurement, Decision, Government, Benefuture currency, Diversity.

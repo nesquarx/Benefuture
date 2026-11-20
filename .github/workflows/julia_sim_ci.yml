@@ -11,12 +11,14 @@ on:
       - 'docs/**'
       - 'COORDINATION.md'
       - 'wiki/**'
+      - 'lifeImage/**'
   pull_request:
     paths-ignore:
       - '**.md'
       - 'docs/**'
       - 'COORDINATION.md'
       - 'wiki/**'
+      - 'lifeImage/**'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
