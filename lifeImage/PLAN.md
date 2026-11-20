@@ -120,8 +120,12 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 7. **Dogfooding.** The pipeline (accuracy-gated models, credence by agreement, escalation, loud logging) is
    Benefuture's metric-model process run on itself; its measured behaviour is evidence for or against that process.
 
+## Decided
+
+- **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
+  API runner may replace them later behind the same task-file interface.
+- **[R] Gold sets** (author, 2026-11-20): model-drafted labels, reviewed by the author.
+
 ## Open
 
-- Runner for tasks: subagent batches (no key; session tokens) or an API runner (a key; cheaper per task at scale).
-- Who labels the gold sets: the author, or the author reviewing model-drafted labels.
 - Licences of the seed sources, verified before any are used.
