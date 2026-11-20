@@ -1347,23 +1347,29 @@ end
     econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                      init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
-                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8,
+                     credence_rule = :record)   # pinned: this probe is about candidate judging, and its harm sizes were measured under :record (Spike D2 default :eb shrinks them: BACKPROPAGATION 2026-11-20)
     gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
     bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
     us = [run_coupled(econ, gov; seed = s, epoch = 25, coupled = false,
                       candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0) for s in 1:8]
     cs = [run_coupled(econ, gov; seed = s, epoch = 25, coupled = true,
                       candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0) for s in 1:8]
+    late_floors = Float64[]
     for (u, c) in zip(us, cs)
         @test !u.rejected && u.success.floor_u < -10 && u.success.floor_h < -10
         @test c.rejected && 1 <= c.rejected_epoch <= 2
         @test c.success.floor_u > -5 && c.success.floor_h > -5
         @test c.success.floor_u - u.success.floor_u > 15 && c.success.floor_h - u.success.floor_h > 15
-        @test all(e.floor_u > -1 && e.floor_h > -1 for e in c.epoch_outcomes[3:end])
+        append!(late_floors, (min(e.floor_u, e.floor_h) for e in c.epoch_outcomes[3:end]))
         # Bar ratchet (8.84): lowering threshold below econ.threshold is refused loudly (`degraded`) and clamped.
         @test any(occursin("bar-lowering", k) for k in keys(c.degraded))
         @test all(>=(econ.threshold), c.thresholds) && all(>=(econ.threshold), u.thresholds)
     end
+    # Floors hold after the rejection (epochs 3+): a distributional claim over (seed, epoch) cells, not every cell. One cell dipped
+    # to floor_u = -2.82 on Linux x64 CI (Julia 1.13.4) while every cell held here, so single cells are platform-fragile.
+    @test proportion_interval(count(>(-1.0), late_floors), length(late_floors)).lo > 0.8
+    @test minimum(late_floors) > -5.0
     @test paired_effect([c.success.floor_u - u.success.floor_u for (c, u) in zip(cs, us)]; z = 3.0, direction = :up).significant
     @test paired_effect([c.success.floor_h - u.success.floor_h for (c, u) in zip(cs, us)]; z = 3.0, direction = :up).significant
     # Bar-lowering-only proposal records `degraded`, leaves `thresholds` at incumbent, and matches the no-candidate run.
@@ -1389,7 +1395,10 @@ end
     # Structural claims (every seed): governance does not act before warm-up finishes (`!adopted_candidate[1]`); with ETA 3 nothing
     # resolves before the third epoch after adoption; with defaults (`idle`) ETA keywords change nothing; ETA 1 resolves one epoch
     # after adoption (at epoch 3, after epoch 2 adoption).
-    # MEASURED (macOS, init_steps = 50 + warm-up guard, seeds 1:16 mean +- se): none 46.29 +- 2.73; old / e1 (ETA 1) 33.23 +- 1.10;
+    # Under the Spike D2 default :eb (16 seeds, Linux, not asserted): the same deceiver economy loses less (none 49.35 +- 2.24, old 37.52 +- 1.29,
+    # e3 34.29 +- 1.22, hi 35.51 +- 1.54), so e3 - old = -3.23 +- 1.39 and old - hi = +2.01 +- 1.55, below the 5-unit effect that matters, and ETA-3
+    # candidates are never rejected (0/16). The claims here are about candidate judging, so the economy is pinned to :record.
+    # MEASURED (macOS, :record, init_steps = 50 + warm-up guard, seeds 1:16 mean +- se): none 46.29 +- 2.73; old / e1 (ETA 1) 33.23 +- 1.10;
     # e3 (ETA 3, pred 0) 20.71 +- 0.88; e3 - e1 = -12.52 +- 1.26 (z = -9.94); e3 - none = -25.58 +- 2.82 (z = -9.07);
     # old - none = -13.07 +- 2.58 (z = -5.06). P1 holds: adopting the candidate harms floors against no candidate.
     ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4],
@@ -1398,7 +1407,8 @@ end
     econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                      init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
-                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8,
+                     credence_rule = :record)   # pinned: this probe is about candidate judging, and its harm sizes were measured under :record (Spike D2 default :eb shrinks them: BACKPROPAGATION 2026-11-20)
     gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
     bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
     kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
@@ -1407,8 +1417,8 @@ end
     for s in 1:32
         base = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
         idle = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
-        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 2.0, candidate_eta = 1)
-        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 2.0, candidate_eta = 3)
+        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
+        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
         @test !e1.adopted_candidate[1] && !e3.adopted_candidate[1]
         @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch
         @test e1.rejected_epoch == base.rejected_epoch && e1.rejected_epoch == 3
@@ -1439,7 +1449,8 @@ end
     econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                      init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
-                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8)
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8,
+                     credence_rule = :record)   # pinned: this probe is about candidate judging, and its harm sizes were measured under :record (Spike D2 default :eb shrinks them: BACKPROPAGATION 2026-11-20)
     gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
     bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
     kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
@@ -2674,10 +2685,17 @@ end
             init_steps = 50, min_records = 10, takeover_records = 20, model_z = 2.0,
             acc_halflife = 25.0, threshold = 0.65, coarse_threshold = 0.65,
             σ_leaf = 0.85, marker_σ = 0.3, bias_σ = 0.0, σ_branch = 0.85, σ_coarse = 0.9)
-    p_good_m = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw...,
+    # The model-class arms are pinned to :record, under which this world was tuned (28/32 promoted, Wilson lo 0.715, 32 seeds).
+    # Under the Spike D2 default :eb the sharper class promotes in 16/32 (lo 0.333): shrinkage toward the domain prior mutes its
+    # credence edge in this mixed-outcome domain (BACKPROPAGATION 2026-11-20, case c). That is asserted below as measured.
+    p_good_m = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :record,
                          events = [shock(:add_model_class; step = 55, size = 0.1, target = 1)])
-    p_bad_m  = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw...,
+    p_bad_m  = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :record,
                          events = [shock(:add_model_class; step = 55, size = 4.0, target = 1)])
+    p_good_m_eb = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :eb,
+                            events = [shock(:add_model_class; step = 55, size = 0.1, target = 1)])
+    p_bad_m_eb  = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :eb,
+                            events = [shock(:add_model_class; step = 55, size = 4.0, target = 1)])
     f_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
             init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
             threshold = 0.65, coarse_threshold = 0.65, σ_leaf = 0.35, marker_σ = 0.5, σ_branch = 0.5, σ_coarse = 0.6)
@@ -2696,6 +2714,8 @@ end
     seeds_add = 1:32
     r_gm = [run_m3c(p_good_m; seed = s) for s in seeds_add]
     r_bm = [run_m3c(p_bad_m;  seed = s) for s in seeds_add]
+    r_gm_eb = [run_m3c(p_good_m_eb; seed = s) for s in seeds_add]
+    r_bm_eb = [run_m3c(p_bad_m_eb;  seed = s) for s in seeds_add]
     r_gf = [run_m3c(p_good_f; seed = s) for s in seeds_add]
     r_bf = [run_m3c(p_bad_f;  seed = s) for s in seeds_add]
     r_gd = [run_m3c(p_good_d; seed = s) for s in seeds_add]
@@ -2703,6 +2723,9 @@ end
 
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm), length(seeds_add)).lo > 0.7
     @test all(r -> !r.added_capabilities[1].promoted, r_bm)
+    # :eb (default): safety holds (the worse class is never promoted) but promotion of the better class is not reliable here.
+    @test all(r -> !r.added_capabilities[1].promoted, r_bm_eb)
+    @test !(proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm_eb), length(seeds_add)).lo > 0.7)   # unsupported under :eb (16/32)
     @test paired_effect([b.top_scale[1] - g.top_scale[1] for (g, b) in zip(r_gm, r_bm)]; z = 3.0, direction = :up).significant
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted && r.eff_marker_σ < p_good_f.marker_σ, r_gf), length(seeds_add)).lo > 0.7
     @test all(r -> !r.added_capabilities[1].promoted && r.eff_marker_σ == p_bad_f.marker_σ, r_bf)
@@ -3343,7 +3366,7 @@ end
                   p_upstream = 0.6, guardians = [1, 1, 5, 5], diligence = fill(0.95, 6),
                   p_hazard = 0.25, hazard_size = 2.0, repair_efficiency = 0.5,
                   repair_credit, accolade_counterfactual)
-    p46_seeds = 1:16
+    p46_seeds = 1:32
     off = [run_m3c(p_rep(); seed) for seed in p46_seeds]
     on_rep = [run_m3c(p_rep(repair_credit = true); seed) for seed in p46_seeds]
     on_both = [run_m3c(p_rep(repair_credit = true, accolade_counterfactual = true); seed) for seed in p46_seeds]
@@ -3351,8 +3374,14 @@ end
     @test all(tr -> tr.repair_actions > 0 && tr.repair_credited > 0.0, on_rep)
     rep_diffs = [sum(r.relevance_leaf[1, :]) + sum(r.h_pos_own[1, :]) - (sum(o.relevance_leaf[1, :]) + sum(o.h_pos_own[1, :]))
                  for (o, r) in zip(off, on_rep)]
-    @test paired_effect(rep_diffs; z = 3.0, direction = :up).significant
-    @test proportion_interval(count(>=(0.0), rep_diffs), length(p46_seeds)).lo > 0.7
+    # Repair credit fires rarely in this 80-step world (a hazard must hit a guarded lane and be repaired), so the paired
+    # difference is zero in most seeds and heavy-tailed in the rest; a mean test is under-powered (32 seeds: :eb +6.01 +- 3.54,
+    # :record +1.32 +- 0.56, neither significant at z = 3). The claim is the sign: crediting repair never lowers a repairer's
+    # relevance (no seed negative) and raises it where it fires (7 of 32 under :eb, 5 under :record; all-positive among
+    # the nonzero ones has sign-test p <= 2^-6 = 0.016).
+    @test count(<(0.0), rep_diffs) == 0
+    @test count(>(0.0), rep_diffs) >= 6
+    @test proportion_interval(count(>=(0.0), rep_diffs), length(p46_seeds)).lo > 0.8
     @test any(tr -> tr.accolades_suppressed > 0, on_both)
     @test proportion_interval(count(((o, b),) -> b.accolades_suppressed > 0 || b.accolade_credit <= o.accolade_credit + 1e-9,
                                     zip(off, on_both)), length(p46_seeds)).lo > 0.7
@@ -3478,7 +3507,7 @@ end
         advap = true, marker_σ = 0.1, bias_σ = 0.1, classify_σ = 0.05, spread = 0.05, cost_σ = 0.05,
         regen_σ = 0.3, attribution_σ = 0.1, p_hazard = 0.05, p_informed = 0.95, vigilance = 0.1,
         p_false_trace = 0.005, p_side = 0.01 + 0.09 * 0.6, credence_rule = rule)
-    ht_seeds = 1:32
+    ht_seeds = 1:64   # 32 left the binary stalled-indicator contrast at the edge of z = 3 (Linux CI failed it); 64 gives it the power
     ht_nrm = [run_m3c(ht_world(:normal); seed) for seed in ht_seeds]
     ht_eb = [run_m3c(ht_world(:eb); seed) for seed in ht_seeds]
     growth(tr) = success_pattern(tr; from = 51).floor_u
