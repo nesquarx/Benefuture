@@ -1,0 +1,268 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1100" font-family="sans-serif"><rect width="100%" height="100%" fill="#111"/>
+<circle cx="550.0" cy="550.0" r="430" fill="none" stroke="#444"/><line x1="120.0" y1="550.0" x2="980.0" y2="550.0" stroke="#333"/><line x1="550.0" y1="120.0" x2="550.0" y2="980.0" stroke="#333"/>
+<text x="115.0" y="542.0" fill="#aaa" font-size="14" text-anchor="end">abstract</text><text x="985.0" y="542.0" fill="#aaa" font-size="14">tangible</text>
+<text x="550.0" y="110.0" fill="#aaa" font-size="14" text-anchor="middle">global / professional</text><text x="550.0" y="1002.0" fill="#aaa" font-size="14" text-anchor="middle">personal / social</text>
+<circle cx="984.1" cy="983.1" r="4" fill="#5f4ce5"/><text x="989.1" y="986.1" fill="#5f4ce5" font-size="7.5" opacity="0.85">Sleep and rest</text>
+<circle cx="979.0" cy="977.1" r="4" fill="#5f4ce5"/><text x="984.0" y="980.1" fill="#5f4ce5" font-size="7.5" opacity="0.85">Hygiene and grooming</text>
+<circle cx="980.1" cy="978.9" r="4" fill="#5f4ce5"/><text x="985.1" y="981.9" fill="#5f4ce5" font-size="7.5" opacity="0.85">Eating and drinking</text>
+<circle cx="768.4" cy="834.2" r="4" fill="#5f4ce5"/><text x="773.4" y="837.2" fill="#5f4ce5" font-size="7.5" opacity="0.85">Nutrition and diet</text>
+<circle cx="979.7" cy="837.6" r="4" fill="#5f4ce5"/><text x="984.7" y="840.6" fill="#5f4ce5" font-size="7.5" opacity="0.85">Exercise and fitness</text>
+<circle cx="984.9" cy="765.1" r="4" fill="#5f4ce5"/><text x="989.9" y="768.1" fill="#5f4ce5" font-size="7.5" opacity="0.85">Physical health and illness</text>
+<circle cx="905.8" cy="338.1" r="4" fill="#5f4ce5"/><text x="910.8" y="341.1" fill="#5f4ce5" font-size="7.5" opacity="0.85">Medical care</text>
+<circle cx="838.0" cy="475.4" r="4" fill="#5f4ce5"/><text x="843.0" y="478.4" fill="#5f4ce5" font-size="7.5" opacity="0.85">Preventive health</text>
+<circle cx="984.9" cy="842.4" r="4" fill="#5f4ce5"/><text x="989.9" y="845.4" fill="#5f4ce5" font-size="7.5" opacity="0.85">Medication and treatment adherence</text>
+<circle cx="123.7" cy="769.8" r="4" fill="#5f4ce5"/><text x="128.7" y="772.8" fill="#5f4ce5" font-size="7.5" opacity="0.85">Mental health and wellbeing</text>
+<circle cx="906.1" cy="767.8" r="4" fill="#5f4ce5"/><text x="911.1" y="770.8" fill="#5f4ce5" font-size="7.5" opacity="0.85">Substance use</text>
+<circle cx="554.8" cy="982.2" r="4" fill="#5f4ce5"/><text x="559.8" y="985.2" fill="#5f4ce5" font-size="7.5" opacity="0.85">Sexuality and sex</text>
+<circle cx="908.1" cy="688.6" r="4" fill="#5f4ce5"/><text x="913.1" y="691.6" fill="#5f4ce5" font-size="7.5" opacity="0.85">Reproduction and fertility</text>
+<circle cx="907.6" cy="551.3" r="4" fill="#5f4ce5"/><text x="912.6" y="554.3" fill="#5f4ce5" font-size="7.5" opacity="0.85">Disability and adaptation</text>
+<circle cx="985.0" cy="770.6" r="4" fill="#5f4ce5"/><text x="990.0" y="773.6" fill="#5f4ce5" font-size="7.5" opacity="0.85">Ageing</text>
+<circle cx="979.7" cy="912.8" r="4" fill="#5f4ce5"/><text x="984.7" y="915.8" fill="#5f4ce5" font-size="7.5" opacity="0.85">Personal appearance</text>
+<circle cx="117.1" cy="983.7" r="4" fill="#5f4ce5"/><text x="122.1" y="986.7" fill="#5f4ce5" font-size="7.5" opacity="0.85">Self-reflection and personal growth</text>
+<circle cx="694.0" cy="830.8" r="4" fill="#5f4ce5"/><text x="699.0" y="833.8" fill="#5f4ce5" font-size="7.5" opacity="0.85">Traditional and alternative healing</text>
+<circle cx="911.0" cy="978.8" r="4" fill="#e5854c"/><text x="916.0" y="981.8" fill="#e5854c" font-size="7.5" opacity="0.85">Parenting young children</text>
+<circle cx="338.9" cy="982.0" r="4" fill="#e5854c"/><text x="343.9" y="985.0" fill="#e5854c" font-size="7.5" opacity="0.85">Parenting adolescents</text>
+<circle cx="830.6" cy="621.5" r="4" fill="#e5854c"/><text x="835.6" y="624.5" fill="#e5854c" font-size="7.5" opacity="0.85">Childcare by others</text>
+<circle cx="912.8" cy="546.9" r="4" fill="#e5854c"/><text x="917.8" y="549.9" fill="#e5854c" font-size="7.5" opacity="0.85">Care of older people</text>
+<circle cx="906.3" cy="554.4" r="4" fill="#e5854c"/><text x="911.3" y="557.4" fill="#e5854c" font-size="7.5" opacity="0.85">Care of the ill or disabled</text>
+<circle cx="259.7" cy="980.8" r="4" fill="#e5854c"/><text x="264.7" y="983.8" fill="#e5854c" font-size="7.5" opacity="0.85">Dating and romantic partnership</text>
+<circle cx="331.9" cy="985.6" r="4" fill="#e5854c"/><text x="336.9" y="988.6" fill="#e5854c" font-size="7.5" opacity="0.85">Marriage and cohabitation</text>
+<circle cx="267.0" cy="979.4" r="4" fill="#e5854c"/><text x="272.0" y="982.4" fill="#e5854c" font-size="7.5" opacity="0.85">Family relations</text>
+<circle cx="330.0" cy="977.8" r="4" fill="#e5854c"/><text x="335.0" y="980.8" fill="#e5854c" font-size="7.5" opacity="0.85">Family occasions and traditions</text>
+<circle cx="406.7" cy="841.8" r="4" fill="#d2e54c"/><text x="411.7" y="844.8" fill="#d2e54c" font-size="7.5" opacity="0.85">Household management</text>
+<circle cx="975.3" cy="980.6" r="4" fill="#d2e54c"/><text x="980.3" y="983.6" fill="#d2e54c" font-size="7.5" opacity="0.85">Cooking and food preparation</text>
+<circle cx="982.5" cy="980.6" r="4" fill="#d2e54c"/><text x="987.5" y="983.6" fill="#d2e54c" font-size="7.5" opacity="0.85">Cleaning and laundry</text>
+<circle cx="983.8" cy="980.5" r="4" fill="#d2e54c"/><text x="988.8" y="983.5" fill="#d2e54c" font-size="7.5" opacity="0.85">Home repair and DIY</text>
+<circle cx="985.6" cy="981.2" r="4" fill="#d2e54c"/><text x="990.6" y="984.2" fill="#d2e54c" font-size="7.5" opacity="0.85">Home organisation and decor</text>
+<circle cx="837.6" cy="405.9" r="4" fill="#d2e54c"/><text x="842.6" y="408.9" fill="#d2e54c" font-size="7.5" opacity="0.85">Home utilities and energy use</text>
+<circle cx="981.2" cy="477.0" r="4" fill="#d2e54c"/><text x="986.2" y="480.0" fill="#d2e54c" font-size="7.5" opacity="0.85">Waste and recycling</text>
+<circle cx="980.9" cy="977.5" r="4" fill="#d2e54c"/><text x="985.9" y="980.5" fill="#d2e54c" font-size="7.5" opacity="0.85">Home gardening</text>
+<circle cx="976.3" cy="976.2" r="4" fill="#d2e54c"/><text x="981.3" y="979.2" fill="#d2e54c" font-size="7.5" opacity="0.85">Pets and companion animals</text>
+<circle cx="981.4" cy="910.3" r="4" fill="#d2e54c"/><text x="986.4" y="913.3" fill="#d2e54c" font-size="7.5" opacity="0.85">Subsistence and own-use production</text>
+<circle cx="979.7" cy="760.1" r="4" fill="#e54c4c"/><text x="984.7" y="763.1" fill="#e54c4c" font-size="7.5" opacity="0.85">Shopping and errands</text>
+<circle cx="911.5" cy="411.1" r="4" fill="#d2e54c"/><text x="916.5" y="414.1" fill="#d2e54c" font-size="7.5" opacity="0.85">Finding and securing housing</text>
+<circle cx="125.1" cy="984.1" r="4" fill="#984ce5"/><text x="130.1" y="987.1" fill="#984ce5" font-size="7.5" opacity="0.85">Friendship</text>
+<circle cx="483.2" cy="985.1" r="4" fill="#984ce5"/><text x="488.2" y="988.1" fill="#984ce5" font-size="7.5" opacity="0.85">Socialising and visiting</text>
+<circle cx="192.1" cy="978.7" r="4" fill="#984ce5"/><text x="197.1" y="981.7" fill="#984ce5" font-size="7.5" opacity="0.85">Everyday conversation and messaging</text>
+<circle cx="480.9" cy="977.3" r="4" fill="#984ce5"/><text x="485.9" y="980.3" fill="#984ce5" font-size="7.5" opacity="0.85">Neighbours and local community</text>
+<circle cx="410.3" cy="769.2" r="4" fill="#984ce5"/><text x="415.3" y="772.2" fill="#984ce5" font-size="7.5" opacity="0.85">Clubs and community groups</text>
+<circle cx="626.3" cy="479.5" r="4" fill="#984ce5"/><text x="631.3" y="482.5" fill="#984ce5" font-size="7.5" opacity="0.85">Volunteering</text>
+<circle cx="698.8" cy="336.0" r="4" fill="#984ce5"/><text x="703.8" y="339.0" fill="#984ce5" font-size="7.5" opacity="0.85">Charity and giving</text>
+<circle cx="692.8" cy="981.9" r="4" fill="#984ce5"/><text x="697.8" y="984.9" fill="#984ce5" font-size="7.5" opacity="0.85">Helping others informally</text>
+<circle cx="842.6" cy="985.0" r="4" fill="#984ce5"/><text x="847.6" y="988.0" fill="#984ce5" font-size="7.5" opacity="0.85">Hosting and hospitality</text>
+<circle cx="123.5" cy="975.0" r="4" fill="#984ce5"/><text x="128.5" y="978.0" fill="#984ce5" font-size="7.5" opacity="0.85">Interpersonal conflict</text>
+<circle cx="121.4" cy="979.8" r="4" fill="#984ce5"/><text x="126.4" y="982.8" fill="#984ce5" font-size="7.5" opacity="0.85">Apology and reconciliation</text>
+<circle cx="265.0" cy="339.1" r="4" fill="#984ce5"/><text x="270.0" y="342.1" fill="#984ce5" font-size="7.5" opacity="0.85">Mediation and dispute resolution</text>
+<circle cx="116.9" cy="767.8" r="4" fill="#984ce5"/><text x="121.9" y="770.8" fill="#984ce5" font-size="7.5" opacity="0.85">Mentoring and peer support</text>
+<circle cx="187.0" cy="905.1" r="4" fill="#984ce5"/><text x="192.0" y="908.1" fill="#984ce5" font-size="7.5" opacity="0.85">Loneliness and social isolation</text>
+<circle cx="123.5" cy="834.6" r="4" fill="#984ce5"/><text x="128.5" y="837.6" fill="#984ce5" font-size="7.5" opacity="0.85">Reputation and gossip</text>
+<circle cx="123.8" cy="831.8" r="4" fill="#984ce5"/><text x="128.8" y="834.8" fill="#984ce5" font-size="7.5" opacity="0.85">Etiquette and social norms</text>
+<circle cx="474.2" cy="839.0" r="4" fill="#984ce5"/><text x="479.2" y="842.0" fill="#984ce5" font-size="7.5" opacity="0.85">Celebrations and festivals</text>
+<circle cx="114.5" cy="765.9" r="4" fill="#984ce5"/><text x="119.5" y="768.9" fill="#984ce5" font-size="7.5" opacity="0.85">Culture and identity</text>
+<circle cx="268.3" cy="837.0" r="4" fill="#984ce5"/><text x="273.3" y="840.0" fill="#984ce5" font-size="7.5" opacity="0.85">Youth and peer culture</text>
+<circle cx="337.2" cy="329.3" r="4" fill="#984ce5"/><text x="342.2" y="332.3" fill="#984ce5" font-size="7.5" opacity="0.85">Inclusion and exclusion</text>
+<circle cx="336.6" cy="121.3" r="4" fill="#4cace5"/><text x="341.6" y="124.3" fill="#4cace5" font-size="7.5" opacity="0.85">Voting and elections</text>
+<circle cx="479.3" cy="190.3" r="4" fill="#4cace5"/><text x="484.3" y="193.3" fill="#4cace5" font-size="7.5" opacity="0.85">Political participation</text>
+<circle cx="118.4" cy="269.2" r="4" fill="#4cace5"/><text x="123.4" y="272.2" fill="#4cace5" font-size="7.5" opacity="0.85">Political discussion and ideology</text>
+<circle cx="472.8" cy="114.3" r="4" fill="#4cace5"/><text x="477.8" y="117.3" fill="#4cace5" font-size="7.5" opacity="0.85">Dealing with government</text>
+<circle cx="340.5" cy="116.2" r="4" fill="#4cace5"/><text x="345.5" y="119.2" fill="#4cace5" font-size="7.5" opacity="0.85">Tax and regulatory compliance</text>
+<circle cx="187.1" cy="116.5" r="4" fill="#4cace5"/><text x="192.1" y="119.5" fill="#4cace5" font-size="7.5" opacity="0.85">Law and courts</text>
+<circle cx="768.6" cy="125.2" r="4" fill="#4cace5"/><text x="773.6" y="128.2" fill="#4cace5" font-size="7.5" opacity="0.85">Policing and law enforcement</text>
+<circle cx="974.3" cy="119.1" r="4" fill="#4cace5"/><text x="979.3" y="122.1" fill="#4cace5" font-size="7.5" opacity="0.85">Military and defence</text>
+<circle cx="258.6" cy="117.1" r="4" fill="#4cace5"/><text x="263.6" y="120.1" fill="#4cace5" font-size="7.5" opacity="0.85">Public administration and policy</text>
+<circle cx="260.1" cy="193.4" r="4" fill="#4cace5"/><text x="265.1" y="196.4" fill="#4cace5" font-size="7.5" opacity="0.85">Advocacy and civil society</text>
+<circle cx="619.8" cy="187.8" r="4" fill="#4cace5"/><text x="624.8" y="190.8" fill="#4cace5" font-size="7.5" opacity="0.85">Unions and collective bargaining</text>
+<circle cx="120.0" cy="114.5" r="4" fill="#4cace5"/><text x="125.0" y="117.5" fill="#4cace5" font-size="7.5" opacity="0.85">Rights and justice</text>
+<circle cx="975.2" cy="340.9" r="4" fill="#4cace5"/><text x="980.2" y="343.9" fill="#4cace5" font-size="7.5" opacity="0.85">Emergency and rescue services</text>
+<circle cx="976.4" cy="118.3" r="4" fill="#4cace5"/><text x="981.4" y="121.3" fill="#4cace5" font-size="7.5" opacity="0.85">Urban planning and infrastructure</text>
+<circle cx="122.8" cy="697.5" r="4" fill="#4ce572"/><text x="127.8" y="700.5" fill="#4ce572" font-size="7.5" opacity="0.85">Religious worship and practice</text>
+<circle cx="340.0" cy="617.6" r="4" fill="#4ce572"/><text x="345.0" y="620.6" fill="#4ce572" font-size="7.5" opacity="0.85">Religious community and clergy</text>
+<circle cx="122.1" cy="985.6" r="4" fill="#4ce572"/><text x="127.1" y="988.6" fill="#4ce572" font-size="7.5" opacity="0.85">Spirituality and meditation</text>
+<circle cx="114.7" cy="982.1" r="4" fill="#4ce572"/><text x="119.7" y="985.1" fill="#4ce572" font-size="7.5" opacity="0.85">Ethics and moral decisions</text>
+<circle cx="124.1" cy="978.1" r="4" fill="#4ce572"/><text x="129.1" y="981.1" fill="#4ce572" font-size="7.5" opacity="0.85">Meaning, values and purpose</text>
+<circle cx="403.6" cy="766.2" r="4" fill="#4ce572"/><text x="408.6" y="769.2" fill="#4ce572" font-size="7.5" opacity="0.85">Rites of passage</text>
+<circle cx="119.3" cy="617.7" r="4" fill="#4ce572"/><text x="124.3" y="620.7" fill="#4ce572" font-size="7.5" opacity="0.85">Philosophical inquiry</text>
+<circle cx="764.7" cy="907.3" r="4" fill="#5fe54c"/><text x="769.7" y="910.3" fill="#5fe54c" font-size="7.5" opacity="0.85">Games and play</text>
+<circle cx="550.8" cy="693.5" r="4" fill="#5fe54c"/><text x="555.8" y="696.5" fill="#5fe54c" font-size="7.5" opacity="0.85">Video and online gaming</text>
+<circle cx="906.1" cy="978.3" r="4" fill="#5fe54c"/><text x="911.1" y="981.3" fill="#5fe54c" font-size="7.5" opacity="0.85">Children's play</text>
+<circle cx="984.1" cy="762.0" r="4" fill="#5fe54c"/><text x="989.1" y="765.0" fill="#5fe54c" font-size="7.5" opacity="0.85">Playing sport</text>
+<circle cx="550.7" cy="400.7" r="4" fill="#5fe54c"/><text x="555.7" y="403.7" fill="#5fe54c" font-size="7.5" opacity="0.85">Watching sport</text>
+<circle cx="982.9" cy="906.4" r="4" fill="#5fe54c"/><text x="987.9" y="909.4" fill="#5fe54c" font-size="7.5" opacity="0.85">Outdoor recreation</text>
+<circle cx="688.0" cy="905.8" r="4" fill="#5fe54c"/><text x="693.0" y="908.8" fill="#5fe54c" font-size="7.5" opacity="0.85">Making music</text>
+<circle cx="331.9" cy="770.4" r="4" fill="#5fe54c"/><text x="336.9" y="773.4" fill="#5fe54c" font-size="7.5" opacity="0.85">Listening to music</text>
+<circle cx="763.2" cy="762.5" r="4" fill="#5fe54c"/><text x="768.2" y="765.5" fill="#5fe54c" font-size="7.5" opacity="0.85">Visual arts and design</text>
+<circle cx="978.3" cy="985.4" r="4" fill="#5fe54c"/><text x="983.3" y="988.4" fill="#5fe54c" font-size="7.5" opacity="0.85">Crafts and hobbies</text>
+<circle cx="121.6" cy="981.5" r="4" fill="#5fe54c"/><text x="126.6" y="984.5" fill="#5fe54c" font-size="7.5" opacity="0.85">Creative writing</text>
+<circle cx="839.2" cy="763.7" r="4" fill="#5fe54c"/><text x="844.2" y="766.7" fill="#5fe54c" font-size="7.5" opacity="0.85">Theatre, dance and performance</text>
+<circle cx="262.4" cy="480.2" r="4" fill="#5fe54c"/><text x="267.4" y="483.2" fill="#5fe54c" font-size="7.5" opacity="0.85">Film, TV and video</text>
+<circle cx="114.0" cy="832.9" r="4" fill="#5fe54c"/><text x="119.0" y="835.9" fill="#5fe54c" font-size="7.5" opacity="0.85">Reading</text>
+<circle cx="189.6" cy="188.5" r="4" fill="#5fe54c"/><text x="194.6" y="191.5" fill="#5fe54c" font-size="7.5" opacity="0.85">News and information media</text>
+<circle cx="265.1" cy="476.9" r="4" fill="#5fe54c"/><text x="270.1" y="479.9" fill="#5fe54c" font-size="7.5" opacity="0.85">Social media and online communities</text>
+<circle cx="769.5" cy="550.8" r="4" fill="#5fe54c"/><text x="774.5" y="553.8" fill="#5fe54c" font-size="7.5" opacity="0.85">Museums, heritage and cultural visits</text>
+<circle cx="692.4" cy="692.2" r="4" fill="#5fe54c"/><text x="697.4" y="695.2" fill="#5fe54c" font-size="7.5" opacity="0.85">Events, concerts and festivals</text>
+<circle cx="767.4" cy="835.6" r="4" fill="#5fe54c"/><text x="772.4" y="838.6" fill="#5fe54c" font-size="7.5" opacity="0.85">Nightlife and entertainment venues</text>
+<circle cx="695.4" cy="401.2" r="4" fill="#5fe54c"/><text x="700.4" y="404.2" fill="#5fe54c" font-size="7.5" opacity="0.85">Gambling and betting</text>
+<circle cx="979.3" cy="475.5" r="4" fill="#e54c4c"/><text x="984.3" y="478.5" fill="#e54c4c" font-size="7.5" opacity="0.85">Retail shopping</text>
+<circle cx="975.9" cy="693.7" r="4" fill="#e54c4c"/><text x="980.9" y="696.7" fill="#e54c4c" font-size="7.5" opacity="0.85">Buying food and groceries</text>
+<circle cx="979.8" cy="694.1" r="4" fill="#e54c4c"/><text x="984.8" y="697.1" fill="#e54c4c" font-size="7.5" opacity="0.85">Dining out and accommodation services</text>
+<circle cx="983.1" cy="626.2" r="4" fill="#e54c4c"/><text x="988.1" y="629.2" fill="#e54c4c" font-size="7.5" opacity="0.85">Clothing and footwear</text>
+<circle cx="764.9" cy="261.1" r="4" fill="#e54c4c"/><text x="769.9" y="264.1" fill="#e54c4c" font-size="7.5" opacity="0.85">Housing costs</text>
+<circle cx="334.6" cy="123.7" r="4" fill="#e54c4c"/><text x="339.6" y="126.7" fill="#e54c4c" font-size="7.5" opacity="0.85">Saving and investing</text>
+<circle cx="339.5" cy="267.2" r="4" fill="#e54c4c"/><text x="344.5" y="270.2" fill="#e54c4c" font-size="7.5" opacity="0.85">Borrowing and debt</text>
+<circle cx="331.3" cy="126.0" r="4" fill="#e54c4c"/><text x="336.3" y="129.0" fill="#e54c4c" font-size="7.5" opacity="0.85">Banking and payments</text>
+<circle cx="336.6" cy="115.0" r="4" fill="#e54c4c"/><text x="341.6" y="118.0" fill="#e54c4c" font-size="7.5" opacity="0.85">Insurance and risk cover</text>
+<circle cx="481.1" cy="340.8" r="4" fill="#e54c4c"/><text x="486.1" y="343.8" fill="#e54c4c" font-size="7.5" opacity="0.85">Receiving income and transfers</text>
+<circle cx="333.8" cy="767.1" r="4" fill="#e54c4c"/><text x="338.8" y="770.1" fill="#e54c4c" font-size="7.5" opacity="0.85">Household budgeting</text>
+<circle cx="189.4" cy="475.0" r="4" fill="#e54c4c"/><text x="194.4" y="478.0" fill="#e54c4c" font-size="7.5" opacity="0.85">Personal financial decisions</text>
+<circle cx="696.0" cy="902.4" r="4" fill="#e54c4c"/><text x="701.0" y="905.4" fill="#e54c4c" font-size="7.5" opacity="0.85">Gift-giving and exchange</text>
+<circle cx="553.9" cy="120.3" r="4" fill="#e54c4c"/><text x="558.9" y="123.3" fill="#e54c4c" font-size="7.5" opacity="0.85">Online shopping and platforms</text>
+<circle cx="975.2" cy="760.4" r="4" fill="#e54c4c"/><text x="980.2" y="763.4" fill="#e54c4c" font-size="7.5" opacity="0.85">Second-hand, repair and reuse</text>
+<circle cx="480.2" cy="124.5" r="4" fill="#e54c4c"/><text x="485.2" y="127.5" fill="#e54c4c" font-size="7.5" opacity="0.85">Phone, internet and subscriptions</text>
+<circle cx="762.4" cy="627.3" r="4" fill="#e54c4c"/><text x="767.4" y="630.3" fill="#e54c4c" font-size="7.5" opacity="0.85">Poverty and scarcity</text>
+<circle cx="330.2" cy="124.2" r="4" fill="#4cace5"/><text x="335.2" y="127.2" fill="#4cace5" font-size="7.5" opacity="0.85">Welfare and social protection</text>
+<circle cx="978.8" cy="616.6" r="4" fill="#4ce5ac"/><text x="983.8" y="619.6" fill="#4ce5ac" font-size="7.5" opacity="0.85">Commuting</text>
+<circle cx="977.3" cy="621.0" r="4" fill="#4ce5ac"/><text x="982.3" y="624.0" fill="#4ce5ac" font-size="7.5" opacity="0.85">Driving</text>
+<circle cx="983.5" cy="267.7" r="4" fill="#4ce5ac"/><text x="988.5" y="270.7" fill="#4ce5ac" font-size="7.5" opacity="0.85">Public transport</text>
+<circle cx="975.6" cy="836.8" r="4" fill="#4ce5ac"/><text x="980.6" y="839.8" fill="#4ce5ac" font-size="7.5" opacity="0.85">Walking and cycling</text>
+<circle cx="981.8" cy="118.2" r="4" fill="#4ce5ac"/><text x="986.8" y="121.2" fill="#4ce5ac" font-size="7.5" opacity="0.85">Air travel</text>
+<circle cx="912.9" cy="762.3" r="4" fill="#4ce5ac"/><text x="917.9" y="765.3" fill="#4ce5ac" font-size="7.5" opacity="0.85">Tourism and leisure travel</text>
+<circle cx="830.8" cy="329.5" r="4" fill="#4ce5ac"/><text x="835.8" y="332.5" fill="#4ce5ac" font-size="7.5" opacity="0.85">Road safety and traffic</text>
+<circle cx="910.6" cy="622.3" r="4" fill="#4ce5ac"/><text x="915.6" y="625.3" fill="#4ce5ac" font-size="7.5" opacity="0.85">Moving house and relocation</text>
+<circle cx="483.8" cy="125.3" r="4" fill="#4ce5ac"/><text x="488.8" y="128.3" fill="#4ce5ac" font-size="7.5" opacity="0.85">Borders, visas and migration admin</text>
+<circle cx="984.9" cy="401.1" r="4" fill="#4ce5e5"/><text x="989.9" y="404.1" fill="#4ce5e5" font-size="7.5" opacity="0.85">Animal care and husbandry</text>
+<circle cx="983.0" cy="337.4" r="4" fill="#4ce5e5"/><text x="988.0" y="340.4" fill="#4ce5e5" font-size="7.5" opacity="0.85">Crop farming and horticulture</text>
+<circle cx="981.9" cy="767.5" r="4" fill="#4ce5e5"/><text x="986.9" y="770.5" fill="#4ce5e5" font-size="7.5" opacity="0.85">Fishing, hunting and foraging</text>
+<circle cx="913.2" cy="336.7" r="4" fill="#4ce5e5"/><text x="918.2" y="339.7" fill="#4ce5e5" font-size="7.5" opacity="0.85">Wildlife and conservation</text>
+<circle cx="548.5" cy="335.5" r="4" fill="#4ce5e5"/><text x="553.5" y="338.5" fill="#4ce5e5" font-size="7.5" opacity="0.85">Environmental stewardship</text>
+<circle cx="904.9" cy="336.0" r="4" fill="#4ce5e5"/><text x="909.9" y="339.0" fill="#4ce5e5" font-size="7.5" opacity="0.85">Weather, climate and adaptation</text>
+<circle cx="687.5" cy="402.4" r="4" fill="#99e54c"/><text x="692.5" y="405.4" fill="#99e54c" font-size="7.5" opacity="0.85">Early childhood education</text>
+<circle cx="333.0" cy="338.5" r="4" fill="#99e54c"/><text x="338.0" y="341.5" fill="#99e54c" font-size="7.5" opacity="0.85">School education</text>
+<circle cx="194.2" cy="333.1" r="4" fill="#99e54c"/><text x="199.2" y="336.1" fill="#99e54c" font-size="7.5" opacity="0.85">Higher education</text>
+<circle cx="694.9" cy="329.5" r="4" fill="#99e54c"/><text x="699.9" y="332.5" fill="#99e54c" font-size="7.5" opacity="0.85">Vocational and on-the-job training</text>
+<circle cx="116.0" cy="914.2" r="4" fill="#99e54c"/><text x="121.0" y="917.2" fill="#99e54c" font-size="7.5" opacity="0.85">Self-directed learning</text>
+<circle cx="117.5" cy="692.1" r="4" fill="#99e54c"/><text x="122.5" y="695.1" fill="#99e54c" font-size="7.5" opacity="0.85">Language learning and use</text>
+<circle cx="264.0" cy="619.1" r="4" fill="#99e54c"/><text x="269.0" y="622.1" fill="#99e54c" font-size="7.5" opacity="0.85">Teaching and tutoring</text>
+<circle cx="263.1" cy="331.9" r="4" fill="#99e54c"/><text x="268.1" y="334.9" fill="#99e54c" font-size="7.5" opacity="0.85">Exams and assessment</text>
+<circle cx="258.0" cy="761.2" r="4" fill="#99e54c"/><text x="263.0" y="764.2" fill="#99e54c" font-size="7.5" opacity="0.85">Literacy, numeracy and basic skills</text>
+<circle cx="191.9" cy="186.4" r="4" fill="#99e54c"/><text x="196.9" y="189.4" fill="#99e54c" font-size="7.5" opacity="0.85">Research training and scholarship</text>
+<circle cx="118.8" cy="189.5" r="4" fill="#4c72e5"/><text x="123.8" y="192.5" fill="#4c72e5" font-size="7.5" opacity="0.85">Mathematics</text>
+<circle cx="119.0" cy="186.8" r="4" fill="#4c72e5"/><text x="124.0" y="189.8" fill="#4c72e5" font-size="7.5" opacity="0.85">Statistics and data analysis</text>
+<circle cx="339.9" cy="119.7" r="4" fill="#4c72e5"/><text x="344.9" y="122.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Physics</text>
+<circle cx="769.1" cy="125.7" r="4" fill="#4c72e5"/><text x="774.1" y="128.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Chemistry</text>
+<circle cx="189.7" cy="119.7" r="4" fill="#4c72e5"/><text x="194.7" y="122.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Astronomy and space science</text>
+<circle cx="767.4" cy="119.1" r="4" fill="#4c72e5"/><text x="772.4" y="122.1" fill="#4c72e5" font-size="7.5" opacity="0.85">Earth and planetary science</text>
+<circle cx="619.2" cy="122.8" r="4" fill="#4c72e5"/><text x="624.2" y="125.8" fill="#4c72e5" font-size="7.5" opacity="0.85">Biology and life sciences</text>
+<circle cx="769.7" cy="125.0" r="4" fill="#4c72e5"/><text x="774.7" y="128.0" fill="#4c72e5" font-size="7.5" opacity="0.85">Ecology and environmental science</text>
+<circle cx="551.5" cy="118.5" r="4" fill="#4c72e5"/><text x="556.5" y="121.5" fill="#4c72e5" font-size="7.5" opacity="0.85">Medicine and clinical science</text>
+<circle cx="340.7" cy="193.3" r="4" fill="#4c72e5"/><text x="345.7" y="196.3" fill="#4c72e5" font-size="7.5" opacity="0.85">Neuroscience</text>
+<circle cx="114.8" cy="186.6" r="4" fill="#4c72e5"/><text x="119.8" y="189.6" fill="#4c72e5" font-size="7.5" opacity="0.85">Psychology</text>
+<circle cx="481.4" cy="114.7" r="4" fill="#4c72e5"/><text x="486.4" y="117.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Public health and epidemiology</text>
+<circle cx="114.1" cy="118.7" r="4" fill="#4c72e5"/><text x="119.1" y="121.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Sociology and social research</text>
+<circle cx="120.2" cy="119.4" r="4" fill="#4c72e5"/><text x="125.2" y="122.4" fill="#4c72e5" font-size="7.5" opacity="0.85">Anthropology and cultural studies</text>
+<circle cx="119.9" cy="121.0" r="4" fill="#4c72e5"/><text x="124.9" y="124.0" fill="#4c72e5" font-size="7.5" opacity="0.85">Economics and finance research</text>
+<circle cx="122.2" cy="119.1" r="4" fill="#4c72e5"/><text x="127.2" y="122.1" fill="#4c72e5" font-size="7.5" opacity="0.85">Business and management research</text>
+<circle cx="118.4" cy="125.9" r="4" fill="#4c72e5"/><text x="123.4" y="128.9" fill="#4c72e5" font-size="7.5" opacity="0.85">Political science and law scholarship</text>
+<circle cx="690.5" cy="123.3" r="4" fill="#4c72e5"/><text x="695.5" y="126.3" fill="#4c72e5" font-size="7.5" opacity="0.85">Geography and planning research</text>
+<circle cx="119.2" cy="118.3" r="4" fill="#4c72e5"/><text x="124.2" y="121.3" fill="#4c72e5" font-size="7.5" opacity="0.85">History and archaeology</text>
+<circle cx="114.8" cy="267.8" r="4" fill="#4c72e5"/><text x="119.8" y="270.8" fill="#4c72e5" font-size="7.5" opacity="0.85">Linguistics and literary studies</text>
+<circle cx="122.4" cy="268.2" r="4" fill="#4c72e5"/><text x="127.4" y="271.2" fill="#4c72e5" font-size="7.5" opacity="0.85">Arts, music and religion studies</text>
+<circle cx="191.0" cy="193.7" r="4" fill="#4c72e5"/><text x="196.0" y="196.7" fill="#4c72e5" font-size="7.5" opacity="0.85">Computer science</text>
+<circle cx="832.0" cy="118.8" r="4" fill="#4c72e5"/><text x="837.0" y="121.8" fill="#4c72e5" font-size="7.5" opacity="0.85">Agricultural and food science</text>
+<circle cx="904.9" cy="114.5" r="4" fill="#4c72e5"/><text x="909.9" y="117.5" fill="#4c72e5" font-size="7.5" opacity="0.85">Materials science</text>
+<circle cx="340.4" cy="116.6" r="4" fill="#d24ce5"/><text x="345.4" y="119.6" fill="#d24ce5" font-size="7.5" opacity="0.85">Software development</text>
+<circle cx="187.4" cy="116.4" r="4" fill="#d24ce5"/><text x="192.4" y="119.4" fill="#d24ce5" font-size="7.5" opacity="0.85">Artificial intelligence and machine learning</text>
+<circle cx="333.5" cy="120.6" r="4" fill="#d24ce5"/><text x="338.5" y="123.6" fill="#d24ce5" font-size="7.5" opacity="0.85">Cybersecurity</text>
+<circle cx="760.8" cy="125.9" r="4" fill="#d24ce5"/><text x="765.8" y="128.9" fill="#d24ce5" font-size="7.5" opacity="0.85">IT operations and networks</text>
+<circle cx="627.4" cy="689.2" r="4" fill="#d24ce5"/><text x="632.4" y="692.2" fill="#d24ce5" font-size="7.5" opacity="0.85">Everyday digital tool use</text>
+<circle cx="978.9" cy="122.2" r="4" fill="#d24ce5"/><text x="983.9" y="125.2" fill="#d24ce5" font-size="7.5" opacity="0.85">Electrical and energy engineering</text>
+<circle cx="984.5" cy="119.9" r="4" fill="#d24ce5"/><text x="989.5" y="122.9" fill="#d24ce5" font-size="7.5" opacity="0.85">Energy generation and supply</text>
+<circle cx="985.0" cy="117.9" r="4" fill="#d24ce5"/><text x="990.0" y="120.9" fill="#d24ce5" font-size="7.5" opacity="0.85">Mechanical engineering</text>
+<circle cx="980.0" cy="120.0" r="4" fill="#d24ce5"/><text x="985.0" y="123.0" fill="#d24ce5" font-size="7.5" opacity="0.85">Civil engineering and construction design</text>
+<circle cx="695.4" cy="116.4" r="4" fill="#d24ce5"/><text x="700.4" y="119.4" fill="#d24ce5" font-size="7.5" opacity="0.85">Biotechnology and biomedical engineering</text>
+<circle cx="981.3" cy="116.6" r="4" fill="#d24ce5"/><text x="986.3" y="119.6" fill="#d24ce5" font-size="7.5" opacity="0.85">Manufacturing and production</text>
+<circle cx="978.1" cy="842.1" r="4" fill="#d24ce5"/><text x="983.1" y="845.1" fill="#d24ce5" font-size="7.5" opacity="0.85">Making and tinkering</text>
+<circle cx="626.4" cy="195.4" r="4" fill="#e54c85"/><text x="631.4" y="198.4" fill="#e54c85" font-size="7.5" opacity="0.85">Having a job</text>
+<circle cx="401.0" cy="259.2" r="4" fill="#e54c85"/><text x="406.0" y="262.2" fill="#e54c85" font-size="7.5" opacity="0.85">Workplace relations and teamwork</text>
+<circle cx="332.1" cy="195.0" r="4" fill="#e54c85"/><text x="337.1" y="198.0" fill="#e54c85" font-size="7.5" opacity="0.85">Job search and hiring</text>
+<circle cx="410.7" cy="121.0" r="4" fill="#e54c85"/><text x="415.7" y="124.0" fill="#e54c85" font-size="7.5" opacity="0.85">Office and administrative work</text>
+<circle cx="337.6" cy="123.7" r="4" fill="#e54c85"/><text x="342.6" y="126.7" fill="#e54c85" font-size="7.5" opacity="0.85">Management and leadership</text>
+<circle cx="329.8" cy="115.0" r="4" fill="#e54c85"/><text x="334.8" y="118.0" fill="#e54c85" font-size="7.5" opacity="0.85">Finance and accounting work</text>
+<circle cx="411.0" cy="114.5" r="4" fill="#e54c85"/><text x="416.0" y="117.5" fill="#e54c85" font-size="7.5" opacity="0.85">Sales, marketing and advertising</text>
+<circle cx="618.3" cy="186.1" r="4" fill="#e54c85"/><text x="623.3" y="189.1" fill="#e54c85" font-size="7.5" opacity="0.85">Customer service</text>
+<circle cx="615.8" cy="195.7" r="4" fill="#e54c85"/><text x="620.8" y="198.7" fill="#e54c85" font-size="7.5" opacity="0.85">Entrepreneurship and small business</text>
+<circle cx="189.6" cy="115.9" r="4" fill="#e54c85"/><text x="194.6" y="118.9" fill="#e54c85" font-size="7.5" opacity="0.85">Legal profession</text>
+<circle cx="975.8" cy="193.5" r="4" fill="#e54c85"/><text x="980.8" y="196.5" fill="#e54c85" font-size="7.5" opacity="0.85">Healthcare professions</text>
+<circle cx="197.2" cy="263.5" r="4" fill="#e54c85"/><text x="202.2" y="266.5" fill="#e54c85" font-size="7.5" opacity="0.85">Counselling, therapy and social work</text>
+<circle cx="339.8" cy="191.6" r="4" fill="#e54c85"/><text x="344.8" y="194.6" fill="#e54c85" font-size="7.5" opacity="0.85">Teaching profession</text>
+<circle cx="980.9" cy="265.5" r="4" fill="#e54c85"/><text x="985.9" y="268.5" fill="#e54c85" font-size="7.5" opacity="0.85">Construction and building trades</text>
+<circle cx="983.7" cy="409.7" r="4" fill="#e54c85"/><text x="988.7" y="412.7" fill="#e54c85" font-size="7.5" opacity="0.85">Craft and skilled trades</text>
+<circle cx="985.9" cy="338.0" r="4" fill="#e54c85"/><text x="990.9" y="341.0" fill="#e54c85" font-size="7.5" opacity="0.85">Agricultural, forestry and fishing work</text>
+<circle cx="984.9" cy="188.1" r="4" fill="#e54c85"/><text x="989.9" y="191.1" fill="#e54c85" font-size="7.5" opacity="0.85">Transport and logistics work</text>
+<circle cx="908.8" cy="336.2" r="4" fill="#e54c85"/><text x="913.8" y="339.2" fill="#e54c85" font-size="7.5" opacity="0.85">Retail and wholesale work</text>
+<circle cx="912.3" cy="334.8" r="4" fill="#e54c85"/><text x="917.3" y="337.8" fill="#e54c85" font-size="7.5" opacity="0.85">Hospitality and food service work</text>
+<circle cx="983.5" cy="548.7" r="4" fill="#e54c85"/><text x="988.5" y="551.7" fill="#e54c85" font-size="7.5" opacity="0.85">Personal and domestic services work</text>
+<circle cx="981.0" cy="410.8" r="4" fill="#e54c85"/><text x="986.0" y="413.8" fill="#e54c85" font-size="7.5" opacity="0.85">Elementary and manual labour</text>
+<circle cx="840.2" cy="193.5" r="4" fill="#e54c85"/><text x="845.2" y="196.5" fill="#e54c85" font-size="7.5" opacity="0.85">Security and protective services</text>
+<circle cx="257.4" cy="187.8" r="4" fill="#e54c85"/><text x="262.4" y="190.8" fill="#e54c85" font-size="7.5" opacity="0.85">Media, publishing and creative professions</text>
+<circle cx="263.5" cy="188.6" r="4" fill="#e54c85"/><text x="268.5" y="191.6" fill="#e54c85" font-size="7.5" opacity="0.85">Journalism and reporting</text>
+<circle cx="258.2" cy="124.3" r="4" fill="#e54c85"/><text x="263.2" y="127.3" fill="#e54c85" font-size="7.5" opacity="0.85">Research and scientific work</text>
+<circle cx="770.3" cy="547.6" r="4" fill="#e54c85"/><text x="775.3" y="550.6" fill="#e54c85" font-size="7.5" opacity="0.85">Informal and gig work</text>
+<circle cx="907.3" cy="267.1" r="4" fill="#e54c85"/><text x="912.3" y="270.1" fill="#e54c85" font-size="7.5" opacity="0.85">Workplace safety</text>
+<circle cx="401.3" cy="336.7" r="4" fill="#e54c85"/><text x="406.3" y="339.7" fill="#e54c85" font-size="7.5" opacity="0.85">Job change and career moves</text>
+<circle cx="903.9" cy="690.9" r="4" fill="#e5bf4c"/><text x="908.9" y="693.9" fill="#e5bf4c" font-size="7.5" opacity="0.85">Theft and property crime</text>
+<circle cx="984.0" cy="831.3" r="4" fill="#e5bf4c"/><text x="989.0" y="834.3" fill="#e5bf4c" font-size="7.5" opacity="0.85">Violence and assault</text>
+<circle cx="902.8" cy="979.0" r="4" fill="#e5bf4c"/><text x="907.8" y="982.0" fill="#e5bf4c" font-size="7.5" opacity="0.85">Sexual violence and abuse</text>
+<circle cx="621.5" cy="984.4" r="4" fill="#e5bf4c"/><text x="626.5" y="987.4" fill="#e5bf4c" font-size="7.5" opacity="0.85">Domestic and partner abuse</text>
+<circle cx="624.2" cy="982.1" r="4" fill="#e5bf4c"/><text x="629.2" y="985.1" fill="#e5bf4c" font-size="7.5" opacity="0.85">Child abuse and neglect</text>
+<circle cx="330.8" cy="484.2" r="4" fill="#e5bf4c"/><text x="335.8" y="487.2" fill="#e5bf4c" font-size="7.5" opacity="0.85">Fraud, scams and deception</text>
+<circle cx="333.9" cy="121.3" r="4" fill="#e5bf4c"/><text x="338.9" y="124.3" fill="#e5bf4c" font-size="7.5" opacity="0.85">Corruption and bribery</text>
+<circle cx="333.6" cy="114.6" r="4" fill="#e5bf4c"/><text x="338.6" y="117.6" fill="#e5bf4c" font-size="7.5" opacity="0.85">Cybercrime</text>
+<circle cx="263.1" cy="545.8" r="4" fill="#e5bf4c"/><text x="268.1" y="548.8" fill="#e5bf4c" font-size="7.5" opacity="0.85">Online harassment and bullying</text>
+<circle cx="257.8" cy="981.4" r="4" fill="#e5bf4c"/><text x="262.8" y="984.4" fill="#e5bf4c" font-size="7.5" opacity="0.85">Bullying and harassment offline</text>
+<circle cx="193.2" cy="401.9" r="4" fill="#e5bf4c"/><text x="198.2" y="404.9" fill="#e5bf4c" font-size="7.5" opacity="0.85">Hate, discrimination and abuse of rights</text>
+<circle cx="765.6" cy="189.8" r="4" fill="#e5bf4c"/><text x="770.6" y="192.8" fill="#e5bf4c" font-size="7.5" opacity="0.85">Illicit drugs trade</text>
+<circle cx="763.6" cy="624.9" r="4" fill="#e5bf4c"/><text x="768.6" y="627.9" fill="#e5bf4c" font-size="7.5" opacity="0.85">Negligence and recklessness</text>
+<circle cx="119.9" cy="268.0" r="4" fill="#e5bf4c"/><text x="124.9" y="271.0" fill="#e5bf4c" font-size="7.5" opacity="0.85">Misinformation and defamation</text>
+<circle cx="121.3" cy="119.6" r="4" fill="#e5bf4c"/><text x="126.3" y="122.6" fill="#e5bf4c" font-size="7.5" opacity="0.85">Extremism and terrorism</text>
+<circle cx="766.6" cy="118.1" r="4" fill="#e5bf4c"/><text x="771.6" y="121.1" fill="#e5bf4c" font-size="7.5" opacity="0.85">Exploitation and trafficking</text>
+<circle cx="975.5" cy="122.2" r="4" fill="#e5bf4c"/><text x="980.5" y="125.2" fill="#e5bf4c" font-size="7.5" opacity="0.85">Environmental harm and pollution</text>
+<circle cx="121.5" cy="625.1" r="4" fill="#e5bf4c"/><text x="126.5" y="628.1" fill="#e5bf4c" font-size="7.5" opacity="0.85">Cheating and plagiarism</text>
+<circle cx="330.5" cy="626.5" r="4" fill="#e5bf4c"/><text x="335.5" y="629.5" fill="#e5bf4c" font-size="7.5" opacity="0.85">Stalking and privacy violation</text>
+<circle cx="983.6" cy="555.0" r="4" fill="#e5bf4c"/><text x="988.6" y="558.0" fill="#e5bf4c" font-size="7.5" opacity="0.85">Traffic offences and drunk driving</text>
+<circle cx="124.5" cy="982.2" r="4" fill="#e5bf4c"/><text x="129.5" y="985.2" fill="#e5bf4c" font-size="7.5" opacity="0.85">Self-harm and suicide</text>
+<circle cx="983.7" cy="120.2" r="4" fill="#e54cbf"/><text x="988.7" y="123.2" fill="#e54cbf" font-size="7.5" opacity="0.85">War, conflict and violence exposure</text>
+<circle cx="840.0" cy="976.3" r="4" fill="#e54cbf"/><text x="845.0" y="979.3" fill="#e54cbf" font-size="7.5" opacity="0.85">Childbirth and having a baby</text>
+<circle cx="983.4" cy="907.7" r="4" fill="#e5854c"/><text x="988.4" y="910.7" fill="#e5854c" font-size="7.5" opacity="0.85">Pregnancy and prenatal care</text>
+<circle cx="696.5" cy="979.5" r="4" fill="#e54cbf"/><text x="701.5" y="982.5" fill="#e54cbf" font-size="7.5" opacity="0.85">Dying and death</text>
+<circle cx="123.5" cy="974.9" r="4" fill="#e54cbf"/><text x="128.5" y="977.9" fill="#e54cbf" font-size="7.5" opacity="0.85">Bereavement and grief</text>
+<circle cx="401.1" cy="770.2" r="4" fill="#e54cbf"/><text x="406.1" y="773.2" fill="#e54cbf" font-size="7.5" opacity="0.85">Funerals and memorial</text>
+<circle cx="979.8" cy="913.2" r="4" fill="#e54cbf"/><text x="984.8" y="916.2" fill="#e54cbf" font-size="7.5" opacity="0.85">Serious illness and diagnosis</text>
+<circle cx="985.3" cy="910.4" r="4" fill="#e54cbf"/><text x="990.3" y="913.4" fill="#e54cbf" font-size="7.5" opacity="0.85">Accidents and injuries</text>
+<circle cx="980.9" cy="403.2" r="4" fill="#e54cbf"/><text x="985.9" y="406.2" fill="#e54cbf" font-size="7.5" opacity="0.85">Disasters and emergencies</text>
+<circle cx="760.1" cy="123.8" r="4" fill="#e54cbf"/><text x="765.1" y="126.8" fill="#e54cbf" font-size="7.5" opacity="0.85">Migration and displacement</text>
+<circle cx="339.7" cy="839.9" r="4" fill="#e54cbf"/><text x="344.7" y="842.9" fill="#e54cbf" font-size="7.5" opacity="0.85">Wedding and partnership formation</text>
+<circle cx="265.8" cy="907.4" r="4" fill="#e54cbf"/><text x="270.8" y="910.4" fill="#e54cbf" font-size="7.5" opacity="0.85">Separation and divorce</text>
+<circle cx="261.1" cy="832.0" r="4" fill="#e54cbf"/><text x="266.1" y="835.0" fill="#e54cbf" font-size="7.5" opacity="0.85">Coming of age and graduation</text>
+<circle cx="477.5" cy="550.8" r="4" fill="#e54cbf"/><text x="482.5" y="553.8" fill="#e54cbf" font-size="7.5" opacity="0.85">Retirement</text>
+<circle cx="555.1" cy="340.2" r="4" fill="#e54cbf"/><text x="560.1" y="343.2" fill="#e54cbf" font-size="7.5" opacity="0.85">Job loss and unemployment</text>
+<circle cx="907.4" cy="115.2" r="4" fill="#e54cbf"/><text x="912.4" y="118.2" fill="#e54cbf" font-size="7.5" opacity="0.85">Imprisonment and reentry</text>
+<circle cx="123.3" cy="982.8" r="4" fill="#e54cbf"/><text x="128.3" y="985.8" fill="#e54cbf" font-size="7.5" opacity="0.85">Identity and life change</text>
+<circle cx="114.4" cy="836.0" r="4" fill="#5f4ce5"/><text x="119.4" y="839.0" fill="#5f4ce5" font-size="7.5" opacity="0.85">Counselling and therapy</text>
+<circle cx="122.2" cy="831.0" r="4" fill="#4ce572"/><text x="127.2" y="834.0" fill="#4ce572" font-size="7.5" opacity="0.85">Folk belief and superstition</text>
+<circle cx="1120" cy="40" r="6" fill="#e54c4c"/><text x="1132" y="45" fill="#ddd" font-size="13">Consumption, money and property</text>
+<circle cx="1120" cy="62" r="6" fill="#e5854c"/><text x="1132" y="67" fill="#ddd" font-size="13">Family, intimacy and care</text>
+<circle cx="1120" cy="84" r="6" fill="#e5bf4c"/><text x="1132" y="89" fill="#ddd" font-size="13">Harm, crime and misconduct</text>
+<circle cx="1120" cy="106" r="6" fill="#d2e54c"/><text x="1132" y="111" fill="#ddd" font-size="13">Home and household</text>
+<circle cx="1120" cy="128" r="6" fill="#99e54c"/><text x="1132" y="133" fill="#ddd" font-size="13">Learning and education</text>
+<circle cx="1120" cy="150" r="6" fill="#5fe54c"/><text x="1132" y="155" fill="#ddd" font-size="13">Play, arts, sport and media</text>
+<circle cx="1120" cy="172" r="6" fill="#4ce572"/><text x="1132" y="177" fill="#ddd" font-size="13">Belief, meaning and ethics</text>
+<circle cx="1120" cy="194" r="6" fill="#4ce5ac"/><text x="1132" y="199" fill="#ddd" font-size="13">Travel, mobility and place</text>
+<circle cx="1120" cy="216" r="6" fill="#4ce5e5"/><text x="1132" y="221" fill="#ddd" font-size="13">Nature, animals and environment</text>
+<circle cx="1120" cy="238" r="6" fill="#4cace5"/><text x="1132" y="243" fill="#ddd" font-size="13">Governance, law and public life</text>
+<circle cx="1120" cy="260" r="6" fill="#4c72e5"/><text x="1132" y="265" fill="#ddd" font-size="13">Sciences and scholarship</text>
+<circle cx="1120" cy="282" r="6" fill="#5f4ce5"/><text x="1132" y="287" fill="#ddd" font-size="13">Body, health and self-care</text>
+<circle cx="1120" cy="304" r="6" fill="#984ce5"/><text x="1132" y="309" fill="#ddd" font-size="13">Relationships and community</text>
+<circle cx="1120" cy="326" r="6" fill="#d24ce5"/><text x="1132" y="331" fill="#ddd" font-size="13">Technology, engineering and making</text>
+<circle cx="1120" cy="348" r="6" fill="#e54cbf"/><text x="1132" y="353" fill="#ddd" font-size="13">Life events and transitions</text>
+<circle cx="1120" cy="370" r="6" fill="#e54c85"/><text x="1132" y="375" fill="#ddd" font-size="13">Work, trades and enterprise</text>
+</svg>
