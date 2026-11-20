@@ -38,14 +38,20 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   migration is a pure function. Raster images carry their basemap version (the flange is a natural place).
 - **[R] Top level by the concept's axes first** (author, 2026-11-20): abstract ↔ tangible (left ↔ right), personal
   and social ↔ global and professional (bottom ↔ top). Other arrangements may be tried before v1.0.
-- **[R] Radius: domains spread out naturally with the concept's three measures** (author, 2026-11-20): complexity
-  of knowledge, difficulty of achievement, scale of impact.
+- **[R] Radius from complexity, difficulty and specificity, which correlate naturally; outward means more of all
+  three. Scale of impact is shown by colour intensity, not radius. A net new achievement (beyond known domains) gets
+  a notch at the rim** (author, 2026-11-20).
 - **[P] Angle-stability invariants**, each with acceptance and counterexample tests: a descendant's arc stays inside
   its ancestor's; neighbours keep their circular order (insertion takes the angle between them); a domain's centre
   angle moves less than a governed ε between versions; a removed domain leaves a tombstone mapping to successors,
   and its neighbours do not close the gap.
 - **[P] Seed sources** (licences to verify before use): OpenAlex topics, ESCO, O*NET, Wikidata; overlap weights
   learnt from co-occurrence.
+
+## Building the graph
+
+- **[R] Building and refining the domains is mechanical, and manageable by a small model** (author, 2026-11-20), to
+  conserve tokens. Levels: coarse, fine, finer, and the event record. Plan: [PLAN.md](PLAN.md).
 
 ## Channels
 

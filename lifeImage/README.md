@@ -11,4 +11,5 @@ prospectus fills the API contract, at the lowest evidence tier.
 
 - Design and recorded decisions: [DESIGN.md](DESIGN.md).
 - Origin: the author's concept document "Concept - Life Image" (2019).
+- Plan: [PLAN.md](PLAN.md).
 - Status: design; nothing built. Held by the project until v1.0 is published.
