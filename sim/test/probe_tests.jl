@@ -2685,9 +2685,8 @@ end
             init_steps = 50, min_records = 10, takeover_records = 20, model_z = 2.0,
             acc_halflife = 25.0, threshold = 0.65, coarse_threshold = 0.65,
             σ_leaf = 0.85, marker_σ = 0.3, bias_σ = 0.0, σ_branch = 0.85, σ_coarse = 0.9)
-    # The model-class arms are pinned to :record, under which this world was tuned (28/32 promoted, Wilson lo 0.715, 32 seeds).
-    # Under the Spike D2 default :eb the sharper class promotes in 16/32 (lo 0.333): shrinkage toward the domain prior mutes its
-    # credence edge in this mixed-outcome domain (BACKPROPAGATION 2026-11-20, case c). That is asserted below as measured.
+    # The :record arms are the tuned reference (this world: 24-28/32 promoted by platform, Wilson lo 0.64-0.715, 32 seeds); the :eb arms
+    # (the default) must match them, since under :eb model comparison reads raw records, not the claims' shrunk credence (8.165; 30/32, lo 0.795).
     p_good_m = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :record,
                          events = [shock(:add_model_class; step = 55, size = 0.1, target = 1)])
     p_bad_m  = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., credence_rule = :record,
@@ -2724,9 +2723,10 @@ end
     # Portable claim (CI Linux gave lo 0.64 where this machine gave 0.72): the better class promotes in a clear majority, and far more often than the worse one.
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm), length(seeds_add)).lo > 0.5
     @test all(r -> !r.added_capabilities[1].promoted, r_bm)
-    # :eb (default): safety holds (the worse class is never promoted) but promotion of the better class is not reliable here.
+    # :eb (default): predictors are compared on their raw records (BACKPROPAGATION 8.165), so the credence rule for claims does not mute the
+    # sharper class's edge (before: 16/32, lo 0.333); the worse class is still never promoted.
     @test all(r -> !r.added_capabilities[1].promoted, r_bm_eb)
-    @test !(proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm_eb), length(seeds_add)).lo > 0.7)   # unsupported under :eb (16/32)
+    @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gm_eb), length(seeds_add)).lo > 0.5
     @test paired_effect([b.top_scale[1] - g.top_scale[1] for (g, b) in zip(r_gm, r_bm)]; z = 3.0, direction = :up).significant
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted && r.eff_marker_σ < p_good_f.marker_σ, r_gf), length(seeds_add)).lo > 0.7
     @test all(r -> !r.added_capabilities[1].promoted && r.eff_marker_σ == p_bad_f.marker_σ, r_bf)
