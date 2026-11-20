@@ -837,7 +837,7 @@ not the rank rule (8.58-c): honest credences (`credence_ref`, predicted value ov
 error, no prior) are underconfident in a domain whose outcomes are mostly positive (credences 0.7–0.9
 come true 100% of the time, 0.3–0.7 in 67–100%), so a model stating half its uncertainty is better
 calibrated and the proper score rightly prefers it. The candidate fix, credence from the record
-(`credence_rule = :record`, the default since the author adopted it, 8.71; Lean `record_credence_ref`: the share of the model's
+(`credence_rule = :eb`, promoted default under 2026-11-19 D2 ruling superseding prior `:record` default 8.71; Lean `eb_credence` shrinks predictions toward the `Mem` domain prior weighted by calibrated error variance; `:record` uses Lean `record_credence_ref`: the share of the model's
 recent errors below its prediction, ties counting half), is calibrated by construction and moved by
 at most 1 / n by any one error; it removes the economy's side-harm stall and half the seed
 dependence of 8.65 (a) (8.66; `sim/test/calibrated_tests.jl`).
@@ -1185,10 +1185,8 @@ the ratchet does not bite (credence 0.84); settlement still claws it back.
 
 Population ethics (decision probes, 50 beings; toy: level 0 is a life barely worth living): G takes
 10 good lives over 200 barely positive ones (Repugnant Conclusion avoided: the many drag the floors
-though their total and their causers' stake are larger); the quantile floor and the median rank 3
-lives at −5 above 30 lives at 1 (the success pattern gives up Non-Sadism; the literal minimum would
-not); against not acting G admits neither addition; forced to choose, only the causers' stakes decide
-(finding 8.56).
+though their total and their causers' stake are larger); a bare quantile floor and the median rank 3
+lives at −5 above 30 lives at 1 (finding 8.56, giving up Non-Sadism under `use_tail_floor = false`), whereas the ruled default **`use_tail_floor = true`** (Spike D1, `L74` `tail(H < Th_H) → Me`, Lean `tail_floor`: bottom-`q` CVaR on positive `U` and deprivation shortfall sum in `Me` for `H < h_ref`) blocks the Sadistic Conclusion under arbitrary origin shifts while keeping `removal_cannot_raise_tail_floor`; against not acting G admits neither addition.
 
 Teaching and research (second and third rungs; understanding shared, not moved), with G per entity
 (8.50): each step every entity not researching acts with chance `p_act` (0.2), reading the levels
@@ -1327,7 +1325,10 @@ for removal.
 | Forks dividing the base vote | Ruled | 8.34 (for now); `fork_rule` |
 | Track records per model and per actor | Ruled | 8.29 (each model estimates from its record) |
 | Ratcheting escrow | Native | Benefuture currency ("ratcheting escrow requirements"), L84; `ratchet_credence_ref`; the ledgers' negative share it reads moved to the Lean reference (`neg_share_ref`) |
-| Credence from the record (`record_credence_ref`, `credence_rule = :record`) | Ruled (8.71), the default | 8.66, 8.58-c; replaces the normal credence over the record's RMS error, its limiting case; no threshold |
+| Empirical-Bayes domain-prior credence (`eb_credence`, `credence_rule = :eb`) | Ruled (D2, 2026-11-19), default | Supersedes prior-free `:normal` (`8.58-c`) and `:record` (`8.71`) as default (`L84` `| Mem` prior); eliminates `ext_world` extremist takeovers & heavy-tailed stalls (`P49`) |
+| Tail-sensitive floor (`tail_floor`, `use_tail_floor = true`, `h_ref = 0.0`) | Ruled (D1, 2026-11-19), default | `8.56`; `L74` `tail(H < Th_H) → Me`; bottom-`q` CVaR on positive `U` and shift-invariant deprivation shortfall sum in `Me` on `H < h_ref` (`P48`) |
+| Tragic-choice-safe lexical `Fr` guard (`goal_G_lexical_fr`, `fr_guard_permissible`, `g_choose_lexical_fr`, `pop_choose(..., fr_ok)`) | Ruled (D3, 2026-11-19) | `G` lexical gate (`L74`, `fallbk: tragic`) over `Fr` (`L136`, `¬Ha_imposed(..., ¬NHa_Estd)`); blocks arbitrary Archimedean overrides when permissible options exist while falling back cleanly on tragic choices and excluding consensual self-risk & `NHa_Estd` (`P50`) |
+| Credence from the record (`record_credence_ref`, `credence_rule = :record`) | Ruled (8.71), retained option | 8.66, 8.58-c; non-parametric fallback; no prior threshold |
 | Per-record credence score deciding model takeover (economy) | Moved to the Lean reference (`credence_score_ref`) | 8.36; its windowed mean, floored at zero, is `credence_accuracy_ref` |
 | Exact Shapley up to 10 contributors, sampled beyond (`shapley_sampled_ref`) | Introduced (estimator) | 2ⁿ coalitions; permutation sampling (Castro et al. 2009) keeps larger outcomes on the causal assessment instead of the L95 traversal. Shares stay efficient on every sample (`shapley_sampled_efficient`), so sampling error moves currency, never mints it; the error is bounded only in probability. Gaming: the orderings come from a stream seeded by (run, step, plan, being), so a contributor cannot pick a favourable sample; forking into identities games Shapley itself, sampled or exact (BACKPROPAGATION 8.57-a). Candidate for removal if coalition values become cheap enough to enumerate or an asymmetric or causal Shapley over the transaction tree replaces them (BACKPROPAGATION [P]) |
 | Outcomes with more than 62 contributors fall to traversal | Introduced (bound) | coalitions are 62-bit masks in `shapley_shares` |

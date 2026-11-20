@@ -2,9 +2,10 @@
   Benefuture.Subgoals.Freedom
   Formalization of Freedom (Fr): Maximization of action capacity subject to non-harm.
   Corresponds to: Bf_Pseudocode.txt L136, and Rights.txt / Philosophy.txt
-  "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high);"
-  Fr is a subgoal, reported per plan, not a filter on G (SPEC_DIVERGENCES §8.8): G's choice is
-  `Proposed.PopulationDirection.goal_G`.
+  "Fr := f_max(∃A, Imp, N, Po) | ¬Ha_imposed(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high, ¬NHa_Estd);"
+  Ruled update (D3, superseding SPEC_DIVERGENCES §8.8): in ordinary choice, `Proposed.PopulationDirection.goal_G_lexical_fr`
+  enforces `Fr` in Stage 1 against imposed non-necessary severe harm while falling back loudly in Stage 2
+  on true tragic choices (or omission catastrophes); unconstrained `goal_G` stays available as the Stage-2 fallback.
 -/
 
 import Mathlib.Data.Real.Basic
@@ -114,8 +115,9 @@ def established_severe (hf : HarmForecast) (fp : FrParams) : Prop :=
   some harm at the long-term tier or worse) and its expected severity confidence · severity_score
   stays within thHigh. Irreversible and irreparable harm block when established, or when their
   severity multipliers carry the expected severity over thHigh; remote chances of them can pass.
-  Mild chances of passing harm or time loss never block. Fr is a subgoal reported per plan, not a
-  filter on G (SPEC_DIVERGENCES §8.8).
+  Mild chances of passing harm or time loss never block. Under ruled D3 (`goal_G_lexical_fr`,
+  superseding §8.8), Stage 1 of G filters imposed non-necessary severe harm by `fr_permissible`
+  and Stage 2 falls back loudly on tragic choices.
 -/
 noncomputable def fr_permissible (hf : HarmForecast) (fp : FrParams) : Bool :=
   haveI := Classical.propDecidable (established_severe hf fp)
@@ -207,7 +209,7 @@ theorem certain_irreversible_harm_blocks :
   A transient harm whose downstream consequence generates strictly greater Value.
   
   Pseudocode L136 defines Freedom:
-  Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high).
+  Fr := f_max(∃A, Imp, N, Po) | ¬Ha_imposed(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high, ¬NHa_Estd).
   Established irreversible harm is established-severe, so Fr blocks it.
 
   TENSION: Consider an action causing a certain irreversible harm, but whose value yield
@@ -216,9 +218,11 @@ theorem certain_irreversible_harm_blocks :
   The certain-harm check fails it (is_action_freedom_permissible = false), as does Fr once the harm
   is established. What this theorem proves is the conjunction: the legacy check fails any profile
   with irreversible harm, while any NecessaryHarm has positive net gain.
-  [P] Resolution (SPEC_DIVERGENCES §8.8): Fr is a subgoal, the everyday rule for action-space
-  maximisation, not a filter on G. In tragic choices the priorities decide: V's convex harm weights
-  (Ha_wt) and G's counterfactual ↑min (`Proposed.PopulationDirection.goal_G`).
+  Ruled Resolution (D3, superseding SPEC_DIVERGENCES §8.8): Stage 1 of `goal_G_lexical_fr`
+  enforces `Fr` against imposed non-necessary harm (preventing arbitrary minor-gain overrides proved
+  in `archimedean_overrides_fr`), while Stage 2 falls back loudly to `V` and `G` on true tragic choices
+  and omission catastrophes (`lexical_fr_tragic_choice_fallback`). Consensual self-risk and established
+  necessary harm (`NHa_Estd`) are excluded from the Stage-1 prohibition (`fr_guard_permissible`).
 -/
 theorem freedom_excludes_irreversible_necessary_harm
     (a : Action) (harm : HarmProfile) (nh : NecessaryHarm)

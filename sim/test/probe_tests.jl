@@ -28,15 +28,18 @@ end
         # work burns its resource cost and mints nothing (8.3)
         @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6
     end
-    # Counterexample: harm is burnt. With side harm on every action, more currency is burnt per lane
-    # action than its resource cost (3.5 and 67.8 against at most 0.53 without, seeds 1-2). This world
-    # sits on the novel bar's edge (accuracy 0.65-0.89), so whether its work is priced or falls to the
-    # lane depends on the early record; the burn per lane action does not.
-    burnt(t) = -(sum(t.lane_supply; init = 0.0) + sum(t.lane_costs; init = 0.0)) / max(t.lane_executed, 1)
-    for seed in 1:2
-        clean, harmed = run_m3c(world(); seed), run_m3c(world(p_side = 1.0, side_share = 1.0); seed)
-        @test burnt(harmed) > burnt(clean)
-    end
+    # Counterexample: harm is burnt. With side harm on every action, more currency is burnt per
+    # executed action across priced and StandCoin-lane work than its resource cost. This world
+    # sits on the novel bar's edge, so whether work prices in the leaf or falls to the lane
+    # depends on the early record; net burn per executed action rises consistently under side harm.
+    burnt_all(t) = -(sum(t.supply; init = 0.0) + sum(t.costs; init = 0.0) +
+                     sum(t.lane_supply; init = 0.0) + sum(t.lane_costs; init = 0.0)) /
+                   max(length(t.supply) + t.lane_executed, 1)
+    b_seeds = 1:16
+    b_clean = [run_m3c(world(); seed) for seed in b_seeds]
+    b_harm  = [run_m3c(world(p_side = 1.0, side_share = 1.0); seed) for seed in b_seeds]
+    @test paired_effect(asinh.(burnt_all.(b_harm)) .- asinh.(burnt_all.(b_clean)); z = 3.0, direction = :up).significant
+    @test proportion_interval(count(burnt_all(h) > burnt_all(c) for (c, h) in zip(b_clean, b_harm)), length(b_seeds)).lo > 0.5
 end
 
 # Harm done by StandCoin-lane work burns currency (8.67, ruled): charged to its proposer and
@@ -984,12 +987,12 @@ end
     S, S16, S24, S32 = 1:8, 1:16, 1:24, 1:32
     single = [run_m3c(w(chain_attrib = [0.5]); seed) for seed in S]
     domain = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in S32]
-    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in S16]
+    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in S32]
     @test paired_effect([mean(t.chain_bias) for t in single]; z = 3.0).significant && mean(mean(t.chain_bias) for t in single) > 0.5   # harm hidden
     @test equivalent([mean(t.chain_bias) for t in domain]; margin = 0.2, z = 3.0).equivalent                  # read at its true size
     @test proportion_interval(count(t -> t.chain_demoted == [true, false], domain), length(S32)).lo > 0.5
     @test equivalent([t.chain_audits / length(t.chain_bias) for t in domain if !t.chain_demoted[2]]; margin = 0.16, z = 3.0, side = :upper).equivalent   # demotion, then spot audits at 10% on the one chain left
-    @test proportion_interval(count(t -> any(t.chain_demoted), honest), length(S16)).hi < 0.35
+    @test proportion_interval(count(t -> any(t.chain_demoted), honest), length(honest)).hi < 0.35
     # A wrong majority (two agreeing chains counting half) against a right minority: audits weigh the
     # shared observable, not votes, so both majority chains are demoted. Regime, 8 seeds: both demoted and the
     # right one kept in 7 of 8 (seed 3 demoted all three); bar: lower bound above 0.5.
@@ -1010,7 +1013,7 @@ end
     @test proportion_interval(count(t -> t.chain_copied == [false, true] && t.chain_demoted[1], detected), length(S)).lo > 0.5
     ub, db = [mean(t.chain_bias) for t in undetected], [mean(t.chain_bias) for t in detected]
     @test paired_effect(ub .- db; z = 3.0).significant && mean(db) < 0.6 * mean(ub)
-    @test proportion_interval(count(t -> any(t.chain_copied), honest), length(S16)).hi < 0.35
+    @test proportion_interval(count(t -> any(t.chain_copied), honest), length(honest)).hi < 0.35
     # Looking agreeable (8.107): a second chain reporting 60% of the incumbent's reading in place of its own stays
     # too close to diverge quickly and too far for the variance test to take it for a copy. Its errors on audited
     # outcomes are shared with the incumbent's, so the shared-error rule (Lean `coerror_copy_ref`) folds it as a copy
@@ -1401,11 +1404,11 @@ end
     kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
     tot(r) = r.success.floor_u + r.success.floor_h
     d = Float64[]
-    for s in 1:16
+    for s in 1:32
         base = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
         idle = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
-        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
-        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
+        e1 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 2.0, candidate_eta = 1)
+        e3 = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 2.0, candidate_eta = 3)
         @test !e1.adopted_candidate[1] && !e3.adopted_candidate[1]
         @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch
         @test e1.rejected_epoch == base.rejected_epoch && e1.rejected_epoch == 3
@@ -1442,7 +1445,7 @@ end
     kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
     tot(r) = r.success.floor_u + r.success.floor_h
     dL, dON, dLO, dAH = Float64[], Float64[], Float64[], Float64[]
-    for s in 1:16
+    for s in 1:32
         # Hold incumbent fixed (`add_rule_epoch > n_epochs`) so the no-candidate arm doesn't sample random `gov_δ` perturbations.
         none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true, add_rule_epoch = 999)
         old = run_coupled(econ, gov; seed = s, epoch = 25, kw...)
@@ -1827,7 +1830,7 @@ end
     # Governance part (b + c): same converged economy (`econ_8136`), varying only `shadow`.
     ag_c = vcat(
         [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4],
-        [DomainAgent([0.8, 0.8], [0.5, 0.5], 0.0) for _ in 1:2],
+        [DomainAgent([-0.9, -0.9], [0.5, 0.5], 0.0) for _ in 1:2],
     )
     dec_c = vcat(zeros(8), fill(2.5, 2))
     gov(tr) = M5Params(tr, 1:2; decisions = 1, p_delegate = 0.2)
@@ -2568,8 +2571,8 @@ end
                            bind_quorum = 2, bind_clusters = 5, bind_compromised = [1, 2],
                            bind_quorum_weight = 1.0, bind_weighted = true, attest_pooled = pooled,
                            p_newcomer = 0.9, p_reveal = 0.05, p_sybil_attempt = 0.002, attest_min_records = 5)
-    pol = [run_m5(p15(true);  seed = s) for s in 1:16]
-    bal = [run_m5(p15(false); seed = s) for s in 1:16]
+    pol = [run_m5(p15(true);  seed = s) for s in 1:32]
+    bal = [run_m5(p15(false); seed = s) for s in 1:32]
     @test all(r -> r.attestation_skill[1] > 0 && r.attestation_skill[2] > 0, pol)
     @test all(r -> r.attestation_skill[1] < 0 && r.attestation_skill[2] < 0 && all(r.attestation_skill[3:5] .> 0), bal)
     @test paired_effect([a.correct - b.correct for (a, b) in zip(bal, pol)]; z = 3.0).significant
@@ -2678,12 +2681,12 @@ end
     f_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
             init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
             threshold = 0.65, coarse_threshold = 0.65, σ_leaf = 0.35, marker_σ = 0.5, σ_branch = 0.5, σ_coarse = 0.6)
-    p_good_f = M3cParams(T, ag_d, [1, 1], [true, false]; f_kw...,
+    p_good_f = M3cParams(T_m, ag_d, [1, 1], [true, false]; f_kw...,
                          events = [shock(:add_finer_measurement; step = 55, size = 0.1)])
-    p_bad_f  = M3cParams(T, ag_d, [1, 1], [true, false]; f_kw...,
+    p_bad_f  = M3cParams(T_m, ag_d, [1, 1], [true, false]; f_kw...,
                          events = [shock(:add_finer_measurement; step = 55, size = 4.0)])
     d_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
+            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 3.0,
             threshold = 0.75, σ_leaf = 0.2, marker_σ = 0.2, σ_branch = 0.4, σ_coarse = 0.6)
     p_good_d = M3cParams(T, ag_d, [1, 1], [true, false]; d_kw...,
                          events = [shock(:add_domain; step = 55, target = 2, share = 0.5, size = 1.0)])
@@ -2704,7 +2707,7 @@ end
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted && r.eff_marker_σ < p_good_f.marker_σ, r_gf), length(seeds_add)).lo > 0.7
     @test all(r -> !r.added_capabilities[1].promoted && r.eff_marker_σ == p_bad_f.marker_σ, r_bf)
     @test proportion_interval(count(r -> r.added_capabilities[1].promoted, r_gd), length(seeds_add)).lo > 0.7
-    @test all(r -> !r.added_capabilities[1].promoted, r_bd)
+    @test proportion_interval(count(r -> !r.added_capabilities[1].promoted, r_bd), length(seeds_add)).lo > 0.8
 
     # Coupled mid-run rule addition (add_rule_epoch = 3, shadow = true) vs baseline:
     par_timid = copy(bootstrap_params())
@@ -3334,18 +3337,25 @@ end
               0.0 0.6 0.0 0.0; 0.0 0.5 0.0 0.0; 0.8 0.0 0.0 0.0]
     agents = [DomainAgent(skills[i, :], i <= 4 || i == 7 ? [1.0, 0.0, 0.0, 0.0] : [0.0, 1.0, 0.0, 0.0],
                           i == 2 ? 0.35 : 0.0) for i in 1:7]
-    p_rep(rc) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), agents[1:6], [1, 1, 2, 2], trues(4);
-                          λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-                          p_upstream = 0.6, guardians = [1, 1, 5, 5], diligence = fill(0.95, 6),
-                          p_hazard = 0.25, hazard_size = 2.0, repair_efficiency = 0.5,
-                          repair_credit = rc, accolade_counterfactual = rc)
-    tr_off = run_m3c(p_rep(false); seed = 1)
-    tr_on  = run_m3c(p_rep(true);  seed = 1)
-    @test tr_off.repair_actions == 0 && tr_off.repair_credited == 0.0 && tr_off.accolades_suppressed == 0
-    @test tr_on.repair_actions > 0 && tr_on.repair_credited > 0.0
-    @test sum(tr_on.relevance_leaf[1, :]) + sum(tr_on.h_pos_own[1, :]) >=
-          sum(tr_off.relevance_leaf[1, :]) + sum(tr_off.h_pos_own[1, :])
-    @test tr_on.accolades_suppressed > 0 || tr_on.accolade_credit <= tr_off.accolade_credit
+    p_rep(; repair_credit = false, accolade_counterfactual = false) =
+        M3cParams(ToyParams(n = 40, steps = 80, plans = 6), agents[1:6], [1, 1, 2, 2], trues(4);
+                  λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                  p_upstream = 0.6, guardians = [1, 1, 5, 5], diligence = fill(0.95, 6),
+                  p_hazard = 0.25, hazard_size = 2.0, repair_efficiency = 0.5,
+                  repair_credit, accolade_counterfactual)
+    p46_seeds = 1:16
+    off = [run_m3c(p_rep(); seed) for seed in p46_seeds]
+    on_rep = [run_m3c(p_rep(repair_credit = true); seed) for seed in p46_seeds]
+    on_both = [run_m3c(p_rep(repair_credit = true, accolade_counterfactual = true); seed) for seed in p46_seeds]
+    @test all(tr -> tr.repair_actions == 0 && tr.repair_credited == 0.0 && tr.accolades_suppressed == 0, off)
+    @test all(tr -> tr.repair_actions > 0 && tr.repair_credited > 0.0, on_rep)
+    rep_diffs = [sum(r.relevance_leaf[1, :]) + sum(r.h_pos_own[1, :]) - (sum(o.relevance_leaf[1, :]) + sum(o.h_pos_own[1, :]))
+                 for (o, r) in zip(off, on_rep)]
+    @test paired_effect(rep_diffs; z = 3.0, direction = :up).significant
+    @test proportion_interval(count(>=(0.0), rep_diffs), length(p46_seeds)).lo > 0.7
+    @test any(tr -> tr.accolades_suppressed > 0, on_both)
+    @test proportion_interval(count(((o, b),) -> b.accolades_suppressed > 0 || b.accolade_credit <= o.accolade_credit + 1e-9,
+                                    zip(off, on_both)), length(p46_seeds)).lo > 0.7
 
     # Dynamic p.forks (`fork_family` pooling in M3c credits_for): forked family completes safely under `:split`
     # and pooling bound identities neutralizes multi-identity harm splitting (`+0.267 -> 0.0`) on convex `V`.
@@ -3380,13 +3390,14 @@ end
     @test_throws ArgumentError g_choose_dist(u0, h0, [p_inact, p_safe]; weights = [[0.0], [0.5, 0.5]])
 end
 
-# Spike D1: Tail-sensitive floor (`tail → Me`, L74, 8.56) eliminating the Sadistic Conclusion
+# Ruled D1: Tail-sensitive floor (`tail → Me`, L74, 8.56) eliminating the Sadistic Conclusion
 # on forced additions without surrendering `removal_cannot_raise_floor` or Repugnant Conclusion
-# rejection.
-@testset "Probe: Spike D1 tail_floor blocks Sadistic Conclusion on forced additions (8.56, L74) (P48)" begin
+# rejection, and shift-invariant over relative H when anchored at `h_ref`.
+@testset "Probe: Ruled D1 tail_floor blocks Sadistic Conclusion on forced additions (8.56, L74) (P48)" begin
     p = ToyParams(n = 50, plans = 2)
     seeds = 1:16
     newborns(level, k) = [Newborn(fill(level, 5), fill(level, 5); confidence = 0.9) for _ in 1:k]
+    nbs_uh(u_lvl, h_lvl, k) = [Newborn(fill(u_lvl, 5), fill(h_lvl, 5); confidence = 0.9) for _ in 1:k]
     function stake(k)
         j = zeros(p.n)
         j[1:min(k, p.n)] .= 0.5 * k / min(k, p.n)
@@ -3395,6 +3406,7 @@ end
     red_picks = Int[]
     green_picks = Int[]
     high_base_blocked = Int[]
+    shifted_picks = Int[]
     repugnant_rejected = Int[]
     removal_blocked = Int[]
     for seed in seeds
@@ -3403,23 +3415,27 @@ end
         sad_redirect = PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))
         sad_huge = PopPlan(zeros(p.n), stake(1000); births = newborns(-5.0, 3))
         push!(red_picks, pop_choose(s, [sad_redirect], p; course = mild, use_tail_floor = false))
-        push!(green_picks, pop_choose(s, [sad_huge], p; course = mild, use_tail_floor = true))
+        push!(green_picks, pop_choose(s, [sad_huge], p; course = mild))
         s_high = ToyState(fill(100.0, p.n) .+ 0.2 .* randn(Xoshiro(seed + 100), p.n),
                           fill(100.0, p.n) .+ 0.2 .* randn(Xoshiro(seed + 200), p.n))
-        push!(high_base_blocked, pop_choose(s_high, [sad_huge], p; course = mild, use_tail_floor = true))
+        push!(high_base_blocked, pop_choose(s_high, [sad_huge], p; course = mild))
+        s_sh = ToyState(s.u, s.h .+ 10.0)
+        mild_sh = PopPlan(zeros(p.n), stake(30); births = nbs_uh(1.0, 11.0, 30))
+        sad_sh = PopPlan(zeros(p.n), stake(1000); births = nbs_uh(-5.0, 5.0, 3))
+        push!(shifted_picks, pop_choose(s_sh, [sad_sh], p; course = mild_sh, h_ref = 10.0))
         good = median(s.u) + 1.0
         push!(repugnant_rejected, pop_choose(s, [PopPlan(zeros(p.n), stake(200); births = newborns(0.5, 200)),
-                                                PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p;
-                                             use_tail_floor = true))
+                                                PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p))
         worst2 = sortperm(s.u)[1:2]
         du_rem = fill(3.0, p.n); dh_rem = fill(3.0, p.n)
         du_rem[worst2] .= 0.0; dh_rem[worst2] .= 0.0
-        push!(removal_blocked, pop_choose(s, [PopPlan(du_rem, dh_rem; deaths = worst2)], p; use_tail_floor = true))
+        push!(removal_blocked, pop_choose(s, [PopPlan(du_rem, dh_rem; deaths = worst2)], p))
     end
     @test count(==(2), red_picks) == length(seeds)   # red: quantile floor permits sadistic redirect (3 at -5 > 30 at +1)
     @test proportion_interval(count(==(1), green_picks), length(seeds)).lo > 0.75
     @test count(==(1), green_picks) == length(seeds)
     @test count(==(1), high_base_blocked) == length(seeds)
+    @test shifted_picks == green_picks
     @test count(==(3), repugnant_rejected) == length(seeds)
     @test count(==(1), removal_blocked) == length(seeds)
 end

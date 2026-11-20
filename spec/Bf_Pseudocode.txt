@@ -71,7 +71,7 @@ Benefuture«Bf» {
     Pe := B + Fuzzy(Sig(St, Sp, SelfAwareness, Empathy, Memory, Continuity«Cnt», Planning, Cm, Contract«Ct»)),gradedLvls;
 
     V(A, b ∈ B) := Sy_{κ=2}(As([(U(b), α, Ha_wt), (H(b), β, α * Ha_wt), (N, γ)], A, t));
-    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min)) | min := Th_quantile, tail → Me;
+    Goal«G»(t) := argmax_{A(t)} [Σ_{b ∈ B(t)} Sy(V(A, b(t)), As(pushDistr))] ∧ ↑ℝ ∧ ¬↓(U(max, min), H(min)) | Fr (fallbk: tragic), min := Th_quantile, tail(H < Th_H) → Me;
 
     Intent«In» : E_Precommit(Ou, Ct(Self));
     D := Ou(E), In(O), via(Pr , U);
@@ -81,7 +81,7 @@ Benefuture«Bf» {
 
     C := {C_i} | C_i ↔ MM_j ∈ TopModels(MM_Accuracy>Th, Dn_i) ,compete(ΔV / (ΔResource«Rc» + Δt));
     RcAccounting«RA»(Transaction«Tx») := Δ↑(U, H) / ↓(Cost + Audit) ∧ ↓Usage{Rc, t};
-    ProbabilisticEscrow«PE»(CNet_i) : Pay_t0(C_i)(P(As(V, A, t_0) > 0)), hold(1 - P), Pay_gradual(As(V, A, t) | ∪MM_Me(CNet(relevantDn(A))));
+    ProbabilisticEscrow«PE»(CNet_i) : Pay_t0(C_i)(P(As(V, A, t_0) > 0 | Mem)), hold(1 - P), Pay_gradual(As(V, A, t) | ∪MM_Me(CNet(relevantDn(A))));
     TransactionProposal«TP_k» := {A, E[ΔV | MM_k], PE(C_k)};
     TP_Gen(A) :: ∀c ∈ CNet(relevantDn(A)) : c → Gen(TP_{k_c}(A)):price_c=(MM_Me((Rc[],t[])→A|RA)-MM_Pr(V←A)+PE_hold);
     onExec(A) :: {
@@ -133,7 +133,7 @@ Benefuture«Bf» {
     TN := Decentralized(Cluster[] : ∩Tech = Core(DataShare, Security)) ∧ OpenSource(Infra) → Facilitate(Me, C, Gv, Comm, So), Cybersecurity, Privacy(DifferentiallyPrivateGenericQuery,2wayVisibleSpecificQuery,InfoHazardGatedPII,transparentAccess), Aggregate(LogIdMl[](E, 1:(0,1)) | ≥2 Cluster) ≥Th ⇒ BindIdentity(E, 1:1);
     IH(TN) := Categorize(Tr_lvls, Opinion, F, Hy...) → SourceVerify(Re(Dn) / Ig(Dn)) + FactCheck(MemoryData«Mem») + ContentionMap + ManageAccess(IHz, (preReq(Ed), Provide(Ed), EnsurePath(Ed → Access) ← Ed | Freedom«Fr»(Tr)), !Censor);
 
-    Fr := f_max(∃A, Imp, N, Po) | ¬Ha_(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high);
+    Fr := f_max(∃A, Imp, N, Po) | ¬Ha_imposed(Estd(P ≥ Th, ≥ longterm) ∨ P·severity > Th_high, ¬NHa_Estd);
     Morality«Mr» := U(P(∃I(Sl↔ℝ) : CC(I → O(Sl)) = 0) ≈ 0 | Memory(Sl) ⊆ O(Sl)), 1shotGame ⊆ 𝕌 − ℝ;
     Economy«Ec» := Sys(RcCreation & Distribution), Sustainable, Equitable;
     EmbeddedLaws«EL»(C, MM) | DynamicAp: ΔImp(ΔLw) < Th;

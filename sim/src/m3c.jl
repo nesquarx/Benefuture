@@ -86,7 +86,7 @@ struct M3cParams
     bind_conf_affirm::Float64  # confidence a cluster states when its methods affirm (world, M6)
     bind_conf_deny::Float64    # confidence a cluster states when its methods deny (world, M6)
     loud::Bool                 # warn once per kind of degradation (the trace records them either way)
-    credence_rule::Symbol      # :normal (credence_ref over RMS error), :record ([P], record_credence_ref), or :eb ([P], eb_credence_ref)
+    credence_rule::Symbol      # :normal (prior-free credence_ref over RMS error), :record (nonparametric cold-start/fallback, record_credence_ref), or :eb (ruled D2 default, eb_credence_ref)
     min_records::Int
     μ_rate::Float64
     μ_every::Int
@@ -294,7 +294,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    marker_σ::Real = CALIBRATED.marker_σ, window::Integer = 100, spread::Real = CALIBRATED.spread, classify_σ::Real = CALIBRATED.classify_σ,
                    parent_threshold::Real = 0.5, μ_min::Real = 0.2, leaf_threshold::Real = 0.4, temperature::Real = 0.01,
                    σ_leaf::Real = CALIBRATED.σ_leaf, σ_branch::Real = CALIBRATED.σ_branch, σ_coarse::Real = CALIBRATED.σ_coarse, n_learn::Real = 20,
-                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, chain_copy = Int[], chain_detect::Bool = true, chain_spot::Real = 0.1, chain_shade = Float64[], chain_spot_all::Bool = false, adaptive_proposals::Bool = false, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :record, min_records::Integer = 10, μ_rate::Real = 0.02,
+                   threshold::Real = 0.9, novel_threshold::Real = 0.75, coarse_threshold::Real = 0.75, max_credence::Real = 0.99, ratchet_k::Integer = 3, ratchet_margin::Real = 0.02, ratchet_horizon::Real = 20.0, accuracy_rule::Symbol = :decay, acc_halflife::Real = 7.0, acc_rate_ref::Real = 5.0, acc_mute::Real = 0.5, rate_halflife::Real = 20.0, ratchet_growth::Real = 1.0, chain_attrib = [1.0], chain_mode::Symbol = :single, chain_z::Real = 3.0, chain_copy = Int[], chain_detect::Bool = true, chain_spot::Real = 0.1, chain_shade = Float64[], chain_spot_all::Bool = false, adaptive_proposals::Bool = false, novel_floor::Real = 0.55, scarcity_floor::Real = 0.001, actor_min_records::Integer = 5, attest_min_records::Integer = 5, adv_min_records::Integer = 5, adv_track_floor::Integer = 20, form_buffer::Integer = 4, own_axis::Real = 0.5, bind_conf_compromised::Real = 0.99, bind_conf_affirm::Real = 0.9, bind_conf_deny::Real = 0.1, diligence_default::Real = 0.95, loud::Bool = false, credence_rule::Symbol = :eb, min_records::Integer = 10, μ_rate::Real = 0.02,
                    μ_every::Integer = 25, endowment::Real = 5.0, cost_per_touch::Real = 0.05, capacity::Real = 1e4,
                    regen::Real = 0.02, overflow_base::Real = 500.0, overflow_factor::Real = 1.0, expert_share::Real = 0.5,
                    form_count::Integer = 20, form_radius::Real = 0.5, max_new::Integer = 16, init_steps::Integer = 50, transactions::Bool = false,
@@ -442,18 +442,56 @@ end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
 
-function _robust_loc_scale(xs)
+function _weighted_median(xs, ws)
     n = length(xs)
-    n == 0 && return (0.0, 0.0)
-    n == 1 && return (Float64(xs[1]), 0.0)
-    s = sort(collect(Float64, xs))
-    k = n >= 10 ? floor(Int, 0.1 * n) : 0
-    mid = @view s[(k + 1):(n - k)]
-    loc = mean(mid)
-    med = median(s)
-    mad_σ = 1.4826 * median(abs.(s .- med))
-    v_trim = length(mid) >= 2 ? mean((x - loc)^2 for x in mid) : 0.0
-    (loc, mad_σ > 0 ? mad_σ^2 : v_trim)
+    n == 0 && return 0.0
+    tw = 0.0
+    cnt = 0
+    @inbounds for i in 1:n
+        w = Float64(ws[i])
+        if w > 0
+            tw += w
+            cnt += 1
+        end
+    end
+    cnt == 0 && return 0.0
+    if cnt == 1
+        @inbounds for i in 1:n
+            ws[i] > 0 && return Float64(xs[i])
+        end
+    end
+    idx = sortperm(xs)
+    half = 0.5 * tw
+    acc = 0.0
+    last_x = 0.0
+    @inbounds for k in idx
+        w = Float64(ws[k])
+        w > 0 || continue
+        x = Float64(xs[k])
+        last_x = x
+        acc += w
+        acc >= half && return x
+    end
+    last_x
+end
+
+function _weighted_robust_loc_scale(xs, ws)
+    w_sum = sum(w for w in ws if w > 0; init = 0.0)
+    (isempty(xs) || w_sum <= 0) && return (0.0, 0.0)
+    length(xs) == 1 && return (Float64(xs[1]), 0.0)
+    loc = _weighted_median(xs, ws)
+    mad_σ = 1.4826 * _weighted_median([abs(Float64(x) - loc) for x in xs], ws)
+    mad_σ > 0 && return (loc, mad_σ^2)
+    v_w = sum(Float64(w) * (Float64(x) - loc)^2 for (x, w) in zip(xs, ws) if w > 0; init = 0.0) / w_sum
+    (loc, v_w)
+end
+
+function _weighted_robust_err_var(errs, ws)
+    w_sum = sum(w for w in ws if w > 0; init = 0.0)
+    (isempty(errs) || w_sum <= 0) && return 0.0
+    s0 = 1.4826 * _weighted_median([abs(Float64(e)) for e in errs], ws)
+    s0 > 0 && return s0^2
+    sum(Float64(w) * Float64(e)^2 for (e, w) in zip(errs, ws) if w > 0; init = 0.0) / w_sum
 end
 
 """
@@ -761,6 +799,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # record instead. An establishment discounts the actor's records since its previous audit.
     discount_spans = [Tuple{Int,Int}[] for _ in 1:na]
     last_audit = zeros(Int, na)
+    eb_ver = Ref(0)
+    eb_dom_cache = Dict{Int, Tuple{Int, UInt, Int, Int, Int, Float64, Float64}}()
+    eb_mod_cache = IdDict{Any, Tuple{Int, Int, Int, Int, Int, Float64}}()
+    eb_actor_cache = Dict{Tuple{Int, Int}, Tuple{Int, Int, Int, Int, Float64}}()
     discounted(x) = x.actor > 0 && any(s0 <= x.step <= s1 for (s0, s1) in discount_spans[x.actor])
     function acc_of(h, hl)
         isempty(h) && return 0.0
@@ -801,13 +843,57 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     function cred(c, pred, a = 0; hist = nothing, sharp = c <= lmax ? topm(c).sharp : 1.0)
         v = plan_value(pred, t)
         cr = if p.credence_rule == :eb
-            h_use = hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax])
+            dom_hist = (c <= lmax ? lhist[c] : phist[c - lmax])
+            h_use = hist !== nothing ? hist : dom_hist
+            use_actor = a > 0 && length(actor_err[a]) >= p.actor_min_records
             if p.accuracy_rule == :decay
                 hl = hl_of(c)
-                i0 = isempty(h_use) ? 1 : searchsortedfirst(h_use, cur[] - 40 * hl; by = x -> x isa Real ? x : x.step)
-                r_use = isempty(h_use) ? h_use : [x for x in @view(h_use[i0:end]) if !discounted(x)]
-                if length(r_use) < p.min_records
-                    if a > 0 && length(actor_err[a]) >= p.actor_min_records
+                dc = get(eb_dom_cache, c, nothing)
+                n_dom, μ0, τ2 = if dc !== nothing && dc[1] == cur[] && dc[2] == objectid(dom_hist) && dc[3] == length(dom_hist) && dc[4] == eb_ver[]
+                    (dc[5], dc[6], dc[7])
+                else
+                    i_dom = isempty(dom_hist) ? 1 : searchsortedfirst(dom_hist, cur[] - 16 * hl; by = x -> x isa Real ? x : x.step)
+                    r_dom = isempty(dom_hist) ? dom_hist : [x for x in @view(dom_hist[i_dom:end]) if !discounted(x)]
+                    nd = length(r_dom)
+                    m0, t2 = if nd >= p.min_records
+                        w_dom = [2.0^(-(cur[] - x.step) / hl) for x in r_dom]
+                        _weighted_robust_loc_scale([x.measured for x in r_dom], w_dom)
+                    else
+                        (0.0, 0.0)
+                    end
+                    eb_dom_cache[c] = (cur[], objectid(dom_hist), length(dom_hist), eb_ver[], nd, m0, t2)
+                    (nd, m0, t2)
+                end
+                n_mod, σ2 = if n_dom < p.min_records
+                    (0, 0.0)
+                elseif use_actor
+                    ac = get(eb_actor_cache, (a, c), nothing)
+                    s2 = if ac !== nothing && ac[1] == cur[] && ac[2] == length(actor_err[a]) && ac[3] == eb_ver[] && ac[4] == tw_now[]
+                        ac[5]
+                    else
+                        i_a = min(searchsortedfirst(actor_err_step[a], cur[] - 16 * hl), length(actor_err_step[a]))
+                        ws = [2.0^(-(cur[] - s) / hl) for s in @view(actor_err_step[a][i_a:end])]
+                        all(==(0.0), ws) && (ws = ones(length(ws)))
+                        v_s2 = _weighted_robust_err_var(Float64.(@view(actor_err[a][i_a:end])), ws)
+                        eb_actor_cache[(a, c)] = (cur[], length(actor_err[a]), eb_ver[], tw_now[], v_s2)
+                        v_s2
+                    end
+                    (0, s2)
+                else
+                    mc = get(eb_mod_cache, h_use, nothing)
+                    if mc !== nothing && mc[1] == cur[] && mc[2] == length(h_use) && mc[3] == eb_ver[] && mc[4] == c
+                        (mc[5], mc[6])
+                    else
+                        i_mod = isempty(h_use) ? 1 : searchsortedfirst(h_use, cur[] - 16 * hl; by = x -> x isa Real ? x : x.step)
+                        r_mod = isempty(h_use) ? h_use : [x for x in @view(h_use[i_mod:end]) if !discounted(x)]
+                        nm = length(r_mod)
+                        s2 = nm >= p.min_records ? _weighted_robust_err_var([x.err for x in r_mod], [2.0^(-(cur[] - x.step) / hl) for x in r_mod]) : 0.0
+                        eb_mod_cache[h_use] = (cur[], length(h_use), eb_ver[], c, nm, s2)
+                        (nm, s2)
+                    end
+                end
+                if n_dom < p.min_records || (!use_actor && n_mod < p.min_records) || σ2 >= τ2
+                    if use_actor
                         decayed_record_credence(v, sharp .* actor_err[a], [Float64(cur[] - s) for s in actor_err_step[a]], hl; cap = p.max_credence)
                     elseif isempty(h_use)
                         record_credence(v, Float64[]; cap = p.max_credence)
@@ -815,24 +901,50 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                         decayed_record_credence(v, [sharp * x.err for x in h_use], [Float64(cur[] - x.step) for x in h_use], hl; cap = p.max_credence)
                     end
                 else
-                    μ0, τ2 = _robust_loc_scale([x.measured for x in r_use])
-                    errs = (a > 0 && length(actor_err[a]) >= p.actor_min_records) ?
-                        (@view actor_err[a][max(1, end - p.window + 1):end]) : [x.err for x in r_use]
-                    eb, σ2 = _robust_loc_scale(errs)
-                    eb_credence(v - eb, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
+                    eb_credence(v, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
                 end
             else
-                r_use = window_of(h_use)
-                if length(r_use) < p.min_records
+                dc = get(eb_dom_cache, c, nothing)
+                n_dom, μ0, τ2 = if dc !== nothing && dc[1] == cur[] && dc[2] == objectid(dom_hist) && dc[3] == length(dom_hist) && dc[4] == eb_ver[]
+                    (dc[5], dc[6], dc[7])
+                else
+                    r_dom = window_of(dom_hist)
+                    nd = length(r_dom)
+                    m0, t2 = nd >= p.min_records ? _weighted_robust_loc_scale([x.measured for x in r_dom], ones(nd)) : (0.0, 0.0)
+                    eb_dom_cache[c] = (cur[], objectid(dom_hist), length(dom_hist), eb_ver[], nd, m0, t2)
+                    (nd, m0, t2)
+                end
+                n_mod, σ2 = if n_dom < p.min_records
+                    (0, 0.0)
+                elseif use_actor
+                    ac = get(eb_actor_cache, (a, c), nothing)
+                    s2 = if ac !== nothing && ac[1] == cur[] && ac[2] == length(actor_err[a]) && ac[3] == eb_ver[] && ac[4] == tw_now[]
+                        ac[5]
+                    else
+                        e = @view actor_err[a][max(1, end - tw_now[] + 1):end]
+                        v_s2 = _weighted_robust_err_var(Float64.(e), ones(length(e)))
+                        eb_actor_cache[(a, c)] = (cur[], length(actor_err[a]), eb_ver[], tw_now[], v_s2)
+                        v_s2
+                    end
+                    (0, s2)
+                else
+                    mc = get(eb_mod_cache, h_use, nothing)
+                    if mc !== nothing && mc[1] == cur[] && mc[2] == length(h_use) && mc[3] == eb_ver[] && mc[4] == c
+                        (mc[5], mc[6])
+                    else
+                        r_mod = window_of(h_use)
+                        nm = length(r_mod)
+                        s2 = nm >= p.min_records ? _weighted_robust_err_var([x.err for x in r_mod], ones(nm)) : 0.0
+                        eb_mod_cache[h_use] = (cur[], length(h_use), eb_ver[], c, nm, s2)
+                        (nm, s2)
+                    end
+                end
+                if n_dom < p.min_records || (!use_actor && n_mod < p.min_records) || σ2 >= τ2
                     e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
-                    errs = length(e) >= p.actor_min_records ? e : [x.err for x in r_use]
+                    errs = length(e) >= p.actor_min_records ? e : [x.err for x in window_of(h_use)]
                     record_credence(v, sharp .* errs; cap = p.max_credence)
                 else
-                    μ0, τ2 = _robust_loc_scale([x.measured for x in r_use])
-                    e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
-                    errs = length(e) >= p.actor_min_records ? e : [x.err for x in r_use]
-                    eb, σ2 = _robust_loc_scale(errs)
-                    eb_credence(v - eb, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
+                    eb_credence(v, sharp^2 * σ2, μ0, τ2; cap = p.max_credence)
                 end
             end
         elseif p.accuracy_rule == :decay
@@ -1237,6 +1349,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0); n += 1)
             new_c = cred(r.c, pr; hist = h, sharp)
             h[i] = merge(r, (credence = new_c, err = v - r.measured, pr = pr, fixed = true))
+            eb_ver[] += 1
             repaired_cred[(uid, i)] = new_c
         end
         if !isempty(repaired_cred)
@@ -2703,6 +2816,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     adv.established[] += 1
                     deceptions[b] += 1   # the actor's permanent deception record (8.91 ruling)
                     push!(discount_spans[b], (last_audit[b], cur[])); last_audit[b] = cur[]
+                    eb_ver[] += 1
                     is_crime(true, true, false) ? (world.crimes[] += 1; top_leaf(st) > 0 && (dom_crime_events[b, top_leaf(st)] += 1)) : (world.accidents[] += 1)
                     # The overstatement repaired is estimated from all the actor's records, so each
                     # further audit sharpens it rather than repairing by a few records' noise.

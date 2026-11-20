@@ -7,7 +7,7 @@
 ```
 Benefuture/
 ├── Bf_Pseudocode.txt            # pseudocode copy (identical to spec/ and the block in Benefuture.txt)
-├── Benefuture/                  # Lean spec over ℝ (Mathlib): 53 files, 510 theorems
+├── Benefuture/                  # Lean spec over ℝ (Mathlib): 53 files, 517 theorems
 │   ├── Math/ Ontology/ Measurement/ Epistemology/ Axiology/
 │   ├── Subgoals/ Governance/ Economy/ Systems/ Axioms/
 │   └── Proposed/                # [P] designs: G and distribution, outcome distribution, Shapley sampling,

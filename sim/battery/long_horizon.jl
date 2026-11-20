@@ -69,7 +69,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
         accuracy_rule = bf ? :decay : :window,
         advap = bf,
         ratchet_k = bf ? 3 : 0,
-        credence_rule = bf ? :record : :normal,
+        credence_rule = bf ? :eb : :normal,
         bind_weighted = bf,
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,

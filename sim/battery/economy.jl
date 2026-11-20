@@ -94,7 +94,7 @@ function world(sev)
     M3cParams(ToyParams(n = 80, steps = STEPS, plans = 10), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
               transactions = true, causal_distribution = true, p_upstream = 0.5, guardians = [1, 2, 3, 4],
               diligence = fill(dil, 8), p_foresee = 1.0, repair_efficiency = 0.5, deceit = [0, 0, 0, 0, 0, 0, d, d], launder = [0, 0, 0, 0, 0, lc, 0, 0],
-              advap = true, credence_rule = :record, bind_weighted = true,
+              advap = true, credence_rule = :eb, bind_weighted = true,
               events, kw...)
 end
 pattern(tr) = success_pattern(tr; from = 51)

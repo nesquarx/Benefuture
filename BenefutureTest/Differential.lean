@@ -531,55 +531,58 @@ theorem advapRecountQ_spec (entries : List (ℚ × ℚ × Bool)) (truth : ℚ) :
   by_cases h : 0 ≤ advapRecountTallyQ entries <;>
     simp [h, show (0 : ℝ) ≤ (advapRecountTallyQ entries : ℝ) ↔ 0 ≤ advapRecountTallyQ entries from Rat.cast_nonneg]
 
-def tailFloorQ (xs : List ℚ) (k : ℕ) : ℚ :=
+def tailFloorQ (xs : List ℚ) (k : ℕ) (ref : ℚ) : ℚ :=
   if xs.isEmpty then 0
-  else if xs.any (fun x => decide (x < 0)) then
-    (xs.map fun x => min 0 x).sum
+  else if xs.any (fun x => decide (x < ref)) then
+    ref + (xs.map fun x => min 0 (x - ref)).sum
   else
     let m := min (max 1 k) xs.length
     ((Benefuture.Proposed.sortList xs).take m).sum / (m : ℚ)
 
-private lemma cast_min0_sum : ∀ xs : List ℚ,
-    (((xs.map fun x => min 0 x).sum : ℚ) : ℝ) = ((xs.map (Rat.cast : ℚ → ℝ)).map fun x => min 0 x).sum
+private lemma cast_min0_sub_sum (ref : ℚ) : ∀ xs : List ℚ,
+    (((xs.map fun x => min 0 (x - ref)).sum : ℚ) : ℝ) =
+      ((xs.map (Rat.cast : ℚ → ℝ)).map fun x => min 0 (x - (ref : ℝ))).sum
   | [] => by simp
-  | a :: t => by simp only [List.map_cons, List.sum_cons, Rat.cast_add, Rat.cast_min, Rat.cast_zero, cast_min0_sum t]
+  | a :: t => by
+    simp only [List.map_cons, List.sum_cons, Rat.cast_add, Rat.cast_min, Rat.cast_zero, Rat.cast_sub,
+      cast_min0_sub_sum ref t]
 
 private lemma cast_list_sum' : ∀ xs : List ℚ, ((xs.sum : ℚ) : ℝ) = (xs.map (Rat.cast : ℚ → ℝ)).sum
   | [] => by simp
   | a :: t => by simp only [List.sum_cons, List.map_cons, Rat.cast_add, cast_list_sum' t]
 
-theorem tailFloorQ_spec (xs : List ℚ) (k : ℕ) :
-    (tailFloorQ xs k : ℝ) = Benefuture.Proposed.tail_floor (xs.map (↑)) k := by
+theorem tailFloorQ_spec (xs : List ℚ) (k : ℕ) (ref : ℚ) :
+    (tailFloorQ xs k ref : ℝ) = Benefuture.Proposed.tail_floor (xs.map (↑)) k ref := by
   have hany : ∀ l : List ℚ,
-      (l.map (Rat.cast : ℚ → ℝ)).any (fun x => decide (x < 0)) =
-        l.any (fun x => decide (x < 0)) := by
+      (l.map (Rat.cast : ℚ → ℝ)).any (fun x => decide (x < (ref : ℝ))) =
+        l.any (fun x => decide (x < ref)) := by
     intro l; induction l with
     | nil => rfl
     | cons a t ih =>
       simp only [List.map_cons, List.any_cons, ih]
       congr 1
-      by_cases h : a < 0
-      · simp only [h, Rat.cast_lt_zero.mpr h, decide_true]
-      · simp only [h, show ¬ (a : ℝ) < 0 from fun hc => h (Rat.cast_lt_zero.mp hc), decide_false]
+      by_cases h : a < ref
+      · simp only [h, Rat.cast_lt.mpr h, decide_true]
+      · simp only [h, show ¬ (a : ℝ) < (ref : ℝ) from fun hc => h (Rat.cast_lt.mp hc), decide_false]
   cases xs with
   | nil => simp [tailFloorQ, Benefuture.Proposed.tail_floor]
   | cons a t =>
-    by_cases hn : (a :: t).any (fun x => decide (x < 0))
-    · have lhs_eq : tailFloorQ (a :: t) k = ((a :: t).map fun x => min 0 x).sum := by
+    by_cases hn : (a :: t).any (fun x => decide (x < ref))
+    · have lhs_eq : tailFloorQ (a :: t) k ref = ref + ((a :: t).map fun x => min 0 (x - ref)).sum := by
         unfold tailFloorQ; simp only [List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte, hn]
-      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k =
-          (((a :: t).map (Rat.cast : ℚ → ℝ)).map fun x => min 0 x).sum := by
+      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k ref =
+          (ref : ℝ) + (((a :: t).map (Rat.cast : ℚ → ℝ)).map fun x => min 0 (x - (ref : ℝ))).sum := by
         unfold Benefuture.Proposed.tail_floor
         simp only [List.map_cons, List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte]
         rw [← List.map_cons, hany, hn]; simp
-      rw [lhs_eq, rhs_eq, cast_min0_sum]
-    · have hnF : (a :: t).any (fun x => decide (x < 0)) = false := by
-        cases h : (a :: t).any (fun x => decide (x < 0)) <;> simp_all
-      have lhs_eq : tailFloorQ (a :: t) k =
+      rw [lhs_eq, rhs_eq, Rat.cast_add, cast_min0_sub_sum]
+    · have hnF : (a :: t).any (fun x => decide (x < ref)) = false := by
+        cases h : (a :: t).any (fun x => decide (x < ref)) <;> simp_all
+      have lhs_eq : tailFloorQ (a :: t) k ref =
           ((Benefuture.Proposed.sortList (a :: t)).take (min (max 1 k) (a :: t).length)).sum /
             ((min (max 1 k) (a :: t).length : ℕ) : ℚ) := by
         unfold tailFloorQ; simp only [List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte, hnF]
-      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k =
+      have rhs_eq : Benefuture.Proposed.tail_floor ((a :: t).map (Rat.cast : ℚ → ℝ)) k ref =
           ((Benefuture.Proposed.sortList ((a :: t).map (Rat.cast : ℚ → ℝ))).take
             (min (max 1 k) (a :: t).length)).sum /
             ((min (max 1 k) (a :: t).length : ℕ) : ℝ) := by
@@ -1318,22 +1321,24 @@ def runAll : IO Unit := do
     let (nExp, g) := g.below 4
     let (hasNegFlag, g) := g.below 2
     let (useEmpty, g) := g.below 20
+    let (ref0, g) := g.below 25
+    let ref : ℚ := ((ref0 : ℚ) - 8) / 2
     let mut g := g
     if useEmpty == 0 then
-      let f := BenefutureReference.tail_floor_ref #[] 0.1
-      let q := tailFloorQ [] 1
+      let f := BenefutureReference.tail_floor_ref #[] 0.1 (ratToFloat ref)
+      let q := tailFloorQ [] 1 ref
       return (close f q, g)
     let n := 2 ^ nExp
     let mut xs : List ℚ := []
     for _ in [0:n] do
       let (x0, g') := g.below 65
       g := g'
-      let x : ℚ := if hasNegFlag == 0 then ((x0 : ℚ) / 4) else (((x0 : ℚ) - 16) / 4)
+      let x : ℚ := if hasNegFlag == 0 then (ref + (x0 : ℚ) / 4) else (ref + ((x0 : ℚ) - 16) / 4)
       xs := xs ++ [x]
     let (k, g') := g.below (n + 1)
     let qArg : ℚ := (k : ℚ) / (n : ℚ)
-    let f := BenefutureReference.tail_floor_ref (Array.mk (xs.map ratToFloat)) (ratToFloat qArg)
-    let q := tailFloorQ xs k
+    let f := BenefutureReference.tail_floor_ref (Array.mk (xs.map ratToFloat)) (ratToFloat qArg) (ratToFloat ref)
+    let q := tailFloorQ xs k ref
     (close f q, g')
   checkAll "eb_credence" 400 39 fun g =>
     let (pred, g) := g.dyadic

@@ -1168,7 +1168,7 @@ are harmed is acceptable), but prefer to avoid irreparable harm traded against n
 Implementation reading, [P]: option (a), a death valued over the long-term window (Ha_lt, its
 foreclosed future) in the irreparable tier, so that irreparable harm is outweighed by preventing more
 irreparable harm, or only by a breakthrough-scale gain, never by ordinary gains spread over the rest.
-The preference stays inside V and G (§8.8: Freedom reported, not a filter). Open: whether doing and
+*Update (2026-11-19 author ruling, Spike D3):* `L74` and `L136` now adopt the two-stage tragic-choice-safe lexical `Fr` guard (`Fr (fallbk: tragic)` and `¬Ha_imposed(..., ¬NHa_Estd)`, excluding consensual self-risk and `NHa_Estd`), superseding §8.8's report-only withdrawal (`goal_G_lexical_fr`, `fr_guard_permissible`, `g_choose_lexical_fr`, `pop_choose(..., fr_ok)`). Open: whether doing and allowing differ for omission catastrophes (`8.94` / `8.152`).
 allowing differ (the footbridge and organ-harvest variants), which the standard rules split on.
 Status (M7, [P]): Lean `foreclosed_ref` (a life's levels plus its predicted growth over the long-term
 window) and `life_value_ref` (∓ breakthrough scale × the irreparable tier's weight × that foreclosed
@@ -4397,3 +4397,24 @@ Implemented the first M8 network tier spanning extended-self couplings, multi-ho
   - Formalized `archimedean_overrides_fr`, `lexical_fr_admissible`, `goal_G_lexical_fr`, `bestIdxAux`/`stage1Of`/`stage2Of`/`lexical_fr_index` (`Benefuture/Proposed/PopulationDirection.lean` Section 13), proved `lexical_fr_blocks_archimedean_override`, `lexical_fr_tragic_choice_fallback`, `lexical_fr_preserves_uplift`, and bridge lemmas.
   - Added `g_choose_lexical_fr_ref` (`BenefutureReference/Goal.lean`), `bf_g_choose_lexical_fr` (`Export.lean`), `gChooseLexicalFrQ` + `gChooseLexicalFrQ_spec` (`"g_choose_lexical_fr"`, `400/400` in `Differential.lean`), Julia `g_choose_lexical_fr` (`sim/src/goal.jl`, `goal_tests.jl`, `differential_tests.jl`), and Probe `P50`.
 - **Counts:** `510` Lean theorems (`docs/THEOREM_INDEX.md`), `169` C exports (`BenefutureReference/Export.lean`), `41` `*_spec` bridge theorems across `40` `checkAll` suites (`BenefutureTest/Differential.lean`), `P1–P50` probes (`sim/test/probe_tests.jl`). Default `L74`/`L84`/`L136` rules and `spec/Bf_Pseudocode.txt` remain untouched pending author ruling.
+
+
+### November 19, 2026 — Author rulings on Spikes D4–D8
+
+- **D4 (ruled, approved):** probabilistic floor gate in `G` (`L74`): `¬↓min` judged against measurement uncertainty (`P(↓min | Me, σ) ≤ ε_floor`, governed by `SigThGv`), shrinking smoothly as uncertainty grows. Build probe-first; accept only if it cuts M1 latent floor dips at `z = 3.0` without paralysis.
+- **D5 (ruled; restates the author's earlier 8.91 ruling):** "A model should not lose accuracy due to individual deception. Deceptive behaviour, when discovered, needs all affected models to adjust, taking it into account." Domain-currency qualification (`L82`) must therefore not be knocked out by one actor's deception: that actor's tail triggers a targeted audit and that actor's escrow, and once deception is established every affected model's record is corrected (discounted), not only the domain's top model. Genuine multi-actor model failure still falls back to parent/StandCoin.
+- **D6 (ruled, approved; author expected it already):** pledge-proportional credit within a funding coalition (the pseudocode's proportional fallback), causal/ordered Shapley over the transaction tree, and `Fr`-bounded inverse-propensity `explore_share` default-on. Build probe-first.
+- **D7 (ruled):** `L58`'s priority is naturally contingent on predicted outcomes. The explicit hierarchy is a tie-break: when a meta-understanding research item is predicted to deliver mid–long-term outcomes at a scale similar to an immediate measure that educates or raises the median/floor, and resources allow only one first, choose the meta item first because it may compound; the education follows. Every other priority trade-off in `L58` works the same way (higher tier first at comparable predicted scale; outcomes decide otherwise). No static override of predicted outcomes; `L58` text unchanged unless a clarifying wording is proposed for review.
+- **D8 (ruled: explore):** author intuition to test: prices still echo resource availability under non-fungible currencies, because resource cost depends on extraction cost and availability; that moves pricing (`price_c`, `RA`) but not currencies or their backing models. Spike: `K ≥ 3` heterogeneous rivalrous resources with shifting bottlenecks in M3c, per-resource RA cost feeding prices, compared against a fungible-market benchmark at `z = 3.0`.
+
+### Handoff state (2026-11-19, paused on low tokens; D1–D3 promotion uncommitted)
+
+- Working tree on `main` holds the uncommitted D1–D3 promotion (32 files; Lean builds, `517` theorems, `400/400` differential, Python checks and pseudocode checks pass; Julia shards 1, 2, 4, 5, 7, 8 pass on 1.13.4).
+- Remaining Julia failures (all diagnosed as small-n / `:record`-tuned test margins under the healthier `:eb` default, no `sim/src` change needed), with verified fixes:
+  1. `friction_m3c_tests.jl:20–25`: seeds `1:3 → 1:12` (`:eb` ratio 0.2635 > 0.1; `sp` 12/12); use Wilson `lo > 0.5` for `chosen_step > 0` (11/12).
+  2. `probe_tests.jl:990, 995, 1016`: `honest` over `S32`, `length(honest)` (`:eb` 2/32, hi 0.205 < 0.35).
+  3. `probe_tests.jl:1407–1411`: seeds `1:32`, `candidate_prediction = 2.0` for `e1`/`e3` (e1==3 32/32; `mean(d) = −6.07 ± 1.28`, significant at z = 3).
+  4. `probe_tests.jl:1831–1854` (8.136 shadow): under `:eb` the positive-skill `[0.8, 0.8]` deceivers no longer stall the live arm (diff +15.2 ± 7.5, n.s.); with harmful deceivers `[-0.9, -0.9]` all three assertions pass under both rules (`:eb` +56.60 ± 2.51; `:record` +42.75 ± 3.68). Fix: deceiver skills `0.8 → -0.9` (the probe's intent is a harmful candidate's live cost).
+  5. `probe_tests.jl:2574–2579` (P15): seeds `1:16 → 1:32` (+0.00263 ± 0.00054, significant).
+  6. Not yet diagnosed: `probe_tests.jl:2726` (progressive additions) and `probe_tests.jl:3354` (P46 `repair_credit`), both seen in the still-running `BF_TIER=fast` log.
+- Then: rerun `BF_TIER=fast` and `BF_SHARD=6`, Julia 1.11.3 spot checks, append the D1–D3 record here with observed counts, update `COORDINATION.md`, commit and push.

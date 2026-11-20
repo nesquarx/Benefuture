@@ -42,22 +42,22 @@ def g_choose_ref (values dScope dMinU dMinH dMaxU : Array Float) : Nat := Id.run
   | some (i, _) => i
 
 /--
-  Tail-sensitive floor (`tail → Me`, Spike D1, L74, `8.56`):
-  if any being stands below neutral (`< 0`), returns the total negative shortfall `∑ min(0, x)`
-  so unaffected lives above neutral cannot mask a negative life; otherwise returns the mean
-  of the bottom `max 1 (min rank n)` sorted levels (CVaR over the bottom q-tail).
+  Tail-sensitive floor (`tail → Me`, L74, `8.56`, ruled D1):
+  if any being lies below the deprivation threshold `ref`, returns `ref + ∑ min(0, x - ref) < ref`
+  so unaffected lives above `ref` cannot mask severe deprivation (shift-invariant over non-empty
+  populations); otherwise returns the mean of the bottom `max 1 (min rank n)` sorted levels (CVaR).
 -/
-def tail_floor_ref (xs : Array Float) (q : Float) : Float := Id.run do
+def tail_floor_ref (xs : Array Float) (q ref : Float) : Float := Id.run do
   let n := xs.size
   if n == 0 then return 0.0
   let mut hasNeg := false
   let mut negSum := 0.0
   for i in [0:n] do
     let x := xs[i]!
-    if x < 0.0 then
+    if x < ref then
       hasNeg := true
-      negSum := negSum + x
-  if hasNeg then return negSum
+      negSum := negSum + (x - ref)
+  if hasNeg then return ref + negSum
   let sorted := xs.qsort (· < ·)
   let qc := if q < 0.0 then 0.0 else if q > 1.0 then 1.0 else q
   let rank := (qc * n.toFloat).ceil.toUInt64.toNat
@@ -68,7 +68,7 @@ def tail_floor_ref (xs : Array Float) (q : Float) : Float := Id.run do
   return s / m.toFloat
 
 /--
-  Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, Spike D3, L55, L136):
+  Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, L55, L136, ruled D3):
   returns `(index, degraded)` where `index = values.size` when no plan is G-admissible.
   Stage 1 restricts to plans that are both G-admissible and Fr-permissible (`degraded = false`).
   When no such plan exists (true tragic choice or omission catastrophe), Stage 2 falls back to

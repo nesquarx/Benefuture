@@ -38,7 +38,7 @@ function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, o
         accuracy_rule = bf ? :decay : :window,
         advap = bf,
         ratchet_k = bf ? 3 : 0,
-        credence_rule = bf ? :record : :normal,
+        credence_rule = bf ? :eb : :normal,
         bind_weighted = bf,
         open_entry = open_entry,
         entrants = entrants,

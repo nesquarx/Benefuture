@@ -531,9 +531,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (held votes active : FloatArray) (truth : Float) : UInt8 :=
   if advap_recount_correct_ref held.data votes.data active.data truth then 1 else 0
 
--- Design-Flaw Spikes D1–D3 (tail_floor, eb_credence, goal_G_lexical_fr)
-@[export bf_tail_floor] def tailFloor (xs : FloatArray) (q : Float) : Float :=
-  tail_floor_ref xs.data q
+-- Ruled Spikes D1–D3 (tail_floor, eb_credence, goal_G_lexical_fr)
+@[export bf_tail_floor] def tailFloor (xs : FloatArray) (q ref : Float) : Float :=
+  tail_floor_ref xs.data q ref
 
 @[export bf_eb_credence] def ebCredence
     (predicted errVar priorMean priorVar cap : Float) : Float :=

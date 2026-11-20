@@ -13,17 +13,17 @@ function floor_quantile(levels, q::Real)
 end
 
 """
-    tail_floor(levels, q) -> Float64
+    tail_floor(levels, q; ref = 0.0) -> Float64
 
-Tail-sensitive floor (`tail → Me`, Spike D1, L74, `8.56`; Lean `tail_floor_ref`): if any level
-lies below neutral (`< 0`), returns the total negative shortfall `∑ min(0, x)` so high levels
-cannot mask suffering lives; otherwise returns the lower `q`-tail CVaR (mean of the bottom
-`max(1, ceil(q * n))` levels).
+Tail-sensitive floor (`tail → Me`, L74, `8.56`, ruled D1; Lean `tail_floor_ref`): if any
+level lies below deprivation threshold `ref`, returns `ref + ∑ min(0, x - ref) < ref` so high
+levels cannot mask severe deprivation (shift-invariant over non-empty populations); otherwise
+returns the lower `q`-tail CVaR (mean of the bottom `max(1, ceil(q * n))` levels).
 """
-function tail_floor(levels, q::Real)
+function tail_floor(levels, q::Real; ref::Real = 0.0)
     check(all(isfinite, levels), "levels must be finite")
-    check(isfinite(q) && 0 <= q <= 1, "q must lie in [0, 1]")
-    ccall(sym(:bf_tail_floor), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), q)
+    check(isfinite(q) && 0 <= q <= 1 && isfinite(ref), "q must lie in [0, 1] and ref must be finite")
+    ccall(sym(:bf_tail_floor), Float64, (Ptr{Cvoid}, Float64, Float64), floatarray(levels), q, ref)
 end
 
 """
@@ -46,11 +46,11 @@ end
 """
     g_choose_lexical_fr(values, d_scope, d_min_u, d_min_h, d_max_u, fr_ok) -> (Union{Int,Nothing}, Bool)
 
-Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, Spike D3, L55, L136;
+Two-stage tragic-choice-safe lexical rights gate (`goal_G_lexical_fr`, L55, L74, L136, ruled D3;
 Lean `g_choose_lexical_fr_ref`): Stage 1 selects the highest-value plan among those that are both
 G-admissible and Fr-permissible (`fr_ok = true`), returning `(index, false)`. When no plan clears
-Stage 1 (true tragic choice or omission catastrophe), Stage 2 falls back to unconstrained `g_choose`
-and returns `(index, true)`.
+Stage 1 (true tragic choice or omission catastrophe), Stage 2 falls back loudly to unconstrained
+`g_choose` and returns `(index, true)`.
 """
 function g_choose_lexical_fr(values, d_scope, d_min_u, d_min_h, d_max_u, fr_ok)
     cols = (values, d_scope, d_min_u, d_min_h, d_max_u)

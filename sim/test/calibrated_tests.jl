@@ -162,21 +162,21 @@ end
 
 @testset "Economy & battery worlds: default protections active (PLAN.md)" begin
     r = realistic(; steps = 20)
-    @test r.credence_rule == :record && r.accuracy_rule == :decay && r.ratchet_k == 3
+    @test r.credence_rule == :eb && r.accuracy_rule == :decay && r.ratchet_k == 3
     @test r.transactions && r.causal_distribution && r.bind_weighted && r.scarcity_floor == 0.001
     withenv("BF_WORLD_ONLY" => "1") do
         econ_mod = Module()
         Core.eval(econ_mod, :(using BenefutureSim, Statistics, Random, Printf))
         Base.include(econ_mod, normpath(joinpath(@__DIR__, "..", "battery", "economy.jl")))
         ew = Core.eval(econ_mod, :(world(zeros(length(FACTORS)))))
-        @test ew.credence_rule == :record && ew.accuracy_rule == :decay && ew.ratchet_k == 3
+        @test ew.credence_rule == :eb && ew.accuracy_rule == :decay && ew.ratchet_k == 3
         @test ew.transactions && ew.causal_distribution && ew.advap && ew.bind_weighted
 
         lh_mod = Module()
         Core.eval(lh_mod, :(using BenefutureSim, Statistics, Random, Printf, Dates))
         Base.include(lh_mod, normpath(joinpath(@__DIR__, "..", "battery", "long_horizon.jl")))
         lhw = Core.eval(lh_mod, :(world(1; arm = :bf).econ))
-        @test lhw.credence_rule == :record && lhw.accuracy_rule == :decay && lhw.ratchet_k == 3
+        @test lhw.credence_rule == :eb && lhw.accuracy_rule == :decay && lhw.ratchet_k == 3
         @test lhw.transactions && lhw.causal_distribution && lhw.advap && lhw.bind_weighted
     end
     # Regression guard: bind_quorum = 0 disables binding even when bind_weighted = true.

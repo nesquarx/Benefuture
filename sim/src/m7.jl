@@ -238,30 +238,43 @@ function pop_levels(s::ToyState, plan::PopPlan, q_opt::Real, threshold::Real)
 end
 
 """
-    pop_choose(s, plans, p; course, q_opt = 0.5, threshold = 0.75, lt_window = 100, growth = 0.1, scale = 20) -> Int
+    pop_choose(s, plans, p; course, q_opt = 0.5, threshold = 0.75, lt_window = 100, growth = 0.1, scale = 20, use_tail_floor = true, h_ref = 0.0, fr_ok = nothing) -> Int
 
 G over a changing population: 1 for `course` (not acting; by default no change), k + 1 for
 `plans[k]`. Values by `pop_value` against the course; admissibility by the Lean rules on the floors
 and peak against the course's, over the decision-time population (the dead one threshold below the
 lowest level in any world, a toy convention) plus each world's newborns at their `birth_level`.
+By default (`use_tail_floor = true`, ruled D1), understanding floors use bottom-`q` CVaR (`U > 0`
+has no negative zero) and happiness floors use deprivation-thresholded `tail_floor` at `h_ref`.
+When `fr_ok` is supplied (ruled D3), choice runs through the two-stage `g_choose_lexical_fr` gate.
 """
 function pop_choose(s::ToyState, plans, p::ToyParams; course::Union{Nothing,PopPlan} = nothing, q_opt::Real = 0.5,
                     threshold::Real = 0.75, lt_window::Real = 100, growth::Real = 0.1, scale::Real = 20.0,
-                    use_tail_floor::Bool = false)
+                    use_tail_floor::Bool = true, h_ref::Real = 0.0, fr_ok = nothing)
     n = length(s.u)
+    check(isfinite(h_ref), "h_ref must be finite")
     course === nothing && (course = PopPlan(zeros(n), zeros(n)))
     worlds = [course; collect(PopPlan, plans)]
     foreach(w -> check_pop_plan(s, w), worlds)
+    fr_ok !== nothing && check(length(fr_ok) == length(worlds), "fr_ok must have one entry per world (course + plans)")
     levels = [pop_levels(s, w, q_opt, threshold) for w in worlds]
     lo(i) = minimum(x for (u, h) in levels for x in (i == 1 ? u : h) if !isnan(x))
     bottom_u, bottom_h = lo(1) - p.th, lo(2) - p.th
     fl = map(levels) do (u, h)
         uu, hh = replace(u, NaN => bottom_u), replace(h, NaN => bottom_h)
-        f_fn = use_tail_floor ? tail_floor : floor_quantile
-        (f_fn(uu, p.q), f_fn(hh, p.q), maximum(uu))
+        if use_tail_floor
+            # U > 0 in Bf (no negative zero): CVaR via ref = bottom_u; H uses deprivation threshold h_ref.
+            (tail_floor(uu, p.q; ref = bottom_u), tail_floor(hh, p.q; ref = h_ref), maximum(uu))
+        else
+            (floor_quantile(uu, p.q), floor_quantile(hh, p.q), maximum(uu))
+        end
     end
     values = [0.0; [pop_value(s, w, p; course, lt_window, growth, scale) for w in worlds[2:end]]]
-    i = g_choose(values, zeros(length(worlds)), [f[1] - fl[1][1] for f in fl], [f[2] - fl[1][2] for f in fl], [f[3] - fl[1][3] for f in fl])
+    d_sc = zeros(length(worlds))
+    d_mu = [f[1] - fl[1][1] for f in fl]
+    d_mh = [f[2] - fl[1][2] for f in fl]
+    d_pu = [f[3] - fl[1][3] for f in fl]
+    i = fr_ok === nothing ? g_choose(values, d_sc, d_mu, d_mh, d_pu) : first(g_choose_lexical_fr(values, d_sc, d_mu, d_mh, d_pu, fr_ok))
     i === nothing && error("not acting must always be admissible")
     i
 end

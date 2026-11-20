@@ -51,13 +51,17 @@ end
     @test_throws ArgumentError g_choose([NaN], [0.0], [0.0], [0.0], [0.0])
 end
 
-@testset "Tail floor (Spike D1): acceptance and adversarial cases" begin
+@testset "Tail floor (Ruled D1): acceptance and adversarial cases" begin
     @test tail_floor(Float64[], 0.1) == 0.0
     xs = [3.0, 1.0, 2.0, 5.0, 4.0]
     @test tail_floor(xs, 0.0) == 1.0
     @test tail_floor(xs, 0.4) ≈ 1.5
     @test tail_floor(xs, 1.0) ≈ 3.0
-    # Non-sadism: any negative life pulls tail_floor below 0 regardless of how many high lives exist.
+    # Shift-invariance (coordinate-free relative affect H):
+    @test tail_floor(xs .+ 10.0, 0.4; ref = 10.0) ≈ tail_floor(xs, 0.4; ref = 0.0) + 10.0
+    @test tail_floor([100.0, 100.0, 5.0] .+ 10.0, 0.1; ref = 10.0) ≈ tail_floor([100.0, 100.0, 5.0], 0.1; ref = 0.0) + 10.0
+    @test tail_floor([110.0, 110.0, 5.0], 0.1; ref = 10.0) ≈ 5.0
+    # Non-sadism: any life below ref pulls tail_floor below ref regardless of how many high lives exist.
     @test tail_floor([100.0, 100.0, 100.0, 100.0, -5.0, -5.0, -5.0], 0.1) ≈ -15.0
     @test tail_floor([100.0, 100.0, 1.0, 1.0, 1.0], 0.1) > 0.0
     @test tail_floor([10.0, -2.0], 0.1) ≈ -2.0
@@ -69,6 +73,7 @@ end
     end
     @test_throws ArgumentError tail_floor([1.0, NaN], 0.5)
     @test_throws ArgumentError tail_floor([1.0], 1.5)
+    @test_throws ArgumentError tail_floor([1.0], 0.5; ref = NaN)
 end
 
 @testset "Lexical Fr goal choice (Spike D3): acceptance and adversarial cases" begin

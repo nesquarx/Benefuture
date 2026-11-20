@@ -318,15 +318,16 @@ fin(xs...) = all(isfinite, xs)
     @test differential(:tail_floor,
                        r -> begin
                            k = rand(r, 0:6)
-                           xs = [rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.5 ? 5.0 * rand(r) : 6.0 * randn(r)) for _ in 1:k]
+                           ref = rand(r) < 0.05 ? hostile(r) : 4.0 * randn(r)
+                           xs = [rand(r) < 0.05 ? hostile(r) : (isfinite(ref) ? ref : 0.0) + (rand(r) < 0.5 ? 5.0 * rand(r) : 6.0 * randn(r)) for _ in 1:k]
                            q = rand(r) < 0.05 ? hostile(r) : (rand(r) < 0.2 ? (rand(r) < 0.5 ? 0.0 : 1.0) : 1.4 * rand(r) - 0.2)
-                           (xs, q)
+                           (xs, q, ref)
                        end,
-                       (xs, q) -> all(isfinite, xs) && isfinite(q) && 0 <= q <= 1,
-                       tail_floor,
-                       (xs, q) -> begin
+                       (xs, q, ref) -> all(isfinite, xs) && isfinite(q) && 0 <= q <= 1 && isfinite(ref),
+                       (xs, q, ref) -> tail_floor(xs, q; ref),
+                       (xs, q, ref) -> begin
                            isempty(xs) && return 0.0
-                           any(<(0.0), xs) && return sum(min(0.0, x) for x in xs)
+                           any(<(ref), xs) && return ref + sum(min(0.0, x - ref) for x in xs)
                            s = sort(collect(Float64, xs))
                            m = max(1, min(ceil(Int, clamp(q, 0.0, 1.0) * length(s)), length(s)))
                            mean(s[1:m])

@@ -59,8 +59,10 @@ end
         # scale (20); at a scale of 1000 it does not. The scale is governed.
         big = [b in others ? 30.0 : 0.0 for b in 1:p.n]
         breakthrough = PopPlan(big, big; deaths = worst)
-        @test pop_choose(s, [breakthrough], p) == 2
-        @test pop_choose(s, [breakthrough], p; scale = 1000) == 1
+        # Breakthrough with Fr-permissible off (D3): Stage 1 blocks the rights-violating breakthrough;
+        # in a tragic choice where inaction also violates Fr, Stage 2 falls back without stalling.
+        @test pop_choose(s, [breakthrough], p; fr_ok = [true, false]) == 1
+        @test pop_choose(s, [switch], p; course, fr_ok = [false, false]) == (one == argmax(s.u) ? 1 : 2)
     end
     # The literal minimum stays down: the dead at the bottom keep it there.
     s = toy_state(p, Xoshiro(1))
@@ -284,18 +286,22 @@ end
     # G, against not acting, admits neither addition: both lower the floors.
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(3); births = newborns(-5.0, 3)),
                          PopPlan(zeros(p.n), stake(30); births = newborns(1.0, 30))], p) == 1
-    # Forced to choose (the mild births happen unless redirected), G finds the sadistic addition admissible
-    # (the floors rise against the course), and only the causers' stakes in ΣV decide: equal stakes tie and
-    # the course stands; one more unit of stake takes the sadistic addition; a smaller one does not.
+    # Under raw quantile floor (`use_tail_floor = false`), forced choice finds the sadistic addition admissible
+    # and only the causers' stakes in ΣV decide: equal stakes tie and the course stands; one more unit takes it.
     mild_plan = PopPlan(zeros(p.n), stake(30); births = newborns(1.0, 30))
-    @test pop_choose(s, [PopPlan(zeros(p.n), stake(30); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
-    @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan) == 2
-    @test pop_choose(s, [PopPlan(zeros(p.n), stake(3); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
-    # Spike D1 (tail_floor): blocks the sadistic redirect regardless of causer stake while preserving Repugnant Conclusion rejection.
-    @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = true) == 1
-    @test pop_choose(s, [PopPlan(zeros(p.n), stake(1000); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = true) == 1
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(30); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = false) == 1
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = false) == 2
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(3); births = newborns(-5.0, 3))], p; course = mild_plan, use_tail_floor = false) == 1
+    # Ruled D1 default (`use_tail_floor = true`, shifted by `h_ref`): blocks sadistic redirect regardless of stake,
+    # invariant to shifts of the H scale, and preserves Repugnant Conclusion rejection.
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(31); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
+    @test pop_choose(s, [PopPlan(zeros(p.n), stake(1000); births = newborns(-5.0, 3))], p; course = mild_plan) == 1
     @test pop_choose(s, [PopPlan(zeros(p.n), stake(200); births = newborns(0.5, 200)),
-                         PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p; use_tail_floor = true) == 3
+                         PopPlan(zeros(p.n), stake(10); births = newborns(good, 10))], p) == 3
+    s_sh = ToyState(s.u, s.h .+ 10.0)
+    nbs(u_lvl, h_lvl, k) = [Newborn(fill(u_lvl, 5), fill(h_lvl, 5); confidence = 0.9) for _ in 1:k]
+    @test pop_choose(s_sh, [PopPlan(zeros(p.n), stake(1000); births = nbs(-5.0, 5.0, 3))], p;
+                     course = PopPlan(zeros(p.n), stake(30); births = nbs(1.0, 11.0, 30)), h_ref = 10.0) == 1
 end
 
 @testset "M7 accession: forced additions and uplift (8.86)" begin

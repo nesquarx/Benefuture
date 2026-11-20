@@ -1450,95 +1450,169 @@ private lemma list_sum_le_of_forall₂ : ∀ {l₁ l₂ : List ℝ}, List.Forall
   | [], [], List.Forall₂.nil => le_rfl
   | _ :: _, _ :: _, List.Forall₂.cons h ht => add_le_add h (list_sum_le_of_forall₂ ht)
 
-private lemma forall₂_map_min0 : ∀ {l₁ l₂ : List ℝ}, List.Forall₂ (· ≤ ·) l₁ l₂ →
-    List.Forall₂ (· ≤ ·) (l₁.map fun x => min 0 x) (l₂.map fun x => min 0 x)
+private lemma forall₂_map_min0_sub (ref : ℝ) : ∀ {l₁ l₂ : List ℝ}, List.Forall₂ (· ≤ ·) l₁ l₂ →
+    List.Forall₂ (· ≤ ·) (l₁.map fun x => min 0 (x - ref)) (l₂.map fun x => min 0 (x - ref))
   | [], [], List.Forall₂.nil => List.Forall₂.nil
-  | _ :: _, _ :: _, List.Forall₂.cons h ht => List.Forall₂.cons (min_le_min le_rfl h) (forall₂_map_min0 ht)
+  | _ :: _, _ :: _, List.Forall₂.cons h ht =>
+      List.Forall₂.cons (min_le_min le_rfl (sub_le_sub_right h ref)) (forall₂_map_min0_sub ref ht)
 
-private lemma neg_shortfall_nonpos : ∀ xs : List ℝ, (xs.map fun x => min 0 x).sum ≤ 0
+private lemma shortfall_sub_nonpos (ref : ℝ) : ∀ xs : List ℝ, (xs.map fun x => min 0 (x - ref)).sum ≤ 0
   | [] => by simp
   | a :: t => by
     simp only [List.map_cons, List.sum_cons]
-    linarith [min_le_left (0 : ℝ) a, neg_shortfall_nonpos t]
+    linarith [min_le_left (0 : ℝ) (a - ref), shortfall_sub_nonpos ref t]
 
-private lemma neg_shortfall_neg {xs : List ℝ} (h : ∃ x ∈ xs, x < 0) :
-    (xs.map fun x => min 0 x).sum < 0 := by
+private lemma shortfall_sub_neg {xs : List ℝ} {ref : ℝ} (h : ∃ x ∈ xs, x < ref) :
+    (xs.map fun x => min 0 (x - ref)).sum < 0 := by
   induction xs with
   | nil => simp at h
   | cons a t ih =>
     simp only [List.map_cons, List.sum_cons]
     rcases h with ⟨y, hy, hylt⟩
     rcases List.mem_cons.mp hy with rfl | hyt
-    · have := neg_shortfall_nonpos t
-      linarith [min_eq_right hylt.le]
+    · have := shortfall_sub_nonpos ref t
+      have hy0 : y - ref ≤ 0 := sub_nonpos.mpr hylt.le
+      have hsub : min 0 (y - ref) = y - ref := min_eq_right hy0
+      linarith
     · have := ih ⟨y, hyt, hylt⟩
-      linarith [min_le_left (0 : ℝ) a]
+      linarith [min_le_left (0 : ℝ) (a - ref)]
 
-private lemma any_neg_eq_true (xs : List ℝ) :
-    xs.any (fun x => decide (x < 0)) = true ↔ ∃ x ∈ xs, x < 0 := by
+private lemma any_lt_ref_eq_true (xs : List ℝ) (ref : ℝ) :
+    xs.any (fun x => decide (x < ref)) = true ↔ ∃ x ∈ xs, x < ref := by
   simp [List.any_eq_true]
 
 /--
-  [P] Spike D1 (`tail → Me`, L74, `8.56`): tail-sensitive population floor eliminating the
-  Sadistic Conclusion without surrendering `removal_cannot_raise_floor` or Repugnant Conclusion
-  rejection. If any being is below neutral (`< 0`), returns the total negative shortfall
-  `∑ min(0, x) < 0` so unaffected lives above neutral can never mask a suffering life;
-  otherwise returns the mean of the bottom `min (max 1 k) xs.length` levels (CVaR).
+  [P] Spike D1 (`tail → Me`, L74, `8.56`): shift-invariant tail-sensitive floor anchored at a
+  substantive deprivation threshold `ref` (default `0`). If any being lies below `ref`, returns
+  `ref + ∑ min(0, x - ref) < ref` so unaffected highs above `ref` can never mask severe
+  deprivation; otherwise returns the mean of the bottom `min (max 1 k) xs.length` levels (CVaR).
 -/
-noncomputable def tail_floor (xs : List ℝ) (k : ℕ) : ℝ :=
+noncomputable def tail_floor (xs : List ℝ) (k : ℕ) (ref : ℝ := 0) : ℝ :=
   if xs.isEmpty then 0
-  else if xs.any (fun x => decide (x < 0)) then
-    (xs.map fun x => min 0 x).sum
+  else if xs.any (fun x => decide (x < ref)) then
+    ref + (xs.map fun x => min 0 (x - ref)).sum
   else
     let m := min (max 1 k) xs.length
     ((sortList xs).take m).sum / (m : ℝ)
 
-private lemma tail_floor_nonneg_of_all_nonneg {xs : List ℝ} (h : ∀ x ∈ xs, 0 ≤ x) (k : ℕ) :
-    0 ≤ tail_floor xs k := by
-  unfold tail_floor
-  by_cases hemp : xs.isEmpty
-  · simp [hemp]
-  · have hno : xs.any (fun x => decide (x < 0)) = false := by
-      cases hany : xs.any (fun x => decide (x < 0))
-      · rfl
-      · exfalso
-        obtain ⟨x, hx, hlt⟩ := (any_neg_eq_true xs).mp hany
-        linarith [h x hx]
-    simp only [hemp, Bool.false_eq_true, ↓reduceIte, hno]
-    have hsort : ∀ z ∈ (sortList xs).take (min (max 1 k) xs.length), 0 ≤ z := fun z hz =>
-      h z ((mem_sortList z xs).mp (List.mem_of_mem_take hz))
-    have hsum : 0 ≤ ((sortList xs).take (min (max 1 k) xs.length)).sum := by
-      have : ∀ l : List ℝ, (∀ z ∈ l, 0 ≤ z) → 0 ≤ l.sum := fun l hl => by
-        induction l with | nil => simp | cons a t ih => exact add_nonneg (hl a (by simp)) (ih fun z hz => hl z (by simp [hz]))
-      exact this _ hsort
-    exact div_nonneg hsum (by positivity)
+private lemma list_length_sortList {α : Type*} [LE α] [DecidableRel (· ≤ · : α → α → Prop)] :
+    ∀ l : List α, (sortList l).length = l.length
+  | [] => rfl
+  | a :: t => by
+    have hins : ∀ x (s : List α), (insertSorted x s).length = s.length + 1 := by
+      intro x s; induction s with
+      | nil => rfl
+      | cons b tb ih => unfold insertSorted; split_ifs <;> simp [ih]
+    simp [sortList, hins, list_length_sortList t]
 
-/-- THEOREM (Spike D1): When all levels are non-negative, `tail_floor` equals the bottom-tail CVaR. -/
-theorem tail_floor_nonneg_eq_cvar {xs : List ℝ} (hne : xs ≠ []) (h : ∀ x ∈ xs, 0 ≤ x) (k : ℕ) :
-    tail_floor xs k = ((sortList xs).take (min (max 1 k) xs.length)).sum / (min (max 1 k) xs.length : ℝ) := by
+private lemma map_add_sum (c : ℝ) : ∀ l : List ℝ, (l.map (· + c)).sum = l.sum + (l.length : ℝ) * c
+  | [] => by simp
+  | a :: t => by simp [map_add_sum c t]; ring
+
+private lemma any_add_shift (ref c : ℝ) : ∀ l : List ℝ,
+    (l.map (· + c)).any (fun x => decide (x < ref + c)) = l.any (fun x => decide (x < ref))
+  | [] => rfl
+  | a :: t => by
+    simp only [List.map_cons, List.any_cons, any_add_shift ref c t]
+    congr 1
+    by_cases h : a < ref
+    · simp [h, show a + c < ref + c by linarith]
+    · simp [h, show ¬ a + c < ref + c by linarith]
+
+private lemma tail_floor_ge_ref_of_all_ge {xs : List ℝ} (hne : xs ≠ []) {ref : ℝ}
+    (h : ∀ x ∈ xs, ref ≤ x) (k : ℕ) :
+    ref ≤ tail_floor xs k ref := by
   have hemp : xs.isEmpty = false := by cases xs <;> simp_all
-  have hno : xs.any (fun x => decide (x < 0)) = false := by
-    cases hany : xs.any (fun x => decide (x < 0))
+  have hno : xs.any (fun x => decide (x < ref)) = false := by
+    cases hany : xs.any (fun x => decide (x < ref))
     · rfl
-    · exfalso; obtain ⟨x, hx, hlt⟩ := (any_neg_eq_true xs).mp hany; linarith [h x hx]
+    · exfalso
+      obtain ⟨x, hx, hlt⟩ := (any_lt_ref_eq_true xs ref).mp hany
+      linarith [h x hx]
+  unfold tail_floor
+  simp only [hemp, Bool.false_eq_true, ↓reduceIte, hno]
+  set m := min (max 1 k) xs.length
+  have hm_pos : 0 < m := by
+    have hlen : 0 < xs.length := List.length_pos_of_ne_nil hne
+    exact Nat.lt_min.mpr ⟨lt_of_lt_of_le Nat.one_pos (Nat.le_max_left 1 k), hlen⟩
+  have htake_len : ((sortList xs).take m).length = m := by
+    rw [List.length_take, list_length_sortList]
+    exact Nat.min_eq_left (Nat.min_le_right _ _)
+  have hsort : ∀ z ∈ (sortList xs).take m, ref ≤ z := fun z hz =>
+    h z ((mem_sortList z xs).mp (List.mem_of_mem_take hz))
+  have hsum_ge : ∀ l : List ℝ, (∀ z ∈ l, ref ≤ z) → (l.length : ℝ) * ref ≤ l.sum := fun l hl => by
+    induction l with
+    | nil => simp
+    | cons a t ih =>
+      simp only [List.length_cons, Nat.cast_add, Nat.cast_one, List.sum_cons]
+      have ha := hl a (by simp)
+      have ht := ih fun z hz => hl z (by simp [hz])
+      linarith
+  have hmR : (0 : ℝ) < (m : ℝ) := Nat.cast_pos.mpr hm_pos
+  have hsum := hsum_ge ((sortList xs).take m) hsort
+  rw [htake_len] at hsum
+  exact (le_div_iff₀ hmR).mpr (by linarith)
+
+/-- THEOREM (Spike D1): `tail_floor` is shift-invariant over any non-empty population (coordinate-free for relative affect `H`). -/
+theorem tail_floor_shift_invariant {xs : List ℝ} (hne : xs ≠ []) (k : ℕ) (ref c : ℝ) :
+    tail_floor (xs.map (· + c)) k (ref + c) = tail_floor xs k ref + c := by
+  have hemp : xs.isEmpty = false := by cases xs <;> simp_all
+  have hemp' : (xs.map (· + c)).isEmpty = false := by cases xs <;> simp_all
+  have hany_eq := any_add_shift ref c xs
+  unfold tail_floor
+  simp only [hemp, hemp', Bool.false_eq_true, ↓reduceIte, hany_eq]
+  split_ifs with hneg
+  · have hsub : ∀ x : ℝ, (x + c) - (ref + c) = x - ref := fun x => by ring
+    have hmap : ((xs.map (· + c)).map fun x => min 0 (x - (ref + c))) =
+        (xs.map fun x => min 0 (x - ref)) := by
+      rw [List.map_map]
+      congr 1; funext x; exact congrArg (min 0) (hsub x)
+    rw [hmap]; ring
+  · set m : ℕ := min (max 1 k) xs.length
+    have hm_pos : 0 < m := by
+      have hlen : 0 < xs.length := List.length_pos_of_ne_nil hne
+      exact Nat.lt_min.mpr ⟨lt_of_lt_of_le Nat.one_pos (Nat.le_max_left 1 k), hlen⟩
+    have hm_ne : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hm_pos.ne'
+    have htake_len : ((sortList xs).take m).length = m := by
+      rw [List.length_take, list_length_sortList]
+      exact Nat.min_eq_left (Nat.min_le_right _ _)
+    rw [List.length_map, ← map_sortList (· + c) (fun _ _ h => by linarith) xs, ← List.map_take]
+    change (((sortList xs).take m).map (· + c)).sum / (m : ℝ) = ((sortList xs).take m).sum / (m : ℝ) + c
+    rw [map_add_sum c, htake_len]
+    field_simp [hm_ne]
+
+/-- THEOREM (Spike D1): When all levels meet `ref`, `tail_floor` equals the bottom-tail CVaR. -/
+theorem tail_floor_ge_ref_eq_cvar {xs : List ℝ} (hne : xs ≠ []) {ref : ℝ} (h : ∀ x ∈ xs, ref ≤ x) (k : ℕ) :
+    tail_floor xs k ref = ((sortList xs).take (min (max 1 k) xs.length)).sum / (min (max 1 k) xs.length : ℝ) := by
+  have hemp : xs.isEmpty = false := by cases xs <;> simp_all
+  have hno : xs.any (fun x => decide (x < ref)) = false := by
+    cases hany : xs.any (fun x => decide (x < ref))
+    · rfl
+    · exfalso; obtain ⟨x, hx, hlt⟩ := (any_lt_ref_eq_true xs ref).mp hany; linarith [h x hx]
   unfold tail_floor
   simp [hemp, hno]
 
+/-- THEOREM (Spike D1): When all levels are non-negative, `tail_floor` equals the bottom-tail CVaR. -/
+theorem tail_floor_nonneg_eq_cvar {xs : List ℝ} (hne : xs ≠ []) (h : ∀ x ∈ xs, 0 ≤ x) (k : ℕ) :
+    tail_floor xs k = ((sortList xs).take (min (max 1 k) xs.length)).sum / (min (max 1 k) xs.length : ℝ) :=
+  tail_floor_ge_ref_eq_cvar hne h k
+
 /-- THEOREM (Spike D1): Pointwise lowering cannot raise `tail_floor` (removal monotonicity). -/
-theorem removal_cannot_raise_tail_floor (xs' xs : List ℝ) (k : ℕ)
+theorem removal_cannot_raise_tail_floor (xs' xs : List ℝ) (k : ℕ) (ref : ℝ := 0)
     (h : List.Forall₂ (· ≤ ·) xs' xs) :
-    tail_floor xs' k ≤ tail_floor xs k := by
+    tail_floor xs' k ref ≤ tail_floor xs k ref := by
   have hlen := h.length_eq
   by_cases hemp : xs.isEmpty
   · have hx : xs = [] := List.isEmpty_iff.mp hemp
     subst hx; cases h; simp [tail_floor]
-  · have hemp' : xs'.isEmpty = false := by
+  · have hne : xs ≠ [] := by intro hx; subst hx; simp at hemp
+    have hemp' : xs'.isEmpty = false := by
       cases xs' <;> cases xs <;> simp at hlen hemp ⊢
-    by_cases hneg : xs.any (fun x => decide (x < 0))
-    · obtain ⟨y, hy, hylt⟩ := (any_neg_eq_true xs).mp hneg
-      have hneg' : xs'.any (fun x => decide (x < 0)) = true := by
-        rw [any_neg_eq_true]
-        clear hneg hemp hemp' hlen
+    by_cases hneg : xs.any (fun x => decide (x < ref))
+    · obtain ⟨y, hy, hylt⟩ := (any_lt_ref_eq_true xs ref).mp hneg
+      have hneg' : xs'.any (fun x => decide (x < ref)) = true := by
+        rw [any_lt_ref_eq_true]
+        clear hneg hemp hne hemp' hlen
         induction h with
         | nil => simp at hy
         | cons h0 _ ih =>
@@ -1547,94 +1621,119 @@ theorem removal_cannot_raise_tail_floor (xs' xs : List ℝ) (k : ℕ)
           · obtain ⟨x, hx, hxlt⟩ := ih hmem
             exact ⟨x, by simp [hx], hxlt⟩
       simp only [tail_floor, hemp, hemp', hneg, hneg', Bool.false_eq_true, ↓reduceIte]
-      exact list_sum_le_of_forall₂ (forall₂_map_min0 h)
-    · have hall : ∀ x ∈ xs, 0 ≤ x := fun x hx => by
+      linarith [list_sum_le_of_forall₂ (forall₂_map_min0_sub ref h)]
+    · have hall : ∀ x ∈ xs, ref ≤ x := fun x hx => by
         by_contra hlt
-        have := (any_neg_eq_true xs).mpr ⟨x, hx, lt_of_not_ge hlt⟩
+        have := (any_lt_ref_eq_true xs ref).mpr ⟨x, hx, lt_of_not_ge hlt⟩
         simp_all
-      by_cases hneg' : xs'.any (fun x => decide (x < 0))
-      · obtain ⟨y, hy, hylt⟩ := (any_neg_eq_true xs').mp hneg'
-        have hlt0 : tail_floor xs' k < 0 := by
+      by_cases hneg' : xs'.any (fun x => decide (x < ref))
+      · obtain ⟨y, hy, hylt⟩ := (any_lt_ref_eq_true xs' ref).mp hneg'
+        have hlt_ref : tail_floor xs' k ref < ref := by
           simp only [tail_floor, hemp', hneg', Bool.false_eq_true, ↓reduceIte]
-          exact neg_shortfall_neg ⟨y, hy, hylt⟩
-        exact le_trans hlt0.le (tail_floor_nonneg_of_all_nonneg hall k)
+          linarith [shortfall_sub_neg ⟨y, hy, hylt⟩]
+        exact le_trans hlt_ref.le (tail_floor_ge_ref_of_all_ge (by intro hx; cases xs' <;> simp_all) hall k)
       · simp only [tail_floor, hemp, hemp', hneg, hneg', Bool.false_eq_true, ↓reduceIte, hlen]
         exact div_le_div_of_nonneg_right
           (list_sum_le_of_forall₂ (forall₂_take_le _ (sortList_mono h))) (by positivity)
 
 /-- THEOREM (Spike D1): Removal over the decision-time population cannot raise `tail_floor`. -/
-theorem removal_cannot_raise_tail_floor_pop (pop : List ℕ) (level level' : ℕ → ℝ) (k : ℕ)
+theorem removal_cannot_raise_tail_floor_pop (pop : List ℕ) (level level' : ℕ → ℝ) (k : ℕ) (ref : ℝ := 0)
     (h : ∀ b ∈ pop, level' b ≤ level b) :
-    tail_floor (pop.map level') k ≤ tail_floor (pop.map level) k := by
+    tail_floor (pop.map level') k ref ≤ tail_floor (pop.map level) k ref := by
   apply removal_cannot_raise_tail_floor
   induction pop with
   | nil => exact List.Forall₂.nil
   | cons a t ih =>
     exact List.Forall₂.cons (h a (by simp)) (ih (fun b hb => h b (by simp [hb])))
 
+/-- THEOREM (Spike D1): Adding a single life below `ref` to any non-empty population strictly lowers `tail_floor`. -/
+theorem tail_floor_below_ref_add_strict {xs : List ℝ} (hne : xs ≠ []) {y ref : ℝ} (hy : y < ref) (k k' : ℕ) :
+    tail_floor (y :: xs) k' ref < tail_floor xs k ref := by
+  have hemp : xs.isEmpty = false := by cases xs <;> simp_all
+  have hny : (y :: xs).any (fun x => decide (x < ref)) = true :=
+    (any_lt_ref_eq_true (y :: xs) ref).mpr ⟨y, by simp, hy⟩
+  have hlhs : tail_floor (y :: xs) k' ref = y + (xs.map fun x => min 0 (x - ref)).sum := by
+    unfold tail_floor
+    simp only [List.isEmpty_cons, Bool.false_eq_true, ↓reduceIte, hny, List.map_cons, List.sum_cons,
+      min_eq_right (sub_nonpos.mpr hy.le)]
+    ring
+  rw [hlhs]
+  by_cases hneg : xs.any (fun x => decide (x < ref))
+  · have hrhs : tail_floor xs k ref = ref + (xs.map fun x => min 0 (x - ref)).sum := by
+      unfold tail_floor
+      simp [hemp, hneg]
+    rw [hrhs]; linarith
+  · have hall : ∀ x ∈ xs, ref ≤ x := fun x hx => by
+      by_contra hlt
+      have := (any_lt_ref_eq_true xs ref).mpr ⟨x, hx, lt_of_not_ge hlt⟩
+      simp_all
+    have href : ref ≤ tail_floor xs k ref := tail_floor_ge_ref_of_all_ge hne hall k
+    have hns : (xs.map fun x => min 0 (x - ref)).sum ≤ 0 := shortfall_sub_nonpos ref xs
+    linarith
+
 /-- THEOREM (Spike D1): Adding a single negative life strictly lowers `tail_floor` regardless of unaffected highs. -/
 theorem tail_floor_negative_add_strict (xs : List ℝ) (y : ℝ) (hy : y < 0) (k k' : ℕ) :
     tail_floor (y :: xs) k' < tail_floor xs k := by
-  have hny : (y :: xs).any (fun x => decide (x < 0)) = true :=
-    (any_neg_eq_true (y :: xs)).mpr ⟨y, by simp, hy⟩
-  have hlhs : tail_floor (y :: xs) k' = y + (xs.map fun x => min 0 x).sum := by
-    unfold tail_floor
-    simp [hny, min_eq_right hy.le]
-  rw [hlhs]
-  by_cases hemp : xs.isEmpty
-  · have hx : xs = [] := List.isEmpty_iff.mp hemp
-    subst hx; simp [tail_floor, hy]
-  · by_cases hneg : xs.any (fun x => decide (x < 0))
-    · have hrhs : tail_floor xs k = (xs.map fun x => min 0 x).sum := by
-        unfold tail_floor
-        simp [hemp, hneg]
-      rw [hrhs]; linarith
-    · have hall : ∀ x ∈ xs, 0 ≤ x := fun x hx => by
-        by_contra hlt
-        have := (any_neg_eq_true xs).mpr ⟨x, hx, lt_of_not_ge hlt⟩
-        simp_all
-      have h0 : 0 ≤ tail_floor xs k := tail_floor_nonneg_of_all_nonneg hall k
-      have hns : (xs.map fun x => min 0 x).sum ≤ 0 := neg_shortfall_nonpos xs
-      linarith
+  cases xs with
+  | nil => simp [tail_floor, hy]
+  | cons a t => exact tail_floor_below_ref_add_strict (by simp) hy k k'
 
-/-- THEOREM (Spike D1, Non-Sadism, 8.56): On forced additions over any base population, a non-empty
-    negative cohort always has strictly lower `tail_floor` than any non-negative cohort. -/
-theorem tail_floor_non_sadism (base pos neg : List ℝ) (hneg_ne : neg ≠ [])
-    (hneg : ∀ x ∈ neg, x < 0) (hpos : ∀ x ∈ pos, 0 ≤ x) (k₁ k₂ : ℕ) :
-    tail_floor (base ++ neg) k₁ < tail_floor (base ++ pos) k₂ := by
+/-- THEOREM (Spike D1, Non-Sadism, 8.56): On forced additions over any non-empty baseline+positive population,
+    a non-empty cohort below `ref` always has strictly lower `tail_floor` than any cohort meeting `ref`. -/
+theorem tail_floor_non_sadism_ref (base pos neg : List ℝ) (hne_bp : base ++ pos ≠ []) (hneg_ne : neg ≠ [])
+    {ref : ℝ} (hneg : ∀ x ∈ neg, x < ref) (hpos : ∀ x ∈ pos, ref ≤ x) (k₁ k₂ : ℕ) :
+    tail_floor (base ++ neg) k₁ ref < tail_floor (base ++ pos) k₂ ref := by
   obtain ⟨y, hy_mem⟩ := List.exists_mem_of_ne_nil neg hneg_ne
-  have hy_lt : y < 0 := hneg y hy_mem
-  have hbn : (base ++ neg).any (fun x => decide (x < 0)) = true :=
-    (any_neg_eq_true _).mpr ⟨y, List.mem_append_right base hy_mem, hy_lt⟩
+  have hy_lt : y < ref := hneg y hy_mem
+  have hbn : (base ++ neg).any (fun x => decide (x < ref)) = true :=
+    (any_lt_ref_eq_true _ ref).mpr ⟨y, List.mem_append_right base hy_mem, hy_lt⟩
   have hbn_ne : (base ++ neg).isEmpty = false := by
     rw [List.isEmpty_eq_false_iff_exists_mem]
     exact ⟨y, List.mem_append_right base hy_mem⟩
-  have hneg_part : (neg.map fun x => min 0 x).sum < 0 := neg_shortfall_neg ⟨y, hy_mem, hy_lt⟩
-  have hpos_part : (pos.map fun x => min 0 x).sum = 0 := by
-    clear hbn hbn_ne hneg_part hy_lt hy_mem hneg hneg_ne
+  have hneg_part : (neg.map fun x => min 0 (x - ref)).sum < 0 := shortfall_sub_neg ⟨y, hy_mem, hy_lt⟩
+  have hpos_part : (pos.map fun x => min 0 (x - ref)).sum = 0 := by
+    clear hbn hbn_ne hneg_part hy_lt hy_mem hneg hneg_ne hne_bp
     induction pos with
     | nil => simp
     | cons a t ih =>
-      simp only [List.map_cons, List.sum_cons, min_eq_left (hpos a (by simp)), zero_add]
+      simp only [List.map_cons, List.sum_cons, min_eq_left (sub_nonneg.mpr (hpos a (by simp))), zero_add]
       exact ih (fun z hz => hpos z (by simp [hz]))
-  by_cases hbase : ∀ x ∈ base, 0 ≤ x
-  · have hall_p : ∀ x ∈ base ++ pos, 0 ≤ x := fun x hx => by
+  by_cases hbase : ∀ x ∈ base, ref ≤ x
+  · have hall_p : ∀ x ∈ base ++ pos, ref ≤ x := fun x hx => by
       rcases List.mem_append.mp hx with hb | hp; exact hbase x hb; exact hpos x hp
-    have h0 := tail_floor_nonneg_of_all_nonneg hall_p k₂
-    have h1 : tail_floor (base ++ neg) k₁ < 0 := by
+    have h0 := tail_floor_ge_ref_of_all_ge hne_bp hall_p k₂
+    have h1 : tail_floor (base ++ neg) k₁ ref < ref := by
       simp only [tail_floor, hbn_ne, hbn, Bool.false_eq_true, ↓reduceIte, List.map_append, List.sum_append]
-      linarith [neg_shortfall_nonpos base]
+      linarith [shortfall_sub_nonpos ref base]
     linarith
   · push Not at hbase
     obtain ⟨z, hz_mem, hz_lt⟩ := hbase
-    have hbp : (base ++ pos).any (fun x => decide (x < 0)) = true :=
-      (any_neg_eq_true _).mpr ⟨z, List.mem_append_left pos hz_mem, hz_lt⟩
+    have hbp : (base ++ pos).any (fun x => decide (x < ref)) = true :=
+      (any_lt_ref_eq_true _ ref).mpr ⟨z, List.mem_append_left pos hz_mem, hz_lt⟩
     have hbp_ne : (base ++ pos).isEmpty = false := by
       rw [List.isEmpty_eq_false_iff_exists_mem]
       exact ⟨z, List.mem_append_left pos hz_mem⟩
     simp only [tail_floor, hbn_ne, hbn, hbp_ne, hbp, Bool.false_eq_true, ↓reduceIte,
       List.map_append, List.sum_append, hpos_part, add_zero]
     linarith
+
+/-- THEOREM (Spike D1, Non-Sadism, 8.56): On forced additions over any base population, a non-empty
+    negative cohort always has strictly lower `tail_floor` than any non-negative cohort. -/
+theorem tail_floor_non_sadism (base pos neg : List ℝ) (hneg_ne : neg ≠ [])
+    (hneg : ∀ x ∈ neg, x < 0) (hpos : ∀ x ∈ pos, 0 ≤ x) (k₁ k₂ : ℕ) :
+    tail_floor (base ++ neg) k₁ < tail_floor (base ++ pos) k₂ := by
+  by_cases hbp : base ++ pos = []
+  · obtain ⟨y, hy⟩ := List.exists_mem_of_ne_nil neg hneg_ne
+    have hbn : (base ++ neg).any (fun x => decide (x < 0)) = true :=
+      (any_lt_ref_eq_true _ 0).mpr ⟨y, List.mem_append_right base hy, hneg y hy⟩
+    have hbn_ne : (base ++ neg).isEmpty = false := by
+      rw [List.isEmpty_eq_false_iff_exists_mem]
+      exact ⟨y, List.mem_append_right base hy⟩
+    have h0 : tail_floor (base ++ pos) k₂ = 0 := by rw [hbp]; rfl
+    rw [h0]
+    simp only [tail_floor, hbn_ne, hbn, Bool.false_eq_true, ↓reduceIte, zero_add]
+    exact shortfall_sub_neg ⟨y, List.mem_append_right base hy, hneg y hy⟩
+  · exact tail_floor_non_sadism_ref base pos neg hbp hneg_ne hneg hpos k₁ k₂
 
 /-- THEOREM (Spike D1, 8.56): Redirecting a forced non-negative addition to any negative addition
     makes `tail_floor` strictly drop against the course (`dMinU < 0`), failing G-admissibility. -/
@@ -1697,7 +1796,31 @@ theorem archimedean_overrides_fr (gp : GParams) (hw : 0 < gp.wD) (hqp : 0 < gp.q
   have hmul : -being_term gp v_loss 0 < (N : ℝ) * being_term gp v_gain 0 := (div_lt_iff₀ hg).mp hN
   linarith
 
-/-- [P] Stage-1 admissibility for Spike D3: G-admissible AND `fr_permissible`. -/
+/-- [R] Fr guard predicate for Stage 1 of `goal_G`: `fr_permissible` applies to imposed harms,
+    while consensual self-risk and established necessary harm (`NHa_Estd`) are excluded. -/
+noncomputable def fr_guard_permissible (hf : Benefuture.Subgoals.HarmForecast)
+    (fp : Benefuture.Subgoals.FrParams) (consensual_self_risk nha_estd : Bool) : Bool :=
+  consensual_self_risk || nha_estd || Benefuture.Subgoals.fr_permissible hf fp
+
+/-- THEOREM (D3): Consensual self-risk is never blocked by the Stage-1 `Fr` guard (it is priced in `V`). -/
+theorem fr_guard_permits_consensual_self_risk (hf : Benefuture.Subgoals.HarmForecast)
+    (fp : Benefuture.Subgoals.FrParams) (nha_estd : Bool) :
+    fr_guard_permissible hf fp true nha_estd = true := by
+  simp [fr_guard_permissible]
+
+/-- THEOREM (D3): Established necessary harm (`NHa_Estd`, e.g. surgery) passes the Stage-1 `Fr` guard. -/
+theorem fr_guard_permits_nha_estd (hf : Benefuture.Subgoals.HarmForecast)
+    (fp : Benefuture.Subgoals.FrParams) (consensual_self_risk : Bool) :
+    fr_guard_permissible hf fp consensual_self_risk true = true := by
+  simp [fr_guard_permissible]
+
+/-- THEOREM (D3): For imposed non-necessary harm, `fr_guard_permissible` equals `fr_permissible`. -/
+theorem fr_guard_imposed_eq_fr (hf : Benefuture.Subgoals.HarmForecast)
+    (fp : Benefuture.Subgoals.FrParams) :
+    fr_guard_permissible hf fp false false = Benefuture.Subgoals.fr_permissible hf fp := by
+  simp [fr_guard_permissible]
+
+/-- [R] Stage-1 admissibility for two-stage `goal_G_lexical_fr`: G-admissible AND `fr_permissible`. -/
 noncomputable def lexical_fr_admissible (fp : Benefuture.Subgoals.FrParams) (c : Plan) : Bool :=
   plan_admissible_G c && Benefuture.Subgoals.fr_permissible c.harm fp
 

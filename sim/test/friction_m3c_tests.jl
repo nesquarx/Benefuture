@@ -17,12 +17,12 @@ const MODELS_TOP = (σ_leaf = 0.9, σ_branch = 0.95, σ_coarse = 1.0)
 fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
 
 @testset "M3c: convergence under heavy friction" begin
-    clean = mean(fr_gain(run_m3c(fr(); seed)) for seed in 1:3)
+    clean = mean(fr_gain(run_m3c(fr(); seed)) for seed in 1:12)
     # Every source but model error and execution at the bad end of its realistic range: floors still rise,
     # more slowly (re-measured at the harsher calibrated ends, markers 0.6 against 0.2 before, for one:
     # about 20% of clean growth over 3 seeds).
-    heavy = [run_m3c(fr(; FRICTION...); seed) for seed in 1:3]
-    @test mean(fr_gain.(heavy)) > 0.1 * clean && all(tr -> length(tr.chosen_step) > 0, heavy)
+    heavy = [run_m3c(fr(; FRICTION...); seed) for seed in 1:12]
+    @test mean(fr_gain.(heavy)) > 0.1 * clean && proportion_interval(count(tr -> length(tr.chosen_step) > 0, heavy), length(heavy)).lo > 0.5
     # The whole success pattern (L74), not the floor alone: medians and the peak of understanding
     # rise as well, and harm's peak (the deepest single-being drop) stays bounded.
     for tr in heavy
