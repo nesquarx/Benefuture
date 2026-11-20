@@ -44,6 +44,39 @@ within each sector, with a child never inside its parent. Candidate proxies (eac
 Impact is intensity, not radius. A notch marks a net new achievement: one that creates a new leaf. At the claimed
 tier it is flagged only, and drawn once attested.
 
+### Cache-first tasks (ruled: optimise AI tasks for maximum cache hit)
+
+Two caches, both designed for: the answer cache (exact match on a task's canonical input) and the model's prompt
+cache (a shared prefix).
+
+- **Canonical inputs.** Cards serialise canonically (sorted keys, normalised text, fixed numeric precision);
+  volatile fields (timestamps, run ids, provenance) stay out of the hash. Candidate lists are sorted by id.
+- **Context-free tasks.** A task sees only what its answer depends on: rate a field on the axes from its own card,
+  not from its neighbours, so a change elsewhere does not invalidate it.
+- **Static first, variable last.** Each task type's prompt is a fixed prefix (instructions, schema, examples, the
+  coarse map summary) followed by the cards; a batch runs many cards of one type in one session so the prefix is
+  reused. Prompt versions change rarely and deliberately.
+- **Deterministic variants for votes.** Three identical prompts give correlated answers; the k votes instead use k
+  fixed variants (candidate order permuted by a fixed rule, or fixed paraphrases), each cacheable.
+- **Model changes do not re-run everything.** On a new model, re-run its gold sets first; re-run items only where
+  the gold sets show drift (score-only until converged, 8.136).
+- Measured: hit rate per task type and per rebuild, reported with each run.
+
+### Toward an embedding engine (ruled: the map can turn into, or feed, an embedding engine)
+
+- **The sparse vector is native.** A domain profile is weights over domain ids summing to 1 (Benefuture L22): a point
+  on a simplex over the vocabulary of ids. An entity's image is a fold of its rows into such a vector (per channel),
+  so search, group sums and comparisons are vector operations.
+- **Migrations are linear.** Each release's migration table is a sparse matrix from old ids to new; vectors migrate
+  by multiplication. Ids stay stable dimensions, never reused.
+- **Dense embeddings are derived, never the source of truth.** Versioned artefacts built from the cards: text
+  (labels, aliases, descriptions), graph (parents, overlaps) and co-occurrence. The card keeps what each needs.
+- **Hyperbolic fit.** Poincaré embeddings place general concepts near the centre and specific ones toward the rim
+  of a disc, in few dimensions, which is the image's own geometry; a higher-dimensional ball could be the engine and
+  the image its anchored two-dimensional view (angles fixed by the basemap, the rest learnt). To test, not assumed.
+- **Similarity finds; it never credits.** Nearness may retrieve and classify; it must not move reputation between
+  domains (Benefuture L101: no transfer, no halo).
+
 ## Levels
 
 Each level has its prediction (outcome, ETA in working sessions, confidence; author ruling 8.134) and an acceptance
@@ -119,12 +152,17 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 6. **Disclosure levels.** Zoom depth by disclosure makes L133's privacy query types concrete.
 7. **Dogfooding.** The pipeline (accuracy-gated models, credence by agreement, escalation, loud logging) is
    Benefuture's metric-model process run on itself; its measured behaviour is evidence for or against that process.
+8. **Domain profiles as vectors.** L22's `Dn(T)` with weights summing to 1 is a sparse simplex vector; classifying an
+   action into domains (`relevantDn(A)`, L86) is retrieval in that space. A similarity space also invites
+   reputation to leak to nearby domains; L101's no-transfer rule should say it holds for similarity too.
 
 ## Decided
 
 - **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
   API runner may replace them later behind the same task-file interface.
 - **[R] Gold sets** (author, 2026-11-20): model-drafted labels, reviewed by the author.
+- **[R] AI tasks optimised for maximum cache hit** (author, 2026-11-20).
+- **[R] The domain map built so it can turn into, or feed, an embedding engine** (author, 2026-11-20).
 
 ## Open
 
