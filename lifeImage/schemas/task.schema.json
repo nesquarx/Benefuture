@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeimage.invalid/schemas/task.schema.json",
+  "title": "Task card (one line of a batch file after the header)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "task_id", "task_type", "prompt_version", "input_hash", "variant", "k", "input", "allowed_verdicts"],
+  "properties": {
+    "kind": {"const": "task"},
+    "task_id": {"type": "string", "minLength": 1},
+    "task_type": {"type": "string", "minLength": 1},
+    "prompt_version": {"type": "integer", "minimum": 1},
+    "input_hash": {"type": "string", "minLength": 1},
+    "variant": {"type": "integer", "minimum": 0},
+    "k": {"type": "integer", "minimum": 1},
+    "input": {"type": "object"},
+    "allowed_verdicts": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  }
+}
