@@ -15,6 +15,11 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
 - **[R] Ownership** (author, 2026-11-20): held by the project before v1.0 is published. The parent repository is
   LGPL; the basemap data needs its own licence, compatible with its sources' terms `[OPEN]`.
 
+- **[R] Domains concern everything, not only work** (author, 2026-11-20): they are to be the backbone of
+  Benefuture's behavioural transaction substrate, so the graph must incorporate and classify any life event or
+  behaviour (care, health, home, relationships, play, faith, civic life, consumption, harm), not only knowledge,
+  skills and occupations.
+
 ## Layers
 
 1. **Domain graph (basemap).** Every domain, nested and overlapping (Benefuture L22: fuzzy nesting, natural overlap,
@@ -45,7 +50,7 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   its ancestor's; neighbours keep their circular order (insertion takes the angle between them); a domain's centre
   angle moves less than a governed ε between versions; a removed domain leaves a tombstone mapping to successors,
   and its neighbours do not close the gap.
-- **[P] Seed sources** (licences to verify before use): OpenAlex topics, ESCO, O*NET, Wikidata; overlap weights
+- **[P] Seed sources** (licences to verify before use): OpenAlex topics, ESCO, O*NET, Wikidata, and for the rest of life ICATUS, COICOP, ICF/ICD (later ICCS); overlap weights
   learnt from co-occurrence.
 
 ## Building the graph

@@ -106,6 +106,12 @@ check. Counts are estimates to replace with measured ones.
 
 ### 1. Coarse: sectors and fields (about 100–300 nodes)
 
+- Coverage is all of life (ruled): seed sources beyond work and knowledge, each to verify, include the UN
+  International Classification of Activities for Time-Use Statistics (ICATUS), time-use activity lexicons, COICOP
+  (consumption by purpose), the WHO classifications of functioning and health (ICF, ICD), and later the UNODC crime
+  classification (ICCS) for the negative channel. Acceptance adds a coverage check: a held-out set of everyday life
+  events and behaviours each finds a field.
+
 - Author confirms the top sectors on the two axes. A model rates each field on both axes (k = 5); angle is the
   direction in the axes' plane, ordered by insertion between neighbours.
 - The one level where the author's eye is the gate: small, and it fixes every later angle.
@@ -180,11 +186,16 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 9. **The graph as memory.** L22 learns domain relations from memory (`Rel ← Mem`); a graph that serves as context
    packs now and as concept-model weights later is that memory made operational, and a candidate concrete form for
    how metric models classify actions into domains.
+10. **One substrate for behaviour.** If every action is classified into these domains, the transaction substrate
+    (L84–L91: proposals generated per relevant domain) and reputation (L101) share one graph with the Life Image;
+    gaps in the graph become places where behaviour cannot be priced or credited, which the coverage check measures.
 
 ## Decided
 
 - **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
   API runner may replace them later behind the same task-file interface.
+- **[R] Domains cover every life event and behaviour** (author, 2026-11-20), as the backbone of Benefuture's
+  behavioural transaction substrate.
 - **[R] Gold sets** (author, 2026-11-20): model-drafted labels, reviewed by the author.
 - **[R] AI tasks optimised for maximum cache hit** (author, 2026-11-20).
 - **[R] The domain map built so it can turn into, or feed, an embedding engine** (author, 2026-11-20), and in time
