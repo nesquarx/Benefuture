@@ -52,6 +52,13 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   migration is a pure function. Raster images carry their basemap version (the flange is a natural place).
 - **[R] Top level by the concept's axes first** (author, 2026-11-20): abstract ↔ tangible (left ↔ right), personal
   and social ↔ global and professional (bottom ↔ top). Other arrangements may be tried before v1.0.
+- **[R] The axes dictate sectors; domain pressure dictates slices** (author, 2026-11-21). Sectors are not a frozen
+  list: they emerge from domains' approximate positions on the axes. A domain's slice width follows its pressure (how
+  much recorded activity it carries), and each yearly version adjusts slightly: AI was a niche slice inside computer
+  science, related to science fiction and philosophy, until the 2000s, and widens over the last decade; mRNA likewise.
+  Stability then means gradual change (order kept, per-version drift bounded), not frozen angles; the sequence of
+  basemaps is itself a history of what humanity does. Pressure measure `[OPEN]`: the share of recent evidence rows,
+  works or postings per domain, smoothed over years.
 - **[R] Radius from complexity, difficulty and specificity, which correlate naturally; outward means more of all
   three. Scale of impact is shown by colour intensity, not radius. A net new achievement (beyond known domains) gets
   a notch at the rim** (author, 2026-11-20).
