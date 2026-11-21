@@ -272,3 +272,13 @@ Tables in `data/gold/confirm_v1_metrics.md`.
   B minimal pairs: 1 of 5 collides.
 - **D:** sub-event count α 0.66 (mean 1.43); link type α 0.65, identical label on 89% of linked pairs.
 - **Weak spots left:** setting (0.61), net impact (0.65), D segmentation (0.66), and the decisive vote item (33%).
+
+## Measured: round-trip v3 (leak-controlled)
+
+- Annotated 93.3% [87.4, 96.6], text-only control 20.0% [13.8, 28.0] (chance 20%): the text leak is gone, and the
+  leak-corrected gain is +73.3 points (se 0.041; beats the 2-standard-error rule). With fully equalised wording only:
+  94.4% against 21.3%.
+- By nearest-decoy similarity: 92–100% up to similarity 0.69, then 66.7% [39.1, 86.2] in the top decile (0.71–1.00),
+  where decoys share most of the annotation: the designed failure region appears where it should.
+
+Author review: `data/gold/review_v1.md` (the 30 most disputed items and the round-trip misses).
