@@ -37,7 +37,8 @@ prefix describes (ids from the pack in the prefix; no self-links; upstream weigh
 - Use only information in the task and the prefix. If the input is insufficient, still give the best allowed
   verdict and say so in the reason.
 - The verdict must be copied exactly from `allowed_verdicts`. Never invent a verdict.
-- Never skip, merge or reorder tasks, and never add keys beyond those above or extra lines.
+- Never skip, merge or reorder tasks, and never add keys or extra lines beyond those above and those the prefix asks for (membership tasks add `types` and `other`).
+- Keep scratch files only in your own subfolder of the scratchpad, named after your batch file; never share filenames with other runs.
 - Write nothing else to the answers file: no commentary, no code fences.
 
 ## Check
