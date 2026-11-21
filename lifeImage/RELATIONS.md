@@ -134,3 +134,26 @@ identification (`prompts/roundtrip.v1.md`, `lifeimage/roundtrip.py`) on merged a
 data/batches/membership.A3.v2.var*.answers.jsonl`; round-trip: `python3 lifeImage/tools/roundtrip_score.py KEY ANSWERS`.
 Predictions before measuring: placebo alpha well below form's; collision on setting pairs near 100% in A3 and low in
 A3S; round-trip above chance (0.2) for ACP and A4 v1 annotations.
+
+## Measured: membership battery v2 (layer A)
+
+273 items (192 from v1 plus 42 minimal pairs' texts), 3 Haiku variants each for A3 and A3S, a 50-item Sonnet run, and
+round-trip on v1 annotations. Tables in `data/gold/membership_v2_metrics.md`.
+
+- **Predictions held:** content α 0.74 (A3) and 0.77 (A3S), against ≥ 0.70; placebo `flavour` filled 7.2% and 4.2%,
+  against < 40%; round-trip 95.8% (A4) and 93.2% (ACP), against > 50%.
+- **Round-trip is at ceiling and does not discriminate.** Distractors shared only the top form domain; next version
+  uses distractors sharing form and content.
+- **Declining works when asked:** the placebo stays near empty and its α is low (0.37, 0.16); outcome now applies to
+  43–50% of items (declined when nothing observably changed), with α near 0.5. Outcome is sparse and harder.
+- **Setting earns its place by collisions:** minimal pairs that should differ in A collide 28.6% without setting and
+  7.1% with it; pairs that should differ only in B collide 37.5% and 25%. Form and content agreement rose slightly with
+  setting present (0.89, 0.77).
+- **The limit is the definitions, not the annotator:** Sonnet matches the Haiku majority on form 0.84, content 0.74,
+  outcome 0.68, about the same as Haiku's agreement with itself. Sonnet is stricter on outcome (null 72%) and fills
+  the placebo more (24%): a stronger model rationalises a meaningless type more readily, so the noise floor is per
+  model.
+- Process: two runners made a stray attempt to create a remote session (denied); runners should be a restricted agent
+  type.
+
+Current layer A: form, content, outcome (observed against counterfactual), setting.
