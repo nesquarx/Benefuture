@@ -157,3 +157,17 @@ round-trip on v1 annotations. Tables in `data/gold/membership_v2_metrics.md`.
   type.
 
 Current layer A: form, content, outcome (observed against counterfactual), setting.
+
+## Graded round-trip v2 (built, not yet run)
+
+Author ruling: decoys get progressively harder, to cases so nuanced that failure is expected, so the test shows where
+validity ends. Levels (true item plus four decoys, chance 0.2): L1 random; L2 same top form domain; L3 same top form
+and content; L4 same top form, content and setting; L5 near-duplicate texts (`data/gold/roundtrip_l5_v0.jsonl`, 40
+items, each four decoys that differ only in a nuance: outcome, setting, content (A-encodable, 16 items) or consumed
+versus produced, consent, acting for, count-as, volition (not A-encodable, 24)). L1-L4 decoys come from the 273-item
+pool; the pool is thin (160 distinct top forms), so a level too few items qualify for is filled from the next easier
+level, nearest first, and marked per decoy in the key and per item in `roundtrip.A3S.v2.fill_report.jsonl`. Scorer:
+accuracy per level with a Wilson interval and the chance line, L5 split by A-encodable and by nuance kind. Predictions
+before measuring: accuracy falls with level; L5 A-encodable nuances above chance, other nuances near 0.2 (confidence
+0.6). Build: `python3 lifeImage/tools/build_roundtrip_graded.py`, annotate the `membership.A3S.v2.l5.var*` batches,
+rerun with `--l5-answers`; score: `python3 lifeImage/tools/roundtrip_score.py --graded data/batches/roundtrip.A3S.v2.L*.key.jsonl`.
