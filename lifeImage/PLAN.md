@@ -158,6 +158,17 @@ Snapshot sources (versioned, hashed) → crosswalk → diff against the current 
 merge, rename, deprecate) → tasks adjudicate → invariant checks (a violation keeps the old angle: stability beats
 optimality) → migration table → release. Non-raster images re-render from rows migrated forward.
 
+## Resume point (paused by the author, 2026-11-21, to save tokens)
+
+1. Re-run the three participation batches (`data/batches/participation.v1.var{0,1,2}.jsonl`; rebuild with
+   `python3 lifeImage/tools/build_battery_bd.py` if the folder is empty) on the `lifeimage-runner` agent type, using
+   the validator named in each batch header; events answers are already cached. Then score with
+   `python3 lifeImage/tools/bd_metrics.py` and record in `RELATIONS.md`.
+2. Assemble the final candidate sets (RELATIONS.md, "Current candidate") from the A, B and D results.
+3. Confirming battery: text-only round-trip control, decoys where the true text is not the plainest, difficulty
+   scored by nearest-decoy similarity, generated decoys for the hard bins; then the author's review of disputed cases.
+4. Pending from earlier: links.v2 with an ungrouped pack and field-to-field upstream links (after layer C settles).
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
