@@ -91,6 +91,13 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   Expertise follows what was done and engaged with (form, content): the shape of mRNA expertise changed only mildly
   over two decades. Impact follows what changed (outcome): mRNA's impact moved from research to health to survival.
   The projection table therefore maps (relation type, participation) to each channel separately.
+- **[R] Potential is predicted expertise and predicted impact; self-assessment counts** (author, 2026-11-21).
+  Channels: red potential, green expertise, blue impact (the concept's arrangement 1). The mix shows estimation:
+  a mid-career image with much red and little yellow (red + green) or purple (red + blue) shows over-estimation;
+  blues, teals and greens without red show under-estimation; a homogeneous blend gives whites and greys with flecks
+  of colour: someone who estimated, learnt and contributed in much the same areas. This judges estimation and the use
+  of expertise only, not worth. It is Benefuture's prediction accuracy per domain (L101) made visible.
+  `[OPEN]`: how the later negative channel is drawn, since red is taken.
 - **[R] The negative channel comes later** (author, 2026-11-20), as criminal history, known impacts and background
   checks begin to supply it. The contract carries sign, tiers and revocation from v0, so adding it breaks nothing.
 - **[P] Obligations for negatives:** gating of sensitive personal data (Benefuture L133), legal erasure (spent
