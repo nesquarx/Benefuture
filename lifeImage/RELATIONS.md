@@ -18,6 +18,15 @@ Stress set: `data/gold/coverage_events_v0.jsonl` and `data/gold/relation_redteam
 6. Comparative: competing vocabularies (8.156, act/content/purpose, OBO Relation Ontology, ConceptNet, SKOS) are
    scored on the same battery.
 
+## Layer A battery (no model run yet)
+
+Candidate membership vocabularies on the same items (151 coverage events plus the layer-A red-team cases):
+A4 (form, material, outcome, reference), A6 (A4 plus mechanism, normative), R156 (causal, structural,
+communicative) and ACP (act, content, purpose). Vocabularies and builder: `lifeimage/membership.py`; batches
+`data/batches/membership.<VOCAB>.v1.var{0,1,2}.jsonl` from `tools/build_membership_batches.py`; scoring with
+`tools/membership_metrics.py` (other and forced rates, applicability, alpha and Jaccard per type, type swaps,
+red-team other share). The pack is listed ungrouped so no guessed sector hints at an answer.
+
 ## Triage of counterexamples
 
 | Case | Layer | Finding | Disposition |

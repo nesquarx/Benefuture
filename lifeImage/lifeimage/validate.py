@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from .membership import VOCABS
 from .packs import pack_ids
 from .vocab import EVENT_RELATIONS, LINK_RELS, MEMBERSHIP_RELS, UPSTREAM
 
@@ -111,6 +112,30 @@ def validate_links_answer(answer, task, ids=None):
     return answer
 
 
+def validate_membership_answer(answer, vocab, ids=None):
+    """A membership answer: verdict "membership", `types` holding exactly the vocabulary's types, each null or a
+    non-empty {domain id: weight} summing to 1 (every id in the pack, when given), and `other` (string or null)."""
+    if answer.get("verdict") != "membership":
+        raise ValidationError(f"membership verdict must be 'membership', not {answer.get('verdict')!r}")
+    if "types" not in answer or "other" not in answer:
+        raise ValidationError("a membership answer needs types and other")
+    types, want = answer["types"], VOCABS[vocab]["types"]
+    if sorted(types) != sorted(want):
+        raise ValidationError(f"types {sorted(types)} differ from the vocabulary's {sorted(want)}")
+    if isinstance(answer["other"], str) and not answer["other"].strip():
+        raise ValidationError("other must name a relation or be null, not blank")
+    for t, ws in types.items():
+        if ws is None:
+            continue
+        if not ws:
+            raise ValidationError(f"{t}: an empty map; use null when the type does not apply")
+        _sums_to_one([{"weight": w} for w in ws.values()], f"{t} membership")
+        for i in ws:
+            if ids is not None and i not in ids:
+                raise ValidationError(f"{i} is not in the pack")
+    return answer
+
+
 def validate_answer(answer):
     _schema("answer", answer)
     if "weights" in answer:
@@ -123,7 +148,8 @@ def validate_answers(batch_lines, answer_lines):
     task, echoing the task's identity, with a verdict from its allowed set."""
     errors = []
     header = json.loads(batch_lines[0])
-    ids = pack_ids(header["prefix"]) if header["task_type"] == "links" else None
+    membership = header["task_type"].startswith("membership.")
+    ids = pack_ids(header["prefix"]) if header["task_type"] == "links" or membership else None
     tasks = {}
     for line in batch_lines[1:]:
         t = validate_task(json.loads(line))
@@ -152,6 +178,11 @@ def validate_answers(batch_lines, answer_lines):
         if t["task_type"] == "links":
             try:
                 validate_links_answer(a, t, ids)
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
+        if membership:
+            try:
+                validate_membership_answer(a, header["task_type"].split(".", 1)[1], ids)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
     for missing in sorted(set(tasks) - seen):
