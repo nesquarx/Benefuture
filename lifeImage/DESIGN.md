@@ -97,7 +97,10 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   blues, teals and greens without red show under-estimation; a homogeneous blend gives whites and greys with flecks
   of colour: someone who estimated, learnt and contributed in much the same areas. This judges estimation and the use
   of expertise only, not worth. It is Benefuture's prediction accuracy per domain (L101) made visible.
-  `[OPEN]`: how the later negative channel is drawn, since red is taken.
+- **[R] Two image versions for now** (author, 2026-11-21). The predicted/measured image (red potential, green
+  expertise, blue impact; Benefuture's predicted and measured metric models, L86) fits a world before Benefuture and is
+  the first product. The reputation image (positive and negative, L101) needs better negative records, which exist
+  today mainly for public figures and convicted offenders, so it comes later and resolves the negative-channel colour.
 - **[R] The negative channel comes later** (author, 2026-11-20), as criminal history, known impacts and background
   checks begin to supply it. The contract carries sign, tiers and revocation from v0, so adding it breaks nothing.
 - **[P] Obligations for negatives:** gating of sensitive personal data (Benefuture L133), legal erasure (spent
