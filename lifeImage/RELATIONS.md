@@ -258,3 +258,17 @@ Build and score: `python3 lifeImage/tools/build_confirm_items.py`, `python3 life
 (batches), annotate and answer, then `python3 lifeImage/tools/confirm_metrics.py data/batches/confirm.v1.var*.answers.jsonl`
 and `python3 lifeImage/tools/build_battery_confirm.py --from-answers data/batches/confirm.v1.var*.answers.jsonl`
 (round-trip v3, scored with `roundtrip_score.py --v3`).
+
+## Measured: confirming battery v1 (all layers, 120 items, 3 variants on the restricted runner)
+
+Tables in `data/gold/confirm_v1_metrics.md`.
+
+- **A:** mean α 0.77; form 0.82, content 0.83, outcome 0.81 (applies 29%; on items that state or imply the
+  counterfactual it is now stable), setting 0.61. Placebo filled 0.3%. A minimal pairs: no collisions (4 of 4 differ).
+- **B:** contribution 0.92 (Spearman 0.90), responsibility 0.89, net impact 0.65; conservation held in all 360
+  answers; overdetermination pattern 89% (contribution 0.07, responsibility 0.55). Production α 0.57 overall, but on
+  the 15 consumed/produced pairs it matched the expected value in 89 of 90 participant judgements: it works when the
+  text records an act, and its low α comes from items with no record. Record fields stay sparse (null 98–100%).
+  B minimal pairs: 1 of 5 collides.
+- **D:** sub-event count α 0.66 (mean 1.43); link type α 0.65, identical label on 89% of linked pairs.
+- **Weak spots left:** setting (0.61), net impact (0.65), D segmentation (0.66), and the decisive vote item (33%).
