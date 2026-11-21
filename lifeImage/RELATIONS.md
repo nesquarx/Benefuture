@@ -81,3 +81,46 @@ red-team other share). The pack is listed ungrouped so no guessed sector hints a
 
 Open: whether material and reference are ill-defined or not distinct (sharper definitions with examples in v2, and a
 stronger model on a subset, separate the two); usefulness by ablation; the author's review of disputed items.
+
+## External review (Fable, oversight prompt v1) and triage
+
+Prompt: `prompts/oversight_relations.v1.md`. Dispositions: adopt, adopt with change, test, or dispute.
+
+| Point | Disposition |
+|---|---|
+| A = form + one unsplit content (+ outcome as interim); carrier is derivable from participating things, which carry their own memberships through layer B; consumed vs produced is a layer-B fact | Adopt; it matches the battery (split .46/.33, unsplit .75) |
+| Outcome stamped post hoc from observed changes with valid time; possibly migrates to event→event links | Adopt with change: outcome is observed change against the predicted counterfactual (metric models already predict the baseline), which also credits prevention (below) |
+| An event↔event layer D (part-of, causes, re-description) absorbs mechanism (a means sub-event), coercion (a prior threat event), the conference dinner and concurrency (separate events, each with its own partition), and domain-level causality | Adopt; Benefuture already keeps event chains in transaction logs (L95 traversal), so D is native there |
+| Purpose violates outputs-only; informedness and volition only as records (disclosure delivered, option set, prior threat event) | Adopt; Benefuture's informedness is already defined over memory (L114) |
+| Normative out of A: status is act × norm set × context; count-as rules ("X counts as Y in C", Searle) in C | Adopt; also resolves the transfer family (tip, tithe, tax, bribe, ransom, gift), cross-culture classification, and agency |
+| Mechanism redundant (form of a sub-event); C reference is the aggregate P(content = B given form = A) | Adopt |
+| C signed causal as a scalar is ill-posed: aggregate event-level effects, store the distribution | Adopt |
+| Prerequisite from precedence alone is confounded; use per-entity hazard of success given prior exposure, controlled | Adopt |
+| R156's communicative is a form, not a relation type | Test; a candidate backpropagation against ruling 8.156 |
+| Analogous cannot be learnt from events; source it from cross-domain model transfer performance | Adopt |
+| Direction from typed co-membership, both directions stored with support, window and version | Adopt |
+| Completeness tests: collision rate on minimal pairs, round-trip identification, placebo type as noise floor, ablation, scoring weights not only top domains; three runs of one model measure retest stability, not validity | Adopt as battery v2 |
+| One additivity rule misfits four consumers: sum to one suits value routing; culpability is non-additive (Chockler–Halpern degree of responsibility, 1/(k+1)) | Adopt with change: additive attribution routes value and currency (conservation needs it); degree of responsibility serves culpability; concurrency goes to layer D, not to weights |
+| Invisible prevention (maintenance, vaccination) | Absorbed by the counterfactual outcome above; a probe case |
+| Omission without duty (boycott, strike, fast) | Test: an output relative to the counterfactual, with no duty needed for credit, only for blame |
+| Depiction (actor playing a surgeon) | Absorbed: form acting, content medicine |
+| Placebo, lottery win | Test: attribution against the predicted counterfactual should route little to luck |
+| One decisive vote (Shapley near 0) | Test: degree of responsibility for culpability; value routing stays additive |
+| Setting slot ("home" as a place) | Test as a candidate type in battery v2 |
+| Form's .88 partly lexical anchoring on the verb | Test: round-trip and collision measure validity |
+
+Prior art to test against: Dowty's proto-roles (supports layer B's graded quantities), Chockler and Halpern
+(responsibility), Searle (constitutive rules), Pustejovsky's qualia (A4's ancestor; telic is a lexical default, not an
+observation), W3C PROV-O (used, wasGeneratedBy, actedOnBehalfOf: a serialisation), ICATUS (benchmark for everyday
+items, with simultaneous activities and "for whom").
+
+## Current candidate (after review)
+
+- A: form, content, outcome (observed change against the predicted counterfactual, with valid time); setting under
+  test.
+- B: causal contribution (additive, for routing), degree of responsibility (for culpability), signed impact per
+  affected party, acting for, under agreement; informedness and volition as records.
+- C, recorded: typed directed co-membership (both directions, with support, window, version), count-as rules with
+  context, analogous (from model transfer). Derived: specialisation, reference, production, prerequisite (hazard
+  model), causal distribution, currency flow.
+- D (event↔event): part-of, causes, re-description, concurrency.
