@@ -86,6 +86,17 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   rehabilitation (Benefuture L117) as a tested property.
 - **[OPEN]** Channel assignment (the concept's arrangement 1, arrangement 2, or a blend).
 
+## Data for prototyping
+
+- **[R] Data use** (author, 2026-11-21): no real minors; anonymised or synthetic data about students and young people
+  is fair game. For testing extraction and comparisons any data is fair game provided identities are redacted and the
+  test data is not saved; only public figures' data may be kept. Exceptional people are the easy case: the focus
+  includes regular people.
+- Consequences: a redaction step runs before anything is stored or shown; raw test inputs live only in an ignored
+  ephemeral folder (`data/ephemeral/`) or the scratchpad, never in git; what is kept are derived metrics and public
+  figures' records. Regular-people tracks: resume datasets (extraction tests only, redacted, unsaved), anonymised
+  learning and time-use microdata, and synthetic personas generated from their distributions.
+
 ## Risks carried into the design
 
 - Self-reports at the claimed tier: a beautiful image of an inflated resume overstates its authority; confidence
