@@ -58,3 +58,26 @@ red-team other share). The pack is listed ungrouped so no guessed sector hints a
 - C, recorded: directed co-membership (conditional weights, from which specialisation emerges), signed causal,
   analogous, normative, reference. Derived views: specialisation, prerequisite (temporal precedence in histories),
   currency flow (from transactions). Lineage lives in migration tables.
+
+## Measured: membership battery v1 (layer A)
+
+192 items (151 coverage events, 41 red-team), 3 Haiku variants per vocabulary (low effort); full tables in
+`data/gold/membership_v1_metrics.md`. Mean α over each vocabulary's types: ACP 0.75, R156 0.63, A4 0.59, A6 0.45.
+
+- **Two relations are robust in every vocabulary:** what kind of act it is (form 0.88, act 0.86, causal 0.82) and
+  what it is about or for (outcome 0.70–0.74, content 0.75, purpose 0.64).
+- **Material (0.38–0.46) and reference (0.33; −0.06 in A6) are unstable.** In A4, outcome and reference swap on 26%
+  of items; in A6, reference loses its mass to normative (21%) and mechanism (17%), so in A4 it was absorbing them.
+  ACP's single content type (0.75) beats A4's material and reference split.
+- **Completeness was not measured by this battery:** "other" stays under 1% even on red-team cases built to break
+  the sets (0.8–3.3%). Low-effort Haiku forces a fit rather than declining; completeness needs the author's review or a
+  judging step.
+- **Agreement on broad types is cheap:** ACP fills every type in 92% of answers; high α there partly reflects vague
+  categories, and purpose is not observable (outputs only).
+- Mechanism and normative apply rarely (17%, 29%); their high Jaccard is mostly agreement on null.
+- Process flaw: two runs shared scratch filenames; material agreement between A4 v0 and A6 v1 is raised (0.56 against
+  0.26–0.35 for independent pairs). Each run gets its own scratch folder from now on.
+- Prediction (A4 beats A6 and R156 on completeness and agreement together, 0.55): missed. A4 beat A6 only.
+
+Open: whether material and reference are ill-defined or not distinct (sharper definitions with examples in v2, and a
+stronger model on a subset, separate the two); usefulness by ablation; the author's review of disputed items.
