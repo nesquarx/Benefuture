@@ -171,3 +171,21 @@ accuracy per level with a Wilson interval and the chance line, L5 split by A-enc
 before measuring: accuracy falls with level; L5 A-encodable nuances above chance, other nuances near 0.2 (confidence
 0.6). Build: `python3 lifeImage/tools/build_roundtrip_graded.py`, annotate the `membership.A3S.v2.l5.var*` batches,
 rerun with `--l5-answers`; score: `python3 lifeImage/tools/roundtrip_score.py --graded data/batches/roundtrip.A3S.v2.L*.key.jsonl`.
+
+## Measured: graded round-trip v2 (A3S annotations)
+
+| Level | Accuracy [95% Wilson] | Note |
+|---|---|---|
+| L1 random decoys | 99.3% [97.4, 99.8] | |
+| L2–L4 nearest decoys | 81.0% [75.9, 85.2] | the thin pool collapsed the three levels: L2 and L3 batches are byte-identical, L4 differs in one task; independent runs agreed on 252 of 273 verdicts |
+| L5 near-duplicates | 85.0% [70.9, 92.9] (n = 40) | A-encodable nuances 81%, others 88% |
+
+- The designed failure did not appear, and the reason is a leak, not validity: on the 18 L5 items with decoys whose
+  annotation is identical to the true one, guessing among the identical candidates predicts about 6.5 correct; 14
+  were correct. The runner is separating the true text from template decoys by cues other than the annotation (the
+  decoys carry their nuance in added wording). Outcome nuances were the hardest (50%, n = 6).
+- Next version: a text-only control (candidates without the annotation; accuracy above chance there measures the
+  leak), decoys written so the true text is not the plainest candidate, and difficulty scored against the nearest
+  decoy's annotation similarity instead of nominal levels.
+- Process: a fifth runner made a stray tool call (documentation read, harmless). All runs move to the restricted
+  runner agent type.
