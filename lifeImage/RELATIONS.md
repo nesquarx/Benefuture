@@ -228,3 +228,33 @@ runner). Tables in `data/gold/bd_v1_metrics.md`.
 Confirming battery: the four layers on one item set; production v2 definition; outcome items that state or imply the
 counterfactual; the round-trip with a text-only control, decoys where the true text is not the plainest, and
 difficulty by nearest-decoy similarity; then the author's review of disputed cases.
+
+## Confirming battery (built, not yet run)
+
+One item set, `data/gold/confirm_items_v0.jsonl` (120 items, every item with its participants listed): 36 from the
+273 layer-A items (20 coverage events spread over domains, 8 red-team cases, 4 whole A minimal pairs), 24 from the 81
+layer-B/D items (overdetermination items and the B and D pairs kept whole), 30 new texts that state or imply the
+counterfactual (22 with an observed change, 8 where the counterfactual equals the observed course, such as a failed
+rescue) and 30 in 15 consumed-versus-produced pairs. One combined task per item, `confirm.v1` (A with the placebo,
+B per participant, D), three variants; production is defined as: produced = the participant's act yields an output
+others can use or assess; consumed = they take in or use up an output without yielding one; both; null if no record.
+The outcome is the observed change against what would otherwise have happened, used only when the text states or
+implies it.
+
+Round-trip v3 (built from the confirm answers): decoys are the nearest annotations (weighted Jaccard over the A types),
+chosen inside a 15% band of the true text's length and added wording so the true text is not the plainest, with the
+nearest decoy's similarity recorded per task; a text-only control batch carries the same candidates without the
+annotation. Scoring: accuracy by similarity decile with Wilson intervals, the control accuracy and the leak-corrected
+gain (annotation minus control, paired by item, counted beyond z = 2 standard errors). Decoys are chosen, not
+rewritten; tasks whose band could not be filled are flagged in the key and scored apart.
+
+Predictions before measuring (confidence 0.6 each): focal production matches the expected value in at least 80% of
+answers on the pairs and separates at least 12 of 15 pairs (alpha was 0.60); the outcome is filled in at least 80% of
+the change items and at most 20% of the no-difference and plain items; control accuracy stays above chance but below
+the annotated arm, the leak-corrected gain is positive and clearly under the 85% raw L5 figure, and accuracy falls
+with the similarity decile (0.7).
+
+Build and score: `python3 lifeImage/tools/build_confirm_items.py`, `python3 lifeImage/tools/build_battery_confirm.py`
+(batches), annotate and answer, then `python3 lifeImage/tools/confirm_metrics.py data/batches/confirm.v1.var*.answers.jsonl`
+and `python3 lifeImage/tools/build_battery_confirm.py --from-answers data/batches/confirm.v1.var*.answers.jsonl`
+(round-trip v3, scored with `roundtrip_score.py --v3`).
