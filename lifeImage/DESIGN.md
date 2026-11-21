@@ -20,6 +20,14 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   behaviour (care, health, home, relationships, play, faith, civic life, consumption, harm), not only knowledge,
   skills and occupations.
 
+- **[R] Everything is a domain; membership is typed** (author, 2026-11-21; Benefuture L22 `Dn(T) := [(Dn_i, RelType,
+  Wt)]` and ruling 8.156, partition of unity per relation type). Harm, consumption, transitions and events are domains
+  like any other. A thing or event belongs to many domains at once through different relations: a birth is an event
+  in family and health; it happens to the mother, who also causes it; it causes the newborn; the attending doctor
+  handles it and gains expertise in it; a poet writing about it engages in poetry about birth. Watching a film is
+  consumption (as a kind of act, subdomain watching), and also culture and recreation (as content and purpose).
+  Cross-cutting domains therefore appear on the image as spread patterns, not contiguous slices.
+
 ## Layers
 
 1. **Domain graph (basemap).** Every domain, nested and overlapping (Benefuture L22: fuzzy nesting, natural overlap,
@@ -27,7 +35,8 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
 2. **Ingestion.** Adapters turn sources into evidence rows. Tiers: claimed (resume, prospectus, read by a language
    model) → attested (issuers, employers, co-authors, background checks) → measured (publications, logs, causal
    contribution in Benefuture). Confidence never reaches 1.
-3. **Contract.** One row per piece of evidence: entity, domain weights (summing to 1) with the basemap version,
+3. **Contract.** One row per piece of evidence: entity, the entity's relation to the event (relation type), domain
+   memberships as (domain, relation type, weight) summing to 1 within each relation type, with the basemap version,
    channel and sign, magnitude, date, tier, confidence, provenance (source and span), revocation. Benefuture's
    per-domain reputation (L101: positive, negative, prediction accuracy, relevance net of decay) is a fold over rows.
 4. **Projection.** Angle and radius come from the basemap, never from the entity, so images are comparable and

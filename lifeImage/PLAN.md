@@ -190,10 +190,19 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
     (L84–L91: proposals generated per relevant domain) and reputation (L101) share one graph with the Life Image;
     gaps in the graph become places where behaviour cannot be priced or credited, which the coverage check measures.
 
+11. **Two relation vocabularies.** Lean holds `RelationshipType` (causal, resource, outcome, substrate, regulatory)
+    and the ruled `RelationType` (8.156: causal, structural, communicative). The entity-to-event relations the
+    Life Image needs (causes, undergoes, handles with expertise, communicates about) map partly onto each, and
+    "undergoes" matches the impacted side of vote weight (8.158) more than either list; a coherence point to settle.
+12. **Withdrawn (2026-11-21):** the proposal to turn harm, transitions and consumption into row tags instead of
+    domains. It forgot typed membership (L22, 8.156); they are domains, and cross-cutting ones.
+
 ## Decided
 
 - **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
   API runner may replace them later behind the same task-file interface.
+- **[R] Everything is a domain; membership is typed per relation, with a partition of unity per relation type**
+  (author, 2026-11-21; L22, 8.156). Cross-cutting domains appear as spread patterns.
 - **[R] Domains cover every life event and behaviour** (author, 2026-11-20), as the backbone of Benefuture's
   behavioural transaction substrate.
 - **[R] Gold sets** (author, 2026-11-20): model-drafted labels, reviewed by the author.
