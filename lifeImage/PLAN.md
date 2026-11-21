@@ -206,6 +206,12 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 
 ## Decided
 
+- **[R] Review timing** (author, 2026-11-21): the author reviews disputed cases only once the final candidate
+  sets are in place and a battery has run on them; until then the lead session's reviews stand in.
+- **[R] Restricted runner** (author, 2026-11-21): task batches run on the `lifeimage-runner` agent type
+  (`.claude/agents/lifeimage-runner.md`: read, write and the validator only).
+- **[R] Graded round-trip decoys** (author, 2026-11-21): distractors progressively harder, up to cases so nuanced
+  that failure is expected, so the test measures where validity ends.
 - **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
   API runner may replace them later behind the same task-file interface.
 - **[R] Domains are networks, placed once where closest; colour never bleeds to neighbours, a little to major
