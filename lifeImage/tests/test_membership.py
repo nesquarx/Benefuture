@@ -3,7 +3,7 @@ import json
 import pytest
 
 from lifeimage.cache import AnswerCache
-from lifeimage.membership import (DEFAULT_GOLD, DEFAULT_PACK, VOCABS, build_membership_batches, load_items,
+from lifeimage.membership import (DEFAULT_GOLD, V1_VOCABS, DEFAULT_PACK, VOCABS, build_membership_batches, load_items,
                                   pack_lines, ungrouped_pack, vocab_text)
 from lifeimage.packs import pack_ids
 from lifeimage.validate import ValidationError, validate_answers, validate_membership_answer
@@ -25,8 +25,8 @@ def build(vocab="A4", items=None, **kw):
 
 
 # ---- vocabularies ----
-def test_the_four_vocabularies_have_the_named_types_in_order():
-    assert {v: d["types"] for v, d in VOCABS.items()} == {
+def test_the_four_v1_vocabularies_have_the_named_types_in_order():
+    assert {v: d["types"] for v, d in VOCABS.items() if v in V1_VOCABS} == {
         "A4": ["form", "material", "outcome", "reference"],
         "A6": ["form", "material", "outcome", "reference", "mechanism", "normative"],
         "R156": ["causal", "structural", "communicative"],
@@ -39,6 +39,8 @@ def test_every_type_has_a_one_line_definition_and_a_worked_example_over_real_pac
             spec = d["defs"][t]
             assert spec["definition"].strip() and "\n" not in spec["definition"]
             ans = spec["example"]["answer"]
+            if ans is None:  # a v2 example may show a decline
+                continue
             assert set(ans) <= IDS, (v, t)
             assert abs(sum(ans.values()) - 1) < 1e-9, (v, t)
 

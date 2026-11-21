@@ -124,3 +124,13 @@ items, with simultaneous activities and "for whom").
   context, analogous (from model transfer). Derived: specialisation, reference, production, prerequisite (hazard
   model), causal distribution, currency flow.
 - D (event↔event): part-of, causes, re-description, concurrency.
+
+## Battery v2 (layer A): built, not yet run
+
+Prompt `prompts/membership.v2.md`; vocabularies A3 (form, content, outcome) and A3S (plus setting), each with the
+placebo type `flavour` (noise floor, reported apart). Minimal pairs in `data/gold/minimal_pairs_v0.jsonl`; round-trip
+identification (`prompts/roundtrip.v1.md`, `lifeimage/roundtrip.py`) on merged annotations. Build with
+`python3 lifeImage/tools/build_battery_v2.py`; metrics: `python3 lifeImage/tools/membership_metrics.py --pairs
+data/batches/membership.A3.v2.var*.answers.jsonl`; round-trip: `python3 lifeImage/tools/roundtrip_score.py KEY ANSWERS`.
+Predictions before measuring: placebo alpha well below form's; collision on setting pairs near 100% in A3 and low in
+A3S; round-trip above chance (0.2) for ACP and A4 v1 annotations.
