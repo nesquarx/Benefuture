@@ -189,3 +189,42 @@ rerun with `--l5-answers`; score: `python3 lifeImage/tools/roundtrip_score.py --
   decoy's annotation similarity instead of nominal levels.
 - Process: a fifth runner made a stray tool call (documentation read, harmless). All runs move to the restricted
   runner agent type.
+
+## Measured: layers B and D, battery v1
+
+81 items (28 red-team, 24 minimal-pair texts, 29 new scenarios), 3 Haiku variants (participation on the restricted
+runner). Tables in `data/gold/bd_v1_metrics.md`.
+
+- **Layer B agrees well on the quantities:** contribution α 0.81 (Spearman 0.81), responsibility 0.80, net impact
+  0.73 (affected parties Jaccard 0.85). Prediction (about 0.5) was pessimistic.
+- **Conservation held in every answer** (contributions to one outcome never above 1).
+- **Contribution and responsibility diverge where they should:** on overdetermination items (sufficient shooters,
+  decisive votes) mean contribution 0.12, responsibility 0.49; the pattern held in 89% of answers.
+- **The record fields are sparse:** informed null 99%, under agreement 92%, volition 90%, acting for 96%; their α
+  rests on few cases. Outputs-only makes them rare in plain text, as intended; consent is caught when stated (surgery
+  carries the signed consent in all three variants, assault in none).
+- **Production (consumed vs produced) is weak:** α 0.60, null 55%. Prediction (≥ 0.7) missed; it needs a sharper
+  definition, since the image's expertise rule leans on it.
+- **B minimal pairs:** 1 of 8 collides; 7 of 8 differ in an expected field.
+- **Layer D:** sub-event count α 0.66 (mean 2.05); link type α 0.70 over matched pairs. Causes dominates (used in 59%
+  of scenarios), concurrent 22%, part_of 16%, re_description 5%; richer texts get more sub-events in 4 of 4 pairs.
+- **Surgery's impact is recorded as harm** when recovery is not in the text: outcome against the counterfactual needs
+  the counterfactual stated or predicted, which the plain-text battery cannot supply.
+
+## Final candidate sets (for the confirming battery)
+
+- **A (event → domain):** form, content, outcome (observed against the predicted counterfactual, with valid time),
+  setting.
+- **B (entity → event):** contribution (additive, routes value), responsibility (degree, for culpability), impact per
+  affected party, production (consumed, produced, both; definition to sharpen), and the records acting for, under
+  agreement, informed, volition.
+- **C (domain ↔ domain), recorded:** typed directed co-membership (both directions, support, window, version),
+  count-as rules with context, analogous (from model transfer). Derived: specialisation, reference, production,
+  prerequisite (hazard model), causal distribution, currency flow.
+- **D (event ↔ event):** part_of, causes, re_description, concurrent.
+- **Channels (predicted/measured image):** potential (red) from predicted expertise and impact, including
+  self-assessment; expertise (green) through form and content with production; impact (blue) through outcome.
+
+Confirming battery: the four layers on one item set; production v2 definition; outcome items that state or imply the
+counterfactual; the round-trip with a text-only control, decoys where the true text is not the plainest, and
+difficulty by nearest-decoy similarity; then the author's review of disputed cases.
