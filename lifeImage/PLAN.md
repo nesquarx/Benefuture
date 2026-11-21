@@ -119,6 +119,13 @@ check. Counts are estimates to replace with measured ones.
 - Prediction: 1–2 sessions; confidence 0.7 that the axes give a readable layout without manual fixes to more than 10%
   of fields.
 
+- Measured (links.v1, 3 Haiku variants over the coarse pack): an upstream link agreed by all three for 99.6% of
+  fields, overlap sets agreeing at mean Jaccard 0.62; but every upstream link went to a sector (none field to field)
+  and 94.8% of the guessed links survived, against a predicted under 50%. The pack grouped fields under their guessed
+  sector, so it anchored the answers: agreement was inflated and the result is a one-level tree, not a network.
+  `seed_v1` is kept as data, not adopted. Next prompt version: an ungrouped pack (by id or by angle) and upstream
+  links allowed, and asked for, between fields.
+
 ### 2. Fine: disciplines, occupation groups, skill groups (about 2,000–5,000)
 
 - Crosswalk the sources (labels, aliases, embeddings) into merged cards; tasks: same / overlapping (weight) /
