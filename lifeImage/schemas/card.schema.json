@@ -4,11 +4,16 @@
   "title": "Domain card",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "label", "aliases", "description", "level", "anchors", "parents", "neighbours", "axes", "radius",
+  "required": ["id", "label", "aliases", "description", "level", "anchors", "links", "axes", "radius",
                "arc", "status", "successors", "basemap_version", "provenance"],
   "$defs": {
     "unit": {"type": "number", "minimum": 0, "maximum": 1},
     "signed": {"type": "number", "minimum": -1, "maximum": 1},
+    "link": {
+      "type": "object", "additionalProperties": false, "required": ["id", "rel", "weight"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "rel": {"type": "string", "minLength": 1},
+                     "weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}, "strict": {"type": "boolean"}}
+    },
     "weighted_ref": {
       "type": "object", "additionalProperties": false, "required": ["id", "weight"],
       "properties": {"id": {"type": "string", "minLength": 1}, "weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}}
@@ -23,8 +28,7 @@
     "level": {"enum": ["coarse", "fine", "finer"]},
     "anchors": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["source", "code", "label"],
       "properties": {"source": {"type": "string"}, "code": {"type": "string"}, "label": {"type": "string"}}}},
-    "parents": {"type": "array", "items": {"$ref": "#/$defs/weighted_ref"}},
-    "neighbours": {"type": "array", "items": {"$ref": "#/$defs/weighted_ref"}},
+    "links": {"type": "array", "items": {"$ref": "#/$defs/link"}},
     "axes": {"oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false,
       "required": ["abstract_tangible", "personal_global"],
       "properties": {"abstract_tangible": {"$ref": "#/$defs/signed"}, "personal_global": {"$ref": "#/$defs/signed"}}}]},

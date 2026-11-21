@@ -1,11 +1,13 @@
-"""Schema validation plus the rules JSON Schema cannot state (weights summing to one, tombstone successors,
-answers matching their task)."""
+"""Schema validation plus the rules JSON Schema cannot state (upstream link weights and membership weights per
+relation summing to one, vocabularies, tombstone successors, answers matching their task)."""
 import json
 import math
 from functools import lru_cache
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+
+from .vocab import EVENT_RELATIONS, LINK_RELS, MEMBERSHIP_RELS, UPSTREAM
 
 SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
 WEIGHT_TOL = 1e-6
@@ -35,10 +37,20 @@ def _sums_to_one(refs, what, key="weight"):
         raise ValidationError(f"{what} weights sum to {total}, not 1")
 
 
-def validate_card(card):
+def validate_card(card, link_rels=LINK_RELS):
     _schema("card", card)
-    if card["parents"]:
-        _sums_to_one(card["parents"], "parents")
+    seen = set()
+    for l in card["links"]:
+        if l["rel"] not in link_rels:
+            raise ValidationError(f"link rel {l['rel']!r} is not in {sorted(link_rels)}")
+        if l["id"] == card["id"]:
+            raise ValidationError(f"{card['id']}: a domain cannot link to itself")
+        if (l["id"], l["rel"]) in seen:
+            raise ValidationError(f"{card['id']}: duplicate {l['rel']} link to {l['id']}")
+        seen.add((l["id"], l["rel"]))
+    upstream = [l for l in card["links"] if l["rel"] == UPSTREAM]
+    if upstream:
+        _sums_to_one(upstream, "upstream link")
     if (card["status"] == "tombstone") != bool(card["successors"]):
         raise ValidationError("successors are required exactly when status is tombstone")
     if card["successors"]:
@@ -46,9 +58,20 @@ def validate_card(card):
     return card
 
 
-def validate_evidence(row, allow_negative=False):
+def validate_evidence(row, allow_negative=False, relations=EVENT_RELATIONS, membership_rels=MEMBERSHIP_RELS):
     _schema("evidence", row)
-    _sums_to_one(row["domains"], "domains")
+    if row["relation"] not in relations:
+        raise ValidationError(f"relation {row['relation']!r} is not in {sorted(relations)}")
+    by_rel, seen = {}, set()
+    for m in row["memberships"]:
+        if m["rel"] not in membership_rels:
+            raise ValidationError(f"membership rel {m['rel']!r} is not in {sorted(membership_rels)}")
+        if (m["domain"], m["rel"]) in seen:
+            raise ValidationError(f"duplicate {m['rel']} membership of {m['domain']}")
+        seen.add((m["domain"], m["rel"]))
+        by_rel.setdefault(m["rel"], []).append(m)
+    for rel, ms in sorted(by_rel.items()):
+        _sums_to_one(ms, f"{rel} membership")
     if (row["channel"] == "negative") != (row["sign"] == -1):
         raise ValidationError("sign is -1 exactly when the channel is negative")
     if row["channel"] == "negative" and not allow_negative:

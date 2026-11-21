@@ -3,16 +3,26 @@
 An arc is (start, end) in degrees, start in [0, 360), width end - start in (0, 360]; arcs may run past 360.
 Angle 0 is tangible (right), 90 global (top), 180 abstract (left), 270 personal (bottom).
 
-Layout is mechanical: coarse arcs tile the circle around each node's own axes angle; a child's arc lies inside its
-parent's arc, widths split by membership weight, and a child with several parents gets one segment per parent.
-Between versions, stability beats optimality: containment, circular order, centre-angle drift below a governed
-epsilon, and tombstones that keep their gap. Without these checks a refinement silently rotates old images.
+Domains form a network, so each is placed once, where it is closest: at the angle of its own axes; else at the
+circular mean of its upstream domains' angles, weighted by link weight. A domain with neither is reported, never
+silently placed. Overlap links place nothing. Layout is mechanical: domains not strictly contained tile the circle
+around their angles; a domain with a `strict` link nests inside that container's arc (the heaviest strict link
+places it), widths split by link weight. Containment is checked only for strict links. Between versions, stability
+beats optimality: circular order, centre-angle drift below a governed epsilon, strict containment, and tombstones
+that keep their gap. Without these checks a refinement silently rotates old images.
+
+Resolution and nesting iterate over rounds, never recursing, so cycles among non-strict links are harmless; strict
+cycles are rejected.
 """
 import math
 from dataclasses import dataclass, field
 
+from .vocab import UPSTREAM
+
 EPSILON = 2.0  # governed: maximum centre-angle drift (degrees) between versions
 INSERT_WIDTH = 3.0  # governed: default arc width (degrees) of a node inserted between neighbours
+AXES_MIN = 0.05  # governed: axes shorter than this carry no direction and defer to the upstream domains
+MEAN_MIN = 1e-9  # upstream directions that cancel out give no mean
 TOL = 1e-6
 
 
@@ -50,18 +60,76 @@ def arcs_overlap(a, b, tol=TOL):
     return min(width(a) - d, width(b)) > tol or min(width(b) - e, width(a)) > tol
 
 
-def coarse_arcs(cards):
-    """Tile the circle: each root's arc spans halfway to its angular neighbours, so its centre is its own angle."""
-    nodes = sorted(((angle_from_axes(c["axes"]), c["id"]) for c in cards))
-    n = len(nodes)
+def tile_arcs(angles):
+    """Tile the circle: {id: angle} -> {id: arc}. Each arc spans halfway to the angular neighbours, so its centre is
+    the node's angle. Nodes sharing an angle split one slice equally, in id order."""
+    groups = {}
+    for id_, a in angles.items():
+        key = round(a % 360 / TOL)
+        groups.setdefault(key, []).append(id_)
+    keys = sorted(groups)
+    n = len(keys)
     out = {}
-    for i, (a, id_) in enumerate(nodes):
-        prev = (a - nodes[i - 1][0]) % 360 if n > 1 else 360
-        nxt = (nodes[(i + 1) % n][0] - a) % 360 if n > 1 else 360
-        if prev == 0 or nxt == 0:
-            raise ValueError(f"{id_}: coincides in angle with a neighbour; axes need separating")
-        out[id_] = _norm(a - prev / 2, prev / 2 + nxt / 2)
+    for i, k in enumerate(keys):
+        a = k * TOL
+        prev = (a - keys[i - 1] * TOL) % 360 if n > 1 else 360
+        nxt = (keys[(i + 1) % n] * TOL - a) % 360 if n > 1 else 360
+        start, span = a - prev / 2, prev / 2 + nxt / 2
+        ids = sorted(groups[k])
+        for j, id_ in enumerate(ids):
+            out[id_] = _norm(start + span * j / len(ids), span / len(ids))
     return out
+
+
+def coarse_arcs(cards):
+    return tile_arcs({c["id"]: angle_from_axes(c["axes"]) for c in cards})
+
+
+def _links(card, rel=UPSTREAM):
+    return [l for l in card["links"] if l["rel"] == rel]
+
+
+def _own_angle(card):
+    ax = card["axes"]
+    if ax and math.hypot(ax["abstract_tangible"], ax["personal_global"]) >= AXES_MIN:
+        return angle_from_axes(ax)
+    return None
+
+
+def _mean_angle(pairs):
+    x = math.fsum(w * math.cos(math.radians(a)) for a, w in pairs)
+    y = math.fsum(w * math.sin(math.radians(a)) for a, w in pairs)
+    if math.hypot(x, y) < MEAN_MIN:
+        return None
+    return math.degrees(math.atan2(y, x)) % 360
+
+
+def resolve_angles(cards):
+    """({id: degrees}, [unresolved ids]). Own axes first; else the weighted circular mean of the upstream domains,
+    once all of them are placed. Where upstream domains wait on each other (a cycle), the placed ones decide."""
+    by_id = {c["id"]: c for c in cards}
+    got = {c["id"]: a for c in cards if (a := _own_angle(c)) is not None}
+    pending = sorted(i for i in by_id if i not in got)
+
+    def step(complete):
+        fresh = {}
+        for i in pending:
+            ups = [(l["id"], l["weight"]) for l in _links(by_id[i]) if l["id"] in by_id]
+            known = [(got[u], w) for u, w in ups if u in got]
+            if known and (not complete or len(known) == len(ups)) and (m := _mean_angle(known)) is not None:
+                fresh[i] = m
+        return fresh
+
+    while pending and (fresh := step(True) or step(False)):
+        got.update(fresh)
+        pending = [i for i in pending if i not in got]
+    return got, sorted(i for i in by_id if i not in got)
+
+
+def strict_links(cards):
+    """{id: [container ids]} for the links marked strict."""
+    return {c["id"]: sorted(l["id"] for l in c["links"] if l.get("strict")) for c in cards
+            if any(l.get("strict") for l in c["links"])}
 
 
 def place_children(parent_arc, children):
@@ -75,34 +143,38 @@ def place_children(parent_arc, children):
     return out
 
 
-def layout(cards, root_arcs=None):
-    """{id: {parent_id or "": arc}} for all cards; parents' arcs are placed before their children's."""
+def layout(cards, free_arcs=None):
+    """{id: arc}, one arc per domain. `free_arcs` fixes the arcs of the domains that are not strictly contained
+    (for refinements that keep them); the others nest inside them."""
     by_id = {c["id"]: c for c in cards}
     for c in cards:
-        for p in c["parents"]:
-            if p["id"] not in by_id:
-                raise ValueError(f"{c['id']}: parent {p['id']} is not in the card set")
-    roots = [c for c in cards if not c["parents"]]
-    arcs = {}
-    for id_, a in (root_arcs if root_arcs is not None else coarse_arcs(roots)).items():
-        arcs[id_] = {"": a}
-    pending = {c["id"] for c in cards if c["parents"]}
+        for l in c["links"]:
+            if l["id"] not in by_id:
+                raise ValueError(f"{c['id']}: link target {l['id']} is not in the card set")
+    angles, unresolved = resolve_angles(cards)
+    if unresolved:
+        raise ValueError(f"no axes and no placed upstream domain for {unresolved}")
+    container = {}
+    for c in cards:
+        s = [l for l in c["links"] if l.get("strict")]
+        if s:
+            container[c["id"]] = max(s, key=lambda l: (l["weight"], l["id"]))
+    free = {i: a for i, a in angles.items() if i not in container}
+    arcs = dict(free_arcs) if free_arcs is not None else tile_arcs(free)
+    if set(arcs) != set(free):
+        raise ValueError(f"free arcs cover {sorted(arcs)}, expected {sorted(free)}")
+    pending = set(container)
     while pending:
-        ready = {i for i in pending if all(p["id"] in arcs and i != p["id"] for p in by_id[i]["parents"])}
+        ready = {i for i in pending if container[i]["id"] in arcs}
         if not ready:
-            raise ValueError(f"parent cycle among {sorted(pending)}")
-        children_of = {}
+            raise ValueError(f"strict link cycle among {sorted(pending)}")
+        kids = {}
         for i in ready:
-            for p in by_id[i]["parents"]:
-                children_of.setdefault(p["id"], []).append((i, p["weight"]))
-        for parent, kids in children_of.items():
-            pa = next(iter(arcs[parent].values()))  # primary segment: the parent's first
-            def key(kw):
-                ax = by_id[kw[0]]["axes"]
-                off = (angle_from_axes(ax) - pa[0]) % 360 if ax else 0
-                return (off, kw[0])
-            for id_, a in place_children(pa, sorted(kids, key=key)).items():
-                arcs.setdefault(id_, {})[parent] = a
+            kids.setdefault(container[i]["id"], []).append((i, container[i]["weight"]))
+        for parent, ks in kids.items():
+            pa = arcs[parent]
+            ks.sort(key=lambda kw: ((angles[kw[0]] - pa[0]) % 360, kw[0]))
+            arcs.update(place_children(pa, ks))
         pending -= ready
     return arcs
 
@@ -130,8 +202,9 @@ def insert_between(group, new_id, left, right, new_width=INSERT_WIDTH):
 @dataclass
 class Version:
     version: str
-    arcs: dict  # {id: {parent_id or "": arc}}
+    arcs: dict  # {id: arc}
     tombstones: dict = field(default_factory=dict)  # {id: [successor ids]}
+    strict: dict = field(default_factory=dict)  # {id: [container ids]}, from strict_links
 
 
 @dataclass
@@ -141,33 +214,27 @@ class Violation:
     detail: str = ""
 
 
-def _groups(v):
-    g = {}
-    for id_, segs in v.arcs.items():
-        for key, arc in segs.items():
-            g.setdefault(key, {})[id_] = arc
-    return g
+def _related(v, a, b):
+    return b in v.strict.get(a, ()) or a in v.strict.get(b, ())
 
 
 def check_invariants(old, new, epsilon=EPSILON):
     out = []
-    for id_, segs in new.arcs.items():
-        for parent, arc in segs.items():
-            if parent and not any(arc_inside(arc, p) for p in new.arcs.get(parent, {}).values()):
-                out.append(Violation("containment", id_, f"outside {parent}"))
-    og, ng = _groups(old), _groups(new)
-    for key in ng:
-        common = [i for i in ng[key] if i in og.get(key, {})]
-        if len(common) > 2:
-            seq = lambda g: [i for i in sorted(g, key=lambda i: (arc_centre(g[i]), i)) if i in common]
-            a, b = seq(og[key]), seq(ng[key])
-            k = b.index(a[0])
-            if b[k:] + b[:k] != a:
-                out.append(Violation("order", key, f"{a} became {b}"))
-        for i in common:
-            d = circ_diff(arc_centre(og[key][i]), arc_centre(ng[key][i]))
-            if d >= epsilon:
-                out.append(Violation("drift", i, f"{d:.2f} deg under {key or 'root'}"))
+    for id_, containers in new.strict.items():
+        for c in containers:
+            if id_ in new.arcs and c in new.arcs and not arc_inside(new.arcs[id_], new.arcs[c]):
+                out.append(Violation("containment", id_, f"outside strict container {c}"))
+    common = [i for i in new.arcs if i in old.arcs]
+    if len(common) > 2:
+        seq = lambda g: [i for i in sorted(g, key=lambda i: (arc_centre(g[i]), i)) if i in common]
+        a, b = seq(old.arcs), seq(new.arcs)
+        k = b.index(a[0])
+        if b[k:] + b[:k] != a:
+            out.append(Violation("order", "", f"{a} became {b}"))
+    for i in common:
+        d = circ_diff(arc_centre(old.arcs[i]), arc_centre(new.arcs[i]))
+        if d >= epsilon:
+            out.append(Violation("drift", i, f"{d:.2f} deg"))
     for id_ in old.arcs:
         if id_ not in new.arcs and id_ not in new.tombstones:
             out.append(Violation("removal", id_, "gone without a tombstone"))
@@ -177,11 +244,10 @@ def check_invariants(old, new, epsilon=EPSILON):
         if id_ not in new.arcs:
             out.append(Violation("gap", id_, "tombstone lost its arc"))
             continue
-        for key, arc in new.arcs[id_].items():
-            was = old.arcs.get(id_, {}).get(key)
-            if was is not None and (circ_diff(was[0], arc[0]) > TOL or abs(width(was) - width(arc)) > TOL):
-                out.append(Violation("gap", id_, "tombstone arc changed"))
-            for other, a in ng[key].items():
-                if other != id_ and other not in new.tombstones and arcs_overlap(arc, a):
-                    out.append(Violation("gap", id_, f"{other} closes the gap"))
+        arc, was = new.arcs[id_], old.arcs.get(id_)
+        if was is not None and (circ_diff(was[0], arc[0]) > TOL or abs(width(was) - width(arc)) > TOL):
+            out.append(Violation("gap", id_, "tombstone arc changed"))
+        for other, a in new.arcs.items():
+            if other != id_ and other not in new.tombstones and not _related(new, id_, other) and arcs_overlap(arc, a):
+                out.append(Violation("gap", id_, f"{other} closes the gap"))
     return out

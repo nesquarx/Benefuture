@@ -26,7 +26,7 @@ margin: where the top two mechanical answers are close.
 ### The domain card
 
 `id` (stable, never reused), `label`, `aliases` (multilingual), `description` (one line), `anchors` (source
-identifiers: OpenAlex, ESCO, O*NET, Wikidata), `parents` (with membership weights), `neighbours` (overlap weights),
+identifiers: OpenAlex, ESCO, O*NET, Wikidata), `links` (domain-to-domain: `upstream` with weights summing to 1, `overlap` with overlap weights; optional `strict` for containment),
 `axes` (abstract ↔ tangible, personal ↔ global, each in [−1, 1]), `radius` inputs (complexity, difficulty,
 specificity) and the composite, `arc` (start, end), `status` (score-only, provisional, stable, tombstone with
 successors), `basemap_version`, and per-field provenance and confidence.
