@@ -14,6 +14,8 @@
     "prompt_version": {"type": "integer", "minimum": 1},
     "verdict": {"type": "string", "minLength": 1},
     "weights": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+    "upstream": {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}},
+    "overlap": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "reason": {"type": "string", "minLength": 1, "pattern": "^[^\\n]*$"},
     "run_id": {"type": "string"}
   }

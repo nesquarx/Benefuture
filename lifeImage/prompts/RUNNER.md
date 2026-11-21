@@ -27,6 +27,9 @@ exactly these keys:
 An optional `"weights": {"<id>": <number in [0,1]>}` is allowed only if the prefix asks for weights, and the numbers
 must then sum to 1.
 
+For a `links` batch the line also carries `"upstream": {"<id>": <weight>}` and `"overlap": ["<id>", ...]` as the
+prefix describes (ids from the pack in the prefix; no self-links; upstream weights sum to 1).
+
 ## Rules
 
 - Judge each task on its own input alone. Do not use answers to earlier tasks, and do not guess what other variants
@@ -34,7 +37,7 @@ must then sum to 1.
 - Use only information in the task and the prefix. If the input is insufficient, still give the best allowed
   verdict and say so in the reason.
 - The verdict must be copied exactly from `allowed_verdicts`. Never invent a verdict.
-- Never skip, merge or reorder tasks, and never add keys or extra lines.
+- Never skip, merge or reorder tasks, and never add keys beyond those above or extra lines.
 - Write nothing else to the answers file: no commentary, no code fences.
 
 ## Check

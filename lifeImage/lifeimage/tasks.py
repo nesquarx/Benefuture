@@ -19,6 +19,7 @@ DEFAULT_PROMPTS = Path(__file__).resolve().parent.parent / "prompts"
 TASK_TYPES = {
     "relate": ["same", "overlapping", "different"],
     "parent": "candidates",
+    "links": ["links"],  # the structure is in the answer's upstream and overlap fields
 }
 
 

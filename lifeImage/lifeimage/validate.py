@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from .packs import pack_ids
 from .vocab import EVENT_RELATIONS, LINK_RELS, MEMBERSHIP_RELS, UPSTREAM
 
 SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
@@ -84,6 +85,32 @@ def validate_task(task):
     return task
 
 
+LINKS_MAX_UPSTREAM = 3
+LINKS_MAX_OVERLAP = 6
+
+
+def validate_links_answer(answer, task, ids=None):
+    """A links answer: verdict "links", 1-3 upstream ids with weights summing to 1, 0-6 distinct overlap ids; with
+    ids (the pack's) and the task, every id must exist in the pack and none may be the field itself."""
+    if answer.get("verdict") != "links":
+        raise ValidationError(f"links verdict must be 'links', not {answer.get('verdict')!r}")
+    if "upstream" not in answer or "overlap" not in answer:
+        raise ValidationError("a links answer needs upstream and overlap")
+    up, ov = answer["upstream"], answer["overlap"]
+    if not 1 <= len(up) <= LINKS_MAX_UPSTREAM:
+        raise ValidationError(f"{len(up)} upstream domains, expected 1-{LINKS_MAX_UPSTREAM}")
+    _sums_to_one([{"weight": w} for w in up.values()], "upstream")
+    if len(ov) > LINKS_MAX_OVERLAP or len(set(ov)) != len(ov):
+        raise ValidationError(f"overlap must be at most {LINKS_MAX_OVERLAP} distinct ids")
+    own = task["input"]["card"]["id"]
+    for i in [*up, *ov]:
+        if i == own:
+            raise ValidationError(f"{own}: a domain cannot link to itself")
+        if ids is not None and i not in ids:
+            raise ValidationError(f"{i} is not in the pack")
+    return answer
+
+
 def validate_answer(answer):
     _schema("answer", answer)
     if "weights" in answer:
@@ -96,6 +123,7 @@ def validate_answers(batch_lines, answer_lines):
     task, echoing the task's identity, with a verdict from its allowed set."""
     errors = []
     header = json.loads(batch_lines[0])
+    ids = pack_ids(header["prefix"]) if header["task_type"] == "links" else None
     tasks = {}
     for line in batch_lines[1:]:
         t = validate_task(json.loads(line))
@@ -121,6 +149,11 @@ def validate_answers(batch_lines, answer_lines):
             errors.append(f"line {n}: model {a['model']!r} differs from the batch's {header['model']!r}")
         if a["verdict"] not in t["allowed_verdicts"]:
             errors.append(f"line {n}: verdict {a['verdict']!r} not in {t['allowed_verdicts']}")
+        if t["task_type"] == "links":
+            try:
+                validate_links_answer(a, t, ids)
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
     for missing in sorted(set(tasks) - seen):
         errors.append(f"missing answer for {missing}")
     return errors
