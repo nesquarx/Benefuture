@@ -86,6 +86,11 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   expertise in cinema; writing reviews and criticism are outputs, and count for more. The mapping from relation
   types to channels, with its caps, is a governed table.
 
+- **[R] Each channel projects through its own relations** (author, 2026-11-21). Potential, expertise and impact
+  apply differently through different relation types, so one entity or domain has a different shape per channel.
+  Expertise follows what was done and engaged with (form, content): the shape of mRNA expertise changed only mildly
+  over two decades. Impact follows what changed (outcome): mRNA's impact moved from research to health to survival.
+  The projection table therefore maps (relation type, participation) to each channel separately.
 - **[R] The negative channel comes later** (author, 2026-11-20), as criminal history, known impacts and background
   checks begin to supply it. The contract carries sign, tiers and revocation from v0, so adding it breaks nothing.
 - **[P] Obligations for negatives:** gating of sensitive personal data (Benefuture L133), legal erasure (spent
