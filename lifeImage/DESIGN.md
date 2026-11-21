@@ -55,8 +55,10 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
 - **[R] Radius from complexity, difficulty and specificity, which correlate naturally; outward means more of all
   three. Scale of impact is shown by colour intensity, not radius. A net new achievement (beyond known domains) gets
   a notch at the rim** (author, 2026-11-20).
-- **[P] Angle-stability invariants**, each with acceptance and counterexample tests: a descendant's arc stays inside
-  its ancestor's; neighbours keep their circular order (insertion takes the angle between them); a domain's centre
+- **[R] Domains are networks, not trees** (author, 2026-11-21): tree-ish and DAG-ish but not always (cycles are
+  possible); "parent" is neither a strong nor a singular relation. Each domain is placed once, where it is closest.
+- **[P] Angle-stability invariants**, each with acceptance and counterexample tests: a domain stays near the
+  domains it is closest to (containment only where a strict hierarchy exists); neighbours keep their circular order (insertion takes the angle between them); a domain's centre
   angle moves less than a governed ε between versions; a removed domain leaves a tombstone mapping to successors,
   and its neighbours do not close the gap.
 - **[P] Seed sources** (licences to verify before use): OpenAlex topics, ESCO, O*NET, Wikidata, and for the rest of life ICATUS, COICOP, ICF/ICD (later ICCS); overlap weights
@@ -68,6 +70,14 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   conserve tokens. Levels: coarse, fine, finer, and the event record. Plan: [PLAN.md](PLAN.md).
 
 ## Channels
+
+- **[R] Colour stays in the event's domains** (author, 2026-11-21): no bleed to neighbouring domains (similarity never
+  credits), a little bleed into major upstream domains.
+- **[R] The image is a view over a subset of relations** (author, 2026-11-21). An event's memberships may be many;
+  Benefuture's behavioural transaction substrate records them all, and the Life Image keeps only the relations that
+  set its colours. Watching many films is all consumption in the substrate, but on the image gives at most some
+  expertise in cinema; writing reviews and criticism are outputs, and count for more. The mapping from relation
+  types to channels, with its caps, is a governed table.
 
 - **[R] The negative channel comes later** (author, 2026-11-20), as criminal history, known impacts and background
   checks begin to supply it. The contract carries sign, tiers and revocation from v0, so adding it breaks nothing.

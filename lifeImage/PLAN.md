@@ -123,8 +123,8 @@ check. Counts are estimates to replace with measured ones.
 
 - Crosswalk the sources (labels, aliases, embeddings) into merged cards; tasks: same / overlapping (weight) /
   different; pick parents with weights among a few candidates.
-- Placement is mechanical: a child's arc lies inside its parents' arcs (split across parents by weight); siblings are
-  ordered by similarity (seriation within the arc).
+- Placement is mechanical: each domain once, where it is closest (axes, overlaps, upstream domains); neighbours
+  ordered by similarity. The graph is a network, so containment holds only where a strict hierarchy exists.
 - Acceptance: invariants hold; gold-set accuracy per task type at or above threshold; at most 5% of nodes escalated.
 - Prediction: 2–3 sessions; confidence 0.6 (the crosswalk across editorial sources is the risk).
 
@@ -201,6 +201,9 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 
 - **[R] Runner** (author, 2026-11-20): Haiku subagents at low effort, reading task batches and writing answers; an
   API runner may replace them later behind the same task-file interface.
+- **[R] Domains are networks, placed once where closest; colour never bleeds to neighbours, a little to major
+  upstream domains; the image keeps only the relations that set its colours, outputs counting more than
+  consumption** (author, 2026-11-21).
 - **[R] Everything is a domain; membership is typed per relation, with a partition of unity per relation type**
   (author, 2026-11-21; L22, 8.156). Cross-cutting domains appear as spread patterns.
 - **[R] Domains cover every life event and behaviour** (author, 2026-11-20), as the backbone of Benefuture's
