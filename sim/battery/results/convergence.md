@@ -1,6 +1,6 @@
 # Convergence & Population-Diversity Sizing Report
 
-- **Commit**: `e62f62a977c7ad9fe42fec68faf36c95807c3f34`
+- **Commit**: `7771da5facf9bf85bc8082190b93311bb9997145`
 - **Sharded Execution**: Consolidated across parallel shards
 - **Convergence Criteria**: Running-mean settling within `10%` (`3%` for M5 accuracy), between-seed relative 95% CI half-width `<= 10%`, and signal-to-noise `z = mean / se >= 3.0`.
 
@@ -26,19 +26,19 @@
 ## 2. M3c Calibrated Realistic Economy (Log-Normal Agent Skills)
 | Total Steps (`50` init + active, `n = 80`, `8` agents) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | `floor_h` Rel 95% Half-Width |
 |---|---|---|---|---|
-| `100` (`50` active) | 49.74 ± 1.10 | 4.3% | 45.1 | 3.6% |
-| `150` (`100` active) | 101.70 ± 1.04 | 2.0% | 98.0 | 1.5% |
-| `250` (`200` active) | 213.28 ± 1.82 | 1.7% | 117.4 | 1.4% |
-| `350` (`300` active) | 323.61 ± 2.04 | 1.2% | 158.8 | 1.2% |
-| `400` (`350` active) | 378.56 ± 2.02 | 1.0% | 187.3 | 1.0% |
+| `100` (`50` active) | 50.44 ± 0.64 | 2.5% | 79.2 | 3.8% |
+| `150` (`100` active) | 102.98 ± 1.13 | 2.1% | 91.4 | 3.1% |
+| `250` (`200` active) | 215.36 ± 1.22 | 1.1% | 176.0 | 1.3% |
+| `350` (`300` active) | 326.03 ± 2.25 | 1.4% | 145.1 | 1.0% |
+| `400` (`350` active) | 384.81 ± 2.23 | 1.1% | 172.4 | 1.0% |
 
 | Diverse Population (`n` beings, `n_agents` log-normal, `150` steps) | Post-Init `floor_u` Gain ± SE | Rel 95% Half-Width | `z` (`mean/se`) | Gain / Being | Gain / Plan |
 |---|---|---|---|---|---|
-| `n = 20`, `agents = 4`, `plans = 10` | 258.27 ± 4.96 | 3.8% | 52.1 | 12.914 | 25.83 |
-| `n = 40`, `agents = 6`, `plans = 10` | 189.88 ± 2.83 | 2.9% | 67.1 | 4.747 | 18.99 |
-| `n = 80`, `agents = 8`, `plans = 10` | 101.70 ± 1.04 | 2.0% | 98.0 | 1.271 | 10.17 |
-| `n = 160`, `agents = 12`, `plans = 20` | 89.32 ± 1.20 | 2.6% | 74.2 | 0.558 | 4.47 |
-| `n = 240`, `agents = 16`, `plans = 30` | 112.37 ± 0.76 | 1.3% | 148.7 | 0.468 | 3.75 |
+| `n = 20`, `agents = 4`, `plans = 10` | 239.53 ± 5.75 | 4.7% | 41.6 | 11.976 | 23.95 |
+| `n = 40`, `agents = 6`, `plans = 10` | 181.43 ± 2.88 | 3.1% | 62.9 | 4.536 | 18.14 |
+| `n = 80`, `agents = 8`, `plans = 10` | 102.00 ± 2.30 | 4.4% | 44.3 | 1.275 | 10.20 |
+| `n = 160`, `agents = 12`, `plans = 20` | 90.32 ± 0.96 | 2.1% | 94.5 | 0.564 | 4.52 |
+| `n = 240`, `agents = 16`, `plans = 30` | 109.32 ± 0.75 | 1.3% | 145.4 | 0.455 | 3.64 |
 
 ## 3. M5 Governance with Diverse Voter Skills & Ability Caps
 | Decisions (`n_voters = 60`) | Accuracy Mean ± SE | Acc 95% Half-Width | Wisdom Gain vs Equal ± SE | Wisdom Gain `z` |
