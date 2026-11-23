@@ -40,6 +40,9 @@ fr_gain(tr) = tr.floor_u[end] - tr.floor_u[51]
     # ruled (8.35: permissiveness is a race to the bottom).
     # A regime over seeds, not one platform-fragile seed (floating point moves single seeds; locally 7 of 8 seeds have at most one
     # currency-backed choice, one has 49): the share where StandCoin executions outnumber currency-backed choices fivefold, with its interval.
-    poors = [run_m3c(fr(; σ_leaf = 2.0, σ_branch = 2.0, σ_coarse = 2.0); seed) for seed in 1:8]
-    @test proportion_interval(count(poor -> poor.lane_executed > 5 * length(poor.chosen_step), poors), length(poors)).lo > 0.5
+    # 24 seeds because 8 gave a Wilson lo of 0.403 at 6 of 8 on Linux CI, too wide to separate a regime from 0.5.
+    poors = [run_m3c(fr(; σ_leaf = 2.0, σ_branch = 2.0, σ_coarse = 2.0); seed) for seed in 1:24]
+    k_poor = count(poor -> poor.lane_executed > 5 * length(poor.chosen_step), poors)
+    println("M3c poor-model regime: ", k_poor, "/", length(poors), " lo=", proportion_interval(k_poor, length(poors)).lo)
+    @test proportion_interval(k_poor, length(poors)).lo > 0.5
 end
