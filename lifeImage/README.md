@@ -11,7 +11,7 @@ prospectus fills the API contract, at the lowest evidence tier.
 
 - Design and recorded decisions: [DESIGN.md](DESIGN.md).
 - Origin: the author's concept document "Concept - Life Image" (2019).
-- Plan: [PLAN.md](PLAN.md).
+- Plan: [PLAN.md](PLAN.md). Rulings and backpropagation: [BACKPROPAGATION.md](BACKPROPAGATION.md) (recorded before mechanisms change).
 - Status: tooling built (schemas, cache, task batches, layout invariants, migration); no basemap data yet. Held by the project until v1.0 is published.
 
 ## Build and test

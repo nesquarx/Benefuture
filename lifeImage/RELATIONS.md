@@ -296,3 +296,23 @@ Author review: `data/gold/review_v1.md` (the 30 most disputed items and the roun
   (consumed)** (author, confirming case 4). A vote produces; publishing under one's name is a count-as matter (C).
 - Candidate backpropagation: L96's `Responsibility(Informed, Counterfactual, Severity, Duty)` has no explicit freedom
   term (alternatives available); the self-defence ruling suggests adding one.
+
+## Relation metadata (LI.42)
+
+Each property has a consumer; nothing generic. Already in the contract: weight, confidence, tier, provenance (source,
+span), date, revoked.
+
+| Property | On | Consumer |
+|---|---|---|
+| Option set (alternatives available, each with its harm) | participation | responsibility by freedom (LI.40) |
+| Counterfactual reference (predicted course and the model or statement it comes from) | outcome membership | outcome against the counterfactual; prevention credit |
+| Magnitude and count per affected party | impact | impact intensity |
+| Context (jurisdiction, culture, norm set) | count-as rules, memberships | tip vs bribe; cross-culture classification |
+| Valid time and record time | every relation | decay (valid time); recount and audit (record time, L101) |
+| Support (evidence count) and version | domain ↔ domain relations | direction and stability of learnt links |
+| Time span and place | events | decay, setting cross-check |
+| Identity binding and entity kind (person, organisation, AI, animal) | entities | liability and image rules by kind |
+
+Left out until a consumer needs them: stated intent (unless itself a recorded statement), emotional valence, generic
+tags. When the option set is missing, responsibility falls back to a governed default and the substitution is logged
+(progressive degradation), never assuming full freedom.
