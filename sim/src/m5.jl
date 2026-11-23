@@ -120,6 +120,7 @@ struct M5Params
     scope_local_share::Float64
     scope_within_harm::Bool
     scope_locals::Vector{Int}
+    ih_vote::Bool              # the composed world's candidate-adoption vote reads through this deliberation (`run_coupled`; world wiring, not a rule)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -148,7 +149,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   bind_conf_deny::Real = 0.1, attest_min_records::Integer = 5, attest_pooled::Bool = false,
                   p_newcomer::Real = 0.0, p_reveal::Real = 0.05, p_sybil_attempt::Real = 1.0,
                   nested_scopes::Bool = false, scope_share_min::Real = 0.8, scope_local_share::Real = 1.0,
-                  scope_within_harm::Bool = true, scope_locals = Int[])
+                  scope_within_harm::Bool = true, scope_locals = Int[], ih_vote::Bool = false)
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -209,7 +210,7 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              Float64(bind_miss), collect(Int, bind_compromised), Float64(bind_conf_compromised),
              Float64(bind_conf_affirm), Float64(bind_conf_deny), Int(attest_min_records), attest_pooled,
              Float64(p_newcomer), Float64(p_reveal), Float64(p_sybil_attempt),
-             nested_scopes, Float64(scope_share_min), Float64(scope_local_share), scope_within_harm, scope_locals_vec)
+             nested_scopes, Float64(scope_share_min), Float64(scope_local_share), scope_within_harm, scope_locals_vec, ih_vote)
 end
 
 """
@@ -219,7 +220,7 @@ Decide `p.decisions` times. Returns the share decided correctly (`correct`) and,
 largest share of total weight one voter held (`max_share`) and the largest single weight
 (`max_single`), both as shares of the total.
 """
-function run_m5(p::M5Params; seed, records = nothing)
+function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     rng = Xoshiro(seed)
     trng = Xoshiro(hash((seed, :split_trial)))  # its own stream: diversity changes no other draw
     # Imperfect agents (8.31): each voter's noise ceiling per domain, inverse to its skill there on
@@ -295,6 +296,7 @@ function run_m5(p::M5Params; seed, records = nothing)
     end
     model_weight, cap_trace, cap_id = Float64[], Float64[], Ref(0)
     truth_trace = Float64[]
+    last_signal = zeros(size(p.skills, 1))   # the final decision's readings after deliberation
     own_pub = zeros(na)
     # Source tags (8.45): tags falsified and caught; AdvAp's echo audit over each person's outputs
     # presented as its own, against the reading its sources gave it (raw counts: entries never
@@ -353,6 +355,7 @@ function run_m5(p::M5Params; seed, records = nothing)
     for n in 1:p.decisions
         k = p.domains[rand(rng, 1:length(p.domains))]
         truth = randn(rng)
+        truths === nothing || (truth = Float64(truths[n]))   # a given truth (the stream is still consumed)
         push!(truth_trace, truth)
         misconception = p.misconception_σ > 0 ? p.misconception_σ * randn(mrng) : 0.0
         apparent = rand(rng) < p.p_apparent  # drawn now, revealed after the decision
@@ -552,6 +555,7 @@ function run_m5(p::M5Params; seed, records = nothing)
                 signal = tagged.reading
             end
         end
+        last_signal .= signal
         vote(i) = (i in p.colluders && defect) ? 1.0 : sign(signal[i])  # a bloc votes its side, not its signal
         # Credence ballots (8.121): a voter states its log-odds that the option is right (from its reading and
         # its own noise, Gaussian: 2 × reading / σ², times its overconfidence); `:credence_calibrated` shrinks
@@ -745,7 +749,7 @@ function run_m5(p::M5Params; seed, records = nothing)
      minds_changed = minds_trace, advice_weight = advw,
      weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
-     records = person_rec, maker_share = maker_share,
+     records = person_rec, maker_share = maker_share, last_signal = last_signal,
      sybil_forks_admitted = sybil_admitted, sybil_forks_blocked = sybil_blocked,
      newcomers_admitted = newcomers_adm, newcomers_refused = newcomers_ref,
      attestation_skill = tn_active ? copy(tn_weights) : Float64[],

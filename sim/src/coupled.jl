@@ -45,6 +45,12 @@ function _with_econ_epoch(p::M3cParams, pv::AbstractVector{<:Real}, epoch_steps:
     M3cParams((get(over, f, getfield(p, f)) for f in fieldnames(M3cParams))...)
 end
 
+# The adoption vote's own M5 call: one decision in domain `k` on the economy's reputation, over a given truth.
+function _with_m5_vote(gp::M5Params, rep::AbstractMatrix{<:Real}, k::Int)
+    over = Dict{Symbol,Any}(:reputation => Float64.(rep), :decisions => 1, :domains => [k])
+    M5Params((get(over, f, getfield(gp, f)) for f in fieldnames(M5Params))...)
+end
+
 function _with_m5_rep_dec(gp::M5Params, rep::AbstractMatrix{<:Real}, dec::Int)
     over = Dict{Symbol,Any}(:reputation => Float64.(rep), :decisions => dec)
     M5Params((get(over, f, getfield(gp, f)) for f in fieldnames(M5Params))...)
@@ -74,6 +80,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      candidate_threshold::Union{Nothing,Real} = nothing,
                      candidate_track_window::Union{Nothing,Integer} = nothing,
                      m5_decisions::Integer = 0, continuous::Bool = false,
+                     candidate_merit::Union{Nothing,Real} = nothing,
                      candidate_prediction::Union{Nothing,Real} = nothing, candidate_eta::Integer = 1,
                      candidate_confidence::Real = 0.0, eta_grace::Integer = 0,
                      candidate_vs_incumbent::Bool = false,
@@ -354,8 +361,19 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         else
             0.0
         end
+        # What honest voters' readings centre on: the candidate's merit where the world states it (a harmful one is below 0),
+        # else the offer's face value. With `gp.ih_vote` the readings pass through M5's deliberation (IH: sources weighed by
+        # their live records, tags counted once, the tag audit), so colluders' republished readings meet record weights.
+        read_truth = candidate_merit !== nothing && has_offer && !(coupled && rejected) ? Float64(candidate_merit) : prior_signal
+        readings = nothing
+        if gp.ih_vote && gp.deliberation
+            rep_v = max.(reputation, 0.0)
+            sum(rep_v) <= 0 && (rep_v = fill(1e-3, size(rep_v)))
+            readings = run_m5(_with_m5_vote(gp, rep_v, k); seed = Int(hash((seed, :coupled_vote, ep)) & 0x7fffffff),
+                              records = src_rec, truths = [read_truth]).last_signal
+        end
         votes = [begin
-            s_i = prior_signal + gp.camp_bias[i] + choice_noise(crng, caps[i, k])
+            s_i = readings === nothing ? read_truth + gp.camp_bias[i] + choice_noise(crng, caps[i, k]) : readings[i]
             (i in gp.colluders) ? 1.0 : (s_i >= 0 ? 1.0 : -1.0)
         end for i in 1:na]
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)

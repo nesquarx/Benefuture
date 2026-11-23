@@ -21,7 +21,7 @@ using BenefutureSim, Statistics, Random, Printf, Dates
 # capture; research breakthroughs occur in both.
 const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
 const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule, :bind_weighted)
-const GOV_MECHANISM_FIELDS = (:advap,)
+const GOV_MECHANISM_FIELDS = (:advap, :deliberation, :info_handling, :source_tags, :tag_audit, :ih_vote)
 const WORLD_ARMS = (:bf, :status_quo)
 
 function world_events(stress::Symbol; steps::Integer = 1200)
@@ -50,7 +50,7 @@ end
 
 # Information handling (L134 IH, step 1 of docs/WORLD_COVERAGE.md): voters hear every source weighed by its live record
 # (the full ContentionMap, 8.44), readings carry origin tags counted once (8.45), AdvAp audits tags against the log (L161).
-ih_flags(on::Bool) = on ? (deliberation = true, info_handling = true, source_tags = true, tag_audit = true) : (;)
+ih_flags(on::Bool) = on ? (deliberation = true, info_handling = true, source_tags = true, tag_audit = true, ih_vote = true) : (;)
 
 function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
                n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf)
