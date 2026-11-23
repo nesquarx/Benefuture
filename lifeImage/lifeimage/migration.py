@@ -9,6 +9,7 @@ relation still sums to 1 and a domain reached by several olds in one relation ge
 `convert_card_v0` rewrites cards from the parents/neighbours form into links.
 """
 import math
+import re
 
 from .vocab import OVERLAP, UPSTREAM
 
@@ -110,3 +111,42 @@ def convert_card_v0(card):
 
 def convert_cards_v0(cards):
     return [convert_card_v0(c) for c in cards]
+
+
+DATE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+ENTITY_KINDS = ("person", "organisation", "ai", "animal", "other")
+
+
+def migrate_evidence_v0(row):
+    """Row with the single `date` -> row with `valid_time` (the date) and `record_time` (the same value: the old
+    contract kept one date, so the best known record time is the date itself). Rows already in the new form pass
+    through; a row carrying both forms or a malformed date raises."""
+    if "date" not in row:
+        return dict(row)
+    if "valid_time" in row or "record_time" in row:
+        raise ValueError("row carries both date and valid_time/record_time")
+    if not isinstance(row["date"], str) or not DATE.match(row["date"]):
+        raise ValueError(f"malformed date {row['date']!r}")
+    out = {k: v for k, v in row.items() if k != "date"}
+    out["valid_time"] = out["record_time"] = row["date"]
+    return out
+
+
+def read_evidence(row):
+    """An evidence row of either contract version, in the current one."""
+    return migrate_evidence_v0(row)
+
+
+def migrate_entity_v0(entity):
+    """Entity id (string) -> {id, kind}. The kind is taken only from an id prefix that is itself a kind name
+    ("person:1"); otherwise "other", never a guess."""
+    prefix = entity.split(":", 1)[0] if ":" in entity else None
+    return {"id": entity, "kind": prefix if prefix in ENTITY_KINDS else "other"}
+
+
+def migrate_card_links(card):
+    """Card with each link stamped with the version it was recorded under (the card's basemap version) where it
+    carries none; existing versions and supports are kept, a missing support stays missing (unknown, not 0)."""
+    out = dict(card)
+    out["links"] = [{**l, "version": l.get("version", card["basemap_version"])} for l in card["links"]]
+    return out

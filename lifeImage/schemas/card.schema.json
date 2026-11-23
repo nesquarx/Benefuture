@@ -12,7 +12,8 @@
     "link": {
       "type": "object", "additionalProperties": false, "required": ["id", "rel", "weight"],
       "properties": {"id": {"type": "string", "minLength": 1}, "rel": {"type": "string", "minLength": 1},
-                     "weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}, "strict": {"type": "boolean"}}
+                     "weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}, "strict": {"type": "boolean"},
+                     "support": {"type": "integer", "minimum": 0}, "version": {"type": "string", "minLength": 1}}
     },
     "weighted_ref": {
       "type": "object", "additionalProperties": false, "required": ["id", "weight"],

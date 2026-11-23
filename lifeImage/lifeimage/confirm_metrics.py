@@ -17,9 +17,12 @@ plus two measures this battery adds.
 import math
 from collections import defaultdict
 
-from .bd_metrics import events_metrics, participation_metrics, render as render_bd
-from .confirm import VOCAB
+from .bd_metrics import (FIELD_VALUE, _units, events_metrics, krippendorff_alpha_interval, krippendorff_alpha_nominal,
+                         participation_metrics, render as render_bd)
+from .confirm import VOCAB, zero_run_flag
+from .confirm_rerun import COERCED
 from .membership import VOCABS
+from .participation import production_gaps
 from .membership_metrics import collisions, render as render_a, vocab_metrics
 
 
@@ -130,4 +133,108 @@ def render_confirm(m):
               f"{_f(o[g]['item_fill_rate'], True)} |" for g in ("change", "null", "plain")]
     lines += ["", f"Counterfactual items matching the expectation (change: filled, null: not filled): "
               f"{_f(o['agreement_with_expectation'], True)}."]
+    return "\n".join(lines) + "\n"
+
+
+# ---- confirm v1 versus v2 on the same items ----
+def _mean(xs):
+    xs = list(xs)
+    return sum(xs) / len(xs) if xs else float("nan")
+
+
+def _only(rec, ids):
+    return {k: [r for r in v if r["item"] in ids] for k, v in rec.items()}
+
+
+def _field_alphas(participation):
+    units = _units(participation)
+    out = {}
+    for f, (kind, get) in FIELD_VALUE.items():
+        vals = [[get(e) for _, e in es] for es in units.values()]
+        out[f] = (krippendorff_alpha_interval if kind == "interval" else krippendorff_alpha_nominal)(vals)
+    return out
+
+
+def _focal_mean(participation, focal):
+    """Mean responsibility of each item's focal participant over its answers; per item, then over items."""
+    per_item = []
+    for item, pid in focal.items():
+        vals = [r["participants"][pid]["responsibility"] for r in participation
+                if r["item"] == item and pid in r["participants"]]
+        if vals:
+            per_item.append(_mean(vals))
+    return _mean(per_item), len(per_item)
+
+
+def compare_versions(v1, v2, items, ids):
+    """confirm v1 against v2 on the same items. `v1`, `v2`: records (`load_confirm_records`); `items`: the rerun items
+    (`confirm_rerun.rerun_items`); `ids`: the item ids of the rerun set. Everything but the self-defence rows is
+    computed over the items both versions answered (`items` in the result counts them), so the two columns see the
+    same items. Returns
+    - fields: Krippendorff alpha per participation field, {field: {v1, v2}}, and a_types the same per A type;
+    - zero_run: answers, and those flagged (outcome recorded, every participant 0 and 0), per version;
+    - production: participant answers where production is required (contribution above 0, or the output received),
+      and how many of those are null, per version;
+    - responsibility: mean responsibility of the coerced participant (`COERCED`) per version, and of the defender per
+      self-defence case (every item of the case that a version answered; v1 has none, so its column is nan).
+    """
+    ids = set(ids)
+    common = ({r["item"] for r in v1["participation"]} & {r["item"] for r in v2["participation"]}) & ids
+    one, two = _only(v1, common), _only(v2, common)
+    types = VOCABS[VOCAB]["types"]
+    out = {"items": len(common), "fields": {}, "a_types": {}, "zero_run": {"answers": {}, "flagged": {}},
+           "production": {}, "responsibility": {}}
+    fa, fb = _field_alphas(one["participation"]), _field_alphas(two["participation"])
+    out["fields"] = {f: {"v1": fa[f], "v2": fb[f]} for f in fa}
+    if common:
+        ta, tb = vocab_metrics(one["A"], types)["types"], vocab_metrics(two["A"], types)["types"]
+        out["a_types"] = {t: {"v1": ta[t]["alpha"], "v2": tb[t]["alpha"]} for t in ta}
+    for name, rec in (("v1", one), ("v2", two)):
+        by_key = {(r["item"], r["variant"]): r for r in rec["participation"]}
+        flagged = n = 0
+        for a in rec["A"]:
+            p = by_key.get((a["item"], a["variant"]))
+            if p is not None:
+                n += 1
+                flagged += zero_run_flag({"types": a["types"], "participants": list(p["participants"].values())})
+        out["zero_run"]["answers"][name], out["zero_run"]["flagged"][name] = n, flagged
+        gaps = required = 0
+        for r in rec["participation"]:
+            es = list(r["participants"].values())
+            missing = set(production_gaps(es))
+            gaps += len(missing)
+            receivers = {i["party"] for e in es for i in e["impact"] if i["sign"] == 1 and i["magnitude"] > 0}
+            required += sum(e["contribution"] > 0 or e["id"] in receivers for e in es)
+        out["production"][name] = {"required": required, "null": gaps}
+    coerced = {i: p for i, p in COERCED.items() if i in common}
+    c1, n1 = _focal_mean(one["participation"], coerced)
+    c2, n2 = _focal_mean(two["participation"], coerced)
+    cases = {}
+    for it in items:
+        if it.get("source") == "self_defence" and it["id"] in ids:
+            cases.setdefault(it["case"], {})[it["id"]] = "defender"
+    sd = {}
+    for case, focal in cases.items():
+        sd[case] = {"v1": _focal_mean(v1["participation"], focal)[0], "v2": _focal_mean(v2["participation"], focal)[0]}
+    out["responsibility"] = {"coercion": {"v1": c1, "v2": c2, "items": max(n1, n2)}, "self_defence": sd}
+    return out
+
+
+def render_compare(c):
+    """Markdown report of `compare_versions`."""
+    lines = [f"## confirm v1 versus v2 on the same {c['items']} items", "", "### Agreement per field (Krippendorff alpha over variants)", "",
+             "| field | v1 | v2 |", "|---|---|---|"]
+    lines += [f"| {f} | {_f(x['v1'])} | {_f(x['v2'])} |" for f, x in c["fields"].items()]
+    lines += [f"| A: {t} | {_f(x['v1'])} | {_f(x['v2'])} |" for t, x in c["a_types"].items()]
+    z = c["zero_run"]
+    lines += ["", "### Zero runs (outcome recorded, every participant 0 and 0)", "", "| | v1 | v2 |", "|---|---|---|",
+              f"| flagged | {z['flagged']['v1']} of {z['answers']['v1']} | {z['flagged']['v2']} of {z['answers']['v2']} |"]
+    p = c["production"]
+    lines += ["", "### Production nulls where production is required", "", "| | v1 | v2 |", "|---|---|---|",
+              f"| null of required | {p['v1']['null']} of {p['v1']['required']} | {p['v2']['null']} of {p['v2']['required']} |"]
+    r = c["responsibility"]
+    lines += ["", "### Responsibility on coercion and self-defence items (mean over answers)", "",
+              "| items | v1 | v2 |", "|---|---|---|",
+              f"| coerced participant ({r['coercion']['items']} items) | {_f(r['coercion']['v1'])} | {_f(r['coercion']['v2'])} |"]
+    lines += [f"| self-defence: {k} defender | {_f(x['v1'])} | {_f(x['v2'])} |" for k, x in sorted(r["self_defence"].items())]
     return "\n".join(lines) + "\n"

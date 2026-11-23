@@ -316,3 +316,21 @@ span), date, revoked.
 Left out until a consumer needs them: stated intent (unless itself a recorded statement), emotional valence, generic
 tags. When the option set is missing, responsibility falls back to a governed default and the substitution is logged
 (progressive degradation), never assuming full freedom.
+
+## Contract v2 and the confirm v2 rerun (built, not yet run)
+
+- Contract: evidence rows carry `valid_time` and `record_time` (old `date` rows migrate by `migrate_evidence_v0` /
+  `read_evidence`), optional `option_set`, `context` and `entity_kind`; outcome memberships carry an optional
+  `counterfactual` {course, source: stated | implied | model:<id>}; entities have a `kind`; domain links carry optional
+  `support` and `version`; count-as rules (`count_as.schema.json`) carry optional `context`; participation impact
+  entries take an optional `count`.
+- Responsibility by freedom (`responsibility_from_freedom`): contribution 0 gives 0; a missing option set uses the
+  governed default 0.5 (`lifeimage/governed.py`), logged as a degradation record each use; with an option set, no
+  alternative less harmful than the outcome gives the governed floor 0.1, rising to 1 when a harmless alternative
+  existed.
+- Production: version-2 answers need a production value whenever contribution is above 0 or the output is received;
+  an answer recording an outcome with every participant at 0 and 0 is a zero run and is rejected.
+- Rerun: `python3 lifeImage/tools/build_battery_confirm.py --rerun` writes `confirm.v2.var{0,1,2}.jsonl` over the 38
+  review items plus 4 self-defence items (`prompts/confirm.v2.md`); compare with
+  `python3 lifeImage/tools/confirm_metrics.py data/batches/confirm.v1.var*.answers.jsonl --vs data/batches/confirm.v2.var*.answers.jsonl`.
+  On v1 the production value was null for 59 of 111 answers that required it.

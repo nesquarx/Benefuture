@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeimage.invalid/schemas/count_as.schema.json",
+  "title": "Count-as rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "when",
+    "counts_as"
+  ],
+  "properties": {
+    "when": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "counts_as": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "jurisdiction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "culture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "norm_set": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

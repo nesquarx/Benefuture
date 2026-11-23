@@ -1,4 +1,4 @@
-"""The confirming battery: one combined task per item, `confirm.v1`.
+"""The confirming battery: one combined task per item, `confirm.v1` (and `confirm.v2`, see below).
 
 An item (`data/gold/confirm_items_v0.jsonl`) is an event text with its participants listed, because who takes part is
 not what is measured. One task answers three layers on it: A (membership of domains by form, content, outcome,
@@ -12,6 +12,12 @@ A batch file holds one variant of all items, split into parts when it would pass
 the header). Answers are checked by the layer validators the batteries already use, so a rule lives once: the A
 part by `validate_membership_answer`, B by `validate_participation_answer` (contributions to one outcome sum to at
 most 1; omitting this check lets a runner credit every participant fully), D by `validate_events_answer`.
+
+Version 2 (`confirm.v2`, prompt `confirm.v2.md`; the prompt version is the version number) judges responsibility by
+freedom and records the option set. Its answers are validated with the version-2 participation rules (option_set
+required, production required whenever contribution is above 0 or the output is received) and a zero-run check
+(`zero_run_flag`): an answer that records an outcome while every participant scores 0 contribution and 0
+responsibility is inconsistent and is rejected, so the runner retries rather than the metrics counting it.
 """
 import json
 from collections import defaultdict
@@ -28,11 +34,14 @@ from .validate import ValidationError, validate_answer, validate_membership_answ
 TASK_TYPE = "confirm.v1"
 PROMPT_NAME = "confirm.v1.md"
 PROMPT_VERSION = 1
+TASK_TYPES = {1: "confirm.v1", 2: "confirm.v2"}
 MODEL = "haiku-subagent-low"
 VOCAB = "A3S"
 MAX_BATCH_TOKENS = 40_000
 DEFAULT_ITEMS = DEFAULT_GOLD / "confirm_items_v0.jsonl"
-SOURCES = ("a_pool", "bd", "counterfactual", "production_pair")
+SOURCES = ("a_pool", "bd", "counterfactual", "production_pair", "self_defence")
+SELF_DEFENCE_CASES = ("no_less_harmful", "less_harmful", "disproportionate", "ambiguous")
+SELF_DEFENCE_EXPECT = ("low", "high", "open")
 PRODUCTION_VALUES = ("produced", "consumed", "both")
 
 
@@ -56,6 +65,11 @@ def load_confirm_items(path=DEFAULT_ITEMS):
         if i["source"] == "counterfactual" and (i.get("counterfactual") not in ("stated", "implied")
                                                 or i.get("expected_outcome") not in ("change", "null")):
             raise ValueError(f"{where}: a counterfactual item needs counterfactual and expected_outcome")
+        if i["source"] == "self_defence":
+            exp = i.get("expect_responsibility") or {}
+            if (i.get("case") not in SELF_DEFENCE_CASES or set(exp) != {"defender"} or exp["defender"] not in SELF_DEFENCE_EXPECT
+                    or not {"defender", "attacker"} <= {p["id"] for p in ps}):
+                raise ValueError(f"{where}: a self-defence item needs a case, a defender and attacker, and an expected defender responsibility")
         if i["source"] == "production_pair":
             exp = i.get("expect_production") or {}
             if (not i.get("pair") or i.get("side") not in ("a", "b") or len(exp) != 1
@@ -75,9 +89,10 @@ def item_hash(item, phash):
     return content_hash(item_input(item, 0, phash))
 
 
-def prefix_text(variant, pack_text, prompts_dir=DEFAULT_PROMPTS):
-    """The batch prefix of a variant: the prompt (link types in the variant's order), the A3S vocabulary, the pack."""
-    prompt = (Path(prompts_dir) / PROMPT_NAME).read_text(encoding="utf-8").rstrip("\n")
+def prefix_text(variant, pack_text, prompts_dir=DEFAULT_PROMPTS, prompt_version=1):
+    """The batch prefix of a variant: the prompt of the version (link types in the variant's order), the A3S
+    vocabulary, the pack."""
+    prompt = (Path(prompts_dir) / f"confirm.v{prompt_version}.md").read_text(encoding="utf-8").rstrip("\n")
     prompt = prompt.replace("{{link_types}}", link_types_text(variant))
     return f"{prompt}\n\n{vocab_text(VOCAB)}\n\nThe coarse pack follows.\n{ungrouped_pack(pack_text, variant)}"
 
@@ -103,30 +118,33 @@ def split_parts(header, task_lines, max_tokens=MAX_BATCH_TOKENS):
 
 def build_confirm_batches(items, pack_text, *, model=MODEL, prompt_version=PROMPT_VERSION, k=DEFAULT_K,
                           max_tokens=MAX_BATCH_TOKENS, prompts_dir=DEFAULT_PROMPTS):
-    """{variant: [part, ...]}, each part [header, task lines...] of at most `max_tokens`."""
+    """{variant: [part, ...]}, each part [header, task lines...] of at most `max_tokens`; `prompt_version` picks
+    the prompt and the task type (`confirm.v<version>`)."""
+    task_type = TASK_TYPES[prompt_version]
     phash = pack_hash(pack_text)
     batches = {}
     for v in range(k):
-        header = json.dumps({"kind": "header", "task_type": TASK_TYPE, "model": model, "prompt_version": prompt_version,
-                             "prefix": prefix_text(v, pack_text, prompts_dir)}, sort_keys=True, ensure_ascii=False)
+        header = json.dumps({"kind": "header", "task_type": task_type, "model": model, "prompt_version": prompt_version,
+                             "prefix": prefix_text(v, pack_text, prompts_dir, prompt_version)}, sort_keys=True, ensure_ascii=False)
         lines = []
         for it in sorted(items, key=lambda i: i["id"]):
             h = item_hash(it, phash)
-            lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": TASK_TYPE,
+            lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": task_type,
                                          "prompt_version": prompt_version, "input_hash": h, "variant": v, "k": k,
                                          "input": item_input(it, v, phash), "allowed_verdicts": ["confirm"]}))
         batches[v] = split_parts(header, lines, max_tokens)
     return batches
 
 
-def write_confirm_batches(batches, out_dir=DEFAULT_OUT):
-    """confirm.v1.var<v>.jsonl, or confirm.v1.var<v>.p<j>.jsonl for a variant split into parts."""
+def write_confirm_batches(batches, out_dir=DEFAULT_OUT, prompt_version=1):
+    """confirm.v<n>.var<v>.jsonl, or confirm.v<n>.var<v>.p<j>.jsonl for a variant split into parts."""
+    task_type = TASK_TYPES[prompt_version]
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     paths = []
     for v, parts in sorted(batches.items()):
         for j, lines in enumerate(parts):
-            name = f"{TASK_TYPE}.var{v}.jsonl" if len(parts) == 1 else f"{TASK_TYPE}.var{v}.p{j}.jsonl"
+            name = f"{task_type}.var{v}.jsonl" if len(parts) == 1 else f"{task_type}.var{v}.p{j}.jsonl"
             (out / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
             paths.append(out / name)
     return paths
@@ -143,8 +161,10 @@ def validate_confirm_answers(batch_lines, answer_lines):
     per task, echoing the task's identity, with the A, B and D parts each valid under its layer's rules."""
     errors = []
     header = json.loads(batch_lines[0])
-    if header["task_type"] != TASK_TYPE:
-        return [f"task type {header['task_type']!r} is not {TASK_TYPE!r}"]
+    versions = {t: v for v, t in TASK_TYPES.items()}
+    if header["task_type"] not in versions:
+        return [f"task type {header['task_type']!r} is not one of {sorted(versions)}"]
+    version = versions[header["task_type"]]
     ids = pack_ids(header["prefix"])
     tasks = {}
     for line in batch_lines[1:]:
@@ -174,15 +194,25 @@ def validate_confirm_answers(batch_lines, answer_lines):
             errors.append(f"line {n}: verdict {a['verdict']!r} not in {t['allowed_verdicts']}")
         am, ap, ae = _parts(a)
         for layer, check in (("A", lambda: validate_membership_answer(am, VOCAB, ids)),
-                             ("B", lambda: validate_participation_answer(ap, t["input"]["item"]["participants"])),
+                             ("B", lambda: validate_participation_answer(ap, t["input"]["item"]["participants"], version=version)),
                              ("D", lambda: validate_events_answer(ae))):
             try:
                 check()
             except (ValidationError, KeyError, TypeError, AttributeError) as e:
                 errors.append(f"line {n}: {layer}: {e}")
+        if version >= 2 and zero_run_flag(a):
+            errors.append(f"line {n}: zero run: an outcome is recorded but every participant scores 0 contribution and 0 responsibility")
     for missing in sorted(set(tasks) - seen):
         errors.append(f"missing answer for {missing}")
     return errors
+
+
+def zero_run_flag(answer):
+    """True when the A outcome is filled while every participant has contribution 0 and responsibility 0: a recorded
+    outcome that nobody produced. An answer with no outcome, or with any non-zero score, is not flagged."""
+    if answer["types"].get("outcome") is None:
+        return False
+    return all(e["contribution"] == 0 and e["responsibility"] == 0 for e in answer["participants"])
 
 
 # ---- records for the metrics ----
@@ -196,8 +226,8 @@ def load_confirm_records(paths):
         if batch == p or not batch.exists():
             raise FileNotFoundError(f"no batch file for answers {p} (expected {batch})")
         lines = batch.read_text(encoding="utf-8").splitlines()
-        if json.loads(lines[0])["task_type"] != TASK_TYPE:
-            raise ValueError(f"{batch}: not a {TASK_TYPE} batch")
+        if json.loads(lines[0])["task_type"] not in TASK_TYPES.values():
+            raise ValueError(f"{batch}: not a confirm batch")
         item_of = {json.loads(l)["task_id"]: json.loads(l)["input"]["item"]["id"] for l in lines[1:]}
         for l in p.read_text(encoding="utf-8").splitlines():
             if not l.strip():

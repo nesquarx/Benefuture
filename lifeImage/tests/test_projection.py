@@ -97,7 +97,7 @@ def test_upstream_domain_listed_in_the_row_is_not_double_counted():
 
 def test_passive_consumption_is_capped_however_much_of_it_there_is():
     rows = [make_row(relation="impacted", memberships=[membership("cinema", "content", 1.0)], magnitude=1.0,
-                     date=f"20{i % 100:02d}") for i in range(1000)]
+                     valid_time=f"20{i % 100:02d}") for i in range(1000)]
     out = project(rows, graph())
     assert val(out, "person:1", "cinema") <= 0.1 + 1e-9
     assert val(out, "person:1", "cinema") == pytest.approx(0.1)
@@ -152,7 +152,7 @@ def test_revoked_rows_do_nothing_and_signed_rows_subtract():
 
 
 def test_input_order_does_not_matter():
-    rows = [make_row(relation="impacted", memberships=[membership("cinema")], magnitude=0.07, date=f"20{i:02d}")
+    rows = [make_row(relation="impacted", memberships=[membership("cinema")], magnitude=0.07, valid_time=f"20{i:02d}")
             for i in range(5)] + [make_row(memberships=[membership("a")], magnitude=1.0)]
     assert project(rows, graph()) == project(list(reversed(rows)), graph())
 

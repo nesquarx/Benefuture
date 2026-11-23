@@ -12,6 +12,12 @@ Answer rules checked by `validate_participation_answer`: exactly the listed part
 and responsibility in [0, 1]; contributions to the one outcome sum to at most 1 (omitting this check lets a runner
 credit every participant fully, which breaks value routing); impact entries with sign +-1 and integer magnitude
 0-3; text-or-null for the record fields; a constrained volition names its record.
+
+Version 2 (prompt `confirm.v2`, LI.40, LI.41, LI.42) adds `option_set` (null or a valid option set; the key is
+required), an optional positive-integer `count` on impact entries (the number of beings affected; absent means 1) and
+the production rule: a participant with contribution above 0, or one named as a party that benefits from another's
+act, must have a production value. Omitting the rule lets a runner leave production null exactly where the act or the
+receipt is recorded, which is the failure the v1 answers showed.
 """
 import hashlib
 import json
@@ -21,6 +27,7 @@ from pathlib import Path
 from .canonical import canonical_json, content_hash
 from .membership import DEFAULT_GOLD, DEFAULT_OUT
 from .tasks import DEFAULT_K, DEFAULT_PROMPTS
+from .responsibility import validate_option_set
 from .validate import ValidationError
 
 TASK_TYPE = "participation"
@@ -33,6 +40,7 @@ MAX_MAGNITUDE = 3
 CONSERVATION_TOL = 1e-6
 ENTRY_KEYS = ("id", "contribution", "responsibility", "impact", "acting_for", "under_agreement", "informed",
               "volition", "volition_record", "production")
+ENTRY_KEYS_V2 = ENTRY_KEYS + ("option_set",)
 
 
 def load_bd_items(path=DEFAULT_ITEMS):
@@ -117,9 +125,23 @@ def _unit(x, what):
         raise ValidationError(f"{what} must be a number in [0, 1], not {x!r}")
 
 
-def validate_participation_answer(answer, participants, conservation=True):
+def impact_count(imp):
+    """Number of beings an impact entry covers (1 when absent)."""
+    return imp.get("count", 1)
+
+
+def production_gaps(entries):
+    """Ids of participants whose production is null although it is required: contribution above 0 (produced), or
+    named as a party with a positive impact in some participant's entry (receives the output: consumed)."""
+    receivers = {i["party"] for e in entries for i in e["impact"] if i["sign"] == 1 and i["magnitude"] > 0}
+    return [e["id"] for e in entries if e["production"] is None and (e["contribution"] > 0 or e["id"] in receivers)]
+
+
+def validate_participation_answer(answer, participants, conservation=True, version=1):
     """A participation answer: verdict "participation" and `participants` holding exactly the listed ids, each with
-    exactly ENTRY_KEYS and valid values; contributions sum to at most 1 unless `conservation` is False."""
+    exactly the version's entry keys and valid values; contributions sum to at most 1 unless `conservation` is False;
+    from version 2 a required production value is present (`production_gaps`)."""
+    keys = ENTRY_KEYS_V2 if version >= 2 else ENTRY_KEYS
     if answer.get("verdict") != TASK_TYPE:
         raise ValidationError(f"verdict must be {TASK_TYPE!r}, not {answer.get('verdict')!r}")
     entries = answer.get("participants")
@@ -131,15 +153,21 @@ def validate_participation_answer(answer, participants, conservation=True):
         raise ValidationError(f"participants {got} differ from the listed {want}")
     for e in entries:
         pid = e["id"]
-        if set(e) != set(ENTRY_KEYS):
-            raise ValidationError(f"{pid}: keys {sorted(set(e) ^ set(ENTRY_KEYS))} missing or unknown")
+        if set(e) != set(keys):
+            raise ValidationError(f"{pid}: keys {sorted(set(e) ^ set(keys))} missing or unknown")
+        if version >= 2 and e["option_set"] is not None:
+            validate_option_set(e["option_set"])
         _unit(e["contribution"], f"{pid}: contribution")
         _unit(e["responsibility"], f"{pid}: responsibility")
         if not isinstance(e["impact"], list):
             raise ValidationError(f"{pid}: impact must be a list")
         for imp in e["impact"]:
-            if not isinstance(imp, dict) or set(imp) != {"party", "sign", "magnitude"}:
-                raise ValidationError(f"{pid}: an impact needs exactly party, sign and magnitude")
+            allowed = {"party", "sign", "magnitude"} | ({"count"} if version >= 2 else set())
+            if not isinstance(imp, dict) or not {"party", "sign", "magnitude"} <= set(imp) <= allowed:
+                raise ValidationError(f"{pid}: an impact needs exactly party, sign and magnitude"
+                                      + (" (and optionally count)" if version >= 2 else ""))
+            if "count" in imp and (isinstance(imp["count"], bool) or not isinstance(imp["count"], int) or imp["count"] < 1):
+                raise ValidationError(f"{pid}: impact count must be a positive integer, not {imp['count']!r}")
             _text_or_null(imp["party"], f"{pid}: impact party")
             if imp["party"] is None:
                 raise ValidationError(f"{pid}: impact party is required")
@@ -158,6 +186,10 @@ def validate_participation_answer(answer, participants, conservation=True):
             raise ValidationError(f"{pid}: volition_record without a volition")
         if e["production"] is not None and e["production"] not in PRODUCTIONS:
             raise ValidationError(f"{pid}: production must be one of {PRODUCTIONS} or null, not {e['production']!r}")
+    if version >= 2:
+        gaps = production_gaps(entries)
+        if gaps:
+            raise ValidationError(f"production is required but null for {gaps} (contribution above 0, or the output is received)")
     total = math.fsum(e["contribution"] for e in entries)
     if conservation and total > 1 + CONSERVATION_TOL:
         raise ValidationError(f"contributions sum to {total:.4f}, above 1")

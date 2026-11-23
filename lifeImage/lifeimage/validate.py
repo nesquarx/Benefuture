@@ -66,6 +66,8 @@ def validate_evidence(row, allow_negative=False, relations=EVENT_RELATIONS, memb
         raise ValidationError(f"relation {row['relation']!r} is not in {sorted(relations)}")
     by_rel, seen = {}, set()
     for m in row["memberships"]:
+        if m.get("counterfactual") is not None and m["rel"] != "outcome":
+            raise ValidationError("a counterfactual belongs to an outcome membership only")
         if m["rel"] not in membership_rels:
             raise ValidationError(f"membership rel {m['rel']!r} is not in {sorted(membership_rels)}")
         if (m["domain"], m["rel"]) in seen:
@@ -188,3 +190,13 @@ def validate_answers(batch_lines, answer_lines):
     for missing in sorted(set(tasks) - seen):
         errors.append(f"missing answer for {missing}")
     return errors
+
+
+def validate_entity(entity):
+    _schema("entity", entity)
+    return entity
+
+
+def validate_count_as(rule):
+    _schema("count_as", rule)
+    return rule
