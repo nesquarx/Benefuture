@@ -8,12 +8,14 @@ on:
       - 'docs/**'
       - 'COORDINATION.md'
       - 'wiki/**'
+      - 'lifeImage/**'
   pull_request:
     paths-ignore:
       - '**.md'
       - 'docs/**'
       - 'COORDINATION.md'
       - 'wiki/**'
+      - 'lifeImage/**'
   workflow_dispatch:
 
 concurrency:

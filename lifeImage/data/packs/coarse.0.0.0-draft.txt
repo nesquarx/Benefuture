@@ -1,0 +1,264 @@
+# coarse pack | basemap 0.0.0-draft | 263 domains | ~6278 tokens
+s.consumption | Consumption, money and property | Buying, saving, borrowing, income, gifts, scarcity
+s.family | Family, intimacy and care | Partnership, parenting, kin, caring for dependants
+s.harm | Harm, crime and misconduct | Violence, theft, deception, abuse, negligence, other wrongs
+s.home | Home and household | Running a home: cooking, cleaning, repair, household administration, own-use production
+s.learning | Learning and education | Schooling, training, self-study, teaching, assessment
+s.leisure | Play, arts, sport and media | Games, sport, music, arts, reading, media and entertainment
+s.meaning | Belief, meaning and ethics | Religion, spirituality, ethics, life purpose, ritual
+s.mobility | Travel, mobility and place | Commuting, driving, transit, tourism, relocation
+s.nature | Nature, animals and environment | Farming, animals, conservation, climate, stewardship
+s.public | Governance, law and public life | Politics, state, law, security, rights, civil society
+s.science | Sciences and scholarship | Academic disciplines across natural, social, formal and humanistic study
+s.self_care | Body, health and self-care | Sleep, hygiene, eating, fitness, illness, mental health, sexuality
+s.social | Relationships and community | Friends, neighbours, groups, helping, conflict, culture and belonging
+s.technology | Technology, engineering and making | Software, engineering, manufacturing, digital tools, making
+s.transitions | Life events and transitions | Birth, death, illness, migration, disaster, major life changes
+s.work | Work, trades and enterprise | Occupations, employment, business, careers and workplace life
+c.banking_payments | Banking and payments | Accounts, transfers, mobile money, cards
+c.borrowing_debt | Borrowing and debt | Loans, credit, repayment, over-indebtedness
+c.clothing_footwear | Clothing and footwear | Buying and choosing clothes and shoes
+c.food_purchasing | Buying food and groceries | Grocery shopping, markets, food budgeting
+c.gifts_exchange | Gift-giving and exchange | Giving gifts, bartering, lending, sharing things
+c.household_budgeting | Household budgeting | Planning spending, making ends meet
+c.income_earning | Receiving income and transfers | Wages, remittances, allowances, pocket money, stipends
+c.insurance_risk | Insurance and risk cover | Buying and claiming insurance
+c.online_commerce | Online shopping and platforms | E-commerce, apps, digital purchases, marketplaces
+c.personal_finance | Personal financial decisions | Financial planning, advice and financial literacy
+c.poverty_scarcity | Poverty and scarcity | Living with insufficient resources, deprivation, hunger
+c.rent_mortgage | Housing costs | Rent, mortgage, property purchase, housing tenure
+c.restaurants_dining | Dining out and accommodation services | Restaurants, takeaway, hotels, cafes as customer
+c.retail_shopping | Retail shopping | Buying goods in shops and markets
+c.reuse_repair | Second-hand, repair and reuse | Thrifting, repairing, sharing and swapping goods
+c.saving_investing | Saving and investing | Savings, investments, pensions, financial planning
+c.shopping_errands | Shopping and errands | Buying goods and services, running errands
+c.subscriptions_telecom | Phone, internet and subscriptions | Mobile plans, connectivity, streaming subscriptions
+c.care_of_ill_disabled | Care of the ill or disabled | Unpaid and paid care for sick or disabled people
+c.childcare_other | Childcare by others | Babysitting, nannies, daycare, grandparents minding children
+c.eldercare | Care of older people | Looking after ageing relatives or clients, care homes
+c.family_rituals | Family occasions and traditions | Birthdays, holidays, reunions, family meals as rituals
+c.family_ties | Family relations | Relations with parents, siblings, extended kin, family obligations
+c.marriage_cohabitation | Marriage and cohabitation | Living as a couple, marriage life, household partnership
+c.parenting_adolescents | Parenting adolescents | Guiding, supporting and setting limits for teenagers
+c.parenting_young_children | Parenting young children | Feeding, bathing, playing with and raising infants and small children
+c.partnership_romance | Dating and romantic partnership | Dating, courtship, romance, couple life
+c.pregnancy_birth | Pregnancy and prenatal care | Being pregnant, antenatal care, preparing for birth
+c.academic_dishonesty | Cheating and plagiarism | Cheating on exams, plagiarism, fabrication of results
+c.bullying_harassment | Bullying and harassment offline | Bullying at school or work, harassment
+c.child_abuse_neglect | Child abuse and neglect | Maltreatment, abandonment, neglect of children
+c.corruption | Corruption and bribery | Bribes, abuse of office, nepotism
+c.cybercrime | Cybercrime | Hacking, phishing, malware, online theft
+c.domestic_abuse | Domestic and partner abuse | Abuse, coercive control in families and relationships
+c.drug_crime | Illicit drugs trade | Drug dealing, trafficking, illicit markets
+c.environmental_harm | Environmental harm and pollution | Polluting, illegal dumping, poaching, destruction of habitat
+c.exploitation_trafficking | Exploitation and trafficking | Forced labour, human trafficking, slavery
+c.extremism_terrorism | Extremism and terrorism | Radicalisation, political violence, terrorism
+c.fraud_deception | Fraud, scams and deception | Fraud, scams, lying for gain, forgery
+c.harassment_discrimination | Hate, discrimination and abuse of rights | Hate speech, prejudice, discriminatory treatment
+c.misinformation_defamation | Misinformation and defamation | Spreading falsehoods, libel, manipulation
+c.negligence_recklessness | Negligence and recklessness | Carelessness causing harm, breaching duty of care
+c.online_harassment | Online harassment and bullying | Trolling, doxxing, cyberbullying
+c.self_harm_suicide | Self-harm and suicide | Self-injury, suicidal thoughts and acts
+c.sexual_violence | Sexual violence and abuse | Rape, sexual assault, exploitation, coercion
+c.stalking_privacy | Stalking and privacy violation | Stalking, surveillance, data misuse, snooping
+c.theft_property_crime | Theft and property crime | Shoplifting, burglary, robbery, vandalism
+c.traffic_offences | Traffic offences and drunk driving | Speeding, impaired driving, hit-and-run
+c.violence_assault | Violence and assault | Physical attacks, fights, intentional injury
+c.cleaning_laundry | Cleaning and laundry | Cleaning, washing clothes, tidying, dishes
+c.cooking | Cooking and food preparation | Preparing meals, baking, kitchen skills
+c.home_energy_utilities | Home utilities and energy use | Heating, electricity, water, internet at home
+c.home_organisation | Home organisation and decor | Furnishing, decluttering, decorating
+c.home_repair_diy | Home repair and DIY | Fixing, building, renovating and maintaining the home
+c.household_gardening | Home gardening | Tending a garden, houseplants, growing food at home
+c.household_planning | Household management | Bills, paperwork, scheduling, household decisions
+c.housing_search | Finding and securing housing | Searching for, renting, buying or leaving a home
+c.pet_ownership | Pets and companion animals | Keeping, feeding, walking and caring for pets
+c.self_provisioning | Subsistence and own-use production | Growing, making or gathering goods for the household's own use
+c.waste_recycling | Waste and recycling | Disposing of, sorting and reusing household waste
+c.basic_skills | Literacy, numeracy and basic skills | Reading, writing, counting, basic digital skills
+c.early_childhood_education | Early childhood education | Preschool, nursery and early learning
+c.exams_assessment | Exams and assessment | Taking and preparing for tests and evaluation
+c.higher_education | Higher education | University study, degrees, student life
+c.language_learning | Language learning and use | Learning and using languages, translation
+c.research_training | Research training and scholarship | Doctoral study, apprenticeship in research
+c.school_education | School education | Primary and secondary schooling as a pupil
+c.self_directed_learning | Self-directed learning | Teaching oneself, online courses, informal learning
+c.tutoring_teaching | Teaching and tutoring | Instructing, tutoring, explaining to others
+c.vocational_training | Vocational and on-the-job training | Apprenticeships, courses, workplace training
+c.children_play | Children's play | Free play, toys, playgrounds, imaginative play
+c.crafts_hobbies | Crafts and hobbies | Knitting, woodworking, model-making, collecting, gardening hobbies
+c.creative_writing | Creative writing | Writing stories, poetry, blogs, diaries for expression
+c.cultural_visits | Museums, heritage and cultural visits | Museums, galleries, libraries, heritage sites
+c.festivals_events | Events, concerts and festivals | Attending concerts, fairs, shows and public events
+c.film_tv_video | Film, TV and video | Watching films, series, streaming, video
+c.gambling | Gambling and betting | Betting, lotteries, casinos, gaming for money
+c.games_play | Games and play | Board and card games, puzzles, playing
+c.music_listening | Listening to music | Listening to recorded or live music
+c.music_making | Making music | Singing, playing instruments, composing
+c.news_media | News and information media | Following news, current affairs, podcasts, radio
+c.nightlife | Nightlife and entertainment venues | Bars, clubs, cafes, going out
+c.outdoor_recreation | Outdoor recreation | Hiking, camping, boating, birdwatching, nature walks
+c.performing_arts | Theatre, dance and performance | Acting, dancing, circus, performing for an audience
+c.reading | Reading | Reading books, magazines and long text for pleasure or interest
+c.social_media | Social media and online communities | Posting, scrolling, online groups, forums
+c.sport_participation | Playing sport | Team and individual sports, competition, training
+c.sport_spectating | Watching sport | Attending or watching sport, fandom
+c.video_gaming | Video and online gaming | Console, PC and mobile gaming, esports
+c.visual_arts | Visual arts and design | Drawing, painting, sculpture, graphic and visual design
+c.ethical_choice | Ethics and moral decisions | Making moral choices, conscience, dilemmas
+c.folk_belief | Folk belief and superstition | Omens, astrology, folk traditions, the occult
+c.life_purpose | Meaning, values and purpose | Seeking meaning, life goals, worldview
+c.philosophical_inquiry | Philosophical inquiry | Reasoning about existence, knowledge and values as a practice
+c.religion_worship | Religious worship and practice | Prayer, services, rituals, observance
+c.religious_community | Religious community and clergy | Congregations, religious leadership, pastoral care
+c.rites_of_passage | Rites of passage | Coming-of-age, initiation, baptism, naming ceremonies
+c.spirituality | Spirituality and meditation | Meditation, mindfulness, non-institutional spirituality
+c.air_travel | Air travel | Flying, airports, aviation
+c.border_migration_admin | Borders, visas and migration admin | Crossing borders, visas, residency, asylum procedures
+c.commuting | Commuting | Daily travel to work or school
+c.driving | Driving | Driving cars and motor vehicles
+c.moving_relocation | Moving house and relocation | Moving homes, towns or regions
+c.public_transport | Public transport | Buses, trains, trams, metro
+c.road_safety | Road safety and traffic | Traffic rules, collisions, safe travel behaviour
+c.tourism_travel | Tourism and leisure travel | Holidays, sightseeing, trips
+c.walking_cycling | Walking and cycling | Moving on foot, by bicycle or scooter
+c.animal_care_husbandry | Animal care and husbandry | Keeping and breeding livestock and working animals
+c.environmental_stewardship | Environmental stewardship | Eco-friendly behaviours, climate action, sustainable living
+c.fishing_hunting_foraging | Fishing, hunting and foraging | Catching, hunting, gathering wild resources
+c.horticulture_farming | Crop farming and horticulture | Growing crops, orchards, market gardening
+c.weather_climate_adaptation | Weather, climate and adaptation | Coping with weather, seasons and climate change
+c.wildlife_conservation | Wildlife and conservation | Protecting species, habitats, wild animals
+c.civil_society_advocacy | Advocacy and civil society | NGOs, lobbying, activism, campaigns
+c.government_services | Dealing with government | Permits, benefits, documents, public services
+c.human_rights | Rights and justice | Human rights, civil liberties, social justice
+c.labour_organising | Unions and collective bargaining | Trade unions, strikes, collective action at work
+c.legal_system | Law and courts | Legal disputes, litigation, contracts, jury duty
+c.military_defence | Military and defence | Military service, defence, armed forces
+c.policing_enforcement | Policing and law enforcement | Policing, arrests, inspections, enforcement
+c.political_discourse | Political discussion and ideology | Debating politics, opinions, ideologies
+c.political_participation | Political participation | Campaigning, protest, petitions, party membership
+c.public_administration | Public administration and policy | Civil service, policy-making, municipal governance
+c.public_safety_emergency | Emergency and rescue services | Fire, ambulance, rescue, civil protection
+c.taxation_compliance | Tax and regulatory compliance | Filing taxes, licences, following rules
+c.urban_planning | Urban planning and infrastructure | Planning cities, public works, public space
+c.voting_elections | Voting and elections | Voting, candidacy, election participation
+c.welfare_benefits | Welfare and social protection | Receiving social benefits, pensions, aid
+c.agricultural_science | Agricultural and food science | Agronomy, soil, food science
+c.anthropology | Anthropology and cultural studies | Cultures, peoples, human evolution
+c.arts_humanities_studies | Arts, music and religion studies | Art history, musicology, theology, religious studies
+c.astronomy_space | Astronomy and space science | Astronomy, cosmology, planetary science
+c.business_science | Business and management research | Management, organisation, marketing research
+c.chemistry | Chemistry | Chemical science and analysis
+c.computer_science | Computer science | Algorithms, theory, computing systems
+c.earth_sciences | Earth and planetary science | Geology, oceanography, atmospheric science
+c.ecology_science | Ecology and environmental science | Ecosystems, biodiversity, environmental science
+c.economics | Economics and finance research | Markets, incentives, finance and economic theory
+c.geography_science | Geography and planning research | Human and physical geography, regional studies
+c.history_science | History and archaeology | Historical and archaeological research
+c.life_sciences | Biology and life sciences | Molecular, cell and organismal biology, genetics
+c.linguistics_literature | Linguistics and literary studies | Language science, literature, philology
+c.materials_science | Materials science | Materials, nanotechnology, condensed matter
+c.mathematics | Mathematics | Pure and applied mathematics
+c.medicine_science | Medicine and clinical science | Clinical research, pathology, medical specialties
+c.neuroscience | Neuroscience | Brain, nervous system and cognition biology
+c.physics | Physics | Classical, quantum and applied physics
+c.political_science | Political science and law scholarship | Politics, governance, law as disciplines
+c.psychology | Psychology | Behaviour and mental processes as a discipline
+c.public_health_science | Public health and epidemiology | Population health, epidemiology, health systems research
+c.sociology | Sociology and social research | Society, groups, institutions, social change
+c.statistics_data | Statistics and data analysis | Statistics, data analysis, measurement
+c.ageing_body | Ageing | Bodily and functional ageing, frailty, staying independent
+c.alternative_medicine | Traditional and alternative healing | Herbal remedies, acupuncture, folk healers, wellness practices
+c.counselling_therapy | Counselling and therapy | Seeking psychological counselling or therapy
+c.disability_adaptation | Disability and adaptation | Living with impairment, assistive devices, accessibility
+c.eating_drinking | Eating and drinking | Having meals and drinks, eating habits and table manners
+c.exercise_fitness | Exercise and fitness | Workouts, running, gym, keeping physically fit
+c.hygiene_grooming | Hygiene and grooming | Washing, brushing teeth, toileting, dressing, personal appearance care
+c.medical_care | Medical care | Seeking and receiving diagnosis, treatment, hospital and clinic care
+c.medication_adherence | Medication and treatment adherence | Taking or skipping prescribed medicine and following treatment plans
+c.mental_health | Mental health and wellbeing | Mood, stress, anxiety, depression, therapy, emotional regulation
+c.nutrition_diet | Nutrition and diet | Dietary choices, dieting, food allergies, nutrition science in practice
+c.personal_appearance | Personal appearance | Hair, make-up, cosmetic procedures, style choices
+c.physical_health | Physical health and illness | Having symptoms, acute and chronic illness, living with a condition
+c.preventive_health | Preventive health | Vaccination, screening, check-ups, safety precautions
+c.reproduction_fertility | Reproduction and fertility | Contraception, conception, fertility treatment, pregnancy loss
+c.self_reflection | Self-reflection and personal growth | Journaling, self-improvement, introspection, habits
+c.sexuality | Sexuality and sex | Sexual desire, sexual activity, sexual health, orientation and identity
+c.sleep | Sleep and rest | Sleeping, napping, sleep quality and resting
+c.substance_use | Substance use | Alcohol, tobacco, cannabis, other drugs, addiction and recovery
+c.celebrations | Celebrations and festivals | Weddings, festivals, parties, communal feasts
+c.charity_giving | Charity and giving | Donating money or goods, fundraising
+c.community_groups | Clubs and community groups | Joining societies, hobby clubs, associations
+c.conflict_interpersonal | Interpersonal conflict | Arguments, feuds, disputes between people
+c.cultural_identity | Culture and identity | Heritage, ethnicity, nationality, belonging, customs
+c.etiquette_norms | Etiquette and social norms | Manners, customs, expectations in social situations
+c.everyday_conversation | Everyday conversation and messaging | Talking, calling, texting, chatting
+c.friendship | Friendship | Forming, keeping and ending friendships, companionship
+c.hospitality_hosting | Hosting and hospitality | Welcoming guests, hosting meals and visitors
+c.inclusion_discrimination | Inclusion and exclusion | Experiencing or countering discrimination, equity, accessibility
+c.loneliness_isolation | Loneliness and social isolation | Lacking contact, withdrawal, social exclusion
+c.mediation_dispute_resolution | Mediation and dispute resolution | Resolving conflicts through third parties or negotiation
+c.mentoring_peer_support | Mentoring and peer support | Guiding, coaching, supporting others informally
+c.mutual_aid | Helping others informally | Helping neighbours, strangers and friends without organisation
+c.neighbours_community | Neighbours and local community | Neighbourly relations, local gatherings, community spirit
+c.reconciliation | Apology and reconciliation | Apologising, forgiving, repairing relationships
+c.reputation_gossip | Reputation and gossip | Trust, reputation, rumour, social standing
+c.socialising | Socialising and visiting | Meeting people, parties, visiting, hanging out
+c.volunteering | Volunteering | Unpaid work for organisations or community causes
+c.youth_culture | Youth and peer culture | Teenage social worlds, trends, subcultures
+c.ai_ml | Artificial intelligence and machine learning | Machine learning, AI systems, data science practice
+c.biotechnology | Biotechnology and biomedical engineering | Bioengineering, medical devices, gene technology
+c.civil_engineering | Civil engineering and construction design | Structures, infrastructure design
+c.cybersecurity | Cybersecurity | Securing systems, defending against attacks
+c.digital_tool_use | Everyday digital tool use | Using computers, phones, apps, devices
+c.electrical_engineering | Electrical and energy engineering | Power systems, generation, electrical engineering
+c.energy_systems | Energy generation and supply | Power plants, renewables, grids, fuels
+c.it_operations | IT operations and networks | Systems administration, networking, cloud, support
+c.maker_tinkering | Making and tinkering | Hacking, building gadgets, maker culture
+c.manufacturing | Manufacturing and production | Factories, assembly, industrial production
+c.mechanical_engineering | Mechanical engineering | Machines, mechanisms, vehicles design
+c.software_development | Software development | Programming, software engineering, apps
+c.accident_injury | Accidents and injuries | Falls, crashes, injuries and recovery
+c.bereavement | Bereavement and grief | Mourning, grief, loss of loved ones
+c.birth_of_child | Childbirth and having a baby | Pregnancy, labour, birth and becoming a parent
+c.coming_of_age | Coming of age and graduation | Leaving home, graduating, becoming adult
+c.death_dying | Dying and death | Dying, end of life care, witnessing death
+c.disaster_experience | Disasters and emergencies | Floods, fires, earthquakes, evacuation and aftermath
+c.divorce | Separation and divorce | Breakup, divorce, custody
+c.funeral_mourning | Funerals and memorial | Funerals, burial, memorial and mourning rituals
+c.identity_change | Identity and life change | Coming out, changing faith or name, major personal change
+c.incarceration | Imprisonment and reentry | Arrest, prison, probation and release
+c.job_loss | Job loss and unemployment | Being fired, laid off or jobless
+c.marriage_wedding | Wedding and partnership formation | Getting married, partnership ceremonies
+c.migration | Migration and displacement | Emigrating, refugee journeys, resettlement
+c.retirement | Retirement | Leaving work in later life, retirement life
+c.serious_illness | Serious illness and diagnosis | Receiving a grave diagnosis, hospitalisation, cancer
+c.war_experience | War, conflict and violence exposure | Living through war, armed conflict, being a combatant
+c.agri_forestry_fishing_work | Agricultural, forestry and fishing work | Paid or own-account farming, forestry, fishing
+c.business_administration | Office and administrative work | Clerical, administrative, secretarial work
+c.construction_trades | Construction and building trades | Building workers, carpenters, electricians, plumbers
+c.customer_service | Customer service | Call centres, front desk, handling customers
+c.elementary_occupations | Elementary and manual labour | Unskilled labour, casual labour, street trading
+c.employment_job | Having a job | Doing paid work in general, attendance, tasks, pay
+c.employment_transition | Job change and career moves | Changing jobs, promotion, retraining, career breaks
+c.entrepreneurship | Entrepreneurship and small business | Starting and running a business, self-employment
+c.finance_accounting | Finance and accounting work | Accountancy, banking, auditing, financial services work
+c.healthcare_work | Healthcare professions | Doctors, nurses, midwives, pharmacists, paramedics
+c.hospitality_work | Hospitality and food service work | Restaurant, hotel, catering, tourism work
+c.informal_gig | Informal and gig work | Informal economy, platform work, odd jobs
+c.job_search | Job search and hiring | Searching for jobs, applying, interviewing, recruiting
+c.journalism | Journalism and reporting | Reporting, investigating, editing
+c.legal_profession | Legal profession | Lawyers, judges, paralegals, legal work
+c.management_executive | Management and leadership | Managers, executives, leadership and directing
+c.media_publishing | Media, publishing and creative professions | Authors, designers, performers, broadcasters at work
+c.occupational_safety | Workplace safety | Occupational hazards, injuries, health and safety
+c.personal_services_work | Personal and domestic services work | Hairdressing, cleaning, domestic work, child and elder care jobs
+c.retail_work | Retail and wholesale work | Shop work, trading, merchandising
+c.sales_marketing | Sales, marketing and advertising | Selling, marketing, promotion
+c.science_research_work | Research and scientific work | Scientists and researchers as a profession
+c.security_services | Security and protective services | Security guards, firefighters, protective roles
+c.skilled_trades | Craft and skilled trades | Metal, wood, textile and repair trades
+c.teaching_profession | Teaching profession | Teachers and trainers in schools and institutions
+c.therapy_social_work | Counselling, therapy and social work | Social workers, therapists, counsellors
+c.transport_logistics | Transport and logistics work | Drivers, couriers, warehouse, shipping, delivery
+c.workplace_relations | Workplace relations and teamwork | Colleagues, managers, collaboration, office politics

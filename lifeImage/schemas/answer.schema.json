@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeimage.invalid/schemas/answer.schema.json",
+  "title": "Answer (one line of an answers file)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "task_type", "input_hash", "variant", "model", "prompt_version", "verdict", "reason"],
+  "properties": {
+    "task_id": {"type": "string", "minLength": 1},
+    "task_type": {"type": "string", "minLength": 1},
+    "input_hash": {"type": "string", "minLength": 1},
+    "variant": {"type": "integer", "minimum": 0},
+    "model": {"type": "string", "minLength": 1},
+    "prompt_version": {"type": "integer", "minimum": 1},
+    "verdict": {"type": "string", "minLength": 1},
+    "weights": {"type": "object", "additionalProperties": {"type": "number", "minimum": 0, "maximum": 1}},
+    "upstream": {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}},
+    "overlap": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "types": {"type": "object", "additionalProperties": {"anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}}]}},
+    "other": {"type": ["string", "null"]},
+    "reason": {"type": "string", "minLength": 1, "pattern": "^[^\\n]*$"},
+    "run_id": {"type": "string"}
+  }
+}

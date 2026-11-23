@@ -1,0 +1,151 @@
+{"id": "ev.1", "text": "Brushing teeth before bed", "expected_fields": ["c.hygiene_grooming"], "reviewed_by": null}
+{"id": "ev.2", "text": "Waking at 3am and unable to fall back asleep", "expected_fields": ["c.sleep"], "reviewed_by": null}
+{"id": "ev.3", "text": "Eating a rushed sandwich at the desk", "expected_fields": ["c.eating_drinking"], "reviewed_by": null}
+{"id": "ev.4", "text": "Starting a low-carb diet to lose weight", "expected_fields": ["c.nutrition_diet"], "reviewed_by": null}
+{"id": "ev.5", "text": "Jogging around the park at dawn", "expected_fields": ["c.exercise_fitness"], "reviewed_by": null}
+{"id": "ev.6", "text": "Going to the clinic for a persistent cough", "expected_fields": ["c.medical_care"], "reviewed_by": null}
+{"id": "ev.7", "text": "Getting the annual flu vaccination", "expected_fields": ["c.preventive_health"], "reviewed_by": null}
+{"id": "ev.8", "text": "Forgetting to take blood pressure tablets for a week", "expected_fields": ["c.medication_adherence"], "reviewed_by": null}
+{"id": "ev.9", "text": "Panic attack before a job interview", "expected_fields": ["c.mental_health"], "reviewed_by": null}
+{"id": "ev.10", "text": "Smoking a first cigarette of the day", "expected_fields": ["c.substance_use"], "reviewed_by": null}
+{"id": "ev.11", "text": "Using a condom and talking about sexual health with a new partner", "expected_fields": ["c.sexuality"], "reviewed_by": null}
+{"id": "ev.12", "text": "Starting IVF treatment after years of trying to conceive", "expected_fields": ["c.reproduction_fertility"], "reviewed_by": null}
+{"id": "ev.13", "text": "Learning to use a wheelchair after a spinal injury", "expected_fields": ["c.disability_adaptation", "c.accident_injury"], "reviewed_by": null}
+{"id": "ev.14", "text": "Struggling with stairs at age 84", "expected_fields": ["c.ageing_body"], "reviewed_by": null}
+{"id": "ev.15", "text": "Getting a haircut and trying a new style", "expected_fields": ["c.personal_appearance"], "reviewed_by": null}
+{"id": "ev.16", "text": "Visiting a herbal healer for back pain", "expected_fields": ["c.alternative_medicine"], "reviewed_by": null}
+{"id": "ev.17", "text": "Singing a lullaby to a newborn at night", "expected_fields": ["c.parenting_young_children"], "reviewed_by": null}
+{"id": "ev.18", "text": "Arguing with a 15-year-old about screen time", "expected_fields": ["c.parenting_adolescents"], "reviewed_by": null}
+{"id": "ev.19", "text": "A grandmother minding the grandchildren after school", "expected_fields": ["c.childcare_other"], "reviewed_by": null}
+{"id": "ev.20", "text": "Spending weekends caring for a father with dementia", "expected_fields": ["c.eldercare", "c.care_of_ill_disabled"], "reviewed_by": null}
+{"id": "ev.21", "text": "Moving in together with a partner", "expected_fields": ["c.marriage_cohabitation"], "reviewed_by": null}
+{"id": "ev.22", "text": "Calling a sister to settle an inheritance quarrel", "expected_fields": ["c.family_ties", "c.conflict_interpersonal"], "reviewed_by": null}
+{"id": "ev.23", "text": "Cooking a family Eid feast", "expected_fields": ["c.family_rituals", "c.cooking"], "reviewed_by": null}
+{"id": "ev.24", "text": "Paying the electricity bill online", "expected_fields": ["c.household_planning", "c.home_energy_utilities"], "reviewed_by": null}
+{"id": "ev.25", "text": "Making dinner from scratch for four", "expected_fields": ["c.cooking"], "reviewed_by": null}
+{"id": "ev.26", "text": "Fixing a leaking tap", "expected_fields": ["c.home_repair_diy"], "reviewed_by": null}
+{"id": "ev.27", "text": "Sorting the recycling into bins", "expected_fields": ["c.waste_recycling"], "reviewed_by": null}
+{"id": "ev.28", "text": "Watering tomatoes on the balcony", "expected_fields": ["c.household_gardening"], "reviewed_by": null}
+{"id": "ev.29", "text": "Walking the dog every morning", "expected_fields": ["c.pet_ownership"], "reviewed_by": null}
+{"id": "ev.30", "text": "Cultivating maize and beans on a family plot for own eating", "expected_fields": ["c.self_provisioning"], "reviewed_by": null}
+{"id": "ev.31", "text": "Viewing flats and signing a lease", "expected_fields": ["c.housing_search", "c.rent_mortgage"], "reviewed_by": null}
+{"id": "ev.32", "text": "Meeting an old friend for coffee", "expected_fields": ["c.friendship", "c.socialising"], "reviewed_by": null}
+{"id": "ev.33", "text": "Texting group chat about weekend plans", "expected_fields": ["c.everyday_conversation"], "reviewed_by": null}
+{"id": "ev.34", "text": "Helping a neighbour carry shopping up the stairs", "expected_fields": ["c.mutual_aid", "c.neighbours_community"], "reviewed_by": null}
+{"id": "ev.35", "text": "Joining a village choir", "expected_fields": ["c.community_groups", "c.music_making"], "reviewed_by": null}
+{"id": "ev.36", "text": "Donating to a disaster appeal", "expected_fields": ["c.charity_giving"], "reviewed_by": null}
+{"id": "ev.37", "text": "Hosting guests for dinner", "expected_fields": ["c.hospitality_hosting"], "reviewed_by": null}
+{"id": "ev.38", "text": "Shouting at a colleague in a heated dispute", "expected_fields": ["c.conflict_interpersonal", "c.workplace_relations"], "reviewed_by": null}
+{"id": "ev.39", "text": "Apologising to a friend after a fight", "expected_fields": ["c.reconciliation"], "reviewed_by": null}
+{"id": "ev.40", "text": "Elder explaining a trade to a young apprentice informally", "expected_fields": ["c.mentoring_peer_support"], "reviewed_by": null}
+{"id": "ev.41", "text": "Spreading a rumour about a classmate", "expected_fields": ["c.reputation_gossip"], "reviewed_by": null}
+{"id": "ev.42", "text": "Learning table manners in a new culture", "expected_fields": ["c.etiquette_norms", "c.cultural_identity"], "reviewed_by": null}
+{"id": "ev.43", "text": "Lunar New Year street celebration", "expected_fields": ["c.celebrations"], "reviewed_by": null}
+{"id": "ev.44", "text": "Wearing traditional dress to mark heritage day", "expected_fields": ["c.cultural_identity"], "reviewed_by": null}
+{"id": "ev.45", "text": "Hanging out at the skate park with friends", "expected_fields": ["c.youth_culture"], "reviewed_by": null}
+{"id": "ev.46", "text": "Casting a ballot in a local election", "expected_fields": ["c.voting_elections"], "reviewed_by": null}
+{"id": "ev.47", "text": "Joining a climate march", "expected_fields": ["c.political_participation"], "reviewed_by": null}
+{"id": "ev.48", "text": "Arguing about immigration policy at dinner", "expected_fields": ["c.political_discourse"], "reviewed_by": null}
+{"id": "ev.49", "text": "Renewing a passport at the municipal office", "expected_fields": ["c.government_services"], "reviewed_by": null}
+{"id": "ev.50", "text": "Filing an annual tax return", "expected_fields": ["c.taxation_compliance"], "reviewed_by": null}
+{"id": "ev.51", "text": "Being stopped and searched by police", "expected_fields": ["c.policing_enforcement"], "reviewed_by": null}
+{"id": "ev.52", "text": "Serving as a conscripted soldier", "expected_fields": ["c.military_defence"], "reviewed_by": null}
+{"id": "ev.53", "text": "City council drafting a budget", "expected_fields": ["c.public_administration"], "reviewed_by": null}
+{"id": "ev.54", "text": "Organising a petition for a safer crossing", "expected_fields": ["c.civil_society_advocacy"], "reviewed_by": null}
+{"id": "ev.55", "text": "Going on strike with a union", "expected_fields": ["c.labour_organising"], "reviewed_by": null}
+{"id": "ev.56", "text": "Attending Friday prayers at the mosque", "expected_fields": ["c.religion_worship"], "reviewed_by": null}
+{"id": "ev.57", "text": "Priest visiting a sick parishioner", "expected_fields": ["c.religious_community"], "reviewed_by": null}
+{"id": "ev.58", "text": "Meditating for twenty minutes each morning", "expected_fields": ["c.spirituality"], "reviewed_by": null}
+{"id": "ev.59", "text": "Deciding whether to tell a hard truth", "expected_fields": ["c.ethical_choice"], "reviewed_by": null}
+{"id": "ev.60", "text": "Reconsidering career in light of what matters most", "expected_fields": ["c.life_purpose"], "reviewed_by": null}
+{"id": "ev.61", "text": "A teenager's bar mitzvah", "expected_fields": ["c.rites_of_passage"], "reviewed_by": null}
+{"id": "ev.62", "text": "Playing chess with a grandchild", "expected_fields": ["c.games_play"], "reviewed_by": null}
+{"id": "ev.63", "text": "Gaming online until midnight", "expected_fields": ["c.video_gaming"], "reviewed_by": null}
+{"id": "ev.64", "text": "Toddler building a sand castle", "expected_fields": ["c.children_play"], "reviewed_by": null}
+{"id": "ev.65", "text": "Playing in a Sunday football league", "expected_fields": ["c.sport_participation"], "reviewed_by": null}
+{"id": "ev.66", "text": "Hiking a mountain trail on a day off", "expected_fields": ["c.outdoor_recreation"], "reviewed_by": null}
+{"id": "ev.67", "text": "Learning guitar", "expected_fields": ["c.music_making"], "reviewed_by": null}
+{"id": "ev.68", "text": "Listening to a podcast while cooking", "expected_fields": ["c.music_listening", "c.news_media"], "reviewed_by": null}
+{"id": "ev.69", "text": "Painting watercolours on weekends", "expected_fields": ["c.visual_arts"], "reviewed_by": null}
+{"id": "ev.70", "text": "Knitting a scarf", "expected_fields": ["c.crafts_hobbies"], "reviewed_by": null}
+{"id": "ev.71", "text": "Acting in a community theatre play", "expected_fields": ["c.performing_arts"], "reviewed_by": null}
+{"id": "ev.72", "text": "Binge-watching a TV series", "expected_fields": ["c.film_tv_video"], "reviewed_by": null}
+{"id": "ev.73", "text": "Reading a novel on the train", "expected_fields": ["c.reading"], "reviewed_by": null}
+{"id": "ev.74", "text": "Scrolling a social feed for an hour", "expected_fields": ["c.social_media"], "reviewed_by": null}
+{"id": "ev.75", "text": "Visiting a museum with school class", "expected_fields": ["c.cultural_visits"], "reviewed_by": null}
+{"id": "ev.76", "text": "Buying lottery tickets and betting on horses", "expected_fields": ["c.gambling"], "reviewed_by": null}
+{"id": "ev.77", "text": "Buying a winter coat in a sale", "expected_fields": ["c.clothing_footwear", "c.retail_shopping"], "reviewed_by": null}
+{"id": "ev.78", "text": "Opening a savings account and starting a pension", "expected_fields": ["c.saving_investing"], "reviewed_by": null}
+{"id": "ev.79", "text": "Taking a payday loan to cover rent", "expected_fields": ["c.borrowing_debt"], "reviewed_by": null}
+{"id": "ev.80", "text": "Sending remittances to family abroad via mobile money", "expected_fields": ["c.banking_payments", "c.income_earning"], "reviewed_by": null}
+{"id": "ev.81", "text": "Planning the monthly budget at the kitchen table", "expected_fields": ["c.household_budgeting"], "reviewed_by": null}
+{"id": "ev.82", "text": "Giving a birthday gift to a cousin", "expected_fields": ["c.gifts_exchange"], "reviewed_by": null}
+{"id": "ev.83", "text": "Ordering shoes from an online marketplace", "expected_fields": ["c.online_commerce"], "reviewed_by": null}
+{"id": "ev.84", "text": "Repairing a broken phone instead of replacing it", "expected_fields": ["c.reuse_repair"], "reviewed_by": null}
+{"id": "ev.85", "text": "Skipping meals to pay the rent", "expected_fields": ["c.poverty_scarcity"], "reviewed_by": null}
+{"id": "ev.86", "text": "Taking the bus to work", "expected_fields": ["c.commuting", "c.public_transport"], "reviewed_by": null}
+{"id": "ev.87", "text": "Driving the kids to school", "expected_fields": ["c.driving"], "reviewed_by": null}
+{"id": "ev.88", "text": "Cycling to the shops", "expected_fields": ["c.walking_cycling"], "reviewed_by": null}
+{"id": "ev.89", "text": "Taking a long-haul flight for a holiday", "expected_fields": ["c.air_travel", "c.tourism_travel"], "reviewed_by": null}
+{"id": "ev.90", "text": "Running a red light and causing a collision", "expected_fields": ["c.traffic_offences", "c.road_safety"], "reviewed_by": null}
+{"id": "ev.91", "text": "Applying for a work visa", "expected_fields": ["c.border_migration_admin"], "reviewed_by": null}
+{"id": "ev.92", "text": "Milking cows before sunrise", "expected_fields": ["c.animal_care_husbandry"], "reviewed_by": null}
+{"id": "ev.93", "text": "Planting rice in the paddy", "expected_fields": ["c.horticulture_farming"], "reviewed_by": null}
+{"id": "ev.94", "text": "Fishing at the lake for the family table", "expected_fields": ["c.fishing_hunting_foraging"], "reviewed_by": null}
+{"id": "ev.95", "text": "Volunteering to count endangered birds", "expected_fields": ["c.wildlife_conservation"], "reviewed_by": null}
+{"id": "ev.96", "text": "Preparing for a heatwave", "expected_fields": ["c.weather_climate_adaptation"], "reviewed_by": null}
+{"id": "ev.97", "text": "Dropping a child at preschool", "expected_fields": ["c.early_childhood_education"], "reviewed_by": null}
+{"id": "ev.98", "text": "Sitting a school mathematics exam", "expected_fields": ["c.exams_assessment", "c.school_education"], "reviewed_by": null}
+{"id": "ev.99", "text": "Starting a university degree", "expected_fields": ["c.higher_education"], "reviewed_by": null}
+{"id": "ev.100", "text": "Apprenticeship as an electrician", "expected_fields": ["c.vocational_training", "c.construction_trades"], "reviewed_by": null}
+{"id": "ev.101", "text": "Tutoring a neighbour's child in maths", "expected_fields": ["c.tutoring_teaching"], "reviewed_by": null}
+{"id": "ev.102", "text": "Learning to read as an adult", "expected_fields": ["c.basic_skills"], "reviewed_by": null}
+{"id": "ev.103", "text": "Finishing a PhD thesis in statistics", "expected_fields": ["c.research_training", "c.statistics_data"], "reviewed_by": null}
+{"id": "ev.104", "text": "Debugging a programme at work", "expected_fields": ["c.software_development"], "reviewed_by": null}
+{"id": "ev.105", "text": "Training a machine learning model", "expected_fields": ["c.ai_ml"], "reviewed_by": null}
+{"id": "ev.106", "text": "Setting up the home wifi", "expected_fields": ["c.it_operations", "c.digital_tool_use"], "reviewed_by": null}
+{"id": "ev.107", "text": "Building a robot kit with friends", "expected_fields": ["c.maker_tinkering"], "reviewed_by": null}
+{"id": "ev.108", "text": "Applying for jobs and interviewing", "expected_fields": ["c.job_search"], "reviewed_by": null}
+{"id": "ev.109", "text": "Working a shift as a hotel receptionist", "expected_fields": ["c.hospitality_work"], "reviewed_by": null}
+{"id": "ev.110", "text": "Nurse on a night shift on the ward", "expected_fields": ["c.healthcare_work"], "reviewed_by": null}
+{"id": "ev.111", "text": "Bricklayer building a wall", "expected_fields": ["c.construction_trades"], "reviewed_by": null}
+{"id": "ev.112", "text": "Delivering parcels by van", "expected_fields": ["c.transport_logistics"], "reviewed_by": null}
+{"id": "ev.113", "text": "Collecting scrap at a landfill for income", "expected_fields": ["c.informal_gig", "c.elementary_occupations"], "reviewed_by": null}
+{"id": "ev.114", "text": "Founding a small bakery", "expected_fields": ["c.entrepreneurship"], "reviewed_by": null}
+{"id": "ev.115", "text": "Accountant closing the quarter's books", "expected_fields": ["c.finance_accounting"], "reviewed_by": null}
+{"id": "ev.116", "text": "Getting promoted to team manager", "expected_fields": ["c.management_executive", "c.employment_transition"], "reviewed_by": null}
+{"id": "ev.117", "text": "Retiring after forty years of work", "expected_fields": ["c.retirement"], "reviewed_by": null}
+{"id": "ev.118", "text": "Being laid off after a factory closure", "expected_fields": ["c.job_loss"], "reviewed_by": null}
+{"id": "ev.119", "text": "Injured at work by an unguarded machine", "expected_fields": ["c.occupational_safety", "c.accident_injury"], "reviewed_by": null}
+{"id": "ev.120", "text": "Shoplifting a phone charger", "expected_fields": ["c.theft_property_crime"], "reviewed_by": null}
+{"id": "ev.121", "text": "Being assaulted by a partner", "expected_fields": ["c.domestic_abuse"], "reviewed_by": null}
+{"id": "ev.122", "text": "Sexual assault at a party", "expected_fields": ["c.sexual_violence"], "reviewed_by": null}
+{"id": "ev.123", "text": "Leaving a young child alone for days", "expected_fields": ["c.child_abuse_neglect"], "reviewed_by": null}
+{"id": "ev.124", "text": "Scam call tricking an elderly man into paying", "expected_fields": ["c.fraud_deception"], "reviewed_by": null}
+{"id": "ev.125", "text": "Bribing an official for a permit", "expected_fields": ["c.corruption"], "reviewed_by": null}
+{"id": "ev.126", "text": "Bullying a classmate in the playground", "expected_fields": ["c.bullying_harassment"], "reviewed_by": null}
+{"id": "ev.127", "text": "Shouting racist abuse at a stranger", "expected_fields": ["c.harassment_discrimination"], "reviewed_by": null}
+{"id": "ev.128", "text": "Selling drugs on the street", "expected_fields": ["c.drug_crime"], "reviewed_by": null}
+{"id": "ev.129", "text": "A contractor skipping safety checks leading to a collapse", "expected_fields": ["c.negligence_recklessness"], "reviewed_by": null}
+{"id": "ev.130", "text": "Spreading fake health news online", "expected_fields": ["c.misinformation_defamation"], "reviewed_by": null}
+{"id": "ev.131", "text": "Forced labour on a fishing boat", "expected_fields": ["c.exploitation_trafficking"], "reviewed_by": null}
+{"id": "ev.132", "text": "Dumping chemicals in a river", "expected_fields": ["c.environmental_harm"], "reviewed_by": null}
+{"id": "ev.133", "text": "Copying a classmate's essay", "expected_fields": ["c.academic_dishonesty"], "reviewed_by": null}
+{"id": "ev.134", "text": "Following an ex-partner and reading their messages", "expected_fields": ["c.stalking_privacy"], "reviewed_by": null}
+{"id": "ev.135", "text": "Attempting suicide", "expected_fields": ["c.self_harm_suicide"], "reviewed_by": null}
+{"id": "ev.136", "text": "Giving birth in a hospital", "expected_fields": ["c.birth_of_child"], "reviewed_by": null}
+{"id": "ev.137", "text": "Attending antenatal appointments", "expected_fields": ["c.pregnancy_birth"], "reviewed_by": null}
+{"id": "ev.138", "text": "Sitting with a dying parent", "expected_fields": ["c.death_dying"], "reviewed_by": null}
+{"id": "ev.139", "text": "Mourning a spouse", "expected_fields": ["c.bereavement"], "reviewed_by": null}
+{"id": "ev.140", "text": "Organising a funeral", "expected_fields": ["c.funeral_mourning"], "reviewed_by": null}
+{"id": "ev.141", "text": "Falling off a ladder and breaking a leg", "expected_fields": ["c.accident_injury"], "reviewed_by": null}
+{"id": "ev.142", "text": "Losing a home in a flood", "expected_fields": ["c.disaster_experience"], "reviewed_by": null}
+{"id": "ev.143", "text": "Emigrating to start a new life abroad", "expected_fields": ["c.migration"], "reviewed_by": null}
+{"id": "ev.144", "text": "Getting married in a village ceremony", "expected_fields": ["c.marriage_wedding"], "reviewed_by": null}
+{"id": "ev.145", "text": "Divorcing and sharing custody", "expected_fields": ["c.divorce"], "reviewed_by": null}
+{"id": "ev.146", "text": "Released from prison and looking for work", "expected_fields": ["c.incarceration", "c.job_search"], "reviewed_by": null}
+{"id": "ev.147", "text": "Coming out to family", "expected_fields": ["c.identity_change"], "reviewed_by": null}
+{"id": "ev.148", "text": "Seeing a therapist weekly", "expected_fields": ["c.counselling_therapy"], "reviewed_by": null}
+{"id": "ev.149", "text": "Stranger rescued from a river by a passer-by", "expected_fields": ["c.mutual_aid", "c.public_safety_emergency"], "reviewed_by": null}
+{"id": "ev.150", "text": "Praying before meals", "expected_fields": ["c.religion_worship"], "reviewed_by": null}
+{"id": "ev.151", "text": "Adjusting to caring for a spouse with a disability", "expected_fields": ["c.care_of_ill_disabled", "c.disability_adaptation"], "reviewed_by": null}
