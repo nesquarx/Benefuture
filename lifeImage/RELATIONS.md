@@ -334,3 +334,21 @@ tags. When the option set is missing, responsibility falls back to a governed de
   review items plus 4 self-defence items (`prompts/confirm.v2.md`); compare with
   `python3 lifeImage/tools/confirm_metrics.py data/batches/confirm.v1.var*.answers.jsonl --vs data/batches/confirm.v2.var*.answers.jsonl`.
   On v1 the production value was null for 59 of 111 answers that required it.
+
+## Measured: rerun under LI.40–42 (confirm v2, 38 disputed items + 4 self-defence items)
+
+Tables in `data/gold/confirm_v2_rerun_metrics.md`.
+
+- **Production fixed:** α 0.30 → 0.86; nulls where required 59 of 111 → 0 of 134.
+- **Responsibility follows freedom:** coerced participants 0.56 → 0.08; self-defence with no less harmful option 0.10,
+  with a less harmful option 0.90, disproportionate 0.90, ambiguous perceived threat 0.40. Prediction (coerced ≤ 0.2;
+  less-harmful case above no-less-harmful) held.
+- **Cost:** responsibility α 0.80 → 0.54, because it now depends on the recorded option set, on which runs differ
+  (volition α 0.42). The option set is the new weak spot; under agreement stays too sparse to measure (α −0.04).
+- Impact α 0.56 → 0.69; acting for 0.75 → 1.00; layer A unchanged (form 0.78, content 0.74, outcome 0.71, setting 0.56).
+- **Defect found (lead fix):** on overdetermined items runners score each redundant contributor near 0 (a "but for"
+  reading), so the zero-run check pushed them to null the outcome (archers, volunteers). Contribution is the additive,
+  Shapley-style share (five sufficient archers: 0.2 each); "but for" belongs to responsibility. The prompt needs that
+  definition in the next version.
+- Governed default for responsibility with no option set: 0.5 (`lifeimage/governed.py`), logged as a degradation
+  when used. `[P]`, a governed threshold.

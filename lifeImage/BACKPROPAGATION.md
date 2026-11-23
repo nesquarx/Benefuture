@@ -75,6 +75,11 @@ deleted. Numbering is stable (LI.n).
 - **LI.42** (2026-11-23) Relation metadata: each property needs a consumer; proposed set in `RELATIONS.md`
   ("Relation metadata"), adopted with this ruling as the basis for the contract update.
 
+## Governed thresholds proposed (not rulings)
+
+- **GT.1** Responsibility with no recorded option set: 0.5; with options, 0.1 (no less harmful alternative) to 1 (a
+  harmless one existed). `lifeimage/governed.py`; each use of the default logged.
+
 ## Candidate backpropagations to Benefuture
 
 Each moves to `docs/BACKPROPAGATION.md` when confirmed by the work or the author.
