@@ -756,8 +756,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # its value error, with what an audit needs to repair it (8.38): the actor, the currency, the
     # prediction, the beings it touched, the measured value, the track-record corrections then (the
     # actor's, and the mean of other actors'), and whether an audit has repaired it.
-    Rec = NamedTuple{(:credence, :outcome, :err, :actor, :c, :pr, :mask, :measured, :corr, :peer_corr, :fixed, :step),
-                     Tuple{Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool,Int}}
+    Rec = NamedTuple{(:credence, :raw, :outcome, :err, :actor, :c, :pr, :mask, :measured, :corr, :peer_corr, :fixed, :step),
+                     Tuple{Float64,Float64,Float64,Float64,Int,Int,ToyPlan,BitVector,Float64,Tuple{Float64,Float64},Tuple{Float64,Float64},Bool,Int}}
     lhist, phist = [Rec[] for _ in 1:lmax], [Rec[] for _ in 1:np]
     lbias, pbias = p.bias_σ .* randn(nrng, lmax), p.bias_σ .* randn(nrng, np)
     # Each leaf's pool of competing models (L82; 8.42.2): the bootstrap model first (its track-record
@@ -840,9 +840,9 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # A currency's credence for a prediction: from the predicted value and its model's uncertainty.
     # Credence for an actor's action comes from the model's record on that actor (8.29: models
     # estimate from track record), once it has a few entries; before that, from its record overall.
-    function cred(c, pred, a = 0; hist = nothing, sharp = c <= lmax ? topm(c).sharp : 1.0)
+    function cred(c, pred, a = 0; hist = nothing, sharp = c <= lmax ? topm(c).sharp : 1.0, rule = p.credence_rule)
         v = plan_value(pred, t)
-        cr = if p.credence_rule == :eb
+        cr = if rule == :eb
             dom_hist = (c <= lmax ? lhist[c] : phist[c - lmax])
             h_use = hist !== nothing ? hist : dom_hist
             use_actor = a > 0 && length(actor_err[a]) >= p.actor_min_records
@@ -949,7 +949,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         elseif p.accuracy_rule == :decay
             hl = c <= lmax ? hl_of(c) : hl_of(c)
-            if p.credence_rule == :record
+            if rule == :record
                 if a > 0 && length(actor_err[a]) >= p.actor_min_records
                     decayed_record_credence(v, sharp .* actor_err[a], [Float64(cur[] - s) for s in actor_err_step[a]], hl; cap = p.max_credence)
                 else
@@ -970,7 +970,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         else
             e = a > 0 ? (@view actor_err[a][max(1, end - tw_now[] + 1):end]) : Float64[]
-            if p.credence_rule == :record
+            if rule == :record
                 # [P] (8.58-c): the share of the record's value errors below the prediction (an
                 # extremist scales its record by `sharp`)
                 errs = length(e) >= p.actor_min_records ? e : [x.err for x in window_of(hist !== nothing ? hist : (c <= lmax ? lhist[c] : phist[c - lmax]))]
@@ -1044,9 +1044,9 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                                                                novel_threshold = p.novel_threshold, min_records = p.min_records,
                                                                novel_floor = p.novel_floor))]]
         length(ks) > 1 || return top[j]
-        brier(h) = [credence_score(x.credence, x.outcome) for x in window_of(h)]
+        brier(h) = [credence_score(x.raw, x.outcome) for x in window_of(h)]
         hlj = hl_of(j)
-        dms(h) = decayed_mean_se([credence_score(x.credence, x.outcome) for x in h], [cur[] - x.step for x in h], hlj)
+        dms(h) = decayed_mean_se([credence_score(x.raw, x.outcome) for x in h], [cur[] - x.step for x in h], hlj)
         sc_ = [brier(mpool[j][k].hist) for k in ks]
         ms = [isempty(x) ? 0.0 : mean(x) for x in sc_]
         ses = [length(x) < 2 ? 1e12 : std(x) / sqrt(length(x)) for x in sc_]
@@ -1274,7 +1274,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 push!(pending_track, (a, kc, mean(pr.du[mask]) + corr[1] - mean(seen.du[mask]),
                                       mean(pr.dh[mask]) + corr[2] - mean(seen.dh[mask])))
             end
-            (credence = cred(c, pr; hist, sharp), outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
+            cr = cred(c, pr; hist, sharp)
+            # Predictors are compared on their raw records (8.165): the record credence of the model's predictions and errors, without the exaggeration (`sharp`) of its stated confidence, whatever the claims' rule.
+            raw = (p.credence_rule != :eb || c > lmax) ? cr : cred(c, pr; hist, sharp = 1.0, rule = :record)
+            (credence = cr, raw = raw, outcome = measured > 0 ? 1.0 : 0.0, err = v - measured, actor = a, c = c, pr = pr,
              mask = mask, measured = measured, corr = corr, peer_corr = peer, fixed = false, step = cur[])
         end
         # A model that did not quote is scored on the estimate it would have quoted: fooled by the
@@ -1348,7 +1351,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             v = plan_value(pr, t)
             leafy && (overstated += max(plan_value(r.pr, t) - v, 0.0); n += 1)
             new_c = cred(r.c, pr; hist = h, sharp)
-            h[i] = merge(r, (credence = new_c, err = v - r.measured, pr = pr, fixed = true))
+            new_raw = (p.credence_rule != :eb || r.c > lmax) ? new_c : cred(r.c, pr; hist = h, sharp = 1.0, rule = :record)
+            h[i] = merge(r, (credence = new_c, raw = new_raw, err = v - r.measured, pr = pr, fixed = true))
             eb_ver[] += 1
             repaired_cred[(uid, i)] = new_c
         end
