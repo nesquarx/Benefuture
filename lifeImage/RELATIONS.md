@@ -282,3 +282,17 @@ Tables in `data/gold/confirm_v1_metrics.md`.
   where decoys share most of the annotation: the designed failure region appears where it should.
 
 Author review: `data/gold/review_v1.md` (the 30 most disputed items and the round-trip misses).
+
+## Author review rulings (2026-11-23)
+
+- **[R] Responsibility follows freedom at the moment of producing the outcome** (author). The outcome is recorded as
+  it is; responsibility is assigned by the level of freedom the participant had in producing it. A self-defender
+  causes harm, and responsibility rests on which ways of defence were available. So the volition record becomes the
+  option set (the alternatives available, and how harmful each was), and responsibility is computed from contribution
+  and that freedom, not capped by a flag. Coerced handovers (shopkeeper, clerk, donor) carry little responsibility
+  because their options were narrow. Beneficiaries who only received an outcome produced nothing and carry none
+  (lead's reading of the same rule; case 3).
+- **[R] Production is required whenever contribution is above 0 (produced) or the participant receives the output
+  (consumed)** (author, confirming case 4). A vote produces; publishing under one's name is a count-as matter (C).
+- Candidate backpropagation: L96's `Responsibility(Informed, Counterfactual, Severity, Duty)` has no explicit freedom
+  term (alternatives available); the self-defence ruling suggests adding one.
