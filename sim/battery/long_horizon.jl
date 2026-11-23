@@ -48,8 +48,12 @@ function world_events(stress::Symbol; steps::Integer = 1200)
     ])); by = s -> s.step)
 end
 
+# Information handling (L134 IH, step 1 of docs/WORLD_COVERAGE.md): voters hear every source weighed by its live record
+# (the full ContentionMap, 8.44), readings carry origin tags counted once (8.45), AdvAp audits tags against the log (L161).
+ih_flags(on::Bool) = on ? (deliberation = true, info_handling = true, source_tags = true, tag_audit = true) : (;)
+
 function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
-               n_agents::Integer = 12, decisions::Integer = 1200)
+               n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf)
     arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
     bf = arm == :bf
     skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
@@ -73,7 +77,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
         bind_weighted = bf,
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
-                          loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf)
+                          loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf, ih_flags(ih)...)
     (econ = econ, gov = gov)
 end
 # ---------------------------------------------------------------------------------------------------

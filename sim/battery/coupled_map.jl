@@ -17,7 +17,7 @@ const Z_CM = 3.0
 
 function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, open_entry::Bool = false,
                        entrants::Integer = 0, adaptive_proposals::Bool = false, p_new_model::Real = 0.01,
-                       over::Dict{Symbol,Any} = Dict{Symbol,Any}())
+                       over::Dict{Symbol,Any} = Dict{Symbol,Any}(), ih::Bool = arm == :bf)
     bf = arm == :bf
     skills0 = draw_skills(Xoshiro(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
     skills = entrants > 0 ? vcat(skills0, draw_skills(Xoshiro(20261115 + seed), entrants, 4, [1, 3]; median = 0.6)) : skills0
@@ -46,7 +46,7 @@ function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, o
         over...
     )
     gov(trace) = M5Params(trace, 1:4; decisions = 60, colluders = colluders, stealth = true,
-                          loyalty = 2.0, p_delegate = 0.2, p_new_model = Float64(p_new_model), advap = bf)
+                          loyalty = 2.0, p_delegate = 0.2, p_new_model = Float64(p_new_model), advap = bf, ih_flags(ih)...)
     (econ = econ, gov = gov)
 end
 

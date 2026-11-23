@@ -99,6 +99,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     n_epochs = econ.toy.steps ÷ epoch
     check(n_epochs >= 1, "at least one epoch required")
     m5_trace = Float64[]
+    src_rec = nothing
     base_dec = m5_decisions ÷ n_epochs
     rem_dec = m5_decisions % n_epochs
 
@@ -392,7 +393,9 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 if sum(rep_m5) <= 0
                     rep_m5 = fill(1e-3, size(rep_m5))
                 end
-                tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff))
+                tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff), records = src_rec)
+                # IH weighs sources by their records: carry them across epochs (live, decayed by their own rule), not a fresh table.
+                gp.deliberation && gp.info_handling && (src_rec = tr_m5.records)
                 append!(m5_trace, tr_m5.final_trace)
             end
         end

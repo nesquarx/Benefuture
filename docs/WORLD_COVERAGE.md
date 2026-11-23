@@ -77,7 +77,7 @@ The M8 worlds are self-contained toys: none calls M3c, M5 or M7, so they share n
 | 32 | Culture, `Di_N` monoculture escape (L125, L159) | - | - | - | - | - | - | - | W | - | - | - | |
 | 33 | Art: reception match, surplus value, confounders (L126-127) | - | - | - | - | - | - | - | W | - | - | - | |
 | 34 | Information hazard gated access, no censorship (L128, L131) | - | - | - | - | - | - | W | - | - | - | - | |
-| 35 | IH: source verification by record, ContentionMap, source tags (L134, 8.45, 8.60) | - | O | O | - | - | - | - | - | - | - | - | |
+| 35 | IH: source verification by record, ContentionMap, source tags (L134, 8.45, 8.60) | - | O | W | - | - | - | - | - | - | - | - | |
 | 36 | IH: multi-hop truth level, count-once rumour suppression (L133-134, P28) | - | - | - | - | - | - | - | - | W | - | - | |
 | 37 | IH: categorise truth levels, opinion, fact, hypothesis; fact check against Mem (L134) | - | - | - | - | - | - | - | - | - | - | - | |
 | 38 | Education, critical thinking, inoculation (L130-131) | W | - | W | W | W | - | W | - | - | - | - | |
@@ -97,6 +97,12 @@ The M8 worlds are self-contained toys: none calls M3c, M5 or M7, so they share n
 | 52 | Not modelled: baseline income SB (L144), SophontOversight SO (L142), Implementation Phase 2 and data tiers (L141), privacy (L133) | - | - | - | - | - | - | - | - | - | - | - | |
 
 Reading notes for cells that need a reason:
+
+- Row 35 is W in Cpl since step 1 (2026-11-23): the `:bf` builders (`ih = true`) turn on `deliberation`, `info_handling`, `source_tags`, `tag_audit` in `gov`,
+  and `run_coupled` carries each source's record across epochs (`run_m5(...; records)`), so weights read live records, not a table reset each epoch.
+  It acts on the M5 side-run (`gov_acc`); the candidate-adoption vote and the economy do not hear it, so the success pattern is unchanged by construction
+  (identical over 6 seeds). Routing candidate votes through deliberation is the next wiring gap. Row 37 stays absent: `BenefutureReference` has the chain rule
+  (`chain_truth_level_ref`) but no categoriser for ruling 8.167a.
 
 - Rows 9-13 are O in M3c because `transactions`, `causal_distribution` and `p_upstream` default off in the constructor,
   and W in Cpl because the composed builders set them (`transactions = true`, `causal_distribution = true`, `p_upstream = 0.4`).
@@ -121,7 +127,7 @@ Rows 1-52 (row 51 groups four axioms; row 52 groups four unmodelled items).
 |---|---|---|---|
 | M3c | 14 | 17 | 21 |
 | M5 | 3 | 12 | 37 |
-| Cpl | 27 | 10 | 15 |
+| Cpl | 28 | 9 | 15 |
 | M7 | 6 | 3 | 43 |
 | M7p | 7 | 0 | 45 |
 | M8 | 9 | 0 | 43 |
@@ -146,11 +152,11 @@ Absent from `run_coupled`, in any setting (neither W nor O):
 | External harm response | 23 | EHR | Aggressors outside Benefuture have no identity, currency or reputation in M3c |
 | Enforcement tiers, contract harm-bound screening, `CvCnt` in a world | 22 | Enf | M3c punishes through escrow, penalties and restraint but never screens contracts against the harm boundary or audits forcible restraint |
 | Culture, art | 32-33 | Art | Art value and cultural diversity do not yet enter V or the economy's currencies |
-| IHz gate and truth-level propagation, categorisation | 34, 36, 37 | IHz, Tru | The only information handling in Cpl is M5's ContentionMap, and that is off (row 35) |
+| IHz gate and truth-level propagation, categorisation | 34, 36, 37 | IHz, Tru | Information handling in Cpl is M5's ContentionMap, source tags and tag audit (row 35, on in `:bf` since step 1, 2026-11-23) with no truth-level classifier (row 37) |
 | Freedom as a reported quantity | 45 | M7, IHz, Enf | Cpl carries the harm boundary only through `irreparable_loss` (off) |
 | Axioms in probes only; SB, SO, Phase 2, privacy | 51, 52 | probes, none | No world exercises them |
 
-Reachable but off in the composed builders (O in Cpl): rows 5, 7, 12, 19, 26, 28, 30, 35, 45, 49. Flipping them is composition work
+Reachable but off in the composed builders (O in Cpl): rows 5, 7, 12, 19, 26, 28, 30, 45, 49. Flipping them is composition work
 without new rules, but each interacts with others, so each needs its own probe before it enters the full world.
 
 ## (2) Composition order toward one complete world
@@ -161,7 +167,7 @@ interaction a success or a failure reveals. Predictions are stated when the step
 
 | Step | Mechanism group | Couples to | Interaction it would reveal | Probe needed | Toy assumptions removed / kept |
 |---|---|---|---|---|---|
-| 1 | **IH in governance and the economy's claims** (row 35): `deliberation`, `info_handling`, `source_tags`, `tag_audit` on in the Cpl `gov` builder; source weights read M3c reputations per domain | M3c reputation (row 14), M5 votes (24-25), AdvAp (47) | Whether record-weighted sources raise governance accuracy when the economy's reputations, not a stand-in, set the weights; whether echo-compounding (8.45) reappears under economy-driven reputation churn | Composition probe: Cpl continuous with deliberation on, tagged versus untagged, a tag-lying bloc; asserts no stall and the success pattern no worse | Removes: M5 reading reputations from a frozen trace. Keeps: contacts as a random graph, truth known to the world |
+| 1 | **IH in governance and the economy's claims** (row 35) [done 2026-11-23, see reading note under Counts; candidate-vote routing and row 37 open]: `deliberation`, `info_handling`, `source_tags`, `tag_audit` on in the Cpl `gov` builder; source weights read M3c reputations per domain | M3c reputation (row 14), M5 votes (24-25), AdvAp (47) | Whether record-weighted sources raise governance accuracy when the economy's reputations, not a stand-in, set the weights; whether echo-compounding (8.45) reappears under economy-driven reputation churn | Composition probe: Cpl continuous with deliberation on, tagged versus untagged, a tag-lying bloc; asserts no stall and the success pattern no worse | Removes: M5 reading reputations from a frozen trace. Keeps: contacts as a random graph, truth known to the world |
 | 2 | **IH world: propagation and hazard access** (rows 34, 36, 37): `run_m8_truth` chain truth level and `count_once` over a social network that also supplies M5's contacts; `run_m8_ihz` gate on a hazard domain feeding M3c hazards and `mandate_education`; ContentionMap over the same network | M8 network (21), M5 contacts, M3c hazards and accidents (17), education (38), freedom (45) | Whether gated access keeps `Freedom(Tr)` while cutting uninoculated accidents inside the economy's own hazard stream; whether truth-level attenuation changes what governance hears | New IH-world probe: 24-40 beings on one network, one hazard domain, true and rumour signals, tens of steps, 3 seeds; acceptance: gated beats censored and open on harm plus access; counterexample: censorship fails freedom, open access raises uninformed harm | Removes: separate toy graphs in M5 and M8. Keeps: truth level as a world property; categorisation of opinion, fact and hypothesis (row 37) still a gap, noted loudly |
 | 3 | **Ideological extremists spreading** (author ruling 8.166): recruitment changes others' outputs at a measured rate, on the IH world of step 2 only; speech never sanctioned, resulting harm priced by liability | IH world (step 2), liability (21), AdvAp (47), M5 votes | Whether IH keeps spread bounded without censorship; whether influence liability (not speech sanction) suffices | Spread probe on the IH world, paired with the same world minus handling as the control the ruling says is not a Benefuture claim; recruitment rate from persuasion data as a sweep, institution-produced rates as sweep only | Removes: extremism as stated-confidence inflation only (8.165). Keeps: opinion as a scalar |
 | 4 | **Liability, influence and enforcement over transaction trees** (rows 12, 16, 21, 22): `upstream_depth` above 1, `propagated_liability` on trees, delegation cap, contract harm-bound screening, three enforcement tiers, `p_contracted` above 0 | M3c trees and justice (11-13, 18), M5 delegation (25), M8 Enf and M8 | Whether influence concentration among hubs and contracted duties change causal distribution; whether forcible restraint stays audited-only under noisy audits | Probe: a 6-10 agent tree with a hub, contract and a breach; acceptance: liability follows control, no double counting; counterexample: uncontrolled hub | Removes: M8's hand-built graphs and M3c's direct-parent-only chains. Keeps: control weights as a world parameter |

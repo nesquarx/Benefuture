@@ -1073,6 +1073,11 @@ outcomes, finds the performant option far more often; deliberation alone hones i
 
 ### Source tags, the full ContentionMap and weight on advice (8.45, 8.60, 8.63)
 
+Composed world (WORLD_COVERAGE step 1, `P51`): the `:bf` builders (`ih_flags`, `sim/battery/long_horizon.jl`) set `deliberation`, `info_handling`,
+`source_tags`, `tag_audit`. Gaming review: a lying source's tags are audited against the log (L161), a colluding source's weight falls with its record
+and a source no better than chance carries none; the carried records decay by their own rules, so a reformed or on-off source is re-weighed. Noise streams
+unchanged (`:deliberation`, `:advice`, `:tags`). Known cost: `rounds > 1` with `tag_liars` is slow (minutes for 200 decisions), so the probe keeps one round.
+
 Information handling's ContentionMap exposes every source in the domain on both sides, each weighed
 by its record (author, on 8.45; the first version surfaced only the three most reputable on each
 side, so every layman heard the same six sources). It runs as a heuristic for speed: one Lean call
@@ -1273,6 +1278,7 @@ for removal.
 |---|---|---|
 | Transactions quoted per currency, screened by G, logged | Native | L86–L89, L145 |
 | Proper-scoring (Brier) payments for predictors and voters | Not built: covered natively | Credence ballots weigh stated confidence only as far as each voter's record proves it calibrated (8.121), and reputation is the record of winning choices; exaggerated confidence buys no weight (a confident bloc: 96% right under calibrated ballots against 67% under stated). A separate payment would duplicate them; revisit only if a probe shows exaggeration paying |
+| `run_m5(...; records)` carrying source records across the composed world's epochs (`run_coupled`, `ih = true` in the `:bf` builders) | Introduced (a pass-through, no rule) | Lets IH weigh sources by live records (8.44) instead of a table reset each epoch; a candidate for removal if M3c's own reputations come to set source weights. No new governed threshold: `record_λpos`, `record_λneg`, `p_novel`, `echo_*` keep their defaults |
 | Forks and merges mid-run in M3c (identity step 2) | Native rule | L123 via Lean `fork_split_ref`; balance, relevance, accumulation allowance, capacity to propose and records split at a fork (records partitioned) and sum at a merge; slots are dormant agents (world model) |
 | Open newcomer entry on unmet/refused proposals (`open_entry`, `entrants`, 8.115 P7) | Native rule | L116 via `bind!`; dormant trailing entrant slots admit symmetrically when a proposal fails (`!res.ok`) and share `propose_w .* act_share` with market-weighted redistribution; tested in `sim/battery/results/status_quo_economy_entry.md` (`z = 3`, 24 seeds: `8.00` entries vs `0.12`, flips `floor_u` from `-23.71` to `+19.88 ± 1.63`) |
 | Measurement chains: acyclic dependencies, overlap-discounted pooling, divergence trigger (8.107) | Native rules | Lean `acyclic_ref`, `pooled_reading_ref`, `chains_diverge_ref`; M3c reads outcomes through chains (`chain_attrib`, `chain_mode = :domain`), audits on divergence, demotes chains by audited error (8.108) |

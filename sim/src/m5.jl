@@ -219,7 +219,7 @@ Decide `p.decisions` times. Returns the share decided correctly (`correct`) and,
 largest share of total weight one voter held (`max_share`) and the largest single weight
 (`max_single`), both as shares of the total.
 """
-function run_m5(p::M5Params; seed)
+function run_m5(p::M5Params; seed, records = nothing)
     rng = Xoshiro(seed)
     trng = Xoshiro(hash((seed, :split_trial)))  # its own stream: diversity changes no other draw
     # Imperfect agents (8.31): each voter's noise ceiling per domain, inverse to its skill there on
@@ -280,7 +280,10 @@ function run_m5(p::M5Params; seed)
     advw = advice_weights(p, na, nd, Xoshiro(hash((seed, :advice))))  # weight on advice per person and domain (8.63)
     minds_trace = Float64[]
     mods = [[(id = k, σ = p.model_σ0, rec = [0.0, 0.0])] for k in 1:nd]
-    person_rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
+    # `records`: the sources' accumulated (right, wrong) from earlier runs of the same society (a composed world's
+    # epochs), so source weights read live records instead of starting blind; nothing starts every source at none.
+    records === nothing || check(size(records) == (na, nd), "records must hold one (right, wrong) per agent and domain")
+    person_rec = records === nothing ? [[0.0, 0.0] for _ in 1:na, _ in 1:nd] : [copy(r) for r in records]
     # The weight of a source reads the rolling net of its record (rights and wrongs, decayed, mistakes
     # slower than wins: L101, 8.29; the entries themselves are kept whole): log-odds of its accuracy,
     # smoothed (Nitzan and Paroush, 1982); a source no better than chance carries none.

@@ -3582,3 +3582,37 @@ end
     @test count(==((2, true)), tragic_choices) == length(seeds)
     @test proportion_interval(count(==((3, false)), lex_choices), length(seeds)).lo > 0.75
 end
+
+# Information handling in the composed world (`L134` IH, 8.44-8.45, 8.167a; WORLD_COVERAGE step 1, P51). Twelve voters in each of
+# four domains, half of them colluding liars whose readings are republished with falsified tags, voters deferring to what they hear
+# (the limiting case where lies bite, 8.63). Arms on the same seeds: voters alone (IH off), hearing without handling (no weights by
+# record, no tags), and IH (record-weighted ContentionMap, tags counted once, AdvAp's tag audit). Truth levels are not assigned here:
+# the Lean reference has no classifier (only the chain rule), so IH weighs sources by their records and tags alone (gap, 8.167a).
+@testset "Probe: IH (record-weighted sources, tags, audit) resists a lying source that sways unhandled hearing (P51)" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 40, steps = 100, plans = 6),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    liars = collect(1:2:48)
+    D = (advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0)
+    C = (colluders = liars, stealth = true, loyalty = 2.0)
+    seeds = 1:8
+    arm(; kw...) = [run_m5(M5Params(m3, 1:4; decisions = 600, signal_σ = 20.0, kw...); seed).correct for seed in seeds]
+    off = arm(; C...)
+    unhandled = arm(; deliberation = true, info_handling = false, tag_liars = liars, D..., C...)
+    ih = arm(; deliberation = true, source_tags = true, tag_liars = liars, D..., C...)
+    # counterexample: hearing without handling lets the lying source sway votes (worse than voting alone)
+    @test paired_effect(off .- unhandled; direction = :up).significant
+    # acceptance: IH decides better than both (+0.019 vs off z 3.2, +0.045 vs unhandled z 7.3 over 8 seeds)
+    @test paired_effect(ih .- off; direction = :up).significant
+    @test paired_effect(ih .- unhandled; direction = :up).significant
+    # with realistic advice taking IH costs nothing (equivalent to voting alone within 0.03)
+    real = arm(; deliberation = true, source_tags = true, tag_liars = liars, C...)
+    @test equivalent(real .- off; margin = 0.03).equivalent
+    # live records: sources start weighed by the record an earlier epoch accumulated, not blind
+    first = run_m5(M5Params(m3, 1:4; decisions = 600, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed = 1)
+    early(r) = mean(r.correct_trace[1:150])
+    blind = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed)) for seed in 2:13]
+    informed = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed, records = first.records)) for seed in 2:13]
+    @test paired_effect(informed .- blind; direction = :up).significant
+    @test_throws ArgumentError run_m5(M5Params(m3, 1:4; deliberation = true); seed = 1, records = [[0.0, 0.0]])
+end
