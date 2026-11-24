@@ -126,6 +126,17 @@ check. Counts are estimates to replace with measured ones.
   `seed_v1` is kept as data, not adopted. Next prompt version: an ungrouped pack (by id or by angle) and upstream
   links allowed, and asked for, between fields.
 
+- Measured (round 2): **links.v2** (ungrouped pack, field-to-field links asked for): an upstream agreed by all three
+  variants for 98.4% of fields; overlap sets Jaccard 0.63; but only 8.1% of fields got a field as upstream (5.9% of
+  upstream links), against a predicted 30%, and 86.9% of guessed links survived. At one granularity the model treats
+  fields as siblings: upstream links to fields are a cross-level matter (fine to coarse), not a coarse one. Against
+  co-membership learnt from 597 annotated events (support ≥ 3), the model's upstream links point the data's way 83.1%
+  (166 testable; chance 0.5; predicted ≥ 50%) and its overlaps are data-consistent 79.2% (259 testable). Direction
+  between fields is therefore taken from the learnt co-membership, the model's links serving as a check.
+  `seed_v2` written. **axes v2** (prompt asking for ±2 only at clear poles): extreme scores 52.6% → 46.6% (predicted
+  < 35%); personal ↔ global fell to 36.7%, abstract ↔ tangible rose to 56.4%: the model reads that axis as nearly
+  binary. Next: pairwise comparisons against anchors with a Bradley–Terry fit for the abstract ↔ tangible axis.
+
 ### 2. Fine: disciplines, occupation groups, skill groups (about 2,000–5,000)
 
 - Crosswalk the sources (labels, aliases, embeddings) into merged cards; tasks: same / overlapping (weight) /
