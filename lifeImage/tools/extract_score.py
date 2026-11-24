@@ -1,6 +1,9 @@
 """Score extract answers against the synthetic ground truth: a markdown report on stdout.
 
-Usage: python3 lifeImage/tools/extract_score.py [data/batches/extract.v1.var{0,1,2}.answers.jsonl]
+Usage: python3 lifeImage/tools/extract_score.py [--texts texts_v2] [data/batches/[texts_v2/]extract.v1.var{0,1,2}.answers.jsonl]
+`--texts texts_v2` matches rows by the lines of the v2 texts that render them (data/synthetic/texts_v2/truth_spans.jsonl)
+and reads the answers from data/batches/texts_v2 by default; without it the truth rows' own (v1, templated) spans are
+used. Either way the report also gives the matched-without-spans scores (domain within one link, year within one).
 Each answers file is read with its batch file beside it (same name without `.answers`; the batch has the tasks and
 the coarse pack). Answers are checked with `validate_answers`; invalid ones are listed and left out of the scores
 (their personas count as nothing extracted), and the rest are completed into claimed evidence rows and scored per
@@ -41,11 +44,18 @@ def score_file(answers_path, cards, personas, truth, corroborated, basemap_versi
 
 
 def main(argv):
-    paths = argv or sorted(str(p) for p in (ROOT / "data/batches").glob("extract.v1.var*.answers.jsonl"))
+    argv = list(argv)
+    texts = "texts"
+    if "--texts" in argv:
+        i = argv.index("--texts")
+        texts = argv[i + 1]
+        del argv[i:i + 2]
+    folder = ROOT / "data/batches" / ("" if texts == "texts" else texts)
+    paths = argv or sorted(str(p) for p in folder.glob("extract.v1.var*.answers.jsonl"))
     if not paths:
         sys.exit(__doc__)
     cards = [json.loads(l) for l in _lines(ROOT / "data/coarse/seed_v2.jsonl")]
-    personas, truth, _texts, corroborated = load_synthetic(ROOT / "data/synthetic")
+    personas, truth, _texts, corroborated = load_synthetic(ROOT / "data/synthetic", texts)
     reports = []
     for p in paths:
         report, invalid, errors = score_file(p, cards, personas, truth, corroborated)

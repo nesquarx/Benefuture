@@ -214,7 +214,7 @@ def test_the_score_counts_inflating_minus_deflating_words():
 def test_the_committed_v2_texts_are_what_the_generator_writes_and_the_rows_are_untouched():
     tool = load_tool("gen_texts_v2")
     files = tool.build()
-    assert len(files) == 160  # 40 personas x (resume, self, diary, spans)
+    assert len(files) == 161  # 40 personas x (resume, self, diary, spans), and truth_spans.jsonl
     assert all((tool.OUT / k).read_text(encoding="utf-8") == v for k, v in files.items())
     starter = load_tool("gen_starter")
     assert starter.build()["rows.jsonl"] == (ROOT / "data/synthetic/rows.jsonl").read_text(encoding="utf-8")

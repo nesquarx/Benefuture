@@ -441,6 +441,21 @@ def _diary(p, R):
     return "\n".join(lines) + "\n", where
 
 
+def truth_spans(p, rendered):
+    """One record per truth row of the persona (`Persona.truth_rows` order), the lines of the v2 text that render it:
+    {persona, truth_index, source, v1_span, spans: ["L<n>", ...] or null when the v2 text omits the row}. The line
+    numbers count every line of the text, blank ones included, as the extractor's `L<n>` numbering does."""
+    claimed = [i for i, r in enumerate(p.rows) if r["tier"] == "claimed"]
+    out = []
+    for k, i in enumerate(claimed):
+        prov = p.rows[i]["provenance"]
+        doc = prov["source"].split(":", 1)[0]
+        n = rendered.spans.get(doc, {}).get(i)
+        out.append({"persona": p.id, "truth_index": k, "source": prov["source"], "v1_span": prov["span"],
+                    "spans": None if n is None else [f"L{n}"]})
+    return out
+
+
 def render_texts_v2(p):
     """The persona's three texts in realistic styles with the v2 spans of its claimed rows; deterministic in the persona's seed."""
     R = stream(p.seed, "texts_v2.resume")

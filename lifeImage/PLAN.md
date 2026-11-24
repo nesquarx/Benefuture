@@ -228,11 +228,13 @@ optimality) → migration table → release. Non-raster images re-render from ro
   0.955. Adopted on both axes; images re-rendered on the v3 basemap. Small batches cost about
   45k tokens per runner and stop the lookup-table shortcut.
 - **Extraction on realistic texts** (`texts_v2`, 40 varied resumes, 3 variants; `data/gold/extract_v1_texts_v2_scores.md`):
-  row-level precision and recall collapse (expertise 0.19 / 0.14), but that is a scorer artefact: rows are matched by
-  their source line, and the truth rows still carry the template resume's lines. At the domain level, which the scorer
-  measures independently of lines, the resume image correlates with the resume truth at 0.536 and with the whole-life
-  truth at 0.243, the same as on the templated texts: extraction quality held without templates. Fix: regenerate the
-  truth spans against the v2 texts (or match rows by domain and time), then re-score row-level and inflation.
+  truth rows are matched by the v2 lines that render them (`data/synthetic/texts_v2/truth_spans.jsonl`, written by
+  `tools/gen_texts_v2.py`; `tools/extract_score.py --texts texts_v2`). Expertise precision 0.66 exact, 0.67 within one link;
+  recall of resume rows 0.51 / 0.51 (on the templated texts 0.62 / 0.70 and 0.52 / 0.58): extraction held without
+  templates. Matched without spans (domain within a link, year within one) precision 0.50, recall 0.36. Expertise
+  inflation by calibration: over +0.19, well -0.06, under -0.15 (ordered, unlike the templated texts). Projection
+  correlation 0.536 with the resume truth, 0.243 with the whole life. The earlier row-level collapse (0.19 / 0.14) was a
+  scorer artefact: the truth spans still pointed at the v1 template lines.
 
 - **Extraction v1** (40 synthetic resumes, 3 variants; `data/gold/extract_v1_scores.md`): resumes carry 17% of a
   persona's truth rows. Expertise precision 0.62 exact, 0.70 within one link; recall of resume rows 0.52 / 0.58

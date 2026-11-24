@@ -11,6 +11,9 @@ Per channel, over (persona, span, domain) units:
 - precision, recall: exact domain; `precision_near`, `recall_near`: a domain within one upstream link (the same, a
   direct upstream of it, or one it is upstream of) of a truth domain on the same line also counts. None when the
   denominator is empty.
+- `precision_nospan`, `recall_nospan`: matched without spans, by (domain within one upstream link, valid_time year within
+  one) over (persona, row, domain) units, for texts whose rows have no span to match by; reported separately, never mixed
+  into the span-matched measures.
 - magnitude_mae, magnitude_bias: an extracted row is matched to a truth resume row of the same line sharing a domain
   (best Jaccard); error is extracted minus truth magnitude.
 - inflation, expertise and impact: the matched row's extracted size against the corroborated size of the same event
@@ -22,6 +25,7 @@ Per channel, over (persona, span, domain) units:
   channel's projected per-domain totals (`projection.project`) between extraction and truth (resume rows; all rows),
   averaged over personas with truth in the channel; a persona whose extraction is constant scores 0.
 """
+import copy
 import gzip
 import json
 import math
@@ -112,6 +116,31 @@ def _projection_corr(pred, truth, channel, cards, known):
     return _mean(scores), len(scores)
 
 
+def _year(row):
+    try:
+        return int(str(row["valid_time"])[:4])
+    except ValueError:
+        return None
+
+
+def _nospan(ext, truth_resume, channel, near):
+    """(precision, recall) matching units by (domain within one link, year within one) alone, spans ignored."""
+    def units(rows):
+        return {pid: [(i, _year(r), {m["domain"] for m in view(r, channel)}) for i, r in enumerate(per) if view(r, channel)]
+                for pid, per in rows.items()}
+    def share(a, b):
+        n = hit = 0
+        for pid, per in a.items():
+            for i, y, ds in per:
+                for d in ds:
+                    n += 1
+                    hit += any(y is not None and y2 is not None and abs(y - y2) <= 1 and any(near(d, d2) for d2 in ds2)
+                               for _j, y2, ds2 in b.get(pid, ()))
+        return _ratio(hit, n)
+    a, b = units(ext), units(truth_resume)
+    return share(a, b), share(b, a)
+
+
 def _inflation(pairs, personas):
     """pairs: [(pid, value)] -> {overall, over, under, well, n}."""
     by = defaultdict(list)
@@ -166,11 +195,13 @@ def compute(extracted, truth, personas, cards, corroborated=None):
                         if m["domain"] in latent and (id(r), m["domain"], kind) not in seen:
                             seen.add((id(r), m["domain"], kind))
                             infl.append((pid, r["magnitude"] - latent[m["domain"]][kind]))
+        ns_p, ns_r = _nospan(ext, truth_resume, c, near)
         pc, pn = _projection_corr(ext, truth_resume, c, cards, known)
         pca, _ = _projection_corr(ext, truth, c, cards, known)
         report["channels"][c] = {
             "precision": _ratio(len(hit), len(P)), "recall": _ratio(len(hit), len(T)),
             "precision_near": _ratio(p_near, len(P)), "recall_near": _ratio(t_near, len(T)),
+            "precision_nospan": ns_p, "recall_nospan": ns_r,
             "recall_all": _ratio(len(hit), len(all_units)), "coverage_gap": _ratio(no_resume, truth_rows),
             "magnitude_mae": _mean(abs(e) for e in errs), "magnitude_bias": _mean(errs), "matched": len(errs),
             "inflation": _inflation(infl, personas),
@@ -213,12 +244,34 @@ def _jsonl(path):
     return [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def load_synthetic(root):
-    """(personas {id: persona}, truth {id: rows}, resume texts {id: text}, corroborated sizes) of the synthetic persons."""
+def with_text_spans(truth, corroborated, records):
+    """(truth, corroborated) with the provenance spans of the truth rows replaced by the spans a rendering of the texts
+    gives them. records: [{persona, truth_index, spans: ["L3", ...] or null}]. A row rendered on several lines is one row
+    per line; a row the text omits keeps the span "-" (no line of the text matches it, only the fallback can).
+    The corroborated size of a rendered line is the mean of the sizes of the rows it carries."""
+    by = {(r["persona"], r["truth_index"]): r["spans"] for r in records}
+    out, sizes = {}, defaultdict(list)
+    for pid, rows in truth.items():
+        out[pid] = []
+        for i, r in enumerate(rows):
+            spans = by.get((pid, i)) or ["-"]
+            for sp in spans:
+                r2 = copy.deepcopy(r)
+                r2["provenance"]["span"] = sp
+                out[pid].append(r2)
+                if is_resume(r) and (pid, span(r)) in corroborated:
+                    sizes[(pid, sp)].append(corroborated[(pid, span(r))])
+    return out, {k: sum(v) / len(v) for k, v in sizes.items()}
+
+
+def load_synthetic(root, texts="texts"):
+    """(personas {id: persona}, truth {id: rows}, resume texts {id: text}, corroborated sizes) of the synthetic persons.
+    texts names the text folder the truth rows' spans refer to: "texts" (the templated v1 texts, spans in the rows) or
+    another folder with a `truth_spans.jsonl` (texts_v2), whose spans replace the rows' own."""
     root = Path(root)
     personas = {p["id"]: p for p in _jsonl(root / "personas.jsonl")}
     truth = {pid: _jsonl(root / "truth" / f"{pid}.jsonl") for pid in personas}
-    texts = {pid: (root / "texts" / f"{pid}.resume.txt").read_text(encoding="utf-8") for pid in personas}
+    texts_by = {pid: (root / texts / f"{pid}.resume.txt").read_text(encoding="utf-8") for pid in personas}
     rows, events = defaultdict(list), defaultdict(list)
     for r in _jsonl(root / "rows.jsonl"):
         rows[r["entity"]].append(r)
@@ -226,7 +279,10 @@ def load_synthetic(root):
         for l in f:
             e = json.loads(l)
             events[e["entity"]].append(e)
-    return personas, truth, texts, corroborated_magnitudes(rows, events)
+    corro = corroborated_magnitudes(rows, events)
+    if texts != "texts":
+        truth, corro = with_text_spans(truth, corro, _jsonl(root / texts / "truth_spans.jsonl"))
+    return personas, truth, texts_by, corro
 
 
 def _f(x, pct=False):
@@ -243,7 +299,9 @@ def render(report):
     lines += ["| measure | " + " | ".join(CHANNELS) + " |", "|---|" + "---|" * len(CHANNELS)]
     ch = report["channels"]
     rows = [("precision (exact domain)", "precision"), ("recall of resume rows (exact)", "recall"),
-            ("precision within one link", "precision_near"), ("recall within one link", "recall_near"),
+            ("precision within one link", "precision_near"),
+            ("precision matched without spans (domain within a link, year within one)", "precision_nospan"),
+            ("recall matched without spans", "recall_nospan"), ("recall within one link", "recall_near"),
             ("recall of all truth rows", "recall_all"), ("coverage gap: truth rows with no resume evidence", "coverage_gap"),
             ("magnitude mean absolute error", "magnitude_mae"), ("magnitude bias (extracted minus truth)", "magnitude_bias"),
             ("matched rows", "matched"), ("projected totals correlation, resume truth", "projection_corr"),
