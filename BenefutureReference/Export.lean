@@ -295,6 +295,15 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_birth_escrow] def birthEscrow (initial predicted : Float) (window : USize) (baseline : Float) : Float :=
   birth_escrow_ref initial predicted window.toNat baseline
 
+@[export bf_baseline_required] def baselineRequired (cost targetU targetH projU projH : Float) (remaining : USize) : Float :=
+  baseline_required_ref cost targetU targetH projU projH remaining.toNat
+
+@[export bf_newborn_baseline] def newbornBaseline (cost targetU targetH : Float) (window : USize) : Float :=
+  newborn_baseline_ref cost targetU targetH window.toNat
+
+@[export bf_baseline_refine] def baselineRefine (current required rate cap : Float) : Float :=
+  baseline_refine_ref current required rate cap
+
 @[export bf_birth_accrued_escrow] def birthAccruedEscrow (initial predicted : Float) (window elapsed : USize) (baseline : Float) : Float :=
   birth_accrued_escrow_ref initial predicted window.toNat elapsed.toNat baseline
 

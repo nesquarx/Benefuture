@@ -2319,6 +2319,35 @@ end
     @test paired_effect([unc_rat(o) - unc_rat(n) for (n, o) in zip(r_on, r_off)]; z = 3.0, direction = :up).significant
 end
 
+@timed_testset "Probe: birth baseline income closes newborns' shortfall at adulthood (8.167b, P-BB)" begin
+    # Hypothesis: without a baseline, children of below-median households reach adulthood below the adult
+    # average understanding and happiness (red baseline: the shortfall is real, over 0.5 levels, a twelfth of the
+    # adult average); with `birth_baseline` (cost to reach the adult average by the window, refined by the child's
+    # measured trajectory, bounded, levied on adults' income) the mean shortfall falls by at least 0.5 levels
+    # (paired, z = 2, 3 seeds, common random numbers). Counterexamples: a zero levy cap pays nothing and changes
+    # nothing; the refinement is bounded, so depressing a child's measured trajectory cannot raise its income
+    # past `bb_cap` times the birth baseline. Structural: currency is conserved and the Goal pattern's
+    # deepest drop (harm's peak) stays within a factor 3 of the world without it.
+    p = ToyParams(n = 30, steps = 60, plans = 6)
+    seeds = 1:3
+    kw = (; p_birth = 0.25, window = 10, income = 1.0)
+    off = [run_population_world(p; seed = s, kw..., birth_baseline = false) for s in seeds]
+    on  = [run_population_world(p; seed = s, kw..., birth_baseline = true) for s in seeds]
+    nil = [run_population_world(p; seed = s, kw..., birth_baseline = true, bb_levy_cap = 0.0) for s in seeds]
+    poor_short(r) = mean(r.grad_short[r.grad_poor])
+    @test all(r -> count(r.grad_poor) >= 3, off)
+    @test mean(poor_short, off) > 0.5                                                  # red: the shortfall exists on current code
+    @test paired_effect([poor_short(o) - poor_short(n) for (n, o) in zip(on, off)]; z = 2.0, direction = :up).mean > 0.5
+    @test paired_effect([poor_short(o) - poor_short(n) for (n, o) in zip(on, off)]; z = 2.0, direction = :up).significant
+    @test all(r -> r.baseline_paid > 0, on) && all(r -> r.baseline_paid == 0, nil)
+    @test all(isapprox(poor_short(a), poor_short(b); atol = 1e-9) for (a, b) in zip(nil, off))   # no payment, no effect
+    for r in on                                                                        # conservation: levy is the only transfer
+        @test isapprox(sum(r.balance), p.n * 10.0 + r.income_minted - r.esc_posted - r.clawback + r.refund - r.baseline_paid; atol = 1e-8)
+    end
+    @test baseline_refine(1.0, 1e9; rate = 1.0, cap = 3.0) == 3.0                      # gaming bound
+    @test all(success_pattern(n).worst_drop < 3 * success_pattern(o).worst_drop for (n, o) in zip(on, off))
+end
+
 @timed_testset "Probe: B17 teachable knowledge diffusion lifts floor and reduces concentration (P42)" begin
     # Higher teaching transfer rate (`ε = 0.25` vs `0.02`) with codifiable discoveries (`p_teachable = 0.8`)
     # lifts both `floor_u` and `median_u` at z = 3.0 over 16 seeds, whereas untransmissible breakthroughs

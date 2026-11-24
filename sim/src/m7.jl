@@ -76,6 +76,31 @@ function birth_escrow(initial::Real, predicted::Real; window::Integer, baseline:
 end
 
 """
+    baseline_required(cost, target_u, target_h, proj_u, proj_h; remaining) -> Float64
+
+Per-period income a child needs to reach the average adult's understanding and happiness (author ruling
+8.167b [P]; Lean `baseline_required_ref`): `cost` per level times the projected shortfall below the targets,
+over the `remaining` periods; `0` when none remain.
+"""
+function baseline_required(cost::Real, target_u::Real, target_h::Real, proj_u::Real, proj_h::Real; remaining::Integer)
+    check(all(isfinite, (cost, target_u, target_h, proj_u, proj_h)) && cost >= 0 && remaining >= 0, "finite levels, non-negative cost and remaining")
+    ccall(sym(:bf_baseline_required), Float64, (Float64, Float64, Float64, Float64, Float64, Csize_t),
+          cost, target_u, target_h, proj_u, proj_h, remaining)
+end
+
+"Baseline income at birth (Lean `newborn_baseline_ref`): the whole cost over the whole window, nothing projected yet."
+function newborn_baseline(cost::Real, target_u::Real, target_h::Real; window::Integer)
+    check(all(isfinite, (cost, target_u, target_h)) && cost >= 0 && window >= 1, "finite levels, non-negative cost, window at least 1")
+    ccall(sym(:bf_newborn_baseline), Float64, (Float64, Float64, Float64, Csize_t), cost, target_u, target_h, window)
+end
+
+"Refinement of a baseline income toward what the measured trajectory now requires (Lean `baseline_refine_ref`): a share `rate` of the way, bounded to `[0, cap]`."
+function baseline_refine(current::Real, required::Real; rate::Real, cap::Real)
+    check(all(isfinite, (current, required, rate, cap)) && cap >= 0, "finite income, required, rate; non-negative cap")
+    ccall(sym(:bf_baseline_refine), Float64, (Float64, Float64, Float64, Float64), current, required, rate, cap)
+end
+
+"""
     birth_accrued_escrow(initial, predicted; window, elapsed, baseline) -> Float64
 
 Predicted shortfall accrued over the first `elapsed` steps of the dependency window
@@ -882,18 +907,81 @@ most one birth. Records the Goal's success pattern over the levels G reads, the 
 understanding (`raw_floor_u`), population, births (by causer), final credences and the escrow totals
 of settled births.
 """
+# Birth baseline state (author ruling 8.167b [P]; WORLD_COVERAGE step 6): per being, the baseline income a
+# dependent receives, the income it started at, the understanding and happiness its income has bought, the
+# adult-average targets at its birth and whether its household was poor; plus the graduates' shortfalls below
+# the adult average. Income is levied pro rata on adults' per-step income (child-benefit analogue), at most
+# `levy_cap` of it, and scaled down together when the demand exceeds it. Introduced, not native: a reading of
+# "provide for the child" as spending per level (`cost`).
+mutable struct BirthBaseline
+    on::Bool
+    cost::Float64
+    rate::Float64
+    cap_mult::Float64
+    levy_cap::Float64
+    meas_σ::Float64
+    income_per_adult::Float64
+    rng::Xoshiro
+    income::Vector{Float64}
+    init::Vector{Float64}
+    up_u::Vector{Float64}
+    up_h::Vector{Float64}
+    tu::Vector{Float64}
+    th::Vector{Float64}
+    poor::Vector{Bool}
+    paid::Float64
+    grad_short::Vector{Float64}
+    grad_poor::Vector{Bool}
+end
+function BirthBaseline(n::Integer; on::Bool, cost::Real, rate::Real, cap_mult::Real, levy_cap::Real, meas_σ::Real,
+                       income_per_adult::Real, rng)
+    BirthBaseline(on, cost, rate, cap_mult, levy_cap, meas_σ, income_per_adult, rng, zeros(n), zeros(n), zeros(n), zeros(n),
+                  zeros(n), zeros(n), falses(n), 0.0, Float64[], Bool[])
+end
+function push_being!(bb::BirthBaseline; income = 0.0, tu = 0.0, th = 0.0, poor = false)
+    push!(bb.income, income); push!(bb.init, income); push!(bb.up_u, 0.0); push!(bb.up_h, 0.0)
+    push!(bb.tu, tu); push!(bb.th, th); push!(bb.poor, poor)
+end
+
 function step_dependents!(s, born, causer, mature_u, mature_h, posted_b, baseline_b, short_b, elapsed_b,
-                          balance, gains, losses, tr, srng, t; window::Integer, settle_σ::Real)
+                          balance, gains, losses, tr, srng, t; window::Integer, settle_σ::Real, bb::Union{Nothing,BirthBaseline} = nothing)
+    scale = 1.0
+    if bb !== nothing && bb.on
+        deps, adl = findall(>(0), born), findall(==(0), born)
+        req = sum(bb.income[deps]; init = 0.0)
+        cap = bb.levy_cap * bb.income_per_adult * length(adl)
+        scale = req > cap ? cap / req : 1.0
+        isempty(adl) || (balance[adl] .-= scale * req / length(adl))
+        bb.paid += scale * req
+    end
     for d in eachindex(born)
         born[d] > 0 || continue
         age = t - born[d]
-        own_h = mature_h[d] * (age + 1) / window
-        s.u[d] = mature_u[d] * (age + 1) / window
+        nat_u, nat_h = mature_u[d] * (age + 1) / window, mature_h[d] * (age + 1) / window
+        if bb !== nothing && bb.on
+            gu, gh = max(0.0, bb.tu[d] - nat_u - bb.up_u[d]), max(0.0, bb.th[d] - nat_h - bb.up_h[d])
+            sh = gu + gh > 0 ? gu / (gu + gh) : 0.5
+            pay = scale * bb.income[d]
+            bb.up_u[d] += pay * sh / bb.cost; bb.up_h[d] += pay * (1 - sh) / bb.cost
+        end
+        own_h = nat_h + (bb === nothing ? 0.0 : bb.up_h[d])
+        s.u[d] = nat_u + (bb === nothing ? 0.0 : bb.up_u[d])
+        if bb !== nothing && bb.on && age + 1 < window
+            k, rem = age + 1, window - (age + 1)
+            mu_ = s.u[d] + bb.meas_σ * bb.tu[d] * randn(bb.rng)
+            mh_ = own_h + bb.meas_σ * bb.th[d] * randn(bb.rng)
+            req_d = baseline_required(bb.cost, bb.tu[d], bb.th[d], mu_ + mu_ / k * rem, mh_ + mh_ / k * rem; remaining = rem)
+            bb.income[d] = baseline_refine(bb.income[d], req_d; rate = bb.rate, cap = bb.cap_mult * bb.init[d])
+        end
         s.h[d] = max(own_h, baseline_b[d])
         short_b[d] += max(0.0, baseline_b[d] - own_h)
         elapsed_b[d] += 1
         age == window - 1 || continue
         s.h[d] = own_h  # mature: the escrow's work is done
+        if bb !== nothing
+            adl = findall(==(0), born)
+            isempty(adl) || (push!(bb.grad_short, max(0.0, mean(s.u[adl]) - s.u[d]) + max(0.0, mean(s.h[adl]) - own_h)); push!(bb.grad_poor, bb.poor[d]))
+        end
         measured = max(0.0, short_b[d] * (1 + settle_σ * randn(srng)))
         st, c = settlement(measured, posted_b[d]), causer[d]
         if st > 0
@@ -1191,7 +1279,9 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
                               gamer_models::Integer = 1, ratchet::Bool = true, pending_ledger::Bool = true,
                               p_act::Real = 0.3, action_scale::Real = 0.05, view_σ::Real = CALIBRATED.view_σ,
                               pred_σ::Real = CALIBRATED.pred_σ, options::Integer = 3, lt_window::Real = 100,
-                              growth::Real = 0.1, scale::Real = 20.0)
+                              growth::Real = 0.1, scale::Real = 20.0,
+                              birth_baseline::Bool = false, bb_cost::Real = 1.0, bb_rate::Real = 0.5, bb_cap::Real = 3.0,
+                              bb_levy_cap::Real = 0.5, bb_meas_σ::Real = 0.05)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (p_research, research_share, p_teachable, p_innovate, ε,
           p_birth, q_opt, threshold, pool_confidence, inherit, gamers, p_act)),
           "rates, shares, quantile, threshold and confidence in [0, 1]")
@@ -1211,10 +1301,12 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
     mature_u, mature_h, read_u, pred_h_b = zeros(n0), zeros(n0), zeros(n0), zeros(n0)
     posted_b, baseline_b, short_b = zeros(n0), zeros(n0), zeros(n0)
     novelty, tacit, quality = fill(Float64(novelty_initial), n0), fill(Float64(tacit_initial), n0), ones(n0)
+    bb = BirthBaseline(n0; on = birth_baseline, cost = bb_cost, rate = bb_rate, cap_mult = bb_cap, levy_cap = bb_levy_cap,
+                       meas_σ = bb_meas_σ, income_per_adult = income, rng = Xoshiro(hash((seed, :baseline))))
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], raw_floor_u = Float64[], population = Int[], actions = Int[],
           births = Ref(0), settled = Ref(0), posted = Ref(0.0), measured = Ref(0.0), clawback = Ref(0.0), refund = Ref(0.0),
-          uncovered = Ref(0.0), breakthroughs = Ref(0), innovations = Ref(0), lessons_chosen = Ref(0), spent = Ref(0.0))
+          uncovered = Ref(0.0), breakthroughs = Ref(0), innovations = Ref(0), lessons_chosen = Ref(0), spent = Ref(0.0), esc_posted = Ref(0.0), income_minted = Ref(0.0))
     dependent(b) = born[b] > 0
     reading() = [dependent(b) ? read_u[b] : s.u[b] for b in eachindex(s.u)]
     confidence(e) = birth_confidence(pool_confidence, gains[e], losses[e], e, born, causer, pred_h_b, elapsed_b, baseline_b, short_b;
@@ -1235,8 +1327,9 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
         n = length(s.u)
         adults = [!dependent(b) for b in 1:n]
         balance[adults] .+= income
+        tr.income_minted[] += income * count(adults)
         step_dependents!(s, born, causer, mature_u, mature_h, posted_b, baseline_b, short_b, elapsed_b,
-                         balance, gains, losses, tr, srng, t; window, settle_σ)
+                         balance, gains, losses, tr, srng, t; window, settle_σ, bb)
         adults = [!dependent(b) for b in 1:n]
         peak, med = maximum(s.u), median(s.u)
         researching = [adults[b] && rand(rrng) < research_share for b in 1:n]
@@ -1295,7 +1388,7 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
                 esc = birth_escrow(0.0, lh; window, baseline = base)
                 if balance[e] >= esc
                     joy = zeros(n); joy[e] = birth_joy
-                    push!(opts, (; e, mu, mh, lu, lh, esc, base)); push!(kinds, :birth)
+                    push!(opts, (; e, mu, mh, lu, lh, esc, base, poor = (s.u[e] - med_u) + (s.h[e] - med_h) < 0)); push!(kinds, :birth)
                     push!(plans, PopPlan(zeros(n), joy; births = [Newborn(pu, ph; confidence = c)]))
                 end
             end
@@ -1320,8 +1413,10 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
         end
         maximum(s.u .+ total_du) > peak + 1e-12 && (tr.innovations[] += 1)
         s.u .+= total_du; s.h .+= total_dh
+        isempty(newborns) || ((avg_u, avg_h) = (mean(s.u[adults]), mean(s.h[adults])))
         for o in newborns
             balance[o.e] -= o.esc
+            tr.esc_posted[] += o.esc
             births_by[o.e] += 1; tr.births[] += 1
             own_h = o.mh / window
             push!(s.u, o.mu / window); push!(s.h, max(own_h, o.base))
@@ -1330,12 +1425,14 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
             push!(mature_u, o.mu); push!(mature_h, o.mh); push!(read_u, o.lu); push!(pred_h_b, o.lh)
             push!(posted_b, o.esc); push!(baseline_b, o.base); push!(short_b, max(0.0, o.base - own_h))
             push!(novelty, novelty_initial); push!(tacit, tacit_initial); push!(quality, 1.0)
+            push_being!(bb; income = birth_baseline ? newborn_baseline(bb_cost, avg_u, avg_h; window) : 0.0, tu = avg_u, th = avg_h, poor = o.poor)
         end
         push!(tr.actions, acted)
         record!()
     end
     conf = [confidence(b) for b in eachindex(s.u)]
-    refs = (:births, :settled, :posted, :measured, :clawback, :refund, :uncovered, :breakthroughs, :innovations, :lessons_chosen, :spent)
+    refs = (:births, :settled, :posted, :measured, :clawback, :refund, :uncovered, :breakthroughs, :innovations, :lessons_chosen, :spent, :esc_posted, :income_minted)
     (; (k => getfield(tr, k) for k in keys(tr) if !(k in refs))..., (k => getfield(tr, k)[] for k in refs)...,
-     births_by = births_by, gamer = gamer, confidence = conf)
+     births_by = births_by, gamer = gamer, confidence = conf, balance = balance, baseline_paid = bb.paid,
+     grad_short = bb.grad_short, grad_poor = bb.grad_poor)
 end

@@ -282,4 +282,23 @@ end
     end
 end
 
+# P-BB heavy: the birth baseline's shortfall effect at z = 2 with seeds added by precision, and the Goal pattern's
+# one-sided loss below 3 (8.167b; fast version `Probe: birth baseline income ...` in probe_tests.jl).
+@timed_testset "Probe: birth baseline income, shortfall effect and Goal pattern (heavy: 8.167b)" begin
+    p = ToyParams(n = 30, steps = 60, plans = 6)
+    kw = (; p_birth = 0.25, window = 10, income = 1.0)
+    runs = Dict{Int,Any}()
+    both(s) = get!(runs, s) do; (run_population_world(p; seed = s, kw..., birth_baseline = false), run_population_world(p; seed = s, kw..., birth_baseline = true)); end
+    ps(r) = mean(r.grad_short[r.grad_poor])
+    eff = seeds_until_stable(s -> ps(both(s)[1]) - ps(both(s)[2]); tol = 0.15, min_seeds = 6, max_seeds = 16)
+    @info "P-BB heavy: seeds used" n = eff.n stable = eff.stable effect = (eff.mean, eff.se)
+    @test paired_effect(eff.values; z = 2.0, direction = :up).significant
+    @test eff.mean > 0.5
+    P = [(success_pattern(both(s)[1]), success_pattern(both(s)[2])) for s in eff.seeds]
+    for k in (:floor_u, :floor_h, :median_u, :median_h)
+        @test equivalent([getfield(o, k) - getfield(n, k) for (o, n) in P]; margin = 3.0, side = :upper).equivalent   # loss (off - on) below 3, one-sided
+    end
+    @test equivalent([n.worst_drop - o.worst_drop for (o, n) in P]; margin = 3.0, side = :upper).equivalent
+end
+
 probe_total("heavy 1")
