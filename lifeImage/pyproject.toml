@@ -7,7 +7,7 @@ name = "lifeimage"
 version = "0.0.0"
 description = "Life Image tooling: domain cards, cached micro-tasks, basemap invariants, migration."
 requires-python = ">=3.11"
-dependencies = ["jsonschema>=4"]
+dependencies = ["jsonschema>=4", "numpy>=1.24"]
 
 [project.optional-dependencies]
 test = ["pytest"]
