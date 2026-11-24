@@ -184,6 +184,19 @@ optimality) → migration table → release. Non-raster images re-render from ro
    co-membership, `data/coarse/comembership_v0.jsonl` from `tools/build_comembership.py`) and `tools/axes_compare.py`.
    `lifeimage/pressure.py` is the pressure measure (LI.25) for later slice widths; layout does not use it yet.
 
+## Datasets and generators (round 2)
+
+- Synthetic: 40 personas (8 archetype presets, ages 8–85, 3 minors) and 6 organisations in `data/synthetic/`, 5,274
+  rows; tiers claimed 51%, attested 32%, measured 18%; 460 self-assessed potential rows with over-, under- and
+  well-calibrated estimators; texts (resume, self-description, diary, prospectus) with ground truth; byte-reproducible
+  (`tools/gen_starter.py --check`). 51 world parameters in `lifeimage/generators/params.py`, each with a range and a
+  source; demographic figures medium confidence, record coverage, claim rates and self-assessment bias low
+  (assumptions, to calibrate).
+- Public: 10 deceased public figures from Wikidata (CC0) in `data/public/`, 376 attested rows, 161 labels unmapped and
+  ~180 dates inferred (both flagged); offline fixtures for CI.
+- Redaction for extraction tests on real texts (`lifeimage/redact.py`); raw inputs only in `data/ephemeral/`.
+- Tests pass on a clean checkout with the network blocked (682 passed, 2 network tests skipped).
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
