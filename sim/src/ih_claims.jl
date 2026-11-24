@@ -77,3 +77,96 @@ function run_ih_claims(p::IhClaimsParams)
     (accuracy = isempty(acc) ? 0.0 : mean(acc), harm = harm, harm_peak = peak, payoff = pay,
      mean_unprovable_weight = isempty(w_unprov) ? 0.0 : mean(w_unprov))
 end
+
+# ---- IH world, step 2b (WORLD_COVERAGE step 2; author rulings 8.166-8.168): one shared network ----
+
+"Copy `p` overriding the named fields (every field is copied, so a new field never breaks a positional list)."
+_with_fields(p::T, over::Dict{Symbol,Any}) where {T} = T((get(over, f, getfield(p, f)) for f in fieldnames(T))...)
+
+Base.@kwdef struct IhWorldParams
+    m3::Any                              # an M3c run: the society (agents, reputations) the claims circulate in
+    econ::Any                            # the M3cParams of the economy that receives the hazard inputs
+    domains::Vector{Int} = [1, 2, 3, 4]
+    steps::Int = 12
+    claims_per_step::Int = 4
+    frac_provable::Float64 = 0.5
+    ih::Bool = true                      # false: the unhandled control (no categoriser, no record weights, no tags, M8 untagged)
+    connected::Bool = true               # false: voters decide alone, the worlds share no network (limiting case)
+    cap_unprovable::Float64 = 0.35       # governed threshold (the same as `IhClaimsParams`)
+    liar_stride::Int = 3                 # every third person is a colluder (a biased expert) publishing the shared bias
+    n_experts::Int = 8                   # the claim's experts: the domain's top by reputation
+    signal_σ::Float64 = 2.0
+    advice_stay::Float64 = 0.20          # as `M5Params` default; defer is the shared network's measured adoption of an echoed rumour
+    infra_step::Int = 0                  # > 0: at this step unprovable claims become provable (8.168)
+    p_side_scale::Float64 = 0.3          # world: chance of an accidental hazard per unit of uninoculated access risk
+    seed::Int = 1
+end
+
+"""
+    run_ih_world(p::IhWorldParams)
+
+Step 2b of the world composition: the claim stream of `run_ih_claims` on the network of the M5 society.
+- One network: `n` = the society's size and the colluders (every `liar_stride`-th person) are shared by
+  `run_m8_truth` (echoed rumour forwarders), M5 (colluding sources, whose readings are republished) and the experts.
+- M8 truth -> M5: the network's measured adoption of an echoed rumour (`false_adoption`) is the share of voters who defer
+  to what they hear (`advice_defer`, 8.63), so an untagged network defers more.
+- M5 -> claims: each claim is one M5 decision on the claim (readings after deliberation, records carried claim to
+  claim, a record only where the outcome is checkable); the domain's top experts' readings, weighed by their records, go
+  through `ih_truth_level` with the claim's provable flag. The unhandled control reads every consensus as fact.
+- M8 IHz -> M3c: accidental hazard harm under the gate becomes the economy's side-effect chance `p_side`; decision
+  accuracy on checkable claims becomes the chance a guardian learns of a hazard in time `p_informed`.
+Reports the claim measures of `run_ih_claims` and the economy's trace with its `success_pattern`.
+"""
+function run_ih_world(p::IhWorldParams)
+    m3 = p.m3; na = length(m3.agents); nd = size(m3.relevance_leaf, 2)
+    liars = collect(1:p.liar_stride:na)
+    # the shared network's two M8 measurements (one n, one set of colluders)
+    t8 = run_m8_truth(M8TruthParams(n = na, steps = 4, echo_copies = length(liars), mode = p.ih ? :bf_truth : :untagged_naive, seed = p.seed))
+    z8 = run_m8_ihz(M8IhzParams(n = na, steps = 8, attacker_frac = length(liars) / na, mode = p.ih ? :gated_ihz : :open_ungated, seed = p.seed))
+    defer = clamp(t8.false_adoption, 0.0, 1 - p.advice_stay)
+    base = M5Params(m3, p.domains; decisions = 1, signal_σ = p.signal_σ, deliberation = p.connected, info_handling = p.ih,
+                    source_tags = p.ih && p.connected, tag_liars = p.connected ? liars : Int[], colluders = liars, stealth = false,
+                    diversity = false, advice_stay = p.advice_stay, advice_avg = 1 - p.advice_stay - defer, advice_defer = defer)
+    rng_t = Xoshiro(hash((p.seed, :truth))); rng_d = Xoshiro(hash((p.seed, :domain)))
+    rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
+    chit = 0.0; cseen = 0.0; acc = Float64[]; harm = 0.0; peak = 0.0; pay = 0.0; w_unprov = Float64[]; swayed = Float64[]
+    for step in 1:p.steps, c in 1:p.claims_per_step
+        k = p.domains[rand(rng_d, 1:length(p.domains))]
+        t = rand(rng_t) < 0.5 ? 1.0 : -1.0
+        observable = rand(rng_t) < p.frac_provable || (p.infra_step > 0 && step >= p.infra_step)
+        bias = rand(rng_t) < 0.5 ? 1.0 : -1.0
+        # in the bias frame +1 is the shared bias's side; an unfalsifiable claim is perceived as the bias side by everyone
+        T = observable ? t * bias : 1.0
+        over = Dict{Symbol,Any}(:p_apparent => observable ? 1.0 : 0.0, :domains => [k])
+        r = run_m5(_with_fields(base, over); seed = Int(hash((p.seed, :claim, step, c)) & 0x7fffffff), records = rec, truths = [T])
+        rec = r.records
+        experts = sortperm(m3.relevance_leaf[:, k]; rev = true)[1:min(p.n_experts, na)]
+        out = [clamp(0.5 + 0.45 * bias * sign(r.last_signal[e]), 0.01, 0.99) for e in experts]
+        push!(swayed, isempty(r.minds_changed) ? 0.0 : r.minds_changed[end])
+        if p.ih
+            wts = [max(source_weight(rec[e, k][1], rec[e, k][2]), 0.02) for e in experts]
+            lvl = ih_truth_level(out, wts, (chit + 1) / (cseen + 2), observable, p.cap_unprovable)
+        else
+            wts = ones(length(experts))
+            lvl = ih_truth_level(out, wts, 1.0, true, p.cap_unprovable)
+        end
+        side = sum(wts .* out) / sum(wts) >= 0.5 ? 1.0 : -1.0
+        pay += lvl * side * t
+        if observable
+            push!(acc, side == t ? 1.0 : 0.0); cseen += 1; chit += side == t ? 1.0 : 0.0
+        else
+            push!(w_unprov, lvl)
+            side != t && (harm += lvl; peak = max(peak, lvl))
+        end
+    end
+    accuracy = isempty(acc) ? 0.0 : mean(acc)
+    n_legit = na - length(liars)
+    risk = z8.accidental_harm / max(1, n_legit * 8 * 0.5 * M8IhzParams().hazard_harm)
+    econ = _with_fields(p.econ, Dict{Symbol,Any}(:p_informed => clamp(accuracy, 0.05, 0.99),
+                                                  :p_side => clamp(p.p_side_scale * risk, 0.0, 1.0)))
+    tr = run_m3c(econ; seed = p.seed)
+    (accuracy = accuracy, harm = harm, harm_peak = peak, payoff = pay,
+     mean_unprovable_weight = isempty(w_unprov) ? 0.0 : mean(w_unprov), swayed = mean(swayed),
+     false_adoption = t8.false_adoption, accidental_harm = z8.accidental_harm, p_informed = clamp(accuracy, 0.05, 0.99),
+     tr = tr, pattern = success_pattern(tr))
+end

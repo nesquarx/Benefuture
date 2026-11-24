@@ -2595,6 +2595,48 @@ end
     @test wall < 20
 end
 
+# The composed IH world (`L134` IH, author rulings 8.166-8.168; WORLD_COVERAGE step 2b, P53): the claim stream of P52 on the one
+# network of the M5 society, which `run_m8_truth` (echoed rumours) and `run_m8_ihz` (hazard access) share; claim truth levels come
+# from `ih_truth_level` (provable flag per claim), decisions are M5 readings, and the economy (M3c) receives the hazard inputs
+# (`p_informed` from decision accuracy, `p_side` from uninoculated access). Control = IH off (untagged, unweighted, no categoriser,
+# ungated hazards), plus a disconnected world where voters decide alone. Hypotheses, stated before measuring: (1) the control
+# lets echoed misinformation sway M5 minds and puts weight near 1 on unfalsifiable claims (undesired outcome); (2) disconnected
+# voters are never swayed (structural); (3) with IH no unprovable claim exceeds the cap in any seed (structural); (4) in the
+# regime where lies bite (noisy voters, P51's limiting case) IH raises decision accuracy by at least 0.05 at z = 2 (paired seeds);
+# (4b) significance in the full tier; (5) in the default regime (accurate voters) accuracy is not lowered by more than 0.05 (one-sided equivalence, a ceiling effect
+# is expected, not a gain; full-tier probe_heavy1); (6) weighted payoff one-sided loss below 3; (7) the economy's floor of understanding is not lowered.
+@timed_testset "Probe: composed IH world on one network sways no minds, caps unfalsifiable weight, lifts decisions where lies bite (P53)" begin
+    econ = M3cParams(ToyParams(n = 30, steps = 25, plans = 6),
+                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                      for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, p_hazard = 0.2, hazard_size = 2.0,
+                     guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    m3 = run_m3c(econ; seed = 1)
+    world(ih, seed; kw...) = run_ih_world(IhWorldParams(; m3, econ, ih, seed, steps = 8, kw...))
+    world(false, 1; steps = 1); world(true, 1; steps = 1)   # warm-up: compilation is not the probe's cost (the full suite has compiled these paths)
+    t0 = time()
+    # control (IH off): echoed misinformation sways minds and unfalsifiable consensus is read as fact
+    c1 = world(false, 1)
+    @test c1.swayed > 0.05
+    @test c1.mean_unprovable_weight > 0.7 && c1.harm_peak > 0.35
+    @test c1.false_adoption > 0.5 && c1.accidental_harm > 0
+    # structural: disconnected voters are not swayed; with IH nothing unprovable exceeds the cap, in every seed
+    @test world(false, 1; connected = false).swayed == 0.0
+    @test all(world(true, s).harm_peak <= 0.99 * 0.35 + 1e-12 for s in 1:3)
+    # regime where lies bite (noisy voters, deferring to what they hear): accuracy gain by the significance rule
+    # smoke of the claims below (their significance, equivalence and Goal-pattern guards are the full-tier P53 heavy probe):
+    # noisy voters, three seeds, the gain's direction and size
+    acc = [world(true, s; signal_σ = 20.0).accuracy - world(false, s; signal_σ = 20.0).accuracy for s in 1:3]
+    @info "P53 accuracy gain, noisy voters (smoke)" n = length(acc) gain = (mean(acc), std(acc) / sqrt(length(acc)))
+    @test mean(acc) >= 0.05
+    # infrastructure event (8.168): unprovable claims become checkable, the world still runs and weights stay capped before it
+    ev = world(true, 1; infra_step = 4)
+    @test ev.accuracy > 0
+    wall = time() - t0
+    @info "P53 wall time (s)" wall
+    @test wall < 20
+end
+
 # ==============================================================================
 # Fast smoke versions of the heavy probes (probe_heavy{1,2,3}_tests.jl). Each runs the same mechanism in a smaller
 # world (1-4 seeds, tens to a couple of hundred steps, under 20 s) and asserts a structural property or one that

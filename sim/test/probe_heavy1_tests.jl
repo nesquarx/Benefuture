@@ -214,4 +214,32 @@ end
     @test all(t -> all(b -> t.audited[b] == (oc[b] > 0), 1:60), rep)
 end
 
+# The composed IH world (P53; fast smoke in probe_tests.jl): the significance, equivalence and Goal-pattern claims over many seeds.
+# Predictions stated before measuring (lead: effect detected, confidence 0.5): in the regime where lies bite (noisy voters, 8.63's
+# limiting case) IH raises decision accuracy by at least 0.05 at z = 3; in the default regime (accurate voters) accuracy sits at a
+# ceiling and is not lowered by more than 0.05 (one-sided); weighted payoff and the economy's floor of understanding lose less than 3.
+@timed_testset "Probe: composed IH world, accuracy gain where lies bite, no loss at the ceiling, Goal pattern guards (P53 heavy)" begin
+    econ = M3cParams(ToyParams(n = 30, steps = 25, plans = 6),
+                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                      for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, p_hazard = 0.2, hazard_size = 2.0,
+                     guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    m3 = run_m3c(econ; seed = 1)
+    world(ih, seed; kw...) = run_ih_world(IhWorldParams(; m3, econ, ih, seed, steps = 12, kw...))
+    seeds = 1:16
+    arms = [(world(true, s; signal_σ = 20.0), world(false, s; signal_σ = 20.0)) for s in seeds]
+    acc = [a.accuracy - b.accuracy for (a, b) in arms]
+    @info "P53 accuracy gain, noisy voters" n = length(acc) gain = (mean(acc), std(acc) / sqrt(length(acc)))
+    @test paired_effect(acc; z = 3.0, direction = :up).significant && mean(acc) >= 0.05
+    dflt = [world(true, s).accuracy - world(false, s).accuracy for s in seeds]
+    @info "P53 accuracy difference, default voters" mean = mean(dflt) se = std(dflt) / sqrt(length(dflt))
+    @test equivalent(-dflt; margin = 0.05, side = :upper).equivalent
+    @test equivalent(-[a.payoff - b.payoff for (a, b) in arms]; margin = 3.0, side = :upper).equivalent
+    @test equivalent(-[a.pattern.floor_u - b.pattern.floor_u for (a, b) in arms]; margin = 3.0, side = :upper).equivalent
+    # harm's peak (deepest single-being drop; a loss is a larger drop): one-sided, same margin
+    wd = [a.pattern.worst_drop - b.pattern.worst_drop for (a, b) in arms]
+    @info "P53 worst_drop difference (on - off)" mean = mean(wd) se = std(wd) / sqrt(length(wd))
+    @test equivalent(wd; margin = 3.0, side = :upper).equivalent
+end
+
 probe_total("heavy 1")
