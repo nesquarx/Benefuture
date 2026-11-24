@@ -49,8 +49,8 @@ OPEN_NOTES = [
     "beyond depth, such as the number of upstream links or novelty (L159), is not yet used.",
     "[OPEN] Pressure here is the share of the synthetic persona, organisation and public-figure rows, a tiny and "
     "unrepresentative sample; real pressure is the smoothed share of recent works, postings and evidence rows (LI.25).",
-    "[OPEN] Slice order is the circular order of axes angles. Axes scores are integers averaged over six votes, so "
-    "many fields share an angle; ties break by their primary sector's angle, then id.",
+    "Slice order is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where "
+    "present, else the five-point v1/v2 means (logged); ties break by their primary sector's angle, then id.",
 ]
 
 
