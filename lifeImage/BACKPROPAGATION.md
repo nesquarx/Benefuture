@@ -62,6 +62,11 @@ deleted. Numbering is stable (LI.n).
 - **LI.33** (2026-11-21) Potential is predicted expertise and predicted impact, self-assessment included; red
   potential, green expertise, blue impact; the mix shows estimation, not worth. DESIGN.
 - **LI.34** (2026-11-21) Two image versions: predicted/measured now; reputation positive/negative later. DESIGN.
+- **LI.36** (2026-11-24) Channels are levels built from events: each event imprints its own variegated pattern on
+  the circle (its memberships across related domains), its weight and decay set the pattern's luminosity, and these
+  imprints add up per channel; the sum saturates like light, giving per-domain levels. A potential event (a claim or
+  prediction) imprints with the level it claims, so red compares with green like for like. Replaces summing row
+  magnitudes on one shared scale. DESIGN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 
