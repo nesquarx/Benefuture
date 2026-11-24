@@ -38,6 +38,9 @@ VOL_ORGS = [("the food bank", "c.charity_giving"), ("a children's reading club",
             ("a refugee support group", "c.human_rights"), ("the animal shelter", "c.wildlife_conservation")]
 BUSINESSES = {"trades": ["workshop", "repair business", "bakery"], "hospitality": ["cafe", "catering business", "guesthouse"],
               "retail": ["shop", "market stall", "online store"], "construction": ["building firm", "joinery business"]}
+LEVELS = [(0.25, "a beginner"), (0.5, "competent"), (0.75, "skilled"), (0.9, "very skilled"), (1.01, "an expert")]
+IMPACTS = [(0.25, "has hardly mattered to anyone"), (0.5, "has made a small difference"), (0.75, "makes a clear difference to people around me"),
+           (0.9, "makes a big difference"), (1.01, "has changed things for many people")]
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 
@@ -843,16 +846,13 @@ def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", p
         for kind, tv in zip(("expertise", "impact"), truth[d]):
             v = tv + bias + P["est_regression_slope"] * (pivot - tv) + R_e.gauss(0, P["est_noise_sd"])
             est[d][kind] = round(clip(v, 0.01, 0.99), 4)
-    levels = [(0.25, "a beginner"), (0.5, "competent"), (0.75, "skilled"), (0.9, "very skilled"), (1.01, "an expert")]
-    impacts = [(0.25, "has hardly mattered to anyone"), (0.5, "has made a small difference"), (0.75, "makes a clear difference to people around me"),
-               (0.9, "makes a big difference"), (1.01, "has changed things for many people")]
     pred_where = {}
     for d in top:
         lab = seed_label(d).lower()
-        lv = next(w for th, w in levels if est[d]["expertise"] < th)
+        lv = next(w for th, w in LEVELS if est[d]["expertise"] < th)
         self_lines.append(f"I would say I am {lv} in {lab}.")
         pred_where[(d, "expertise")] = len(self_lines)
-        im = next(w for th, w in impacts if est[d]["impact"] < th)
+        im = next(w for th, w in IMPACTS if est[d]["impact"] < th)
         self_lines.append(f"What I do in {lab} {im}.")
         pred_where[(d, "impact")] = len(self_lines)
     persona.texts = {"resume": "\n".join(resume_lines) + "\n", "self": "\n".join(self_lines) + "\n", "diary": "\n".join(diary_lines) + "\n"}

@@ -1,7 +1,9 @@
 """Basemap v0: where each coarse field sits on the image (LI.22 to LI.26).
 
 Angle (LI.24, LI.25): each field is placed once, at the angle of its axes position, the mean of the cached axes
-votes (prompt versions 1 and 2; three variants each), abstract-tangible horizontal (0 deg = tangible, right) and
+votes: the v3 means (`axis_at` and `axis_pg` answers on a 0-10 scale, 5 balanced, scaled to [-1, 1]) when the field has
+votes on both axes, else the v1/v2 means (prompt versions 1 and 2; three variants each), the fallback recorded loudly
+(`degradation`, mechanism `axes_v3`, with the fields named). Abstract-tangible horizontal (0 deg = tangible, right) and
 personal-global vertical (90 deg = global, top). A field whose mean axes are shorter than `layout.AXES_MIN` has no
 direction and takes the weighted circular mean of its upstream domains (listed in `Basemap.inherited`). A sector has
 no axes of its own and takes the weighted circular mean of the fields placed under it.
@@ -23,7 +25,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..axes import axes_input, parse_scores
+from ..axes_v3 import parse_scale
 from ..canonical import content_hash
+from ..degradation import record_degradation
 from ..layout import AXES_MIN, _mean_angle, angle_from_axes, circ_diff
 from ..packs import is_sector
 from ..pressure import pressure_from_evidence
@@ -85,10 +89,14 @@ def load_cards(path=CARDS):
     return read_jsonl(path)
 
 
-def axes_means(cards, answers_path=ANSWERS, legacy=LEGACY_CARDS):
-    """{field id: {abstract_tangible, personal_global, votes}}, scores averaged over every cached vote and scaled to
-    [-1, 1]. Votes are matched to fields by the hash of the axes input; answers cached against earlier card sets
-    (`legacy`) are matched through those sets. Fields with no vote are absent."""
+def axes_means(cards, answers_path=ANSWERS, legacy=LEGACY_CARDS, v3_paths=None, log=None):
+    """{field id: {abstract_tangible, personal_global, votes, source}}, scores scaled to [-1, 1]. A field takes its v3
+    means (the cached `axis_at` and `axis_pg` answers, 0 abstract / personal to 10 tangible / global, 5 balanced; votes
+    is the smaller count of the two axes) when it has votes on both axes (`source` "v3"), else the mean of every
+    cached v1/v2 vote (`source` "v1v2"), the substitution recorded loudly in `log` (see `degradation`). Votes are
+    matched to fields by the hash of the axes input; answers cached against earlier card sets (`legacy`) are matched
+    through those sets. `v3_paths` is (axis_at file, axis_pg file), by default beside `answers_path`. Fields with no
+    vote are absent."""
     index = {}
     for cs in [cards] + [read_jsonl(p) for p in legacy if Path(p).exists()]:
         by = {c["id"]: c for c in cs}
@@ -101,9 +109,25 @@ def axes_means(cards, answers_path=ANSWERS, legacy=LEGACY_CARDS):
         i = index.get(a["input_hash"])
         if i in want:
             acc.setdefault(i, []).append(parse_scores(a["verdict"]))
-    return {i: {"abstract_tangible": math.fsum(s[0] for s in v) / len(v) / 2,
-                "personal_global": math.fsum(s[1] for s in v) / len(v) / 2, "votes": len(v)}
-            for i, v in sorted(acc.items())}
+    out = {i: {"abstract_tangible": math.fsum(s[0] for s in v) / len(v) / 2,
+               "personal_global": math.fsum(s[1] for s in v) / len(v) / 2, "votes": len(v), "source": "v1v2"}
+           for i, v in sorted(acc.items())}
+    v3_paths = v3_paths or [Path(answers_path).parent / f"{t}.jsonl" for t in ("axis_at", "axis_pg")]
+    v3 = {}
+    for path, (task_type, axis) in zip(v3_paths, (("axis_at", "abstract_tangible"), ("axis_pg", "personal_global"))):
+        for a in read_jsonl(path) if Path(path).exists() else []:
+            i = index.get(a["input_hash"])
+            if i in want and a.get("task_type", task_type) == task_type:
+                v3.setdefault(i, {}).setdefault(axis, []).append(parse_scale(a["verdict"]))
+    for i, d in sorted(v3.items()):
+        if len(d) == 2:
+            out[i] = {**{ax: (math.fsum(v) / len(v) - 5) / 5 for ax, v in d.items()}, "votes": min(len(v) for v in d.values()), "source": "v3"}
+    fallback = sorted(i for i, a in out.items() if a["source"] == "v1v2")
+    if fallback:
+        shown = ", ".join(fallback[:5]) + (f" and {len(fallback) - 5} more" if len(fallback) > 5 else "")
+        record_degradation(f"axes_means: {shown}", "axes_v3", "axes v1/v2 means",
+                           f"no axis_at and axis_pg v3 answers for {len(fallback)} of {len(out)} fields", log)
+    return dict(sorted(out.items()))
 
 
 def _own(ax):
@@ -213,6 +237,7 @@ def evidence_rows(root=ROOT):
 
 def build_v0(root=ROOT):
     cards = load_cards(root / "data/coarse/seed_v2.jsonl")
-    bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / "data/coarse/seed_v0.jsonl", root / "data/coarse/seed_v1.jsonl"]),
+    bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / "data/coarse/seed_v0.jsonl", root / "data/coarse/seed_v1.jsonl"],
+                                 [root / "data/answers/axis_at.jsonl", root / "data/answers/axis_pg.jsonl"]),
                evidence_rows(root), cards[0]["basemap_version"])
     return bm

@@ -229,6 +229,21 @@ optimality) → migration table → release. Non-raster images re-render from ro
   calibration). Caveat: runners parsed the templated synthetic resumes by pattern, so this measures template parsing;
   realistic varied texts (or redacted real resumes, LI.15) are needed.
 
+- **Axes v3 (batches built, not run)** (`prompts/axes.v3.md`, `lifeimage/axes_v3.py`, `tools/build_v3_batches.py`): two task
+  types, `axis_at` and `axis_pg`, each verdict a string "0".."10" (0 abstract / personal-social, 10 tangible /
+  global-professional, 5 balanced), one card per task, 247 fields in 5 balanced parts of 49-50 tasks per type and variant
+  (30 files, `data/batches/axes.v3.<at|pg>.var{0,1,2}.part{n}.jsonl`, gitignored), a different card order per variant;
+  the prompt and `prompts/RUNNER.md` forbid bulk scoring tables. Predicted by the next measurement (ETA: when run; confidence
+  moderate): fields at 0 or 10 below 25%, mean pairwise variant Spearman at least 0.8, Spearman with the v1/v2 means at
+  least 0.85. `tools/axes_compare.py` reports all of it, and with the pairwise pilot; `render/basemap.py` takes v3 means per
+  field when both axes have votes and falls back to v1/v2 loudly (degradation `axes_v3`).
+- **Texts v2** (`lifeimage/generators/texts_v2.py`, `tools/gen_texts_v2.py`, `data/synthetic/texts_v2/`): the 40 personas'
+  texts regenerated, rows unchanged, in three resume formats (chronological, skills-first, narrative bio), a phrase bank,
+  vague and missing dates, omitted details (never an omitted row), personal lines, and embellishment matching the
+  calibration type (over inflates, under deflates, well neutral). A date-led line parser that recovers all resume rows of the
+  v1 texts recovers 0% (strict) and 18% (lenient) of the v2 rows; inflating minus deflating words per resume: over +6.6, well
+  +0.4, under -5.1. Next: rerun extraction (3 variants) on texts_v2 and score with the v2 spans in `<id>.spans.json`.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance

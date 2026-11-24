@@ -36,6 +36,9 @@ prefix describes (ids from the pack in the prefix; no self-links; upstream weigh
 
 - Judge each task on its own input alone. Do not use answers to earlier tasks, and do not guess what other variants
   said: variants of one input are answered independently on purpose.
+- Judge each task on its own card; do not build a scoring table or script that assigns values in bulk. Many similar
+  judgements (scores, ratings, placements) are answered one by one, reading each input; a lookup table you wrote
+  once and applied to all measures your table, not the inputs.
 - Use only information in the task and the prefix. If the input is insufficient, still give the best allowed
   verdict and say so in the reason.
 - The verdict must be copied exactly from `allowed_verdicts`. Never invent a verdict.
