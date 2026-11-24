@@ -224,7 +224,8 @@ optimality) → migration table → release. Non-raster images re-render from ro
 - **Axes v3** (0–10 scale, ≤ 50 cards per runner, each card judged on its own; abstract ↔ tangible, 2 variants):
   scores at 0 or 10: 3.0% (v1 52.1%, v2 56.4% on this axis; predicted < 15%); variant agreement Spearman 0.943, mean
   absolute difference 0.59 points (predicted ≥ 0.75); Spearman with v1/v2 means 0.956 and with the pairwise pilot
-  0.878 (predicted ≥ 0.8). Adopted for the basemap on this axis; personal ↔ global v3 next. Small batches cost about
+  0.878 (predicted ≥ 0.8). Personal ↔ global v3: at 0 or 10 5.3%, variant agreement 0.952, Spearman with v1/v2 means
+  0.955. Adopted on both axes; images re-rendered on the v3 basemap. Small batches cost about
   45k tokens per runner and stop the lookup-table shortcut.
 - **Extraction v1** (40 synthetic resumes, 3 variants; `data/gold/extract_v1_scores.md`): resumes carry 17% of a
   persona's truth rows. Expertise precision 0.62 exact, 0.70 within one link; recall of resume rows 0.52 / 0.58
