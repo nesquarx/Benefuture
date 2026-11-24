@@ -1,4 +1,4 @@
 # Battery Results: economy.csv
 
-- **Commit**: `4248639a05af6f526804c28eb152335b5609ba8a`
-- **Rows**: 62
+- **Commit**: `0b4cd9dea124d779b3cb250d5c4d7c2e353ad14a`
+- **Rows**: 61
