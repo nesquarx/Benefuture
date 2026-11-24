@@ -242,4 +242,44 @@ end
     @test equivalent(wd; margin = 3.0, side = :upper).equivalent
 end
 
+# Ideological extremists on the IH world (P54; fast smoke in probe_tests.jl). Regimes and predictions stated before measuring (lead:
+# spread reduced with IH, confidence 0.6; Goal effect may be small). Regimes: (a) default voters (signal_sigma 2), (b) noisy voters
+# (signal_sigma 20, 8.63's limiting case); extremist share 0.25, reframe chance 0.5. Claims, direction, metric, smallest effect that matters:
+# (1) IH lowers the extremists' influence (truth level x their weighted share of the consensus), at least 0.05, z = 2, both regimes;
+# (2) IH lowers the minds swayed (control less IH), at least 0.02, z = 2, both regimes (confidence 0.5: the liar bloc already sways);
+# (3) the wrong-side weight on unprovable claims falls with IH, at least 0.05, z = 2; (4) Goal pattern (floor of understanding, harm's
+# peak) one-sided loss of IH vs control below 3 (equivalence); structural: unprovable influence under IH within the cap in every seed.
+# Seeds by precision (seeds_until_stable, tol 0.01, 4 to 16 seeds), count reported. All results are reported whichever way they fall.
+@timed_testset "Probe: extremists on the IH world, spread and influence bounded, Goal pattern guards (P54 heavy)" begin
+    econ = M3cParams(ToyParams(n = 30, steps = 25, plans = 6),
+                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                      for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, p_hazard = 0.2, hazard_size = 2.0,
+                     guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    m3 = run_m3c(econ; seed = 1)
+    world(ih, seed; kw...) = run_ih_world(IhWorldParams(; m3, econ, ih, seed, steps = 12, extremist_frac = 0.25, kw...))
+    for (name, kw) in (("default voters", (;)), ("noisy voters", (signal_σ = 20.0,)))
+        cache = Dict{Int,Any}()
+        arms(s) = get!(cache, s) do; (world(false, s; kw...), world(true, s; kw...)); end
+        r = seeds_until_stable(s -> (a = arms(s); a[1].ext_influence - a[2].ext_influence); tol = 0.01, min_seeds = 4, max_seeds = 16)
+        S = r.seeds; A = [arms(s) for s in S]
+        @info "P54 extremist influence, control less IH ($name)" n = r.n stable = r.stable effect = (r.mean, r.se)
+        @test paired_effect(r.values; z = 2.0, direction = :up).significant && r.mean >= 0.05
+        sw = [a[1].swayed - a[2].swayed for a in A]
+        @info "P54 minds swayed, control less IH ($name)" n = length(sw) effect = (mean(sw), std(sw) / sqrt(length(sw)))
+        @test paired_effect(sw; z = 2.0, direction = :up).significant && mean(sw) >= 0.02
+        wr = [a[1].wrong_unprovable_weight - a[2].wrong_unprovable_weight for a in A]
+        @info "P54 wrong-side weight on unprovable claims, control less IH ($name)" n = length(wr) effect = (mean(wr), std(wr) / sqrt(length(wr)))
+        @test paired_effect(wr; z = 2.0, direction = :up).significant && mean(wr) >= 0.05
+        @test all(a[2].ext_influence_unprovable_peak <= 0.99 * 0.35 + 1e-12 for a in A)    # structural, every seed
+        # the Goal pattern is noisy (harm's peak especially): its seeds are added until its own precision is reached (tol 1.0, up to 16)
+        rg = seeds_until_stable(s -> (a = arms(s); a[2].pattern.worst_drop - a[1].pattern.worst_drop); tol = 1.0, min_seeds = 4, max_seeds = 16)
+        G = [arms(s) for s in rg.seeds]
+        @info "P54 Goal pattern ($name)" n = rg.n stable = rg.stable floor_u = mean(a[2].pattern.floor_u - a[1].pattern.floor_u for a in G) worst_drop = (rg.mean, rg.se)
+        @test all(a[2].ext_influence_unprovable_peak <= 0.99 * 0.35 + 1e-12 for a in G)
+        @test equivalent(-[a[2].pattern.floor_u - a[1].pattern.floor_u for a in G]; margin = 3.0, side = :upper).equivalent
+        @test equivalent(rg.values; margin = 3.0, side = :upper).equivalent
+    end
+end
+
 probe_total("heavy 1")

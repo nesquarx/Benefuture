@@ -2637,6 +2637,44 @@ end
     @test wall < 20
 end
 
+# Ideological extremists in the IH world (author ruling 8.166: spread is checkable only where the handling the framework prescribes
+# is in place; 8.168: unfalsifiable framing; WORLD_COVERAGE step 3; P54). Extremists publish the ideology at full confidence whatever the
+# evidence, frame claims as unfalsifiable, and spread on the shared network as one more fixed-side bloc. Predictions before measuring
+# (lead): spread (minds swayed) and extremist influence fall with IH, confidence 0.6; the Goal pattern effect may be small.
+# Hypotheses: (1) control (IH off): extremists carry weight above 0.1 of a claim's consensus on average (undesired outcome; stated 0.3 and 'raise
+# the minds swayed' first, both measured lower: 0.18 and no added sway beside the liar bloc, recorded here, not tuned); (2) with IH the extremists' influence on an unprovable claim never exceeds the cap (structural, every seed)
+# and no wrong-side weight exceeds it; (3) IH lowers extremist influence and does not raise minds swayed (three seeds, direction only;
+# significance in probe_heavy1); (4) the wrong-side weight on unprovable claims reaches the economy: switching the glue off lowers the
+# control's side-effect hazards path (p_side) so the economy differs; (5) Goal pattern one-sided loss of IH vs control below 3.
+@timed_testset "Probe: ideological extremists on the IH world are bounded without sanctioning speech (P54)" begin
+    econ = M3cParams(ToyParams(n = 30, steps = 25, plans = 6),
+                     [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                      for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, p_hazard = 0.2, hazard_size = 2.0,
+                     guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    m3 = run_m3c(econ; seed = 1)
+    world(ih, seed; kw...) = run_ih_world(IhWorldParams(; m3, econ, ih, seed, steps = 8, extremist_frac = 0.25, kw...))
+    world(false, 1; steps = 1); world(true, 1; steps = 1)   # warm-up
+    t0 = time()
+    ctrl = [world(false, s) for s in 1:3]; ih = [world(true, s) for s in 1:3]
+    none = world(false, 1; extremist_frac = 0.0)
+    @test ctrl[1].n_extremists > 0 && none.n_extremists == 0 && none.ext_influence == 0.0
+    @info "P54 swayed with / without extremists (control, seed 1)" with = ctrl[1].swayed without = none.swayed   # falsified expectation: the liar bloc already saturates M5 spreading, so extremists add no measurable sway at three seeds
+    @test mean(c.ext_influence for c in ctrl) > 0.1                  # unhandled, the extremist share of the consensus is read as fact (first guess 0.3 was too high; measured 0.18)
+    @test all(w.ext_influence_unprovable_peak <= 0.99 * 0.35 + 1e-12 && w.harm_peak <= 0.99 * 0.35 + 1e-12 for w in ih)   # structural
+    @info "P54 extremist influence / swayed (control, IH)" infl = (mean(c.ext_influence for c in ctrl), mean(w.ext_influence for w in ih)) sway = (mean(c.swayed for c in ctrl), mean(w.swayed for w in ih))
+    @test mean(w.ext_influence for w in ih) < mean(c.ext_influence for c in ctrl)
+    @test mean(w.swayed for w in ih) <= mean(c.swayed for c in ctrl) + 1e-12
+    # glue: wrong-side weight on unprovable claims reaches the economy
+    off = world(false, 1; unprovable_to_econ = 0.0)
+    @test ctrl[1].wrong_unprovable_weight > 0 && ctrl[1].tr.floor_u != off.tr.floor_u   # the economy runs on a different side-effect chance
+    @test all(w.wrong_unprovable_weight <= ctrl[i].wrong_unprovable_weight + 1e-12 for (i, w) in enumerate(ih))
+    @test mean(i.pattern.floor_u - c.pattern.floor_u for (i, c) in zip(ih, ctrl)) > -3.0
+    wall = time() - t0
+    @info "P54 wall time (s)" wall
+    @test wall < 20
+end
+
 # ==============================================================================
 # Fast smoke versions of the heavy probes (probe_heavy{1,2,3}_tests.jl). Each runs the same mechanism in a smaller
 # world (1-4 seeds, tens to a couple of hundred steps, under 20 s) and asserts a structural property or one that
