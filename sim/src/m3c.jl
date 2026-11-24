@@ -1132,7 +1132,8 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         p.ra_domain && 1 <= c <= ntrue && (ra_domain_audit[c] += p.audit_cost)
         right = rand(erng) < p.restraint_audit_acc
         upheld = right ? justified : !justified
-        liab = false_restraint_liability(upheld, p.restraint_kappa, cost + p.audit_cost)
+        # the audit speaks in credence that the restraint was false: its accuracy on an overturn, the rest on an upholding
+        liab = credence_restraint_liability(upheld ? 1 - p.restraint_audit_acc : p.restraint_audit_acc, p.restraint_kappa, cost + p.audit_cost)
         upheld || (restraints_overturned[] += 1)
         liab > 0 && (enf_liab[k] += liab; restraint_liability[] += liab)
         upheld

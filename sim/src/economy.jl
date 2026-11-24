@@ -304,6 +304,19 @@ function false_restraint_liability(upheld::Bool, kappa::Real, cost::Real)
 end
 
 """
+    credence_restraint_liability(conf, kappa, cost) -> liability
+
+Credence-scaled liability (Lean `credence_restraint_liability_ref`, ruling 8.169 iii, a lead decision
+pending author review): `kappa * cost * clamp(2 conf - 1, 0, 1)`, `conf` the audit's credence that the
+restraint was false. Zero at `conf <= 1/2`; the binary liability at `conf = 1`.
+"""
+function credence_restraint_liability(conf::Real, kappa::Real, cost::Real)
+    check(isfinite(conf) && 0 <= conf <= 1, "conf in [0, 1]")
+    check(isfinite(kappa) && kappa >= 0 && isfinite(cost) && cost >= 0, "kappa and cost non-negative")
+    ccall(sym(:bf_credence_restraint_liability), Float64, (Float64, Float64, Float64), conf, kappa, cost)
+end
+
+"""
     responsibility_factor(is_act, is_informed, has_duty, counterfactual_ratio;
                           severity_scale = 1.0, accident_factor = 0.5) -> factor
 

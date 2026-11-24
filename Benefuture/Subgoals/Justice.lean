@@ -533,5 +533,68 @@ theorem false_restraint_liability_mono_kappa (k1 k2 cost : ℝ) (hle : k1 ≤ k2
   simp only [false_restraint_liability, Bool.false_eq_true, if_false]
   exact mul_le_mul_of_nonneg_right (max_le_max_left 0 hle) (le_max_left 0 cost)
 
-end Benefuture.Subgoals
+/-- Weight of an audit's credence `conf` that the restraint was false (ruling 8.169 iii, a lead
+    decision pending author review; precedent `sanction_escrow_credence`): truth levels never reach 1,
+    so the audit speaks in credence, not verdict. Zero at and below one half (no better than a coin),
+    rising linearly to 1 at certainty. -/
+noncomputable def restraint_audit_weight (conf : ℝ) : ℝ := min 1 (max 0 (2 * conf - 1))
 
+/-- Credence-scaled liability of the enforcing entity: the weighted share of the cost the audit
+    believes was imposed falsely, `kappa * cost * weight(conf)`. At certainty it is the binary
+    `false_restraint_liability false`. -/
+noncomputable def credence_restraint_liability (conf kappa cost : ℝ) : ℝ :=
+  max 0 kappa * max 0 cost * restraint_audit_weight conf
+
+theorem restraint_audit_weight_zero_at_or_below_half (conf : ℝ) (h : conf ≤ 1 / 2) :
+    restraint_audit_weight conf = 0 := by
+  unfold restraint_audit_weight
+  have : max 0 (2 * conf - 1) = 0 := max_eq_left (by linarith)
+  rw [this]; norm_num
+
+theorem restraint_audit_weight_mono (c1 c2 : ℝ) (hle : c1 ≤ c2) :
+    restraint_audit_weight c1 ≤ restraint_audit_weight c2 := by
+  unfold restraint_audit_weight
+  exact min_le_min_left 1 (max_le_max_left 0 (by linarith))
+
+theorem restraint_audit_weight_nonneg (conf : ℝ) : 0 ≤ restraint_audit_weight conf := by
+  unfold restraint_audit_weight
+  exact le_min zero_le_one (le_max_left _ _)
+
+theorem restraint_audit_weight_le_one (conf : ℝ) : restraint_audit_weight conf ≤ 1 :=
+  min_le_left _ _
+
+/-- Liability is monotone in the audit's confidence. -/
+theorem credence_restraint_liability_mono_conf (c1 c2 kappa cost : ℝ) (hle : c1 ≤ c2) :
+    credence_restraint_liability c1 kappa cost ≤ credence_restraint_liability c2 kappa cost := by
+  unfold credence_restraint_liability
+  have h0 : 0 ≤ max 0 kappa * max 0 cost := mul_nonneg (le_max_left _ _) (le_max_left _ _)
+  exact mul_le_mul_of_nonneg_left (restraint_audit_weight_mono c1 c2 hle) h0
+
+/-- No liability when the audit is no better than a coin. -/
+theorem credence_restraint_liability_zero_at_or_below_half (conf kappa cost : ℝ) (h : conf ≤ 1 / 2) :
+    credence_restraint_liability conf kappa cost = 0 := by
+  unfold credence_restraint_liability
+  rw [restraint_audit_weight_zero_at_or_below_half conf h]; simp
+
+/-- At certainty it is the binary liability. -/
+theorem credence_restraint_liability_certain (kappa cost : ℝ) :
+    credence_restraint_liability 1 kappa cost = false_restraint_liability false kappa cost := by
+  unfold credence_restraint_liability restraint_audit_weight
+  have : min (1:ℝ) (max 0 (2 * 1 - 1)) = 1 := by norm_num
+  rw [this, false_restraint_liability]
+  simp
+
+/-- Never above the binary liability (doubt only lightens it). -/
+theorem credence_restraint_liability_le_binary (conf kappa cost : ℝ) :
+    credence_restraint_liability conf kappa cost ≤ false_restraint_liability false kappa cost := by
+  have h := credence_restraint_liability_mono_conf conf (max conf 1) kappa cost (le_max_left _ _)
+  have h2 : credence_restraint_liability (max conf 1) kappa cost = credence_restraint_liability 1 kappa cost := by
+    unfold credence_restraint_liability restraint_audit_weight
+    have a : min 1 (max 0 (2 * max conf 1 - 1)) = 1 :=
+      min_eq_left (le_max_of_le_right (by nlinarith [le_max_right conf 1]))
+    have b : min 1 (max 0 (2 * (1:ℝ) - 1)) = 1 := by norm_num
+    rw [a, b]
+  rw [h2, credence_restraint_liability_certain] at h
+  exact h
+
+end Benefuture.Subgoals

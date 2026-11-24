@@ -11,14 +11,14 @@ const AG = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0
 const EAGER = [0.0, 0.0, 0.3, 0.3]   # two precise and two overeager enforcing entities (world property)
 const SEEDS = 1:24
 
-function arm(audit, kappa, seed; eager = EAGER)
+function arm(audit, kappa, seed; eager = EAGER, acc = 0.9)
     p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), AG, [1, 1], trues(2);
                   λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
                   guardians = [1, 2], p_informed = 1.0, diligence = [0.0, 1.0, 1.0, 1.0],
                   p_hazard = 0.35, hazard_share = 0.25, hazard_size = 1.0, repair_efficiency = 1.0,
                   endowment = 50.0, sanction_escalate = true, sanction_pattern_min = 3,
                   sanction_restraint_decay = 0.6, sanction_min_share = 0.1, LEGACY...,
-                  enforcer_eager = eager, restraint_audit = audit, restraint_kappa = kappa)
+                  enforcer_eager = eager, restraint_audit = audit, restraint_kappa = kappa, restraint_audit_acc = acc)
     tr = run_m3c(p; seed = seed)
     sp = success_pattern(tr; from = 20)
     missed_harm = tr.restraint_missed * 1.0                 # one hazard unit per dangerous proposer left unrestrained by chill
@@ -29,31 +29,39 @@ function arm(audit, kappa, seed; eager = EAGER)
      total_harm = tr.false_restraint_harm + missed_harm + tr.restraint_audit_cost, floor_u = sp.floor_u)
 end
 
-function sweep(kappas = [0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0])
+const ACCS = [0.8, 0.9, 0.97]
+
+function sweep(kappas = [0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0]; accs = ACCS)
     rows = NamedTuple[]
     free = [arm(false, 0.0, s) for s in SEEDS]
-    push!(rows, (label = "unaudited", kappa = NaN, runs = free))
-    for k in kappas
-        push!(rows, (label = "audited", kappa = k, runs = [arm(true, k, s) for s in SEEDS]))
+    push!(rows, (label = "unaudited", acc = NaN, kappa = NaN, runs = free))
+    for a in accs, k in kappas
+        push!(rows, (label = "audited", acc = a, kappa = k, runs = [arm(true, k, s; acc = a) for s in SEEDS]))
     end
     rows
 end
 
+# Harm components reported apart (8.169 iii: liability scaled by the audit's credence that the restraint was false):
+# unrestrained = hazard units of dangerous proposers left unrestrained (chill or capacity), false = harm of false
+# restraints that stood, audit = commons spend on audits, standing = share of justified restraints that stood.
 function report(rows, io = stdout)
     m(r, f) = mean(getfield.(r.runs, f))
-    println(io, "seeds ", first(SEEDS), ":", last(SEEDS), " (", length(SEEDS), ", paired); eager = ", EAGER)
-    println(io, "arm        kappa  false_eff just_eff just_rate missed audits audit_cost false_harm total_harm floor_u")
+    println(io, "seeds ", first(SEEDS), ":", last(SEEDS), " (", length(SEEDS), ", paired); eager = ", EAGER, "; liability scaled by audit credence (2 conf - 1)")
+    println(io, "arm        acc   kappa  unrestrained false_harm audit_spend standing total   floor_u")
     for r in rows
-        println(io, rpad(r.label, 10), " ", rpad(isnan(r.kappa) ? "-" : string(r.kappa), 6),
-                join([lpad(string(round(m(r, f), digits = 2)), 10) for f in (:false_eff, :just_eff, :just_rate, :missed, :audits, :audit_cost, :false_harm, :total_harm, :floor_u)]))
+        println(io, rpad(r.label, 10), " ", rpad(isnan(r.acc) ? "-" : string(r.acc), 5), " ", rpad(isnan(r.kappa) ? "-" : string(r.kappa), 6),
+                join([lpad(string(round(m(r, f), digits = 2)), 11) for f in (:missed_harm, :false_harm, :audit_cost, :just_rate, :total_harm, :floor_u)]))
     end
-    aud = filter(r -> r.label == "audited", rows)
-    best = aud[argmin([m(r, :total_harm) for r in aud])]
-    println(io, "kappa minimising total harm (false-restraint harm + chilled-restraint harm + audit cost): ", best.kappa)
     free = first(rows)
-    d(f) = [getfield(a, f) - getfield(b, f) for (a, b) in zip(best.runs, free.runs)]
-    println(io, "best vs unaudited, paired mean (se): ",
-            join(["$f " * string(round(mean(d(f)), digits = 2)) * " (" * string(round(std(d(f)) / sqrt(length(SEEDS)), digits = 2)) * ")" for f in (:false_eff, :just_rate, :floor_u)], "; "))
+    for a in unique(filter(!isnan, getfield.(rows, :acc)))
+        aud = filter(r -> r.label == "audited" && r.acc == a, rows)
+        tot = [m(r, :total_harm) for r in aud]
+        i = argmin(tot)
+        interior = 1 < i < length(aud) && tot[i] < tot[1] && tot[i] < tot[end]
+        d(f) = [getfield(x, f) - getfield(y, f) for (x, y) in zip(aud[i].runs, free.runs)]
+        println(io, "acc ", a, ": kappa minimising total = ", aud[i].kappa, " (interior optimum: ", interior, "); vs unaudited paired mean (se) ",
+                join(["$f " * string(round(mean(d(f)), digits = 2)) * " (" * string(round(std(d(f)) / sqrt(length(SEEDS)), digits = 2)) * ")" for f in (:false_eff, :just_rate, :floor_u)], "; "))
+    end
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__

@@ -417,14 +417,22 @@ Governance and incentives
   [`restraint_audit_prob_mono_severity`](../Benefuture/Subgoals/Justice.lean),
   [`restraint_audit_prob_mono_duration`](../Benefuture/Subgoals/Justice.lean),
   [`false_restraint_liability_zero_when_upheld`](../Benefuture/Subgoals/Justice.lean),
-  [`false_restraint_liability_positive_when_overturned`](../Benefuture/Subgoals/Justice.lean)).
+  [`false_restraint_liability_positive_when_overturned`](../Benefuture/Subgoals/Justice.lean)). The liability is scaled
+  by the audit's credence that the restraint was false (lead decision pending author review): zero at credence of one
+  half or below, monotone above, the binary rule at certainty
+  ([`credence_restraint_liability_zero_at_or_below_half`](../Benefuture/Subgoals/Justice.lean),
+  [`credence_restraint_liability_mono_conf`](../Benefuture/Subgoals/Justice.lean),
+  [`credence_restraint_liability_certain`](../Benefuture/Subgoals/Justice.lean),
+  [`credence_restraint_liability_le_binary`](../Benefuture/Subgoals/Justice.lean)).
   In simulation (M3c with two overeager of four enforcing entities, 24 paired seeds,
   [`restraint_balance.txt`](../sim/battery/results/restraint_balance.txt)): audited restraint with liability weight 1
-  cuts effective false restraints from 22.5 to 11.7 per run and raises the floor of understanding (+1.1, no loss),
-  at a cost: the share of justified restraints that stand falls from 1.0 to 0.59 (liability chills justified restraint
-  too, and audit capacity and audit noise matter), and audit spend exceeds the harm of false restraint in this toy
-  world. Over kappa 0 to 8 every curve is monotone: no interior optimum was found, so the balance is open. Toy
-  assumptions: four enforcers, a fixed audit capacity, audit accuracy 0.9, harm proxy of one unit per missed restraint.
+  cuts false-restraint harm (13.5 unaudited to 7.9 at audit accuracy 0.9) and does not lower the floor of understanding,
+  at a measured trade-off, not a claim: the share of justified restraints that stand falls from 1.0 to 0.55, 0.61, 0.65
+  at audit accuracy 0.8, 0.9, 0.97 (a wrong audit still overturns a correct restraint, and equivalence within a margin
+  does not hold). Audit spend (about 30 at kappa 1) exceeds the harm it prevents in this toy, so total harm falls
+  monotonically in kappa at every accuracy: no interior optimum, the balance is open. Toy assumptions: four
+  enforcers, a fixed audit capacity, one unit of harm per unrestrained dangerous proposer, an audit cost per audit
+  of one unit.
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).

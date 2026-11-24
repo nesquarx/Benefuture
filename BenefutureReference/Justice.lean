@@ -74,4 +74,15 @@ def false_restraint_liability_ref (upheld : Bool) (kappa cost : Float) : Float :
   if upheld then 0.0
   else (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0)
 
+/-- Weight of the audit's credence that the restraint was false (ruling 8.169 iii): `clamp (2 conf - 1)`
+    to [0, 1]; zero at and below one half. Matches `restraint_audit_weight`. -/
+def restraint_audit_weight_ref (conf : Float) : Float :=
+  let w := 2.0 * conf - 1.0
+  if w < 0.0 then 0.0 else if w > 1.0 then 1.0 else w
+
+/-- Credence-scaled liability: `max 0 kappa * max 0 cost * weight conf`. Matches
+    `credence_restraint_liability`. -/
+def credence_restraint_liability_ref (conf kappa cost : Float) : Float :=
+  (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0) * restraint_audit_weight_ref conf
+
 end BenefutureReference

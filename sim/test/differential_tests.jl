@@ -6,6 +6,8 @@
 # tolerance. Test oracles are deliberately independent transcriptions of the Lean docstrings; the
 # simulation itself never computes rules in Julia.
 
+include("test_helpers.jl")   # all_perms (also used by shapley_sampling_tests.jl), so this file runs alone
+
 const HOSTILE = (NaN, Inf, -Inf, -1.0, -1e-9, 0.0, 1e-300, 1.0, 1.5, 1e12)
 hostile(r) = rand(r) < 0.3 ? rand(r, HOSTILE) : (rand(r) < 0.5 ? rand(r) : 10 * randn(r))
 
@@ -151,6 +153,11 @@ fin(xs...) = all(isfinite, xs)
                        (up, k, c) -> fin(k, c) && k >= 0 && c >= 0,
                        (up, k, c) -> false_restraint_liability(up, k, c),
                        (up, k, c) -> up ? 0.0 : k * c) == (guard = 0, value = 0)
+    @test differential(:credence_restraint_liability,
+                       r -> (rand(r) < 0.1 ? hostile(r) : rand(r), rand(r) < 0.1 ? hostile(r) : 4.0 * rand(r), rand(r) < 0.1 ? hostile(r) : 4.0 * rand(r)),
+                       (q, k, c) -> fin(q, k, c) && 0 <= q <= 1 && k >= 0 && c >= 0,
+                       (q, k, c) -> credence_restraint_liability(q, k, c),
+                       (q, k, c) -> k * c * clamp(2q - 1, 0.0, 1.0)) == (guard = 0, value = 0)
     @test differential(:ra_value_per_cost,
                        r -> (rand(r) < 0.1 ? hostile(r) : 20 * rand(r) - 5, rand(r) < 0.1 ? hostile(r) : 5 * rand(r) - 0.5,
                              rand(r) < 0.1 ? hostile(r) : 3 * rand(r) - 0.5, rand(r) < 0.1 ? hostile(r) : 2 * rand(r)),

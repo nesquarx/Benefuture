@@ -1040,7 +1040,7 @@ function run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
                     restraints_audited += 1
                     right = rand(rng) < p.restraint_audit_acc
                     upheld = right ? justified : !justified
-                    restraint_liability += false_restraint_liability(upheld, p.restraint_kappa, sev * incident_harm)
+                    restraint_liability += credence_restraint_liability(upheld ? 1 - p.restraint_audit_acc : p.restraint_audit_acc, p.restraint_kappa, sev * incident_harm)
                     upheld || (unaudited_force_blocked += 1; stands = false)
                 end
                 if stands && !justified

@@ -480,6 +480,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_false_restraint_liability] def falseRestraintLiability (upheld : UInt8) (kappa cost : Float) : Float :=
   false_restraint_liability_ref (upheld != 0) kappa cost
 
+@[export bf_credence_restraint_liability] def credenceRestraintLiability (conf kappa cost : Float) : Float :=
+  credence_restraint_liability_ref conf kappa cost
+
 -- 8.133 & 8.155 / L83: RA estimating domain value per (cost + audit), commons reserve, contraction factor
 @[export bf_ra_value_per_cost] def raValuePerCost (measuredGain resourceCost auditCost fallback : Float) : Float :=
   ra_value_per_cost_ref measuredGain resourceCost auditCost fallback
