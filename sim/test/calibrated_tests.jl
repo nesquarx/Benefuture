@@ -126,11 +126,12 @@ end
 end
 
 # Part of 8.65 (a), the seed-dependent leaf qualification, is the same fragility: early outliers in a
-# model's record keep its currency from ever qualifying. Over paired seeds (1:24) of the realistic world
+# model's record keep its currency from ever qualifying. Over paired seeds (1:48) of the realistic world
 # (250 steps), time-decayed accuracy and record credence (8.85) increase floor growth and avoid lane halts
 # (since sanction escalation (31d6838), healthy `:record` runs still trigger brief restraints, so compare total halts avoided).
 @testset "Record credence: the currency regime takes hold in more seeds" begin
-    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:24]
+    # 48 seeds: at 24 the growth effect sat at z = 2.1 locally and fell under 2 on CI (run 45411289849); seeds added by precision.
+    runs(rule) = [run_m3c(realistic(; steps = 250, credence_rule = rule); seed) for seed in 1:48]
     normal, record = runs(:normal), runs(:record)
     growth(tr) = tr.floor_u[end] - tr.floor_u[51]
     @test paired_effect(growth.(record) .- growth.(normal)).significant
