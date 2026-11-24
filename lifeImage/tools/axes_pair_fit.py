@@ -1,7 +1,9 @@
 """Fit pairwise axis positions (Bradley-Terry with ties) from axes_pair answers; no model is run.
 
-Usage (from the repository root): python3 lifeImage/tools/axes_pair_fit.py [--out FILE]
-Reads the answers next to the batches (data/batches/axes_pair.<axis>.v1.part*.answers.jsonl), regenerates the
+Usage (from the repository root): python3 lifeImage/tools/axes_pair_fit.py [--out FILE] [--pilot [--axis AXIS]]
+With --pilot it reads the single-order pilot's answers (data/batches/axes_pair.<axis>.pilot.part*.answers.jsonl, built
+by build_axes_pair_batches.py --axis ABSTRACT_TANGIBLE --comparisons 4 --single-order), regenerates its tasks and writes
+data/coarse/axes_pairwise_pilot.jsonl, leaving the full fit's file alone. Otherwise reads the answers next to the batches (data/batches/axes_pair.<axis>.v1.part*.answers.jsonl), regenerates the
 designed tasks from seed_v0 and the axes v1/v2 answers, and writes data/coarse/axes_pairwise_v1.jsonl (id, axis,
 position rescaled to [-1, 1], se). Prints per axis the Spearman agreement with the v1 and v2 means, the share of fields
 at the extremes (|position| > 0.8) and the split-half reliability (fit on half the comparisons against the other half).
@@ -22,6 +24,16 @@ EXTREME = 0.8
 
 def read(paths):
     return [json.loads(l) for p in paths for l in Path(p).read_text(encoding="utf-8").splitlines() if l.strip()]
+
+
+PILOT_COMPARISONS = 4
+
+
+def answer_files(batches, axis, pilot=False):
+    """The answers files of the axis: the pilot's parts, or the full design's (v1) parts, in part order."""
+    tag = "pilot" if pilot else "v1"
+    files = Path(batches).glob(f"axes_pair.{axis}.{tag}.part*.answers.jsonl")
+    return sorted(files, key=lambda p: int(p.name.rsplit(".part", 1)[1].split(".", 1)[0]))
 
 
 def fit_axis(axis, tasks, answers, means, seed=0, version_means=None):
@@ -58,20 +70,25 @@ def report(stats):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", default=ROOT / "data/coarse/axes_pairwise_v1.jsonl")
+    ap.add_argument("--out", default=None)
     ap.add_argument("--model", default="haiku-runner")
+    ap.add_argument("--pilot", action="store_true", help="fit the single-order pilot's answers")
+    ap.add_argument("--axis", choices=AXES, default=None, help="one axis only (the pilot covers abstract_tangible)")
     a = ap.parse_args()
+    axes = [a.axis] if a.axis else ["abstract_tangible"] if a.pilot else list(AXES)
+    out = a.out or ROOT / ("data/coarse/axes_pairwise_pilot.jsonl" if a.pilot else "data/coarse/axes_pairwise_v1.jsonl")
     batches = ROOT / "data/batches"
     cards = read([ROOT / "data/coarse/seed_v0.jsonl"])
     v1, v2 = (read(sorted(batches.glob(f"axes.v{v}.var*.answers.jsonl"))) for v in (1, 2))
     prior, m1, m2 = axis_means(cards, [v1, v2]), axis_means(cards, [v1]), axis_means(cards, [v2])
     rows, stats = [], {}
-    for axis in AXES:
-        files = sorted(batches.glob(f"axes_pair.{axis}.v1.part*.answers.jsonl"))
+    for axis in axes:
+        files = answer_files(batches, axis, a.pilot)
         if not files:
-            sys.exit(f"no answers for {axis}: run data/batches/axes_pair.{axis}.v1.part*.jsonl first")
-        tasks = [json.loads(l) for p in build_pair_batches(cards, prior[axis], axis, model=a.model) for l in p[1:]]
+            sys.exit(f"no answers for {axis}: run data/batches/axes_pair.{axis}.{'pilot' if a.pilot else 'v1'}.part*.jsonl first")
+        kw = {"comparisons": PILOT_COMPARISONS, "single_order": True} if a.pilot else {}
+        tasks = [json.loads(l) for p in build_pair_batches(cards, prior[axis], axis, model=a.model, **kw) for l in p[1:]]
         r, stats[axis] = fit_axis(axis, tasks, read(files), prior[axis], version_means={"v1": m1[axis], "v2": m2[axis]})
         rows += r
-    write_rows(rows, a.out)
+    write_rows(rows, out)
     print(report(stats))

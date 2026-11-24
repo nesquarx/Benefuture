@@ -2,12 +2,13 @@
 relation summing to one, vocabularies, tombstone successors, answers matching their task)."""
 import json
 import math
+import re
 from functools import lru_cache
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from .membership import VOCABS
+from .membership import VOCABS, real_types
 from .packs import pack_ids
 from .vocab import EVENT_RELATIONS, LINK_RELS, MEMBERSHIP_RELS, UPSTREAM
 
@@ -138,6 +139,61 @@ def validate_membership_answer(answer, vocab, ids=None):
     return answer
 
 
+EXTRACT_KEYS = {"span", "relation", "channel", "magnitude", "valid_time", "types"}
+EXTRACT_CHANNELS = ("positive", "prediction")  # the negative channel is reserved
+EXTRACT_MAGNITUDE_MAX = 1.5
+_SPAN = re.compile(r"^L(\d+)$")
+_VALID_TIME = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+
+
+def validate_extract_answer(answer, task, ids=None):
+    """An extract answer: verdict "rows" and `rows`, each row exactly span (`L<n>` of a non-blank line of the task's
+    `lines`), relation (an event relation), channel (positive or prediction), magnitude (0 to 1.5), valid_time (null or a
+    date) and `types` (exactly the A3S types, each null or {domain: weight} summing to 1, ids in the pack when given,
+    at least one non-null). An answer with no rows is valid."""
+    if answer.get("verdict") != "rows":
+        raise ValidationError(f"extract verdict must be 'rows', not {answer.get('verdict')!r}")
+    rows = answer.get("rows")
+    if not isinstance(rows, list):
+        raise ValidationError("an extract answer needs a list `rows`")
+    lines = {int(l[1:l.index(":")]) for l in task["input"]["lines"] if l.startswith("L") and ":" in l}
+    want = sorted(real_types("A3S"))
+    for n, r in enumerate(rows):
+        where = f"row {n}"
+        if not isinstance(r, dict) or set(r) != EXTRACT_KEYS:
+            raise ValidationError(f"{where}: keys must be exactly {sorted(EXTRACT_KEYS)}")
+        m = _SPAN.match(r["span"]) if isinstance(r["span"], str) else None
+        if not m or int(m.group(1)) not in lines:
+            raise ValidationError(f"{where}: span {r['span']!r} is not a line of the text")
+        if r["relation"] not in EVENT_RELATIONS:
+            raise ValidationError(f"{where}: relation {r['relation']!r} is not in {sorted(EVENT_RELATIONS)}")
+        if r["channel"] not in EXTRACT_CHANNELS:
+            raise ValidationError(f"{where}: channel {r['channel']!r} is not in {list(EXTRACT_CHANNELS)}")
+        mag = r["magnitude"]
+        if isinstance(mag, bool) or not isinstance(mag, (int, float)) or not 0 <= mag <= EXTRACT_MAGNITUDE_MAX:
+            raise ValidationError(f"{where}: magnitude {mag!r} is not a number in [0, {EXTRACT_MAGNITUDE_MAX}]")
+        vt = r["valid_time"]
+        if vt is not None and not (isinstance(vt, str) and _VALID_TIME.match(vt)):
+            raise ValidationError(f"{where}: valid_time {vt!r} is neither null nor YYYY[-MM[-DD]]")
+        types = r["types"]
+        if not isinstance(types, dict) or sorted(types) != want:
+            raise ValidationError(f"{where}: types must be exactly {want}")
+        if all(ws is None for ws in types.values()):
+            raise ValidationError(f"{where}: every type is null; the row belongs to no domain")
+        for t, ws in types.items():
+            if ws is None:
+                continue
+            if not isinstance(ws, dict) or not ws:
+                raise ValidationError(f"{where}: {t} must be null or a non-empty {{domain: weight}} map")
+            if any(isinstance(w, bool) or not isinstance(w, (int, float)) or w <= 0 for w in ws.values()):
+                raise ValidationError(f"{where}: {t} weights must be positive numbers")
+            _sums_to_one([{"weight": w} for w in ws.values()], f"{where} {t}")
+            for i in ws:
+                if ids is not None and i not in ids:
+                    raise ValidationError(f"{where}: {i} is not in the pack")
+    return answer
+
+
 def validate_answer(answer):
     _schema("answer", answer)
     if "weights" in answer:
@@ -151,7 +207,8 @@ def validate_answers(batch_lines, answer_lines):
     errors = []
     header = json.loads(batch_lines[0])
     membership = header["task_type"].startswith("membership.")
-    ids = pack_ids(header["prefix"]) if header["task_type"] == "links" or membership else None
+    extract = header["task_type"] == "extract"
+    ids = pack_ids(header["prefix"]) if header["task_type"] == "links" or membership or extract else None
     tasks = {}
     for line in batch_lines[1:]:
         t = validate_task(json.loads(line))
@@ -180,6 +237,11 @@ def validate_answers(batch_lines, answer_lines):
         if t["task_type"] == "links":
             try:
                 validate_links_answer(a, t, ids)
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
+        if extract:
+            try:
+                validate_extract_answer(a, t, ids)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
         if membership:

@@ -195,6 +195,18 @@ optimality) → migration table → release. Non-raster images re-render from ro
 - Public: 10 deceased public figures from Wikidata (CC0) in `data/public/`, 376 attested rows, 161 labels unmapped and
   ~180 dates inferred (both flagged); offline fixtures for CI.
 - Redaction for extraction tests on real texts (`lifeimage/redact.py`); raw inputs only in `data/ephemeral/`.
+- Pairwise pilot (abstract ↔ tangible): `tools/build_axes_pair_batches.py --axis abstract_tangible --comparisons 4
+  --single-order` writes `data/batches/axes_pair.abstract_tangible.pilot.part{0..4}.jsonl` (972 pairs, each asked once,
+  the first slot an Euler orientation so every field is first as often as second give or take one); after the runs,
+  `tools/axes_pair_fit.py --pilot` reports split-half reliability, Spearman with the v1 and v2 means and the extreme
+  share. Prediction: split-half at least 0.7 (confidence 0.5; four comparisons a field is sparse).
+- Extraction test (task `extract` v1, `prompts/extract.v1.md`): `tools/build_extract_batches.py` writes
+  `data/batches/extract.v1.var{0,1,2}.jsonl` (40 resumes each, ~16k tokens); `tools/extract_score.py` scores the answers
+  per channel (expertise = form and content, impact = outcome, potential = prediction rows) against the truth:
+  precision and recall exact and within one upstream link, magnitude error, inflation by calibration, coverage and the
+  projected per-domain correlation. Resumes carry 17% of the truth rows (the rest is diary and self-description), so
+  `recall` is against resume rows and `recall_all` against all truth. Prediction: exact precision at least 0.6 and
+  recall at least 0.5 (confidence 0.5).
 - Tests pass on a clean checkout with the network blocked (682 passed, 2 network tests skipped).
 
 ## Order of work

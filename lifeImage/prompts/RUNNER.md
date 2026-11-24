@@ -27,6 +27,8 @@ exactly these keys:
 An optional `"weights": {"<id>": <number in [0,1]>}` is allowed only if the prefix asks for weights, and the numbers
 must then sum to 1.
 
+For an `extract` batch the line also carries `"rows": [...]` as the prefix describes (domain ids from the pack, a verdict of `rows`).
+
 For a `links` batch the line also carries `"upstream": {"<id>": <weight>}` and `"overlap": ["<id>", ...]` as the
 prefix describes (ids from the pack in the prefix; no self-links; upstream weights sum to 1).
 

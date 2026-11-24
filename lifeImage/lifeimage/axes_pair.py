@@ -5,7 +5,13 @@ by id, so it does not depend on presentation; the k = 2 variants show the two or
 the second its reverse, so a position bias adds one win to each side. A verdict "a" or "b" names the presented slot.
 
 Design: anchors are about 12 fields spread across the v1/v2 means of the axis; every field meets the 2 nearest
-anchors below and the 2 nearest above its own mean, plus 2 random fields, a pair appearing once.
+anchors below and the 2 nearest above its own mean, plus 2 random fields, a pair appearing once. `comparisons`
+sets the number each field initiates (anchors split over the two sides, 2 random fields): 6 is the default design,
+4 the pilot's.
+
+Single order (the pilot): each pair is asked once and the order is an Euler orientation of the pair graph, so every
+field is shown first at most once more or less often than second: a position bias adds as many wins as losses to a
+field and cancels across the set without the second order's cost.
 """
 import hashlib
 import json
@@ -70,9 +76,15 @@ def choose_anchors(means, n=12):
     return chosen
 
 
-def design_pairs(means, anchors, near=2, n_random=2, seed=0):
+def design_pairs(means, anchors, near=2, n_random=2, seed=0, comparisons=None):
     """Sorted unordered pairs: per field the `near` nearest anchors on each side of its mean (the other side fills
-    in when one is short) and n_random random fields not yet met."""
+    in when one is short) and n_random random fields not yet met. `comparisons` (at least 4) replaces near and
+    n_random: near = (comparisons - 2) // 2 anchors a side, the rest random."""
+    if comparisons is not None:
+        if comparisons < 4:
+            raise ValueError("comparisons must be at least 4 (one anchor a side and two random fields)")
+        near = (comparisons - 2) // 2
+        n_random = comparisons - 2 * near
     opponents = {f: set() for f in means}
     pairs = set()
 
@@ -100,14 +112,52 @@ def design_pairs(means, anchors, near=2, n_random=2, seed=0):
     return sorted(pairs)
 
 
+def orient_single(pairs):
+    """{pair: (first, second)}: each pair in one order such that every field is first at most once more or less
+    often than second (an Euler orientation of the pair graph: odd-degree fields are joined to a dummy field so
+    every field has even degree, then each circuit is walked and each edge oriented along the walk)."""
+    adj = defaultdict(list)  # field -> [(neighbour, edge id)], sorted for determinism
+    edges = []
+    for pair in sorted(pairs):
+        e = len(edges)
+        edges.append(pair)
+        adj[pair[0]].append((pair[1], e))
+        adj[pair[1]].append((pair[0], e))
+    dummy = None
+    for f in sorted(adj):
+        if len(adj[f]) % 2:
+            dummy = dummy or "\x00dummy"
+            e = len(edges)
+            edges.append((f, dummy))
+            adj[f].append((dummy, e))
+            adj[dummy].append((f, e))
+    used, out = [False] * len(edges), {}
+    for start in sorted(adj):
+        stack = [start]
+        while stack:
+            v = stack[-1]
+            while adj[v] and used[adj[v][-1][1]]:
+                adj[v].pop()
+            if not adj[v]:
+                stack.pop()
+                continue
+            w, e = adj[v].pop()
+            used[e] = True
+            if dummy not in (v, w):
+                out[edges[e]] = (v, w)
+            stack.append(w)
+    return out
+
+
 def _card(card, by_id):
     return axes_input(card, by_id)["card"]
 
 
 def build_pair_batches(cards, means, axis, *, model, prompt_version=1, prompts_dir=DEFAULT_PROMPTS, max_tokens=35000,
-                       cache=None, anchors=None, n_anchors=12, seed=0):
+                       cache=None, anchors=None, n_anchors=12, seed=0, comparisons=None, single_order=False):
     """Batch parts (each a header line plus task lines, at most max_tokens at 4 bytes a token) for the axis: both
-    orders of every designed pair, cached (pair, variant) votes skipped. means: {field id: mean} for this axis."""
+    orders of every designed pair (one balanced order each with single_order), cached (pair, variant) votes skipped.
+    means: {field id: mean} for this axis; comparisons: per-field design size (default design when None)."""
     by_id = {c["id"]: c for c in cards}
     anchors = anchors if anchors is not None else choose_anchors(means, n_anchors)
     prefix = read_prefix(TASK_TYPE, prompt_version, prompts_dir)
@@ -115,16 +165,19 @@ def build_pair_batches(cards, means, axis, *, model, prompt_version=1, prompts_d
                          "prefix": prefix}, sort_keys=True, ensure_ascii=False)
     cost = lambda line: len(line.encode("utf-8")) + 1
     parts, lines, used = [], [], cost(header)
-    for pair in design_pairs(means, anchors, seed=seed):
+    pairs = design_pairs(means, anchors, seed=seed, comparisons=comparisons)
+    k = 1 if single_order else K
+    order = orient_single(pairs) if single_order else None
+    for pair in pairs:
         cp = {i: _card(by_id[i], by_id) for i in pair}
         h = pair_hash(axis, list(cp.values()))
-        for v in range(K):
+        for v in range(k):
             if cache is not None and cache.has(TASK_TYPE, h, model, prompt_version, v):
                 continue
-            a, b = presented(pair, h, v)
+            a, b = order[pair] if single_order else presented(pair, h, v)
             line = canonical_json({
-                "kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": TASK_TYPE, "prompt_version": prompt_version,
-                "input_hash": h, "variant": v, "k": K,
+                "kind": "task", "task_id": f"{h[:16]}-{'s' if single_order else 'v'}{v}", "task_type": TASK_TYPE,
+                "prompt_version": prompt_version, "input_hash": h, "variant": v, "k": k,
                 "input": {"axis": axis, "toward": TOWARD[axis], "a": cp[a], "b": cp[b]}, "allowed_verdicts": VERDICTS})
             if lines and used + cost(line) > max_tokens * 4:
                 parts.append([header] + lines)
@@ -136,12 +189,14 @@ def build_pair_batches(cards, means, axis, *, model, prompt_version=1, prompts_d
     return parts
 
 
-def write_pair_batches(parts, out_dir, axis, prompt_version=1):
+def write_pair_batches(parts, out_dir, axis, prompt_version=1, tag=None):
+    """Write the parts as axes_pair.<axis>.<tag>.part<n>.jsonl; the tag defaults to v<prompt_version>."""
+    tag = tag or f"v{prompt_version}"
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     paths = []
     for n, lines in enumerate(parts):
-        p = out / f"{TASK_TYPE}.{axis}.v{prompt_version}.part{n}.jsonl"
+        p = out / f"{TASK_TYPE}.{axis}.{tag}.part{n}.jsonl"
         p.write_text("\n".join(lines) + "\n", encoding="utf-8")
         paths.append(p)
     return paths
