@@ -1,7 +1,7 @@
 name: Julia Sim CI
 
 # Tiers: every code push runs the fast tier (rules, units, probes); the full suite runs nightly on
-# main and on demand (workflow_dispatch with tier = full) as 8 parallel shards. Docs-only pushes run nothing;
+# main and on demand (workflow_dispatch with tier = full) as 11 parallel shards. Docs-only pushes run nothing;
 # a newer push cancels the run it supersedes.
 on:
   push:
@@ -95,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
