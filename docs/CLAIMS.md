@@ -409,6 +409,22 @@ Governance and incentives
     ([`invalid_contract_null_and_void`](../Benefuture/Ontology/Law.lean),
     [`unaudited_forcible_restraint_rejected`](../Benefuture/Systems/Enforcement.lean),
     [`rising_harm_mandates_intervention`](../Benefuture/Subgoals/Continuity.lean)).
+- Audited forcible restraint (author ruling 8.169, [P]): the audit probability rises with restraint burden and is
+  certain at and above the severity bar and below 1 beneath it; liability to the enforcer is zero when the audit
+  upholds the restraint and positive when it overturns one
+  ([`restraint_audit_prob_certain_above_bar`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_audit_prob_below_one_below_bar`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_audit_prob_mono_severity`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_audit_prob_mono_duration`](../Benefuture/Subgoals/Justice.lean),
+  [`false_restraint_liability_zero_when_upheld`](../Benefuture/Subgoals/Justice.lean),
+  [`false_restraint_liability_positive_when_overturned`](../Benefuture/Subgoals/Justice.lean)).
+  In simulation (M3c with two overeager of four enforcing entities, 24 paired seeds,
+  [`restraint_balance.txt`](../sim/battery/results/restraint_balance.txt)): audited restraint with liability weight 1
+  cuts effective false restraints from 22.5 to 11.7 per run and raises the floor of understanding (+1.1, no loss),
+  at a cost: the share of justified restraints that stand falls from 1.0 to 0.59 (liability chills justified restraint
+  too, and audit capacity and audit noise matter), and audit spend exceeds the harm of false restraint in this toy
+  world. Over kappa 0 to 8 every curve is monotone: no interior optimum was found, so the balance is open. Toy
+  assumptions: four enforcers, a fixed audit capacity, audit accuracy 0.9, harm proxy of one unit per missed restraint.
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).

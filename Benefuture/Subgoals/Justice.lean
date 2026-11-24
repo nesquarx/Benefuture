@@ -452,5 +452,86 @@ theorem informed_ge_uninformed_responsibility
     (mul_le_mul_of_nonneg_right ?_ (le_min zero_le_one (le_max_left _ _))) (le_max_left _ _)
   cases isAct <;> cases hasDuty <;> simp
 
+/-- Restraint burden (`L121` Proportional; author ruling 8.169): the severity of a forcible
+    restraint grows with its duration, `sev * (1 + dur / durScale)`. -/
+noncomputable def restraint_burden (sev dur durScale : ℝ) : ℝ := sev * (1 + dur / durScale)
+
+/-- Probability that a forcible restraint by the Administration is audited (`L121` DueProcess; AdvAp,
+    funded from the commons; author ruling 8.169 option c): a floor plus a share rising with the
+    burden, reaching 1 at the governed severity bar `bar`. -/
+noncomputable def restraint_audit_prob (sev dur durScale bar floorP : ℝ) : ℝ :=
+  min 1 (floorP + (1 - floorP) * (restraint_burden sev dur durScale / bar))
+
+/-- Liability of the enforcing entity for a restraint (`L120` liability order; ruling 8.169): zero
+    when the audit upholds the restraint, otherwise the weight `kappa` times the cost it imposed.
+    The commons carries the audit cost; the enforcer carries this. -/
+noncomputable def false_restraint_liability (upheld : Bool) (kappa cost : ℝ) : ℝ :=
+  if upheld then 0 else max 0 kappa * max 0 cost
+
+theorem restraint_audit_prob_certain_above_bar (sev dur durScale bar floorP : ℝ)
+    (hbar : 0 < bar) (hf : floorP ≤ 1)
+    (h : bar ≤ restraint_burden sev dur durScale) :
+    restraint_audit_prob sev dur durScale bar floorP = 1 := by
+  unfold restraint_audit_prob
+  apply min_eq_left
+  have h1 : 1 ≤ restraint_burden sev dur durScale / bar := by
+    rw [le_div_iff₀ hbar]; linarith
+  nlinarith
+
+theorem restraint_audit_prob_below_one_below_bar (sev dur durScale bar floorP : ℝ)
+    (hbar : 0 < bar) (hf : floorP < 1)
+    (h : restraint_burden sev dur durScale < bar) :
+    restraint_audit_prob sev dur durScale bar floorP < 1 := by
+  unfold restraint_audit_prob
+  apply lt_of_le_of_lt (min_le_right _ _)
+  have h1 : restraint_burden sev dur durScale / bar < 1 := by
+    rw [div_lt_iff₀ hbar]; linarith
+  nlinarith
+
+theorem restraint_audit_prob_mono_in_burden (b1 b2 bar floorP : ℝ)
+    (hbar : 0 < bar) (hf : floorP ≤ 1) (hle : b1 ≤ b2) :
+    min 1 (floorP + (1 - floorP) * (b1 / bar)) ≤ min 1 (floorP + (1 - floorP) * (b2 / bar)) := by
+  apply min_le_min_left
+  have : b1 / bar ≤ b2 / bar := div_le_div_of_nonneg_right hle hbar.le
+  nlinarith
+
+/-- Monotone in severity at fixed duration. -/
+theorem restraint_audit_prob_mono_severity (s1 s2 dur durScale bar floorP : ℝ)
+    (hbar : 0 < bar) (hf : floorP ≤ 1) (hd : 0 ≤ dur) (hds : 0 < durScale) (hle : s1 ≤ s2) :
+    restraint_audit_prob s1 dur durScale bar floorP ≤ restraint_audit_prob s2 dur durScale bar floorP := by
+  unfold restraint_audit_prob
+  apply restraint_audit_prob_mono_in_burden _ _ bar floorP hbar hf
+  unfold restraint_burden
+  have : 0 ≤ 1 + dur / durScale := by positivity
+  exact mul_le_mul_of_nonneg_right hle this
+
+/-- Monotone in duration at fixed non-negative severity. -/
+theorem restraint_audit_prob_mono_duration (sev d1 d2 durScale bar floorP : ℝ)
+    (hbar : 0 < bar) (hf : floorP ≤ 1) (hs : 0 ≤ sev) (hds : 0 < durScale) (hle : d1 ≤ d2) :
+    restraint_audit_prob sev d1 durScale bar floorP ≤ restraint_audit_prob sev d2 durScale bar floorP := by
+  unfold restraint_audit_prob
+  apply restraint_audit_prob_mono_in_burden _ _ bar floorP hbar hf
+  unfold restraint_burden
+  have : d1 / durScale ≤ d2 / durScale := div_le_div_of_nonneg_right hle hds.le
+  exact mul_le_mul_of_nonneg_left (by linarith) hs
+
+theorem false_restraint_liability_zero_when_upheld (kappa cost : ℝ) :
+    false_restraint_liability true kappa cost = 0 := by
+  simp [false_restraint_liability]
+
+/-- Counterexample guard: an overturned restraint at positive weight and cost is never free for the
+    enforcer (the unaudited, costless restraint of the toy enforcement world is exactly zero). -/
+theorem false_restraint_liability_positive_when_overturned (kappa cost : ℝ)
+    (hk : 0 < kappa) (hc : 0 < cost) :
+    0 < false_restraint_liability false kappa cost := by
+  simp only [false_restraint_liability, Bool.false_eq_true, if_false]
+  rw [max_eq_right hk.le, max_eq_right hc.le]
+  exact mul_pos hk hc
+
+theorem false_restraint_liability_mono_kappa (k1 k2 cost : ℝ) (hle : k1 ≤ k2) :
+    false_restraint_liability false k1 cost ≤ false_restraint_liability false k2 cost := by
+  simp only [false_restraint_liability, Bool.false_eq_true, if_false]
+  exact mul_le_mul_of_nonneg_right (max_le_max_left 0 hle) (le_max_left 0 cost)
+
 end Benefuture.Subgoals
 

@@ -1696,6 +1696,51 @@ end
     @test all(p.off_exec > 0 for p in pat)  # min_share > 0 lets actor still contribute honestly
 end
 
+@timed_testset "Probe: audited forcible restraint, liability to the overeager enforcer (8.169, L120/L121)" begin
+    # Hypothesis (stated before measuring): audited restraint with liability to the enforcing entity cuts false
+    # restraints (z = 3, paired seeds 1:12) against free, unchecked restraint, at a measured cost in justified
+    # restraints (liability chills them too; the lead's 'rate not lowered' target is not met, see
+    # sim/battery/restraint_balance.jl), without a significant loss of floor_u (one-sided, z = 3).
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    # Lean rule: audit probability monotone, certain at and above the bar, below 1 beneath it; liability zero when upheld.
+    @test restraint_audit_prob(0.9, 0, 0.8) == 1.0 && restraint_audit_prob(0.4, 20, 0.8) == 1.0
+    @test restraint_audit_prob(0.2, 0, 0.8) < 1.0 && restraint_audit_prob(0.2, 0, 0.8) >= 0.05
+    @test restraint_audit_prob(0.2, 0, 0.8) < restraint_audit_prob(0.4, 0, 0.8) < restraint_audit_prob(0.4, 1, 0.8)
+    @test false_restraint_liability(true, 2.0, 3.0) == 0.0 && false_restraint_liability(false, 2.0, 3.0) == 6.0
+    @test false_restraint_liability(false, 0.0, 3.0) == 0.0  # counterexample: no weight, no deterrence
+    @test_throws ArgumentError restraint_audit_prob(0.5, 0, 0.0)
+    agr = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:3])
+    function run_restraint(audit::Bool, kappa::Real, seed::Int; eager = [0.0, 0.0, 0.3, 0.3], cap = 2)
+        p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), agr, [1, 1], trues(2);
+                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                      guardians = [1, 2], p_informed = 1.0, diligence = [0.0, 1.0, 1.0, 1.0],
+                      p_hazard = 0.35, hazard_share = 0.25, hazard_size = 1.0, repair_efficiency = 1.0,
+                      endowment = 50.0, sanction_escalate = true, sanction_pattern_min = 3,
+                      sanction_restraint_decay = 0.6, sanction_min_share = 0.1, LEGACY...,
+                      enforcer_eager = eager, restraint_audit = audit, restraint_kappa = kappa, restraint_audit_cap = cap)
+        tr = run_m3c(p; seed = seed)
+        (tr = tr, false_eff = Float64(tr.false_restraints_effective), floor_u = success_pattern(tr; from = 20).floor_u,
+         just_rate = tr.justified_restraints_effective / max(1, tr.justified_restraints + tr.restraint_missed))
+    end
+    free = [run_restraint(false, 0.0, s) for s in 1:12]
+    aud  = [run_restraint(true, 1.0, s) for s in 1:12]
+    # Red baseline on the outcome: free restraint lets overeager enforcers restrain honest proposers at no cost.
+    @test all(r -> r.false_eff > 0 && r.tr.restraint_liability == 0.0 && r.tr.restraint_audits == 0, free)
+    @test all(r -> r.tr.restraint_audits > 0 && r.tr.restraints_overturned > 0 && r.tr.restraint_liability > 0 &&
+                   r.tr.restraint_audit_cost > 0, aud)
+    @test paired_effect([f.false_eff - a.false_eff for (f, a) in zip(free, aud)]; z = 3.0).significant
+    @test paired_effect([a.floor_u - f.floor_u for (f, a) in zip(free, aud)]; z = 3.0, direction = :down).significant == false
+    # The measured cost: justified restraint stands less often (chill and audit noise), bounded below 0.5.
+    loss = [f.just_rate - a.just_rate for (f, a) in zip(free, aud)]
+    @test paired_effect(loss; z = 3.0).significant && mean(loss) < 0.5
+    # Counterexample: precise enforcers (no eagerness) make no false restraints, audited or not.
+    @test all(run_restraint(a, 1.0, 1; eager = [0.0, 0.0]).tr.false_restraints == 0 for a in (false, true))
+    # Out of capacity: above-bar restraint waits, below-bar proceeds and is audited later; both logged loudly.
+    nocap = run_restraint(true, 1.0, 1; cap = 0)
+    @test nocap.tr.restraint_waits > 0 && nocap.tr.restraint_audits == 0 && nocap.tr.restraint_pending > 0
+    @test any(k -> startswith(k, "restraint audit"), keys(nocap.tr.degraded))
+end
+
 @timed_testset "Probe: RA commons reserve and spending contraction under fallback shock (8.133, 8.71)" begin
     # Under scarce capacity, high hazard burn, and an unattributed catastrophe shock (step 80), RA commons reserve
     # + pricing/spending contraction protects physical capacity and commons solvency so emergency repair fraction rises
@@ -2001,7 +2046,14 @@ end
     enf_bf = [run_m8_enforcement(M8EnforcementParams(mode = :bf_enforcement, seed = s)) for s in seeds]
     enf_un = [run_m8_enforcement(M8EnforcementParams(mode = :unaudited_coercion, seed = s)) for s in seeds]
     enf_no = [run_m8_enforcement(M8EnforcementParams(mode = :unenforced, seed = s)) for s in seeds]
-    @test all(r -> r.continuity_preserved && r.invalid_contracts_executed == 0 && r.unaudited_force_abuses == 0, enf_bf)
+    @test all(r -> r.continuity_preserved && r.invalid_contracts_executed == 0, enf_bf)
+    # 8.169: restraint is audited by the shared rule, so escaped false restraint is possible (no guarantee by construction);
+    # free restraint (no audit) abuses more, and an audit's overturn is liable to the enforcer.
+    enf_free = [run_m8_enforcement(M8EnforcementParams(mode = :bf_enforcement, restraint_audit = false, seed = s)) for s in seeds]
+    @test all(r -> r.restraints_audited == 0 && r.restraint_liability == 0.0, enf_free) && all(r -> r.restraints_audited > 0, enf_bf)
+    @test paired_effect([f.unaudited_force_abuses - b.unaudited_force_abuses for (b, f) in zip(enf_bf, enf_free)];
+                        z = 3.0, direction = :up).significant
+    @test sum(r.restraint_liability for r in enf_bf) > 0
     @test all(r -> !r.continuity_preserved, enf_no)
     @test paired_effect([u.residual_harm - b.residual_harm for (b, u) in zip(enf_bf, enf_un)];
                         z = 3.0, direction = :up).significant

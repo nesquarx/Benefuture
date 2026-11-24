@@ -267,6 +267,17 @@ struct M3cParams
     proposal_confidence::Float64  # 8.134: confidence band on a proposal's predicted outcome (`prediction_on_track`)
     repair_credit::Bool           # 8.26.1: credit physical repairs as a repairer's recorded action (without clearing offender debit)
     accolade_counterfactual::Bool # 8.26.2: award outside-contract carrying accolades only when carrier's counterfactual eff > 0
+    enforcer_eager::Vector{Float64} # world: enforcing entities within Ad (L121), each with an eagerness = chance per proposal of restraining a proposer without a qualifying pattern (false restraint); empty = none
+    restraint_audit::Bool         # 8.169 (c, ii): forcible restraint is audited with `restraint_audit_prob`, audit cost from the commons, false restraint liable to the enforcer
+    restraint_bar::Float64        # governed: restraint burden at and above which the audit is certain and precedes the restraint (8.169)
+    restraint_kappa::Float64      # governed: liability weight of an overturned restraint on its enforcer (8.169)
+    restraint_audit_floor::Float64 # governed: audit probability of the lightest restraint (8.169)
+    restraint_dur_scale::Float64  # governed: restraint steps over which burden doubles (8.169)
+    restraint_audit_cap::Int      # world: restraint audits the commons can fund per step (audit capacity)
+    restraint_audit_acc::Float64  # world noise: chance an audit judges a restraint's justification correctly
+    false_restraint_severity::Float64 # world: severity of an overeager restraint
+    false_restraint_harm::Float64 # world: value lost per unit severity by a wrongly restrained being (harm proxy)
+    enforcer_liability_scale::Float64 # world: liability an enforcing entity absorbs before reining in (restraint propensity x exp(-L / scale))
 end
 
 """
@@ -324,7 +335,17 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
                    responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5,
                    proposal_pma::Bool = false, proposal_eta::Integer = 3, proposal_eta_grace::Integer = 0, proposal_confidence::Real = 0.25,
-                   repair_credit::Bool = false, accolade_counterfactual::Bool = false)
+                   repair_credit::Bool = false, accolade_counterfactual::Bool = false,
+                   enforcer_eager = Float64[], restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
+                   restraint_audit_floor::Real = 0.05, restraint_dur_scale::Real = 5.0, restraint_audit_cap::Integer = 2,
+                   restraint_audit_acc::Real = 0.9, false_restraint_severity::Real = 0.6, false_restraint_harm::Real = 1.0,
+                   enforcer_liability_scale::Real = 5.0)
+    check(all(e -> isfinite(e) && 0 <= e <= 1, enforcer_eager) && isfinite(restraint_bar) && restraint_bar > 0 &&
+          isfinite(restraint_kappa) && restraint_kappa >= 0 && isfinite(restraint_audit_floor) && 0 <= restraint_audit_floor <= 1 &&
+          isfinite(restraint_dur_scale) && restraint_dur_scale > 0 && restraint_audit_cap >= 0 &&
+          isfinite(restraint_audit_acc) && 0 <= restraint_audit_acc <= 1 && isfinite(false_restraint_severity) && false_restraint_severity >= 0 &&
+          isfinite(false_restraint_harm) && false_restraint_harm >= 0 && isfinite(enforcer_liability_scale) && enforcer_liability_scale > 0,
+          "enforcer eagerness and audit accuracy in [0, 1]; bar, duration and liability scales positive; kappa, cap, harm non-negative")
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -437,7 +458,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
               proposal_pma, Int(proposal_eta), Int(proposal_eta_grace), Float64(proposal_confidence),
-              repair_credit, accolade_counterfactual)
+              repair_credit, accolade_counterfactual,
+              collect(Float64, enforcer_eager), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
+              Float64(restraint_audit_floor), Float64(restraint_dur_scale), Int(restraint_audit_cap), Float64(restraint_audit_acc),
+              Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -1090,6 +1114,29 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     dom_pos_events, dom_neg_events, dom_crime_events = zeros(Int, na, ncol), zeros(Int, na, ncol), zeros(Int, na, ncol)
     sanction_escalations, sanction_restraints = Ref(0), Ref(0)
     jrng = Xoshiro(hash((seed, :justice)))
+    # Restraint by the Administration's enforcing entities (8.169): own stream, per-enforcer ledger.
+    erng = Xoshiro(hash((seed, :enforcers)))
+    nenf = length(p.enforcer_eager)
+    enf_liab = zeros(max(nenf, 1))                 # liability each enforcing entity carries (forgotten slowly)
+    restr_run = zeros(Int, na)                     # consecutive restraints of each proposer (duration)
+    restraint_pending = Tuple{Int,Bool,Float64,Int}[]  # audits owed: (enforcer, restraint was justified, cost imposed)
+    restr_audits_left = Ref(0)
+    false_restraints, false_restr_effective, justified_restraints, justified_restr_effective = Ref(0), Ref(0), Ref(0), Ref(0)
+    restraints_overturned, restraint_audits, restraint_waits, restraint_missed = Ref(0), Ref(0), Ref(0), Ref(0)
+    restraint_audit_cost, restraint_liability, false_restr_harm = Ref(0.0), Ref(0.0), Ref(0.0)
+    function restraint_audit!(k, justified, cost, c)
+        # The audit is funded from the commons (AdvAp, `ra_domain_audit`); a correct audit overturns an
+        # unjustified restraint, a wrong one does not (noise); liability is the enforcer's, not the commons'.
+        restraint_audits[] += 1
+        restraint_audit_cost[] += p.audit_cost
+        p.ra_domain && 1 <= c <= ntrue && (ra_domain_audit[c] += p.audit_cost)
+        right = rand(erng) < p.restraint_audit_acc
+        upheld = right ? justified : !justified
+        liab = false_restraint_liability(upheld, p.restraint_kappa, cost + p.audit_cost)
+        upheld || (restraints_overturned[] += 1)
+        liab > 0 && (enf_liab[k] += liab; restraint_liability[] += liab)
+        upheld
+    end
     # 8.134 predict-measure-adapt loop for non-candidate proposals & measurements:
     # each executed proposal registers `(step, agent, col, predicted, measured, eta, grace, conf)`;
     # resolved once `resolution_due(cur[] - step, eta, grace)` holds via `prediction_on_track`.
@@ -1446,6 +1493,12 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    unattributed = world.unattributed[], hazard_penalties = world.hazard_penalties[], hazard_debits = world.hazard_debits[],
                    repaired = world.repaired[], side_hazards = world.side_hazards[], degraded = degraded,
                    sanction_escalations = sanction_escalations[], sanction_restraints = sanction_restraints[],
+                   false_restraints = false_restraints[], false_restraints_effective = false_restr_effective[],
+                   justified_restraints = justified_restraints[], justified_restraints_effective = justified_restr_effective[],
+                   restraints_overturned = restraints_overturned[], restraint_audits = restraint_audits[],
+                   restraint_waits = restraint_waits[], restraint_missed = restraint_missed[],
+                   restraint_audit_cost = restraint_audit_cost[], restraint_liability = restraint_liability[],
+                   false_restraint_harm = false_restr_harm[], restraint_pending = length(restraint_pending),
                    proposal_pma_record = copy(pma_resolved), proposal_pma_pending = length(pma_pending),
                    proposal_pma_misses = copy(pma_misses), proposal_pma_on_track = copy(pma_on_track),
                    proposal_pma_calibration = [(pma_on_track[a] + pma_misses[a]) > 0 ?
@@ -1475,6 +1528,15 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     end
     for step in 1:t.steps
         cur[] = step; update_rates!()
+        if nenf > 0
+            enf_liab .*= 0.98
+            restr_audits_left[] = p.restraint_audit_cap
+            while !isempty(restraint_pending) && restr_audits_left[] > 0
+                k, just, cst, cc = popfirst!(restraint_pending)
+                restr_audits_left[] -= 1
+                restraint_audit!(k, just, cst, cc)
+            end
+        end
         if p.proposal_pma && !isempty(pma_pending)
             keep_idx = Int[]
             for (idx_p, pm_item) in enumerate(pma_pending)
@@ -1985,7 +2047,65 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 (ok = ok, quotes = qs)
             end
             c_prop = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : leaves[j]
-            if p.sanction_escalate && dom_crime_events[proposers[j], c_prop] >= p.sanction_pattern_min
+            qualifies = p.sanction_escalate && dom_crime_events[proposers[j], c_prop] >= p.sanction_pattern_min
+            if nenf > 0
+                # Forcible restraint by an enforcing entity of the Administration (8.169, L121). A dangerous
+                # proposer (qualifying pattern) is restrained by the rehabilitative share; an overeager
+                # entity also restrains a proposer with no pattern. Liability chills both (propensity x exp(-L/scale)).
+                k = rand(erng, 1:nenf)
+                chill = exp(-enf_liab[k] / p.enforcer_liability_scale)
+                sev = 0.0
+                attempt = false
+                if qualifies
+                    rehab_sh = rehabilitate_restraint(1.0, dom_crime_events[proposers[j], c_prop], p.sanction_pattern_min;
+                                                      decay = p.sanction_restraint_decay, min_share = p.sanction_min_share)
+                    if rand(jrng) > rehab_sh
+                        if rand(erng) < chill
+                            attempt = true; sev = 1.0 - rehab_sh
+                        else
+                            restraint_missed[] += 1   # chilled: the dangerous proposer goes unrestrained
+                        end
+                    end
+                elseif rand(erng) < p.enforcer_eager[k] * chill
+                    attempt = true; sev = p.false_restraint_severity
+                end
+                if attempt
+                    restr_run[proposers[j]] += 1
+                    cost = sev * p.false_restraint_harm
+                    qualifies ? (justified_restraints[] += 1) : (false_restraints[] += 1)
+                    stands = true
+                    if p.restraint_audit
+                        pa = restraint_audit_prob(sev, restr_run[proposers[j]] - 1, p.restraint_bar;
+                                                  duration_scale = p.restraint_dur_scale, floor = p.restraint_audit_floor)
+                        if pa >= 1.0
+                            if restr_audits_left[] > 0
+                                restr_audits_left[] -= 1
+                                stands = restraint_audit!(k, qualifies, cost, c_prop)   # above the bar the audit precedes the restraint
+                            else
+                                restraint_waits[] += 1
+                                degrade!("restraint audit", "above-bar restraint waits for audit", "audit capacity exhausted")
+                                restr_run[proposers[j]] -= 1
+                                continue
+                            end
+                        elseif rand(erng) < pa
+                            if restr_audits_left[] > 0
+                                restr_audits_left[] -= 1
+                                restraint_audit!(k, qualifies, cost, c_prop)            # below the bar the restraint stands, audited after
+                            else
+                                push!(restraint_pending, (k, qualifies, cost, c_prop))
+                                degrade!("restraint audit", "below-bar restraint proceeds, audited later", "audit capacity exhausted")
+                            end
+                        end
+                    end
+                    if stands
+                        sanction_restraints[] += qualifies ? 1 : 0
+                        qualifies ? (justified_restr_effective[] += 1) : (false_restr_effective[] += 1; false_restr_harm[] += cost)
+                        continue
+                    end
+                else
+                    restr_run[proposers[j]] = 0
+                end
+            elseif qualifies
                 rehab_sh = rehabilitate_restraint(1.0, dom_crime_events[proposers[j], c_prop], p.sanction_pattern_min;
                                                   decay = p.sanction_restraint_decay, min_share = p.sanction_min_share)
                 if rand(jrng) > rehab_sh

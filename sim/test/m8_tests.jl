@@ -136,7 +136,7 @@ end
     enf_un = run_m8_enforcement(M8EnforcementParams(mode = :unaudited_coercion, seed = 7))
     enf_no = run_m8_enforcement(M8EnforcementParams(mode = :unenforced, seed = 7))
     @test enf_bf.continuity_preserved && !enf_no.continuity_preserved
-    @test enf_bf.unaudited_force_abuses == 0 && enf_un.unaudited_force_abuses > 0
+    @test enf_bf.unaudited_force_abuses < enf_un.unaudited_force_abuses && enf_un.unaudited_force_abuses > 0  # 8.169: audited restraint no longer abuse-free by construction
     @test enf_bf.residual_harm < enf_un.residual_harm < enf_no.residual_harm
 end
 

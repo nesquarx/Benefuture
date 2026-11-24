@@ -1,0 +1,14 @@
+commit beaf2fa (plus uncommitted at run time)
+seeds 1:24 (24, paired); eager = [0.0, 0.0, 0.3, 0.3]
+arm        kappa  false_eff just_eff just_rate missed audits audit_cost false_harm total_harm floor_u
+unaudited  -           22.5     27.79       1.0       0.0       0.0       0.0      13.5      13.5     13.29
+audited    0.0        20.71     21.83      0.79       0.0     39.96     39.96     12.42     52.38     12.73
+audited    0.1        18.38     20.96      0.75      1.54     37.83     37.83     11.02      50.4     13.69
+audited    0.25       16.88     19.71      0.73       3.0     35.04     35.04     10.12     48.17     13.38
+audited    0.5        14.83     17.92      0.66      5.96     31.62     31.62       8.9     46.48     14.07
+audited    1.0        11.71     16.67      0.59      8.71     27.54     27.54      7.02     43.28     14.42
+audited    2.0         8.29      15.0      0.56      9.96     23.04     23.04      4.97     37.98     14.51
+audited    4.0         6.33     13.79      0.47     12.75     20.29     20.29       3.8     36.84     14.86
+audited    8.0         4.62     11.71      0.43     14.38     16.46     16.46      2.78     33.61     15.26
+kappa minimising total harm (false-restraint harm + chilled-restraint harm + audit cost): 8.0
+best vs unaudited, paired mean (se): false_eff -17.88 (0.61); just_rate -0.57 (0.03); floor_u 1.97 (0.3)

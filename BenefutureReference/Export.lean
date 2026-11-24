@@ -473,6 +473,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   rehabilitate_restraint_ref baseShare crimeEvents.toUInt64.toNat
     patternMin.toUInt64.toNat stepDecay minShare
 
+-- 8.169 / L120, L121: audit probability of forcible restraint; liability of the enforcing entity
+@[export bf_restraint_audit_prob] def restraintAuditProb (sev dur durScale bar floorP : Float) : Float :=
+  restraint_audit_prob_ref sev dur durScale bar floorP
+
+@[export bf_false_restraint_liability] def falseRestraintLiability (upheld : UInt8) (kappa cost : Float) : Float :=
+  false_restraint_liability_ref (upheld != 0) kappa cost
+
 -- 8.133 & 8.155 / L83: RA estimating domain value per (cost + audit), commons reserve, contraction factor
 @[export bf_ra_value_per_cost] def raValuePerCost (measuredGain resourceCost auditCost fallback : Float) : Float :=
   ra_value_per_cost_ref measuredGain resourceCost auditCost fallback

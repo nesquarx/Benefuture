@@ -60,4 +60,18 @@ def responsibility_factor_ref (isAct isInformed hasDuty : Bool)
   let sevNN := if severityScale > 0.0 then severityScale else 0.0
   roleWeight * clamp01 counterfactualRatio * sevNN
 
+/-- Audit probability of a forcible restraint (`L121`; ruling 8.169 c): `min 1 (floor + (1 - floor) *
+    burden / bar)`, burden `sev * (1 + dur / durScale)`; 1 at and above the severity bar. Matches
+    `Benefuture.Subgoals.restraint_audit_prob`. Assumes `bar > 0`, `durScale > 0`. -/
+def restraint_audit_prob_ref (sev dur durScale bar floorP : Float) : Float :=
+  let burden := sev * (1.0 + dur / durScale)
+  let raw := floorP + (1.0 - floorP) * (burden / bar)
+  if raw < 1.0 then raw else 1.0
+
+/-- Liability of the enforcing entity (`L120`; ruling 8.169 ii): zero when the audit upholds the
+    restraint, else `max 0 kappa * max 0 cost`. Matches `false_restraint_liability`. -/
+def false_restraint_liability_ref (upheld : Bool) (kappa cost : Float) : Float :=
+  if upheld then 0.0
+  else (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0)
+
 end BenefutureReference
