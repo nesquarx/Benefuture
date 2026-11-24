@@ -191,11 +191,13 @@ mechanisms (flags only). Steps 4-5 raise the economy's own coverage with mechani
 Steps 6-8 form one chain (population, then G per entity, then morality), because B25 needs deaths and G per entity needs a living cast.
 Steps 9-12 are less coupled and can proceed in parallel once step 6 is green.
 
+Step 2a status (2026-11-24, `P52`): the categoriser `ih_truth_level_ref` and a claim-stream world `run_ih_claims` (provable flag per claim, infrastructure event) are green in a probe. Step 2b, joining the network of `run_m8_truth` and `run_m8_ihz` to M5 contacts and M3c hazards, is not done.
+
 ## (3) Compositions that likely need an author ruling
 
 | Composition | Question | Why past rulings do not settle it |
 |---|---|---|
-| Step 2, row 37 | How are truth levels assigned in the composed world: a world property, measured by metric models, or both? How are opinion, fact and hypothesis categorised (L134 `Categorize`)? | `Truth.lean` bounds the chain rule but the pseudocode gives no classifier; a world property is the toy assumption, a measured one needs a model class |
+| Step 2, row 37 [provable flag settled by 8.168; classifier `ih_truth_level_ref`] | How are truth levels assigned in the composed world: a world property, measured by metric models, or both? How are opinion, fact and hypothesis categorised (L134 `Categorize`)? | `Truth.lean` bounds the chain rule but the pseudocode gives no classifier; a world property is the toy assumption, a measured one needs a model class |
 | Step 3 | Recruitment rate source and form (8.166 (3) says adapt persuasion data): which datasets, whether recruitment acts on outputs through the weight-on-advice mixture (8.63) | The figure is institution-dependent in part; the sweep range needs a ruling on the Benefuture-plausible end |
 | Step 2 | Whether a hazard domain's gate is a governed threshold of its own and who sets `req_ed` | `ihz_access_risk` is formal, the gate's governance is not stated; candidate for SigThGv |
 | Step 4 | Who audits forcible restraint, and at what cost, in an economy where audits are resource-priced | Enf assumes audited-only restraint; M3c prices audits through AdvAp; the two audit regimes are unreconciled |

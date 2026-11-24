@@ -522,6 +522,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (baseLevel : Float) (hops : FloatArray) : Float :=
   chain_truth_level_ref baseLevel hops.data
 
+@[export bf_ih_truth_level] def ihTruthLevel
+    (outputs weights : FloatArray) (memScore : Float) (provable : UInt8) (capUnprovable : Float) : Float :=
+  ih_truth_level_ref outputs.data weights.data memScore (provable != 0) capUnprovable
+
 -- Parsimony cleanup (`sim/README.md` L1322-1324): ContentionMap & AdvAp governance recount
 @[export bf_contention_map] def contentionMap
     (reputations : FloatArray) (selfIdx : USize) : FloatArray :=

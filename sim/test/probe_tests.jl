@@ -3655,3 +3655,52 @@ end
     @info "IH adoption vote: Goal pattern difference (on - off)" goal mean = mean(goal) se = std(goal) / sqrt(length(goal))
     @test equivalent(-goal; margin = 3.0, side = :upper).equivalent
 end
+
+# Provability classifier in the IH world (`L134` Categorize, author rulings 8.167a and 8.168; WORLD_COVERAGE step 2a, P52).
+# Eight experts (a third uninformed) judge a stream of claims; half are provable (checkable outcome), half are not, and
+# on those the experts share a bias, so their consensus is confident and says nothing. Control = the current behaviour:
+# every consensus is read as fact. Hypotheses: (1) control puts weight near 1 on unfalsifiable claims (the undesired
+# outcome); (2) the classifier bounds it by cap_unprovable in every seed (structural); (3) record weighting raises decision
+# accuracy on provable claims (z = 2, paired seeds); (4) the weighted payoff is no worse (one-sided loss < 3);
+# (5) an infrastructure event making claims provable lets their level rise past the cap.
+@testset "Probe: provability classifier bounds unfalsifiable consensus, records improve provable decisions (P52)" begin
+    t0 = time()
+    cap = 0.35
+    arm(on, seed; kw...) = run_ih_claims(IhClaimsParams(; classifier = on, cap_unprovable = cap, seed, kw...))
+    # Lean rule: acceptance and counterexamples
+    unan = fill(0.97, 6); eq = fill(1.0, 6)
+    @test ih_truth_level(unan, eq, 1.0, true, cap) > 0.9
+    @test ih_truth_level(unan, eq, 1.0, false, cap) <= 0.99 * cap + 1e-12          # unanimous but unprovable: capped
+    @test ih_truth_level(unan, eq, 1.0, true, cap) < 1.0                           # never 1
+    @test ih_truth_level(fill(0.5, 6), eq, 1.0, true, cap) >= 0.01                 # never 0
+    @test ih_truth_level(unan, eq, 0.5, true, cap) < ih_truth_level(unan, eq, 0.9, true, cap)   # record raises it
+    # control: confident consensus on unfalsifiable claims drives decisions as if fact
+    c1 = arm(false, 1)
+    @test c1.mean_unprovable_weight > 0.7
+    @test c1.harm_peak > cap
+    # structural: with the classifier no unprovable claim exceeds the cap, in every seed
+    @test all(arm(true, s).harm_peak <= 0.99 * cap + 1e-12 for s in 1:6)
+    # acceptance: provable-claim accuracy improves (paired), seeds by precision
+    # default pool (a third biased): reported, not tuned away
+    d0 = [arm(true, s).accuracy - arm(false, s).accuracy for s in 1:6]
+    @info "P52 accuracy gain, default pool (a third biased)" mean = mean(d0) se = std(d0) / sqrt(length(d0))
+    # a captured pool (half the experts share the bias): equal weighting loses accuracy, record weighting recovers it
+    acc = seeds_until_stable(s -> arm(true, s; frac_biased = 0.5).accuracy - arm(false, s; frac_biased = 0.5).accuracy; tol = 0.05, min_seeds = 3, max_seeds = 8)
+    @info "P52 accuracy gain" n = acc.n stable = acc.stable gain = (acc.mean, acc.se)
+    @test paired_effect(acc.values; direction = :up).significant
+    hm = seeds_until_stable(s -> arm(false, s).harm - arm(true, s).harm; tol = 0.5, min_seeds = 3, max_seeds = 8)
+    @info "P52 harm on unprovable claims removed" n = hm.n harm_cut = (hm.mean, hm.se)
+    @test paired_effect(hm.values; direction = :up).significant
+    # Goal-pattern guard: weighted payoff (off - on) loss below 3, one-sided
+    pay = [arm(true, s; frac_biased = 0.5).payoff - arm(false, s; frac_biased = 0.5).payoff for s in 1:8]
+    @info "P52 payoff difference (on - off)" mean = mean(pay) se = std(pay) / sqrt(length(pay))
+    @test equivalent(-pay; margin = 3.0, side = :upper).equivalent
+    # an infrastructure event: unprovable claims become checkable, levels rise beyond the cap
+    ev = arm(true, 1; infra_step = 10)
+    @test ev.mean_unprovable_weight <= 0.99 * cap + 1e-12 && ev.accuracy > 0
+    late = ih_truth_level(unan, eq, 0.9, true, cap)                                 # same claim once provable
+    @test late > ih_truth_level(unan, eq, 0.9, false, cap)
+    wall = time() - t0
+    @info "P52 wall time (s)" wall
+    @test wall < 20
+end
