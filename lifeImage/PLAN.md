@@ -209,6 +209,26 @@ optimality) → migration table → release. Non-raster images re-render from ro
   recall at least 0.5 (confidence 0.5).
 - Tests pass on a clean checkout with the network blocked (682 passed, 2 network tests skipped).
 
+## Round 2 measurements: images, pilot, extraction
+
+- **Images v0** (`data/images/v0/`, `tools/render_v0.py`): 56 renders (40 personas, 6 organisations, 10 public
+  figures), byte-reproducible. Over-estimation is barely visible: red sums a few self-assessment rows while green and
+  blue sum many events; proposed fix (awaiting the author): fold channels into per-domain levels so red compares
+  claimed with realised level. Slices uneven (pressure from a tiny sample); radius carries depth only.
+- **Pairwise pilot** (abstract ↔ tangible, 972 pairs): runners did not judge pairs independently; they scored each
+  domain on a private 0–10 scale and derived verdicts from it, so the pilot measures absolute scoring. Positions agree
+  with the v1/v2 means (Spearman 0.86); fields at the poles 4% (v2: 46.6%); split-half reliability 0.62 (predicted
+  ≥ 0.8; runners' private scales differ). The order was already in the integer scores; the pile-up at the poles is a
+  scale artefact. Next: axes v3 on a 0–10 scale. Lesson: low-effort runners turn many similar judgements into a lookup
+  table, so designs that need independent judgements need small batches.
+- **Extraction v1** (40 synthetic resumes, 3 variants; `data/gold/extract_v1_scores.md`): resumes carry 17% of a
+  persona's truth rows. Expertise precision 0.62 exact, 0.70 within one link; recall of resume rows 0.52 / 0.58
+  (predicted ≥ 0.6 within a link: just missed). Impact almost absent (precision within a link 0.31, recall 0.08) and no
+  potential rows: resumes state roles, not outcomes or self-assessment. A resume-based image correlates 0.25 with the
+  whole-life truth image. Expertise inflation 0.31, not ordered by calibration type (the synthetic resumes do not render
+  calibration). Caveat: runners parsed the templated synthetic resumes by pattern, so this measures template parsing;
+  realistic varied texts (or redacted real resumes, LI.15) are needed.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
