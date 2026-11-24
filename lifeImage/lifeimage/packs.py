@@ -49,6 +49,13 @@ def ordered_cards(cards, variant=0):
     return out
 
 
+def _unpack(cards, variant):
+    sectors = sorted((c for c in cards if is_sector(c)), key=lambda c: c["id"])
+    fields = [c for c in cards if not is_sector(c)]
+    fields.sort(key=(lambda c: c["id"]) if variant == 0 else (lambda c: _variant_key(variant, c["id"])))
+    return sectors + fields
+
+
 def basemap_version(cards):
     versions = {c["basemap_version"] for c in cards}
     if len(versions) != 1:
@@ -59,6 +66,15 @@ def basemap_version(cards):
 def coarse_pack(cards, variant=0):
     version = basemap_version(cards)
     body = "\n".join(_line(c) for c in ordered_cards(cards, variant)) + "\n"
+    tokens = -(-len(body) // 4)
+    return f"{PACK_MARK} | basemap {version} | {len(cards)} domains | ~{tokens} tokens\n{body}"
+
+
+def ungrouped_pack(cards, variant=0):
+    """The coarse pack with no grouping: sectors first (by id), then every field by id (variant 0) or by a hash of
+    the variant and id (a fixed shuffle). Guessed links never reach it, so they cannot anchor an answer."""
+    version = basemap_version(cards)
+    body = "\n".join(_line(c) for c in _unpack(cards, variant)) + "\n"
     tokens = -(-len(body) // 4)
     return f"{PACK_MARK} | basemap {version} | {len(cards)} domains | ~{tokens} tokens\n{body}"
 

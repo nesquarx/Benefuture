@@ -167,7 +167,11 @@ optimality) → migration table → release. Non-raster images re-render from ro
 2. Assemble the final candidate sets (RELATIONS.md, "Current candidate") from the A, B and D results.
 3. Confirming battery: text-only round-trip control, decoys where the true text is not the plainest, difficulty
    scored by nearest-decoy similarity, generated decoys for the hard bins; then the author's review of disputed cases.
-4. Pending from earlier: links.v2 with an ungrouped pack and field-to-field upstream links (after layer C settles).
+4. links.v2 (ungrouped pack, field-to-field upstream; built, not yet run) and axes.v2 (±2 only at clear poles; v1 scored
+   52.6% of scores at a pole): `python3 lifeImage/tools/build_v2_batches.py` writes `data/batches/{links,axes}.v2.var{0,1,2}.jsonl`
+   (model `haiku-runner`); then `tools/apply_links_v2.py` (seed_v2, compared with seed_v0 and with the data-learnt
+   co-membership, `data/coarse/comembership_v0.jsonl` from `tools/build_comembership.py`) and `tools/axes_compare.py`.
+   `lifeimage/pressure.py` is the pressure measure (LI.25) for later slice widths; layout does not use it yet.
 
 ## Order of work
 
