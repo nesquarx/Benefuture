@@ -1,7 +1,7 @@
 # Mechanism probes (CLAUDE.md, Verification): each the smallest world that exercises one mechanism
 # alone, with its acceptance and counterexample cases, seconds to run. A mechanism enters the full
 # worlds and the batteries only once its probe is green. Probes over about 30 s on a laptop live in
-# probe_heavy_tests.jl (full tier); see docs/BACKPROPAGATION.md (probe speed).
+# probe_heavy{1,2,3}_tests.jl (full tier), each with a "Smoke:" version at the end of this file; see docs/BACKPROPAGATION.md (probe speed).
 using Random, Statistics
 
 isdefined(@__MODULE__, Symbol("@timed_testset")) || include(joinpath(@__DIR__, "probe_timing.jl"))
@@ -2593,6 +2593,489 @@ end
     wall = time() - t0
     @info "P52 wall time (s)" wall
     @test wall < 20
+end
+
+# ==============================================================================
+# Fast smoke versions of the heavy probes (probe_heavy{1,2,3}_tests.jl). Each runs the same mechanism in a smaller
+# world (1-4 seeds, tens to a couple of hundred steps, under 20 s) and asserts a structural property or one that
+# holds by a wide margin; the statistical claim (many seeds, z = 2 or 3, equivalence margins) stays in the heavy file.
+# docs/BACKPROPAGATION.md (probe speed): every mechanism has a fast probe.
+# ==============================================================================
+
+@timed_testset "Smoke: Spike D2 eb_credence runs on the extremist world, takeovers are bookkept, credences stay in [0, 1] (heavy: P49)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ext_world(; kw...) = M3cParams(ToyParams(n = 60, steps = 150, plans = 8),
+        [DomainAgent([l in (1, 3) ? 0.6 : 0.0 for l in 1:4], [0.5, 0, 0.5, 0], 0.3) for _ in 1:6],
+        [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+        LEGACY..., σ_leaf = 0.45, σ_branch = 0.6, σ_coarse = 0.75, p_new_model = 0.05,
+        improve_drift = 0.0, improve_σ = 0.0, p_extremist = 0.5, extremise = 0.5, kw...)
+    ts_n = [run_m3c(ext_world(credence_rule = :normal); seed) for seed in 1:2]
+    ts_eb = [run_m3c(ext_world(credence_rule = :eb); seed) for seed in 1:2]
+    for tr in vcat(ts_n, ts_eb)
+        @test 0 <= tr.takeovers_extreme <= tr.takeovers
+        @test all(r -> 0.0 <= r.credence <= 1.0, tr.leaf_records[1])
+    end
+    # the rule is live: the two credence rules do not give the same records
+    @test any(a.leaf_records != b.leaf_records for (a, b) in zip(ts_n, ts_eb))
+end
+
+@timed_testset "Smoke: IH in the adoption vote leaves a harmful candidate less adopted than voters alone (heavy: run_coupled ih_vote)" begin
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.1 + 0.4 * (r - 1) / 11) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+          for k in 1:4 for r in 1:12]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 40, steps = 75, plans = 6), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 25, deceit = dec, track_window = 20,
+                     actor_min_records = 10, advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8, credence_rule = :record)
+    liars = collect(1:2:48)
+    D = (advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    arm(on) = begin
+        gov(tr) = M5Params(tr, 1:4; decisions = 1, signal_σ = 20.0, colluders = liars, stealth = true, loyalty = 2.0, p_delegate = 0.2,
+                           (on ? (deliberation = true, source_tags = true, tag_audit = true, tag_liars = liars, ih_vote = true, D...) : (;))...)
+        r = run_coupled(econ, gov; seed = 1, epoch = 25, coupled = false, m5_decisions = 200,
+                        candidate_pv = bad_pv, candidate_track_window = 0, candidate_merit = -1.0)
+        mean(r.adopted_candidate)
+    end
+    off, on = arm(false), arm(true)
+    @test off == 1.0          # counterexample: voters alone adopt the harmful candidate in every epoch
+    @test on < off            # IH reads the vote through deliberation and adoption falls
+end
+
+@timed_testset "Smoke: IH (record-weighted sources, tags, audit) beats hearing without handling (heavy: P51)" begin
+    m3 = run_m3c(M3cParams(ToyParams(n = 40, steps = 100, plans = 6),
+                           [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                            for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    liars = collect(1:2:48)
+    D = (advice_stay = 0.0, advice_avg = 0.0, advice_defer = 1.0)
+    C = (colluders = liars, stealth = true, loyalty = 2.0)
+    arm(; kw...) = mean(run_m5(M5Params(m3, 1:4; decisions = 400, signal_σ = 20.0, kw...); seed).correct for seed in 1:3)
+    unhandled = arm(; deliberation = true, info_handling = false, tag_liars = liars, D..., C...)
+    ih = arm(; deliberation = true, source_tags = true, tag_liars = liars, D..., C...)
+    @test ih > unhandled      # measured +0.045 (z 7.3, 8 seeds)
+    @test_throws ArgumentError run_m5(M5Params(m3, 1:4; deliberation = true); seed = 1, records = [[0.0, 0.0]])
+end
+
+@timed_testset "Smoke: repair credit, accolade counterfactual and fork family (heavy: P46)" begin
+    skills = [0.8 0.0 0.0 0.0; 0.7 0.0 0.0 0.0; 0.6 0.0 0.0 0.0; 0.5 0.0 0.0 0.0;
+              0.0 0.6 0.0 0.0; 0.0 0.5 0.0 0.0; 0.8 0.0 0.0 0.0]
+    agents = [DomainAgent(skills[i, :], i <= 4 || i == 7 ? [1.0, 0.0, 0.0, 0.0] : [0.0, 1.0, 0.0, 0.0], i == 2 ? 0.35 : 0.0) for i in 1:7]
+    p_rep(; kw...) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), agents[1:6], [1, 1, 2, 2], trues(4);
+                               λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                               p_upstream = 0.6, guardians = [1, 1, 5, 5], diligence = fill(0.95, 6),
+                               p_hazard = 0.25, hazard_size = 2.0, repair_efficiency = 0.5, kw...)
+    off = [run_m3c(p_rep(); seed) for seed in 1:3]
+    on_rep = [run_m3c(p_rep(repair_credit = true); seed) for seed in 1:3]
+    @test all(tr -> tr.repair_actions == 0 && tr.repair_credited == 0.0 && tr.accolades_suppressed == 0, off)
+    @test all(tr -> tr.repair_actions > 0 && tr.repair_credited > 0.0, on_rep)
+    rep_diffs = [sum(r.relevance_leaf[1, :]) + sum(r.h_pos_own[1, :]) - (sum(o.relevance_leaf[1, :]) + sum(o.h_pos_own[1, :])) for (o, r) in zip(off, on_rep)]
+    @test count(<(0.0), rep_diffs) == 0      # crediting repair never lowers a repairer's relevance
+    V_nl(x) = sign(x) * abs(x)^1.5
+    v_harm(mask) = V_nl(((mask & 1 != 0) ? -1.0 : 0.0) + ((mask & 2 != 0) ? 1.5 : 0.0) + ((mask & 4 != 0) ? -1.0 : 0.0))
+    raw = shapley_shares(v_harm, 3; rng = Xoshiro(1))
+    pooled = bound_shapley_shares(v_harm, [1, 2, 1]; rng = Xoshiro(1))
+    honest = shapley_shares(m -> V_nl(((m & 1 != 0) ? -2.0 : 0.0) + ((m & 2 != 0) ? 1.5 : 0.0)), 2; rng = Xoshiro(1))
+    @test (raw[1] + raw[3]) > honest[1] + 0.25
+    @test pooled[1] + pooled[3] ≈ honest[1] && pooled[2] ≈ honest[2]
+end
+
+@timed_testset "Smoke: understanding as its equation, models taught whole (heavy: 8.109)" begin
+    oc = [b % 3 == 0 ? 0.4 : 0.0 for b in 1:60]
+    base = [run_m7_traits(seed = s) for s in 1:2]
+    @test all(t -> all(x -> x in t.bundles, t.final_bundles), base)           # no crossed wires
+    rep = [run_m7_traits(seed = s, overclaim = oc, reports = true) for s in 1:2]
+    @test all(t -> all(b -> t.audited[b] == (oc[b] > 0), 1:60), rep)          # reports audit every overclaimer, no honest one
+    tacit = run_m7_traits(seed = 1, p_teachable = 0.0)
+    @test tacit.mean_cy != base[1].mean_cy                                    # teachable breakthroughs change what spreads
+end
+
+@timed_testset "Smoke: progressive capability additions never promote a worse class and runs finish (heavy: PLAN.md L67, 8.136)" begin
+    ag_m = [DomainAgent([0.35, 0.35], [1.0, 0.0], 0.0) for _ in 1:8]
+    ag_d = [DomainAgent([0.6, 0.6], [1.0, 0.0], 0.0) for _ in 1:8]
+    T_m = ToyParams(n = 60, steps = 160, plans = 8)
+    m_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 20, model_z = 2.0,
+            acc_halflife = 25.0, threshold = 0.65, coarse_threshold = 0.65,
+            σ_leaf = 0.85, marker_σ = 0.3, bias_σ = 0.0, σ_branch = 0.85, σ_coarse = 0.9, credence_rule = :record)
+    p_bad_m = M3cParams(T_m, ag_m, [1, 1], [true, false]; m_kw..., events = [shock(:add_model_class; step = 55, size = 4.0, target = 1)])
+    f_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 2.0,
+            threshold = 0.65, coarse_threshold = 0.65, σ_leaf = 0.35, marker_σ = 0.5, σ_branch = 0.5, σ_coarse = 0.6)
+    p_bad_f = M3cParams(T_m, ag_d, [1, 1], [true, false]; f_kw..., events = [shock(:add_finer_measurement; step = 55, size = 4.0)])
+    d_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+            init_steps = 50, min_records = 10, takeover_records = 15, model_z = 3.0, threshold = 0.75, σ_leaf = 0.2, marker_σ = 0.2, σ_branch = 0.4, σ_coarse = 0.6)
+    p_bad_d = M3cParams(ToyParams(n = 60, steps = 160, plans = 8), ag_d, [1, 1], [true, false]; d_kw...,
+                        events = [shock(:add_domain; step = 55, target = 2, share = 0.5, size = 10.0)])
+    for seed in 1:2
+        @test !run_m3c(p_bad_m; seed).added_capabilities[1].promoted          # a worse class is never promoted
+        r = run_m3c(p_bad_f; seed)
+        @test !r.added_capabilities[1].promoted && r.eff_marker_σ == p_bad_f.marker_σ
+        @test !run_m3c(p_bad_d; seed).added_capabilities[1].promoted
+    end
+    p_good_f = M3cParams(T_m, ag_d, [1, 1], [true, false]; f_kw..., events = [shock(:add_finer_measurement; step = 55, size = 0.1)])
+    @test any(run_m3c(p_good_f; seed).added_capabilities[1].promoted for seed in 1:3)   # a finer measurement promotes (lo 0.7 over 32 seeds)
+end
+
+@timed_testset "Smoke: priority weights steered by a noisy estimate change the run; meta-research is wired (heavy: 8.131)" begin
+    f(σ, mr; s = 1) = run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 80, weight_σ = σ, meta_research = mr)
+    truth, noisy, meta = f(0.0, 0.0), f(1.5, 0.0), f(1.5, 0.05)
+    @test all(isfinite, truth.floor_u) && all(isfinite, noisy.floor_u) && all(isfinite, meta.floor_u)
+    @test truth.floor_u != noisy.floor_u && noisy.floor_u != meta.floor_u
+    @test f(0.0, 0.0).floor_u == truth.floor_u       # same seed, same run
+end
+
+@timed_testset "Smoke: weighted TN identity binding blocks sybils and zeroes compromised clusters (heavy: 8.70)" begin
+    w14 = run_m3c(M3cParams(ToyParams(n = 40, steps = 100, plans = 6),
+                            [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                             for k in 1:4 for r in 1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    p14(bw) = M5Params(w14, 1:4; decisions = 120, colluders = [1], fork_copies = 150, fork_rule = :per_identity,
+                       bind_quorum = 2, bind_clusters = 3, bind_compromised = [1, 2],
+                       bind_quorum_weight = 0.5, bind_weighted = bw, p_reveal = 0.1, attest_min_records = 5)
+    unw, wgt = [run_m5(p14(false); seed = s) for s in 1:2], [run_m5(p14(true); seed = s) for s in 1:2]
+    @test all(r -> r.sybil_forks_blocked == 0 && r.sybil_forks_admitted > 100, unw)
+    @test all(r -> r.attestation_skill[1] < 0 && r.attestation_skill[2] < 0 && r.attestation_skill[3] > 0 &&
+                   r.sybil_forks_blocked > r.sybil_forks_admitted, wgt)
+    @test mean(r.correct for r in wgt) >= mean(r.correct for r in unw)   # not worse (the gain needs the heavy probe's 16 to 32 seeds)
+end
+
+@timed_testset "Smoke: a candidate is eligible only if it beats the incumbent's record and is judged against its own prediction (heavy: 8.134)" begin
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8, credence_rule = :record)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    s = 1
+    none = run_coupled(econ, gov; seed = s, epoch = 25, continuous = true, add_rule_epoch = 999)
+    lo = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = -5.0, candidate_eta = 3, candidate_vs_incumbent = true)
+    hi = run_coupled(econ, gov; seed = s, epoch = 25, kw..., candidate_prediction = 10.0, candidate_eta = 3, candidate_vs_incumbent = true)
+    @test !none.adopted_candidate[1] && !lo.adopted_candidate[1] && !hi.adopted_candidate[1]      # nothing adopted before warm-up ends
+    @test !any(lo.adopted_candidate) && isempty(lo.prediction_record) && isnan(lo.prediction_calibration)   # honest-low is never adopted
+    @test any(hi.adopted_candidate) && hi.rejected && hi.rejected_epoch >= 5                          # dishonest-high is adopted, then rejected at its ETA
+    @test length(hi.prediction_record) == 1 && !hi.prediction_record[1].on_track && hi.prediction_calibration == 0.0
+    @test hi.prediction_record[1].measured < hi.prediction_record[1].predicted
+    @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 25, continuous = true, candidate_vs_incumbent = true)
+end
+
+@timed_testset "Smoke: harm read through competing measurement chains (heavy: 8.107)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.2) for _ in 1:6]
+    w(; kw...) = M3cParams(ToyParams(n = 60, steps = 100, plans = 8), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                           transactions = true, causal_distribution = true, p_side = 0.1, LEGACY..., kw...)
+    single = [run_m3c(w(chain_attrib = [0.5]); seed) for seed in 1:3]
+    domain = [run_m3c(w(chain_attrib = [0.5, 1.0], chain_mode = :domain); seed) for seed in 1:3]
+    honest = [run_m3c(w(chain_attrib = [1.0, 1.0], chain_mode = :domain); seed) for seed in 1:3]
+    @test mean(mean(t.chain_bias) for t in single) > 1.0              # the half-counting incumbent hides harm (measured +3.25)
+    @test abs(mean(mean(t.chain_bias) for t in domain)) < 0.3         # the domain reads it at its true size (measured +0.01)
+    @test count(t -> t.chain_demoted == [true, false], domain) >= 2   # the half-counting chain is demoted, the honest one kept
+    @test !any(t -> any(t.chain_copied), honest)                      # honest pairs are not taken for copies
+end
+
+@timed_testset "Smoke: RA estimates domain value and allocates scarce capacity toward the high-yield leaf (heavy: L83, 8.133)" begin
+    ag10 = [DomainAgent([0.9, 0.15], [0.5, 0.5], 0.0) for _ in 1:6]
+    p10(ra_on) = M3cParams(ToyParams(n = 30, steps = 100, plans = 12), ag10, [1, 1], trues(2);
+                           λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                           init_steps = 20, budget = true, endowment = 100.0, capacity = 50.0, regen = 0.25,
+                           cost_per_touch = 0.2, ra_domain = true, ra_alloc_weight = ra_on ? 1.0 : 0.0,
+                           ra_audit_per_step = [0.0, 4.0], LEGACY...)
+    on10 = [run_m3c(p10(true); seed = s) for s in 1:3]
+    @test all(r -> r.ra_audit_costs > 0 && r.ra_alloc[1] > r.ra_alloc[2], on10)
+    @test mean(r.ra_unit_value[1] - r.ra_unit_value[2] for r in on10) > 0
+end
+
+@timed_testset "Smoke: repeated deception meets an escalating ratchet; honest variance and isolated mistakes do not (heavy: 8.91)" begin
+    selected_act(tr, a) = count(==(a), tr.exec_agent)
+    ww_params = ToyParams(n = 80, steps = 200, plans = 10)
+    agents = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6]
+    bad_events = [shock(:breakthrough; step = 26, duration = 25, size = -1.0, target = 6),
+                  shock(:breakthrough; step = 76, duration = 25, size = -1.0, target = 6),
+                  shock(:breakthrough; step = 126, duration = 25, size = -1.0, target = 6)]
+    cfg(; kw...) = M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                             causal_distribution = true, deceit = [0, 0, 0, 0, 0, 1.0], events = bad_events, on_off = 25,
+                             advap = true, LEGACY..., kw...)
+    function phase_cred(tr, w)
+        i = [k for k in eachindex(tr.exec_agent) if tr.exec_agent[k] == 6 && tr.exec_step[k] in w && tr.exec_pred[k] > 0]
+        isempty(i) ? NaN : mean(tr.exec_upfront[i] ./ tr.exec_pred[i])
+    end
+    on, flat = run_m3c(cfg(); seed = 1), run_m3c(cfg(ratchet_growth = 0.0); seed = 1)
+    @test phase_cred(on, 126:150) < phase_cred(flat, 126:150)          # escalating beats the flat ledger in the third bad phase
+    @test phase_cred(on, 126:150) < phase_cred(on, 76:100)
+    @test on.deceptions[6] >= 1
+    @test selected_act(on, 6) > 25                                     # a deceiver that stopped returns to participation
+    ev = [shock(:breakthrough; step = 50, duration = 10, size = -1.0, target = 6)]
+    v = run_m3c(M3cParams(ww_params, agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                          causal_distribution = true, deceit = Float64[], events = ev, advap = true, LEGACY...); seed = 1)
+    @test selected_act(v, 6) > 140 && v.deceptions[6] == 0             # isolated honest mistakes are not deception
+end
+
+@timed_testset "Smoke: understanding aggregates across things by priority (heavy: 8.117)" begin
+    a = [run_m7_traits(seed = s, things = [1.0, 0.1]) for s in 1:2]
+    @test all(t -> t.thing_gain[1] > t.thing_gain[2], a)               # effort follows priority (measured 0.57 vs 0.41)
+    op = run_m7_traits(seed = 1, max_new_things = 4, p_new_thing = 0.3, steps = 120)
+    @test op.new_things == 4
+end
+
+@timed_testset "Smoke: Di_N_Balance raises the novelty bonus on monoculture and fake novelty pays less than honesty (heavy: L159)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    m3_div = run_m3c(M3cParams(ToyParams(n = 30, steps = 80, plans = 6),
+                               [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 7 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0)
+                                for k in 1:4 for r in 1:8], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true); seed = 1)
+    bloc = unique(vcat([sortperm(m3_div.relevance_leaf[:, d]; rev = true)[1:4] for d in 1:4]...))
+    mono(nb) = [run_m5(M5Params(m3_div, 1:4; decisions = 200, colluders = bloc, p_delegate = 0.8, p_apparent = 0.4,
+                                stealth = true, diversity = true, novelty_bonus = nb, conviction = 2.4); seed = s) for s in 1:3]
+    lo, hi = mono(0.0), mono(0.9)
+    @test mean(mean(h.chosen_share) for h in hi) > mean(mean(l.chosen_share) for l in lo)
+    @test mean(h.correct_after for h in hi) > mean(l.correct_after for l in lo)
+    ag_honest = [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6]
+    ag_fake = [[DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:5]; DomainAgent([-0.3, 0, 0, 0], [1.0, 0, 0, 0], 0.0)]
+    cfg_n(ag) = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), ag, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                          transactions = true, causal_distribution = true, explore_share = 0.2, advap = true, LEGACY...)
+    stand(tr, a) = sum(tr.balance[a, :]) + tr.overflow_agent[a]
+    @test mean(stand(run_m3c(cfg_n(ag_fake); seed = s), 6) - stand(run_m3c(cfg_n(ag_honest); seed = s), 6) for s in 1:3) < 0
+end
+
+@timed_testset "Smoke: open entry brings bound newcomers into a closed economy (heavy: 8.115)" begin
+    skills0 = draw_skills(Xoshiro(20261031), 8, 4, [1, 3]; median = 0.6)
+    skills4 = vcat(skills0, draw_skills(Xoshiro(20261115), 4, 4, [1, 3]; median = 0.6))
+    function run_entry(open_entry::Bool, seed::Int)
+        entrants = open_entry ? 4 : 0
+        na = 8 + entrants
+        sk = open_entry ? skills4 : skills0
+        agents = [DomainAgent(sk[a, :], [0.5, 0, 0.5, 0], 0.3) for a in 1:na]
+        deceit = vcat([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0], zeros(entrants))
+        p = M3cParams(ToyParams(n = 40, steps = 160, plans = 10), agents, [1, 1, 2, 2], trues(4);
+                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                      p_upstream = 0.5, guardians = [1, 2, 3, 4], diligence = fill(0.95, na),
+                      p_informed = 0.95, p_foresee = 1.0, repair_efficiency = 0.5,
+                      deceit = deceit, advap = true, vigilance = 0.1, cost_σ = 0.05, memory_loss = 0.0, p_false_trace = 0.005,
+                      adaptive_proposals = true, open_entry = open_entry, entrants = entrants,
+                      events = [shock(:capture; step = 60, duration = 100, size = 1.5, target = 1)], LEGACY...)
+        tr = run_m3c(p; seed)
+        (entries = tr.entries, exec = length(tr.chosen_agent))
+    end
+    closed, opened = [run_entry(false, s) for s in 1:2], [run_entry(true, s) for s in 1:2]
+    @test all(r.entries == 0 for r in closed)
+    @test all(r.entries > 0 for r in opened)
+    @test mean(r.exec for r in opened) > mean(r.exec for r in closed)    # newcomers replace lost execution
+end
+
+@timed_testset "Smoke: the status bar ratchets up when enough models clear it, and never falls (heavy: 8.84)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    w(; kw...) = M3cParams(ToyParams(n = 60, steps = 300, plans = 8), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:4],
+                    [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true, LEGACY...,
+                    p_new_model = 0.1, takeover_records = 30, ratchet_horizon = 10.0, kw...)
+    tr = run_m3c(w(); seed = 1)
+    b = tr.bar_trace
+    @test all(diff(b) .>= 0)                                       # never falls
+    @test tr.lane_halted == 0                                      # pricing goes on
+    @test run_m3c(w(ratchet_k = 0); seed = 1).bar_trace[end] == b[1]   # red baseline: without it the bar stays
+    @test b[end] >= b[1]
+end
+
+@timed_testset "Smoke: score-only until converged, legacy funder, shadow governance (heavy: 8.136)" begin
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    P_conv = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                       transactions = true, init_steps = 5, min_records = 15, threshold = 0.85,
+                       model_z = 3.0, cost_per_touch = 0.25, converge_init = true, legacy_funder = true)
+    convs = [run_m3c(P_conv; seed = s) for s in 1:2]
+    @test all(c -> c.converged && c.converge_step > 5 && c.legacy_executed > 0, convs)
+    P_noise = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                        transactions = true, init_steps = 5, min_records = 12, threshold = 0.99,
+                        marker_σ = 10.0, σ_leaf = 10.0, converge_init = true, legacy_funder = true)
+    rn = run_m3c(P_noise; seed = 1)       # counterexample: a noisy domain never converges
+    @test !rn.converged && rn.converge_step == 0 && rn.legacy_executed > 0 && rn.lane_halted == 0
+    @test all(==(P_noise.endowment), rn.balance)
+    # shadow governance: a harmful candidate promised too much is rejected in shadow and the live path is untouched
+    ag_c = vcat([DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4],
+                [DomainAgent([-0.9, -0.9], [0.5, 0.5], 0.0) for _ in 1:2])
+    gov(tr) = M5Params(tr, 1:2; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    econ = M3cParams(ToyParams(n = 40, steps = 200, plans = 6), ag_c, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 5, deceit = vcat(zeros(8), fill(2.5, 2)),
+                     track_window = 20, actor_min_records = 10, threshold = 0.80, converge_init = true, legacy_funder = true)
+    hi_sh = run_coupled(econ, gov; seed = 1, epoch = 25, continuous = true, candidate_pv = bad_pv, candidate_threshold = 0.5,
+                        candidate_track_window = 0, candidate_prediction = 40.0, candidate_eta = 3, candidate_vs_incumbent = true, shadow = true)
+    @test !hi_sh.shadow_promoted && !any(hi_sh.adopted_candidate) && hi_sh.rejected && !isempty(hi_sh.prediction_record) && hi_sh.prediction_calibration == 0.0
+end
+
+@timed_testset "Smoke: meta-research as its own domain is wired and changes the run (heavy: 8.132)" begin
+    f(ms; s = 1) = run_m7_traits(seed = s, things = [1.0, 0.3, 0.1], m = 6, steps = 80, weight_σ = 1.5, per_being = true,
+                                 meta_share = ms, weight_shared = 1.0, meta_domain = true).floor_u
+    base, small, large = f(0.0), f(0.05), f(0.3)
+    @test all(isfinite, base) && all(isfinite, small) && all(isfinite, large)
+    @test base != small && small != large
+    @test f(0.05) == small
+end
+
+@timed_testset "Smoke: model collusion, profile gaming and named fallbacks (heavy: B4)" begin
+    @test length(COMPONENT_FALLBACKS) == 10
+    toy = ToyParams(; n = 30, steps = 120, plans = 4)
+    ag_cap = [DomainAgent([0.8, 0.2], [0.5, 0.5], 0.1), DomainAgent([0.2, 0.8], [0.5, 0.5], 0.1)]
+    tr_cap = run_m3c(M3cParams(toy, ag_cap, [1, 1], [true, true]; λpos = 0.05, λneg = 0.02,
+                               events = [shock(:capture; step = 60, duration = 60, size = 15.0, target = 1)]); seed = 1)
+    @test any(occursin("eligible parent model by μ", k) for k in keys(tr_cap.degraded))
+    ag_c = [DomainAgent([0.5, 0.5], [0.5, 0.5], 0.1) for _ in 1:6]
+    cw(tw, adv) = M3cParams(ToyParams(; n = 50, steps = 150, plans = 8), ag_c, [1, 1], [true, true];
+                            λpos = 0.05, λneg = 0.02, transactions = true, accuracy_rule = :window,
+                            p_new_model = 0.2, improve_drift = -0.4, improve_σ = 0.1,
+                            takeover_records = 5, min_records = 5, pool_max = 8,
+                            events = [shock(:capture; step = 10, duration = 20, size = 5.0, target = 1)],
+                            model_collude = 1.0, model_collude_bias = 5.0, collude_actors = [1],
+                            track_window = tw, credence_rule = :record, advap = adv)
+    red_c = [run_m3c(cw(0, false); seed = s) for s in 1:3]
+    grn_c = [run_m3c(cw(20, true); seed = s) for s in 1:3]
+    @test mean(r -> r.takeovers_colluding, red_c) >= 1.0 && mean(g -> g.takeovers_colluding, grn_c) >= 1.0
+    pay(r) = r.upfront[1] - r.settled_value[1]
+    @test mean(pay, red_c) > mean(pay, grn_c)                  # the colluder's overpayment falls with window records and AdvAp
+    ag_p = [DomainAgent([0.25, 0.8], [1.0, 0.0], 3.0), DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05),
+            DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05), DomainAgent([0.8, 0.8], [0.0, 1.0], 0.05)]
+    pw(mode) = M3cParams(ToyParams(; n = 60, steps = 120, plans = 8), ag_p, [1, 1], [true, true];
+                         λpos = 0.05, λneg = 0.02, transactions = true, profile_mode = mode, profile_gamers = [2, 0, 0, 0])
+    red_p = [run_m3c(pw(:declared); seed = s) for s in 1:2]
+    grn_p = [run_m3c(pw(:measured); seed = s) for s in 1:2]
+    @test mean(g -> g.leaf_accuracy[2], grn_p) > mean(r -> r.leaf_accuracy[2], red_p)   # measured profiles defeat the gamer's declared one
+end
+
+@timed_testset "Smoke: a governance candidate is judged at its own stated ETA (heavy: 8.134)" begin
+    @test prediction_on_track(1.0, 1.0, 0.0) && !prediction_on_track(0.9, 1.0, 0.0) && prediction_on_track(0.9, 1.0, 0.2)
+    @test !resolution_due(2, 3, 0) && resolution_due(3, 3, 0) && !resolution_due(3, 3, 1) && resolution_due(4, 3, 1)
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8, credence_rule = :record)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    kw = (candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0, continuous = true)
+    base = run_coupled(econ, gov; seed = 1, epoch = 25, kw...)
+    idle = run_coupled(econ, gov; seed = 1, epoch = 25, kw..., candidate_eta = 3, eta_grace = 1)
+    e1 = run_coupled(econ, gov; seed = 1, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 1)
+    e3 = run_coupled(econ, gov; seed = 1, epoch = 25, kw..., candidate_prediction = 0.0, candidate_eta = 3)
+    @test !e1.adopted_candidate[1] && !e3.adopted_candidate[1]
+    @test idle.floor_u == base.floor_u && idle.rejected_epoch == base.rejected_epoch      # with defaults, ETA keywords change nothing
+    ad1 = findfirst(e1.adopted_candidate)
+    @test ad1 !== nothing && ad1 >= 2 && e1.rejected_epoch == ad1 + 1                      # ETA 1 resolves one epoch after adoption
+    @test e3.rejected_epoch == 0 || e3.rejected_epoch >= 5                                 # ETA 3 resolves later
+    @test any(occursin("bar-lowering", k) for k in keys(base.degraded)) && all(>=(econ.threshold), base.thresholds)
+end
+
+@timed_testset "Smoke: a governor acts inside one continuous economy (heavy: L3.4)" begin
+    # One governor closure serves every case (a closure per case would recompile `run_m3c` each time, over 30 s apiece).
+    ag = [DomainAgent([k == l ? 0.5 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for r in 1:4]
+    P = M3cParams(ToyParams(n = 40, steps = 60, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02)
+    a = run_m3c(P; seed = 1)
+    calls, bump = Int[], Ref(false)
+    gov = (st, sn) -> (push!(calls, length(sn.floor_u)); bump[] && st == 20 ? (threshold = 0.99,) : nothing)
+    b = run_m3c(P; seed = 1, governor = gov, governor_every = 20)    # a governor that changes nothing leaves the run identical
+    @test a.floor_u == b.floor_u && a.balance == b.balance
+    @test calls == [21, 41, 61]                                      # called at each period with the trace so far
+    bump[] = true
+    c = run_m3c(P; seed = 1, governor = gov, governor_every = 20)    # a changed governed value acts from that step on, not before
+    @test c.floor_u[1:21] == a.floor_u[1:21]
+    @test c.leaf_accuracy == a.leaf_accuracy || c.balance != a.balance
+    @test_throws ArgumentError run_m3c(P; seed = 1, governor = gov)
+end
+
+@timed_testset "Smoke: active-world actuation of model_z, ratchet_horizon, actor_min_records, min_records and adv_z (heavy: threshold actuation)" begin
+    ag4 = [DomainAgent([0.6, 0, 0.6, 0], [0.5, 0, 0.5, 0], 0.1) for _ in 1:4]
+    w_mz(mz) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag4, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                         transactions = true, LEGACY..., p_new_model = 0.25, pool_max = 4, takeover_records = 5, improve_drift = -0.25, model_z = mz)
+    @test all(==(0), [run_m3c(w_mz(20.0); seed = s).takeovers for s in 1:3])
+    @test sum(run_m3c(w_mz(0.1); seed = s).takeovers for s in 1:3) > 0
+    w_rh(rh) = M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag4, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                         transactions = true, LEGACY..., p_new_model = 0.35, pool_max = 5, ratchet_k = 2, takeover_records = 5,
+                         threshold = 0.65, ratchet_margin = 0.02, ratchet_horizon = rh)
+    @test all(==(0.65), [run_m3c(w_rh(50.0); seed = s).leaf_bars[1] for s in 1:2])
+    @test all(>(0.65), [run_m3c(w_rh(1.0); seed = s).leaf_bars[1] for s in 1:2])
+    ag_dec = [DomainAgent([0.6, 0, 0, 0], [1, 0, 0, 0], 0.1) for _ in 1:4]
+    w_amr(amr) = M3cParams(ToyParams(n = 20, steps = 120, plans = 6), ag_dec, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                           transactions = true, LEGACY..., credence_rule = :record, deceit = [0.0, 0.0, 0.0, 1.5], advap = false,
+                           endowment = 2.0, cost_per_touch = 0.6, init_steps = 20, actor_min_records = amr)
+    up_lo = [run_m3c(w_amr(1); seed = s).upfront[4] for s in 1:4]
+    up_hi = [run_m3c(w_amr(500); seed = s).upfront[4] for s in 1:4]
+    @test mean(up_hi) > mean(up_lo)
+    ag5 = [DomainAgent([0.6, 0, 0, 0, 0.6], [0.5, 0, 0, 0, 0.5], 0.0) for _ in 1:4]
+    w_mr(mr) = M3cParams(ToyParams(n = 40, steps = 80, plans = 6), ag5, [1, 1, 2, 2, 1], Bool[true, true, true, true, false];
+                         λpos = 0.05, λneg = 0.02, transactions = true, LEGACY..., form_count = 6, min_records = mr)
+    mr_lo = [run_m3c(w_mr(1); seed = s).formations[1].eligible_step for s in 1:3]
+    mr_hi = [let f = run_m3c(w_mr(60); seed = s).formations[1]; f.eligible_step == 0 ? 999 : f.eligible_step; end for s in 1:3]
+    @test all(mr_hi .> mr_lo)
+    ag6 = [DomainAgent([0.6, 0, 0, 0], [1, 0, 0, 0], 0.1) for _ in 1:6]
+    w_az(az) = M3cParams(ToyParams(n = 24, steps = 120, plans = 6), ag6, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                         transactions = true, LEGACY..., advap = true, deceit = [0.0, 0.0, 0.0, 0.0, 0.2, 0.2], marker_σ = 0.3, adv_min_records = 5, adv_z = az)
+    az_lo = [run_m3c(w_az(0.5); seed = s).advap_founded for s in 1:3]
+    az_hi = [run_m3c(w_az(8.0); seed = s).advap_founded for s in 1:3]
+    @test all(az_lo .> az_hi)
+end
+
+@timed_testset "Smoke: coupled economy-governance rejects a harmful threshold candidate within two epochs (heavy: L3.2)" begin
+    ag = [DomainAgent([k == l ? (r == 1 ? -0.9 : 0.6) : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:2]
+    dec = [r == 1 ? 1.5 : 0.0 for k in 1:4 for r in 1:2]
+    econ = M3cParams(ToyParams(n = 60, steps = 150, plans = 8), ag, [1, 1, 2, 2], trues(4);
+                     λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                     init_steps = 50, deceit = dec, track_window = 20, actor_min_records = 10,
+                     advap = true, vigilance = 0.2, p_trace = 0.9, repair_efficiency = 0.8, credence_rule = :record)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    u = run_coupled(econ, gov; seed = 1, epoch = 25, coupled = false, candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0)
+    c = run_coupled(econ, gov; seed = 1, epoch = 25, coupled = true, candidate_pv = bad_pv, candidate_threshold = 0.5, candidate_track_window = 0)
+    @test !u.rejected && u.success.floor_u < -10 && u.success.floor_h < -10
+    @test c.rejected && 1 <= c.rejected_epoch <= 2
+    @test c.success.floor_u - u.success.floor_u > 15 && c.success.floor_h - u.success.floor_h > 15
+    @test any(occursin("bar-lowering", k) for k in keys(c.degraded))
+    @test all(>=(econ.threshold), c.thresholds) && all(>=(econ.threshold), u.thresholds)
+    base1 = run_coupled(econ, gov; seed = 1, epoch = 25)
+    bar_only = run_coupled(econ, gov; seed = 1, epoch = 25, candidate_threshold = 0.5)
+    @test all(==(econ.threshold), bar_only.thresholds) && bar_only.floor_u == base1.floor_u && bar_only.floor_h == base1.floor_h
+    @test isempty(base1.degraded)
+    @test_throws ArgumentError run_coupled(econ, gov; seed = 1, epoch = 0)
+end
+
+@timed_testset "Smoke: progressive capability removals engage the coarser fallback loudly (heavy: PLAN.md L67)" begin
+    ag = [DomainAgent([k == l ? 0.6 : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for k in 1:2 for _ in 1:4]
+    T = ToyParams(n = 40, steps = 120, plans = 6)
+    base_kw = (λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+               init_steps = 25, min_records = 10, threshold = 0.80, coarse_threshold = 0.60, cost_per_touch = 0.15)
+    p_leaf = M3cParams(T, ag, [1, 1], trues(2); base_kw..., events = [shock(:remove_leaf_models; step = 50, duration = 35, target = 1)])
+    p_sc = M3cParams(T, ag, [1, 1], trues(2); base_kw..., events = [shock(:remove_leaf_models; step = 50, duration = 35, target = 0),
+                                                                    shock(:remove_parent_models; step = 50, duration = 35, target = 0)])
+    p_leg = M3cParams(T, ag, [1, 1], trues(2); base_kw..., events = [shock(:legacy_only; step = 55, duration = 20)])
+    r_lf, r_sc, r_leg = [run_m3c(p; seed = 1) for p in (p_leaf, p_sc, p_leg)]
+    @test any(k -> occursin("leaf domain pricing", k), keys(r_lf.degraded))
+    @test any(k -> occursin("StandCoin", k), keys(r_sc.degraded))
+    @test any(k -> occursin("legacy institutions only", k), keys(r_leg.degraded)) && r_leg.legacy_executed > 0
+    @test (r_sc.lane_executed + r_sc.lane_halted) > (r_lf.lane_executed + r_lf.lane_halted)   # full removal routes more into StandCoin
+end
+
+@timed_testset "Smoke: TrustMin cluster cascade, reality floor, noise bound and collusion penalty (heavy: L162)" begin
+    fl = 0.05
+    t1, t2, t4, t8 = (trust_cascade(fl, 1.0, k) for k in (1.0, 2.0, 4.0, 8.0))
+    @test t1 > t2 > t4 > t8 > fl
+    @test (t2 - fl) ≈ 0.5 * (t1 - fl)
+    @test trust_cascade(fl, 1.0, 100.0) ≈ fl
+    ww_cfg(; kw...) = M3cParams(ToyParams(n = 30, steps = 100, plans = 6), [DomainAgent([0.6, 0, 0, 0], [1.0, 0, 0, 0], 0.0) for _ in 1:6],
+                                [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
+                                advap = true, LEGACY..., kw...)
+    ww_vec = [0.0, 0.0, 0.0, 0.0, 0.0, 0.10]
+    arm(bw; kw...) = [run_m3c(ww_cfg(; bind_clusters = 5, bind_compromised = [1, 2], p_reveal = 0.05, bind_weighted = bw, kw...); seed = s) for s in 1:3]
+    unw = arm(false; deceit = [0, 0, 0, 0, 0, 1.0], whitewash = ww_vec)
+    wtd = arm(true; deceit = [0, 0, 0, 0, 0, 1.0], whitewash = ww_vec)
+    @test mean(u.identities_admitted for u in unw) > mean(w.identities_admitted for w in wtd)   # fewer false sybils admitted
+    hon = arm(true; p_newcomer = 0.5)
+    @test mean(h.newcomers > 0 ? h.newcomers_refused / h.newcomers : 0.0 for h in hon) < 0.10  # noise-made refusals bounded
+    @test mean(mean(w.attestation_skill[3:5]) - mean(w.attestation_skill[1:2]) for w in wtd) > 0   # colluding clusters lose skill
+end
+
+@timed_testset "Smoke: a resource supplier profits from artificial scarcity withholding without AdvAp (heavy: 8.133 red)" begin
+    skills = collect(range(0.2, 0.8; length = 8))
+    ag = [DomainAgent([k == l ? skills[i] : 0.0 for l in 1:2], [k == l ? 1.0 : 0.0 for l in 1:2], 0.0) for (i, k) in enumerate(repeat(1:2, 4))]
+    make_p(wh) = M3cParams(ToyParams(n = 40, steps = 120, plans = 6), ag, [1, 1], trues(2); λpos = 0.05, λneg = 0.02,
+                           capacity = 300.0, regen = 0.20, budget = true, transactions = true, supplier = 1, supply_share = 0.5, withhold = wh, advap = false)
+    diffs = [run_m3c(make_p(0.6); seed = s).supplier_income - run_m3c(make_p(0.0); seed = s).supplier_income for s in 1:4]
+    @test mean(diffs) > 0
 end
 
 probe_total("fast")

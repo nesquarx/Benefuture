@@ -1,7 +1,7 @@
 # Heavy mechanism probes 1 of 3 (full tier: nightly and workflow_dispatch; not in BF_TIER=fast). Moved verbatim from
 # probe_tests.jl because each took over 30 s (author: "make sure probes are fast"); claims and bounds unchanged.
-# Run all three: julia --project=sim sim/test/probes_heavy.jl. Each still needs a fast smoke version in
-# probe_tests.jl (docs/BACKPROPAGATION.md, probe speed).
+# Run all three: julia --project=sim sim/test/probes_heavy.jl. Each has a fast "Smoke:" version at the end of probe_tests.jl
+# (docs/BACKPROPAGATION.md, probe speed); the statistical claims stay here.
 using Random, Statistics
 
 isdefined(@__MODULE__, Symbol("@timed_testset")) || include(joinpath(@__DIR__, "probe_timing.jl"))
@@ -83,14 +83,16 @@ end
     end
     runs = Dict{Int,Any}()
     both(seed) = get!(runs, seed) do; (arm(false, seed), arm(true, seed)); end
-    drop = seeds_until_stable(seed -> (o = both(seed)[1].adopt - both(seed)[2].adopt; o); tol = 0.08, min_seeds = 3, max_seeds = 8)
+    drop = seeds_until_stable(seed -> (o = both(seed)[1].adopt - both(seed)[2].adopt; o); tol = 0.08, min_seeds = 8, max_seeds = 12)   # min 8: the Goal claim below needs its own power, the adoption drop alone stabilises at 4 seeds on Linux
     @info "IH adoption vote: seeds used" n = drop.n stable = drop.stable adoption_drop = (drop.mean, drop.se)
     # counterexample: with IH off a harmful candidate is adopted in every epoch
     @test all(both(s)[1].adopt == 1.0 for s in drop.seeds)
     # acceptance: IH lowers harmful adoption (z = 2, paired seeds) ...
     @test paired_effect(drop.values; direction = :up).significant
-    # ... and the Goal pattern is no worse: the loss (off - on) stays below 3 units (one-sided: a gain is welcome; measured +2.4 +- 1.1 over 6
-    # seeds, so the two-sided equivalence within 3 is not shown, IH being if anything better)
+    # ... and the Goal pattern is no worse: the loss (off - on) stays below 3 units (one-sided: a gain is welcome; measured on Linux over 10 seeds
+    # +2.9 +- 1.1, per-seed differences from -1.5 to +7; the author's 6-seed run read +2.4 +- 1.1). The seed count follows the adoption drop's precision,
+    # which settled at 4 seeds on Linux, where the Goal difference (+0.8 +- 1.3, upper bound 3.5) is too imprecise to show the claim: the claim held,
+    # the test was under-powered, so the floor of 8 seeds is the fix (upper bound 0.1 at 8 seeds), not a looser margin.
     goal = [both(s)[2].goal - both(s)[1].goal for s in drop.seeds]
     @info "IH adoption vote: Goal pattern difference (on - off)" goal mean = mean(goal) se = std(goal) / sqrt(length(goal))
     @test equivalent(-goal; margin = 3.0, side = :upper).equivalent

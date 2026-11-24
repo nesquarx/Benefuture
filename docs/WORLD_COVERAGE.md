@@ -102,8 +102,8 @@ Reading notes for cells that need a reason:
   and `run_coupled` carries each source's record across epochs (`run_m5(...; records)`), so weights read live records, not a table reset each epoch.
   It acts on the M5 side-run (`gov_acc`); with `ih_vote` (on in `:bf`, 2026-11-23, M5Params field; off in a bare `run_coupled`) the candidate-adoption vote
   also reads through M5's deliberation (`run_m5(...; truths)`, the final readings `last_signal`), so IH reaches the economy and the Goal pattern. Probe
-  `Probe: IH in the adoption vote ...` (`probe_tests.jl`): with half the voters colluding liars and a harmful candidate (honest readings centred at -1),
-  adoption per epoch falls from 1.00 to 0.67 (-0.33 +- 0.06, 6 paired seeds by `seeds_until_stable`, z > 5) and the Goal pattern is not worse (+2.4 +- 1.1;
+  `Probe: IH in the adoption vote ...` (`probe_heavy1_tests.jl`, smoke version in `probe_tests.jl`): with half the voters colluding liars and a harmful candidate (honest readings centred at -1),
+  adoption per epoch falls from 1.00 to 0.65 (-0.35 +- 0.04, 8 paired seeds, z > 5) and the Goal pattern is not worse (+2.8 +- 1.2, at least 8 seeds needed for the bound;
   loss below 3 shown one-sided). Toy: the harm is a stated world property (`candidate_merit`), not read from the economy before adoption. Row 37 stays absent: `BenefutureReference` has the chain rule
   (`chain_truth_level_ref`) but no categoriser for ruling 8.167a.
 

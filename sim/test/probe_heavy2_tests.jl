@@ -1,7 +1,7 @@
 # Heavy mechanism probes 2 of 3 (full tier: nightly and workflow_dispatch; not in BF_TIER=fast). Moved verbatim from
 # probe_tests.jl because each took over 30 s (author: "make sure probes are fast"); claims and bounds unchanged.
-# Run all three: julia --project=sim sim/test/probes_heavy.jl. Each still needs a fast smoke version in
-# probe_tests.jl (docs/BACKPROPAGATION.md, probe speed).
+# Run all three: julia --project=sim sim/test/probes_heavy.jl. Each has a fast "Smoke:" version at the end of probe_tests.jl
+# (docs/BACKPROPAGATION.md, probe speed); the statistical claims stay here.
 using Random, Statistics
 
 isdefined(@__MODULE__, Symbol("@timed_testset")) || include(joinpath(@__DIR__, "probe_timing.jl"))
