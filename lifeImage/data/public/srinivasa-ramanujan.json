@@ -1,0 +1,21 @@
+{
+ "birth": "1887-12-22",
+ "by_property": {
+  "P106": 2,
+  "P108": 2,
+  "P166": 2,
+  "P463": 1,
+  "P69": 5,
+  "P800": 23
+ },
+ "death": "1920-04-26",
+ "description": "Indian mathematician (1887–1920)",
+ "inferred_dates": 27,
+ "label": "Srinivasa Ramanujan",
+ "public_reason": null,
+ "qid": "Q83163",
+ "retrieved": "2026-11-24",
+ "rows": 35,
+ "shape": "mathematician: a thin record",
+ "unmapped": 25
+}

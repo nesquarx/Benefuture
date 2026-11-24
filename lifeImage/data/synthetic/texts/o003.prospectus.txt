@@ -1,0 +1,50 @@
+HarbourDoor Software Ltd
+Prospectus of HarbourDoor Software Ltd, Fenwick, DE
+Contact: hello@harbourdoor.example.org | (415) 555-0186 | 12 Chapel Street, Fenwick
+
+About us
+HarbourDoor Software Ltd is a small software firm with about 12 people, founded in 2006.
+
+Our history
+In 2007 the software firm kept uptime above 99.9%.
+In 2008 the software firm signed five new business customers.
+In 2010 the software firm filed accounts showing a small surplus.
+In 2010 the software firm kept uptime above 99.5%.
+In 2011 the software firm kept uptime above 99.95%.
+In 2011 the software firm filed accounts showing break-even.
+In 2012 the software firm signed twenty new business customers.
+In 2012 the software firm kept uptime above 99.5%.
+In 2013 the software firm took on five new staff.
+In 2013 the software firm switched to renewable electricity.
+In 2013 the software firm supported the neighbourhood clean-up.
+In 2013 the software firm passed a security certification audit.
+In 2013 the software firm took on four new staff.
+In 2013 the software firm launched a mobile app for customers.
+In 2015 the software firm stopped single-use packaging.
+In 2017 the software firm signed twelve new business customers.
+In 2017 the software firm kept uptime above 99.95%.
+In 2017 the software firm launched version two of the platform.
+In 2018 the software firm signed five new business customers.
+In 2018 the software firm kept uptime above 99.9%.
+In 2019 the software firm kept uptime above 99.5%.
+In 2020 the software firm launched an analytics dashboard.
+In 2020 the software firm stopped single-use packaging.
+In 2020 the software firm kept uptime above 99.9%.
+In 2020 the software firm launched version two of the platform.
+In 2021 the software firm took on five new staff.
+In 2021 the software firm supported the town carnival.
+In 2022 the software firm supported the town carnival.
+In 2022 the software firm took on five new staff.
+In 2022 the software firm kept uptime above 99.5%.
+In 2023 the software firm signed twenty new business customers.
+In 2023 the software firm released the data connector as open source.
+In 2023 the software firm took on three new staff.
+In 2024 the software firm filed accounts showing a small surplus.
+In 2025 the software firm kept uptime above 99.9%.
+In 2026 the software firm launched an analytics dashboard.
+
+Risks and incidents
+We have had no recorded incident that we consider material.
+
+Governance
+The organisation is run by a small board and reports to its owners once a year.

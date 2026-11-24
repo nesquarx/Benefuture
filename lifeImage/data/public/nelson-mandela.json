@@ -1,0 +1,21 @@
+{
+ "birth": "1918-07-18",
+ "by_property": {
+  "P106": 7,
+  "P166": 89,
+  "P39": 3,
+  "P463": 2,
+  "P69": 4,
+  "P800": 1
+ },
+ "death": "2013-12-05",
+ "description": "President of South Africa and anti-apartheid activist (1918–2013)",
+ "inferred_dates": 42,
+ "label": "Nelson Mandela",
+ "public_reason": null,
+ "qid": "Q8023",
+ "retrieved": "2026-11-24",
+ "rows": 106,
+ "shape": "statesman and lawyer: offices, activism, awards, degrees",
+ "unmapped": 47
+}

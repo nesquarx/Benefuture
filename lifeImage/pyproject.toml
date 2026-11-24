@@ -13,7 +13,7 @@ dependencies = ["jsonschema>=4", "numpy>=1.24"]
 test = ["pytest"]
 
 [tool.setuptools]
-packages = ["lifeimage"]
+packages = ["lifeimage", "lifeimage.generators", "lifeimage.sources"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

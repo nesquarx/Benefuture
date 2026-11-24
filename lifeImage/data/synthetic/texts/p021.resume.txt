@@ -1,0 +1,10 @@
+Rosa Andersson
+rosa.andersson@example.org | (415) 555-0148 | 15 Garden Road, Kingsmere
+Date of birth: 9 October 2000
+
+Summary
+Researcher based in Kingsmere, CA.
+
+Education and training
+2025  Course in Python
+2018  Course in bookkeeping

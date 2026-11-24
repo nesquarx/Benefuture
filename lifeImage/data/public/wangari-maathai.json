@@ -1,0 +1,22 @@
+{
+ "birth": "1940-04-01",
+ "by_property": {
+  "P106": 5,
+  "P108": 1,
+  "P166": 17,
+  "P39": 2,
+  "P463": 2,
+  "P69": 6,
+  "P800": 2
+ },
+ "death": "2011-09-25",
+ "description": "Kenyan environmentalist and politician who won the Nobel Peace Prize in 2004 (1940–2011)",
+ "inferred_dates": 15,
+ "label": "Wangari Muta Maathai",
+ "public_reason": null,
+ "qid": "Q46795",
+ "retrieved": "2026-11-24",
+ "rows": 35,
+ "shape": "environmental activist and politician: offices, Nobel peace prize, academic posts",
+ "unmapped": 16
+}

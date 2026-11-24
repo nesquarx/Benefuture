@@ -1,0 +1,25 @@
+Leila Petrov
+leila.petrov@example.org | (415) 555-0178 | 73 Elm Close, Westerby
+
+Summary
+Career changer based in Westerby, US.
+
+Experience
+2024-present  systems administrator, Tessel Systems
+2021  Promoted to senior nurse
+2013  Career change into software
+2009  Promoted to senior lecturer
+2008-2011  lecturer, Kingsmead School
+2006  Career change into education
+2006-2008  lecturer, Brookfield Primary
+2003-2007  systems administrator, Lumen Labs
+2001  Career change into trades
+1998  Promoted to senior lecturer
+
+Education and training
+2024  Course in basic electrics
+2023  Course in marketing
+2016  Course in Python
+2001  Course in Python
+1995  Course in Python
+1993  Passed the baccalaureate-equivalent

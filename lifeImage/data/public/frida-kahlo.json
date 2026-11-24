@@ -1,0 +1,17 @@
+{
+ "birth": "1907-07-06",
+ "by_property": {
+  "P106": 1,
+  "P800": 2
+ },
+ "death": "1954-07-13",
+ "description": "Mexican painter (1907–1954)",
+ "inferred_dates": 1,
+ "label": "Frida Kahlo",
+ "public_reason": null,
+ "qid": "Q5588",
+ "retrieved": "2026-11-24",
+ "rows": 3,
+ "shape": "painter: dated works; Wikidata holds few other statements (a thin record)",
+ "unmapped": 0
+}

@@ -1,0 +1,10 @@
+{"date": "inferred", "fallback": false, "instance_of": ["health profession", "occupation", "job activity"], "kind": "occupation", "label": "nurse", "mapped": true, "property": "P106", "qid": "Q186360", "referenced": true}
+{"date": "inferred", "fallback": false, "instance_of": ["profession", "position"], "kind": "occupation", "label": "statistician", "mapped": true, "property": "P106", "qid": "Q2732142", "referenced": true}
+{"date": "inferred", "fallback": false, "instance_of": ["profession", "occupation"], "kind": "occupation", "label": "writer", "mapped": true, "property": "P106", "qid": "Q36180", "referenced": false}
+{"date": "inferred", "fallback": false, "instance_of": ["profession"], "kind": "occupation", "label": "politician", "mapped": true, "property": "P106", "qid": "Q82955", "referenced": true}
+{"date": "inferred", "fallback": false, "instance_of": ["profession", "occupation", "position"], "kind": "occupation", "label": "teacher", "mapped": true, "property": "P106", "qid": "Q37226", "referenced": true}
+{"date": "inferred", "fallback": false, "instance_of": ["profession", "occupation"], "kind": "occupation", "label": "sociologist", "mapped": true, "property": "P106", "qid": "Q2306091", "referenced": false}
+{"date": "stated", "fallback": false, "instance_of": ["order", "order of merit"], "kind": "award received", "label": "Order of Merit", "mapped": true, "property": "P166", "qid": "Q94056", "referenced": true}
+{"date": "stated", "fallback": true, "instance_of": ["statistics award", "fellowship award"], "kind": "award received", "label": "Fellow of the Royal Statistical Society", "mapped": false, "property": "P166", "qid": "Q59712349", "referenced": true}
+{"date": "stated", "fallback": true, "instance_of": ["military decoration"], "kind": "award received", "label": "Decoration of the Royal Red Cross", "mapped": false, "property": "P166", "qid": "Q94340", "referenced": true}
+{"date": "inferred", "fallback": false, "instance_of": ["learned society", "scientific society"], "kind": "member of", "label": "Royal Statistical Society", "mapped": true, "property": "P463", "qid": "Q1692699", "referenced": false}

@@ -1,0 +1,22 @@
+{
+ "birth": "1931-02-18",
+ "by_property": {
+  "P106": 10,
+  "P108": 1,
+  "P166": 32,
+  "P39": 1,
+  "P463": 3,
+  "P69": 3,
+  "P800": 11
+ },
+ "death": "2019-08-05",
+ "description": "African American novelist, essayist, and academic (1931–2019)",
+ "inferred_dates": 18,
+ "label": "Toni Morrison",
+ "public_reason": null,
+ "qid": "Q72334",
+ "retrieved": "2026-11-24",
+ "rows": 61,
+ "shape": "novelist and professor: dated works, awards",
+ "unmapped": 28
+}
