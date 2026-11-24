@@ -15,8 +15,13 @@ from lifeimage.extract import SYNTHETIC, build_extract_batches, resume_input, wr
 from lifeimage.membership import DEFAULT_OUT, DEFAULT_PACK  # noqa: E402
 
 if __name__ == "__main__":
+    texts = "texts"
+    out = DEFAULT_OUT
+    if "--texts" in sys.argv:  # e.g. --texts texts_v2 writes to data/batches/texts_v2/ so v1 batches stay intact
+        texts = sys.argv[sys.argv.index("--texts") + 1]
+        out = DEFAULT_OUT / texts
     personas = [json.loads(l) for l in (SYNTHETIC / "personas.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
-    inputs = [resume_input(p, (SYNTHETIC / "texts" / f"{p['id']}.resume.txt").read_text(encoding="utf-8")) for p in personas]
+    inputs = [resume_input(p, (SYNTHETIC / texts / f"{p['id']}.resume.txt").read_text(encoding="utf-8")) for p in personas]
     batches = build_extract_batches(inputs, DEFAULT_PACK.read_text(encoding="utf-8"))
-    for p in write_extract_batches(batches, DEFAULT_OUT):
+    for p in write_extract_batches(batches, out):
         print(p.name, len(p.read_text(encoding="utf-8").splitlines()) - 1, "tasks", f"~{-(-p.stat().st_size // 4)} tokens")
