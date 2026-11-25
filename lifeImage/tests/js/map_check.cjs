@@ -44,9 +44,18 @@ const http = require('http'), fs = require('fs'), path = require('path');
   out.click = { selected: await p.evaluate(() => window.__tv.selected) };
   out.hash = await p.evaluate(() => location.hash);
   await p.mouse.move(2, 2); await p.waitForTimeout(100);
-  const before = await p.evaluate(([x, y]) => window.__tv.pixelAt(x, y), [at.x, at.y]);
+  // The slice centre can fall on the selection outline (#ffd84a, or the white hover outline) when the slice is only a few pixels
+  // wide at the fly-to zoom, so sample the nearest pixel to the centre that is fill, not outline; the same point before and after.
+  const pt = await p.evaluate(([x, y]) => {
+    const isLine = c => (c[0] === 255 && c[1] === 216 && c[2] === 74) || (c[0] === 255 && c[1] === 255 && c[2] === 255);
+    const offs = []; for (let dy = -10; dy <= 10; dy++) for (let dx = -10; dx <= 10; dx++) offs.push([dx, dy]);
+    offs.sort((a, b) => (a[0] * a[0] + a[1] * a[1]) - (b[0] * b[0] + b[1] * b[1]));
+    for (const [dx, dy] of offs) if (!isLine(window.__tv.pixelAt(x + dx, y + dy))) return [x + dx, y + dy];
+    return [x, y];
+  }, [at.x, at.y]);
+  const before = await p.evaluate(([x, y]) => window.__tv.pixelAt(x, y), pt);
   await p.click('#ch-green'); await idle(p);
-  const after = await p.evaluate(([x, y]) => window.__tv.pixelAt(x, y), [at.x, at.y]);
+  const after = await p.evaluate(([x, y]) => window.__tv.pixelAt(x, y), pt);
   out.toggle = { before, after };
   const q = await mk(base + out.hash);
   out.restored = await q.evaluate(() => Object.assign({}, window.__tv.view(), { selected: window.__tv.selected }));
