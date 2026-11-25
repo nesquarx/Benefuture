@@ -97,7 +97,7 @@ td,th{{padding:.15rem .8rem .15rem 0;text-align:left;vertical-align:top}} h1,h2{
 <table>
 {LEGEND_LEGACY if legacy else LEGEND_LEVELS}
 <tr><td>angle</td><td>0 deg right is tangible, top global, left abstract, bottom personal; slice width follows evidence pressure</td></tr>
-<tr><td>radius</td><td>inner ring sectors, outer ring fields; no radius detail within a field yet</td></tr>
+<tr><td>radius</td><td>inner ring sectors, outer ring fields; within a ring the band follows the radius composite (complexity, difficulty, specificity)</td></tr>
 <tr><td>flange</td><td>triangle at the right rim, with the basemap version; the notch slot at the rim is empty (no net new achievements yet)</td></tr>
 </table>
 <p>The image judges estimation and the use of expertise, not worth. <a href="basemap.svg">Basemap with sector labels</a>.</p>
@@ -111,7 +111,7 @@ td,th{{padding:.15rem .8rem .15rem 0;text-align:left;vertical-align:top}} h1,h2{
 def main(out, legacy=False):
     out.mkdir(parents=True, exist_ok=True)
     cards = bmod.load_cards()
-    bm = bmod.build_v0()
+    bm = bmod.build_v0(by_depth=legacy)  # the legacy projection keeps the earlier depth-only radius
     ents = im.load_entities()
     total = 0
     asof = {p["id"]: p["as_of"] for p in ch.starter_personas()}

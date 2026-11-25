@@ -13,9 +13,11 @@ proportion to pressure (`pressure.pressure_from_evidence` over the rows given), 
 domain with no evidence yet keeps a place. A slice's centre therefore follows its axes angle only up to the shift the
 widths cause; `Slice.axes_angle` keeps the angle the axes alone gave and `Basemap.shift` reports the spread.
 
-Radius (LI.26): depth. Sectors fill the inner ring, fields the outer. Complexity, difficulty and specificity are
-outward-increasing and would spread the fields across their ring; their proxies are not available, so every field
-spans the whole outer ring (see `OPEN_NOTES`).
+Radius (LI.26): sectors fill the inner ring, fields the outer. Inside its ring a domain takes a radial band of
+`BAND` of the ring's span, placed by its radius composite (`radius.composite` on the card, from `lifeimage.radius`:
+complexity, difficulty and specificity, outward-increasing), scaled so the ring's innermost composite sits at the ring's
+inner edge and its outermost at the outer edge. A domain without a composite falls back to depth: it spans its whole
+ring, recorded loudly (`degradation`, mechanism `radius_composite`, the domains named). `by_depth=True` asks for depth outright (the legacy projection), unlogged. Equal composites in a ring sit mid-ring.
 
 Everything is deterministic: ties break by id, no randomness, no clock.
 """
@@ -33,20 +35,21 @@ from ..packs import is_sector
 from ..pressure import pressure_from_evidence
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-CARDS = ROOT / "data/coarse/seed_v2.jsonl"
-LEGACY_CARDS = (ROOT / "data/coarse/seed_v0.jsonl", ROOT / "data/coarse/seed_v1.jsonl")  # answers cached against earlier links
+CARDS = ROOT / "data/coarse/seed_v3.jsonl"
+LEGACY_CARDS = (ROOT / "data/coarse/seed_v0.jsonl", ROOT / "data/coarse/seed_v1.jsonl", ROOT / "data/coarse/seed_v2.jsonl")  # answers cached against earlier links
 ANSWERS = ROOT / "data/answers/axes.jsonl"
 
 SECTOR_RING = (0.16, 0.42)  # (r0, r1) as a fraction of the rim
 FIELD_RING = (0.44, 0.96)
 MIN_FIELD_SLICE = 0.25  # governed: degrees, the least a field keeps however little evidence it has
 MIN_SECTOR_SLICE = 2.0  # governed: degrees
+BAND = 0.2  # governed: a domain's radial band as a share of its ring's span (LI.26)
 SMOOTHING = 1.0  # governed: additive pressure smoothing (`pressure.py`)
 
 OPEN_NOTES = [
-    "[OPEN] Radius within the field ring: complexity and difficulty proxies are not yet available (LI.26), so every "
-    "field spans the whole outer ring and radius carries depth only (sectors inner, fields outer). Specificity "
-    "beyond depth, such as the number of upstream links or novelty (L159), is not yet used.",
+    "[OPEN] Radius within a ring comes from the mechanical proxies of `lifeimage.radius` (LI.26): complexity and "
+    "specificity cover every domain, difficulty under a fifth (ISCO skill level), and specificity does not yet "
+    "correlate positively with the other two; novelty (L159) is not used. A domain with no composite spans its whole ring (logged).",
     "[OPEN] Pressure here is the share of the synthetic persona, organisation and public-figure rows, a tiny and "
     "unrepresentative sample; real pressure is the smoothed share of recent works, postings and evidence rows (LI.25).",
     "Slice order is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where "
@@ -65,6 +68,7 @@ class Slice:
     r1: float
     pressure: float
     source: str  # axes | upstream | children
+    composite: float = None  # radius composite behind the band; None when the domain fell back to depth
 
     @property
     def angle(self):
@@ -79,6 +83,7 @@ class Basemap:
     notes: list = field(default_factory=list)
     shift: dict = field(default_factory=dict)  # ring -> {mean, max}: degrees between slice centre and axes angle
     votes: dict = field(default_factory=dict)  # field id -> number of axes votes behind its angle
+    radius_fallback: list = field(default_factory=list)  # domains without a composite, placed by depth
 
 
 def read_jsonl(path):
@@ -196,7 +201,32 @@ def evidence_pressure(rows, domains, smoothing=SMOOTHING):
     return pressure_from_evidence([r for r in rows if not r["revoked"]], domains, smoothing)
 
 
-def build(cards, axes, rows, version="0.0.0-draft"):
+def radial_bands(cards, ring_of, log=None, by_depth=False):
+    """({id: (r0, r1)}, [ids by depth]). Per ring, the composites are scaled linearly onto the ring (innermost at the
+    inner edge); a card with no composite spans the whole ring and is listed."""
+    radii = {"sector": SECTOR_RING, "field": FIELD_RING}
+    comp = {c["id"]: None if by_depth else (c.get("radius") or {}).get("composite") for c in cards}
+    out, fallback = {}, []
+    for ring, (lo, hi) in radii.items():
+        ids = [c["id"] for c in cards if ring_of[c["id"]] == ring]
+        vals = [comp[i] for i in ids if comp[i] is not None]
+        cmin, cmax = (min(vals), max(vals)) if vals else (0.0, 0.0)
+        for i in ids:
+            if comp[i] is None:
+                out[i] = (lo, hi)
+                fallback.append(i)
+                continue
+            t = 0.5 if cmax == cmin else (comp[i] - cmin) / (cmax - cmin)
+            r0 = lo + t * (hi - lo) * (1 - BAND)
+            out[i] = (r0, r0 + (hi - lo) * BAND)
+    if fallback and not by_depth:
+        shown = ", ".join(sorted(fallback)[:5]) + (f" and {len(fallback) - 5} more" if len(fallback) > 5 else "")
+        record_degradation(f"radial_bands: {shown}", "radius_composite", "depth (whole ring)",
+                           f"no radius composite on {len(fallback)} of {len(cards)} domains", log)
+    return out, sorted(fallback)
+
+
+def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False):
     by = {c["id"]: c for c in cards}
     angle, source, inherited = place_angles(cards, axes)
     ids = sorted(by)
@@ -216,15 +246,17 @@ def build(cards, axes, rows, version="0.0.0-draft"):
                     key=lambda i: (round(angle[i], 6), round(angle.get(primary[i], 0.0), 6), i))
     s_arcs = slice_ring([(i, angle[i]) for i in sectors], sector_p, MIN_SECTOR_SLICE)
     f_arcs = slice_ring([(i, angle[i]) for i in fields], p, MIN_FIELD_SLICE)
+    bands, fallback = radial_bands(cards, {i: "sector" if is_sector(by[i]) else "field" for i in ids}, log, by_depth)
     slices = {}
-    for ring, arcs, radii, press in (("sector", s_arcs, SECTOR_RING, sector_p), ("field", f_arcs, FIELD_RING, p)):
+    for ring, arcs, press in (("sector", s_arcs, sector_p), ("field", f_arcs, p)):
         for i, (start, wd) in arcs.items():
-            slices[i] = Slice(i, ring, angle[i], start, wd, radii[0], radii[1], press[i], source[i])
+            slices[i] = Slice(i, ring, angle[i], start, wd, bands[i][0], bands[i][1], press[i], source[i],
+                              None if i in fallback else by[i]["radius"]["composite"])
     shift = {}
     for ring in ("sector", "field"):
         d = [circ_diff(s.angle, s.axes_angle) for s in slices.values() if s.ring == ring]
         shift[ring] = {"mean": math.fsum(d) / len(d), "max": max(d)}
-    return Basemap(version, slices, inherited, list(OPEN_NOTES), shift, {i: a["votes"] for i, a in axes.items()})
+    return Basemap(version, slices, inherited, list(OPEN_NOTES), shift, {i: a["votes"] for i, a in axes.items()}, fallback)
 
 
 def evidence_rows(root=ROOT):
@@ -235,9 +267,9 @@ def evidence_rows(root=ROOT):
     return rows
 
 
-def build_v0(root=ROOT):
-    cards = load_cards(root / "data/coarse/seed_v2.jsonl")
-    bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / "data/coarse/seed_v0.jsonl", root / "data/coarse/seed_v1.jsonl"],
+def build_v0(root=ROOT, by_depth=False):
+    cards = load_cards(root / "data/coarse/seed_v3.jsonl")
+    bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / f"data/coarse/seed_v{v}.jsonl" for v in (0, 1, 2)],
                                  [root / "data/answers/axis_at.jsonl", root / "data/answers/axis_pg.jsonl"]),
-               evidence_rows(root), cards[0]["basemap_version"])
+               evidence_rows(root), cards[0]["basemap_version"], by_depth=by_depth)
     return bm

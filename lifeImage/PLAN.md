@@ -41,6 +41,13 @@ within each sector, with a child never inside its parent. Candidate proxies (eac
 - difficulty: O*NET job zones (preparation, 1–5), ISCED levels of the qualifications that teach it;
 - complexity: prerequisite depth, the number of distinct parent domains a node draws on.
 
+Built (`lifeimage/radius.py`, `tools/build_radius.py`; `data/coarse/seed_v3.jsonl`, `data/fine/fine_v1.jsonl`; the basemap places
+each band by the composite and falls back to depth, logged). Coverage of 1,049 nodes: specificity 100%, complexity 100%,
+difficulty 19% (ISCO skill level by major group; O*NET job zones and ISCED education are not in the fetched sources, so
+unused). Spearman: complexity~difficulty +0.25 (n=196), complexity~specificity +0.03, difficulty~specificity -0.11 (|z| < 2
+for both): the proxies do not yet correlate as ruled, and the report flags it. Specificity is largely popularity in the
+co-membership sample; a source of per-domain breadth or reach would test whether that is the cause.
+
 Impact is intensity, not radius. A notch marks a net new achievement: one that creates a new leaf. At the claimed
 tier it is flagged only, and drawn once attested.
 

@@ -29,6 +29,27 @@ GOVERNED = {
         "default": 0.5,
         "source": "LI.38: share kept when the person reports it themselves (pale); the earlier claimed-layer saturation.",
     },
+    "radius.band": {
+        "default": 0.2,
+        "source": "LI.26: a domain's radial band as a share of its ring's span (`render/basemap.py` BAND); assumption.",
+    },
+    "radius.sector_cap": {
+        "default": 0.4,
+        "source": "LI.26: the composite a sector's top rank reaches before fields lift outward (`radius.py` SECTOR_CAP); assumption.",
+    },
+    "radius.step_floor": {
+        "default": 0.1,
+        "source": "LI.26: the least share of the remaining radius a child moves outward of its parent (`radius.py` STEP_FLOOR); "
+                  "keeps a child strictly outside its parent; assumption.",
+    },
+    "radius.step_span": {
+        "default": 0.8,
+        "source": "LI.26: the share of the remaining radius a child's own rank spans (`radius.py` STEP_SPAN); floor + span < 1; assumption.",
+    },
+    "radius.prerequisite_margin": {
+        "default": 0.1,
+        "source": "LI.26: inclusion asymmetry p(b|a) - p(a|b) that gives a co-membership direction (`radius.py` PREREQ_MARGIN); assumption.",
+    },
 }
 
 # The reference pool of LI.39: generalist personas aged 40 on the generated population's calibration mix, fixed seeds,
