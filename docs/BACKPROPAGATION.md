@@ -4498,3 +4498,8 @@ Cause common to most: Spike D2 made `credence_rule = :eb` the default (`M3cParam
   - **[R] Lead reading (4) form of SO.** SO engagement probability scales with speculated risk significance = severity x probability. Home: `SophontOversight` pseudocode line 142 and its article.
   - **[R] Lead reading (5) newborn vote.** The vote exists from birth and starts delegated (weighted by impact and expertise as usual: `BfDm` line 113, `LqdBfDm` line 114, delegation retractable). The child may recant the delegation and vote directly in domains where its voice is useful, as measured capability matures; influence grows continuously with measured capability; there is no single age of majority. Homes: `BfDm`/`LqdBfDm` lines, the democracy article.
   - **Status.** 8.171 OPEN items (a)-(e) are resolved by 8.172; (f) acquittal audits stays open.
+
+### 8.173 every judgement is audited (author, 2026-11-25)
+- Author, verbatim: "Every judgement gets random audits and can be AdvApd too."
+- Reading: random audits and AdvAp challenges apply to every judicial verdict, acquittals included, not only restraints; audit and challenge outcomes feed the voting experts' judicial records (8.170 a). Resolves 8.171 open item f: a captured panel that acquits everything no longer fails silent, since audited acquittals that are overturned count against it and feed the false/true alarm (8.170 e, extended to false acquittals). Cost: random audits and non-repetitive triggers from the commons; recursive audits within the AdvAp budget (8.170 d). Candidate homes: L117 J, L121 DueProcess, Justice article.
+- Status: [R]; implementation queued after step 5 (M3c judicial panel: audit acquittals at the random rate, AdvAp challenges by victims, alarm over both error types).
