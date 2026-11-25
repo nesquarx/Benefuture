@@ -33,6 +33,10 @@ deleted. Numbering is stable (LI.n).
   if identities are redacted and test data is not saved, except public figures; focus includes regular people.
   DESIGN.
 - **LI.16** (2026-11-23) Rulings are recorded in this file before mechanisms change. This file.
+- **LI.17** (2026-11-25) Source licences confirmed by the author: OpenAlex CC0 1.0; ISCO and ESCO CC BY 4.0. All
+  three allow commercial use, modification and redistribution without fees; ISCO and ESCO require attribution, carried
+  in `ATTRIBUTION.md` and with every release of the basemap. Candidate files built earlier keep the status recorded at
+  build time; the next pool build carries `verified`. `lifeimage/fine/sources.py`.
 
 ### Domains and basemap
 - **LI.20** (2026-11-20) Domains concern everything, not only work: the backbone of Benefuture's behavioural

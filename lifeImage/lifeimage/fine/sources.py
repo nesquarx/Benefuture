@@ -4,7 +4,8 @@ Every fetch carries the generic client name of `lifeimage.sources.wikidata` and 
 stored trimmed under `data/fine/sources/<source>.jsonl` (one row per class: code, label, aliases, description,
 broader), so the pool rebuilds offline. A row is a class of a classification, never an individual record.
 
-Licence status per source: `verified` (the licence statement was read on a primary page), `unverified` (believed, but
+Licence status per source: `verified` (the licence statement was read on a primary page, or confirmed by the author:
+LI.17), `unverified` (believed, but
 the pages read did not state it) or `restricted` (a reservation of rights was read; labels are kept as reference
 names and the status travels with every candidate).
 """
@@ -16,12 +17,12 @@ from pathlib import Path
 LICENCES = {
     "wikidata": {"licence": "CC0 1.0", "status": "verified",
                  "evidence": "https://www.wikidata.org/wiki/Wikidata:Licensing (data/SOURCES_EVENTS.md)"},
-    "openalex": {"licence": "CC0 1.0 (believed)", "status": "unverified",
-                 "evidence": "licence not stated on the OpenAlex help pages read; snapshot LICENSE.txt not read"},
-    "esco_isco": {"licence": "ESCO free reuse with attribution, believed CC BY 4.0", "status": "unverified",
-                  "evidence": "ESCO download page read; it does not state the licence"},
-    "esco_skills": {"licence": "ESCO free reuse with attribution, believed CC BY 4.0", "status": "unverified",
-                    "evidence": "ESCO download page read; it does not state the licence"},
+    "openalex": {"licence": "CC0 1.0", "status": "verified",
+                 "evidence": "author confirmation 2026-11-25 (BACKPROPAGATION LI.17)"},
+    "esco_isco": {"licence": "CC BY 4.0 (attribution required: ATTRIBUTION.md)", "status": "verified",
+                  "evidence": "author confirmation 2026-11-25 (BACKPROPAGATION LI.17)"},
+    "esco_skills": {"licence": "CC BY 4.0 (attribution required: ATTRIBUTION.md)", "status": "verified",
+                    "evidence": "author confirmation 2026-11-25 (BACKPROPAGATION LI.17)"},
     "icatus": {"licence": "United Nations copyright, all rights reserved", "status": "restricted",
                "evidence": "Copyright line of the ICATUS 2016 publication (ST/ESA/STAT/SER.M/98); reference use only"},
     "atus": {"licence": "US government work, public domain (BLS: everything it publishes is in the public domain, except "
