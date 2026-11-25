@@ -90,6 +90,12 @@ deleted. Numbering is stable (LI.n).
   calibration examples, two variants in opposite order, controls with existing signal and random far pairs to calibrate the scale.
   The answers enter the simulation as the optional 'judged' source (weight and floor governed; empty and loudly degraded until
   answers exist). PLAN (proposal, not a ruling).
+- **LI.60** (2026-11-25; author, refines LI.55, LI.58) Order of layout work: circular seriation (global ring order over the
+  combined similarity, angle penalty from the axes prior) runs after the fine refinement is merged, as a comparison arm on
+  the blinded adjacency check. A further placement clean-up: build the event co-membership overlap list from a large sample,
+  compare it with each field's layout neighbours, rank the fields with the most mismatch, find the position where each has
+  the most matches, then a runner validates the move by seeing the current and suggested placement with both neighbour sets.
+  PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
