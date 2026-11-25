@@ -343,6 +343,13 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   reports the extracted-row sets as absent (loudly) until new answers exist, and refuses answers whose batch holds
   other texts than `data/synthetic/texts_v2`.
 
+- **Life-activity fines** (ATUS 2025 activity lexicon, BLS, public domain verified; 300 candidates, 2 variants): fine
+  level now 786 cards (739 upstream, 47 overlap; escalated 8.1%; agreement 0.70). Coarse fields with no fine child
+  149 → 105 (44 gained: sleep, eating, hygiene, parenting, home repair, shopping, worship, volunteering, sport, play,
+  among others). Predicted ≥ 150 candidates (held) and two-thirds of the childless fields covered (missed: 30%); the
+  remaining 105 include harm, health conditions, relationships and the arts, which neither source details. Multi-parent
+  pairs supported by learnt co-membership 35.1% against a 1.6% baseline.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
