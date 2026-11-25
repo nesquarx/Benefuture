@@ -421,6 +421,14 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   calibration 0.451 against 0.472: finer resolution does not change identification (predicted +0.05: missed). The limit
   is elsewhere (the features or the generator's archetype signal), not resolution. Images grew to ~190 KB each.
 
+- **Identification ceiling** (`data/gold/identification_ceiling.*`; predictions committed before measurement,
+  `f59c09a`): archetype from the image's full per-domain levels 0.85 [0.78, 0.90], from the raw truth rows 0.78
+  [0.70, 0.84], from the battery's summary features 0.57 [0.49, 0.65] (levels minus summary +0.27, sign test p < 0.001).
+  The image carries the archetype; the summary features lose it. Calibration is the reverse: summary features
+  (which include the grain share) 0.58 with a logistic classifier, raw rows 0.39, levels alone 0.17: estimation lives
+  in grain and tier, not in levels, as LI.38 intends. Fine rings add nothing measurable (+0.01). Next: the
+  characterisation battery should read the image's levels and grain together (a v3 feature set, pre-registered).
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
