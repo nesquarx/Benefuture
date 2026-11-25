@@ -267,7 +267,20 @@ struct M3cParams
     proposal_confidence::Float64  # 8.134: confidence band on a proposal's predicted outcome (`prediction_on_track`)
     repair_credit::Bool           # 8.26.1: credit physical repairs as a repairer's recorded action (without clearing offender debit)
     accolade_counterfactual::Bool # 8.26.2: award outside-contract carrying accolades only when carrier's counterfactual eff > 0
-    enforcer_eager::Vector{Float64} # world: enforcing entities within Ad (L121), each with an eagerness = chance per proposal of restraining a proposer without a qualifying pattern (false restraint); empty = none
+    judges::Vector{Float64}       # world (8.170): judicial experts of the restraint panel, each with an evidence-reading noise (skill varies); empty = no panel, restraint off
+    judge_bias::Vector{Float64}   # world: capture of each expert, a log-odds shift towards guilt (0 = honest; empty = all honest); the counterexample lever
+    judge_cluster::Vector{Int}    # world: cluster of each expert (1 = majority, 2 = minority; empty = all majority)
+    panel_size::Int               # governed: experts drawn per case
+    panel_minority_weight::Float64 # governed: vote-weight uplift of minority-cluster experts (L115 `Di, N(minority clusters) -> VW up`)
+    evidence_sep::Float64         # world: separation of the case evidence between guilty and innocent
+    evidence_noise::Float64       # world: noise of the case evidence, shared by the panel (own stream)
+    false_accusation_rate::Float64 # world: chance per proposal that an innocent proposer is referred to the panel
+    enforcer_excess::Vector{Float64} # world: enforcing entities (execute verdicts, L121), each with an excess = extra severity beyond the verdict; empty = one faithful enforcer
+    excess_tol::Float64           # governed: execution excess fraction an audit tolerates before charging the enforcer
+    restraint_recursion_budget::Int # governed: recursive restraint audits (AdvAp) funded per step
+    restraint_challenge::Float64  # world: chance the losing side challenges an audit finding, triggering a recursive audit
+    restraint_alarm_ratio::Float64 # governed: false/true audited findings ratio at which the justice process is flagged flawed (8.170 e)
+    restraint_alarm_min::Int      # governed: audited findings needed before the alarm may fire
     restraint_audit::Bool         # 8.169 (c, ii): forcible restraint is audited with `restraint_audit_prob`, audit cost from the commons, false restraint liable to the enforcer
     restraint_bar::Float64        # governed: restraint burden at and above which the audit is certain and precedes the restraint (8.169)
     restraint_kappa::Float64      # governed: liability weight of an overturned restraint on its enforcer (8.169)
@@ -336,16 +349,27 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    responsibility_reading::Bool = false, responsibility_counterfactual::Real = 1.0, responsibility_severity::Real = 1.0, responsibility_accident_factor::Real = 0.5,
                    proposal_pma::Bool = false, proposal_eta::Integer = 3, proposal_eta_grace::Integer = 0, proposal_confidence::Real = 0.25,
                    repair_credit::Bool = false, accolade_counterfactual::Bool = false,
-                   enforcer_eager = Float64[], restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
+                   judges = Float64[], judge_bias = Float64[], judge_cluster = Int[], panel_size::Integer = 5, panel_minority_weight::Real = 1.5,
+                   evidence_sep::Real = 1.5, evidence_noise::Real = 1.0, false_accusation_rate::Real = 0.03,
+                   enforcer_excess = Float64[], excess_tol::Real = 0.1, restraint_recursion_budget::Integer = 1, restraint_challenge::Real = 0.0,
+                   restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 6, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
                    restraint_audit_floor::Real = 0.05, restraint_dur_scale::Real = 5.0, restraint_audit_cap::Integer = 2,
                    restraint_audit_acc::Real = 0.9, false_restraint_severity::Real = 0.6, false_restraint_harm::Real = 1.0,
                    enforcer_liability_scale::Real = 5.0)
-    check(all(e -> isfinite(e) && 0 <= e <= 1, enforcer_eager) && isfinite(restraint_bar) && restraint_bar > 0 &&
+    check(all(e -> isfinite(e) && e >= 0, judges) && all(isfinite, judge_bias) && all(c -> c in (1, 2), judge_cluster) &&
+          (isempty(judge_bias) || length(judge_bias) == length(judges)) && (isempty(judge_cluster) || length(judge_cluster) == length(judges)) &&
+          panel_size >= 1 && isfinite(panel_minority_weight) && panel_minority_weight >= 0 && isfinite(evidence_sep) && evidence_sep > 0 &&
+          isfinite(evidence_noise) && evidence_noise > 0 && isfinite(false_accusation_rate) && 0 <= false_accusation_rate <= 1 &&
+          all(e -> isfinite(e) && e >= 0, enforcer_excess) && isfinite(excess_tol) && excess_tol >= 0 && restraint_recursion_budget >= 0 &&
+          isfinite(restraint_challenge) && 0 <= restraint_challenge <= 1 && isfinite(restraint_alarm_ratio) && restraint_alarm_ratio >= 0 &&
+          restraint_alarm_min >= 0,
+          "judges, bias, excess, noise non-negative and aligned; clusters 1 or 2; panel at least 1; rates in [0, 1]")
+    check(isfinite(restraint_bar) && restraint_bar > 0 &&
           isfinite(restraint_kappa) && restraint_kappa >= 0 && isfinite(restraint_audit_floor) && 0 <= restraint_audit_floor <= 1 &&
           isfinite(restraint_dur_scale) && restraint_dur_scale > 0 && restraint_audit_cap >= 0 &&
           isfinite(restraint_audit_acc) && 0 <= restraint_audit_acc <= 1 && isfinite(false_restraint_severity) && false_restraint_severity >= 0 &&
           isfinite(false_restraint_harm) && false_restraint_harm >= 0 && isfinite(enforcer_liability_scale) && enforcer_liability_scale > 0,
-          "enforcer eagerness and audit accuracy in [0, 1]; bar, duration and liability scales positive; kappa, cap, harm non-negative")
+          "audit accuracy in [0, 1]; bar, duration and liability scales positive; kappa, cap, harm non-negative")
     agents = collect(DomainAgent, agents)
     nl, np = length(leaf_parent), maximum(leaf_parent; init = 0)
     check(!isempty(agents) && all(a -> length(a.skills) == nl, agents), "agents need one skill per true leaf")
@@ -459,7 +483,9 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
               proposal_pma, Int(proposal_eta), Int(proposal_eta_grace), Float64(proposal_confidence),
               repair_credit, accolade_counterfactual,
-              collect(Float64, enforcer_eager), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
+              collect(Float64, judges), collect(Float64, judge_bias), collect(Int, judge_cluster), Int(panel_size), Float64(panel_minority_weight),
+              Float64(evidence_sep), Float64(evidence_noise), Float64(false_accusation_rate), collect(Float64, enforcer_excess), Float64(excess_tol),
+              Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
               Float64(restraint_audit_floor), Float64(restraint_dur_scale), Int(restraint_audit_cap), Float64(restraint_audit_acc),
               Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale))
 end
@@ -1116,26 +1142,103 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     jrng = Xoshiro(hash((seed, :justice)))
     # Restraint by the Administration's enforcing entities (8.169): own stream, per-enforcer ledger.
     erng = Xoshiro(hash((seed, :enforcers)))
-    nenf = length(p.enforcer_eager)
-    enf_liab = zeros(max(nenf, 1))                 # liability each enforcing entity carries (forgotten slowly)
+    krng = Xoshiro(hash((seed, :judges)))          # evidence and panel draws (8.170), own stream
+    njudge = length(p.judges)
+    restr_on = njudge > 0
+    nenf = max(1, length(p.enforcer_excess))
+    enf_liab = zeros(nenf)                         # liability each enforcing entity carries (forgotten slowly)
+    judge_rep = zeros(max(njudge, 1))              # negative judicial-domain reputation of each expert (forgotten slowly)
+    judge_over = zeros(Int, max(njudge, 1))        # verdicts of each expert overturned on audit (repeated pattern, L117)
+    judge_rec = [Tuple{Float64,Float64}[] for _ in 1:max(njudge, 1)]  # (stated confidence in guilt, audited outcome) per expert
     restr_run = zeros(Int, na)                     # consecutive restraints of each proposer (duration)
-    restraint_pending = Tuple{Int,Bool,Float64,Int}[]  # audits owed: (enforcer, restraint was justified, cost imposed)
-    restr_audits_left = Ref(0)
+    restraint_pending = Tuple{Int,Bool,Float64,Int,Vector{Tuple{Int,Float64,Bool}},Float64,Float64,Int}[]  # audits owed after an unaudited-before restraint
+    restr_audits_left, recursion_left = Ref(0), Ref(0)
     false_restraints, false_restr_effective, justified_restraints, justified_restr_effective = Ref(0), Ref(0), Ref(0), Ref(0)
     restraints_overturned, restraint_audits, restraint_waits, restraint_missed = Ref(0), Ref(0), Ref(0), Ref(0)
     restraint_audit_cost, restraint_liability, false_restr_harm = Ref(0.0), Ref(0.0), Ref(0.0)
-    function restraint_audit!(k, justified, cost, c)
-        # The audit is funded from the commons (AdvAp, `ra_domain_audit`); a correct audit overturns an
-        # unjustified restraint, a wrong one does not (noise); liability is the enforcer's, not the commons'.
+    judge_liability, judge_currency, challenger_charged, excess_harm, excess_charged = Ref(0.0), Ref(0.0), Ref(0.0), Ref(0.0), Ref(0.0)
+    recursive_audits, recursion_refused, findings_false, findings_true = Ref(0), Ref(0), Ref(0), Ref(0)
+    restraint_verdicts, restraint_acquittals, alarm_step, alarm_count = Ref(0), Ref(0), Ref(0), Ref(0)
+    challenge_unfounded = zeros(Int, na + 1)       # unfounded challenges per side: each proposer, and the panel (index na + 1)
+    function judge_case!(guilty)
+        # Restraint is the last-resort verdict of Justice (8.170): a panel of judicial experts votes on guilt with
+        # stated confidence, each reading the shared noisy case evidence with its own skill and capture; ballots
+        # weigh as in LqCfdBfDm (vote weight x record calibration x log-odds), minority clusters uplifted.
+        local x = (guilty ? 1.0 : -1.0) * p.evidence_sep + p.evidence_noise * randn(krng)
+        local panel = randperm(krng, njudge)[1:min(p.panel_size, njudge)]
+        local total = 0.0
+        local voters = Tuple{Int,Float64,Bool}[]
+        for i in panel
+            local jobs = x + p.judges[i] * randn(krng)
+            local lo = clamp(2 * p.evidence_sep * jobs / (p.evidence_noise^2 + p.judges[i]^2) + (isempty(p.judge_bias) ? 0.0 : p.judge_bias[i]), -10.0, 10.0)
+            local minor = !isempty(p.judge_cluster) && p.judge_cluster[i] == 2
+            local vw = panel_voice(exp(-judge_rep[i] / p.enforcer_liability_scale), p.panel_minority_weight, minor)
+            local rec = judge_rec[i]
+            local cal = length(rec) < 3 ? 1.0 : clamp(2 * credence_accuracy(first.(rec), last.(rec)), 0.0, 2.0)
+            total += cfd_ballot_weight(vw, cal, lo)
+            push!(voters, (i, 1 / (1 + exp(-lo)), lo > 0))
+        end
+        (total > 0, voters)
+    end
+    function audit_read(guilty)
+        rand(erng) < p.restraint_audit_acc ? guilty : !guilty   # true = the audit upholds the verdict
+    end
+    function fund_audit!(c)
         restraint_audits[] += 1
         restraint_audit_cost[] += p.audit_cost
-        p.ra_domain && 1 <= c <= ntrue && (ra_domain_audit[c] += p.audit_cost)
-        right = rand(erng) < p.restraint_audit_acc
-        upheld = right ? justified : !justified
-        # the audit speaks in credence that the restraint was false: its accuracy on an overturn, the rest on an upholding
-        liab = credence_restraint_liability(upheld ? 1 - p.restraint_audit_acc : p.restraint_audit_acc, p.restraint_kappa, cost + p.audit_cost)
-        upheld || (restraints_overturned[] += 1)
-        liab > 0 && (enf_liab[k] += liab; restraint_liability[] += liab)
+        p.ra_domain && 1 <= c <= ntrue && (ra_domain_audit[c] += p.audit_cost)   # AdvAp audits are funded from the commons
+    end
+    function audit_case!(k, guilty, cost, c, voters, exc_frac, exc_cost, prop, executed)
+        # One audit trigger (commons-funded) reads the verdict's quality and the execution's fidelity. The losing
+        # side may challenge the finding: a recursive audit, funded from the commons within the per-step budget; a
+        # challenge the new audit does not support is unfounded, and above the AdvAp threshold it is charged to the
+        # challenger (`report_penalty`). Out of budget the last finding stands, logged loudly.
+        fund_audit!(c)
+        local upheld = audit_read(guilty)
+        while p.restraint_challenge > 0 && rand(erng) < p.restraint_challenge
+            if recursion_left[] <= 0
+                recursion_refused[] += 1
+                degrade!("restraint audit recursion", "challenge refused, last finding stands", "recursion budget exhausted")
+                break
+            end
+            recursion_left[] -= 1; recursive_audits[] += 1
+            fund_audit!(c)
+            local side = upheld ? prop : na + 1
+            local again = audit_read(guilty)
+            if again == upheld
+                challenge_unfounded[side] += 1
+                challenger_charged[] += report_penalty(challenge_unfounded[side], p.frivolous_threshold; audit_cost = p.audit_cost)
+            end
+            upheld = again
+        end
+        upheld ? (findings_true[] += 1) : (findings_false[] += 1; restraints_overturned[] += 1)
+        for (i, cf, _) in voters
+            push!(judge_rec[i], (cf, upheld ? 1.0 : 0.0)); length(judge_rec[i]) > 40 && popfirst!(judge_rec[i])
+        end
+        if !upheld
+            # liability of the false verdict falls on the experts who voted guilty, by their stated confidence
+            # (the Lean credence rule applied to the experts' own confidence): judicial-domain reputation first,
+            # currency only once the pattern repeats (L117)
+            local ng = count(v -> v[3], voters)
+            for (i, cf, g) in voters
+                g || continue
+                local liab = credence_restraint_liability(cf, p.restraint_kappa, (cost + p.audit_cost) / max(ng, 1))
+                judge_rep[i] += liab; judge_over[i] += 1; judge_liability[] += liab
+                judge_over[i] >= p.sanction_pattern_min && (judge_currency[] += liab)
+            end
+        end
+        if upheld && executed && exc_cost > 0 && exc_frac > p.excess_tol && rand(erng) < p.restraint_audit_acc
+            # the enforcer is liable only for the execution excess beyond the verdict
+            local liab = false_restraint_liability(false, p.restraint_kappa, exc_cost)
+            enf_liab[k] += liab; restraint_liability[] += liab; excess_charged[] += liab
+        end
+        if restraint_balance_flawed(p.restraint_alarm_min, findings_false[], findings_true[]; ratio = p.restraint_alarm_ratio)
+            alarm_count[] += 1
+            if alarm_step[] == 0
+                alarm_step[] = cur[]
+                degrade!("restraint justice", "alarm: flawed process flagged as governance candidate", "false restraints reached true restraints")
+            end
+        end
         upheld
     end
     # 8.134 predict-measure-adapt loop for non-candidate proposals & measurements:
@@ -1499,6 +1602,13 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    restraints_overturned = restraints_overturned[], restraint_audits = restraint_audits[],
                    restraint_waits = restraint_waits[], restraint_missed = restraint_missed[],
                    restraint_audit_cost = restraint_audit_cost[], restraint_liability = restraint_liability[],
+                   restraint_verdicts = restraint_verdicts[], restraint_acquittals = restraint_acquittals[],
+                   judge_liability = judge_liability[], judge_currency_liability = judge_currency[],
+                   enforcer_liability = copy(enf_liab), judge_rep_liability = copy(judge_rep), judge_overturned = copy(judge_over),
+                   restraint_recursive_audits = recursive_audits[], restraint_recursion_refused = recursion_refused[],
+                   challenger_charged = challenger_charged[], excess_charged = excess_charged[], excess_harm = excess_harm[],
+                   findings_false = findings_false[], findings_true = findings_true[],
+                   restraint_alarm_step = alarm_step[], restraint_alarm_count = alarm_count[],
                    false_restraint_harm = false_restr_harm[], restraint_pending = length(restraint_pending),
                    proposal_pma_record = copy(pma_resolved), proposal_pma_pending = length(pma_pending),
                    proposal_pma_misses = copy(pma_misses), proposal_pma_on_track = copy(pma_on_track),
@@ -1529,13 +1639,14 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     end
     for step in 1:t.steps
         cur[] = step; update_rates!()
-        if nenf > 0
-            enf_liab .*= 0.98
+        if restr_on
+            enf_liab .*= 0.98; judge_rep .*= 0.98
             restr_audits_left[] = p.restraint_audit_cap
+            recursion_left[] = p.restraint_recursion_budget
             while !isempty(restraint_pending) && restr_audits_left[] > 0
-                k, just, cst, cc = popfirst!(restraint_pending)
+                k, just, cst, cc, vts, ef, ec, pr = popfirst!(restraint_pending)
                 restr_audits_left[] -= 1
-                restraint_audit!(k, just, cst, cc)
+                audit_case!(k, just, cst, cc, vts, ef, ec, pr, true)
             end
         end
         if p.proposal_pma && !isempty(pma_pending)
@@ -2049,59 +2160,65 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
             c_prop = top_leaf(stops[j]) > 0 ? top_leaf(stops[j]) : leaves[j]
             qualifies = p.sanction_escalate && dom_crime_events[proposers[j], c_prop] >= p.sanction_pattern_min
-            if nenf > 0
-                # Forcible restraint by an enforcing entity of the Administration (8.169, L121). A dangerous
-                # proposer (qualifying pattern) is restrained by the rehabilitative share; an overeager
-                # entity also restrains a proposer with no pattern. Liability chills both (propensity x exp(-L/scale)).
+            if restr_on
+                # Restraint is the last-resort verdict of Justice (8.170, L117 J, L121): a dangerous proposer
+                # (qualifying pattern) is referred with the rehabilitative restraint probability, an innocent one by
+                # false accusation (world noise); a panel of judicial experts votes on guilt with confidence; an
+                # enforcing entity of the Administration executes the verdict, possibly with excess; audits read both.
                 k = rand(erng, 1:nenf)
-                chill = exp(-enf_liab[k] / p.enforcer_liability_scale)
-                sev = 0.0
-                attempt = false
-                if qualifies
-                    rehab_sh = rehabilitate_restraint(1.0, dom_crime_events[proposers[j], c_prop], p.sanction_pattern_min;
-                                                      decay = p.sanction_restraint_decay, min_share = p.sanction_min_share)
-                    if rand(jrng) > rehab_sh
-                        if rand(erng) < chill
-                            attempt = true; sev = 1.0 - rehab_sh
-                        else
-                            restraint_missed[] += 1   # chilled: the dangerous proposer goes unrestrained
-                        end
-                    end
-                elseif rand(erng) < p.enforcer_eager[k] * chill
-                    attempt = true; sev = p.false_restraint_severity
-                end
-                if attempt
-                    restr_run[proposers[j]] += 1
-                    cost = sev * p.false_restraint_harm
-                    qualifies ? (justified_restraints[] += 1) : (false_restraints[] += 1)
-                    stands = true
-                    if p.restraint_audit
-                        pa = restraint_audit_prob(sev, restr_run[proposers[j]] - 1, p.restraint_bar;
-                                                  duration_scale = p.restraint_dur_scale, floor = p.restraint_audit_floor)
-                        if pa >= 1.0
-                            if restr_audits_left[] > 0
-                                restr_audits_left[] -= 1
-                                stands = restraint_audit!(k, qualifies, cost, c_prop)   # above the bar the audit precedes the restraint
-                            else
-                                restraint_waits[] += 1
-                                degrade!("restraint audit", "above-bar restraint waits for audit", "audit capacity exhausted")
-                                restr_run[proposers[j]] -= 1
-                                continue
-                            end
-                        elseif rand(erng) < pa
-                            if restr_audits_left[] > 0
-                                restr_audits_left[] -= 1
-                                restraint_audit!(k, qualifies, cost, c_prop)            # below the bar the restraint stands, audited after
-                            else
-                                push!(restraint_pending, (k, qualifies, cost, c_prop))
-                                degrade!("restraint audit", "below-bar restraint proceeds, audited later", "audit capacity exhausted")
+                chill = exp(-enf_liab[k] / p.enforcer_liability_scale)   # an enforcer charged for excess reins it in
+                rehab_sh = qualifies ? rehabilitate_restraint(1.0, dom_crime_events[proposers[j], c_prop], p.sanction_pattern_min;
+                                                              decay = p.sanction_restraint_decay, min_share = p.sanction_min_share) : 1.0
+                referred = qualifies ? rand(jrng) > rehab_sh : rand(erng) < p.false_accusation_rate
+                if referred
+                    convict, voters = judge_case!(qualifies)
+                    if convict
+                        restraint_verdicts[] += 1
+                        sev = max(p.false_restraint_severity, 1.0 - rehab_sh)
+                        exc = k <= length(p.enforcer_excess) ? p.enforcer_excess[k] * chill : 0.0
+                        sevx = sev * (1.0 + exc)
+                        restr_run[proposers[j]] += 1
+                        cost = sev * p.false_restraint_harm
+                        exc_cost = (sevx - sev) * p.false_restraint_harm
+                        qualifies ? (justified_restraints[] += 1) : (false_restraints[] += 1)
+                        stands = true
+                        if p.restraint_audit
+                            pa = restraint_audit_prob(sevx, restr_run[proposers[j]] - 1, p.restraint_bar;
+                                                      duration_scale = p.restraint_dur_scale, floor = p.restraint_audit_floor)
+                            if pa >= 1.0
+                                if restr_audits_left[] > 0
+                                    restr_audits_left[] -= 1
+                                    stands = audit_case!(k, qualifies, cost, c_prop, voters, exc, exc_cost, proposers[j], true)   # above the bar the audit precedes the restraint
+                                else
+                                    restraint_waits[] += 1
+                                    degrade!("restraint audit", "above-bar restraint waits for audit", "audit capacity exhausted")
+                                    restr_run[proposers[j]] -= 1
+                                    continue
+                                end
+                            elseif rand(erng) < pa
+                                if restr_audits_left[] > 0
+                                    restr_audits_left[] -= 1
+                                    audit_case!(k, qualifies, cost, c_prop, voters, exc, exc_cost, proposers[j], true)            # below the bar the restraint stands, audited after
+                                else
+                                    push!(restraint_pending, (k, qualifies, cost, c_prop, voters, exc, exc_cost, proposers[j]))
+                                    degrade!("restraint audit", "below-bar restraint proceeds, audited later", "audit capacity exhausted")
+                                end
                             end
                         end
-                    end
-                    if stands
-                        sanction_restraints[] += qualifies ? 1 : 0
-                        qualifies ? (justified_restr_effective[] += 1) : (false_restr_effective[] += 1; false_restr_harm[] += cost)
-                        continue
+                        if stands
+                            sanction_restraints[] += qualifies ? 1 : 0
+                            if qualifies
+                                justified_restr_effective[] += 1
+                            else
+                                false_restr_effective[] += 1; false_restr_harm[] += cost + exc_cost
+                            end
+                            excess_harm[] += exc_cost
+                            continue
+                        end
+                    else
+                        restraint_acquittals[] += 1
+                        qualifies && (restraint_missed[] += 1)   # a guilty proposer the panel acquitted
+                        restr_run[proposers[j]] = 0
                     end
                 else
                     restr_run[proposers[j]] = 0

@@ -158,6 +158,16 @@ fin(xs...) = all(isfinite, xs)
                        (q, k, c) -> fin(q, k, c) && 0 <= q <= 1 && k >= 0 && c >= 0,
                        (q, k, c) -> credence_restraint_liability(q, k, c),
                        (q, k, c) -> k * c * clamp(2q - 1, 0.0, 1.0)) == (guard = 0, value = 0)
+    @test differential(:restraint_balance_flawed,
+                       r -> (rand(r, 0:20), rand(r, 0:20), rand(r, 0:20), rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r)),
+                       (m, f, t, q) -> fin(q) && q >= 0,
+                       (m, f, t, q) -> restraint_balance_flawed(m, f, t; ratio = q),
+                       (m, f, t, q) -> m <= f + t && q * t <= f) == (guard = 0, value = 0)
+    @test differential(:panel_voice,
+                       r -> (rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.5),
+                       (w, u, m) -> fin(w, u) && w >= 0 && u >= 0,
+                       (w, u, m) -> panel_voice(w, u, m),
+                       (w, u, m) -> m ? w * max(1.0, u) : w) == (guard = 0, value = 0)
     @test differential(:ra_value_per_cost,
                        r -> (rand(r) < 0.1 ? hostile(r) : 20 * rand(r) - 5, rand(r) < 0.1 ? hostile(r) : 5 * rand(r) - 0.5,
                              rand(r) < 0.1 ? hostile(r) : 3 * rand(r) - 0.5, rand(r) < 0.1 ? hostile(r) : 2 * rand(r)),

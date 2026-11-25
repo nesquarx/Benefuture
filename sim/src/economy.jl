@@ -317,6 +317,30 @@ function credence_restraint_liability(conf::Real, kappa::Real, cost::Real)
 end
 
 """
+    restraint_balance_flawed(min_audits, false_n, true_n; ratio = 1.0) -> Bool
+
+Alarm of the justice process (Lean `restraint_balance_flawed_ref`, ruling 8.170 e): true once at least
+`min_audits` verdicts are audited and the audited findings of false restraint reach `ratio` times those
+of true restraint. Reads audited outputs only.
+"""
+function restraint_balance_flawed(min_audits::Integer, false_n::Integer, true_n::Integer; ratio::Real = 1.0)
+    check(min_audits >= 0 && false_n >= 0 && true_n >= 0 && isfinite(ratio) && ratio >= 0, "counts and ratio non-negative")
+    ccall(sym(:bf_restraint_balance_flawed), UInt8, (Float64, Float64, Float64, Float64),
+          Float64(min_audits), Float64(false_n), Float64(true_n), Float64(ratio)) != 0
+end
+
+"""
+    panel_voice(vw, uplift, minority) -> weight
+
+Voice of a panel expert (Lean `panel_voice_ref`, `L115`): a minority-cluster expert's weight is raised
+by `uplift` (never lowered); a majority expert's is unchanged.
+"""
+function panel_voice(vw::Real, uplift::Real, minority::Bool)
+    check(isfinite(vw) && vw >= 0 && isfinite(uplift) && uplift >= 0, "weight and uplift non-negative")
+    ccall(sym(:bf_panel_voice), Float64, (Float64, Float64, UInt8), Float64(vw), Float64(uplift), minority ? 0x01 : 0x00)
+end
+
+"""
     responsibility_factor(is_act, is_informed, has_duty, counterfactual_ratio;
                           severity_scale = 1.0, accident_factor = 0.5) -> factor
 

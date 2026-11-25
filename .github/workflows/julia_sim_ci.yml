@@ -68,7 +68,7 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v2
         with:
-          version: '1.13'
+          version: '1.13.3'   # pinned to the local version: CI 1.13.4 vs local 1.13.3 moved single seeds (BACKPROPAGATION 8.170)
 
       - name: Test BenefutureSim (Fast Tier)
         env:
@@ -128,7 +128,7 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v2
         with:
-          version: '1.13'
+          version: '1.13.3'   # pinned to the local version: CI 1.13.4 vs local 1.13.3 moved single seeds (BACKPROPAGATION 8.170)
 
       - name: Test BenefutureSim Shard
         env:

@@ -1696,56 +1696,87 @@ end
     @test all(p.off_exec > 0 for p in pat)  # min_share > 0 lets actor still contribute honestly
 end
 
-@timed_testset "Probe: audited forcible restraint, liability to the overeager enforcer (8.169, L120/L121)" begin
-    # Hypothesis (stated before measuring): audited restraint with liability to the enforcing entity cuts false
-    # restraints (z = 3, paired seeds 1:12) against free, unchecked restraint, at a measured cost in justified
-    # restraints (reported as a measured trade-off, not asserted; see sim/battery/restraint_balance.jl), without a significant loss of floor_u (one-sided, z = 3).
+# 8.170 (author): restraint is the last-resort verdict of Justice; the liability is on the judicial experts who voted on
+# it, enforcement executes the verdict, audits curb excess of power. Hypotheses (stated before measuring, lead
+# confidence 0.65): with a panel of judicial experts voting with confidence, false restraints stay below true ones in
+# every seed (structural), justified restraint is not chilled by liability (equivalence vs no liability, margin 0.05,
+# z = 2), a captured panel raises the alarm, execution excess is audited and charged to the enforcer, and recursive
+# audits stop at their budget, loudly. Seeds 1:8 (paired); heavy z = 2 checks in probe_heavy3_tests.jl.
+isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+
+@timed_testset "Probe: restraint verdicts by a judicial panel, false below true, justified restraint not chilled (8.170 a, c, e)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
-    # Lean rule: audit probability monotone, certain at and above the bar, below 1 beneath it; liability zero when upheld.
-    @test restraint_audit_prob(0.9, 0, 0.8) == 1.0 && restraint_audit_prob(0.4, 20, 0.8) == 1.0
-    @test restraint_audit_prob(0.2, 0, 0.8) < 1.0 && restraint_audit_prob(0.2, 0, 0.8) >= 0.05
-    @test restraint_audit_prob(0.2, 0, 0.8) < restraint_audit_prob(0.4, 0, 0.8) < restraint_audit_prob(0.4, 1, 0.8)
-    @test false_restraint_liability(true, 2.0, 3.0) == 0.0 && false_restraint_liability(false, 2.0, 3.0) == 6.0
-    @test false_restraint_liability(false, 0.0, 3.0) == 0.0  # counterexample: no weight, no deterrence
-    # Credence-scaled liability (8.169 iii): zero at confidence <= 1/2, the binary liability at certainty, monotone between.
-    @test credence_restraint_liability(0.5, 2.0, 3.0) == 0.0 && credence_restraint_liability(0.1, 2.0, 3.0) == 0.0
-    @test credence_restraint_liability(1.0, 2.0, 3.0) == false_restraint_liability(false, 2.0, 3.0)
-    @test credence_restraint_liability(0.9, 2.0, 3.0) ≈ 4.8
-    @test credence_restraint_liability(0.6, 2.0, 3.0) < credence_restraint_liability(0.75, 2.0, 3.0) < credence_restraint_liability(0.9, 2.0, 3.0)
-    @test_throws ArgumentError credence_restraint_liability(1.2, 2.0, 3.0)
-    @test_throws ArgumentError restraint_audit_prob(0.5, 0, 0.0)
-    agr = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:3])
-    function run_restraint(audit::Bool, kappa::Real, seed::Int; eager = [0.0, 0.0, 0.3, 0.3], cap = 2)
-        p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), agr, [1, 1], trues(2);
-                      λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-                      guardians = [1, 2], p_informed = 1.0, diligence = [0.0, 1.0, 1.0, 1.0],
-                      p_hazard = 0.35, hazard_share = 0.25, hazard_size = 1.0, repair_efficiency = 1.0,
-                      endowment = 50.0, sanction_escalate = true, sanction_pattern_min = 3,
-                      sanction_restraint_decay = 0.6, sanction_min_share = 0.1, LEGACY...,
-                      enforcer_eager = eager, restraint_audit = audit, restraint_kappa = kappa, restraint_audit_cap = cap)
-        tr = run_m3c(p; seed = seed)
-        (tr = tr, false_eff = Float64(tr.false_restraints_effective), floor_u = success_pattern(tr; from = 20).floor_u,
-         just_rate = tr.justified_restraints_effective / max(1, tr.justified_restraints + tr.restraint_missed))
-    end
-    free = [run_restraint(false, 0.0, s) for s in 1:12]
-    aud  = [run_restraint(true, 1.0, s) for s in 1:12]
-    # Red baseline on the outcome: free restraint lets overeager enforcers restrain honest proposers at no cost.
-    @test all(r -> r.false_eff > 0 && r.tr.restraint_liability == 0.0 && r.tr.restraint_audits == 0, free)
-    @test all(r -> r.tr.restraint_audits > 0 && r.tr.restraints_overturned > 0 && r.tr.restraint_liability > 0 &&
-                   r.tr.restraint_audit_cost > 0, aud)
-    @test paired_effect([f.false_eff - a.false_eff for (f, a) in zip(free, aud)]; z = 3.0).significant
-    @test paired_effect([a.floor_u - f.floor_u for (f, a) in zip(free, aud)]; z = 3.0, direction = :down).significant == false
-    # Justified share standing is a measured trade-off, not a claim of this probe: audit noise and liability chill
-    # justified restraint too (sim/battery/restraint_balance.jl: 1.0 -> about 0.6 standing at kappa 1, no interior
-    # optimum; CLAIMS, OPEN_PROBLEMS). Equivalence within a margin does not hold, so it is reported there, and only
-    # its bounds are asserted here.
-    @test all(r -> 0.0 <= r.just_rate <= 1.0, vcat(free, aud))
-    # Counterexample: precise enforcers (no eagerness) make no false restraints, audited or not.
-    @test all(run_restraint(a, 1.0, 1; eager = [0.0, 0.0]).tr.false_restraints == 0 for a in (false, true))
-    # Out of capacity: above-bar restraint waits, below-bar proceeds and is audited later; both logged loudly.
-    nocap = run_restraint(true, 1.0, 1; cap = 0)
-    @test nocap.tr.restraint_waits > 0 && nocap.tr.restraint_audits == 0 && nocap.tr.restraint_pending > 0
-    @test any(k -> startswith(k, "restraint audit"), keys(nocap.tr.degraded))
+    # Lean rules: the alarm predicate (default ratio 1) and the minority uplift of panel voices.
+    @test restraint_balance_flawed(6, 5, 5) && restraint_balance_flawed(6, 9, 3) && !restraint_balance_flawed(6, 2, 9)
+    @test !restraint_balance_flawed(10, 3, 3)                               # too few audited findings to judge
+    @test !restraint_balance_flawed(0, 4, 5) && restraint_balance_flawed(0, 4, 5; ratio = 0.5)
+    @test panel_voice(1.0, 1.5, true) == 1.5 && panel_voice(1.0, 1.5, false) == 1.0 && panel_voice(1.0, 0.5, true) == 1.0
+    @test_throws ArgumentError panel_voice(-1.0, 1.5, true)
+    nominal = [restraint_world(s) for s in 1:8]
+    noliab  = [restraint_world(s; kappa = 0.0) for s in 1:8]
+    noaudit = [restraint_world(s; audit = false) for s in 1:8]
+    coin    = [restraint_world(s; acc = 0.5) for s in 1:8]                  # positive control: audits that read at chance
+    # Outcome baseline: the panel convicts (restraints exist), the audits ran, and liability reached experts.
+    @test all(r -> r.true_eff > 0 && r.tr.restraint_audits > 0 && r.tr.findings_true > 0, nominal)
+    @test sum(r -> r.tr.judge_liability, nominal) > 0
+    # Structural (every seed): false restraints below true restraints; the alarm stays silent.
+    @test all(r -> r.false_eff < r.true_eff, nominal)
+    @test all(r -> r.tr.restraint_alarm_step == 0, nominal)
+    @test all(r -> r.tr.enforcer_liability == zeros(1), nominal)             # faithful enforcers owe nothing: liability sits with the experts
+    # No chill: justified restraint stands as often with liability on the experts as without (equivalence), and the
+    # margin is detectable (audits at chance lower it beyond the margin, a positive control).
+    @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nominal, noliab)]; margin = 0.05, z = 2.0).equivalent
+    @test paired_effect([a.just_rate - c.just_rate for (a, c) in zip(nominal, coin)]; z = 2.0, direction = :up).mean > 0.05
+    # The remaining loss against no audit at all is the audits' own noise (accuracy 0.9 overturns some correct restraints,
+    # measured 0.76 against 0.92 standing, ratio 0.83: the lead's 0.9 target holds against no liability, not against no
+    # audit); only its bounds are asserted, the measurement is in sim/battery/restraint_balance.jl.
+    @test 0.5 * mean(r.just_rate for r in noaudit) <= mean(r.just_rate for r in nominal) <= mean(r.just_rate for r in noaudit)
+end
+
+@timed_testset "Probe: a captured panel raises the restraint alarm (8.170 e; counterexample)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    # Seven of eight experts captured (a log-odds shift towards guilt), the minority cluster one honest expert, and
+    # the capturer refers every innocent proposer (false accusation rate 1): false restraints reach true ones, which the
+    # alarm reads from audited findings only. Counterexample, not a tuned world.
+    bias, cluster = [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 0.0], [1, 1, 1, 1, 1, 1, 1, 2]
+    cap = [restraint_world(s; bias = bias, cluster = cluster, accuse = 1.0) for s in 1:8]
+    nom = [restraint_world(s) for s in 1:8]
+    @test all(r -> r.tr.restraint_alarm_step > 0 && r.tr.restraint_alarm_count > 0, cap)
+    @test sum(r -> r.false_eff, cap) >= sum(r -> r.true_eff, cap)             # pooled: false restraints reach true ones
+    @test paired_effect([c.ratio - n.ratio for (c, n) in zip(cap, nom)]; z = 2.0, direction = :up).significant
+    @test all(r -> r.tr.findings_false > 0 && r.tr.judge_liability > 0, cap) # the false verdicts are charged to the experts
+    @test any(k -> startswith(k, "restraint justice"), keys(first(cap).tr.degraded))   # loud, once per kind
+    # An aligned world is not flagged: honest experts, nominal accusation rate.
+    @test all(r -> r.tr.restraint_alarm_step == 0, nom)
+end
+
+@timed_testset "Probe: execution excess is audited and charged to the enforcer, not the experts (8.170 b, d)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    # Four enforcing entities, the last two execute with excess (extra severity beyond the verdict).
+    exc = [0.0, 0.0, 1.0, 1.0]
+    on  = [restraint_world(s; excess = exc) for s in 1:8]
+    off = [restraint_world(s; excess = exc, audit = false) for s in 1:8]
+    @test all(r -> r.tr.excess_harm > 0, off) && all(r -> r.tr.excess_charged == 0.0, off)   # unaudited excess goes free
+    @test all(r -> r.tr.excess_charged > 0, on)
+    @test all(r -> r.tr.enforcer_liability[1] == 0.0 && r.tr.enforcer_liability[2] == 0.0, on)  # only the excessive enforcers owe
+    @test sum(r -> r.tr.enforcer_liability[3] + r.tr.enforcer_liability[4], on) > 0
+    @test paired_effect([a.tr.excess_harm - b.tr.excess_harm for (a, b) in zip(on, off)]; z = 2.0, direction = :down).significant
+    # Nominal enforcers (no excess) are never charged for excess: the verdict's quality is the experts' liability, not theirs.
+    @test all(r -> r.tr.excess_charged == 0.0, [restraint_world(s) for s in 1:8])
+end
+
+@timed_testset "Probe: recursive restraint audits stop at the AdvAp budget, loudly (8.170 d)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    # Every finding is challenged with probability 0.9; each challenge triggers a recursive audit from the commons.
+    unb = [restraint_world(s; challenge = 0.9, budget = 1000) for s in 1:8]
+    bud = [restraint_world(s; challenge = 0.9, budget = 1) for s in 1:8]
+    nob = [restraint_world(s; challenge = 0.9, budget = 0) for s in 1:8]
+    @test all(r -> r.tr.restraint_recursive_audits > 0 && r.tr.restraint_recursion_refused == 0, unb)  # unbudgeted: recursion unchecked
+    @test all(r -> r.tr.restraint_recursive_audits <= 80 && r.tr.restraint_recursion_refused > 0, bud)  # at most budget x steps; refusals counted
+    @test all(r -> r.tr.restraint_recursive_audits == 0 && r.tr.restraint_recursion_refused > 0, nob)
+    @test all(r -> any(k -> startswith(k, "restraint audit recursion"), keys(r.tr.degraded)), bud)  # loud when the budget is exhausted
+    @test paired_effect([a.tr.restraint_audit_cost - b.tr.restraint_audit_cost for (a, b) in zip(unb, bud)]; z = 2.0, direction = :up).significant
+    @test sum(r -> r.tr.challenger_charged, unb) > 0                         # frivolous repeats above the threshold cost the challenger
 end
 
 @timed_testset "Probe: RA commons reserve and spending contraction under fallback shock (8.133, 8.71)" begin

@@ -85,4 +85,14 @@ def restraint_audit_weight_ref (conf : Float) : Float :=
 def credence_restraint_liability_ref (conf kappa cost : Float) : Float :=
   (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0) * restraint_audit_weight_ref conf
 
+/-- Restraint-balance alarm (ruling 8.170 e): flagged once at least `minAudits` verdicts are audited
+    and `falseN >= ratio * trueN`. Matches `restraint_balance_flawed`. -/
+def restraint_balance_flawed_ref (minAudits falseN trueN : Nat) (ratio : Float) : Bool :=
+  minAudits ≤ falseN + trueN && ratio * trueN.toFloat ≤ falseN.toFloat
+
+/-- Voice of a panel expert (`L115`): minority clusters get the weight raised by `uplift`, never
+    lowered. Matches `panel_voice`. -/
+def panel_voice_ref (vw uplift : Float) (minority : Bool) : Float :=
+  if minority then vw * (if uplift > 1.0 then uplift else 1.0) else vw
+
 end BenefutureReference

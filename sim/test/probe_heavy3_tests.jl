@@ -525,3 +525,28 @@ end
 end
 
 probe_total("heavy 3")
+
+
+# 8.170: restraint by a judicial panel, heavy z = 2 check on 24 paired seeds (the fast probes use 8; see probe_tests.jl).
+# Hypotheses (lead, confidence 0.65): (a) false restraints stay below true ones in every seed; (b) liability on the experts does
+# not chill justified restraint (equivalence to no liability within 0.05, shown detectable by audits at chance); (c) a captured panel
+# raises the alarm in every seed; (d) the alarm stays silent in the nominal world in at least 0.9 of seeds (a regime, read as a proportion with its interval; audit noise can raise a false alarm).
+@timed_testset "Probe (heavy): restraint panel, false below true, no chill, alarm under capture (8.170; 24 seeds)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    seeds = 1:24
+    nom = [restraint_world(s) for s in seeds]
+    nol = [restraint_world(s; kappa = 0.0) for s in seeds]
+    coin = [restraint_world(s; acc = 0.5) for s in seeds]
+    bias, cluster = [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 0.0], [1, 1, 1, 1, 1, 1, 1, 2]
+    cap = [restraint_world(s; bias = bias, cluster = cluster, accuse = 1.0) for s in seeds]
+    @test all(r -> r.false_eff < r.true_eff, nom)
+    @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nom, nol)]; margin = 0.05, z = 2.0).equivalent
+    @test paired_effect([a.just_rate - c.just_rate for (a, c) in zip(nom, coin)]; z = 2.0, direction = :up).mean > 0.05
+    alarm = proportion_interval(count(r -> r.tr.restraint_alarm_step > 0, cap), length(cap); z = 2.0)
+    quiet = proportion_interval(count(r -> r.tr.restraint_alarm_step == 0, nom), length(nom); z = 2.0)
+    # Measured: the alarm fires in 24 of 24 captured seeds and stays silent in 23 of 24 nominal ones (seed 19 raises a false alarm on
+    # audited findings: ground truth there is 2 false against 4 true restraints, the noisy audits read it as a tie or worse).
+    @test alarm.lo > 0.8 && quiet.p >= 0.9 && quiet.lo > 0.7
+    @test paired_effect([c.ratio - n.ratio for (c, n) in zip(cap, nom)]; z = 2.0, direction = :up).significant
+end

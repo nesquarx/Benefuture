@@ -113,7 +113,7 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v2
         with:
-          version: '1.13'
+          version: '1.13.3'   # pinned to the local version: CI 1.13.4 vs local 1.13.3 moved single seeds (BACKPROPAGATION 8.170)
 
       - name: Restore the battery's evaluation cache (resumable across runs; files are keyed by code hash)
         uses: actions/cache@v4

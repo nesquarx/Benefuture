@@ -1,66 +1,45 @@
-# Balance sweep of the restraint-liability weight kappa (author ruling 8.169, L120/L121): audited false
-# restraint is liable to the overeager enforcing entity; the balance between deterring false restraint
-# and not chilling justified restraint is found here. Prediction (lead, confidence 0.5): false restraints
-# near zero at moderate kappa, restraint audits 5-15% of audit spend, U-shaped total harm in kappa.
-# Runs in about a minute (0.25 s per seed), so no progress snapshot is needed (CLAUDE.md, 5-minute rule).
+# Balance sweep of restraint by a judicial panel (author ruling 8.170, L115/L117/L120/L121): restraint is the last-resort
+# verdict of Justice; the liability of a false restraint falls on the experts who voted for it, by their stated confidence;
+# enforcement executes and is liable only for excess; audits read verdict quality and execution fidelity. Reports, per arm,
+# the false/true ratio of effective restraints, the justified share standing, audit spend, harms and the alarm.
+# Prediction (lead, confidence 0.65): chilling largely disappears (justified share >= 0.9 of no liability), false/true << 1
+# nominally, the alarm fires under capture. Runs in about a minute (0.25 s per run), so no progress snapshot is needed.
 # julia --project=sim sim/battery/restraint_balance.jl
 using BenefutureSim, Random, Statistics
 include(joinpath(@__DIR__, "..", "test", "legacy.jl"))
+include(joinpath(@__DIR__, "..", "test", "test_helpers.jl"))
 
-const AG = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:3])
-const EAGER = [0.0, 0.0, 0.3, 0.3]   # two precise and two overeager enforcing entities (world property)
 const SEEDS = 1:24
+const BIAS, CLUSTER = [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 0.0], [1, 1, 1, 1, 1, 1, 1, 2]
+const EXCESS = [0.0, 0.0, 1.0, 1.0]
 
-function arm(audit, kappa, seed; eager = EAGER, acc = 0.9)
-    p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), AG, [1, 1], trues(2);
-                  λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
-                  guardians = [1, 2], p_informed = 1.0, diligence = [0.0, 1.0, 1.0, 1.0],
-                  p_hazard = 0.35, hazard_share = 0.25, hazard_size = 1.0, repair_efficiency = 1.0,
-                  endowment = 50.0, sanction_escalate = true, sanction_pattern_min = 3,
-                  sanction_restraint_decay = 0.6, sanction_min_share = 0.1, LEGACY...,
-                  enforcer_eager = eager, restraint_audit = audit, restraint_kappa = kappa, restraint_audit_acc = acc)
-    tr = run_m3c(p; seed = seed)
-    sp = success_pattern(tr; from = 20)
-    missed_harm = tr.restraint_missed * 1.0                 # one hazard unit per dangerous proposer left unrestrained by chill
-    (false_eff = tr.false_restraints_effective, just_eff = tr.justified_restraints_effective,
-     just_rate = tr.justified_restraints_effective / max(1, tr.justified_restraints + tr.restraint_missed),
-     missed = tr.restraint_missed, audits = tr.restraint_audits, audit_cost = tr.restraint_audit_cost,
-     liability = tr.restraint_liability, false_harm = tr.false_restraint_harm, missed_harm = missed_harm,
-     total_harm = tr.false_restraint_harm + missed_harm + tr.restraint_audit_cost, floor_u = sp.floor_u)
-end
-
-const ACCS = [0.8, 0.9, 0.97]
-
-function sweep(kappas = [0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0]; accs = ACCS)
-    rows = NamedTuple[]
-    free = [arm(false, 0.0, s) for s in SEEDS]
-    push!(rows, (label = "unaudited", acc = NaN, kappa = NaN, runs = free))
-    for a in accs, k in kappas
-        push!(rows, (label = "audited", acc = a, kappa = k, runs = [arm(true, k, s; acc = a) for s in SEEDS]))
+# Each arm is (label, keyword arguments of `restraint_world`); kappa sweeps the liability weight on the experts.
+function arms(kappas = [0.0, 0.5, 1.0, 2.0, 4.0])
+    out = Tuple{String,Any}[("no audit", (audit = false,))]
+    for k in kappas
+        push!(out, ("nominal kappa $k", (kappa = k,)))
     end
-    rows
+    push!(out, ("audit at chance", (acc = 0.5,)), ("nominal + excess", (excess = EXCESS,)), ("excess, no audit", (excess = EXCESS, audit = false)),
+          ("captured panel", (bias = BIAS, cluster = CLUSTER, accuse = 1.0)), ("captured, no audit", (bias = BIAS, cluster = CLUSTER, accuse = 1.0, audit = false)))
+    out
 end
 
-# Harm components reported apart (8.169 iii: liability scaled by the audit's credence that the restraint was false):
-# unrestrained = hazard units of dangerous proposers left unrestrained (chill or capacity), false = harm of false
-# restraints that stood, audit = commons spend on audits, standing = share of justified restraints that stood.
+function sweep(; arms = arms())
+    [(label = l, kw = kw, runs = [restraint_world(s; kw...) for s in SEEDS]) for (l, kw) in arms]
+end
+
 function report(rows, io = stdout)
-    m(r, f) = mean(getfield.(r.runs, f))
-    println(io, "seeds ", first(SEEDS), ":", last(SEEDS), " (", length(SEEDS), ", paired); eager = ", EAGER, "; liability scaled by audit credence (2 conf - 1)")
-    println(io, "arm        acc   kappa  unrestrained false_harm audit_spend standing total   floor_u")
+    m(r, f) = mean(f.(r.runs))
+    println(io, "seeds ", first(SEEDS), ":", last(SEEDS), " (", length(SEEDS), ", paired); panel of 5 from 8 experts; false accusation 0.03 (nominal), 1.0 (captured)")
+    println(io, rpad("arm", 22), "false_eff true_eff f/t    standing audit_spend expert_liab enf_liab excess_harm false_harm alarm_seeds floor_u")
     for r in rows
-        println(io, rpad(r.label, 10), " ", rpad(isnan(r.acc) ? "-" : string(r.acc), 5), " ", rpad(isnan(r.kappa) ? "-" : string(r.kappa), 6),
-                join([lpad(string(round(m(r, f), digits = 2)), 11) for f in (:missed_harm, :false_harm, :audit_cost, :just_rate, :total_harm, :floor_u)]))
-    end
-    free = first(rows)
-    for a in unique(filter(!isnan, getfield.(rows, :acc)))
-        aud = filter(r -> r.label == "audited" && r.acc == a, rows)
-        tot = [m(r, :total_harm) for r in aud]
-        i = argmin(tot)
-        interior = 1 < i < length(aud) && tot[i] < tot[1] && tot[i] < tot[end]
-        d(f) = [getfield(x, f) - getfield(y, f) for (x, y) in zip(aud[i].runs, free.runs)]
-        println(io, "acc ", a, ": kappa minimising total = ", aud[i].kappa, " (interior optimum: ", interior, "); vs unaudited paired mean (se) ",
-                join(["$f " * string(round(mean(d(f)), digits = 2)) * " (" * string(round(std(d(f)) / sqrt(length(SEEDS)), digits = 2)) * ")" for f in (:false_eff, :just_rate, :floor_u)], "; "))
+        fh(x) = x.tr.false_restraint_harm
+        println(io, rpad(r.label, 22),
+                join([lpad(string(round(m(r, f), digits = 2)), 9) for f in (x -> x.false_eff, x -> x.true_eff, x -> x.ratio, x -> x.just_rate,
+                                                                               x -> x.tr.restraint_audit_cost, x -> x.tr.judge_liability,
+                                                                               x -> sum(x.tr.enforcer_liability), x -> x.tr.excess_harm, fh)]),
+                lpad(string(count(x -> x.tr.restraint_alarm_step > 0, r.runs), "/", length(r.runs)), 12),
+                lpad(string(round(m(r, x -> success_pattern(x.tr; from = 20).floor_u), digits = 2)), 8))
     end
 end
 

@@ -409,30 +409,44 @@ Governance and incentives
     ([`invalid_contract_null_and_void`](../Benefuture/Ontology/Law.lean),
     [`unaudited_forcible_restraint_rejected`](../Benefuture/Systems/Enforcement.lean),
     [`rising_harm_mandates_intervention`](../Benefuture/Subgoals/Continuity.lean)).
-- Audited forcible restraint (author ruling 8.169, [P]): the audit probability rises with restraint burden and is
-  certain at and above the severity bar and below 1 beneath it; liability to the enforcer is zero when the audit
-  upholds the restraint and positive when it overturns one
+- Restraint by judicial panels with audits (author rulings 8.169 and 8.170, [P]): the audit probability rises with restraint
+  burden and is certain at and above the severity bar and below 1 beneath it; liability is zero when the audit upholds the
+  restraint and positive when it overturns one, and the credence-scaled form is zero at credence of one half or below,
+  monotone above and the binary rule at certainty; here it is applied to each voting expert's stated confidence, the
+  enforcer answering only for execution excess
   ([`restraint_audit_prob_certain_above_bar`](../Benefuture/Subgoals/Justice.lean),
   [`restraint_audit_prob_below_one_below_bar`](../Benefuture/Subgoals/Justice.lean),
   [`restraint_audit_prob_mono_severity`](../Benefuture/Subgoals/Justice.lean),
   [`restraint_audit_prob_mono_duration`](../Benefuture/Subgoals/Justice.lean),
   [`false_restraint_liability_zero_when_upheld`](../Benefuture/Subgoals/Justice.lean),
-  [`false_restraint_liability_positive_when_overturned`](../Benefuture/Subgoals/Justice.lean)). The liability is scaled
-  by the audit's credence that the restraint was false (lead decision pending author review): zero at credence of one
-  half or below, monotone above, the binary rule at certainty
-  ([`credence_restraint_liability_zero_at_or_below_half`](../Benefuture/Subgoals/Justice.lean),
+  [`false_restraint_liability_positive_when_overturned`](../Benefuture/Subgoals/Justice.lean),
+  [`credence_restraint_liability_zero_at_or_below_half`](../Benefuture/Subgoals/Justice.lean),
   [`credence_restraint_liability_mono_conf`](../Benefuture/Subgoals/Justice.lean),
   [`credence_restraint_liability_certain`](../Benefuture/Subgoals/Justice.lean),
   [`credence_restraint_liability_le_binary`](../Benefuture/Subgoals/Justice.lean)).
-  In simulation (M3c with two overeager of four enforcing entities, 24 paired seeds,
-  [`restraint_balance.txt`](../sim/battery/results/restraint_balance.txt)): audited restraint with liability weight 1
-  cuts false-restraint harm (13.5 unaudited to 7.9 at audit accuracy 0.9) and does not lower the floor of understanding,
-  at a measured trade-off, not a claim: the share of justified restraints that stand falls from 1.0 to 0.55, 0.61, 0.65
-  at audit accuracy 0.8, 0.9, 0.97 (a wrong audit still overturns a correct restraint, and equivalence within a margin
-  does not hold). Audit spend (about 30 at kappa 1) exceeds the harm it prevents in this toy, so total harm falls
-  monotonically in kappa at every accuracy: no interior optimum, the balance is open. Toy assumptions: four
-  enforcers, a fixed audit capacity, one unit of harm per unrestrained dangerous proposer, an audit cost per audit
-  of one unit.
+  The process is flagged flawed (alarm) once enough verdicts are audited and false findings reach true findings (ratio
+  governed, default 1); a nominal process (false below true) is never flagged, too few audits never flag, more false
+  findings never lower the alarm; a minority panel voice is raised and never lowered
+  ([`restraint_balance_flawed_of_false_ge_true`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_balance_not_flawed_when_false_lt_true`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_balance_not_flawed_below_min_audits`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_balance_flawed_mono`](../Benefuture/Subgoals/Justice.lean),
+  [`panel_voice_minority_ge`](../Benefuture/Subgoals/Justice.lean),
+  [`panel_voice_majority_unchanged`](../Benefuture/Subgoals/Justice.lean)).
+  In simulation (M3c, a panel of five drawn from eight experts of varying skill voting on noisy shared evidence, four
+  enforcing entities, 24 paired seeds, [`restraint_balance.txt`](../sim/battery/results/restraint_balance.txt)): nominally
+  false restraints stay below true restraints in every seed (0.42 against 21.8 per run); liability on the experts does not
+  chill justified restraint (standing 0.76 with and without liability, equivalent within 0.05 at z = 2, the margin
+  detectable since audits reading at chance cut it to 0.20), the remaining loss against no audit (0.93) being audit
+  noise; execution excess is audited and charged to the excessive enforcers only (unaudited excess harm 11.2, audited
+  7.5); recursive audits stop at their budget, logged loudly. Under a captured panel (counterexample, seven of eight
+  experts shifted towards guilt, every innocent referred) false restraints reach true ones (11.5 against 7.3), the alarm
+  fires in 24 of 24 seeds and audits cut false-restraint harm from 65.2 to 6.9. The alarm raises one false alarm in 24
+  nominal seeds (audit noise), so it is a flag for review, not a verdict. Toy assumptions: eight experts with fixed
+  skills, one shared evidence signal per case, false accusation a fixed world rate, capture a fixed log-odds shift, audits
+  with fixed accuracy 0.9, a fixed audit capacity, a record-calibration weight estimated on audited convictions only,
+  acquittals never audited (a fully captured panel then acquits everything), the alarm not yet a governance candidate,
+  no currency balance for experts.
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).
