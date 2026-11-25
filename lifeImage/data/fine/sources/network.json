@@ -80,5 +80,55 @@
   "rows": 252,
   "status": "fetched",
   "url": "https://api.openalex.org/subfields?per-page=200&page=1"
+ },
+ "wikidata": {
+  "dropped": 4798,
+  "error_count": 11,
+  "errors": [
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q108458"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q1761396"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q189539"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q2585724"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q260607"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q331055"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q334401"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q3839081"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q3908516"
+   },
+   {
+    "error": "KeyError: 'query'",
+    "root": "Q6160"
+   }
+  ],
+  "method": "MediaWiki API, direct subclasses, first 100 per root by search relevance (the Query Service answered 429 with waits of 1000 s; gap.fetch_wikidata_gap is the batched SPARQL alternative)",
+  "rows": 607,
+  "status": "fetched",
+  "url": "https://query.wikidata.org/sparql (MediaWiki API: each root and its direct subclasses)"
  }
 }

@@ -53,9 +53,22 @@ def patient_fetch(url, attempts=14, pause=3.0):
 
 
 def get_wikidata():
-    rows, dropped, errors = gap.fetch_wikidata_gap_api(functools.partial(http_fetch, retries=4, pause=0.3), log=lambda m: print(m, flush=True))
+    import time
+    fetch = functools.partial(http_fetch, retries=4, pause=1.0)
+    rows, dropped, errors = gap.fetch_wikidata_gap_api(fetch, log=lambda m: print(m, flush=True))
+    for _ in range(3):  # the API throttles bursts: the fields whose roots failed are fetched again, slowly
+        failed = {e["root"] for e in errors if "root" in e}
+        fields = sorted(f for f, rs in gap.WIKIDATA_ROOTS.items() if failed & set(rs))
+        if not fields:
+            break
+        print("retrying", fields, flush=True)
+        time.sleep(90)
+        r2, d2, e2 = gap.fetch_wikidata_gap_api(fetch, roots={f: gap.WIKIDATA_ROOTS[f] for f in fields})
+        rows = [r for r in rows if r["target"] not in fields] + r2
+        dropped += d2
+        errors = [e for e in errors if "root" not in e] + e2
     note = {"method": "MediaWiki API, direct subclasses, first 100 per root by search relevance (the Query Service answered 429 with waits of 1000 s; gap.fetch_wikidata_gap is the batched SPARQL alternative)", "dropped": len(dropped), "errors": errors[:10], "error_count": len(errors)}
-    return rows, "https://query.wikidata.org/sparql (MediaWiki API: each root and its direct subclasses)", note
+    return rows, "https://www.wikidata.org/w/api.php (each root and its direct subclasses)", note
 
 
 def get_getty():

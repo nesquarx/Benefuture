@@ -1,6 +1,51 @@
 {
- "candidates": 174,
+ "candidates": 717,
  "dropped": [
+  {
+   "label": "commuting",
+   "reason": "restates coarse domain c.commuting",
+   "source": "wikidata"
+  },
+  {
+   "label": "cybercrime",
+   "reason": "restates coarse domain c.cybercrime",
+   "source": "wikidata"
+  },
+  {
+   "label": "early childhood education",
+   "reason": "restates coarse domain c.early_childhood_education",
+   "source": "wikidata"
+  },
+  {
+   "label": "friendship",
+   "reason": "restates coarse domain c.friendship",
+   "source": "wikidata"
+  },
+  {
+   "label": "public transport",
+   "reason": "restates coarse domain c.public_transport",
+   "source": "wikidata"
+  },
+  {
+   "label": "retirement",
+   "reason": "restates coarse domain c.retirement",
+   "source": "wikidata"
+  },
+  {
+   "label": "rite of passage",
+   "reason": "restates coarse domain c.rites_of_passage",
+   "source": "wikidata"
+  },
+  {
+   "label": "nature conservation",
+   "reason": "restates existing candidate f.conservation_landscape_nature",
+   "source": "wikidata"
+  },
+  {
+   "label": "wildlife conservation",
+   "reason": "restates coarse domain c.wildlife_conservation",
+   "source": "wikidata"
+  },
   {
    "label": "political participation",
    "reason": "restates coarse domain c.political_participation",
@@ -8,9 +53,10 @@
   }
  ],
  "licence_status": "verified",
- "merged": 13,
- "raw": 188,
+ "merged": 68,
+ "raw": 795,
  "sources": [
+  "wikidata",
   "getty_aat",
   "doid",
   "mondo",

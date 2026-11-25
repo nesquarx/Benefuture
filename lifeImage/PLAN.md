@@ -577,3 +577,14 @@ Built (`lifeimage/render/tiles.py`, `render/tileview.py`, `tools/build_tiles.py`
   aggregate is the members' area-weighted claimed red; not covered by the downsample test, which compares solid colour. (c) A
   hull is the members' bounding sector widened to a pixel, so it may colour gaps between sparse members (the shares keep the mean
   right, the shape is approximate). (d) Rows in group and comparison views.
+
+- **Gap candidates for the childless fields** (LI.19, LI.54, LI.56; `data/fine/candidates_gap_v0.jsonl`, `gap_pool_report.json`;
+  `tools/fine_gap_fetch.py`, `tools/fine_pool.py --gap-only`, `lifeimage/fine/gap.py`): 717 candidates from Wikidata (558
+  rows; direct subclasses of chosen roots, via the MediaWiki API because the Query Service rate-limited to 1000 s waits),
+  LCSH, EuroVoc, BLS Consumer Expenditure categories, Getty AAT, Disease Ontology, MONDO and O*NET, capped per field and
+  source, deduplicated against the coarse labels and both earlier pools (68 merged, 10 dropped). Predicted at least 60 of
+  the 95 childless fields to receive a candidate: 94 do (by the field their root was chosen for; placement is the parent
+  task's). Not fetched: NIBRS (fbi.gov serves automated clients an HTML block page), R-COICOP (no page located), root
+  Q260607 (climate change adaptation; weather_climate_adaptation has no candidate) and ten roots whose API call was
+  throttled (their fields are covered by other roots). Pending: a runner pass on the 30 `fine_parent.v1.gap.*` batches,
+  then `tools/fine_apply.py` (its `SETS` lists `gap`) reports the fields that gained children.
