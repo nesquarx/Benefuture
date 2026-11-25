@@ -71,6 +71,18 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
 - **[P] Seed sources** (licences to verify before use): OpenAlex topics, ESCO, O*NET, Wikidata, and for the rest of life ICATUS, COICOP, ICF/ICD (later ICCS); overlap weights
   learnt from co-occurrence.
 
+## Tiled basemap
+
+Detail follows resolution (LI.52, LI.53). The disc is mapped into a unit square and cut into a z/x/y tile pyramid (MVT in a
+PMTiles archive); a tile holds the slices at least one pixel across at its zoom (a governed value), so a 200 px view loads a
+fraction of what a 4096 px view does and zooming adds detail until everything that exists is shipped. A fine slice too narrow
+to show is drawn as its parent, whose level aggregates it (LI.51); a coarse field has no aggregating parent and is dropped
+when sub-pixel. Tiles carry domain ids only and are public; colour comes from a per-entity levels file joined at view time,
+so disclosure decides which levels file exists. The vector page is a map (search and fly-to, selection with a panel, hover,
+labels by zoom, channel toggles, legend, position indicator, linkable URL hash) and exists online (static folder, range
+requests) and offline (one file); the raster version covers 1x to 4x only. New basemap releases recolour vector pages from a
+migrated levels file and re-render the raster pyramid. Code: `render/tiles.py`, `render/tileview.py`, `tools/build_tiles.py`.
+
 ## Building the graph
 
 - **[R] Building and refining the domains is mechanical, and manageable by a small model** (author, 2026-11-20), to

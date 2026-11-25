@@ -30,6 +30,18 @@ GOVERNED = {
         "default": 0.5,
         "source": "LI.38: share kept when the person reports it themselves (pale); the earlier claimed-layer saturation.",
     },
+    "tiles.min_slice_px": {
+        "default": 1.0,
+        "source": "LI.52: a tile at zoom z ships a slice only when both its on-screen arc width (at mid radius) and its radial depth "
+                  "are at least this many pixels at that zoom's resolution (256 px tiles). One pixel is the least a pixel grid can "
+                  "show as its own colour; a narrower slice is drawn as its parent, whose level aggregates it (LI.51). Assumption; "
+                  "Nyquist (2 px) would halve the detail shipped.",
+    },
+    "tiles.arc_tolerance_px": {
+        "default": 0.25,
+        "source": "LI.52: the most an arc's polygon may stray from the true circle, in pixels at the tile's zoom; sets vertex density "
+                  "(no wasted vertices at low zoom). Assumption: a quarter pixel is invisible.",
+    },
     "radius.band": {
         "default": 0.2,
         "source": "LI.26: a domain's radial band as a share of its ring's span (`render/basemap.py` BAND); assumption.",
