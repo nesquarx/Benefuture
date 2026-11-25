@@ -524,6 +524,47 @@ end
     @test pe.mean > 0 && pe.significant
 end
 
+# Fractal governance and economy, phase B (P59 heavy; fast version in probe_tests.jl). Predictions (lead, before measuring): (i) divergent sibling
+# trials beat one society-wide choice on welfare under a wrong consensus, z = 2 on paired seeds (0.55); (ii) severe decisions: divergence raises no
+# being's peak drawdown beyond 0.4 (one-sided, 0.7); (iii) the Goal pattern of the full fractal world (scope and divergence) loses at most 0.5 on
+# the floor and the median of per-being cumulative outcome against the single choice (one-sided equivalence, 0.6; units: a decision at severity
+# 0.2 is 0.2); (iv) on a real unified run's emergent hierarchy the ledger identity and the budget nesting hold. Not tuned to rescue.
+@timed_testset "Probe (heavy): fractal governance, divergence by uncertainty and severity, Goal pattern, unified hierarchy (P59)" begin
+    function levels_of(seed; n = 48)
+        net = build_trust_network(n; seed); W = zeros(n, n); for i in 1:n, j in net.contacts[i]; W[i, j] += 1.0; end
+        [l.labels for l in cluster_levels(cluster_hierarchy(attention_normalise(W)))]
+    end
+    with(p; kw...) = FractalParams(; (f => getfield(p, f) for f in fieldnames(FractalParams))..., kw...)
+    LV = Dict{Int,Any}(); lv(s) = get!(() -> levels_of(s), LV, s)
+    base = FractalParams(decisions = 60, scoped = false)
+    r1 = seeds_until_stable(s -> run_fractal(lv(s), with(base; divergent = true); seed = s).welfare / 60 - run_fractal(lv(s), with(base; divergent = false); seed = s).welfare / 60;
+                            tol = 0.003, min_seeds = 8, max_seeds = 24)
+    @info "P59 heavy (i) welfare per decision, divergent minus single" n = r1.n stable = r1.stable mean = r1.mean se = r1.se
+    @test paired_effect(r1.values; z = 2.0, direction = :up).significant
+    sev = FractalParams(decisions = 40, scoped = false, severity = [0.8], bias = [0.0], view_σ = 1.5)
+    r2 = seeds_until_stable(s -> run_fractal(lv(s), with(sev; divergent = true); seed = s).harm_peak - run_fractal(lv(s), with(sev; divergent = false); seed = s).harm_peak;
+                            tol = 0.1, min_seeds = 8, max_seeds = 24)
+    @info "P59 heavy (ii) harm peak, divergent minus single, severe" n = r2.n stable = r2.stable mean = r2.mean se = r2.se
+    @test equivalent(r2.values; margin = 0.4, side = :upper, z = 2.0).equivalent
+    full = FractalParams(decisions = 60); single = with(full; scoped = false, divergent = false)
+    pair = Dict{Int,Any}(); both(s) = get!(() -> (run_fractal(lv(s), full; seed = s), run_fractal(lv(s), single; seed = s)), pair, s)
+    r3f = seeds_until_stable(s -> both(s)[1].floor - both(s)[2].floor; tol = 0.3, min_seeds = 8, max_seeds = 24)
+    r3m = seeds_until_stable(s -> both(s)[1].median - both(s)[2].median; tol = 0.3, min_seeds = 8, max_seeds = 24)
+    @info "P59 heavy (iii) Goal pattern, fractal minus single" n = r3f.n floor = (r3f.mean, r3f.se) median = (r3m.mean, r3m.se)
+    @test_broken equivalent(-r3f.values; margin = 0.5, side = :upper).equivalent   # MISSED (24 seeds): floor difference +0.18 +- 0.38, too noisy to show no loss within the margin; not tuned
+    @test equivalent(-r3m.values; margin = 0.5, side = :upper).equivalent
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    run = run_coupled(econ, gov; seed = 1, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(liar_community = 1))
+    fr = unified_fractal(run.unified, FractalParams(decisions = 40); seed = 1)
+    kids = Dict{Any,Float64}(); for (k, pn) in fr.parents; kids[pn] = get(kids, pn, 0.0) + fr.allocations[k]; end
+    @test all(((pn, tot),) -> tot <= fr.allocations[pn] + 1e-9, kids)
+    @test sum(values(fr.balances)) ≈ fr.reserve + fr.minted - fr.burnt atol = 1e-6
+    @test minimum(values(fr.balances)) >= -1e-9
+end
+
 probe_total("heavy 3")
 
 

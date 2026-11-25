@@ -3545,3 +3545,74 @@ probe_total("fast")
     @info "P58 wall time (s)" wall
     @test wall < 60
 end
+
+# The unified world, phase B: fractal governance and economy per emergent cluster (author ruling 8.174; 8.50, 8.150, 8.42.3; P59). Every cluster of
+# the nested hierarchy decides the decisions within its impact (Lean `deciding_scope`) from its own noisy view, spends from a reserve bounded by its
+# parent, and, for a decision whose impact is uncertain, its siblings are offered novelty bonuses (Lean `divergence_weight`: up with uncertainty, down
+# with severity) to try the other option in parallel; outcomes per cluster settle the comparison and everyone converges. Predictions before measuring
+# (lead): (i) divergent sibling trials beat one society-wide choice on welfare when the society's consensus is wrong, paired over seeds, at z = 2
+# and at least 0.05 a decision (0.55); (ii) on a severe decision divergence raises no single being's peak drawdown beyond half a decision's loss
+# (one-sided equivalence, 0.7), with the counterexample (severity slope zero, strong bonus, noisy views) raising it; (iii) a local decision is decided
+# locally and a spilling one escalates, in every seed and decision (0.8); (iv) budgets nest, no cluster spends beyond its reserve, the ledger identity
+# holds in every seed, a raid on a tiny reserve is refused loudly, and splitting clusters cannot farm the bonus beyond the decision's pool (0.8).
+# Not tuned: whatever the numbers say is recorded.
+@timed_testset "Probe: fractal governance and economy per emergent cluster, divergent trials by uncertainty and severity (P59)" begin
+    function levels_of(seed; n = 48)
+        net = build_trust_network(n; seed); W = zeros(n, n); for i in 1:n, j in net.contacts[i]; W[i, j] += 1.0; end
+        [l.labels for l in cluster_levels(cluster_hierarchy(attention_normalise(W)))]
+    end
+    LV = Dict(s => levels_of(s) for s in 1:6)
+    @test all(s -> levels_nested([(labels = l,) for l in LV[s]]), 1:6) && all(s -> length(unique(LV[s][1])) > length(unique(LV[s][end])), 1:6)
+    run_fractal(LV[1], FractalParams(decisions = 6); seed = 1)   # warm-up
+    t0 = time()
+    # Lean rule exposed: monotone in uncertainty, antitone in severity, zero beyond the slope's catastrophe line
+    @test divergence_weight(0.8, 0.1) > divergence_weight(0.4, 0.1) > divergence_weight(0.0, 0.1) == 0.0
+    @test divergence_weight(0.6, 0.1) > divergence_weight(0.6, 0.3) > divergence_weight(0.6, 0.5) == 0.0
+    @test 0 <= divergence_weight(1.0, 0.0) <= 1.0 && divergence_weight(0.6, 0.9) == 0.0
+    # (i) uncertain decision, wrong consensus: parallel trials learn what one choice does not, paired on the same worlds
+    base = FractalParams(decisions = 60, scoped = false)
+    wel(s, div) = run_fractal(LV[s], FractalParams(; (f => getfield(base, f) for f in fieldnames(FractalParams))..., divergent = div); seed = s).welfare / 60
+    d1 = [wel(s, true) - wel(s, false) for s in 1:6]
+    e1 = paired_effect(d1; z = 2.0, direction = :up)
+    @info "P59 (i) welfare per decision, divergent minus single (paired)" d1 = round.(d1; digits = 4) mean = e1.mean se = e1.se z = e1.z
+    @test e1.significant && e1.mean > 0
+    @test_broken e1.mean > 0.05   # the declared smallest effect that matters (a eighth of a decision's welfare scale): MISSED, measured about 0.013
+    # (ii) severe decision: the severity shape stops the experiment; without it (counterexample) the experiment costs a being its peak drawdown
+    sev = FractalParams(decisions = 40, scoped = false, severity = [0.8], bias = [0.0], view_σ = 1.5)
+    with(p; kw...) = FractalParams(; (f => getfield(p, f) for f in fieldnames(FractalParams))..., kw...)
+    peak(s, p) = run_fractal(LV[s], p; seed = s).harm_peak
+    shaped = [peak(s, with(sev; divergent = true)) - peak(s, with(sev; divergent = false)) for s in 1:6]
+    unshaped = [peak(s, with(sev; divergent = true, severity_slope = 0.0, bonus_max = 3.0)) - peak(s, with(sev; divergent = false)) for s in 1:6]
+    @info "P59 (ii) harm peak, divergent minus single" shaped = round.(shaped; digits = 3) unshaped = round.(unshaped; digits = 3)
+    @test equivalent(shaped; margin = 0.4, side = :upper).equivalent
+    @test paired_effect(unshaped; z = 2.0, direction = :up).significant     # counterexample: the same experiment without the severity shape harms
+    # (iii) scope: a local decision is decided locally; a spilling one escalates (structural, every seed and decision)
+    for s in 1:3
+        loc = run_fractal(LV[s], FractalParams(decisions = 30, spill = 0.05); seed = s)
+        @test all(d -> d.level == 1 && d.cluster == (1, loc.levels[1][d.origin]), loc.decisions)
+        spl = run_fractal(LV[s], FractalParams(decisions = 30, spill = 0.6); seed = s)
+        @test all(d -> d.level >= 2 && (d.impact_in_scope >= 0.8 || d.level == length(spl.levels)) && isapprox(d.spillover, 0.6; atol = 1e-9), spl.decisions)
+        @test all(d -> d.cluster == (d.level, spl.levels[d.level][d.origin]), spl.decisions)   # the deciding cluster contains the impact's origin
+    end
+    # (iv) budgets nest; ledger identity; a raid on a small reserve is refused loudly; splitting clusters cannot farm the bonus
+    for s in 1:3
+        r = run_fractal(LV[s], FractalParams(decisions = 40); seed = s)
+        kids = Dict{Any,Float64}(); for (k, pn) in r.parents; kids[pn] = get(kids, pn, 0.0) + r.allocations[k]; end
+        @test all(((pn, tot),) -> tot <= r.allocations[pn] + 1e-9, kids)               # children's allowances sum within the parent's
+        @test sum(values(r.balances)) ≈ r.reserve + r.minted - r.burnt atol = 1e-6      # one currency, one ledger
+        @test minimum(values(r.balances)) >= -1e-9                                     # no cluster spends beyond what it holds
+        tiny = run_fractal(LV[s], FractalParams(decisions = 40, reserve = 2.0, scoped = false); seed = s)
+        @test sum(values(tiny.balances)) ≈ tiny.reserve + tiny.minted - tiny.burnt atol = 1e-6
+        @test minimum(values(tiny.balances)) >= -1e-9
+        @test any(g -> g.mechanism == :novelty_bonus, tiny.degraded)                   # the raid is refused, loudly
+        pool = sum(d.weight * 1.5 * 0.2 * 48 for d in r.decisions)                      # w * bonus_max * severity * members, per decision
+        @test sum(values(r.spent)) <= pool + 1e-6                                      # farming bound: pay per member impacted, however many siblings
+    end
+    fine = [collect(1:48) for _ in 1:1]; fine = [fine[1], ones(Int, 48)]
+    coarse = [repeat(1:12, 4)[1:48], ones(Int, 48)]
+    rf = run_fractal(fine, FractalParams(decisions = 40, scoped = false); seed = 1); rc = run_fractal(coarse, FractalParams(decisions = 40, scoped = false); seed = 1)
+    @test sum(values(rf.spent)) <= sum(d.weight * 1.5 * 0.2 * 48 for d in rf.decisions) + 1e-6 && sum(values(rc.spent)) <= sum(d.weight * 1.5 * 0.2 * 48 for d in rc.decisions) + 1e-6
+    wall = time() - t0
+    @info "P59 wall time (s)" wall
+    @test wall < 20
+end

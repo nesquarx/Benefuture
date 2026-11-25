@@ -514,6 +514,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
     (shares withinHarm : FloatArray) (shareMin : Float) : UInt64 :=
   (deciding_scope_ref shares.data withinHarm.data shareMin).toUInt64
 
+-- 8.174 / 8.42.3: divergence weight of novelty-bonused parallel trials
+@[export bf_divergence_weight] def divergenceWeight (u s c : Float) : Float :=
+  divergence_weight_ref u s c
+
 -- M8 (`7.12`, `7.14`, `B25`): extended-self feedback, multi-hop influence liability, end-of-horizon score
 @[export bf_extended_self_feedback] def extendedSelfFeedback
     (couplings deltas : FloatArray) : Float :=

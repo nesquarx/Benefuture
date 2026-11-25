@@ -531,6 +531,17 @@ function deciding_scope(shares, within_harm; share_min::Real = 0.8)
 end
 
 """
+    divergence_weight(uncertainty, severity; severity_slope = 2.0) -> Float64
+
+The share of the novelty bonus offered to sibling clusters to try a different option on the same decision (8.174, 8.42.3; Lean
+`divergence_weight_ref`): rises with the impact uncertainty in [0, 1], falls with severity, zero once `severity * severity_slope >= 1`.
+"""
+function divergence_weight(uncertainty::Real, severity::Real; severity_slope::Real = 2.0)
+    check(isfinite(uncertainty) && isfinite(severity) && isfinite(severity_slope), "divergence_weight: finite inputs")
+    ccall(sym(:bf_divergence_weight), Float64, (Float64, Float64, Float64), uncertainty, severity, severity_slope)
+end
+
+"""
     advap_reward(exploit_gain, prevented_harm; share, floor) -> reward
 
 The reward for revealing successful gaming (AdvAp, L161; Lean `advap_reward_ref`): the exploit's

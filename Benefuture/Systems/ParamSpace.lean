@@ -376,4 +376,46 @@ theorem deciding_scope_monotone_in_share_min
     deciding_scope scopes m₁ ≤ deciding_scope scopes m₂ :=
   deciding_scope_from_mono_share_min 0 scopes hm
 
+/-! ## Divergence weight: novelty-bonused parallel trials by uncertainty and severity (`8.174`, `8.42.3`) -/
+
+/-- Divergence weight (`8.174`): the share of the novelty bonus offered to sibling clusters to try a different option on the same
+    decision. It rises with the decision's impact uncertainty `u ∈ [0, 1]` and falls linearly with its severity `s ≥ 0` at the
+    governed slope `c` (`severity_slope`), reaching zero once `s * c ≥ 1`: catastrophic options converge rather than experiment. -/
+noncomputable def divergence_weight (u s c : ℝ) : ℝ := u * max 0 (1 - s * c)
+
+theorem divergence_weight_nonneg {u s c : ℝ} (hu : 0 ≤ u) : 0 ≤ divergence_weight u s c :=
+  mul_nonneg hu (le_max_left _ _)
+
+/-- Bounded by the uncertainty itself (and so by one): no severity makes divergence exceed what uncertainty warrants. -/
+theorem divergence_weight_le_uncertainty {u s c : ℝ} (hu : 0 ≤ u) (hs : 0 ≤ s) (hc : 0 ≤ c) :
+    divergence_weight u s c ≤ u := by
+  unfold divergence_weight
+  have h : max 0 (1 - s * c) ≤ 1 := max_le (by norm_num) (by nlinarith [mul_nonneg hs hc])
+  nlinarith
+
+theorem divergence_weight_le_one {u s c : ℝ} (hu : 0 ≤ u) (hu1 : u ≤ 1) (hs : 0 ≤ s) (hc : 0 ≤ c) :
+    divergence_weight u s c ≤ 1 :=
+  le_trans (divergence_weight_le_uncertainty hu hs hc) hu1
+
+/-- Rises with uncertainty. -/
+theorem divergence_weight_mono_uncertainty {u₁ u₂ : ℝ} (s c : ℝ) (h : u₁ ≤ u₂) :
+    divergence_weight u₁ s c ≤ divergence_weight u₂ s c :=
+  mul_le_mul_of_nonneg_right h (le_max_left _ _)
+
+/-- Falls with severity (a steeper slope is the same statement on the other side). -/
+theorem divergence_weight_anti_severity {u : ℝ} (hu : 0 ≤ u) {s₁ s₂ : ℝ} (c : ℝ) (hc : 0 ≤ c) (h : s₁ ≤ s₂) :
+    divergence_weight u s₂ c ≤ divergence_weight u s₁ c := by
+  unfold divergence_weight
+  exact mul_le_mul_of_nonneg_left (max_le_max (le_refl 0) (by nlinarith [mul_le_mul_of_nonneg_right h hc])) hu
+
+/-- Counterexample side: a severe enough decision gets no divergence at all. -/
+theorem divergence_weight_zero_when_severe {u s c : ℝ} (h : 1 ≤ s * c) : divergence_weight u s c = 0 := by
+  unfold divergence_weight
+  rw [max_eq_left (by linarith)]
+  ring
+
+/-- A decision with no impact uncertainty is not experimented on. -/
+theorem divergence_weight_zero_when_certain (s c : ℝ) : divergence_weight 0 s c = 0 := by
+  unfold divergence_weight; ring
+
 end Benefuture.Systems

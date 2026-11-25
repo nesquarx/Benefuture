@@ -430,6 +430,15 @@ def deciding_scope_ref (shares withinHarm : Array Float) (shareMin : Float) : Na
       return i
   return n - 1
 
+/-- Divergence weight (`8.174`, `8.42.3`): uncertainty `u` times the severity discount `max 0 (1 - s * c)`; rises with uncertainty, falls with
+    severity, zero once `s * c >= 1`. Inputs are clamped to `u` in `[0, 1]`, `s` and `c` non-negative. -/
+def divergence_weight_ref (u s c : Float) : Float :=
+  let u := if u < 0.0 then 0.0 else if u > 1.0 then 1.0 else u
+  let s := if s < 0.0 then 0.0 else s
+  let c := if c < 0.0 then 0.0 else c
+  let d := 1.0 - s * c
+  u * (if d > 0.0 then d else 0.0)
+
 /-- Net extended-self feedback across coupled network targets (`L136`, `7.12`, M8):
     sums `max 0 (min 1 c_k) * delta_k` across paired entries. -/
 def extended_self_feedback_ref (couplings deltas : Array Float) : Float := Id.run do
