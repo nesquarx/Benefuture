@@ -322,6 +322,15 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   rule that licences are verified before use). 486 candidates go to the parent task: 30 batches of ≤ 50 cards,
   3 variants. OpenAlex and ESCO licences still need a primary-page check before any release.
 
+- **Fine parents applied** (fine_parent v1, 2 variants, 486 candidates; `data/fine/fine_v0.jsonl`): 453 upstream, 33
+  overlap; escalated 8.6% (limit 5%); mean agreement 0.71; no candidate asked for a new coarse field (predicted < 10%;
+  possibly a prompt bias toward existing fields). Multi-parent pairs are supported by learnt co-membership in 32.7%
+  of cases against a 1.6% baseline over all coarse pairs (20×): the parents carry real structure. 149 of 247 coarse
+  fields have no fine child: the licence-clean sources are academic and occupational (OpenAlex, ESCO, ISCO), and the
+  life-activity source (ICATUS) was excluded. Next: a licence-clean life-activity source, the American Time Use
+  Survey activity lexicon (US government work, public domain, to verify), for the care, home, leisure and personal
+  fields. Seven answers carried mistyped hashes despite their runners' validation; repaired by copying from the batch.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance

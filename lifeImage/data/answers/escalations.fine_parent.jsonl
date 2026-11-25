@@ -1,0 +1,42 @@
+{"id":"f.area_development_expertise_monitoring","kept":{"s.learning":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.art_art_performing_visual","kept":{"s.leisure":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.aspect_ethics_issue_legal","kept":{"c.philosophical_inquiry":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.award_courage","kept":{"s.meaning":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.award_franklin_institute","kept":{"s.science":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"new_field"}}
+{"id":"f.award_international","kept":{"s.public":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"new_field"}}
+{"id":"f.award_literary","kept":{"c.creative_writing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.biophysics","kept":{"c.life_sciences":0.5,"c.physics":0.5},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.clerk_collector_money_related_teller","kept":{"c.finance_accounting":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.construction_manufacturing_mining_supervisor","kept":{"c.management_executive":0.529412,"c.manufacturing":0.470588},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.edition_translation_version","kept":{"c.media_publishing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.engineering_environmental","kept":{"c.civil_engineering":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.equipment_instrumentation_precision_using","kept":{"s.technology":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.equipment_machinery_specialised_working","kept":{"c.manufacturing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.extraction_machinery_material_operating_processing_raw","kept":{"c.manufacturing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.family_practice","kept":{"c.medicine_science":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.fellowship_grant","kept":{"c.research_training":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.fighter_freedom","kept":{"s.public":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.flow_fluid_process_transfer","kept":{"c.chemistry":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.general_science_social","kept":{"c.political_science":0.36,"c.sociology":0.64},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.handling_moving","kept":{"c.transport_logistics":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.health_informatics","kept":{"c.computer_science":0.45,"c.medicine_science":0.55},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.health_information_management","kept":{"c.healthcare_work":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.health_mutagenesis_toxicology","kept":{"s.science":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.industrial_relation","kept":{"c.business_science":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.information_management_system","kept":{"c.business_science":0.625,"c.computer_science":0.375},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.information_skill","kept":{"c.statistics_data":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.instrumentation","kept":{"s.technology":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.law_management_monitoring_policy","kept":{"s.public":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.lecture_series","kept":{"s.learning":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.lifting_moving","kept":{"c.elementary_occupations":0.428571,"c.transport_logistics":0.571429},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.measuring_physical_property","kept":{"s.technology":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.medal","kept":{"s.public":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.mobile_operating_plant","kept":{"s.technology":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.model","kept":{"s.leisure":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"new_field","1":"overlap"}}
+{"id":"f.museology","kept":{"c.arts_humanities_studies":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.operating_watercraft","kept":{"s.mobility":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.problem_solving","kept":{"s.learning":0.55,"s.work":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.rehabilitation","kept":{"c.medical_care":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.related_service_street_worker","kept":{"c.informal_gig":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.research_safety","kept":{"s.science":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.virtuoso","kept":{"s.leisure":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
