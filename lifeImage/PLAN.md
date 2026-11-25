@@ -429,6 +429,14 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   in grain and tier, not in levels, as LI.38 intends. Fine rings add nothing measurable (+0.01). Next: the
   characterisation battery should read the image's levels and grain together (a v3 feature set, pre-registered).
 
+- **Characterisation v3** (`data/gold/characterisation_signatures_v3.*` registered before measurement, `e11b170`; report
+  `data/gold/characterisation_v3_report.*`): per-domain solid levels, red grain share and tier saturation (coarse rings), PCA
+  (k = 20) fitted inside every fold, plus the v2 summary features. Truth rows, logistic: archetype 0.785 [0.711, 0.844]
+  against v2 0.576 (+0.208, paired interval [+0.137, +0.280]); calibration 0.542 against 0.576 (-0.035, inconclusive: the
+  grain and tier block adds nothing measurable beyond the global grain share). Extracted rows: archetype 0.192 against 0.100
+  (+0.092), calibration 0.442 against 0.517 (-0.075). Legacy: archetype 0.812, calibration 0.431. Held 11, not held 5,
+  inconclusive 2 of 18 (9.1 expected).
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance

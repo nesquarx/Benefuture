@@ -34,3 +34,16 @@ def test_the_registration_names_the_three_populations_and_both_labels():
     assert {p["label"] for p in data["predictions"]} == {"archetype", "calibration"}
     used = {s for p in data["predictions"] for s in (p["a"][0], *(p["b"][:1] if "b" in p else []))}
     assert used == set(data["sets"])
+
+
+def test_the_committed_v3_report_evaluates_exactly_the_registered_predictions_and_renders_deterministically():
+    import subprocess
+    import sys
+    rep = json.loads((ROOT / "data/gold/characterisation_v3_report.json").read_text(encoding="utf-8"))
+    reg = json.loads(V3.read_text(encoding="utf-8"))["predictions"]
+    assert [v["id"] for v in rep["verdicts"]] == [p["id"] for p in reg]
+    assert all(v["confidence"] == p["confidence"] and v["text"] == p["text"] for v, p in zip(rep["verdicts"], reg))
+    md = ROOT / "data/gold/characterisation_v3_report.md"
+    before = md.read_bytes()
+    subprocess.run([sys.executable, str(ROOT / "tools/characterise_v3.py"), "--render-only"], check=True, capture_output=True)
+    assert md.read_bytes() == before
