@@ -838,13 +838,23 @@ def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", p
         ti = clip(0.6 * te + 0.4 * R_l.betavariate(3, 3) + R_l.gauss(0, 0.04), 0.02, 0.98)
         persona.latent[d] = {"expertise": round(te, 4), "impact": round(ti, 4)}
         truth[d] = (te, ti)
-    # people regress their estimates toward their own average potential (Kruger and Dunning: weaker domains are
-    # overrated, stronger ones underrated), on top of their persona-level bias and per-estimate noise
-    pivot = sum(x for pair in truth.values() for x in pair) / max(1, 2 * len(truth))
+    # A self-estimate follows the self-assessment literature (LI.50): it follows the truth with a shallow slope around the
+    # middle of the scale, shifted up (better-than-average) and by the persona's own offset, and all of that bias shrinks
+    # as feedback in the domain grows (events lived there), so low skill with sparse feedback is over-estimated, the
+    # highly skilled under-estimated, and frequent feedback leaves little bias.
+    n_events = {}
+    for e, t in zip(raw, tpls):
+        if t.area != "harm":
+            for mm in _membership_weights(t, e["detail"]):
+                if mm["rel"] == "content":
+                    n_events[mm["domain"]] = n_events.get(mm["domain"], 0) + 1
     for d in top:
+        fb = 1.0 - math.exp(-n_events.get(d, 0) / P["est_feedback_scale"])
+        persona.latent[d]["feedback"] = round(fb, 4)
         est[d] = {}
         for kind, tv in zip(("expertise", "impact"), truth[d]):
-            v = tv + bias + P["est_regression_slope"] * (pivot - tv) + R_e.gauss(0, P["est_noise_sd"])
+            bias_d = P["est_bta"] + bias + (P["est_slope"] - 1.0) * (tv - 0.5)
+            v = tv + (1.0 - fb) * bias_d + R_e.gauss(0, P["est_noise_sd"])
             est[d][kind] = round(clip(v, 0.01, 0.99), 4)
     pred_where = {}
     for d in top:

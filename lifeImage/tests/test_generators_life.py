@@ -223,11 +223,12 @@ def test_self_assessment_over_under_and_well_calibrated_with_estimation_error():
         means[cal] = [st.mean(est_errors(p)) for p in ps]
         assert all(est_errors(p) for p in ps)
     m, s_ = st.mean(means["over"]), 3 * se_mean(means["over"])
-    assert m - s_ > 0.1, (m, s_)
+    assert m - s_ > 0.04, (m, s_)
     m, s_ = st.mean(means["under"]), 3 * se_mean(means["under"])
-    assert m + s_ < -0.08, (m, s_)
+    assert m + s_ < -0.02, (m, s_)  # the better-than-average shift (LI.50) offsets part of the under-estimator's offset
     w, ws = st.mean(means["well"]), 3 * se_mean(means["well"])
     assert abs(w) + ws < 0.05, (w, ws)  # equivalence margin 0.05, and the sample could detect an effect of that size
+    assert st.mean(means["over"]) - st.mean(means["well"]) > 0.08 and st.mean(means["well"]) - st.mean(means["under"]) > 0.05
     # never ideal: even the well-calibrated misjudge, and persons differ within a type
     assert st.pstdev(est_errors(gen(1, "generalist", 40, calibration="well"))) > 0.02
     assert st.pstdev(means["over"]) > 0.02
@@ -283,3 +284,63 @@ def test_age_zero_and_a_hundred_generate_without_error():
     for age in (0, 1, 100):
         p = gen(2, "generalist", age)
         assert p.events and all(validate_row(r) for r in p.rows)
+
+
+# ---- self-estimates follow the self-assessment literature (LI.50) ----
+_EST_CACHE = {}
+
+
+def estimate_gaps(cal="well", seeds=range(8000, 8080)):
+    """[(true level, estimate minus truth, feedback in the domain)] over expertise and impact of every claimed domain; feedback is
+    the persona's latent record of how much feedback the domain gave (0 none, 1 constant)."""
+    key = (cal, seeds)
+    if key not in _EST_CACHE:
+        out = []
+        for sd in seeds:
+            p = gen(sd, "generalist", 40, calibration=cal)
+            est = {}
+            for r in p.rows:
+                if r["channel"] == "prediction":
+                    m = r["memberships"][0]
+                    est[(m["domain"], "impact" if m["rel"] == "outcome" else "expertise")] = r["magnitude"]
+            for d, lat in p.latent.items():
+                for kind in ("expertise", "impact"):
+                    out.append((lat[kind], est[(d, kind)] - lat[kind], lat["feedback"]))
+        _EST_CACHE[key] = out
+    return _EST_CACHE[key]
+
+
+def verdict(group, versus, direction, delta):
+    from lifeimage import characterise as ch
+    return ch.contrast_verdict(group, versus, direction, delta)
+
+
+def test_where_feedback_is_frequent_people_estimate_better_than_where_it_is_sparse_at_the_same_skill():
+    mid = [(g, n) for t, g, n in estimate_gaps() if 0.35 <= t <= 0.65]
+    sparse, frequent = [g for g, n in mid if n <= 0.25], [g for g, n in mid if n >= 0.5]
+    assert len(sparse) >= 30 and len(frequent) >= 30  # fresh seeds hold both kinds of domain
+    v = verdict(sparse, frequent, ">", 0.02)
+    assert v["verdict"] == "held", v
+
+
+def test_even_a_well_calibrated_person_estimates_themselves_better_than_average_where_feedback_is_sparse():
+    sparse_mid = [g for t, g, n in estimate_gaps() if 0.35 <= t <= 0.65 and n <= 0.25]
+    assert verdict(sparse_mid, [0.0] * len(sparse_mid), ">", 0.04)["verdict"] == "held"
+
+
+def test_low_skill_with_sparse_feedback_is_over_estimated_and_the_highly_skilled_under_estimated():
+    low = [g for t, g, n in estimate_gaps() if t <= 0.5 and n <= 0.25]
+    high = [g for t, g, n in estimate_gaps() if t >= 0.75]
+    assert len(low) >= 20 and len(high) >= 40
+    assert verdict(low, [0.0] * len(low), ">", 0.06)["verdict"] == "held"
+    assert verdict(high, [0.0] * len(high), "<", 0.02)["verdict"] == "held"
+
+
+def test_estimation_parameters_are_world_parameters_with_ranges_sources_and_literature_confidence():
+    for name in ("est_bta", "est_slope", "est_feedback_scale"):
+        p = PARAMS[name]
+        assert p.low <= p.default <= p.high and p.source.strip() and p.confidence in ("low", "medium", "high")
+    assert PARAMS["est_slope"].low >= 0.1 and PARAMS["est_slope"].high <= 0.7  # Zell and Krizan 2014: r about 0.29
+    assert "est_regression_slope" not in PARAMS
+    with pytest.raises(ValueError):
+        resolve({"est_bta": 0.9})

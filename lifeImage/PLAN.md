@@ -277,6 +277,29 @@ report `data/gold/characterisation_v1_report.md`; images `data/images/v1/`.
 - Images are very dark (mean luminance 0.002–0.04): the saturating tone map's constant is set for far more evidence
   than a regular life holds.
 
+## Characterisation battery v2 (LI.38 grain, LI.39 tone anchor, LI.50 estimation bias)
+
+Signatures pre-registered and hash-pinned before rendering (`883da98`, `data/gold/characterisation_signatures_v2.*`: v1
+archetype and pooled signatures unchanged, per-domain calibration K1-K13, whole-image W1-W6, predicted identification
+I1-I6); report `data/gold/characterisation_v2_report.md`; images `data/images/v2/`.
+
+- Changes: grain is claimed potential only (prediction rows); tier is saturation (measured 1.0, attested 0.85, claimed
+  0.5) and never changes a level; knowledge taken in is solid red. `levels.tone_k` = 0.16388, derived by
+  `governed.derive_tone_k` (median 40-year-old generalist of the generated population: typical touched domain at level
+  0.5). Generator self-estimates: domain-specific bias with feedback (`est_bta`, `est_slope`, `est_feedback_scale`,
+  literature in `params.py`), `data/synthetic` and `texts_v2` regenerated.
+- 144 personas, truth rows: 38 signatures, 14 held, 10 not held, 14 inconclusive. Held: tone anchor (W1 median typical
+  level 0.556 at ages 36 to 44, W2, W3 mean luminance 0.168 against 0.031 in v1), tier as saturation (W4, W5), the
+  Dunning-Kruger shape of the claim gap (K12, K13) and claimed levels by calibration (K6, K7). Inconclusive: the gap
+  and grain-share contrasts between calibrations (K1-K5, K8-K11): effects of the predicted sign at 0.06 to 0.13 against
+  deltas of 0.05 to 0.15, intervals including zero at 48 personas a cell.
+- Blind identification (leave-one-out nearest centroid): truth archetype 0.53 [0.45, 0.61] (predicted at least 0.60:
+  inconclusive; v1 0.58); truth calibration 0.47 [0.39, 0.55] (predicted at least 0.45: held; chance 0.333; v1 0.31);
+  legacy 0.54 and 0.36 (predicted at most 0.62 and 0.40: held).
+- Caveat: the cached extraction answers were read from the earlier self-texts, so extracted-row calibration (0.53, held)
+  carries the earlier generator's bias; re-extraction (a model run) is needed for a fair reading. Extracted archetype
+  0.17 (predicted at least 0.25: not held).
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance

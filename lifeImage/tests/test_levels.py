@@ -48,18 +48,43 @@ def test_a_row_producing_makes_green_and_blue_not_red():
     assert level([r], "green") > 0.05 and level([r], "blue") > 0.05 and level([r], "red") == 0.0
 
 
-def test_a_claim_of_doing_is_grainy_red_never_solid_and_never_green():
+def test_a_claim_of_doing_is_placed_by_what_it_claims_and_drawn_pale_never_grain():
     r = row(tier="claimed")
     c = cv([r])
-    assert level([r], "red", "claimed") > 0.05
-    assert D not in c.get("solid", {}) and level([r], "green", "claimed") == 0.0 and level([r], "green") == 0.0
+    assert level([r], "green") > 0.05 and level([r], "blue") > 0.05 and level([r], "red") == 0.0
+    assert D not in c.get("claimed", {})  # grain is claimed potential only
+    assert c["solid"][D]["saturation"] == pytest.approx(0.5)
 
 
-def test_a_test_of_knowing_makes_solid_red_by_tier_and_a_claimed_one_makes_grainy_red():
+def test_a_claim_of_taking_in_is_solid_red_and_pale():
+    r = row(tier="claimed", relation="impacted", production="consumed")
+    assert level([r], "red") > 0.05 and level([r], "green") == 0.0
+    assert D not in cv([r]).get("claimed", {})
+    assert cv([r])["solid"][D]["saturation"] == pytest.approx(0.5)
+
+
+def test_a_test_of_knowing_is_solid_red_at_every_tier_and_paler_for_self_report():
     k = row(test_kind="knowing", tier="attested")
     assert level([k], "red") > 0.05 and level([k], "green") == 0.0
     kc = row(test_kind="knowing", tier="claimed")
-    assert level([kc], "red", "claimed") > 0.05 and level([kc], "red") == 0.0
+    assert level([kc], "red") == pytest.approx(level([k], "red")) and level([kc], "green") == 0.0
+    assert D not in cv([kc]).get("claimed", {})
+    assert cv([kc])["solid"][D]["saturation"] < cv([k])["solid"][D]["saturation"]
+
+
+def test_tier_changes_the_saturation_and_never_the_level():
+    lv_ = {t: level([row(tier=t)], "green") for t in ("claimed", "attested", "measured")}
+    assert lv_["claimed"] == pytest.approx(lv_["measured"]) == pytest.approx(lv_["attested"])
+    sat = {t: cv([row(tier=t)])["solid"][D]["saturation"] for t in ("claimed", "attested", "measured")}
+    assert sat["measured"] == pytest.approx(1.0) and sat["claimed"] == pytest.approx(0.5)
+    assert sat["claimed"] < sat["attested"] < sat["measured"]
+
+
+def test_a_slice_built_from_two_tiers_has_the_imprint_weighted_saturation():
+    both = [row(tier="claimed", magnitude=0.5), row(tier="measured", magnitude=0.5)]
+    assert cv(both)["solid"][D]["saturation"] == pytest.approx(0.75, abs=1e-6)
+    heavy = [row(tier="claimed", magnitude=0.1), row(tier="measured", magnitude=0.9)]
+    assert 0.9 < cv(heavy)["solid"][D]["saturation"] < 1.0
 
 
 def test_an_assessment_of_doing_makes_green_not_red():
@@ -74,10 +99,12 @@ def test_knowing_and_doing_the_same_thing_show_red_with_green_beside_it_while_re
     assert level(both, "red") == pytest.approx(level(knowing, "red"), abs=1e-9)
 
 
-def test_self_assessment_and_prediction_are_red_and_grainy():
+def test_self_assessment_and_prediction_are_red_and_grainy_whatever_the_tier():
     p = make_row(channel="prediction", memberships=[membership(D, "form"), membership(D, "content")], magnitude=0.6, valid_time="2026-11",
                  tier="claimed")
     assert level([p], "red", "claimed") > 0.05 and level([p], "green", "claimed") == 0.0 and level([p], "red") == 0.0
+    m = make_row(channel="prediction", memberships=[membership(D, "form"), membership(D, "content")], magnitude=0.6, valid_time="2026-11", tier="measured")
+    assert level([m], "red", "claimed") == pytest.approx(level([p], "red", "claimed"))  # tier never decides grain
 
 
 # ---------- LI.36: levels from imprints ----------
@@ -96,7 +123,7 @@ def test_imprints_add_per_channel_and_saturate_like_light():
 
 
 def test_a_thousand_viewings_never_reach_one_review():
-    viewings = [row(relation="impacted", production="consumed", magnitude=0.05, memberships=[membership(D, "content")]) for _ in range(1000)]
+    viewings = [row(relation="impacted", production="consumed", magnitude=0.001, memberships=[membership(D, "content")]) for _ in range(1000)]
     review = row(magnitude=1.0, memberships=[membership(D, "form"), membership(D, "content")])
     assert level(viewings, "red") < 1.0
     assert level([review], "green") > level(viewings[:5], "red") and level([review], "green") > 0.2
@@ -118,7 +145,7 @@ def test_a_claim_of_a_level_imprints_that_level_so_red_matches_the_same_level_do
 
 
 def test_a_claim_above_the_record_reads_as_red_beyond_green():
-    done = row(magnitude=0.4)
+    done = row(magnitude=0.05)
     claim = make_row(channel="prediction", memberships=[membership(D, "form"), membership(D, "content")], magnitude=0.95, valid_time="2026-11",
                      tier="claimed")
     c = cv([done, claim])
@@ -179,3 +206,38 @@ def test_a_persona_with_a_knowing_test_shows_solid_red_where_the_exam_is():
     assert p is not None
     c = im.channel_values(p.rows, cards())
     assert level(p.rows, "red", domain="c.exams_assessment") > 0 or c["solid"].get("c.school_education", {}).get("red", 0) > 0
+
+
+# ---------- LI.39: the tone constant is anchored to a reference life ----------
+
+def _typical_touched_level(rows):
+    """Median over the domains a row names directly of the strongest solid channel level."""
+    solid = cv(rows, asof="2026-11-24").get("solid", {})
+    direct = {m["domain"] for r in rows if r["channel"] == "positive" and not r["revoked"] for m in r["memberships"]}
+    vals = sorted(max(solid[d][k] for k in ("red", "green", "blue")) for d in direct if d in solid)
+    return vals[len(vals) // 2] if vals else None
+
+
+def test_a_regular_forty_year_olds_typical_domain_is_mid_brightness_not_dark():
+    # fresh seeds, not the ones the constant was derived from
+    typical = []
+    for s in range(7000, 7030):
+        p = life.generate_persona(seed=s, archetype="generalist", age=40, as_of="2026-11-24", pid=f"r{s}")
+        t = _typical_touched_level(p.rows)
+        if t is not None:
+            typical.append(t)
+    typical.sort()
+    median = typical[len(typical) // 2]
+    assert 0.40 <= median <= 0.60, median
+
+
+def test_the_scale_is_absolute_a_thin_life_is_dimmer_and_a_rich_one_brighter():
+    thin = [row(magnitude=0.02)]
+    rich = [row(magnitude=0.02) for _ in range(40)]
+    assert level(rich, "green") > 3 * level(thin, "green") and level(thin, "green") < 0.2
+
+
+def test_the_tone_constant_is_the_derived_governed_value():
+    from lifeimage import governed
+    assert im.DEFAULT.levels.tone_k == pytest.approx(governed.governed("levels.tone_k"))
+    assert governed.derive_tone_k() == pytest.approx(governed.governed("levels.tone_k"), rel=1e-3)

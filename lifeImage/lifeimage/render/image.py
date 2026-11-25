@@ -10,8 +10,9 @@ Folding is `projection.project` (caps by relation, a little bleed one step to up
 neighbours). Before folding, each row is dimmed by a half-life: factor 0.5 ** (age / half_life), age measured from
 `asof`, by default the entity's latest `valid_time`, so a historical figure's career is not dimmed to nothing.
 
-Layers. Colour is kept in two layers: `solid` (attested and measured tiers) and `claimed`. The claimed layer is drawn
-with reduced saturation and a visible grain, so an inflated resume does not look as authoritative as a record.
+Layers. Colour is kept in two layers: `solid` (every row but predictions) and `claimed` (claimed potential: predictions
+only, red). The claimed layer is drawn as grain; the solid layer is drawn with the saturation of its tiers (LI.38: a
+self-report is pale, a record full). In the legacy projection the claimed layer is the claimed tier, desaturated.
 
 Intensity is magnitude on a log scale, the same fixed scale for every entity so images stay comparable; colour never
 exceeds the value its domain's rows carry. Wedges of different domains never overlap, so additive colour is
@@ -62,12 +63,13 @@ def intensity(v, g=DEFAULT):
 
 
 def rgb(ch, g=DEFAULT, claimed=False, levels=False):
-    """(r, g, b) ints from channel values (legacy: log intensity) or levels in [0, 1] (`levels=True`: used as they are);
-    claimed colours keep `claimed_saturation` of their chroma."""
+    """(r, g, b) ints from channel values (legacy: log intensity) or levels in [0, 1] (`levels=True`: used as they are, kept to
+    the slice's `saturation` of their chroma when it has one); legacy claimed colours keep `claimed_saturation`."""
     c = [min(1.0, max(0.0, ch.get(k, 0.0))) if levels else intensity(ch.get(k, 0.0), g) for k in CHANNELS]
-    if claimed:
+    sat = ch.get("saturation", 1.0) if levels else (g.claimed_saturation if claimed else 1.0)
+    if sat != 1.0:
         grey = math.fsum(c) / 3
-        c = [grey + g.claimed_saturation * (x - grey) for x in c]
+        c = [grey + sat * (x - grey) for x in c]
     return tuple(int(round(255 * x)) for x in c)
 
 
@@ -174,7 +176,7 @@ def render_svg(label, cv, bm, governed=DEFAULT, size=640, legacy=False):
         for layer, bucket, flag in (("solid", solid, False), ("claimed", claimed, True)):
             ch = cv.get(layer, {}).get(s.id)
             if ch and any(ch[k] > 0 for k in CHANNELS):
-                bucket.append(f'<path d="{wedge_path(s)}" fill="{hexcolour(rgb(ch, g, flag, levels=not legacy))}"><title>{escape(s.id)}</title></path>')
+                bucket.append(f'<path d="{wedge_path(s)}" fill="{hexcolour(rgb(ch, g, flag and legacy, levels=not legacy))}"><title>{escape(s.id)}</title></path>')
     t = g.grain_tile
     defs = claimed_g = ""
     if claimed:  # the grain mask exists only where there is something claimed to draw

@@ -126,7 +126,7 @@ def test_claimed_potential_is_compared_with_the_latent_truth_by_calibration(worl
     pot = {p: [copy.deepcopy(r) for r in rows if r["channel"] == "prediction"] for p, rows in truth.items()}
     rep = compute(pot, truth, personas, CARDS, corro)["channels"]["potential"]
     assert rep["inflation"]["n"] > 400
-    assert rep["inflation"]["over"] > 0.1 and rep["inflation"]["under"] < -0.1 and abs(rep["inflation"]["well"]) < 0.08
+    assert rep["inflation"]["over"] > 0.1 and rep["inflation"]["under"] < -0.02 and abs(rep["inflation"]["well"]) < 0.08  # LI.50: the better-than-average shift offsets part of the under-estimators' offset
     assert rep["precision"] == 0.0  # nothing in the resume says it
 
 

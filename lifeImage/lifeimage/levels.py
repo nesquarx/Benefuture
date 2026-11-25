@@ -1,28 +1,34 @@
-"""Levels (LI.36) and the channel split (LI.37): evidence rows to per-domain red, green and blue levels in [0, 1].
+"""Levels (LI.36), the channel split (LI.37, LI.38) and the tone anchor (LI.39): evidence rows to per-domain red, green and
+blue levels in [0, 1].
 
 Each row imprints its own pattern on the circle: its memberships across related domains (colour stays in the row's
 domains, a little bleeds to major upstream domains, none to neighbours; `projection.project` does the folding), with
 luminosity = weight x decay. Imprints add per channel; a saturating tone map turns each domain's sum into a level,
 level = 1 - exp(-sum / tone_k), so exposures compose as 1 - prod(1 - level) and a thousand small imprints approach but
-never exceed one. A potential event (a claim or prediction) imprints with the level it claims: its amount is the sum
-whose tone-mapped level is the claim, so red compares with green like for like.
+never exceed one. `tone_k` is the governed value `levels.tone_k` (`lifeimage/governed.py`), derived so that a reference
+life's typical touched domain is at level 0.5; the scale is absolute across people. A potential event (a claim or
+prediction) imprints with the level it claims: its amount is the sum whose tone-mapped level is the claim, so red
+compares with green like for like.
 
-Channel split (LI.37). Red is knowledge and potential: rows that take in (production `consumed`), claims (the claimed
-tier, whatever the row says it did), self-assessments and predictions, and tests of knowing (red solid by tier).
-Green is demonstrated skill: attested or measured rows that produce, and assessments of doing. Blue is impact: the
-outcome membership of attested or measured rows that produce (a test measures skill, not what it changed). Grainy red
-is never made solid and red without green reads as knowing or claiming without doing. Taking in counts
-`consumed_weight` as much as producing.
+Channel split. Red is knowledge and potential: rows that take in (production `consumed`), tests of knowing, and
+predictions (self-assessments, forecasts, claims of capability). Green is demonstrated skill: rows that produce, and
+assessments of doing. Blue is impact: the outcome membership of rows that produce (a test measures skill, not what it
+changed). Taking in counts `consumed_weight` as much as producing. Red without green reads as knowing or claiming
+without doing.
+
+Layers. `claimed` holds claimed potential only: the red of prediction rows, drawn as grain. Every other row, whatever its
+tier, is `solid`. Tier shows only as saturation: each solid domain carries `saturation`, the imprint-weighted mean of
+the tier saturations (measured, attested, claimed) of the rows that built it, so self-reported colour is pale and a
+record is full. Tier never changes a level and never makes grain.
 
 A row's `production` is `produced` or `consumed`; where the field is absent (extracted rows) the relation decides:
 `impacted` is consumed, anything else produced. `test_kind` is `knowing` or `doing` on a test or assessment row.
-
-Layers: `solid` (attested and measured) and `claimed`, each tone-mapped separately.
 """
 import math
 from dataclasses import dataclass
 from datetime import date
 
+from . import governed as gv
 from .projection import DEFAULT as PROJECTION
 from .projection import project
 
@@ -37,10 +43,17 @@ KNOWLEDGE_RELS = ("form", "content")
 class Governed:
     """Governed constants of the levels (defaults; each is a threshold to be governed later)."""
     half_life_years: float = 15.0  # a row's luminosity halves every this many years
-    tone_k: float = 1.0  # tone map level = 1 - exp(-sum / tone_k): a summed luminosity of tone_k gives level 0.63
+    tone_k: float = gv.governed("levels.tone_k")  # tone map level = 1 - exp(-sum / tone_k); derived (LI.39), a summed luminosity of tone_k gives 0.63
+    saturation_measured: float = gv.governed("levels.saturation_measured")  # share of colour kept, by tier of the rows that built a slice
+    saturation_attested: float = gv.governed("levels.saturation_attested")
+    saturation_claimed: float = gv.governed("levels.saturation_claimed")
     consumed_weight: float = 0.5  # taking in imprints this fraction of what producing does
     max_claimed_level: float = 0.99  # a claim of 1 would need an infinite imprint
     projection: object = PROJECTION  # bleed to upstream domains
+
+
+    def saturation(self, tier):
+        return {"measured": self.saturation_measured, "attested": self.saturation_attested, "claimed": self.saturation_claimed}[tier]
 
 
 DEFAULT = Governed()
@@ -76,19 +89,15 @@ def route(r):
     """[(layer, channel, rels, weight factor)] a live positive or prediction row imprints in, before decay."""
     if r["channel"] == "prediction":
         return [("claimed", "red", ("form", "content", "outcome"), 1.0)]
-    claimed = r["tier"] == "claimed"
-    layer = "claimed" if claimed else "solid"
     consumed = production(r) == "consumed"
     kind = r.get("test_kind")
-    if claimed:  # a claim is knowledge or potential, whatever it claims to have done
-        return [("claimed", "red", ("form", "content", "outcome"), 1.0)]
     if kind == "knowing":
-        return [(layer, "red", KNOWLEDGE_RELS, 1.0)]
+        return [("solid", "red", KNOWLEDGE_RELS, 1.0)]
     if kind == "doing":
-        return [(layer, "green", KNOWLEDGE_RELS, 1.0)]
+        return [("solid", "green", KNOWLEDGE_RELS, 1.0)]
     if consumed:
-        return [(layer, "red", KNOWLEDGE_RELS, 1.0)]
-    return [(layer, "green", KNOWLEDGE_RELS, 1.0), (layer, "blue", ("outcome",), 1.0)]
+        return [("solid", "red", KNOWLEDGE_RELS, 1.0)]
+    return [("solid", "green", KNOWLEDGE_RELS, 1.0), ("solid", "blue", ("outcome",), 1.0)]
 
 
 def imprints(rows, cards, governed=DEFAULT, asof=None):
@@ -114,22 +123,55 @@ def imprints(rows, cards, governed=DEFAULT, asof=None):
     return out
 
 
-def channel_levels(rows, cards, governed=DEFAULT, asof=None):
-    """{"solid": {domain: {red, green, blue}}, "claimed": {...}}: per-domain levels in [0, 1]."""
-    derived = {"solid": [], "claimed": []}
-    for imp in imprints(rows, cards, governed, asof):
-        r = imp["row"]
-        derived[imp["layer"]].append({"entity": "x", "relation": "causal", "channel": imp["channel"], "sign": 1, "revoked": False,
-                                      "magnitude": imp["amount"], "memberships": imp["memberships"]})
+def _fold(imps, cards, governed):
+    """{(layer, tier): {domain: {channel: summed luminosity}}} of imprints (before the tone map)."""
+    derived = {}
+    for imp in imps:
+        tier = imp["row"]["tier"] if imp["layer"] == "solid" else "claimed"
+        derived.setdefault((imp["layer"], tier), []).append(
+            {"entity": "x", "relation": "causal", "channel": imp["channel"], "sign": 1, "revoked": False,
+             "magnitude": imp["amount"], "memberships": imp["memberships"]})
     out = {}
-    for layer, rs in derived.items():
-        out[layer] = {}
+    for key, rs in sorted(derived.items()):
+        sums = out.setdefault(key, {})
         for _entity, per_domain in sorted(project(rs, cards, governed.projection, ALL_RELS).items()):
             for d, ch in per_domain.items():
-                row = out[layer].setdefault(d, dict.fromkeys(CHANNELS, 0.0))
+                row = sums.setdefault(d, dict.fromkeys(CHANNELS, 0.0))
                 for k in CHANNELS:
                     row[k] += max(0.0, ch.get(k, 0.0))
-        for d, row in out[layer].items():
+    return out
+
+
+def raw_sums(rows, cards, governed=DEFAULT, asof=None):
+    """{"solid": {domain: {channel: sum}}, "claimed": {...}, "tier_mass": {domain: {tier: mass}}}: summed luminosity before
+    the tone map (the solid layer over all tiers; tier_mass is the solid sum over channels by tier)."""
+    folded = _fold(imprints(rows, cards, governed, asof), cards, governed)
+    out = {"solid": {}, "claimed": {}, "tier_mass": {}}
+    for (layer, tier), sums in folded.items():
+        for d, ch in sums.items():
+            row = out[layer].setdefault(d, dict.fromkeys(CHANNELS, 0.0))
             for k in CHANNELS:
-                row[k] = tone(row[k], governed)
+                row[k] += ch[k]
+            if layer == "solid":
+                tm = out["tier_mass"].setdefault(d, {})
+                tm[tier] = tm.get(tier, 0.0) + math.fsum(ch.values())
+    return out
+
+
+def touched_domains(rows, cards, governed=DEFAULT, asof=None):
+    """Domains a solid imprint names directly (not by upstream bleed)."""
+    return {m["domain"] for imp in imprints(rows, cards, governed, asof) if imp["layer"] == "solid" for m in imp["memberships"]}
+
+
+def channel_levels(rows, cards, governed=DEFAULT, asof=None):
+    """{"solid": {domain: {red, green, blue, saturation}}, "claimed": {domain: {red, green, blue}}}: per-domain levels in
+    [0, 1] and the solid layer's saturation (imprint-weighted mean of the tier saturations)."""
+    raw = raw_sums(rows, cards, governed, asof)
+    out = {"solid": {}, "claimed": {}}
+    for layer in out:
+        for d, row in raw[layer].items():
+            out[layer][d] = {k: tone(row[k], governed) for k in CHANNELS}
+    for d, tm in raw["tier_mass"].items():
+        total = math.fsum(tm.values())
+        out["solid"][d]["saturation"] = math.fsum(governed.saturation(t) * m for t, m in tm.items()) / total if total > 0 else 1.0
     return out

@@ -1,11 +1,12 @@
 """Characterisation: what an image shows, measured from features and not by eye.
 
-An image state is what the renderer draws: per basemap slice, solid and claimed levels of red, green and blue in
-[0, 1] (`image_state`), with the newest imprint date of each slice. `features` computes the pre-registered features
-of `data/gold/characterisation_signatures_v1.md` from it. `contrast_verdict`, `proportion_verdict` and
-`evaluate_signatures` decide each pre-registered signature (held, not held, inconclusive); `loo_accuracy` is blind
-identification (nearest centroid, leave one out, features standardised on the training fold only); `pooled` is the
-humanity-white composite.
+An image state is what the renderer draws: per basemap slice, solid and claimed-potential (grain) levels of red, green and
+blue in [0, 1] (`image_state`), the solid layer's saturation (tier, LI.38), whether a row names the slice directly, and the
+newest imprint date of each slice. `features` computes the pre-registered features of
+`data/gold/characterisation_signatures_v1.md` and `_v2.md` from it. `contrast_verdict`, `proportion_verdict`,
+`paired_verdict`, `evaluate_signatures` and `identification_verdict` decide each pre-registered signature (held, not
+held, inconclusive); `loo_accuracy` is blind identification (nearest centroid, leave one out, features standardised on the
+training fold only); `pooled` is the humanity-white composite.
 
 Populations: the starter personas under four projections (truth rows, claimed resume rows, rows extracted from the
 resume texts, and the legacy projection) and the extended population (8 archetypes x 3 calibrations x 6 replicates,
@@ -25,17 +26,21 @@ from .render import basemap as bmod
 from .render import image as im
 
 ROOT = Path(__file__).resolve().parent.parent
-SIGNATURES = ROOT / "data/gold/characterisation_signatures_v1.json"
+SIGNATURES = ROOT / "data/gold/characterisation_signatures_v2.json"
 
 CONSTANTS = {"grain_cover": 0.1837, "lit_bin_threshold": 0.10, "merge_gap_degrees": 15, "min_cluster_mass": 0.10,
-             "current_years": 5, "past_years": 10, "luma": (0.2126, 0.7152, 0.0722)}
+             "current_years": 5, "past_years": 10, "luma": (0.2126, 0.7152, 0.0722),
+             "claimed_slice_level": 0.05, "gap_margin": 0.10, "low_green": 0.30, "high_green": 0.60}
 BINS = 360
 ARCHETYPE_ORDER = ["student", "shift_worker", "carer", "small_business_owner", "researcher", "retiree", "career_changer", "generalist"]
 CALIBRATION_ORDER = ["over", "well", "under"]
 REPLICATES = 6
 BASE_FEATURES = ("share_red", "share_green", "share_blue", "red_grain_share", "dimmed_share", "luminance", "chroma", "balance_distance",
                  "spread_entropy", "red_spread_entropy", "n_clusters", "max_arc_share", "current_luminance", "past_luminance",
-                 "past_over_current", "cluster_age_gap")
+                 "past_over_current", "cluster_age_gap",
+                 "typical_level", "grain_cover", "n_claimed_slices", "claim_gap", "claim_gap_abs", "grain_green_share",
+                 "mean_claimed_level", "overclaim_share", "underclaim_share")
+EXTRA_FEATURES = ("claim_gap_low_green", "claim_gap_high_green")  # computed, not used in blind identification
 
 
 @dataclass(frozen=True)
@@ -47,8 +52,10 @@ class Slice:
     r0: float
     r1: float
     solid: tuple  # (red, green, blue) levels
-    claimed: tuple
+    claimed: tuple  # claimed potential (grain), red only in practice
     newest: object = None  # day ordinal of the newest imprint, or None
+    sat: float = 1.0  # saturation of the solid layer (tier, LI.38)
+    touched: bool = False  # a row names this domain directly (not only by upstream bleed)
 
     @property
     def area(self):
@@ -59,8 +66,11 @@ class Slice:
         return (self.start + self.width / 2) % 360
 
     def displayed(self):
+        """The solid colour blended toward its grey by 1 - sat, then lit by the grain: 1 - (1 - s') (1 - g L_claimed)."""
         g = CONSTANTS["grain_cover"]
-        return tuple(1 - (1 - s) * (1 - g * c) for s, c in zip(self.solid, self.claimed))
+        grey = math.fsum(self.solid) / 3
+        solid = self.solid if self.sat == 1.0 else tuple(grey + self.sat * (x - grey) for x in self.solid)
+        return tuple(1 - (1 - s) * (1 - g * c) for s, c in zip(solid, self.claimed))
 
     def luminance(self, d=None):
         return sum(w * c for w, c in zip(CONSTANTS["luma"], d or self.displayed()))
@@ -81,7 +91,7 @@ class Features(dict):
 
 
 def feature_names():
-    return set(BASE_FEATURES)
+    return set(BASE_FEATURES) | set(EXTRA_FEATURES)
 
 
 def _runs(lit):
@@ -207,7 +217,41 @@ def features(state):
     f["current_luminance"] = math.fsum(cur) / len(cur) if cur else nan
     f["past_luminance"] = math.fsum(past) / len(past) if past else nan
     f["past_over_current"] = f["past_luminance"] / f["current_luminance"] if cur and past and f["current_luminance"] > 0 else nan
+    _claim_features(f, fields)
+    touched = sorted(max(s.solid) for s in fields if s.touched)
+    n = len(touched)
+    f["typical_level"] = (touched[n // 2] if n % 2 else (touched[n // 2 - 1] + touched[n // 2]) / 2) if n else nan
     return f
+
+
+def _claim_features(f, fields):
+    """Claimed potential (grain red) against demonstrated skill (solid green) in the field slices that carry a claim."""
+    nan = float("nan")
+    lvl, gm = CONSTANTS["claimed_slice_level"], CONSTANTS["gap_margin"]
+    field_area = math.fsum(s.area for s in fields)
+    cl = [s for s in fields if s.claimed[0] >= lvl]
+    f["n_claimed_slices"] = len(cl)
+    f["grain_cover"] = math.fsum(s.area for s in cl) / field_area if field_area > 0 and cl else 0.0
+    for k in ("claim_gap", "claim_gap_abs", "grain_green_share", "mean_claimed_level", "overclaim_share", "underclaim_share",
+              "claim_gap_low_green", "claim_gap_high_green"):
+        f[k] = nan
+    if not cl:
+        return
+    area = math.fsum(s.area for s in cl)
+    gap = lambda ss: math.fsum(s.area * (s.claimed[0] - s.solid[1]) for s in ss) / math.fsum(s.area for s in ss)
+    f["claim_gap"] = gap(cl)
+    f["claim_gap_abs"] = math.fsum(s.area * abs(s.claimed[0] - s.solid[1]) for s in cl) / area
+    claimed, green = math.fsum(s.area * s.claimed[0] for s in cl), math.fsum(s.area * s.solid[1] for s in cl)
+    f["grain_green_share"] = claimed / (claimed + green) if claimed + green > 0 else nan
+    f["mean_claimed_level"] = math.fsum(s.claimed[0] for s in cl) / len(cl)
+    f["overclaim_share"] = math.fsum(s.area for s in cl if s.claimed[0] - s.solid[1] > gm) / area
+    f["underclaim_share"] = math.fsum(s.area for s in cl if s.solid[1] - s.claimed[0] > gm) / area
+    low = [s for s in cl if s.solid[1] < CONSTANTS["low_green"]]
+    high = [s for s in cl if s.solid[1] >= CONSTANTS["high_green"]]
+    if low:
+        f["claim_gap_low_green"] = gap(low)
+    if high:
+        f["claim_gap_high_green"] = gap(high)
 
 
 def dimmed_share(rows, asof, half_life=lv.DEFAULT.half_life_years):
@@ -276,6 +320,45 @@ def contrast_verdict(group, versus, direction, delta):
     return {**out, "verdict": verdict, "mean_group": ma, "mean_versus": mb, "effect": e, "lo": lo, "hi": hi}
 
 
+def paired_verdict(diffs, direction, delta):
+    """Held / not held / inconclusive for the mean of per-persona differences (Student-t at n - 1 degrees of freedom)."""
+    s = 1.0 if direction == ">" else -1.0
+    n = len(diffs)
+    if n < 2:
+        return {"n_group": n, "n_versus": n, "verdict": "inconclusive", "effect": None, "lo": None, "hi": None}
+    m, v = _mean_var(diffs)
+    e, se = s * m, math.sqrt(v / n)
+    crit = t_crit(n - 1) if se > 0 else 0.0
+    lo, hi = e - crit * se, e + crit * se
+    verdict = "held" if e >= delta and lo > 0 else "not held" if hi < delta else "inconclusive"
+    return {"n_group": n, "n_versus": n, "verdict": verdict, "mean_group": m, "mean_versus": 0.0, "effect": e, "lo": lo, "hi": hi}
+
+
+def identification_verdict(bound, value, correct, n):
+    """A stated minimum or maximum of blind-identification accuracy: held if the point accuracy meets it, not held if the
+    Wilson 95% interval lies wholly on the wrong side, inconclusive otherwise."""
+    lo, hi = wilson(correct, n)
+    acc = correct / n if n else 0.0
+    if bound == "min":
+        verdict = "held" if n and acc >= value else "not held" if hi < value else "inconclusive"
+    else:
+        verdict = "held" if n and acc <= value else "not held" if lo > value else "inconclusive"
+    return {"verdict": verdict, "accuracy": acc, "correct": correct, "n": n, "lo": lo, "hi": hi, "bound": bound, "value": value}
+
+
+def evaluate_identification(specs, ident_by_set):
+    """Verdicts of the pre-registered identification predictions; `ident_by_set` is {set name: {label: {correct, n}}}. A spec set
+    "starter extracted (var0, var1, var2) / new" pools the three variants (correct and n summed)."""
+    out = []
+    for sp in specs:
+        names = [f"starter extracted var{v} / new" for v in range(3)] if sp["set"].startswith("starter extracted (") else [sp["set"]]
+        got = [ident_by_set[n][sp["label"]] for n in names if n in ident_by_set]
+        res = identification_verdict(sp["bound"], sp["value"], sum(g["correct"] for g in got), sum(g["n"] for g in got)) if got else \
+            {"verdict": "inconclusive", "accuracy": None, "correct": 0, "n": 0, "lo": 0.0, "hi": 1.0, "bound": sp["bound"], "value": sp["value"]}
+        out.append({"id": sp["id"], "set": sp["set"], "label": sp["label"], "confidence": sp["confidence"], **res})
+    return out
+
+
 def proportion_verdict(k, n, p0):
     lo, hi = wilson(k, n)
     verdict = "held" if n and lo >= p0 else "not held" if n and hi < p0 else "inconclusive"
@@ -301,8 +384,19 @@ def feature_value(rec, name):
     return rec[name]
 
 
-def evaluate_signatures(sigs, records, pooled_result=None):
-    """[{id, statement, confidence, verdict, ...}] over records ({archetype, calibration, **features})."""
+def _isnan(x):
+    return isinstance(x, float) and math.isnan(x)
+
+
+def _subset(records, spec):
+    if not spec:
+        return records
+    return [r for r in records if r.get("age") is not None and spec.get("age_min", -1e9) <= r["age"] <= spec.get("age_max", 1e9)]
+
+
+def evaluate_signatures(sigs, records, pooled_result=None, sets=None):
+    """[{id, statement, confidence, verdict, ...}] over records ({archetype, calibration, age, **features}); `sets` is
+    {name: records} for signatures that name another projection (`paired_sets`, `band_stat` with a `set`)."""
     out = []
     for s in sigs:
         base = {"id": s["id"], "statement": s["statement"], "confidence": s["confidence"], "kind": s["kind"]}
@@ -321,6 +415,29 @@ def evaluate_signatures(sigs, records, pooled_result=None):
             grp = [r for r in records if _match(r, s["group"]) and (not s.get("given") or _predicate(r, s["given"]))]
             res = proportion_verdict(sum(_predicate(r, s["predicate"]) for r in grp), len(grp), s["p0"])
             res["p0"] = s["p0"]
+        elif s["kind"] == "paired":
+            diffs = []
+            for r in records:
+                a = feature_value(r, s["a"])
+                b = s["b"] if isinstance(s["b"], (int, float)) else feature_value(r, s["b"])
+                if not (_isnan(a) or _isnan(b)):
+                    diffs.append(a - b)
+            res = paired_verdict(diffs, s["direction"], s["delta"])
+            res["delta"], res["direction"], res["feature"] = s["delta"], s["direction"], s.get("feature", f"{s['a']} - {s['b']}")
+        elif s["kind"] == "paired_sets":
+            first, second = ({r["id"]: r for r in (sets or {}).get(n, [])} for n in s["sets"])
+            diffs = [first[i][s["feature"]] - second[i][s["feature"]] for i in sorted(set(first) & set(second))
+                     if not (_isnan(first[i][s["feature"]]) or _isnan(second[i][s["feature"]]))]
+            res = paired_verdict(diffs, s["direction"], s["delta"])
+            res["delta"], res["direction"] = s["delta"], s["direction"]
+        elif s["kind"] == "band_stat":
+            pool = _subset((sets or {}).get(s["set"], []) if "set" in s else records, s.get("subset"))
+            vals = sorted(x for x in (feature_value(r, s["feature"]) for r in pool) if not _isnan(x))
+            if not vals:
+                res = {"verdict": "inconclusive", "value": None, "n": 0, "lo": s["lo"], "hi": s["hi"]}
+            else:
+                v = math.fsum(vals) / len(vals) if s["stat"] == "mean" else (vals[len(vals) // 2] if len(vals) % 2 else (vals[len(vals) // 2 - 1] + vals[len(vals) // 2]) / 2)
+                res = {"verdict": "held" if s["lo"] - 1e-12 <= v <= s["hi"] + 1e-12 else "not held", "value": v, "n": len(vals), "lo": s["lo"], "hi": s["hi"], "stat": s["stat"]}
         elif s["kind"] == "band":
             vals = pooled_result["shares"] if pooled_result else {}
             ok = bool(vals) and all(s["lo"] <= v <= s["hi"] for v in vals.values())
@@ -334,6 +451,10 @@ def evaluate_signatures(sigs, records, pooled_result=None):
 
 def load_signatures(path=SIGNATURES):
     return json.loads(Path(path).read_text(encoding="utf-8"))["signatures"]
+
+
+def load_identification(path=SIGNATURES):
+    return json.loads(Path(path).read_text(encoding="utf-8")).get("identification", [])
 
 
 def tally(verdicts):
@@ -445,6 +566,7 @@ def image_state(rows, bm, asof=None, legacy=False):
     cards = world_cards()
     cv = im.channel_values(rows, cards, asof=asof, legacy=legacy)
     newest = _newest(rows, cards)
+    touched = lv.touched_domains(rows, cards, im.DEFAULT.levels, asof)
     live = [r for r in rows if not r["revoked"] and r["channel"] in ("positive", "prediction")]
     ref = lv.parse_time(asof).toordinal() if asof else max((lv.parse_time(r["valid_time"]).toordinal() for r in live), default=0)
     conv = (lambda v: im.intensity(v)) if legacy else (lambda v: min(1.0, max(0.0, v)))
@@ -454,7 +576,8 @@ def image_state(rows, bm, asof=None, legacy=False):
         for layer in ("solid", "claimed"):
             ch = cv.get(layer, {}).get(i, {})
             lay.append(tuple(conv(ch.get(k, 0.0)) for k in lv.CHANNELS))
-        sl.append(Slice(i, s.ring, s.start, s.width, s.r0, s.r1, lay[0], lay[1], newest.get(i)))
+        sat = 1.0 if legacy else cv.get("solid", {}).get(i, {}).get("saturation", 1.0)
+        sl.append(Slice(i, s.ring, s.start, s.width, s.r0, s.r1, lay[0], lay[1], newest.get(i), sat, i in touched))
     return State(sl, ref)
 
 
@@ -462,7 +585,7 @@ def record_for(entity, rows, asof, legacy=False, bm=None):
     st = image_state(rows, bm or world_basemap(), asof, legacy)
     f = features(st)
     f["dimmed_share"] = dimmed_share(rows, asof) if asof else 0.0
-    return {"id": entity["id"], "archetype": entity.get("archetype"), "calibration": entity.get("calibration"), **f}, st
+    return {"id": entity["id"], "archetype": entity.get("archetype"), "calibration": entity.get("calibration"), "age": entity.get("age"), **f}, st
 
 
 # ---------- data ----------

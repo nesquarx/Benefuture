@@ -1,9 +1,9 @@
 """Render the predicted/measured image of every synthetic persona, organisation and public figure.
 
-Usage (from the repository root): python3 lifeImage/tools/render_v0.py [--out lifeImage/data/images/v1] [--legacy]
+Usage (from the repository root): python3 lifeImage/tools/render_v0.py [--out lifeImage/data/images/v2] [--legacy]
 Writes one SVG per entity, `basemap.svg` (the sector ring labelled), `basemap.json` (angles, slices, notes) and
 `contact.html` (grid, legend, and the characterisation features beside each image). By default the levels (LI.36) and
-the channel split (LI.37) are drawn, into data/images/v1; `--legacy` draws the earlier projection (default
+the channel split (LI.37, LI.38) and the anchored tone map (LI.39) are drawn, into data/images/v2; `--legacy` draws the earlier projection (default
 data/images/v0). Deterministic: the same data gives byte-identical files.
 """
 import argparse
@@ -47,8 +47,9 @@ LEGEND_LEVELS = """<tr><td><span class=sw style="background:#f00"></span>red</td
 <tr><td><span class=sw style="background:#0f0"></span>green</td><td>demonstrated skill: attested or measured producing, and assessments of doing</td></tr>
 <tr><td><span class=sw style="background:#00f"></span>blue</td><td>impact: the outcome of what attested or measured producing changed for others</td></tr>
 <tr><td><span class=sw style="background:#ff0"></span>yellow (red+green), <span class=sw style="background:#f0f"></span>purple (red+blue)</td><td>knowing or claiming matched by doing, or by impact; red without green is knowing or claiming without doing</td></tr>
-<tr><td>grain, paler colour</td><td>claimed tier (self-reported, not corroborated; grainy red is never made solid); solid colour is attested or measured, and a test of knowing makes red solid by tier</td></tr>
-<tr><td>brightness</td><td>a level in [0, 1] per domain and channel: imprints (weight x decay, 15-year half-life) add, then a saturating tone map; a claim imprints the level it claims</td></tr>"""
+<tr><td>grain</td><td>claimed potential only: self-assessment, forecasts and claims of capability (red); never made solid, and read against the green beside it</td></tr>
+<tr><td>paler colour</td><td>tier: a self-reported event is drawn pale, an attested one slightly less, a measured one at full saturation; the level is the same at every tier</td></tr>
+<tr><td>brightness</td><td>a level in [0, 1] per domain and channel: imprints (weight x decay, 15-year half-life) add, then a saturating tone map anchored so a regular 40-year-old's typical touched domain is mid-brightness; absolute across people, a claim imprints the level it claims</td></tr>"""
 LEGEND_LEGACY = """<tr><td><span class=sw style="background:#f00"></span>red</td><td>potential: predicted expertise and impact, self-assessment included</td></tr>
 <tr><td><span class=sw style="background:#0f0"></span>green</td><td>expertise: what was done and engaged with (form, content)</td></tr>
 <tr><td><span class=sw style="background:#00f"></span>blue</td><td>impact: what changed (outcome)</td></tr>
@@ -64,6 +65,7 @@ def feature_line(f):
     return (f'R {100 * f["share_red"]:.0f}% G {100 * f["share_green"]:.0f}% B {100 * f["share_blue"]:.0f}%<br>'
             f'grainy red {100 * f["red_grain_share"]:.0f}% &middot; dimmed {100 * f["dimmed_share"]:.0f}%<br>'
             f'clusters {f["n_clusters"]} &middot; spread {f["spread_entropy"]:.2f} &middot; lum {f["luminance"]:.3f}<br>'
+            f'{"claim gap %+.2f" % f["claim_gap"] if f["claim_gap"] == f["claim_gap"] else "no claims"} &middot; typical level {f["typical_level"]:.2f}<br>'
             f'top arcs {escape(", ".join(f"{k} {100 * v:.0f}%" for v, k in arcs))}')
 
 
@@ -81,7 +83,7 @@ def contact_html(ents, bm, total_bytes, feats=None, legacy=False):
         cells.append("</div>")
     notes = "".join(f"<li>{escape(n)}</li>" for n in bm.notes)
     return f"""<!doctype html>
-<html lang=en><meta charset=utf-8><title>Life Image {"v0 legacy" if legacy else "v1"}: contact sheet</title>
+<html lang=en><meta charset=utf-8><title>Life Image {"v0 legacy" if legacy else "v2"}: contact sheet</title>
 <style>
 body{{background:#101010;color:#ddd;font:14px/1.4 sans-serif;margin:1.5rem}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem}}
@@ -89,7 +91,7 @@ figure{{margin:0;background:#000;padding:.4rem;border:1px solid #222}} img{{widt
 figcaption{{font-size:12px;color:#aaa;padding-top:.3rem}} .sw{{display:inline-block;width:1em;height:1em;vertical-align:-.15em;margin-right:.4em}}
 td,th{{padding:.15rem .8rem .15rem 0;text-align:left;vertical-align:top}} h1,h2{{font-weight:600}} a{{color:#8ab}}
 </style>
-<h1>Life Image {"v0 (legacy projection)" if legacy else "v1 (levels and channel split)"}: predicted/measured</h1>
+<h1>Life Image {"v0 (legacy projection)" if legacy else "v2 (levels, grain for potential only, anchored scale)"}: predicted/measured</h1>
 <p>Basemap {escape(bm.version)}. {len(ents)} entities, all synthetic or public figures. SVG total {total_bytes / 1e6:.1f} MB.</p>
 <h2>Legend</h2>
 <table>
@@ -137,4 +139,4 @@ if __name__ == "__main__":
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--legacy", action="store_true", help="draw the earlier projection (summed magnitudes on a log scale)")
     a = ap.parse_args()
-    main(a.out or ROOT / ("data/images/v0" if a.legacy else "data/images/v1"), a.legacy)
+    main(a.out or ROOT / ("data/images/v0" if a.legacy else "data/images/v2"), a.legacy)

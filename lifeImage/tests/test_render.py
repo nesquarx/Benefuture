@@ -180,12 +180,13 @@ def test_unknown_domain_is_rejected():
         im.channel_values([done_row("c.nope", 1.0)], cards())
 
 
-def test_claimed_tier_goes_to_the_claimed_layer_and_attested_to_the_solid_layer():
-    cv = im.channel_values([done_row("c.sleep", 1.0, tier="claimed"), done_row("c.physics", 1.0, tier="attested"),
-                            done_row("c.eldercare", 1.0, tier="measured")], cards())
-    assert "c.sleep" in colour_domains({"x": cv["claimed"]}) and "c.sleep" not in colour_domains({"x": cv["solid"]})
-    assert {"c.physics", "c.eldercare"} <= colour_domains({"x": cv["solid"]})
-    assert "c.physics" not in colour_domains({"x": cv["claimed"]})
+def test_every_tier_goes_to_the_solid_layer_and_only_predictions_make_grain():
+    done = im.channel_values([done_row("c.sleep", 1.0, tier="claimed"), done_row("c.physics", 1.0, tier="attested"),
+                              done_row("c.eldercare", 1.0, tier="measured")], cards())
+    assert {"c.sleep", "c.physics", "c.eldercare"} <= colour_domains({"x": done["solid"]})
+    assert colour_domains({"x": done.get("claimed", {})}) == set()
+    guess = im.channel_values([prediction_row("c.sleep", 0.8)], cards())
+    assert "c.sleep" in colour_domains({"x": guess["claimed"]}) and colour_domains({"x": guess.get("solid", {})}) == set()
 
 
 def test_older_rows_are_dimmed_by_the_half_life():
@@ -235,11 +236,21 @@ def test_same_input_gives_byte_identical_svg():
     assert render(e, bm).encode() == render(e, bm).encode()
 
 
-def test_claimed_contributions_are_drawn_with_grain_and_attested_ones_are_not():
+def test_grain_is_drawn_for_predictions_only_and_a_claimed_event_is_drawn_solid_but_pale():
     bm, _ = world()
     claimed = im.render_svg("c", im.channel_values([done_row("c.sleep", 1.0, tier="claimed")], cards()), bm)
-    solid = im.render_svg("s", im.channel_values([done_row("c.sleep", 1.0, tier="attested")], cards()), bm)
-    assert 'mask="url(#grain)"' in claimed and 'mask="url(#grain)"' not in solid
+    measured = im.render_svg("s", im.channel_values([done_row("c.sleep", 1.0, tier="measured")], cards()), bm)
+    guess = im.render_svg("p", im.channel_values([prediction_row("c.sleep", 0.8)], cards()), bm)
+    assert 'mask="url(#grain)"' not in claimed and 'mask="url(#grain)"' not in measured
+    assert 'mask="url(#grain)"' in guess
+
+    def fill(svg):
+        root = ET.fromstring(svg)
+        w = next(el for el in root.iter() if el.get("id") == "wedges")
+        f = next(p.get("fill") for p in w if p.find("{http://www.w3.org/2000/svg}title") is not None and p.find("{http://www.w3.org/2000/svg}title").text == "c.sleep")
+        return tuple(int(f[i:i + 2], 16) for i in (1, 3, 5))
+    sat = lambda c: (max(c) - min(c)) / max(c)
+    assert sat(fill(claimed)) < sat(fill(measured)) - 0.2
 
 
 def test_a_claimed_colour_is_less_saturated_than_the_same_attested_colour():

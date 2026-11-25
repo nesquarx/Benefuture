@@ -20,9 +20,9 @@ SIGS = ROOT / "data/gold/characterisation_signatures_v1.json"
 SIGS_SHA = "a0663d12af98743d6e5a88f48bab1fa97da0627d236070a74b7c28b5853478fd"
 
 
-def sl(id, start, width, solid=(0, 0, 0), claimed=(0, 0, 0), ring="field", newest=None):
+def sl(id, start, width, solid=(0, 0, 0), claimed=(0, 0, 0), ring="field", newest=None, sat=1.0, touched=False):
     r0, r1 = (0.44, 0.96) if ring == "field" else (0.16, 0.42)
-    return ch.Slice(id, ring, start, width, r0, r1, tuple(solid), tuple(claimed), newest)
+    return ch.Slice(id, ring, start, width, r0, r1, tuple(solid), tuple(claimed), newest, sat, touched)
 
 
 def state(slices, asof=20000):
@@ -278,4 +278,119 @@ def test_the_report_tool_is_deterministic(tmp_path):
     mod.main(tmp_path / "b")
     assert (tmp_path / "a.json").read_bytes() == (tmp_path / "b.json").read_bytes()
     assert (tmp_path / "a.md").read_text(encoding="utf-8").count("**held**") + (tmp_path / "a.md").read_text(encoding="utf-8").count("**not held**") + \
-        (tmp_path / "a.md").read_text(encoding="utf-8").count("**inconclusive**") == len(json.loads(SIGS.read_text(encoding="utf-8"))["signatures"])
+        (tmp_path / "a.md").read_text(encoding="utf-8").count("**inconclusive**") == len(ch.load_signatures())
+    assert "Predicted blind identification" in (tmp_path / "a.md").read_text(encoding="utf-8")
+
+
+# ---------- version 2: tier as saturation, claimed potential against demonstrated skill, the anchored scale ----------
+
+def test_a_pale_slice_has_less_chroma_than_the_same_levels_drawn_at_full_saturation():
+    full = ch.features(state(ring(solid=(0.8, 0.0, 0.0))))
+    pale = ch.features(state(ring(solid=(0.8, 0.0, 0.0), sat=0.5)))
+    assert full["chroma"] == pytest.approx(1.0) and pale["chroma"] == pytest.approx(0.75)
+    assert pale["luminance"] > 0 and pale["share_red"] < full["share_red"]
+
+
+def sl2(id, start, width, solid=(0, 0, 0), claimed=(0, 0, 0), sat=1.0, touched=False, ring_="field", newest=None):
+    r0, r1 = (0.44, 0.96) if ring_ == "field" else (0.16, 0.42)
+    return ch.Slice(id, ring_, start, width, r0, r1, tuple(solid), tuple(claimed), newest, sat, touched)
+
+
+def test_the_claim_gap_is_claimed_potential_minus_demonstrated_skill_in_the_domains_claimed():
+    over = ch.features(state([sl2(f"f{i}", i * 10, 10, solid=(0, 0.3, 0), claimed=(0.8, 0, 0)) for i in range(36)]))
+    assert over["claim_gap"] == pytest.approx(0.5) and over["claim_gap_abs"] == pytest.approx(0.5)
+    assert over["grain_green_share"] == pytest.approx(0.8 / 1.1) and over["mean_claimed_level"] == pytest.approx(0.8)
+    assert over["overclaim_share"] == pytest.approx(1.0) and over["underclaim_share"] == pytest.approx(0.0)
+    assert over["grain_cover"] == pytest.approx(1.0) and over["n_claimed_slices"] == 36
+    under = ch.features(state([sl2(f"f{i}", i * 10, 10, solid=(0, 0.7, 0), claimed=(0.2, 0, 0)) for i in range(36)]))
+    assert under["claim_gap"] == pytest.approx(-0.5) and under["underclaim_share"] == pytest.approx(1.0) and under["overclaim_share"] == 0.0
+    honest = ch.features(state([sl2(f"f{i}", i * 10, 10, solid=(0, 0.5, 0), claimed=(0.52, 0, 0)) for i in range(36)]))
+    assert abs(honest["claim_gap"]) < 0.05 and honest["overclaim_share"] == 0.0 and honest["underclaim_share"] == 0.0
+
+
+def test_claim_features_are_undefined_without_a_claim_and_grain_cover_is_zero():
+    f = ch.features(state(ring(solid=(0.5, 0.5, 0.0))))
+    assert f["n_claimed_slices"] == 0 and f["grain_cover"] == 0.0
+    for k in ("claim_gap", "claim_gap_abs", "grain_green_share", "mean_claimed_level", "overclaim_share", "claim_gap_low_green"):
+        assert math.isnan(f[k]), k
+
+
+def test_the_gap_is_split_by_demonstrated_skill_low_green_against_high_green():
+    sls = [sl2("a", 0, 10, solid=(0, 0.1, 0), claimed=(0.7, 0, 0)), sl2("b", 10, 10, solid=(0, 0.8, 0), claimed=(0.6, 0, 0)),
+           sl2("c", 20, 10, solid=(0, 0.45, 0), claimed=(0.5, 0, 0))]
+    f = ch.features(state(sls))
+    assert f["claim_gap_low_green"] == pytest.approx(0.6) and f["claim_gap_high_green"] == pytest.approx(-0.2)
+
+
+def test_typical_level_is_the_median_strongest_solid_level_over_touched_field_slices():
+    sls = [sl2("a", 0, 10, solid=(0.2, 0, 0), touched=True), sl2("b", 10, 10, solid=(0, 0.5, 0.1), touched=True),
+           sl2("c", 20, 10, solid=(0.9, 0, 0), touched=True), sl2("d", 30, 10, solid=(0.05, 0, 0), touched=False)]  # d is bleed, not touched
+    assert ch.features(state(sls))["typical_level"] == pytest.approx(0.5)
+    assert math.isnan(ch.features(state(ring(solid=(0.5, 0, 0))))["typical_level"])
+
+
+def test_through_the_pipeline_an_over_claim_shows_as_a_positive_gap_and_an_honest_one_does_not():
+    from conftest import make_row, membership
+    D = "c.physics"
+    done = make_row(channel="positive", memberships=[membership(D, r) for r in ("form", "content", "outcome")], magnitude=0.05, valid_time="2026-11",
+                    tier="attested", relation="causal", production="produced")
+    def claim(level):
+        return make_row(channel="prediction", memberships=[membership(D, "form"), membership(D, "content")], magnitude=level, valid_time="2026-11", tier="claimed")
+    gap = lambda rows: ch.features(ch.image_state(rows, ch.world_basemap(), "2026-11-24"))["claim_gap"]
+    g_green = ch.features(ch.image_state([done], ch.world_basemap(), "2026-11-24"))
+    assert math.isnan(g_green["claim_gap"])
+    assert gap([done, claim(0.95)]) > 0.3 and gap([done, claim(0.1)]) < -0.1
+    assert gap([done, claim(0.95)]) > gap([done, claim(0.5)]) > gap([done, claim(0.1)])
+
+
+def test_a_resume_of_claimed_events_has_no_grain_and_a_persona_with_self_assessments_does():
+    p = ch.starter_personas()[0]
+    resume = ch.starter_rows("resume")[p["id"]]
+    truth = ch.starter_rows("truth")[p["id"]]
+    assert ch.features(ch.image_state(resume, ch.world_basemap(), p["as_of"]))["grain_cover"] == 0.0
+    assert ch.features(ch.image_state(truth, ch.world_basemap(), p["as_of"]))["grain_cover"] > 0.0
+
+
+def test_paired_verdict_decides_by_the_interval_of_the_paired_differences():
+    rng = random.Random(3)
+    big = [0.4 + rng.gauss(0, 0.1) for _ in range(30)]
+    assert ch.paired_verdict(big, ">", 0.2)["verdict"] == "held"
+    assert ch.paired_verdict(big, "<", 0.2)["verdict"] == "not held"
+    assert ch.paired_verdict([0.01 + rng.gauss(0, 0.02) for _ in range(40)], ">", 0.2)["verdict"] == "not held"
+    assert ch.paired_verdict([0.5, -0.4, 0.3], ">", 0.1)["verdict"] == "inconclusive"
+    assert ch.paired_verdict([], ">", 0.1)["verdict"] == "inconclusive"
+
+
+def test_evaluate_signatures_handles_paired_sets_band_stat_and_paired_features():
+    recs_a = [{"id": f"p{i}", "archetype": "x", "calibration": "well", "age": 40, "chroma": 0.9 + 0.01 * (i % 3), "f": 0.5, "g": 0.1 + 0.01 * (i % 4)} for i in range(12)]
+    recs_b = [{**r, "chroma": r["chroma"] - 0.3} for r in recs_a]
+    sigs = [
+        {"id": "P1", "kind": "paired_sets", "statement": "s", "feature": "chroma", "sets": ["b", "a"], "direction": "<", "delta": 0.1, "confidence": "low"},
+        {"id": "B1", "kind": "band_stat", "statement": "s", "feature": "f", "stat": "median", "subset": {"age_min": 36, "age_max": 44}, "lo": 0.4, "hi": 0.6, "confidence": "low"},
+        {"id": "B2", "kind": "band_stat", "statement": "s", "feature": "f", "stat": "mean", "set": "b", "lo": 0.0, "hi": 0.2, "confidence": "low"},
+        {"id": "F1", "kind": "paired", "statement": "s", "a": "f", "b": "g", "direction": ">", "delta": 0.3, "confidence": "low"},
+        {"id": "F2", "kind": "paired", "statement": "s", "a": "g", "b": 0, "direction": "<", "delta": 0.01, "confidence": "low"},
+    ]
+    out = {v["id"]: v for v in ch.evaluate_signatures(sigs, recs_a, None, sets={"a": recs_a, "b": recs_b})}
+    assert out["P1"]["verdict"] == "held" and out["B1"]["verdict"] == "held" and out["B2"]["verdict"] == "not held"
+    assert out["F1"]["verdict"] == "held" and out["F2"]["verdict"] == "not held"  # g is positive: the wrong way round
+
+
+def test_identification_verdict_for_a_minimum_and_a_maximum_follows_the_wilson_interval():
+    assert ch.identification_verdict("min", 0.6, 70, 100)["verdict"] == "held"
+    assert ch.identification_verdict("min", 0.6, 40, 100)["verdict"] == "not held"
+    assert ch.identification_verdict("min", 0.6, 55, 100)["verdict"] == "inconclusive"
+    assert ch.identification_verdict("max", 0.4, 30, 100)["verdict"] == "held"
+    assert ch.identification_verdict("max", 0.4, 60, 100)["verdict"] == "not held"
+    assert ch.identification_verdict("max", 0.4, 45, 100)["verdict"] == "inconclusive"
+
+
+def test_every_v2_signature_names_a_feature_the_battery_computes_and_load_signatures_reads_it():
+    data = json.loads((ROOT / "data/gold/characterisation_signatures_v2.json").read_text(encoding="utf-8"))
+    names = ch.feature_names()
+    for s in data["signatures"]:
+        for f in [s.get("feature"), s.get("a"), s.get("b")]:
+            if isinstance(f, str):
+                assert f in names or f.startswith(("arc_share:", "gb_in:")) or f.startswith("pooled_"), (s["id"], f)
+    assert set(data["identification_features_added"]) <= names
+    assert [s["id"] for s in ch.load_signatures()] == [s["id"] for s in data["signatures"]]
