@@ -89,6 +89,13 @@ deleted. Numbering is stable (LI.n).
   neighbours, and a coarse level is the re-saturated sum of its children and its own imprints (luminosities add, the tone map
   applies once), so a field holds a fine imprint whole, once. Fine domains are placed once inside their main parent's arc in outer
   rings and no coarse arc moves. The tone constant is re-derived on the coarse aggregate (0.15862, LI.39 rule unchanged). DESIGN.
+- **LI.52** (2026-11-25) Detail follows resolution. At any view, enough basemap detail loads for the colouring to be
+  full detail at that pixel resolution: a 200 by 200 disc loads simpler than a 4k by 4k one; zooming keeps adding
+  detail as available and required, down to all that exists. Online and offline versions, each self-contained at a
+  raster and a vector level, both recalibrating to new basemaps as released. Mechanism (lead proposal): a tiled vector
+  basemap (map-tile pyramid; MVT/PMTiles candidate) carrying domain ids only, coloured from a per-entity levels file
+  joined at view time; a slice too narrow to show at the current resolution is drawn as its parent, whose level already
+  aggregates it (LI.51). DESIGN, PLAN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 
