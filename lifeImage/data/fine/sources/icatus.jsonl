@@ -1,0 +1,221 @@
+{"aliases": [], "broader": "Employment and related activities", "code": "11", "description": "", "label": "Employment in corporations, government and non-profit institutions"}
+{"aliases": [], "broader": "Employment in corporations, government and non-profit institutions", "code": "110", "description": "", "label": "Employment in corporations, government and non-profit institutions"}
+{"aliases": [], "broader": "Employment and related activities", "code": "12", "description": "", "label": "Employment in household enterprises to produce goods"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "121", "description": "", "label": "Growing of crops for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "122", "description": "", "label": "Raising of animals for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "123", "description": "", "label": "Forestry and logging for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "124", "description": "", "label": "Fishing for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "125", "description": "", "label": "Aquaculture for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "126", "description": "", "label": "Mining and quarrying for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "127", "description": "", "label": "Making and processing of goods for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "128", "description": "", "label": "Construction activities for the market in household enterprises"}
+{"aliases": [], "broader": "Employment in household enterprises to produce goods", "code": "129", "description": "", "label": "Other activities related to employment in household enterprises to produce goods"}
+{"aliases": [], "broader": "Employment and related activities", "code": "13", "description": "", "label": "Employment in households and household enterprises to provide services"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "131", "description": "", "label": "Vending and trading of goods in household enterprises"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "132", "description": "", "label": "Providing paid repair, installation, maintenance and disposal services in households and household enterprises"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "133", "description": "", "label": "Providing paid business and professional services in households and household enterprises"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "134", "description": "", "label": "Transporting goods and passengers for pay or profit in households and household enterprises"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "135", "description": "", "label": "Providing paid personal care services in households and household enterprises"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "136", "description": "", "label": "Providing paid domestic services"}
+{"aliases": [], "broader": "Employment in households and household enterprises to provide services", "code": "139", "description": "", "label": "Other activities related to employment in households and household enterprises providing services"}
+{"aliases": [], "broader": "Employment and related activities", "code": "14", "description": "", "label": "Ancillary activities and breaks related to employment"}
+{"aliases": [], "broader": "Ancillary activities and breaks related to employment", "code": "141", "description": "", "label": "Activities ancillary to employment"}
+{"aliases": [], "broader": "Ancillary activities and breaks related to employment", "code": "142", "description": "", "label": "Breaks during working time within employment"}
+{"aliases": [], "broader": "Employment and related activities", "code": "15", "description": "", "label": "Training and studies in relation to employment"}
+{"aliases": [], "broader": "Training and studies in relation to employment", "code": "150", "description": "", "label": "Training and studies in relation to employment"}
+{"aliases": [], "broader": "Employment and related activities", "code": "16", "description": "", "label": "Seeking employment"}
+{"aliases": [], "broader": "Seeking employment", "code": "160", "description": "", "label": "Seeking employment"}
+{"aliases": [], "broader": "Employment and related activities", "code": "17", "description": "", "label": "Setting up a business"}
+{"aliases": [], "broader": "Setting up a business", "code": "170", "description": "", "label": "Setting up a business"}
+{"aliases": [], "broader": "Employment and related activities", "code": "18", "description": "", "label": "Travelling and commuting for employment"}
+{"aliases": [], "broader": "Travelling and commuting for employment", "code": "181", "description": "", "label": "Employment-related travel"}
+{"aliases": [], "broader": "Travelling and commuting for employment", "code": "182", "description": "", "label": "Commuting"}
+{"aliases": [], "broader": "Production of goods for own final use", "code": "21", "description": "", "label": "Agriculture, forestry, fishing and mining for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "211", "description": "", "label": "Growing of crops and kitchen gardening for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "212", "description": "", "label": "Farming of animals and production of animal products for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "213", "description": "", "label": "Hunting, trapping and production of animal skins for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "214", "description": "", "label": "Forestry and logging for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "215", "description": "", "label": "Gathering wild products for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "216", "description": "", "label": "Fishing for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "217", "description": "", "label": "Aquaculture for own final use"}
+{"aliases": [], "broader": "Agriculture, forestry, fishing and mining for own final use", "code": "218", "description": "", "label": "Mining and quarrying for own final use"}
+{"aliases": [], "broader": "Production of goods for own final use", "code": "22", "description": "", "label": "Making and processing goods for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "221", "description": "", "label": "Making, processing food products, beverages and tobacco for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "222", "description": "", "label": "Making, processing textiles, wearing apparel, leather and related products for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "223", "description": "", "label": "Making, processing of wood and bark products for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "224", "description": "", "label": "Making, processing bricks, concrete slabs, hollow blocks and tiles for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "225", "description": "", "label": "Making, processing herbal and medicinal preparations for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "226", "description": "", "label": "Making, processing metals and metal products for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "227", "description": "", "label": "Making, processing of products using other materials for own final use"}
+{"aliases": [], "broader": "Making and processing goods for own final use", "code": "229", "description": "", "label": "Acquiring supplies, disposing of products, and other activities related to making and processing goods for own final use"}
+{"aliases": [], "broader": "Production of goods for own final use", "code": "23", "description": "", "label": "Construction activities for own final use"}
+{"aliases": [], "broader": "Construction activities for own final use", "code": "230", "description": "", "label": "Construction activities for own final use"}
+{"aliases": [], "broader": "Production of goods for own final use", "code": "24", "description": "", "label": "Supplying water and fuel for own household or for own final use"}
+{"aliases": [], "broader": "Supplying water and fuel for own household or for own final use", "code": "241", "description": "", "label": "Gathering firewood and other natural products used as fuel for own final use"}
+{"aliases": [], "broader": "Supplying water and fuel for own household or for own final use", "code": "242", "description": "", "label": "Fetching water from natural and other sources for own final use"}
+{"aliases": [], "broader": "Production of goods for own final use", "code": "25", "description": "", "label": "Travelling, moving, transporting or accompanying goods or persons related to own-use production of goods"}
+{"aliases": [], "broader": "Travelling, moving, transporting or accompanying goods or persons related to own-use production of goods", "code": "250", "description": "", "label": "Travelling, moving, transporting or accompanying goods or persons related to own-use production of goods"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "31", "description": "", "label": "Food and meals management and preparation"}
+{"aliases": [], "broader": "Food and meals management and preparation", "code": "311", "description": "", "label": "Preparing meals/snacks"}
+{"aliases": [], "broader": "Food and meals management and preparation", "code": "312", "description": "", "label": "Serving meals/snacks"}
+{"aliases": [], "broader": "Food and meals management and preparation", "code": "313", "description": "", "label": "Cleaning up after food preparation/meals/snacks"}
+{"aliases": [], "broader": "Food and meals management and preparation", "code": "314", "description": "", "label": "Storing, arranging, preserving food stocks"}
+{"aliases": [], "broader": "Food and meals management and preparation", "code": "319", "description": "", "label": "Other activities related to food and meals management and preparation"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "32", "description": "", "label": "Cleaning and maintaining of own dwelling and surroundings"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "321", "description": "", "label": "Indoor cleaning"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "322", "description": "", "label": "Outdoor cleaning"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "323", "description": "", "label": "Recycling and disposal of garbage"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "324", "description": "", "label": "Upkeep of indoor/outdoor plants, hedges, garden, grounds, landscape, and so on"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "325", "description": "", "label": "Tending furnace, boiler, fireplace for heating and water supply"}
+{"aliases": [], "broader": "Cleaning and maintaining of own dwelling and surroundings", "code": "329", "description": "", "label": "Other activities related to cleaning and upkeep of dwelling and surroundings"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "33", "description": "", "label": "Do-it-yourself decoration, maintenance and repair"}
+{"aliases": [], "broader": "Do-it-yourself decoration, maintenance and repair", "code": "331", "description": "", "label": "Do-it-yourself improvement, maintenance and repair of own dwelling"}
+{"aliases": [], "broader": "Do-it-yourself decoration, maintenance and repair", "code": "332", "description": "", "label": "Installation, servicing and repair of personal and household goods, including ICT equipment"}
+{"aliases": [], "broader": "Do-it-yourself decoration, maintenance and repair", "code": "333", "description": "", "label": "Vehicle maintenance and repairs"}
+{"aliases": [], "broader": "Do-it-yourself decoration, maintenance and repair", "code": "339", "description": "", "label": "Other activities related to do-it-yourself decoration, maintenance and repair"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "34", "description": "", "label": "Care and maintenance of textiles and footwear"}
+{"aliases": [], "broader": "Care and maintenance of textiles and footwear", "code": "341", "description": "", "label": "Hand/machine washing"}
+{"aliases": [], "broader": "Care and maintenance of textiles and footwear", "code": "342", "description": "", "label": "Drying, hanging out, bringing in wash"}
+{"aliases": [], "broader": "Care and maintenance of textiles and footwear", "code": "343", "description": "", "label": "Ironing, pressing and folding"}
+{"aliases": [], "broader": "Care and maintenance of textiles and footwear", "code": "344", "description": "", "label": "Mending or repairing and care of clothes and shoes; cleaning and polishing shoes"}
+{"aliases": [], "broader": "Care and maintenance of textiles and footwear", "code": "349", "description": "", "label": "Other activities related to care of textiles and footwear"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "35", "description": "", "label": "Household management for own final use"}
+{"aliases": [], "broader": "Household management for own final use", "code": "351", "description": "", "label": "Paying household bills"}
+{"aliases": [], "broader": "Household management for own final use", "code": "352", "description": "", "label": "Budgeting, planning, organizing duties and activities in the household"}
+{"aliases": [], "broader": "Household management for own final use", "code": "359", "description": "", "label": "Other activities related to household management"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "36", "description": "", "label": "Pet care"}
+{"aliases": [], "broader": "Pet care", "code": "361", "description": "", "label": "Daily pet care"}
+{"aliases": [], "broader": "Pet care", "code": "362", "description": "", "label": "Using veterinary care or other pet care services (grooming, stabling and holiday or day care)"}
+{"aliases": [], "broader": "Pet care", "code": "369", "description": "", "label": "Other activities related to pet care"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "37", "description": "", "label": "Shopping for own household and family members"}
+{"aliases": [], "broader": "Shopping for own household and family members", "code": "371", "description": "", "label": "Shopping for/purchasing of goods and related activities"}
+{"aliases": [], "broader": "Shopping for own household and family members", "code": "372", "description": "", "label": "Shopping for/availing of services and related activity"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "38", "description": "", "label": "Travelling, moving, transporting or accompanying goods or persons related to unpaid domestic services for household and family members"}
+{"aliases": [], "broader": "Travelling, moving, transporting or accompanying goods or persons related to unpaid domestic services for household and family members", "code": "380", "description": "", "label": "Travelling, moving, transporting or accompanying goods or persons related to unpaid domestic services for household and family members"}
+{"aliases": [], "broader": "Unpaid domestic services for household and family members", "code": "39", "description": "", "label": "Other unpaid domestic services for household and family members"}
+{"aliases": [], "broader": "Other unpaid domestic services for household and family members", "code": "390", "description": "", "label": "Other unpaid domestic services for household and family members"}
+{"aliases": [], "broader": "Unpaid caregiving services for household and family members", "code": "41", "description": "", "label": "Childcare and instruction"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "411", "description": "", "label": "Caring for children including feeding, cleaning and providing physical care"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "412", "description": "", "label": "Providing medical care to children"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "413", "description": "", "label": "Instructing, teaching, training and helping children"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "414", "description": "", "label": "Talking with and reading to children"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "415", "description": "", "label": "Playing and sports with children"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "416", "description": "", "label": "Minding children (passive care)"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "417", "description": "", "label": "Meetings and arrangements with schools and childcare service providers"}
+{"aliases": [], "broader": "Childcare and instruction", "code": "419", "description": "", "label": "Other activities related to childcare and instruction"}
+{"aliases": [], "broader": "Unpaid caregiving services for household and family members", "code": "42", "description": "", "label": "Care for dependent adults"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "421", "description": "", "label": "Assisting dependent adults with tasks of daily living"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "422", "description": "", "label": "Assisting dependent adults with medical care"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "423", "description": "", "label": "Assisting dependent adults with forms, administration and accounts"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "424", "description": "", "label": "Affective/emotional support for dependent adults"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "425", "description": "", "label": "Passive care of dependent adults"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "426", "description": "", "label": "Meetings and arrangements with adult care service providers"}
+{"aliases": [], "broader": "Care for dependent adults", "code": "429", "description": "", "label": "Other activities related to care for dependent adults"}
+{"aliases": [], "broader": "Unpaid caregiving services for household and family members", "code": "43", "description": "", "label": "Help to non-dependent adult household and family members"}
+{"aliases": [], "broader": "Help to non-dependent adult household and family members", "code": "431", "description": "", "label": "Feeding, cleaning, physical care for non-dependent adult household and family members, including for temporary illness"}
+{"aliases": [], "broader": "Help to non-dependent adult household and family members", "code": "432", "description": "", "label": "Affective/emotional support for non-dependent adult household and family members"}
+{"aliases": [], "broader": "Help to non-dependent adult household and family members", "code": "439", "description": "", "label": "Other activities related to care for non-dependent adult household and family members"}
+{"aliases": [], "broader": "Unpaid caregiving services for household and family members", "code": "44", "description": "", "label": "Travelling and accompanying goods or persons related to unpaid caregiving services for household and family members"}
+{"aliases": [], "broader": "Travelling and accompanying goods or persons related to unpaid caregiving services for household and family members", "code": "441", "description": "", "label": "Travelling related to caregiving services for household and family members"}
+{"aliases": [], "broader": "Travelling and accompanying goods or persons related to unpaid caregiving services for household and family members", "code": "442", "description": "", "label": "Accompanying own children"}
+{"aliases": [], "broader": "Travelling and accompanying goods or persons related to unpaid caregiving services for household and family members", "code": "443", "description": "", "label": "Accompanying dependent adults"}
+{"aliases": [], "broader": "Travelling and accompanying goods or persons related to unpaid caregiving services for household and family members", "code": "444", "description": "", "label": "Accompanying non-dependent adult household and family members"}
+{"aliases": [], "broader": "Unpaid caregiving services for household and family members", "code": "49", "description": "", "label": "Other activities related to unpaid caregiving services for household and family members"}
+{"aliases": [], "broader": "Other activities related to unpaid caregiving services for household and family members", "code": "490", "description": "", "label": "Other activities related to unpaid caregiving services for household and family members"}
+{"aliases": [], "broader": "Unpaid volunteer, trainee and other unpaid work", "code": "51", "description": "", "label": "Unpaid direct volunteering for other households"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "511", "description": "", "label": "Unpaid volunteer household maintenance, management, construction, renovation and repair"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "512", "description": "", "label": "Unpaid volunteer shopping/purchasing goods and services"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "513", "description": "", "label": "Unpaid volunteer childcare and instruction"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "514", "description": "", "label": "Unpaid volunteer care for adults"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "515", "description": "", "label": "Unpaid volunteer help in enterprises owned by other households"}
+{"aliases": [], "broader": "Unpaid direct volunteering for other households", "code": "519", "description": "", "label": "Other activities related to direct unpaid volunteering for other households"}
+{"aliases": [], "broader": "Unpaid volunteer, trainee and other unpaid work", "code": "52", "description": "", "label": "Unpaid community- and organization-based volunteering"}
+{"aliases": [], "broader": "Unpaid community- and organization-based volunteering", "code": "521", "description": "", "label": "Unpaid volunteer work on road/building repair, clearing and preparing land, cleaning (streets, markets, etc.) and construction"}
+{"aliases": [], "broader": "Unpaid community- and organization-based volunteering", "code": "522", "description": "", "label": "Unpaid volunteer preparing/serving meals, cleaning up"}
+{"aliases": [], "broader": "Unpaid community- and organization-based volunteering", "code": "523", "description": "", "label": "Unpaid volunteer cultural activities, recreation and sports activities"}
+{"aliases": [], "broader": "Unpaid community- and organization-based volunteering", "code": "524", "description": "", "label": "Unpaid volunteer office/administrative work"}
+{"aliases": [], "broader": "Unpaid community- and organization-based volunteering", "code": "529", "description": "", "label": "Other activities related to community- and organization-based unpaid volunteering"}
+{"aliases": [], "broader": "Unpaid volunteer, trainee and other unpaid work", "code": "53", "description": "", "label": "Unpaid trainee work and related activities"}
+{"aliases": [], "broader": "Unpaid trainee work and related activities", "code": "530", "description": "", "label": "Unpaid trainee work and related activities"}
+{"aliases": [], "broader": "Unpaid volunteer, trainee and other unpaid work", "code": "54", "description": "", "label": "Travelling time related to unpaid volunteer, trainee and other unpaid work"}
+{"aliases": [], "broader": "Travelling time related to unpaid volunteer, trainee and other unpaid work", "code": "540", "description": "", "label": "Travelling time related to unpaid volunteer, trainee and other unpaid work"}
+{"aliases": [], "broader": "Unpaid volunteer, trainee and other unpaid work", "code": "59", "description": "", "label": "Other unpaid work activities"}
+{"aliases": [], "broader": "Other unpaid work activities", "code": "590", "description": "", "label": "Other unpaid work activities"}
+{"aliases": [], "broader": "Learning", "code": "61", "description": "", "label": "Formal education"}
+{"aliases": [], "broader": "Formal education", "code": "611", "description": "", "label": "School/university attendance"}
+{"aliases": [], "broader": "Formal education", "code": "612", "description": "", "label": "Extracurricular activities"}
+{"aliases": [], "broader": "Formal education", "code": "613", "description": "", "label": "Breaks at place of formal education"}
+{"aliases": [], "broader": "Formal education", "code": "614", "description": "", "label": "Self-study for distance education course work (video, audio, online)"}
+{"aliases": [], "broader": "Formal education", "code": "619", "description": "", "label": "Other activities related to formal education"}
+{"aliases": [], "broader": "Learning", "code": "62", "description": "", "label": "Homework, being tutored, course review, research and activities related to formal education"}
+{"aliases": [], "broader": "Homework, being tutored, course review, research and activities related to formal education", "code": "620", "description": "", "label": "Homework, being tutored, course review, research and activities related to formal education"}
+{"aliases": [], "broader": "Learning", "code": "63", "description": "", "label": "Additional study, non-formal education and courses"}
+{"aliases": [], "broader": "Additional study, non-formal education and courses", "code": "630", "description": "", "label": "Additional study, non-formal education and courses"}
+{"aliases": [], "broader": "Learning", "code": "64", "description": "", "label": "Travelling time related to learning"}
+{"aliases": [], "broader": "Travelling time related to learning", "code": "640", "description": "", "label": "Travelling time related to learning"}
+{"aliases": [], "broader": "Learning", "code": "69", "description": "", "label": "Other activities related to learning"}
+{"aliases": [], "broader": "Other activities related to learning", "code": "690", "description": "", "label": "Other activities related to learning"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "71", "description": "", "label": "Socializing and communication"}
+{"aliases": [], "broader": "Socializing and communication", "code": "711", "description": "", "label": "Talking, conversing, chatting"}
+{"aliases": [], "broader": "Socializing and communication", "code": "712", "description": "", "label": "Socializing, getting together and gathering activities"}
+{"aliases": [], "broader": "Socializing and communication", "code": "713", "description": "", "label": "Reading and writing mail (including email)"}
+{"aliases": [], "broader": "Socializing and communication", "code": "719", "description": "", "label": "Other activities related to socializing and communication"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "72", "description": "", "label": "Participating in community cultural/social events"}
+{"aliases": [], "broader": "Participating in community cultural/social events", "code": "721", "description": "", "label": "Participating in community celebrations of cultural and historic events"}
+{"aliases": [], "broader": "Participating in community cultural/social events", "code": "722", "description": "", "label": "Participating in community rites/events (non-religious) of weddings, funerals, births and similar rites of passage"}
+{"aliases": [], "broader": "Participating in community cultural/social events", "code": "723", "description": "", "label": "Participating in community social functions (music, dance, etc.)"}
+{"aliases": [], "broader": "Participating in community cultural/social events", "code": "729", "description": "", "label": "Other activities related to community participation"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "73", "description": "", "label": "Involvement in civic and related responsibilities"}
+{"aliases": [], "broader": "Involvement in civic and related responsibilities", "code": "730", "description": "", "label": "Involvement in civic and related responsibilities"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "74", "description": "", "label": "Religious practices"}
+{"aliases": [], "broader": "Religious practices", "code": "741", "description": "", "label": "Private prayer, meditation and other spiritual activities"}
+{"aliases": [], "broader": "Religious practices", "code": "742", "description": "", "label": "Participating in collective religious practice"}
+{"aliases": [], "broader": "Religious practices", "code": "749", "description": "", "label": "Other activities related to religious practice"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "75", "description": "", "label": "Travelling time related to socializing and communication, community participation and religious practice"}
+{"aliases": [], "broader": "Travelling time related to socializing and communication, community participation and religious practice", "code": "750", "description": "", "label": "Travelling time related to socializing and communication, community participation and religious practice"}
+{"aliases": [], "broader": "Socializing and communication, community participation and religious practice", "code": "79", "description": "", "label": "Other activities related to socializing and communication, community participation and religious practice"}
+{"aliases": [], "broader": "Other activities related to socializing and communication, community participation and religious practice", "code": "790", "description": "", "label": "Other activities related to socializing and communication, community participation and religious practice"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "81", "description": "", "label": "Attending/visiting cultural, entertainment and sports events/venues"}
+{"aliases": [], "broader": "Attending/visiting cultural, entertainment and sports events/venues", "code": "811", "description": "", "label": "Attendance at organized/mass cultural events, and shows"}
+{"aliases": [], "broader": "Attending/visiting cultural, entertainment and sports events/venues", "code": "812", "description": "", "label": "Attendance at parks/gardens"}
+{"aliases": [], "broader": "Attending/visiting cultural, entertainment and sports events/venues", "code": "813", "description": "", "label": "Attendance at sports events"}
+{"aliases": [], "broader": "Attending/visiting cultural, entertainment and sports events/venues", "code": "819", "description": "", "label": "Other activities related to attendance at cultural, entertainment and sports events"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "82", "description": "", "label": "Cultural participation, hobbies, games and other pastime activities"}
+{"aliases": [], "broader": "Cultural participation, hobbies, games and other pastime activities", "code": "821", "description": "", "label": "Visual, literary and performing arts (as hobby)"}
+{"aliases": [], "broader": "Cultural participation, hobbies, games and other pastime activities", "code": "822", "description": "", "label": "Hobbies"}
+{"aliases": [], "broader": "Cultural participation, hobbies, games and other pastime activities", "code": "823", "description": "", "label": "Playing games and other pastime activities"}
+{"aliases": [], "broader": "Cultural participation, hobbies, games and other pastime activities", "code": "829", "description": "", "label": "Other activities related to cultural participation, hobbies, games"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "83", "description": "", "label": "Sports participation and exercise, and related activities"}
+{"aliases": [], "broader": "Sports participation and exercise, and related activities", "code": "831", "description": "", "label": "Participating in sports"}
+{"aliases": [], "broader": "Sports participation and exercise, and related activities", "code": "832", "description": "", "label": "Exercising"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "84", "description": "", "label": "Mass media use"}
+{"aliases": [], "broader": "Mass media use", "code": "841", "description": "", "label": "Reading for leisure"}
+{"aliases": [], "broader": "Mass media use", "code": "842", "description": "", "label": "Watching/listening to television and videos"}
+{"aliases": [], "broader": "Mass media use", "code": "843", "description": "", "label": "Listening to the radio and audio devices"}
+{"aliases": [], "broader": "Mass media use", "code": "849", "description": "", "label": "Other activities related to mass media use"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "85", "description": "", "label": "Activities associated with reflecting, resting, relaxing"}
+{"aliases": [], "broader": "Activities associated with reflecting, resting, relaxing", "code": "850", "description": "", "label": "Activities associated with reflecting, resting, relaxing"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "86", "description": "", "label": "Travelling time related to culture, leisure, mass media and sports practices"}
+{"aliases": [], "broader": "Travelling time related to culture, leisure, mass media and sports practices", "code": "860", "description": "", "label": "Travelling time related to culture, leisure, mass media and sports practices"}
+{"aliases": [], "broader": "Culture, leisure, mass media and sports practices", "code": "89", "description": "", "label": "Other activities related to culture, leisure, mass media and sports practices"}
+{"aliases": [], "broader": "Other activities related to culture, leisure, mass media and sports practices", "code": "890", "description": "", "label": "Other activities related to culture, leisure, mass media and sports practices"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "91", "description": "", "label": "Sleep and related activities"}
+{"aliases": [], "broader": "Sleep and related activities", "code": "911", "description": "", "label": "Night sleep/essential sleep"}
+{"aliases": [], "broader": "Sleep and related activities", "code": "912", "description": "", "label": "Incidental sleep/naps"}
+{"aliases": [], "broader": "Sleep and related activities", "code": "913", "description": "", "label": "Sleeplessness"}
+{"aliases": [], "broader": "Sleep and related activities", "code": "919", "description": "", "label": "Other sleep and related activities"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "92", "description": "", "label": "Eating and drinking"}
+{"aliases": [], "broader": "Eating and drinking", "code": "921", "description": "", "label": "Eating meals/snack"}
+{"aliases": [], "broader": "Eating and drinking", "code": "922", "description": "", "label": "Drinking other than with meal or snack"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "93", "description": "", "label": "Personal hygiene and care"}
+{"aliases": [], "broader": "Personal hygiene and care", "code": "931", "description": "", "label": "Personal hygiene and care"}
+{"aliases": [], "broader": "Personal hygiene and care", "code": "932", "description": "", "label": "Health/medical care for oneself"}
+{"aliases": [], "broader": "Personal hygiene and care", "code": "939", "description": "", "label": "Other activities related to personal hygiene and care"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "94", "description": "", "label": "Receiving personal and health/medical care from others"}
+{"aliases": [], "broader": "Receiving personal and health/medical care from others", "code": "941", "description": "", "label": "Receiving personal care from others"}
+{"aliases": [], "broader": "Receiving personal and health/medical care from others", "code": "942", "description": "", "label": "Receiving health/medical care from others"}
+{"aliases": [], "broader": "Receiving personal and health/medical care from others", "code": "949", "description": "", "label": "Other activities related to receiving personal and health/medical care"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "95", "description": "", "label": "Travelling time related to self-care and maintenance activities"}
+{"aliases": [], "broader": "Travelling time related to self-care and maintenance activities", "code": "950", "description": "", "label": "Travelling time related to self-care and maintenance activities"}
+{"aliases": [], "broader": "Self-care and maintenance", "code": "99", "description": "", "label": "Other self-care and maintenance activities"}
+{"aliases": [], "broader": "Other self-care and maintenance activities", "code": "990", "description": "", "label": "Other self-care and maintenance activities"}

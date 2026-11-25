@@ -1,0 +1,22 @@
+{
+ "esco_isco": {
+  "rows": 183,
+  "status": "fetched",
+  "url": "https://ec.europa.eu/esco/api (ISCO-08 via ESCO)"
+ },
+ "esco_skills": {
+  "rows": 84,
+  "status": "fetched",
+  "url": "https://ec.europa.eu/esco/api (skills hierarchy)"
+ },
+ "icatus": {
+  "rows": 221,
+  "status": "fetched",
+  "url": "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
+ },
+ "openalex": {
+  "rows": 252,
+  "status": "fetched",
+  "url": "https://api.openalex.org/subfields?per-page=200&page=1"
+ }
+}
