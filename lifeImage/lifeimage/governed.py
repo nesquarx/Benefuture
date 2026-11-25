@@ -13,9 +13,10 @@ GOVERNED = {
         "source": "LI.40: responsibility when no less harmful alternative was open; coercion lowers it, never to 0.",
     },
     "levels.tone_k": {
-        "default": 0.16388,
+        "default": 0.15862,
         "source": "LI.39: the tone map's constant; derived by `derive_tone_k` so the median 40-year-old persona of the generated "
-                  "population has its typical touched domain at level 0.5 (mid-brightness). Absolute across people.",
+                  "population has its typical touched coarse field at level 0.5 (mid-brightness). Absolute across people. "
+                  "Re-derived on fine evidence (LI.51: 0.16388 before, the coarse field now aggregating its fine children).",
     },
     "levels.saturation_measured": {
         "default": 1.0,
@@ -63,20 +64,20 @@ REFERENCE_LEVEL = 0.5
 def derive_tone_k(seeds=REFERENCE_SEEDS):
     """The tone constant that puts the reference life's typical touched domain at `REFERENCE_LEVEL`.
 
-    Per persona, the typical touched domain is the median, over the domains a solid imprint names directly, of the
-    strongest channel's summed luminosity; the reference life is the median persona of that figure. Level = 1 - exp(-S / k),
+    Per persona, the typical touched domain is the median, over the coarse fields a solid imprint names directly or through a
+    fine child (LI.51), of the strongest channel's summed luminosity (the field's aggregate); the reference life is the median persona of that figure. Level = 1 - exp(-S / k),
     so k = S / -ln(1 - REFERENCE_LEVEL). Reads the untoned sums, so it does not depend on the constant it sets."""
     import math
     from statistics import median
     from .generators import life
     from .render import basemap as bmod
-    cards = bmod.load_cards()
+    cards = bmod.load_all_cards()
     typical = []
     for sd in seeds:
         p = life.generate_persona(seed=sd, archetype="generalist", age=REFERENCE_AGE, as_of=REFERENCE_AS_OF, pid=f"ref{sd}")
         from . import levels as lv
         raw = lv.raw_sums(p.rows, cards, lv.DEFAULT, REFERENCE_AS_OF)["solid"]
-        direct = lv.touched_domains(p.rows, cards, lv.DEFAULT, REFERENCE_AS_OF)
+        direct = lv.touched_coarse(p.rows, cards, lv.DEFAULT, REFERENCE_AS_OF)
         vals = [max(raw[d].values()) for d in direct if d in raw]
         if vals:
             typical.append(median(vals))

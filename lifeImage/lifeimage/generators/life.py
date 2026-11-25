@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from . import catalogue as C
 from .common import (BASEMAP_VERSION, CITIES, COUNTRIES, FIRST, LAST, STREETS, clip, normalise, pick, poisson, seed_label,
                      stream)
+from . import fine_pick
 from .params import ARCHETYPES, SECTORS, resolve
 from ..responsibility import responsibility_from_freedom
 
@@ -83,7 +84,8 @@ class Persona:
 
     @property
     def truth_rows(self):
-        """The claimed rows: what an extractor reading the texts should find."""
+        """The claimed rows: what an extractor reading the texts should find (a text names a field, not the fine domain an event
+        was placed in: score against `fine.cards.coarsen_rows` of these)."""
         return [r for r in self.rows if r["tier"] == "claimed"]
 
     def meta(self):
@@ -719,8 +721,11 @@ def _lines_resume(pl, evs, tpls):
     return lines, where
 
 
-def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", params=None, calibration=None, pid=None):
-    """One persona: events, evidence rows, texts. Deterministic in (seed, archetype, age, as_of, params, calibration)."""
+def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", params=None, calibration=None, pid=None, fine=True):
+    """One persona: events, evidence rows, texts. Deterministic in (seed, archetype, age, as_of, params, calibration, fine).
+
+    `fine=True` names a fine domain for each event that falls in a coarse field with fine children (LI.51); `fine=False` keeps
+    every row at the coarse fields (the earlier generator), everything else being equal."""
     if archetype not in ARCHETYPES:
         raise ValueError(f"unknown archetype {archetype!r}")
     if not isinstance(age, int) or age < 0 or age > 110:
@@ -756,6 +761,14 @@ def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", p
         events.append({"id": eid, "key": t.key, "area": t.area, "valid_time": ym(e["mi"]), "label": fmt(t.d, e["detail"]), "detail": {
             k: v for k, v in e["detail"].items() if isinstance(v, (str, int, float, bool))}, "participants": parts, "participation": ans,
             "tiers": [], "rows": [], "phrase": None})
+    # --- fine domains: each event names one under every coarse field of its memberships that has fine children (LI.51) ---
+    fine_map = []
+    for n, (e, t, ev) in enumerate(zip(raw, tpls, events)):
+        coarse = sorted({m["domain"] for m in _membership_weights(t, e["detail"])}) if fine else []
+        words = fine_pick.event_words(t.key, t.area, ev["label"], e["detail"])
+        mapping = {c: f for c in coarse if (f := fine_pick.choose(seed, n, c, words, archetype, P["fine_fit_sharpness"]))}
+        ev["fine"] = mapping
+        fine_map.append(mapping)
     # --- which tiers record each event ---
     R_t = stream(seed, "tiers")
     verb = R_t.uniform(0.6, 1.4)
@@ -873,6 +886,8 @@ def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", p
     for n, (e, t) in enumerate(zip(raw, tpls)):
         d = e["detail"]
         mem = _membership_weights(t, d)
+        if fine_map[n]:
+            mem = fine_pick.name_fine(mem, fine_map[n])
         me = next(x for x in events[n]["participation"]["participants"] if x["id"] == persona.entity)
         mag = t.mag * R_r.uniform(0.8, 1.2) * (0.6 + 0.4 * me["contribution"] ** 0.5)
         if t.key == "job":

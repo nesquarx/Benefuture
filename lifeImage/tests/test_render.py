@@ -17,7 +17,7 @@ def world():
 
 
 def cards_by_id(bm):
-    return bmod.load_cards()
+    return bmod.load_all_cards()
 
 
 def red_share(cv):
@@ -106,7 +106,7 @@ def test_basemap_is_deterministic():
 # ---------- channels ----------
 
 def cards():
-    return bmod.load_cards()
+    return bmod.load_all_cards()
 
 
 def _row(channel, domain, magnitude, over):

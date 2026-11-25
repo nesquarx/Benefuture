@@ -83,6 +83,12 @@ deleted. Numbering is stable (LI.n).
   imprinted domains of the strongest solid channel) at level 0.5, mid-brightness. The scale is absolute across people:
   a thinner life is dimmer, a richer one brighter, never normalised per person. Default and derivation live in
   `lifeimage/governed.py`. DESIGN.
+- **LI.51** (2026-11-25; lead proposal under the author's go-ahead "keep going" of 2026-11-25 and the instruction to make evidence reach
+  the fine level; not a direct author ruling; amends LI.30 and LI.36) Evidence reaches the fine level. A row names a fine domain
+  where its coarse field has fine children; the imprint lands on it, a little bleeds to its upstream coarse field (LI.30), none to
+  neighbours, and a coarse level is the re-saturated sum of its children and its own imprints (luminosities add, the tone map
+  applies once), so a field holds a fine imprint whole, once. Fine domains are placed once inside their main parent's arc in outer
+  rings and no coarse arc moves. The tone constant is re-derived on the coarse aggregate (0.15862, LI.39 rule unchanged). DESIGN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 

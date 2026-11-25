@@ -42,6 +42,9 @@ BASE_FEATURES = ("share_red", "share_green", "share_blue", "red_grain_share", "d
                  "typical_level", "grain_cover", "n_claimed_slices", "claim_gap", "claim_gap_abs", "grain_green_share",
                  "mean_claimed_level", "overclaim_share", "underclaim_share")
 EXTRA_FEATURES = ("claim_gap_low_green", "claim_gap_high_green")  # computed, not used in blind identification
+# Fine-ring descriptors (LI.51), computed only from the fine slices; never part of the pre-registered signatures or of the
+# primary blind identification (which stays on BASE_FEATURES), used by the exploratory identification on fine evidence.
+FINE_FEATURES = ("fine_lit_share", "fine_n_lit", "fine_spread_entropy", "fine_top_share", "fine_depth", "fine_touched_share")
 
 
 @dataclass(frozen=True)
@@ -56,7 +59,8 @@ class Slice:
     claimed: tuple  # claimed potential (grain), red only in practice
     newest: object = None  # day ordinal of the newest imprint, or None
     sat: float = 1.0  # saturation of the solid layer (tier, LI.38)
-    touched: bool = False  # a row names this domain directly (not only by upstream bleed)
+    touched: bool = False  # a row names this domain directly (not only by upstream bleed); a field is touched by a named child
+    parent: object = None  # fine slices: the main parent's id
 
     @property
     def area(self):
@@ -153,7 +157,8 @@ def _entropy(m):
 
 
 def features(state):
-    sl = state.slices
+    """The pre-registered features, from the coarse image (sector and field rings); the fine ring adds `fine_*` descriptors."""
+    sl = [s for s in state.slices if s.ring != "fine"]
     disp = [s.displayed() for s in sl]
     area = [s.area for s in sl]
     tot_a = math.fsum(area) or 1.0
@@ -222,7 +227,34 @@ def features(state):
     touched = sorted(max(s.solid) for s in fields if s.touched)
     n = len(touched)
     f["typical_level"] = (touched[n // 2] if n % 2 else (touched[n // 2 - 1] + touched[n // 2]) / 2) if n else nan
+    f.update(_fine_features([s for s in state.slices if s.ring == "fine"], fields))
     return f
+
+
+def _fine_features(fine, fields):
+    """Descriptors of the fine ring: how much of it is lit (area share), how many slices, how evenly the light spreads over
+    its bins, the share of the brightest slice, the mean number of lit children per lit field, and the share of named fine
+    slices among the lit ones (0 for all of these when nothing is lit or there is no fine ring)."""
+    out = dict.fromkeys(FINE_FEATURES, 0.0)
+    if not fine:
+        return out
+    y = {s.id: s.luminance() for s in fine}
+    lit = [s for s in fine if y[s.id] > 0]
+    area = math.fsum(s.area for s in fine)
+    out["fine_n_lit"] = len(lit)
+    if not lit:
+        return out
+    out["fine_lit_share"] = math.fsum(s.area for s in lit) / area if area > 0 else 0.0
+    m, _ = _bins(fine, lambda s: y[s.id])
+    out["fine_spread_entropy"] = _entropy(m)
+    tot = math.fsum(y[s.id] * s.area for s in lit)
+    out["fine_top_share"] = max(y[s.id] * s.area for s in lit) / tot if tot > 0 else 0.0
+    per_field = {}
+    for s in lit:
+        per_field[s.parent] = per_field.get(s.parent, 0) + 1
+    out["fine_depth"] = math.fsum(per_field.values()) / len(per_field)
+    out["fine_touched_share"] = sum(1 for s in lit if s.touched) / len(lit)
+    return out
 
 
 def _claim_features(f, fields):
@@ -505,13 +537,15 @@ def _vector(rec, names):
     return out
 
 
-def identification_names(records):
+def identification_names(records, extra=()):
     arcs = sorted(k for k in records[0] if k.startswith("arc_share:"))
-    return [k for k in BASE_FEATURES] + arcs
+    return [k for k in BASE_FEATURES] + arcs + list(extra)
 
 
-def identify(records):
-    names = identification_names(records)
+def identify(records, extra=()):
+    """Blind identification of archetype and calibration from the pre-registered features (`BASE_FEATURES`, the arc shares);
+    `extra` names further features to add (the exploratory fine descriptors, `FINE_FEATURES`)."""
+    names = identification_names(records, extra)
     X = [_vector(r, names) for r in records]
     return {label: loo_accuracy(X, [r[label] for r in records]) for label in ("archetype", "calibration")}
 
@@ -542,7 +576,8 @@ def world_basemap():
 
 @lru_cache(maxsize=1)
 def world_cards():
-    return bmod.load_cards()
+    """Every domain a row may name: the coarse seed (v3) and the fine cards (v1)."""
+    return bmod.load_all_cards()
 
 
 def _newest(rows, cards):
@@ -563,22 +598,23 @@ def _newest(rows, cards):
 
 def image_state(rows, bm, asof=None, legacy=False):
     """The state the renderer draws for one entity's rows: levels per slice (legacy: the earlier projection on its log
-    intensity scale, claimed colour not desaturated)."""
+    intensity scale, claimed colour not desaturated). Fine slices (ring "fine") follow the coarse ones where the basemap
+    has them; `features` reads the coarse rings and the fine ring through separate descriptors."""
     cards = world_cards()
     cv = im.channel_values(rows, cards, asof=asof, legacy=legacy)
     newest = _newest(rows, cards)
-    touched = lv.touched_domains(rows, cards, im.DEFAULT.levels, asof)
+    touched = lv.touched_with_parents(rows, cards, im.DEFAULT.levels, asof)
     live = [r for r in rows if not r["revoked"] and r["channel"] in ("positive", "prediction")]
     ref = lv.parse_time(asof).toordinal() if asof else max((lv.parse_time(r["valid_time"]).toordinal() for r in live), default=0)
     conv = (lambda v: im.intensity(v)) if legacy else (lambda v: min(1.0, max(0.0, v)))
     sl = []
-    for i, s in sorted(bm.slices.items()):
+    for i, s in sorted({**bm.slices, **getattr(bm, "fine", {})}.items()):
         lay = []
         for layer in ("solid", "claimed"):
             ch = cv.get(layer, {}).get(i, {})
             lay.append(tuple(conv(ch.get(k, 0.0)) for k in lv.CHANNELS))
         sat = 1.0 if legacy else cv.get("solid", {}).get(i, {}).get("saturation", 1.0)
-        sl.append(Slice(i, s.ring, s.start, s.width, s.r0, s.r1, lay[0], lay[1], newest.get(i), sat, i in touched))
+        sl.append(Slice(i, s.ring, s.start, s.width, s.r0, s.r1, lay[0], lay[1], newest.get(i), sat, i in touched, getattr(s, "parent", None)))
     return State(sl, ref)
 
 
@@ -665,8 +701,9 @@ def extended_population():
     return out
 
 
-def extended_rows(spec):
-    p = life.generate_persona(seed=spec["seed"], archetype=spec["archetype"], age=spec["age"], calibration=spec["calibration"], pid=spec["id"])
+def extended_rows(spec, fine=True):
+    """(rows, as_of) of one extended persona; `fine=False` keeps every row at the coarse fields (the control of the fine study)."""
+    p = life.generate_persona(seed=spec["seed"], archetype=spec["archetype"], age=spec["age"], calibration=spec["calibration"], pid=spec["id"], fine=fine)
     return p.rows, p.as_of
 
 

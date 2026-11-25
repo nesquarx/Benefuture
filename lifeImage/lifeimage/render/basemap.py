@@ -19,6 +19,16 @@ complexity, difficulty and specificity, outward-increasing), scaled so the ring'
 inner edge and its outermost at the outer edge. A domain without a composite falls back to depth: it spans its whole
 ring, recorded loudly (`degradation`, mechanism `radius_composite`, the domains named). `by_depth=True` asks for depth outright (the legacy projection), unlogged. Equal composites in a ring sit mid-ring.
 
+Fine level (LI.51). Fine domains are placed once, inside the arc of their main parent (`fine/placement.py`: the heaviest
+upstream link, else the heaviest overlap link, the substitution logged as `fine_placement`), ordered by their pull toward
+their other parents, in an outer ring, so no coarse arc, order or centre moves (the fine level is drawn after the coarse
+one and pressure is counted at the coarse fields, `fine.cards.coarsen_rows`). Fine children of a coarse field sit in the
+ring just outside the rim (`FINE_RING`), those whose main parent is a sector in the one beyond it (`FINE_SECTOR_RING`).
+A fine domain's radial band comes from the composite on its card, scaled within its ring like the coarse ones; the judged
+radius exists for coarse fields only, so the mechanical composite stands in for fine domains, recorded loudly
+(`radius_judged`). `Basemap.fine` holds the fine slices (`Slice.parent` is the main parent), `Basemap.extent` the half-width
+a drawing needs.
+
 Everything is deterministic: ties break by id, no randomness, no clock.
 """
 import json
@@ -30,6 +40,8 @@ from ..axes import axes_input, parse_scores
 from ..axes_v3 import parse_scale
 from ..canonical import content_hash
 from ..degradation import record_degradation
+from ..fine.cards import coarsen_rows, load_fine, placement_parents
+from ..fine.placement import main_parent, place_fine
 from ..layout import AXES_MIN, _mean_angle, angle_from_axes, circ_diff
 from ..packs import is_sector
 from ..pressure import pressure_from_evidence
@@ -44,6 +56,10 @@ FIELD_RING = (0.44, 0.96)
 MIN_FIELD_SLICE = 0.25  # governed: degrees, the least a field keeps however little evidence it has
 MIN_SECTOR_SLICE = 2.0  # governed: degrees
 BAND = 0.2  # governed: a domain's radial band as a share of its ring's span (LI.26)
+FINE_RING = (0.98, 1.12)  # fine children of a coarse field
+FINE_SECTOR_RING = (1.14, 1.28)  # fine domains whose main parent is a sector
+FINE_BAND = 0.5  # governed: a fine domain's radial band as a share of its (narrow) ring's span
+EXTENT_MARGIN = 0.25  # room outside the outermost ring for the orientation flange
 SMOOTHING = 1.0  # governed: additive pressure smoothing (`pressure.py`)
 
 OPEN_NOTES = [
@@ -69,6 +85,7 @@ class Slice:
     pressure: float
     source: str  # axes | upstream | children
     composite: float = None  # radius composite behind the band; None when the domain fell back to depth
+    parent: str = None  # fine slices: the main parent whose arc holds this slice
 
     @property
     def angle(self):
@@ -84,6 +101,8 @@ class Basemap:
     shift: dict = field(default_factory=dict)  # ring -> {mean, max}: degrees between slice centre and axes angle
     votes: dict = field(default_factory=dict)  # field id -> number of axes votes behind its angle
     radius_fallback: list = field(default_factory=list)  # domains without a composite, placed by depth
+    fine: dict = field(default_factory=dict)  # fine domain id -> Slice (ring "fine"), inside the main parent's arc
+    extent: float = 1.0 + EXTENT_MARGIN  # half-width of the drawing: the outermost ring plus a margin
 
 
 def read_jsonl(path):
@@ -226,8 +245,10 @@ def radial_bands(cards, ring_of, log=None, by_depth=False):
     return out, sorted(fallback)
 
 
-def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False):
+def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False, fine_cards=None):
     by = {c["id"]: c for c in cards}
+    if fine_cards:
+        rows = coarsen_rows(rows, fine_cards)  # pressure is counted at the coarse fields
     angle, source, inherited = place_angles(cards, axes)
     ids = sorted(by)
     p = evidence_pressure(rows, ids)
@@ -256,7 +277,68 @@ def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False):
     for ring in ("sector", "field"):
         d = [circ_diff(s.angle, s.axes_angle) for s in slices.values() if s.ring == ring]
         shift[ring] = {"mean": math.fsum(d) / len(d), "max": max(d)}
-    return Basemap(version, slices, inherited, list(OPEN_NOTES), shift, {i: a["votes"] for i, a in axes.items()}, fallback)
+    bm = Basemap(version, slices, inherited, list(OPEN_NOTES), shift, {i: a["votes"] for i, a in axes.items()}, fallback)
+    if fine_cards:
+        bm.fine = place_fine_slices(fine_cards, slices, log, by_depth)
+        bm.extent = round(max(s.r1 for s in bm.fine.values()) + EXTENT_MARGIN, 3)
+    return bm
+
+
+def fine_bands(fine_cards, kind_of, log=None, by_depth=False):
+    """{id: (r0, r1)}: per ring (`kind_of[id]`: "field" or "sector" for the main parent's kind), the composites scaled
+    linearly onto the ring, innermost at the inner edge. A card with no composite spans the whole ring (`radius_composite`);
+    every fine domain uses its mechanical composite, as the judged radius covers coarse fields only (`radius_judged`)."""
+    rings = {"field": FINE_RING, "sector": FINE_SECTOR_RING}
+    comp = {c["id"]: None if by_depth else (c.get("radius") or {}).get("composite") for c in fine_cards}
+    out, fallback = {}, []
+    for kind, (lo, hi) in rings.items():
+        ids = sorted(c["id"] for c in fine_cards if kind_of[c["id"]] == kind)
+        vals = [comp[i] for i in ids if comp[i] is not None]
+        cmin, cmax = (min(vals), max(vals)) if vals else (0.0, 0.0)
+        for i in ids:
+            if comp[i] is None:
+                out[i] = (lo, hi)
+                fallback.append(i)
+                continue
+            t = 0.5 if cmax == cmin else (comp[i] - cmin) / (cmax - cmin)
+            r0 = lo + t * (hi - lo) * (1 - FINE_BAND)
+            out[i] = (r0, r0 + (hi - lo) * FINE_BAND)
+    if not by_depth:
+        mech = sorted(i for i, v in comp.items() if v is not None)
+        if mech:
+            record_degradation(f"fine_bands: {len(mech)} fine domains", "radius_judged", "mechanical composite",
+                               "the judged radius covers coarse fields only; fine domains take the mechanical composite", log)
+        if fallback:
+            record_degradation(f"fine_bands: {len(fallback)} fine domains", "radius_composite", "depth (whole ring)",
+                               f"no radius composite on {len(fallback)} of {len(fine_cards)} fine domains", log)
+    return out
+
+
+def place_fine_slices(fine_cards, coarse_slices, log=None, by_depth=False):
+    """{fine id: Slice}: each fine domain inside its main parent's arc (`fine.placement.place_fine`), in the ring of its
+    parent's kind, radial band from its composite. Raises on a fine domain with no parent at all."""
+    parent_arcs = {i: (s.start, s.start + s.width) for i, s in coarse_slices.items()}
+    specs, substituted = [], []
+    for c in sorted(fine_cards, key=lambda c: c["id"]):
+        parents, sub = placement_parents(c)
+        if sub:
+            substituted.append(c["id"])
+        specs.append({"id": c["id"], "parents": parents})
+    if substituted:
+        shown = ", ".join(substituted[:5]) + (f" and {len(substituted) - 5} more" if len(substituted) > 5 else "")
+        record_degradation(f"place_fine_slices: {shown}", "fine_placement", "heaviest overlap link as parent",
+                           f"{len(substituted)} fine domains have no upstream link", log)
+    arcs = place_fine(parent_arcs, specs)
+    parent = {f["id"]: main_parent(f) for f in specs}
+    kind_of = {i: "sector" if coarse_slices[p].ring == "sector" else "field" for i, p in parent.items()}
+    bands = fine_bands(fine_cards, kind_of, log, by_depth)
+    by = {c["id"]: c for c in fine_cards}
+    out = {}
+    for i, (start, end) in sorted(arcs.items()):
+        comp = (by[i].get("radius") or {}).get("composite")
+        out[i] = Slice(i, "fine", ((start + end) / 2) % 360, start % 360, end - start, bands[i][0], bands[i][1], 0.0, "placement",
+                       None if comp is None or by_depth else comp, parent[i])
+    return out
 
 
 def evidence_rows(root=ROOT):
@@ -267,9 +349,18 @@ def evidence_rows(root=ROOT):
     return rows
 
 
-def build_v0(root=ROOT, by_depth=False):
+def build_v0(root=ROOT, by_depth=False, fine=True, log=None):
+    """The basemap of the coarse seed (v3) with, unless `fine=False`, the fine level (`data/fine/fine_v1.jsonl`) placed
+    inside it; `log` takes the loud degradation records."""
     cards = load_cards(root / "data/coarse/seed_v3.jsonl")
+    fine_cards = load_fine(root / "data/fine/fine_v1.jsonl")
     bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / f"data/coarse/seed_v{v}.jsonl" for v in (0, 1, 2)],
                                  [root / "data/answers/axis_at.jsonl", root / "data/answers/axis_pg.jsonl"]),
-               evidence_rows(root), cards[0]["basemap_version"], by_depth=by_depth)
+               coarsen_rows(evidence_rows(root), fine_cards),  # pressure is counted at the coarse fields either way
+               cards[0]["basemap_version"], log=log, by_depth=by_depth, fine_cards=fine_cards if fine else None)
     return bm
+
+
+def load_all_cards(root=ROOT):
+    """The coarse seed cards (v3) followed by the fine cards (v1): every domain a row may name."""
+    return load_cards(root / "data/coarse/seed_v3.jsonl") + load_fine(root / "data/fine/fine_v1.jsonl")

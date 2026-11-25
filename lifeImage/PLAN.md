@@ -368,8 +368,8 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
 - **Interactive viewer** (`4a2236d`; `data/images/interactive/`, 10 files, 0.95 MB): offline HTML; semantic zoom from
   disc to sector, coarse field and evidence rows (reason, tier, date, channel, contribution); disclosure levels none
   (pattern only: no labels, ids, row text or zoom in the file), summary, full; a group image (4 personas, re-saturated
-  sum) and a comparison view; deterministic. Open: rows attach at the coarse field because fine domains carry no rows
-  yet; the next step is mapping evidence rows to fine domains.
+  sum) and a comparison view; deterministic. (Rows attached at the coarse field then; evidence reaches the fine level
+  since LI.51, see "Evidence at the fine level".)
 
 - **Judged radius** (radius v1, 0–10, coarse fields, 2 variants): at 0 or 10 4.7%; variant agreement Spearman 0.921,
   mean absolute difference 0.53 (predicted ≥ 0.85: held); Spearman with ISCO difficulty 0.31 (predicted ≥ 0.4:
@@ -378,6 +378,42 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   sociology and life sciences inward); the judged scale places them as LI.26 intends. Adopted: the radius composite
   takes the judged score where present (fine domains still fall back to the mechanical composite, logged); seed_v3,
   fine_v1, the v2 images and the interactive viewers rebuilt.
+
+- **Evidence at the fine level** (LI.51; `fine/cards.py`, `generators/fine_pick.py`, `levels.py`, `render/`): a persona's event
+  that falls in a coarse field with fine children also names one (deterministic per seed, event and field on its own random
+  stream; chance = the fine card's upstream link weight toward the field x exp(sharpness x fit), fit = idf-weighted share of the
+  child's words carried by the event's wording and key, plus half the share carried by the archetype's sectors and interests;
+  `fine_fit_sharpness` 6, a world parameter). Predictions made before the measurement: 45-75% of event rows name a fine domain
+  (measured 96.0% of 16,113 event rows of the 144 extended personas, and 96% over 911 in the tests: missed high, as the templates
+  use common fields, 93 of the 144 domains they name having fine children); chosen children fit the wording better than a random
+  sibling by at least 3 standard errors (held). Imprints land on the named fine domain, `bleed_fraction` of it moves to its
+  upstream coarse field (LI.30), nothing to neighbours or overlap links, and a coarse level is the re-saturated sum of its own
+  luminosity (direct imprints and the bleed it received) and its children's luminosities times their link weights, so the
+  child keeps 1 - bleed of an imprint and the field holds the whole of it once. One step only: a sector is lit by what names
+  coarse fields directly, not by their fine children. Placed once inside the main parent's arc by the existing plan
+  (`fine/placement.py`, ordered by pull toward the other parents); the 92 fine domains whose main parent is a sector sit in a
+  second outer ring inside that sector's arc, the 47 with no upstream link by their heaviest overlap link (logged as
+  `fine_placement`); radial bands from the fine cards' mechanical composite, the judged radius covering coarse fields only
+  (logged as `radius_judged`). Coarse arcs, order and centres are untouched (pressure is counted at the coarse fields), the
+  static renderer widens its viewBox to `Basemap.extent` and draws the fine slices in the outer rings, and the interactive viewer
+  walks disc, sector, field, fine domain, evidence, row (depth 0-5; a row is listed at its fine domain and, flagged as carried
+  up, at the field above it so contributions still sum to each level). Features read the coarse rings as before; `fine_*`
+  descriptors read the fine ring. `data/synthetic`, `tools/render_v0.py` (v2 images, 9.57 MB of SVG for 56 images, each about
+  190 KB against 55 KB before: the 786 added outlines; legacy v0 keeps no fine ring, 2.10 MB) and the interactive viewers
+  (10 files, 1.85 MB, largest 0.30 MB) regenerated. The tone constant was re-derived on the coarse aggregate: 0.16388 to 0.15862
+  (the LI.39 rule applied to fine evidence; the typical touched coarse field counts its main fine-parent field, not the lighter
+  parents of a two-parent child). Truth rows (`truth/*.jsonl`) are the claimed rows as they are; extraction is scored on them
+  read at the coarse level (`fine.cards.coarsen_rows`), since a resume names a field.
+- **Characterisation battery v2 on fine evidence** (re-measurement; signatures unchanged; `data/gold/characterisation_v2_fine_report.*`,
+  `python3 tools/characterise.py --out data/gold/characterisation_v2_fine_report --label "v2 on fine evidence"`; 29 s): 38
+  signatures, 14 held, 11 not held, 13 inconclusive (v2: 14, 10, 14). Blind identification, truth rows, 144 personas: archetype
+  0.569 [0.488, 0.647] against the control of the same personas and code with every row kept at the coarse fields 0.562 and
+  the v2 report's 0.535 (fine against control: 8 personas right only with fine, 7 only without, exact sign test p = 1.0);
+  calibration 0.451 [0.372, 0.533] against 0.472 and 0.465 (10 / 13, p = 0.68). Predicted: within 0.05 of the control (held);
+  the exploratory fine-ring descriptors add at least 0.05 to archetype identification (missed: 0.556, 3 / 5, p = 0.73). Finer
+  resolution does not change identification here: the generator's evidence splits over children without separating archetypes
+  beyond what the coarse fields already show. A touched fine domain's median level is 0.376 against 0.449 for a touched coarse
+  field.
 
 ## Order of work
 

@@ -16,6 +16,14 @@ assessments of doing. Blue is impact: the outcome membership of rows that produc
 changed). Taking in counts `consumed_weight` as much as producing. Red without green reads as knowing or claiming
 without doing.
 
+Fine level (LI.51). A row may name a fine domain (a card of level `fine`) instead of its coarse field. The imprint lands on
+the fine domain, a little bleeds to its upstream coarse fields (LI.30, by link weight), none to neighbours or overlap
+links, and a coarse level aggregates its fine children: its summed luminosity is its own (direct imprints and the bleed it
+received) plus each child's summed luminosity times the link weight, and the tone map is applied to that sum once
+(re-saturated, so it never exceeds 1). A fine imprint thus reaches its coarse field whole, once: the child keeps
+1 - bleed of it, the field gets the bleed plus what the child holds. The aggregate is one step (fine to coarse): a sector
+is lit by what names coarse fields directly, not by their fine children.
+
 Layers. `claimed` holds claimed potential only: the red of prediction rows, drawn as grain. Every other row, whatever its
 tier, is `solid`. Tier shows only as saturation: each solid domain carries `saturation`, the imprint-weighted mean of
 the tier saturations (measured, attested, claimed) of the rows that built it, so self-reported colour is pale and a
@@ -29,6 +37,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from . import governed as gv
+from .fine.cards import is_fine, upstream
 from .projection import DEFAULT as PROJECTION
 from .projection import project
 
@@ -132,6 +141,7 @@ def _fold(imps, cards, governed):
             {"entity": "x", "relation": "causal", "channel": imp["channel"], "sign": 1, "revoked": False,
              "magnitude": imp["amount"], "memberships": imp["memberships"]})
     out = {}
+    fine = {c["id"]: upstream(c) for c in cards if is_fine(c)}
     for key, rs in sorted(derived.items()):
         sums = out.setdefault(key, {})
         for _entity, per_domain in sorted(project(rs, cards, governed.projection, ALL_RELS).items()):
@@ -139,6 +149,12 @@ def _fold(imps, cards, governed):
                 row = sums.setdefault(d, dict.fromkeys(CHANNELS, 0.0))
                 for k in CHANNELS:
                     row[k] += max(0.0, ch.get(k, 0.0))
+        held = {d: dict(v) for d, v in sums.items() if d in fine}  # the children's sums, before any aggregation
+        for d, ch in sorted(held.items()):
+            for parent, w in fine[d]:
+                row = sums.setdefault(parent, dict.fromkeys(CHANNELS, 0.0))
+                for k in CHANNELS:
+                    row[k] += ch[k] * w
     return out
 
 
@@ -161,6 +177,26 @@ def raw_sums(rows, cards, governed=DEFAULT, asof=None):
 def touched_domains(rows, cards, governed=DEFAULT, asof=None):
     """Domains a solid imprint names directly (not by upstream bleed)."""
     return {m["domain"] for imp in imprints(rows, cards, governed, asof) if imp["layer"] == "solid" for m in imp["memberships"]}
+
+
+def touched_coarse(rows, cards, governed=DEFAULT, asof=None):
+    """The coarse domains a solid imprint names directly, and the main upstream field (heaviest link, never a sector) of each
+    fine domain it names: what the anchor of LI.39 and the characterisation count as touched. A fine domain's lighter
+    parents are lit by the aggregate but not touched (the leak of a two-parent domain is not a field the life visited)."""
+    by = {c["id"]: c for c in cards}
+    out = set()
+    for d in touched_domains(rows, cards, governed, asof):
+        if d in by and is_fine(by[d]):
+            ups = [p for p, _w in upstream(by[d]) if not p.startswith("s.")]
+            out.update(ups[:1])
+        else:
+            out.add(d)
+    return out
+
+
+def touched_with_parents(rows, cards, governed=DEFAULT, asof=None):
+    """Touched domains for the image: those named directly (fine ones too) and the coarse fields they make touched."""
+    return touched_domains(rows, cards, governed, asof) | touched_coarse(rows, cards, governed, asof)
 
 
 def channel_levels(rows, cards, governed=DEFAULT, asof=None):

@@ -61,7 +61,11 @@ def texts_of_entity(pid):
 
 def test_none_file_carries_no_label_id_row_text_or_name():
     h = single("none")
-    leaked = sorted(s for s in texts_of_entity(PERSONA) if s in h)
+    # the page's own code and styles are shared by every file and contain short words that are also labels (fine labels such as
+    # "order" or "port"), so the leak check reads what the file carries as data: the model block, the title and the header
+    head = " ".join(re.findall(r"<title>(.*?)</title>", h, re.S) + re.findall(r"<h1>(.*?)</h1>", h, re.S))
+    carried = head + re.search(r'<script id="data" type="application/json">(.*?)</script>', h, re.S).group(1)
+    leaked = sorted(s for s in texts_of_entity(PERSONA) if s in carried)
     assert leaked == [], f"undisclosed text in the none file: {leaked[:5]}"
     m = model_of(h)
     assert m["zoom"] is False and m["disclosure"] == "none"
@@ -102,8 +106,8 @@ def test_unknown_disclosure_is_refused():
 
 def test_zoom_path_reaches_a_row_for_a_domain_with_evidence():
     m = model_of(single("full"))
-    path = it.zoom_path(m, next(iter(m["rows"])))
-    assert [p["depth"] for p in path] == [0, 1, 2, 3, 4]  # disc, sector, field, evidence, row
+    path = it.zoom_path(m, next(k for k in m["rows"] if m["slices"][int(k)]["r"] == 1))
+    assert [p["depth"] for p in path] == [0, 1, 2, 4, 5]  # disc, sector, field, evidence, row (a field has no fine step)
     assert path[1]["slice"]["r"] == 0 and path[2]["slice"]["r"] == 1
     row = path[4]["row"]
     for key in ("t", "k", "d", "c", "v"):
@@ -289,7 +293,8 @@ def test_viewer_runs_and_obeys_its_disclosure_in_a_browser(disclosure, tmp_path)
     if disclosure == "none":
         assert r["zoomed"] is False and r["labels"] == 0 and r["panel"] is False
     else:
-        assert r["zoomed"] is True and r["maxDepth"] == (4 if disclosure == "full" else 2), r
+        # full reaches a row (5); summary stops at the field (2) or, when its best field has fine children, at a fine domain (3)
+        assert r["zoomed"] is True and (r["maxDepth"] == 5 if disclosure == "full" else r["maxDepth"] in (2, 3)), r
         assert r["labelsAtDisc"] > 0 and r["wheelChangedScale"] is True
     if disclosure == "full":
         assert r["rowShown"] and r["rowFields"] >= 5

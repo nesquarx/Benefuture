@@ -32,6 +32,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
+from .fine.cards import coarsen_rows, load_fine
 from .projection import project
 
 CHANNELS = ("expertise", "impact", "potential")
@@ -270,7 +271,8 @@ def load_synthetic(root, texts="texts"):
     another folder with a `truth_spans.jsonl` (texts_v2), whose spans replace the rows' own."""
     root = Path(root)
     personas = {p["id"]: p for p in _jsonl(root / "personas.jsonl")}
-    truth = {pid: _jsonl(root / "truth" / f"{pid}.jsonl") for pid in personas}
+    fine = load_fine()  # texts name fields, not the fine domains the rows were placed in: truth is read at the coarse level
+    truth = {pid: coarsen_rows(_jsonl(root / "truth" / f"{pid}.jsonl"), fine) for pid in personas}
     texts_by = {pid: (root / texts / f"{pid}.resume.txt").read_text(encoding="utf-8") for pid in personas}
     rows, events = defaultdict(list), defaultdict(list)
     for r in _jsonl(root / "rows.jsonl"):

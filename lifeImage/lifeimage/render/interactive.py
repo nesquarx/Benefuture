@@ -1,18 +1,19 @@
 """Interactive viewer (LI.2): one self-contained HTML file per image, zoomable from the whole disc to single pieces of
 evidence, with no network, no libraries and no external files.
 
-Zoom path. depth 0 the whole disc; 1 a sector; 2 a coarse field (its levels, and the fine domains beneath it); 3 the
-evidence imprinting that field; 4 one evidence row (one-line reason, tier, date, channel, contribution to the level).
-Evidence rows sit at the coarse field because the fine cards carry no rows yet, so the fine domains are listed, not
-drawn with levels of their own. Wheel, pinch and drag zoom and pan freely, and the depth follows the zoom (labels
-appear where a slice is wide enough on screen); the keyboard walks the same path (arrows, Enter, Escape, + and -), and
-the side panel offers every step as a button.
+Zoom path. depth 0 the whole disc; 1 a sector; 2 a coarse field; 3 a fine domain of it (an outer ring, LI.51; a fine
+domain whose main parent is a sector hangs from the sector and skips depth 2); 4 the evidence imprinting that slice; 5 one
+evidence row (one-line reason, tier, date, channel, contribution to the level). A row sits at the fine domain it names and,
+because a coarse level aggregates its children, also at the coarse field above it (flagged as carried up), so a field's
+contributions sum to its level. Wheel, pinch and drag zoom and pan freely, and the depth follows the zoom (labels appear
+where a slice is wide enough on screen); the keyboard walks the same path (arrows, Enter, Escape, + and -), and the side
+panel offers every step as a button.
 
 Disclosure (DESIGN, BP.6) is chosen at build time and decides what is in the bytes, never what is hidden by script:
-  none     the pattern only: slice geometry and colours under anonymous indices; no ids, labels, names, fine domains,
+  none     the pattern only: slice geometry (all three rings) and colours under anonymous indices; no ids, labels, names,
            rows, zoom or pan wiring.
-  summary  adds domain ids and labels, levels per domain, the fine domains and (group) the members' summed imprints;
-           zoom reaches the field.
+  summary  adds domain ids and labels, levels per domain and (group) the members' summed imprints; zoom reaches the fine
+           domain.
   full     adds the evidence rows with their reports and contributions; zoom reaches a single row.
 
 Contribution of a row. The level of a domain and channel is split among the rows that imprint it in proportion to each
@@ -69,16 +70,12 @@ def _events(root=bmod.ROOT):
 
 
 def context(root=bmod.ROOT):
-    """Everything a build reads: cards, the basemap, entities with their rows, fine domains, event labels, asof dates."""
-    cards = bmod.load_cards(root / "data/coarse/seed_v2.jsonl")
-    fine = {}
-    for c in bmod.read_jsonl(root / "data/fine/fine_v0.jsonl"):
-        for l in c["links"]:
-            if l["rel"] == "upstream":
-                fine.setdefault(l["id"], set()).add(c["label"])
+    """Everything a build reads: the coarse and fine cards, the basemap (with its fine ring), entities with their rows, event
+    labels, asof dates."""
+    cards = bmod.load_all_cards(root)
     asof = {p["id"]: p["as_of"] for p in bmod.read_jsonl(root / "data/synthetic/personas.jsonl")}
     return {"cards": cards, "by": {c["id"]: c for c in cards}, "bm": bmod.build_v0(root),
-            "ents": {e["id"]: e for e in im.load_entities(root)}, "fine": {k: sorted(v) for k, v in fine.items()},
+            "ents": {e["id"]: e for e in im.load_entities(root)},
             "asof": asof, "root": root}
 
 
@@ -264,16 +261,23 @@ def build_model(spec, ctx, disclosure, governed=lv.DEFAULT):
     if not spec["members"]:
         raise ValueError("no members")
     bm, by = ctx["bm"], ctx["by"]
-    ordered = sorted(bm.slices.values(), key=lambda s: (s.ring != "sector", s.start, s.id))
+    ring_no = {"sector": 0, "field": 1, "fine": 2}
+    ordered = sorted([*bm.slices.values(), *bm.fine.values()], key=lambda s: (ring_no[s.ring], s.start, s.id))
     index = {s.id: i for i, s in enumerate(ordered)}
     analyses = [analyse(ctx, m, governed) for m in spec["members"]]
     kind, full, named = spec["kind"], disclosure == "full", disclosure != "none"
     slices = []
     for s in ordered:
-        d = {"r": 0 if s.ring == "sector" else 1, "a": round(s.start, 3), "w": round(s.width, 3), "i0": round(s.r0, 4), "i1": round(s.r1, 4)}
+        d = {"r": ring_no[s.ring], "a": round(s.start, 3), "w": round(s.width, 3), "i0": round(s.r0, 4), "i1": round(s.r1, 4)}
         if named:
-            sec = _sector_of(by, s.id)
-            d.update({"id": s.id, "l": by[s.id]["label"], "p": index[sec] if s.ring == "field" and sec is not None else -1})
+            d.update({"id": s.id, "l": by[s.id]["label"], "p": -1})
+            if s.ring == "field":
+                sec = _sector_of(by, s.id)
+                d["p"] = index[sec] if sec is not None else -1
+            elif s.ring == "fine":  # p: the sector above, q: the field above (-1 when the main parent is a sector)
+                par = bm.slices[s.parent]
+                sec = s.parent if par.ring == "sector" else _sector_of(by, s.parent)
+                d.update({"p": index[sec] if sec is not None else -1, "q": index[s.parent] if par.ring == "field" else -1})
         slices.append(d)
     levels = levels_from_raw(sum_raw([a["raw"] for a in analyses]), governed) if kind != "compare" else None
     if kind == "compare":
@@ -286,7 +290,7 @@ def build_model(spec, ctx, disclosure, governed=lv.DEFAULT):
                  {"id": "b_only", "name": f"Only {names[1]} (B minus A)", "lv": _enc(sets["b_only"], index)}]
     else:
         views = [{"id": "main", "name": spec["title"] if named else "Life image", "lv": _enc(levels, index)}]
-    model = {"v": 1, "kind": kind, "disclosure": disclosure, "zoom": named, "basemap": bm.version,
+    model = {"v": 2, "ext": bm.extent, "kind": kind, "disclosure": disclosure, "zoom": named, "basemap": bm.version,
              "title": spec["title"] if named else "Life Image: pattern only", "slices": slices, "views": views,
              "tone_k": governed.tone_k, "sat": [governed.saturation(t) for t in ("measured", "attested", "claimed")]}
     if kind == "group" and named:
@@ -295,8 +299,6 @@ def build_model(spec, ctx, disclosure, governed=lv.DEFAULT):
             + [round(a["raw"]["claimed"].get(d, {}).get("red", 0.0), 6)]
             + [round(a["raw"]["tier_mass"].get(d, {}).get(t, 0.0), 6) for t in ("measured", "attested", "claimed")]
             for d in sorted(set(a["raw"]["solid"]) | set(a["raw"]["claimed"]), key=index.get)}} for a in analyses]
-    if named:
-        model["fine"] = {str(index[d]): v for d, v in sorted(ctx["fine"].items()) if d in index and slices[index[d]]["r"] == 1}
     if full:
         # rows are reported against the (whole) image: the group's levels, or one entity's
         lev = levels if levels else analyses[0]["levels"]
@@ -307,13 +309,14 @@ def build_model(spec, ctx, disclosure, governed=lv.DEFAULT):
                 r = a["member"]["rows"][ri]
                 direct = {m["domain"] for m in r["memberships"]}
                 for d, v in contrib[(mi, ri)].items():
-                    if slices[index[d]]["r"] != 1:
+                    if slices[index[d]]["r"] == 0:
                         continue
                     item = {"t": r["reason"], "k": r["tier"], "d": r["valid_time"], "c": _channels(r),
                             "v": {k: round(x, 4) for k, x in sorted(v.items())},
                             "s": f'{r["provenance"]["source"]} {r["provenance"]["span"]}', "q": r["confidence"]}
                     if d not in direct:
-                        item["b"] = 1
+                        item["b"] = 2 if any(x in direct and by[x].get("level") == "fine" and d in {l["id"] for l in by[x]["links"] if l["rel"] == "upstream"}
+                                             for x in direct) else 1
                     if kind == "group":
                         item["m"] = mi
                     rows.setdefault(str(index[d]), []).append(item)
@@ -324,15 +327,23 @@ def build_model(spec, ctx, disclosure, governed=lv.DEFAULT):
 
 
 def zoom_path(model, idx):
-    """The steps from the disc to a single row for the field at slice index `idx`: depth 0 disc, 1 sector, 2 field,
-    3 evidence (when rows are disclosed), 4 the first (largest) row."""
+    """The steps from the disc to a single row for the slice at index `idx` (a coarse field or a fine domain): depth 0 disc,
+    1 sector, 2 field, 3 fine domain (fine slices only), 4 evidence (when rows are disclosed), 5 the first (largest) row. A
+    fine domain whose main parent is a sector has no depth-2 step."""
     if not model["zoom"]:
         raise ValueError("no zoom at disclosure none")
     f = model["slices"][int(idx)]
-    path = [{"depth": 0}, {"depth": 1, "slice": model["slices"][f["p"]] if f["p"] >= 0 else None}, {"depth": 2, "slice": f}]
+    sectors = model["slices"]
+    path = [{"depth": 0}, {"depth": 1, "slice": sectors[f["p"]] if f["p"] >= 0 else None}]
+    if f["r"] == 2:
+        if f["q"] >= 0:
+            path.append({"depth": 2, "slice": sectors[f["q"]]})
+        path.append({"depth": 3, "slice": f})
+    else:
+        path.append({"depth": 2, "slice": f})
     rows = model.get("rows", {}).get(str(idx))
     if rows:
-        path += [{"depth": 3, "rows": rows}, {"depth": 4, "row": rows[0]}]
+        path += [{"depth": 4, "rows": rows}, {"depth": 5, "row": rows[0]}]
     return path
 
 
@@ -350,14 +361,14 @@ def build_viewer(spec, ctx, disclosure):
     toolbar = '<div id="toolbar" role="group" aria-label="Views"></div>' if (m["kind"] != "single" and (zoom or m["kind"] == "compare")) else ""
     panel = '<aside id="panel" aria-label="Detail" aria-live="polite"></aside>' if zoom else ""
     note = {"none": "Disclosure: none. Pattern only: no labels and no zoom.",
-            "summary": "Disclosure: summary. Labels and levels per domain; zoom reaches the field.",
+            "summary": "Disclosure: summary. Labels and levels per domain; zoom reaches the fine domain.",
             "full": "Disclosure: full. Zoom reaches single evidence rows."}[disclosure]
     keys = ("Wheel or pinch to zoom, drag to pan. Keys: arrows (left and right move between neighbours, down goes in, up or "
             "Escape comes out), + and - zoom, Shift with arrows pans, 0 resets.") if zoom else ""
     return (f'<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{title}</title><style>{CSS}{PANEL_CSS if zoom else ""}</style></head><body>'
             f'<header><h1>{title}</h1><p class="note">{escape(note)} Basemap {escape(m["basemap"])}. {escape(keys)}</p></header>'
-            f'{toolbar}<main id="app"><div id="stagewrap"><svg id="stage" viewBox="-1.25 -1.25 2.5 2.5" role="img" '
+            f'{toolbar}<main id="app"><div id="stagewrap"><svg id="stage" viewBox="-{m["ext"]:g} -{m["ext"]:g} {2 * m["ext"]:g} {2 * m["ext"]:g}" role="img" '
             f'aria-label="Life image" {"tabindex=0" if zoom else ""}></svg></div>{panel}</main>'
             f'<footer>{LEGEND}</footer><noscript><p>This viewer needs JavaScript.</p></noscript>'
             f'<script id="data" type="application/json">{_json(m)}</script>'
@@ -443,7 +454,7 @@ CORE_JS = r"""
 window.__errs=[];window.addEventListener('error',function(e){window.__errs.push(String(e.message))});
 (function(){'use strict';
 var M=JSON.parse(document.getElementById('data').textContent),NS='http://www.w3.org/2000/svg',S=M.slices,N=S.length;
-var LAB=M.disclosure!=='none',ROWS=M.disclosure==='full',ZOOM=M.zoom,svg=document.getElementById('stage');
+var LAB=M.disclosure!=='none',ROWS=M.disclosure==='full',ZOOM=M.zoom,svg=document.getElementById('stage'),E=M.ext||1.25;
 function se(tag,at,par){var e=document.createElementNS(NS,tag);for(var k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e}
 function pt(r,a){a=a*Math.PI/180;return (r*Math.cos(a)).toFixed(4)+' '+(-r*Math.sin(a)).toFixed(4)}
 function wedge(s){var a0=s.a,a1=s.a+s.w,big=s.w>180?1:0;
@@ -453,8 +464,8 @@ function rgb(v){var c=[v[0],v[1],v[2]],t=v[3];if(t!==1){var g=(c[0]+c[1]+c[2])/3
 var defs=se('defs',{},svg);
 var pat=se('pattern',{id:'dots',width:.014,height:.014,patternUnits:'userSpaceOnUse'},defs);
 se('rect',{width:.014,height:.014,fill:'#000'},pat);var dot=se('rect',{width:.006,height:.006,fill:'#fff'},pat);
-var mask=se('mask',{id:'grain',maskUnits:'userSpaceOnUse',x:-1.25,y:-1.25,width:2.5,height:2.5},defs),mrect=se('rect',{x:-1.25,y:-1.25,width:2.5,height:2.5,fill:'url(#dots)'},mask);
-se('rect',{x:-1.25,y:-1.25,width:2.5,height:2.5,fill:'#000'},svg);
+var mask=se('mask',{id:'grain',maskUnits:'userSpaceOnUse',x:-E,y:-E,width:2*E,height:2*E},defs),mrect=se('rect',{x:-E,y:-E,width:2*E,height:2*E,fill:'url(#dots)'},mask);
+se('rect',{x:-E,y:-E,width:2*E,height:2*E,fill:'#000'},svg);
 var cam=se('g',{id:'cam'},svg),gW=se('g',{id:'wedges'},cam),gC=se('g',{id:'claimed',mask:'url(#grain)',style:'mix-blend-mode:screen'},cam),
  gG=se('g',{id:'guides',fill:'none',stroke:'#202024','stroke-width':1.2,'vector-effect':'non-scaling-stroke'},cam),
  gS=se('g',{id:'sel'},cam),gT=se('g',{id:'ticks'},cam),gL=se('g',{id:'labels'},cam);
@@ -475,7 +486,7 @@ function setLv(lv){LV=lv;paint();if(window.__redraw)window.__redraw()}
 function setView(j){view=j;setLv(M.views[j].lv)}
 function setMembers(sel){groupSel=sel;setLv(groupLv(sel))}
 paint();
-window.__li={mask:mask,mrect:mrect,M:M,S:S,N:N,W:W,svg:svg,cam:cam,gL:gL,gT:gT,gS:gS,pat:pat,dot:dot,se:se,pt:pt,wedge:wedge,rgb:rgb,
+window.__li={E:E,mask:mask,mrect:mrect,M:M,S:S,N:N,W:W,svg:svg,cam:cam,gL:gL,gT:gT,gS:gS,pat:pat,dot:dot,se:se,pt:pt,wedge:wedge,rgb:rgb,
  get lv(){return LV},setView:setView,setMembers:setMembers,groupLv:groupLv,setLv:setLv,labelsOn:LAB,rowsOn:ROWS,zoomOn:ZOOM};
 var tb=document.getElementById('toolbar');
 if(tb&&M.kind==='compare'){M.views.forEach(function(v,j){var l=document.createElement('label'),r=document.createElement('input');
@@ -490,10 +501,10 @@ if(tb&&M.kind==='group'&&M.members){groupSel=M.members.map(function(){return tru
 
 INTERACT_JS = r"""
 (function(){'use strict';
-var L=window.__li,M=L.M,S=L.S,N=L.N,se=L.se,svg=L.svg,camg=L.cam,gL=L.gL,gT=L.gT,gS=L.gS,ROWS=L.rowsOn,TAU=Math.PI/180;
-var panel=document.getElementById('panel'),stage=svg,cam={s:1,x:0,y:0},st={sec:null,field:null,rows:false,row:null},msel=null;
+var L=window.__li,M=L.M,S=L.S,N=L.N,se=L.se,svg=L.svg,camg=L.cam,gL=L.gL,gT=L.gT,gS=L.gS,ROWS=L.rowsOn,TAU=Math.PI/180,E=L.E;
+var panel=document.getElementById('panel'),stage=svg,cam={s:1,x:0,y:0},st={sec:null,field:null,fine:null,rows:false,row:null},msel=null;
 var SORT='contribution',SMIN=1,SMAX=40,timer=null,raf=0;
-function kpx(){var r=svg.getBoundingClientRect();return Math.min(r.width,r.height)/2.5||240}
+function kpx(){var r=svg.getBoundingClientRect();return Math.min(r.width,r.height)/(2*E)||240}
 function rmid(s){return (s.i0+s.i1)/2}
 function ctr(s){var a=(s.a+s.w/2)*TAU,r=rmid(s);return [r*Math.cos(a),-r*Math.sin(a)]}
 function bbox(s){var xs=[],ys=[];for(var q=0;q<=8;q++){var a=(s.a+s.w*q/8)*TAU;[s.i0,s.i1].forEach(function(r){xs.push(r*Math.cos(a));ys.push(-r*Math.sin(a))})}
@@ -503,36 +514,42 @@ function tot(i){var v=lvl(i);return v?v[0]+v[1]+v[2]+v[4]:0}
 function byAngle(list){return list.slice().sort(function(a,b){return S[a].a-S[b].a||a-b})}
 function sectors(){var o=[];S.forEach(function(s,i){if(s.r===0)o.push(i)});return byAngle(o)}
 function kids(sec){var o=[];S.forEach(function(s,i){if(s.r===1&&s.p===sec)o.push(i)});return byAngle(o)}
+function fines(field){var o=[];S.forEach(function(s,i){if(s.r===2&&s.q===field)o.push(i)});return byAngle(o)}
+function secFines(sec){var o=[];S.forEach(function(s,i){if(s.r===2&&s.q===-1&&s.p===sec)o.push(i)});return byAngle(o)}
+function cur(){return st.fine!==null?st.fine:st.field}
+function focus(i){var s=S[i];return s.r===2?{sec:s.p,field:s.q>=0?s.q:null,fine:i}:s.r===1?{sec:s.p,field:i,fine:null}:{sec:i,field:null,fine:null}}
+function at(i,rows,row){var f=focus(i);f.rows=!!rows;f.row=row===undefined?null:row;return f}
 function rowsOf(f){var r=(M.rows&&M.rows[f])||[];return r.map(function(x,i){x._i=i;return x}).filter(function(x){return !msel||x.m===undefined||msel[x.m]})}
 function sortedRows(f){var r=rowsOf(f).slice();if(SORT==='date')r.sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:a._i-b._i});return r}
-function depth(){return st.sec===null?0:st.field===null?1:!st.rows?2:st.row===null?3:4}
-function applyCam(){var s=cam.s,w=2.5/s;svg.setAttribute('viewBox',(cam.x-w/2).toFixed(5)+' '+(cam.y-w/2).toFixed(5)+' '+w.toFixed(5)+' '+w.toFixed(5));
+function depth(){if(st.sec===null)return 0;if(cur()===null)return 1;if(!st.rows)return st.fine!==null?3:2;return st.row===null?4:5}
+function applyCam(){var s=cam.s,w=2*E/s;svg.setAttribute('viewBox',(cam.x-w/2).toFixed(5)+' '+(cam.y-w/2).toFixed(5)+' '+w.toFixed(5)+' '+w.toFixed(5));
  L.pat.setAttribute('width',.014/s);L.pat.setAttribute('height',.014/s);L.dot.setAttribute('width',.006/s);L.dot.setAttribute('height',.006/s);
  [L.mask,L.mrect].forEach(function(e){e.setAttribute('x',(cam.x-w/2).toFixed(5));e.setAttribute('y',(cam.y-w/2).toFixed(5));e.setAttribute('width',w.toFixed(5));e.setAttribute('height',w.toFixed(5))});redraw()}
-function clampCam(c){c.s=Math.min(SMAX,Math.max(SMIN,c.s));c.x=Math.min(1.2,Math.max(-1.2,c.x));c.y=Math.min(1.2,Math.max(-1.2,c.y))}
+function clampCam(c){c.s=Math.min(SMAX,Math.max(SMIN,c.s));var m=E-.05;c.x=Math.min(m,Math.max(-m,c.x));c.y=Math.min(m,Math.max(-m,c.y))}
 var tid=0;
 function setCam(s,x,y,animate){var t={s:s,x:x,y:y};clampCam(t);
  if(!animate||window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){tid++;cam=t;applyCam();return}
  var from={s:cam.s,x:cam.x,y:cam.y},t0=null,my=++tid;var tween=function(now){if(my!==tid)return;if(t0===null)t0=now;var u=Math.min(1,(now-t0)/240),e=u*u*(3-2*u);
   cam={s:from.s*Math.pow(t.s/from.s,e),x:from.x+(t.x-from.x)*e,y:from.y+(t.y-from.y)*e};applyCam();draw();if(u<1)requestAnimationFrame(tween)};
  requestAnimationFrame(tween)}
-function fit(b,pad){var w=Math.max(b[1]-b[0],1e-3),h=Math.max(b[3]-b[2],1e-3);return Math.min(SMAX,Math.max(SMIN,pad*2.5/Math.max(w,h)))}
+function fit(b,pad){var w=Math.max(b[1]-b[0],1e-3),h=Math.max(b[3]-b[2],1e-3);return Math.min(SMAX,Math.max(SMIN,pad*2*E/Math.max(w,h)))}
 function rowPos(f){var rs=rowsOf(f).slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a._i-b._i}),s=S[f],n=rs.length,a=(s.a+s.w/2)*TAU,out=[];
  rs.forEach(function(r,j){var rad=s.i0+(s.i1-s.i0)*(0.04+0.92*(n>1?j/(n-1):.5));out.push({row:r,x:rad*Math.cos(a),y:-rad*Math.sin(a),rad:rad})});return out}
 function camFor(){var d=depth();
  if(d===0)return [1,0,0];
  if(d===1){if(st.sec<0)return [1,0,0];var c=ctr(S[st.sec]),a=(S[st.sec].a+S[st.sec].w/2)*TAU;return [2.2,.55*Math.cos(a)*.6+c[0]*.4,-.55*Math.sin(a)*.6+c[1]*.4]}
- var f=S[st.field];if(d===2){var b=bbox(f),c=ctr(f);return [fit(b,.8),c[0],c[1]]}
- var ps=rowPos(st.field);if(d===3||st.row===null){var c=ctr(f);return [18,c[0],c[1]]}
+ var f=S[cur()];if(d<=3){var b=bbox(f),c=ctr(f);return [fit(b,.8),c[0],c[1]]}
+ var ps=rowPos(cur());if(d===4||st.row===null){var c=ctr(f);return [18,c[0],c[1]]}
  var hit=ps.filter(function(p){return p.row._i===st.row})[0];return hit?[26,hit.x,hit.y]:[18,ctr(f)[0],ctr(f)[1]]}
-function go(next,quiet){st=next;var c=camFor();setCam(c[0],c[1],c[2],true);render();if(!quiet)announce()}
-function announce(){var d=depth(),t=d===0?M.title:d===1?(st.sec>=0?S[st.sec].l:'Other fields'):S[st.field].l;
+function go(next,quiet){if(next.fine===undefined)next.fine=null;st=next;var c=camFor();setCam(c[0],c[1],c[2],true);render();if(!quiet)announce()}
+function announce(){var d=depth(),t=d===0?M.title:d===1?(st.sec>=0?S[st.sec].l:'Other fields'):S[cur()].l;
  var e=document.getElementById('live');if(!e){e=document.createElement('div');e.id='live';e.setAttribute('aria-live','polite');e.style.cssText='position:absolute;left:-9999px';document.body.appendChild(e)}
- e.textContent=['Whole disc','Sector','Field','Evidence','Row'][d]+': '+t}
+ e.textContent=['Whole disc','Sector','Field','Fine domain','Evidence','Row'][d]+': '+t}
 // ---- drawing: selection, dimming, labels, ticks
-function render(){var d=depth(),sel=d>=2?st.field:d===1?st.sec:-1;
+function render(){var d=depth(),sel=d>=2?cur():d===1?st.sec:-1;
  for(var i=0;i<N;i++){var s=S[i],on=true;
-  if(d>=2)on=i===st.field||i===st.sec;else if(d===1)on=i===st.sec||(s.r===1&&s.p===st.sec);
+  if(d>=2)on=i===cur()||i===st.field||i===st.sec||(s.r===2&&st.field!==null&&s.q===st.field)||(s.r===2&&st.field===null&&s.q===-1&&s.p===st.sec);
+  else if(d===1)on=i===st.sec||(s.r>=1&&s.p===st.sec);
   L.W[i].setAttribute('opacity',on?1:.3)}
  gS.textContent='';if(sel>=0)se('path',{d:L.wedge(S[sel]),fill:'none',stroke:'#fff','stroke-width':2,'vector-effect':'non-scaling-stroke'},gS);
  redraw();panelRender()}
@@ -540,13 +557,13 @@ function fmt(n){return n.toFixed(2)}
 function redraw(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;draw()})}
 function draw(){var s=cam.s,k=kpx(),ks=k*s,vw=svg.getBoundingClientRect().width/2/ks+.1;gL.textContent='';gT.textContent='';
  var fs=10.5/ks,d=depth();
- S.forEach(function(sl,i){var arc=sl.w*TAU*rmid(sl)*ks,mid=ctr(sl),forced=(d>=1&&(i===st.sec||i===st.field));
+ S.forEach(function(sl,i){var arc=sl.w*TAU*rmid(sl)*ks,mid=ctr(sl),forced=(d>=1&&(i===st.sec||i===st.field||i===st.fine));
   if(!forced&&arc<12)return;if(Math.abs(mid[0]-cam.x)>vw+.3||Math.abs(mid[1]-cam.y)>vw+.3)return;
   var avail=(sl.i1-sl.i0)*ks,v=lvl(i),txt=sl.l+(forced&&v&&arc>=12?' '+fmt(Math.max(v[0],v[1],v[2])):'');
   var maxc=Math.floor(avail/(10.5*.56));if(txt.length>maxc)txt=txt.slice(0,Math.max(3,maxc-1))+'…';
   var a=(sl.a+sl.w/2),flip=Math.cos(a*TAU)<0,t=se('text',{x:mid[0],y:mid[1],'font-size':fs,'text-anchor':'middle','dominant-baseline':'central','stroke-width':fs*.3,
    transform:'rotate('+(-a+(flip?180:0))+' '+mid[0]+' '+mid[1]+')'},gL);t.textContent=txt;if(forced)t.setAttribute('font-weight','700')});
- if(d>=3&&st.field!==null){var ps=rowPos(st.field);
+ if(d>=4&&cur()!==null){var ps=rowPos(cur());
   ps.forEach(function(p,j){var c=dominant(p.row),on=p.row._i===st.row,space=Math.min(j?(p.rad-ps[j-1].rad)*ks:99,j<ps.length-1?(ps[j+1].rad-p.rad)*ks:99);
    se('circle',{cx:p.x,cy:p.y,r:(on?7:4.5)/ks,fill:c,stroke:on?'#fff':'#000','stroke-width':1.4/ks},gT);
    if(space>=13||on){var t=se('text',{x:p.x+10/ks,y:p.y,'font-size':fs,'stroke-width':fs*.3,'dominant-baseline':'central'},gT);var u=p.row.t;t.textContent=u.length>48?u.slice(0,47)+'…':u}})}}
@@ -560,21 +577,25 @@ function down(){var d=depth();
  if(d===0){var s=bestSector();if(s===null){var f=best(S.map(function(x,i){return i}).filter(function(i){return S[i].r===1}));if(f===null)return;go({sec:S[f].p,field:null,rows:false,row:null});return}go({sec:s,field:null,rows:false,row:null})}
  else if(d===1){var ks=kids(st.sec);var f=ks.length?best(ks.filter(function(i){return tot(i)>0}).concat(ks.filter(function(i){return !tot(i)}))):null;
   if(f===null||(tot(f)===0&&ks.some(function(i){return tot(i)>0})))f=best(ks);if(f!==null)go({sec:st.sec,field:f,rows:false,row:null})}
- else if(d===2){if(ROWS&&rowsOf(st.field).length)go({sec:st.sec,field:st.field,rows:true,row:null});else announceText(ROWS?'No evidence rows for this field':'Rows are not disclosed in this file')}
- else if(d===3){var r=sortedRows(st.field);if(r.length)go({sec:st.sec,field:st.field,rows:true,row:r[0]._i})}}
+ else if(d===2){var fs=fines(st.field).filter(function(i){return tot(i)>0}),f=best(fs);
+  if(f!==null)go({sec:st.sec,field:st.field,fine:f,rows:false,row:null});
+  else if(ROWS&&rowsOf(st.field).length)go({sec:st.sec,field:st.field,rows:true,row:null});else announceText(ROWS?'No evidence rows for this field':'Rows are not disclosed in this file')}
+ else if(d===3){if(ROWS&&rowsOf(st.fine).length)go({sec:st.sec,field:st.field,fine:st.fine,rows:true,row:null});else announceText(ROWS?'No evidence rows for this fine domain':'Rows are not disclosed in this file')}
+ else if(d===4){var r=sortedRows(cur());if(r.length)go({sec:st.sec,field:st.field,fine:st.fine,rows:true,row:r[0]._i})}}
 function up(){var d=depth();if(d===0)return;
  if(d===1)go({sec:null,field:null,rows:false,row:null});else if(d===2)go({sec:st.sec,field:null,rows:false,row:null});
- else if(d===3)go({sec:st.sec,field:st.field,rows:false,row:null});else go({sec:st.sec,field:st.field,rows:true,row:null})}
+ else if(d===3)go({sec:st.sec,field:st.field,fine:null,rows:false,row:null});
+ else if(d===4)go({sec:st.sec,field:st.field,fine:st.fine,rows:false,row:null});else go({sec:st.sec,field:st.field,fine:st.fine,rows:true,row:null})}
 function step(dir){var d=depth();
  if(d===0){var all=sectors();if(all.length)go({sec:dir>0?all[0]:all[all.length-1],field:null,rows:false,row:null});return}
- if(d===1||d===2){var list=d===1?sectors():kids(st.sec),cur=d===1?st.sec:st.field,j=list.indexOf(cur);if(!list.length)return;
-  var n=list[(j+dir+list.length)%list.length];go(d===1?{sec:n,field:null,rows:false,row:null}:{sec:st.sec,field:n,rows:false,row:null});return}
- var r=sortedRows(st.field);if(!r.length)return;var pos=d===3?(dir>0?0:r.length-1):r.findIndex(function(x){return x._i===st.row})+dir;
- pos=Math.min(r.length-1,Math.max(0,pos));go({sec:st.sec,field:st.field,rows:true,row:r[pos]._i})}
+ if(d===1||d===2||d===3){var list=d===1?sectors():d===2?kids(st.sec):st.field!==null?fines(st.field):secFines(st.sec),cur_=d===1?st.sec:d===2?st.field:st.fine,j=list.indexOf(cur_);if(!list.length)return;
+  var n=list[(j+dir+list.length)%list.length];go(d===1?{sec:n,field:null,rows:false,row:null}:d===2?{sec:st.sec,field:n,rows:false,row:null}:{sec:st.sec,field:st.field,fine:n,rows:false,row:null});return}
+ var r=sortedRows(cur());if(!r.length)return;var pos=d===4?(dir>0?0:r.length-1):r.findIndex(function(x){return x._i===st.row})+dir;
+ pos=Math.min(r.length-1,Math.max(0,pos));go({sec:st.sec,field:st.field,fine:st.fine,rows:true,row:r[pos]._i})}
 function announceText(t){var e=document.getElementById('live');if(e)e.textContent=t}
 function select(i){var s=S[i];if(s.r===0){go({sec:i,field:null,rows:false,row:null})}
- else if(st.field===i&&!st.rows&&ROWS&&rowsOf(i).length)go({sec:s.p,field:i,rows:true,row:null});else go({sec:s.p,field:i,rows:false,row:null})}
-function selectRow(f,idx){go({sec:S[f].p,field:f,rows:true,row:idx})}
+ else if(cur()===i&&!st.rows&&ROWS&&rowsOf(i).length)go(at(i,true));else go(at(i,false))}
+function selectRow(f,idx){go(at(f,true,idx))}
 // ---- panel
 function h(tag,par,text,at){var e=document.createElement(tag);if(text!==undefined)e.textContent=text;for(var k in at||{})e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e}
 function btn(par,text,fn,cur){var li=par.tagName==='UL'?h('li',par):par,b=h('button',li,text,{type:'button'});if(cur)b.setAttribute('aria-current','true');b.addEventListener('click',fn);return b}
@@ -584,30 +605,36 @@ function bars(par,v){var names=[['red','#ff4040',0],['green','#30d050',1],['blue
 function crumbs(par){var n=h('nav',par,undefined,{'aria-label':'Zoom path'}),d=depth();
  btn(n,'Whole disc',function(){go({sec:null,field:null,rows:false,row:null})},d===0);
  if(d>=1)btn(n,st.sec>=0?S[st.sec].l:'Other fields',function(){go({sec:st.sec,field:null,rows:false,row:null})},d===1);
- if(d>=2)btn(n,S[st.field].l,function(){go({sec:st.sec,field:st.field,rows:false,row:null})},d===2);
- if(d>=3)btn(n,'Evidence',function(){go({sec:st.sec,field:st.field,rows:true,row:null})},d===3);
- if(d>=4)btn(n,'Row',function(){},true)}
+ if(d>=2&&st.field!==null)btn(n,S[st.field].l,function(){go({sec:st.sec,field:st.field,rows:false,row:null})},d===2);
+ if(d>=3&&st.fine!==null)btn(n,S[st.fine].l,function(){go({sec:st.sec,field:st.field,fine:st.fine,rows:false,row:null})},d===3);
+ if(d>=4)btn(n,'Evidence',function(){go({sec:st.sec,field:st.field,fine:st.fine,rows:true,row:null})},d===4);
+ if(d>=5)btn(n,'Row',function(){},true)}
+function fineList(p,list){h('h3',p,'Fine domains ('+list.length+')',{'class':'sub'});
+ if(list.length){var ul=h('ul',p);list.slice().sort(function(a,b){return tot(b)-tot(a)}).forEach(function(i){btn(ul,S[i].l+'  '+fmt(Math.max.apply(0,(lvl(i)||[0]).slice(0,3))),function(){select(i)})})}}
+function evidenceButton(p,i){var n=rowsOf(i).length;
+ if(ROWS){if(n)btn(p,'Evidence rows ('+n+')',function(){select(i)});else h('p',p,'No evidence rows imprint this slice.',{'class':'sub'})}
+ else h('p',p,'Row detail is not disclosed in this file.',{'class':'sub'})}
 function panelRender(){var p=panel,d=depth();p.textContent='';crumbs(p);
  if(d===0){h('h2',p,M.title);h('p',p,'Sectors by total level. Select one, or zoom the image.',{'class':'sub'});
   var ul=h('ul',p);sectors().sort(function(a,b){return tot(b)-tot(a)}).forEach(function(i){btn(ul,S[i].l+'  '+fmt(Math.max.apply(0,(lvl(i)||[0]).slice(0,3))),function(){select(i)})})}
  else if(d===1){h('h2',p,st.sec>=0?S[st.sec].l:'Other fields');if(st.sec>=0)bars(p,lvl(st.sec));h('h3',p,'Fields',{'class':'sub'});
-  var ul=h('ul',p);kids(st.sec).sort(function(a,b){return tot(b)-tot(a)}).forEach(function(i){btn(ul,S[i].l+'  '+fmt(Math.max.apply(0,(lvl(i)||[0]).slice(0,3))),function(){select(i)})})}
- else if(d===2){var f=S[st.field];h('h2',p,f.l);bars(p,lvl(st.field));var fn=(M.fine&&M.fine[st.field])||[];
-  h('h3',p,'Fine domains ('+fn.length+')',{'class':'sub'});
-  if(fn.length){var ul=h('ul',p);fn.forEach(function(t){h('li',ul,t)});h('p',p,'Evidence rows are placed at the field; fine domains carry no rows of their own yet.',{'class':'sub'})}
-  var n=rowsOf(st.field).length;
-  if(ROWS){if(n)btn(p,'Evidence rows ('+n+')',function(){select(st.field)});else h('p',p,'No evidence rows imprint this field.',{'class':'sub'})}
-  else h('p',p,'Row detail is not disclosed in this file.',{'class':'sub'})}
- else{var f=S[st.field],rs=sortedRows(st.field);h('h2',p,f.l+': evidence ('+rs.length+')');
+  var ul=h('ul',p);kids(st.sec).sort(function(a,b){return tot(b)-tot(a)}).forEach(function(i){btn(ul,S[i].l+'  '+fmt(Math.max.apply(0,(lvl(i)||[0]).slice(0,3))),function(){select(i)})});
+  var sf=secFines(st.sec);if(sf.length)fineList(p,sf)}
+ else if(d===2){var f=S[st.field];h('h2',p,f.l);bars(p,lvl(st.field));
+  h('p',p,'A field is the re-saturated sum of what its fine domains hold and what names it directly.',{'class':'sub'});
+  fineList(p,fines(st.field));evidenceButton(p,st.field)}
+ else if(d===3){var f=S[st.fine];h('h2',p,f.l);bars(p,lvl(st.fine));
+  h('p',p,'A fine domain in '+(st.field!==null?S[st.field].l:S[st.sec].l)+'. Its colour reaches the field above whole, once.',{'class':'sub'});evidenceButton(p,st.fine)}
+ else{var c=cur(),f=S[c],rs=sortedRows(c);h('h2',p,f.l+': evidence ('+rs.length+')');
   var o=h('div',p),sb=h('button',o,'Sorted by '+(SORT==='contribution'?'contribution':'date')+' (switch)',{type:'button'});
   sb.addEventListener('click',function(){SORT=SORT==='contribution'?'date':'contribution';panelRender()});
-  if(d===4){rowDetail(p,rs.filter(function(r){return r._i===st.row})[0])}
+  if(d===5){rowDetail(p,rs.filter(function(r){return r._i===st.row})[0])}
   var ul=h('ul',p);rs.forEach(function(r){var tot_=0;for(var k in r.v)tot_+=r.v[k];
-   btn(ul,r.t+'  · '+r.k+' · '+r.d+' · '+r.c+' · +'+tot_.toFixed(3),function(){selectRow(st.field,r._i)},r._i===st.row)})}}
+   btn(ul,r.t+'  · '+r.k+' · '+r.d+' · '+r.c+' · +'+tot_.toFixed(3),function(){selectRow(c,r._i)},r._i===st.row)})}}
 function rowDetail(p,r){if(!r)return;var c=h('section',p,undefined,{id:'rowdetail','aria-label':'Evidence row'});var dl=h('dl',c);
  function kv(a,b){h('dt',dl,a);h('dd',dl,b)}
  kv('Reason',r.t);kv('Tier',r.k+(r.k==='claimed'?' (self-reported, drawn pale)':''));kv('Date',r.d);kv('Channel',r.c);
- var parts=[];for(var k in r.v)parts.push(k+' +'+r.v[k].toFixed(4));kv('Contribution to the level',parts.join(', ')+(r.b?' (bled from a neighbouring domain)':''));
+ var parts=[];for(var k in r.v)parts.push(k+' +'+r.v[k].toFixed(4));kv('Contribution to the level',parts.join(', ')+(r.b===2?' (carried up from a fine domain it holds)':r.b?' (bled from an upstream domain)':''));
  kv('Source',r.s);kv('Confidence',String(r.q));if(r.m!==undefined)kv('Member',M.members?M.members[r.m].name:String(r.m))}
 // ---- gestures
 function toModel(cx,cy){var r=svg.getBoundingClientRect(),ks=kpx()*cam.s;return [cam.x+(cx-r.left-r.width/2)/ks,cam.y+(cy-r.top-r.height/2)/ks]}
@@ -616,18 +643,21 @@ function zoomAt(f,cx,cy){var p=toModel(cx,cy),s=Math.min(SMAX,Math.max(SMIN,cam.
 function later(){clearTimeout(timer);timer=setTimeout(syncFromCam,160)}
 function hitSlice(x,y){var r=Math.hypot(x,y),a=(Math.atan2(-y,x)/TAU+360)%360,out=-1;
  S.forEach(function(s,i){if(r>=s.i0&&r<=s.i1){var d=(a-s.a+360)%360;if(d<=s.w)out=i}});return out}
-function syncFromCam(){var s=cam.s,want=s>=1.6?1:0;if(s>=3.2)want=2;if(s>=12&&ROWS)want=3;
- if(want===0){if(depth()!==0){st={sec:null,field:null,rows:false,row:null};render()}return}
- var h_=hitSlice(cam.x,cam.y),n={sec:st.sec,field:st.field,rows:st.rows,row:st.row};
- if(h_>=0){var sl=S[h_];if(sl.r===0)n={sec:h_,field:want>=2&&st.sec===h_?st.field:null,rows:false,row:null};
-  else{n.sec=sl.p;if(want>=2)n.field=h_;else n.field=null}}
- if(want<2){n.field=null;n.rows=false;n.row=null}if(want<3){n.rows=false;n.row=null}
- if(want>=3&&n.field!==null&&rowsOf(n.field).length){n.rows=true}else if(want>=3)n.rows=false;
+function syncFromCam(){var s=cam.s,want=s>=1.6?1:0;if(s>=3.2)want=2;if(s>=7)want=3;if(s>=16&&ROWS)want=4;
+ if(want===0){if(depth()!==0){st={sec:null,field:null,fine:null,rows:false,row:null};render()}return}
+ var h_=hitSlice(cam.x,cam.y),n={sec:st.sec,field:st.field,fine:st.fine,rows:st.rows,row:st.row};
+ if(h_>=0){var sl=S[h_];
+  if(sl.r===0)n={sec:h_,field:want>=2&&st.sec===h_?st.field:null,fine:want>=3&&st.sec===h_?st.fine:null,rows:false,row:null};
+  else if(sl.r===1){n.sec=sl.p;n.field=want>=2?h_:null;n.fine=null}
+  else{n.sec=sl.p;n.field=want>=2&&sl.q>=0?sl.q:null;n.fine=want>=3?h_:null}}
+ if(want<2){n.field=null;n.fine=null;n.rows=false;n.row=null}if(want<3){n.fine=null;n.rows=false;n.row=null}if(want<4){n.rows=false;n.row=null}
+ var c=n.fine!==null?n.fine:n.field;
+ if(want>=4&&c!==null&&rowsOf(c).length){n.rows=true}else if(want>=4)n.rows=false;
  if(n.sec===null&&want>=1)return;
- if(n.sec!==st.sec||n.field!==st.field||n.rows!==st.rows){st=n;render()}}
+ if(n.sec!==st.sec||n.field!==st.field||n.fine!==st.fine||n.rows!==st.rows){st=n;render()}}
 var ptrs={},drag=null,pinch=null;
-function rowTickAt(cx,cy){if(depth()<3||st.field===null)return null;var r=svg.getBoundingClientRect(),ks=kpx()*cam.s,best=null,bd=1e9;
- rowPos(st.field).forEach(function(p){var dx=(p.x-cam.x)*ks+r.width/2+r.left-cx,dy=(p.y-cam.y)*ks+r.height/2+r.top-cy,d=Math.hypot(dx,dy);if(d<bd&&d<12){bd=d;best=p}});return best}
+function rowTickAt(cx,cy){if(depth()<4||cur()===null)return null;var r=svg.getBoundingClientRect(),ks=kpx()*cam.s,best=null,bd=1e9;
+ rowPos(cur()).forEach(function(p){var dx=(p.x-cam.x)*ks+r.width/2+r.left-cx,dy=(p.y-cam.y)*ks+r.height/2+r.top-cy,d=Math.hypot(dx,dy);if(d<bd&&d<12){bd=d;best=p}});return best}
 stage.addEventListener('wheel',function(e){e.preventDefault();var f=Math.exp(-e.deltaY*(e.ctrlKey?.01:.0016));zoomAt(f,e.clientX,e.clientY)},{passive:false});
 stage.addEventListener('pointerdown',function(e){ptrs[e.pointerId]={x:e.clientX,y:e.clientY};try{stage.setPointerCapture(e.pointerId)}catch(_){}
  var ids=Object.keys(ptrs);if(ids.length===1)drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false};
@@ -638,7 +668,7 @@ stage.addEventListener('pointermove',function(e){if(!ptrs[e.pointerId])return;pt
   var ks=kpx()*cam.s;cam={s:cam.s,x:drag.cx-dx/ks,y:drag.cy-dy/ks};clampCam(cam);tid++;applyCam()}});
 function end(e){var was=drag;delete ptrs[e.pointerId];if(Object.keys(ptrs).length<2)pinch=null;stage.classList.remove('drag');
  if(Object.keys(ptrs).length===0){drag=null;
-  if(was&&!was.moved&&e.type==='pointerup'){var tk=rowTickAt(e.clientX,e.clientY);if(tk){selectRow(st.field,tk.row._i);return}
+  if(was&&!was.moved&&e.type==='pointerup'){var tk=rowTickAt(e.clientX,e.clientY);if(tk){selectRow(cur(),tk.row._i);return}
    var m=toModel(e.clientX,e.clientY),i=hitSlice(m[0],m[1]);if(i>=0)select(i);else if(depth()>0)go({sec:null,field:null,rows:false,row:null})}
   else if(was&&was.moved)later()}}
 stage.addEventListener('pointerup',end);stage.addEventListener('pointercancel',end);
@@ -673,9 +703,9 @@ SELFTEST_JS = r"""
  var before=N.cam().s;stage.dispatchEvent(new WheelEvent('wheel',{deltaY:-500,clientX:300,clientY:300,bubbles:true,cancelable:true}));
  R.wheelChangedScale=N.cam().s>before;R.zoomed=R.wheelChangedScale;
  key('0');var md=0;for(var q=0;q<6;q++){key('ArrowDown');md=Math.max(md,N.depth())}R.maxDepth=md;
- R.keyboardReachedRow=N.depth()===4;
+ R.keyboardReachedRow=N.depth()===5;
  var rd=document.getElementById('rowdetail');R.rowShown=!!rd&&rd.textContent.length>20;R.rowFields=rd?rd.querySelectorAll('dt').length:0;
- key('ArrowUp');key('ArrowUp');R.upTwo=N.depth()===(md>=4?2:0);key('0');
+ key('ArrowUp');key('ArrowUp');R.upTwo=N.depth()===md-2;key('0');
  if(M.kind==='group'&&M.members){var all=M.members.map(function(){return true}),g=L.groupLv(all);R.groupMatches=diff(g,M.views[0].lv)<2e-3;
   var one=all.slice();one[0]=false;L.setMembers(one);R.groupTogglesChange=diff(L.lv,M.views[0].lv)>1e-3;L.setMembers(all)}
  if(M.kind==='compare'){R.views=document.querySelectorAll('#toolbar input[type=radio]').length;L.setView(0);var a=JSON.stringify(L.lv);L.setView(2);R.viewsDiffer=a!==JSON.stringify(L.lv)}

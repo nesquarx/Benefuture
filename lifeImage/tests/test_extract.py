@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from lifeimage.cache import AnswerCache
+from lifeimage.fine.cards import coarsen_rows, load_fine
 from lifeimage.extract import (CLAIMED_CONFIDENCE, answer_rows, build_extract_batches, evidence_rows, resume_input,
                                write_extract_batches)
 from lifeimage.generators.common import A_RELS
@@ -24,7 +25,8 @@ def personas():
 
 
 def truth(pid):
-    return [json.loads(l) for l in (SYN / "truth" / f"{pid}.jsonl").read_text().splitlines()]
+    """The truth rows read at the coarse level: a resume names a field, not the fine domain the row was placed in (LI.51)."""
+    return coarsen_rows([json.loads(l) for l in (SYN / "truth" / f"{pid}.jsonl").read_text().splitlines()], load_fine())
 
 
 def inputs():

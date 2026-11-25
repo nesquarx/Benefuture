@@ -7,6 +7,7 @@ import math
 
 import pytest
 
+from lifeimage import levels as lv
 from lifeimage.generators import life
 from lifeimage.render import basemap as bmod
 from lifeimage.render import image as im
@@ -18,7 +19,7 @@ RELS = ("form", "content", "outcome")
 
 
 def cards():
-    return bmod.load_cards()
+    return bmod.load_all_cards()
 
 
 def row(domain=D, magnitude=0.5, **over):
@@ -213,7 +214,7 @@ def test_a_persona_with_a_knowing_test_shows_solid_red_where_the_exam_is():
 def _typical_touched_level(rows):
     """Median over the domains a row names directly of the strongest solid channel level."""
     solid = cv(rows, asof="2026-11-24").get("solid", {})
-    direct = {m["domain"] for r in rows if r["channel"] == "positive" and not r["revoked"] for m in r["memberships"]}
+    direct = lv.touched_coarse([r for r in rows if r["channel"] == "positive"], cards(), lv.DEFAULT, "2026-11-24")  # the anchor is read at the coarse fields (LI.51)
     vals = sorted(max(solid[d][k] for k in ("red", "green", "blue")) for d in direct if d in solid)
     return vals[len(vals) // 2] if vals else None
 

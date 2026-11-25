@@ -7,12 +7,12 @@
  ],
  "shift_degrees": {
   "field": {
-   "max": 49.23712100978088,
-   "mean": 17.684240456590718
+   "max": 52.09673754196001,
+   "mean": 17.442503306941816
   },
   "sector": {
-   "max": 53.62516505187267,
-   "mean": 22.19242650041038
+   "max": 51.823161194265595,
+   "mean": 21.904910174254987
   }
  },
  "slices": {
@@ -23,9 +23,9 @@
    "r1": 0.7350751782676702,
    "ring": "field",
    "source": "axes",
-   "start": 188.999,
+   "start": 191.414,
    "votes": 2,
-   "width": 0.357
+   "width": 0.358
   },
   "c.accident_injury": {
    "axes_angle": 323.13,
@@ -34,31 +34,31 @@
    "r1": 0.5924015439170837,
    "ring": "field",
    "source": "axes",
-   "start": 329.114,
+   "start": 330.161,
    "votes": 2,
-   "width": 0.646
+   "width": 0.65
   },
   "c.ageing_body": {
    "axes_angle": 315.0,
-   "pressure": 0.000783,
+   "pressure": 0.00062,
    "r0": 0.5095967935345977,
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 295.644,
+   "start": 295.316,
    "votes": 2,
-   "width": 0.491
+   "width": 0.443
   },
   "c.agri_forestry_fishing_work": {
    "axes_angle": 20.556,
-   "pressure": 0.001183,
+   "pressure": 0.001514,
    "r0": 0.7119027908283226,
    "r1": 0.8159027908283226,
    "ring": "field",
    "source": "axes",
-   "start": 45.936,
+   "start": 48.628,
    "votes": 2,
-   "width": 0.614
+   "width": 0.721
   },
   "c.agricultural_science": {
    "axes_angle": 60.255,
@@ -67,20 +67,20 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 88.564,
+   "start": 84.048,
    "votes": 2,
-   "width": 0.352
+   "width": 0.353
   },
   "c.ai_ml": {
    "axes_angle": 135.0,
-   "pressure": 0.000174,
+   "pressure": 0.000221,
    "r0": 0.8560000000000001,
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 143.734,
+   "start": 141.196,
    "votes": 2,
-   "width": 0.304
+   "width": 0.319
   },
   "c.air_travel": {
    "axes_angle": 41.186,
@@ -89,7 +89,7 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 69.553,
+   "start": 69.263,
    "votes": 2,
    "width": 0.304
   },
@@ -100,20 +100,20 @@
    "r1": 0.750101603660458,
    "ring": "field",
    "source": "axes",
-   "start": 269.203,
+   "start": 269.583,
    "votes": 2,
    "width": 0.304
   },
   "c.animal_care_husbandry": {
    "axes_angle": 339.444,
-   "pressure": 0.001175,
+   "pressure": 0.001148,
    "r0": 0.6752059977214819,
    "r1": 0.7792059977214819,
    "ring": "field",
    "source": "axes",
-   "start": 25.876,
+   "start": 28.534,
    "votes": 2,
-   "width": 0.611
+   "width": 0.607
   },
   "c.anthropology": {
    "axes_angle": 135.0,
@@ -122,7 +122,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 139.966,
+   "start": 138.073,
    "votes": 2,
    "width": 0.304
   },
@@ -133,7 +133,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 154.826,
+   "start": 154.077,
    "votes": 2,
    "width": 0.304
   },
@@ -144,7 +144,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 118.797,
+   "start": 116.942,
    "votes": 2,
    "width": 0.304
   },
@@ -155,20 +155,20 @@
    "r1": 0.6582021379287728,
    "ring": "field",
    "source": "axes",
-   "start": 155.482,
+   "start": 154.735,
    "votes": 2,
-   "width": 1.134
+   "width": 1.142
   },
   "c.basic_skills": {
    "axes_angle": 203.199,
-   "pressure": 0.00268,
+   "pressure": 0.001956,
    "r0": 0.6737824229003911,
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 181.347,
+   "start": 183.792,
    "votes": 2,
-   "width": 1.075
+   "width": 0.858
   },
   "c.bereavement": {
    "axes_angle": 225.0,
@@ -177,7 +177,7 @@
    "r1": 0.7026491096241015,
    "ring": "field",
    "source": "axes",
-   "start": 206.039,
+   "start": 206.949,
    "votes": 2,
    "width": 0.304
   },
@@ -188,7 +188,7 @@
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 88.261,
+   "start": 83.744,
    "votes": 2,
    "width": 0.304
   },
@@ -199,9 +199,9 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 283.288,
+   "start": 283.791,
    "votes": 2,
-   "width": 1.522
+   "width": 1.534
   },
   "c.border_migration_admin": {
    "axes_angle": 110.556,
@@ -210,9 +210,9 @@
    "r1": 0.7322280286254889,
    "ring": "field",
    "source": "axes",
-   "start": 101.449,
+   "start": 98.065,
    "votes": 2,
-   "width": 0.31
+   "width": 0.311
   },
   "c.borrowing_debt": {
    "axes_angle": 161.565,
@@ -221,9 +221,9 @@
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 164.166,
+   "start": 167.961,
    "votes": 2,
-   "width": 0.989
+   "width": 0.996
   },
   "c.bullying_harassment": {
    "axes_angle": 240.255,
@@ -232,53 +232,53 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 226.75,
+   "start": 226.859,
    "votes": 2,
    "width": 0.304
   },
   "c.business_administration": {
    "axes_angle": 113.199,
-   "pressure": 0.010893,
+   "pressure": 0.010707,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 101.759,
+   "start": 98.376,
    "votes": 2,
-   "width": 3.602
+   "width": 3.577
   },
   "c.business_science": {
    "axes_angle": 138.814,
-   "pressure": 0.000218,
+   "pressure": 0.000899,
    "r0": 0.7636260093279512,
    "r1": 0.8676260093279512,
    "ring": "field",
    "source": "axes",
-   "start": 148.389,
+   "start": 145.705,
    "votes": 2,
-   "width": 0.317
+   "width": 0.529
   },
   "c.care_of_ill_disabled": {
    "axes_angle": 321.34,
-   "pressure": 0.002767,
+   "pressure": 0.009937,
    "r0": 0.5943783851608295,
    "r1": 0.6983783851608295,
    "ring": "field",
    "source": "axes",
-   "start": 325.338,
+   "start": 324.318,
    "votes": 2,
-   "width": 1.101
+   "width": 3.337
   },
   "c.celebrations": {
    "axes_angle": 284.036,
-   "pressure": 0.015008,
+   "pressure": 0.013585,
    "r0": 0.546768111581802,
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 260.203,
+   "start": 262.86,
    "votes": 2,
-   "width": 4.868
+   "width": 4.471
   },
   "c.charity_giving": {
    "axes_angle": 251.565,
@@ -287,20 +287,20 @@
    "r1": 0.6691162115571347,
    "ring": "field",
    "source": "axes",
-   "start": 231.331,
+   "start": 231.206,
    "votes": 2,
-   "width": 3.713
+   "width": 3.747
   },
   "c.chemistry": {
    "axes_angle": 50.194,
-   "pressure": 0.001305,
+   "pressure": 0.001117,
    "r0": 0.8139256530064891,
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 85.662,
+   "start": 81.207,
    "votes": 2,
-   "width": 0.652
+   "width": 0.597
   },
   "c.child_abuse_neglect": {
    "axes_angle": 296.565,
@@ -309,7 +309,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 268.9,
+   "start": 269.279,
    "votes": 2,
    "width": 0.304
   },
@@ -320,31 +320,31 @@
    "r1": 0.599677197565208,
    "ring": "field",
    "source": "axes",
-   "start": 326.44,
+   "start": 327.656,
    "votes": 2,
    "width": 0.304
   },
   "c.children_play": {
    "axes_angle": 307.875,
-   "pressure": 0.001109,
+   "pressure": 0.00097,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 284.81,
+   "start": 285.325,
    "votes": 2,
-   "width": 0.591
+   "width": 0.551
   },
   "c.civil_engineering": {
    "axes_angle": 48.814,
-   "pressure": 0.001321,
+   "pressure": 0.001304,
    "r0": 0.8411313541498833,
    "r1": 0.9451313541498833,
    "ring": "field",
    "source": "axes",
-   "start": 85.006,
+   "start": 80.552,
    "votes": 2,
-   "width": 0.656
+   "width": 0.655
   },
   "c.civil_society_advocacy": {
    "axes_angle": 129.806,
@@ -353,20 +353,20 @@
    "r1": 0.710399881368765,
    "ring": "field",
    "source": "axes",
-   "start": 127.961,
+   "start": 125.918,
    "votes": 2,
-   "width": 4.915
+   "width": 4.96
   },
   "c.cleaning_laundry": {
    "axes_angle": 318.366,
-   "pressure": 0.000174,
+   "pressure": 0.000586,
    "r0": 0.5013714968495707,
    "r1": 0.6053714968495707,
    "ring": "field",
    "source": "axes",
-   "start": 316.088,
+   "start": 315.517,
    "votes": 2,
-   "width": 0.304
+   "width": 0.432
   },
   "c.clothing_footwear": {
    "axes_angle": 327.995,
@@ -375,7 +375,7 @@
    "r1": 0.6183420429382332,
    "ring": "field",
    "source": "axes",
-   "start": 331.425,
+   "start": 332.512,
    "votes": 2,
    "width": 0.304
   },
@@ -386,20 +386,20 @@
    "r1": 0.7026491096241015,
    "ring": "field",
    "source": "axes",
-   "start": 228.669,
+   "start": 228.784,
    "votes": 2,
    "width": 0.304
   },
   "c.community_groups": {
    "axes_angle": 233.13,
-   "pressure": 0.002854,
+   "pressure": 0.003118,
    "r0": 0.546768111581802,
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 210.5,
+   "start": 211.362,
    "votes": 2,
-   "width": 1.128
+   "width": 1.219
   },
   "c.commuting": {
    "axes_angle": 333.435,
@@ -408,20 +408,20 @@
    "r1": 0.544,
    "ring": "field",
    "source": "axes",
-   "start": 0.361,
+   "start": 2.78,
    "votes": 2,
    "width": 0.304
   },
   "c.computer_science": {
    "axes_angle": 139.399,
-   "pressure": 0.001514,
+   "pressure": 0.001987,
    "r0": 0.8560000000000001,
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 149.33,
+   "start": 146.863,
    "votes": 2,
-   "width": 0.716
+   "width": 0.867
   },
   "c.conflict_interpersonal": {
    "axes_angle": 228.814,
@@ -430,31 +430,31 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 208.623,
+   "start": 209.461,
    "votes": 2,
-   "width": 0.314
+   "width": 0.315
   },
   "c.construction_trades": {
    "axes_angle": 36.87,
-   "pressure": 0.005197,
+   "pressure": 0.004611,
    "r0": 0.6737824229003911,
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 61.895,
+   "start": 62.399,
    "votes": 2,
-   "width": 1.849
+   "width": 1.683
   },
   "c.cooking": {
    "axes_angle": 315.0,
-   "pressure": 0.006396,
+   "pressure": 0.005391,
    "r0": 0.6247479813440977,
    "r1": 0.7287479813440977,
    "ring": "field",
    "source": "axes",
-   "start": 308.614,
+   "start": 308.351,
    "votes": 2,
-   "width": 2.218
+   "width": 1.925
   },
   "c.corruption": {
    "axes_angle": 135.0,
@@ -463,7 +463,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 140.27,
+   "start": 138.377,
    "votes": 2,
    "width": 0.304
   },
@@ -474,20 +474,20 @@
    "r1": 0.6559878859258013,
    "ring": "field",
    "source": "axes",
-   "start": 187.528,
+   "start": 189.931,
    "votes": 2,
-   "width": 1.471
+   "width": 1.483
   },
   "c.crafts_hobbies": {
    "axes_angle": 315.0,
-   "pressure": 0.003306,
+   "pressure": 0.003534,
    "r0": 0.6706191210166925,
    "r1": 0.7746191210166925,
    "ring": "field",
    "source": "axes",
-   "start": 287.371,
+   "start": 287.833,
    "votes": 2,
-   "width": 1.267
+   "width": 1.348
   },
   "c.creative_writing": {
    "axes_angle": 221.186,
@@ -496,9 +496,9 @@
    "r1": 0.739820427671306,
    "ring": "field",
    "source": "axes",
-   "start": 197.72,
+   "start": 198.57,
    "votes": 2,
-   "width": 3.249
+   "width": 3.278
   },
   "c.cultural_identity": {
    "axes_angle": 225.0,
@@ -507,31 +507,31 @@
    "r1": 0.7184668053549456,
    "ring": "field",
    "source": "axes",
-   "start": 205.128,
+   "start": 206.037,
    "votes": 2,
    "width": 0.304
   },
   "c.cultural_visits": {
    "axes_angle": 315.0,
-   "pressure": 0.008787,
+   "pressure": 0.007703,
    "r0": 0.5662236341367082,
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 288.638,
+   "start": 289.181,
    "votes": 2,
-   "width": 2.954
+   "width": 2.643
   },
   "c.customer_service": {
    "axes_angle": 113.199,
-   "pressure": 0.005615,
+   "pressure": 0.005427,
    "r0": 0.5076986937731435,
    "r1": 0.6116986937731435,
    "ring": "field",
    "source": "axes",
-   "start": 105.361,
+   "start": 101.952,
    "votes": 2,
-   "width": 1.978
+   "width": 1.936
   },
   "c.cybercrime": {
    "axes_angle": 135.0,
@@ -540,7 +540,7 @@
    "r1": 0.8410526126675916,
    "ring": "field",
    "source": "axes",
-   "start": 144.341,
+   "start": 141.819,
    "votes": 2,
    "width": 0.304
   },
@@ -551,9 +551,9 @@
    "r1": 0.9302633014559417,
    "ring": "field",
    "source": "axes",
-   "start": 115.834,
+   "start": 113.326,
    "votes": 2,
-   "width": 0.38
+   "width": 0.381
   },
   "c.death_dying": {
    "axes_angle": 299.745,
@@ -562,20 +562,20 @@
    "r1": 0.7659192993913021,
    "ring": "field",
    "source": "axes",
-   "start": 271.457,
+   "start": 271.61,
    "votes": 2,
    "width": 0.304
   },
   "c.digital_tool_use": {
    "axes_angle": 236.31,
-   "pressure": 0.004263,
+   "pressure": 0.004176,
    "r0": 0.6478419238792414,
    "r1": 0.7518419238792414,
    "ring": "field",
    "source": "axes",
-   "start": 212.173,
+   "start": 213.128,
    "votes": 2,
-   "width": 1.562
+   "width": 1.548
   },
   "c.disability_adaptation": {
    "axes_angle": 326.31,
@@ -584,7 +584,7 @@
    "r1": 0.7608578977461492,
    "ring": "field",
    "source": "axes",
-   "start": 331.121,
+   "start": 332.208,
    "votes": 2,
    "width": 0.304
   },
@@ -595,7 +595,7 @@
    "r1": 0.750101603660458,
    "ring": "field",
    "source": "axes",
-   "start": 345.456,
+   "start": 347.739,
    "votes": 2,
    "width": 0.304
   },
@@ -606,9 +606,9 @@
    "r1": 0.750101603660458,
    "ring": "field",
    "source": "axes",
-   "start": 206.646,
+   "start": 207.557,
    "votes": 2,
-   "width": 0.346
+   "width": 0.347
   },
   "c.domestic_abuse": {
    "axes_angle": 249.444,
@@ -617,20 +617,20 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 228.973,
+   "start": 229.088,
    "votes": 2,
    "width": 0.304
   },
   "c.driving": {
    "axes_angle": 339.444,
-   "pressure": 0.005742,
+   "pressure": 0.006226,
    "r0": 0.6421476245948786,
    "r1": 0.7461476245948786,
    "ring": "field",
    "source": "axes",
-   "start": 26.488,
+   "start": 29.141,
    "votes": 2,
-   "width": 2.017
+   "width": 2.184
   },
   "c.drug_crime": {
    "axes_angle": 50.194,
@@ -639,7 +639,7 @@
    "r1": 0.7085017816073106,
    "ring": "field",
    "source": "axes",
-   "start": 86.314,
+   "start": 81.804,
    "votes": 2,
    "width": 0.304
   },
@@ -650,20 +650,20 @@
    "r1": 0.8347254157440189,
    "ring": "field",
    "source": "axes",
-   "start": 343.422,
+   "start": 345.691,
    "votes": 2,
-   "width": 1.321
+   "width": 1.331
   },
   "c.earth_sciences": {
    "axes_angle": 60.255,
-   "pressure": 0.000174,
+   "pressure": 0.000379,
    "r0": 0.8139256530064891,
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 88.916,
+   "start": 84.401,
    "votes": 2,
-   "width": 0.304
+   "width": 0.368
   },
   "c.eating_drinking": {
    "axes_angle": 315.0,
@@ -672,20 +672,20 @@
    "r1": 0.5712057011433941,
    "ring": "field",
    "source": "axes",
-   "start": 296.135,
+   "start": 295.759,
    "votes": 2,
-   "width": 0.89
+   "width": 0.896
   },
   "c.ecology_science": {
    "axes_angle": 81.87,
-   "pressure": 0.000174,
+   "pressure": 0.000238,
    "r0": 0.797158907394918,
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 90.619,
+   "start": 87.283,
    "votes": 2,
-   "width": 0.304
+   "width": 0.324
   },
   "c.economics": {
    "axes_angle": 138.814,
@@ -694,9 +694,9 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 148.706,
+   "start": 146.235,
    "votes": 2,
-   "width": 0.625
+   "width": 0.628
   },
   "c.eldercare": {
    "axes_angle": 333.435,
@@ -705,9 +705,9 @@
    "r1": 0.719574227934519,
    "ring": "field",
    "source": "axes",
-   "start": 345.759,
+   "start": 348.044,
    "votes": 2,
-   "width": 1.808
+   "width": 1.823
   },
   "c.electrical_engineering": {
    "axes_angle": 45.0,
@@ -716,20 +716,20 @@
    "r1": 0.9451313541498833,
    "ring": "field",
    "source": "axes",
-   "start": 69.856,
+   "start": 69.567,
    "votes": 2,
-   "width": 0.545
+   "width": 0.547
   },
   "c.elementary_occupations": {
    "axes_angle": 26.565,
-   "pressure": 0.000174,
+   "pressure": 0.000886,
    "r0": 0.46024619973678693,
    "r1": 0.5642461997367869,
    "ring": "field",
    "source": "axes",
-   "start": 58.867,
+   "start": 59.136,
    "votes": 2,
-   "width": 0.304
+   "width": 0.525
   },
   "c.employment_job": {
    "axes_angle": 90.0,
@@ -738,9 +738,9 @@
    "r1": 0.6116986937731435,
    "ring": "field",
    "source": "axes",
-   "start": 90.922,
+   "start": 87.607,
    "votes": 2,
-   "width": 5.005
+   "width": 5.051
   },
   "c.employment_transition": {
    "axes_angle": 135.0,
@@ -749,9 +749,9 @@
    "r1": 0.7659192993913021,
    "ring": "field",
    "source": "axes",
-   "start": 138.592,
+   "start": 136.687,
    "votes": 2,
-   "width": 1.374
+   "width": 1.385
   },
   "c.energy_systems": {
    "axes_angle": 45.0,
@@ -760,7 +760,7 @@
    "r1": 0.9153946556058249,
    "ring": "field",
    "source": "axes",
-   "start": 70.401,
+   "start": 70.114,
    "votes": 2,
    "width": 0.304
   },
@@ -771,9 +771,9 @@
    "r1": 0.7066036818458564,
    "ring": "field",
    "source": "axes",
-   "start": 96.927,
+   "start": 93.721,
    "votes": 2,
-   "width": 1.701
+   "width": 1.715
   },
   "c.environmental_harm": {
    "axes_angle": 32.005,
@@ -782,7 +782,7 @@
    "r1": 0.7058130046639756,
    "ring": "field",
    "source": "axes",
-   "start": 61.592,
+   "start": 62.095,
    "votes": 2,
    "width": 0.304
   },
@@ -793,9 +793,9 @@
    "r1": 0.6874643115324675,
    "ring": "field",
    "source": "axes",
-   "start": 38.928,
+   "start": 41.521,
    "votes": 2,
-   "width": 1.642
+   "width": 1.656
   },
   "c.ethical_choice": {
    "axes_angle": 217.875,
@@ -804,9 +804,9 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 197.046,
+   "start": 197.829,
    "votes": 2,
-   "width": 0.37
+   "width": 0.372
   },
   "c.etiquette_norms": {
    "axes_angle": 225.0,
@@ -815,20 +815,20 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 205.432,
+   "start": 206.341,
    "votes": 2,
    "width": 0.304
   },
   "c.everyday_conversation": {
    "axes_angle": 232.125,
-   "pressure": 0.00087,
+   "pressure": 0.000931,
    "r0": 0.5100713184749612,
    "r1": 0.6140713184749612,
    "ring": "field",
    "source": "axes",
-   "start": 209.982,
+   "start": 210.823,
    "votes": 2,
-   "width": 0.518
+   "width": 0.539
   },
   "c.exams_assessment": {
    "axes_angle": 153.435,
@@ -837,20 +837,20 @@
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 158.786,
+   "start": 158.515,
    "votes": 2,
-   "width": 1.542
+   "width": 1.554
   },
   "c.exercise_fitness": {
    "axes_angle": 318.814,
-   "pressure": 0.023099,
+   "pressure": 0.020995,
    "r0": 0.5519878859258013,
    "r1": 0.6559878859258013,
    "ring": "field",
    "source": "axes",
-   "start": 316.392,
+   "start": 315.949,
    "votes": 2,
-   "width": 7.358
+   "width": 6.773
   },
   "c.exploitation_trafficking": {
    "axes_angle": 45.0,
@@ -859,7 +859,7 @@
    "r1": 0.7085017816073106,
    "ring": "field",
    "source": "axes",
-   "start": 84.702,
+   "start": 80.248,
    "votes": 2,
    "width": 0.304
   },
@@ -870,7 +870,7 @@
    "r1": 0.7470966744756058,
    "ring": "field",
    "source": "axes",
-   "start": 140.573,
+   "start": 138.681,
    "votes": 2,
    "width": 0.304
   },
@@ -881,9 +881,9 @@
    "r1": 0.5534904988072713,
    "ring": "field",
    "source": "axes",
-   "start": 243.531,
+   "start": 243.512,
    "votes": 2,
-   "width": 7.385
+   "width": 7.454
   },
   "c.family_ties": {
    "axes_angle": 239.036,
@@ -892,9 +892,9 @@
    "r1": 0.5765838481862396,
    "ring": "field",
    "source": "axes",
-   "start": 219.847,
+   "start": 220.251,
    "votes": 2,
-   "width": 5.034
+   "width": 5.081
   },
   "c.festivals_events": {
    "axes_angle": 300.964,
@@ -903,42 +903,42 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 271.761,
+   "start": 271.914,
    "votes": 2,
-   "width": 10.226
+   "width": 10.322
   },
   "c.film_tv_video": {
    "axes_angle": 206.565,
-   "pressure": 0.006264,
+   "pressure": 0.005986,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 184.19,
+   "start": 186.652,
    "votes": 2,
-   "width": 2.178
+   "width": 2.11
   },
   "c.finance_accounting": {
    "axes_angle": 131.186,
-   "pressure": 0.008313,
+   "pressure": 0.007948,
    "r0": 0.7535026128814701,
    "r1": 0.8575026128814701,
    "ring": "field",
    "source": "axes",
-   "start": 133.18,
+   "start": 131.371,
    "votes": 2,
-   "width": 2.808
+   "width": 2.719
   },
   "c.fishing_hunting_foraging": {
    "axes_angle": 330.945,
-   "pressure": 0.000174,
+   "pressure": 0.000435,
    "r0": 0.6201611046393083,
    "r1": 0.7241611046393083,
    "ring": "field",
    "source": "axes",
-   "start": 343.118,
+   "start": 345.305,
    "votes": 2,
-   "width": 0.304
+   "width": 0.385
   },
   "c.folk_belief": {
    "axes_angle": 225.0,
@@ -947,7 +947,7 @@
    "r1": 0.686832007049433,
    "ring": "field",
    "source": "axes",
-   "start": 203.849,
+   "start": 204.753,
    "votes": 2,
    "width": 0.304
   },
@@ -958,9 +958,9 @@
    "r1": 0.6183420429382332,
    "ring": "field",
    "source": "axes",
-   "start": 344.742,
+   "start": 347.022,
    "votes": 2,
-   "width": 0.713
+   "width": 0.718
   },
   "c.fraud_deception": {
    "axes_angle": 170.538,
@@ -969,7 +969,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 165.762,
+   "start": 169.565,
    "votes": 2,
    "width": 0.304
   },
@@ -980,7 +980,7 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 227.053,
+   "start": 227.163,
    "votes": 2,
    "width": 0.304
   },
@@ -991,7 +991,7 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 250.916,
+   "start": 250.966,
    "votes": 2,
    "width": 0.304
   },
@@ -1002,7 +1002,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 180.066,
+   "start": 182.508,
    "votes": 2,
    "width": 0.304
   },
@@ -1013,9 +1013,9 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 251.219,
+   "start": 251.27,
    "votes": 2,
-   "width": 0.946
+   "width": 0.953
   },
   "c.geography_science": {
    "axes_angle": 108.435,
@@ -1024,7 +1024,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 99.235,
+   "start": 96.044,
    "votes": 2,
    "width": 0.304
   },
@@ -1035,20 +1035,20 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 265.071,
+   "start": 267.331,
    "votes": 2,
    "width": 0.304
   },
   "c.government_services": {
    "axes_angle": 123.69,
-   "pressure": 0.007584,
+   "pressure": 0.009606,
    "r0": 0.562743586855317,
    "r1": 0.666743586855317,
    "ring": "field",
    "source": "axes",
-   "start": 116.214,
+   "start": 113.707,
    "votes": 2,
-   "width": 2.584
+   "width": 3.235
   },
   "c.harassment_discrimination": {
    "axes_angle": 201.801,
@@ -1057,31 +1057,31 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 181.043,
+   "start": 183.488,
    "votes": 2,
    "width": 0.304
   },
   "c.healthcare_work": {
    "axes_angle": 57.995,
-   "pressure": 0.00225,
+   "pressure": 0.002168,
    "r0": 0.7851374111869825,
    "r1": 0.8891374111869825,
    "ring": "field",
    "source": "axes",
-   "start": 87.318,
+   "start": 82.821,
    "votes": 2,
-   "width": 0.943
+   "width": 0.924
   },
   "c.higher_education": {
    "axes_angle": 153.435,
-   "pressure": 0.010672,
+   "pressure": 0.023615,
    "r0": 0.7591969121658328,
    "r1": 0.8631969121658328,
    "ring": "field",
    "source": "axes",
-   "start": 160.328,
+   "start": 160.07,
    "votes": 2,
-   "width": 3.534
+   "width": 7.587
   },
   "c.history_science": {
    "axes_angle": 116.565,
@@ -1090,9 +1090,9 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 107.339,
+   "start": 103.889,
    "votes": 2,
-   "width": 0.317
+   "width": 0.318
   },
   "c.home_energy_utilities": {
    "axes_angle": 333.435,
@@ -1101,75 +1101,75 @@
    "r1": 0.6053714968495707,
    "ring": "field",
    "source": "axes",
-   "start": 359.158,
+   "start": 1.567,
    "votes": 2,
-   "width": 1.203
+   "width": 1.212
   },
   "c.home_organisation": {
    "axes_angle": 311.186,
-   "pressure": 0.000657,
+   "pressure": 0.000597,
    "r0": 0.5630597390968342,
    "r1": 0.6670597390968341,
    "ring": "field",
    "source": "axes",
-   "start": 286.312,
+   "start": 286.789,
    "votes": 2,
-   "width": 0.452
+   "width": 0.436
   },
   "c.home_repair_diy": {
    "axes_angle": 315.0,
-   "pressure": 0.006167,
+   "pressure": 0.006836,
    "r0": 0.6453109264785772,
    "r1": 0.7493109264785772,
    "ring": "field",
    "source": "axes",
-   "start": 310.832,
+   "start": 310.276,
    "votes": 2,
-   "width": 2.148
+   "width": 2.374
   },
   "c.horticulture_farming": {
    "axes_angle": 7.125,
-   "pressure": 0.002127,
+   "pressure": 0.002457,
    "r0": 0.6935540976968145,
    "r1": 0.7975540976968145,
    "ring": "field",
    "source": "axes",
-   "start": 40.57,
+   "start": 43.177,
    "votes": 2,
-   "width": 0.905
+   "width": 1.013
   },
   "c.hospitality_hosting": {
    "axes_angle": 293.962,
-   "pressure": 0.009657,
+   "pressure": 0.003508,
    "r0": 0.5834643115324675,
    "r1": 0.6874643115324675,
    "ring": "field",
    "source": "axes",
-   "start": 265.375,
+   "start": 267.635,
    "votes": 2,
-   "width": 3.222
+   "width": 1.34
   },
   "c.hospitality_work": {
    "axes_angle": 32.005,
-   "pressure": 0.003967,
+   "pressure": 0.003962,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 60.121,
+   "start": 60.614,
    "votes": 2,
-   "width": 1.471
+   "width": 1.481
   },
   "c.household_budgeting": {
    "axes_angle": 240.255,
-   "pressure": 0.005259,
+   "pressure": 0.00411,
    "r0": 0.5940622329193123,
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 224.881,
+   "start": 225.332,
    "votes": 2,
-   "width": 1.868
+   "width": 1.527
   },
   "c.household_gardening": {
    "axes_angle": 315.0,
@@ -1178,20 +1178,20 @@
    "r1": 0.7241611046393083,
    "ring": "field",
    "source": "axes",
-   "start": 312.98,
+   "start": 312.65,
    "votes": 2,
-   "width": 1.609
+   "width": 1.622
   },
   "c.household_planning": {
    "axes_angle": 236.31,
-   "pressure": 0.01553,
+   "pressure": 0.013633,
    "r0": 0.5630597390968342,
    "r1": 0.6670597390968341,
    "ring": "field",
    "source": "axes",
-   "start": 214.333,
+   "start": 215.277,
    "votes": 2,
-   "width": 5.029
+   "width": 4.486
   },
   "c.housing_search": {
    "axes_angle": 11.31,
@@ -1200,9 +1200,9 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 41.475,
+   "start": 44.19,
    "votes": 2,
-   "width": 1.329
+   "width": 1.339
   },
   "c.human_rights": {
    "axes_angle": 147.995,
@@ -1211,9 +1211,9 @@
    "r1": 0.754056175882213,
    "ring": "field",
    "source": "axes",
-   "start": 156.616,
+   "start": 155.877,
    "votes": 2,
-   "width": 1.465
+   "width": 1.477
   },
   "c.hygiene_grooming": {
    "axes_angle": 311.634,
@@ -1222,7 +1222,7 @@
    "r1": 0.55001045152588,
    "ring": "field",
    "source": "axes",
-   "start": 286.764,
+   "start": 287.225,
    "votes": 2,
    "width": 0.304
   },
@@ -1233,7 +1233,7 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 206.342,
+   "start": 207.253,
    "votes": 2,
    "width": 0.304
   },
@@ -1244,7 +1244,7 @@
    "r1": 0.7277989314633705,
    "ring": "field",
    "source": "axes",
-   "start": 71.974,
+   "start": 71.759,
    "votes": 2,
    "width": 0.304
   },
@@ -1255,7 +1255,7 @@
    "r1": 0.7241611046393083,
    "ring": "field",
    "source": "axes",
-   "start": 168.929,
+   "start": 172.642,
    "votes": 2,
    "width": 0.304
   },
@@ -1266,7 +1266,7 @@
    "r1": 0.6183420429382332,
    "ring": "field",
    "source": "axes",
-   "start": 165.458,
+   "start": 169.261,
    "votes": 2,
    "width": 0.304
   },
@@ -1277,7 +1277,7 @@
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 70.704,
+   "start": 70.418,
    "votes": 2,
    "width": 0.304
   },
@@ -1288,20 +1288,20 @@
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 144.038,
+   "start": 141.515,
    "votes": 2,
    "width": 0.304
   },
   "c.it_operations": {
    "axes_angle": 74.055,
-   "pressure": 0.001762,
+   "pressure": 0.001784,
    "r0": 0.7816579570617667,
    "r1": 0.8856579570617666,
    "ring": "field",
    "source": "axes",
-   "start": 89.827,
+   "start": 86.479,
    "votes": 2,
-   "width": 0.792
+   "width": 0.804
   },
   "c.job_loss": {
    "axes_angle": 135.0,
@@ -1310,20 +1310,20 @@
    "r1": 0.7184668053549456,
    "ring": "field",
    "source": "axes",
-   "start": 136.291,
+   "start": 134.394,
    "votes": 2,
-   "width": 1.088
+   "width": 1.096
   },
   "c.job_search": {
    "axes_angle": 135.0,
-   "pressure": 0.001357,
+   "pressure": 0.001287,
    "r0": 0.4839724467549652,
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 137.379,
+   "start": 135.49,
    "votes": 2,
-   "width": 0.668
+   "width": 0.65
   },
   "c.journalism": {
    "axes_angle": 126.87,
@@ -1332,7 +1332,7 @@
    "r1": 0.754056175882213,
    "ring": "field",
    "source": "axes",
-   "start": 119.512,
+   "start": 117.658,
    "votes": 2,
    "width": 0.304
   },
@@ -1343,7 +1343,7 @@
    "r1": 0.6885717341120409,
    "ring": "field",
    "source": "axes",
-   "start": 107.656,
+   "start": 104.206,
    "votes": 2,
    "width": 0.304
   },
@@ -1354,9 +1354,9 @@
    "r1": 0.8489611639549258,
    "ring": "field",
    "source": "axes",
-   "start": 191.393,
+   "start": 193.372,
    "votes": 2,
-   "width": 0.812
+   "width": 0.818
   },
   "c.legal_profession": {
    "axes_angle": 135.0,
@@ -1365,9 +1365,9 @@
    "r1": 0.9201399050094605,
    "ring": "field",
    "source": "axes",
-   "start": 143.323,
+   "start": 140.784,
    "votes": 2,
-   "width": 0.411
+   "width": 0.412
   },
   "c.legal_system": {
    "axes_angle": 131.186,
@@ -1376,7 +1376,7 @@
    "r1": 0.8195406176523848,
    "ring": "field",
    "source": "axes",
-   "start": 135.988,
+   "start": 134.09,
    "votes": 2,
    "width": 0.304
   },
@@ -1387,20 +1387,20 @@
    "r1": 0.7184668053549456,
    "ring": "field",
    "source": "axes",
-   "start": 204.153,
+   "start": 205.057,
    "votes": 2,
-   "width": 0.571
+   "width": 0.574
   },
   "c.life_sciences": {
    "axes_angle": 90.0,
-   "pressure": 0.00145,
+   "pressure": 0.001637,
    "r0": 0.8306918054618848,
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 95.927,
+   "start": 92.658,
    "votes": 2,
-   "width": 0.696
+   "width": 0.759
   },
   "c.linguistics_literature": {
    "axes_angle": 146.31,
@@ -1409,9 +1409,9 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 155.13,
+   "start": 154.381,
    "votes": 2,
-   "width": 0.353
+   "width": 0.354
   },
   "c.loneliness_isolation": {
    "axes_angle": 243.435,
@@ -1420,7 +1420,7 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 227.357,
+   "start": 227.467,
    "votes": 2,
    "width": 0.304
   },
@@ -1431,31 +1431,31 @@
    "r1": 0.8410526126675916,
    "ring": "field",
    "source": "axes",
-   "start": 308.177,
+   "start": 307.912,
    "votes": 2,
-   "width": 0.437
+   "width": 0.439
   },
   "c.management_executive": {
    "axes_angle": 122.005,
-   "pressure": 0.001175,
+   "pressure": 0.00414,
    "r0": 0.7212349169367476,
    "r1": 0.8252349169367476,
    "ring": "field",
    "source": "axes",
-   "start": 110.228,
+   "start": 106.752,
    "votes": 2,
-   "width": 0.611
+   "width": 1.536
   },
   "c.manufacturing": {
    "axes_angle": 45.0,
-   "pressure": 0.001342,
+   "pressure": 0.001465,
    "r0": 0.7519206653615329,
    "r1": 0.8559206653615329,
    "ring": "field",
    "source": "axes",
-   "start": 71.008,
+   "start": 70.722,
    "votes": 2,
-   "width": 0.663
+   "width": 0.705
   },
   "c.marriage_cohabitation": {
    "axes_angle": 246.038,
@@ -1464,9 +1464,9 @@
    "r1": 0.5765838481862396,
    "ring": "field",
    "source": "axes",
-   "start": 227.66,
+   "start": 227.771,
    "votes": 2,
-   "width": 0.545
+   "width": 0.547
   },
   "c.marriage_wedding": {
    "axes_angle": 233.13,
@@ -1475,53 +1475,53 @@
    "r1": 0.5534904988072713,
    "ring": "field",
    "source": "axes",
-   "start": 211.628,
+   "start": 212.581,
    "votes": 2,
-   "width": 0.545
+   "width": 0.547
   },
   "c.materials_science": {
    "axes_angle": 45.0,
-   "pressure": 0.000174,
+   "pressure": 0.000262,
    "r0": 0.8560000000000001,
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 71.671,
+   "start": 71.427,
    "votes": 2,
-   "width": 0.304
+   "width": 0.331
   },
   "c.mathematics": {
    "axes_angle": 145.008,
-   "pressure": 0.001552,
+   "pressure": 0.002441,
    "r0": 0.8139256530064891,
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 152.657,
+   "start": 151.676,
    "votes": 2,
-   "width": 0.727
+   "width": 1.009
   },
   "c.mechanical_engineering": {
    "axes_angle": 41.186,
-   "pressure": 0.000261,
+   "pressure": 0.000379,
    "r0": 0.8262633014559417,
    "r1": 0.9302633014559417,
    "ring": "field",
    "source": "axes",
-   "start": 66.927,
+   "start": 66.698,
    "votes": 2,
-   "width": 0.33
+   "width": 0.368
   },
   "c.media_publishing": {
    "axes_angle": 130.601,
-   "pressure": 0.000174,
+   "pressure": 0.000779,
    "r0": 0.7402159145512902,
    "r1": 0.8442159145512902,
    "ring": "field",
    "source": "axes",
-   "start": 132.876,
+   "start": 130.879,
    "votes": 2,
-   "width": 0.304
+   "width": 0.492
   },
   "c.mediation_dispute_resolution": {
    "axes_angle": 180.0,
@@ -1530,20 +1530,20 @@
    "r1": 0.8159027908283226,
    "ring": "field",
    "source": "axes",
-   "start": 168.625,
+   "start": 172.338,
    "votes": 2,
    "width": 0.304
   },
   "c.medical_care": {
    "axes_angle": 23.199,
-   "pressure": 0.039212,
+   "pressure": 0.030695,
    "r0": 0.5095967935345977,
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 46.55,
+   "start": 49.349,
    "votes": 2,
-   "width": 12.317
+   "width": 9.787
   },
   "c.medication_adherence": {
    "axes_angle": 296.565,
@@ -1552,42 +1552,42 @@
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 268.596,
+   "start": 268.975,
    "votes": 2,
    "width": 0.304
   },
   "c.medicine_science": {
    "axes_angle": 66.801,
-   "pressure": 0.000174,
+   "pressure": 0.003721,
    "r0": 0.8474585510734558,
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 89.22,
+   "start": 84.769,
    "votes": 2,
-   "width": 0.304
+   "width": 1.406
   },
   "c.mental_health": {
    "axes_angle": 216.87,
-   "pressure": 0.004472,
+   "pressure": 0.002001,
    "r0": 0.5731831355433153,
    "r1": 0.6771831355433153,
    "ring": "field",
    "source": "axes",
-   "start": 195.42,
+   "start": 196.957,
    "votes": 2,
-   "width": 1.626
+   "width": 0.872
   },
   "c.mentoring_peer_support": {
    "axes_angle": 221.186,
-   "pressure": 0.000174,
+   "pressure": 0.000385,
    "r0": 0.6737824229003911,
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 197.417,
+   "start": 198.2,
    "votes": 2,
-   "width": 0.304
+   "width": 0.369
   },
   "c.migration": {
    "axes_angle": 30.964,
@@ -1596,9 +1596,9 @@
    "r1": 0.7975540976968145,
    "ring": "field",
    "source": "axes",
-   "start": 59.474,
+   "start": 59.965,
    "votes": 2,
-   "width": 0.344
+   "width": 0.345
   },
   "c.military_defence": {
    "axes_angle": 53.13,
@@ -1607,7 +1607,7 @@
    "r1": 0.7977124703956608,
    "ring": "field",
    "source": "axes",
-   "start": 86.618,
+   "start": 82.108,
    "votes": 2,
    "width": 0.304
   },
@@ -1618,7 +1618,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 165.155,
+   "start": 168.957,
    "votes": 2,
    "width": 0.304
   },
@@ -1629,42 +1629,42 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 338.424,
+   "start": 340.568,
    "votes": 2,
-   "width": 4.694
+   "width": 4.737
   },
   "c.music_listening": {
    "axes_angle": 249.444,
-   "pressure": 0.005864,
+   "pressure": 0.005034,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 229.276,
+   "start": 229.393,
    "votes": 2,
-   "width": 2.054
+   "width": 1.814
   },
   "c.music_making": {
    "axes_angle": 270.0,
-   "pressure": 0.011832,
+   "pressure": 0.012663,
    "r0": 0.7054172212059037,
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 252.165,
+   "start": 252.223,
    "votes": 2,
-   "width": 3.891
+   "width": 4.184
   },
   "c.mutual_aid": {
    "axes_angle": 276.34,
-   "pressure": 0.010427,
+   "pressure": 0.010234,
    "r0": 0.546768111581802,
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 256.057,
+   "start": 256.407,
    "votes": 2,
-   "width": 3.459
+   "width": 3.43
   },
   "c.negligence_recklessness": {
    "axes_angle": 213.69,
@@ -1673,9 +1673,9 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 191.036,
+   "start": 193.014,
    "votes": 2,
-   "width": 0.357
+   "width": 0.358
   },
   "c.neighbours_community": {
    "axes_angle": 253.301,
@@ -1684,9 +1684,9 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 235.347,
+   "start": 235.257,
    "votes": 2,
-   "width": 7.173
+   "width": 7.24
   },
   "c.neuroscience": {
    "axes_angle": 98.13,
@@ -1695,7 +1695,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 96.624,
+   "start": 93.417,
    "votes": 2,
    "width": 0.304
   },
@@ -1706,7 +1706,7 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 163.862,
+   "start": 167.657,
    "votes": 2,
    "width": 0.304
   },
@@ -1717,7 +1717,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 324.731,
+   "start": 323.71,
    "votes": 2,
    "width": 0.304
   },
@@ -1728,20 +1728,20 @@
    "r1": 0.6559878859258013,
    "ring": "field",
    "source": "axes",
-   "start": 323.75,
+   "start": 322.722,
    "votes": 2,
-   "width": 0.981
+   "width": 0.988
   },
   "c.occupational_safety": {
    "axes_angle": 36.87,
-   "pressure": 0.000413,
+   "pressure": 0.00039,
    "r0": 0.5788774348276782,
    "r1": 0.6828774348276782,
    "ring": "field",
    "source": "axes",
-   "start": 63.745,
+   "start": 64.082,
    "votes": 2,
-   "width": 0.377
+   "width": 0.371
   },
   "c.online_commerce": {
    "axes_angle": 101.31,
@@ -1750,7 +1750,7 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 98.628,
+   "start": 95.436,
    "votes": 2,
    "width": 0.304
   },
@@ -1761,20 +1761,20 @@
    "r1": 0.6313125890268959,
    "ring": "field",
    "source": "axes",
-   "start": 183.887,
+   "start": 186.348,
    "votes": 2,
    "width": 0.304
   },
   "c.outdoor_recreation": {
    "axes_angle": 315.0,
-   "pressure": 0.012354,
+   "pressure": 0.010434,
    "r0": 0.5836226842313138,
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 291.592,
+   "start": 291.824,
    "votes": 2,
-   "width": 4.052
+   "width": 3.492
   },
   "c.parenting_adolescents": {
    "axes_angle": 237.995,
@@ -1783,20 +1783,20 @@
    "r1": 0.6689578388582884,
    "ring": "field",
    "source": "axes",
-   "start": 219.361,
+   "start": 219.763,
    "votes": 2,
-   "width": 0.486
+   "width": 0.488
   },
   "c.parenting_young_children": {
    "axes_angle": 299.055,
-   "pressure": 0.005525,
+   "pressure": 0.00474,
    "r0": 0.5187711401003517,
    "r1": 0.6227711401003517,
    "ring": "field",
    "source": "axes",
-   "start": 269.507,
+   "start": 269.887,
    "votes": 2,
-   "width": 1.95
+   "width": 1.723
   },
   "c.partnership_romance": {
    "axes_angle": 246.038,
@@ -1805,9 +1805,9 @@
    "r1": 0.6691162115571347,
    "ring": "field",
    "source": "axes",
-   "start": 228.205,
+   "start": 228.318,
    "votes": 2,
-   "width": 0.464
+   "width": 0.466
   },
   "c.performing_arts": {
    "axes_angle": 338.199,
@@ -1816,9 +1816,9 @@
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 24.823,
+   "start": 27.473,
    "votes": 2,
-   "width": 1.053
+   "width": 1.061
   },
   "c.personal_appearance": {
    "axes_angle": 311.186,
@@ -1827,31 +1827,31 @@
    "r1": 0.6582021379287728,
    "ring": "field",
    "source": "axes",
-   "start": 286.008,
+   "start": 286.485,
    "votes": 2,
    "width": 0.304
   },
   "c.personal_finance": {
    "axes_angle": 206.565,
-   "pressure": 0.00395,
+   "pressure": 0.004663,
    "r0": 0.6339223279098517,
    "r1": 0.7379223279098517,
    "ring": "field",
    "source": "axes",
-   "start": 182.421,
+   "start": 184.65,
    "votes": 2,
-   "width": 1.465
+   "width": 1.699
   },
   "c.personal_services_work": {
    "axes_angle": 14.036,
-   "pressure": 0.000174,
+   "pressure": 0.000264,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 42.804,
+   "start": 45.53,
    "votes": 2,
-   "width": 0.304
+   "width": 0.332
   },
   "c.pet_ownership": {
    "axes_angle": 315.0,
@@ -1860,9 +1860,9 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 315.361,
+   "start": 314.787,
    "votes": 2,
-   "width": 0.424
+   "width": 0.426
   },
   "c.philosophical_inquiry": {
    "axes_angle": 201.801,
@@ -1871,9 +1871,9 @@
    "r1": 0.8924590857695275,
    "ring": "field",
    "source": "axes",
-   "start": 180.673,
+   "start": 183.116,
    "votes": 2,
-   "width": 0.37
+   "width": 0.372
   },
   "c.physical_health": {
    "axes_angle": 315.0,
@@ -1882,20 +1882,20 @@
    "r1": 0.6559878859258013,
    "ring": "field",
    "source": "axes",
-   "start": 297.025,
+   "start": 296.655,
    "votes": 2,
-   "width": 11.152
+   "width": 11.257
   },
   "c.physics": {
    "axes_angle": 122.005,
-   "pressure": 0.00116,
+   "pressure": 0.001159,
    "r0": 0.8474585510734558,
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 110.839,
+   "start": 108.288,
    "votes": 2,
-   "width": 0.607
+   "width": 0.61
   },
   "c.policing_enforcement": {
    "axes_angle": 69.444,
@@ -1904,7 +1904,7 @@
    "r1": 0.7977124703956608,
    "ring": "field",
    "source": "axes",
-   "start": 89.523,
+   "start": 86.175,
    "votes": 2,
    "width": 0.304
   },
@@ -1915,7 +1915,7 @@
    "r1": 0.601259145085145,
    "ring": "field",
    "source": "axes",
-   "start": 166.065,
+   "start": 169.869,
    "votes": 2,
    "width": 0.304
   },
@@ -1926,9 +1926,9 @@
    "r1": 0.601259145085145,
    "ring": "field",
    "source": "axes",
-   "start": 109.096,
+   "start": 105.611,
    "votes": 2,
-   "width": 1.132
+   "width": 1.141
   },
   "c.political_science": {
    "axes_angle": 142.125,
@@ -1937,7 +1937,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 151.256,
+   "start": 150.271,
    "votes": 2,
    "width": 0.304
   },
@@ -1948,9 +1948,9 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 330.671,
+   "start": 331.755,
    "votes": 2,
-   "width": 0.451
+   "width": 0.453
   },
   "c.pregnancy_birth": {
    "axes_angle": 327.995,
@@ -1959,9 +1959,9 @@
    "r1": 0.6771831355433153,
    "ring": "field",
    "source": "axes",
-   "start": 337.188,
+   "start": 339.323,
    "votes": 2,
-   "width": 1.235
+   "width": 1.245
   },
   "c.preventive_health": {
    "axes_angle": 333.435,
@@ -1970,9 +1970,9 @@
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 347.567,
+   "start": 349.867,
    "votes": 2,
-   "width": 11.591
+   "width": 11.701
   },
   "c.psychology": {
    "axes_angle": 144.462,
@@ -1981,20 +1981,20 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 151.916,
+   "start": 150.933,
    "votes": 2,
    "width": 0.304
   },
   "c.public_administration": {
    "axes_angle": 127.875,
-   "pressure": 0.024448,
+   "pressure": 0.02347,
    "r0": 0.7155406176523849,
    "r1": 0.8195406176523848,
    "ring": "field",
    "source": "axes",
-   "start": 119.815,
+   "start": 117.962,
    "votes": 2,
-   "width": 7.773
+   "width": 7.542
   },
   "c.public_health_science": {
    "axes_angle": 126.87,
@@ -2003,9 +2003,9 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 119.101,
+   "start": 117.246,
    "votes": 2,
-   "width": 0.411
+   "width": 0.412
   },
   "c.public_safety_emergency": {
    "axes_angle": 32.005,
@@ -2014,7 +2014,7 @@
    "r1": 0.8413687649091088,
    "ring": "field",
    "source": "axes",
-   "start": 59.817,
+   "start": 60.31,
    "votes": 2,
    "width": 0.304
   },
@@ -2025,7 +2025,7 @@
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 45.632,
+   "start": 48.324,
    "votes": 2,
    "width": 0.304
   },
@@ -2036,9 +2036,9 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 200.969,
+   "start": 201.847,
    "votes": 2,
-   "width": 2.88
+   "width": 2.906
   },
   "c.reconciliation": {
    "axes_angle": 231.34,
@@ -2047,42 +2047,42 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 209.679,
+   "start": 210.519,
    "votes": 2,
    "width": 0.304
   },
   "c.religion_worship": {
    "axes_angle": 228.814,
-   "pressure": 0.002858,
+   "pressure": 0.002581,
    "r0": 0.6144668053549456,
    "r1": 0.7184668053549456,
    "ring": "field",
    "source": "axes",
-   "start": 207.494,
+   "start": 208.409,
    "votes": 2,
-   "width": 1.129
+   "width": 1.052
   },
   "c.religious_community": {
    "axes_angle": 213.69,
-   "pressure": 0.004646,
+   "pressure": 0.003193,
    "r0": 0.7093717934276584,
    "r1": 0.8133717934276584,
    "ring": "field",
    "source": "axes",
-   "start": 189.356,
+   "start": 191.772,
    "votes": 2,
-   "width": 1.68
+   "width": 1.242
   },
   "c.rent_mortgage": {
    "axes_angle": 0.0,
-   "pressure": 0.00278,
+   "pressure": 0.00192,
    "r0": 0.5741321854240424,
    "r1": 0.6781321854240424,
    "ring": "field",
    "source": "axes",
-   "start": 37.822,
+   "start": 40.675,
    "votes": 2,
-   "width": 1.105
+   "width": 0.847
   },
   "c.reproduction_fertility": {
    "axes_angle": 320.194,
@@ -2091,7 +2091,7 @@
    "r1": 0.6771831355433153,
    "ring": "field",
    "source": "axes",
-   "start": 325.035,
+   "start": 324.014,
    "votes": 2,
    "width": 0.304
   },
@@ -2102,7 +2102,7 @@
    "r1": 0.6324194184502939,
    "ring": "field",
    "source": "axes",
-   "start": 205.735,
+   "start": 206.645,
    "votes": 2,
    "width": 0.304
   },
@@ -2113,9 +2113,9 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 152.22,
+   "start": 151.237,
    "votes": 2,
-   "width": 0.437
+   "width": 0.439
   },
   "c.restaurants_dining": {
    "axes_angle": 0.0,
@@ -2124,9 +2124,9 @@
    "r1": 0.6528239908859272,
    "ring": "field",
    "source": "axes",
-   "start": 37.266,
+   "start": 40.115,
    "votes": 2,
-   "width": 0.557
+   "width": 0.56
   },
   "c.retail_shopping": {
    "axes_angle": 344.055,
@@ -2135,20 +2135,20 @@
    "r1": 0.5984119954429636,
    "ring": "field",
    "source": "axes",
-   "start": 28.505,
+   "start": 31.325,
    "votes": 2,
-   "width": 6.334
+   "width": 6.393
   },
   "c.retail_work": {
    "axes_angle": 39.806,
-   "pressure": 0.007317,
+   "pressure": 0.005442,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 64.122,
+   "start": 64.453,
    "votes": 2,
-   "width": 2.502
+   "width": 1.941
   },
   "c.retirement": {
    "axes_angle": 236.31,
@@ -2157,9 +2157,9 @@
    "r1": 0.7184668053549456,
    "ring": "field",
    "source": "axes",
-   "start": 213.734,
+   "start": 214.676,
    "votes": 2,
-   "width": 0.598
+   "width": 0.601
   },
   "c.reuse_repair": {
    "axes_angle": 323.13,
@@ -2168,9 +2168,9 @@
    "r1": 0.7241611046393083,
    "ring": "field",
    "source": "axes",
-   "start": 326.743,
+   "start": 327.96,
    "votes": 2,
-   "width": 0.965
+   "width": 0.972
   },
   "c.rites_of_passage": {
    "axes_angle": 225.0,
@@ -2179,9 +2179,9 @@
    "r1": 0.7026491096241015,
    "ring": "field",
    "source": "axes",
-   "start": 204.724,
+   "start": 205.632,
    "votes": 2,
-   "width": 0.404
+   "width": 0.405
   },
   "c.road_safety": {
    "axes_angle": 351.87,
@@ -2190,20 +2190,20 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 36.21,
+   "start": 39.052,
    "votes": 2,
-   "width": 1.056
+   "width": 1.064
   },
   "c.sales_marketing": {
    "axes_angle": 119.745,
-   "pressure": 0.00288,
+   "pressure": 0.002738,
    "r0": 0.613992280414582,
    "r1": 0.717992280414582,
    "ring": "field",
    "source": "axes",
-   "start": 107.959,
+   "start": 104.51,
    "votes": 2,
-   "width": 1.136
+   "width": 1.101
   },
   "c.saving_investing": {
    "axes_angle": 180.0,
@@ -2212,31 +2212,31 @@
    "r1": 0.7578523754051214,
    "ring": "field",
    "source": "axes",
-   "start": 167.679,
+   "start": 171.385,
    "votes": 2,
-   "width": 0.946
+   "width": 0.953
   },
   "c.school_education": {
    "axes_angle": 198.435,
-   "pressure": 0.034392,
+   "pressure": 0.029971,
    "r0": 0.6310751782676702,
    "r1": 0.7350751782676702,
    "ring": "field",
    "source": "axes",
-   "start": 169.232,
+   "start": 172.946,
    "votes": 2,
-   "width": 10.833
+   "width": 9.562
   },
   "c.science_research_work": {
    "axes_angle": 110.556,
-   "pressure": 0.005394,
+   "pressure": 0.004722,
    "r0": 0.8306918054618848,
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 99.539,
+   "start": 96.348,
    "votes": 2,
-   "width": 1.91
+   "width": 1.717
   },
   "c.security_services": {
    "axes_angle": 45.0,
@@ -2245,20 +2245,20 @@
    "r1": 0.7322280286254889,
    "ring": "field",
    "source": "axes",
-   "start": 72.278,
+   "start": 72.063,
    "votes": 2,
    "width": 0.304
   },
   "c.self_directed_learning": {
    "axes_angle": 216.87,
-   "pressure": 0.009635,
+   "pressure": 0.008102,
    "r0": 0.716489667533112,
    "r1": 0.820489667533112,
    "ring": "field",
    "source": "axes",
-   "start": 192.205,
+   "start": 194.19,
    "votes": 2,
-   "width": 3.215
+   "width": 2.767
   },
   "c.self_harm_suicide": {
    "axes_angle": 255.964,
@@ -2267,20 +2267,20 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 242.521,
+   "start": 242.497,
    "votes": 2,
    "width": 0.304
   },
   "c.self_provisioning": {
    "axes_angle": 315.0,
-   "pressure": 0.001697,
+   "pressure": 0.000853,
    "r0": 0.6201611046393083,
    "r1": 0.7241611046393083,
    "ring": "field",
    "source": "axes",
-   "start": 314.589,
+   "start": 314.272,
    "votes": 2,
-   "width": 0.772
+   "width": 0.515
   },
   "c.self_reflection": {
    "axes_angle": 231.34,
@@ -2289,9 +2289,9 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 209.241,
+   "start": 210.08,
    "votes": 2,
-   "width": 0.437
+   "width": 0.439
   },
   "c.serious_illness": {
    "axes_angle": 303.69,
@@ -2300,9 +2300,9 @@
    "r1": 0.7342845010857895,
    "ring": "field",
    "source": "axes",
-   "start": 282.322,
+   "start": 282.818,
    "votes": 2,
-   "width": 0.966
+   "width": 0.973
   },
   "c.sexual_violence": {
    "axes_angle": 311.186,
@@ -2311,7 +2311,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 285.705,
+   "start": 286.181,
    "votes": 2,
    "width": 0.304
   },
@@ -2322,31 +2322,31 @@
    "r1": 0.5924015439170837,
    "ring": "field",
    "source": "axes",
-   "start": 259.899,
+   "start": 262.556,
    "votes": 2,
    "width": 0.304
   },
   "c.shopping_errands": {
    "axes_angle": 324.462,
-   "pressure": 0.000174,
+   "pressure": 0.000257,
    "r0": 0.49441199544296366,
    "r1": 0.5984119954429636,
    "ring": "field",
    "source": "axes",
-   "start": 330.063,
+   "start": 331.121,
    "votes": 2,
-   "width": 0.304
+   "width": 0.33
   },
   "c.skilled_trades": {
    "axes_angle": 14.036,
-   "pressure": 0.007393,
+   "pressure": 0.007121,
    "r0": 0.76678931121165,
    "r1": 0.8707893112116499,
    "ring": "field",
    "source": "axes",
-   "start": 43.107,
+   "start": 45.862,
    "votes": 2,
-   "width": 2.525
+   "width": 2.462
   },
   "c.sleep": {
    "axes_angle": 311.634,
@@ -2355,7 +2355,7 @@
    "r1": 0.55001045152588,
    "ring": "field",
    "source": "axes",
-   "start": 287.067,
+   "start": 287.529,
    "votes": 2,
    "width": 0.304
   },
@@ -2366,20 +2366,20 @@
    "r1": 0.7221046321790077,
    "ring": "field",
    "source": "axes",
-   "start": 180.369,
+   "start": 182.812,
    "votes": 2,
    "width": 0.304
   },
   "c.socialising": {
    "axes_angle": 276.34,
-   "pressure": 0.000435,
+   "pressure": 0.007945,
    "r0": 0.5100713184749612,
    "r1": 0.6140713184749612,
    "ring": "field",
    "source": "axes",
-   "start": 259.515,
+   "start": 259.837,
    "votes": 2,
-   "width": 0.384
+   "width": 2.719
   },
   "c.sociology": {
    "axes_angle": 143.13,
@@ -2388,20 +2388,20 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 151.559,
+   "start": 150.575,
    "votes": 2,
-   "width": 0.357
+   "width": 0.358
   },
   "c.software_development": {
    "axes_angle": 138.814,
-   "pressure": 0.011354,
+   "pressure": 0.010726,
    "r0": 0.7816579570617667,
    "r1": 0.8856579570617666,
    "ring": "field",
    "source": "axes",
-   "start": 144.645,
+   "start": 142.123,
    "votes": 2,
-   "width": 3.744
+   "width": 3.582
   },
   "c.spirituality": {
    "axes_angle": 228.366,
@@ -2410,31 +2410,31 @@
    "r1": 0.750101603660458,
    "ring": "field",
    "source": "axes",
-   "start": 206.992,
+   "start": 207.905,
    "votes": 2,
-   "width": 0.502
+   "width": 0.504
   },
   "c.sport_participation": {
    "axes_angle": 327.995,
-   "pressure": 0.016931,
+   "pressure": 0.02014,
    "r0": 0.6532194777659115,
    "r1": 0.7572194777659115,
    "ring": "field",
    "source": "axes",
-   "start": 331.728,
+   "start": 332.816,
    "votes": 2,
-   "width": 5.46
+   "width": 6.508
   },
   "c.sport_spectating": {
    "axes_angle": 303.69,
-   "pressure": 0.000278,
+   "pressure": 0.00107,
    "r0": 0.5314249407913216,
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 281.986,
+   "start": 282.236,
    "votes": 2,
-   "width": 0.336
+   "width": 0.582
   },
   "c.stalking_privacy": {
    "axes_angle": 251.565,
@@ -2443,20 +2443,20 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 235.044,
+   "start": 234.953,
    "votes": 2,
    "width": 0.304
   },
   "c.statistics_data": {
    "axes_angle": 145.008,
-   "pressure": 0.003872,
+   "pressure": 0.003678,
    "r0": 0.797158907394918,
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 153.385,
+   "start": 152.685,
    "votes": 2,
-   "width": 1.441
+   "width": 1.393
   },
   "c.subscriptions_telecom": {
    "axes_angle": 104.036,
@@ -2465,7 +2465,7 @@
    "r1": 0.7518419238792414,
    "ring": "field",
    "source": "axes",
-   "start": 98.932,
+   "start": 95.74,
    "votes": 2,
    "width": 0.304
   },
@@ -2476,31 +2476,31 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 285.401,
+   "start": 285.877,
    "votes": 2,
    "width": 0.304
   },
   "c.taxation_compliance": {
    "axes_angle": 135.0,
-   "pressure": 0.007139,
+   "pressure": 0.004986,
    "r0": 0.6282280286254889,
    "r1": 0.7322280286254889,
    "ring": "field",
    "source": "axes",
-   "start": 140.877,
+   "start": 138.985,
    "votes": 2,
-   "width": 2.447
+   "width": 1.799
   },
   "c.teaching_profession": {
    "axes_angle": 139.399,
-   "pressure": 0.003118,
+   "pressure": 0.007371,
    "r0": 0.7876684085876468,
    "r1": 0.8916684085876467,
    "ring": "field",
    "source": "axes",
-   "start": 150.046,
+   "start": 147.731,
    "votes": 2,
-   "width": 1.209
+   "width": 2.54
   },
   "c.theft_property_crime": {
    "axes_angle": 324.462,
@@ -2509,20 +2509,20 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 330.367,
+   "start": 331.451,
    "votes": 2,
    "width": 0.304
   },
   "c.therapy_social_work": {
    "axes_angle": 150.255,
-   "pressure": 0.001479,
+   "pressure": 0.002932,
    "r0": 0.7639421615694684,
    "r1": 0.8679421615694684,
    "ring": "field",
    "source": "axes",
-   "start": 158.081,
+   "start": 157.354,
    "votes": 2,
-   "width": 0.705
+   "width": 1.161
   },
   "c.tourism_travel": {
    "axes_angle": 333.435,
@@ -2531,9 +2531,9 @@
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 0.665,
+   "start": 3.084,
    "votes": 2,
-   "width": 24.158
+   "width": 24.389
   },
   "c.traffic_offences": {
    "axes_angle": 350.538,
@@ -2542,42 +2542,42 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 35.866,
+   "start": 38.707,
    "votes": 2,
-   "width": 0.344
+   "width": 0.345
   },
   "c.transport_logistics": {
    "axes_angle": 41.186,
-   "pressure": 0.006647,
+   "pressure": 0.006267,
    "r0": 0.6196865796989448,
    "r1": 0.7236865796989448,
    "ring": "field",
    "source": "axes",
-   "start": 67.257,
+   "start": 67.066,
    "votes": 2,
-   "width": 2.295
+   "width": 2.197
   },
   "c.tutoring_teaching": {
    "axes_angle": 180.0,
-   "pressure": 0.003445,
+   "pressure": 0.003096,
    "r0": 0.730725415744019,
    "r1": 0.8347254157440189,
    "ring": "field",
    "source": "axes",
-   "start": 166.369,
+   "start": 170.173,
    "votes": 2,
-   "width": 1.31
+   "width": 1.212
   },
   "c.urban_planning": {
    "axes_angle": 54.462,
-   "pressure": 0.000479,
+   "pressure": 0.00051,
    "r0": 0.7591969121658328,
    "r1": 0.8631969121658328,
    "ring": "field",
    "source": "axes",
-   "start": 86.921,
+   "start": 82.412,
    "votes": 2,
-   "width": 0.397
+   "width": 0.408
   },
   "c.video_gaming": {
    "axes_angle": 210.964,
@@ -2586,9 +2586,9 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 186.368,
+   "start": 188.762,
    "votes": 2,
-   "width": 1.16
+   "width": 1.169
   },
   "c.violence_assault": {
    "axes_angle": 318.366,
@@ -2597,31 +2597,31 @@
    "r1": 0.6313125890268959,
    "ring": "field",
    "source": "axes",
-   "start": 315.785,
+   "start": 315.213,
    "votes": 2,
    "width": 0.304
   },
   "c.visual_arts": {
    "axes_angle": 323.13,
-   "pressure": 0.003756,
+   "pressure": 0.003151,
    "r0": 0.7054172212059037,
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 327.708,
+   "start": 328.932,
    "votes": 2,
-   "width": 1.406
+   "width": 1.229
   },
   "c.vocational_training": {
    "axes_angle": 45.0,
-   "pressure": 0.038577,
+   "pressure": 0.024561,
    "r0": 0.730725415744019,
    "r1": 0.8347254157440189,
    "ring": "field",
    "source": "axes",
-   "start": 72.581,
+   "start": 72.367,
    "votes": 2,
-   "width": 12.121
+   "width": 7.881
   },
   "c.volunteering": {
    "axes_angle": 255.964,
@@ -2630,9 +2630,9 @@
    "r1": 0.6691162115571347,
    "ring": "field",
    "source": "axes",
-   "start": 242.824,
+   "start": 242.801,
    "votes": 2,
-   "width": 0.706
+   "width": 0.711
   },
   "c.voting_elections": {
    "axes_angle": 122.005,
@@ -2641,20 +2641,20 @@
    "r1": 0.579430997828421,
    "ring": "field",
    "source": "axes",
-   "start": 111.446,
+   "start": 108.898,
    "votes": 2,
-   "width": 4.388
+   "width": 4.428
   },
   "c.walking_cycling": {
    "axes_angle": 323.13,
-   "pressure": 0.000174,
+   "pressure": 0.000195,
    "r0": 0.4624604517397584,
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 329.76,
+   "start": 330.811,
    "votes": 2,
-   "width": 0.304
+   "width": 0.311
   },
   "c.war_experience": {
    "axes_angle": 40.601,
@@ -2663,20 +2663,20 @@
    "r1": 0.7975540976968145,
    "ring": "field",
    "source": "axes",
-   "start": 66.623,
+   "start": 66.394,
    "votes": 2,
    "width": 0.304
   },
   "c.waste_recycling": {
    "axes_angle": 345.964,
-   "pressure": 0.00154,
+   "pressure": 0.0014,
    "r0": 0.546768111581802,
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 34.839,
+   "start": 37.718,
    "votes": 2,
-   "width": 0.724
+   "width": 0.685
   },
   "c.weather_climate_adaptation": {
    "axes_angle": 348.69,
@@ -2685,20 +2685,20 @@
    "r1": 0.7058130046639756,
    "ring": "field",
    "source": "axes",
-   "start": 35.563,
+   "start": 38.403,
    "votes": 2,
    "width": 0.304
   },
   "c.welfare_benefits": {
    "axes_angle": 128.66,
-   "pressure": 0.000399,
+   "pressure": 0.000529,
    "r0": 0.562743586855317,
    "r1": 0.666743586855317,
    "ring": "field",
    "source": "axes",
-   "start": 127.588,
+   "start": 125.504,
    "votes": 2,
-   "width": 0.373
+   "width": 0.414
   },
   "c.wildlife_conservation": {
    "axes_angle": 29.745,
@@ -2707,7 +2707,7 @@
    "r1": 0.7792059977214819,
    "ring": "field",
    "source": "axes",
-   "start": 59.17,
+   "start": 59.661,
    "votes": 2,
    "width": 0.304
   },
@@ -2718,9 +2718,9 @@
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 138.047,
+   "start": 136.14,
    "votes": 2,
-   "width": 0.545
+   "width": 0.547
   },
   "c.youth_culture": {
    "axes_angle": 229.399,
@@ -2729,31 +2729,31 @@
    "r1": 0.650768111581802,
    "ring": "field",
    "source": "axes",
-   "start": 208.938,
+   "start": 209.776,
    "votes": 2,
    "width": 0.304
   },
   "s.consumption": {
    "axes_angle": 206.049,
-   "pressure": 0.038124,
+   "pressure": 0.039779,
    "r0": 0.2432,
    "r1": 0.2952,
    "ring": "sector",
    "source": "children",
-   "start": 186.07,
+   "start": 186.184,
    "votes": null,
-   "width": 15.059
+   "width": 15.606
   },
   "s.family": {
    "axes_angle": 271.55,
-   "pressure": 0.060258,
+   "pressure": 0.069046,
    "r0": 0.17386684,
    "r1": 0.22586684,
    "ring": "sector",
    "source": "children",
-   "start": 241.833,
+   "start": 242.181,
    "votes": null,
-   "width": 22.64
+   "width": 25.617
   },
   "s.harm": {
    "axes_angle": 269.109,
@@ -2762,130 +2762,130 @@
    "r1": 0.30906684,
    "ring": "sector",
    "source": "children",
-   "start": 238.656,
+   "start": 239.006,
    "votes": null,
-   "width": 3.177
+   "width": 3.175
   },
   "s.home": {
    "axes_angle": 318.311,
-   "pressure": 0.046132,
+   "pressure": 0.042897,
    "r0": 0.22933315999999998,
    "r1": 0.28133315999999997,
    "ring": "sector",
    "source": "children",
-   "start": 3.035,
+   "start": 1.797,
    "votes": null,
-   "width": 17.802
+   "width": 16.673
   },
   "s.learning": {
    "axes_angle": 191.75,
-   "pressure": 0.11272,
+   "pressure": 0.111236,
    "r0": 0.368,
    "r1": 0.42,
    "ring": "sector",
    "source": "children",
-   "start": 145.46,
+   "start": 146.136,
    "votes": null,
-   "width": 40.61
+   "width": 40.048
   },
   "s.leisure": {
    "axes_angle": 285.878,
-   "pressure": 0.126585,
+   "pressure": 0.126892,
    "r0": 0.29866684,
    "r1": 0.35066684,
    "ring": "sector",
    "source": "children",
-   "start": 264.473,
+   "start": 267.798,
    "votes": null,
-   "width": 45.359
+   "width": 45.403
   },
   "s.meaning": {
    "axes_angle": 227.593,
-   "pressure": 0.011215,
+   "pressure": 0.01004,
    "r0": 0.33333316,
    "r1": 0.38533316,
    "ring": "sector",
    "source": "children",
-   "start": 201.128,
+   "start": 201.79,
    "votes": null,
-   "width": 5.841
+   "width": 5.434
   },
   "s.mobility": {
    "axes_angle": 353.134,
-   "pressure": 0.101366,
+   "pressure": 0.101871,
    "r0": 0.18773316,
    "r1": 0.23973316,
    "ring": "sector",
    "source": "children",
-   "start": 25.221,
+   "start": 22.934,
    "votes": null,
-   "width": 36.721
+   "width": 36.844
   },
   "s.nature": {
    "axes_angle": 352.713,
-   "pressure": 0.00696,
+   "pressure": 0.007204,
    "r0": 0.27786684,
    "r1": 0.32986684,
    "ring": "sector",
    "source": "children",
-   "start": 20.836,
+   "start": 18.47,
    "votes": null,
-   "width": 4.384
+   "width": 4.464
   },
   "s.public": {
    "axes_angle": 120.784,
-   "pressure": 0.064307,
+   "pressure": 0.064339,
    "r0": 0.2016,
    "r1": 0.2536,
    "ring": "sector",
    "source": "children",
-   "start": 121.433,
+   "start": 122.129,
    "votes": null,
-   "width": 24.027
+   "width": 24.007
   },
   "s.science": {
    "axes_angle": 118.927,
-   "pressure": 0.021913,
+   "pressure": 0.02727,
    "r0": 0.31253316,
    "r1": 0.36453315999999997,
    "ring": "sector",
    "source": "children",
-   "start": 111.927,
+   "start": 110.802,
    "votes": null,
-   "width": 9.506
+   "width": 11.328
   },
   "s.self_care": {
    "axes_angle": 310.595,
-   "pressure": 0.149482,
+   "pressure": 0.136228,
    "r0": 0.21546684000000002,
    "r1": 0.26746684000000004,
    "ring": "sector",
    "source": "children",
-   "start": 309.833,
+   "start": 313.201,
    "votes": null,
-   "width": 53.202
+   "width": 48.596
   },
   "s.social": {
    "axes_angle": 242.944,
-   "pressure": 0.078002,
+   "pressure": 0.078395,
    "r0": 0.27786684,
    "r1": 0.32986684,
    "ring": "sector",
    "source": "children",
-   "start": 206.97,
+   "start": 207.224,
    "votes": null,
-   "width": 28.718
+   "width": 28.815
   },
   "s.technology": {
    "axes_angle": 73.961,
-   "pressure": 0.020861,
+   "pressure": 0.020285,
    "r0": 0.35413316000000006,
    "r1": 0.40613316000000005,
    "ring": "sector",
    "source": "children",
-   "start": 61.941,
+   "start": 59.778,
    "votes": null,
-   "width": 9.146
+   "width": 8.938
   },
   "s.transitions": {
    "axes_angle": 268.708,
@@ -2894,20 +2894,20 @@
    "r1": 0.38533316,
    "ring": "sector",
    "source": "children",
-   "start": 235.688,
+   "start": 236.039,
    "votes": null,
-   "width": 2.969
+   "width": 2.967
   },
   "s.work": {
    "axes_angle": 82.678,
-   "pressure": 0.11339,
+   "pressure": 0.117192,
    "r0": 0.16,
    "r1": 0.21200000000000002,
    "ring": "sector",
    "source": "children",
-   "start": 71.087,
+   "start": 68.717,
    "votes": null,
-   "width": 40.84
+   "width": 42.085
   }
  },
  "version": "0.0.0-draft"

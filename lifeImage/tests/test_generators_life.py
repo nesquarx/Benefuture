@@ -8,6 +8,7 @@ import statistics as st
 
 import pytest
 
+from lifeimage.fine.cards import coarsen_rows, load_fine
 from lifeimage.generators import life
 from lifeimage.generators.common import padded, seed_ids, validate_row
 from lifeimage.generators.params import ARCHETYPES, PARAMS, resolve
@@ -41,7 +42,7 @@ def test_same_seed_same_life_different_seed_different_life():
 @pytest.mark.parametrize("archetype", sorted(ARCHETYPES))
 def test_every_row_meets_the_contract_for_every_archetype_and_age(archetype):
     lo, hi = ARCHETYPES[archetype]["age_range"]
-    ids = seed_ids()
+    ids = seed_ids() | {c["id"] for c in load_fine()}  # a row names a coarse field or a fine domain (LI.51)
     for seed, age in zip(range(6), [lo, (lo + hi) // 2, hi, lo + 1, hi - 1, (lo + hi) // 2 + 1]):
         p = gen(seed, archetype, age)
         assert len(p.rows) >= 8, "a life leaves evidence"
@@ -127,8 +128,13 @@ def test_a_retiree_is_retired_a_young_adult_is_not():
 
 
 # ---- archetypes are parameter presets, not hard-coded lives ----
+def coarse_rows(p):
+    """The persona's rows read at the coarse level (fine domains read as their upstream fields, LI.51)."""
+    return coarsen_rows(p.rows, load_fine())
+
+
 def share(p, prefix):
-    ds = [m["domain"] for r in p.rows for m in r["memberships"] if r["channel"] == "positive"]
+    ds = [m["domain"] for r in coarse_rows(p) for m in r["memberships"] if r["channel"] == "positive"]
     return sum(d.startswith(prefix) for d in ds) / len(ds)
 
 
@@ -137,7 +143,7 @@ def test_researcher_touches_science_more_than_shift_worker_paired_seeds():
            "c.statistics_data", "c.computer_science", "c.medicine_science", "c.psychology", "c.sociology", "c.economics")
 
     def frac(p):
-        ds = [m["domain"] for r in p.rows for m in r["memberships"] if r["channel"] == "positive"]
+        ds = [m["domain"] for r in coarse_rows(p) for m in r["memberships"] if r["channel"] == "positive"]
         return sum(d in sci for d in ds) / len(ds)
 
     a = [frac(gen(s, "researcher", 40)) for s in SEEDS]
@@ -150,9 +156,9 @@ def test_carer_small_business_and_career_changer_have_their_signature():
     care = {"c.eldercare", "c.care_of_ill_disabled", "c.parenting_young_children"}
     for s in range(15):
         c = gen(s, "carer", 45)
-        assert sum(m["domain"] in care for r in c.rows for m in r["memberships"]) >= 3
+        assert sum(m["domain"] in care for r in coarse_rows(c) for m in r["memberships"]) >= 3
         b = gen(s, "small_business_owner", 45)
-        assert any(m["domain"] == "c.entrepreneurship" for r in b.rows for m in r["memberships"])
+        assert any(m["domain"] == "c.entrepreneurship" for r in coarse_rows(b) for m in r["memberships"])
         k = gen(s, "career_changer", 45)
         sectors = {e["detail"].get("sector") for e in k.events if e["key"] == "job"}
         assert len(sectors - {None}) >= 2 and any(e["key"] == "employment_transition" for e in k.events)

@@ -9,6 +9,7 @@ from collections import Counter
 
 import pytest
 
+from lifeimage.fine.cards import load_fine
 from lifeimage.generators.common import ROOT, seed_ids, validate_row
 
 SYN = ROOT / "data" / "synthetic"
@@ -32,7 +33,7 @@ def test_forty_personas_over_archetypes_and_ages_and_six_organisations():
 
 
 def test_every_stored_row_meets_the_contract_and_belongs_to_a_listed_entity():
-    ids = seed_ids()
+    ids = seed_ids() | {c["id"] for c in load_fine()}  # rows name coarse fields or, where the field has fine children, a fine domain (LI.51)
     ents = {p["entity"] for p in jl("personas.jsonl")} | {o["entity"] for o in jl("orgs.jsonl")}
     n = 0
     for name in ("rows.jsonl", "org_rows.jsonl"):

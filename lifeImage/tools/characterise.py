@@ -61,7 +61,53 @@ def v1_luminance():
     return out
 
 
-def main(out, signatures=None):
+def mcnemar(a, b):
+    """(only a right, only b right, two-sided exact sign-test p) over paired correct flags."""
+    x = sum(1 for p, q in zip(a, b) if p and not q)
+    y = sum(1 for p, q in zip(a, b) if q and not p)
+    n = x + y
+    if n == 0:
+        return x, y, 1.0
+    tail = sum(math.comb(n, k) for k in range(0, min(x, y) + 1)) / 2 ** n
+    return x, y, min(1.0, 2 * tail)
+
+
+def fine_study(ext, ext_rows, ext_asof):
+    """Fine evidence against the control (the same personas, same code, every row kept at the coarse fields), paired by
+    persona; plus the exploratory identification with the fine-ring descriptors and the facts of the fine ring."""
+    from statistics import median
+    fine_ids = {c["id"] for c in ch.world_cards() if c.get("level") == "fine"}
+    ctl_rows = {e["id"]: ch.extended_rows(e, fine=False)[0] for e in ext}
+    recs_f, states_f = ch.population_records(ext, ext_rows, ext_asof)
+    recs_c, _ = ch.population_records(ext, ctl_rows, ext_asof)
+    out = {"n": len(ext), "identification": {}, "exploratory": {}}
+    for label in ("archetype", "calibration"):
+        f = ch.identify(recs_f)[label]
+        c = ch.identify(recs_c)[label]
+        ex = ch.identify(recs_f, ch.FINE_FEATURES)[label]
+        flags = lambda r, k: [p == t for p, t in zip(r["predictions"], [x[label] for x in recs_f])]  # noqa: E731
+        ff, cf, ef = flags(f, 0), flags(c, 0), flags(ex, 0)
+        out["identification"][label] = {"fine": {k: v for k, v in f.items() if k != "predictions"}, "control": {k: v for k, v in c.items() if k != "predictions"},
+                                        "paired": dict(zip(("only_fine", "only_control", "p"), mcnemar(ff, cf)))}
+        out["exploratory"][label] = {"with_fine_descriptors": {k: v for k, v in ex.items() if k != "predictions"},
+                                     "against_fine_features_alone": dict(zip(("only_descriptors", "only_base", "p"), mcnemar(ef, ff)))}
+    rows = [r for e in ext for r in ext_rows[e["id"]] if r["channel"] != "prediction"]
+    named = sum(any(m["domain"] in fine_ids for m in r["memberships"]) for r in rows)
+    lit = [r_["fine_n_lit"] for r_ in recs_f]
+    typ = []
+    for st in states_f:
+        vals = sorted(max(s.solid) for s in st.slices if s.ring == "fine" and s.touched and max(s.solid) > 0)
+        if vals:
+            typ.append(median(vals))
+    cov = [x for x in (r_["typical_level"] for r_ in recs_f) if not math.isnan(x)]
+    out["facts"] = {"event_rows": len(rows), "event_rows_naming_a_fine_domain": named, "share": named / len(rows),
+                    "mean_lit_fine_slices": sum(lit) / len(lit), "median_fine_typical_level": median(typ) if typ else None,
+                    "median_coarse_typical_level": median(cov) if cov else None,
+                    "fine_lit_share_mean": sum(r_["fine_lit_share"] for r_ in recs_f) / len(recs_f)}
+    return out
+
+
+def main(out, signatures=None, label="v2"):
     warnings.simplefilter("ignore")
     signatures = signatures or ch.SIGNATURES
     sigs = ch.load_signatures(signatures)
@@ -93,10 +139,11 @@ def main(out, signatures=None):
     ident_verdicts = ch.evaluate_identification(ident_specs, {r["name"]: r["identification"] for r in results})
     post = post_hoc(ext)
     lum = {r["name"]: {"mean": mean_of(r["records"], "luminance"), "typical_level": mean_of(r["records"], "typical_level")} for r in results}
-    payload = {"signatures": SIG_NOTE.format(Path(signatures).name), "sets": results, "identification_verdicts": ident_verdicts,
+    study = fine_study(ext, ext_rows, ext_asof) if label != "v2" else None
+    payload = {"signatures": SIG_NOTE.format(Path(signatures).name), "label": label, "fine_study": study, "sets": results, "identification_verdicts": ident_verdicts,
                "luminance": lum, "luminance_v1": v1_luminance(), "post_hoc": post, "degraded": log}
     (out.with_suffix(".json")).write_text(json.dumps(clean(payload), indent=1, sort_keys=True) + "\n", encoding="utf-8")
-    (out.with_suffix(".md")).write_text(report(results, sigs, ident_verdicts, lum, v1_luminance(), log, post), encoding="utf-8")
+    (out.with_suffix(".md")).write_text(report(results, sigs, ident_verdicts, lum, v1_luminance(), log, post, label, study), encoding="utf-8")
     for r in results:
         i = r["identification"]
         print(f"{r['name']:38s} n={r['n']:3d} held/not/inc={r['tally']['held']}/{r['tally']['not held']}/{r['tally']['inconclusive']} "
@@ -145,8 +192,50 @@ def post_hoc(ext):
     return {"mean_estimate_minus_truth": {c: mean(v) for c, v in by.items()}, "n_estimates": len(xs), "pooled_correlation_estimate_truth": r}
 
 
-def report(results, sigs, ident_verdicts, lum, lum_v1, log, post):
-    L = ["# Characterisation v2: report", "",
+V2_REPORT = ROOT / "data/gold/characterisation_v2_report.json"
+
+
+def fine_section(study):
+    """The markdown of the fine study: the prediction made before the run, the paired identification against the control and
+    against the committed v2 report, the exploratory fine descriptors, and the facts of the fine ring."""
+    f3_ = lambda x: "n/a" if x is None else f"{x:.3f}"  # noqa: E731
+    before = {}
+    if V2_REPORT.exists():
+        d = json.loads(V2_REPORT.read_text(encoding="utf-8"))
+        s0 = next(s for s in d["sets"] if s["name"] == "extended / new")
+        before = {k: s0["identification"][k] for k in ("archetype", "calibration")}
+    L = ["## Fine evidence: does identification change with the finer resolution?", "",
+         "Prediction, written before the run (confidence moderate, ETA this run): the pre-registered features read the coarse image, where a field",
+         "is the re-saturated sum of its children, so identification stays within 0.05 of the control (the same personas and code with every row kept at",
+         "the coarse fields); the exploratory fine descriptors add at least 0.05 to archetype identification (low confidence: fine detail may separate",
+         "archetypes the coarse fields blur).", "",
+         f"{study['n']} personas (8 archetypes x 3 calibrations x 6), paired by persona. Control: the same code and personas, rows at the coarse fields.",
+         "Before (committed v2 report, earlier generator and code): archetype "
+         f"{f3_(before.get('archetype', {}).get('accuracy'))}, calibration {f3_(before.get('calibration', {}).get('accuracy'))}.", "",
+         "| label | v2 report (before) | control, current code | fine evidence | only fine right / only control right (exact sign test p) |", "|---|---|---|---|---|"]
+    for k in ("archetype", "calibration"):
+        i = study["identification"][k]
+        b = before.get(k)
+        L.append(f"| {k} | {f3_(b['accuracy']) if b else 'n/a'} | {i['control']['accuracy']:.3f} [{i['control']['wilson'][0]:.3f}, {i['control']['wilson'][1]:.3f}] | "
+                 f"{i['fine']['accuracy']:.3f} [{i['fine']['wilson'][0]:.3f}, {i['fine']['wilson'][1]:.3f}] | "
+                 f"{i['paired']['only_fine']} / {i['paired']['only_control']} (p = {i['paired']['p']:.3f}) |")
+    L += ["", "Exploratory, not pre-registered: the same identification with the fine-ring descriptors (`fine_*`) added to the features.", "",
+          "| label | fine evidence | with fine descriptors | only descriptors right / only base right (exact sign test p) |", "|---|---|---|---|"]
+    for k in ("archetype", "calibration"):
+        i, e = study["identification"][k], study["exploratory"][k]
+        w = e["with_fine_descriptors"]
+        L.append(f"| {k} | {i['fine']['accuracy']:.3f} | {w['accuracy']:.3f} [{w['wilson'][0]:.3f}, {w['wilson'][1]:.3f}] | "
+                 f"{e['against_fine_features_alone']['only_descriptors']} / {e['against_fine_features_alone']['only_base']} (p = {e['against_fine_features_alone']['p']:.3f}) |")
+    fa = study["facts"]
+    L += ["", f"Facts of the fine ring: {fa['event_rows_naming_a_fine_domain']} of {fa['event_rows']} event rows name a fine domain ({fa['share']:.1%}); a persona lights "
+          f"{fa['mean_lit_fine_slices']:.1f} fine slices on average ({fa['fine_lit_share_mean']:.1%} of the ring by area); the median typical level of a touched fine "
+          f"domain is {f3_(fa['median_fine_typical_level'])} against {f3_(fa['median_coarse_typical_level'])} for a touched coarse field (evidence splits over children).", ""]
+    return L
+
+
+def report(results, sigs, ident_verdicts, lum, lum_v1, log, post, label="v2", study=None):
+    title = "v2" if label == "v2" else label
+    L = [f"# Characterisation {title}: report", "",
          "Pre-registered signatures (`characterisation_signatures_v2.json`, committed before any render with grain restricted to claimed potential, the",
          "anchored tone map or the literature-based estimation bias) evaluated on the extended population (144 generated personas, all-tier truth rows; the",
          "primary verdicts) and, as secondary readings, on the 40 starter personas under each projection. No model was run. Held, not held and inconclusive",
@@ -184,6 +273,8 @@ def report(results, sigs, ident_verdicts, lum, lum_v1, log, post):
     for r in results:
         b = lum_v1.get(r["name"])
         L.append(f"| {r['name']} | {f'{b[0]:.4f} ({b[1]:.4f}, {b[2]:.4f})' if b else 'n/a'} | {f3(lum[r['name']]['mean'])} | {f3(lum[r['name']]['typical_level'])} |")
+    if study:
+        L += [""] + fine_section(study)
     L += ["", "## Post-hoc diagnostic (not pre-registered)", "",
           "Extended population: mean estimate minus truth over every claimed domain, by calibration, and the pooled correlation between estimate and truth",
           f"({post['n_estimates']} estimates; Zell and Krizan 2014 report about 0.29 between self-assessment and performance).", "",
@@ -203,5 +294,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=ROOT / "data/gold/characterisation_v2_report")
     ap.add_argument("--signatures", type=Path, default=None)
+    ap.add_argument("--label", default="v2", help='report label; "v2 on fine evidence" adds the fine study')
     a = ap.parse_args()
-    main(a.out, a.signatures)
+    main(a.out, a.signatures, a.label)

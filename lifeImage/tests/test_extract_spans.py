@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from lifeimage.fine.cards import coarsen_rows, load_fine
 from lifeimage.extract_metrics import compute, load_synthetic
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,7 +39,7 @@ def perfect_v2_reading(v1_world):
     _p, truth, _t, _c = v1_world
     rows = {}
     for pid, per in truth.items():
-        allrows = [json.loads(l) for l in (SYN / "rows.jsonl").read_text().splitlines() if f'"person:{pid}"' in l]
+        allrows = coarsen_rows([json.loads(l) for l in (SYN / "rows.jsonl").read_text().splitlines() if f'"person:{pid}"' in l], load_fine())
         by_idx = json.loads((SYN / "texts_v2" / f"{pid}.spans.json").read_text())["spans"]["resume"]
         out = []
         for r in per:

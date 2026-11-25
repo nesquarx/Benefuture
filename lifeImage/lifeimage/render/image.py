@@ -28,9 +28,10 @@ from html import escape
 from pathlib import Path
 
 from .. import levels as lv
+from ..fine.cards import coarsen_rows
 from ..projection import DEFAULT as PROJECTION
 from ..projection import project
-from .basemap import ROOT, read_jsonl
+from .basemap import EXTENT_MARGIN, ROOT, read_jsonl
 
 CHANNELS = ("red", "green", "blue")
 # (source row channel, membership rels) per image channel
@@ -83,6 +84,9 @@ def channel_values(rows, cards, governed=DEFAULT, asof=None, legacy=False):
     if not legacy:
         return lv.channel_levels(rows, cards, governed.levels, asof)
     known = {c["id"] for c in cards}
+    fine = [c for c in cards if c.get("level") == "fine"]
+    if fine:  # the earlier projection knows coarse fields only: rows are read at the coarse level (fine.cards.coarsen_rows)
+        rows = coarsen_rows(rows, fine)
     live = [r for r in rows if not r["revoked"] and r["channel"] in ("positive", "prediction")]
     for r in live:
         for m in r["memberships"]:
@@ -168,8 +172,12 @@ def flange(version, rim=1.0):
 
 
 def render_svg(label, cv, bm, governed=DEFAULT, size=640, legacy=False):
+    """The image as SVG. Coarse slices (sector and field rings) and, where the basemap has them, the fine slices in their
+    outer rings (LI.51); the drawing is as wide as the outermost ring needs (`bm.extent`)."""
     g = governed
-    order = sorted(bm.slices.values(), key=lambda s: (s.ring != "sector", s.id))
+    fine = getattr(bm, "fine", {}) or {}
+    e = getattr(bm, "extent", 1.25) if fine else 1.25
+    order = sorted(bm.slices.values(), key=lambda s: (s.ring != "sector", s.id)) + sorted(fine.values(), key=lambda s: s.id)
     outline = "".join(wedge_path(s) for s in order)
     solid, claimed = [], []
     for s in order:
@@ -180,22 +188,23 @@ def render_svg(label, cv, bm, governed=DEFAULT, size=640, legacy=False):
     t = g.grain_tile
     defs = claimed_g = ""
     if claimed:  # the grain mask exists only where there is something claimed to draw
+        m = e - 0.15
         defs = ("<defs>"
                 f'<pattern id="dots" width="{t}" height="{t}" patternUnits="userSpaceOnUse"><rect width="{t}" height="{t}" fill="#000"/>'
                 f'<rect width="{g.grain_dot}" height="{g.grain_dot}" fill="#fff"/></pattern>'
-                '<mask id="grain" maskUnits="userSpaceOnUse" x="-1.1" y="-1.1" width="2.2" height="2.2">'
-                '<rect x="-1.1" y="-1.1" width="2.2" height="2.2" fill="url(#dots)"/></mask></defs>')
+                f'<mask id="grain" maskUnits="userSpaceOnUse" x="-{m:g}" y="-{m:g}" width="{2 * m:g}" height="{2 * m:g}">'
+                f'<rect x="-{m:g}" y="-{m:g}" width="{2 * m:g}" height="{2 * m:g}" fill="url(#dots)"/></mask></defs>')
         claimed_g = f'<g id="claimed" mask="url(#grain)" style="mix-blend-mode:screen">{"".join(claimed)}</g>'
     parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.25 -1.25 2.5 2.5" width="{size}" height="{size}">',
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="-{e:g} -{e:g} {2 * e:g} {2 * e:g}" width="{size}" height="{size}">',
         f"<title>{escape(label)}</title>",
         defs,
-        '<rect x="-1.25" y="-1.25" width="2.5" height="2.5" fill="#000"/>',
+        f'<rect x="-{e:g}" y="-{e:g}" width="{2 * e:g}" height="{2 * e:g}" fill="#000"/>',
         f'<path id="guides" d="{outline}" fill="none" stroke="#1c1c1c" stroke-width="0.002"/>',
         f'<g id="wedges">{"".join(solid)}</g>',
         claimed_g,
         '<g id="notches"></g>',
-        flange(bm.version),
+        flange(bm.version, rim=e - EXTENT_MARGIN),
         "</svg>",
     ]
     return "\n".join(parts) + "\n"

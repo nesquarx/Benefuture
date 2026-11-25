@@ -110,8 +110,8 @@ td,th{{padding:.15rem .8rem .15rem 0;text-align:left;vertical-align:top}} h1,h2{
 
 def main(out, legacy=False):
     out.mkdir(parents=True, exist_ok=True)
-    cards = bmod.load_cards()
-    bm = bmod.build_v0(by_depth=legacy)  # the legacy projection keeps the earlier depth-only radius
+    cards = bmod.load_all_cards()
+    bm = bmod.build_v0(by_depth=legacy, fine=not legacy)  # the legacy projection keeps the earlier depth-only radius and has no fine ring
     ents = im.load_entities()
     total = 0
     asof = {p["id"]: p["as_of"] for p in ch.starter_personas()}
