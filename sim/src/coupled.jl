@@ -386,6 +386,12 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             (i in gp.colluders) ? 1.0 : (s_i >= 0 ? 1.0 : -1.0)
         end for i in 1:na]
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)
+        # the identity layer's ballots (8.72): bound newcomers vote, sybils vote against the candidate's merit; only with the layer on
+        if U !== nothing && U.ident !== nothing && cand_active
+            nvoting = count(!, delegated)
+            tally += identity_ballots(U.ident, read_truth, sum(held[i] for i in 1:na if !delegated[i]; init = 0.0) / max(1, nvoting),
+                                      Xoshiro(hash((seed, :identity_vote, ep))))
+        end
         chose_cand = cand_active && tally > 0 && !(coupled && rejected)
         if chose_cand && cvi   # eligible only if its predicted per-epoch outcome beats the incumbent's measured record by the significance rule
             chose_cand = length(inc_scores) >= 2 &&

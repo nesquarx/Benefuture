@@ -6,6 +6,7 @@
 # tolerance. Test oracles are deliberately independent transcriptions of the Lean docstrings; the
 # simulation itself never computes rules in Julia.
 
+using BenefutureSim, Test, Random, Statistics
 include("test_helpers.jl")   # all_perms (also used by shapley_sampling_tests.jl), so this file runs alone
 
 const HOSTILE = (NaN, Inf, -Inf, -1.0, -1e-9, 0.0, 1e-300, 1.0, 1.5, 1e12)

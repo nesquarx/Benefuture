@@ -3470,8 +3470,11 @@ end
         @info "P57 arms (last epoch)" base_attention = b.sybil_attention bind_attention = w.sybil_attention base_vote = b.sybil_vote_share bind_vote = w.sybil_vote_share newcomer = w.newcomer_conf sybil = w.sybil_conf
         d = a.duped.unified.epochs[end].identity
         @info "P57 duped arm (p_dupe 0.02)" attention = d.sybil_attention vote = d.sybil_vote_share sybil_conf = d.sybil_conf
-        @test_broken d.sybil_vote_share <= 0.05 && d.sybil_attention <= 0.3 * b.sybil_attention   # prediction missed when listeners are fooled
-        @test d.sybil_vote_share < b.sybil_vote_share && d.sybil_attention < b.sybil_attention      # still a cut, smaller than predicted
+        # lead's prediction (confidence 0.55) now holds with attesters' records (a vouch is a claim with an outcome; audits score the attesters)
+        @test d.sybil_vote_share <= 0.3 * b.sybil_vote_share && d.sybil_attention <= 0.3 * b.sybil_attention   # >70% cut at the default 2% fooling
+        @test d.sybil_conf < 0.3 && d.revoked >= 1                                      # sybils no longer reach 0.6-0.84; found ones are revoked
+        @test d.newcomer_conf >= 0.5                                                    # honest newcomers still reach working confidence
+        @test d.min_member_factor >= 0.25 && d.min_member_factor < 1                    # fooled attesters lose record, are floored, never excluded
         @test b.sybil_attention > 0.10 && b.sybil_vote_share > 0.15                    # red baseline: the army buys interaction and ballots today
         @test w.sybil_vote_share <= 0.05 && w.sybil_attention <= 0.3 * b.sybil_attention   # bounded under binding (structural)
         for e in a.bind.unified.epochs
@@ -3482,7 +3485,6 @@ end
         end
         @test a.bind.unified.epochs[end].identity.newcomer_conf >= 0.5                 # honest newcomers reach working confidence within 3 epochs
         @test a.bind.unified.epochs[end].identity.newcomer_conf > 0.2   # above the preliminary confidence
-        @test a.base.success.floor_u == a.bind.success.floor_u && a.base.success.floor_h == a.bind.success.floor_h   # Goal pattern: layer is not fed back
     end
     # gaming: the vouching ring and participation farming, on the Lean rule directly
     ring = identity_confidence(0.0, fill(7.0, 11), fill(0.0, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)   # unbound attesters weigh zero
@@ -3499,3 +3501,47 @@ end
 end
 
 probe_total("fast")
+
+# Attestation records and cluster farming; the layer in the adoption vote (lead decision on 8.72, 8.170; P58). An attestation is a claim with an
+# outcome: when an attested identity's truth comes out (audit), its attesters are scored on the confidence they stated (the existing class-balanced
+# attestation skill) and their later vouching scales by that record within [record_floor, 1]. Predictions before measuring (lead, confidence 0.55):
+# (1) cluster farming (sybils vouch for one another in 6 distinct clusters, looking independent) leaves sybil confidence below 0.3 and ballot share
+# at most 30% of the unbound baseline; (2) counterexample: without audits (p_audit 0) no record forms and the sybils reach more confidence than with
+# them; (3) Goal pattern, coupled: 36 sybils (harmful candidate on offer, merit -1, sybils vote for it) adopt it in the unbound world in some seed
+# (red baseline: the outcome, not the feature) and under binding the adoption and floors equal the clean world's exactly, harm's peak within 3x clean.
+@timed_testset "Probe: attestation records, cluster farming and identity ballots in the adoption vote (P58)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    uw(seed, binding; newc = 12, syb = 12, coupled = false, cand = false, kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = coupled, m5_decisions = 30,
+        (cand ? (candidate_pv = bad_pv, candidate_track_window = 0, candidate_merit = -1.0) : (;))...,
+        unified = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = newc, sybils = syb, binding = binding; kw...)))
+    last(r) = r.unified.epochs[end].identity
+    uw(1, true)   # warm-up
+    t0 = time()
+    farmed = Bool[]
+    for s in 1:3
+        base, farm, noaudit = last(uw(s, false)), last(uw(s, true; farm_clusters = 6)), last(uw(s, true; p_audit = 0.0))
+        norm = last(uw(s, true))
+        @info "P58 arms (last epoch)" base_vote = base.sybil_vote_share farm_vote = farm.sybil_vote_share farm_conf = farm.sybil_conf noaudit_conf = noaudit.sybil_conf audit_conf = norm.sybil_conf
+        push!(farmed, farm.sybil_conf < 0.3 && farm.sybil_vote_share <= 0.3 * base.sybil_vote_share)
+        @test farm.sybil_conf < 0.4 && farm.sybil_vote_share <= 0.5 * base.sybil_vote_share         # farmed clusters are cut by over half
+        @test noaudit.sybil_conf > norm.sybil_conf                                                    # counterexample: without records the sybils climb higher
+    end
+    @test_broken all(farmed)   # prediction (1) missed in one seed of three (sybil confidence 0.31, ballot share 0.07 against bounds 0.3 and 0.05): not tuned
+    adopt = Bool[]; ok = true
+    for s in 1:3
+        clean, base, bind = uw(s, false; syb = 0, coupled = true, cand = true), uw(s, false; syb = 36, coupled = true, cand = true), uw(s, true; syb = 36, coupled = true, cand = true)
+        append!(adopt, base.adopted_candidate .& .!clean.adopted_candidate)
+        @info "P58 Goal pattern (seed $s)" clean = clean.adopted_candidate base = base.adopted_candidate bind = bind.adopted_candidate floor_u = (clean.success.floor_u, base.success.floor_u, bind.success.floor_u)
+        @test bind.adopted_candidate == clean.adopted_candidate                                       # bound sybils change no decision
+        @test bind.success.floor_u == clean.success.floor_u && bind.success.floor_h == clean.success.floor_h
+        @test bind.success.worst_drop <= 3 * clean.success.worst_drop                                 # harm's peak within 3x clean (one-sided)
+    end
+    @test any(adopt)   # red baseline: unbound, the army gets the harmful candidate adopted in some seed
+    wall = time() - t0
+    @info "P58 wall time (s)" wall
+    @test wall < 60
+end

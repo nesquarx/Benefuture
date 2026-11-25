@@ -576,3 +576,37 @@ end
     @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nom_on, nom_off)]; margin = 0.05, z = 2.0).lo > -0.05
     @test paired_effect([a.tr.restraint_audit_cost - b.tr.restraint_audit_cost for (a, b) in zip(after, before)]; z = 2.0, direction = :up).significant
 end
+
+# Attestation records and identity ballots (lead decision on 8.72, 8.170; P58 heavy): z = 2 on paired seeds (fast probe uses 3).
+# Hypotheses (lead, confidence 0.55; direction, metric, smallest effect that matters stated before measuring): (a) at the default 2% fooling,
+# binding with attester records cuts the sybils' ballot share by more than 0.10 (of 0.167 unbound; paired, down); (b) honest newcomers' mean
+# confidence reaches 0.5 in at least 0.9 of seeds (proportion interval); (c) farmed clusters (6 distinct) leave a ballot share at most 0.05 in
+# at least 0.8 of seeds (MISSED: 0.625, interval lower bound 0.38; the fast probe saw one miss in three); (d) in the coupled world with a harmful candidate (merit -1) 36 unbound sybils
+# raise its adoption (paired, up, smallest effect 0.05 of epochs) and bound sybils leave every adoption equal to the clean world's (structural).
+@timed_testset "Probe (heavy): attestation records cut sybil ballots, farming and the adoption vote (P58; 16 seeds)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    uw(seed, binding; newc = 12, syb = 12, coupled = false, cand = false, kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = coupled, m5_decisions = 30,
+        (cand ? (candidate_pv = bad_pv, candidate_track_window = 0, candidate_merit = -1.0) : (;))...,
+        unified = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = newc, sybils = syb, binding = binding; kw...)))
+    last(r) = r.unified.epochs[end].identity
+    seeds = 1:16
+    base = [last(uw(s, false)) for s in seeds]; bind = [last(uw(s, true)) for s in seeds]; farm = [last(uw(s, true; farm_clusters = 6)) for s in seeds]
+    @test paired_effect([b.sybil_vote_share - a.sybil_vote_share for (a, b) in zip(base, bind)]; z = 2.0, direction = :down).mean < -0.10
+    @test paired_effect([b.sybil_vote_share - a.sybil_vote_share for (a, b) in zip(base, bind)]; z = 2.0, direction = :down).significant
+    nc = proportion_interval(count(b -> b.newcomer_conf >= 0.5, bind), length(bind); z = 2.0)
+    @test nc.p >= 0.9
+    fm = proportion_interval(count(f -> f.sybil_vote_share <= 0.05, farm), length(farm); z = 2.0)
+    @info "P58 heavy: farming" p = fm.p lo = fm.lo newcomers = nc.p
+    # Measured: 10 of 16 seeds at or below 0.05 (interval lower bound 0.38): prediction (c) of 0.8 is MISSED; farmed clusters are cut but not always to the bound.
+    @test_broken fm.p >= 0.8
+    @test fm.p >= 0.5 && fm.lo > 0.3
+    @test all(b -> b.min_member_factor >= 0.25, bind)                            # fooled attesters are floored, never excluded
+    cand(s, binding, syb) = uw(s, binding; syb = syb, coupled = true, cand = true).adopted_candidate
+    clean = [cand(s, false, 0) for s in seeds]; unb = [cand(s, false, 36) for s in seeds]; bnd = [cand(s, true, 36) for s in seeds]
+    @test paired_effect([mean(u) - mean(c) for (u, c) in zip(unb, clean)]; z = 2.0, direction = :up).mean > 0.05
+    @test bnd == clean
+end
