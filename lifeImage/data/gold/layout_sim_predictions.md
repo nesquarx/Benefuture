@@ -44,3 +44,11 @@ adjacency (1.68 to 0 and 0.33), religion fell: not met on the metric, though the
 neighbours by eye (Arts, music and religion studies left Statistics for Philosophical inquiry; Finding and securing housing left
 Crop farming for Hospitality and Commuting). 4 tiled mean shift 27.9, p95 71.4, max 133.8 (not met; S1: 23.1, 54.5, 89.3);
 sectors split 16 and 16 (met), extra runs 166 to 174 (not met; S1 184). Runtime 5.5 s with the hold-out (met).
+
+## Prediction 2 judged (lead, 2026-11-25)
+Blinded `adjacency.v1`, Haiku runners, 247 fields x 2 variants (key held out of the runners' reach): variant 0, B (simulation)
+108 vs A (axes) 91, 48 ties, share B 0.543, z 1.21; variant 1, 111 vs 92, 44 ties, share 0.547, z 1.33; pooled 219 vs 183,
+share 0.545, z 1.80 (the variants agree on 82% of fields, so pooling overstates n; the per-variant z is the honest figure).
+Decisive 81% of tasks (>= 40%: met). Position bias 0.46 / 0.51 (none to speak of). Prediction (>= 55%, z >= 2): **not met**.
+Direction favours the simulation, magnitude small and not significant: the simulated layout is at best slightly better to an
+independent judge, consistent with signal coverage of 3.7% of field pairs. Not adopted; rerun after the signals grow.
