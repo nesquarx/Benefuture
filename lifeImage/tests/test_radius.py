@@ -44,6 +44,17 @@ def shipped():
     return coarse, fine, rows, rd.compute(coarse, fine, rows)
 
 
+def shipped_as_built():
+    """The radius as `tools/build_radius.py` writes it: judged scores (radius v1) taken when cached, else mechanical."""
+    coarse, fine, rows, _ = shipped()
+    answers = ROOT / "data/answers/radius.jsonl"
+    judged = {}
+    if answers.exists():
+        from lifeimage.radius_judged import judged_means, owners
+        judged = judged_means([json.loads(l) for l in answers.read_text().splitlines() if l.strip()], owners(coarse))
+    return coarse, fine, rows, rd.compute(coarse, fine, rows, judged=judged)
+
+
 # ---------- the proxies, one by one ----------
 
 def test_isco_difficulty_follows_the_four_skill_levels_of_isco08():
@@ -200,7 +211,7 @@ def test_shipped_correlation_report_flags_every_negative_pair_and_complexity_tra
 
 
 def test_v3_and_fine_v1_files_carry_the_radius_and_leave_every_other_field_alone():
-    coarse, fine, rows, res = shipped()
+    coarse, fine, rows, res = shipped_as_built()
     for old, new in ((coarse, "data/coarse/seed_v3.jsonl"), (fine, "data/fine/fine_v1.jsonl")):
         cards = [json.loads(l) for l in (ROOT / new).read_text().splitlines() if l.strip()]
         assert [c["id"] for c in cards] == [c["id"] for c in old]

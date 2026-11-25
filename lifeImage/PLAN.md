@@ -371,6 +371,14 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   sum) and a comparison view; deterministic. Open: rows attach at the coarse field because fine domains carry no rows
   yet; the next step is mapping evidence rows to fine domains.
 
+- **Judged radius** (radius v1, 0–10, coarse fields, 2 variants): at 0 or 10 4.7%; variant agreement Spearman 0.921,
+  mean absolute difference 0.53 (predicted ≥ 0.85: held); Spearman with ISCO difficulty 0.31 (predicted ≥ 0.4:
+  missed narrowly), with the popularity-driven specificity proxy 0.02 (predicted near zero: held). The largest
+  disagreements show the mechanical composite inverted (rites of passage, gifts and clothing placed outward; physics,
+  sociology and life sciences inward); the judged scale places them as LI.26 intends. Adopted: the radius composite
+  takes the judged score where present (fine domains still fall back to the mechanical composite, logged); seed_v3,
+  fine_v1, the v2 images and the interactive viewers rebuilt.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
