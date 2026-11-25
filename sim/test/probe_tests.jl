@@ -3441,4 +3441,61 @@ end
     @test wall < 20
 end
 
+# Entry-point identity binding in the unified world (rulings 8.72, 8.167c, 8.172 (3), 8.174 phase A finding 3; P57). Identities are bound at
+# ports of entry with a preliminary confidence that rises by independent attestation (Lean `identity_confidence_ref`); an identity off an
+# entry point is flagged; confidence weights the interaction counted toward clustering, the ballot and the currency ceiling above basic
+# sustenance. Predictions before measuring (lead): a sybil army that real listeners hear cuts its influence by more than 70% (attention it
+# draws, ballot share) under binding (0.6); honest newcomers reach the working confidence within tens of steps (0.6); not tuned to rescue.
+# Hypotheses: (1) outcome baseline on the current unified world (no binding): 12 sybils heard by half the members draw over 10% of the real
+# listeners' attention (half the members hear them at a quarter of their attention: 12.5% by construction) and hold over 15% of the ballots; (2) structural, every seed: with binding and no real listener fooled (`p_dupe` 0) the sybils' ballot share is
+# at most 0.05 and their attention share at most 30% of the baseline's (a ring bootstraps nothing); with fooled listeners (`p_dupe` 0.02 per step) the
+# lead's cut of over 70% is the prediction and it MISSED (recorded @test_broken, not tuned: duped vouches from several clusters seed the ring), no identity's ceiling falls below basic sustenance, confidence stays in [0, 1),
+# a flagged identity never holds a ballot while its confidence is below the working confidence; (3) effect: honest newcomers' mean confidence
+# rises above the preliminary and reaches the working confidence by epoch 3 (30 steps); (4) the Goal pattern: the layer does not feed the
+# economy (a toy assumption, named), so floors are identical to the run without it; (5) gaming: a vouching ring (sybils vouching for one
+# another, all in one cluster) bootstraps nothing (confidence stays below the preliminary), participation alone earns nothing (Lean rule), and
+# a same-cluster ring adds less than independent clusters.
+@timed_testset "Probe: entry-point identity binding bounds a sybil army and lifts honest newcomers (P57)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    uw(seed, binding; p_dupe = 0.02) = run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30,
+                                    unified = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 12, sybils = 12, binding = binding, p_dupe = p_dupe)))
+    uw(1, true)   # warm-up
+    t0 = time()
+    arms = [(base = uw(s, false), bind = uw(s, true; p_dupe = 0.0), duped = uw(s, true)) for s in 1:3]
+    for a in arms
+        b = a.base.unified.epochs[end].identity; w = a.bind.unified.epochs[end].identity
+        @info "P57 arms (last epoch)" base_attention = b.sybil_attention bind_attention = w.sybil_attention base_vote = b.sybil_vote_share bind_vote = w.sybil_vote_share newcomer = w.newcomer_conf sybil = w.sybil_conf
+        d = a.duped.unified.epochs[end].identity
+        @info "P57 duped arm (p_dupe 0.02)" attention = d.sybil_attention vote = d.sybil_vote_share sybil_conf = d.sybil_conf
+        @test_broken d.sybil_vote_share <= 0.05 && d.sybil_attention <= 0.3 * b.sybil_attention   # prediction missed when listeners are fooled
+        @test d.sybil_vote_share < b.sybil_vote_share && d.sybil_attention < b.sybil_attention      # still a cut, smaller than predicted
+        @test b.sybil_attention > 0.10 && b.sybil_vote_share > 0.15                    # red baseline: the army buys interaction and ballots today
+        @test w.sybil_vote_share <= 0.05 && w.sybil_attention <= 0.3 * b.sybil_attention   # bounded under binding (structural)
+        for e in a.bind.unified.epochs
+            s = e.identity
+            @test all(c -> 0 <= c < 1, s.conf[1:48]) && all(c -> 0 <= c < 1, s.conf)
+            @test all(>=(0.3), s.ceiling)                                              # basic sustenance never denied
+            @test all(i -> !(s.vote_weight[i] > 0) || s.conf[i] >= 0.5, eachindex(s.conf))
+        end
+        @test a.bind.unified.epochs[end].identity.newcomer_conf >= 0.5                 # honest newcomers reach working confidence within 3 epochs
+        @test a.bind.unified.epochs[end].identity.newcomer_conf > 0.2   # above the preliminary confidence
+        @test a.base.success.floor_u == a.bind.success.floor_u && a.base.success.floor_h == a.bind.success.floor_h   # Goal pattern: layer is not fed back
+    end
+    # gaming: the vouching ring and participation farming, on the Lean rule directly
+    ring = identity_confidence(0.0, fill(7.0, 11), fill(0.0, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)   # unbound attesters weigh zero
+    @test ring == 0.0
+    ring_bound = identity_confidence(0.0, fill(7.0, 11), fill(0.3, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)
+    indep = identity_confidence(0.0, collect(1.0:11.0), fill(0.3, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)
+    @test ring_bound < indep                               # a same-cluster ring counts less than independent clusters
+    @test identity_confidence(0.0, Float64[], Float64[]; rate = 0.5, disc = 0.5, participation = 10^6, part_cap = 0.5, half = 20) == 0.0   # participation alone earns nothing
+    @test identity_confidence(0.2, [1.0, 2.0], [0.9, 0.9]; rate = 0.5, disc = 0.5, participation = 30, part_cap = 0.5, half = 20) >
+          identity_confidence(0.2, [1.0], [0.9]; rate = 0.5, disc = 0.5, participation = 30, part_cap = 0.5, half = 20) > 0.2   # monotone in independent attestations
+    wall = time() - t0
+    @info "P57 wall time (s)" wall
+    @test wall < 20
+end
+
 probe_total("fast")

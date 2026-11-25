@@ -209,6 +209,25 @@ fin(xs...) = all(isfinite, xs)
                        (confs, weights, th, qw) -> all(c -> isfinite(c) && 0 <= c <= 1, confs) && all(isfinite, weights) && isfinite(th) && 0 <= th <= 1 && isfinite(qw) && qw >= 0,
                        binding_admits_weighted,
                        (confs, weights, th, qw) -> sum((clamp(w, 0.0, 1.0) for (c, w) in zip(confs, weights) if c >= th); init = 0.0) >= qw) == (guard = 0, value = 0)
+    @test differential(:identity_confidence,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           cl = Float64[rand(r, 1:3) for _ in 1:k]
+                           ws = [rand(r) < 0.05 ? hostile(r) : rand(r) for _ in 1:k]
+                           (rand(r) < 0.05 ? hostile(r) : 0.9 * rand(r), cl, ws, rand(r) < 0.05 ? hostile(r) : 0.99 * rand(r), rand(r) < 0.05 ? hostile(r) : rand(r),
+                            rand(r) < 0.05 ? hostile(r) : 50.0 * rand(r), rand(r) < 0.05 ? hostile(r) : 0.99 * rand(r), rand(r) < 0.05 ? hostile(r) : 1 + 20 * rand(r))
+                       end,
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> all(isfinite, (s0, rt, ds, pp, pc, hf)) && all(isfinite, ws) && all(w -> 0 <= w <= 1, ws) &&
+                           0 <= s0 < 1 && 0 <= rt < 1 && 0 <= ds <= 1 && pp >= 0 && 0 <= pc < 1 && hf > 0,
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> identity_confidence(s0, cl, ws; rate = rt, disc = ds, participation = pp, part_cap = pc, half = hf),
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> begin
+                           c = s0
+                           for i in eachindex(cl)
+                               kk = count(==(cl[i]), cl[1:(i - 1)])
+                               c += (1 - c) * rt * (clamp(ws[i], 0, 1) * ds^kk)
+                           end
+                           c + (1 - c) * (pc * pp / (pp + hf)) * c
+                       end) == (guard = 0, value = 0)
     @test differential(:deciding_scope,
                        r -> begin
                            n = rand(r, 1:6)

@@ -483,6 +483,24 @@ function binding_admits_weighted(confidences, weights, threshold::Real, quorum_w
           floatarray(collect(Float64, confidences)), floatarray(collect(Float64, weights)), threshold, quorum_weight) == 1
 end
 
+"""
+    identity_confidence(start, clusters, weights; rate, disc, participation, part_cap, half) -> Float64
+
+Identity confidence by independent attestation (Lean `identity_confidence_ref`; [P], 8.72, 8.167c): from `start` (0 for an identity
+bound off an entry point) each attestation, in order, from a cluster (`clusters`) with the attester's own confidence (`weights`) adds
+`rate` of the remaining distance to 1, discounted by `disc` per earlier attestation from the same cluster; participation (`participation`
+steps, saturating at `part_cap`, half-way at `half`) amplifies what attestation earned and never replaces it.
+"""
+function identity_confidence(start::Real, clusters, weights; rate::Real, disc::Real, participation::Real, part_cap::Real, half::Real)
+    check(length(clusters) == length(weights), "one weight per attestation")
+    check(all(isfinite, clusters) && all(w -> isfinite(w) && 0 <= w <= 1, weights), "finite clusters, weights in [0, 1]")
+    check(isfinite(start) && 0 <= start < 1 && isfinite(rate) && 0 <= rate < 1 && isfinite(disc) && 0 <= disc <= 1 &&
+          isfinite(participation) && participation >= 0 && isfinite(part_cap) && 0 <= part_cap < 1 && isfinite(half) && half > 0,
+          "start in [0, 1), rate in [0, 1), disc in [0, 1], participation non-negative, part_cap in [0, 1), half positive")
+    ccall(sym(:bf_identity_confidence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64),
+          start, floatarray(collect(Float64, clusters)), floatarray(collect(Float64, weights)), rate, disc, participation, part_cap, half)
+end
+
 "Gauging the freedom range (Lean `gauge_radius_ref`): harm within the radius shrinks it by `factor`, none widens it."
 function gauge_radius(δ::Real, harmed::Bool; factor::Real)
     check(isfinite(δ) && δ > 0 && isfinite(factor) && factor > 1, "radius positive, factor above 1")

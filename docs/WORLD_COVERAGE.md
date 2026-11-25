@@ -149,7 +149,7 @@ Rows 1-52 (row 51 groups four axioms; row 52 groups four unmodelled items).
 | EHR | 1 | 0 | 51 |
 | Enf | 5 | 0 | 47 |
 
-Unified (Uni, `unified = true`; not a matrix column, it is Cpl with rows 34, 36 and 37 added): 31 W, 9 O, 12 absent (of 52). Row 36 is W per voter (the echoes among a voter's own contacts set its rumour adoption and its weight on advice); row 37 is W through the claims' `ih_truth_level`; row 34 is W as the economy's side-effect chance, network-wide (`run_m8_ihz` has no per-voter structure yet); row 35 reads the voters' contacts instead of the full map; row 29 still declares its binding clusters (the emergent clusters are a read-only measurement, not yet a binding input).
+Unified (Uni, `unified = true`; not a matrix column, it is Cpl with rows 34, 36 and 37 added): 31 W, 9 O, 12 absent (of 52). Row 36 is W per voter (the echoes among a voter's own contacts set its rumour adoption and its weight on advice); row 37 is W through the claims' `ih_truth_level`; row 34 is W as the economy's side-effect chance, network-wide (`run_m8_ihz` has no per-voter structure yet); row 35 reads the voters' contacts instead of the full map; row 29 still declares its binding clusters in M3c/M5; in the unified world an identity layer (`UnifiedParams(identity = IdentityParams(...))`, P57) binds entrants at ports of entry, flags off-entry identities and weights interaction, ballot and currency ceiling by confidence read from the emergent clusters (measured, not yet fed to the adoption vote or economy).
 
 One mechanism group (row 37, categorising truth levels and fact checking against Mem) appears in no matrix column (only in Uni and `run_ih_world`), four more (row 52) are not modelled,
 and four axioms (row 51) live in probes alone.

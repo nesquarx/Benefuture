@@ -342,5 +342,63 @@ theorem compromised_nonpos_cannot_force_quorum
       weighted_attestation_say_zero_of_nonpos threshold cComp wComp hcomp, zero_add]
   exact not_le_of_gt hhon
 
+/-! ## Identity confidence by independent attestation (`8.72`, `8.167c`, `L123`) -/
+
+/-- One attestation: the identity takes the share `gain` (rate times the attester's discounted weight) of the
+    remaining distance to full confidence. -/
+def attest_step (conf gain : ℝ) : ℝ := conf + (1 - conf) * gain
+
+/-- Confidence after a sequence of attestations with the given gains. -/
+def attest_fold (conf : ℝ) : List ℝ → ℝ
+  | [] => conf
+  | g :: gs => attest_fold (attest_step conf g) gs
+
+/-- An attestation never lowers confidence. -/
+theorem attest_step_ge (conf gain : ℝ) (hc : conf ≤ 1) (hg : 0 ≤ gain) : conf ≤ attest_step conf gain := by
+  unfold attest_step; nlinarith
+
+/-- Confidence stays below 1 whatever the attestations (each gain below 1). -/
+theorem attest_step_lt_one (conf gain : ℝ) (hc : conf < 1) (hg0 : 0 ≤ gain) (hg1 : gain < 1) :
+    attest_step conf gain < 1 := by
+  unfold attest_step; nlinarith
+
+/-- Confidence is monotone in the attestation's gain (a stronger attester never adds less). -/
+theorem attest_step_mono_gain (conf : ℝ) {g₁ g₂ : ℝ} (hc : conf ≤ 1) (hg : g₁ ≤ g₂) :
+    attest_step conf g₁ ≤ attest_step conf g₂ := by
+  unfold attest_step; nlinarith
+
+/-- Confidence is monotone in what it already holds. -/
+theorem attest_step_mono_conf {c₁ c₂ : ℝ} (gain : ℝ) (hg1 : gain ≤ 1) (hc : c₁ ≤ c₂) :
+    attest_step c₁ gain ≤ attest_step c₂ gain := by
+  unfold attest_step; nlinarith
+
+/-- Same-cluster attestations count less: an attestation discounted by `disc ≤ 1` for each earlier one from its
+    cluster adds no more than the same attestation from a new cluster. -/
+theorem same_cluster_attestation_counts_less (conf rate w disc : ℝ) (k : ℕ)
+    (hc : conf ≤ 1) (hr : 0 ≤ rate) (hw : 0 ≤ w) (hd0 : 0 ≤ disc) (hd1 : disc ≤ 1) :
+    attest_step conf (rate * (w * disc ^ k)) ≤ attest_step conf (rate * w) := by
+  apply attest_step_mono_gain conf hc
+  have hp : disc ^ k ≤ 1 := pow_le_one₀ hd0 hd1
+  have : w * disc ^ k ≤ w := by nlinarith
+  exact mul_le_mul_of_nonneg_left this hr
+
+/-- Over any sequence of gains in `[0, 1)`, confidence only rises and stays below 1. -/
+theorem attest_fold_bounds (gs : List ℝ) (conf : ℝ) (hc0 : 0 ≤ conf) (hc : conf < 1)
+    (hg : ∀ g ∈ gs, 0 ≤ g ∧ g < 1) : conf ≤ attest_fold conf gs ∧ attest_fold conf gs < 1 := by
+  induction gs generalizing conf with
+  | nil => exact ⟨le_rfl, hc⟩
+  | cons g gs ih =>
+    have hg' := hg g (by simp)
+    have h1 := attest_step_ge conf g hc.le hg'.1
+    have h2 := attest_step_lt_one conf g hc hg'.1 hg'.2
+    have h0 : 0 ≤ attest_step conf g := le_trans hc0 h1
+    obtain ⟨a, b⟩ := ih (attest_step conf g) h0 h2 (fun x hx => hg x (by simp [hx]))
+    exact ⟨le_trans h1 a, b⟩
+
+/-- Participation without attestation earns nothing: with no confidence from attestation, the participation
+    amplification `att + (1 - att) * part * att` stays at zero. -/
+theorem participation_alone_earns_nothing (part : ℝ) :
+    (0 : ℝ) + (1 - 0) * part * 0 = 0 := by ring
+
 end Benefuture.Systems
 

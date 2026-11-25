@@ -153,6 +153,7 @@ Base.@kwdef struct UnifiedParams
     domains::Vector{Int} = [1, 2, 3, 4]
     ih_flag::Bool = true
     over::Dict{Symbol,Any} = Dict{Symbol,Any}()
+    identity::Union{Nothing,IdentityParams} = nothing   # entry-point identity binding layer (8.72, 8.167c); nothing: no newcomers or sybils
 end
 
 "Set the unified world up: the network, the claim stream on it (a pre-pass over the horizon's epochs), the economy with the claims' outputs as its inputs."
@@ -170,7 +171,8 @@ function unified_setup(econ::M3cParams, up::UnifiedParams, n_epochs::Integer; se
                         network = net, rounds = up.rounds, liars_override = liars, run_economy = false, seed = seed, up.over...)
     cl = run_ih_world(ihp)
     (net = net, claims = cl, econ = _with_fields(econ, Dict{Symbol,Any}(:p_informed => cl.econ_inputs.p_informed, :p_side => cl.econ_inputs.p_side)),
-     bloc = cl.bloc, gov_inter = zeros(na, na), epochs = NamedTuple[], n_epochs = n_epochs)
+     bloc = cl.bloc, gov_inter = zeros(na, na), epochs = NamedTuple[], n_epochs = n_epochs,
+     ident = up.identity === nothing ? nothing : identity_setup(up.identity, net, up.communities; seed = seed))
 end
 
 "The governance's M5 parameters on the one network: its contacts, its colluders, its rumour exposure."
@@ -186,13 +188,16 @@ end
 function unified_record!(U, ep::Integer, reputation::AbstractMatrix)
     e = clamp(ep, 1, length(U.claims.interaction))
     W = attention_normalise(reduce(+, U.claims.interaction[1:e]) .+ U.gov_inter)
+    # the identity layer (8.72): newcomers and sybils join the attention matrix, weighted by their confidence once binding is on
+    isnap = U.ident === nothing ? nothing : identity_advance!(U.ident, W, ep)
+    isnap === nothing || (W = identity_weighted(U.ident, identity_attention(U.ident, W)))
     h = cluster_hierarchy(W); lv = cluster_levels(h)
     s = U.claims.voter_snapshots[e]
     readings = (led_astray = s.led_astray, accuracy = s.accuracy, rumour_deferral = U.claims.voter_defer, reputation = vec(mean(max.(reputation, 0.0); dims = 2)))
     push!(U.epochs, (epoch = ep, levels = lv, nested = levels_nested(lv), interaction = sum(reduce(+, U.claims.interaction[1:e]) .+ U.gov_inter),
-                     agreement = adjusted_rand_index(lv[findfirst(l -> l.k == h.best, lv)].labels, U.net.planted),
-                     readings = [(k = l.k, clusters = cluster_readings(l.labels, readings)) for l in lv]))
+                     agreement = adjusted_rand_index(lv[findfirst(l -> l.k == h.best, lv)].labels[1:U.net.n], U.net.planted),
+                     readings = [(k = l.k, clusters = cluster_readings(l.labels[1:U.net.n], readings)) for l in lv], identity = isnap))
 end
 
 "What the unified world reports: the network, the epochs' nested clusters and readings, the claims' outputs."
-unified_report(U) = (network = U.net, epochs = U.epochs, claims = U.claims, interaction = U.gov_inter, econ_inputs = U.claims.econ_inputs)
+unified_report(U) = (network = U.net, identity = U.ident, epochs = U.epochs, claims = U.claims, interaction = U.gov_inter, econ_inputs = U.claims.econ_inputs)
