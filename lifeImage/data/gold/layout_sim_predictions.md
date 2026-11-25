@@ -62,3 +62,11 @@ Baseline on the current code: signal covers 11.9% of pairs within two positions 
 - Order bias (reversed minus canonical) within one point on average, variants within one point on at least 70% of pairs. Confidence 0.6.
 - With the judged source on (weight 0.75, floor 0.3) the adjacent-pair coverage rises above 60% and the blinded adjacency
   judgement favours the simulation by at least 55% (z >= 2) on a rerun. Confidence 0.4 (the earlier effect was small).
+
+## Rerun with the judged source, prediction judged (lead, 2026-11-25)
+relatedness.v1: 4,536 answers; calibration gap 3.97 (predicted >= 3: met); order bias -0.02, 95% within 1 point (met).
+Judged pairs above the floor: 345 of 2,268 (most nearby pairs score low: the neighbours are often unrelated, not just
+unsignalled). Rerun: adjacent no-signal share 0.733 -> 0.721 (coverage > 60% predicted: not met). Blinded adjacency (axes A
+vs rerun B): variant 0, 113 vs 91, share 0.554, z 1.54; variant 1, 103 vs 91, share 0.531, z 0.86; pooled 0.543, z 1.70.
+Prediction (>= 55%, z >= 2): **not met**, again. Two runs agree: the simulation is a small, consistent, non-significant
+improvement to an independent judge. The relaxation with a loose angular prior does not fix adjacency enough to be seen.
