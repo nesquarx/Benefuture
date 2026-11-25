@@ -19,16 +19,16 @@ from lifeimage.fine import sources as S  # noqa: E402
 from lifeimage.sources.wikidata import http_fetch  # noqa: E402
 
 OUT = ROOT / "data" / "fine" / "sources"
-FETCH = functools.partial(http_fetch, pause=0.4)
+FETCH = functools.partial(http_fetch, retries=2, pause=0.3)
 OBO = {"doid": ("https://purl.obolibrary.org/obo/doid.obo", gap.DOID_ROOTS),
        "mondo": ("https://purl.obolibrary.org/obo/mondo.obo", gap.MONDO_ROOTS)}
 ONET_URL = "https://www.onetcenter.org/dl_files/database/db_31_0_csv/gwas_to_iwas.csv"
 
 
 def get_wikidata():
-    rows, dropped, errors = gap.fetch_wikidata_gap(FETCH)
+    rows, dropped, errors = gap.fetch_wikidata_gap(functools.partial(http_fetch, retries=6, pause=1.0), log=lambda m: print(m, flush=True))
     note = {"dropped": len(dropped), "errors": errors[:10], "error_count": len(errors)}
-    return rows, "https://query.wikidata.org/sparql (subclass trees, depth 0-2)", note
+    return rows, "https://query.wikidata.org/sparql (each root and its direct subclasses)", note
 
 
 def get_getty():

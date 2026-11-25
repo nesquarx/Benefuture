@@ -110,16 +110,6 @@ WIKIDATA_ROOTS = {
 }
 
 SPARQL = "https://query.wikidata.org/sparql?format=json&query="
-_QUERY = """SELECT ?c ?l ?n ?d ?k WHERE {{
-  {{ BIND(wd:{root} AS ?c) BIND(0 AS ?k) }}
-  UNION {{ ?c wdt:P279 wd:{root} . BIND(1 AS ?k) }}
-  UNION {{ ?c wdt:P279/wdt:P279 wd:{root} . BIND(2 AS ?k) }}
-  ?c wikibase:sitelinks ?n . ?c rdfs:label ?l . FILTER(lang(?l) = "en")
-  OPTIONAL {{ ?c schema:description ?d . FILTER(lang(?d) = "en") }} }}"""
-
-
-def wikidata_query(root):
-    return _QUERY.format(root=root)
 
 
 def _qid(binding):
@@ -159,36 +149,49 @@ def cap_per_field(rows, cap=FIELD_CAP):
     return out
 
 
-def fetch_wikidata_gap(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP):
-    """(rows, dropped, errors): per field, the union of its roots' classes (depth 0 to 2), capped. A root that fails is
-    recorded in errors and the rest continue."""
+_BATCH_QUERY = """SELECT ?r ?c ?l ?n ?d ?k WHERE {{
+  VALUES ?r {{ {roots} }}
+  {{ BIND(?r AS ?c) BIND(0 AS ?k) }} UNION {{ ?c wdt:P279 ?r . BIND(1 AS ?k) }}
+  ?c wikibase:sitelinks ?n . ?c rdfs:label ?l . FILTER(lang(?l) = "en")
+  OPTIONAL {{ ?c schema:description ?d . FILTER(lang(?d) = "en") }} }}"""
+BATCH = 12  # roots per request: the public endpoint allows about one request a minute during its outages
+
+
+def fetch_wikidata_gap(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, batch=BATCH, log=None):
+    """(rows, dropped, errors): per field, the union of its roots' classes (the root and its direct subclasses), capped.
+    Roots are queried `batch` at a time; a batch that fails is recorded in errors and the rest continue."""
     import urllib.parse
-    rows, dropped, errors, cache = [], [], [], {}
+    unique = sorted({r for rs in roots.values() for r in rs})
+    by_root = {}
+    errors = []
+    for i in range(0, len(unique), batch):
+        chunk = unique[i:i + batch]
+        q = _BATCH_QUERY.format(roots=" ".join(f"wd:{r}" for r in chunk))
+        try:
+            bds = fetch(SPARQL + urllib.parse.quote(q))["results"]["bindings"]
+        except Exception as e:  # noqa: BLE001 - recorded, never silent
+            errors.append({"roots": chunk, "error": f"{type(e).__name__}: {e}"[:200]})
+            continue
+        for b in bds:
+            by_root.setdefault(b["r"]["value"].rsplit("/", 1)[-1], []).append(b)
+        if log:
+            log(f"batch {i // batch + 1}/{-(-len(unique) // batch)}: {len(bds)} rows")
+    rows, dropped = [], []
     for field in sorted(roots):
-        mine = []
+        mine, seen = [], set()
         for root in roots[field]:
-            if root not in cache:
-                try:
-                    bds = fetch(SPARQL + urllib.parse.quote(wikidata_query(root)))["results"]["bindings"]
-                except Exception as e:  # noqa: BLE001 - recorded, never silent
-                    errors.append({"root": root, "field": field, "error": f"{type(e).__name__}: {e}"[:200]})
-                    cache[root] = None
-                    continue
-                cache[root] = bds
-            if cache[root] is None:
+            bds = by_root.get(root)
+            if not bds:
                 continue
-            bds = cache[root]
             depth_of = {_qid(b): int(b["k"]["value"]) for b in sorted(bds, key=lambda b: -int(b["k"]["value"]))}
             label = next((b["l"]["value"] for b in bds if _qid(b) == root), root)
             got, drp = wikidata_rows(bds, field, label, depth_of)
-            mine += [dict(r, broader="" if r["code"] == root else r["broader"]) for r in got]
             dropped += [dict(d, field=field) for d in drp]
-        seen, uniq = set(), []
-        for r in mine:
-            if r["code"] not in seen:
-                seen.add(r["code"])
-                uniq.append(r)
-        rows += cap_per_field(uniq, cap)
+            for r in got:
+                if r["code"] not in seen:
+                    seen.add(r["code"])
+                    mine.append(dict(r, broader="" if r["code"] == root else r["broader"]))
+        rows += cap_per_field(mine, cap)
     return rows, dropped, errors
 
 
