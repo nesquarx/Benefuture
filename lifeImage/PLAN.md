@@ -300,6 +300,15 @@ I1-I6); report `data/gold/characterisation_v2_report.md`; images `data/images/v2
   carries the earlier generator's bias; re-extraction (a model run) is needed for a fair reading. Extracted archetype
   0.17 (predicted at least 0.25: not held).
 
+## Fine level, first pass
+
+- 650 candidates from Wikidata unmapped classes (48, CC0), OpenAlex subfields (242, CC0 believed), ISCO minor groups
+  via ESCO (120) and ESCO skill groups (75) (licence statements not read: unverified), one from answers, and ICATUS
+  (164). ICATUS is United Nations copyright with all rights reserved, so its candidates are excluded from the
+  published pool and batches; its raw list stays local (gitignored) as a private benchmark (lead decision under the
+  rule that licences are verified before use). 486 candidates go to the parent task: 30 batches of ≤ 50 cards,
+  3 variants. OpenAlex and ESCO licences still need a primary-page check before any release.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance

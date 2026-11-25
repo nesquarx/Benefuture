@@ -1,677 +1,1334 @@
 {
- "by_source": {
-  "answers": {
-   "in_pool": 1,
-   "licence": "project data",
-   "licence_status": "verified",
-   "raw": 1
+  "by_source": {
+    "answers": {
+      "in_pool": 1,
+      "licence": "project data",
+      "licence_status": "verified",
+      "raw": 1
+    },
+    "esco_isco": {
+      "in_pool": 120,
+      "licence": "ESCO free reuse with attribution, believed CC BY 4.0",
+      "licence_status": "unverified",
+      "raw": 130
+    },
+    "esco_skills": {
+      "in_pool": 75,
+      "licence": "ESCO free reuse with attribution, believed CC BY 4.0",
+      "licence_status": "unverified",
+      "raw": 75
+    },
+    "icatus": {
+      "excluded_reason": "licence restricted (all rights reserved): candidates excluded from the published pool and batches; raw list kept only locally (gitignored) as a private benchmark",
+      "in_pool": 0,
+      "licence": "United Nations copyright, all rights reserved",
+      "licence_status": "restricted",
+      "raw": 221
+    },
+    "openalex": {
+      "in_pool": 242,
+      "licence": "CC0 1.0 (believed)",
+      "licence_status": "unverified",
+      "raw": 252
+    },
+    "wikidata": {
+      "in_pool": 48,
+      "licence": "CC0 1.0",
+      "licence_status": "verified",
+      "raw": 48
+    }
   },
-  "esco_isco": {
-   "in_pool": 120,
-   "licence": "ESCO free reuse with attribution, believed CC BY 4.0",
-   "licence_status": "unverified",
-   "raw": 130
-  },
-  "esco_skills": {
-   "in_pool": 75,
-   "licence": "ESCO free reuse with attribution, believed CC BY 4.0",
-   "licence_status": "unverified",
-   "raw": 75
-  },
-  "icatus": {
-   "in_pool": 164,
-   "licence": "United Nations copyright, all rights reserved",
-   "licence_status": "restricted",
-   "raw": 221
-  },
-  "openalex": {
-   "in_pool": 242,
-   "licence": "CC0 1.0 (believed)",
-   "licence_status": "unverified",
-   "raw": 252
-  },
-  "wikidata": {
-   "in_pool": 48,
-   "licence": "CC0 1.0",
-   "licence_status": "verified",
-   "raw": 48
-  }
- },
- "dropped": [
-  {
-   "label": "Commuting",
-   "reason": "restates coarse domain c.commuting",
-   "source": "icatus"
-  },
-  {
-   "label": "Eating and drinking",
-   "reason": "restates coarse domain c.eating_drinking",
-   "source": "icatus"
-  },
-  {
-   "label": "Mechanical Engineering",
-   "reason": "restates coarse domain c.mechanical_engineering",
-   "source": "openalex"
-  },
-  {
-   "label": "Leadership and Management",
-   "reason": "restates coarse domain c.management_executive",
-   "source": "openalex"
-  },
-  {
-   "label": "Other services managers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other health professionals",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other teaching professionals",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other health associate professionals",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other clerical support workers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other personal services workers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other sales workers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other craft and related workers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other stationary plant and machine operators",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other elementary workers",
-   "reason": "residual category",
-   "source": "esco_isco"
-  },
-  {
-   "label": "Other activities related to employment in household enterprises to produce goods",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to employment in households and household enterprises providing services",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to food and meals management and preparation",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to cleaning and upkeep of dwelling and surroundings",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to do-it-yourself decoration, maintenance and repair",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to care of textiles and footwear",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to household management",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to pet care",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other unpaid domestic services for household and family members",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other unpaid domestic services for household and family members",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to childcare and instruction",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to care for dependent adults",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to care for non-dependent adult household and family members",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to unpaid caregiving services for household and family members",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to unpaid caregiving services for household and family members",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to direct unpaid volunteering for other households",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to community- and organization-based unpaid volunteering",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other unpaid work activities",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other unpaid work activities",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to formal education",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to learning",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to learning",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to socializing and communication",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to community participation",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to religious practice",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to socializing and communication, community participation and religious practice",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to socializing and communication, community participation and religious practice",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to attendance at cultural, entertainment and sports events",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to cultural participation, hobbies, games",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to mass media use",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to culture, leisure, mass media and sports practices",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to culture, leisure, mass media and sports practices",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other sleep and related activities",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to personal hygiene and care",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other activities related to receiving personal and health/medical care",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other self-care and maintenance activities",
-   "reason": "residual category",
-   "source": "icatus"
-  },
-  {
-   "label": "Other self-care and maintenance activities",
-   "reason": "residual category",
-   "source": "icatus"
-  }
- ],
- "kinds": {
-  "activity": 165,
-  "award": 20,
-  "discipline": 242,
-  "education": 1,
-  "employer": 1,
-  "membership": 4,
-  "occupation": 131,
-  "skill": 75,
-  "work": 11
- },
- "licence_status_of_candidates": {
-  "restricted": 164,
-  "unverified": 437,
-  "verified": 49
- },
- "merged": 26,
- "network": {
-  "blocked": false,
-  "sources": {
-   "esco_isco": {
-    "rows": 183,
-    "status": "fetched",
-    "url": "https://ec.europa.eu/esco/api (ISCO-08 via ESCO)"
-   },
-   "esco_skills": {
-    "rows": 84,
-    "status": "fetched",
-    "url": "https://ec.europa.eu/esco/api (skills hierarchy)"
-   },
-   "icatus": {
-    "rows": 221,
-    "status": "fetched",
-    "url": "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
-   },
-   "openalex": {
-    "rows": 252,
-    "status": "fetched",
-    "url": "https://api.openalex.org/subfields?per-page=200&page=1"
-   }
-  }
- },
- "pool": 650,
- "wikidata": {
-  "class_candidates": 48,
   "dropped": [
-   {
-    "label": "star on Hollywood Walk of Fame",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Q137870547",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Theodore Roosevelt Award",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Associated Press Athlete of the Year",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "chapelmaster",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Thomaskantor",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Johann Ernst III, Duke of Saxe-Weimar",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Leopold, Prince of Anhalt-Köthen",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Thomasschule zu Leipzig",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Collegium Musicum",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the Jagiellonian University of Krakow",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Actonian Prize",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "prix Gegner",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Benjamin Franklin Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Cameron Prize of the University of Edinburgh",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "72 scientist women names on the Eiffel tower",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Commission on Isotopic Abundances and Atomic Weights",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Pierre and Marie Curie",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Jawaharlal Nehru Award for International Understanding",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "International Simón Bolívar Prize",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Ludovic-Trarieux International Human Rights Prize",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Madrid Complutense",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Princess of Asturias Award for International Cooperation",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the Peking University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "J. William Fulbright Prize",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary Canadian citizenship",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Ahimsa Award",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Delta Prize for Global Understanding",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the Autonomous University of Barcelona",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Hong Kong",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Calcutta",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Pretoria",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the Howard University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Honorary doctor of Leiden University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Four Freedoms Award – Freedom Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Honorary Doctor at Karolinska Institutet",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Giuseppe Motta Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Mo Ibrahim Prize for Achievement in African Leadership",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary citizen of Paris",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Paris 1 Pantheon-Sorbonne",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of Paris 8 University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Freedom of the London Borough of Greenwich",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Freedom of the Royal Borough of Greenwich",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of Antwerp",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of the University of the Witwatersrand",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Honorary doctor of the University of Fort Hare",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Honorary King's Counsel",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Ramanujan graph",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Commandeur des Arts et des Lettres‎",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "National Humanities Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "The Nichols-Chancellor's Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Common Wealth Award of Distinguished Service",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "NAACP Image Award for Outstanding Literary Work, Fiction",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Library of Congress Living Legend",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Ohio Women's Hall of Fame",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "New Jersey Hall of Fame",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "doctor honoris causa from the Paris-Sorbonne University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Honorary doctor of the University of Oxford",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Audie Award for Narration by the Author or Authors",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Jawaharlal Nehru Award for International Understanding",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Petra-Kelly-Preis",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "The Nichols-Chancellor's Medal",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "NAACP Image Award – Chairman's Award",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "World Citizenship Award",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "Elizabeth Blackwell Award",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   },
-   {
-    "label": "honorary doctor of Waseda University",
-    "reason": "instance with no domain-level class",
-    "source": "wikidata"
-   }
+    {
+      "label": "Commuting",
+      "reason": "restates coarse domain c.commuting",
+      "source": "icatus"
+    },
+    {
+      "label": "Eating and drinking",
+      "reason": "restates coarse domain c.eating_drinking",
+      "source": "icatus"
+    },
+    {
+      "label": "Mechanical Engineering",
+      "reason": "restates coarse domain c.mechanical_engineering",
+      "source": "openalex"
+    },
+    {
+      "label": "Leadership and Management",
+      "reason": "restates coarse domain c.management_executive",
+      "source": "openalex"
+    },
+    {
+      "label": "Other services managers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other health professionals",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other teaching professionals",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other health associate professionals",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other clerical support workers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other personal services workers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other sales workers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other craft and related workers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other stationary plant and machine operators",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other elementary workers",
+      "reason": "residual category",
+      "source": "esco_isco"
+    },
+    {
+      "label": "Other activities related to employment in household enterprises to produce goods",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to employment in households and household enterprises providing services",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to food and meals management and preparation",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to cleaning and upkeep of dwelling and surroundings",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to do-it-yourself decoration, maintenance and repair",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to care of textiles and footwear",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to household management",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to pet care",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other unpaid domestic services for household and family members",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other unpaid domestic services for household and family members",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to childcare and instruction",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to care for dependent adults",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to care for non-dependent adult household and family members",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to unpaid caregiving services for household and family members",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to unpaid caregiving services for household and family members",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to direct unpaid volunteering for other households",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to community- and organization-based unpaid volunteering",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other unpaid work activities",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other unpaid work activities",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to formal education",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to learning",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to learning",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to socializing and communication",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to community participation",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to religious practice",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to socializing and communication, community participation and religious practice",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to socializing and communication, community participation and religious practice",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to attendance at cultural, entertainment and sports events",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to cultural participation, hobbies, games",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to mass media use",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to culture, leisure, mass media and sports practices",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to culture, leisure, mass media and sports practices",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other sleep and related activities",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to personal hygiene and care",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other activities related to receiving personal and health/medical care",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other self-care and maintenance activities",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "Other self-care and maintenance activities",
+      "reason": "residual category",
+      "source": "icatus"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    },
+    {
+      "label": "(ICATUS candidate)",
+      "reason": "licence restricted"
+    }
   ],
-  "instances_dropped": 66,
-  "unmapped_rows": 161
- }
+  "kinds": {
+    "activity": 165,
+    "award": 20,
+    "discipline": 242,
+    "education": 1,
+    "employer": 1,
+    "membership": 4,
+    "occupation": 131,
+    "skill": 75,
+    "work": 11
+  },
+  "licence_status_of_candidates": {
+    "restricted": 164,
+    "unverified": 437,
+    "verified": 49
+  },
+  "merged": 26,
+  "network": {
+    "blocked": false,
+    "sources": {
+      "esco_isco": {
+        "rows": 183,
+        "status": "fetched",
+        "url": "https://ec.europa.eu/esco/api (ISCO-08 via ESCO)"
+      },
+      "esco_skills": {
+        "rows": 84,
+        "status": "fetched",
+        "url": "https://ec.europa.eu/esco/api (skills hierarchy)"
+      },
+      "icatus": {
+        "rows": 221,
+        "status": "fetched",
+        "url": "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
+      },
+      "openalex": {
+        "rows": 252,
+        "status": "fetched",
+        "url": "https://api.openalex.org/subfields?per-page=200&page=1"
+      }
+    }
+  },
+  "pool": 650,
+  "wikidata": {
+    "class_candidates": 48,
+    "dropped": [
+      {
+        "label": "star on Hollywood Walk of Fame",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Q137870547",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Theodore Roosevelt Award",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Associated Press Athlete of the Year",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "chapelmaster",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Thomaskantor",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Johann Ernst III, Duke of Saxe-Weimar",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Leopold, Prince of Anhalt-Köthen",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Thomasschule zu Leipzig",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Collegium Musicum",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the Jagiellonian University of Krakow",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Actonian Prize",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "prix Gegner",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Benjamin Franklin Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Cameron Prize of the University of Edinburgh",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "72 scientist women names on the Eiffel tower",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Commission on Isotopic Abundances and Atomic Weights",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Pierre and Marie Curie",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Jawaharlal Nehru Award for International Understanding",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "International Simón Bolívar Prize",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Ludovic-Trarieux International Human Rights Prize",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Madrid Complutense",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Princess of Asturias Award for International Cooperation",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the Peking University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "J. William Fulbright Prize",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary Canadian citizenship",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Ahimsa Award",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Delta Prize for Global Understanding",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the Autonomous University of Barcelona",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Hong Kong",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Calcutta",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Pretoria",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the Howard University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Honorary doctor of Leiden University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Four Freedoms Award – Freedom Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Honorary Doctor at Karolinska Institutet",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Giuseppe Motta Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Mo Ibrahim Prize for Achievement in African Leadership",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary citizen of Paris",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Paris 1 Pantheon-Sorbonne",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of Paris 8 University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Freedom of the London Borough of Greenwich",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Freedom of the Royal Borough of Greenwich",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of Antwerp",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of the University of the Witwatersrand",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Honorary doctor of the University of Fort Hare",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Honorary King's Counsel",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Ramanujan graph",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Commandeur des Arts et des Lettres‎",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "National Humanities Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "The Nichols-Chancellor's Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Common Wealth Award of Distinguished Service",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "NAACP Image Award for Outstanding Literary Work, Fiction",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Library of Congress Living Legend",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Ohio Women's Hall of Fame",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "New Jersey Hall of Fame",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "doctor honoris causa from the Paris-Sorbonne University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Honorary doctor of the University of Oxford",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Audie Award for Narration by the Author or Authors",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Jawaharlal Nehru Award for International Understanding",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Petra-Kelly-Preis",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "The Nichols-Chancellor's Medal",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "NAACP Image Award – Chairman's Award",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "World Citizenship Award",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "Elizabeth Blackwell Award",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      },
+      {
+        "label": "honorary doctor of Waseda University",
+        "reason": "instance with no domain-level class",
+        "source": "wikidata"
+      }
+    ],
+    "instances_dropped": 66,
+    "unmapped_rows": 161
+  }
 }
