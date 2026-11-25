@@ -1,0 +1,22 @@
+{
+ "candidates": 174,
+ "dropped": [
+  {
+   "label": "political participation",
+   "reason": "restates coarse domain c.political_participation",
+   "source": "eurovoc"
+  }
+ ],
+ "licence_status": "verified",
+ "merged": 13,
+ "raw": 188,
+ "sources": [
+  "getty_aat",
+  "doid",
+  "mondo",
+  "onet",
+  "eurovoc",
+  "lcsh",
+  "bls_cex"
+ ]
+}

@@ -195,6 +195,75 @@ def fetch_wikidata_gap(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, batch=BATCH, 
     return rows, dropped, errors
 
 
+# The Query Service answers 429 with waits of up to 1000 s during its outages; the MediaWiki API has its own limits and
+# gives the same direct subclasses (`haswbstatement:P279=<root>`), though only the first SEARCH_LIMIT per root, by search
+# relevance, so the ranking by sitelinks is over that subset (a degradation recorded in the fetch note).
+API = "https://www.wikidata.org/w/api.php"
+SEARCH_LIMIT = 100
+
+
+def _api(params):
+    import urllib.parse
+    return API + "?" + urllib.parse.urlencode({"format": "json", **params})
+
+
+def fetch_wikidata_gap_api(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, search_limit=SEARCH_LIMIT, log=None):
+    """(rows, dropped, errors) like `fetch_wikidata_gap`, through the MediaWiki API: the direct subclasses of each root
+    (search `haswbstatement:P279=<root>`, at most `search_limit`) and the root itself, labelled in English with their
+    sitelink counts by `wbgetentities` (50 ids a call)."""
+    unique = sorted({r for rs in roots.values() for r in rs})
+    kids, errors = {}, []
+    for root in unique:
+        try:
+            hits = fetch(_api({"action": "query", "list": "search", "srsearch": f"haswbstatement:P279={root}", "srnamespace": 0,
+                               "srlimit": search_limit, "srprop": ""}))["query"]["search"]
+            kids[root] = [h["title"] for h in hits if h["title"].startswith("Q")]
+        except Exception as e:  # noqa: BLE001 - recorded, never silent
+            errors.append({"root": root, "error": f"{type(e).__name__}: {e}"[:200]})
+    ids = sorted({q for r, ks in kids.items() for q in [r, *ks]})
+    info = {}
+    for i in range(0, len(ids), 50):
+        chunk = ids[i:i + 50]
+        try:
+            ents = fetch(_api({"action": "wbgetentities", "ids": "|".join(chunk), "props": "labels|descriptions|sitelinks",
+                               "languages": "en"}))["entities"]
+        except Exception as e:  # noqa: BLE001
+            errors.append({"ids": chunk[:3], "error": f"{type(e).__name__}: {e}"[:200]})
+            continue
+        for q, e in ents.items():
+            if "missing" in e:
+                continue
+            info[q] = {"label": (e.get("labels", {}).get("en") or {}).get("value", q),
+                       "description": (e.get("descriptions", {}).get("en") or {}).get("value", ""),
+                       "sitelinks": len(e.get("sitelinks", {}))}
+        if log:
+            log(f"entities {min(i + 50, len(ids))}/{len(ids)}")
+
+    def binding(q, k):  # the shape `wikidata_rows` reads
+        d = {"c": {"value": f"http://www.wikidata.org/entity/{q}"}, "l": {"value": info[q]["label"]},
+             "n": {"value": str(info[q]["sitelinks"])}, "k": {"value": str(k)}}
+        if info[q]["description"]:
+            d["d"] = {"value": info[q]["description"]}
+        return d
+
+    rows, dropped = [], []
+    for field in sorted(roots):
+        mine, seen = [], set()
+        for root in roots[field]:
+            if root not in info:
+                continue
+            bds = [binding(root, 0)] + [binding(q, 1) for q in kids.get(root, []) if q in info]
+            depth_of = {_qid(b): int(b["k"]["value"]) for b in reversed(bds)}
+            got, drp = wikidata_rows(bds, field, info[root]["label"], depth_of)
+            dropped += [dict(d, field=field) for d in drp]
+            for r in got:
+                if r["code"] not in seen:
+                    seen.add(r["code"])
+                    mine.append(dict(r, broader="" if r["code"] == root else r["broader"]))
+        rows += cap_per_field(mine, cap)
+    return rows, dropped, errors
+
+
 # ---------- OBO ontologies: Disease Ontology (CC0), MONDO (CC BY 4.0) ----------
 
 def parse_obo(text):
@@ -423,8 +492,31 @@ def fetch_eurovoc_gap(fetch, roots=EUROVOC_ROOTS, cap=EUROVOC_CAP):
 # ---------- LCSH (US public domain, LI.56): narrower authorities of chosen headings ----------
 
 LCSH_URL = "https://id.loc.gov/authorities/subjects/label/{label}.json"
-LCSH_ROOTS = {}  # field -> [LCSH headings]; filled for the fields the other sources left empty
-LCSH_CAP = 6
+LCSH_ROOTS = {  # field -> [LCSH headings]: the topics of the fields whose roots the classification trees name least well
+    "traffic_offences": ["Traffic violations", "Drunk driving"],
+    "medication_adherence": ["Patient compliance", "Self-medication"],
+    "family_ties": ["Family", "Kinship"],
+    "friendship": ["Friendship"],
+    "etiquette_norms": ["Etiquette"],
+    "reputation_gossip": ["Reputation", "Gossip"],
+    "neighbours_community": ["Neighbors", "Community life"],
+    "conflict_interpersonal": ["Interpersonal conflict"],
+    "reconciliation": ["Reconciliation"],
+    "life_purpose": ["Meaning (Philosophy)", "Life skills"],
+    "ethical_choice": ["Ethics", "Conscience"],
+    "identity_change": ["Identity (Psychology)"],
+    "poverty_scarcity": ["Poverty"],
+    "youth_culture": ["Youth"],
+    "loneliness_isolation": ["Loneliness", "Social isolation"],
+    "spirituality": ["Spirituality"],
+    "academic_dishonesty": ["Cheating (Education)"],
+    "negligence_recklessness": ["Negligence"],
+    "folk_belief": ["Superstition", "Folklore"],
+    "housing_search": ["Housing", "Home ownership"],
+    "partnership_romance": ["Dating (Social customs)", "Courtship"],
+    "parenting_adolescents": ["Parent and teenager"],
+}
+LCSH_CAP = 4
 _NARROWER = "http://www.loc.gov/mads/rdf/v1#hasNarrowerAuthority"
 _ALABEL = "http://www.loc.gov/mads/rdf/v1#authoritativeLabel"
 

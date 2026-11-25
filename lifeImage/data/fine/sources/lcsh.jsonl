@@ -1,0 +1,61 @@
+{"aliases": [], "broader": "Interpersonal conflict", "code": "sh96002376", "depth": 1, "descendants": 0, "description": "", "label": "Marital conflict", "target": "conflict_interpersonal"}
+{"aliases": [], "broader": "Ethics", "code": "sh2006003161", "depth": 1, "descendants": 0, "description": "", "label": "Akrasia", "target": "ethical_choice"}
+{"aliases": [], "broader": "Ethics", "code": "sh85008537", "depth": 1, "descendants": 0, "description": "", "label": "Asceticism", "target": "ethical_choice"}
+{"aliases": [], "broader": "Ethics", "code": "sh92003917", "depth": 1, "descendants": 0, "description": "", "label": "Betrayal", "target": "ethical_choice"}
+{"aliases": [], "broader": "Ethics", "code": "sh85020764", "depth": 1, "descendants": 0, "description": "", "label": "Casuistry", "target": "ethical_choice"}
+{"aliases": [], "broader": "Etiquette", "code": "sh85022699", "depth": 1, "descendants": 0, "description": "", "label": "Charm", "target": "etiquette_norms"}
+{"aliases": [], "broader": "Etiquette", "code": "sh85029382", "depth": 1, "descendants": 0, "description": "", "label": "Compliments", "target": "etiquette_norms"}
+{"aliases": [], "broader": "Etiquette", "code": "sh85031697", "depth": 1, "descendants": 0, "description": "", "label": "Conversation", "target": "etiquette_norms"}
+{"aliases": [], "broader": "Etiquette", "code": "sh85033563", "depth": 1, "descendants": 0, "description": "", "label": "Courtesy", "target": "etiquette_norms"}
+{"aliases": [], "broader": "Kinship", "code": "sh85070677", "depth": 1, "descendants": 0, "description": "", "label": "Joking relationships", "target": "family_ties"}
+{"aliases": [], "broader": "Kinship", "code": "sh85039179", "depth": 1, "descendants": 0, "description": "", "label": "Double descent (Kinship)", "target": "family_ties"}
+{"aliases": [], "broader": "Kinship", "code": "sh85105561", "depth": 1, "descendants": 0, "description": "", "label": "Postnuptial residence (Ethnology)", "target": "family_ties"}
+{"aliases": [], "broader": "Kinship", "code": "sh00009746", "depth": 1, "descendants": 0, "description": "", "label": "Unilineal descent (Kinship)", "target": "family_ties"}
+{"aliases": [], "broader": "Superstition", "code": "sh85004685", "depth": 1, "descendants": 0, "description": "", "label": "Amulets", "target": "folk_belief"}
+{"aliases": [], "broader": "Folklore", "code": "sh87006375", "depth": 1, "descendants": 0, "description": "", "label": "Banshees", "target": "folk_belief"}
+{"aliases": [], "broader": "Superstition", "code": "sh85022700", "depth": 1, "descendants": 0, "description": "", "label": "Charms", "target": "folk_belief"}
+{"aliases": [], "broader": "Superstition", "code": "sh85039814", "depth": 1, "descendants": 0, "description": "", "label": "Dryads", "target": "folk_belief"}
+{"aliases": [], "broader": "Friendship", "code": "sh85047713", "depth": 1, "descendants": 0, "description": "", "label": "Fellowship", "target": "friendship"}
+{"aliases": [], "broader": "Friendship", "code": "sh85090666", "depth": 1, "descendants": 0, "description": "", "label": "Neighborliness", "target": "friendship"}
+{"aliases": [], "broader": "Friendship", "code": "sh99014263", "depth": 1, "descendants": 0, "description": "", "label": "Best friends", "target": "friendship"}
+{"aliases": [], "broader": "Friendship", "code": "sj97003284", "depth": 1, "descendants": 0, "description": "", "label": "Best friends", "target": "friendship"}
+{"aliases": [], "broader": "Housing", "code": "sh85061720", "depth": 1, "descendants": 0, "description": "", "label": "Homelessness", "target": "housing_search"}
+{"aliases": [], "broader": "Housing", "code": "sh85078056", "depth": 1, "descendants": 0, "description": "", "label": "Lodging-houses", "target": "housing_search"}
+{"aliases": [], "broader": "Housing", "code": "sh85123553", "depth": 1, "descendants": 0, "description": "", "label": "Slums", "target": "housing_search"}
+{"aliases": [], "broader": "Housing", "code": "sh85031107", "depth": 1, "descendants": 0, "description": "", "label": "Congregate housing", "target": "housing_search"}
+{"aliases": [], "broader": "Identity (Psychology)", "code": "sh2024002468", "depth": 1, "descendants": 0, "description": "", "label": "Nepantla", "target": "identity_change"}
+{"aliases": [], "broader": "Identity (Psychology)", "code": "sh91003756", "depth": 1, "descendants": 0, "description": "", "label": "Gender identity", "target": "identity_change"}
+{"aliases": [], "broader": "Identity (Psychology)", "code": "sh85057485", "depth": 1, "descendants": 0, "description": "", "label": "Group identity", "target": "identity_change"}
+{"aliases": [], "broader": "Identity (Psychology)", "code": "sh96007084", "depth": 1, "descendants": 0, "description": "", "label": "Mistaken identity", "target": "identity_change"}
+{"aliases": [], "broader": "Meaning (Philosophy)", "code": "sh85112508", "depth": 1, "descendants": 0, "description": "", "label": "Relevance", "target": "life_purpose"}
+{"aliases": [], "broader": "Life skills", "code": "sh2007003677", "depth": 1, "descendants": 0, "description": "", "label": "Financial literacy", "target": "life_purpose"}
+{"aliases": [], "broader": "Life skills", "code": "sh87001937", "depth": 1, "descendants": 0, "description": "", "label": "Functional literacy", "target": "life_purpose"}
+{"aliases": [], "broader": "Life skills", "code": "sh2013000623", "depth": 1, "descendants": 0, "description": "", "label": "Health literacy", "target": "life_purpose"}
+{"aliases": [], "broader": "Loneliness", "code": "sh85031289", "depth": 1, "descendants": 0, "description": "", "label": "Consolation", "target": "loneliness_isolation"}
+{"aliases": [], "broader": "Social isolation", "code": "sh85078243", "depth": 1, "descendants": 0, "description": "", "label": "Loneliness", "target": "loneliness_isolation"}
+{"aliases": [], "broader": "Social isolation", "code": "sh85081057", "depth": 1, "descendants": 0, "description": "", "label": "Marginality, Social", "target": "loneliness_isolation"}
+{"aliases": [], "broader": "Social isolation", "code": "sh2020000135", "depth": 1, "descendants": 0, "description": "", "label": "Ostracism (Psychology)", "target": "loneliness_isolation"}
+{"aliases": [], "broader": "Negligence", "code": "sh85080191", "depth": 1, "descendants": 0, "description": "", "label": "Malpractice", "target": "negligence_recklessness"}
+{"aliases": [], "broader": "Negligence", "code": "sh85009419", "depth": 1, "descendants": 0, "description": "", "label": "Attractive nuisance", "target": "negligence_recklessness"}
+{"aliases": [], "broader": "Negligence", "code": "sh85090637", "depth": 1, "descendants": 0, "description": "", "label": "Negligence, Comparative", "target": "negligence_recklessness"}
+{"aliases": [], "broader": "Negligence", "code": "sh85090639", "depth": 1, "descendants": 0, "description": "", "label": "Negligence, Criminal", "target": "negligence_recklessness"}
+{"aliases": [], "broader": "Community life", "code": "sh85029242", "depth": 1, "descendants": 0, "description": "", "label": "Community leadership", "target": "neighbours_community"}
+{"aliases": [], "broader": "Community life", "code": "sh85029254", "depth": 1, "descendants": 0, "description": "", "label": "Community organization", "target": "neighbours_community"}
+{"aliases": [], "broader": "Community life", "code": "sh85123981", "depth": 1, "descendants": 0, "description": "", "label": "Social participation", "target": "neighbours_community"}
+{"aliases": [], "broader": "Community life", "code": "sh85012853", "depth": 1, "descendants": 0, "description": "", "label": "Bees (Cooperative gatherings)", "target": "neighbours_community"}
+{"aliases": [], "broader": "Dating (Social customs)", "code": "sh95002827", "depth": 1, "descendants": 0, "description": "", "label": "Blind dates", "target": "partnership_romance"}
+{"aliases": [], "broader": "Courtship", "code": "sh85017998", "depth": 1, "descendants": 0, "description": "", "label": "Bundling (Courtship)", "target": "partnership_romance"}
+{"aliases": [], "broader": "Dating (Social customs)", "code": "sh88006814", "depth": 1, "descendants": 0, "description": "", "label": "Interethnic dating", "target": "partnership_romance"}
+{"aliases": [], "broader": "Dating (Social customs)", "code": "sh2004002866", "depth": 1, "descendants": 0, "description": "", "label": "Interfaith dating", "target": "partnership_romance"}
+{"aliases": [], "broader": "Poverty", "code": "sh85061720", "depth": 1, "descendants": 0, "description": "", "label": "Homelessness", "target": "poverty_scarcity"}
+{"aliases": [], "broader": "Gossip", "code": "sh85132078", "depth": 1, "descendants": 0, "description": "", "label": "Talebearing", "target": "reputation_gossip"}
+{"aliases": [], "broader": "Reputation", "code": "sh2022007134", "depth": 1, "descendants": 0, "description": "", "label": "Online reputation management", "target": "reputation_gossip"}
+{"aliases": [], "broader": "Spirituality", "code": "sh93005155", "depth": 1, "descendants": 0, "description": "", "label": "Feminist spirituality", "target": "spirituality"}
+{"aliases": [], "broader": "Traffic violations", "code": "sh2007002977", "depth": 1, "descendants": 0, "description": "", "label": "Aggressive driving", "target": "traffic_offences"}
+{"aliases": [], "broader": "Traffic violations", "code": "sh97006562", "depth": 1, "descendants": 0, "description": "", "label": "Drugged driving", "target": "traffic_offences"}
+{"aliases": [], "broader": "Traffic violations", "code": "sh85039787", "depth": 1, "descendants": 0, "description": "", "label": "Drunk driving", "target": "traffic_offences"}
+{"aliases": [], "broader": "Traffic violations", "code": "sj2021052073", "depth": 1, "descendants": 0, "description": "", "label": "Drunk driving", "target": "traffic_offences"}
+{"aliases": [], "broader": "Youth", "code": "sh85039629", "depth": 1, "descendants": 0, "description": "", "label": "Dropouts", "target": "youth_culture"}
+{"aliases": [], "broader": "Youth", "code": "sh85057506", "depth": 1, "descendants": 0, "description": "", "label": "Groupies", "target": "youth_culture"}
+{"aliases": [], "broader": "Youth", "code": "sh85106388", "depth": 1, "descendants": 0, "description": "", "label": "Preppies", "target": "youth_culture"}
+{"aliases": [], "broader": "Youth", "code": "sh96000234", "depth": 1, "descendants": 0, "description": "", "label": "Skinheads", "target": "youth_culture"}

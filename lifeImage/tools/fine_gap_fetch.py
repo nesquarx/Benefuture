@@ -25,10 +25,37 @@ OBO = {"doid": ("https://purl.obolibrary.org/obo/doid.obo", gap.DOID_ROOTS),
 ONET_URL = "https://www.onetcenter.org/dl_files/database/db_31_0_csv/gwas_to_iwas.csv"
 
 
+def patient_fetch(url, attempts=14, pause=3.0):
+    """GET JSON from the Wikidata Query Service, honouring Retry-After in full (its outage mode allows one request a
+    minute and answers 429 with waits of up to 1000 s); a timeout backs off 30 s. Fails loudly after `attempts`."""
+    import time
+    import urllib.error
+    import urllib.request
+    from lifeimage.sources.wikidata import USER_AGENT
+    last = None
+    for _ in range(attempts):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=75) as r:
+                data = json.loads(r.read().decode("utf-8"))
+            time.sleep(pause)
+            return data
+        except urllib.error.HTTPError as e:
+            last = e
+            wait = e.headers.get("Retry-After") if e.headers else None
+            print(f"HTTP {e.code}; waiting {wait or 30}s", flush=True)
+            time.sleep(min(1200, float(wait)) + 2 if wait and wait.isdigit() else 30)
+        except (urllib.error.URLError, TimeoutError) as e:
+            last = e
+            print(f"{type(e).__name__}; waiting 30s", flush=True)
+            time.sleep(30)
+    raise last
+
+
 def get_wikidata():
-    rows, dropped, errors = gap.fetch_wikidata_gap(functools.partial(http_fetch, retries=6, pause=1.0), log=lambda m: print(m, flush=True))
-    note = {"dropped": len(dropped), "errors": errors[:10], "error_count": len(errors)}
-    return rows, "https://query.wikidata.org/sparql (each root and its direct subclasses)", note
+    rows, dropped, errors = gap.fetch_wikidata_gap_api(functools.partial(http_fetch, retries=4, pause=0.3), log=lambda m: print(m, flush=True))
+    note = {"method": "MediaWiki API, direct subclasses, first 100 per root by search relevance (the Query Service answered 429 with waits of 1000 s; gap.fetch_wikidata_gap is the batched SPARQL alternative)", "dropped": len(dropped), "errors": errors[:10], "error_count": len(errors)}
+    return rows, "https://query.wikidata.org/sparql (MediaWiki API: each root and its direct subclasses)", note
 
 
 def get_getty():
@@ -71,9 +98,12 @@ def get_cex():
 
 
 def get_nibrs():
-    """FBI NIBRS offence codes: fbi.gov answers automated clients with 403, so there is nothing to read here."""
-    S.fetch_text("https://www.fbi.gov/file-repository/ucr/ucr-2019-1-nibrs-user-manua-093020.pdf", retries=1)
-    raise RuntimeError("the NIBRS offence-code list needs a parser once a copy can be fetched")
+    """FBI NIBRS offence codes: fbi.gov answers a script with an HTML block page (403, or 200 with a page that is not
+    the PDF), so there is nothing to parse; recorded as blocked. No offence list is typed in from memory."""
+    body = S.fetch_text("https://www.fbi.gov/file-repository/ucr/ucr-2019-1-nibrs-user-manua-093020.pdf", retries=1)
+    if not body.startswith(b"%PDF"):
+        raise RuntimeError("fbi.gov returned an HTML page instead of the NIBRS PDF (automated clients are blocked)")
+    raise RuntimeError("the NIBRS PDF was fetched but no offence-code parser exists yet")
 
 
 GETTERS = {"wikidata": get_wikidata, "getty_aat": get_getty, "doid": lambda: _obo("doid"), "mondo": lambda: _obo("mondo"),

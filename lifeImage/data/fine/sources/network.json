@@ -5,8 +5,13 @@
   "status": "fetched",
   "url": "https://www.bls.gov/tus/lexicons/lexiconnoex2025.pdf"
  },
+ "bls_cex": {
+  "rows": 22,
+  "status": "fetched",
+  "url": "https://www.bls.gov/cex/tables/calendar-year/mean-item-share-average-standard-error/cu-size-2025.xlsx"
+ },
  "doid": {
-  "rows": 13,
+  "rows": 12,
   "status": "fetched",
   "terms": 12419,
   "url": "https://purl.obolibrary.org/obo/doid.obo"
@@ -21,10 +26,17 @@
   "status": "fetched",
   "url": "https://ec.europa.eu/esco/api (skills hierarchy)"
  },
+ "eurovoc": {
+  "error_count": 0,
+  "errors": [],
+  "rows": 56,
+  "status": "fetched",
+  "url": "https://publications.europa.eu/webapi/rdf/sparql?default-graph-uri=&query="
+ },
  "getty_aat": {
   "error_count": 0,
   "errors": [],
-  "rows": 38,
+  "rows": 21,
   "status": "fetched",
   "url": "https://vocab.getty.edu/sparql"
  },
@@ -33,15 +45,34 @@
   "status": "fetched",
   "url": "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
  },
+ "lcsh": {
+  "error_count": 1,
+  "errors": [
+   {
+    "error": "HTTPError: HTTP Error 404: Not Found",
+    "field": "medication_adherence",
+    "root": "Self-medication"
+   }
+  ],
+  "rows": 61,
+  "status": "fetched",
+  "url": "https://id.loc.gov/authorities/subjects/label/"
+ },
  "mondo": {
-  "rows": 24,
+  "rows": 7,
   "status": "fetched",
   "terms": 58714,
   "url": "https://purl.obolibrary.org/obo/mondo.obo"
  },
+ "nibrs": {
+  "detail": "RuntimeError: fbi.gov returned an HTML page instead of the NIBRS PDF (automated clients are blocked)",
+  "rows": 0,
+  "status": "blocked",
+  "url": "nibrs"
+ },
  "onet": {
   "release": "O*NET 31.0",
-  "rows": 2,
+  "rows": 9,
   "status": "fetched",
   "url": "https://www.onetcenter.org/dl_files/database/db_31_0_csv/gwas_to_iwas.csv"
  },

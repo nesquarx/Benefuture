@@ -30,6 +30,20 @@ def test_wikidata_rows_keep_class_labels_in_english_and_drop_names_and_obscure_c
     assert {d["reason"] for d in dropped} == {"proper name (capital letter inside)", "fewer sitelinks than 8", "no English label"}
 
 
+def test_api_fetch_ranks_direct_subclasses_by_sitelinks_and_labels_them_in_english():
+    def fake(url):
+        if "list=search" in url:
+            return {"query": {"search": [{"title": "Q11"}, {"title": "Q12"}, {"title": "Q13"}]}}
+        sl = lambda n: {f"s{i}wiki": {} for i in range(n)}
+        return {"entities": {"Q1": {"labels": {"en": {"value": "fraud"}}, "sitelinks": sl(90)},
+                             "Q11": {"labels": {"en": {"value": "scam"}}, "descriptions": {"en": {"value": "d"}}, "sitelinks": sl(40)},
+                             "Q12": {"labels": {"en": {"value": "forgery"}}, "sitelinks": sl(60)},
+                             "Q13": {"labels": {"en": {"value": "Fraud Act"}}, "sitelinks": sl(30)}}}
+    rows, dropped, errors = gap.fetch_wikidata_gap_api(fake, roots={"fraud_deception": ["Q1"]}, cap=2)
+    assert [r["label"] for r in rows] == ["fraud", "forgery"] and rows[1]["broader"] == "fraud" and rows[0]["broader"] == ""
+    assert errors == [] and [d["label"] for d in dropped] == ["Fraud Act"]
+
+
 def test_cap_per_field_keeps_the_best_known_and_never_exceeds_the_cap():
     rows = [{"code": f"Q{i}", "label": f"class {i:02d}", "target": "f", "sitelinks": 100 - i, "depth": 1, "broader": "r"} for i in range(20)]
     rows += [{"code": "Q99", "label": "other", "target": "g", "sitelinks": 9, "depth": 1, "broader": "r"}]

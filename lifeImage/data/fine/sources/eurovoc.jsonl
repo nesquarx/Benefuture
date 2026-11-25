@@ -1,0 +1,56 @@
+{"aliases": [], "broader": "migration policy", "code": "eurovoc:185", "depth": 1, "descendants": 1, "description": "", "label": "migration control", "target": "border_migration_admin"}
+{"aliases": [], "broader": "migration policy", "code": "eurovoc:6541", "depth": 1, "descendants": 0, "description": "", "label": "EU migration policy", "target": "border_migration_admin"}
+{"aliases": [], "broader": "migration control", "code": "eurovoc:1915", "depth": 1, "descendants": 0, "description": "", "label": "illegal migration", "target": "border_migration_admin"}
+{"aliases": [], "broader": "migration policy", "code": "eurovoc:1462", "depth": 1, "descendants": 0, "description": "", "label": "integration of migrants", "target": "border_migration_admin"}
+{"aliases": [], "broader": "migration policy", "code": "eurovoc:3323", "depth": 1, "descendants": 0, "description": "", "label": "repatriation grant", "target": "border_migration_admin"}
+{"aliases": [], "broader": "examination", "code": "eurovoc:88", "depth": 1, "descendants": 0, "description": "", "label": "admission to examinations", "target": "exams_assessment"}
+{"aliases": [], "broader": "political violence", "code": "eurovoc:1211", "depth": 1, "descendants": 1, "description": "", "label": "civil war", "target": "extremism_terrorism"}
+{"aliases": [], "broader": "political violence", "code": "eurovoc:4452", "depth": 1, "descendants": 1, "description": "", "label": "terrorism", "target": "extremism_terrorism"}
+{"aliases": [], "broader": "political violence", "code": "eurovoc:8415", "depth": 1, "descendants": 0, "description": "", "label": "concentration camp", "target": "extremism_terrorism"}
+{"aliases": [], "broader": "political violence", "code": "eurovoc:253", "depth": 1, "descendants": 0, "description": "", "label": "coup d'état", "target": "extremism_terrorism"}
+{"aliases": [], "broader": "political violence", "code": "eurovoc:3053", "depth": 1, "descendants": 0, "description": "", "label": "forced disappearance", "target": "extremism_terrorism"}
+{"aliases": [], "broader": "family", "code": "eurovoc:2239", "depth": 1, "descendants": 5, "description": "", "label": "family relationship", "target": "family_ties"}
+{"aliases": [], "broader": "family", "code": "eurovoc:2501", "depth": 1, "descendants": 1, "description": "", "label": "family policy", "target": "family_ties"}
+{"aliases": [], "broader": "family relationship", "code": "eurovoc:759", "depth": 1, "descendants": 0, "description": "", "label": "abandoned child", "target": "family_ties"}
+{"aliases": [], "broader": "family relationship", "code": "eurovoc:3302", "depth": 1, "descendants": 0, "description": "", "label": "adopted child", "target": "family_ties"}
+{"aliases": [], "broader": "family", "code": "eurovoc:4234", "depth": 1, "descendants": 0, "description": "", "label": "breadwinner", "target": "family_ties"}
+{"aliases": [], "broader": "insurance", "code": "eurovoc:165", "depth": 1, "descendants": 4, "description": "", "label": "insurance contract", "target": "insurance_risk"}
+{"aliases": [], "broader": "insurance", "code": "eurovoc:3706", "depth": 1, "descendants": 2, "description": "", "label": "transport insurance", "target": "insurance_risk"}
+{"aliases": [], "broader": "insurance", "code": "eurovoc:3274", "depth": 1, "descendants": 0, "description": "", "label": "agricultural insurance", "target": "insurance_risk"}
+{"aliases": [], "broader": "insurance", "code": "eurovoc:3244", "depth": 1, "descendants": 0, "description": "", "label": "co-insurance", "target": "insurance_risk"}
+{"aliases": [], "broader": "insurance", "code": "eurovoc:3567", "depth": 1, "descendants": 0, "description": "", "label": "compulsory insurance", "target": "insurance_risk"}
+{"aliases": [], "broader": "trade union", "code": "eurovoc:5522", "depth": 1, "descendants": 0, "description": "", "label": "trade union confederation", "target": "labour_organising"}
+{"aliases": [], "broader": "marriage", "code": "eurovoc:8448", "depth": 1, "descendants": 0, "description": "", "label": "forced marriage", "target": "marriage_cohabitation"}
+{"aliases": [], "broader": "marriage", "code": "eurovoc:6625", "depth": 1, "descendants": 0, "description": "", "label": "marriage of convenience", "target": "marriage_cohabitation"}
+{"aliases": [], "broader": "marriage", "code": "eurovoc:4007", "depth": 1, "descendants": 0, "description": "", "label": "mixed marriage", "target": "marriage_cohabitation"}
+{"aliases": [], "broader": "migration", "code": "eurovoc:2509", "depth": 1, "descendants": 5, "description": "", "label": "migration policy", "target": "migration"}
+{"aliases": [], "broader": "migration", "code": "eurovoc:1912", "depth": 1, "descendants": 2, "description": "", "label": "family migration", "target": "migration"}
+{"aliases": [], "broader": "migration", "code": "eurovoc:724", "depth": 1, "descendants": 1, "description": "", "label": "emigration", "target": "migration"}
+{"aliases": [], "broader": "migration", "code": "eurovoc:1913", "depth": 1, "descendants": 1, "description": "", "label": "forced migration", "target": "migration"}
+{"aliases": [], "broader": "migration", "code": "eurovoc:1921", "depth": 1, "descendants": 0, "description": "", "label": "Community migration", "target": "migration"}
+{"aliases": [], "broader": "political ideology", "code": "eurovoc:32", "depth": 1, "descendants": 0, "description": "", "label": "Communism", "target": "political_discourse"}
+{"aliases": [], "broader": "political ideology", "code": "eurovoc:905", "depth": 1, "descendants": 0, "description": "", "label": "Eurocommunism", "target": "political_discourse"}
+{"aliases": [], "broader": "political ideology", "code": "eurovoc:907", "depth": 1, "descendants": 0, "description": "", "label": "Euroright", "target": "political_discourse"}
+{"aliases": [], "broader": "political ideology", "code": "eurovoc:971", "depth": 1, "descendants": 0, "description": "", "label": "Fascism", "target": "political_discourse"}
+{"aliases": [], "broader": "political ideology", "code": "eurovoc:1614", "depth": 1, "descendants": 0, "description": "", "label": "Liberalism", "target": "political_discourse"}
+{"aliases": [], "broader": "political rights", "code": "eurovoc:583", "depth": 1, "descendants": 2, "description": "", "label": "civil rights", "target": "political_participation"}
+{"aliases": [], "broader": "political rights", "code": "eurovoc:1621", "depth": 1, "descendants": 1, "description": "", "label": "freedom of communication", "target": "political_participation"}
+{"aliases": [], "broader": "political behaviour", "code": "eurovoc:5748", "depth": 1, "descendants": 1, "description": "", "label": "political morality", "target": "political_participation"}
+{"aliases": [], "broader": "political behaviour", "code": "eurovoc:2269", "depth": 1, "descendants": 1, "description": "", "label": "political participation", "target": "political_participation"}
+{"aliases": [], "broader": "political participation", "code": "eurovoc:404", "depth": 1, "descendants": 0, "description": "", "label": "depoliticisation", "target": "political_participation"}
+{"aliases": [], "broader": "poverty", "code": "eurovoc:6784", "depth": 1, "descendants": 0, "description": "", "label": "mendicity", "target": "poverty_scarcity"}
+{"aliases": [], "broader": "crime against property", "code": "eurovoc:2", "depth": 1, "descendants": 0, "description": "", "label": "breach of trust", "target": "theft_property_crime"}
+{"aliases": [], "broader": "crime against property", "code": "eurovoc:8433", "depth": 1, "descendants": 0, "description": "", "label": "forgery of documents", "target": "theft_property_crime"}
+{"aliases": [], "broader": "crime against property", "code": "eurovoc:1092", "depth": 1, "descendants": 0, "description": "", "label": "fraud", "target": "theft_property_crime"}
+{"aliases": [], "broader": "crime against property", "code": "eurovoc:2383", "depth": 1, "descendants": 0, "description": "", "label": "piracy", "target": "theft_property_crime"}
+{"aliases": [], "broader": "crime against property", "code": "eurovoc:4742", "depth": 1, "descendants": 0, "description": "", "label": "theft", "target": "theft_property_crime"}
+{"aliases": [], "broader": "crime against individuals", "code": "eurovoc:5572", "depth": 1, "descendants": 4, "description": "", "label": "sexual offence", "target": "violence_assault"}
+{"aliases": [], "broader": "crime against individuals", "code": "eurovoc:1251", "depth": 1, "descendants": 1, "description": "", "label": "homicide", "target": "violence_assault"}
+{"aliases": [], "broader": "crime against individuals", "code": "eurovoc:6613", "depth": 1, "descendants": 1, "description": "", "label": "psychological harassment", "target": "violence_assault"}
+{"aliases": [], "broader": "violence", "code": "eurovoc:6555", "depth": 1, "descendants": 1, "description": "", "label": "youth violence", "target": "violence_assault"}
+{"aliases": [], "broader": "crime against individuals", "code": "eurovoc:3950", "depth": 1, "descendants": 0, "description": "", "label": "defamation", "target": "violence_assault"}
+{"aliases": [], "broader": "voting method", "code": "eurovoc:3977", "depth": 1, "descendants": 3, "description": "", "label": "list voting system", "target": "voting_elections"}
+{"aliases": [], "broader": "voting method", "code": "eurovoc:3981", "depth": 1, "descendants": 2, "description": "", "label": "majority voting system", "target": "voting_elections"}
+{"aliases": [], "broader": "electoral system", "code": "eurovoc:698", "depth": 1, "descendants": 1, "description": "", "label": "indirect election", "target": "voting_elections"}
+{"aliases": [], "broader": "election", "code": "eurovoc:697", "depth": 1, "descendants": 0, "description": "", "label": "European election", "target": "voting_elections"}
+{"aliases": [], "broader": "electoral system", "code": "eurovoc:4368", "depth": 1, "descendants": 0, "description": "", "label": "European electoral system", "target": "voting_elections"}
