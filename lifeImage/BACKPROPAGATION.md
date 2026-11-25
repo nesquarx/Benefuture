@@ -96,6 +96,10 @@ deleted. Numbering is stable (LI.n).
   basemap (map-tile pyramid; MVT/PMTiles candidate) carrying domain ids only, coloured from a per-entity levels file
   joined at view time; a slice too narrow to show at the current resolution is drawn as its parent, whose level already
   aggregates it (LI.51). DESIGN, PLAN.
+- **LI.53** (2026-11-25; amends LI.52) Raster covers only 1x to 4x zoom; beyond that a viewer is looking for something
+  in particular, which the vector version serves, with selection and search of specific items. The viewer is treated as
+  a map: its experience and features follow map conventions (search and fly-to, selection with an information panel,
+  labels by zoom, layer toggles per channel, legend, zoom and position indicator, linkable views). DESIGN, PLAN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 
