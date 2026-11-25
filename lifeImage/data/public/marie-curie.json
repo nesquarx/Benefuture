@@ -1,0 +1,22 @@
+{
+ "birth": "1867-11-07",
+ "by_property": {
+  "P106": 3,
+  "P108": 3,
+  "P166": 17,
+  "P39": 1,
+  "P463": 14,
+  "P69": 6,
+  "P800": 1
+ },
+ "death": "1934-07-04",
+ "description": "Polish-born French physicist and chemist (1867–1934)",
+ "inferred_dates": 23,
+ "label": "Marie Curie",
+ "public_reason": null,
+ "qid": "Q7186",
+ "retrieved": "2026-11-24",
+ "rows": 45,
+ "shape": "scientist: two Nobel prizes, professorship, laboratory employer, many memberships",
+ "unmapped": 16
+}

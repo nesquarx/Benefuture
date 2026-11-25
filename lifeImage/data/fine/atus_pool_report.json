@@ -1,0 +1,48 @@
+{
+ "candidates": 300,
+ "dropped": [
+  {
+   "label": "Personal Care",
+   "reason": "restates existing candidate f.care_general_personal_providing",
+   "source": "atus"
+  },
+  {
+   "label": "Household Management",
+   "reason": "restates coarse domain c.household_planning",
+   "source": "atus"
+  },
+  {
+   "label": "Education",
+   "reason": "restates existing candidate f.education",
+   "source": "atus"
+  },
+  {
+   "label": "Eating and Drinking",
+   "reason": "restates coarse domain c.eating_drinking",
+   "source": "atus"
+  },
+  {
+   "label": "Eating and Drinking",
+   "reason": "restates coarse domain c.eating_drinking",
+   "source": "atus"
+  },
+  {
+   "label": "Eating and drinking",
+   "reason": "restates coarse domain c.eating_drinking",
+   "source": "atus"
+  },
+  {
+   "label": "Reading",
+   "reason": "restates coarse domain c.reading",
+   "source": "atus"
+  },
+  {
+   "label": "Other Income-generating Activities",
+   "reason": "residual category",
+   "source": "atus"
+  }
+ ],
+ "licence_status": "verified",
+ "merged": 10,
+ "raw": 318
+}

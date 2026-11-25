@@ -62,6 +62,33 @@ deleted. Numbering is stable (LI.n).
 - **LI.33** (2026-11-21) Potential is predicted expertise and predicted impact, self-assessment included; red
   potential, green expertise, blue impact; the mix shows estimation, not worth. DESIGN.
 - **LI.34** (2026-11-21) Two image versions: predicted/measured now; reputation positive/negative later. DESIGN.
+- **LI.37** (2026-11-25; amends LI.33) Channels follow the source document's split. Red is knowledge and potential:
+  taking in (reading, watching, attending), claims, self-assessment and predictions. Green is demonstrated skill:
+  producing, or doing the thing under assessment. Blue is impact: what the product changes for others. Tests split by
+  what they measure: a test of knowing makes red solid (claimed → measured tier); an assessment of doing is green. The
+  produced/consumed field and a knowing/doing flag on tests choose between red and green. Estimation still reads in
+  the image: grainy red never made solid, and red without green, mean knowing or claiming without doing. DESIGN.
+- **LI.36** (2026-11-24) Channels are levels built from events: each event imprints its own variegated pattern on
+  the circle (its memberships across related domains), its weight and decay set the pattern's luminosity, and these
+  imprints add up per channel; the sum saturates like light, giving per-domain levels. A potential event (a claim or
+  prediction) imprints with the level it claims, so red compares with green like for like. Replaces summing row
+  magnitudes on one shared scale. DESIGN.
+- **LI.38** (2026-11-25; amends LI.37; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) Grain marks claimed potential and predictions only: self-assessments, forecasts
+  and claims of capability (rows of channel `prediction`). Tier (claimed, attested, measured) never makes grain; it
+  shows only as reduced saturation of the solid colour (measured full, attested slightly less, self-reported pale).
+  Knowledge taken in is solid red whatever its tier (pale when self-reported); an event reported by the person is
+  placed by what it was (producing: green and blue, taking in: red) and drawn pale. DESIGN.
+- **LI.39** (2026-11-25; amends LI.36; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) The tone map's constant is a governed value anchored to a reference life: the
+  median 40-year-old persona of the generated population has its typical touched domain (median over directly
+  imprinted domains of the strongest solid channel) at level 0.5, mid-brightness. The scale is absolute across people:
+  a thinner life is dimmer, a richer one brighter, never normalised per person. Default and derivation live in
+  `lifeimage/governed.py`. DESIGN.
+- **LI.51** (2026-11-25; lead proposal under the author's go-ahead "keep going" of 2026-11-25 and the instruction to make evidence reach
+  the fine level; not a direct author ruling; amends LI.30 and LI.36) Evidence reaches the fine level. A row names a fine domain
+  where its coarse field has fine children; the imprint lands on it, a little bleeds to its upstream coarse field (LI.30), none to
+  neighbours, and a coarse level is the re-saturated sum of its children and its own imprints (luminosities add, the tone map
+  applies once), so a field holds a fine imprint whole, once. Fine domains are placed once inside their main parent's arc in outer
+  rings and no coarse arc moves. The tone constant is re-derived on the coarse aggregate (0.15862, LI.39 rule unchanged). DESIGN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 
@@ -74,6 +101,12 @@ deleted. Numbering is stable (LI.n).
   receives the output (consumed); a vote produces. RELATIONS.
 - **LI.42** (2026-11-23) Relation metadata: each property needs a consumer; proposed set in `RELATIONS.md`
   ("Relation metadata"), adopted with this ruling as the basis for the contract update.
+
+### Synthetic generator
+- **LI.50** (2026-11-25; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) The generator's self-estimates follow the self-assessment literature, as world parameters with
+  ranges and sources in `lifeimage/generators/params.py`, never tuned to make a battery pass: bias is domain-specific
+  (larger over-estimation where skill is low and feedback sparse, little where feedback is frequent, a
+  better-than-average shift, under-estimation among the highly skilled), replacing a uniform small error. PLAN.
 
 ## Governed thresholds proposed (not rulings)
 

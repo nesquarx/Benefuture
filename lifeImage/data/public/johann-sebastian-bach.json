@@ -1,0 +1,20 @@
+{
+ "birth": "1685-03-21",
+ "by_property": {
+  "P106": 11,
+  "P108": 6,
+  "P39": 2,
+  "P69": 1,
+  "P800": 25
+ },
+ "death": "1750-07-28",
+ "description": "German composer (1685–1750)",
+ "inferred_dates": 31,
+ "label": "Johann Sebastian Bach",
+ "public_reason": null,
+ "qid": "Q1339",
+ "retrieved": "2026-11-24",
+ "rows": 45,
+ "shape": "composer: court and church employers, many works",
+ "unmapped": 14
+}

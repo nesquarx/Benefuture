@@ -31,6 +31,8 @@
     "confidence": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
     "provenance": {"type": "object", "additionalProperties": false, "required": ["source", "span"],
       "properties": {"source": {"type": "string", "minLength": 1}, "span": {"type": "string"}}},
-    "revoked": {"type": "boolean"}
+    "revoked": {"type": "boolean"},
+    "production": {"enum": ["produced", "consumed"]},
+    "test_kind": {"enum": ["knowing", "doing"]}
   }
 }

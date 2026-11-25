@@ -3,3 +3,4 @@ __pycache__/
 *.egg-info/
 data/batches/
 data/ephemeral/
+data/fine/sources/icatus.jsonl

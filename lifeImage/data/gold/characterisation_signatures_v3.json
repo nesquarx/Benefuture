@@ -1,0 +1,350 @@
+{
+ "basis": "Written from the identification-ceiling result (data/gold/identification_ceiling.md: levels 0.85 archetype, summary 0.57; calibration 0.58 from summary features, 0.17 from levels alone) and the definitions of the image state; committed before any v3 measurement. Version 2 signatures (characterisation_signatures_v2.*) are unchanged and re-evaluated.",
+ "classifiers": {
+  "centroid": "nearest centroid in the training fold's standardised space (the battery's)",
+  "logistic": "L2 multinomial logistic regression, penalty chosen by nested cross-validation inside every training fold (grid 0.0001 to 10 by decades, 4 inner folds, cross-validated log-loss), as in the identification ceiling"
+ },
+ "features": {
+  "G": "per coarse slice: red grain share = claimed red / (solid red + claimed red), 0 where both are 0",
+  "L": "per coarse slice (sector and field rings): solid red, green and blue levels",
+  "S": "the v2 summary features (BASE_FEATURES and the arc shares, the battery's identification names), passed through unreduced",
+  "T": "per coarse slice: saturation of the solid layer (tier, LI.38)",
+  "pca_k": 20,
+  "reduction": "PCA on the columns standardised with the training fold's mean and sd, top k components (k = 20), fitted inside every training fold and, for the penalty search, again inside every inner fold; unsupervised, labels never read; sign of each component fixed by its largest absolute loading being positive",
+  "sets": {
+   "v2": "S",
+   "v3": "PCA(L, G, T) + S",
+   "v3_GT": "PCA(G, T) + S",
+   "v3_L": "PCA(L) + S",
+   "v3_k10": "as v3 with k = 10 (exploratory, truth rows only)",
+   "v3_k40": "as v3 with k = 40 (exploratory, truth rows only)",
+   "v3_pca": "PCA(L, G, T) alone"
+  }
+ },
+ "predictions": [
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "confidence": 0.6,
+   "id": "A1",
+   "kind": "min",
+   "label": "archetype",
+   "text": "v3 features identify archetype from truth rows at least 0.75 (logistic): the image's levels, reduced, keep the signal the summary features lose",
+   "value": 0.75
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v2",
+    "logistic"
+   ],
+   "confidence": 0.65,
+   "delta": 0.15,
+   "id": "A2",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "v3 beats v2 (same classifier, logistic) on archetype by at least 0.15"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v2",
+    "centroid"
+   ],
+   "confidence": 0.65,
+   "delta": 0.15,
+   "id": "A3",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "v3 (logistic) beats the battery's v2 nearest centroid on archetype by at least 0.15"
+  },
+  {
+   "a": [
+    "truth",
+    "v3_L",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v3_GT",
+    "logistic"
+   ],
+   "confidence": 0.7,
+   "delta": 0.1,
+   "id": "A4",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "levels carry archetype, grain and tier do not: v3_L minus v3_GT (logistic) is at least 0.10"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "centroid"
+   ],
+   "b": [
+    "truth",
+    "v2",
+    "centroid"
+   ],
+   "confidence": 0.55,
+   "delta": 0.1,
+   "id": "A5",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "the reduction helps the nearest centroid too: v3 minus v2 (centroid) is at least 0.10"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "confidence": 0.35,
+   "id": "C1",
+   "kind": "min",
+   "label": "calibration",
+   "text": "v3 features identify calibration from truth rows at least 0.60 (logistic)",
+   "value": 0.6
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v2",
+    "logistic"
+   ],
+   "confidence": 0.35,
+   "delta": 0.04,
+   "id": "C2",
+   "kind": "diff",
+   "label": "calibration",
+   "text": "per-domain grain share and tier saturation add to the global grain share: v3 minus v2 (logistic) on calibration is at least 0.04"
+  },
+  {
+   "a": [
+    "truth",
+    "v3_GT",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v3_L",
+    "logistic"
+   ],
+   "confidence": 0.45,
+   "delta": 0.04,
+   "id": "C3",
+   "kind": "diff",
+   "label": "calibration",
+   "text": "adding the grain and tier block to the summary features beats adding the levels block: v3_GT minus v3_L (logistic) on calibration is at least 0.04"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "truth",
+    "v3_L",
+    "logistic"
+   ],
+   "confidence": 0.45,
+   "delta": 0.04,
+   "id": "C4",
+   "kind": "diff",
+   "label": "calibration",
+   "text": "the full v3 beats v3_L (logistic) on calibration by at least 0.04: the grain and tier block is what calibration needs"
+  },
+  {
+   "a": [
+    "truth",
+    "v3_pca",
+    "logistic"
+   ],
+   "confidence": 0.5,
+   "id": "C5",
+   "kind": "max",
+   "label": "calibration",
+   "text": "the reduced image blocks alone (v3_pca, without the summary features) identify calibration at most 0.55 (logistic)",
+   "value": 0.55
+  },
+  {
+   "a": [
+    "extracted",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "extracted",
+    "v2",
+    "logistic"
+   ],
+   "confidence": 0.4,
+   "delta": 0.05,
+   "id": "X1",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "on rows extracted from resume texts, v3 beats v2 (logistic) on archetype by at least 0.05"
+  },
+  {
+   "a": [
+    "extracted",
+    "v3",
+    "logistic"
+   ],
+   "confidence": 0.4,
+   "id": "X2",
+   "kind": "min",
+   "label": "archetype",
+   "text": "on extracted rows v3 identifies archetype at least 0.30 (logistic; the v2 battery reads about 0.2)",
+   "value": 0.3
+  },
+  {
+   "a": [
+    "extracted",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "extracted",
+    "v2",
+    "logistic"
+   ],
+   "confidence": 0.3,
+   "delta": 0.04,
+   "id": "X3",
+   "kind": "diff",
+   "label": "calibration",
+   "text": "on extracted rows v3 beats v2 (logistic) on calibration by at least 0.04"
+  },
+  {
+   "a": [
+    "legacy",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "legacy",
+    "v2",
+    "logistic"
+   ],
+   "confidence": 0.6,
+   "delta": 0.15,
+   "id": "L1",
+   "kind": "diff",
+   "label": "archetype",
+   "text": "on the legacy projection v3 beats v2 (logistic) on archetype by at least 0.15: the legacy image still draws the levels"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "b": [
+    "legacy",
+    "v3",
+    "logistic"
+   ],
+   "confidence": 0.5,
+   "delta": 0.05,
+   "id": "L2",
+   "kind": "diff",
+   "label": "calibration",
+   "text": "the legacy projection has no tier saturation, so calibration drops: truth minus legacy for v3 (logistic) is at least 0.05"
+  },
+  {
+   "a": [
+    "legacy",
+    "v3",
+    "logistic"
+   ],
+   "confidence": 0.6,
+   "id": "L3",
+   "kind": "max",
+   "label": "calibration",
+   "text": "on the legacy projection v3 identifies calibration at most 0.55 (logistic)",
+   "value": 0.55
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "classes": [
+    "generalist"
+   ],
+   "confidence": 0.55,
+   "id": "R1",
+   "k": 2,
+   "kind": "rank_low",
+   "label": "archetype",
+   "text": "generalist is among the two lowest-recall archetypes for v3 (logistic) on truth rows (no distinctive profile)"
+  },
+  {
+   "a": [
+    "truth",
+    "v3",
+    "logistic"
+   ],
+   "classes": [
+    "well"
+   ],
+   "confidence": 0.5,
+   "id": "R2",
+   "k": 1,
+   "kind": "rank_low",
+   "label": "calibration",
+   "text": "well calibrated is the lowest-recall calibration class for v3 (logistic) on truth rows (the middle class is confused with both sides)"
+  }
+ ],
+ "protocol": "leave one out per persona; reduction, scaling and tuning fitted on the training rows only; deterministic (no random numbers)",
+ "reference_v2": {
+  "source": "data/gold/identification_ceiling.json (same personas, same classifiers)",
+  "truth": {
+   "archetype": {
+    "centroid": 0.569,
+    "logistic": 0.576
+   },
+   "calibration": {
+    "centroid": 0.451,
+    "logistic": 0.576
+   }
+  }
+ },
+ "registered": "2026-11-25",
+ "rule": {
+  "diff": "difference of accuracy a - b over the same personas, normal-approximation 95% interval of the paired difference of correct flags (persona-level means over the three variants for the extracted set, 40 clusters, Student-t 39 df); held if the difference >= delta and the interval excludes 0; not held if the interval's upper end < delta; else inconclusive. The exact sign test is reported (per persona-variant flags; for the extracted set on the persona-level sign of the mean difference)",
+  "max": "held if the point accuracy <= value, not held if the Wilson 95% lower bound > value, else inconclusive",
+  "min": "held if the point accuracy >= value, not held if the Wilson 95% upper bound < value, else inconclusive",
+  "multiplicity": "no adjustment; each prediction is read on its own, with its stated confidence; the report counts held against the confidences' expectation",
+  "rank_low": "held if any named class is among the k lowest-recall classes (ties by class order)"
+ },
+ "sets": {
+  "extracted": "starter extracted (var0, var1, var2) / new: the 40 starter personas, rows read from resume texts, new projection; each variant evaluated on its own (leave one out within the variant) and pooled, 120 persona-variants",
+  "legacy": "extended / legacy: the same 144 personas under the legacy projection",
+  "truth": "extended / new: 144 generated personas (8 archetypes x 3 calibrations x 6), truth rows, fine evidence, new projection"
+ },
+ "smallest_effects": "each prediction's delta or value is the smallest effect that matters; directions are stated in the text",
+ "version": 3
+}

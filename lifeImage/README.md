@@ -12,7 +12,12 @@ prospectus fills the API contract, at the lowest evidence tier.
 - Design and recorded decisions: [DESIGN.md](DESIGN.md).
 - Origin: the author's concept document "Concept - Life Image" (2019).
 - Plan: [PLAN.md](PLAN.md). Rulings and backpropagation: [BACKPROPAGATION.md](BACKPROPAGATION.md) (recorded before mechanisms change).
-- Status: tooling built (schemas, cache, task batches, layout invariants, migration); no basemap data yet. Held by the project until v1.0 is published.
+- Status (pre-v1.0, held by the project): a whole-of-life domain graph (16 sectors, 247 coarse fields placed on two
+  judged axes and a judged radius; 786 fine domains from OpenAlex, ESCO/ISCO, Wikidata and the ATUS activity lexicon);
+  relation types tested in batteries (layers A, B, D); synthetic regular people, organisations and public figures;
+  predicted/measured images (static and an offline zoomable viewer with disclosure levels, group and comparison
+  views). From the image's per-domain levels a classifier recovers a persona's archetype at about 0.8 (chance 0.125);
+  estimation style is carried by grain and tier (about 0.55, chance 0.33). Details and every measurement: PLAN.md.
 
 ## Build and test
 

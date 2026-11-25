@@ -10,28 +10,30 @@ from collections import Counter
 from pathlib import Path
 
 from .canonical import canonical_json, content_hash
-from .packs import coarse_pack, is_sector
+from .packs import coarse_pack, is_sector, ungrouped_pack
 from .tasks import DEFAULT_K, DEFAULT_PROMPTS, read_prefix
 from .validate import LINKS_MAX_OVERLAP, validate_links_answer  # noqa: F401  (re-exported)
 
 QUORUM = 2  # votes (of k=3) needed to keep an upstream or overlap id
 
 
-def links_inputs(cards):
+def links_inputs(cards, ungrouped=False):
     """{field id: task input}: id, label, description and the pack hash; sectors are not classified."""
-    pack_hash = content_hash({"pack": coarse_pack(cards)})[:16]
+    pack_hash = content_hash({"pack": (ungrouped_pack if ungrouped else coarse_pack)(cards)})[:16]
     return {c["id"]: {"card": {"id": c["id"], "label": c["label"], "description": c["description"]}, "pack": pack_hash}
             for c in sorted(cards, key=lambda c: c["id"]) if not is_sector(c)}
 
 
-def build_links_batches(cards, *, cache=None, model, prompt_version=1, prompts_dir=DEFAULT_PROMPTS, k=DEFAULT_K):
-    """{variant: [header, task lines...]} for the (field, variant) pairs not yet cached."""
+def build_links_batches(cards, *, cache=None, model, prompt_version=1, prompts_dir=DEFAULT_PROMPTS, k=DEFAULT_K, ungrouped=False):
+    """{variant: [header, task lines...]} for the (field, variant) pairs not yet cached. With `ungrouped` (links.v2)
+    the pack lists sectors then all fields with no grouping, shuffled per variant."""
     instructions = read_prefix("links", prompt_version, prompts_dir)
-    inputs = links_inputs(cards)
+    inputs = links_inputs(cards, ungrouped)
+    pack = ungrouped_pack if ungrouped else coarse_pack
     batches = {}
     for v in range(k):
         header = json.dumps({"kind": "header", "task_type": "links", "model": model, "prompt_version": prompt_version,
-                             "prefix": instructions.rstrip("\n") + "\n\n" + coarse_pack(cards, v)},
+                             "prefix": instructions.rstrip("\n") + "\n\n" + pack(cards, v)},
                             sort_keys=True, ensure_ascii=False)
         lines = []
         for inp in inputs.values():

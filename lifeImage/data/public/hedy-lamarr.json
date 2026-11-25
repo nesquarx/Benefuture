@@ -1,0 +1,18 @@
+{
+ "birth": "1914-11-09",
+ "by_property": {
+  "P106": 9,
+  "P166": 4,
+  "P800": 6
+ },
+ "death": "2000-01-19",
+ "description": "Austrian-American actress and co-inventor of an early technique for spread spectrum communications and frequency hopping (1914-2000)",
+ "inferred_dates": 10,
+ "label": "Hedy Lamarr",
+ "public_reason": null,
+ "qid": "Q49034",
+ "retrieved": "2026-11-24",
+ "rows": 19,
+ "shape": "actress and inventor: two careers",
+ "unmapped": 7
+}

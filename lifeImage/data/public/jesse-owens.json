@@ -1,0 +1,19 @@
+{
+ "birth": "1913-09-12",
+ "by_property": {
+  "P106": 6,
+  "P166": 7,
+  "P463": 1,
+  "P69": 3
+ },
+ "death": "1980-03-31",
+ "description": "American track and field athlete (1913–1980)",
+ "inferred_dates": 12,
+ "label": "Jesse Owens",
+ "public_reason": null,
+ "qid": "Q52651",
+ "retrieved": "2026-11-24",
+ "rows": 17,
+ "shape": "athlete: Olympic awards, little else",
+ "unmapped": 6
+}

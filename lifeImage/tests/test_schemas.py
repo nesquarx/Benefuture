@@ -30,6 +30,8 @@ def test_card_radius_and_arc_bounds(card):
     r = {"complexity": 0.2, "difficulty": 0.3, "specificity": 0.4, "composite": 0.3}
     validate_card(card(radius=r, arc={"start": 10, "end": 50}))
     bad(validate_card, card(radius={**r, "composite": 1.1}))
+    validate_card(card(radius={**r, "difficulty": None}))  # a proxy with no source is null, the composite stays
+    bad(validate_card, card(radius={**r, "composite": None}))
     bad(validate_card, card(arc={"start": -5, "end": 50}))
 
 

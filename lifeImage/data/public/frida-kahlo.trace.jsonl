@@ -1,0 +1,3 @@
+{"date": "inferred", "fallback": false, "instance_of": ["artistic profession", "occupation"], "kind": "occupation", "label": "painter", "mapped": true, "property": "P106", "qid": "Q1028181", "referenced": true}
+{"date": "stated", "fallback": false, "instance_of": ["painting"], "kind": "notable work", "label": "Still Life: Pitahayas", "mapped": true, "property": "P800", "qid": "Q18343221", "referenced": false}
+{"date": "stated", "fallback": false, "instance_of": ["painting"], "kind": "notable work", "label": "The Two Fridas", "mapped": true, "property": "P800", "qid": "Q3232010", "referenced": true}

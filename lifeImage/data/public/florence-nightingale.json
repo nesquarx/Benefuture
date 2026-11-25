@@ -1,0 +1,18 @@
+{
+ "birth": "1820-05-12",
+ "by_property": {
+  "P106": 6,
+  "P166": 3,
+  "P463": 1
+ },
+ "death": "1910-08-13",
+ "description": "English social reformer, statistician, and founder of modern nursing (1820–1910)",
+ "inferred_dates": 7,
+ "label": "Florence Nightingale",
+ "public_reason": null,
+ "qid": "Q37103",
+ "retrieved": "2026-11-24",
+ "rows": 10,
+ "shape": "nurse, reformer and statistician: care, reform, memberships",
+ "unmapped": 2
+}

@@ -29,9 +29,11 @@ def read_jsonl(path):
     return [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
-def apply(seed_path, answer_paths, out_path, cache, esc_log, model=MODEL, prompt_version=1):
+def apply(seed_path, answer_paths, out_path, cache, esc_log, model=MODEL, prompt_version=1, ungrouped=False,
+          prompts_dir=None, source=SOURCE):
     cards = read_jsonl(seed_path)
-    batches = build_links_batches(cards, model=model, prompt_version=prompt_version)
+    extra = {"prompts_dir": prompts_dir} if prompts_dir is not None else {}
+    batches = build_links_batches(cards, model=model, prompt_version=prompt_version, ungrouped=ungrouped, **extra)
     answers = []
     for v, path in enumerate(answer_paths):
         lines = [l for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -39,7 +41,7 @@ def apply(seed_path, answer_paths, out_path, cache, esc_log, model=MODEL, prompt
         if errs:
             raise SystemExit(f"{path}: {len(errs)} invalid, first: {errs[0]}")
         answers += [json.loads(l) for l in lines]
-    by_hash = {content_hash(inp): fid for fid, inp in links_inputs(cards).items()}
+    by_hash = {content_hash(inp): fid for fid, inp in links_inputs(cards, ungrouped).items()}
     votes = {}
     for a in answers:
         votes.setdefault(by_hash[a["input_hash"]], {})[a["variant"]] = a
@@ -58,7 +60,7 @@ def apply(seed_path, answer_paths, out_path, cache, esc_log, model=MODEL, prompt
         links = [{"id": i, "rel": "upstream", "weight": round(w, 6)} for i, w in m["upstream"].items()]
         links += [{"id": i, "rel": "overlap", "weight": round(m["overlap_weights"][i], 6)} for i in m["overlap"]]
         conf = CONF_FLOOR + CONF_SPAN * field_agreement(votes[c["id"]])
-        prov = dict(c["provenance"], links={"source": SOURCE, "confidence": round(conf, 3)})
+        prov = dict(c["provenance"], links={"source": source, "confidence": round(conf, 3)})
         out.append(validate_card(dict(c, links=links, provenance=prov)))
     Path(out_path).write_text("".join(json.dumps(c, ensure_ascii=False) + "\n" for c in out), encoding="utf-8")
     stats = agreement_stats(votes)
