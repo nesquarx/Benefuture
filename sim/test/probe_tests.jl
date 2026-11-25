@@ -3393,6 +3393,11 @@ end
     gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
     uw(seed; kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(; kw...))
     uw(1)   # warm-up: compilation is not the probe's cost
+    warm(st) = run_coupled(M3cParams(ToyParams(n = 30, steps = st, plans = 4), agents[1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                                     transactions = true, causal_distribution = true, init_steps = 10, form_count = 10^6),
+                           tr -> M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true);
+                           seed = 1, epoch = 25, continuous = true, unified = UnifiedParams(domains = [1]))
+    warm(25)   # warm-up of the continuous (governed) economy, compiled outside the timed region (phase D widened the governor's hand-over)
     t0 = time()
     runs = [uw(s; liar_community = 1) for s in 1:3]
     for r in runs
