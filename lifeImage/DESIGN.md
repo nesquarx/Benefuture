@@ -74,14 +74,20 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
 ## Tiled basemap
 
 Detail follows resolution (LI.52, LI.53). The disc is mapped into a unit square and cut into a z/x/y tile pyramid (MVT in a
-PMTiles archive); a tile holds the slices at least one pixel across at its zoom (a governed value), so a 200 px view loads a
-fraction of what a 4096 px view does and zooming adds detail until everything that exists is shipped. A fine slice too narrow
-to show is drawn as its parent, whose level aggregates it (LI.51); a coarse field has no aggregating parent and is dropped
-when sub-pixel. Tiles carry domain ids only and are public; colour comes from a per-entity levels file joined at view time,
-so disclosure decides which levels file exists. The vector page is a map (search and fly-to, selection with a panel, hover,
-labels by zoom, channel toggles, legend, position indicator, linkable URL hash) and exists online (static folder, range
-requests) and offline (one file); the raster version covers 1x to 4x only. New basemap releases recolour vector pages from a
-migrated levels file and re-render the raster pyramid. Code: `render/tiles.py`, `render/tileview.py`, `tools/build_tiles.py`.
+PMTiles archive). Full detail for a resolution means the view equals a full-detail render downsampled to it (tested): a tile holds
+the slices at least one pixel across at its zoom (a governed value), and slices narrower than that are not dropped but merged,
+per pixel-sized cell, into aggregate polygons coloured by the area-weighted mean of their members in linear light, so a 200 px view
+loads a fraction of what a 4096 px view does and zooming resolves the members until everything that exists is shipped. Tiles
+carry domain ids only and are public; colour comes from a per-entity levels file joined at view time, so disclosure decides which
+levels file exists. The vector page is a map (search and fly-to, selection with a panel, hover, labels by zoom without
+collisions, channel toggles, legend, position indicator, linkable URL hash, group and comparison views) and exists online (static
+folder, range requests) and offline (one file); the raster version covers 1x to 4x only (zoom 0 to 2). New basemap releases recolour
+vector pages from a migrated levels file and re-render the raster pyramid. Code: `render/tiles.py`, `render/tileview.py`,
+`tools/build_tiles.py`.
+
+Stated convention: interactive depth 0 to 3 (disc, sector, field, fine domain) is read at pyramid zoom 0, 2, 4, 6 (each depth is
+four times the magnification, the step from the whole disc to one sector, to a field, to a fine domain; zoom 6 is where every
+slice reaches a pixel). It is a convention for tests and measurements, not something the viewer reads.
 
 ## Building the graph
 

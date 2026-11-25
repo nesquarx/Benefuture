@@ -33,12 +33,13 @@ def measure(arch, pyr, bm):
     for z in range(pyr.meta["maxzoom"] + 1):
         ts = [t for t in arch.tiles() if t[0] == z]
         feats = sum(len(v) for t in ts for v in T.decode_mvt(arch.tile(*t)).values())
+        dec = [T.decode_mvt(arch.tile(*t)) for t in ts]
         out["zoom"][z] = {"tiles": len(ts), "features": feats, "bytes": sum(arch.tile_size(*t) for t in ts),
-                          "slices_shipped": len({f["tags"]["id"] for t in ts for n, v in T.decode_mvt(arch.tile(*t)).items()
-                                                 if n != "fallback" for f in v})}
+                          "slices_shipped": len({f["tags"]["id"] for d in dec for n, v in d.items() if n != "aggregate" for f in v}),
+                          "aggregates": sum(len(d.get("aggregate", [])) for d in dec)}
     for px in (200, 1024, 4096):
         z = T.zoom_for_px(px)
-        out["views"][px] = {"zoom": z, **{k: out["zoom"][z][k] for k in ("tiles", "features", "bytes", "slices_shipped")}}
+        out["views"][px] = {"zoom": z, **{k: out["zoom"][z][k] for k in ("tiles", "features", "bytes", "slices_shipped", "aggregates")}}
     return out
 
 

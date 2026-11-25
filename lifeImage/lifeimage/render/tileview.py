@@ -53,6 +53,17 @@ def disclose(lf, ctx, spec, disclosure):
 
 # ---------- raster ----------
 
+_C = np.arange(256) / 255.0
+_LUT = np.where(_C <= 0.04045, _C / 12.92, ((_C + 0.055) / 1.055) ** 2.4)
+
+
+def _downsample_linear(rgb8, ss):
+    """Box-filter an 8-bit sRGB image by ss in linear light (edge pixels keep the light they cover), back to sRGB floats 0-255."""
+    n = rgb8.shape[0] // ss
+    lin = _LUT[rgb8].reshape(n, ss, n, ss, 3).mean(axis=(1, 3))
+    return 255 * np.where(lin <= 0.0031308, 12.92 * lin, 1.055 * np.maximum(lin, 1e-12) ** (1 / 2.4) - 0.055)
+
+
 def render_tile(archive, lf, z, x, y, ss=2):
     """PNG bytes of one tile, or None when it is all black. Supersampled, then box-filtered; claimed red is drawn as grain."""
     layers = archive.decoded(z, x, y)
@@ -61,17 +72,16 @@ def render_tile(archive, lf, z, x, y, ss=2):
     d, dc, has_claim = ImageDraw.Draw(img), ImageDraw.Draw(claimed), False
     for name in T.LAYERS:
         for f in layers.get(name, []):
-            v = lf["ids"].get(f["tags"]["id"])
-            if not v:
-                continue
+            col = T.feature_colour(lf, name, f["tags"], archive.order)
+            grain = T.feature_claimed(lf, name, f["tags"], archive.order)
             for ring in f["rings"]:
                 pts = [(px * S / T.MVT_EXTENT, py * S / T.MVT_EXTENT) for px, py in ring]
-                if v[0] or v[1] or v[2]:
-                    d.polygon(pts, fill=T.colour_of(v))
-                if v[4]:
-                    dc.polygon(pts, fill=(int(round(255 * v[4])), 0, 0))
+                if any(col):
+                    d.polygon(pts, fill=col)
+                if grain:
+                    dc.polygon(pts, fill=(int(round(255 * grain)), 0, 0))
                     has_claim = True
-    out = np.asarray(img.resize((T.TILE_PX, T.TILE_PX), Image.BOX), dtype=np.float64)
+    out = _downsample_linear(np.asarray(img), ss)
     if has_claim:
         ext = archive.metadata["extent"]
         k = T.ppu(z, ext)
@@ -133,12 +143,12 @@ LEGEND = ('<h2>Legend</h2><p><span class="sw" style="background:#f33"></span>red
 JS = r"""
 (function(){'use strict';
 var CFG=JSON.parse(document.getElementById('cfg').textContent),META=CFG.meta,EXT=META.extent,MAXZ=META.maxzoom,TILE=256;
-var VEC=CFG.mode==='vector',RMAX=2,LAYERS=['sector','field','fallback','fine'];
+var VEC=CFG.mode==='vector',RMAX=2,LAYERS=['sector','aggregate','field','fine'];
 var cv=document.getElementById('c'),ctx=cv.getContext('2d'),posEl=document.getElementById('pos'),info=document.getElementById('info');
 var tv=window.__tv={ready:false,idle:false,errors:[],tilesFetched:[],tileBytes:0,selected:null,hover:null,labelsDrawn:0};
 window.addEventListener('error',function(e){tv.errors.push(String(e.message))});
 window.addEventListener('unhandledrejection',function(e){tv.errors.push(String(e.reason))});
-var W=1,H=1,DPR=1,cam={wpx:512,cx:.5,cy:.5},ch={r:true,g:true,b:true},LV=null,SEL=null,HOV=null,pending=0,anim=false,drawQ=false;
+var W=1,H=1,DPR=1,cam={wpx:512,cx:.5,cy:.5},ch={r:true,g:true,b:true},LV=null,LS=[],IDS={},KIND='single',MEM=[],MODE=0,SETS=null,SEL=null,HOV=null,pending=0,anim=false,drawQ=false;
 var tiles=new Map(),IDX=META.index||{},LAB={},PAR={},ROWS={};
 function rad(d){return d*Math.PI/180}
 function wmin(){return VEC?Math.min(W,H)*.5:TILE}
@@ -212,9 +222,19 @@ function getTile(z,x,y){var k=z+'/'+x+'/'+y,t=tiles.get(k);if(t)return t;t={stat
   else im.src=CFG.urls.tiles+k+'.png'}
  return t}
 // ---- colour
-function colour(v,t){var r=ch.r?v[0]:0,g=ch.g?v[1]:0,b=ch.b?v[2]:0,s=v[3],c=[r,g,b];
- if(s!==1){var m=(c[0]+c[1]+c[2])/3;c=c.map(function(x){return m+s*(x-m)})}
- return 'rgb('+c.map(function(x){return Math.round(255*Math.min(1,Math.max(0,x)))}).join(',')+')'}
+function clamp01(x){return Math.min(1,Math.max(0,x))}
+function rgbv(v){var c=[ch.r?v[0]:0,ch.g?v[1]:0,ch.b?v[2]:0],t=v[3];if(t!==1){var g=(c[0]+c[1]+c[2])/3;c=c.map(function(x){return g+t*(x-g)})}
+ return c.map(function(x){return Math.round(255*clamp01(x))})}
+function colour(v){return 'rgb('+rgbv(v)+')'}
+function lin(c){c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)}
+function enc(x){x=clamp01(x);return Math.round(255*(x<=.0031308?12.92*x:1.055*Math.pow(x,1/2.4)-.055))}
+var ORD=null;
+function members(f){if(!f._m){if(!ORD)ORD=Object.keys(IDX).sort();f._m=f.tags.m.split(',').map(function(i){return ORD[+i]});f._a=f.tags.a.split(',').map(function(x){return x/10000})}return f}
+// colour and claimed red of a feature: an aggregate averages its members by area share in linear light
+function fcol(f,L){if(L!=='aggregate'){var v=IDS[f.tags.id];return [lit(v)?colour(v):null,v&&ch.r?v[4]:0]}
+ members(f);var acc=[0,0,0],cl=0,any=false;
+ for(var i=0;i<f._m.length;i++){var v=IDS[f._m[i]];if(!v)continue;if(ch.r)cl+=f._a[i]*v[4];if(!lit(v))continue;any=true;var c=rgbv(v);for(var j=0;j<3;j++)acc[j]+=f._a[i]*lin(c[j])}
+ return [any?'rgb('+acc.map(enc)+')':null,cl]}
 function lit(v){return v&&((ch.r&&v[0])||(ch.g&&v[1])||(ch.b&&v[2]))}
 // ---- drawing
 function sx(zt,x,px){return (x+px/4096)/Math.pow(2,zt)*cam.wpx-origin()[0]}
@@ -226,10 +246,10 @@ function drawVector(){
  need.forEach(function(t){var T0=getTile(z,t[0],t[1]),zt=z,x=t[0],y=t[1];
   while(T0.state!==1&&zt>0){zt--;x>>=1;y>>=1;T0=tiles.get(zt+'/'+x+'/'+y)||{state:0}}
   if(T0.state!==1||!T0.data)return;
-  LAYERS.forEach(function(L){(T0.data[L]||[]).forEach(function(f){var v=LV&&LV.ids[f.tags.id];
-   if(!lit(v)&&!(v&&ch.r&&v[4]))return;
-   if(lit(v)){var col=colour(v);ctx.fillStyle=col;ctx.strokeStyle=col;ctx.lineWidth=.6;pathOf(ctx,zt,x,y,f.rings);ctx.fill();ctx.stroke()}
-   if(v&&ch.r&&v[4])claimed.push([f,zt,x,y,v[4]])})})});
+  LAYERS.forEach(function(L){(T0.data[L]||[]).forEach(function(f){var fc=fcol(f,L);
+   if(!fc[0]&&!fc[1])return;
+   if(fc[0]){ctx.fillStyle=fc[0];ctx.strokeStyle=fc[0];ctx.lineWidth=.6;pathOf(ctx,zt,x,y,f.rings);ctx.fill();ctx.stroke()}
+   if(fc[1])claimed.push([f,zt,x,y,fc[1]])})})});
  if(claimed.length){if(!gl){gl=document.createElement('canvas');gc=document.createElement('canvas')}
   gl.width=cv.width;gl.height=cv.height;var g=gl.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
   claimed.forEach(function(c){g.fillStyle='rgb('+Math.round(255*c[4])+',0,0)';pathOf(g,c[1],c[2],c[3],c[0].rings);g.fill()});
@@ -242,7 +262,7 @@ function drawVector(){
  // highlight
  [HOV,SEL].forEach(function(id,n){if(!id)return;ctx.strokeStyle=n?'#ffd84a':'#ffffff';ctx.lineWidth=n?2.2:1.4;
   need.forEach(function(t){var T0=tiles.get(z+'/'+t[0]+'/'+t[1]);if(!T0||!T0.data)return;
-   LAYERS.forEach(function(L){(T0.data[L]||[]).forEach(function(f){if(f.tags.id===id&&L!=='fallback'){pathOf(ctx,z,t[0],t[1],f.rings);ctx.stroke()}})})})});
+   LAYERS.forEach(function(L){(T0.data[L]||[]).forEach(function(f){if(f.tags.id===id&&L!=='aggregate'){pathOf(ctx,z,t[0],t[1],f.rings);ctx.stroke()}})})})});
  drawLabels()}
 function drawRaster(){
  var z=tileZ(),k=TILE*Math.pow(2,z)/cam.wpx,o=origin(),need=viewTiles(z,o[0]*k,o[1]*k,W*k,H*k);
@@ -253,14 +273,18 @@ function sector(id){var s=IDX[id];if(!s)return null;var a=rad(s[0]+s[1]/2),r=(s[
  return {wx:.5+r*Math.cos(a)/(2*EXT),wy:.5-r*Math.sin(a)/(2*EXT),s:s,ang:s[0]+s[1]/2}}
 function screenOf(id){var c=sector(id);if(!c)return null;var o=origin(),r=cv.getBoundingClientRect();return {x:c.wx*cam.wpx-o[0]+r.left,y:c.wy*cam.wpx-o[1]+r.top}}
 var tw={};
-function drawLabels(){var n=0,ppu=cam.wpx/(2*EXT),o=origin(),fs=11;ctx.font=fs+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+function drawLabels(){var ppu=cam.wpx/(2*EXT),o=origin(),fs=11,cand=[];ctx.font=fs+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
  if(LV&&LV.labels){for(var id in IDX){var s=IDX[id],lab=LV.labels[id];if(!lab)continue;
   var arc=(s[2]+s[3])/2*rad(s[1])*ppu,dep=(s[3]-s[2])*ppu;if(arc<fs+2)continue;
   var c=sector(id),X=c.wx*cam.wpx-o[0],Y=c.wy*cam.wpx-o[1];if(X<-50||Y<-50||X>W+50||Y>H+50)continue;
   var w=tw[lab]||(tw[lab]=ctx.measureText(lab).width);if(dep<w+6)continue;
   var a=-rad(c.ang);if(Math.cos(a)<0)a+=Math.PI;
-  ctx.save();ctx.translate(X,Y);ctx.rotate(a);ctx.fillStyle='#000a';ctx.fillRect(-w/2-2,-fs/2-1,w+4,fs+2);ctx.fillStyle='#fff';ctx.fillText(lab,0,0);ctx.restore();n++}}
- tv.labelsDrawn=n}
+  var bw=w+4,bh=fs+2,hx=(Math.abs(Math.cos(a))*bw+Math.abs(Math.sin(a))*bh)/2,hy=(Math.abs(Math.sin(a))*bw+Math.abs(Math.cos(a))*bh)/2;
+  cand.push({id:id,lab:lab,w:w,X:X,Y:Y,a:a,area:arc*dep,box:[X-hx,Y-hy,X+hx,Y+hy]})}}
+ cand.sort(function(p,q){return q.area-p.area||(p.id<q.id?-1:1)});var kept=[];
+ cand.forEach(function(c){var b=c.box;for(var i=0;i<kept.length;i++){var k=kept[i].box;if(!(b[2]<=k[0]||k[2]<=b[0]||b[3]<=k[1]||k[3]<=b[1]))return}kept.push(c)});
+ kept.forEach(function(c){ctx.save();ctx.translate(c.X,c.Y);ctx.rotate(c.a);ctx.fillStyle='#000a';ctx.fillRect(-c.w/2-2,-fs/2-1,c.w+4,fs+2);ctx.fillStyle='#fff';ctx.fillText(c.lab,0,0);ctx.restore()});
+ tv.labelsDrawn=kept.length;tv.labelCandidates=cand.length;tv.labelBoxes=kept.map(function(c){return c.box})}
 function draw(){drawQ=false;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalCompositeOperation='source-over';ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
  if(CFG.mode==='vector'&&!pm)return;if(VEC&&LV)drawVector();else if(!VEC)drawRaster();
  var z=zoomOf(),e=(cam.cx-.5)*2*EXT,f=-(cam.cy-.5)*2*EXT,r=Math.hypot(e,f),ang=(Math.atan2(f,e)*180/Math.PI+360)%360;
@@ -280,13 +304,13 @@ function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp
 function name(id){return (LV&&LV.labels&&LV.labels[id])||id}
 function select(id){SEL=id;tv.selected=id;panel();schedule();scheduleHash()}
 function panel(){if(!info)return;if(!SEL){info.innerHTML='<p>Click a slice to select it, or search for a domain above.</p>';return}
- var v=LV&&LV.ids[SEL],s=IDX[SEL],ring=s?['sector','field','fine domain'][s[4]]:'',h='<h2>'+esc(name(SEL))+'</h2><p><code>'+esc(SEL)+'</code>'+(ring?' · '+ring:'')+'</p>';
+ var v=IDS[SEL],s=IDX[SEL],ring=s?['sector','field','fine domain'][s[4]]:'',h='<h2>'+esc(name(SEL))+'</h2><p><code>'+esc(SEL)+'</code>'+(ring?' · '+ring:'')+'</p>';
  var par=(LV&&LV.parents&&LV.parents[SEL])||(s&&s[5]?[s[5]]:[]);
  if(par.length)h+='<p>Parents: '+par.slice(0,4).map(function(p){return '<a href="#" data-go="'+esc(p)+'">'+esc(name(p))+'</a>'}).join(', ')+'</p>';
  h+='<h2>Levels</h2>';
  if(v){[['red','#f55',0],['green','#4d4',1],['blue','#58f',2]].forEach(function(c){h+='<p><span class="sw" style="background:'+c[1]+'"></span>'+c[0]+': <b>'+v[c[2]].toFixed(2)+'</b></p>'});
   h+='<p>saturation: '+v[3].toFixed(2)+(v[4]?' · claimed potential (grain): '+v[4].toFixed(2):'')+'</p>'}else h+='<p>No evidence here.</p>';
- var rows=LV&&LV.rows&&LV.rows[SEL];
+ var rows=KIND==='single'&&LV&&LV.rows&&LV.rows[SEL];
  if(rows&&rows.length){h+='<h2>Evidence ('+rows.length+')</h2>';rows.slice(0,12).forEach(function(r){h+='<div class="row"><b>'+esc(r.t)+'</b><br>'+esc(r.k)+' · '+esc(r.d)+' · '+esc(r.c)+(r.b?' · carried up':'')+'</div>'})}
  info.innerHTML=h;info.querySelectorAll('[data-go]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();flyTo(a.getAttribute('data-go'),true)})})}
 // ---- search and fly-to
@@ -303,11 +327,11 @@ function matches(q){q=q.trim().toLowerCase();if(!q)return[];var out=[];
  out.sort(function(a,b){return a[0]-b[0]||(a[1]<b[1]?-1:a[1]>b[1]?1:0)});return out.slice(0,8).map(function(x){return x[2]})}
 // ---- hit test
 function hit(px,py){if(!VEC||!pm)return null;var z=tileZ(),k=TILE*Math.pow(2,z)/cam.wpx,o=origin(),wx=(o[0]+px)*k,wy=(o[1]+py)*k,x=Math.floor(wx/TILE),y=Math.floor(wy/TILE),T0=tiles.get(z+'/'+x+'/'+y);
- if(!T0||!T0.data)return null;var qx=(wx/TILE-x)*4096,qy=(wy/TILE-y)*4096;
- for(var l=LAYERS.length-1;l>=0;l--){var fs=T0.data[LAYERS[l]]||[];for(var i=0;i<fs.length;i++){var f=fs[i];
+ if(!T0||!T0.data)return null;var qx=(wx/TILE-x)*4096,qy=(wy/TILE-y)*4096,order=['fine','field','aggregate','sector'];
+ for(var l=0;l<order.length;l++){var fs=T0.data[order[l]]||[];for(var i=0;i<fs.length;i++){var f=fs[i];
   for(var r=0;r<f.rings.length;r++){var g=f.rings[r],ins=false,n=g.length/2;for(var a=0,b=n-1;a<n;b=a++){var x1=g[2*a],y1=g[2*a+1],x2=g[2*b],y2=g[2*b+1];
    if((y1>qy)!==(y2>qy)&&qx<(x2-x1)*(qy-y1)/(y2-y1)+x1)ins=!ins}
-   if(ins)return f.tags.id}}}
+   if(ins)return order[l]==='aggregate'?{id:members(f)._m[0],agg:f._m.length}:{id:f.tags.id,agg:0}}}}
  return null}
 // ---- interaction
 function zoomAt(px,py,f){var o=origin(),wx=(o[0]+px)/cam.wpx,wy=(o[1]+py)/cam.wpx;cam.wpx*=f;clampCam();cam.cx=wx-(px-W/2)/cam.wpx;cam.cy=wy-(py-H/2)/cam.wpx;clampCam();tv.idle=false;schedule()}
@@ -318,9 +342,9 @@ cv.addEventListener('pointermove',function(e){var n=Object.keys(ptrs).length;
  if(n>=2){ptrs[e.pointerId]=[e.offsetX,e.offsetY];var p=Object.values(ptrs),d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);if(drag&&drag.d){zoomAt((p[0][0]+p[1][0])/2,(p[0][1]+p[1][1])/2,d/drag.d)}if(drag)drag.d=d;drag&&(drag.moved=true);return}
  if(drag&&ptrs[e.pointerId]){var dx=e.offsetX-drag.x,dy=e.offsetY-drag.y;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;
   if(drag.moved){cam.cx=drag.cx-dx/cam.wpx;cam.cy=drag.cy-dy/cam.wpx;clampCam();tv.idle=false;schedule()}return}
- var h=hit(e.offsetX,e.offsetY);if(h!==HOV){HOV=h;tv.hover=h;cv.title=h?name(h):'';schedule()}});
+ var h=hit(e.offsetX,e.offsetY),id=h&&!h.agg?h.id:null;cv.title=h?(h.agg?h.agg+' small domains here: zoom in to tell them apart':name(h.id)):'';if(id!==HOV){HOV=id;tv.hover=id;schedule()}});
 cv.addEventListener('pointerup',function(e){delete ptrs[e.pointerId];cv.style.cursor='grab';
- if(drag&&!drag.moved&&VEC){var h=hit(e.offsetX,e.offsetY);if(h)select(h);else{SEL=null;tv.selected=null;panel();schedule();scheduleHash()}}
+ if(drag&&!drag.moved&&VEC){var h=hit(e.offsetX,e.offsetY);if(h&&h.agg)flyTo(h.id,true);else if(h)select(h.id);else{SEL=null;tv.selected=null;panel();schedule();scheduleHash()}}
  if(!Object.keys(ptrs).length)drag=null});
 cv.addEventListener('pointerleave',function(){if(HOV){HOV=null;tv.hover=null;schedule()}});
 cv.addEventListener('wheel',function(e){e.preventDefault();zoomAt(e.offsetX,e.offsetY,Math.exp(-e.deltaY*(e.deltaMode?.05:.0015)))},{passive:false});
@@ -330,6 +354,29 @@ window.addEventListener('keydown',function(e){if(e.target&&e.target.tagName==='I
  else if(e.key==='Escape'){SEL=null;tv.selected=null;panel();schedule();scheduleHash()}
  else if(e.key.indexOf('Arrow')===0){var d=60/cam.wpx;if(e.key==='ArrowLeft')cam.cx-=d;if(e.key==='ArrowRight')cam.cx+=d;if(e.key==='ArrowUp')cam.cy-=d;if(e.key==='ArrowDown')cam.cy+=d;clampCam();schedule()}});
 window.addEventListener('resize',resize);
+// ---- levels sets: single, group (re-saturated sum), compare (overlap and differences)
+function lum(l,k){return -k*Math.log(1-Math.min(l,1-1e-12))}
+function groupIds(mask){var k=LS[0].tone_k,acc={};
+ LS.forEach(function(lf,j){if(!mask[j])return;for(var d in lf.ids){var v=lf.ids[d],a=acc[d]||(acc[d]=[0,0,0,0,0,0]),s=[lum(v[0],k),lum(v[1],k),lum(v[2],k),lum(v[4],k)],m=s[0]+s[1]+s[2];
+  for(var q=0;q<4;q++)a[q]+=s[q];a[4]+=m*v[3];a[5]+=m}});
+ var out={};for(var d in acc){var a=acc[d],t=function(x){return 1-Math.exp(-x/k)};out[d]=[t(a[0]),t(a[1]),t(a[2]),a[5]>0?a[4]/a[5]:1,t(a[3])]}return out}
+function compareIds(){var A=LS[0].ids,B=LS[1].ids,o={a:A,b:B,overlap:{},a_only:{},b_only:{}},ds={};for(var d in A)ds[d]=1;for(var d in B)ds[d]=1;
+ for(var d in ds){var x=A[d],y=B[d],u=x||[0,0,0,1,0],w=y||[0,0,0,1,0],sat=x&&y?Math.min(u[3],w[3]):x?u[3]:w[3],ov=[],ao=[],bo=[];
+  for(var j=0;j<3;j++){ov.push(Math.min(u[j],w[j]));ao.push(Math.max(u[j]-w[j],0));bo.push(Math.max(w[j]-u[j],0))}
+  [['overlap',ov,sat],['a_only',ao,u[3]],['b_only',bo,w[3]]].forEach(function(t){if(t[1][0]||t[1][1]||t[1][2])o[t[0]][d]=t[1].concat([t[2],0])})}
+ return o}
+var MODES=['a','b','overlap','a_only','b_only'];
+function applyIds(){if(KIND==='group')IDS=groupIds(MEM);else if(KIND==='compare')IDS=SETS[MODES[MODE]];else IDS=LS[0].ids;tv.idle=false;panel();schedule()}
+async function bootLevels(){var sets=CFG.levelsets||(CFG.levels?[CFG.levels]:null);
+ if(!sets&&CFG.urls){var us=CFG.urls.levelsets||[CFG.urls.levels];sets=[];for(var i=0;i<us.length;i++)sets.push(await (await fetch(us[i])).json())}
+ LS=sets;LV=LS[0];KIND=CFG.kind||'single';MEM=LS.map(function(){return true});if(KIND==='compare')SETS=compareIds();applyIds();buildSets()}
+function buildSets(){var el=document.getElementById('sets');if(!el||KIND==='single')return;
+ if(KIND==='group')LS.forEach(function(lf,j){var l=document.createElement('label');l.className='ch';var c=document.createElement('input');c.type='checkbox';c.checked=true;
+  c.addEventListener('change',function(){MEM[j]=c.checked;applyIds()});l.appendChild(c);l.appendChild(document.createTextNode(' '+(lf.title||('image '+(j+1)))));el.appendChild(l)});
+ else{var nm=function(j){return LS[j].title||('image '+(j+1))},lab=[nm(0),nm(1),'overlap','only '+nm(0),'only '+nm(1)];
+  lab.forEach(function(t,j){var l=document.createElement('label');l.className='ch';var c=document.createElement('input');c.type='radio';c.name='mode';c.checked=j===0;
+   c.addEventListener('change',function(){MODE=j;applyIds()});l.appendChild(c);l.appendChild(document.createTextNode(' '+t));el.appendChild(l)})}}
+tv.setMode=function(j){MODE=j;applyIds()};tv.setMembers=function(m){MEM=m.slice();applyIds()};
 // ---- page wiring
 var sb=document.getElementById('search'),rl=document.getElementById('results');
 if(sb){var show=function(){var m=matches(sb.value);rl.innerHTML='';m.forEach(function(id,i){var li=document.createElement('li');li.textContent=name(id)+'  ('+id+')';
@@ -341,13 +388,14 @@ tv.view=function(){return {zoom:zoomOf(),cx:cam.cx,cy:cam.cy,selected:tv.selecte
 tv.size=function(){var r=cv.getBoundingClientRect();return {w:r.right,h:r.bottom}};
 tv.screenOf=screenOf;
 tv.setView=function(z,ox,oy){cam.wpx=TILE*Math.pow(2,z);cam.cx=(ox+W/2)/cam.wpx;cam.cy=(oy+H/2)/cam.wpx;tv.idle=false;schedule()};
+tv.lookAt=function(id,z){var c=sector(id);if(!c)return;cam.wpx=TILE*Math.pow(2,z);clampCam();cam.cx=c.wx;cam.cy=c.wy;tv.idle=false;schedule()};
+tv.levelsOf=function(id){return IDS[id]||null};
 tv.clearLog=function(){tv.tilesFetched=[];tv.tileBytes=0};
 tv.pixelAt=function(x,y){var r=cv.getBoundingClientRect(),d=ctx.getImageData(Math.round((x-r.left)*DPR),Math.round((y-r.top)*DPR),1,1).data;return [d[0],d[1],d[2]]};
 tv.litPixels=function(){var d=ctx.getImageData(0,0,cv.width,cv.height).data,n=0;for(var i=0;i<d.length;i+=4)if(d[i]+d[i+1]+d[i+2]>45)n++;return n};
 (async function(){try{
  resize();await bootSource();
- if(VEC){var lv=CFG.levels;if(!lv&&CFG.urls&&CFG.urls.levels)lv=await (await fetch(CFG.urls.levels)).json();LV=lv;
-  if(CFG.source!=='offline'&&!META.index){META=await pm.metadata();IDX=META.index||{}}}
+ if(VEC){if(CFG.source!=='offline'&&!META.index){META=await pm.metadata();IDX=META.index||{}}await bootLevels()}
  var has=readHash();if(!has){cam.wpx=fitW();cam.cx=cam.cy=.5}
  ['r','g','b'].forEach(function(k){var el=document.getElementById('ch-'+({r:'red',g:'green',b:'blue'})[k]);if(el)el.checked=ch[k]});
  if(SEL)tv.selected=SEL;panel();clampCam();
@@ -373,7 +421,7 @@ def _page(cfg, title, blob=None, vector=True):
     cfg_json = json.dumps(cfg, sort_keys=True, separators=(",", ":")).replace("<", "\\u003c")
     return (f'<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{t}</title><style>{CSS}</style></head><body>'
-            f'<header><h1>{t}</h1>{toolbar}<p class="note">{escape(note)} Basemap {escape(str(cfg["meta"]["basemap"]))}.</p></header>'
+            f'<header><h1>{t}</h1>{toolbar}<span id="sets"></span><p class="note">{escape(note)} Basemap {escape(str(cfg["meta"]["basemap"]))}.</p></header>'
             f'<div id="wrap"><div id="stage"><canvas id="c" aria-label="Life image map"></canvas><div id="pos"></div></div>'
             f'<aside><div id="info"></div>{LEGEND}</aside></div>'
             f'<noscript><p>This viewer needs JavaScript.</p></noscript>'
@@ -384,23 +432,42 @@ def _meta(archive_bytes):
     return T.PMTiles(archive_bytes).metadata
 
 
-def offline_vector_html(archive_bytes, lf, title):
-    """One self-contained page: the whole pyramid (PMTiles, base64) and the levels file embedded; no network."""
+def _sets(lf, kind):
+    if kind not in ("single", "group", "compare"):
+        raise ValueError(f"kind must be single, group or compare, not {kind!r}")
+    lfs = list(lf) if isinstance(lf, (list, tuple)) else [lf]
+    if kind == "compare" and len(lfs) != 2:
+        raise ValueError("a comparison needs exactly two levels files")
+    if kind != "single" and len(lfs) < 2:
+        raise ValueError(f"a {kind} view needs at least two levels files")
+    if len({x["basemap"] for x in lfs}) > 1:
+        raise ValueError("levels files are on different basemap versions; migrate them first (tiles.migrate_levels)")
+    return lfs
+
+
+def offline_vector_html(archive_bytes, lf, title, kind="single"):
+    """One self-contained page: the whole pyramid (PMTiles, base64) and the levels file(s) embedded; no network. `kind` single
+    (one levels file), group (the re-saturated sum of several, members switchable) or compare (two: each, the overlap and
+    each side's difference), the set operations of `interactive.py`."""
     meta = _meta(archive_bytes)
-    cfg = {"mode": "vector", "source": "offline", "meta": meta, "levels": lf}
+    cfg = {"mode": "vector", "source": "offline", "meta": meta, "levelsets": _sets(lf, kind), "kind": kind}
     return _page(cfg, title, base64.b64encode(archive_bytes).decode())
 
 
-def online_vector_dir(out, archive_bytes, lf, title):
+def online_vector_dir(out, archive_bytes, lf, title, kind="single"):
     """A static folder: index.html, basemap.pmtiles (fetched by range) and levels.json (fetched once)."""
     from pathlib import Path
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     meta = _meta(archive_bytes)
     (out / "basemap.pmtiles").write_bytes(archive_bytes)
-    (out / "levels.json").write_text(json.dumps(lf, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+    lfs = _sets(lf, kind)
+    names = []
+    for j, x in enumerate(lfs):
+        names.append("levels.json" if len(lfs) == 1 else f"levels-{j}.json")
+        (out / names[-1]).write_text(json.dumps(x, sort_keys=True, separators=(",", ":")), encoding="utf-8")
     cfg = {"mode": "vector", "source": "online", "meta": {k: v for k, v in meta.items() if k != "index"} | {"index": meta["index"]},
-           "urls": {"tiles": "basemap.pmtiles", "levels": "levels.json"}}
+           "urls": {"tiles": "basemap.pmtiles", "levels": names[0], "levelsets": names}, "kind": kind}
     (out / "index.html").write_text(_page(cfg, title), encoding="utf-8")
     return out
 

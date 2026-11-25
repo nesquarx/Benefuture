@@ -515,49 +515,65 @@ Recorded here until the work confirms them; each goes to `docs/BACKPROPAGATION.m
 ## Tiled basemap (LI.52)
 
 Built (`lifeimage/render/tiles.py`, `render/tileview.py`, `tools/build_tiles.py`, `tests/test_tiles.py`, node drivers in
-`tests/js/`; governed `tiles.min_slice_px` = 1 and `tiles.arc_tolerance_px` = 0.25 in `governed.py`). Prediction (confidence 0.7):
-tiled colours match the current renderer at depths 0 to 3, bytes per view stay constant with depth, the 200 px load is at least
-5x smaller than the 4096 px one. All three held.
+`tests/js/`; governed `tiles.min_slice_px` = 1 and `tiles.arc_tolerance_px` = 0.25 in `governed.py`). First prediction
+(confidence 0.7): tiled colours match the current renderer at depths 0 to 3 (held), bytes per view constant with depth (held),
+200 px load at least 5x smaller than 4096 px (held at 6.8x while sub-pixel slices were dropped or drawn as parents; **missed at
+4.0x** once every sub-pixel slice became an aggregate, see below; the test now states 3x).
 
 - **Format.** MVT tiles in a PMTiles v3 archive, both written here with no dependency (hand-encoded protobuf, Hilbert tile ids,
-  gzip, directories split into leaves when the root would pass 16 KB), and checked once in a scratch venv against the
-  `mapbox-vector-tile` decoder and the `pmtiles` reader (both read the archive: 2180 tiles, polygons decode). The client is own
-  canvas code (decoder, PMTiles reader with range requests, a few hundred lines), no MapLibre. The pyramid is a unit-square
-  cartesian quadtree, 256 px tiles, MVT extent 4096 with a 64-unit buffer; arcs are sampled to a quarter-pixel chord error
-  at the tile's zoom; polygons are clipped to tiles (Sutherland-Hodgman) so a tile's bytes depend on what is in it, not on the
-  slice's size. Zoom 0 to 6: zoom 6 is the first where all 1049 slices (263 coarse, 786 fine) reach a pixel.
+  gzip, directories split into leaves when the root would pass 16 KB), checked once in a scratch venv against the
+  `mapbox-vector-tile` decoder and the `pmtiles` reader (both read the archive, polygons decode). The client is own canvas code
+  (decoder, PMTiles reader with range requests), no MapLibre. Unit-square cartesian quadtree, 256 px tiles, MVT extent 4096 with a
+  64-unit buffer; arcs sampled to a quarter-pixel chord error at the tile's zoom; polygons clipped to tiles so a tile's bytes
+  depend on what is in it. Zoom 0 to 6: zoom 6 is the first where all 1049 slices (263 coarse, 786 fine) reach a pixel.
+- **Full detail for the resolution (ruling after the first build).** The definition, and the test: the tiled render equals a
+  full-detail render (every slice whole, at 4x the target size, box-filtered in linear light) at the target size. A slice under a
+  pixel is therefore never dropped and not painted as its parent (the parent's level aggregates its children, LI.51, but
+  the children do not sit over the parent's area, and the parent's colour is not what the area averages to). Hidden slices of one
+  ring (field or fine) in the same pixel-sized cell (1 px of arc by 1 px of radius) become one `aggregate` polygon (the hull of
+  the members, widened to a pixel) carrying member ids and each member's share of the hull area; its colour is the members'
+  rendered colours averaged by area in linear light, the rest of the hull black. Selecting an aggregate flies to its largest
+  member. Tests (p012, p019, p023 at 200, 1024 and 4096 px): mean absolute error 0.73, 0.58, 0.70 of 255 at 200 px, about 0.1 at
+  1024 and 0.03 at 4096; light within 1.2 to 3.0% at 200 px, 1.1% at 1024, 0.4% at 4096; pixels lit in the reference but black
+  in the tiled render 0.14%, 0.08%, 0.11% at 200 px (stated tolerances before measuring: mean 2, light 4%, missing 0.15%). Red
+  baseline: the dropped fields and parent fallback failed light within 3% on all three at 200 px, and without the aggregates the
+  missing-area bound fails for all three (0.39%, 0.17%, 0.24%). Rendering supersampled edges in linear light also mattered
+  (sRGB averaging lost 4 to 9% of the light on thin slices).
 - **Load per view** (full disc; `tools/build_tiles.py --measure`, basemap 0.0.0-draft; a view of S px reads zoom
-  ceil(log2(S/256))): 200 px (z0, 1 tile) 409 features, 307 slices, 11.7 KB; 1024 px (z2, 16 tiles) 854 features, 651 slices,
-  31.5 KB; 4096 px (z4, 163 tiles) 1668 features, 930 slices, 79.3 KB. The 4096 px load is 6.8x the 200 px one in bytes (4.1x in
-  features). Per zoom: bytes 11.7, 16.5, 31.5, 46.4, 79.3, 143, 286 KB for the full disc at z0 to z6. The monolithic viewer ships
-  all 1049 slices (139 KB of geometry JSON) at any size, of which 785 are under a pixel at 200 px.
-- **Bounded per view.** Worst 1024 x 768 viewport, bytes of tile data: 11.7, 16.5, 31.5, 25.5, 15.0, 14.6, 9.3 KB at z0 to z6
+  ceil(log2(S/256))): 200 px (z0, 1 tile) 690 features (307 slices, 383 aggregates), 19.0 KB; 1024 px (z2, 16 tiles) 1100
+  features (651 slices, 308 aggregates), 36.0 KB; 4096 px (z4, 163 tiles) 1763 features (930 slices, 101 aggregates), 76.3 KB.
+  The 4096 px load is 4.0x the 200 px one in bytes (2.6x in features). Per zoom, full-disc bytes at z0 to z6: 19.0, 24.5, 36.0,
+  48.8, 76.3, 134.8, 264.7 KB (aggregates 383, 426, 308, 249, 101, 58, 0). The monolithic viewer ships all 1049 slices (139 KB of
+  geometry JSON) at any size, of which 785 are under a pixel at 200 px.
+- **Bounded per view.** Worst 1024 x 768 viewport, bytes of tile data at z0 to z6: 19.0, 24.5, 36.0, 27.6, 15.2, 13.6, 8.8 KB
   (bound stated before measuring: 150 KB; z6 at most 1.5x z3). It falls with depth because tiles clip and a viewport sees less.
-- **Render match.** Colour at every shipped slice's centroid, tiled against `render/image.py` from the same levels, personas
-  p023, p012, p019, depths 0 to 3 (zoom 0, 2, 4, 6; 307, 651, 930, 1049 slices): worst error 0 of 255 per channel for two
-  personas and 1 for p019 (levels file keeps four decimals; tolerance 1). A hidden fine child takes its parent's colour exactly.
-- **Files** (persona p023, full disclosure): `basemap.pmtiles` 639 KB (2180 tiles); `levels-p023.json` 200 KB (labels, parents and
-  up to 25 evidence rows per domain; the bare levels are a fraction); offline vector page 1.16 MB (whole pyramid and levels),
-  offline raster page 127 KB (zoom 0 to 2, 20 PNG tiles, 78 KB); online folders hold the same bytes as separate files. Offline
-  pages hold no http(s) reference and render in Chromium with the network off (tests screenshot at deviceScaleFactor 1); the online
-  page fetched exactly the viewport's tiles by range request, none outside (counting server in `tests/js/online_check.cjs`).
-- **Map conventions (LI.53)**, vector only: search by name or id with fly-to, click to select with a panel (domain, parents,
-  levels, evidence rows where the levels file discloses them), hover highlight, labels where they fit, red/green/blue toggles,
-  legend, zoom and position indicator, view in the URL hash restored on load. Disclosure `none` ships levels only, `summary`
-  adds labels and parents, `full` adds rows. Raster stops at zoom 2 (a 256 px to a 1024 px disc).
+- **Render match per slice.** Colour at every shipped slice's centroid, tiled against `render/image.py` from the same levels,
+  personas p023, p012, p019, depths 0 to 3 (zoom 0, 2, 4, 6; 307, 651, 930, 1049 slices): worst error 0 of 255 per channel for two
+  personas and 1 for p019 (the levels file keeps four decimals; tolerance 1).
+- **Depth to zoom (stated convention, DESIGN.md).** Interactive depth 0 to 3 (disc, sector, field, fine domain) is read at pyramid
+  zoom 0, 2, 4, 6; a convention for the tests, not read from the viewer.
+- **Files** (persona p023, full disclosure): `basemap.pmtiles` 629 KB (2180 tiles); `levels-p023.json` 200 KB (labels, parents and up
+  to 25 evidence rows per domain); offline vector page 1.15 MB (whole pyramid and levels), offline raster page 133 KB (zoom 0 to 2,
+  20 PNG tiles, 79 KB); online folders hold the same bytes as separate files. Offline pages hold no http(s) reference and render in
+  Chromium with the network off; the online page fetched exactly the viewport's tiles by range request, none outside.
+- **Map conventions (LI.53, follow-up rulings)**, vector only: search by name or id with fly-to, click to select with a panel
+  (domain, parents, levels, evidence rows where the levels file discloses them), hover highlight, red/green/blue toggles, legend,
+  zoom and position indicator, view in the URL hash restored on load. Labels are placed greedily by on-screen area and a label
+  whose box (the bounding box of its rotated text) overlaps a placed one is dropped; a Chromium test checks no two drawn boxes overlap
+  at ten zooms, with suppression seen. Group view (members switchable) is the re-saturated sum of several levels files
+  (`tiles.group_levels`: luminosities add, tone applies once; checked against `interactive.levels_from_raw`), comparison view
+  shows each image, the overlap and each side's difference (`tiles.compare_levels`, against `interactive.compare_levels`); the
+  page's JavaScript is checked against the Python for both. Rows are shown for single images only. Raster stops at zoom 2.
 - **Recalibration.** `tiles.migrate_levels` moves a levels file to a newer basemap through a `migration` table on luminosities
-  (the inverse tone map adds), conserving each channel's total; tested with a rename and a split. Vector pages recolour from
-  the migrated file; the raster pyramid is re-rendered by the build tool.
-- **Deviations from the lead's design, and why.** (1) Fallback to the parent holds only for fine slices: the levels rule
-  aggregates fine into coarse (LI.51) but a sector is not the aggregate of its fields, so a coarse field narrower than a pixel
-  is not drawn (every field reaches a pixel by zoom 3; at zoom 0 to 2, 162, 123 and 11 of the 247 are missing, and no parent colours their area). (2) A hidden
-  run of fine children is shipped as one `fallback` polygon (the hull of the run's arcs and radial span, carrying the parent id)
-  rather than nothing, since the fine ring lies outside its parent's own polygon; the hull may colour small gaps between hidden
-  siblings. (3) Draw order is by layer (`sector`, `field`, `fallback`, `fine`), not by feature. (4) The slice index (id to
-  angle and radius) sits in the archive metadata so the viewer can fly to a domain before its tile loads; it is geometry only.
-  (5) Seams between polygons are hidden by a 0.6 px stroke in the fill colour. (6) Guides and the orientation flange of the SVG
-  renderer are not drawn.
-- **Open.** (a) The depth-to-zoom map (0, 2, 4, 6) is a convention for the tests, not read from the viewer. (b) Whether a
-  coarse field should instead aggregate to a mean colour when sub-pixel (a mip-map) needs the author. (c) The vector page does not
-  yet do group or comparison images, nor per-slice evidence beyond 25 rows. (d) Cross-platform: raster tiles are Pillow output
-  and not byte-compared. (e) Label collisions are not resolved (a label is drawn where the slice is wide enough).
+  (the inverse tone map adds), conserving each channel's total; a page refuses levels files on different basemap versions.
+  Vector pages recolour from the migrated file; the raster pyramid is re-rendered by the build tool.
+- **Deviations from the lead's design, and why.** (1) No parent fallback: replaced by area-mean aggregates (above), by ruling.
+  Aggregates group by pixel cell within a ring, not within a sector (fields are placed by axes angle, not inside their sector's
+  arc). (2) Draw order is by layer (`sector`, `aggregate`, `field`, `fine`). (3) The slice index (id to angle and radius) sits in
+  the archive metadata so the viewer can fly to a domain before its tile loads; geometry only. (4) Seams between polygons are
+  hidden by a 0.6 px stroke in the fill colour. (5) Guides and the flange of the SVG renderer are not drawn. (6) Aggregate members
+  are coded as indices into the sorted slice ids (the first version, with ids as text, made the 200 px load 3.0x the 4096 px one).
+- **Open.** (a) Cross-platform: raster tiles are Pillow output, not byte-compared. (b) Grain (claimed potential) of an
+  aggregate is the members' area-weighted claimed red; not covered by the downsample test, which compares solid colour. (c) A
+  hull is the members' bounding sector widened to a pixel, so it may colour gaps between sparse members (the shares keep the mean
+  right, the shape is approximate). (d) Rows in group and comparison views.

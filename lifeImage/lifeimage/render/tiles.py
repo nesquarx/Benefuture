@@ -6,16 +6,15 @@ quadtree pyramid z/x/y of 256 px tiles. Every slice is a polygon (arcs sampled s
 
 Screen-space level of detail. A tile at zoom z holds the slices whose on-screen arc width (at mid radius) and radial depth are
 both at least `tiles.min_slice_px` pixels at that zoom (`visible`), so the colouring is full detail for the resolution and
-`max_zoom` is where everything that exists is shipped. Two kinds of slice are not shipped when too narrow, with different
-fallbacks (a deviation from the one-line LI.52 rule, evidence-driven):
- - a fine slice is drawn as its parent: the hidden children of one parent are merged into runs, each run one `fallback`
-   polygon (the hull of the run's arcs and radial span) carrying the parent's id; the parent's level already aggregates its
-   children (LI.51, `levels._fold`);
- - a coarse field has no such parent (a sector is not the aggregate of its fields: LI.51 aggregates one step, fine to coarse),
-   so a field too narrow to show is simply not drawn (it is under a pixel by construction). Sectors are always wide enough.
+`max_zoom` is where everything that exists is shipped. A slice too narrow to ship is not dropped and not drawn as its
+parent (the parent's level aggregates its children, LI.51, but the children do not sit over the parent's area, and the parent's
+colour is not the mean of what the area shows). Full detail for a resolution is a full-detail render downsampled to it, so
+hidden slices of one ring that fall in the same pixel-sized cell (arc position and radius, `tiles.min_slice_px`) become one
+`aggregate` polygon: the hull of the members' arcs and radial spans, carrying the member ids (`m`: indices into the sorted slice ids of the archive metadata, largest share first) and each
+member's share of the hull's area (`a`: ten-thousandths). Its colour is the members' rendered colours averaged by area in linear light and encoded again
+(`aggregate_colour`), the rest of the hull being black. Selection and search resolve the members on zoom. Sectors are always wide enough.
 
-Features carry domain ids only (layers `sector`, `field`, `fallback`, `fine`, drawn in that order; tags `id`, and `p`, the
-parent, on fine slices); colours come from a per-entity levels file joined at view time, so tiles are public and disclosure
+Features carry domain ids only (layers `sector`, `aggregate`, `field`, `fine`, drawn in that order; tag `id`, and `m`, `a` on aggregates); colours come from a per-entity levels file joined at view time, so tiles are public and disclosure
 decides which levels file exists. Tiles are Mapbox Vector Tiles (hand-encoded protobuf, no dependency; checked against
 `mapbox-vector-tile` and `pmtiles` readers) in a PMTiles v3 archive.
 
@@ -39,7 +38,7 @@ ARC_TOL_PX = gv.governed("tiles.arc_tolerance_px")
 MVT_EXTENT = 4096
 MVT_BUFFER = 64  # tile units (4 px) kept outside the tile so polygons meet without seams
 DEPTH_ZOOM = (0, 2, 4, 6)  # the pyramid zoom each interactive depth (disc, sector, field, fine domain) is read at
-LAYERS = ("sector", "field", "fallback", "fine")
+LAYERS = ("sector", "aggregate", "field", "fine")
 MAX_ZOOM_CAP = 12
 
 
@@ -289,51 +288,66 @@ class Pyramid:
     meta: dict = field(default_factory=dict)
 
 
-def _hidden_runs(bm, z):
-    """[(parent id, a0, a1, r0, r1)]: hidden fine children of each parent merged where they touch (no visible child between)."""
+def hidden_clusters(bm, z):
+    """[[members]]: the slices too narrow to ship at zoom z, grouped by ring kind (fine or field) and pixel-sized cell: arc
+    position and radius, each `MIN_SLICE_PX` across, so one cluster is about one pixel of the render."""
     ext = bm.extent
     k = ppu(z, ext)
-    kids = {}
-    for s in bm.fine.values():
-        kids.setdefault(s.parent, []).append(s)
-    runs = []
-    for pid, ss in sorted(kids.items()):
-        base = bm.slices[pid].start
-        ss = sorted(ss, key=lambda s: ((s.start - base) % 360, s.id))
-        cur = None
-        for s in ss:
-            rel = (s.start - base) % 360
-            if visible(s, z, ext):
-                cur = None
-                continue
-            gap_px = (rel - cur[2]) * math.pi / 180 * (s.r0 + s.r1) / 2 * k if cur else None
-            if cur and gap_px <= MIN_SLICE_PX:
-                cur[2], cur[3], cur[4] = rel + s.width, min(cur[3], s.r0), max(cur[4], s.r1)
-            else:
-                cur = [pid, rel, rel + s.width, s.r0, s.r1]
-                runs.append(cur)
-        # relative angles back to absolute
-    return [(p, base_of(bm, p) + a, base_of(bm, p) + b, r0, r1) for p, a, b, r0, r1 in runs]
+    cells = {}
+    for s in [*bm.slices.values(), *bm.fine.values()]:
+        if s.ring == "sector" or visible(s, z, ext):
+            continue
+        rm = (s.r0 + s.r1) / 2
+        rc = (math.floor(rm * k / MIN_SLICE_PX) + 0.5) * MIN_SLICE_PX / k
+        mid = (s.start + s.width / 2) % 360
+        key = (s.ring, math.floor(math.radians(mid) * rc * k / MIN_SLICE_PX), math.floor(rm * k / MIN_SLICE_PX))
+        cells.setdefault(key, []).append(s)
+    return [sorted(v, key=lambda s: s.id) for _, v in sorted(cells.items())]
 
 
-def base_of(bm, pid):
-    return bm.slices[pid].start
+def _area(s):
+    return 0.5 * math.radians(s.width) * (s.r1 ** 2 - s.r0 ** 2)
+
+
+def cluster_hull(members, k):
+    """(a0, a1, r0, r1, [(id, share of the hull's area)]) of a cluster at k pixels per unit: the members' arcs and radial
+    spans, widened to at least `MIN_SLICE_PX` each way (a hull thinner than a pixel cannot be coded at tile precision, and is
+    the pixel whose colour it averages), angles unwrapped around the first member's centre."""
+    mids = [(s.start + s.width / 2) % 360 for s in members]
+    ref = mids[0]
+    rel = [((m - ref + 180) % 360) - 180 for m in mids]
+    a0 = ref + min(r - s.width / 2 for r, s in zip(rel, members))
+    a1 = ref + max(r + s.width / 2 for r, s in zip(rel, members))
+    r0, r1 = min(s.r0 for s in members), max(s.r1 for s in members)
+    rc = (r0 + r1) / 2
+    pad = 0.25 * MIN_SLICE_PX / k  # members sit strictly inside the hull, clear of tile quantisation
+    r0, r1 = r0 - pad, r1 + pad
+    a0, a1 = a0 - math.degrees(pad / rc), a1 + math.degrees(pad / rc)
+    dr = MIN_SLICE_PX / k - (r1 - r0)
+    if dr > 0:
+        r0, r1 = r0 - dr / 2, r1 + dr / 2
+    da = math.degrees(MIN_SLICE_PX / (rc * k)) - (a1 - a0)
+    if da > 0:
+        a0, a1 = a0 - da / 2, a1 + da / 2
+    hull = 0.5 * math.radians(a1 - a0) * (r1 ** 2 - r0 ** 2)
+    return a0, a1, r0, r1, [(s.id, _area(s) / hull) for s in members]
 
 
 def build_zoom(bm, z):
     """{(x, y): {layer: [(tags, ring)]}} for zoom z."""
     ext, n = bm.extent, 2 ** z
+    order = {i: j for j, i in enumerate(sorted([*bm.slices, *bm.fine]))}
     polys = []  # (layer, tags, polygon)
     for s in sorted([*bm.slices.values(), *bm.fine.values()], key=lambda s: s.id):
         if not visible(s, z, ext):
             continue
         layer = "fine" if s.ring == "fine" else s.ring
-        tags = {"id": s.id}
-        if s.ring == "fine":
-            tags["p"] = s.parent
-        polys.append((layer, tags, sector_polygon(s.start, s.start + s.width, s.r0, s.r1, z, ext)))
-    for pid, a0, a1, r0, r1 in _hidden_runs(bm, z):
-        polys.append(("fallback", {"id": pid}, sector_polygon(a0, a1, r0, r1, z, ext)))
+        polys.append((layer, {"id": s.id}, sector_polygon(s.start, s.start + s.width, s.r0, s.r1, z, ext)))
+    for members in hidden_clusters(bm, z):
+        a0, a1, r0, r1, shares = cluster_hull(members, ppu(z, ext))
+        shares = sorted(shares, key=lambda t: (-t[1], t[0]))
+        tags = {"m": ",".join(str(order[i]) for i, _ in shares), "a": ",".join(str(round(w * 10000)) for _, w in shares)}
+        polys.append(("aggregate", tags, sector_polygon(a0, a1, r0, r1, z, ext)))
     tiles, b = {}, MVT_BUFFER / MVT_EXTENT
     for layer, tags, poly in polys:
         xs, ys = [p[0] * n for p in poly], [p[1] * n for p in poly]
@@ -514,6 +528,7 @@ class PMTiles:
         self._root = _read_dir(data[q[0]:q[0] + q[1]])
         self._leaf = {}
         self._cache = {}
+        self.order = sorted(self.metadata.get("index", {}))
 
     def _entries(self):
         for e in self._root:
@@ -590,9 +605,50 @@ def _inside(pt, ring):
     return ins
 
 
+def _lin(c):
+    c /= 255.0
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _enc(x):
+    x = min(1.0, max(0.0, x))
+    return int(round(255 * (12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055)))
+
+
+def aggregate_members(tags, order):
+    """[(id, share of the hull's area)] of an aggregate's tags; `order` is the archive's sorted slice ids."""
+    return [(order[int(i)], int(w) / 10000) for i, w in zip(tags["m"].split(","), tags["a"].split(","))]
+
+
+def aggregate_colour(lf, tags, order):
+    """(r, g, b) of an aggregate: its members' rendered colours averaged by area share in linear light, then encoded."""
+    acc = [0.0, 0.0, 0.0]
+    for i, w in aggregate_members(tags, order):
+        v = lf["ids"].get(i)
+        if v and (v[0] or v[1] or v[2]):
+            for j, c in enumerate(colour_of(v)):
+                acc[j] += w * _lin(c)
+    return tuple(_enc(x) for x in acc)
+
+
+def feature_colour(lf, layer, tags, order):
+    if layer == "aggregate":
+        return aggregate_colour(lf, tags, order)
+    v = lf["ids"].get(tags["id"])
+    return colour_of(v) if v and (v[0] or v[1] or v[2]) else (0, 0, 0)
+
+
+def feature_claimed(lf, layer, tags, order):
+    """Claimed red (the grain) of a feature; an aggregate's is its members' by area share."""
+    if layer == "aggregate":
+        return sum(w * (lf["ids"].get(i) or [0] * 5)[4] for i, w in aggregate_members(tags, order))
+    v = lf["ids"].get(tags["id"])
+    return v[4] if v else 0.0
+
+
 def colour_at(archive, lf, z, wx, wy):
     """The solid colour the tiled render gives at the unit-square point (wx, wy) at zoom z: the topmost feature holding the point,
-    its colour from the levels file (a fallback feature carries its parent's id); black where none holds it or none is coloured."""
+    its colour from the levels file (an aggregate averages its members); black where none holds it or none is coloured."""
     n = 2 ** z
     x, y = min(n - 1, int(wx * n)), min(n - 1, int(wy * n))
     pt = ((wx * n - x) * MVT_EXTENT, (wy * n - y) * MVT_EXTENT)
@@ -600,8 +656,7 @@ def colour_at(archive, lf, z, wx, wy):
     for name in reversed(LAYERS):
         for f in layers.get(name, []):
             if any(_inside(pt, r) for r in f["rings"]):
-                v = lf["ids"].get(f["tags"]["id"])
-                return colour_of(v) if v and (v[0] or v[1] or v[2]) else (0, 0, 0)
+                return feature_colour(lf, name, f["tags"], archive.order)
     return (0, 0, 0)
 
 
@@ -641,3 +696,43 @@ def check_levels_ids(lf, valid):
     if missing:
         raise ValueError(f"levels file names ids the basemap does not have: {', '.join(missing[:5])}")
     return lf
+
+
+def _lum(level, k):
+    return -k * math.log(1.0 - min(level, 1 - 1e-12))
+
+
+def group_levels(lfs):
+    """The re-saturated sum of several levels files (LI.36 set operations, as `interactive.py`): per domain and channel the
+    luminosities add and the tone map applies once, so exposures compose as 1 - prod(1 - level) and a level never exceeds 1;
+    saturation is the luminosity-weighted mean of the members'."""
+    k = lfs[0]["tone_k"]
+    acc = {}
+    for lf in lfs:
+        for d, v in lf["ids"].items():
+            a = acc.setdefault(d, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            sums = [_lum(v[0], k), _lum(v[1], k), _lum(v[2], k), _lum(v[4], k)]
+            mass = sums[0] + sums[1] + sums[2]
+            for j in range(4):
+                a[j] += sums[j]
+            a[4] += mass * v[3]
+            a[5] += mass
+    ids = {d: [1 - math.exp(-a[0] / k), 1 - math.exp(-a[1] / k), 1 - math.exp(-a[2] / k), a[4] / a[5] if a[5] > 0 else 1.0,
+               1 - math.exp(-a[3] / k)] for d, a in sorted(acc.items())}
+    return {"kind": "levels", "v": 1, "basemap": lfs[0]["basemap"], "tone_k": k, "ids": ids}
+
+
+def compare_levels(a, b):
+    """{overlap, a_only, b_only}: levels files holding per domain and channel min(A, B), max(A - B, 0) and max(B - A, 0)
+    (as `interactive.compare_levels`; saturation follows the side or sides that carry the colour)."""
+    out = {n: {} for n in ("overlap", "a_only", "b_only")}
+    for d in sorted(set(a["ids"]) | set(b["ids"])):
+        x, y = a["ids"].get(d), b["ids"].get(d)
+        u, w = x or [0.0, 0.0, 0.0, 1.0, 0.0], y or [0.0, 0.0, 0.0, 1.0, 0.0]
+        ov = [min(u[j], w[j]) for j in (0, 1, 2)]
+        ao, bo = [max(u[j] - w[j], 0.0) for j in (0, 1, 2)], [max(w[j] - u[j], 0.0) for j in (0, 1, 2)]
+        sat = min(u[3], w[3]) if x and y else u[3] if x else w[3]
+        for name, ch, s in (("overlap", ov, sat), ("a_only", ao, u[3]), ("b_only", bo, w[3])):
+            if any(ch):
+                out[name][d] = [*ch, s, 0.0]
+    return {n: {"kind": "levels", "v": 1, "basemap": a["basemap"], "tone_k": a["tone_k"], "ids": ids} for n, ids in out.items()}

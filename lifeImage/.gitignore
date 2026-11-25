@@ -12,3 +12,6 @@ data/tiles/levels-*.json
 !data/tiles/levels-p023.json
 data/tiles/offline/*
 !data/tiles/offline/p023-*.html
+
+# ICATUS calibration anchors (LI.19): local only, never shipped
+data/calibration/
