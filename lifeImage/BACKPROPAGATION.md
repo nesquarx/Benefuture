@@ -100,6 +100,11 @@ deleted. Numbering is stable (LI.n).
   shipped: the library consumes events either preformatted or categorised by an agent. The shipping licence rule (LI.57)
   does not bind them; their terms need only allow internal research use. Data constraints still hold (anonymised or
   synthetic, no identities kept except public figures, no real underage people identified). PLAN.
+- **LI.62** (2026-11-25; author, extends LI.61) Event generation sources are global and multilingual, and include social
+  media data available for research use (identities redacted; only derived, de-identified features kept, apart from public
+  figures). The outcome is a dataset and generator that produce realistic events as text or preformatted records, covering
+  essentially any part of the circle and re-targetable as domains are refined; generator and verifier are trained
+  adversarially, the verifier judging real-world-ness against calibration sources. PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
