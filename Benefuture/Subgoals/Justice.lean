@@ -597,4 +597,58 @@ theorem credence_restraint_liability_le_binary (conf kappa cost : ℝ) :
   rw [h2, credence_restraint_liability_certain] at h
   exact h
 
+/-- Restraint-balance alarm (ruling 8.170 e; `L115`, `L117` J): the justice process is flagged flawed
+    when, over at least `minAudits` audited verdicts, the findings of false restraint reach `ratio`
+    times the findings of true restraint (default `ratio = 1`: false restraints must stay below true
+    ones). It reads audited outputs only; no hidden confidence enters. -/
+def restraint_balance_flawed (minAudits falseN trueN : ℕ) (ratio : ℝ) : Prop :=
+  minAudits ≤ falseN + trueN ∧ ratio * (trueN : ℝ) ≤ (falseN : ℝ)
+
+/-- With the default ratio, false restraints at or above true ones raise the alarm. -/
+theorem restraint_balance_flawed_of_false_ge_true (minAudits falseN trueN : ℕ) (ratio : ℝ)
+    (hr : ratio ≤ 1) (hn : minAudits ≤ falseN + trueN) (h : trueN ≤ falseN) :
+    restraint_balance_flawed minAudits falseN trueN ratio := by
+  refine ⟨hn, ?_⟩
+  have ht : (0:ℝ) ≤ trueN := Nat.cast_nonneg _
+  have hf : (trueN : ℝ) ≤ falseN := by exact_mod_cast h
+  nlinarith
+
+/-- Counterexample guard: a nominal process (false below true, ratio at least 1) is not flagged. -/
+theorem restraint_balance_not_flawed_when_false_lt_true (minAudits falseN trueN : ℕ) (ratio : ℝ)
+    (hr : 1 ≤ ratio) (h : falseN < trueN) :
+    ¬ restraint_balance_flawed minAudits falseN trueN ratio := by
+  rintro ⟨_, h2⟩
+  have hf : (falseN : ℝ) + 1 ≤ trueN := by exact_mod_cast h
+  have ht : (0:ℝ) ≤ trueN := Nat.cast_nonneg _
+  nlinarith
+
+/-- Too few audits to judge: no alarm. -/
+theorem restraint_balance_not_flawed_below_min_audits (minAudits falseN trueN : ℕ) (ratio : ℝ)
+    (h : falseN + trueN < minAudits) :
+    ¬ restraint_balance_flawed minAudits falseN trueN ratio := by
+  rintro ⟨h1, _⟩
+  omega
+
+/-- More false findings never lower the alarm. -/
+theorem restraint_balance_flawed_mono (minAudits f1 f2 trueN : ℕ) (ratio : ℝ) (hle : f1 ≤ f2)
+    (h : restraint_balance_flawed minAudits f1 trueN ratio) :
+    restraint_balance_flawed minAudits f2 trueN ratio := by
+  obtain ⟨h1, h2⟩ := h
+  refine ⟨by omega, ?_⟩
+  have : (f1 : ℝ) ≤ f2 := by exact_mod_cast hle
+  linarith
+
+/-- Voice of a panel expert (`L115` `LqCfdBfDm`, minority clusters get `VW↑`): a minority-cluster
+    expert's vote weight is raised by `uplift` (never lowered), a majority expert's is unchanged. -/
+noncomputable def panel_voice (vw uplift : ℝ) (minority : Bool) : ℝ :=
+  if minority then vw * max 1 uplift else vw
+
+theorem panel_voice_minority_ge (vw uplift : ℝ) (h : 0 ≤ vw) : vw ≤ panel_voice vw uplift true := by
+  unfold panel_voice
+  simp only [if_true]
+  nlinarith [le_max_left 1 uplift]
+
+theorem panel_voice_majority_unchanged (vw uplift : ℝ) : panel_voice vw uplift false = vw := by
+  simp [panel_voice]
+
 end Benefuture.Subgoals

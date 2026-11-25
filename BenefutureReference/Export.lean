@@ -483,6 +483,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_credence_restraint_liability] def credenceRestraintLiability (conf kappa cost : Float) : Float :=
   credence_restraint_liability_ref conf kappa cost
 
+-- 8.170 / L115, L117: restraint-balance alarm over audited findings; minority uplift of panel voices
+@[export bf_restraint_balance_flawed] def restraintBalanceFlawed (minAudits falseN trueN ratio : Float) : UInt8 :=
+  if restraint_balance_flawed_ref minAudits.toUInt64.toNat falseN.toUInt64.toNat trueN.toUInt64.toNat ratio then 1 else 0
+
+@[export bf_panel_voice] def panelVoice (vw uplift : Float) (minority : UInt8) : Float :=
+  panel_voice_ref vw uplift (minority != 0)
+
 -- 8.133 & 8.155 / L83: RA estimating domain value per (cost + audit), commons reserve, contraction factor
 @[export bf_ra_value_per_cost] def raValuePerCost (measuredGain resourceCost auditCost fallback : Float) : Float :=
   ra_value_per_cost_ref measuredGain resourceCost auditCost fallback

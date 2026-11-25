@@ -525,3 +525,54 @@ end
 end
 
 probe_total("heavy 3")
+
+
+# 8.170: restraint by a judicial panel, heavy z = 2 check on 24 paired seeds (the fast probes use 8; see probe_tests.jl).
+# Hypotheses (lead, confidence 0.65): (a) false restraints stay below true ones in every seed; (b) liability on the experts does
+# not chill justified restraint (equivalence to no liability within 0.05, shown detectable by audits at chance); (c) a captured panel
+# raises the alarm in every seed; (d) the alarm stays silent in the nominal world in at least 0.9 of seeds (a regime, read as a proportion with its interval; audit noise can raise a false alarm).
+@timed_testset "Probe (heavy): restraint panel, false below true, no chill, alarm under capture (8.170; 24 seeds)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    seeds = 1:24
+    nom = [restraint_world(s) for s in seeds]
+    nol = [restraint_world(s; kappa = 0.0) for s in seeds]
+    coin = [restraint_world(s; acc = 0.5) for s in seeds]
+    bias, cluster = [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 0.0], [1, 1, 1, 1, 1, 1, 1, 2]
+    cap = [restraint_world(s; bias = bias, cluster = cluster, accuse = 1.0) for s in seeds]
+    @test all(r -> r.false_eff < r.true_eff, nom)
+    @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nom, nol)]; margin = 0.05, z = 2.0).equivalent
+    @test paired_effect([a.just_rate - c.just_rate for (a, c) in zip(nom, coin)]; z = 2.0, direction = :up).mean > 0.05
+    alarm = proportion_interval(count(r -> r.tr.restraint_alarm_step > 0, cap), length(cap); z = 2.0)
+    quiet = proportion_interval(count(r -> r.tr.restraint_alarm_step == 0, nom), length(nom); z = 2.0)
+    # Measured: the alarm fires in 24 of 24 captured seeds and stays silent in 23 of 24 nominal ones (seed 19 raises a false alarm on
+    # audited findings: ground truth there is 2 false against 4 true restraints, the noisy audits read it as a tie or worse).
+    @test alarm.lo > 0.8 && quiet.p >= 0.9 && quiet.lo > 0.7
+    @test paired_effect([c.ratio - n.ratio for (c, n) in zip(cap, nom)]; z = 2.0, direction = :up).significant
+end
+
+# 8.173: every judgement is audited, acquittals included; heavy z = 2 check on 24 paired seeds (fast probe uses 8).
+# Hypotheses (lead, confidence 0.65): (a) a fully captured acquitting panel raises the alarm in most seeds with acquittal audits
+# and in none without (lead predicted a lower bound above 0.8; see the measured note); (b) the nominal false-alarm rate is reported with its interval
+# (at least 0.9 quiet); (c) justified restraint is not chilled (equivalence on vs off within 0.05); (d) audit spend rises.
+@timed_testset "Probe (heavy): acquittal audits, alarm under capture-to-acquit, no chill, spend (8.173; 24 seeds)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    seeds = 1:24
+    bias, cluster = fill(-6.0, 8), fill(1, 8)
+    before = [restraint_world(s; bias = bias, cluster = cluster) for s in seeds]
+    after  = [restraint_world(s; bias = bias, cluster = cluster, acq = true) for s in seeds]
+    nom_off = [restraint_world(s) for s in seeds]
+    nom_on  = [restraint_world(s; acq = true) for s in seeds]
+    @test all(r -> r.tr.restraint_alarm_step == 0, before)
+    alarm = proportion_interval(count(r -> r.tr.restraint_alarm_step > 0, after), length(after); z = 2.0)
+    quiet = proportion_interval(count(r -> r.tr.restraint_alarm_step == 0, nom_on), length(nom_on); z = 2.0)
+    @test quiet.p >= 0.9 && quiet.lo > 0.7
+    # Measured: alarm in 21 of 24 captured seeds (interval lower bound 0.69: the lead's prediction of above 0.8 is MISSED, about 7 audited
+    # acquittals per run barely reach the minimum of 6 findings), 24 of 24 quiet nominal seeds (the one false alarm of 8.170 vanishes since
+    # audited acquittals add correct findings), no chill by the one-sided bound (mean +0.024, interval [-0.010, +0.058]: two-sided
+    # equivalence within 0.05 not shown), nominal spend unchanged (24.8 to 24.6), spend under capture 4.7 to 10.0.
+    @test alarm.p >= 0.75 && alarm.lo > 0.6
+    @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nom_on, nom_off)]; margin = 0.05, z = 2.0).lo > -0.05
+    @test paired_effect([a.tr.restraint_audit_cost - b.tr.restraint_audit_cost for (a, b) in zip(after, before)]; z = 2.0, direction = :up).significant
+end

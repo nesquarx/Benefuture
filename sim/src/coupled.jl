@@ -87,6 +87,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                      shadow::Bool = false,
                      incumbent_pv::Union{Nothing,AbstractVector{<:Real}} = nothing,
                      add_rule_epoch::Integer = 0,
+                     unified::Union{Bool,UnifiedParams} = false,
                      loud::Bool = econ.loud)
     check(epoch >= 1 && econ.toy.steps >= epoch, "epoch must be positive and within total steps")
     check(m5_decisions >= 0 && add_rule_epoch >= 0, "m5_decisions and add_rule_epoch must be non-negative")
@@ -110,6 +111,10 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     base_dec = m5_decisions ÷ n_epochs
     rem_dec = m5_decisions % n_epochs
 
+    # Unified world (phase A, 8.174): one trust network drives the voters' contacts, the rumour, the claims, the adoption vote and
+    # the economy's hazard inputs; clusters are read from the interaction it measured (`unified_record!`).
+    U = unified === false ? nothing : unified_setup(econ, unified === true ? UnifiedParams() : unified, n_epochs; seed = seed)
+    U === nothing || (econ = U.econ)
     na = length(econ.agents)
     nd = count(econ.known)
     grng = Xoshiro(hash((seed, :coupled_gov)))
@@ -183,6 +188,8 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
 
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
+        U === nothing || (gp = unified_gp(U, gp); unified_record!(U, ep, reputation);
+                              U.epochs[end].interaction > 0 || degrade!("emergent clusters", "one cluster", "no interaction measured yet (no source had a record to be heard)", ep))
 
         ep_start = (ep - 1) * epoch + 1
         ep_end = ep * epoch
@@ -369,8 +376,10 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         if gp.ih_vote && gp.deliberation
             rep_v = max.(reputation, 0.0)
             sum(rep_v) <= 0 && (rep_v = fill(1e-3, size(rep_v)))
-            readings = run_m5(_with_m5_vote(gp, rep_v, k); seed = Int(hash((seed, :coupled_vote, ep)) & 0x7fffffff),
-                              records = src_rec, truths = [read_truth]).last_signal
+            vote_run = run_m5(_with_m5_vote(gp, rep_v, k); seed = Int(hash((seed, :coupled_vote, ep)) & 0x7fffffff),
+                              records = src_rec, truths = [read_truth])
+            U === nothing || unified_hear!(U, vote_run.heard)
+            readings = vote_run.last_signal
         end
         votes = [begin
             s_i = readings === nothing ? read_truth + gp.camp_bias[i] + choice_noise(crng, caps[i, k]) : readings[i]
@@ -413,6 +422,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 end
                 tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff), records = src_rec)
                 # IH weighs sources by their records: carry them across epochs (live, decayed by their own rule), not a fresh table.
+                U === nothing || unified_hear!(U, tr_m5.heard)
                 gp.deliberation && gp.info_handling && (src_rec = tr_m5.records)
                 append!(m5_trace, tr_m5.final_trace)
             end
@@ -483,5 +493,6 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
      promotion_epoch = shadow_promoted ? adopt_ep : 0,
      promotion_time = shadow_promoted ? (add_rule_epoch > 0 ? adopt_ep - add_rule_epoch : adopt_ep) : 0,
      degraded = degraded,
+     unified = U === nothing ? nothing : unified_report(U),
      econ_trace = continuous ? tr_all : nothing)
 end

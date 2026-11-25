@@ -301,4 +301,37 @@ end
     @test equivalent([n.worst_drop - o.worst_drop for (o, n) in P]; margin = 3.0, side = :upper).equivalent
 end
 
+# The unified world, phase A (P56 heavy; fast version in probe_tests.jl). Predictions (lead, before measuring): clusters recover the planted
+# communities in at least 80% of seeds at the last epoch (0.7); the lie's reach follows the one network (z = 2, paired); the Goal pattern's
+# one-sided loss of the unified world against the coupled world alone is below 3 (0.6; the unified economy takes its hazard inputs from the
+# claims on the network, a deliberate difference, not tuned to rescue). Seed counts follow precision (`seeds_until_stable`).
+@timed_testset "Probe: unified world, clusters recover planted communities, the lie follows the network, Goal pattern guard (P56 heavy)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    m3 = run_m3c(econ; seed = 1)
+    function reach(seed)
+        net = build_trust_network(48; seed); liars = [i for i in 1:48 if net.planted[i] == 1][1:8]; h = filter(i -> !(i in liars), 1:48)
+        kw = (; m3, econ, ih = false, seed, steps = 8, liars_override = liars, run_economy = false, signal_σ = 6.0, claims_per_step = 10)
+        lc = [count(in(liars), net.contacts[i]) for i in h]
+        cor(lc, run_ih_world(IhWorldParams(; kw..., network = net, rounds = 2)).voter_led_astray[h]) - cor(lc, run_ih_world(IhWorldParams(; kw...)).voter_led_astray[h])
+    end
+    r = seeds_until_stable(reach; tol = 0.1, min_seeds = 8, max_seeds = 16)
+    @info "P56 lie reach, unified minus separate (corr)" n = r.n stable = r.stable mean = r.mean se = r.se
+    @test paired_effect(r.values; direction = :up).significant
+    runs = Dict{Int,Any}()
+    both(seed) = get!(runs, seed) do
+        (run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30),
+         run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(liar_community = 1)))
+    end
+    g = seeds_until_stable(seed -> (o = both(seed); (o[2].success.floor_u + o[2].success.floor_h) - (o[1].success.floor_u + o[1].success.floor_h)); tol = 1.0, min_seeds = 8, max_seeds = 16)
+    @info "P56 Goal pattern difference (unified - coupled alone)" n = g.n stable = g.stable mean = g.mean se = g.se
+    @test equivalent(-g.values; margin = 3.0, side = :upper).equivalent
+    rec = [both(s)[2].unified.epochs[end].agreement > 0.6 for s in g.seeds]
+    pi = proportion_interval(count(rec), length(rec))
+    @info "P56 cluster recovery at the last epoch" n = length(rec) k = count(rec) interval = (pi.lo, pi.hi)
+    @test pi.lo > 0.6
+end
+
 probe_total("heavy 1")

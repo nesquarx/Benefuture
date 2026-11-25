@@ -121,6 +121,8 @@ struct M5Params
     scope_within_harm::Bool
     scope_locals::Vector{Int}
     ih_vote::Bool              # the composed world's candidate-adoption vote reads through this deliberation (`run_coupled`; world wiring, not a rule)
+    network::Any               # nothing, or each voter's contacts (the unified world's trust network): the only sources a voter hears (world)
+    defer_voter::Vector{Float64}  # per voter, the share who defer to what they hear (the network's measured rumour adoption; empty: `advice_defer` for all)
 end
 
 function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, impact_weight::Real = 1.0,
@@ -149,7 +151,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
                   bind_conf_deny::Real = 0.1, attest_min_records::Integer = 5, attest_pooled::Bool = false,
                   p_newcomer::Real = 0.0, p_reveal::Real = 0.05, p_sybil_attempt::Real = 1.0,
                   nested_scopes::Bool = false, scope_share_min::Real = 0.8, scope_local_share::Real = 1.0,
-                  scope_within_harm::Bool = true, scope_locals = Int[], ih_vote::Bool = false)
+                  scope_within_harm::Bool = true, scope_locals = Int[], ih_vote::Bool = false,
+                  network = nothing, defer_voter = Float64[])
     domains = collect(Int, domains)
     check(!isempty(domains) && all(d -> 1 <= d <= size(m3.relevance_leaf, 2), domains), "domains must be leaves of the run")
     check(decisions >= 1 && 0 <= p_delegate <= 1 && 0 < cap <= 1, "decisions positive, delegation chance in [0, 1], cap in (0, 1]")
@@ -210,7 +213,8 @@ function M5Params(m3, domains; base::Real = 1.0, expertise_weight::Real = 5.0, i
              Float64(bind_miss), collect(Int, bind_compromised), Float64(bind_conf_compromised),
              Float64(bind_conf_affirm), Float64(bind_conf_deny), Int(attest_min_records), attest_pooled,
              Float64(p_newcomer), Float64(p_reveal), Float64(p_sybil_attempt),
-             nested_scopes, Float64(scope_share_min), Float64(scope_local_share), scope_within_harm, scope_locals_vec, ih_vote)
+             nested_scopes, Float64(scope_share_min), Float64(scope_local_share), scope_within_harm, scope_locals_vec, ih_vote,
+             network === nothing ? nothing : [collect(Int, c) for c in network], collect(Float64, defer_voter))
 end
 
 """
@@ -276,7 +280,8 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     # Clean deliberation: each voter's contacts (a fixed social network), each domain's models, and
     # every source's full record of published readings on apparent decisions (right, total).
     nrng = Xoshiro(hash((seed, :deliberation)))
-    contacts = [p.deliberation ? [j for j in randperm(nrng, na)[1:min(p.n_contacts + 1, na)] if j != i][1:min(p.n_contacts, na - 1)] : Int[] for i in 1:na]
+    contacts = p.network !== nothing ? p.network : [p.deliberation ? [j for j in randperm(nrng, na)[1:min(p.n_contacts + 1, na)] if j != i][1:min(p.n_contacts, na - 1)] : Int[] for i in 1:na]
+    p.network === nothing || check(length(contacts) == na && all(c -> all(j -> 1 <= j <= na, c), contacts), "one contact list per voter, among the voters")
     nd = size(p.reputation, 2)
     advw = advice_weights(p, na, nd, Xoshiro(hash((seed, :advice))))  # weight on advice per person and domain (8.63)
     minds_trace = Float64[]
@@ -502,7 +507,7 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
                 # The social network's information handling (L134 IH: SourceVerify by Re(Dn), and a
                 # ContentionMap) exposes every source on each side of the question, weighed by its
                 # record; without it, a voter hears its contacts.
-                srcs = p.info_handling ? contention_map_for(i) : contacts[i]
+                srcs = p.info_handling && p.network === nothing ? contention_map_for(i) : contacts[i]
                 # The full map heard in one call (Lean `heard_weights_ref`): weaker sources at the
                 # novelty chance, a mean-field shortcut; a few contacts keep a draw each.
                 wc = p.info_handling ? heard_weights(pw[srcs], mine, p.p_novel) : [hear(lo(person_rec[j, k])) for j in srcs]
@@ -532,7 +537,7 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
                 own_pub = pub.(1:na)
                 push!(minds_trace, mean(sign(reading[i]) != sign(signal[i]) for i in 1:na))
                 signal = reading
-            elseif p.info_handling && isempty(p.tag_liars)
+            elseif p.info_handling && isempty(p.tag_liars) && p.network === nothing
                 # Every voter already hears every origin directly, once: further rounds add no origin,
                 # so the tagged reading is the first round's (exact shortcut), cast with full weight.
                 tag_tally = sum((held[i] * ((i in p.colluders && defect) ? 1.0 : sign(reading[i])) for i in 1:na if !delegated[i]); init = 0.0)
@@ -750,6 +755,7 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
      weight_gap = weight_gap[], tags_falsified = tags_false[], tags_detected = tags_caught[],
      launderers_flagged = [j for j in p.tag_liars if flagged[j]], honest_flagged = count(flagged[j] && !liar[j] for j in 1:na),
      records = person_rec, maker_share = maker_share, last_signal = last_signal,
+     heard = (sources = heard_srcs, weights = heard_wc),   # the final decision's sources per voter and the weight each was given (measured interaction)
      sybil_forks_admitted = sybil_admitted, sybil_forks_blocked = sybil_blocked,
      newcomers_admitted = newcomers_adm, newcomers_refused = newcomers_ref,
      attestation_skill = tn_active ? copy(tn_weights) : Float64[],
@@ -767,15 +773,19 @@ take_advice(w, total, own_side, heard) = (1 - w) * total * own_side + w * heard
 
 "Weight on advice per person and domain (8.63; docs/CALIBRATION.md): a mixture of stay, average, defer and Beta."
 function advice_weights(p, na, nd, rng)
-    rest = 1 - p.advice_stay - p.advice_avg - p.advice_defer
-    draw() = begin
+    dv = p.defer_voter
+    check(isempty(dv) || length(dv) == na, "one defer share per voter, or none")
+    draw(i) = begin
+        defer = isempty(dv) ? p.advice_defer : dv[i]
+        avg = isempty(dv) ? p.advice_avg : max(1 - p.advice_stay - defer, 0.0)
+        rest = 1 - p.advice_stay - avg - defer
         u = rand(rng)
         u < p.advice_stay ? 0.0 :
-        u < p.advice_stay + p.advice_avg ? 0.5 :
-        u < p.advice_stay + p.advice_avg + p.advice_defer ? 1.0 :
+        u < p.advice_stay + avg ? 0.5 :
+        u < p.advice_stay + avg + defer ? 1.0 :
         rest > 0 ? beta_draw(rng, p.advice_α, p.advice_β) : 1.0
     end
-    [draw() for _ in 1:na, _ in 1:nd]
+    [draw(i) for i in 1:na, _ in 1:nd]
 end
 
 "Gamma(a, 1) by Marsaglia and Tsang (2000), boosted for a < 1; Beta as a ratio of gammas."
