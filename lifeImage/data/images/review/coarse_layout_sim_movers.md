@@ -4,43 +4,43 @@ layout_sim_v0; angle shift of the simulation's state from the axes angle, neighb
 
 | field | axes angle | sim angle | shift | neighbours before | neighbours after |
 |---|---|---|---|---|---|
-| Public health and epidemiology | 126.87 | 10.73 | 116.14 | Astronomy and space science / Journalism and reporting | Wildlife and conservation / Agricultural, forestry and fishing work |
-| Negligence and recklessness | 213.69 | 328.57 | 114.88 | Religious community and clergy / Language learning and use | Clothing and footwear / Violence and assault |
-| Theatre, dance and performance | 338.2 | 245.43 | 92.77 | Tourism and leisure travel / Animal care and husbandry | Marriage and cohabitation / Family occasions and traditions |
-| Vocational and on-the-job training | 45.0 | 136.35 | 91.35 | Security and protective services / Exploitation and trafficking | Tax and regulatory compliance / Mathematics |
-| Visual arts and design | 323.13 | 241.43 | 81.7 | Second-hand, repair and reuse / Accidents and injuries | Mental health and wellbeing / Stalking and privacy violation |
-| Early childhood education | 333.43 | 255.47 | 77.97 | Fishing, hunting and foraging / Buying food and groceries | Celebrations and festivals / Charity and giving |
-| Media, publishing and creative professions | 130.6 | 205.98 | 75.38 | Advocacy and civil society / Finance and accounting work | Arts, music and religion studies / Social media and online communities |
-| Borrowing and debt | 161.57 | 235.46 | 73.9 | News and information media / Misinformation and defamation | Listening to music / Friendship |
-| Poverty and scarcity | 326.31 | 257.09 | 69.22 | Theft and property crime / Disability and adaptation | Charity and giving / Funerals and memorial |
-| Healthcare professions | 57.99 | 354.78 | 63.21 | Urban planning and infrastructure / Biotechnology and biomedical engineering | Moving house and relocation / Retail shopping |
-| Museums, heritage and cultural visits | 315.0 | 251.93 | 63.07 | Crafts and hobbies / Outdoor recreation | Dating and romantic partnership / Bereavement and grief |
-| Banking and payments | 146.31 | 208.62 | 62.31 | Linguistics and literary studies / Rights and justice | Hate, discrimination and abuse of rights / Counselling, therapy and social work |
-| Counselling, therapy and social work | 150.26 | 209.95 | 59.7 | Rights and justice / Exams and assessment | Banking and payments / Online harassment and bullying |
-| Medical care | 23.2 | 323.77 | 59.42 | Agricultural, forestry and fishing work / Elementary and manual labour | Exercise and fitness / Outdoor recreation |
-| Arts, music and religion studies | 146.31 | 205.69 | 59.38 | Statistics and data analysis / Linguistics and literary studies | Philosophical inquiry / Media, publishing and creative professions |
-| History and archaeology | 116.57 | 174.76 | 58.2 | Customer service / Unions and collective bargaining | Higher education / Anthropology and cultural studies |
-| Cybercrime | 135.0 | 192.34 | 57.34 | Insurance and risk cover / Software development | Linguistics and literary studies / Teaching and tutoring |
-| Journalism and reporting | 126.87 | 184.17 | 57.3 | Public health and epidemiology / Public administration and policy | Teaching profession / Exams and assessment |
-| Everyday digital tool use | 236.31 | 187.84 | 48.47 | Wedding and partnership formation / Retirement | Exams and assessment / Mediation and dispute resolution |
-| Personal and domestic services work | 14.04 | 327.87 | 46.17 | Finding and securing housing / Craft and skilled trades | Dining out and accommodation services / Second-hand, repair and reuse |
-| Linguistics and literary studies | 146.31 | 191.96 | 45.65 | Arts, music and religion studies / Banking and payments | Misinformation and defamation / Cybercrime |
-| Disasters and emergencies | 333.43 | 19.01 | 45.57 | Buying food and groceries / Care of older people | War, conflict and violence exposure / Weather, climate and adaptation |
-| Subsistence and own-use production | 315.0 | 0.19 | 45.19 | Home gardening / Pets and companion animals | Road safety and traffic / Fishing, hunting and foraging |
-| Anthropology and cultural studies | 135.0 | 179.93 | 44.93 | Job change and career moves / Corruption and bribery | History and archaeology / Teaching profession |
-| Extremism and terrorism | 135.0 | 90.94 | 44.06 | Corruption and bribery / Tax and regulatory compliance | Informal and gig work / Customer service |
+| Negligence and recklessness | 213.69 | 325.15 | 111.46 | Religious community and clergy / Language learning and use | Outdoor recreation / Disability and adaptation |
+| Public health and epidemiology | 126.87 | 20.73 | 106.14 | Astronomy and space science / Journalism and reporting | Environmental stewardship / Craft and skilled trades |
+| Theatre, dance and performance | 338.2 | 249.56 | 88.64 | Tourism and leisure travel / Animal care and husbandry | Dating and romantic partnership / Celebrations and festivals |
+| Vocational and on-the-job training | 45.0 | 131.57 | 86.57 | Security and protective services / Exploitation and trafficking | Software development / Computer science |
+| Visual arts and design | 323.13 | 241.13 | 82.0 | Second-hand, repair and reuse / Accidents and injuries | Clubs and community groups / Mental health and wellbeing |
+| Borrowing and debt | 161.57 | 234.76 | 73.2 | News and information media / Misinformation and defamation | Listening to music / Personal financial decisions |
+| Media, publishing and creative professions | 130.6 | 202.11 | 71.51 | Advocacy and civil society / Finance and accounting work | Arts, music and religion studies / Social media and online communities |
+| Early childhood education | 333.43 | 268.77 | 64.67 | Fishing, hunting and foraging / Buying food and groceries | Games and play / Hosting and hospitality |
+| Banking and payments | 146.31 | 210.33 | 64.02 | Linguistics and literary studies / Rights and justice | Literacy, numeracy and basic skills / Interpersonal conflict |
+| Museums, heritage and cultural visits | 315.0 | 256.14 | 58.86 | Crafts and hobbies / Outdoor recreation | Socialising and visiting / Funerals and memorial |
+| Counselling, therapy and social work | 150.26 | 208.6 | 58.34 | Rights and justice / Exams and assessment | Saving and investing / Literacy, numeracy and basic skills |
+| Healthcare professions | 57.99 | 2.43 | 55.56 | Urban planning and infrastructure / Biotechnology and biomedical engineering | Traffic offences and drunk driving / Road safety and traffic |
+| Medical care | 23.2 | 328.31 | 54.89 | Agricultural, forestry and fishing work / Elementary and manual labour | Violence and assault / Making and tinkering |
+| Everyday digital tool use | 236.31 | 182.64 | 53.67 | Wedding and partnership formation / Retirement | Linguistics and literary studies / News and information media |
+| Arts, music and religion studies | 146.31 | 199.83 | 53.52 | Statistics and data analysis / Linguistics and literary studies | Language learning and use / Media, publishing and creative professions |
+| Disasters and emergencies | 333.43 | 23.15 | 49.72 | Buying food and groceries / Care of older people | Elementary and manual labour / War, conflict and violence exposure |
+| History and archaeology | 116.57 | 165.86 | 49.3 | Customer service / Unions and collective bargaining | Higher education / Teaching profession |
+| Journalism and reporting | 126.87 | 173.8 | 46.93 | Public health and epidemiology / Public administration and policy | Anthropology and cultural studies / Cybercrime |
+| Subsistence and own-use production | 315.0 | 359.27 | 44.27 | Home gardening / Pets and companion animals | Hospitality and food service work / Retail shopping |
+| Gambling and betting | 198.43 | 242.19 | 43.76 | School education / Social media and online communities | Stalking and privacy violation / Wedding and partnership formation |
+| Personal and domestic services work | 14.04 | 331.61 | 42.42 | Finding and securing housing / Craft and skilled trades | Making and tinkering / Theft and property crime |
+| IT operations and networks | 74.05 | 115.39 | 41.34 | Policing and law enforcement / Ecology and environmental science | Business and management research / Workplace relations and teamwork |
+| Receiving income and transfers | 168.69 | 127.38 | 41.31 | Misinformation and defamation / Fraud, scams and deception | Welfare and social protection / Statistics and data analysis |
+| Cybercrime | 135.0 | 174.92 | 39.92 | Insurance and risk cover / Software development | Journalism and reporting / Exams and assessment |
+| Poverty and scarcity | 326.31 | 5.47 | 39.16 | Theft and property crime / Disability and adaptation | Driving / Waste and recycling |
 
 ## Named outliers
 
 | field | similarity to neighbours before | after | neighbours before | neighbours after |
 |---|---|---|---|---|
-| Agricultural, forestry and fishing work (agriculture) | 0.000 | 0.000 | Public transport / Medical care | Public health and epidemiology / Workplace safety |
-| Agricultural and food science (agriculture) | 0.227 | 0.000 | Biotechnology and biomedical engineering / Earth and planetary science | Civil engineering and construction design / Urban planning and infrastructure |
-| Arts, music and religion studies (arts) | 0.729 | 0.333 | Statistics and data analysis / Linguistics and literary studies | Philosophical inquiry / Media, publishing and creative professions |
-| Theatre, dance and performance (arts) | 0.000 | 0.000 | Tourism and leisure travel / Animal care and husbandry | Marriage and cohabitation / Family occasions and traditions |
-| Visual arts and design (arts) | 0.000 | 0.000 | Second-hand, repair and reuse / Accidents and injuries | Mental health and wellbeing / Stalking and privacy violation |
-| Finding and securing housing (housing) | 0.000 | 0.000 | Crop farming and horticulture / Personal and domestic services work | Hospitality and food service work / Commuting |
-| Mathematics (mathematics) | 1.677 | 0.000 | Research training and scholarship / Statistics and data analysis | Vocational and on-the-job training / Finance and accounting work |
-| Religious worship and practice (religion) | 0.500 | 0.211 | Spirituality and meditation / Interpersonal conflict | Culture and identity / Everyday conversation and messaging |
-| Religious community and clergy (religion) | 0.000 | 0.000 | Cheating and plagiarism / Negligence and recklessness | Creative writing / Meaning, values and purpose |
-| Statistics and data analysis (statistics) | 1.677 | 0.333 | Mathematics / Arts, music and religion studies | Job search and hiring / Computer science |
+| Agricultural, forestry and fishing work (agriculture) | 0.000 | 0.000 | Public transport / Medical care | Wildlife and conservation / Public transport |
+| Agricultural and food science (agriculture) | 0.608 | 0.357 | Biotechnology and biomedical engineering / Earth and planetary science | Manufacturing and production / Urban planning and infrastructure |
+| Arts, music and religion studies (arts) | 0.729 | 0.375 | Statistics and data analysis / Linguistics and literary studies | Language learning and use / Media, publishing and creative professions |
+| Theatre, dance and performance (arts) | 0.000 | 0.000 | Tourism and leisure travel / Animal care and husbandry | Dating and romantic partnership / Celebrations and festivals |
+| Visual arts and design (arts) | 0.000 | 0.000 | Second-hand, repair and reuse / Accidents and injuries | Clubs and community groups / Mental health and wellbeing |
+| Finding and securing housing (housing) | 0.000 | 0.000 | Crop farming and horticulture / Personal and domestic services work | Accidents and injuries / Shopping and errands |
+| Mathematics (mathematics) | 2.052 | 0.375 | Research training and scholarship / Statistics and data analysis | Research training and scholarship / Rights and justice |
+| Religious worship and practice (religion) | 0.500 | 0.000 | Spirituality and meditation / Interpersonal conflict | Counselling and therapy / Loneliness and social isolation |
+| Religious community and clergy (religion) | 0.000 | 0.333 | Cheating and plagiarism / Negligence and recklessness | Mentoring and peer support / Self-reflection and personal growth |
+| Statistics and data analysis (statistics) | 1.677 | 0.000 | Mathematics / Arts, music and religion studies | Receiving income and transfers / Cybersecurity |

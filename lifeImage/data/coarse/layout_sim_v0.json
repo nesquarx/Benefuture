@@ -1,275 +1,275 @@
 {
  "angles": {
-  "c.academic_dishonesty": 190.6216,
-  "c.accident_injury": 352.0921,
-  "c.ageing_body": 308.1393,
-  "c.agri_forestry_fishing_work": 11.644,
-  "c.agricultural_science": 39.5282,
-  "c.ai_ml": 132.4965,
-  "c.air_travel": 4.5098,
-  "c.alternative_medicine": 299.6448,
-  "c.animal_care_husbandry": 2.8541,
-  "c.anthropology": 179.9319,
-  "c.arts_humanities_studies": 205.6917,
-  "c.astronomy_space": 97.2296,
-  "c.banking_payments": 208.6165,
-  "c.basic_skills": 207.403,
-  "c.bereavement": 252.385,
-  "c.biotechnology": 52.7784,
-  "c.birth_of_child": 308.818,
-  "c.border_migration_admin": 97.9186,
-  "c.borrowing_debt": 235.4647,
-  "c.bullying_harassment": 216.3506,
-  "c.business_administration": 109.6871,
-  "c.business_science": 113.5233,
-  "c.care_of_ill_disabled": 311.4732,
-  "c.celebrations": 254.3292,
-  "c.charity_giving": 256.2748,
-  "c.chemistry": 50.434,
-  "c.child_abuse_neglect": 282.3153,
-  "c.childcare_other": 288.1245,
-  "c.children_play": 275.5604,
-  "c.civil_engineering": 38.6729,
-  "c.civil_society_advocacy": 143.7497,
-  "c.cleaning_laundry": 309.5096,
-  "c.clothing_footwear": 328.3379,
-  "c.coming_of_age": 231.9284,
-  "c.community_groups": 236.7462,
-  "c.commuting": 353.2331,
-  "c.computer_science": 127.6035,
-  "c.conflict_interpersonal": 212.3393,
-  "c.construction_trades": 27.4497,
-  "c.cooking": 329.0234,
-  "c.corruption": 150.254,
-  "c.counselling_therapy": 230.6697,
-  "c.crafts_hobbies": 297.1502,
-  "c.creative_writing": 218.4109,
-  "c.cultural_identity": 228.7733,
-  "c.cultural_visits": 251.9261,
-  "c.customer_service": 92.411,
-  "c.cybercrime": 192.3417,
-  "c.cybersecurity": 119.3503,
-  "c.death_dying": 280.3298,
-  "c.digital_tool_use": 187.8425,
-  "c.disability_adaptation": 309.9395,
-  "c.disaster_experience": 19.006,
-  "c.divorce": 229.8108,
-  "c.domestic_abuse": 280.9146,
-  "c.driving": 1.6579,
-  "c.drug_crime": 15.2037,
-  "c.early_childhood_education": 255.4687,
-  "c.earth_sciences": 71.7781,
-  "c.eating_drinking": 315.8619,
-  "c.ecology_science": 45.8618,
-  "c.economics": 132.8556,
-  "c.eldercare": 303.0696,
-  "c.electrical_engineering": 36.1125,
-  "c.elementary_occupations": 23.0637,
-  "c.employment_job": 115.9248,
-  "c.employment_transition": 130.0835,
-  "c.energy_systems": 29.2568,
-  "c.entrepreneurship": 104.0335,
-  "c.environmental_harm": 15.8665,
-  "c.environmental_stewardship": 20.4777,
-  "c.ethical_choice": 223.0664,
-  "c.etiquette_norms": 224.1306,
-  "c.everyday_conversation": 229.5788,
-  "c.exams_assessment": 185.1557,
-  "c.exercise_fitness": 321.6298,
-  "c.exploitation_trafficking": 13.5236,
-  "c.extremism_terrorism": 90.9367,
-  "c.family_rituals": 247.2625,
-  "c.family_ties": 243.1594,
-  "c.festivals_events": 261.7577,
-  "c.film_tv_video": 225.3455,
-  "c.finance_accounting": 139.4315,
-  "c.fishing_hunting_foraging": 0.5931,
-  "c.folk_belief": 237.4162,
-  "c.food_purchasing": 331.1721,
-  "c.fraud_deception": 193.5089,
-  "c.friendship": 236.0284,
-  "c.funeral_mourning": 257.3817,
-  "c.gambling": 240.7028,
-  "c.games_play": 257.8674,
-  "c.geography_science": 103.0273,
-  "c.gifts_exchange": 265.3262,
-  "c.government_services": 128.6783,
-  "c.harassment_discrimination": 207.8591,
-  "c.healthcare_work": 354.7835,
-  "c.higher_education": 167.4574,
-  "c.history_science": 174.7633,
-  "c.home_energy_utilities": 351.4321,
-  "c.home_organisation": 305.6859,
-  "c.home_repair_diy": 307.055,
-  "c.horticulture_farming": 12.9297,
-  "c.hospitality_hosting": 270.6125,
-  "c.hospitality_work": 352.455,
-  "c.household_budgeting": 266.5629,
-  "c.household_gardening": 329.9099,
-  "c.household_planning": 273.5211,
-  "c.housing_search": 352.9549,
-  "c.human_rights": 151.3993,
-  "c.hygiene_grooming": 314.4837,
-  "c.identity_change": 230.0863,
-  "c.incarceration": 73.5411,
-  "c.inclusion_discrimination": 211.7888,
-  "c.income_earning": 156.8288,
-  "c.informal_gig": 76.6006,
-  "c.insurance_risk": 157.7878,
-  "c.it_operations": 112.6802,
-  "c.job_loss": 130.8201,
-  "c.job_search": 125.459,
-  "c.journalism": 184.1664,
-  "c.labour_organising": 118.9725,
-  "c.language_learning": 196.5712,
-  "c.legal_profession": 158.5156,
-  "c.legal_system": 133.146,
-  "c.life_purpose": 221.4728,
-  "c.life_sciences": 68.7826,
-  "c.linguistics_literature": 191.9615,
-  "c.loneliness_isolation": 228.1839,
-  "c.maker_tinkering": 298.1939,
-  "c.management_executive": 101.9228,
-  "c.manufacturing": 37.8557,
-  "c.marriage_cohabitation": 244.8416,
-  "c.marriage_wedding": 244.4943,
-  "c.materials_science": 51.6971,
-  "c.mathematics": 138.5158,
-  "c.mechanical_engineering": 35.0623,
-  "c.media_publishing": 205.9777,
-  "c.mediation_dispute_resolution": 189.9717,
-  "c.medical_care": 323.7743,
-  "c.medication_adherence": 316.1293,
-  "c.medicine_science": 30.4439,
-  "c.mental_health": 241.0891,
-  "c.mentoring_peer_support": 215.7448,
-  "c.migration": 28.7255,
-  "c.military_defence": 58.9907,
-  "c.misinformation_defamation": 191.3291,
-  "c.moving_relocation": 354.695,
-  "c.music_listening": 234.6996,
-  "c.music_making": 238.9476,
-  "c.mutual_aid": 277.5758,
-  "c.negligence_recklessness": 328.57,
-  "c.neighbours_community": 249.5306,
-  "c.neuroscience": 95.2094,
-  "c.news_media": 193.8494,
-  "c.nightlife": 279.677,
-  "c.nutrition_diet": 329.0763,
-  "c.occupational_safety": 12.3392,
-  "c.online_commerce": 95.9204,
-  "c.online_harassment": 211.1814,
-  "c.outdoor_recreation": 326.4336,
-  "c.parenting_adolescents": 248.3993,
-  "c.parenting_young_children": 283.9376,
-  "c.partnership_romance": 251.4505,
-  "c.performing_arts": 245.4253,
-  "c.personal_appearance": 309.7376,
-  "c.personal_finance": 231.346,
-  "c.personal_services_work": 327.8666,
-  "c.pet_ownership": 351.722,
-  "c.philosophical_inquiry": 205.2103,
-  "c.physical_health": 319.5019,
-  "c.physics": 105.0928,
-  "c.policing_enforcement": 75.8885,
-  "c.political_discourse": 154.1952,
-  "c.political_participation": 141.062,
-  "c.political_science": 140.102,
-  "c.poverty_scarcity": 257.0852,
-  "c.pregnancy_birth": 315.1481,
-  "c.preventive_health": 334.0251,
-  "c.psychology": 140.6203,
-  "c.public_administration": 122.6221,
-  "c.public_health_science": 10.7264,
-  "c.public_safety_emergency": 26.1841,
-  "c.public_transport": 7.8372,
-  "c.reading": 233.2041,
-  "c.reconciliation": 222.1071,
-  "c.religion_worship": 229.1473,
-  "c.religious_community": 220.184,
-  "c.rent_mortgage": 336.5366,
-  "c.reproduction_fertility": 314.7873,
-  "c.reputation_gossip": 213.7415,
-  "c.research_training": 141.393,
-  "c.restaurants_dining": 327.8069,
-  "c.retail_shopping": 356.9987,
-  "c.retail_work": 64.7006,
-  "c.retirement": 213.0321,
-  "c.reuse_repair": 328.0595,
-  "c.rites_of_passage": 237.0661,
-  "c.road_safety": 359.7251,
-  "c.sales_marketing": 107.1416,
-  "c.saving_investing": 206.8884,
-  "c.school_education": 200.9231,
-  "c.science_research_work": 106.0292,
-  "c.security_services": 49.3078,
-  "c.self_directed_learning": 195.1659,
-  "c.self_harm_suicide": 267.3395,
-  "c.self_provisioning": 0.1929,
-  "c.self_reflection": 216.742,
-  "c.serious_illness": 304.9421,
-  "c.sexual_violence": 301.8376,
-  "c.sexuality": 279.9426,
-  "c.shopping_errands": 351.9972,
-  "c.skilled_trades": 24.8302,
-  "c.sleep": 304.1969,
-  "c.social_media": 206.2982,
-  "c.socialising": 253.1725,
-  "c.sociology": 155.6567,
-  "c.software_development": 131.4115,
-  "c.spirituality": 236.2634,
-  "c.sport_participation": 312.6575,
-  "c.sport_spectating": 298.9006,
-  "c.stalking_privacy": 241.656,
-  "c.statistics_data": 126.577,
-  "c.subscriptions_telecom": 111.9735,
-  "c.substance_use": 290.8435,
-  "c.taxation_compliance": 133.7407,
-  "c.teaching_profession": 182.7142,
-  "c.theft_property_crime": 329.387,
-  "c.therapy_social_work": 209.9538,
-  "c.tourism_travel": 342.4345,
-  "c.traffic_offences": 359.3779,
-  "c.transport_logistics": 17.2534,
-  "c.tutoring_teaching": 192.9258,
-  "c.urban_planning": 45.2095,
-  "c.video_gaming": 226.8917,
-  "c.violence_assault": 328.584,
-  "c.visual_arts": 241.4343,
-  "c.vocational_training": 136.3519,
-  "c.volunteering": 265.8352,
-  "c.voting_elections": 147.6256,
-  "c.walking_cycling": 336.112,
-  "c.war_experience": 18.5396,
-  "c.waste_recycling": 3.6178,
-  "c.weather_climate_adaptation": 19.416,
-  "c.welfare_benefits": 154.5506,
-  "c.wildlife_conservation": 10.1678,
-  "c.workplace_relations": 118.6244,
-  "c.youth_culture": 227.8025,
-  "s.consumption": 255.1557,
-  "s.family": 267.2983,
-  "s.harm": 293.0006,
-  "s.home": 322.9947,
-  "s.learning": 194.6477,
-  "s.leisure": 257.0888,
-  "s.meaning": 230.8251,
-  "s.mobility": 357.78,
-  "s.nature": 6.6921,
-  "s.public": 126.0267,
-  "s.science": 116.0601,
-  "s.self_care": 308.0972,
-  "s.social": 236.9026,
-  "s.technology": 80.5929,
-  "s.transitions": 266.8684,
-  "s.work": 82.1722
+  "c.academic_dishonesty": 186.734,
+  "c.accident_injury": 341.7667,
+  "c.ageing_body": 307.0245,
+  "c.agri_forestry_fishing_work": 12.563,
+  "c.agricultural_science": 38.3377,
+  "c.ai_ml": 136.865,
+  "c.air_travel": 13.6171,
+  "c.alternative_medicine": 310.6966,
+  "c.animal_care_husbandry": 3.4793,
+  "c.anthropology": 170.1312,
+  "c.arts_humanities_studies": 199.8324,
+  "c.astronomy_space": 104.8505,
+  "c.banking_payments": 210.3303,
+  "c.basic_skills": 209.4504,
+  "c.bereavement": 248.9517,
+  "c.biotechnology": 43.258,
+  "c.birth_of_child": 308.1889,
+  "c.border_migration_admin": 97.3792,
+  "c.borrowing_debt": 234.7645,
+  "c.bullying_harassment": 211.731,
+  "c.business_administration": 106.6545,
+  "c.business_science": 114.4285,
+  "c.care_of_ill_disabled": 315.5018,
+  "c.celebrations": 250.75,
+  "c.charity_giving": 258.4018,
+  "c.chemistry": 47.0801,
+  "c.child_abuse_neglect": 280.3148,
+  "c.childcare_other": 293.8987,
+  "c.children_play": 284.5569,
+  "c.civil_engineering": 33.9722,
+  "c.civil_society_advocacy": 139.1773,
+  "c.cleaning_laundry": 309.113,
+  "c.clothing_footwear": 332.3923,
+  "c.coming_of_age": 228.0872,
+  "c.community_groups": 240.4738,
+  "c.commuting": 2.915,
+  "c.computer_science": 134.1084,
+  "c.conflict_interpersonal": 211.0992,
+  "c.construction_trades": 24.7248,
+  "c.cooking": 333.5863,
+  "c.corruption": 143.6194,
+  "c.counselling_therapy": 228.8133,
+  "c.crafts_hobbies": 310.2665,
+  "c.creative_writing": 214.079,
+  "c.cultural_identity": 230.7915,
+  "c.cultural_visits": 256.1397,
+  "c.customer_service": 91.0951,
+  "c.cybercrime": 174.9185,
+  "c.cybersecurity": 127.9981,
+  "c.death_dying": 276.0224,
+  "c.digital_tool_use": 182.6433,
+  "c.disability_adaptation": 325.2959,
+  "c.disaster_experience": 23.1546,
+  "c.divorce": 224.8296,
+  "c.domestic_abuse": 272.3814,
+  "c.driving": 4.4206,
+  "c.drug_crime": 17.1217,
+  "c.early_childhood_education": 268.7685,
+  "c.earth_sciences": 75.3793,
+  "c.eating_drinking": 325.7117,
+  "c.ecology_science": 46.1146,
+  "c.economics": 136.6809,
+  "c.eldercare": 305.3047,
+  "c.electrical_engineering": 34.6239,
+  "c.elementary_occupations": 22.7486,
+  "c.employment_job": 109.9673,
+  "c.employment_transition": 126.3709,
+  "c.energy_systems": 29.6288,
+  "c.entrepreneurship": 101.2351,
+  "c.environmental_harm": 16.4076,
+  "c.environmental_stewardship": 19.9929,
+  "c.ethical_choice": 225.2234,
+  "c.etiquette_norms": 224.1969,
+  "c.everyday_conversation": 232.2039,
+  "c.exams_assessment": 178.9592,
+  "c.exercise_fitness": 319.2802,
+  "c.exploitation_trafficking": 14.6533,
+  "c.extremism_terrorism": 124.6283,
+  "c.family_rituals": 246.1154,
+  "c.family_ties": 244.4511,
+  "c.festivals_events": 264.282,
+  "c.film_tv_video": 221.5148,
+  "c.finance_accounting": 135.1906,
+  "c.fishing_hunting_foraging": 3.1722,
+  "c.folk_belief": 236.3714,
+  "c.food_purchasing": 341.3378,
+  "c.fraud_deception": 187.0635,
+  "c.friendship": 237.1733,
+  "c.funeral_mourning": 256.8659,
+  "c.gambling": 242.1918,
+  "c.games_play": 268.1278,
+  "c.geography_science": 104.441,
+  "c.gifts_exchange": 260.0905,
+  "c.government_services": 125.5655,
+  "c.harassment_discrimination": 203.7782,
+  "c.healthcare_work": 2.4344,
+  "c.higher_education": 162.1384,
+  "c.history_science": 165.8606,
+  "c.home_energy_utilities": 333.9895,
+  "c.home_organisation": 307.4365,
+  "c.home_repair_diy": 309.5165,
+  "c.horticulture_farming": 10.0184,
+  "c.hospitality_hosting": 269.5924,
+  "c.hospitality_work": 358.187,
+  "c.household_budgeting": 259.487,
+  "c.household_gardening": 334.6842,
+  "c.household_planning": 271.1168,
+  "c.housing_search": 342.0309,
+  "c.human_rights": 151.5156,
+  "c.hygiene_grooming": 314.9421,
+  "c.identity_change": 231.421,
+  "c.incarceration": 65.9682,
+  "c.inclusion_discrimination": 203.2553,
+  "c.income_earning": 127.3756,
+  "c.informal_gig": 80.2089,
+  "c.insurance_risk": 140.6204,
+  "c.it_operations": 115.3897,
+  "c.job_loss": 118.0201,
+  "c.job_search": 117.409,
+  "c.journalism": 173.7954,
+  "c.labour_organising": 117.0849,
+  "c.language_learning": 198.8983,
+  "c.legal_profession": 155.3665,
+  "c.legal_system": 134.6635,
+  "c.life_purpose": 222.5102,
+  "c.life_sciences": 67.214,
+  "c.linguistics_literature": 181.5395,
+  "c.loneliness_isolation": 230.3606,
+  "c.maker_tinkering": 331.5133,
+  "c.management_executive": 99.8316,
+  "c.manufacturing": 37.4525,
+  "c.marriage_cohabitation": 248.5514,
+  "c.marriage_wedding": 242.7086,
+  "c.materials_science": 45.4945,
+  "c.mathematics": 144.6875,
+  "c.mechanical_engineering": 28.8446,
+  "c.media_publishing": 202.1123,
+  "c.mediation_dispute_resolution": 187.7687,
+  "c.medical_care": 328.3113,
+  "c.medication_adherence": 316.8453,
+  "c.medicine_science": 32.6813,
+  "c.mental_health": 241.5396,
+  "c.mentoring_peer_support": 216.0666,
+  "c.migration": 31.4218,
+  "c.military_defence": 64.2664,
+  "c.misinformation_defamation": 187.5158,
+  "c.moving_relocation": 357.2476,
+  "c.music_listening": 233.7954,
+  "c.music_making": 238.8263,
+  "c.mutual_aid": 274.3541,
+  "c.negligence_recklessness": 325.1487,
+  "c.neighbours_community": 253.1618,
+  "c.neuroscience": 96.3597,
+  "c.news_media": 183.8135,
+  "c.nightlife": 281.6735,
+  "c.nutrition_diet": 332.954,
+  "c.occupational_safety": 13.9929,
+  "c.online_commerce": 69.4242,
+  "c.online_harassment": 206.5561,
+  "c.outdoor_recreation": 323.9101,
+  "c.parenting_adolescents": 251.112,
+  "c.parenting_young_children": 291.3833,
+  "c.partnership_romance": 249.0828,
+  "c.performing_arts": 249.558,
+  "c.personal_appearance": 311.0884,
+  "c.personal_finance": 235.6217,
+  "c.personal_services_work": 331.6141,
+  "c.pet_ownership": 341.035,
+  "c.philosophical_inquiry": 205.1098,
+  "c.physical_health": 321.1874,
+  "c.physics": 113.6048,
+  "c.policing_enforcement": 72.7167,
+  "c.political_discourse": 152.731,
+  "c.political_participation": 136.3225,
+  "c.political_science": 137.2188,
+  "c.poverty_scarcity": 5.4735,
+  "c.pregnancy_birth": 316.5326,
+  "c.preventive_health": 337.6801,
+  "c.psychology": 143.8686,
+  "c.public_administration": 121.1195,
+  "c.public_health_science": 20.7291,
+  "c.public_safety_emergency": 27.0647,
+  "c.public_transport": 13.3452,
+  "c.reading": 226.691,
+  "c.reconciliation": 220.4711,
+  "c.religion_worship": 229.4617,
+  "c.religious_community": 219.3564,
+  "c.rent_mortgage": 332.6967,
+  "c.reproduction_fertility": 316.121,
+  "c.reputation_gossip": 207.1271,
+  "c.research_training": 144.1197,
+  "c.restaurants_dining": 333.9501,
+  "c.retail_shopping": 0.3848,
+  "c.retail_work": 54.9948,
+  "c.retirement": 236.7142,
+  "c.reuse_repair": 332.1293,
+  "c.rites_of_passage": 232.9746,
+  "c.road_safety": 2.5951,
+  "c.sales_marketing": 102.2509,
+  "c.saving_investing": 207.7208,
+  "c.school_education": 192.4595,
+  "c.science_research_work": 103.402,
+  "c.security_services": 53.5349,
+  "c.self_directed_learning": 197.3464,
+  "c.self_harm_suicide": 260.3067,
+  "c.self_provisioning": 359.2705,
+  "c.self_reflection": 220.1648,
+  "c.serious_illness": 306.4859,
+  "c.sexual_violence": 294.7095,
+  "c.sexuality": 276.5955,
+  "c.shopping_errands": 342.4791,
+  "c.skilled_trades": 21.8025,
+  "c.sleep": 304.0161,
+  "c.social_media": 202.7345,
+  "c.socialising": 254.6971,
+  "c.sociology": 153.4285,
+  "c.software_development": 129.325,
+  "c.spirituality": 232.5841,
+  "c.sport_participation": 312.941,
+  "c.sport_spectating": 295.0248,
+  "c.stalking_privacy": 241.9416,
+  "c.statistics_data": 127.8958,
+  "c.subscriptions_telecom": 124.2094,
+  "c.substance_use": 290.0388,
+  "c.taxation_compliance": 135.8167,
+  "c.teaching_profession": 167.8733,
+  "c.theft_property_crime": 331.9863,
+  "c.therapy_social_work": 208.5974,
+  "c.tourism_travel": 350.5936,
+  "c.traffic_offences": 2.3728,
+  "c.transport_logistics": 19.1186,
+  "c.tutoring_teaching": 185.9163,
+  "c.urban_planning": 38.9805,
+  "c.video_gaming": 223.4308,
+  "c.violence_assault": 325.9108,
+  "c.visual_arts": 241.1254,
+  "c.vocational_training": 131.5739,
+  "c.volunteering": 257.3925,
+  "c.voting_elections": 141.8964,
+  "c.walking_cycling": 340.888,
+  "c.war_experience": 23.5102,
+  "c.waste_recycling": 6.1443,
+  "c.weather_climate_adaptation": 17.792,
+  "c.welfare_benefits": 127.051,
+  "c.wildlife_conservation": 10.8711,
+  "c.workplace_relations": 116.5817,
+  "c.youth_culture": 224.5939,
+  "s.consumption": 291.3338,
+  "s.family": 268.4824,
+  "s.harm": 288.5459,
+  "s.home": 321.6795,
+  "s.learning": 191.7312,
+  "s.leisure": 258.4802,
+  "s.meaning": 230.7805,
+  "s.mobility": 2.3455,
+  "s.nature": 6.0764,
+  "s.public": 123.5665,
+  "s.science": 117.0166,
+  "s.self_care": 310.1059,
+  "s.social": 235.854,
+  "s.technology": 79.401,
+  "s.transitions": 266.62,
+  "s.work": 78.5095
  },
  "coverage": {
   "comembership": {
    "fields": 136,
    "pair_share": 0.009315032421579276,
    "pairs": 283,
-   "pairs_also_in_another_source": 117
+   "pairs_also_in_another_source": 125
   },
   "fine": {
    "fields": 108,
@@ -277,17 +277,23 @@
    "pairs": 125,
    "pairs_also_in_another_source": 109
   },
+  "judged": {
+   "fields": 226,
+   "pair_share": 0.011355781574010073,
+   "pairs": 345,
+   "pairs_also_in_another_source": 133
+  },
   "overlap": {
    "fields": 247,
    "pair_share": 0.018893387314439947,
    "pairs": 574,
-   "pairs_also_in_another_source": 270
+   "pairs_also_in_another_source": 321
   },
   "text": {
    "fields": 232,
    "pair_share": 0.01892630262335012,
    "pairs": 575,
-   "pairs_also_in_another_source": 264
+   "pairs_also_in_another_source": 266
   },
   "upstream": {
    "fields": 37,
@@ -298,1744 +304,1744 @@
  },
  "coverage_any": {
   "fields": 247,
-  "pairs": 1127,
-  "pairs_in_two_or_more_sources": 328
+  "pairs": 1339,
+  "pairs_in_two_or_more_sources": 389
  },
  "degraded": [],
  "diagnostics": {
   "at_shift_limit": 0,
-  "attraction_scale": 0.11023054888353659,
-  "max_radius_drift": 0.007642360289185635,
-  "max_state_shift": 116.14354490257469,
-  "mean_state_shift": 19.54241800011166
+  "attraction_scale": 0.09042788191033746,
+  "max_radius_drift": 0.0071432478374600095,
+  "max_state_shift": 111.4586672516777,
+  "mean_state_shift": 18.19921143062687
  },
  "fields": {
   "c.academic_dishonesty": {
-   "angle": 190.6216,
+   "angle": 186.734,
    "axes_angle": 213.6901,
-   "centre": 166.1056,
-   "radius": 0.68335,
+   "centre": 167.166,
+   "radius": 0.6833,
    "radius_prior": 0.68308
   },
   "c.accident_injury": {
-   "angle": 352.0921,
+   "angle": 341.7667,
    "axes_angle": 323.1301,
-   "centre": 33.0553,
-   "radius": 0.54244,
+   "centre": 7.0745,
+   "radius": 0.54283,
    "radius_prior": 0.5404
   },
   "c.ageing_body": {
-   "angle": 308.1393,
+   "angle": 307.0245,
    "axes_angle": 315.0,
-   "centre": 298.1265,
-   "radius": 0.563,
+   "centre": 291.9637,
+   "radius": 0.56326,
    "radius_prior": 0.5616
   },
   "c.agri_forestry_fishing_work": {
-   "angle": 11.644,
+   "angle": 12.563,
    "axes_angle": 20.556,
-   "centre": 56.0278,
-   "radius": 0.76214,
+   "centre": 55.2118,
+   "radius": 0.76226,
    "radius_prior": 0.7639
   },
   "c.agricultural_science": {
-   "angle": 39.5282,
+   "angle": 38.3377,
    "axes_angle": 60.2551,
-   "centre": 72.9308,
-   "radius": 0.84795,
+   "centre": 72.1217,
+   "radius": 0.84805,
    "radius_prior": 0.84916
   },
   "c.ai_ml": {
-   "angle": 132.4965,
+   "angle": 136.865,
    "axes_angle": 135.0,
-   "centre": 121.5136,
-   "radius": 0.90723,
+   "centre": 135.8957,
+   "radius": 0.90722,
    "radius_prior": 0.908
   },
   "c.air_travel": {
-   "angle": 4.5098,
+   "angle": 13.6171,
    "axes_angle": 41.1859,
-   "centre": 54.4952,
-   "radius": 0.55929,
+   "centre": 56.0281,
+   "radius": 0.55997,
    "radius_prior": 0.55938
   },
   "c.alternative_medicine": {
-   "angle": 299.6448,
+   "angle": 310.6966,
    "axes_angle": 296.5651,
-   "centre": 291.539,
-   "radius": 0.69823,
+   "centre": 298.4609,
+   "radius": 0.69831,
    "radius_prior": 0.6981
   },
   "c.animal_care_husbandry": {
-   "angle": 2.8541,
+   "angle": 3.4793,
    "axes_angle": 339.444,
-   "centre": 53.3548,
-   "radius": 0.72708,
+   "centre": 49.9086,
+   "radius": 0.72704,
    "radius_prior": 0.72721
   },
   "c.anthropology": {
-   "angle": 179.9319,
+   "angle": 170.1312,
    "axes_angle": 135.0,
-   "centre": 159.5246,
-   "radius": 0.88045,
+   "centre": 161.2555,
+   "radius": 0.88075,
    "radius_prior": 0.88269
   },
   "c.arts_humanities_studies": {
-   "angle": 205.6917,
+   "angle": 199.8324,
    "axes_angle": 146.3099,
-   "centre": 182.7371,
-   "radius": 0.86391,
+   "centre": 181.5564,
+   "radius": 0.86404,
    "radius_prior": 0.86593
   },
   "c.astronomy_space": {
-   "angle": 97.2296,
+   "angle": 104.8505,
    "axes_angle": 125.5377,
-   "centre": 82.6599,
-   "radius": 0.89901,
+   "centre": 88.2309,
+   "radius": 0.89904,
    "radius_prior": 0.89946
   },
   "c.banking_payments": {
-   "angle": 208.6165,
+   "angle": 210.3303,
    "axes_angle": 146.3099,
-   "centre": 186.3707,
-   "radius": 0.6082,
+   "centre": 187.6348,
+   "radius": 0.60777,
    "radius_prior": 0.6062
   },
   "c.basic_skills": {
-   "angle": 207.403,
+   "angle": 209.4504,
    "axes_angle": 203.1986,
-   "centre": 185.0668,
-   "radius": 0.72575,
-   "radius_prior": 0.72578
-  },
-  "c.bereavement": {
-   "angle": 252.385,
-   "axes_angle": 225.0,
-   "centre": 248.0621,
-   "radius": 0.65064,
-   "radius_prior": 0.65065
-  },
-  "c.biotechnology": {
-   "angle": 52.7784,
-   "axes_angle": 60.2551,
-   "centre": 75.2239,
-   "radius": 0.90765,
-   "radius_prior": 0.908
-  },
-  "c.birth_of_child": {
-   "angle": 308.818,
-   "axes_angle": 306.8699,
-   "centre": 299.1148,
-   "radius": 0.68122,
-   "radius_prior": 0.68228
-  },
-  "c.border_migration_admin": {
-   "angle": 97.9186,
-   "axes_angle": 110.556,
-   "centre": 82.9673,
-   "radius": 0.68057,
-   "radius_prior": 0.68023
-  },
-  "c.borrowing_debt": {
-   "angle": 235.4647,
-   "axes_angle": 161.5651,
-   "centre": 212.2546,
-   "radius": 0.64592,
-   "radius_prior": 0.64606
-  },
-  "c.bullying_harassment": {
-   "angle": 216.3506,
-   "axes_angle": 240.2551,
-   "centre": 190.4527,
-   "radius": 0.59877,
-   "radius_prior": 0.59877
-  },
-  "c.business_administration": {
-   "angle": 109.6871,
-   "axes_angle": 113.1986,
-   "centre": 91.8945,
-   "radius": 0.58608,
-   "radius_prior": 0.58342
-  },
-  "c.business_science": {
-   "angle": 113.5233,
-   "axes_angle": 138.8141,
-   "centre": 95.0557,
-   "radius": 0.81413,
-   "radius_prior": 0.81563
-  },
-  "c.care_of_ill_disabled": {
-   "angle": 311.4732,
-   "axes_angle": 321.3402,
-   "centre": 302.5908,
-   "radius": 0.64575,
-   "radius_prior": 0.64638
-  },
-  "c.celebrations": {
-   "angle": 254.3292,
-   "axes_angle": 284.0362,
-   "centre": 253.1683,
-   "radius": 0.59869,
-   "radius_prior": 0.59877
-  },
-  "c.charity_giving": {
-   "angle": 256.2748,
-   "axes_angle": 251.5651,
-   "centre": 258.6083,
-   "radius": 0.61707,
-   "radius_prior": 0.61712
-  },
-  "c.chemistry": {
-   "angle": 50.434,
-   "axes_angle": 50.1944,
-   "centre": 74.442,
-   "radius": 0.86575,
-   "radius_prior": 0.86593
-  },
-  "c.child_abuse_neglect": {
-   "angle": 282.3153,
-   "axes_angle": 296.5651,
-   "centre": 286.5343,
-   "radius": 0.6369,
-   "radius_prior": 0.6372
-  },
-  "c.childcare_other": {
-   "angle": 288.1245,
-   "axes_angle": 321.3402,
-   "centre": 288.5612,
-   "radius": 0.55062,
-   "radius_prior": 0.54768
-  },
-  "c.children_play": {
-   "angle": 275.5604,
-   "axes_angle": 307.875,
-   "centre": 281.4607,
-   "radius": 0.58474,
-   "radius_prior": 0.58342
-  },
-  "c.civil_engineering": {
-   "angle": 38.6729,
-   "axes_angle": 48.8141,
-   "centre": 72.4268,
-   "radius": 0.89021,
-   "radius_prior": 0.89313
-  },
-  "c.civil_society_advocacy": {
-   "angle": 143.7497,
-   "axes_angle": 129.8056,
-   "centre": 140.6816,
-   "radius": 0.65781,
-   "radius_prior": 0.6584
-  },
-  "c.cleaning_laundry": {
-   "angle": 309.5096,
-   "axes_angle": 318.3665,
-   "centre": 300.0979,
-   "radius": 0.55479,
-   "radius_prior": 0.55337
-  },
-  "c.clothing_footwear": {
-   "angle": 328.3379,
-   "axes_angle": 327.9946,
-   "centre": 347.1448,
-   "radius": 0.56656,
-   "radius_prior": 0.56634
-  },
-  "c.coming_of_age": {
-   "angle": 231.9284,
-   "axes_angle": 249.444,
-   "centre": 206.8847,
-   "radius": 0.65099,
-   "radius_prior": 0.65065
-  },
-  "c.community_groups": {
-   "angle": 236.7462,
-   "axes_angle": 233.1301,
-   "centre": 214.1702,
-   "radius": 0.60008,
-   "radius_prior": 0.59877
-  },
-  "c.commuting": {
-   "angle": 353.2331,
-   "axes_angle": 333.4349,
-   "centre": 36.3529,
-   "radius": 0.49358,
-   "radius_prior": 0.492
-  },
-  "c.computer_science": {
-   "angle": 127.6035,
-   "axes_angle": 139.3987,
-   "centre": 111.6222,
-   "radius": 0.90599,
-   "radius_prior": 0.908
-  },
-  "c.conflict_interpersonal": {
-   "angle": 212.3393,
-   "axes_angle": 228.8141,
-   "centre": 188.8683,
-   "radius": 0.60003,
-   "radius_prior": 0.59877
-  },
-  "c.construction_trades": {
-   "angle": 27.4497,
-   "axes_angle": 36.8699,
-   "centre": 67.5829,
-   "radius": 0.7271,
-   "radius_prior": 0.72578
-  },
-  "c.cooking": {
-   "angle": 329.0234,
-   "axes_angle": 315.0,
-   "centre": 348.9216,
-   "radius": 0.67398,
-   "radius_prior": 0.67675
-  },
-  "c.corruption": {
-   "angle": 150.254,
-   "axes_angle": 135.0,
-   "centre": 147.7415,
-   "radius": 0.63759,
-   "radius_prior": 0.6372
-  },
-  "c.counselling_therapy": {
-   "angle": 230.6697,
-   "axes_angle": 212.0054,
-   "centre": 204.2927,
-   "radius": 0.60587,
-   "radius_prior": 0.60399
-  },
-  "c.crafts_hobbies": {
-   "angle": 297.1502,
-   "axes_angle": 315.0,
-   "centre": 289.6913,
-   "radius": 0.72171,
-   "radius_prior": 0.72262
-  },
-  "c.creative_writing": {
-   "angle": 218.4109,
-   "axes_angle": 221.1859,
-   "centre": 192.6827,
-   "radius": 0.68822,
-   "radius_prior": 0.68782
-  },
-  "c.cultural_identity": {
-   "angle": 228.7733,
-   "axes_angle": 225.0,
-   "centre": 201.1567,
-   "radius": 0.6665,
-   "radius_prior": 0.66647
-  },
-  "c.cultural_visits": {
-   "angle": 251.9261,
-   "axes_angle": 315.0,
-   "centre": 246.5884,
-   "radius": 0.61929,
-   "radius_prior": 0.61822
-  },
-  "c.customer_service": {
-   "angle": 92.411,
-   "axes_angle": 113.1986,
-   "centre": 80.9316,
-   "radius": 0.5607,
-   "radius_prior": 0.5597
-  },
-  "c.cybercrime": {
-   "angle": 192.3417,
-   "axes_angle": 135.0,
-   "centre": 167.0944,
-   "radius": 0.78733,
-   "radius_prior": 0.78905
-  },
-  "c.cybersecurity": {
-   "angle": 119.3503,
-   "axes_angle": 123.6901,
-   "centre": 101.4132,
-   "radius": 0.87749,
-   "radius_prior": 0.87826
-  },
-  "c.death_dying": {
-   "angle": 280.3298,
-   "axes_angle": 299.7449,
-   "centre": 285.9262,
-   "radius": 0.71344,
-   "radius_prior": 0.71392
-  },
-  "c.digital_tool_use": {
-   "angle": 187.8425,
-   "axes_angle": 236.3099,
-   "centre": 164.8487,
-   "radius": 0.6997,
-   "radius_prior": 0.69984
-  },
-  "c.disability_adaptation": {
-   "angle": 309.9395,
-   "axes_angle": 326.3099,
-   "centre": 300.7701,
-   "radius": 0.70806,
-   "radius_prior": 0.70886
-  },
-  "c.disaster_experience": {
-   "angle": 19.006,
-   "axes_angle": 333.4349,
-   "centre": 61.3381,
-   "radius": 0.69843,
-   "radius_prior": 0.6981
-  },
-  "c.divorce": {
-   "angle": 229.8108,
-   "axes_angle": 225.0,
-   "centre": 203.0737,
-   "radius": 0.69735,
-   "radius_prior": 0.6981
-  },
-  "c.domestic_abuse": {
-   "angle": 280.9146,
-   "axes_angle": 249.444,
-   "centre": 286.2302,
-   "radius": 0.63688,
-   "radius_prior": 0.6372
-  },
-  "c.driving": {
-   "angle": 1.6579,
-   "axes_angle": 339.444,
-   "centre": 51.9592,
-   "radius": 0.69281,
-   "radius_prior": 0.69415
-  },
-  "c.drug_crime": {
-   "angle": 15.2037,
-   "axes_angle": 50.1944,
-   "centre": 58.2288,
-   "radius": 0.65674,
-   "radius_prior": 0.6565
-  },
-  "c.early_childhood_education": {
-   "angle": 255.4687,
-   "axes_angle": 333.4349,
-   "centre": 256.0694,
-   "radius": 0.78111,
-   "radius_prior": 0.78273
-  },
-  "c.earth_sciences": {
-   "angle": 71.7781,
-   "axes_angle": 60.2551,
-   "centre": 78.5634,
-   "radius": 0.86569,
-   "radius_prior": 0.86593
-  },
-  "c.eating_drinking": {
-   "angle": 315.8619,
-   "axes_angle": 315.0,
-   "centre": 313.068,
-   "radius": 0.52106,
-   "radius_prior": 0.51921
-  },
-  "c.ecology_science": {
-   "angle": 45.8618,
-   "axes_angle": 81.8699,
-   "centre": 73.6775,
-   "radius": 0.84669,
-   "radius_prior": 0.84916
-  },
-  "c.economics": {
-   "angle": 132.8556,
-   "axes_angle": 138.8141,
-   "centre": 121.9871,
-   "radius": 0.88212,
-   "radius_prior": 0.88269
-  },
-  "c.eldercare": {
-   "angle": 303.0696,
-   "axes_angle": 333.4349,
-   "centre": 292.9067,
-   "radius": 0.66638,
-   "radius_prior": 0.66757
-  },
-  "c.electrical_engineering": {
-   "angle": 36.1125,
-   "axes_angle": 45.0,
-   "centre": 71.1205,
-   "radius": 0.89229,
-   "radius_prior": 0.89313
-  },
-  "c.elementary_occupations": {
-   "angle": 23.0637,
-   "axes_angle": 26.5651,
-   "centre": 63.7125,
-   "radius": 0.51611,
-   "radius_prior": 0.51225
-  },
-  "c.employment_job": {
-   "angle": 115.9248,
-   "axes_angle": 90.0,
-   "centre": 97.8459,
-   "radius": 0.56134,
-   "radius_prior": 0.5597
-  },
-  "c.employment_transition": {
-   "angle": 130.0835,
-   "axes_angle": 135.0,
-   "centre": 115.983,
-   "radius": 0.71222,
-   "radius_prior": 0.71392
-  },
-  "c.energy_systems": {
-   "angle": 29.2568,
-   "axes_angle": 45.0,
-   "centre": 68.9209,
-   "radius": 0.86145,
-   "radius_prior": 0.86339
-  },
-  "c.entrepreneurship": {
-   "angle": 104.0335,
-   "axes_angle": 101.3099,
-   "centre": 85.8206,
-   "radius": 0.65515,
-   "radius_prior": 0.6546
-  },
-  "c.environmental_harm": {
-   "angle": 15.8665,
-   "axes_angle": 32.0054,
-   "centre": 58.5329,
-   "radius": 0.65476,
-   "radius_prior": 0.65381
-  },
-  "c.environmental_stewardship": {
-   "angle": 20.4777,
-   "axes_angle": 0.0,
-   "centre": 62.622,
-   "radius": 0.63725,
-   "radius_prior": 0.63546
-  },
-  "c.ethical_choice": {
-   "angle": 223.0664,
-   "axes_angle": 217.875,
-   "centre": 196.6278,
-   "radius": 0.68255,
-   "radius_prior": 0.68228
-  },
-  "c.etiquette_norms": {
-   "angle": 224.1306,
-   "axes_angle": 225.0,
-   "centre": 196.9657,
-   "radius": 0.59948,
-   "radius_prior": 0.59877
-  },
-  "c.everyday_conversation": {
-   "angle": 229.5788,
-   "axes_angle": 232.125,
-   "centre": 202.6304,
-   "radius": 0.56372,
-   "radius_prior": 0.56207
-  },
-  "c.exams_assessment": {
-   "angle": 185.1557,
-   "axes_angle": 153.4349,
-   "centre": 163.2978,
-   "radius": 0.72629,
-   "radius_prior": 0.72578
-  },
-  "c.exercise_fitness": {
-   "angle": 321.6298,
-   "axes_angle": 318.8141,
-   "centre": 328.464,
-   "radius": 0.60474,
-   "radius_prior": 0.60399
-  },
-  "c.exploitation_trafficking": {
-   "angle": 13.5236,
-   "axes_angle": 45.0,
-   "centre": 57.9248,
-   "radius": 0.65651,
-   "radius_prior": 0.6565
-  },
-  "c.extremism_terrorism": {
-   "angle": 90.9367,
-   "axes_angle": 135.0,
-   "centre": 79.8115,
-   "radius": 0.69448,
-   "radius_prior": 0.6951
-  },
-  "c.family_rituals": {
-   "angle": 247.2625,
-   "axes_angle": 263.6598,
-   "centre": 233.3453,
-   "radius": 0.50366,
-   "radius_prior": 0.50149
-  },
-  "c.family_ties": {
-   "angle": 243.1594,
-   "axes_angle": 239.0362,
-   "centre": 224.9224,
-   "radius": 0.52651,
-   "radius_prior": 0.52458
-  },
-  "c.festivals_events": {
-   "angle": 261.7577,
-   "axes_angle": 300.9638,
-   "centre": 267.3522,
-   "radius": 0.619,
-   "radius_prior": 0.61822
-  },
-  "c.film_tv_video": {
-   "angle": 225.3455,
-   "axes_angle": 206.5651,
-   "centre": 198.1726,
-   "radius": 0.58537,
-   "radius_prior": 0.58342
-  },
-  "c.finance_accounting": {
-   "angle": 139.4315,
-   "axes_angle": 131.1859,
-   "centre": 134.6538,
-   "radius": 0.80173,
-   "radius_prior": 0.8055
-  },
-  "c.fishing_hunting_foraging": {
-   "angle": 0.5931,
-   "axes_angle": 330.9454,
-   "centre": 50.6744,
-   "radius": 0.67271,
-   "radius_prior": 0.67216
-  },
-  "c.folk_belief": {
-   "angle": 237.4162,
-   "axes_angle": 225.0,
-   "centre": 215.3371,
-   "radius": 0.63512,
-   "radius_prior": 0.63483
-  },
-  "c.food_purchasing": {
-   "angle": 331.1721,
-   "axes_angle": 333.4349,
-   "centre": 353.1568,
-   "radius": 0.56745,
-   "radius_prior": 0.56634
-  },
-  "c.fraud_deception": {
-   "angle": 193.5089,
-   "axes_angle": 170.5377,
-   "centre": 168.6103,
-   "radius": 0.61855,
-   "radius_prior": 0.61791
-  },
-  "c.friendship": {
-   "angle": 236.0284,
-   "axes_angle": 243.4349,
-   "centre": 212.9047,
-   "radius": 0.59874,
-   "radius_prior": 0.59877
-  },
-  "c.funeral_mourning": {
-   "angle": 257.3817,
-   "axes_angle": 270.0,
-   "centre": 261.0864,
-   "radius": 0.682,
-   "radius_prior": 0.68228
-  },
-  "c.gambling": {
-   "angle": 240.7028,
-   "axes_angle": 198.4349,
-   "centre": 219.8254,
-   "radius": 0.61838,
-   "radius_prior": 0.61822
-  },
-  "c.games_play": {
-   "angle": 257.8674,
-   "axes_angle": 270.0,
-   "centre": 261.7148,
-   "radius": 0.61859,
-   "radius_prior": 0.61822
-  },
-  "c.geography_science": {
-   "angle": 103.0273,
-   "axes_angle": 108.4349,
-   "centre": 84.811,
-   "radius": 0.84901,
-   "radius_prior": 0.84916
-  },
-  "c.gifts_exchange": {
-   "angle": 265.3262,
-   "axes_angle": 288.4349,
-   "centre": 272.6652,
-   "radius": 0.59859,
-   "radius_prior": 0.59877
-  },
-  "c.government_services": {
-   "angle": 128.6783,
-   "axes_angle": 123.6901,
-   "centre": 113.6731,
-   "radius": 0.61605,
-   "radius_prior": 0.61474
-  },
-  "c.harassment_discrimination": {
-   "angle": 207.8591,
-   "axes_angle": 201.8014,
-   "centre": 185.6477,
-   "radius": 0.59938,
-   "radius_prior": 0.59861
-  },
-  "c.healthcare_work": {
-   "angle": 354.7835,
-   "axes_angle": 57.9946,
-   "centre": 41.7039,
-   "radius": 0.8332,
-   "radius_prior": 0.83714
-  },
-  "c.higher_education": {
-   "angle": 167.4574,
-   "axes_angle": 153.4349,
-   "centre": 155.2613,
-   "radius": 0.81068,
-   "radius_prior": 0.8112
-  },
-  "c.history_science": {
-   "angle": 174.7633,
-   "axes_angle": 116.5651,
-   "centre": 159.2138,
-   "radius": 0.84885,
-   "radius_prior": 0.84916
-  },
-  "c.home_energy_utilities": {
-   "angle": 351.4321,
-   "axes_angle": 333.4349,
-   "centre": 31.3687,
-   "radius": 0.55582,
-   "radius_prior": 0.55337
-  },
-  "c.home_organisation": {
-   "angle": 305.6859,
-   "axes_angle": 311.1859,
-   "centre": 295.3133,
-   "radius": 0.61578,
-   "radius_prior": 0.61506
-  },
-  "c.home_repair_diy": {
-   "angle": 307.055,
-   "axes_angle": 315.0,
-   "centre": 296.7181,
-   "radius": 0.69515,
-   "radius_prior": 0.69731
-  },
-  "c.horticulture_farming": {
-   "angle": 12.9297,
-   "axes_angle": 7.125,
-   "centre": 57.2661,
-   "radius": 0.74529,
-   "radius_prior": 0.74555
-  },
-  "c.hospitality_hosting": {
-   "angle": 270.6125,
-   "axes_angle": 293.9625,
-   "centre": 276.0291,
-   "radius": 0.63485,
-   "radius_prior": 0.63546
-  },
-  "c.hospitality_work": {
-   "angle": 352.455,
-   "axes_angle": 32.0054,
-   "centre": 34.1209,
-   "radius": 0.58534,
-   "radius_prior": 0.58342
-  },
-  "c.household_budgeting": {
-   "angle": 266.5629,
-   "axes_angle": 240.2551,
-   "centre": 274.2916,
-   "radius": 0.64553,
-   "radius_prior": 0.64606
-  },
-  "c.household_gardening": {
-   "angle": 329.9099,
-   "axes_angle": 315.0,
-   "centre": 351.987,
-   "radius": 0.67232,
-   "radius_prior": 0.67216
-  },
-  "c.household_planning": {
-   "angle": 273.5211,
-   "axes_angle": 236.3099,
-   "centre": 278.9421,
-   "radius": 0.61516,
-   "radius_prior": 0.61506
-  },
-  "c.housing_search": {
-   "angle": 352.9549,
-   "axes_angle": 11.3099,
-   "centre": 35.5312,
-   "radius": 0.63561,
-   "radius_prior": 0.63562
-  },
-  "c.human_rights": {
-   "angle": 151.3993,
-   "axes_angle": 147.9946,
-   "centre": 148.6321,
-   "radius": 0.70199,
-   "radius_prior": 0.70206
-  },
-  "c.hygiene_grooming": {
-   "angle": 314.4837,
-   "axes_angle": 311.6335,
-   "centre": 310.9191,
-   "radius": 0.499,
-   "radius_prior": 0.49801
-  },
-  "c.identity_change": {
-   "angle": 230.0863,
-   "axes_angle": 225.0,
-   "centre": 203.3993,
-   "radius": 0.68201,
-   "radius_prior": 0.68228
-  },
-  "c.incarceration": {
-   "angle": 73.5411,
-   "axes_angle": 45.0,
-   "centre": 78.8993,
-   "radius": 0.67603,
-   "radius_prior": 0.6758
-  },
-  "c.inclusion_discrimination": {
-   "angle": 211.7888,
-   "axes_angle": 194.0362,
-   "centre": 188.5588,
-   "radius": 0.672,
-   "radius_prior": 0.67216
-  },
-  "c.income_earning": {
-   "angle": 156.8288,
-   "axes_angle": 168.6901,
-   "centre": 150.5994,
-   "radius": 0.56692,
-   "radius_prior": 0.56634
-  },
-  "c.informal_gig": {
-   "angle": 76.6006,
-   "axes_angle": 45.0,
-   "centre": 79.5074,
-   "radius": 0.53688,
-   "radius_prior": 0.53597
-  },
-  "c.insurance_risk": {
-   "angle": 157.7878,
-   "axes_angle": 135.0,
-   "centre": 150.9035,
-   "radius": 0.6466,
-   "radius_prior": 0.64606
-  },
-  "c.it_operations": {
-   "angle": 112.6802,
-   "axes_angle": 74.0546,
-   "centre": 94.3889,
-   "radius": 0.83282,
-   "radius_prior": 0.83366
-  },
-  "c.job_loss": {
-   "angle": 130.8201,
-   "axes_angle": 135.0,
-   "centre": 117.2237,
-   "radius": 0.66566,
-   "radius_prior": 0.66647
-  },
-  "c.job_search": {
-   "angle": 125.459,
-   "axes_angle": 135.0,
-   "centre": 109.4709,
-   "radius": 0.53816,
-   "radius_prior": 0.53597
-  },
-  "c.journalism": {
-   "angle": 184.1664,
-   "axes_angle": 126.8699,
-   "centre": 162.3687,
-   "radius": 0.70206,
-   "radius_prior": 0.70206
-  },
-  "c.labour_organising": {
-   "angle": 118.9725,
-   "axes_angle": 119.7449,
-   "centre": 101.0706,
-   "radius": 0.6362,
-   "radius_prior": 0.63657
-  },
-  "c.language_learning": {
-   "angle": 196.5712,
-   "axes_angle": 216.8699,
-   "centre": 172.2425,
-   "radius": 0.79711,
-   "radius_prior": 0.79696
-  },
-  "c.legal_profession": {
-   "angle": 158.5156,
-   "axes_angle": 135.0,
-   "centre": 151.2616,
-   "radius": 0.86572,
-   "radius_prior": 0.86814
-  },
-  "c.legal_system": {
-   "angle": 133.146,
-   "axes_angle": 131.1859,
-   "centre": 122.4534,
-   "radius": 0.76555,
-   "radius_prior": 0.76754
-  },
-  "c.life_purpose": {
-   "angle": 221.4728,
-   "axes_angle": 225.0,
-   "centre": 195.8507,
-   "radius": 0.66714,
-   "radius_prior": 0.66647
-  },
-  "c.life_sciences": {
-   "angle": 68.7826,
-   "axes_angle": 90.0,
-   "centre": 78.0002,
-   "radius": 0.8814,
-   "radius_prior": 0.88269
-  },
-  "c.linguistics_literature": {
-   "angle": 191.9615,
-   "axes_angle": 146.3099,
-   "centre": 166.7656,
-   "radius": 0.86351,
-   "radius_prior": 0.86593
-  },
-  "c.loneliness_isolation": {
-   "angle": 228.1839,
-   "axes_angle": 243.4349,
-   "centre": 200.8526,
-   "radius": 0.59945,
-   "radius_prior": 0.59877
-  },
-  "c.maker_tinkering": {
-   "angle": 298.1939,
-   "axes_angle": 315.0,
-   "centre": 290.5849,
-   "radius": 0.78871,
-   "radius_prior": 0.78905
-  },
-  "c.management_executive": {
-   "angle": 101.9228,
-   "axes_angle": 122.0054,
-   "centre": 83.8909,
-   "radius": 0.76892,
-   "radius_prior": 0.77323
-  },
-  "c.manufacturing": {
-   "angle": 37.8557,
-   "axes_angle": 45.0,
-   "centre": 71.7467,
-   "radius": 0.80295,
-   "radius_prior": 0.80392
-  },
-  "c.marriage_cohabitation": {
-   "angle": 244.8416,
-   "axes_angle": 246.0375,
-   "centre": 228.2837,
-   "radius": 0.52524,
-   "radius_prior": 0.52458
-  },
-  "c.marriage_wedding": {
-   "angle": 244.4943,
-   "axes_angle": 233.1301,
-   "centre": 227.7363,
-   "radius": 0.50314,
-   "radius_prior": 0.50149
-  },
-  "c.materials_science": {
-   "angle": 51.6971,
-   "axes_angle": 45.0,
-   "centre": 74.9062,
-   "radius": 0.90719,
-   "radius_prior": 0.908
-  },
-  "c.mathematics": {
-   "angle": 138.5158,
-   "axes_angle": 145.008,
-   "centre": 132.7898,
-   "radius": 0.86503,
-   "radius_prior": 0.86593
-  },
-  "c.mechanical_engineering": {
-   "angle": 35.0623,
-   "axes_angle": 41.1859,
-   "centre": 70.6629,
-   "radius": 0.87734,
-   "radius_prior": 0.87826
-  },
-  "c.media_publishing": {
-   "angle": 205.9777,
-   "axes_angle": 130.6013,
-   "centre": 183.1351,
-   "radius": 0.79028,
-   "radius_prior": 0.79222
-  },
-  "c.mediation_dispute_resolution": {
-   "angle": 189.9717,
-   "axes_angle": 180.0,
-   "centre": 165.7745,
-   "radius": 0.76311,
-   "radius_prior": 0.7639
-  },
-  "c.medical_care": {
-   "angle": 323.7743,
-   "axes_angle": 23.1986,
-   "centre": 336.7441,
-   "radius": 0.56924,
-   "radius_prior": 0.5616
-  },
-  "c.medication_adherence": {
-   "angle": 316.1293,
-   "axes_angle": 296.5651,
-   "centre": 313.668,
-   "radius": 0.56195,
-   "radius_prior": 0.5616
-  },
-  "c.medicine_science": {
-   "angle": 30.4439,
-   "axes_angle": 66.8014,
-   "centre": 69.776,
-   "radius": 0.89412,
-   "radius_prior": 0.89946
-  },
-  "c.mental_health": {
-   "angle": 241.0891,
-   "axes_angle": 216.8699,
-   "centre": 220.4132,
-   "radius": 0.62787,
-   "radius_prior": 0.62518
-  },
-  "c.mentoring_peer_support": {
-   "angle": 215.7448,
-   "axes_angle": 221.1859,
-   "centre": 190.1159,
+   "centre": 186.6349,
    "radius": 0.72552,
    "radius_prior": 0.72578
   },
+  "c.bereavement": {
+   "angle": 248.9517,
+   "axes_angle": 225.0,
+   "centre": 235.3542,
+   "radius": 0.65057,
+   "radius_prior": 0.65065
+  },
+  "c.biotechnology": {
+   "angle": 43.258,
+   "axes_angle": 60.2551,
+   "centre": 72.8585,
+   "radius": 0.90715,
+   "radius_prior": 0.908
+  },
+  "c.birth_of_child": {
+   "angle": 308.1889,
+   "axes_angle": 306.8699,
+   "centre": 293.3876,
+   "radius": 0.68129,
+   "radius_prior": 0.68228
+  },
+  "c.border_migration_admin": {
+   "angle": 97.3792,
+   "axes_angle": 110.556,
+   "centre": 81.5501,
+   "radius": 0.68051,
+   "radius_prior": 0.68023
+  },
+  "c.borrowing_debt": {
+   "angle": 234.7645,
+   "axes_angle": 161.5651,
+   "centre": 210.0549,
+   "radius": 0.64609,
+   "radius_prior": 0.64606
+  },
+  "c.bullying_harassment": {
+   "angle": 211.731,
+   "axes_angle": 240.2551,
+   "centre": 188.6727,
+   "radius": 0.59882,
+   "radius_prior": 0.59877
+  },
+  "c.business_administration": {
+   "angle": 106.6545,
+   "axes_angle": 113.1986,
+   "centre": 90.1712,
+   "radius": 0.58589,
+   "radius_prior": 0.58342
+  },
+  "c.business_science": {
+   "angle": 114.4285,
+   "axes_angle": 138.8141,
+   "centre": 97.8852,
+   "radius": 0.81326,
+   "radius_prior": 0.81563
+  },
+  "c.care_of_ill_disabled": {
+   "angle": 315.5018,
+   "axes_angle": 321.3402,
+   "centre": 307.3973,
+   "radius": 0.64554,
+   "radius_prior": 0.64638
+  },
+  "c.celebrations": {
+   "angle": 250.75,
+   "axes_angle": 284.0362,
+   "centre": 239.2689,
+   "radius": 0.59891,
+   "radius_prior": 0.59877
+  },
+  "c.charity_giving": {
+   "angle": 258.4018,
+   "axes_angle": 251.5651,
+   "centre": 257.4829,
+   "radius": 0.61701,
+   "radius_prior": 0.61712
+  },
+  "c.chemistry": {
+   "angle": 47.0801,
+   "axes_angle": 50.1944,
+   "centre": 73.9642,
+   "radius": 0.8658,
+   "radius_prior": 0.86593
+  },
+  "c.child_abuse_neglect": {
+   "angle": 280.3148,
+   "axes_angle": 296.5651,
+   "centre": 284.417,
+   "radius": 0.63695,
+   "radius_prior": 0.6372
+  },
+  "c.childcare_other": {
+   "angle": 293.8987,
+   "axes_angle": 321.3402,
+   "centre": 287.6034,
+   "radius": 0.55013,
+   "radius_prior": 0.54768
+  },
+  "c.children_play": {
+   "angle": 284.5569,
+   "axes_angle": 307.875,
+   "centre": 285.1488,
+   "radius": 0.58463,
+   "radius_prior": 0.58342
+  },
+  "c.civil_engineering": {
+   "angle": 33.9722,
+   "axes_angle": 48.8141,
+   "centre": 70.3653,
+   "radius": 0.8904,
+   "radius_prior": 0.89313
+  },
+  "c.civil_society_advocacy": {
+   "angle": 139.1773,
+   "axes_angle": 129.8056,
+   "centre": 138.8392,
+   "radius": 0.65873,
+   "radius_prior": 0.6584
+  },
+  "c.cleaning_laundry": {
+   "angle": 309.113,
+   "axes_angle": 318.3665,
+   "centre": 294.3707,
+   "radius": 0.55462,
+   "radius_prior": 0.55337
+  },
+  "c.clothing_footwear": {
+   "angle": 332.3923,
+   "axes_angle": 327.9946,
+   "centre": 346.2897,
+   "radius": 0.56648,
+   "radius_prior": 0.56634
+  },
+  "c.coming_of_age": {
+   "angle": 228.0872,
+   "axes_angle": 249.444,
+   "centre": 202.6953,
+   "radius": 0.65115,
+   "radius_prior": 0.65065
+  },
+  "c.community_groups": {
+   "angle": 240.4738,
+   "axes_angle": 233.1301,
+   "centre": 218.2549,
+   "radius": 0.59979,
+   "radius_prior": 0.59877
+  },
+  "c.commuting": {
+   "angle": 2.915,
+   "axes_angle": 333.4349,
+   "centre": 49.068,
+   "radius": 0.49398,
+   "radius_prior": 0.492
+  },
+  "c.computer_science": {
+   "angle": 134.1084,
+   "axes_angle": 139.3987,
+   "centre": 128.711,
+   "radius": 0.90615,
+   "radius_prior": 0.908
+  },
+  "c.conflict_interpersonal": {
+   "angle": 211.0992,
+   "axes_angle": 228.8141,
+   "centre": 188.3632,
+   "radius": 0.60001,
+   "radius_prior": 0.59877
+  },
+  "c.construction_trades": {
+   "angle": 24.7248,
+   "axes_angle": 36.8699,
+   "centre": 66.4698,
+   "radius": 0.727,
+   "radius_prior": 0.72578
+  },
+  "c.cooking": {
+   "angle": 333.5863,
+   "axes_angle": 315.0,
+   "centre": 349.2388,
+   "radius": 0.67382,
+   "radius_prior": 0.67675
+  },
+  "c.corruption": {
+   "angle": 143.6194,
+   "axes_angle": 135.0,
+   "centre": 146.2031,
+   "radius": 0.63797,
+   "radius_prior": 0.6372
+  },
+  "c.counselling_therapy": {
+   "angle": 228.8133,
+   "axes_angle": 212.0054,
+   "centre": 203.5886,
+   "radius": 0.6059,
+   "radius_prior": 0.60399
+  },
+  "c.crafts_hobbies": {
+   "angle": 310.2665,
+   "axes_angle": 315.0,
+   "centre": 297.6348,
+   "radius": 0.7218,
+   "radius_prior": 0.72262
+  },
+  "c.creative_writing": {
+   "angle": 214.079,
+   "axes_angle": 221.1859,
+   "centre": 190.4635,
+   "radius": 0.68829,
+   "radius_prior": 0.68782
+  },
+  "c.cultural_identity": {
+   "angle": 230.7915,
+   "axes_angle": 225.0,
+   "centre": 205.8381,
+   "radius": 0.66619,
+   "radius_prior": 0.66647
+  },
+  "c.cultural_visits": {
+   "angle": 256.1397,
+   "axes_angle": 315.0,
+   "centre": 253.273,
+   "radius": 0.61928,
+   "radius_prior": 0.61822
+  },
+  "c.customer_service": {
+   "angle": 91.0951,
+   "axes_angle": 113.1986,
+   "centre": 80.1225,
+   "radius": 0.56072,
+   "radius_prior": 0.5597
+  },
+  "c.cybercrime": {
+   "angle": 174.9185,
+   "axes_angle": 135.0,
+   "centre": 161.8636,
+   "radius": 0.78754,
+   "radius_prior": 0.78905
+  },
+  "c.cybersecurity": {
+   "angle": 127.9981,
+   "axes_angle": 123.6901,
+   "centre": 116.6234,
+   "radius": 0.87731,
+   "radius_prior": 0.87826
+  },
+  "c.death_dying": {
+   "angle": 276.0224,
+   "axes_angle": 299.7449,
+   "centre": 283.8089,
+   "radius": 0.71325,
+   "radius_prior": 0.71392
+  },
+  "c.digital_tool_use": {
+   "angle": 182.6433,
+   "axes_angle": 236.3099,
+   "centre": 164.6973,
+   "radius": 0.69972,
+   "radius_prior": 0.69984
+  },
+  "c.disability_adaptation": {
+   "angle": 325.2959,
+   "axes_angle": 326.3099,
+   "centre": 332.9513,
+   "radius": 0.70786,
+   "radius_prior": 0.70886
+  },
+  "c.disaster_experience": {
+   "angle": 23.1546,
+   "axes_angle": 333.4349,
+   "centre": 65.1724,
+   "radius": 0.69849,
+   "radius_prior": 0.6981
+  },
+  "c.divorce": {
+   "angle": 224.8296,
+   "axes_angle": 225.0,
+   "centre": 199.0921,
+   "radius": 0.69746,
+   "radius_prior": 0.6981
+  },
+  "c.domestic_abuse": {
+   "angle": 272.3814,
+   "axes_angle": 249.444,
+   "centre": 280.0752,
+   "radius": 0.63671,
+   "radius_prior": 0.6372
+  },
+  "c.driving": {
+   "angle": 4.4206,
+   "axes_angle": 339.444,
+   "centre": 51.3042,
+   "radius": 0.69255,
+   "radius_prior": 0.69415
+  },
+  "c.drug_crime": {
+   "angle": 17.1217,
+   "axes_angle": 50.1944,
+   "centre": 57.3116,
+   "radius": 0.6567,
+   "radius_prior": 0.6565
+  },
+  "c.early_childhood_education": {
+   "angle": 268.7685,
+   "axes_angle": 333.4349,
+   "centre": 273.4316,
+   "radius": 0.7814,
+   "radius_prior": 0.78273
+  },
+  "c.earth_sciences": {
+   "angle": 75.3793,
+   "axes_angle": 60.2551,
+   "centre": 78.6664,
+   "radius": 0.86576,
+   "radius_prior": 0.86593
+  },
+  "c.eating_drinking": {
+   "angle": 325.7117,
+   "axes_angle": 315.0,
+   "centre": 333.5514,
+   "radius": 0.52088,
+   "radius_prior": 0.51921
+  },
+  "c.ecology_science": {
+   "angle": 46.1146,
+   "axes_angle": 81.8699,
+   "centre": 73.5038,
+   "radius": 0.84707,
+   "radius_prior": 0.84916
+  },
+  "c.economics": {
+   "angle": 136.6809,
+   "axes_angle": 138.8141,
+   "centre": 135.4221,
+   "radius": 0.88143,
+   "radius_prior": 0.88269
+  },
+  "c.eldercare": {
+   "angle": 305.3047,
+   "axes_angle": 333.4349,
+   "centre": 289.8577,
+   "radius": 0.66647,
+   "radius_prior": 0.66757
+  },
+  "c.electrical_engineering": {
+   "angle": 34.6239,
+   "axes_angle": 45.0,
+   "centre": 70.9665,
+   "radius": 0.89226,
+   "radius_prior": 0.89313
+  },
+  "c.elementary_occupations": {
+   "angle": 22.7486,
+   "axes_angle": 26.5651,
+   "centre": 64.7577,
+   "radius": 0.51617,
+   "radius_prior": 0.51225
+  },
+  "c.employment_job": {
+   "angle": 109.9673,
+   "axes_angle": 90.0,
+   "centre": 94.485,
+   "radius": 0.56178,
+   "radius_prior": 0.5597
+  },
+  "c.employment_transition": {
+   "angle": 126.3709,
+   "axes_angle": 135.0,
+   "centre": 113.6289,
+   "radius": 0.71196,
+   "radius_prior": 0.71392
+  },
+  "c.energy_systems": {
+   "angle": 29.6288,
+   "axes_angle": 45.0,
+   "centre": 68.1349,
+   "radius": 0.86152,
+   "radius_prior": 0.86339
+  },
+  "c.entrepreneurship": {
+   "angle": 101.2351,
+   "axes_angle": 101.3099,
+   "centre": 84.0993,
+   "radius": 0.65511,
+   "radius_prior": 0.6546
+  },
+  "c.environmental_harm": {
+   "angle": 16.4076,
+   "axes_angle": 32.0054,
+   "centre": 57.0076,
+   "radius": 0.65475,
+   "radius_prior": 0.65381
+  },
+  "c.environmental_stewardship": {
+   "angle": 19.9929,
+   "axes_angle": 0.0,
+   "centre": 60.7926,
+   "radius": 0.63711,
+   "radius_prior": 0.63546
+  },
+  "c.ethical_choice": {
+   "angle": 225.2234,
+   "axes_angle": 217.875,
+   "centre": 199.4516,
+   "radius": 0.68257,
+   "radius_prior": 0.68228
+  },
+  "c.etiquette_norms": {
+   "angle": 224.1969,
+   "axes_angle": 225.0,
+   "centre": 198.4624,
+   "radius": 0.59935,
+   "radius_prior": 0.59877
+  },
+  "c.everyday_conversation": {
+   "angle": 232.2039,
+   "axes_angle": 232.125,
+   "centre": 206.5638,
+   "radius": 0.56359,
+   "radius_prior": 0.56207
+  },
+  "c.exams_assessment": {
+   "angle": 178.9592,
+   "axes_angle": 153.4349,
+   "centre": 162.7928,
+   "radius": 0.72642,
+   "radius_prior": 0.72578
+  },
+  "c.exercise_fitness": {
+   "angle": 319.2802,
+   "axes_angle": 318.8141,
+   "centre": 314.3055,
+   "radius": 0.60488,
+   "radius_prior": 0.60399
+  },
+  "c.exploitation_trafficking": {
+   "angle": 14.6533,
+   "axes_angle": 45.0,
+   "centre": 56.7035,
+   "radius": 0.65647,
+   "radius_prior": 0.6565
+  },
+  "c.extremism_terrorism": {
+   "angle": 124.6283,
+   "axes_angle": 135.0,
+   "centre": 109.5497,
+   "radius": 0.6944,
+   "radius_prior": 0.6951
+  },
+  "c.family_rituals": {
+   "angle": 246.1154,
+   "axes_angle": 263.6598,
+   "centre": 230.9279,
+   "radius": 0.50429,
+   "radius_prior": 0.50149
+  },
+  "c.family_ties": {
+   "angle": 244.4511,
+   "axes_angle": 239.0362,
+   "centre": 224.6606,
+   "radius": 0.52643,
+   "radius_prior": 0.52458
+  },
+  "c.festivals_events": {
+   "angle": 264.282,
+   "axes_angle": 300.9638,
+   "centre": 266.6522,
+   "radius": 0.61881,
+   "radius_prior": 0.61822
+  },
+  "c.film_tv_video": {
+   "angle": 221.5148,
+   "axes_angle": 206.5651,
+   "centre": 195.512,
+   "radius": 0.58546,
+   "radius_prior": 0.58342
+  },
+  "c.finance_accounting": {
+   "angle": 135.1906,
+   "axes_angle": 131.1859,
+   "centre": 130.8084,
+   "radius": 0.80204,
+   "radius_prior": 0.8055
+  },
+  "c.fishing_hunting_foraging": {
+   "angle": 3.1722,
+   "axes_angle": 330.9454,
+   "centre": 49.4126,
+   "radius": 0.67276,
+   "radius_prior": 0.67216
+  },
+  "c.folk_belief": {
+   "angle": 236.3714,
+   "axes_angle": 225.0,
+   "centre": 212.4037,
+   "radius": 0.63515,
+   "radius_prior": 0.63483
+  },
+  "c.food_purchasing": {
+   "angle": 341.3378,
+   "axes_angle": 333.4349,
+   "centre": 6.3907,
+   "radius": 0.56772,
+   "radius_prior": 0.56634
+  },
+  "c.fraud_deception": {
+   "angle": 187.0635,
+   "axes_angle": 170.5377,
+   "centre": 167.4971,
+   "radius": 0.61875,
+   "radius_prior": 0.61791
+  },
+  "c.friendship": {
+   "angle": 237.1733,
+   "axes_angle": 243.4349,
+   "centre": 213.3092,
+   "radius": 0.59859,
+   "radius_prior": 0.59877
+  },
+  "c.funeral_mourning": {
+   "angle": 256.8659,
+   "axes_angle": 270.0,
+   "centre": 254.7467,
+   "radius": 0.68191,
+   "radius_prior": 0.68228
+  },
+  "c.gambling": {
+   "angle": 242.1918,
+   "axes_angle": 198.4349,
+   "centre": 221.421,
+   "radius": 0.61835,
+   "radius_prior": 0.61822
+  },
+  "c.games_play": {
+   "angle": 268.1278,
+   "axes_angle": 270.0,
+   "centre": 272.2896,
+   "radius": 0.61853,
+   "radius_prior": 0.61822
+  },
+  "c.geography_science": {
+   "angle": 104.441,
+   "axes_angle": 108.4349,
+   "centre": 87.9268,
+   "radius": 0.84903,
+   "radius_prior": 0.84916
+  },
+  "c.gifts_exchange": {
+   "angle": 260.0905,
+   "axes_angle": 288.4349,
+   "centre": 261.0351,
+   "radius": 0.59865,
+   "radius_prior": 0.59877
+  },
+  "c.government_services": {
+   "angle": 125.5655,
+   "axes_angle": 123.6901,
+   "centre": 111.319,
+   "radius": 0.61565,
+   "radius_prior": 0.61474
+  },
+  "c.harassment_discrimination": {
+   "angle": 203.7782,
+   "axes_angle": 201.8014,
+   "centre": 182.9605,
+   "radius": 0.59951,
+   "radius_prior": 0.59861
+  },
+  "c.healthcare_work": {
+   "angle": 2.4344,
+   "axes_angle": 57.9946,
+   "centre": 47.3905,
+   "radius": 0.83327,
+   "radius_prior": 0.83714
+  },
+  "c.higher_education": {
+   "angle": 162.1384,
+   "axes_angle": 153.4349,
+   "centre": 154.4522,
+   "radius": 0.81073,
+   "radius_prior": 0.8112
+  },
+  "c.history_science": {
+   "angle": 165.8606,
+   "axes_angle": 116.5651,
+   "centre": 158.4047,
+   "radius": 0.84875,
+   "radius_prior": 0.84916
+  },
+  "c.home_energy_utilities": {
+   "angle": 333.9895,
+   "axes_angle": 333.4349,
+   "centre": 351.367,
+   "radius": 0.55569,
+   "radius_prior": 0.55337
+  },
+  "c.home_organisation": {
+   "angle": 307.4365,
+   "axes_angle": 311.1859,
+   "centre": 292.4028,
+   "radius": 0.61583,
+   "radius_prior": 0.61506
+  },
+  "c.home_repair_diy": {
+   "angle": 309.5165,
+   "axes_angle": 315.0,
+   "centre": 295.7738,
+   "radius": 0.69538,
+   "radius_prior": 0.69731
+  },
+  "c.horticulture_farming": {
+   "angle": 10.0184,
+   "axes_angle": 7.125,
+   "centre": 54.0408,
+   "radius": 0.74519,
+   "radius_prior": 0.74555
+  },
+  "c.hospitality_hosting": {
+   "angle": 269.5924,
+   "axes_angle": 293.9625,
+   "centre": 274.7673,
+   "radius": 0.63459,
+   "radius_prior": 0.63546
+  },
+  "c.hospitality_work": {
+   "angle": 358.187,
+   "axes_angle": 32.0054,
+   "centre": 38.9357,
+   "radius": 0.58525,
+   "radius_prior": 0.58342
+  },
+  "c.household_budgeting": {
+   "angle": 259.487,
+   "axes_angle": 240.2551,
+   "centre": 260.1196,
+   "radius": 0.64554,
+   "radius_prior": 0.64606
+  },
+  "c.household_gardening": {
+   "angle": 334.6842,
+   "axes_angle": 315.0,
+   "centre": 352.7841,
+   "radius": 0.67222,
+   "radius_prior": 0.67216
+  },
+  "c.household_planning": {
+   "angle": 271.1168,
+   "axes_angle": 236.3099,
+   "centre": 277.6803,
+   "radius": 0.61506,
+   "radius_prior": 0.61506
+  },
+  "c.housing_search": {
+   "angle": 342.0309,
+   "axes_angle": 11.3099,
+   "centre": 8.0693,
+   "radius": 0.63551,
+   "radius_prior": 0.63562
+  },
+  "c.human_rights": {
+   "angle": 151.5156,
+   "axes_angle": 147.9946,
+   "centre": 148.8456,
+   "radius": 0.70153,
+   "radius_prior": 0.70206
+  },
+  "c.hygiene_grooming": {
+   "angle": 314.9421,
+   "axes_angle": 311.6335,
+   "centre": 305.5766,
+   "radius": 0.49907,
+   "radius_prior": 0.49801
+  },
+  "c.identity_change": {
+   "angle": 231.421,
+   "axes_angle": 225.0,
+   "centre": 206.1422,
+   "radius": 0.68191,
+   "radius_prior": 0.68228
+  },
+  "c.incarceration": {
+   "angle": 65.9682,
+   "axes_angle": 45.0,
+   "centre": 76.9638,
+   "radius": 0.67599,
+   "radius_prior": 0.6758
+  },
+  "c.inclusion_discrimination": {
+   "angle": 203.2553,
+   "axes_angle": 194.0362,
+   "centre": 182.6564,
+   "radius": 0.67159,
+   "radius_prior": 0.67216
+  },
+  "c.income_earning": {
+   "angle": 127.3756,
+   "axes_angle": 168.6901,
+   "centre": 114.888,
+   "radius": 0.56718,
+   "radius_prior": 0.56634
+  },
+  "c.informal_gig": {
+   "angle": 80.2089,
+   "axes_angle": 45.0,
+   "centre": 79.0024,
+   "radius": 0.5368,
+   "radius_prior": 0.53597
+  },
+  "c.insurance_risk": {
+   "angle": 140.6204,
+   "axes_angle": 135.0,
+   "centre": 141.4713,
+   "radius": 0.64689,
+   "radius_prior": 0.64606
+  },
+  "c.it_operations": {
+   "angle": 115.3897,
+   "axes_angle": 74.0546,
+   "centre": 98.552,
+   "radius": 0.83296,
+   "radius_prior": 0.83366
+  },
+  "c.job_loss": {
+   "angle": 118.0201,
+   "axes_angle": 135.0,
+   "centre": 101.0034,
+   "radius": 0.66556,
+   "radius_prior": 0.66647
+  },
+  "c.job_search": {
+   "angle": 117.409,
+   "axes_angle": 135.0,
+   "centre": 100.1304,
+   "radius": 0.5382,
+   "radius_prior": 0.53597
+  },
+  "c.journalism": {
+   "angle": 173.7954,
+   "axes_angle": 126.8699,
+   "centre": 161.5596,
+   "radius": 0.70236,
+   "radius_prior": 0.70206
+  },
+  "c.labour_organising": {
+   "angle": 117.0849,
+   "axes_angle": 119.7449,
+   "centre": 99.6534,
+   "radius": 0.63618,
+   "radius_prior": 0.63657
+  },
+  "c.language_learning": {
+   "angle": 198.8983,
+   "axes_angle": 216.8699,
+   "centre": 180.9955,
+   "radius": 0.79678,
+   "radius_prior": 0.79696
+  },
+  "c.legal_profession": {
+   "angle": 155.3665,
+   "axes_angle": 135.0,
+   "centre": 150.4525,
+   "radius": 0.86531,
+   "radius_prior": 0.86814
+  },
+  "c.legal_system": {
+   "angle": 134.6635,
+   "axes_angle": 131.1859,
+   "centre": 129.2967,
+   "radius": 0.76559,
+   "radius_prior": 0.76754
+  },
+  "c.life_purpose": {
+   "angle": 222.5102,
+   "axes_angle": 225.0,
+   "centre": 196.8541,
+   "radius": 0.66743,
+   "radius_prior": 0.66647
+  },
+  "c.life_sciences": {
+   "angle": 67.214,
+   "axes_angle": 90.0,
+   "centre": 77.4951,
+   "radius": 0.88157,
+   "radius_prior": 0.88269
+  },
+  "c.linguistics_literature": {
+   "angle": 181.5395,
+   "axes_angle": 146.3099,
+   "centre": 163.7468,
+   "radius": 0.86376,
+   "radius_prior": 0.86593
+  },
+  "c.loneliness_isolation": {
+   "angle": 230.3606,
+   "axes_angle": 243.4349,
+   "centre": 205.534,
+   "radius": 0.59918,
+   "radius_prior": 0.59877
+  },
+  "c.maker_tinkering": {
+   "angle": 331.5133,
+   "axes_angle": 315.0,
+   "centre": 344.3101,
+   "radius": 0.78889,
+   "radius_prior": 0.78905
+  },
+  "c.management_executive": {
+   "angle": 99.8316,
+   "axes_angle": 122.0054,
+   "centre": 82.4736,
+   "radius": 0.76938,
+   "radius_prior": 0.77323
+  },
+  "c.manufacturing": {
+   "angle": 37.4525,
+   "axes_angle": 45.0,
+   "centre": 71.5928,
+   "radius": 0.80326,
+   "radius_prior": 0.80392
+  },
+  "c.marriage_cohabitation": {
+   "angle": 248.5514,
+   "axes_angle": 246.0375,
+   "centre": 234.9285,
+   "radius": 0.52559,
+   "radius_prior": 0.52458
+  },
+  "c.marriage_wedding": {
+   "angle": 242.7086,
+   "axes_angle": 233.1301,
+   "centre": 221.8467,
+   "radius": 0.50341,
+   "radius_prior": 0.50149
+  },
+  "c.materials_science": {
+   "angle": 45.4945,
+   "axes_angle": 45.0,
+   "centre": 73.1762,
+   "radius": 0.90725,
+   "radius_prior": 0.908
+  },
+  "c.mathematics": {
+   "angle": 144.6875,
+   "axes_angle": 145.008,
+   "centre": 147.6027,
+   "radius": 0.86498,
+   "radius_prior": 0.86593
+  },
+  "c.mechanical_engineering": {
+   "angle": 28.8446,
+   "axes_angle": 41.1859,
+   "centre": 67.799,
+   "radius": 0.87612,
+   "radius_prior": 0.87826
+  },
+  "c.media_publishing": {
+   "angle": 202.1123,
+   "axes_angle": 130.6013,
+   "centre": 181.9544,
+   "radius": 0.79023,
+   "radius_prior": 0.79222
+  },
+  "c.mediation_dispute_resolution": {
+   "angle": 187.7687,
+   "axes_angle": 180.0,
+   "centre": 168.1052,
+   "radius": 0.76325,
+   "radius_prior": 0.7639
+  },
+  "c.medical_care": {
+   "angle": 328.3113,
+   "axes_angle": 23.1986,
+   "centre": 339.197,
+   "radius": 0.56874,
+   "radius_prior": 0.5616
+  },
+  "c.medication_adherence": {
+   "angle": 316.8453,
+   "axes_angle": 296.5651,
+   "centre": 310.7669,
+   "radius": 0.56207,
+   "radius_prior": 0.5616
+  },
+  "c.medicine_science": {
+   "angle": 32.6813,
+   "axes_angle": 66.8014,
+   "centre": 69.3346,
+   "radius": 0.89485,
+   "radius_prior": 0.89946
+  },
+  "c.mental_health": {
+   "angle": 241.5396,
+   "axes_angle": 216.8699,
+   "centre": 220.5291,
+   "radius": 0.62756,
+   "radius_prior": 0.62518
+  },
+  "c.mentoring_peer_support": {
+   "angle": 216.0666,
+   "axes_angle": 221.1859,
+   "centre": 192.287,
+   "radius": 0.72544,
+   "radius_prior": 0.72578
+  },
   "c.migration": {
-   "angle": 28.7255,
+   "angle": 31.4218,
    "axes_angle": 30.9638,
-   "centre": 68.5965,
-   "radius": 0.74453,
+   "centre": 68.4592,
+   "radius": 0.74471,
    "radius_prior": 0.74555
   },
   "c.military_defence": {
-   "angle": 58.9907,
+   "angle": 64.2664,
    "axes_angle": 53.1301,
-   "centre": 75.5279,
-   "radius": 0.74546,
+   "centre": 76.6597,
+   "radius": 0.7455,
    "radius_prior": 0.74571
   },
   "c.misinformation_defamation": {
-   "angle": 191.3291,
+   "angle": 187.5158,
    "axes_angle": 165.9638,
-   "centre": 166.4367,
-   "radius": 0.63704,
+   "centre": 167.8012,
+   "radius": 0.63718,
    "radius_prior": 0.6372
   },
   "c.moving_relocation": {
-   "angle": 354.695,
+   "angle": 357.2476,
    "axes_angle": 330.2551,
-   "centre": 38.8735,
-   "radius": 0.56013,
+   "centre": 35.8265,
+   "radius": 0.55999,
    "radius_prior": 0.55938
   },
   "c.music_listening": {
-   "angle": 234.6996,
+   "angle": 233.7954,
    "axes_angle": 249.444,
-   "centre": 210.8496,
-   "radius": 0.58536,
+   "centre": 208.6499,
+   "radius": 0.58502,
    "radius_prior": 0.58342
   },
   "c.music_making": {
-   "angle": 238.9476,
+   "angle": 238.8263,
    "axes_angle": 270.0,
-   "centre": 217.5812,
-   "radius": 0.75534,
+   "centre": 215.5533,
+   "radius": 0.75564,
    "radius_prior": 0.75742
   },
   "c.mutual_aid": {
-   "angle": 277.5758,
+   "angle": 274.3541,
    "axes_angle": 276.3402,
-   "centre": 283.4512,
-   "radius": 0.6003,
+   "centre": 281.942,
+   "radius": 0.60027,
    "radius_prior": 0.59877
   },
   "c.negligence_recklessness": {
-   "angle": 328.57,
+   "angle": 325.1487,
    "axes_angle": 213.6901,
-   "centre": 347.4759,
-   "radius": 0.6176,
+   "centre": 332.6202,
+   "radius": 0.61775,
    "radius_prior": 0.61791
   },
   "c.neighbours_community": {
-   "angle": 249.5306,
+   "angle": 253.1618,
    "axes_angle": 253.3008,
-   "centre": 241.1803,
-   "radius": 0.60046,
+   "centre": 245.6125,
+   "radius": 0.60022,
    "radius_prior": 0.59877
   },
   "c.neuroscience": {
-   "angle": 95.2094,
+   "angle": 96.3597,
    "axes_angle": 98.1301,
-   "centre": 82.0518,
-   "radius": 0.89852,
+   "centre": 81.2427,
+   "radius": 0.89867,
    "radius_prior": 0.89946
   },
   "c.news_media": {
-   "angle": 193.8494,
+   "angle": 183.8135,
    "axes_angle": 159.444,
-   "centre": 168.9143,
-   "radius": 0.63579,
+   "centre": 165.6231,
+   "radius": 0.63572,
    "radius_prior": 0.63562
   },
   "c.nightlife": {
-   "angle": 279.677,
+   "angle": 281.6735,
    "axes_angle": 320.1944,
-   "centre": 285.318,
-   "radius": 0.61803,
+   "centre": 284.7211,
+   "radius": 0.61809,
    "radius_prior": 0.61822
   },
   "c.nutrition_diet": {
-   "angle": 329.0763,
+   "angle": 332.954,
    "axes_angle": 319.3987,
-   "centre": 350.3781,
-   "radius": 0.60476,
+   "centre": 347.7823,
+   "radius": 0.60478,
    "radius_prior": 0.60399
   },
   "c.occupational_safety": {
-   "angle": 12.3392,
+   "angle": 13.9929,
    "axes_angle": 36.8699,
-   "centre": 56.5737,
-   "radius": 0.63121,
+   "centre": 56.3658,
+   "radius": 0.63179,
    "radius_prior": 0.63088
   },
   "c.online_commerce": {
-   "angle": 95.9204,
+   "angle": 69.4242,
    "axes_angle": 101.3099,
-   "centre": 82.3558,
-   "radius": 0.58684,
+   "centre": 78.0265,
+   "radius": 0.58671,
    "radius_prior": 0.58627
   },
   "c.online_harassment": {
-   "angle": 211.1814,
+   "angle": 206.5561,
    "axes_angle": 206.5651,
-   "centre": 188.2547,
-   "radius": 0.58065,
+   "centre": 183.6362,
+   "radius": 0.58059,
    "radius_prior": 0.57931
   },
   "c.outdoor_recreation": {
-   "angle": 326.4336,
+   "angle": 323.9101,
    "axes_angle": 315.0,
-   "centre": 343.3835,
-   "radius": 0.63553,
+   "centre": 330.6953,
+   "radius": 0.6355,
    "radius_prior": 0.63562
   },
   "c.parenting_adolescents": {
-   "angle": 248.3993,
+   "angle": 251.112,
    "axes_angle": 237.9946,
-   "centre": 237.3162,
-   "radius": 0.61686,
+   "centre": 241.7484,
+   "radius": 0.6166,
    "radius_prior": 0.61696
   },
   "c.parenting_young_children": {
-   "angle": 283.9376,
+   "angle": 291.3833,
    "axes_angle": 299.0546,
-   "centre": 287.5477,
-   "radius": 0.57297,
+   "centre": 286.59,
+   "radius": 0.57271,
    "radius_prior": 0.57077
   },
   "c.partnership_romance": {
-   "angle": 251.4505,
+   "angle": 249.0828,
    "axes_angle": 246.0375,
-   "centre": 245.0336,
-   "radius": 0.61613,
+   "centre": 235.7394,
+   "radius": 0.61567,
    "radius_prior": 0.61712
   },
   "c.performing_arts": {
-   "angle": 245.4253,
+   "angle": 249.558,
    "axes_angle": 338.1986,
-   "centre": 229.0878,
-   "radius": 0.75596,
+   "centre": 236.503,
+   "radius": 0.75604,
    "radius_prior": 0.75742
   },
   "c.personal_appearance": {
-   "angle": 309.7376,
+   "angle": 311.0884,
    "axes_angle": 311.1859,
-   "centre": 300.466,
-   "radius": 0.60577,
+   "centre": 298.7649,
+   "radius": 0.60569,
    "radius_prior": 0.6062
   },
   "c.personal_finance": {
-   "angle": 231.346,
+   "angle": 235.6217,
    "axes_angle": 206.5651,
-   "centre": 205.8834,
+   "centre": 211.4023,
    "radius": 0.68444,
    "radius_prior": 0.68592
   },
   "c.personal_services_work": {
-   "angle": 327.8666,
+   "angle": 331.6141,
    "axes_angle": 14.0362,
-   "centre": 345.855,
-   "radius": 0.58381,
+   "centre": 344.6958,
+   "radius": 0.58385,
    "radius_prior": 0.58342
   },
   "c.pet_ownership": {
-   "angle": 351.722,
+   "angle": 341.035,
    "axes_angle": 315.0,
-   "centre": 32.1877,
-   "radius": 0.59952,
+   "centre": 5.819,
+   "radius": 0.59948,
    "radius_prior": 0.59877
   },
   "c.philosophical_inquiry": {
-   "angle": 205.2103,
+   "angle": 205.1098,
    "axes_angle": 201.8014,
-   "centre": 182.3993,
-   "radius": 0.83936,
+   "centre": 183.2984,
+   "radius": 0.83917,
    "radius_prior": 0.84046
   },
   "c.physical_health": {
-   "angle": 319.5019,
+   "angle": 321.1874,
    "axes_angle": 315.0,
-   "centre": 319.4487,
-   "radius": 0.60521,
+   "centre": 323.3208,
+   "radius": 0.60505,
    "radius_prior": 0.60399
   },
   "c.physics": {
-   "angle": 105.0928,
+   "angle": 113.6048,
    "axes_angle": 122.0054,
-   "centre": 86.9832,
-   "radius": 0.89889,
+   "centre": 97.3154,
+   "radius": 0.89885,
    "radius_prior": 0.89946
   },
   "c.policing_enforcement": {
-   "angle": 75.8885,
+   "angle": 72.7167,
    "axes_angle": 69.444,
-   "centre": 79.2033,
-   "radius": 0.74497,
+   "centre": 78.3305,
+   "radius": 0.74481,
    "radius_prior": 0.74571
   },
   "c.political_discourse": {
-   "angle": 154.1952,
+   "angle": 152.731,
    "axes_angle": 180.0,
-   "centre": 149.5228,
-   "radius": 0.55154,
+   "centre": 149.7363,
+   "radius": 0.55234,
    "radius_prior": 0.54926
   },
   "c.political_participation": {
-   "angle": 141.062,
+   "angle": 136.3225,
    "axes_angle": 120.9638,
-   "centre": 137.1919,
-   "radius": 0.55072,
+   "centre": 134.5375,
+   "radius": 0.55068,
    "radius_prior": 0.54926
   },
   "c.political_science": {
-   "angle": 140.102,
+   "angle": 137.2188,
    "axes_angle": 142.125,
-   "centre": 136.1655,
-   "radius": 0.86281,
+   "centre": 136.207,
+   "radius": 0.863,
    "radius_prior": 0.86593
   },
   "c.poverty_scarcity": {
-   "angle": 257.0852,
+   "angle": 5.4735,
    "axes_angle": 326.3099,
-   "centre": 260.708,
-   "radius": 0.58659,
+   "centre": 52.6227,
+   "radius": 0.58661,
    "radius_prior": 0.58627
   },
   "c.pregnancy_birth": {
-   "angle": 315.1481,
+   "angle": 316.5326,
    "axes_angle": 327.9946,
-   "centre": 311.9976,
-   "radius": 0.62512,
+   "centre": 309.9924,
+   "radius": 0.62497,
    "radius_prior": 0.62518
   },
   "c.preventive_health": {
-   "angle": 334.0251,
+   "angle": 337.6801,
    "axes_angle": 333.4349,
-   "centre": 359.3659,
-   "radius": 0.56437,
+   "centre": 359.4453,
+   "radius": 0.56399,
    "radius_prior": 0.5616
   },
   "c.psychology": {
-   "angle": 140.6203,
+   "angle": 143.8686,
    "axes_angle": 144.4623,
-   "centre": 136.4695,
-   "radius": 0.84835,
+   "centre": 146.5072,
+   "radius": 0.84858,
    "radius_prior": 0.84916
   },
   "c.public_administration": {
-   "angle": 122.6221,
+   "angle": 121.1195,
    "axes_angle": 127.875,
-   "centre": 105.3748,
-   "radius": 0.76581,
+   "centre": 105.3225,
+   "radius": 0.76555,
    "radius_prior": 0.76754
   },
   "c.public_health_science": {
-   "angle": 10.7264,
+   "angle": 20.7291,
    "axes_angle": 126.8699,
-   "centre": 55.4614,
-   "radius": 0.86134,
+   "centre": 61.8265,
+   "radius": 0.86104,
    "radius_prior": 0.86593
   },
   "c.public_safety_emergency": {
-   "angle": 26.1841,
+   "angle": 27.0647,
    "axes_angle": 32.0054,
-   "centre": 66.5896,
-   "radius": 0.78563,
+   "centre": 67.4631,
+   "radius": 0.78636,
    "radius_prior": 0.78937
   },
   "c.public_transport": {
-   "angle": 7.8372,
+   "angle": 13.3452,
    "axes_angle": 14.0362,
-   "centre": 54.7992,
-   "radius": 0.5176,
+   "centre": 55.7241,
+   "radius": 0.51773,
    "radius_prior": 0.51446
   },
   "c.reading": {
-   "angle": 233.2041,
+   "angle": 226.691,
    "axes_angle": 221.1859,
-   "centre": 208.4897,
-   "radius": 0.61975,
+   "centre": 201.0903,
+   "radius": 0.61966,
    "radius_prior": 0.61822
   },
   "c.reconciliation": {
-   "angle": 222.1071,
+   "angle": 220.4711,
    "axes_angle": 231.3402,
-   "centre": 196.29,
-   "radius": 0.59904,
+   "centre": 194.3051,
+   "radius": 0.599,
    "radius_prior": 0.59877
   },
   "c.religion_worship": {
-   "angle": 229.1473,
+   "angle": 229.4617,
    "axes_angle": 228.8141,
-   "centre": 201.8347,
-   "radius": 0.66689,
+   "centre": 204.856,
+   "radius": 0.66703,
    "radius_prior": 0.66647
   },
   "c.religious_community": {
-   "angle": 220.184,
+   "angle": 219.3564,
    "axes_angle": 213.6901,
-   "centre": 194.9425,
-   "radius": 0.7603,
+   "centre": 193.0928,
+   "radius": 0.7599,
    "radius_prior": 0.76137
   },
   "c.rent_mortgage": {
-   "angle": 336.5366,
+   "angle": 332.6967,
    "axes_angle": 0.0,
-   "centre": 5.95,
-   "radius": 0.62629,
+   "centre": 346.8651,
+   "radius": 0.6262,
    "radius_prior": 0.62613
   },
   "c.reproduction_fertility": {
-   "angle": 314.7873,
+   "angle": 316.121,
    "axes_angle": 320.1944,
-   "centre": 311.2231,
-   "radius": 0.62541,
+   "centre": 309.218,
+   "radius": 0.62536,
    "radius_prior": 0.62518
   },
   "c.reputation_gossip": {
-   "angle": 213.7415,
+   "angle": 207.1271,
    "axes_angle": 225.0,
-   "centre": 189.7792,
-   "radius": 0.58074,
+   "centre": 183.9403,
+   "radius": 0.58097,
    "radius_prior": 0.58042
   },
   "c.research_training": {
-   "angle": 141.393,
+   "angle": 144.1197,
    "axes_angle": 144.4623,
-   "centre": 137.9819,
-   "radius": 0.88161,
+   "centre": 146.8788,
+   "radius": 0.88147,
    "radius_prior": 0.88269
   },
   "c.restaurants_dining": {
-   "angle": 327.8069,
+   "angle": 333.9501,
    "axes_angle": 0.0,
-   "centre": 345.4091,
-   "radius": 0.60049,
+   "centre": 350.4811,
+   "radius": 0.60044,
    "radius_prior": 0.60082
   },
   "c.retail_shopping": {
-   "angle": 356.9987,
+   "angle": 0.3848,
    "axes_angle": 344.0546,
-   "centre": 45.3621,
-   "radius": 0.54725,
+   "centre": 43.3877,
+   "radius": 0.54717,
    "radius_prior": 0.54641
   },
   "c.retail_work": {
-   "angle": 64.7006,
+   "angle": 54.9948,
    "axes_angle": 39.8056,
-   "centre": 76.6504,
-   "radius": 0.58369,
+   "centre": 75.5373,
+   "radius": 0.58375,
    "radius_prior": 0.58342
   },
   "c.retirement": {
-   "angle": 213.0321,
+   "angle": 236.7142,
    "axes_angle": 236.3099,
-   "centre": 189.3264,
-   "radius": 0.66694,
+   "centre": 212.8564,
+   "radius": 0.66664,
    "radius_prior": 0.66647
   },
   "c.reuse_repair": {
-   "angle": 328.0595,
+   "angle": 332.1293,
    "axes_angle": 323.1301,
-   "centre": 346.5069,
-   "radius": 0.67179,
+   "centre": 345.6518,
+   "radius": 0.67169,
    "radius_prior": 0.67216
   },
   "c.rites_of_passage": {
-   "angle": 237.0661,
+   "angle": 232.9746,
    "axes_angle": 225.0,
-   "centre": 214.9823,
-   "radius": 0.65014,
+   "centre": 207.5402,
+   "radius": 0.65033,
    "radius_prior": 0.65065
   },
   "c.road_safety": {
-   "angle": 359.7251,
+   "angle": 2.5951,
    "axes_angle": 351.8699,
-   "centre": 49.435,
-   "radius": 0.56121,
+   "centre": 48.3841,
+   "radius": 0.56089,
    "radius_prior": 0.55938
   },
   "c.sales_marketing": {
-   "angle": 107.1416,
+   "angle": 102.2509,
    "axes_angle": 119.7449,
-   "centre": 89.5558,
-   "radius": 0.66605,
+   "centre": 85.5073,
+   "radius": 0.66567,
    "radius_prior": 0.66599
   },
   "c.saving_investing": {
-   "angle": 206.8884,
+   "angle": 207.7208,
    "axes_angle": 180.0,
-   "centre": 184.1616,
-   "radius": 0.70519,
+   "centre": 184.5687,
+   "radius": 0.70512,
    "radius_prior": 0.70585
   },
   "c.school_education": {
-   "angle": 200.9231,
+   "angle": 192.4595,
    "axes_angle": 198.4349,
-   "centre": 177.4324,
-   "radius": 0.68541,
+   "centre": 173.0383,
+   "radius": 0.68545,
    "radius_prior": 0.68308
   },
   "c.science_research_work": {
-   "angle": 106.0292,
+   "angle": 103.402,
    "axes_angle": 110.556,
-   "centre": 88.1468,
+   "centre": 86.9162,
    "radius": 0.88213,
    "radius_prior": 0.88269
   },
   "c.security_services": {
-   "angle": 49.3078,
+   "angle": 53.5349,
    "axes_angle": 45.0,
-   "centre": 73.9915,
-   "radius": 0.68146,
+   "centre": 74.4148,
+   "radius": 0.6814,
    "radius_prior": 0.68023
   },
   "c.self_directed_learning": {
-   "angle": 195.1659,
+   "angle": 197.3464,
    "axes_angle": 216.8699,
-   "centre": 170.45,
-   "radius": 0.76798,
+   "centre": 179.203,
+   "radius": 0.76791,
    "radius_prior": 0.76849
   },
   "c.self_harm_suicide": {
-   "angle": 267.3395,
+   "angle": 260.3067,
    "axes_angle": 255.9638,
-   "centre": 275.2071,
-   "radius": 0.61832,
+   "centre": 261.3392,
+   "radius": 0.61825,
    "radius_prior": 0.61791
   },
   "c.self_provisioning": {
-   "angle": 0.1929,
+   "angle": 359.2705,
    "axes_angle": 315.0,
-   "centre": 50.2244,
-   "radius": 0.6732,
+   "centre": 39.9337,
+   "radius": 0.67295,
    "radius_prior": 0.67216
   },
   "c.self_reflection": {
-   "angle": 216.742,
+   "angle": 220.1648,
    "axes_angle": 231.3402,
-   "centre": 190.8243,
-   "radius": 0.68271,
+   "centre": 193.9334,
+   "radius": 0.68263,
    "radius_prior": 0.68228
   },
   "c.serious_illness": {
-   "angle": 304.9421,
+   "angle": 306.4859,
    "axes_angle": 303.6901,
-   "centre": 294.609,
-   "radius": 0.68112,
+   "centre": 291.2558,
+   "radius": 0.6811,
    "radius_prior": 0.68228
   },
   "c.sexual_violence": {
-   "angle": 301.8376,
+   "angle": 294.7095,
    "axes_angle": 311.1859,
-   "centre": 291.8431,
-   "radius": 0.63678,
+   "centre": 287.9075,
+   "radius": 0.63685,
    "radius_prior": 0.6372
   },
   "c.sexuality": {
-   "angle": 279.9426,
+   "angle": 276.5955,
    "axes_angle": 277.125,
-   "centre": 285.6221,
-   "radius": 0.54162,
+   "centre": 284.1129,
+   "radius": 0.54141,
    "radius_prior": 0.5404
   },
   "c.shopping_errands": {
-   "angle": 351.9972,
+   "angle": 342.4791,
    "axes_angle": 324.4623,
-   "centre": 32.5654,
-   "radius": 0.54704,
+   "centre": 8.9038,
+   "radius": 0.54731,
    "radius_prior": 0.54641
   },
   "c.skilled_trades": {
-   "angle": 24.8302,
+   "angle": 21.8025,
    "axes_angle": 14.0362,
-   "centre": 65.2064,
-   "radius": 0.81641,
+   "centre": 63.2638,
+   "radius": 0.81606,
    "radius_prior": 0.81879
   },
   "c.sleep": {
-   "angle": 304.1969,
+   "angle": 304.0161,
    "axes_angle": 311.6335,
-   "centre": 293.9704,
-   "radius": 0.49845,
+   "centre": 288.794,
+   "radius": 0.49837,
    "radius_prior": 0.49801
   },
   "c.social_media": {
-   "angle": 206.2982,
+   "angle": 202.7345,
    "axes_angle": 200.556,
-   "centre": 183.5331,
-   "radius": 0.66908,
+   "centre": 182.3524,
+   "radius": 0.66897,
    "radius_prior": 0.6701
   },
   "c.socialising": {
-   "angle": 253.1725,
+   "angle": 254.6971,
    "axes_angle": 276.3402,
-   "centre": 249.5735,
-   "radius": 0.56315,
+   "centre": 250.592,
+   "radius": 0.56334,
    "radius_prior": 0.56207
   },
   "c.sociology": {
-   "angle": 155.6567,
+   "angle": 153.4285,
    "axes_angle": 143.1301,
-   "centre": 150.2683,
-   "radius": 0.87937,
+   "centre": 150.0673,
+   "radius": 0.8791,
    "radius_prior": 0.88269
   },
   "c.software_development": {
-   "angle": 131.4115,
+   "angle": 129.325,
    "axes_angle": 138.8141,
-   "centre": 119.563,
-   "radius": 0.83411,
+   "centre": 118.6052,
+   "radius": 0.83414,
    "radius_prior": 0.83366
   },
   "c.spirituality": {
-   "angle": 236.2634,
+   "angle": 232.5841,
    "axes_angle": 228.3665,
-   "centre": 213.3087,
-   "radius": 0.69783,
+   "centre": 207.0855,
+   "radius": 0.69777,
    "radius_prior": 0.6981
   },
   "c.sport_participation": {
-   "angle": 312.6575,
+   "angle": 312.941,
    "axes_angle": 327.9946,
-   "centre": 307.5133,
-   "radius": 0.70246,
+   "centre": 302.1707,
+   "radius": 0.70267,
    "radius_prior": 0.70522
   },
   "c.sport_spectating": {
-   "angle": 298.9006,
+   "angle": 295.0248,
    "axes_angle": 303.6901,
-   "centre": 291.0958,
-   "radius": 0.5845,
+   "centre": 288.3507,
+   "radius": 0.58437,
    "radius_prior": 0.58342
   },
   "c.stalking_privacy": {
-   "angle": 241.656,
+   "angle": 241.9416,
    "axes_angle": 251.5651,
-   "centre": 222.2301,
-   "radius": 0.59893,
+   "centre": 221.1169,
+   "radius": 0.59887,
    "radius_prior": 0.59861
   },
   "c.statistics_data": {
-   "angle": 126.577,
+   "angle": 127.8958,
    "axes_angle": 145.008,
-   "centre": 110.4922,
-   "radius": 0.84962,
+   "centre": 115.7364,
+   "radius": 0.84976,
    "radius_prior": 0.84916
   },
   "c.subscriptions_telecom": {
-   "angle": 111.9735,
+   "angle": 124.2094,
    "axes_angle": 104.0362,
-   "centre": 93.8348,
-   "radius": 0.69924,
+   "centre": 109.2456,
+   "radius": 0.69935,
    "radius_prior": 0.69984
   },
   "c.substance_use": {
-   "angle": 290.8435,
+   "angle": 290.0388,
    "axes_angle": 309.8056,
-   "centre": 288.8652,
-   "radius": 0.61808,
+   "centre": 285.5765,
+   "radius": 0.61805,
    "radius_prior": 0.61791
   },
   "c.taxation_compliance": {
-   "angle": 133.7407,
+   "angle": 135.8167,
    "axes_angle": 135.0,
-   "centre": 123.505,
-   "radius": 0.68043,
+   "centre": 133.0676,
+   "radius": 0.68123,
    "radius_prior": 0.68023
   },
   "c.teaching_profession": {
-   "angle": 182.7142,
+   "angle": 167.8733,
    "axes_angle": 139.3987,
-   "centre": 160.9466,
-   "radius": 0.83776,
+   "centre": 159.8335,
+   "radius": 0.83813,
    "radius_prior": 0.83967
   },
   "c.theft_property_crime": {
-   "angle": 329.387,
+   "angle": 331.9863,
    "axes_angle": 324.4623,
-   "centre": 351.0241,
-   "radius": 0.59922,
+   "centre": 345.0139,
+   "radius": 0.59909,
    "radius_prior": 0.59861
   },
   "c.therapy_social_work": {
-   "angle": 209.9538,
+   "angle": 208.5974,
    "axes_angle": 150.2551,
-   "centre": 187.5222,
-   "radius": 0.81258,
+   "centre": 185.6256,
+   "radius": 0.81283,
    "radius_prior": 0.81594
   },
   "c.tourism_travel": {
-   "angle": 342.4345,
+   "angle": 350.5936,
    "axes_angle": 333.4349,
-   "centre": 18.5679,
-   "radius": 0.5157,
+   "centre": 21.2633,
+   "radius": 0.51548,
    "radius_prior": 0.51446
   },
   "c.traffic_offences": {
-   "angle": 359.3779,
+   "angle": 2.3728,
    "axes_angle": 350.5377,
-   "centre": 48.7309,
-   "radius": 0.61817,
+   "centre": 46.7565,
+   "radius": 0.61798,
    "radius_prior": 0.61791
   },
   "c.transport_logistics": {
-   "angle": 17.2534,
+   "angle": 19.1186,
    "axes_angle": 41.1859,
-   "centre": 59.7835,
-   "radius": 0.66985,
+   "centre": 58.8663,
+   "radius": 0.67006,
    "radius_prior": 0.67169
   },
   "c.tutoring_teaching": {
-   "angle": 192.9258,
+   "angle": 185.9163,
    "axes_angle": 180.0,
-   "centre": 167.8523,
-   "radius": 0.78173,
+   "centre": 166.381,
+   "radius": 0.782,
    "radius_prior": 0.78273
   },
   "c.urban_planning": {
-   "angle": 45.2095,
+   "angle": 38.9805,
    "axes_angle": 54.4623,
-   "centre": 73.3113,
-   "radius": 0.81022,
+   "centre": 72.5022,
+   "radius": 0.81014,
    "radius_prior": 0.8112
   },
   "c.video_gaming": {
-   "angle": 226.8917,
+   "angle": 223.4308,
    "axes_angle": 210.9638,
-   "centre": 199.812,
-   "radius": 0.63545,
+   "centre": 197.7258,
+   "radius": 0.63543,
    "radius_prior": 0.63562
   },
   "c.violence_assault": {
-   "angle": 328.584,
+   "angle": 325.9108,
    "axes_angle": 318.3665,
-   "centre": 347.807,
-   "radius": 0.58103,
+   "centre": 334.1515,
+   "radius": 0.58075,
    "radius_prior": 0.57931
   },
   "c.visual_arts": {
-   "angle": 241.4343,
+   "angle": 241.1254,
    "axes_angle": 323.1301,
-   "centre": 221.4635,
-   "radius": 0.75789,
+   "centre": 219.4788,
+   "radius": 0.75787,
    "radius_prior": 0.75742
   },
   "c.vocational_training": {
-   "angle": 136.3519,
+   "angle": 131.5739,
    "axes_angle": 45.0,
-   "centre": 128.345,
-   "radius": 0.78181,
+   "centre": 124.3369,
+   "radius": 0.78219,
    "radius_prior": 0.78273
   },
   "c.volunteering": {
-   "angle": 265.8352,
+   "angle": 257.3925,
    "axes_angle": 255.9638,
-   "centre": 273.1727,
-   "radius": 0.61842,
+   "centre": 255.2542,
+   "radius": 0.6181,
    "radius_prior": 0.61712
   },
   "c.voting_elections": {
-   "angle": 147.6256,
+   "angle": 141.8964,
    "axes_angle": 122.0054,
-   "centre": 145.3756,
-   "radius": 0.52954,
+   "centre": 143.8372,
+   "radius": 0.52971,
    "radius_prior": 0.52743
   },
   "c.walking_cycling": {
-   "angle": 336.112,
+   "angle": 340.888,
    "axes_angle": 323.1301,
-   "centre": 5.3715,
-   "radius": 0.51537,
+   "centre": 5.4509,
+   "radius": 0.51524,
    "radius_prior": 0.51446
   },
   "c.war_experience": {
-   "angle": 18.5396,
+   "angle": 23.5102,
    "axes_angle": 40.6013,
-   "centre": 61.0341,
-   "radius": 0.74449,
+   "centre": 65.4765,
+   "radius": 0.74468,
    "radius_prior": 0.74555
   },
   "c.waste_recycling": {
-   "angle": 3.6178,
+   "angle": 6.1443,
    "axes_angle": 345.9638,
-   "centre": 54.0007,
-   "radius": 0.59905,
+   "centre": 53.1916,
+   "radius": 0.59934,
    "radius_prior": 0.59877
   },
   "c.weather_climate_adaptation": {
-   "angle": 19.416,
+   "angle": 17.792,
    "axes_angle": 348.6901,
-   "centre": 61.6422,
-   "radius": 0.6555,
+   "centre": 57.6157,
+   "radius": 0.6552,
    "radius_prior": 0.65381
   },
   "c.welfare_benefits": {
-   "angle": 154.5506,
+   "angle": 127.051,
    "axes_angle": 128.6598,
-   "centre": 149.882,
-   "radius": 0.61569,
+   "centre": 114.5288,
+   "radius": 0.61606,
    "radius_prior": 0.61474
   },
   "c.wildlife_conservation": {
-   "angle": 10.1678,
+   "angle": 10.8711,
    "axes_angle": 29.7449,
-   "centre": 55.1033,
-   "radius": 0.72667,
+   "centre": 54.6995,
+   "radius": 0.72661,
    "radius_prior": 0.72721
   },
   "c.workplace_relations": {
-   "angle": 118.6244,
+   "angle": 116.5817,
    "axes_angle": 135.0,
-   "centre": 100.6449,
-   "radius": 0.53868,
+   "centre": 99.2277,
+   "radius": 0.53913,
    "radius_prior": 0.53597
   },
   "c.youth_culture": {
-   "angle": 227.8025,
+   "angle": 224.5939,
    "axes_angle": 229.3987,
-   "centre": 200.5486,
+   "centre": 198.7664,
    "radius": 0.59983,
    "radius_prior": 0.59877
   }
@@ -2043,22 +2049,22 @@
  "metrics": {
   "coherence": {
    "after": {
-    "mean_rank_distance": 29.520851818988465,
-    "mean_similarity": 0.24210394740486135,
-    "no_signal_share": 0.8218623481781376
+    "mean_rank_distance": 27.056011949215833,
+    "mean_similarity": 0.3231195987506646,
+    "no_signal_share": 0.7206477732793523
    },
    "before": {
-    "mean_rank_distance": 36.078083407275955,
-    "mean_similarity": 0.18801563756749995,
-    "no_signal_share": 0.8340080971659919
+    "mean_rank_distance": 32.442120985810305,
+    "mean_similarity": 0.29404995412813234,
+    "no_signal_share": 0.7327935222672065
    }
   },
   "coherence_by_source": {
    "comembership": {
     "after": {
-     "mean_rank_distance": 31.607773851590107,
-     "mean_similarity": 0.03674964509421105,
-     "no_signal_share": 0.9676113360323887
+     "mean_rank_distance": 31.67844522968198,
+     "mean_similarity": 0.030427831528180117,
+     "no_signal_share": 0.9635627530364372
     },
     "before": {
      "mean_rank_distance": 38.71731448763251,
@@ -2068,9 +2074,9 @@
    },
    "fine": {
     "after": {
-     "mean_rank_distance": 21.608,
-     "mean_similarity": 0.03643724696356275,
-     "no_signal_share": 0.9757085020242915
+     "mean_rank_distance": 22.224,
+     "mean_similarity": 0.012145748987854251,
+     "no_signal_share": 0.9878542510121457
     },
     "before": {
      "mean_rank_distance": 27.552,
@@ -2078,11 +2084,23 @@
      "no_signal_share": 0.9919028340080972
     }
    },
+   "judged": {
+    "after": {
+     "mean_rank_distance": 13.634782608695652,
+     "mean_similarity": 0.19285392969603496,
+     "no_signal_share": 0.8421052631578947
+    },
+    "before": {
+     "mean_rank_distance": 18.91304347826087,
+     "mean_similarity": 0.14137908874750982,
+     "no_signal_share": 0.8744939271255061
+    }
+   },
    "overlap": {
     "after": {
-     "mean_rank_distance": 20.475609756097562,
-     "mean_similarity": 0.1363023036437247,
-     "no_signal_share": 0.854251012145749
+     "mean_rank_distance": 20.691637630662022,
+     "mean_similarity": 0.11201080566801619,
+     "no_signal_share": 0.8785425101214575
     },
     "before": {
      "mean_rank_distance": 28.22822299651568,
@@ -2092,9 +2110,9 @@
    },
    "text": {
     "after": {
-     "mean_rank_distance": 30.07304347826087,
-     "mean_similarity": 0.11238979272137728,
-     "no_signal_share": 0.9190283400809717
+     "mean_rank_distance": 31.04173913043478,
+     "mean_similarity": 0.08429023661128286,
+     "no_signal_share": 0.9271255060728745
     },
     "before": {
      "mean_rank_distance": 37.50782608695652,
@@ -2104,9 +2122,9 @@
    },
    "upstream": {
     "after": {
-     "mean_rank_distance": 9.5,
-     "mean_similarity": 0.003903989630670401,
-     "no_signal_share": 0.9959514170040485
+     "mean_rank_distance": 11.35,
+     "mean_similarity": 0.0,
+     "no_signal_share": 1.0
     },
     "before": {
      "mean_rank_distance": 16.45,
@@ -2118,14 +2136,14 @@
   "holdout": {
    "comembership": {
     "after_with_source": {
-     "mean_rank_distance": 31.607773851590107,
-     "mean_similarity": 0.03674964509421105,
-     "no_signal_share": 0.9676113360323887
+     "mean_rank_distance": 31.67844522968198,
+     "mean_similarity": 0.030427831528180117,
+     "no_signal_share": 0.9635627530364372
     },
     "after_without_source": {
-     "mean_rank_distance": 36.35335689045937,
-     "mean_similarity": 0.016309254968790356,
-     "no_signal_share": 0.9919028340080972
+     "mean_rank_distance": 35.44169611307421,
+     "mean_similarity": 0.013640666010544112,
+     "no_signal_share": 0.9838056680161943
     },
     "before": {
      "mean_rank_distance": 38.85512367491166,
@@ -2135,14 +2153,14 @@
    },
    "fine": {
     "after_with_source": {
-     "mean_rank_distance": 21.608,
-     "mean_similarity": 0.03643724696356275,
-     "no_signal_share": 0.9757085020242915
+     "mean_rank_distance": 22.224,
+     "mean_similarity": 0.012145748987854251,
+     "no_signal_share": 0.9878542510121457
     },
     "after_without_source": {
-     "mean_rank_distance": 25.096,
-     "mean_similarity": 0.020242914979757085,
-     "no_signal_share": 0.979757085020243
+     "mean_rank_distance": 24.744,
+     "mean_similarity": 0.02834008097165992,
+     "no_signal_share": 0.9757085020242915
     },
     "before": {
      "mean_rank_distance": 27.848,
@@ -2150,16 +2168,33 @@
      "no_signal_share": 0.9878542510121457
     }
    },
-   "overlap": {
+   "judged": {
     "after_with_source": {
-     "mean_rank_distance": 20.475609756097562,
-     "mean_similarity": 0.1363023036437247,
-     "no_signal_share": 0.854251012145749
+     "mean_rank_distance": 13.634782608695652,
+     "mean_similarity": 0.19285392969603496,
+     "no_signal_share": 0.8421052631578947
     },
     "after_without_source": {
-     "mean_rank_distance": 28.101045296167246,
-     "mean_similarity": 0.05263158299595142,
-     "no_signal_share": 0.9433198380566802
+     "mean_rank_distance": 15.405797101449275,
+     "mean_similarity": 0.12846218109376004,
+     "no_signal_share": 0.8825910931174089
+    },
+    "before": {
+     "mean_rank_distance": 19.257971014492753,
+     "mean_similarity": 0.0992224150118887,
+     "no_signal_share": 0.9149797570850202
+    }
+   },
+   "overlap": {
+    "after_with_source": {
+     "mean_rank_distance": 20.691637630662022,
+     "mean_similarity": 0.11201080566801619,
+     "no_signal_share": 0.8785425101214575
+    },
+    "after_without_source": {
+     "mean_rank_distance": 25.5,
+     "mean_similarity": 0.0688259190283401,
+     "no_signal_share": 0.9230769230769231
     },
     "before": {
      "mean_rank_distance": 28.48432055749129,
@@ -2169,14 +2204,14 @@
    },
    "text": {
     "after_with_source": {
-     "mean_rank_distance": 30.07304347826087,
-     "mean_similarity": 0.11238979272137728,
-     "no_signal_share": 0.9190283400809717
+     "mean_rank_distance": 31.04173913043478,
+     "mean_similarity": 0.08429023661128286,
+     "no_signal_share": 0.9271255060728745
     },
     "after_without_source": {
-     "mean_rank_distance": 33.40521739130435,
-     "mean_similarity": 0.05793255434946847,
-     "no_signal_share": 0.9473684210526315
+     "mean_rank_distance": 33.624347826086954,
+     "mean_similarity": 0.08616132342777282,
+     "no_signal_share": 0.9392712550607287
     },
     "before": {
      "mean_rank_distance": 37.72,
@@ -2186,14 +2221,14 @@
    },
    "upstream": {
     "after_with_source": {
-     "mean_rank_distance": 9.5,
-     "mean_similarity": 0.003903989630670401,
-     "no_signal_share": 0.9959514170040485
+     "mean_rank_distance": 11.35,
+     "mean_similarity": 0.0,
+     "no_signal_share": 1.0
     },
     "after_without_source": {
-     "mean_rank_distance": 12.4,
-     "mean_similarity": 0.007689679699998976,
-     "no_signal_share": 0.9919028340080972
+     "mean_rank_distance": 13.75,
+     "mean_similarity": 0.0,
+     "no_signal_share": 1.0
     },
     "before": {
      "mean_rank_distance": 16.7,
@@ -2204,9 +2239,9 @@
   },
   "stability": {
    "after": {
-    "max_shift": 133.78586369119375,
-    "mean_shift": 27.93096748797766,
-    "p95_shift": 71.44537461376373
+    "max_shift": 118.93017793318228,
+    "mean_shift": 26.643244413840637,
+    "p95_shift": 68.41628306256061
    },
    "at_shift_limit": 0,
    "before": {
@@ -2216,8 +2251,8 @@
    },
    "fragmentation": {
     "after": {
-     "extra_runs": 174,
-     "runs": 190,
+     "extra_runs": 173,
+     "runs": 189,
      "sectors_split": 16
     },
     "before": {
@@ -2226,32 +2261,17 @@
      "sectors_split": 16
     }
    },
-   "max_state_shift": 116.14354490257469,
-   "mean_state_shift": 19.54241800011166
+   "max_state_shift": 111.4586672516777,
+   "mean_state_shift": 18.19921143062687
   }
  },
  "movers": [
   {
    "after": [
-    "Wildlife and conservation",
-    "Agricultural, forestry and fishing work"
+    "Outdoor recreation",
+    "Disability and adaptation"
    ],
-   "angle": 10.73,
-   "axes_angle": 126.87,
-   "before": [
-    "Astronomy and space science",
-    "Journalism and reporting"
-   ],
-   "id": "c.public_health_science",
-   "label": "Public health and epidemiology",
-   "shift": 116.14
-  },
-  {
-   "after": [
-    "Clothing and footwear",
-    "Violence and assault"
-   ],
-   "angle": 328.57,
+   "angle": 325.15,
    "axes_angle": 213.69,
    "before": [
     "Religious community and clergy",
@@ -2259,14 +2279,29 @@
    ],
    "id": "c.negligence_recklessness",
    "label": "Negligence and recklessness",
-   "shift": 114.88
+   "shift": 111.46
   },
   {
    "after": [
-    "Marriage and cohabitation",
-    "Family occasions and traditions"
+    "Environmental stewardship",
+    "Craft and skilled trades"
    ],
-   "angle": 245.43,
+   "angle": 20.73,
+   "axes_angle": 126.87,
+   "before": [
+    "Astronomy and space science",
+    "Journalism and reporting"
+   ],
+   "id": "c.public_health_science",
+   "label": "Public health and epidemiology",
+   "shift": 106.14
+  },
+  {
+   "after": [
+    "Dating and romantic partnership",
+    "Celebrations and festivals"
+   ],
+   "angle": 249.56,
    "axes_angle": 338.2,
    "before": [
     "Tourism and leisure travel",
@@ -2274,14 +2309,14 @@
    ],
    "id": "c.performing_arts",
    "label": "Theatre, dance and performance",
-   "shift": 92.77
+   "shift": 88.64
   },
   {
    "after": [
-    "Tax and regulatory compliance",
-    "Mathematics"
+    "Software development",
+    "Computer science"
    ],
-   "angle": 136.35,
+   "angle": 131.57,
    "axes_angle": 45.0,
    "before": [
     "Security and protective services",
@@ -2289,14 +2324,14 @@
    ],
    "id": "c.vocational_training",
    "label": "Vocational and on-the-job training",
-   "shift": 91.35
+   "shift": 86.57
   },
   {
    "after": [
-    "Mental health and wellbeing",
-    "Stalking and privacy violation"
+    "Clubs and community groups",
+    "Mental health and wellbeing"
    ],
-   "angle": 241.43,
+   "angle": 241.13,
    "axes_angle": 323.13,
    "before": [
     "Second-hand, repair and reuse",
@@ -2304,44 +2339,14 @@
    ],
    "id": "c.visual_arts",
    "label": "Visual arts and design",
-   "shift": 81.7
-  },
-  {
-   "after": [
-    "Celebrations and festivals",
-    "Charity and giving"
-   ],
-   "angle": 255.47,
-   "axes_angle": 333.43,
-   "before": [
-    "Fishing, hunting and foraging",
-    "Buying food and groceries"
-   ],
-   "id": "c.early_childhood_education",
-   "label": "Early childhood education",
-   "shift": 77.97
-  },
-  {
-   "after": [
-    "Arts, music and religion studies",
-    "Social media and online communities"
-   ],
-   "angle": 205.98,
-   "axes_angle": 130.6,
-   "before": [
-    "Advocacy and civil society",
-    "Finance and accounting work"
-   ],
-   "id": "c.media_publishing",
-   "label": "Media, publishing and creative professions",
-   "shift": 75.38
+   "shift": 82.0
   },
   {
    "after": [
     "Listening to music",
-    "Friendship"
+    "Personal financial decisions"
    ],
-   "angle": 235.46,
+   "angle": 234.76,
    "axes_angle": 161.57,
    "before": [
     "News and information media",
@@ -2349,59 +2354,44 @@
    ],
    "id": "c.borrowing_debt",
    "label": "Borrowing and debt",
-   "shift": 73.9
+   "shift": 73.2
   },
   {
    "after": [
-    "Charity and giving",
-    "Funerals and memorial"
+    "Arts, music and religion studies",
+    "Social media and online communities"
    ],
-   "angle": 257.09,
-   "axes_angle": 326.31,
+   "angle": 202.11,
+   "axes_angle": 130.6,
    "before": [
-    "Theft and property crime",
-    "Disability and adaptation"
+    "Advocacy and civil society",
+    "Finance and accounting work"
    ],
-   "id": "c.poverty_scarcity",
-   "label": "Poverty and scarcity",
-   "shift": 69.22
+   "id": "c.media_publishing",
+   "label": "Media, publishing and creative professions",
+   "shift": 71.51
   },
   {
    "after": [
-    "Moving house and relocation",
-    "Retail shopping"
+    "Games and play",
+    "Hosting and hospitality"
    ],
-   "angle": 354.78,
-   "axes_angle": 57.99,
+   "angle": 268.77,
+   "axes_angle": 333.43,
    "before": [
-    "Urban planning and infrastructure",
-    "Biotechnology and biomedical engineering"
+    "Fishing, hunting and foraging",
+    "Buying food and groceries"
    ],
-   "id": "c.healthcare_work",
-   "label": "Healthcare professions",
-   "shift": 63.21
+   "id": "c.early_childhood_education",
+   "label": "Early childhood education",
+   "shift": 64.67
   },
   {
    "after": [
-    "Dating and romantic partnership",
-    "Bereavement and grief"
+    "Literacy, numeracy and basic skills",
+    "Interpersonal conflict"
    ],
-   "angle": 251.93,
-   "axes_angle": 315.0,
-   "before": [
-    "Crafts and hobbies",
-    "Outdoor recreation"
-   ],
-   "id": "c.cultural_visits",
-   "label": "Museums, heritage and cultural visits",
-   "shift": 63.07
-  },
-  {
-   "after": [
-    "Hate, discrimination and abuse of rights",
-    "Counselling, therapy and social work"
-   ],
-   "angle": 208.62,
+   "angle": 210.33,
    "axes_angle": 146.31,
    "before": [
     "Linguistics and literary studies",
@@ -2409,14 +2399,29 @@
    ],
    "id": "c.banking_payments",
    "label": "Banking and payments",
-   "shift": 62.31
+   "shift": 64.02
   },
   {
    "after": [
-    "Banking and payments",
-    "Online harassment and bullying"
+    "Socialising and visiting",
+    "Funerals and memorial"
    ],
-   "angle": 209.95,
+   "angle": 256.14,
+   "axes_angle": 315.0,
+   "before": [
+    "Crafts and hobbies",
+    "Outdoor recreation"
+   ],
+   "id": "c.cultural_visits",
+   "label": "Museums, heritage and cultural visits",
+   "shift": 58.86
+  },
+  {
+   "after": [
+    "Saving and investing",
+    "Literacy, numeracy and basic skills"
+   ],
+   "angle": 208.6,
    "axes_angle": 150.26,
    "before": [
     "Rights and justice",
@@ -2424,14 +2429,29 @@
    ],
    "id": "c.therapy_social_work",
    "label": "Counselling, therapy and social work",
-   "shift": 59.7
+   "shift": 58.34
   },
   {
    "after": [
-    "Exercise and fitness",
-    "Outdoor recreation"
+    "Traffic offences and drunk driving",
+    "Road safety and traffic"
    ],
-   "angle": 323.77,
+   "angle": 2.43,
+   "axes_angle": 57.99,
+   "before": [
+    "Urban planning and infrastructure",
+    "Biotechnology and biomedical engineering"
+   ],
+   "id": "c.healthcare_work",
+   "label": "Healthcare professions",
+   "shift": 55.56
+  },
+  {
+   "after": [
+    "Violence and assault",
+    "Making and tinkering"
+   ],
+   "angle": 328.31,
    "axes_angle": 23.2,
    "before": [
     "Agricultural, forestry and fishing work",
@@ -2439,74 +2459,14 @@
    ],
    "id": "c.medical_care",
    "label": "Medical care",
-   "shift": 59.42
-  },
-  {
-   "after": [
-    "Philosophical inquiry",
-    "Media, publishing and creative professions"
-   ],
-   "angle": 205.69,
-   "axes_angle": 146.31,
-   "before": [
-    "Statistics and data analysis",
-    "Linguistics and literary studies"
-   ],
-   "id": "c.arts_humanities_studies",
-   "label": "Arts, music and religion studies",
-   "shift": 59.38
-  },
-  {
-   "after": [
-    "Higher education",
-    "Anthropology and cultural studies"
-   ],
-   "angle": 174.76,
-   "axes_angle": 116.57,
-   "before": [
-    "Customer service",
-    "Unions and collective bargaining"
-   ],
-   "id": "c.history_science",
-   "label": "History and archaeology",
-   "shift": 58.2
+   "shift": 54.89
   },
   {
    "after": [
     "Linguistics and literary studies",
-    "Teaching and tutoring"
+    "News and information media"
    ],
-   "angle": 192.34,
-   "axes_angle": 135.0,
-   "before": [
-    "Insurance and risk cover",
-    "Software development"
-   ],
-   "id": "c.cybercrime",
-   "label": "Cybercrime",
-   "shift": 57.34
-  },
-  {
-   "after": [
-    "Teaching profession",
-    "Exams and assessment"
-   ],
-   "angle": 184.17,
-   "axes_angle": 126.87,
-   "before": [
-    "Public health and epidemiology",
-    "Public administration and policy"
-   ],
-   "id": "c.journalism",
-   "label": "Journalism and reporting",
-   "shift": 57.3
-  },
-  {
-   "after": [
-    "Exams and assessment",
-    "Mediation and dispute resolution"
-   ],
-   "angle": 187.84,
+   "angle": 182.64,
    "axes_angle": 236.31,
    "before": [
     "Wedding and partnership formation",
@@ -2514,44 +2474,29 @@
    ],
    "id": "c.digital_tool_use",
    "label": "Everyday digital tool use",
-   "shift": 48.47
+   "shift": 53.67
   },
   {
    "after": [
-    "Dining out and accommodation services",
-    "Second-hand, repair and reuse"
+    "Language learning and use",
+    "Media, publishing and creative professions"
    ],
-   "angle": 327.87,
-   "axes_angle": 14.04,
-   "before": [
-    "Finding and securing housing",
-    "Craft and skilled trades"
-   ],
-   "id": "c.personal_services_work",
-   "label": "Personal and domestic services work",
-   "shift": 46.17
-  },
-  {
-   "after": [
-    "Misinformation and defamation",
-    "Cybercrime"
-   ],
-   "angle": 191.96,
+   "angle": 199.83,
    "axes_angle": 146.31,
    "before": [
-    "Arts, music and religion studies",
-    "Banking and payments"
+    "Statistics and data analysis",
+    "Linguistics and literary studies"
    ],
-   "id": "c.linguistics_literature",
-   "label": "Linguistics and literary studies",
-   "shift": 45.65
+   "id": "c.arts_humanities_studies",
+   "label": "Arts, music and religion studies",
+   "shift": 53.52
   },
   {
    "after": [
-    "War, conflict and violence exposure",
-    "Weather, climate and adaptation"
+    "Elementary and manual labour",
+    "War, conflict and violence exposure"
    ],
-   "angle": 19.01,
+   "angle": 23.15,
    "axes_angle": 333.43,
    "before": [
     "Buying food and groceries",
@@ -2559,14 +2504,44 @@
    ],
    "id": "c.disaster_experience",
    "label": "Disasters and emergencies",
-   "shift": 45.57
+   "shift": 49.72
   },
   {
    "after": [
-    "Road safety and traffic",
-    "Fishing, hunting and foraging"
+    "Higher education",
+    "Teaching profession"
    ],
-   "angle": 0.19,
+   "angle": 165.86,
+   "axes_angle": 116.57,
+   "before": [
+    "Customer service",
+    "Unions and collective bargaining"
+   ],
+   "id": "c.history_science",
+   "label": "History and archaeology",
+   "shift": 49.3
+  },
+  {
+   "after": [
+    "Anthropology and cultural studies",
+    "Cybercrime"
+   ],
+   "angle": 173.8,
+   "axes_angle": 126.87,
+   "before": [
+    "Public health and epidemiology",
+    "Public administration and policy"
+   ],
+   "id": "c.journalism",
+   "label": "Journalism and reporting",
+   "shift": 46.93
+  },
+  {
+   "after": [
+    "Hospitality and food service work",
+    "Retail shopping"
+   ],
+   "angle": 359.27,
    "axes_angle": 315.0,
    "before": [
     "Home gardening",
@@ -2574,57 +2549,117 @@
    ],
    "id": "c.self_provisioning",
    "label": "Subsistence and own-use production",
-   "shift": 45.19
+   "shift": 44.27
   },
   {
    "after": [
-    "History and archaeology",
-    "Teaching profession"
+    "Stalking and privacy violation",
+    "Wedding and partnership formation"
    ],
-   "angle": 179.93,
-   "axes_angle": 135.0,
+   "angle": 242.19,
+   "axes_angle": 198.43,
    "before": [
-    "Job change and career moves",
-    "Corruption and bribery"
+    "School education",
+    "Social media and online communities"
    ],
-   "id": "c.anthropology",
-   "label": "Anthropology and cultural studies",
-   "shift": 44.93
+   "id": "c.gambling",
+   "label": "Gambling and betting",
+   "shift": 43.76
   },
   {
    "after": [
-    "Informal and gig work",
-    "Customer service"
+    "Making and tinkering",
+    "Theft and property crime"
    ],
-   "angle": 90.94,
+   "angle": 331.61,
+   "axes_angle": 14.04,
+   "before": [
+    "Finding and securing housing",
+    "Craft and skilled trades"
+   ],
+   "id": "c.personal_services_work",
+   "label": "Personal and domestic services work",
+   "shift": 42.42
+  },
+  {
+   "after": [
+    "Business and management research",
+    "Workplace relations and teamwork"
+   ],
+   "angle": 115.39,
+   "axes_angle": 74.05,
+   "before": [
+    "Policing and law enforcement",
+    "Ecology and environmental science"
+   ],
+   "id": "c.it_operations",
+   "label": "IT operations and networks",
+   "shift": 41.34
+  },
+  {
+   "after": [
+    "Welfare and social protection",
+    "Statistics and data analysis"
+   ],
+   "angle": 127.38,
+   "axes_angle": 168.69,
+   "before": [
+    "Misinformation and defamation",
+    "Fraud, scams and deception"
+   ],
+   "id": "c.income_earning",
+   "label": "Receiving income and transfers",
+   "shift": 41.31
+  },
+  {
+   "after": [
+    "Journalism and reporting",
+    "Exams and assessment"
+   ],
+   "angle": 174.92,
    "axes_angle": 135.0,
    "before": [
-    "Corruption and bribery",
-    "Tax and regulatory compliance"
+    "Insurance and risk cover",
+    "Software development"
    ],
-   "id": "c.extremism_terrorism",
-   "label": "Extremism and terrorism",
-   "shift": 44.06
+   "id": "c.cybercrime",
+   "label": "Cybercrime",
+   "shift": 39.92
+  },
+  {
+   "after": [
+    "Driving",
+    "Waste and recycling"
+   ],
+   "angle": 5.47,
+   "axes_angle": 326.31,
+   "before": [
+    "Theft and property crime",
+    "Disability and adaptation"
+   ],
+   "id": "c.poverty_scarcity",
+   "label": "Poverty and scarcity",
+   "shift": 39.16
   }
  ],
  "named": {
   "c.agri_forestry_fishing_work": {
    "after": [
     {
+     "id": "c.horticulture_farming",
+     "label": "Crop farming and horticulture"
+    },
+    {
      "id": "c.wildlife_conservation",
      "label": "Wildlife and conservation"
     },
     {
-     "id": "c.public_health_science",
-     "label": "Public health and epidemiology"
+     "id": "c.public_transport",
+     "label": "Public transport"
     },
     {
-     "id": "c.occupational_safety",
-     "label": "Workplace safety"
-    },
-    {
-     "id": "c.horticulture_farming",
-     "label": "Crop farming and horticulture"
+     "id": "c.air_travel",
+     "label": "Air travel"
     }
    ],
    "after_similarity": 0.0,
@@ -2653,23 +2688,23 @@
   "c.agricultural_science": {
    "after": [
     {
-     "id": "c.manufacturing",
-     "label": "Manufacturing and production"
+     "id": "c.electrical_engineering",
+     "label": "Electrical and energy engineering"
     },
     {
-     "id": "c.civil_engineering",
-     "label": "Civil engineering and construction design"
+     "id": "c.manufacturing",
+     "label": "Manufacturing and production"
     },
     {
      "id": "c.urban_planning",
      "label": "Urban planning and infrastructure"
     },
     {
-     "id": "c.ecology_science",
-     "label": "Ecology and environmental science"
+     "id": "c.biotechnology",
+     "label": "Biotechnology and biomedical engineering"
     }
    ],
-   "after_similarity": 0.0,
+   "after_similarity": 0.3571428571428571,
    "before": [
     {
      "id": "c.healthcare_work",
@@ -2688,19 +2723,19 @@
      "label": "Medicine and clinical science"
     }
    ],
-   "before_similarity": 0.22743821110382118,
+   "before_similarity": 0.6083905920562023,
    "group": "agriculture",
    "label": "Agricultural and food science"
   },
   "c.arts_humanities_studies": {
    "after": [
     {
-     "id": "c.school_education",
-     "label": "School education"
+     "id": "c.self_directed_learning",
+     "label": "Self-directed learning"
     },
     {
-     "id": "c.philosophical_inquiry",
-     "label": "Philosophical inquiry"
+     "id": "c.language_learning",
+     "label": "Language learning and use"
     },
     {
      "id": "c.media_publishing",
@@ -2711,7 +2746,7 @@
      "label": "Social media and online communities"
     }
    ],
-   "after_similarity": 0.3333335,
+   "after_similarity": 0.375,
    "before": [
     {
      "id": "c.mathematics",
@@ -2737,20 +2772,20 @@
   "c.housing_search": {
    "after": [
     {
+     "id": "c.food_purchasing",
+     "label": "Buying food and groceries"
+    },
+    {
      "id": "c.accident_injury",
      "label": "Accidents and injuries"
     },
     {
-     "id": "c.hospitality_work",
-     "label": "Hospitality and food service work"
+     "id": "c.shopping_errands",
+     "label": "Shopping and errands"
     },
     {
-     "id": "c.commuting",
-     "label": "Commuting"
-    },
-    {
-     "id": "c.moving_relocation",
-     "label": "Moving house and relocation"
+     "id": "c.tourism_travel",
+     "label": "Tourism and leisure travel"
     }
    ],
    "after_similarity": 0.0,
@@ -2779,23 +2814,23 @@
   "c.mathematics": {
    "after": [
     {
-     "id": "c.taxation_compliance",
-     "label": "Tax and regulatory compliance"
+     "id": "c.psychology",
+     "label": "Psychology"
     },
     {
-     "id": "c.vocational_training",
-     "label": "Vocational and on-the-job training"
+     "id": "c.research_training",
+     "label": "Research training and scholarship"
     },
     {
-     "id": "c.finance_accounting",
-     "label": "Finance and accounting work"
+     "id": "c.human_rights",
+     "label": "Rights and justice"
     },
     {
-     "id": "c.political_science",
-     "label": "Political science and law scholarship"
+     "id": "c.political_discourse",
+     "label": "Political discussion and ideology"
     }
    ],
-   "after_similarity": 0.0,
+   "after_similarity": 0.375,
    "before": [
     {
      "id": "c.psychology",
@@ -2814,23 +2849,23 @@
      "label": "Arts, music and religion studies"
     }
    ],
-   "before_similarity": 1.676502790277183,
+   "before_similarity": 2.051502790277183,
    "group": "mathematics",
    "label": "Mathematics"
   },
   "c.performing_arts": {
    "after": [
     {
-     "id": "c.marriage_wedding",
-     "label": "Wedding and partnership formation"
+     "id": "c.bereavement",
+     "label": "Bereavement and grief"
     },
     {
-     "id": "c.marriage_cohabitation",
-     "label": "Marriage and cohabitation"
+     "id": "c.partnership_romance",
+     "label": "Dating and romantic partnership"
     },
     {
-     "id": "c.family_rituals",
-     "label": "Family occasions and traditions"
+     "id": "c.celebrations",
+     "label": "Celebrations and festivals"
     },
     {
      "id": "c.parenting_adolescents",
@@ -2863,23 +2898,23 @@
   "c.religion_worship": {
    "after": [
     {
+     "id": "c.coming_of_age",
+     "label": "Coming of age and graduation"
+    },
+    {
+     "id": "c.counselling_therapy",
+     "label": "Counselling and therapy"
+    },
+    {
      "id": "c.loneliness_isolation",
      "label": "Loneliness and social isolation"
     },
     {
      "id": "c.cultural_identity",
      "label": "Culture and identity"
-    },
-    {
-     "id": "c.everyday_conversation",
-     "label": "Everyday conversation and messaging"
-    },
-    {
-     "id": "c.divorce",
-     "label": "Separation and divorce"
     }
    ],
-   "after_similarity": 0.21088243129405493,
+   "after_similarity": 0.0,
    "before": [
     {
      "id": "c.divorce",
@@ -2905,23 +2940,23 @@
   "c.religious_community": {
    "after": [
     {
-     "id": "c.self_reflection",
-     "label": "Self-reflection and personal growth"
-    },
-    {
      "id": "c.creative_writing",
      "label": "Creative writing"
     },
     {
-     "id": "c.life_purpose",
-     "label": "Meaning, values and purpose"
+     "id": "c.mentoring_peer_support",
+     "label": "Mentoring and peer support"
+    },
+    {
+     "id": "c.self_reflection",
+     "label": "Self-reflection and personal growth"
     },
     {
      "id": "c.reconciliation",
      "label": "Apology and reconciliation"
     }
    ],
-   "after_similarity": 0.0,
+   "after_similarity": 0.3333335,
    "before": [
     {
      "id": "c.counselling_therapy",
@@ -2947,23 +2982,23 @@
   "c.statistics_data": {
    "after": [
     {
-     "id": "c.public_administration",
-     "label": "Public administration and policy"
+     "id": "c.welfare_benefits",
+     "label": "Welfare and social protection"
     },
     {
-     "id": "c.job_search",
-     "label": "Job search and hiring"
+     "id": "c.income_earning",
+     "label": "Receiving income and transfers"
     },
     {
-     "id": "c.computer_science",
-     "label": "Computer science"
+     "id": "c.cybersecurity",
+     "label": "Cybersecurity"
     },
     {
-     "id": "c.government_services",
-     "label": "Dealing with government"
+     "id": "c.software_development",
+     "label": "Software development"
     }
    ],
-   "after_similarity": 0.3333335,
+   "after_similarity": 0.0,
    "before": [
     {
      "id": "c.research_training",
@@ -2989,8 +3024,12 @@
   "c.visual_arts": {
    "after": [
     {
-     "id": "c.gambling",
-     "label": "Gambling and betting"
+     "id": "c.music_making",
+     "label": "Making music"
+    },
+    {
+     "id": "c.community_groups",
+     "label": "Clubs and community groups"
     },
     {
      "id": "c.mental_health",
@@ -2999,10 +3038,6 @@
     {
      "id": "c.stalking_privacy",
      "label": "Stalking and privacy violation"
-    },
-    {
-     "id": "c.family_ties",
-     "label": "Family relations"
     }
    ],
    "after_similarity": 0.0,
@@ -3030,256 +3065,257 @@
   }
  },
  "order": [
-  "c.self_provisioning",
+  "c.retail_shopping",
+  "c.traffic_offences",
+  "c.healthcare_work",
+  "c.road_safety",
+  "c.commuting",
   "c.fishing_hunting_foraging",
-  "c.driving",
   "c.animal_care_husbandry",
+  "c.driving",
+  "c.poverty_scarcity",
   "c.waste_recycling",
-  "c.air_travel",
-  "c.public_transport",
-  "c.wildlife_conservation",
-  "c.public_health_science",
-  "c.agri_forestry_fishing_work",
-  "c.occupational_safety",
   "c.horticulture_farming",
+  "c.wildlife_conservation",
+  "c.agri_forestry_fishing_work",
+  "c.public_transport",
+  "c.air_travel",
+  "c.occupational_safety",
   "c.exploitation_trafficking",
-  "c.drug_crime",
   "c.environmental_harm",
-  "c.transport_logistics",
-  "c.war_experience",
-  "c.disaster_experience",
+  "c.drug_crime",
   "c.weather_climate_adaptation",
+  "c.transport_logistics",
   "c.environmental_stewardship",
-  "c.elementary_occupations",
+  "c.public_health_science",
   "c.skilled_trades",
-  "c.public_safety_emergency",
+  "c.elementary_occupations",
+  "c.disaster_experience",
+  "c.war_experience",
   "c.construction_trades",
-  "c.migration",
-  "c.energy_systems",
-  "c.medicine_science",
+  "c.public_safety_emergency",
   "c.mechanical_engineering",
+  "c.energy_systems",
+  "c.migration",
+  "c.medicine_science",
+  "c.civil_engineering",
   "c.electrical_engineering",
   "c.manufacturing",
-  "c.civil_engineering",
   "c.agricultural_science",
   "c.urban_planning",
-  "c.ecology_science",
-  "c.security_services",
-  "c.chemistry",
-  "c.materials_science",
   "c.biotechnology",
-  "c.military_defence",
+  "c.materials_science",
+  "c.ecology_science",
+  "c.chemistry",
+  "c.security_services",
   "c.retail_work",
-  "c.life_sciences",
-  "c.earth_sciences",
+  "c.military_defence",
   "c.incarceration",
+  "c.life_sciences",
+  "c.online_commerce",
   "c.policing_enforcement",
+  "c.earth_sciences",
   "c.informal_gig",
-  "c.extremism_terrorism",
   "c.customer_service",
   "c.neuroscience",
-  "c.online_commerce",
-  "c.astronomy_space",
   "c.border_migration_admin",
   "c.management_executive",
-  "c.geography_science",
   "c.entrepreneurship",
-  "c.physics",
-  "c.science_research_work",
   "c.sales_marketing",
+  "c.science_research_work",
+  "c.geography_science",
+  "c.astronomy_space",
   "c.business_administration",
-  "c.subscriptions_telecom",
-  "c.it_operations",
-  "c.business_science",
   "c.employment_job",
+  "c.physics",
+  "c.business_science",
+  "c.it_operations",
   "c.workplace_relations",
   "c.labour_organising",
-  "c.cybersecurity",
-  "c.public_administration",
   "c.job_search",
-  "c.statistics_data",
-  "c.computer_science",
+  "c.job_loss",
+  "c.public_administration",
+  "c.subscriptions_telecom",
+  "c.extremism_terrorism",
   "c.government_services",
   "c.employment_transition",
-  "c.job_loss",
+  "c.welfare_benefits",
+  "c.income_earning",
+  "c.statistics_data",
+  "c.cybersecurity",
   "c.software_development",
-  "c.ai_ml",
-  "c.economics",
-  "c.legal_system",
-  "c.taxation_compliance",
   "c.vocational_training",
-  "c.mathematics",
+  "c.computer_science",
+  "c.legal_system",
   "c.finance_accounting",
-  "c.political_science",
-  "c.psychology",
+  "c.taxation_compliance",
   "c.political_participation",
-  "c.research_training",
+  "c.economics",
+  "c.ai_ml",
+  "c.political_science",
   "c.civil_society_advocacy",
+  "c.insurance_risk",
   "c.voting_elections",
   "c.corruption",
+  "c.psychology",
+  "c.research_training",
+  "c.mathematics",
   "c.human_rights",
   "c.political_discourse",
-  "c.welfare_benefits",
   "c.sociology",
-  "c.income_earning",
-  "c.insurance_risk",
   "c.legal_profession",
   "c.higher_education",
   "c.history_science",
-  "c.anthropology",
   "c.teaching_profession",
+  "c.anthropology",
   "c.journalism",
-  "c.exams_assessment",
-  "c.digital_tool_use",
-  "c.mediation_dispute_resolution",
-  "c.academic_dishonesty",
-  "c.misinformation_defamation",
-  "c.linguistics_literature",
   "c.cybercrime",
-  "c.tutoring_teaching",
-  "c.fraud_deception",
+  "c.exams_assessment",
+  "c.linguistics_literature",
+  "c.digital_tool_use",
   "c.news_media",
+  "c.tutoring_teaching",
+  "c.academic_dishonesty",
+  "c.fraud_deception",
+  "c.misinformation_defamation",
+  "c.mediation_dispute_resolution",
+  "c.school_education",
   "c.self_directed_learning",
   "c.language_learning",
-  "c.school_education",
-  "c.philosophical_inquiry",
   "c.arts_humanities_studies",
   "c.media_publishing",
   "c.social_media",
-  "c.saving_investing",
-  "c.basic_skills",
-  "c.harassment_discrimination",
-  "c.banking_payments",
-  "c.therapy_social_work",
-  "c.online_harassment",
   "c.inclusion_discrimination",
-  "c.conflict_interpersonal",
-  "c.retirement",
+  "c.harassment_discrimination",
+  "c.philosophical_inquiry",
+  "c.online_harassment",
   "c.reputation_gossip",
-  "c.mentoring_peer_support",
+  "c.saving_investing",
+  "c.therapy_social_work",
+  "c.basic_skills",
+  "c.banking_payments",
+  "c.conflict_interpersonal",
   "c.bullying_harassment",
-  "c.self_reflection",
   "c.creative_writing",
+  "c.mentoring_peer_support",
   "c.religious_community",
-  "c.life_purpose",
+  "c.self_reflection",
   "c.reconciliation",
-  "c.ethical_choice",
-  "c.etiquette_norms",
   "c.film_tv_video",
+  "c.life_purpose",
   "c.video_gaming",
+  "c.etiquette_norms",
   "c.youth_culture",
+  "c.divorce",
+  "c.ethical_choice",
+  "c.reading",
+  "c.coming_of_age",
+  "c.counselling_therapy",
+  "c.religion_worship",
   "c.loneliness_isolation",
   "c.cultural_identity",
-  "c.religion_worship",
-  "c.everyday_conversation",
-  "c.divorce",
   "c.identity_change",
-  "c.counselling_therapy",
-  "c.personal_finance",
-  "c.coming_of_age",
-  "c.reading",
+  "c.everyday_conversation",
+  "c.spirituality",
+  "c.rites_of_passage",
   "c.music_listening",
   "c.borrowing_debt",
-  "c.friendship",
-  "c.spirituality",
-  "c.community_groups",
-  "c.rites_of_passage",
+  "c.personal_finance",
   "c.folk_belief",
+  "c.retirement",
+  "c.friendship",
   "c.music_making",
-  "c.gambling",
-  "c.mental_health",
+  "c.community_groups",
   "c.visual_arts",
+  "c.mental_health",
   "c.stalking_privacy",
-  "c.family_ties",
+  "c.gambling",
   "c.marriage_wedding",
-  "c.marriage_cohabitation",
-  "c.performing_arts",
+  "c.family_ties",
   "c.family_rituals",
+  "c.marriage_cohabitation",
+  "c.bereavement",
+  "c.partnership_romance",
+  "c.performing_arts",
+  "c.celebrations",
   "c.parenting_adolescents",
   "c.neighbours_community",
-  "c.partnership_romance",
-  "c.cultural_visits",
-  "c.bereavement",
   "c.socialising",
-  "c.celebrations",
-  "c.early_childhood_education",
-  "c.charity_giving",
-  "c.poverty_scarcity",
+  "c.cultural_visits",
   "c.funeral_mourning",
-  "c.games_play",
-  "c.festivals_events",
-  "c.gifts_exchange",
   "c.volunteering",
+  "c.charity_giving",
   "c.household_budgeting",
+  "c.gifts_exchange",
   "c.self_harm_suicide",
+  "c.festivals_events",
+  "c.games_play",
+  "c.early_childhood_education",
   "c.hospitality_hosting",
   "c.household_planning",
-  "c.children_play",
-  "c.mutual_aid",
-  "c.nightlife",
-  "c.sexuality",
-  "c.death_dying",
   "c.domestic_abuse",
+  "c.mutual_aid",
+  "c.death_dying",
+  "c.sexuality",
   "c.child_abuse_neglect",
+  "c.nightlife",
+  "c.children_play",
+  "c.substance_use",
   "c.parenting_young_children",
   "c.childcare_other",
-  "c.substance_use",
-  "c.crafts_hobbies",
-  "c.maker_tinkering",
-  "c.sport_spectating",
-  "c.alternative_medicine",
   "c.sexual_violence",
-  "c.eldercare",
+  "c.sport_spectating",
   "c.sleep",
+  "c.eldercare",
   "c.serious_illness",
-  "c.home_organisation",
-  "c.home_repair_diy",
   "c.ageing_body",
+  "c.home_organisation",
   "c.birth_of_child",
   "c.cleaning_laundry",
+  "c.home_repair_diy",
+  "c.crafts_hobbies",
+  "c.alternative_medicine",
   "c.personal_appearance",
-  "c.disability_adaptation",
-  "c.care_of_ill_disabled",
   "c.sport_participation",
   "c.hygiene_grooming",
+  "c.care_of_ill_disabled",
   "c.reproduction_fertility",
   "c.pregnancy_birth",
-  "c.eating_drinking",
   "c.medication_adherence",
-  "c.physical_health",
   "c.exercise_fitness",
-  "c.medical_care",
+  "c.physical_health",
   "c.outdoor_recreation",
-  "c.restaurants_dining",
+  "c.negligence_recklessness",
+  "c.disability_adaptation",
+  "c.eating_drinking",
+  "c.violence_assault",
+  "c.medical_care",
+  "c.maker_tinkering",
   "c.personal_services_work",
+  "c.theft_property_crime",
   "c.reuse_repair",
   "c.clothing_footwear",
-  "c.negligence_recklessness",
-  "c.violence_assault",
-  "c.cooking",
+  "c.rent_mortgage",
   "c.nutrition_diet",
-  "c.theft_property_crime",
+  "c.cooking",
+  "c.restaurants_dining",
+  "c.home_energy_utilities",
   "c.household_gardening",
-  "c.food_purchasing",
   "c.preventive_health",
   "c.walking_cycling",
-  "c.rent_mortgage",
-  "c.tourism_travel",
-  "c.home_energy_utilities",
   "c.pet_ownership",
-  "c.shopping_errands",
+  "c.food_purchasing",
   "c.accident_injury",
-  "c.hospitality_work",
   "c.housing_search",
-  "c.commuting",
+  "c.shopping_errands",
+  "c.tourism_travel",
   "c.moving_relocation",
-  "c.healthcare_work",
-  "c.retail_shopping",
-  "c.traffic_offences",
-  "c.road_safety"
+  "c.hospitality_work",
+  "c.self_provisioning"
  ],
  "params": {
   "inherited_stiffness": 0.25,
+  "judged_floor": 0.3,
   "k_polar": 0.1,
   "k_radial": 5.0,
   "k_repel": 2.0,
@@ -3295,6 +3331,7 @@
   "weights": {
    "comembership": 0.5,
    "fine": 0.75,
+   "judged": 0.75,
    "overlap": 1.0,
    "text": 0.5,
    "upstream": 1.0
@@ -3303,251 +3340,251 @@
  "ring_order": {
   "after": [
    "c.walking_cycling",
-   "c.rent_mortgage",
-   "c.tourism_travel",
-   "c.home_energy_utilities",
    "c.pet_ownership",
-   "c.shopping_errands",
+   "c.food_purchasing",
    "c.accident_injury",
-   "c.hospitality_work",
    "c.housing_search",
-   "c.commuting",
+   "c.shopping_errands",
+   "c.tourism_travel",
    "c.moving_relocation",
-   "c.healthcare_work",
+   "c.hospitality_work",
+   "c.self_provisioning",
    "c.retail_shopping",
    "c.traffic_offences",
+   "c.healthcare_work",
    "c.road_safety",
-   "c.self_provisioning",
+   "c.commuting",
    "c.fishing_hunting_foraging",
-   "c.driving",
    "c.animal_care_husbandry",
+   "c.driving",
+   "c.poverty_scarcity",
    "c.waste_recycling",
-   "c.air_travel",
-   "c.public_transport",
-   "c.wildlife_conservation",
-   "c.public_health_science",
-   "c.agri_forestry_fishing_work",
-   "c.occupational_safety",
    "c.horticulture_farming",
+   "c.wildlife_conservation",
+   "c.agri_forestry_fishing_work",
+   "c.public_transport",
+   "c.air_travel",
+   "c.occupational_safety",
    "c.exploitation_trafficking",
-   "c.drug_crime",
    "c.environmental_harm",
-   "c.transport_logistics",
-   "c.war_experience",
-   "c.disaster_experience",
+   "c.drug_crime",
    "c.weather_climate_adaptation",
+   "c.transport_logistics",
    "c.environmental_stewardship",
-   "c.elementary_occupations",
+   "c.public_health_science",
    "c.skilled_trades",
-   "c.public_safety_emergency",
+   "c.elementary_occupations",
+   "c.disaster_experience",
+   "c.war_experience",
    "c.construction_trades",
-   "c.migration",
-   "c.energy_systems",
-   "c.medicine_science",
+   "c.public_safety_emergency",
    "c.mechanical_engineering",
+   "c.energy_systems",
+   "c.migration",
+   "c.medicine_science",
+   "c.civil_engineering",
    "c.electrical_engineering",
    "c.manufacturing",
-   "c.civil_engineering",
    "c.agricultural_science",
    "c.urban_planning",
-   "c.ecology_science",
-   "c.security_services",
-   "c.chemistry",
-   "c.materials_science",
    "c.biotechnology",
-   "c.military_defence",
+   "c.materials_science",
+   "c.ecology_science",
+   "c.chemistry",
+   "c.security_services",
    "c.retail_work",
-   "c.life_sciences",
-   "c.earth_sciences",
+   "c.military_defence",
    "c.incarceration",
+   "c.life_sciences",
+   "c.online_commerce",
    "c.policing_enforcement",
+   "c.earth_sciences",
    "c.informal_gig",
-   "c.extremism_terrorism",
    "c.customer_service",
    "c.neuroscience",
-   "c.online_commerce",
-   "c.astronomy_space",
    "c.border_migration_admin",
    "c.management_executive",
-   "c.geography_science",
    "c.entrepreneurship",
-   "c.physics",
-   "c.science_research_work",
    "c.sales_marketing",
+   "c.science_research_work",
+   "c.geography_science",
+   "c.astronomy_space",
    "c.business_administration",
-   "c.subscriptions_telecom",
-   "c.it_operations",
-   "c.business_science",
    "c.employment_job",
+   "c.physics",
+   "c.business_science",
+   "c.it_operations",
    "c.workplace_relations",
    "c.labour_organising",
-   "c.cybersecurity",
-   "c.public_administration",
    "c.job_search",
-   "c.statistics_data",
-   "c.computer_science",
+   "c.job_loss",
+   "c.public_administration",
+   "c.subscriptions_telecom",
+   "c.extremism_terrorism",
    "c.government_services",
    "c.employment_transition",
-   "c.job_loss",
+   "c.welfare_benefits",
+   "c.income_earning",
+   "c.statistics_data",
+   "c.cybersecurity",
    "c.software_development",
-   "c.ai_ml",
-   "c.economics",
-   "c.legal_system",
-   "c.taxation_compliance",
    "c.vocational_training",
-   "c.mathematics",
+   "c.computer_science",
+   "c.legal_system",
    "c.finance_accounting",
-   "c.political_science",
-   "c.psychology",
+   "c.taxation_compliance",
    "c.political_participation",
-   "c.research_training",
+   "c.economics",
+   "c.ai_ml",
+   "c.political_science",
    "c.civil_society_advocacy",
+   "c.insurance_risk",
    "c.voting_elections",
    "c.corruption",
+   "c.psychology",
+   "c.research_training",
+   "c.mathematics",
    "c.human_rights",
    "c.political_discourse",
-   "c.welfare_benefits",
    "c.sociology",
-   "c.income_earning",
-   "c.insurance_risk",
    "c.legal_profession",
    "c.higher_education",
    "c.history_science",
-   "c.anthropology",
    "c.teaching_profession",
+   "c.anthropology",
    "c.journalism",
-   "c.exams_assessment",
-   "c.digital_tool_use",
-   "c.mediation_dispute_resolution",
-   "c.academic_dishonesty",
-   "c.misinformation_defamation",
-   "c.linguistics_literature",
    "c.cybercrime",
-   "c.tutoring_teaching",
-   "c.fraud_deception",
+   "c.exams_assessment",
+   "c.linguistics_literature",
+   "c.digital_tool_use",
    "c.news_media",
+   "c.tutoring_teaching",
+   "c.academic_dishonesty",
+   "c.fraud_deception",
+   "c.misinformation_defamation",
+   "c.mediation_dispute_resolution",
+   "c.school_education",
    "c.self_directed_learning",
    "c.language_learning",
-   "c.school_education",
-   "c.philosophical_inquiry",
    "c.arts_humanities_studies",
    "c.media_publishing",
    "c.social_media",
-   "c.saving_investing",
-   "c.basic_skills",
-   "c.harassment_discrimination",
-   "c.banking_payments",
-   "c.therapy_social_work",
-   "c.online_harassment",
    "c.inclusion_discrimination",
-   "c.conflict_interpersonal",
-   "c.retirement",
+   "c.harassment_discrimination",
+   "c.philosophical_inquiry",
+   "c.online_harassment",
    "c.reputation_gossip",
-   "c.mentoring_peer_support",
+   "c.saving_investing",
+   "c.therapy_social_work",
+   "c.basic_skills",
+   "c.banking_payments",
+   "c.conflict_interpersonal",
    "c.bullying_harassment",
-   "c.self_reflection",
    "c.creative_writing",
+   "c.mentoring_peer_support",
    "c.religious_community",
-   "c.life_purpose",
+   "c.self_reflection",
    "c.reconciliation",
-   "c.ethical_choice",
-   "c.etiquette_norms",
    "c.film_tv_video",
+   "c.life_purpose",
    "c.video_gaming",
+   "c.etiquette_norms",
    "c.youth_culture",
+   "c.divorce",
+   "c.ethical_choice",
+   "c.reading",
+   "c.coming_of_age",
+   "c.counselling_therapy",
+   "c.religion_worship",
    "c.loneliness_isolation",
    "c.cultural_identity",
-   "c.religion_worship",
-   "c.everyday_conversation",
-   "c.divorce",
    "c.identity_change",
-   "c.counselling_therapy",
-   "c.personal_finance",
-   "c.coming_of_age",
-   "c.reading",
+   "c.everyday_conversation",
+   "c.spirituality",
+   "c.rites_of_passage",
    "c.music_listening",
    "c.borrowing_debt",
-   "c.friendship",
-   "c.spirituality",
-   "c.community_groups",
-   "c.rites_of_passage",
+   "c.personal_finance",
    "c.folk_belief",
+   "c.retirement",
+   "c.friendship",
    "c.music_making",
-   "c.gambling",
-   "c.mental_health",
+   "c.community_groups",
    "c.visual_arts",
+   "c.mental_health",
    "c.stalking_privacy",
-   "c.family_ties",
+   "c.gambling",
    "c.marriage_wedding",
-   "c.marriage_cohabitation",
-   "c.performing_arts",
+   "c.family_ties",
    "c.family_rituals",
+   "c.marriage_cohabitation",
+   "c.bereavement",
+   "c.partnership_romance",
+   "c.performing_arts",
+   "c.celebrations",
    "c.parenting_adolescents",
    "c.neighbours_community",
-   "c.partnership_romance",
-   "c.cultural_visits",
-   "c.bereavement",
    "c.socialising",
-   "c.celebrations",
-   "c.early_childhood_education",
-   "c.charity_giving",
-   "c.poverty_scarcity",
+   "c.cultural_visits",
    "c.funeral_mourning",
-   "c.games_play",
-   "c.festivals_events",
-   "c.gifts_exchange",
    "c.volunteering",
+   "c.charity_giving",
    "c.household_budgeting",
+   "c.gifts_exchange",
    "c.self_harm_suicide",
+   "c.festivals_events",
+   "c.games_play",
+   "c.early_childhood_education",
    "c.hospitality_hosting",
    "c.household_planning",
-   "c.children_play",
-   "c.mutual_aid",
-   "c.nightlife",
-   "c.sexuality",
-   "c.death_dying",
    "c.domestic_abuse",
+   "c.mutual_aid",
+   "c.death_dying",
+   "c.sexuality",
    "c.child_abuse_neglect",
+   "c.nightlife",
+   "c.children_play",
+   "c.substance_use",
    "c.parenting_young_children",
    "c.childcare_other",
-   "c.substance_use",
-   "c.crafts_hobbies",
-   "c.maker_tinkering",
-   "c.sport_spectating",
-   "c.alternative_medicine",
    "c.sexual_violence",
-   "c.eldercare",
+   "c.sport_spectating",
    "c.sleep",
+   "c.eldercare",
    "c.serious_illness",
-   "c.home_organisation",
-   "c.home_repair_diy",
    "c.ageing_body",
+   "c.home_organisation",
    "c.birth_of_child",
    "c.cleaning_laundry",
+   "c.home_repair_diy",
+   "c.crafts_hobbies",
+   "c.alternative_medicine",
    "c.personal_appearance",
-   "c.disability_adaptation",
-   "c.care_of_ill_disabled",
    "c.sport_participation",
    "c.hygiene_grooming",
+   "c.care_of_ill_disabled",
    "c.reproduction_fertility",
    "c.pregnancy_birth",
-   "c.eating_drinking",
    "c.medication_adherence",
-   "c.physical_health",
    "c.exercise_fitness",
-   "c.medical_care",
+   "c.physical_health",
    "c.outdoor_recreation",
-   "c.restaurants_dining",
+   "c.negligence_recklessness",
+   "c.disability_adaptation",
+   "c.eating_drinking",
+   "c.violence_assault",
+   "c.medical_care",
+   "c.maker_tinkering",
    "c.personal_services_work",
+   "c.theft_property_crime",
    "c.reuse_repair",
    "c.clothing_footwear",
-   "c.negligence_recklessness",
-   "c.violence_assault",
-   "c.cooking",
+   "c.rent_mortgage",
    "c.nutrition_diet",
-   "c.theft_property_crime",
+   "c.cooking",
+   "c.restaurants_dining",
+   "c.home_energy_utilities",
    "c.household_gardening",
-   "c.food_purchasing",
    "c.preventive_health"
   ],
   "before": [
