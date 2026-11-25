@@ -651,3 +651,35 @@ end
     @test paired_effect([mean(u) - mean(c) for (u, c) in zip(unb, clean)]; z = 2.0, direction = :up).mean > 0.05
     @test bnd == clean
 end
+
+# The unified world, phase C (P60 heavy; fast version in probe_tests.jl). Predictions (lead, before measuring): (i) binding cuts the sybil agents' share of
+# the currency (off minus on, paired seeds, z = 2, direction up, smallest effect that matters 0.02 of the currency; 0.6); (ii) the Goal pattern of the one
+# world (layers on) loses less than 3 of floor_u + floor_h against phase A, one-sided equivalence at z = 2 (0.55); (iii) structural in every seed: the
+# fractal ledger identity across levels and the commons bound (0.7). Not tuned to rescue.
+@timed_testset "Probe (heavy): one world, ceiling on real balances, Goal pattern against phase A, ledger across levels (P60)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    function world(seed, binding; layers = true)
+        up = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = binding), economy = true, fractal = FractalParams()) :
+                      UnifiedParams(liar_community = 1)
+        r = run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+        b = vec(sum(r.econ_trace.balance; dims = 2))
+        (r = r, share = sum(b[(na - ns + 1):na]) / sum(b), fl = r.success.floor_u + r.success.floor_h)
+    end
+    cache = Dict{Int,Any}(); arm(s) = get!(() -> (off = world(s, false), on = world(s, true), phaseA = world(s, false; layers = false)), cache, s)
+    r1 = seeds_until_stable(s -> arm(s).off.share - arm(s).on.share; tol = 0.01, min_seeds = 8, max_seeds = 24)
+    @info "P60 heavy (i) sybil currency share, off minus on" n = r1.n stable = r1.stable mean = r1.mean se = r1.se
+    e1 = paired_effect(r1.values; z = 2.0, direction = :up)
+    @test e1.mean > 0.02                  # the point estimate clears the smallest effect that matters
+    @test_broken e1.significant           # MISSED (24 seeds, z about 1.7: +0.034 +- 0.020 of the currency, paired): direction as predicted, not shown at z = 2; not tuned
+    r2 = seeds_until_stable(s -> max(0.0, arm(s).phaseA.fl - arm(s).on.fl); tol = 0.5, min_seeds = 8, max_seeds = 24)
+    @info "P60 heavy (ii) Goal pattern, one-sided loss against phase A (floor_u + floor_h)" n = r2.n stable = r2.stable mean = r2.mean se = r2.se
+    @test equivalent(r2.values; margin = 3.0, side = :upper, z = 2.0).equivalent
+    for s in keys(cache), r in (cache[s].off.r, cache[s].on.r), f in r.unified.fractal
+        @test abs(f.ledger_gap) < 1e-6 && f.drawn <= f.commons + 1e-9
+    end
+end

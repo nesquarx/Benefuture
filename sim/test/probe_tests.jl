@@ -3500,6 +3500,62 @@ end
     @test wall < 20
 end
 
+
+# The unified world, phase C: one world (author ruling 8.174; 8.72, 8.172, 8.150; P60). The identity layer's newcomers and sybils are economy agents (the
+# economy's trailing agents, one to one), so the identity currency ceiling acts on their real accumulation allowance (`allowance`, read live: what a
+# ceiling leaves over the allowance flows to the commons, never below zero, so basic sustenance is kept); each epoch's fractal run takes its root reserve
+# from the economy's commons (`unified_fractal_epoch!`: nested reserves, one currency, `sum(balances) = reserve + minted - burnt`, drawn never above the
+# commons); beings are linked to agents (a ring) so each cluster has understanding and happiness readings. Predictions before measuring (lead): the identity
+# ceiling holds (0.7: allowance never below basic sustenance share, ledger identity every seed), the Goal pattern within margin of phase A (0.55:
+# one-sided loss of floor_u + floor_h below 3), the sybil drain cut under binding (0.6). Baseline outcome hypothesis: off arm (binding off, sybils bypass
+# it) sybil agents hold well above their head share (12 of 48, 0.25) of the currency. Not tuned to rescue; what is measured is recorded.
+@timed_testset "Probe: one world, the identity ceiling on real balances, fractal budgets from the commons, cluster readings (P60)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924   # the sybil agents fool the metric models upward (the attack of P57's army, now with a purse)
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    function world(seed, binding; layers = true)
+        up = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = binding), economy = true, fractal = FractalParams()) :
+                      UnifiedParams(liar_community = 1)
+        r = run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+        b = vec(sum(r.econ_trace.balance; dims = 2))
+        (r = r, share = sum(b[(na - ns + 1):na]) / sum(b), total = sum(b), commons = sum(r.econ_trace.reinvested), fl = r.success.floor_u + r.success.floor_h)
+    end
+    world(1, true)   # warm-up
+    t0 = time()
+    arms = [(off = world(s, false), on = world(s, true), phaseA = world(s, false; layers = false)) for s in 1:4]
+    for a in arms
+        @info "P60 arms" share = (a.off.share, a.on.share, a.phaseA.share) commons = (a.off.commons, a.on.commons) floors = (a.off.fl, a.on.fl, a.phaseA.fl)
+        # structural, every seed: the ledger identity across levels, the commons bound, basic sustenance, the economy reads the ceiling
+        for r in (a.off.r, a.on.r)
+            for f in r.unified.fractal
+                @test abs(f.ledger_gap) < 1e-6 && f.drawn <= f.commons + 1e-9                  # one currency across levels, drawn within the commons
+            end
+        end
+        @test all(>=(0.3 / 0.93 - 1e-9), a.on.r.unified.allowance)                               # basic sustenance: the ceiling never takes an identity below it (relative to a bound member)
+        @test all(==(1.0), a.off.r.unified.allowance)                                            # binding off: no ceiling
+        @test a.on.r.unified.allowance[end - ns + 1:end] != ones(ns)                             # the ceiling acts on the sybil agents' allowance
+        @test minimum(vec(sum(a.on.r.econ_trace.balance; dims = 2))) > -Inf && isfinite(a.on.total) # no stall: the run completes with a finite ledger
+        @test a.on.commons >= 0
+        # (c) cluster-level readings exist (beings linked to agents)
+        cl = a.on.r.unified.epochs[end].readings[1].clusters
+        @test all(c -> haskey(c, :understanding) && haskey(c, :happiness) && isfinite(c.understanding) && isfinite(c.happiness), cl)
+        # Goal pattern, one-sided against phase A (the loss of floor_u + floor_h)
+        @test max(0.0, a.phaseA.fl - a.on.fl) < 3
+    end
+    @test_broken mean(a.off.share for a in arms) > 0.30   # red baseline MISSED: sybil agents hold about their head share (0.25) of the currency; the economy's own accounting already leaves deceit no drain
+    cut = [a.off.share - a.on.share for a in arms]
+    @info "P60 sybil currency share, off minus on (paired)" cut = round.(cut; digits = 3) mean = mean(cut)
+    @test mean(cut) > 0                                                                          # prediction: binding cuts the sybils' holdings (direction only, 4 seeds; significance is the heavy probe)
+    @test any(a -> a.on.commons > a.off.commons, arms)                                           # what the ceiling skims funds the commons
+    @test any(a -> any(f -> f.reserve > 0, a.on.r.unified.fractal), arms)                         # the fractal run is funded from it
+    wall = time() - t0
+    @info "P60 wall time (s)" wall
+    @test wall < 20
+end
+
 probe_total("fast")
 
 # Attestation records and cluster farming; the layer in the adoption vote (lead decision on 8.72, 8.170; P58). An attestation is a claim with an

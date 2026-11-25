@@ -293,6 +293,7 @@ struct M3cParams
     false_restraint_severity::Float64 # world: severity of an overeager restraint
     false_restraint_harm::Float64 # world: value lost per unit severity by a wrongly restrained being (harm proxy)
     enforcer_liability_scale::Float64 # world: liability an enforcing entity absorbs before reining in (restraint propensity x exp(-L / scale))
+    allowance::Vector{Float64}    # per agent, the scale on its accumulation allowance (identity currency ceiling, 8.172; read live, 1 = the allowance as is). Balance above it flows to the commons (`reinvested`), never below zero: basic sustenance stays
 end
 
 """
@@ -357,7 +358,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 6, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
                    restraint_audit_floor::Real = 0.05, restraint_dur_scale::Real = 5.0, restraint_audit_cap::Integer = 2,
                    restraint_audit_acc::Real = 0.9, acquittal_audit::Bool = false, acquittal_audit_rate::Real = 0.25, false_restraint_severity::Real = 0.6, false_restraint_harm::Real = 1.0,
-                   enforcer_liability_scale::Real = 5.0)
+                   enforcer_liability_scale::Real = 5.0, allowance = Float64[])
     check(all(e -> isfinite(e) && e >= 0, judges) && all(isfinite, judge_bias) && all(c -> c in (1, 2), judge_cluster) &&
           (isempty(judge_bias) || length(judge_bias) == length(judges)) && (isempty(judge_cluster) || length(judge_cluster) == length(judges)) &&
           panel_size >= 1 && isfinite(panel_minority_weight) && panel_minority_weight >= 0 && isfinite(evidence_sep) && evidence_sep > 0 &&
@@ -489,7 +490,8 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               Float64(evidence_sep), Float64(evidence_noise), Float64(false_accusation_rate), collect(Float64, enforcer_excess), Float64(excess_tol),
               Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
               Float64(restraint_audit_floor), Float64(restraint_dur_scale), Int(restraint_audit_cap), Float64(restraint_audit_acc), acquittal_audit, Float64(acquittal_audit_rate),
-              Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale))
+              Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale),
+              isempty(allowance) ? ones(length(agents)) : collect(Float64, allowance))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -1595,7 +1597,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         L = nleaves()
         cols = [1:L; (lmax + 1):ncol]
         own_rel = (rel_gain .+ rel_loss)[:, cols]
-        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
+        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], being_u = copy(s.u), being_h = copy(s.h), endowment = p.endowment, endowed = endowed,
                    h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                    relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                    relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
@@ -2978,7 +2980,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             totals = rel_gain[a, :] .+ rel_loss[a, :]
             totals[col_parent.(1:np)] .= relevance_parents(a)
             for c in 1:ncol
-                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base * base_share[a], p.overflow_factor, totals[c]))
+                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base * base_share[a] * p.allowance[a], p.overflow_factor, totals[c]))
                 balance[a, c] -= excess
                 reinvested[c] += excess
                 overflow_agent[a] += excess

@@ -188,7 +188,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
 
         # Build M5 parameters for this epoch using the accumulated economy reputation.
         gp = gov isa M5Params ? gov : gov(tr_ep)
-        U === nothing || (gp = unified_gp(U, gp); unified_record!(U, ep, reputation);
+        U === nothing || (gp = unified_gp(U, gp); unified_record!(U, ep, reputation, tr_ep);
                               U.epochs[end].interaction > 0 || degrade!("emergent clusters", "one cluster", "no interaction measured yet (no source had a record to be heard)", ep))
 
         ep_start = (ep - 1) * epoch + 1
@@ -327,6 +327,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         expertise = gp.relative_expertise ? relative_reputation(rep_k) : rep_k
         w = [voting_weight(gp.base, gp.expertise_weight, [1.0], [expertise[i]], gp.impact_weight, gp.focus[i, k];
                            optional_below = gp.optional_below)[1] for i in 1:na]
+        U === nothing || (w = unified_vote_scale(U, w))   # phase C: economy-mapped newcomers and sybils vote at their identity's ballot weight
         total = sum(w)
         held = copy(w)
         delegated, received = falses(na), falses(na)
@@ -383,11 +384,11 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         end
         votes = [begin
             s_i = readings === nothing ? read_truth + gp.camp_bias[i] + choice_noise(crng, caps[i, k]) : readings[i]
-            (i in gp.colluders) ? 1.0 : (s_i >= 0 ? 1.0 : -1.0)
+            U !== nothing && unified_sybil(U, i) ? (read_truth >= 0 ? -1.0 : 1.0) : (i in gp.colluders) ? 1.0 : (s_i >= 0 ? 1.0 : -1.0)
         end for i in 1:na]
         tally = sum((held[i] * votes[i] for i in 1:na if !delegated[i]); init = 0.0)
         # the identity layer's ballots (8.72): bound newcomers vote, sybils vote against the candidate's merit; only with the layer on
-        if U !== nothing && U.ident !== nothing && cand_active
+        if U !== nothing && U.ident !== nothing && !U.economy && cand_active
             nvoting = count(!, delegated)
             tally += identity_ballots(U.ident, read_truth, sum(held[i] for i in 1:na if !delegated[i]; init = 0.0) / max(1, nvoting),
                                       Xoshiro(hash((seed, :identity_vote, ep))))
