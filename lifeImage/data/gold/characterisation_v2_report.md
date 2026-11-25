@@ -14,12 +14,12 @@ are reported as they fall; signatures are not edited after measurement.
 | starter truth / new | 40 | 10 | 8 | 20 | 0.35 [0.22, 0.50] (chance 0.125, majority 0.12) | 0.30 [0.18, 0.45] (chance 0.333, majority 0.40) |
 | starter truth / legacy | 40 | 7 | 11 | 20 | 0.42 [0.29, 0.58] (chance 0.125, majority 0.12) | 0.40 [0.26, 0.55] (chance 0.333, majority 0.40) |
 | starter resume claims / new | 40 | 7 | 7 | 24 | 0.23 [0.12, 0.38] (chance 0.125, majority 0.12) | 0.50 [0.35, 0.65] (chance 0.333, majority 0.40) |
-| starter extracted var0 / new | 40 | 11 | 7 | 20 | 0.20 [0.10, 0.35] (chance 0.125, majority 0.12) | 0.40 [0.26, 0.55] (chance 0.333, majority 0.40) |
-| starter extracted var0 / legacy | 40 | 9 | 16 | 13 | 0.12 [0.05, 0.26] (chance 0.125, majority 0.12) | 0.40 [0.26, 0.55] (chance 0.333, majority 0.40) |
-| starter extracted var1 / new | 40 | 6 | 6 | 26 | 0.15 [0.07, 0.29] (chance 0.125, majority 0.12) | 0.57 [0.42, 0.71] (chance 0.333, majority 0.40) |
-| starter extracted var1 / legacy | 40 | 8 | 17 | 13 | 0.12 [0.05, 0.26] (chance 0.125, majority 0.12) | 0.45 [0.31, 0.60] (chance 0.333, majority 0.40) |
-| starter extracted var2 / new | 40 | 8 | 10 | 20 | 0.15 [0.07, 0.29] (chance 0.125, majority 0.12) | 0.60 [0.45, 0.74] (chance 0.333, majority 0.40) |
-| starter extracted var2 / legacy | 40 | 8 | 17 | 13 | 0.23 [0.12, 0.38] (chance 0.125, majority 0.12) | 0.53 [0.37, 0.67] (chance 0.333, majority 0.40) |
+| starter extracted var0 / new | 40 | 6 | 7 | 25 | 0.17 [0.09, 0.32] (chance 0.125, majority 0.12) | 0.50 [0.35, 0.65] (chance 0.333, majority 0.40) |
+| starter extracted var0 / legacy | 40 | 8 | 17 | 13 | 0.20 [0.10, 0.35] (chance 0.125, majority 0.12) | 0.50 [0.35, 0.65] (chance 0.333, majority 0.40) |
+| starter extracted var1 / new | 40 | 12 | 8 | 18 | 0.30 [0.18, 0.45] (chance 0.125, majority 0.12) | 0.40 [0.26, 0.55] (chance 0.333, majority 0.40) |
+| starter extracted var1 / legacy | 40 | 9 | 16 | 13 | 0.20 [0.10, 0.35] (chance 0.125, majority 0.12) | 0.38 [0.24, 0.53] (chance 0.333, majority 0.40) |
+| starter extracted var2 / new | 40 | 10 | 10 | 18 | 0.17 [0.09, 0.32] (chance 0.125, majority 0.12) | 0.47 [0.33, 0.63] (chance 0.333, majority 0.40) |
+| starter extracted var2 / legacy | 40 | 9 | 16 | 13 | 0.15 [0.07, 0.29] (chance 0.125, majority 0.12) | 0.45 [0.31, 0.60] (chance 0.333, majority 0.40) |
 
 Identification: nearest centroid, leave one out, features standardised on the training fold; Wilson 95% interval; chance is 1/classes,
 majority the share of the largest class. An interval whose lower end is above the chance and the majority rate is better than chance.
@@ -33,8 +33,8 @@ together and does not say how to combine them; this reading was fixed before any
 |---|---|---|---|---|---|
 | I1 | extended / new | archetype | at least 0.60 | 0.535 [0.453, 0.614] (n=144) | inconclusive |
 | I2 | extended / new | calibration | at least 0.45 | 0.465 [0.386, 0.547] (n=144) | held |
-| I3 | starter extracted (var0, var1, var2) / new | archetype | at least 0.25 | 0.167 [0.111, 0.243] (n=120) | not held |
-| I4 | starter extracted (var0, var1, var2) / new | calibration | at least 0.40 | 0.525 [0.436, 0.612] (n=120) | held |
+| I3 | starter extracted (var0, var1, var2) / new | archetype | at least 0.25 | 0.217 [0.152, 0.299] (n=120) | inconclusive |
+| I4 | starter extracted (var0, var1, var2) / new | calibration | at least 0.40 | 0.458 [0.372, 0.547] (n=120) | held |
 | I5 | extended / legacy | archetype | at most 0.62 | 0.542 [0.460, 0.621] (n=144) | held |
 | I6 | extended / legacy | calibration | at most 0.40 | 0.361 [0.287, 0.442] (n=144) | held |
 
@@ -85,40 +85,40 @@ together and does not say how to combine them; this reading was fixed before any
 
 | id | extended / new | extended / legacy | starter truth / new | starter truth / legacy | starter resume claims / new | starter extracted var0 / new | starter extracted var0 / legacy | starter extracted var1 / new | starter extracted var1 / legacy | starter extracted var2 / new | starter extracted var2 / legacy |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| A1 | held | not held | inconclusive | not held | held | held | not held | inconclusive | not held | not held | not held |
-| A2 | not held | not held | not held | inconclusive | not held | not held | inconclusive | not held | not held | not held | not held |
+| A1 | held | not held | inconclusive | not held | held | inconclusive | not held | held | inconclusive | not held | not held |
+| A2 | not held | not held | not held | inconclusive | not held | not held | not held | not held | not held | not held | inconclusive |
 | A3 | held | held | held | held | held | held | held | held | held | held | held |
 | A4 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | A5 | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held |
 | A6 | not held | not held | inconclusive | not held | inconclusive | inconclusive | not held | inconclusive | not held | not held | not held |
 | A7 | held | held | inconclusive | inconclusive | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
-| A8 | not held | not held | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
+| A8 | not held | not held | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | held | held |
 | A9 | held | not held | inconclusive | not held | not held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
-| A10 | not held | not held | not held | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
+| A10 | not held | not held | not held | inconclusive | inconclusive | inconclusive | not held | held | not held | inconclusive | not held |
 | A11 | not held | not held | not held | not held | inconclusive | not held | not held | inconclusive | not held | not held | not held |
-| A12 | held | held | held | held | held | held | held | inconclusive | inconclusive | inconclusive | inconclusive |
-| A13 | not held | not held | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
+| A12 | held | held | held | held | held | inconclusive | inconclusive | held | held | inconclusive | inconclusive |
+| A13 | not held | not held | inconclusive | inconclusive | inconclusive | inconclusive | not held | not held | not held | inconclusive | not held |
 | A14 | inconclusive | held | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
 | A15 | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | A16 | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | A17 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | G1 | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held |
 | G2 | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held | not held |
-| K1 | inconclusive | not held | inconclusive | inconclusive | inconclusive | held | held | inconclusive | held | held | held |
+| K1 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | held | held | held | held | held |
 | K2 | inconclusive | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
-| K3 | inconclusive | not held | held | inconclusive | inconclusive | held | held | inconclusive | held | held | held |
-| K4 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | not held | not held |
+| K3 | inconclusive | not held | held | inconclusive | inconclusive | inconclusive | held | held | held | held | held |
+| K4 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | not held | not held | not held | not held | not held |
 | K5 | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
 | K6 | held | held | held | held | inconclusive | held | held | held | held | held | held |
 | K7 | held | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | K8 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
-| K9 | inconclusive | not held | inconclusive | not held | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
-| K10 | inconclusive | not held | inconclusive | inconclusive | inconclusive | held | held | inconclusive | held | held | held |
+| K9 | inconclusive | not held | inconclusive | not held | inconclusive | inconclusive | not held | not held | not held | not held | not held |
+| K10 | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | held | held | held | held | held |
 | K11 | inconclusive | not held | not held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
-| K12 | held | held | held | held | inconclusive | held | inconclusive | held | inconclusive | inconclusive | inconclusive |
+| K12 | held | held | held | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
 | K13 | held | not held | inconclusive | not held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive |
-| W1 | held | not held | held | not held | held | not held | not held | not held | not held | not held | not held |
-| W2 | held | inconclusive | inconclusive | inconclusive | inconclusive | inconclusive | not held | inconclusive | not held | inconclusive | not held |
+| W1 | held | not held | held | not held | held | held | not held | held | not held | held | not held |
+| W2 | held | inconclusive | inconclusive | inconclusive | inconclusive | not held | not held | inconclusive | not held | inconclusive | not held |
 | W3 | held | held | held | held | not held | not held | not held | not held | not held | not held | not held |
 | W4 | held | held | held | held | held | held | held | held | held | held | held |
 | W5 | held | held | held | held | held | held | held | held | held | held | held |
@@ -133,12 +133,12 @@ together and does not say how to combine them; this reading was fixed before any
 | starter truth / new | 0.269 | 0.375 | 0.357 | 0.951 |
 | starter truth / legacy | 0.048 | 0.506 | 0.446 | 0.962 |
 | starter resume claims / new | 0.186 | 0.392 | 0.423 | 1.019 |
-| starter extracted var0 / new | 0.214 | 0.621 | 0.166 | 1.065 |
-| starter extracted var0 / legacy | 0.067 | 0.933 | 0.000 | 1.081 |
-| starter extracted var1 / new | 0.215 | 0.620 | 0.166 | 1.066 |
-| starter extracted var1 / legacy | 0.067 | 0.933 | 0.000 | 1.081 |
-| starter extracted var2 / new | 0.228 | 0.607 | 0.165 | 0.987 |
-| starter extracted var2 / legacy | 0.082 | 0.918 | 0.000 | 1.000 |
+| starter extracted var0 / new | 0.208 | 0.627 | 0.165 | 1.075 |
+| starter extracted var0 / legacy | 0.095 | 0.905 | 0.000 | 1.081 |
+| starter extracted var1 / new | 0.272 | 0.529 | 0.199 | 1.041 |
+| starter extracted var1 / legacy | 0.059 | 0.883 | 0.059 | 1.078 |
+| starter extracted var2 / new | 0.377 | 0.458 | 0.165 | 1.012 |
+| starter extracted var2 / legacy | 0.119 | 0.881 | 0.000 | 1.000 |
 
 ## Luminance, before and after
 
@@ -151,11 +151,11 @@ Mean image luminance by set; version 1 is the earlier report (earlier tone const
 | starter truth / new | 0.0315 (0.0022, 0.0510) | 0.169 | 0.464 |
 | starter truth / legacy | 0.1359 (0.0210, 0.1921) | 0.136 | 0.231 |
 | starter resume claims / new | 0.0006 (0.0000, 0.0015) | 0.035 | 0.500 |
-| starter extracted var0 / new | 0.0006 (0.0000, 0.0019) | 0.025 | 0.493 |
-| starter extracted var0 / legacy | 0.0054 (0.0000, 0.0112) | 0.005 | 0.000 |
-| starter extracted var1 / new | 0.0006 (0.0000, 0.0024) | 0.024 | 0.482 |
-| starter extracted var1 / legacy | 0.0054 (0.0000, 0.0111) | 0.005 | 0.000 |
-| starter extracted var2 / new | 0.0003 (0.0000, 0.0014) | 0.016 | 0.280 |
+| starter extracted var0 / new | 0.0006 (0.0000, 0.0019) | 0.018 | 0.389 |
+| starter extracted var0 / legacy | 0.0054 (0.0000, 0.0112) | 0.004 | 0.000 |
+| starter extracted var1 / new | 0.0006 (0.0000, 0.0024) | 0.017 | 0.401 |
+| starter extracted var1 / legacy | 0.0054 (0.0000, 0.0111) | 0.004 | 0.000 |
+| starter extracted var2 / new | 0.0003 (0.0000, 0.0014) | 0.014 | 0.363 |
 | starter extracted var2 / legacy | 0.0042 (0.0003, 0.0082) | 0.004 | 0.000 |
 
 ## Post-hoc diagnostic (not pre-registered)

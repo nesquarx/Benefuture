@@ -307,8 +307,9 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   0.06–0.13, intervals include zero).
 - Blind identification, truth rows: calibration 0.47 [0.39, 0.55] (v1 0.31, chance 0.33; held against ≥ 0.45);
   archetype 0.53 [0.45, 0.61] (inconclusive against ≥ 0.60). Legacy summing: archetype 0.54, calibration 0.36.
-  Extracted rows: archetype 0.17; calibration 0.53, untrustworthy (answers extracted from the old texts, so the old
-  bias): re-extraction needed.
+  Extracted rows, re-extracted from the regenerated texts (3 variants pooled): archetype 0.22 [0.15, 0.30]
+  (inconclusive against ≥ 0.25), calibration 0.46 [0.37, 0.55] (held against ≥ 0.40): a resume carries the person's
+  estimation style, not their archetype, since resumes show mostly work.
 - Mean luminance 0.031 → 0.168; tone constant derived so a median 40-year-old's typical domain sits at 0.556.
 - Caveat: estimate–truth correlation in the generator is 0.48 against the literature's ~0.29, so the generated
   people are better calibrated than real ones; calibration should be easier to see in real data, not harder.
