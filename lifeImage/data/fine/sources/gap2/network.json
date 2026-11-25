@@ -23,5 +23,13 @@
   "rows": 0,
   "status": "blocked",
   "url": "mondo"
+ },
+ "wikidata": {
+  "error_count": 0,
+  "errors": [],
+  "method": "MediaWiki API, root and direct subclasses, first 100 per root",
+  "rows": 168,
+  "status": "fetched",
+  "url": "https://www.wikidata.org/w/api.php"
  }
 }
