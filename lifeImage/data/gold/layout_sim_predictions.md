@@ -32,3 +32,15 @@ optimiser of the order. S2 (`k_polar` 0.1, `shift_budget` 300, otherwise S1) is 
    The loose angular spring is expected to let angles drift further than the old axes-only placement: that drift is reported, not hidden.
 
 Runtime: `compute` without the hold-out reruns finishes within 30 s. Confidence 0.9.
+
+## Results (2026-11-25, S2 default; S1 in brackets; seeds: none, the run is deterministic)
+
+1a mean adjacent similarity 0.188 to 0.242 (x1.29, met) [0.180, not met]. 1b no-signal share 0.834 to 0.822 (x0.985, not met)
+[0.874]. 1c mean rank distance of signal pairs 36.1 to 29.5 (-18%, met) [30.8, -15%, met]. 1d hold-out (baseline there is the
+raw-angle order, not the build's tie-broken order): upstream and co-membership rose, overlap, fine (unchanged) and text fell:
+2 of 5, not met. 2 not yet judged (batches `data/batches/adjacency.v1.*`, key beside them). 3 groups rising: agriculture (work and
+science) no, arts yes in aggregate [S1: yes], housing flat at zero, mathematics and statistics lost their strong mutual
+adjacency (1.68 to 0 and 0.33), religion fell: not met on the metric, though the named outliers moved to better
+neighbours by eye (Arts, music and religion studies left Statistics for Philosophical inquiry; Finding and securing housing left
+Crop farming for Hospitality and Commuting). 4 tiled mean shift 27.9, p95 71.4, max 133.8 (not met; S1: 23.1, 54.5, 89.3);
+sectors split 16 and 16 (met), extra runs 166 to 174 (not met; S1 184). Runtime 5.5 s with the hold-out (met).

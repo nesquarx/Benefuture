@@ -318,11 +318,19 @@ def adjacent_pairs(order):
 
 
 def coherence(order, sig, source=None):
-    """Mean similarity of circularly adjacent fields and the share with no signal; `source` restricts to one source."""
+    """Mean similarity of circularly adjacent fields, the share with no signal, and the mean circular rank distance of the pairs
+    with signal; `source` restricts to one source."""
     ix = {i: n for n, i in enumerate(sig.ids)}
     m = sig.combined if source is None else sig.sources[source]
     vals = [m[ix[a], ix[b]] for a, b in adjacent_pairs(order)]
-    return {"mean_similarity": float(np.mean(vals)), "no_signal_share": float(np.mean([v == 0 for v in vals]))}
+    n = len(order)
+    pos = np.array([order.index(i) for i in sig.ids])
+    gap = np.abs(pos[:, None] - pos[None, :])
+    rank = np.minimum(gap, n - gap)
+    iu = np.triu_indices(n, 1)
+    has = m[iu] > 0
+    return {"mean_similarity": float(np.mean(vals)), "no_signal_share": float(np.mean([v == 0 for v in vals])),
+            "mean_rank_distance": float(rank[iu][has].mean()) if has.any() else None}
 
 
 def main_sector(cid, by, seen=()):
@@ -364,7 +372,6 @@ def compute(root=ROOT, params=None, holdout=True):
     (`data/coarse/layout_sim_v0.json`)."""
     from .render import basemap as bm
     from .fine.cards import coarsen_rows, load_fine
-    from .comembership import ROOT as _unused  # noqa: F401  (keeps the module path honest)
     root = Path(root)
     cards = bm.load_cards(root / "data/coarse/seed_v3.jsonl")
     fine_cards = load_fine(root / "data/fine/fine_v1.jsonl")
@@ -447,6 +454,22 @@ def compute(root=ROOT, params=None, holdout=True):
         "fields": {i: {"axes_angle": round(prior[i], 4), "angle": round(out["angles"][i], 4), "radius_prior": round(prior_r[i], 5),
                        "radius": round(out["radius"][i], 5), "centre": round(after.slices[i].angle, 4)} for i in fields},
         "metrics": {"coherence": coh, "coherence_by_source": per_source, "holdout": held, "stability": stability},
+        "ring_order": {"before": before_order, "after": after_order},
         "named": named, "movers": movers,
         "degraded": sorted({d for d in map(str, log)}),
     }
+
+
+def tiled_slices(result, root=ROOT):
+    """{id: Slice} of the simulation's layout tiled by `basemap.build` (angles enter as unit axes vectors, so the build's
+    widths, radial bands and sector placement are reused unchanged); the default build is not touched."""
+    from .render import basemap as bm
+    from .fine.cards import coarsen_rows, load_fine
+    root = Path(root)
+    cards = bm.load_cards(root / "data/coarse/seed_v3.jsonl")
+    axes = bm.axes_means(cards, root / "data/answers/axes.jsonl", [root / f"data/coarse/seed_v{v}.jsonl" for v in (0, 1, 2)],
+                         [root / "data/answers/axis_at.jsonl", root / "data/answers/axis_pg.jsonl"])
+    rows = coarsen_rows(bm.evidence_rows(root), load_fine(root / "data/fine/fine_v1.jsonl"))
+    ax = {i: {**a, "abstract_tangible": math.cos(math.radians(result["angles"][i])),
+              "personal_global": math.sin(math.radians(result["angles"][i]))} for i, a in axes.items()}
+    return bm.build(cards, ax, rows, cards[0]["basemap_version"], log=[]).slices

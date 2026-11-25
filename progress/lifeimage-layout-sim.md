@@ -1,4 +1,4 @@
-Status: IN PROGRESS (resumed 2026-11-25)
+Status: DONE 2026-11-25 (lead to review; hold-out and named-outlier predictions not met, see predictions file Results)
 
 ## Goal and acceptance
 LI.55 + LI.58: polar force simulation for coarse placement (loose angular spring, strict radial spring, settle without
@@ -22,3 +22,7 @@ tools/layout_sim.py, review sheet option, batches, full suite, push.
 
 ## Resume
 cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_layout_sim.py tests/test_adjacency.py
+
+## Final state
+All items done: adjacency.py + prompt + validate hook, predictions + results, tools/layout_sim.py, review sheet option, batches
+(data/batches/adjacency.v1.*, gitignored), governed S2 defaults (k_polar 0.1). Full suite: 1171 pass; test_fine_gap failure belongs to the fine agent.

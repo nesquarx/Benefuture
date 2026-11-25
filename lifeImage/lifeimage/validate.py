@@ -194,6 +194,19 @@ def validate_extract_answer(answer, task, ids=None):
     return answer
 
 
+def validate_adjacency_input(task):
+    """An adjacency task: `input.card` plus `set_1` and `set_2`, two domains each, none the card's own."""
+    inp = task["input"]
+    own = inp.get("card", {}).get("id")
+    for k in ("set_1", "set_2"):
+        s = inp.get(k)
+        if not isinstance(s, list) or len(s) != 2 or len({c.get("id") for c in s}) != 2:
+            raise ValidationError(f"adjacency {k} must hold two distinct domains")
+        if any(c.get("id") == own for c in s):
+            raise ValidationError(f"adjacency {k} contains the card's own domain")
+    return task
+
+
 def validate_answer(answer):
     _schema("answer", answer)
     if "weights" in answer:
@@ -212,6 +225,8 @@ def validate_answers(batch_lines, answer_lines):
     tasks = {}
     for line in batch_lines[1:]:
         t = validate_task(json.loads(line))
+        if header["task_type"] == "adjacency":
+            validate_adjacency_input(t)
         tasks[t["task_id"]] = t
     seen = set()
     for n, line in enumerate(answer_lines, 1):

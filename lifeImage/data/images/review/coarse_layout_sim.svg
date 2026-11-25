@@ -1,0 +1,806 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2800" height="2800" viewBox="0 0 2800 2800" font-family="Helvetica, Arial, sans-serif">
+<rect width="2800" height="2800" fill="#fbfaf7"/>
+<circle cx="1400.0" cy="1400.0" r="225.0" fill="none" stroke="#d8d4cc" stroke-width="1" stroke-dasharray="4 6"/>
+<circle cx="1400.0" cy="1400.0" r="450.0" fill="none" stroke="#d8d4cc" stroke-width="1" stroke-dasharray="4 6"/>
+<circle cx="1400.0" cy="1400.0" r="675.0" fill="none" stroke="#d8d4cc" stroke-width="1" stroke-dasharray="4 6"/>
+<circle cx="1400.0" cy="1400.0" r="900.0" fill="none" stroke="#d8d4cc" stroke-width="1" stroke-dasharray="4 6"/>
+<line x1="1445.0" y1="1400.0" x2="2300.0" y2="1400.0" stroke="#bbb4a8" stroke-width="1.5"/>
+<line x1="1400.0" y1="1355.0" x2="1400.0" y2="500.0" stroke="#bbb4a8" stroke-width="1.5"/>
+<line x1="1355.0" y1="1400.0" x2="500.0" y2="1400.0" stroke="#bbb4a8" stroke-width="1.5"/>
+<line x1="1400.0" y1="1445.0" x2="1400.0" y2="2300.0" stroke="#bbb4a8" stroke-width="1.5"/>
+<path d="M1907.7,1353.7 A509.8,509.8 0 0 0 1907.4,1350.9 L1814.3,1359.9 A416.2,416.2 0 0 1 1814.5,1362.2 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Walking and cycling (c.walking_cycling)</title></path>
+<path d="M2007.5,1341.2 A610.3,610.3 0 0 0 2006.5,1332.3 L1913.5,1342.6 A516.7,516.7 0 0 1 1914.3,1350.2 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Housing costs (c.rent_mortgage)</title></path>
+<path d="M1906.7,1343.4 A509.8,509.8 0 0 0 1838.1,1139.2 L1757.7,1187.1 A416.2,416.2 0 0 1 1813.6,1353.8 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Tourism and leisure travel (c.tourism_travel)</title></path>
+<path d="M1868.2,1121.3 A544.8,544.8 0 0 0 1862.2,1111.5 L1782.8,1161.1 A451.2,451.2 0 0 1 1787.7,1169.2 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Home utilities and energy use (c.home_energy_utilities)</title></path>
+<path d="M1896.8,1089.8 A585.7,585.7 0 0 0 1894.5,1086.2 L1815.5,1136.3 A492.1,492.1 0 0 1 1817.4,1139.4 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Pets and companion animals (c.pet_ownership)</title></path>
+<path d="M1854.7,1111.4 A538.6,538.6 0 0 0 1853.1,1108.8 L1774.3,1159.4 A445.0,445.0 0 0 1 1775.7,1161.6 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Shopping and errands (c.shopping_errands)</title></path>
+<path d="M1848.5,1111.7 A533.2,533.2 0 0 0 1845.2,1106.7 L1767.0,1158.2 A439.6,439.6 0 0 1 1769.8,1162.3 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Accidents and injuries (c.accident_injury)</title></path>
+<path d="M1877.5,1085.4 A571.9,571.9 0 0 0 1869.3,1073.1 L1792.4,1126.6 A478.3,478.3 0 0 1 1799.4,1136.9 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Hospitality and food service work (c.hospitality_work)</title></path>
+<path d="M1907.8,1046.3 A618.9,618.9 0 0 0 1899.4,1034.5 L1823.9,1089.8 A525.3,525.3 0 0 1 1831.0,1099.8 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Finding and securing housing (c.housing_search)</title></path>
+<path d="M1795.1,1110.8 A489.6,489.6 0 0 0 1793.5,1108.7 L1718.3,1164.4 A396.0,396.0 0 0 1 1719.6,1166.1 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Commuting (c.commuting)</title></path>
+<path d="M1842.3,1072.7 A550.2,550.2 0 0 0 1813.7,1037.3 L1743.4,1099.0 A456.6,456.6 0 0 1 1767.1,1128.3 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Moving house and relocation (c.moving_relocation)</title></path>
+<path d="M2001.7,872.5 A800.2,800.2 0 0 0 1993.1,862.8 L1923.8,925.7 A706.6,706.6 0 0 1 1931.3,934.2 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Healthcare professions (c.healthcare_work)</title></path>
+<path d="M1799.2,1038.5 A538.6,538.6 0 0 0 1756.5,996.3 L1694.5,1066.4 A445.0,445.0 0 0 1 1729.8,1101.3 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Retail shopping (c.retail_shopping)</title></path>
+<path d="M1799.0,948.0 A602.9,602.9 0 0 0 1796.3,945.6 L1734.8,1016.2 A509.3,509.3 0 0 1 1737.1,1018.2 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Traffic offences and drunk driving (c.traffic_offences)</title></path>
+<path d="M1761.7,985.3 A550.2,550.2 0 0 0 1753.9,978.7 L1693.7,1050.4 A456.6,456.6 0 0 1 1700.2,1055.9 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Road safety and traffic (c.road_safety)</title></path>
+<path d="M1819.2,901.0 A651.7,651.7 0 0 0 1814.7,897.2 L1755.2,969.4 A558.1,558.1 0 0 1 1759.0,972.6 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Subsistence and own-use production (c.self_provisioning)</title></path>
+<path d="M1814.7,897.2 A651.7,651.7 0 0 0 1811.3,894.5 L1752.3,967.1 A558.1,558.1 0 0 1 1755.2,969.4 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Fishing, hunting and foraging (c.fishing_hunting_foraging)</title></path>
+<path d="M1823.8,879.1 A671.5,671.5 0 0 0 1803.7,863.3 L1747.4,938.1 A577.9,577.9 0 0 1 1764.7,951.7 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Driving (c.driving)</title></path>
+<path d="M1821.5,839.6 A701.3,701.3 0 0 0 1815.6,835.1 L1760.1,910.5 A607.7,607.7 0 0 1 1765.3,914.4 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Animal care and husbandry (c.animal_care_husbandry)</title></path>
+<path d="M1747.1,928.2 A585.7,585.7 0 0 0 1741.4,924.1 L1686.9,1000.2 A492.1,492.1 0 0 1 1691.6,1003.6 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Waste and recycling (c.waste_recycling)</title></path>
+<path d="M1720.8,952.9 A550.2,550.2 0 0 0 1718.4,951.2 L1664.2,1027.6 A456.6,456.6 0 0 1 1666.2,1029.0 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Air travel (c.air_travel)</title></path>
+<path d="M1695.0,984.2 A509.8,509.8 0 0 0 1692.8,982.6 L1639.0,1059.3 A416.2,416.2 0 0 1 1640.8,1060.5 Z" fill="#d36868" stroke="#fbfaf7" stroke-width="0.8"><title>Public transport (c.public_transport)</title></path>
+<path d="M1802.7,825.9 A701.3,701.3 0 0 0 1799.7,823.8 L1746.3,900.7 A607.7,607.7 0 0 1 1749.0,902.5 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Wildlife and conservation (c.wildlife_conservation)</title></path>
+<path d="M1870.8,721.2 A826.1,826.1 0 0 0 1865.9,717.8 L1813.1,795.1 A732.5,732.5 0 0 1 1817.5,798.1 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Public health and epidemiology (c.public_health_science)</title></path>
+<path d="M1814.1,793.6 A734.3,734.3 0 0 0 1806.5,788.5 L1754.7,866.4 A640.7,640.7 0 0 1 1761.4,870.9 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Agricultural, forestry and fishing work (c.agri_forestry_fishing_work)</title></path>
+<path d="M1740.2,888.2 A614.6,614.6 0 0 0 1736.9,886.0 L1685.6,964.3 A521.0,521.0 0 0 1 1688.4,966.1 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Workplace safety (c.occupational_safety)</title></path>
+<path d="M1793.5,799.7 A717.8,717.8 0 0 0 1782.8,792.8 L1732.9,872.0 A624.2,624.2 0 0 1 1742.2,877.9 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Crop farming and horticulture (c.horticulture_farming)</title></path>
+<path d="M1740.0,860.6 A637.7,637.7 0 0 0 1737.2,858.8 L1687.7,938.2 A544.1,544.1 0 0 1 1690.1,939.8 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Exploitation and trafficking (c.exploitation_trafficking)</title></path>
+<path d="M1737.2,858.8 A637.7,637.7 0 0 0 1734.3,857.0 L1685.2,936.7 A544.1,544.1 0 0 1 1687.7,938.2 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Illicit drugs trade (c.drug_crime)</title></path>
+<path d="M1733.0,859.1 A635.2,635.2 0 0 0 1730.2,857.3 L1681.5,937.3 A541.6,541.6 0 0 1 1684.0,938.8 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Environmental harm and pollution (c.environmental_harm)</title></path>
+<path d="M1738.5,843.6 A651.3,651.3 0 0 0 1716.9,831.0 L1671.4,912.8 A557.7,557.7 0 0 1 1689.9,923.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Transport and logistics work (c.transport_logistics)</title></path>
+<path d="M1749.3,772.9 A717.8,717.8 0 0 0 1746.0,771.1 L1700.8,853.1 A624.2,624.2 0 0 1 1703.7,854.7 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>War, conflict and violence exposure (c.war_experience)</title></path>
+<path d="M1725.4,808.5 A675.1,675.1 0 0 0 1722.2,806.8 L1677.6,889.0 A581.5,581.5 0 0 1 1680.3,890.5 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Disasters and emergencies (c.disaster_experience)</title></path>
+<path d="M1703.2,841.8 A635.2,635.2 0 0 0 1700.2,840.2 L1656.0,922.7 A541.6,541.6 0 0 1 1658.5,924.0 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Weather, climate and adaptation (c.weather_climate_adaptation)</title></path>
+<path d="M1692.4,854.8 A618.7,618.7 0 0 0 1676.6,846.5 L1634.7,930.3 A525.1,525.1 0 0 1 1648.2,937.2 Z" fill="#d39068" stroke="#fbfaf7" stroke-width="0.8"><title>Environmental stewardship (c.environmental_stewardship)</title></path>
+<path d="M1627.0,945.7 A507.8,507.8 0 0 0 1622.8,943.7 L1581.7,1027.8 A414.2,414.2 0 0 1 1585.1,1029.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Elementary and manual labour (c.elementary_occupations)</title></path>
+<path d="M1743.9,695.8 A783.7,783.7 0 0 0 1713.3,681.6 L1675.9,767.4 A690.1,690.1 0 0 1 1702.8,779.9 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Craft and skilled trades (c.skilled_trades)</title></path>
+<path d="M1702.7,705.9 A757.2,757.2 0 0 0 1699.0,704.3 L1662.1,790.3 A663.6,663.6 0 0 1 1665.3,791.7 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Emergency and rescue services (c.public_safety_emergency)</title></path>
+<path d="M1676.4,756.9 A700.0,700.0 0 0 0 1657.4,749.0 L1623.0,836.1 A606.4,606.4 0 0 1 1639.5,842.9 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Construction and building trades (c.construction_trades)</title></path>
+<path d="M1664.0,732.5 A717.8,717.8 0 0 0 1659.9,730.9 L1626.0,818.2 A624.2,624.2 0 0 1 1629.5,819.5 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Migration and displacement (c.migration)</title></path>
+<path d="M1698.3,632.1 A823.9,823.9 0 0 0 1694.3,630.5 L1660.8,717.9 A730.3,730.3 0 0 1 1664.4,719.3 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Energy generation and supply (c.energy_systems)</title></path>
+<path d="M1705.9,600.2 A856.3,856.3 0 0 0 1686.1,592.9 L1654.9,681.1 A762.7,762.7 0 0 1 1672.4,687.6 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Medicine and clinical science (c.medicine_science)</title></path>
+<path d="M1679.8,610.9 A837.2,837.2 0 0 0 1674.7,609.1 L1644.0,697.5 A743.6,743.6 0 0 1 1648.5,699.1 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Mechanical engineering (c.mechanical_engineering)</title></path>
+<path d="M1679.1,596.5 A850.6,850.6 0 0 0 1671.4,593.8 L1641.5,682.5 A757.0,757.0 0 0 1 1648.4,684.9 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Electrical and energy engineering (c.electrical_engineering)</title></path>
+<path d="M1645.8,669.9 A770.3,770.3 0 0 0 1636.8,667.0 L1608.0,756.0 A676.7,676.7 0 0 1 1615.9,758.6 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Manufacturing and production (c.manufacturing)</title></path>
+<path d="M1661.5,590.6 A850.6,850.6 0 0 0 1652.2,587.6 L1624.4,677.0 A757.0,757.0 0 0 1 1632.7,679.6 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Civil engineering and construction design (c.civil_engineering)</title></path>
+<path d="M1640.4,625.4 A811.0,811.0 0 0 0 1635.7,624.0 L1608.5,713.5 A717.4,717.4 0 0 1 1612.7,714.8 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Agricultural and food science (c.agricultural_science)</title></path>
+<path d="M1625.7,656.6 A776.9,776.9 0 0 0 1620.4,655.1 L1593.9,744.8 A683.3,683.3 0 0 1 1598.5,746.2 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Urban planning and infrastructure (c.urban_planning)</title></path>
+<path d="M1630.1,622.3 A811.0,811.0 0 0 0 1625.7,621.0 L1599.7,710.9 A717.4,717.4 0 0 1 1603.6,712.0 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Ecology and environmental science (c.ecology_science)</title></path>
+<path d="M1583.4,767.0 A659.0,659.0 0 0 0 1580.1,766.1 L1554.5,856.1 A565.4,565.4 0 0 1 1557.4,856.9 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Security and protective services (c.security_services)</title></path>
+<path d="M1625.7,605.3 A826.1,826.1 0 0 0 1617.4,603.0 L1592.8,693.3 A732.5,732.5 0 0 1 1600.1,695.3 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Chemistry (c.chemistry)</title></path>
+<path d="M1627.4,566.5 A864.0,864.0 0 0 0 1622.6,565.2 L1598.5,655.6 A770.4,770.4 0 0 1 1602.8,656.8 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Materials science (c.materials_science)</title></path>
+<path d="M1622.6,565.2 A864.0,864.0 0 0 0 1618.1,564.0 L1594.5,654.6 A770.4,770.4 0 0 1 1598.5,655.6 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Biotechnology and biomedical engineering (c.biotechnology)</title></path>
+<path d="M1581.3,705.3 A717.9,717.9 0 0 0 1577.6,704.4 L1554.4,795.1 A624.3,624.3 0 0 1 1557.6,795.9 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Military and defence (c.military_defence)</title></path>
+<path d="M1541.4,845.9 A571.9,571.9 0 0 0 1522.6,841.4 L1502.5,932.8 A478.3,478.3 0 0 1 1518.3,936.6 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Retail and wholesale work (c.retail_work)</title></path>
+<path d="M1580.3,578.3 A841.2,841.2 0 0 0 1569.4,576.0 L1550.6,667.7 A747.6,747.6 0 0 1 1560.3,669.8 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Biology and life sciences (c.life_sciences)</title></path>
+<path d="M1566.4,590.8 A826.1,826.1 0 0 0 1561.2,589.7 L1542.9,681.5 A732.5,732.5 0 0 1 1547.6,682.5 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Earth and planetary science (c.earth_sciences)</title></path>
+<path d="M1527.8,757.6 A655.0,655.0 0 0 0 1524.4,756.9 L1506.6,848.8 A561.4,561.4 0 0 1 1509.6,849.4 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Imprisonment and reentry (c.incarceration)</title></path>
+<path d="M1536.4,695.1 A717.9,717.9 0 0 0 1532.6,694.4 L1515.3,786.4 A624.3,624.3 0 0 1 1518.6,787.0 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Policing and law enforcement (c.policing_enforcement)</title></path>
+<path d="M1497.7,879.9 A529.2,529.2 0 0 0 1495.0,879.4 L1478.2,971.5 A435.6,435.6 0 0 1 1480.5,971.9 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Informal and gig work (c.informal_gig)</title></path>
+<path d="M1520.7,738.5 A672.4,672.4 0 0 0 1517.2,737.9 L1500.9,830.1 A578.8,578.8 0 0 1 1503.9,830.6 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Extremism and terrorism (c.extremism_terrorism)</title></path>
+<path d="M1495.9,857.9 A550.5,550.5 0 0 0 1477.6,855.0 L1464.4,947.6 A456.9,456.9 0 0 1 1479.6,950.1 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Customer service (c.customer_service)</title></path>
+<path d="M1520.7,552.2 A856.3,856.3 0 0 0 1516.2,551.6 L1503.5,644.3 A762.7,762.7 0 0 1 1507.5,644.9 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Neuroscience (c.neuroscience)</title></path>
+<path d="M1477.9,830.9 A574.4,574.4 0 0 0 1474.9,830.5 L1462.7,923.3 A480.8,480.8 0 0 1 1465.2,923.6 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Online shopping and platforms (c.online_commerce)</title></path>
+<path d="M1511.7,551.0 A856.3,856.3 0 0 0 1507.1,550.4 L1495.4,643.3 A762.7,762.7 0 0 1 1499.5,643.8 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Astronomy and space science (c.astronomy_space)</title></path>
+<path d="M1482.5,746.2 A659.0,659.0 0 0 0 1478.9,745.7 L1467.7,838.7 A565.4,565.4 0 0 1 1470.7,839.0 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Borders, visas and migration admin (c.border_migration_admin)</title></path>
+<path d="M1488.9,662.6 A742.7,742.7 0 0 0 1469.1,660.5 L1460.4,753.7 A649.1,649.1 0 0 1 1477.7,755.6 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Management and leadership (c.management_executive)</title></path>
+<path d="M1475.5,592.5 A811.0,811.0 0 0 0 1471.2,592.1 L1463.0,685.3 A717.4,717.4 0 0 1 1466.8,685.7 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Geography and planning research (c.geography_science)</title></path>
+<path d="M1455.8,766.5 A635.9,635.9 0 0 0 1436.8,765.1 L1431.4,858.6 A542.3,542.3 0 0 1 1447.6,859.8 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Entrepreneurship and small business (c.entrepreneurship)</title></path>
+<path d="M1449.6,545.1 A856.3,856.3 0 0 0 1440.5,544.6 L1436.1,638.1 A762.7,762.7 0 0 1 1444.2,638.6 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Physics (c.physics)</title></path>
+<path d="M1439.8,559.7 A841.2,841.2 0 0 0 1414.6,558.9 L1413.0,652.5 A747.6,747.6 0 0 1 1435.4,653.2 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Research and scientific work (c.science_research_work)</title></path>
+<path d="M1411.2,753.9 A646.2,646.2 0 0 0 1398.8,753.8 L1399.0,847.4 A552.6,552.6 0 0 1 1409.6,847.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Sales, marketing and advertising (c.sales_marketing)</title></path>
+<path d="M1398.9,828.1 A571.9,571.9 0 0 0 1363.3,829.3 L1369.3,922.7 A478.3,478.3 0 0 1 1399.1,921.7 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Office and administrative work (c.business_administration)</title></path>
+<path d="M1356.5,724.7 A676.7,676.7 0 0 0 1353.0,725.0 L1359.5,818.4 A583.1,583.1 0 0 1 1362.5,818.1 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Phone, internet and subscriptions (c.subscriptions_telecom)</title></path>
+<path d="M1344.6,604.8 A797.1,797.1 0 0 0 1333.4,605.7 L1341.2,699.0 A703.5,703.5 0 0 1 1351.1,698.2 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>IT operations and networks (c.it_operations)</title></path>
+<path d="M1334.8,621.9 A780.9,780.9 0 0 0 1327.6,622.5 L1336.3,715.7 A687.3,687.3 0 0 1 1342.6,715.1 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Business and management research (c.business_science)</title></path>
+<path d="M1349.0,851.8 A550.5,550.5 0 0 0 1300.9,858.5 L1317.7,950.5 A456.9,456.9 0 0 1 1357.6,945.0 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Having a job (c.employment_job)</title></path>
+<path d="M1304.7,879.5 A529.2,529.2 0 0 0 1299.8,880.4 L1317.5,972.3 A435.6,435.6 0 0 1 1321.6,971.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Workplace relations and teamwork (c.workplace_relations)</title></path>
+<path d="M1282.6,791.5 A619.7,619.7 0 0 0 1279.4,792.1 L1297.6,883.9 A526.1,526.1 0 0 1 1300.3,883.4 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Unions and collective bargaining (c.labour_organising)</title></path>
+<path d="M1237.1,578.8 A837.2,837.2 0 0 0 1231.6,579.9 L1250.4,671.6 A743.6,743.6 0 0 1 1255.3,670.6 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Cybersecurity (c.cybersecurity)</title></path>
+<path d="M1251.6,677.5 A737.6,737.6 0 0 0 1158.1,703.2 L1188.8,791.6 A644.0,644.0 0 0 1 1270.5,769.2 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Public administration and policy (c.public_administration)</title></path>
+<path d="M1226.4,900.1 A529.2,529.2 0 0 0 1220.8,902.1 L1252.5,990.2 A435.6,435.6 0 0 1 1257.1,988.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Job search and hiring (c.job_search)</title></path>
+<path d="M1125.3,636.9 A811.0,811.0 0 0 0 1106.9,643.8 L1140.7,731.1 A717.4,717.4 0 0 1 1157.0,725.0 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Statistics and data analysis (c.statistics_data)</title></path>
+<path d="M1087.7,594.4 A864.0,864.0 0 0 0 1075.6,599.2 L1110.7,686.0 A770.4,770.4 0 0 1 1121.5,681.7 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Computer science (c.computer_science)</title></path>
+<path d="M1174.7,843.8 A600.1,600.1 0 0 0 1143.6,857.4 L1183.6,942.1 A506.5,506.5 0 0 1 1209.8,930.6 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Dealing with government (c.government_services)</title></path>
+<path d="M1105.5,776.7 A689.3,689.3 0 0 0 1090.5,784.0 L1132.6,867.7 A595.7,595.7 0 0 1 1145.5,861.4 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Job change and career moves (c.employment_transition)</title></path>
+<path d="M1109.7,822.2 A646.6,646.6 0 0 0 1098.7,827.9 L1142.3,910.7 A553.0,553.0 0 0 1 1151.7,905.8 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Job loss and unemployment (c.job_loss)</title></path>
+<path d="M1028.6,694.7 A797.1,797.1 0 0 0 985.3,719.3 L1034.0,799.2 A703.5,703.5 0 0 1 1072.2,777.5 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Software development (c.software_development)</title></path>
+<path d="M950.4,662.2 A864.0,864.0 0 0 0 946.3,664.7 L995.5,744.3 A770.4,770.4 0 0 1 999.1,742.1 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Artificial intelligence and machine learning (c.ai_ml)</title></path>
+<path d="M958.3,684.1 A841.2,841.2 0 0 0 950.5,689.0 L1000.5,768.1 A747.6,747.6 0 0 1 1007.4,763.7 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Economics and finance research (c.economics)</title></path>
+<path d="M1005.9,776.6 A737.6,737.6 0 0 0 1002.6,778.7 L1053.0,857.5 A644.0,644.0 0 0 1 1055.9,855.7 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Law and courts (c.legal_system)</title></path>
+<path d="M1044.9,844.9 A659.0,659.0 0 0 0 1027.6,856.3 L1080.5,933.5 A565.4,565.4 0 0 1 1095.3,923.7 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Tax and regulatory compliance (c.taxation_compliance)</title></path>
+<path d="M975.5,780.2 A751.3,751.3 0 0 0 894.5,844.2 L957.5,913.5 A657.7,657.7 0 0 1 1028.4,857.4 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Vocational and on-the-job training (c.vocational_training)</title></path>
+<path d="M844.2,788.8 A826.1,826.1 0 0 0 833.5,798.7 L897.7,866.8 A732.5,732.5 0 0 1 907.1,858.1 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Mathematics (c.mathematics)</title></path>
+<path d="M870.8,838.3 A771.8,771.8 0 0 0 844.7,864.0 L912.1,929.0 A678.2,678.2 0 0 1 935.0,906.4 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Finance and accounting work (c.finance_accounting)</title></path>
+<path d="M805.6,826.3 A826.1,826.1 0 0 0 802.6,829.4 L870.2,894.1 A732.5,732.5 0 0 1 872.9,891.3 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Political science and law scholarship (c.political_science)</title></path>
+<path d="M813.5,839.8 A811.0,811.0 0 0 0 810.5,843.0 L878.5,907.2 A717.4,717.4 0 0 1 881.2,904.5 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Psychology (c.psychology)</title></path>
+<path d="M1006.7,1028.3 A541.1,541.1 0 0 0 999.4,1036.2 L1068.7,1099.2 A447.5,447.5 0 0 1 1074.7,1092.6 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Political participation (c.political_participation)</title></path>
+<path d="M777.2,834.5 A841.2,841.2 0 0 0 772.9,839.3 L842.7,901.7 A747.6,747.6 0 0 1 846.5,897.4 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Research training and scholarship (c.research_training)</title></path>
+<path d="M923.4,973.9 A639.4,639.4 0 0 0 888.3,1016.7 L963.2,1072.8 A545.8,545.8 0 0 1 993.1,1036.2 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Advocacy and civil society (c.civil_society_advocacy)</title></path>
+<path d="M982.6,1087.3 A521.5,521.5 0 0 0 959.7,1120.5 L1038.8,1170.7 A427.9,427.9 0 0 1 1057.5,1143.5 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Voting and elections (c.voting_elections)</title></path>
+<path d="M876.3,1067.5 A620.3,620.3 0 0 0 874.6,1070.3 L953.9,1120.1 A526.7,526.7 0 0 1 955.4,1117.7 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Corruption and bribery (c.corruption)</title></path>
+<path d="M825.1,1039.3 A678.7,678.7 0 0 0 816.0,1054.2 L896.6,1101.9 A585.1,585.1 0 0 1 904.4,1089.0 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Rights and justice (c.human_rights)</title></path>
+<path d="M934.4,1124.3 A541.1,541.1 0 0 0 932.9,1126.8 L1013.7,1174.0 A447.5,447.5 0 0 1 1014.9,1172.0 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Political discussion and ideology (c.political_discourse)</title></path>
+<path d="M882.0,1097.0 A600.1,600.1 0 0 0 879.9,1100.8 L961.0,1147.4 A506.5,506.5 0 0 1 962.8,1144.3 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Welfare and social protection (c.welfare_benefits)</title></path>
+<path d="M670.8,980.5 A841.2,841.2 0 0 0 668.2,985.1 L749.6,1031.3 A747.6,747.6 0 0 1 752.0,1027.2 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Sociology and social research (c.sociology)</title></path>
+<path d="M915.9,1125.5 A556.5,556.5 0 0 0 914.4,1128.1 L996.1,1173.8 A462.9,462.9 0 0 1 997.3,1171.7 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Receiving income and transfers (c.income_earning)</title></path>
+<path d="M851.8,1093.0 A628.3,628.3 0 0 0 850.2,1095.9 L932.1,1141.2 A534.7,534.7 0 0 1 933.5,1138.8 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Insurance and risk cover (c.insurance_risk)</title></path>
+<path d="M675.3,999.2 A828.1,828.1 0 0 0 672.5,1004.4 L754.7,1049.2 A734.5,734.5 0 0 1 757.2,1044.5 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Legal profession (c.legal_profession)</title></path>
+<path d="M717.5,1028.9 A776.9,776.9 0 0 0 674.5,1122.3 L761.9,1155.7 A683.3,683.3 0 0 1 799.7,1073.6 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Higher education (c.higher_education)</title></path>
+<path d="M642.5,1110.1 A811.0,811.0 0 0 0 641.0,1114.3 L728.6,1147.3 A717.4,717.4 0 0 1 730.0,1143.5 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>History and archaeology (c.history_science)</title></path>
+<path d="M612.7,1103.6 A841.2,841.2 0 0 0 611.1,1107.8 L698.9,1140.3 A747.6,747.6 0 0 1 700.3,1136.6 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Anthropology and cultural studies (c.anthropology)</title></path>
+<path d="M647.5,1121.3 A802.5,802.5 0 0 0 635.8,1154.9 L725.0,1183.5 A708.9,708.9 0 0 1 735.2,1153.8 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Teaching profession (c.teaching_profession)</title></path>
+<path d="M753.8,1192.7 A678.7,678.7 0 0 0 752.7,1196.2 L842.0,1224.3 A585.1,585.1 0 0 1 842.9,1221.3 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Journalism and reporting (c.journalism)</title></path>
+<path d="M732.3,1189.7 A700.0,700.0 0 0 0 726.9,1207.9 L816.9,1233.6 A606.4,606.4 0 0 1 821.6,1217.9 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Exams and assessment (c.exams_assessment)</title></path>
+<path d="M749.3,1214.3 A676.7,676.7 0 0 0 744.5,1232.0 L835.2,1255.2 A583.1,583.1 0 0 1 839.3,1240.0 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Everyday digital tool use (c.digital_tool_use)</title></path>
+<path d="M688.7,1217.7 A734.3,734.3 0 0 0 687.7,1221.4 L778.5,1244.2 A640.7,640.7 0 0 1 779.4,1240.9 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Mediation and dispute resolution (c.mediation_dispute_resolution)</title></path>
+<path d="M758.3,1239.1 A661.6,661.6 0 0 0 757.3,1243.1 L848.2,1265.3 A568.0,568.0 0 0 1 849.1,1261.9 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Cheating and plagiarism (c.academic_dishonesty)</title></path>
+<path d="M797.4,1252.9 A620.3,620.3 0 0 0 796.6,1256.1 L887.7,1277.8 A526.7,526.7 0 0 1 888.3,1275.1 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Misinformation and defamation (c.misinformation_defamation)</title></path>
+<path d="M596.4,1208.4 A826.1,826.1 0 0 0 595.2,1213.4 L686.4,1234.5 A732.5,732.5 0 0 1 687.4,1230.1 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Linguistics and literary studies (c.linguistics_literature)</title></path>
+<path d="M662.6,1229.0 A756.9,756.9 0 0 0 661.7,1232.9 L753.0,1253.6 A663.3,663.3 0 0 1 753.8,1250.1 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Cybercrime (c.cybercrime)</title></path>
+<path d="M667.3,1234.2 A751.3,751.3 0 0 0 663.9,1249.7 L755.6,1268.4 A657.7,657.7 0 0 1 758.6,1254.8 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Teaching and tutoring (c.tutoring_teaching)</title></path>
+<path d="M809.3,1279.4 A602.9,602.9 0 0 0 808.6,1282.5 L900.4,1300.7 A509.3,509.3 0 0 1 901.0,1298.1 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Fraud, scams and deception (c.fraud_deception)</title></path>
+<path d="M793.0,1279.4 A618.9,618.9 0 0 0 792.4,1282.6 L884.3,1300.4 A525.3,525.3 0 0 1 884.8,1297.6 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>News and information media (c.news_media)</title></path>
+<path d="M675.0,1259.9 A738.4,738.4 0 0 0 669.0,1295.1 L761.7,1308.4 A644.8,644.8 0 0 1 766.9,1277.7 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Self-directed learning (c.self_directed_learning)</title></path>
+<path d="M643.7,1291.5 A764.1,764.1 0 0 0 642.2,1302.3 L735.0,1314.2 A670.5,670.5 0 0 1 736.3,1304.8 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Language learning and use (c.language_learning)</title></path>
+<path d="M743.9,1315.4 A661.6,661.6 0 0 0 738.9,1425.6 L832.5,1421.9 A568.0,568.0 0 0 1 836.7,1327.4 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>School education (c.school_education)</title></path>
+<path d="M597.4,1431.0 A803.2,803.2 0 0 0 597.6,1436.2 L691.1,1432.0 A709.6,709.6 0 0 1 690.9,1427.4 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Philosophical inquiry (c.philosophical_inquiry)</title></path>
+<path d="M574.7,1437.3 A826.1,826.1 0 0 0 574.9,1441.6 L668.4,1436.9 A732.5,732.5 0 0 1 668.2,1433.0 Z" fill="#9ed368" stroke="#fbfaf7" stroke-width="0.8"><title>Arts, music and religion studies (c.arts_humanities_studies)</title></path>
+<path d="M641.2,1438.3 A759.8,759.8 0 0 0 641.5,1444.8 L735.0,1439.3 A666.2,666.2 0 0 1 734.7,1433.6 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Media, publishing and creative professions (c.media_publishing)</title></path>
+<path d="M751.2,1438.3 A649.9,649.9 0 0 0 751.4,1441.8 L844.9,1435.8 A556.3,556.3 0 0 1 844.7,1432.8 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Social media and online communities (c.social_media)</title></path>
+<path d="M719.3,1443.8 A682.1,682.1 0 0 0 720.2,1455.2 L813.5,1447.6 A588.5,588.5 0 0 1 812.7,1437.8 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Saving and investing (c.saving_investing)</title></path>
+<path d="M702.3,1456.6 A700.0,700.0 0 0 0 703.2,1467.0 L796.4,1458.1 A606.4,606.4 0 0 1 795.6,1449.0 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Literacy, numeracy and basic skills (c.basic_skills)</title></path>
+<path d="M817.1,1456.1 A585.5,585.5 0 0 0 817.4,1459.2 L910.6,1449.7 A491.9,491.9 0 0 1 910.3,1447.1 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Hate, discrimination and abuse of rights (c.harassment_discrimination)</title></path>
+<path d="M810.7,1459.9 A592.4,592.4 0 0 0 812.0,1471.6 L904.9,1460.3 A498.8,498.8 0 0 1 903.8,1450.4 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Banking and payments (c.banking_payments)</title></path>
+<path d="M624.6,1494.4 A781.1,781.1 0 0 0 626.7,1510.1 L719.3,1496.9 A687.5,687.5 0 0 1 717.5,1483.1 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Counselling, therapy and social work (c.therapy_social_work)</title></path>
+<path d="M837.5,1480.1 A568.2,568.2 0 0 0 837.9,1483.1 L930.5,1469.4 A474.6,474.6 0 0 1 930.2,1466.9 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Online harassment and bullying (c.online_harassment)</title></path>
+<path d="M755.3,1495.3 A651.7,651.7 0 0 0 755.8,1498.7 L848.3,1484.5 A558.1,558.1 0 0 1 847.9,1481.6 Z" fill="#76d368" stroke="#fbfaf7" stroke-width="0.8"><title>Inclusion and exclusion (c.inclusion_discrimination)</title></path>
+<path d="M821.1,1488.7 A585.7,585.7 0 0 0 821.6,1491.9 L914.0,1477.2 A492.1,492.1 0 0 1 913.6,1474.5 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Interpersonal conflict (c.conflict_interpersonal)</title></path>
+<path d="M761.4,1501.4 A646.6,646.6 0 0 0 762.5,1508.1 L854.8,1492.5 A553.0,553.0 0 0 1 853.8,1486.8 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Retirement (c.retirement)</title></path>
+<path d="M838.8,1495.2 A569.2,569.2 0 0 0 839.4,1498.2 L931.5,1482.0 A475.6,475.6 0 0 1 931.1,1479.5 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Reputation and gossip (c.reputation_gossip)</title></path>
+<path d="M710.5,1520.7 A700.0,700.0 0 0 0 711.3,1525.2 L803.4,1508.4 A606.4,606.4 0 0 1 802.7,1504.6 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Mentoring and peer support (c.mentoring_peer_support)</title></path>
+<path d="M823.7,1504.7 A585.7,585.7 0 0 0 824.3,1507.8 L916.3,1490.6 A492.1,492.1 0 0 1 915.8,1488.0 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Bullying and harassment offline (c.bullying_harassment)</title></path>
+<path d="M750.4,1521.6 A660.9,660.9 0 0 0 751.4,1526.6 L843.2,1508.7 A567.3,567.3 0 0 1 842.4,1504.4 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Self-reflection and personal growth (c.self_reflection)</title></path>
+<path d="M746.5,1527.5 A665.8,665.8 0 0 0 754.9,1564.7 L845.5,1541.6 A572.2,572.2 0 0 1 838.4,1509.6 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Creative writing (c.creative_writing)</title></path>
+<path d="M690.7,1581.1 A732.0,732.0 0 0 0 694.8,1596.4 L785.0,1571.3 A638.4,638.4 0 0 1 781.4,1557.9 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Religious community and clergy (c.religious_community)</title></path>
+<path d="M777.1,1573.5 A646.6,646.6 0 0 0 778.9,1579.7 L868.8,1553.7 A553.0,553.0 0 0 1 867.3,1548.4 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Meaning, values and purpose (c.life_purpose)</title></path>
+<path d="M837.4,1562.8 A585.7,585.7 0 0 0 838.3,1565.8 L928.0,1539.3 A492.1,492.1 0 0 1 927.3,1536.8 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Apology and reconciliation (c.reconciliation)</title></path>
+<path d="M766.2,1587.1 A660.9,660.9 0 0 0 767.4,1591.2 L857.0,1564.1 A567.3,567.3 0 0 1 855.9,1560.6 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Ethics and moral decisions (c.ethical_choice)</title></path>
+<path d="M839.3,1569.4 A585.7,585.7 0 0 0 840.3,1572.4 L929.7,1544.8 A492.1,492.1 0 0 1 928.9,1542.3 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Etiquette and social norms (c.etiquette_norms)</title></path>
+<path d="M853.5,1568.3 A571.9,571.9 0 0 0 860.0,1588.3 L948.4,1557.5 A478.3,478.3 0 0 1 942.9,1540.8 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Film, TV and video (c.film_tv_video)</title></path>
+<path d="M815.7,1603.8 A618.9,618.9 0 0 0 819.9,1615.7 L907.7,1583.1 A525.3,525.3 0 0 1 904.0,1573.0 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Video and online gaming (c.video_gaming)</title></path>
+<path d="M851.0,1604.1 A585.7,585.7 0 0 0 852.1,1607.0 L939.7,1573.9 A492.1,492.1 0 0 1 938.8,1571.5 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Youth and peer culture (c.youth_culture)</title></path>
+<path d="M852.1,1607.0 A585.7,585.7 0 0 0 853.2,1609.9 L940.6,1576.4 A492.1,492.1 0 0 1 939.7,1573.9 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Loneliness and social isolation (c.loneliness_isolation)</title></path>
+<path d="M796.3,1631.8 A646.6,646.6 0 0 0 797.6,1635.0 L884.8,1601.0 A553.0,553.0 0 0 1 883.7,1598.2 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Culture and identity (c.cultural_identity)</title></path>
+<path d="M797.6,1635.0 A646.6,646.6 0 0 0 802.0,1646.0 L888.6,1610.4 A553.0,553.0 0 0 1 884.8,1601.0 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Religious worship and practice (c.religion_worship)</title></path>
+<path d="M888.9,1610.3 A552.7,552.7 0 0 0 890.9,1615.1 L977.1,1578.6 A459.1,459.1 0 0 1 975.5,1574.6 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Everyday conversation and messaging (c.everyday_conversation)</title></path>
+<path d="M778.1,1662.7 A675.1,675.1 0 0 0 779.7,1666.5 L865.7,1629.5 A581.5,581.5 0 0 1 864.3,1626.3 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Separation and divorce (c.divorce)</title></path>
+<path d="M792.8,1660.8 A660.9,660.9 0 0 0 794.2,1664.1 L880.0,1626.7 A567.3,567.3 0 0 1 878.8,1623.9 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Identity and life change (c.identity_change)</title></path>
+<path d="M858.8,1635.9 A590.4,590.4 0 0 0 865.1,1649.8 L949.9,1610.2 A496.8,496.8 0 0 1 944.6,1598.5 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Counselling and therapy (c.counselling_therapy)</title></path>
+<path d="M798.3,1681.0 A664.1,664.1 0 0 0 806.9,1698.7 L890.5,1656.6 A570.5,570.5 0 0 1 883.1,1641.4 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Personal financial decisions (c.personal_finance)</title></path>
+<path d="M835.2,1684.5 A632.4,632.4 0 0 0 836.7,1687.5 L920.1,1644.9 A538.8,538.8 0 0 1 918.8,1642.4 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Coming of age and graduation (c.coming_of_age)</title></path>
+<path d="M862.7,1674.2 A603.2,603.2 0 0 0 877.3,1701.1 L958.4,1654.4 A509.6,509.6 0 0 1 946.1,1631.6 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Reading (c.reading)</title></path>
+<path d="M904.4,1685.4 A571.9,571.9 0 0 0 913.7,1701.0 L993.3,1651.7 A478.3,478.3 0 0 1 985.6,1638.7 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Listening to music (c.music_listening)</title></path>
+<path d="M865.8,1730.7 A628.3,628.3 0 0 0 871.6,1739.9 L950.3,1689.3 A534.7,534.7 0 0 1 945.4,1681.4 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Borrowing and debt (c.borrowing_debt)</title></path>
+<path d="M907.4,1716.9 A585.7,585.7 0 0 0 909.1,1719.5 L987.6,1668.4 A492.1,492.1 0 0 1 986.1,1666.2 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Friendship (c.friendship)</title></path>
+<path d="M834.2,1768.2 A675.1,675.1 0 0 0 837.4,1773.2 L915.4,1721.5 A581.5,581.5 0 0 1 912.6,1717.2 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Spirituality and meditation (c.spirituality)</title></path>
+<path d="M911.9,1723.8 A585.7,585.7 0 0 0 918.9,1734.1 L995.8,1680.7 A492.1,492.1 0 0 1 989.9,1672.0 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Clubs and community groups (c.community_groups)</title></path>
+<path d="M880.6,1760.7 A632.4,632.4 0 0 0 883.2,1764.4 L959.7,1710.5 A538.8,538.8 0 0 1 957.5,1707.3 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Rites of passage (c.rites_of_passage)</title></path>
+<path d="M894.8,1756.2 A618.1,618.1 0 0 0 896.7,1758.9 L972.9,1704.5 A524.5,524.5 0 0 1 971.3,1702.3 Z" fill="#68d3ab" stroke="#fbfaf7" stroke-width="0.8"><title>Folk belief and superstition (c.folk_belief)</title></path>
+<path d="M806.9,1822.9 A728.5,728.5 0 0 0 839.3,1865.1 L911.3,1805.3 A634.9,634.9 0 0 1 883.1,1768.6 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Making music (c.music_making)</title></path>
+<path d="M935.7,1785.1 A603.2,603.2 0 0 0 937.8,1787.5 L1009.5,1727.4 A509.6,509.6 0 0 1 1007.8,1725.3 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Gambling and betting (c.gambling)</title></path>
+<path d="M933.0,1791.6 A609.5,609.5 0 0 0 939.0,1798.6 L1009.8,1737.4 A515.9,515.9 0 0 1 1004.7,1731.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Mental health and wellbeing (c.mental_health)</title></path>
+<path d="M849.0,1876.5 A728.5,728.5 0 0 0 859.3,1888.2 L928.8,1825.5 A634.9,634.9 0 0 1 919.8,1815.3 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Visual arts and design (c.visual_arts)</title></path>
+<path d="M965.4,1792.4 A585.5,585.5 0 0 0 967.5,1794.7 L1036.6,1731.6 A491.9,491.9 0 0 1 1034.9,1729.7 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Stalking and privacy violation (c.stalking_privacy)</title></path>
+<path d="M1016.7,1749.8 A518.9,518.9 0 0 0 1049.2,1782.4 L1112.4,1713.4 A425.3,425.3 0 0 1 1085.8,1686.7 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Family relations (c.family_ties)</title></path>
+<path d="M1063.2,1767.0 A498.1,498.1 0 0 0 1066.7,1770.2 L1129.4,1700.7 A404.5,404.5 0 0 1 1126.5,1698.1 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Wedding and partnership formation (c.marriage_wedding)</title></path>
+<path d="M1052.8,1785.7 A518.9,518.9 0 0 0 1056.5,1789.0 L1118.5,1718.8 A425.3,425.3 0 0 1 1115.5,1716.1 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Marriage and cohabitation (c.marriage_cohabitation)</title></path>
+<path d="M917.8,1946.1 A728.5,728.5 0 0 0 928.0,1954.9 L988.7,1883.6 A634.9,634.9 0 0 1 979.8,1875.9 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Theatre, dance and performance (c.performing_arts)</title></path>
+<path d="M1077.3,1779.5 A498.1,498.1 0 0 0 1129.2,1818.1 L1180.1,1739.6 A404.5,404.5 0 0 1 1137.9,1708.2 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Family occasions and traditions (c.family_rituals)</title></path>
+<path d="M1072.7,1905.3 A602.1,602.1 0 0 0 1077.0,1908.1 L1127.3,1829.1 A508.5,508.5 0 0 1 1123.6,1826.8 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Parenting adolescents (c.parenting_adolescents)</title></path>
+<path d="M1085.8,1894.3 A585.7,585.7 0 0 0 1150.6,1930.0 L1190.5,1845.3 A492.1,492.1 0 0 1 1136.0,1815.3 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Neighbours and local community (c.neighbours_community)</title></path>
+<path d="M1143.6,1944.9 A602.2,602.2 0 0 0 1148.0,1947.0 L1187.2,1861.9 A508.6,508.6 0 0 1 1183.5,1860.2 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Dating and romantic partnership (c.partnership_romance)</title></path>
+<path d="M1147.6,1947.9 A603.2,603.2 0 0 0 1173.2,1958.9 L1208.4,1872.2 A509.6,509.6 0 0 1 1186.8,1862.9 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Museums, heritage and cultural visits (c.cultural_visits)</title></path>
+<path d="M1162.2,1986.0 A632.4,632.4 0 0 0 1165.3,1987.2 L1200.0,1900.3 A538.8,538.8 0 0 1 1197.4,1899.2 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Bereavement and grief (c.bereavement)</title></path>
+<path d="M1194.9,1913.2 A552.7,552.7 0 0 0 1219.5,1922.3 L1250.0,1833.9 A459.1,459.1 0 0 1 1229.6,1826.3 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Socialising and visiting (c.socialising)</title></path>
+<path d="M1208.7,1953.6 A585.7,585.7 0 0 0 1252.4,1966.8 L1276.0,1876.2 A492.1,492.1 0 0 1 1239.2,1865.1 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Celebrations and festivals (c.celebrations)</title></path>
+<path d="M1210.7,2127.0 A751.3,751.3 0 0 0 1227.6,2131.2 L1249.1,2040.1 A657.7,657.7 0 0 1 1234.3,2036.4 Z" fill="#68d383" stroke="#fbfaf7" stroke-width="0.8"><title>Early childhood education (c.early_childhood_education)</title></path>
+<path d="M1261.8,1986.1 A602.2,602.2 0 0 0 1300.4,1993.9 L1315.9,1901.6 A508.6,508.6 0 0 1 1283.3,1895.0 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Charity and giving (c.charity_giving)</title></path>
+<path d="M1305.0,1966.5 A574.4,574.4 0 0 0 1309.5,1967.3 L1324.2,1874.8 A480.8,480.8 0 0 1 1320.5,1874.2 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Poverty and scarcity (c.poverty_scarcity)</title></path>
+<path d="M1295.9,2052.6 A660.9,660.9 0 0 0 1299.3,2053.1 L1313.6,1960.6 A567.3,567.3 0 0 1 1310.6,1960.2 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Funerals and memorial (c.funeral_mourning)</title></path>
+<path d="M1308.1,1996.2 A603.2,603.2 0 0 0 1318.0,1997.6 L1330.8,1904.9 A509.6,509.6 0 0 1 1322.4,1903.7 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Games and play (c.games_play)</title></path>
+<path d="M1318.0,1997.6 A603.2,603.2 0 0 0 1426.5,2002.6 L1422.3,1909.1 A509.6,509.6 0 0 1 1330.8,1904.9 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Events, concerts and festivals (c.festivals_events)</title></path>
+<path d="M1425.7,1985.1 A585.7,585.7 0 0 0 1428.8,1985.0 L1424.2,1891.5 A492.1,492.1 0 0 1 1421.6,1891.6 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Gift-giving and exchange (c.gifts_exchange)</title></path>
+<path d="M1429.6,2001.5 A602.2,602.2 0 0 0 1437.1,2001.1 L1431.3,1907.6 A508.6,508.6 0 0 1 1425.0,1908.0 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Volunteering (c.volunteering)</title></path>
+<path d="M1438.7,2027.1 A628.3,628.3 0 0 0 1455.4,2025.8 L1447.1,1932.6 A534.7,534.7 0 0 1 1432.9,1933.6 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Household budgeting (c.household_budgeting)</title></path>
+<path d="M1453.1,2000.6 A602.9,602.9 0 0 0 1456.3,2000.3 L1447.6,1907.1 A509.3,509.3 0 0 1 1444.9,1907.3 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Self-harm and suicide (c.self_harm_suicide)</title></path>
+<path d="M1457.8,2016.0 A618.7,618.7 0 0 0 1472.2,2014.5 L1461.3,1921.5 A525.1,525.1 0 0 1 1449.0,1922.8 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Hosting and hospitality (c.hospitality_hosting)</title></path>
+<path d="M1470.0,1996.3 A600.4,600.4 0 0 0 1516.5,1989.0 L1498.3,1897.1 A506.8,506.8 0 0 1 1459.1,1903.3 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Household management (c.household_planning)</title></path>
+<path d="M1510.9,1961.0 A571.9,571.9 0 0 0 1516.3,1959.9 L1497.3,1868.3 A478.3,478.3 0 0 1 1492.8,1869.2 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Children&#x27;s play (c.children_play)</title></path>
+<path d="M1519.1,1973.4 A585.7,585.7 0 0 0 1553.2,1965.3 L1528.7,1875.0 A492.1,492.1 0 0 1 1500.1,1881.8 Z" fill="#68d3d3" stroke="#fbfaf7" stroke-width="0.8"><title>Helping others informally (c.mutual_aid)</title></path>
+<path d="M1557.8,1982.2 A603.2,603.2 0 0 0 1560.9,1981.3 L1535.9,1891.1 A509.6,509.6 0 0 1 1533.3,1891.9 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Nightlife and entertainment venues (c.nightlife)</title></path>
+<path d="M1542.2,1913.8 A533.2,533.2 0 0 0 1544.9,1913.1 L1519.5,1823.0 A439.6,439.6 0 0 1 1517.2,1823.6 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Sexuality and sex (c.sexuality)</title></path>
+<path d="M1587.4,2063.4 A689.3,689.3 0 0 0 1590.9,2062.4 L1565.0,1972.4 A595.7,595.7 0 0 1 1561.9,1973.3 Z" fill="#7668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Dying and death (c.death_dying)</title></path>
+<path d="M1571.8,1996.0 A620.3,620.3 0 0 0 1574.9,1995.1 L1548.5,1905.3 A526.7,526.7 0 0 1 1545.9,1906.1 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Domestic and partner abuse (c.domestic_abuse)</title></path>
+<path d="M1574.9,1995.1 A620.3,620.3 0 0 0 1578.1,1994.2 L1551.2,1904.5 A526.7,526.7 0 0 1 1548.5,1905.3 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Child abuse and neglect (c.child_abuse_neglect)</title></path>
+<path d="M1560.9,1936.9 A560.5,560.5 0 0 0 1577.0,1931.8 L1547.4,1843.0 A466.9,466.9 0 0 1 1534.1,1847.2 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Parenting young children (c.parenting_young_children)</title></path>
+<path d="M1570.4,1912.1 A539.7,539.7 0 0 0 1573.2,1911.2 L1543.1,1822.5 A446.1,446.1 0 0 1 1540.9,1823.3 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Childcare by others (c.childcare_other)</title></path>
+<path d="M1593.4,1971.0 A602.9,602.9 0 0 0 1596.5,1970.0 L1566.0,1881.5 A509.3,509.3 0 0 1 1563.4,1882.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Substance use (c.substance_use)</title></path>
+<path d="M1627.2,2059.1 A697.2,697.2 0 0 0 1642.6,2053.6 L1610.0,1965.8 A603.6,603.6 0 0 1 1596.7,1970.6 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Crafts and hobbies (c.crafts_hobbies)</title></path>
+<path d="M1663.4,2109.6 A756.9,756.9 0 0 0 1668.9,2107.6 L1635.6,2020.1 A663.3,663.3 0 0 1 1630.8,2021.9 Z" fill="#d3b868" stroke="#fbfaf7" stroke-width="0.8"><title>Making and tinkering (c.maker_tinkering)</title></path>
+<path d="M1603.1,1934.6 A571.9,571.9 0 0 0 1608.5,1932.5 L1574.4,1845.3 A478.3,478.3 0 0 1 1569.9,1847.1 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Watching sport (c.sport_spectating)</title></path>
+<path d="M1646.2,2028.6 A675.1,675.1 0 0 0 1649.5,2027.3 L1614.9,1940.3 A581.5,581.5 0 0 1 1612.0,1941.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Traditional and alternative healing (c.alternative_medicine)</title></path>
+<path d="M1629.3,1976.4 A620.3,620.3 0 0 0 1632.3,1975.1 L1597.3,1888.3 A526.7,526.7 0 0 1 1594.7,1889.4 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Sexual violence and abuse (c.sexual_violence)</title></path>
+<path d="M1642.6,2000.5 A647.6,647.6 0 0 0 1661.5,1992.5 L1623.7,1906.8 A554.0,554.0 0 0 1 1607.5,1913.7 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Care of older people (c.eldercare)</title></path>
+<path d="M1599.9,1852.8 A495.0,495.0 0 0 0 1602.3,1851.8 L1564.1,1766.4 A401.4,401.4 0 0 1 1562.1,1767.2 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Sleep and rest (c.sleep)</title></path>
+<path d="M1670.1,2003.1 A660.9,660.9 0 0 0 1680.3,1998.5 L1640.6,1913.7 A567.3,567.3 0 0 1 1631.8,1917.7 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Serious illness and diagnosis (c.serious_illness)</title></path>
+<path d="M1654.6,1943.7 A600.4,600.4 0 0 0 1658.8,1941.7 L1618.4,1857.3 A506.8,506.8 0 0 1 1614.9,1858.9 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Home organisation and decor (c.home_organisation)</title></path>
+<path d="M1690.7,2008.5 A674.4,674.4 0 0 0 1715.6,1996.0 L1671.8,1913.2 A580.8,580.8 0 0 1 1650.3,1924.1 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Home repair and DIY (c.home_repair_diy)</title></path>
+<path d="M1658.5,1888.0 A552.2,552.2 0 0 0 1662.2,1886.0 L1617.8,1803.6 A458.6,458.6 0 0 1 1614.6,1805.3 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Ageing (c.ageing_body)</title></path>
+<path d="M1713.8,1981.6 A660.9,660.9 0 0 0 1729.2,1973.0 L1682.6,1891.8 A567.3,567.3 0 0 1 1669.3,1899.2 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Childbirth and having a baby (c.birth_of_child)</title></path>
+<path d="M1671.4,1872.4 A544.8,544.8 0 0 0 1675.0,1870.3 L1627.8,1789.5 A451.2,451.2 0 0 1 1624.8,1791.2 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Cleaning and laundry (c.cleaning_laundry)</title></path>
+<path d="M1699.0,1911.4 A592.4,592.4 0 0 0 1701.7,1909.8 L1654.0,1829.2 A498.8,498.8 0 0 1 1651.8,1830.6 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Personal appearance (c.personal_appearance)</title></path>
+<path d="M1748.8,1989.3 A684.8,684.8 0 0 0 1751.9,1987.4 L1703.8,1907.1 A591.2,591.2 0 0 1 1701.1,1908.8 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Disability and adaptation (c.disability_adaptation)</title></path>
+<path d="M1723.0,1939.2 A628.5,628.5 0 0 0 1753.8,1919.5 L1701.1,1842.1 A534.9,534.9 0 0 1 1674.9,1858.9 Z" fill="#9e68d3" stroke="#fbfaf7" stroke-width="0.8"><title>Care of the ill or disabled (c.care_of_ill_disabled)</title></path>
+<path d="M1783.6,1963.3 A681.5,681.5 0 0 0 1845.0,1916.1 L1783.9,1845.3 A587.9,587.9 0 0 1 1731.0,1885.9 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Playing sport (c.sport_participation)</title></path>
+<path d="M1723.2,1774.9 A495.0,495.0 0 0 0 1725.2,1773.2 L1663.7,1702.6 A401.4,401.4 0 0 1 1662.1,1704.0 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Hygiene and grooming (c.hygiene_grooming)</title></path>
+<path d="M1800.4,1859.5 A609.5,609.5 0 0 0 1802.8,1857.3 L1741.0,1787.1 A515.9,515.9 0 0 1 1738.9,1788.9 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Reproduction and fertility (c.reproduction_fertility)</title></path>
+<path d="M1802.8,1857.3 A609.5,609.5 0 0 0 1812.7,1848.5 L1749.3,1779.6 A515.9,515.9 0 0 1 1741.0,1787.1 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Pregnancy and prenatal care (c.pregnancy_birth)</title></path>
+<path d="M1748.1,1778.3 A514.1,514.1 0 0 0 1754.0,1772.8 L1689.5,1704.9 A420.5,420.5 0 0 1 1684.7,1709.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Eating and drinking (c.eating_drinking)</title></path>
+<path d="M1780.2,1800.5 A552.2,552.2 0 0 0 1782.4,1798.4 L1717.6,1730.9 A458.6,458.6 0 0 1 1715.8,1732.6 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Medication and treatment adherence (c.medication_adherence)</title></path>
+<path d="M1808.8,1826.0 A590.4,590.4 0 0 0 1884.1,1738.0 L1807.3,1684.4 A496.8,496.8 0 0 1 1744.0,1758.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Physical health and illness (c.physical_health)</title></path>
+<path d="M1884.1,1738.0 A590.4,590.4 0 0 0 1920.6,1678.5 L1838.0,1634.4 A496.8,496.8 0 0 1 1807.3,1684.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Exercise and fitness (c.exercise_fitness)</title></path>
+<path d="M1886.9,1660.5 A552.2,552.2 0 0 0 1924.1,1574.0 L1835.3,1544.5 A458.6,458.6 0 0 1 1804.4,1616.4 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Medical care (c.medical_care)</title></path>
+<path d="M1987.3,1595.0 A618.9,618.9 0 0 0 1998.1,1558.8 L1907.7,1534.8 A525.3,525.3 0 0 1 1898.5,1565.5 Z" fill="#6883d3" stroke="#fbfaf7" stroke-width="0.8"><title>Outdoor recreation (c.outdoor_recreation)</title></path>
+<path d="M1967.9,1550.8 A587.5,587.5 0 0 0 1969.3,1545.2 L1878.6,1522.1 A493.9,493.9 0 0 1 1877.4,1526.8 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Dining out and accommodation services (c.restaurants_dining)</title></path>
+<path d="M1954.1,1541.4 A571.9,571.9 0 0 0 1954.9,1538.1 L1864.1,1515.5 A478.3,478.3 0 0 1 1863.4,1518.2 Z" fill="#c6d368" stroke="#fbfaf7" stroke-width="0.8"><title>Personal and domestic services work (c.personal_services_work)</title></path>
+<path d="M2032.4,1557.4 A651.7,651.7 0 0 0 2035.0,1546.7 L1943.8,1525.6 A558.1,558.1 0 0 1 1941.6,1534.8 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Second-hand, repair and reuse (c.reuse_repair)</title></path>
+<path d="M1942.2,1525.3 A556.5,556.5 0 0 0 1942.9,1522.4 L1851.6,1501.8 A462.9,462.9 0 0 1 1851.0,1504.2 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Clothing and footwear (c.clothing_footwear)</title></path>
+<path d="M1988.2,1532.6 A602.9,602.9 0 0 0 1989.0,1528.9 L1897.5,1508.9 A509.3,509.3 0 0 1 1896.8,1512.0 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Negligence and recklessness (c.negligence_recklessness)</title></path>
+<path d="M1955.0,1521.5 A568.2,568.2 0 0 0 1955.7,1518.5 L1864.1,1499.0 A474.6,474.6 0 0 1 1863.6,1501.5 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Violence and assault (c.violence_assault)</title></path>
+<path d="M2041.4,1536.8 A655.9,655.9 0 0 0 2045.7,1515.2 L1953.5,1498.8 A562.3,562.3 0 0 1 1949.9,1517.3 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Cooking and food preparation (c.cooking)</title></path>
+<path d="M1981.2,1503.7 A590.4,590.4 0 0 0 1982.9,1493.7 L1890.5,1478.8 A496.8,496.8 0 0 1 1889.1,1487.3 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Nutrition and diet (c.nutrition_diet)</title></path>
+<path d="M1978.1,1492.9 A585.5,585.5 0 0 0 1978.6,1489.8 L1886.1,1475.5 A491.9,491.9 0 0 1 1885.7,1478.0 Z" fill="#c668d3" stroke="#fbfaf7" stroke-width="0.8"><title>Theft and property crime (c.theft_property_crime)</title></path>
+<path d="M2044.0,1500.0 A651.7,651.7 0 0 0 2046.6,1481.7 L1953.7,1470.0 A558.1,558.1 0 0 1 1951.5,1485.6 Z" fill="#d36890" stroke="#fbfaf7" stroke-width="0.8"><title>Home gardening (c.household_gardening)</title></path>
+<path d="M1952.1,1469.8 A556.5,556.5 0 0 0 1952.9,1462.8 L1859.9,1452.3 A462.9,462.9 0 0 1 1859.3,1458.0 Z" fill="#68abd3" stroke="#fbfaf7" stroke-width="0.8"><title>Buying food and groceries (c.food_purchasing)</title></path>
+<path d="M1948.7,1462.4 A552.2,552.2 0 0 0 1950.0,1349.8 L1856.7,1358.3 A458.6,458.6 0 0 1 1855.7,1451.8 Z" fill="#d368b8" stroke="#fbfaf7" stroke-width="0.8"><title>Preventive health (c.preventive_health)</title></path>
+<path d="M1611.2,1355.9 A215.8,215.8 0 0 0 1542.5,1238.0 L1511.6,1273.2 A169.0,169.0 0 0 1 1565.4,1365.4 Z" fill="#a63030" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1596.1,1177.1 A296.9,296.9 0 0 0 1578.2,1162.5 L1550.1,1200.0 A250.1,250.1 0 0 1 1565.2,1212.3 Z" fill="#a65c30" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1619.4,1107.6 A365.5,365.5 0 0 0 1571.3,1077.1 L1549.4,1118.5 A318.7,318.7 0 0 1 1591.3,1145.1 Z" fill="#a68830" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1489.4,1231.5 A190.8,190.8 0 0 0 1353.4,1215.0 L1364.8,1260.4 A144.0,144.0 0 0 1 1467.5,1272.8 Z" fill="#97a630" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1319.9,1081.9 A328.1,328.1 0 0 0 1258.9,1103.8 L1279.1,1146.0 A281.3,281.3 0 0 1 1331.3,1127.2 Z" fill="#6ba630" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1301.9,1193.9 A228.2,228.2 0 0 0 1226.5,1251.7 L1262.1,1282.1 A181.4,181.4 0 0 1 1322.0,1236.2 Z" fill="#3ea630" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1112.7,1154.4 A378.0,378.0 0 0 0 1022.0,1396.8 L1068.8,1397.2 A331.2,331.2 0 0 1 1148.3,1184.8 Z" fill="#30a64d" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1053.2,1397.1 A346.8,346.8 0 0 0 1054.5,1429.9 L1101.1,1425.9 A300.0,300.0 0 0 1 1100.0,1397.5 Z" fill="#30a679" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1104.2,1425.6 A296.9,296.9 0 0 0 1153.2,1565.0 L1192.1,1539.0 A250.1,250.1 0 0 1 1150.9,1421.6 Z" fill="#30a6a6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1179.1,1547.7 A265.7,265.7 0 0 0 1227.0,1601.6 L1257.5,1566.1 A218.9,218.9 0 0 1 1218.0,1521.7 Z" fill="#3079a6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1194.5,1639.5 A315.6,315.6 0 0 0 1426.3,1714.5 L1422.4,1667.9 A268.8,268.8 0 0 1 1225.0,1604.0 Z" fill="#304da6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1428.9,1745.6 A346.8,346.8 0 0 0 1446.7,1743.6 L1440.4,1697.3 A300.0,300.0 0 0 1 1425.0,1699.0 Z" fill="#3e30a6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1427.4,1601.4 A203.3,203.3 0 0 0 1511.8,1569.8 L1486.1,1530.7 A156.5,156.5 0 0 1 1421.1,1555.1 Z" fill="#6b30a6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1553.0,1632.3 A278.2,278.2 0 0 0 1565.6,1623.5 L1537.7,1585.9 A231.4,231.4 0 0 1 1527.2,1593.2 Z" fill="#9730a6" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1543.3,1593.4 A240.7,240.7 0 0 0 1639.9,1420.4 L1593.2,1416.5 A193.9,193.9 0 0 1 1515.4,1555.8 Z" fill="#a63088" stroke="#fbfaf7" stroke-width="1.5"/>
+<path d="M1652.3,1421.5 A253.2,253.2 0 0 0 1647.8,1348.2 L1602.0,1357.8 A206.4,206.4 0 0 1 1605.7,1417.5 Z" fill="#a6305c" stroke="#fbfaf7" stroke-width="1.5"/>
+<text x="1566.2" y="1303.2" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">1</text>
+<rect x="2370" y="147" width="18" height="18" fill="#a63030"/><text x="2396" y="156" font-size="15" fill="#3a352e" dominant-baseline="middle">1. Travel, mobility and place</text>
+<text x="1572.5" y="1187.8" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">2</text>
+<rect x="2370" y="173" width="18" height="18" fill="#a65c30"/><text x="2396" y="182" font-size="15" fill="#3a352e" dominant-baseline="middle">2. Nature, animals and environment</text>
+<text x="1583.4" y="1111.2" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">3</text>
+<rect x="2370" y="199" width="18" height="18" fill="#a68830"/><text x="2396" y="208" font-size="15" fill="#3a352e" dominant-baseline="middle">3. Technology, engineering and making</text>
+<text x="1420.1" y="1233.8" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">4</text>
+<rect x="2370" y="225" width="18" height="18" fill="#97a630"/><text x="2396" y="234" font-size="15" fill="#3a352e" dominant-baseline="middle">4. Work, trades and enterprise</text>
+<text x="1296.8" y="1113.3" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">5</text>
+<rect x="2370" y="251" width="18" height="18" fill="#6ba630"/><text x="2396" y="260" font-size="15" fill="#3a352e" dominant-baseline="middle">5. Sciences and scholarship</text>
+<text x="1275.4" y="1237.4" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">6</text>
+<rect x="2370" y="277" width="18" height="18" fill="#3ea630"/><text x="2396" y="286" font-size="15" fill="#3a352e" dominant-baseline="middle">6. Governance, law and public life</text>
+<text x="1067.9" y="1275.8" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">7</text>
+<rect x="2370" y="303" width="18" height="18" fill="#30a64d"/><text x="2396" y="312" font-size="15" fill="#3a352e" dominant-baseline="middle">7. Learning and education</text>
+<text x="1076.8" y="1412.6" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">8</text>
+<rect x="2370" y="329" width="18" height="18" fill="#30a679"/><text x="2396" y="338" font-size="15" fill="#3a352e" dominant-baseline="middle">8. Belief, meaning and ethics</text>
+<text x="1142.0" y="1490.7" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">9</text>
+<rect x="2370" y="355" width="18" height="18" fill="#30a6a6"/><text x="2396" y="364" font-size="15" fill="#3a352e" dominant-baseline="middle">9. Relationships and community</text>
+<text x="1218.7" y="1560.8" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">10</text>
+<rect x="2370" y="381" width="18" height="18" fill="#3079a6"/><text x="2396" y="390" font-size="15" fill="#3a352e" dominant-baseline="middle">10. Consumption, money and property</text>
+<text x="1310.1" y="1678.0" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">11</text>
+<rect x="2370" y="407" width="18" height="18" fill="#304da6"/><text x="2396" y="416" font-size="15" fill="#3a352e" dominant-baseline="middle">11. Play, arts, sport and media</text>
+<text x="1435.3" y="1721.5" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">12</text>
+<rect x="2370" y="433" width="18" height="18" fill="#3e30a6"/><text x="2396" y="442" font-size="15" fill="#3a352e" dominant-baseline="middle">12. Life events and transitions</text>
+<text x="1463.2" y="1568.4" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">13</text>
+<rect x="2370" y="459" width="18" height="18" fill="#6b30a6"/><text x="2396" y="468" font-size="15" fill="#3a352e" dominant-baseline="middle">13. Family, intimacy and care</text>
+<text x="1545.9" y="1608.8" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">14</text>
+<rect x="2370" y="485" width="18" height="18" fill="#9730a6"/><text x="2396" y="494" font-size="15" fill="#3a352e" dominant-baseline="middle">14. Harm, crime and misconduct</text>
+<text x="1589.8" y="1505.9" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">15</text>
+<rect x="2370" y="511" width="18" height="18" fill="#a63088"/><text x="2396" y="520" font-size="15" fill="#3a352e" dominant-baseline="middle">15. Body, health and self-care</text>
+<text x="1629.4" y="1386.1" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle">16</text>
+<rect x="2370" y="537" width="18" height="18" fill="#a6305c"/><text x="2396" y="546" font-size="15" fill="#3a352e" dominant-baseline="middle">16. Home and household</text>
+<polyline points="1907.6,1352.3 2268.8,1318.3 2290.2,1316.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2294.6" y="1316.2" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-5.35 2294.6 1316.2)">Walking and cycling</text>
+<polyline points="2007.0,1336.7 2267.9,1309.5 2289.2,1307.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2293.7" y="1306.5" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-5.97 2293.7 1306.5)">Housing costs</text>
+<polyline points="1883.3,1237.7 2227.2,1122.1 2247.5,1115.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2251.8" y="1113.9" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-18.57 2251.8 1113.9)">Tourism and leisure travel</text>
+<polyline points="1865.2,1116.4 2145.1,945.8 2163.4,934.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2167.3" y="932.3" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-31.36 2167.3 932.3)">Home utilities and energy use</text>
+<polyline points="1895.7,1088.0 2138.5,935.1 2158.3,926.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2162.2" y="924.0" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-31.98 2162.2 924.0)">Pets and companion animals</text>
+<polyline points="1853.9,1110.1 2135.4,930.3 2153.2,918.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2157.0" y="915.8" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-32.60 2157.0 915.8)">Shopping and errands</text>
+<polyline points="1846.9,1109.2 2131.4,924.0 2147.9,910.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2151.7" y="907.7" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-33.22 2151.7 907.7)">Accidents and injuries</text>
+<polyline points="1873.4,1079.2 2122.4,910.5 2140.2,898.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2143.9" y="896.0" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-34.12 2143.9 896.0)">Hospitality and food service work</text>
+<polyline points="1903.6,1040.4 2110.2,892.9 2127.6,880.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2131.2" y="877.8" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-35.53 2131.2 877.8)">Finding and securing housing</text>
+<polyline points="1794.3,1109.8 2102.8,882.7 2120.1,870.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2123.7" y="867.4" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-36.35 2123.7 867.4)">Commuting</text>
+<polyline points="1828.4,1054.7 2079.4,852.3 2096.1,838.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2099.6" y="836.1" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-38.87 2099.6 836.1)">Moving house and relocation</text>
+<polyline points="1997.4,867.6 2051.5,819.4 2067.5,805.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2070.9" y="802.2" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-41.70 2070.9 802.2)">Healthcare professions</text>
+<polyline points="1778.4,1016.8 2013.1,779.1 2028.2,763.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2031.3" y="760.6" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-45.36 2031.3 760.6)">Retail shopping</text>
+<polyline points="1797.7,946.8 1975.6,744.1 1989.7,728.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1992.7" y="724.6" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-48.73 1992.7 724.6)">Traffic offences and drunk driving</text>
+<polyline points="1757.8,982.0 1967.5,737.1 1981.4,720.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1984.3" y="717.4" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-49.44 1984.3 717.4)">Road safety and traffic</text>
+<polyline points="1817.0,899.1 1958.3,729.3 1973.0,713.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1975.9" y="710.3" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-50.14 1975.9 710.3)">Subsistence and own-use production</text>
+<polyline points="1813.0,895.8 1953.0,725.0 1965.6,707.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1968.4" y="704.1" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-50.76 1968.4 704.1)">Fishing, hunting and foraging</text>
+<polyline points="1813.8,871.1 1937.7,712.7 1951.2,696.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1954.0" y="692.6" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-51.94 1954.0 692.6)">Driving</text>
+<polyline points="1818.6,837.3 1920.8,699.8 1943.6,690.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1946.3" y="686.6" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-52.56 1946.3 686.6)">Animal care and husbandry</text>
+<polyline points="1744.3,926.2 1912.9,694.0 1935.9,684.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1938.6" y="680.7" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-53.18 1938.6 680.7)">Waste and recycling</text>
+<polyline points="1719.6,952.1 1906.8,689.6 1928.1,678.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1930.8" y="674.9" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-53.80 1930.8 674.9)">Air travel</text>
+<polyline points="1693.9,983.4 1903.0,686.9 1920.3,672.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1922.9" y="669.2" font-size="10.5" fill="#6e2020" text-anchor="start" dominant-baseline="middle" transform="rotate(-54.42 1922.9 669.2)">Public transport</text>
+<polyline points="1801.2,824.8 1899.2,684.3 1912.4,667.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1914.9" y="663.6" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-55.04 1914.9 663.6)">Wildlife and conservation</text>
+<polyline points="1868.4,719.5 1894.8,681.2 1904.4,661.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1906.9" y="658.1" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-55.66 1906.9 658.1)">Public health and epidemiology</text>
+<polyline points="1810.3,791.0 1887.6,676.3 1896.4,656.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1898.9" y="652.7" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-56.28 1898.9 652.7)">Agricultural, forestry and fishing work</text>
+<polyline points="1738.6,887.1 1880.7,671.7 1888.3,651.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1890.8" y="647.3" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-56.90 1890.8 647.3)">Workplace safety</text>
+<polyline points="1788.1,796.2 1871.9,665.9 1880.2,645.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1882.6" y="642.0" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-57.52 1882.6 642.0)">Crop farming and horticulture</text>
+<polyline points="1738.6,859.7 1863.4,660.6 1872.0,640.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1874.4" y="636.9" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-58.14 1874.4 636.9)">Exploitation and trafficking</text>
+<polyline points="1735.7,857.9 1859.5,658.1 1863.7,635.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1866.1" y="631.8" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-58.76 1866.1 631.8)">Illicit drugs trade</text>
+<polyline points="1731.6,858.2 1855.5,655.7 1855.4,630.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1857.7" y="626.8" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-59.38 1857.7 626.8)">Environmental harm and pollution</text>
+<polyline points="1727.8,837.2 1839.2,645.9 1847.1,625.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1849.3" y="621.9" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-60.00 1849.3 621.9)">Transport and logistics work</text>
+<polyline points="1747.6,772.0 1822.6,636.5 1837.3,620.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1839.5" y="616.3" font-size="10.5" fill="#29206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-60.72 1839.5 616.3)">War, conflict and violence exposure</text>
+<polyline points="1723.8,807.6 1818.6,634.3 1828.8,615.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1831.0" y="611.5" font-size="10.5" fill="#29206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-61.34 1831.0 611.5)">Disasters and emergencies</text>
+<polyline points="1701.7,841.0 1814.5,632.1 1820.3,610.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1822.4" y="606.9" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-61.96 1822.4 606.9)">Weather, climate and adaptation</text>
+<polyline points="1684.5,850.6 1801.3,625.1 1811.1,606.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1813.2" y="602.1" font-size="10.5" fill="#6e3d20" text-anchor="start" dominant-baseline="middle" transform="rotate(-62.62 1813.2 602.1)">Environmental stewardship</text>
+<polyline points="1624.9,944.7 1786.5,617.6 1796.0,598.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1797.9" y="594.4" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-63.71 1797.9 594.4)">Elementary and manual labour</text>
+<polyline points="1728.6,688.5 1765.9,607.8 1774.9,588.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1776.8" y="584.3" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-65.21 1776.8 584.3)">Craft and skilled trades</text>
+<polyline points="1700.9,705.1 1746.7,599.2 1755.5,579.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1757.3" y="575.5" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-66.57 1757.3 575.5)">Emergency and rescue services</text>
+<polyline points="1666.9,752.9 1732.8,593.3 1746.6,575.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1748.3" y="571.7" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-67.19 1748.3 571.7)">Construction and building trades</text>
+<polyline points="1661.9,731.7 1718.5,587.5 1737.6,572.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1739.3" y="568.0" font-size="10.5" fill="#29206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-67.81 1739.3 568.0)">Migration and displacement</text>
+<polyline points="1696.3,631.3 1713.9,585.8 1728.7,568.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1730.3" y="564.4" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-68.43 1730.3 564.4)">Energy generation and supply</text>
+<polyline points="1696.0,596.5 1701.7,581.2 1719.7,565.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1721.3" y="560.8" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-69.05 1721.3 560.8)">Medicine and clinical science</text>
+<polyline points="1677.2,610.0 1689.0,576.6 1710.6,561.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1712.2" y="557.4" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-69.67 1712.2 557.4)">Mechanical engineering</text>
+<polyline points="1675.2,595.1 1682.4,574.3 1701.5,558.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1703.1" y="554.1" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-70.29 1703.1 554.1)">Electrical and energy engineering</text>
+<polyline points="1641.3,668.4 1673.3,571.3 1692.4,555.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1693.9" y="550.9" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-70.91 1693.9 550.9)">Manufacturing and production</text>
+<polyline points="1656.8,589.1 1663.5,568.1 1683.3,552.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1684.7" y="547.7" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-71.53 1684.7 547.7)">Civil engineering and construction design</text>
+<polyline points="1638.1,624.7 1656.1,565.8 1674.1,549.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1675.5" y="544.7" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-72.15 1675.5 544.7)">Agricultural and food science</text>
+<polyline points="1623.1,655.8 1650.6,564.1 1664.9,546.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1666.2" y="541.8" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-72.77 1666.2 541.8)">Urban planning and infrastructure</text>
+<polyline points="1627.9,621.6 1645.3,562.5 1655.6,543.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1656.9" y="539.0" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-73.39 1656.9 539.0)">Ecology and environmental science</text>
+<polyline points="1581.7,766.6 1640.7,561.2 1646.4,540.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1647.6" y="536.2" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-74.00 1647.6 536.2)">Security and protective services</text>
+<polyline points="1621.6,604.1 1634.1,559.3 1637.1,537.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1638.3" y="533.6" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-74.62 1638.3 533.6)">Chemistry</text>
+<polyline points="1625.0,565.8 1627.2,557.5 1627.7,535.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1628.9" y="531.1" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-75.24 1628.9 531.1)">Materials science</text>
+<polyline points="1620.4,564.6 1622.6,556.2 1618.4,533.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1619.5" y="528.7" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-75.86 1619.5 528.7)">Biotechnology and biomedical engineering</text>
+<polyline points="1579.4,704.8 1618.1,555.0 1609.0,530.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1610.1" y="526.3" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-76.48 1610.1 526.3)">Military and defence</text>
+<polyline points="1532.0,843.6 1601.5,550.9 1599.6,528.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1600.6" y="524.1" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-77.10 1600.6 524.1)">Retail and wholesale work</text>
+<polyline points="1574.9,577.2 1581.4,546.4 1590.2,526.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1591.1" y="522.0" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-77.72 1591.1 522.0)">Biology and life sciences</text>
+<polyline points="1563.8,590.3 1573.0,544.7 1580.7,524.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1581.6" y="520.0" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-78.34 1581.6 520.0)">Earth and planetary science</text>
+<polyline points="1526.1,757.2 1568.0,543.7 1571.2,522.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1572.1" y="518.1" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-78.96 1572.1 518.1)">Imprisonment and reentry</text>
+<polyline points="1534.5,694.8 1563.5,542.8 1561.7,520.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1562.6" y="516.3" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-79.58 1562.6 516.3)">Policing and law enforcement</text>
+<polyline points="1496.4,879.7 1558.9,542.0 1552.2,519.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1553.0" y="514.6" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-80.20 1553.0 514.6)">Informal and gig work</text>
+<polyline points="1518.9,738.2 1554.4,541.1 1542.7,517.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1543.4" y="513.0" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-80.82 1543.4 513.0)">Extremism and terrorism</text>
+<polyline points="1486.8,856.4 1537.5,538.3 1533.1,515.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1533.8" y="511.5" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-81.44 1533.8 511.5)">Customer service</text>
+<polyline points="1518.4,551.9 1520.7,535.7 1523.6,514.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1524.2" y="510.1" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-82.06 1524.2 510.1)">Neuroscience</text>
+<polyline points="1476.4,830.7 1516.1,535.1 1514.0,513.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1514.6" y="508.8" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-82.67 1514.6 508.8)">Online shopping and platforms</text>
+<polyline points="1509.4,550.7 1511.5,534.5 1504.4,512.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1504.9" y="507.6" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-83.29 1504.9 507.6)">Astronomy and space science</text>
+<polyline points="1480.7,746.0 1506.8,533.9 1494.8,511.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1495.3" y="506.5" font-size="10.5" fill="#296e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-83.91 1495.3 506.5)">Borders, visas and migration admin</text>
+<polyline points="1479.0,661.5 1492.9,532.3 1485.2,510.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1485.6" y="505.5" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-84.53 1485.6 505.5)">Management and leadership</text>
+<polyline points="1473.4,592.3 1478.9,530.9 1475.5,509.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1475.9" y="504.7" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-85.15 1475.9 504.7)">Geography and planning research</text>
+<polyline points="1446.3,765.7 1463.6,529.7 1465.2,508.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1465.5" y="503.8" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-85.82 1465.5 503.8)">Entrepreneurship and small business</text>
+<polyline points="1445.1,544.9 1445.9,528.6 1447.1,507.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1447.3" y="502.7" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-86.98 1447.3 502.7)">Physics</text>
+<polyline points="1427.2,559.2 1428.2,527.8 1428.9,506.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1429.1" y="501.9" font-size="10.5" fill="#476e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-88.15 1429.1 501.9)">Research and scientific work</text>
+<polyline points="1405.0,753.8 1406.8,527.4 1406.9,506.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1407.0" y="501.5" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-89.56 1407.0 501.5)">Sales, marketing and advertising</text>
+<polyline points="1381.1,828.4 1371.2,527.8 1370.4,506.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1370.3" y="501.9" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(88.11 1370.3 501.9)">Office and administrative work</text>
+<polyline points="1354.7,724.9 1341.6,529.3 1340.7,507.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1340.4" y="503.4" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(86.20 1340.4 503.4)">Phone, internet and subscriptions</text>
+<polyline points="1339.0,605.2 1333.2,529.9 1331.1,508.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1330.7" y="504.1" font-size="10.5" fill="#6e5b20" text-anchor="end" dominant-baseline="middle" transform="rotate(85.58 1330.7 504.1)">IT operations and networks</text>
+<polyline points="1331.2,622.2 1323.1,530.8 1321.2,509.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1320.8" y="504.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(84.94 1320.8 504.9)">Business and management research</text>
+<polyline points="1324.8,854.6 1280.9,535.5 1278.0,514.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1277.3" y="509.9" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(82.15 1277.3 509.9)">Having a job</text>
+<polyline points="1302.2,879.9 1238.8,542.4 1238.3,520.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1237.4" y="516.3" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(79.58 1237.4 516.3)">Workplace relations and teamwork</text>
+<polyline points="1281.0,791.8 1232.4,543.6 1228.7,522.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1227.9" y="518.1" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(78.96 1227.9 518.1)">Unions and collective bargaining</text>
+<polyline points="1234.3,579.3 1227.3,544.6 1219.3,524.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1218.4" y="520.0" font-size="10.5" fill="#6e5b20" text-anchor="end" dominant-baseline="middle" transform="rotate(78.34 1218.4 520.0)">Cybersecurity</text>
+<polyline points="1204.4,688.8 1168.6,558.6 1163.0,537.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1161.8" y="533.6" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(74.63 1161.8 533.6)">Public administration and policy</text>
+<polyline points="1223.6,901.1 1109.1,577.3 1102.0,557.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1100.5" y="552.8" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(70.53 1100.5 552.8)">Job search and hiring</text>
+<polyline points="1116.1,640.3 1094.5,582.6 1087.0,562.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1085.4" y="558.3" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(69.51 1085.4 558.3)">Statistics and data analysis</text>
+<polyline points="1081.6,596.8 1078.4,588.8 1070.6,568.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1068.9" y="564.7" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(68.38 1068.9 564.7)">Computer science</text>
+<polyline points="1159.1,850.4 1049.6,600.8 1041.0,581.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1039.2" y="577.1" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(66.33 1039.2 577.1)">Dealing with government</text>
+<polyline points="1098.0,780.3 1017.7,615.6 1008.3,596.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1006.3" y="592.3" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(64.02 1006.3 592.3)">Job change and career moves</text>
+<polyline points="1104.2,825.0 1000.8,624.0 991.0,605.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="988.9" y="601.0" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(62.78 988.9 601.0)">Job loss and unemployment</text>
+<polyline points="1006.7,706.7 969.5,641.0 958.9,622.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="956.7" y="618.4" font-size="10.5" fill="#6e5b20" text-anchor="end" dominant-baseline="middle" transform="rotate(60.44 956.7 618.4)">Software development</text>
+<polyline points="948.4,663.4 943.9,656.1 934.7,636.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="932.3" y="632.7" font-size="10.5" fill="#6e5b20" text-anchor="end" dominant-baseline="middle" transform="rotate(58.64 932.3 632.7)">Artificial intelligence and machine learning</text>
+<polyline points="954.4,686.5 937.7,659.9 926.4,641.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="924.0" y="637.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(58.02 924.0 637.9)">Economics and finance research</text>
+<polyline points="1004.2,777.6 931.7,663.6 918.2,646.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="915.8" y="643.0" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(57.40 915.8 643.0)">Law and courts</text>
+<polyline points="1036.2,850.5 918.3,672.4 906.5,654.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="904.0" y="650.7" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(56.50 904.0 650.7)">Tax and regulatory compliance</text>
+<polyline points="933.9,810.8 858.6,715.6 845.3,698.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="842.5" y="695.3" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(51.65 842.5 695.3)">Vocational and on-the-job training</text>
+<polyline points="838.8,793.7 807.2,759.6 792.7,743.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="789.6" y="740.6" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(47.21 789.6 740.6)">Mathematics</text>
+<polyline points="857.6,851.0 786.7,779.2 771.6,764.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="768.5" y="760.8" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(45.35 768.5 760.8)">Finance and accounting work</text>
+<polyline points="804.1,827.8 770.5,795.6 757.0,778.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="753.8" y="775.7" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(44.01 753.8 775.7)">Political science and law scholarship</text>
+<polyline points="812.0,841.4 767.3,799.0 750.3,785.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="747.0" y="782.7" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(43.39 747.0 782.7)">Psychology</text>
+<polyline points="1003.0,1032.3 759.8,807.0 743.7,792.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="740.4" y="789.8" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(42.77 740.4 789.8)">Political participation</text>
+<polyline points="775.0,836.9 751.7,815.9 735.8,801.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="732.4" y="798.5" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(42.02 732.4 798.5)">Research training and scholarship</text>
+<polyline points="905.4,994.9 724.9,847.1 708.3,833.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="704.8" y="830.6" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(39.32 704.8 830.6)">Advocacy and civil society</text>
+<polyline points="970.9,1103.7 681.9,904.2 664.3,892.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="660.6" y="889.4" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(34.62 660.6 889.4)">Voting and elections</text>
+<polyline points="875.5,1068.9 662.1,934.2 644.4,922.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="640.6" y="919.6" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(32.32 640.6 919.6)">Corruption and bribery</text>
+<polyline points="820.5,1046.7 654.9,945.8 639.3,930.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="635.5" y="927.9" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(31.70 635.5 927.9)">Rights and justice</text>
+<polyline points="933.6,1125.5 647.9,957.4 634.3,938.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="630.4" y="936.2" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(31.08 630.4 936.2)">Political discussion and ideology</text>
+<polyline points="880.9,1098.9 645.2,962.1 629.3,946.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="625.4" y="944.5" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(30.46 625.4 944.5)">Welfare and social protection</text>
+<polyline points="669.5,982.8 642.2,967.2 624.5,955.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="620.6" y="952.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(29.84 620.6 952.9)">Sociology and social research</text>
+<polyline points="915.2,1126.8 639.7,971.6 619.7,963.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="615.8" y="961.4" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(29.22 615.8 961.4)">Receiving income and transfers</text>
+<polyline points="851.0,1094.5 637.5,975.7 615.0,972.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="611.1" y="969.9" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(28.60 611.1 969.9)">Insurance and risk cover</text>
+<polyline points="673.9,1001.8 634.8,980.4 610.4,980.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="606.5" y="978.4" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(27.98 606.5 978.4)">Legal profession</text>
+<polyline points="694.4,1074.9 607.4,1034.8 588.0,1025.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="583.9" y="1024.0" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(24.74 583.9 1024.0)">Higher education</text>
+<polyline points="641.7,1112.2 584.2,1090.3 565.0,1080.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="560.8" y="1078.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(20.94 560.8 1078.9)">History and archaeology</text>
+<polyline points="611.9,1105.7 582.5,1094.7 561.6,1089.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="557.4" y="1088.0" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(20.32 557.4 1088.0)">Anthropology and cultural studies</text>
+<polyline points="641.5,1138.0 575.2,1115.1 554.9,1108.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="550.7" y="1106.7" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(19.05 550.7 1106.7)">Teaching profession</text>
+<polyline points="753.2,1194.4 568.4,1135.7 547.9,1129.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="543.6" y="1127.8" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(17.63 543.6 1127.8)">Journalism and reporting</text>
+<polyline points="729.5,1198.8 564.2,1149.2 543.7,1143.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="539.3" y="1141.8" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(16.70 539.3 1141.8)">Exams and assessment</text>
+<polyline points="746.9,1223.1 557.7,1171.9 538.7,1160.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="534.3" y="1159.2" font-size="10.5" fill="#6e5b20" text-anchor="end" dominant-baseline="middle" transform="rotate(15.55 534.3 1159.2)">Everyday digital tool use</text>
+<polyline points="688.2,1219.6 554.1,1185.6 536.1,1169.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="531.8" y="1168.6" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(14.93 531.8 1168.6)">Mediation and dispute resolution</text>
+<polyline points="757.8,1241.1 552.9,1190.5 533.7,1179.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="529.3" y="1178.0" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(14.31 529.3 1178.0)">Cheating and plagiarism</text>
+<polyline points="797.0,1254.5 551.7,1195.3 531.3,1188.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="527.0" y="1187.4" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(13.69 527.0 1187.4)">Misinformation and defamation</text>
+<polyline points="595.8,1210.9 550.5,1200.2 529.1,1197.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="524.7" y="1196.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(13.07 524.7 1196.9)">Linguistics and literary studies</text>
+<polyline points="662.2,1230.9 549.4,1205.1 527.0,1207.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="522.6" y="1206.3" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(12.45 522.6 1206.3)">Cybercrime</text>
+<polyline points="665.6,1241.9 546.9,1216.4 524.9,1216.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="520.5" y="1215.8" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(11.83 520.5 1215.8)">Teaching and tutoring</text>
+<polyline points="809.0,1280.9 544.5,1227.7 523.0,1226.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="518.6" y="1225.4" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(11.21 518.6 1225.4)">Fraud, scams and deception</text>
+<polyline points="792.7,1281.0 543.6,1232.2 521.2,1235.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="516.7" y="1234.9" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(10.59 516.7 1234.9)">News and information media</text>
+<polyline points="671.8,1277.5 539.5,1255.2 518.3,1251.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="513.9" y="1250.9" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(9.55 513.9 1250.9)">Self-directed learning</text>
+<polyline points="642.9,1296.9 535.3,1282.2 514.1,1279.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="509.7" y="1278.7" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(7.76 509.7 1278.7)">Language learning and use</text>
+<polyline points="739.1,1370.4 528.2,1360.9 506.8,1359.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="502.3" y="1359.7" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(2.57 502.3 1359.7)">School education</text>
+<polyline points="597.5,1433.6 528.1,1436.5 506.4,1429.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="501.9" y="1429.9" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(-1.91 501.9 1429.9)">Philosophical inquiry</text>
+<polyline points="574.8,1439.5 528.4,1441.7 506.8,1439.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="502.3" y="1439.6" font-size="10.5" fill="#476e20" text-anchor="end" dominant-baseline="middle" transform="rotate(-2.53 502.3 1439.6)">Arts, music and religion studies</text>
+<polyline points="641.3,1441.6 528.7,1447.7 507.3,1449.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="502.8" y="1449.3" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(-3.15 502.8 1449.3)">Media, publishing and creative professions</text>
+<polyline points="751.3,1440.0 529.0,1453.8 507.9,1458.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="503.4" y="1459.0" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-3.77 503.4 1459.0)">Social media and online communities</text>
+<polyline points="719.7,1449.5 529.7,1463.3 508.6,1468.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="504.1" y="1468.7" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-4.39 504.1 1468.7)">Saving and investing</text>
+<polyline points="702.7,1461.8 530.8,1477.1 509.4,1478.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="504.9" y="1478.4" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(-5.01 504.9 1478.4)">Literacy, numeracy and basic skills</text>
+<polyline points="817.3,1457.6 531.6,1485.9 510.2,1487.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="505.8" y="1488.1" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-5.63 505.8 1488.1)">Hate, discrimination and abuse of rights</text>
+<polyline points="811.3,1465.7 532.7,1496.8 511.3,1497.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="506.8" y="1497.8" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-6.25 506.8 1497.8)">Banking and payments</text>
+<polyline points="625.6,1502.3 534.9,1514.2 512.4,1506.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="507.9" y="1507.4" font-size="10.5" fill="#646e20" text-anchor="end" dominant-baseline="middle" transform="rotate(-6.87 507.9 1507.4)">Counselling, therapy and social work</text>
+<polyline points="837.7,1481.6 536.4,1525.3 513.6,1516.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="509.1" y="1517.1" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-7.49 509.1 1517.1)">Online harassment and bullying</text>
+<polyline points="755.5,1497.0 537.1,1529.9 514.9,1526.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="510.4" y="1526.7" font-size="10.5" fill="#296e20" text-anchor="end" dominant-baseline="middle" transform="rotate(-8.11 510.4 1526.7)">Inclusion and exclusion</text>
+<polyline points="821.3,1490.3 537.8,1534.5 516.3,1535.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="511.8" y="1536.3" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-8.73 511.8 1536.3)">Interpersonal conflict</text>
+<polyline points="761.9,1504.8 538.9,1541.4 517.8,1545.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="513.4" y="1546.0" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-9.35 513.4 1546.0)">Retirement</text>
+<polyline points="839.1,1496.7 540.0,1548.2 519.4,1554.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="515.0" y="1555.5" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-9.97 515.0 1555.5)">Reputation and gossip</text>
+<polyline points="710.9,1522.9 540.9,1553.3 521.2,1564.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="516.7" y="1565.1" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-10.59 516.7 1565.1)">Mentoring and peer support</text>
+<polyline points="824.0,1506.3 541.8,1558.3 523.0,1573.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="518.6" y="1574.7" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-11.21 518.6 1574.7)">Bullying and harassment offline</text>
+<polyline points="750.9,1524.1 542.9,1563.9 524.9,1583.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="520.5" y="1584.2" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-11.83 520.5 1584.2)">Self-reflection and personal growth</text>
+<polyline points="750.4,1546.2 548.7,1591.6 527.8,1596.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="523.4" y="1597.3" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-12.68 523.4 1597.3)">Creative writing</text>
+<polyline points="692.7,1588.8 556.9,1625.0 536.0,1629.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="531.6" y="1631.0" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-14.90 531.6 1631.0)">Religious community and clergy</text>
+<polyline points="778.0,1576.6 560.5,1638.3 538.5,1639.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="534.2" y="1640.4" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-15.52 534.2 1640.4)">Meaning, values and purpose</text>
+<polyline points="837.8,1564.3 562.4,1644.8 541.2,1648.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="536.8" y="1649.7" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-16.14 536.8 1649.7)">Apology and reconciliation</text>
+<polyline points="766.8,1589.1 563.9,1649.7 543.9,1657.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="539.6" y="1659.0" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-16.76 539.6 1659.0)">Ethics and moral decisions</text>
+<polyline points="839.8,1570.9 565.3,1654.6 546.7,1667.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="542.4" y="1668.3" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-17.38 542.4 1668.3)">Etiquette and social norms</text>
+<polyline points="856.6,1578.4 570.9,1672.2 550.5,1678.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="546.3" y="1680.2" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-18.17 546.3 1680.2)">Film, TV and video</text>
+<polyline points="817.8,1609.8 579.0,1695.8 557.1,1698.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="552.9" y="1699.6" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-19.48 552.9 1699.6)">Video and online gaming</text>
+<polyline points="851.6,1605.6 582.9,1706.3 560.4,1707.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="556.1" y="1708.7" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-20.10 556.1 1708.7)">Youth and peer culture</text>
+<polyline points="852.7,1608.5 584.5,1710.6 563.7,1716.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="559.5" y="1717.8" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-20.72 559.5 1717.8)">Loneliness and social isolation</text>
+<polyline points="797.0,1633.4 586.2,1715.0 567.2,1725.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="563.0" y="1726.9" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-21.34 563.0 1726.9)">Culture and identity</text>
+<polyline points="799.8,1640.5 590.0,1724.6 570.8,1734.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="566.6" y="1736.0" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-21.96 566.6 1736.0)">Religious worship and practice</text>
+<polyline points="889.9,1612.7 594.5,1735.8 574.4,1743.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="570.3" y="1745.0" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-22.58 570.3 1745.0)">Everyday conversation and messaging</text>
+<polyline points="778.9,1664.6 597.2,1742.0 578.2,1752.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="574.1" y="1753.9" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-23.20 574.1 1753.9)">Separation and divorce</text>
+<polyline points="793.5,1662.5 599.1,1746.6 582.1,1761.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="578.0" y="1762.8" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-23.82 578.0 1762.8)">Identity and life change</text>
+<polyline points="861.9,1642.9 604.6,1759.0 586.0,1769.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="581.9" y="1771.7" font-size="10.5" fill="#6e205b" text-anchor="end" dominant-baseline="middle" transform="rotate(-24.44 581.9 1771.7)">Counselling and therapy</text>
+<polyline points="802.5,1689.9 614.9,1780.9 595.6,1790.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="591.6" y="1792.3" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-25.88 591.6 1792.3)">Personal financial decisions</text>
+<polyline points="836.0,1686.0 621.7,1794.6 602.6,1804.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="598.6" y="1806.3" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-26.88 598.6 1806.3)">Coming of age and graduation</text>
+<polyline points="869.8,1687.7 633.0,1816.2 614.2,1826.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="610.3" y="1828.6" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-28.49 610.3 1828.6)">Reading</text>
+<polyline points="909.0,1693.3 650.8,1847.5 632.4,1858.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="628.6" y="1860.8" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-30.85 628.6 1860.8)">Listening to music</text>
+<polyline points="868.7,1735.3 662.0,1865.7 643.5,1876.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="639.7" y="1878.9" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-32.20 639.7 1878.9)">Borrowing and debt</text>
+<polyline points="908.3,1718.2 667.4,1874.1 648.7,1884.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="644.9" y="1887.1" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-32.82 644.9 1887.1)">Friendship</text>
+<polyline points="835.8,1770.7 670.7,1879.2 654.0,1892.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="650.2" y="1895.2" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-33.44 650.2 1895.2)">Spirituality and meditation</text>
+<polyline points="915.4,1729.0 678.0,1890.1 660.3,1902.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="656.6" y="1904.7" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-34.17 656.6 1904.7)">Clubs and community groups</text>
+<polyline points="881.9,1762.6 685.0,1900.3 666.3,1910.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="662.6" y="1913.5" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-34.85 662.6 1913.5)">Rites of passage</text>
+<polyline points="895.7,1757.5 688.1,1904.7 671.9,1918.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="668.2" y="1921.4" font-size="10.5" fill="#206e51" text-anchor="end" dominant-baseline="middle" transform="rotate(-35.47 668.2 1921.4)">Folk belief and superstition</text>
+<polyline points="822.7,1844.3 708.4,1932.2 691.5,1945.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="687.9" y="1948.0" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-37.58 687.9 1948.0)">Making music</text>
+<polyline points="936.7,1786.3 729.8,1958.9 713.2,1972.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="709.7" y="1975.3" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-39.81 709.7 1975.3)">Gambling and betting</text>
+<polyline points="936.0,1795.1 735.6,1965.7 719.4,1979.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="716.0" y="1982.7" font-size="10.5" fill="#6e205b" text-anchor="end" dominant-baseline="middle" transform="rotate(-40.43 716.0 1982.7)">Mental health and wellbeing</text>
+<polyline points="854.1,1882.4 746.1,1977.8 730.0,1992.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="726.6" y="1995.0" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-41.46 726.6 1995.0)">Visual arts and design</text>
+<polyline points="966.4,1793.6 753.9,1986.5 738.0,2000.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="734.7" y="2003.9" font-size="10.5" fill="#64206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-42.23 734.7 2003.9)">Stalking and privacy violation</text>
+<polyline points="1032.6,1766.4 782.1,2016.2 766.9,2031.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="763.8" y="2034.5" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-44.92 763.8 2034.5)">Family relations</text>
+<polyline points="1065.0,1768.7 813.1,2045.8 798.3,2061.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="795.3" y="2064.6" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-47.70 795.3 2064.6)">Wedding and partnership formation</text>
+<polyline points="1054.7,1787.4 819.3,2051.4 805.5,2067.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="802.5" y="2071.1" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-48.32 802.5 2071.1)">Marriage and cohabitation</text>
+<polyline points="922.9,1950.5 828.5,2059.5 814.5,2075.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="811.5" y="2079.1" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-49.09 811.5 2079.1)">Theatre, dance and performance</text>
+<polyline points="1102.6,1799.6 879.0,2100.1 866.3,2117.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="863.6" y="2120.9" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-53.35 863.6 2120.9)">Family occasions and traditions</text>
+<polyline points="1074.9,1906.7 928.8,2134.5 917.2,2152.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="914.8" y="2156.3" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-57.32 914.8 2156.3)">Parenting adolescents</text>
+<polyline points="1117.7,1913.1 979.3,2164.6 969.0,2183.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="966.8" y="2187.3" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-61.18 966.8 2187.3)">Neighbours and local community</text>
+<polyline points="1145.8,1945.9 1031.7,2191.1 1022.6,2210.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1020.7" y="2214.6" font-size="10.5" fill="#47206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-65.03 1020.7 2214.6)">Dating and romantic partnership</text>
+<polyline points="1160.3,1953.5 1053.3,2200.8 1044.8,2220.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1043.0" y="2224.6" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-66.59 1043.0 2224.6)">Museums, heritage and cultural visits</text>
+<polyline points="1163.7,1986.6 1074.0,2209.5 1066.0,2229.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1064.3" y="2233.5" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-68.06 1064.3 2233.5)">Bereavement and grief</text>
+<polyline points="1207.1,1917.9 1095.4,2217.8 1088.0,2237.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1086.4" y="2242.1" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-69.57 1086.4 2242.1)">Socialising and visiting</text>
+<polyline points="1230.4,1960.6 1147.3,2235.3 1141.1,2255.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1139.8" y="2260.1" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-73.17 1139.8 2260.1)">Celebrations and festivals</text>
+<polyline points="1219.1,2129.2 1189.9,2247.0 1184.8,2267.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1183.7" y="2272.1" font-size="10.5" fill="#206e33" text-anchor="end" dominant-baseline="middle" transform="rotate(-76.07 1183.7 2272.1)">Early childhood education</text>
+<polyline points="1281.1,1990.3 1227.6,2255.4 1223.4,2276.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1222.5" y="2280.9" font-size="10.5" fill="#206e6e" text-anchor="end" dominant-baseline="middle" transform="rotate(-78.61 1222.5 2280.9)">Charity and giving</text>
+<polyline points="1307.2,1966.9 1259.1,2261.2 1253.2,2281.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1252.5" y="2286.4" font-size="10.5" fill="#20516e" text-anchor="end" dominant-baseline="middle" transform="rotate(-80.55 1252.5 2286.4)">Poverty and scarcity</text>
+<polyline points="1297.6,2052.9 1264.8,2262.1 1262.8,2283.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1262.1" y="2287.9" font-size="10.5" fill="#29206e" text-anchor="end" dominant-baseline="middle" transform="rotate(-81.17 1262.1 2287.9)">Funerals and memorial</text>
+<polyline points="1313.1,1996.9 1274.3,2263.5 1272.3,2284.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1271.7" y="2289.4" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-81.79 1271.7 2289.4)">Games and play</text>
+<polyline points="1372.1,2002.6 1359.7,2271.7 1358.7,2293.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1358.5" y="2297.6" font-size="10.5" fill="#20336e" text-anchor="end" dominant-baseline="middle" transform="rotate(-87.35 1358.5 2297.6)">Events, concerts and festivals</text>
+<polyline points="1427.2,1985.1 1440.6,2271.7 1440.7,2293.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1440.9" y="2297.6" font-size="10.5" fill="#206e6e" text-anchor="start" dominant-baseline="middle" transform="rotate(-272.61 1440.9 2297.6)">Gift-giving and exchange</text>
+<polyline points="1433.3,2001.3 1448.3,2271.3 1450.4,2292.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1450.6" y="2297.1" font-size="10.5" fill="#206e6e" text-anchor="start" dominant-baseline="middle" transform="rotate(-273.23 1450.6 2297.1)">Volunteering</text>
+<polyline points="1447.0,2026.5 1465.3,2270.2 1466.9,2291.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1467.2" y="2296.0" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-274.29 1467.2 2296.0)">Household budgeting</text>
+<polyline points="1454.7,2000.4 1479.2,2269.0 1481.1,2290.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1481.5" y="2294.9" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-275.21 1481.5 2294.9)">Self-harm and suicide</text>
+<polyline points="1465.0,2015.3 1491.7,2267.8 1493.9,2289.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1494.4" y="2293.6" font-size="10.5" fill="#206e6e" text-anchor="start" dominant-baseline="middle" transform="rotate(-276.03 1494.4 2293.6)">Hosting and hospitality</text>
+<polyline points="1493.3,1993.1 1535.6,2262.0 1539.0,2283.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1539.7" y="2287.6" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-278.94 1539.7 2287.6)">Household management</text>
+<polyline points="1513.6,1960.5 1573.4,2255.2 1577.6,2276.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1578.5" y="2280.6" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-281.46 1578.5 2280.6)">Children&#x27;s play</text>
+<polyline points="1536.2,1969.6 1603.0,2248.7 1608.0,2269.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1609.0" y="2273.9" font-size="10.5" fill="#206e6e" text-anchor="start" dominant-baseline="middle" transform="rotate(-283.45 1609.0 2273.9)">Helping others informally</text>
+<polyline points="1559.4,1981.8 1630.5,2241.6 1626.1,2265.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1627.2" y="2269.4" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-284.65 1627.2 2269.4)">Nightlife and entertainment venues</text>
+<polyline points="1543.6,1913.5 1635.0,2240.4 1635.4,2262.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1636.6" y="2266.9" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-285.27 1636.6 2266.9)">Sexuality and sex</text>
+<polyline points="1589.2,2062.9 1639.5,2239.1 1644.7,2259.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1646.0" y="2264.2" font-size="10.5" fill="#29206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-285.89 1646.0 2264.2)">Dying and death</text>
+<polyline points="1573.4,1995.6 1643.9,2237.9 1654.0,2257.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1655.3" y="2261.5" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-286.51 1655.3 2261.5)">Domestic and partner abuse</text>
+<polyline points="1576.5,1994.6 1648.3,2236.6 1663.3,2254.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1664.6" y="2258.7" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-287.13 1664.6 2258.7)">Child abuse and neglect</text>
+<polyline points="1569.0,1934.4 1663.1,2232.0 1672.5,2251.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1673.9" y="2255.8" font-size="10.5" fill="#47206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-287.75 1673.9 2255.8)">Parenting young children</text>
+<polyline points="1571.8,1911.6 1677.8,2227.2 1682.3,2248.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1683.7" y="2252.6" font-size="10.5" fill="#47206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-288.40 1683.7 2252.6)">Childcare by others</text>
+<polyline points="1594.9,1970.5 1682.2,2225.8 1691.4,2245.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1692.9" y="2249.5" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-289.02 1692.9 2249.5)">Substance use</text>
+<polyline points="1634.9,2056.4 1694.0,2221.6 1701.3,2241.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1702.8" y="2246.0" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-289.69 1702.8 2246.0)">Crafts and hobbies</text>
+<polyline points="1666.1,2108.6 1706.8,2216.9 1710.7,2238.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1712.3" y="2242.6" font-size="10.5" fill="#6e5b20" text-anchor="start" dominant-baseline="middle" transform="rotate(-290.34 1712.3 2242.6)">Making and tinkering</text>
+<polyline points="1605.8,1933.6 1714.1,2214.2 1719.8,2234.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1721.4" y="2239.1" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-290.96 1721.4 2239.1)">Watching sport</text>
+<polyline points="1647.8,2027.9 1720.4,2211.7 1728.8,2231.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1730.4" y="2235.6" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-291.58 1730.4 2235.6)">Traditional and alternative healing</text>
+<polyline points="1630.8,1975.8 1724.7,2210.0 1737.8,2227.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1739.5" y="2232.0" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-292.20 1739.5 2232.0)">Sexual violence and abuse</text>
+<polyline points="1652.1,1996.5 1739.7,2203.8 1748.0,2223.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1749.7" y="2227.7" font-size="10.5" fill="#47206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-292.91 1749.7 2227.7)">Care of older people</text>
+<polyline points="1601.1,1852.3 1754.5,2197.4 1763.2,2217.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1765.1" y="2221.1" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-293.97 1765.1 2221.1)">Sleep and rest</text>
+<polyline points="1675.2,2000.8 1763.4,2193.4 1772.3,2212.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1774.2" y="2216.9" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-294.61 1774.2 2216.9)">Serious illness and diagnosis</text>
+<polyline points="1656.7,1942.7 1773.1,2188.9 1782.3,2208.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1784.2" y="2212.3" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-295.31 1784.2 2212.3)">Home organisation and decor</text>
+<polyline points="1703.2,2002.4 1792.3,2179.5 1802.0,2198.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1804.0" y="2202.6" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-296.72 1804.0 2202.6)">Home repair and DIY</text>
+<polyline points="1660.3,1887.0 1811.4,2169.6 1821.5,2188.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1823.6" y="2192.4" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-298.13 1823.6 2192.4)">Ageing</text>
+<polyline points="1721.5,1977.4 1824.6,2162.4 1835.0,2181.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1837.2" y="2185.0" font-size="10.5" fill="#47206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-299.11 1837.2 2185.0)">Childbirth and having a baby</text>
+<polyline points="1673.2,1871.4 1837.6,2155.0 1844.7,2175.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1846.9" y="2179.5" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-299.82 1846.9 2179.5)">Cleaning and laundry</text>
+<polyline points="1700.4,1910.6 1842.5,2152.2 1853.0,2170.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1855.3" y="2174.7" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-300.44 1855.3 2174.7)">Personal appearance</text>
+<polyline points="1750.3,1988.4 1846.4,2149.8 1861.3,2165.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1863.7" y="2169.7" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-301.06 1863.7 2169.7)">Disability and adaptation</text>
+<polyline points="1738.6,1929.6 1870.0,2135.2 1881.6,2153.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1884.0" y="2157.1" font-size="10.5" fill="#47206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-302.59 1884.0 2157.1)">Care of the ill or disabled</text>
+<polyline points="1815.0,1940.6 1931.4,2092.2 1944.4,2109.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1947.2" y="2112.7" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-307.51 1947.2 2112.7)">Playing sport</text>
+<polyline points="1724.2,1774.0 1971.6,2059.4 1983.7,2077.2" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1986.7" y="2080.6" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-310.76 1986.7 2080.6)">Hygiene and grooming</text>
+<polyline points="1801.6,1858.4 1975.1,2056.4 1991.0,2070.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="1994.0" y="2074.2" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-311.38 1994.0 2074.2)">Reproduction and fertility</text>
+<polyline points="1807.8,1852.9 1983.9,2048.5 1998.2,2064.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2001.3" y="2067.8" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-312.00 2001.3 2067.8)">Pregnancy and prenatal care</text>
+<polyline points="1751.1,1775.6 1995.9,2037.5 2010.4,2053.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2013.5" y="2056.5" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-313.06 2013.5 2056.5)">Eating and drinking</text>
+<polyline points="1781.3,1799.5 2002.5,2031.2 2017.4,2046.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2020.5" y="2049.9" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-313.68 2020.5 2049.9)">Medication and treatment adherence</text>
+<polyline points="1848.6,1783.8 2063.1,1967.3 2079.3,1981.3" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2082.7" y="1984.2" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-319.45 2082.7 1984.2)">Physical health and illness</text>
+<polyline points="1903.2,1708.8 2143.8,1856.4 2162.0,1867.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2165.9" y="1870.0" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-328.46 2165.9 1870.0)">Exercise and fitness</text>
+<polyline points="1907.4,1618.0 2201.7,1744.6 2221.4,1753.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2225.6" y="1754.8" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-336.74 2225.6 1754.8)">Medical care</text>
+<polyline points="1993.0,1577.0 2236.2,1649.5 2256.7,1655.7" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2261.0" y="1657.0" font-size="10.5" fill="#20336e" text-anchor="start" dominant-baseline="middle" transform="rotate(-343.38 2261.0 1657.0)">Outdoor recreation</text>
+<polyline points="1968.6,1548.0 2244.5,1619.8 2264.2,1629.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2268.5" y="1630.3" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-345.15 2268.5 1630.3)">Dining out and accommodation services</text>
+<polyline points="1954.5,1539.8 2246.2,1613.3 2266.6,1619.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2271.0" y="1620.9" font-size="10.5" fill="#646e20" text-anchor="start" dominant-baseline="middle" transform="rotate(-345.77 2271.0 1620.9)">Personal and domestic services work</text>
+<polyline points="2033.8,1552.1 2248.6,1603.6 2269.0,1610.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2273.3" y="1611.4" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-346.39 2273.3 1611.4)">Second-hand, repair and reuse</text>
+<polyline points="1942.6,1523.8 2250.8,1594.2 2271.2,1601.0" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2275.6" y="1602.0" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-347.01 2275.6 1602.0)">Clothing and footwear</text>
+<polyline points="1988.6,1530.7 2251.9,1589.2 2273.3,1591.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2277.7" y="1592.5" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-347.63 2277.7 1592.5)">Negligence and recklessness</text>
+<polyline points="1955.4,1520.0 2253.0,1584.3 2275.3,1582.1" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2279.7" y="1583.0" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-348.25 2279.7 1583.0)">Violence and assault</text>
+<polyline points="2043.7,1526.0 2256.4,1567.7 2277.4,1571.8" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2281.8" y="1572.7" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-348.92 2281.8 1572.7)">Cooking and food preparation</text>
+<polyline points="1982.1,1498.7 2260.4,1545.9 2281.5,1549.4" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2285.9" y="1550.2" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-350.38 2285.9 1550.2)">Nutrition and diet</text>
+<polyline points="1978.4,1491.4 2262.0,1536.1 2283.1,1539.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2287.6" y="1540.2" font-size="10.5" fill="#64206e" text-anchor="start" dominant-baseline="middle" transform="rotate(-351.02 2287.6 1540.2)">Theft and property crime</text>
+<polyline points="2045.4,1490.9 2264.1,1521.6 2285.3,1524.6" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2289.8" y="1525.3" font-size="10.5" fill="#6e203d" text-anchor="start" dominant-baseline="middle" transform="rotate(-351.99 2289.8 1525.3)">Home gardening</text>
+<polyline points="1952.5,1466.3 2266.4,1504.0 2287.7,1506.5" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2292.2" y="1507.1" font-size="10.5" fill="#20516e" text-anchor="start" dominant-baseline="middle" transform="rotate(-353.16 2292.2 1507.1)">Buying food and groceries</text>
+<polyline points="1952.2,1406.1 2272.6,1409.7 2294.0,1409.9" fill="none" stroke="#c9c3b8" stroke-width="0.6"/>
+<text x="2298.5" y="1409.9" font-size="10.5" fill="#6e205b" text-anchor="start" dominant-baseline="middle" transform="rotate(-359.37 2298.5 1409.9)">Preventive health</text>
+<text x="2678.0" y="1400.0" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" dominant-baseline="middle">TANGIBLE  →</text>
+<text x="1400.0" y="95.0" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" dominant-baseline="middle">GLOBAL / PROFESSIONAL</text>
+<text x="122.0" y="1400.0" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" dominant-baseline="middle">←  ABSTRACT</text>
+<text x="1400.0" y="2705.0" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" dominant-baseline="middle">PERSONAL / SOCIAL</text>
+<text x="40" y="50" font-size="26" fill="#3a352e">Life Image coarse layout, basemap layout_sim_v0 (simulated placement)</text>
+<text x="40" y="82" font-size="15" fill="#7a7266">16 sectors (inner ring) and 247 fields. Angle: polar force simulation (axes as a weak prior, attraction along links, repulsion). Radial band: judged advanced/specialised score (dashed rings at 0.25 steps). Width: domain pressure (synthetic sample, provisional). Colour: main sector.</text>
+</svg>

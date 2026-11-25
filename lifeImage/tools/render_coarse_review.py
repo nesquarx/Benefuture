@@ -65,8 +65,18 @@ def spread(items):
     return {i: x % 360 for x, (_, i) in zip(a, items)}
 
 
-def build():
-    bm = json.loads((ROOT / "data/images/v2/basemap.json").read_text())
+def sim_basemap():
+    """The simulation's layout (data/coarse/layout_sim_v0.json) tiled by the basemap build, in basemap.json's shape."""
+    sys.path.insert(0, str(ROOT))
+    from lifeimage import layout_sim
+    res = json.loads((ROOT / "data/coarse/layout_sim_v0.json").read_text())
+    sl = layout_sim.tiled_slices(res)
+    return {"version": f"{res['version']} (simulated placement)",
+            "slices": {i: {"ring": s.ring, "start": s.start, "width": s.width, "r0": s.r0, "r1": s.r1} for i, s in sl.items()}}
+
+
+def build(sim=False):
+    bm = sim_basemap() if sim else json.loads((ROOT / "data/images/v2/basemap.json").read_text())
     cards = [json.loads(l) for l in (ROOT / "data/coarse/seed_v3.jsonl").read_text().splitlines() if l.strip()]
     by = {c["id"]: c for c in cards}
     sl = bm["slices"]
@@ -123,8 +133,9 @@ def build():
         out.append(f'<text x="{x:.1f}" y="{y:.1f}" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" '
                    f'dominant-baseline="middle">{name}</text>')
     out.append(f'<text x="40" y="50" font-size="26" fill="#3a352e">Life Image coarse layout, basemap {escape(str(bm.get("version")))}</text>')
+    how = "polar force simulation (axes as a weak prior, attraction along links, repulsion)" if sim else "judged axes"
     out.append(f'<text x="40" y="82" font-size="15" fill="#7a7266">{len(sectors)} sectors (inner ring) and {len(fields)} fields. '
-               'Angle: judged axes. Radial band: judged advanced/specialised score (dashed rings at 0.25 steps). '
+               f'Angle: {how}. Radial band: judged advanced/specialised score (dashed rings at 0.25 steps). '
                'Width: domain pressure (synthetic sample, provisional). Colour: main sector.</text>')
     out.append('</svg>')
     return "\n".join(out), len(sectors), len(fields)
@@ -133,17 +144,19 @@ def build():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--png", action="store_true")
+    ap.add_argument("--layout-sim", action="store_true", help="take angles from data/coarse/layout_sim_v0.json")
     args = ap.parse_args()
-    svg, ns, nf = build()
+    svg, ns, nf = build(args.layout_sim)
+    name = "coarse_layout_sim" if args.layout_sim else "coarse_layout"
     d = ROOT / "data/images/review"; d.mkdir(parents=True, exist_ok=True)
-    p = d / "coarse_layout.svg"; p.write_text(svg)
+    p = d / f"{name}.svg"; p.write_text(svg)
     print(f"{p}: {ns} sectors, {nf} fields")
     if args.png:
         js = (f"const {{chromium}}=require('playwright');(async()=>{{const b=await chromium.launch();"
               f"const pg=await b.newPage({{viewport:{{width:{SIZE},height:{SIZE}}},deviceScaleFactor:1}});"
-              f"await pg.goto('file://{p}');await pg.screenshot({{path:'{d / 'coarse_layout.png'}'}});await b.close();}})();")
+              f"await pg.goto('file://{p}');await pg.screenshot({{path:'{d / f'{name}.png'}'}});await b.close();}})();")
         subprocess.run(["node", "-e", js], check=True)
-        print(d / "coarse_layout.png")
+        print(d / f"{name}.png")
 
 
 if __name__ == "__main__":
