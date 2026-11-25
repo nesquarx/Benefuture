@@ -60,6 +60,12 @@ deleted. Numbering is stable (LI.n).
   version (AI, mRNA widening); stability is gradual change, not frozen angles. DESIGN.
 - **LI.26** (2026-11-20, refined 2026-11-21) Radius from complexity, difficulty and specificity; impact is colour
   intensity, not radius; a net new achievement gets a notch. DESIGN.
+- **LI.55** (2026-11-25; refines LI.24, LI.25) Adjacent domains keep thematic similarity as far as possible; perfect
+  gradation is not expected, but outliers that muddy the picture are fixed (seen in the coarse review: arts and
+  religion beside mathematics and statistics, finding and securing housing among agriculture). Placement is settled
+  by a physics simulation: polar springs to the judged axes' angles and radius, attraction along overlaps, upstream
+  links and learnt co-membership, nearness, and repulsion keeping slices apart; the map sorts itself and the result is
+  measured before adoption. DESIGN, PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
