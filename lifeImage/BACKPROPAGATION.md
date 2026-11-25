@@ -37,6 +37,15 @@ deleted. Numbering is stable (LI.n).
   three allow commercial use, modification and redistribution without fees; ISCO and ESCO require attribution, carried
   in `ATTRIBUTION.md` and with every release of the basemap. Candidate files built earlier keep the status recorded at
   build time; the next pool build carries `verified`. `lifeimage/fine/sources.py`.
+- **LI.56** (2026-11-25; extends LI.17, LI.19) Further licences confirmed by the author. US public domain (17 U.S.C.
+  105; no attribution required, credited as best practice; no implied endorsement): LCSH (Library of Congress), NIBRS
+  offence codes (FBI), NAICS (Census/OMB), BLS Consumer Expenditure and CPI categories, and the BLS R-COICOP
+  concordance. Princeton WordNet: WordNet 3.0 licence, commercial use allowed, verbatim copyright notice and disclaimer
+  kept in every copy (Open English WordNet, CC BY 4.0, is an alternative). EuroVoc: CC BY 4.0 (some linked-data
+  releases CC0); credit the Publications Office of the EU. COICOP itself: UN copyright, all rights reserved, so it is
+  treated like ICATUS (internal calibration only, LI.19) and consumption domains come from the BLS R-COICOP
+  concordance instead. Still open: MeSH terms and ShareAlike sources (UNESCO Thesaurus, schema.org).
+  `lifeimage/fine/sources.py`, `ATTRIBUTION.md`.
 - **LI.18** (2026-11-25) Publishable means the whole library at v1.0: the API contract, the basemap data release,
   the viewers (LI.52, LI.53) and the Benefuture bridge together, not the basemap alone. PLAN.
 - **LI.19** (2026-11-25; amends LI.17, LI.15) ICATUS is used only for internal calibration (a local benchmark,
