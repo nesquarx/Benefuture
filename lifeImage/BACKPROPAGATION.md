@@ -96,6 +96,10 @@ deleted. Numbering is stable (LI.n).
   compare it with each field's layout neighbours, rank the fields with the most mismatch, find the position where each has
   the most matches, then a runner validates the move by seeing the current and suggested placement with both neighbour sets.
   PLAN.
+- **LI.61** (2026-11-25; author, scopes LI.57) Datasets used to generate synthetic events are calibration only and never
+  shipped: the library consumes events either preformatted or categorised by an agent. The shipping licence rule (LI.57)
+  does not bind them; their terms need only allow internal research use. Data constraints still hold (anonymised or
+  synthetic, no identities kept except public figures, no real underage people identified). PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
