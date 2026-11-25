@@ -81,6 +81,10 @@ deleted. Numbering is stable (LI.n).
   by a physics simulation: polar springs to the judged axes' angles and radius, attraction along overlaps, upstream
   links and learnt co-membership, nearness, and repulsion keeping slices apart; the map sorts itself and the result is
   measured before adoption. DESIGN, PLAN.
+- **LI.58** (2026-11-25; refines LI.55) In the layout simulation the angular spring is loose and the distance
+  spring stricter. Angles settle first without collision; collision then turns on for an effective tessellation.
+  Once tuned, the simulation becomes the de facto method of updating the basemap (each version starting from the
+  previous layout as its prior). DESIGN, PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
