@@ -35,7 +35,7 @@ def get_wikidata():
         r2, _, e2 = gap.fetch_wikidata_gap_api(fetch, roots={f: gap2.WIKIDATA_ROOTS[f] for f in fields}, cap=gap2.CAP)
         rows = [r for r in rows if r["target"] not in fields] + r2
         errors = [e for e in errors if "root" not in e] + e2
-    rows = [r for r in rows if r["label"] not in gap2.SKIP_LABELS]
+    rows = [r for r in rows if r["label"].lower() not in gap2.SKIP_LABELS]
     return rows, gap.API, {"method": "MediaWiki API, root and direct subclasses, first 100 per root", "errors": errors[:10], "error_count": len(errors)}
 
 

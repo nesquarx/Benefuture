@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from lifeimage.fine import gap2  # noqa: E402
 from lifeimage.fine.pool import build_pool, new_candidates, write_pool  # noqa: E402
 from lifeimage.fine.sources import read_jsonl  # noqa: E402
 
@@ -58,7 +59,7 @@ def gap2_only(coarse):
         f = FINE / "sources" / "gap2" / f"{name}.jsonl"
         if f.exists():
             present.append(name)
-            rows += [dict(r, source=name, kind="topic") for r in read_jsonl(f)]
+            rows += [dict(r, source=name, kind="topic") for r in read_jsonl(f) if r["label"].lower() not in gap2.SKIP_LABELS]
     cands, rep = new_candidates(rows, existing, coarse, source="wikidata", order=present)
     write_pool(cands, FINE / "candidates_gap2_v0.jsonl")
     rep["sources"] = present

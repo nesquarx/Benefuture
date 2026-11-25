@@ -13,6 +13,7 @@ Prediction (lead): all nine >= 8; < 200 candidates; <= 6 batch files; confidence
   fine_build_batches --set gap2, fine_apply SETS gains gap2.
 
 ## Done
+Targets updated per lead: counselling_therapy replaces therapy_social_work. gap2.py, fine_gap2_fetch.py, pool/batch/apply wiring written; first fetch gave 189 cands, curating (SKIP_LABELS) and adding roots for weak fields; refetch running (log /tmp/claude-0/gap2fetch.log).
 (nothing yet)
 
 ## Next
