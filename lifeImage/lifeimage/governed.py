@@ -69,15 +69,15 @@ GOVERNED = {
                   "cannot drag a field across the circle alone while several can; assumption (about the width of a sector's arc).",
     },
     "layout_sim.shift_budget": {
-        "default": 100.0,
+        "default": 300.0,
         "source": "LI.55 / LI.58: the shift (degrees from the prior angle) the median field's full attraction may cause. The angular spring is "
-                  "weak by ruling (do not constrain angle too much): the prior is the stability term (LI.25) but may give way by about a quarter "
-                  "circle; the radius, judged on its own scale, is held much harder (k_radial).",
+                  "weak by ruling (do not constrain angle too much): the prior is the stability term (LI.25) but may give way far (the budget "
+                  "exceeds the shift_max guard, which bounds it in practice); a first run at 100 (k_polar 0.3) is kept in the predictions addendum; the radius, judged on its own scale, is held much harder (k_radial).",
     },
     "layout_sim.k_polar": {
-        "default": 0.3,
+        "default": 0.1,
         "source": "LI.58: stiffness of the weak angular spring to the prior angle (the axes angle, later the previous layout), relative to the median "
-                  "field's total attraction (normalised to 1). Derived: pull_cap / shift_budget = 30 / 100, so a field pulled at saturation by the "
+                  "field's total attraction (normalised to 1). Derived: pull_cap / shift_budget = 30 / 300, so a field pulled at saturation by the "
                   "median total attraction settles at the budget. This is the stability term of LI.25; the stability metrics show the drift it allows.",
     },
     "layout_sim.shift_max": {
