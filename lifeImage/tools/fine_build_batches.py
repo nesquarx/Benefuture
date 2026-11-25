@@ -25,7 +25,7 @@ def main(argv=None):
     ap.add_argument("--k", type=int, default=3)
     ap.add_argument("--out", default=ROOT / "data/batches")
     ap.add_argument("--candidates", default=ROOT / "data/fine/candidates_v0.jsonl")
-    ap.add_argument("--set", choices=["atus", "gap"], help="build the batches of a further candidate set (2 variants, tagged files)")
+    ap.add_argument("--set", choices=["atus", "gap", "gap2"], help="build the batches of a further candidate set (2 variants, tagged files)")
     ap.add_argument("--coarse", default=ROOT / "data/coarse/seed_v2.jsonl")
     a = ap.parse_args(argv)
     if a.set:  # only the new candidates: data/fine/candidates_<set>_v0.jsonl, 2 variants

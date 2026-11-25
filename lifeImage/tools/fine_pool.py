@@ -49,10 +49,29 @@ def gap_only(coarse):
     print(f"gap: raw {rep['raw']}, new candidates {len(cands)}, merged {rep['merged']}, dropped {len(rep['dropped'])}; sources {present}")
 
 
+def gap2_only(coarse):
+    """Candidates of the second gap set (`data/fine/candidates_gap2_v0.jsonl`) from data/fine/sources/gap2/, against the
+    committed first, ATUS and gap pools, which stay untouched."""
+    existing = [c for n in ("candidates_v0", "candidates_atus_v0", "candidates_gap_v0") for c in read_jsonl(FINE / f"{n}.jsonl")]
+    rows, present = [], []
+    for name in GAP_SOURCES:
+        f = FINE / "sources" / "gap2" / f"{name}.jsonl"
+        if f.exists():
+            present.append(name)
+            rows += [dict(r, source=name, kind="topic") for r in read_jsonl(f)]
+    cands, rep = new_candidates(rows, existing, coarse, source="wikidata", order=present)
+    write_pool(cands, FINE / "candidates_gap2_v0.jsonl")
+    rep["sources"] = present
+    (FINE / "gap2_pool_report.json").write_text(json.dumps(rep, indent=1, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"gap2: raw {rep['raw']}, new candidates {len(cands)}, merged {rep['merged']}, dropped {len(rep['dropped'])}; sources {present}")
+
+
 def main(argv=None):
     coarse = read_jsonl(ROOT / "data/coarse/seed_v2.jsonl")
     if argv is None:
         argv = sys.argv[1:]
+    if "--gap2-only" in argv:
+        return gap2_only(coarse)
     if "--gap-only" in argv:
         return gap_only(coarse)
     if "--atus-only" in argv:

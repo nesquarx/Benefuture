@@ -1,0 +1,54 @@
+{"aliases": [], "broader": "Psychotherapy", "code": "sh85013878", "depth": 1, "descendants": 0, "description": "", "label": "Bibliotherapy", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Psychotherapy", "code": "sh85078141", "depth": 1, "descendants": 0, "description": "", "label": "Logotherapy", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Counseling", "code": "sh95001844", "depth": 1, "descendants": 0, "description": "", "label": "Mentoring", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Psychotherapy", "code": "sh85089802", "depth": 1, "descendants": 0, "description": "", "label": "Narcotherapy", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Psychotherapy", "code": "sh86004895", "depth": 1, "descendants": 0, "description": "", "label": "Psychosynthesis", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Psychotherapy", "code": "sh85000972", "depth": 1, "descendants": 0, "description": "", "label": "Adolescent psychotherapy", "target": "counselling_therapy"}
+{"aliases": [], "broader": "Data protection", "code": "sh90001862", "depth": 1, "descendants": 0, "description": "", "label": "Computer security", "target": "cybersecurity"}
+{"aliases": [], "broader": "Data protection", "code": "sj2021059061", "depth": 1, "descendants": 0, "description": "", "label": "Computer security", "target": "cybersecurity"}
+{"aliases": [], "broader": "Computer security", "code": "sh90005677", "depth": 1, "descendants": 0, "description": "", "label": "Database security", "target": "cybersecurity"}
+{"aliases": [], "broader": "Computer security", "code": "sh2009002990", "depth": 1, "descendants": 0, "description": "", "label": "CAPTCHA (Challenge-response test)", "target": "cybersecurity"}
+{"aliases": [], "broader": "Computer security", "code": "sh2005007675", "depth": 1, "descendants": 0, "description": "", "label": "Anomaly detection (Computer security)", "target": "cybersecurity"}
+{"aliases": [], "broader": "Computer security", "code": "sh2011005959", "depth": 1, "descendants": 0, "description": "", "label": "Cyber intelligence (Computer security)", "target": "cybersecurity"}
+{"aliases": [], "broader": "Pollution", "code": "sh85002389", "depth": 1, "descendants": 0, "description": "", "label": "Agricultural pollution", "target": "environmental_harm"}
+{"aliases": [], "broader": "Pollution", "code": "sh88002267", "depth": 1, "descendants": 0, "description": "", "label": "Chemical spills", "target": "environmental_harm"}
+{"aliases": [], "broader": "Environmental degradation", "code": "sh99002839", "depth": 1, "descendants": 0, "description": "", "label": "Contaminated forests", "target": "environmental_harm"}
+{"aliases": [], "broader": "Pollution", "code": "sh95006597", "depth": 1, "descendants": 0, "description": "", "label": "Contaminated sediments", "target": "environmental_harm"}
+{"aliases": [], "broader": "Pollution", "code": "sh93000975", "depth": 1, "descendants": 0, "description": "", "label": "Cross-media pollution", "target": "environmental_harm"}
+{"aliases": [], "broader": "Environmental degradation", "code": "sh94007672", "depth": 1, "descendants": 0, "description": "", "label": "Forest degradation", "target": "environmental_harm"}
+{"aliases": [], "broader": "Hotels", "code": "sh85020066", "depth": 1, "descendants": 0, "description": "", "label": "Caravansaries", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Entertaining", "code": "sh85052948", "depth": 1, "descendants": 0, "description": "", "label": "Games", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Hospitality", "code": "sh2018000038", "depth": 1, "descendants": 0, "description": "", "label": "Homestay", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Entertaining", "code": "sh85062282", "depth": 1, "descendants": 0, "description": "", "label": "Hospitality", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Hotels", "code": "sh85078056", "depth": 1, "descendants": 0, "description": "", "label": "Lodging-houses", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Hotels", "code": "sh85087511", "depth": 1, "descendants": 0, "description": "", "label": "Motels", "target": "hospitality_hosting"}
+{"aliases": [], "broader": "Drugs", "code": "sh85000195", "depth": 1, "descendants": 0, "description": "", "label": "Abortifacients", "target": "medication_adherence"}
+{"aliases": [], "broader": "Drugs", "code": "sh85005968", "depth": 1, "descendants": 0, "description": "", "label": "Aphrodisiacs", "target": "medication_adherence"}
+{"aliases": [], "broader": "Drugs", "code": "sh85038455", "depth": 1, "descendants": 0, "description": "", "label": "Dispensatories", "target": "medication_adherence"}
+{"aliases": [], "broader": "Drugs", "code": "sh85038566", "depth": 1, "descendants": 0, "description": "", "label": "Diuretics", "target": "medication_adherence"}
+{"aliases": [], "broader": "Drugs", "code": "sh89002897", "depth": 1, "descendants": 0, "description": "", "label": "Excipients", "target": "medication_adherence"}
+{"aliases": [], "broader": "Drugs", "code": "sh85064819", "depth": 1, "descendants": 0, "description": "", "label": "Indandione", "target": "medication_adherence"}
+{"aliases": [], "broader": "Teenagers", "code": "dg2015060361", "depth": 1, "descendants": 0, "description": "", "label": "Boys", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Teenagers", "code": "dg2015060360", "depth": 1, "descendants": 0, "description": "", "label": "Girls", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Parenting", "code": "sh88005988", "depth": 1, "descendants": 0, "description": "", "label": "Grandparenting", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Teenagers", "code": "sh96002692", "depth": 1, "descendants": 0, "description": "", "label": "Abused teenagers", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Teenagers", "code": "sh2013001501", "depth": 1, "descendants": 0, "description": "", "label": "Bisexual teenagers", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Teenagers", "code": "sh00002263", "depth": 1, "descendants": 0, "description": "", "label": "Christian teenagers", "target": "parenting_adolescents"}
+{"aliases": [], "broader": "Birth control", "code": "sh85000196", "depth": 1, "descendants": 0, "description": "", "label": "Abortion", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Human reproductive technology", "code": "sh98002858", "depth": 1, "descendants": 0, "description": "", "label": "Human cloning", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Infertility", "code": "sh85066091", "depth": 1, "descendants": 0, "description": "", "label": "Infertility, Female", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Infertility", "code": "sh85066092", "depth": 1, "descendants": 0, "description": "", "label": "Infertility, Male", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Human reproductive technology", "code": "sh88004707", "depth": 1, "descendants": 0, "description": "", "label": "Surrogate motherhood", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Human reproductive technology", "code": "sh85008176", "depth": 1, "descendants": 0, "description": "", "label": "Artificial insemination, Human", "target": "reproduction_fertility"}
+{"aliases": [], "broader": "Home economics", "code": "sh85012782", "depth": 1, "descendants": 0, "description": "", "label": "Bedmaking", "target": "self_provisioning"}
+{"aliases": [], "broader": "Gardening", "code": "sh85027920", "depth": 1, "descendants": 0, "description": "", "label": "Cold-frames", "target": "self_provisioning"}
+{"aliases": [], "broader": "Home economics", "code": "sh2010008400", "depth": 1, "descendants": 0, "description": "", "label": "Cooking", "target": "self_provisioning"}
+{"aliases": [], "broader": "Home economics", "code": "sh85044107", "depth": 1, "descendants": 0, "description": "", "label": "Entertaining", "target": "self_provisioning"}
+{"aliases": [], "broader": "Home economics", "code": "sh85050184", "depth": 1, "descendants": 0, "description": "", "label": "Food", "target": "self_provisioning"}
+{"aliases": [], "broader": "Home economics", "code": "sj2021050352", "depth": 1, "descendants": 0, "description": "", "label": "Food", "target": "self_provisioning"}
+{"aliases": [], "broader": "Weather", "code": "sh85039663", "depth": 1, "descendants": 0, "description": "", "label": "Droughts", "target": "weather_climate_adaptation"}
+{"aliases": [], "broader": "Weather", "code": "sj2021051990", "depth": 1, "descendants": 0, "description": "", "label": "Droughts", "target": "weather_climate_adaptation"}
+{"aliases": [], "broader": "Natural disasters", "code": "sh85040496", "depth": 1, "descendants": 0, "description": "", "label": "Earthquakes", "target": "weather_climate_adaptation"}
+{"aliases": [], "broader": "Natural disasters", "code": "sh85049168", "depth": 1, "descendants": 0, "description": "", "label": "Floods", "target": "weather_climate_adaptation"}
+{"aliases": [], "broader": "Weather", "code": "sh85062931", "depth": 1, "descendants": 0, "description": "", "label": "Humidity", "target": "weather_climate_adaptation"}
+{"aliases": [], "broader": "Climatic changes", "code": "sh85097057", "depth": 1, "descendants": 0, "description": "", "label": "Paleoclimatology", "target": "weather_climate_adaptation"}

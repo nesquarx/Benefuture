@@ -1,0 +1,27 @@
+{
+ "doid": {
+  "rows": 6,
+  "status": "fetched",
+  "terms": 12419,
+  "url": "https://purl.obolibrary.org/obo/doid.obo"
+ },
+ "lcsh": {
+  "error_count": 1,
+  "errors": [
+   {
+    "error": "HTTPError: HTTP Error 404: Not Found",
+    "field": "medication_adherence",
+    "root": "Self-medication"
+   }
+  ],
+  "rows": 54,
+  "status": "fetched",
+  "url": "https://id.loc.gov/authorities/subjects/label/{label}.json"
+ },
+ "mondo": {
+  "detail": "ValueError: no term named 'infertility'",
+  "rows": 0,
+  "status": "blocked",
+  "url": "mondo"
+ }
+}

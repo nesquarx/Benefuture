@@ -29,7 +29,8 @@ from lifeimage.validate import validate_card  # noqa: E402
 
 MODEL = "haiku-runner"
 # further candidate sets applied alongside the first: (batch tag, candidates file, variants)
-SETS = [("atus", ROOT / "data/fine/candidates_atus_v0.jsonl", 2), ("gap", ROOT / "data/fine/candidates_gap_v0.jsonl", 2)]
+SETS = [("atus", ROOT / "data/fine/candidates_atus_v0.jsonl", 2), ("gap", ROOT / "data/fine/candidates_gap_v0.jsonl", 2),
+        ("gap2", ROOT / "data/fine/candidates_gap2_v0.jsonl", 2)]
 SOURCE = "haiku-runner x3, fine_parent.v1"
 ESCALATION_LIMIT = 0.05  # plan acceptance: at most 5% of nodes escalated
 WEIGHT_DIGITS = 9  # rounding keeps parent weights summing to 1 within the validator's 1e-6
