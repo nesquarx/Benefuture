@@ -160,6 +160,43 @@ def build_pool(coarse_cards, source_dir=ROOT / "data" / "fine" / "sources", publ
     return pool, report
 
 
+def new_candidates(rows, existing_pool, coarse_cards, source="atus"):
+    """(candidates, report) for the rows of one further source, only what is new: a row that restates a coarse domain or
+    an existing candidate (by label or alias) is dropped with its reason; the rest are deduplicated among themselves and
+    given ids clear of the existing pool, so the first pool's cards and cached answers are untouched.
+    report: raw = candidates + dropped + merged."""
+    held = {}
+    for c in coarse_cards:
+        for l in [c["label"], *(a["text"] for a in c["aliases"])]:
+            held.setdefault(dedupe_key(l), f"restates coarse domain {c['id']}")
+    for c in existing_pool:
+        for l in [c["label"], *c.get("aliases", [])]:
+            held.setdefault(dedupe_key(l), f"restates existing candidate {c['id']}")
+    items, dropped = [], []
+    for r in rows:
+        hit = held.get(dedupe_key(r["label"]))
+        if hit:
+            dropped.append({"label": r["label"], "source": source, "reason": hit})
+        else:
+            items.append(_item(r["label"], source, r["code"], KINDS.get(source, "activity"), r.get("description", ""),
+                               r.get("aliases", []), [r.get("broader", "")]))
+    merged, rep = merge_candidates(items, [source])
+    taken = {c["id"] for c in existing_pool}
+    out = []
+    for c in sorted(merged, key=lambda c: c["sources"][0]["code"]):
+        base = f"f.{_slug(c['label'])}"
+        cid, n = base, 1
+        while cid in taken:
+            n += 1
+            cid = f"{base}_{n}"
+        taken.add(cid)
+        out.append(dict(c, id=cid))
+    out.sort(key=lambda c: c["id"])
+    all_dropped = dropped + rep["dropped"]
+    return out, {"raw": len(rows), "candidates": len(out), "merged": rep["merged"], "dropped": all_dropped,
+                 "licence_status": LICENCES[source]["status"]}
+
+
 def load_pool(path):
     return read_jsonl(path)
 

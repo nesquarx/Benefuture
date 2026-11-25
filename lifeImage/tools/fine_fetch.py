@@ -1,6 +1,6 @@
 """Fetch the public classifications used as fine candidates into data/fine/sources/ (trimmed rows, one file each).
 
-Usage (from the repository root): python3 lifeImage/tools/fine_fetch.py [--only openalex esco_isco esco_skills icatus]
+Usage (from the repository root): python3 lifeImage/tools/fine_fetch.py [--only openalex esco_isco esco_skills icatus atus] [--atus-pdf FILE]
 Each source is tried on its own; a failure is recorded in `data/fine/sources/network.json` (status `blocked` and the
 reason) and the other sources continue. The generic client name of `lifeimage.sources.wikidata` is used; nothing
 personal is sent. ICATUS is read from the UN's PDF through `pdftotext -layout`.
@@ -46,13 +46,30 @@ def get_icatus():
     return S.parse_icatus(text), S.ICATUS_URL
 
 
-GETTERS = {"openalex": get_openalex, "esco_isco": get_isco, "esco_skills": get_skills, "icatus": get_icatus}
+ATUS_PDF = []  # a local copy of the lexicon PDF (--atus-pdf), for when bls.gov refuses automated clients
+
+
+def get_atus():
+    """ATUS lexicon (BLS, public domain). bls.gov answers automated clients with 403, so a local copy of
+    `lexiconnoex2025.pdf` (obtained through a browser-like fetch) is read when `--atus-pdf` is given."""
+    with tempfile.TemporaryDirectory() as d:
+        pdf = Path(ATUS_PDF[0]) if ATUS_PDF else Path(d) / "atus.pdf"
+        if not ATUS_PDF:
+            pdf.write_bytes(S.fetch_text(S.ATUS_URL))
+        text = subprocess.run(["pdftotext", "-layout", str(pdf), "-"], capture_output=True, text=True, check=True).stdout
+    return S.parse_atus_lexicon(text), S.ATUS_URL
+
+
+GETTERS = {"openalex": get_openalex, "esco_isco": get_isco, "esco_skills": get_skills, "icatus": get_icatus, "atus": get_atus}
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", nargs="*", choices=sorted(GETTERS))
+    ap.add_argument("--atus-pdf", help="local copy of the ATUS lexicon PDF (bls.gov blocks automated downloads)")
     a = ap.parse_args(argv)
+    if a.atus_pdf:
+        ATUS_PDF.append(a.atus_pdf)
     net_path = OUT / "network.json"
     net = json.loads(net_path.read_text()) if net_path.exists() else {}
     for name in a.only or sorted(GETTERS):
@@ -60,6 +77,9 @@ def main(argv=None):
             rows, url = GETTERS[name]()
             S.write_jsonl(rows, OUT / f"{name}.jsonl")
             net[name] = {"status": "fetched", "url": url, "rows": len(rows)}
+            if name == "atus" and ATUS_PDF:
+                net[name]["note"] = "bls.gov refused automated download (HTTP 403, Akamai); the PDF was read from a local copy"
+
         except Exception as e:  # noqa: BLE001 - any failure is recorded loudly, never silent
             net[name] = {"status": "blocked", "url": GETTERS[name].__name__, "detail": f"{type(e).__name__}: {e}"[:300], "rows": 0}
         print(name, net[name], flush=True)

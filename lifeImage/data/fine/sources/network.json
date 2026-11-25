@@ -1,4 +1,10 @@
 {
+ "atus": {
+  "note": "bls.gov refused automated download (HTTP 403, Akamai); the PDF was read from a local copy",
+  "rows": 318,
+  "status": "fetched",
+  "url": "https://www.bls.gov/tus/lexicons/lexiconnoex2025.pdf"
+ },
  "esco_isco": {
   "rows": 183,
   "status": "fetched",

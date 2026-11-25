@@ -24,10 +24,14 @@ LICENCES = {
                     "evidence": "ESCO download page read; it does not state the licence"},
     "icatus": {"licence": "United Nations copyright, all rights reserved", "status": "restricted",
                "evidence": "Copyright line of the ICATUS 2016 publication (ST/ESA/STAT/SER.M/98); reference use only"},
+    "atus": {"licence": "US government work, public domain (BLS: everything it publishes is in the public domain, except "
+                        "previously copyrighted photographs and illustrations; credit requested)", "status": "verified",
+             "evidence": "https://www.bls.gov/opub/copyright-information.htm (read 2026-11-25); lexicon https://www.bls.gov/tus/lexicons.htm"},
     "answers": {"licence": "project data", "status": "verified", "evidence": "cached answers of this repository"},
 }
 KINDS = {"openalex": "discipline", "esco_isco": "occupation", "esco_skills": "skill", "icatus": "activity"}
 ESCO_API = "https://ec.europa.eu/esco/api/resource/{kind}?uri={uri}&language=en"
+ATUS_URL = "https://www.bls.gov/tus/lexicons/lexiconnoex2025.pdf"
 ICATUS_URL = "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
 OPENALEX_URL = "https://api.openalex.org/subfields?per-page=200&page={page}"
 ISCO_ROOTS = [f"http://data.europa.eu/esco/isco/C{i}" for i in range(10)]
@@ -99,6 +103,56 @@ def parse_icatus(text):
         names[r["code"]] = r["label"]
     return [{"code": r["code"], "label": r["label"], "aliases": [], "description": "",
              "broader": names.get(r["code"][:-1], "")} for r in recs if len(r["code"]) in (2, 3)]
+
+
+_ATUS_LINE = re.compile(r"^(\s*)(\d{2})\s{2,}(\S.*?)\s*$")
+_ATUS_RESIDUAL = re.compile(r"n\.?e\.?c\.?\*?$|^waiting\b|\bwaiting (?:associated|related|assoc)|\bsecurity (?:procedures|related)", re.I)
+_ATUS_SKIP_MAJOR = {"18": "travel is a context of an activity, not an activity", "50": "data codes name no activity"}
+_ATUS_WORDS = [(r"\bnonhh\b", "non-household"), (r"\bhh\b", "household"), (r"\bsvcs\b", "services"), (r"\brel\.", "related"),
+               (r"\bassoc\.", "associated"), (r"\bexc\.|\bex\b", "except"), (r"\binc\.", "including"), (r"\bw/(?=\w)", "with ")]
+
+
+def _atus_label(text):
+    text = re.sub(r"\s+", " ", text.replace("*", "")).strip()
+    for pat, rep in _ATUS_WORDS:
+        text = re.sub(pat, rep, text)
+    return text.strip()
+
+
+def parse_atus_lexicon(text, year=2025):
+    """Major (depth 1), second-tier (2) and third-tier (3) categories of the BLS ATUS activity lexicon (text of
+    `pdftotext -layout`, the version without activity examples). Codes concatenate the tiers (`01`, `0101`, `010102`).
+    Residual categories (n.e.c.), waiting and security-procedure categories, travel (major 18: a context of an activity)
+    and data codes (major 50) are not activities and are skipped; abbreviations are spelled out. Tiers are told apart by
+    indentation; page numbers and headers carry no label and never match."""
+    rows, major, second, skip = [], None, None, False
+    names = {}
+    for line in text.splitlines():
+        m = _ATUS_LINE.match(line)
+        if not m or "Lexicon" in line or "Categories" in line:
+            continue
+        indent, num, raw = len(m.group(1)), m.group(2), m.group(3)
+        depth = 1 if indent < 10 else (2 if indent < 28 else 3)
+        if depth == 1:
+            major, second, skip = num, None, num in _ATUS_SKIP_MAJOR
+            code = num
+        elif depth == 2:
+            second, code = num, f"{major}{num}"
+        else:
+            code = f"{major}{second}{num}"
+        if major is None or (depth == 3 and second is None):
+            continue
+        label = _atus_label(raw)
+        names[code] = label
+        if skip or _ATUS_RESIDUAL.search(label):
+            continue
+        broader = names.get(code[:-2], "") if depth > 1 else ""
+        rows.append({"code": code, "label": label, "aliases": [], "depth": depth, "broader": broader,
+                     "description": f"ATUS {year} {('major', 'second-tier', 'third-tier')[depth - 1]} activity category"
+                                    + (f" (under {broader})" if broader else "") + "."})
+    if not rows:
+        raise ValueError("no activity categories found in the lexicon text")
+    return rows
 
 
 def read_jsonl(path):

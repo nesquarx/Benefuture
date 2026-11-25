@@ -19,6 +19,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from . import levels as lv
+from .canonical import canonical_json
 from .degradation import record_degradation
 from .generators import life
 from .generators.params import ARCHETYPES
@@ -624,7 +625,19 @@ def starter_rows(source, root=ROOT, log=None):
     out = {}
     for v in range(3):
         base = root / f"data/batches/texts_v2/extract.v1.var{v}"
+        if not Path(f"{base}.jsonl").exists() or not Path(f"{base}.answers.jsonl").exists():
+            record_degradation(f"extracted var{v}", "extract_answers", "no extracted rows for this variant",
+                               f"answers file absent: {Path(base).name}.answers.jsonl run the rebuilt batch on the runner", log)
+            out[v] = _by_persona(personas, [])
+            continue
         tasks = {t["task_id"]: t for t in _jsonl(f"{base}.jsonl") if t.get("kind") == "task"}
+        from .extract import numbered
+        for t in tasks.values():  # the batch must carry the texts as they are now, or its answers are for other texts
+            pid = t["input"]["source"].split(":", 1)[1]
+            now = numbered((root / f"data/synthetic/texts_v2/{pid}.resume.txt").read_text(encoding="utf-8"))
+            if canonical_json(t["input"]["lines"]) != canonical_json(now):  # batches hold canonical text (whitespace folded)
+                raise ValueError(f"extracted var{v}: the batch of {pid} holds other texts than data/synthetic/texts_v2 now "
+                                 "(answers to it are stale); rebuild with tools/build_extract_batches.py --texts texts_v2")
         rows = []
         for a in _jsonl(f"{base}.answers.jsonl"):
             t = tasks[a["task_id"]]

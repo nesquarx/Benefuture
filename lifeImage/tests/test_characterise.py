@@ -229,6 +229,8 @@ def test_every_signature_names_a_feature_the_battery_computes():
 # ---------- the data ----------
 
 def test_extracted_rows_are_mapped_to_personas_for_every_variant_and_carry_claims_only():
+    if not all((ROOT / f"data/batches/texts_v2/extract.v1.var{v}.answers.jsonl").exists() for v in range(3)):
+        pytest.skip("no extractor answers for the current texts yet (data/batches is not committed; a runner produces them)")
     pops = ch.starter_rows("extracted")
     assert set(pops) == {0, 1, 2}
     for v, by in pops.items():
@@ -394,3 +396,91 @@ def test_every_v2_signature_names_a_feature_the_battery_computes_and_load_signat
                 assert f in names or f.startswith(("arc_share:", "gb_in:")) or f.startswith("pooled_"), (s["id"], f)
     assert set(data["identification_features_added"]) <= names
     assert [s["id"] for s in ch.load_signatures()] == [s["id"] for s in data["signatures"]]
+
+
+# ---------- extracted rows from the regenerated texts ----------
+
+import importlib.util as _ilu
+import shutil as _shutil
+from pathlib import Path as _Path
+
+_ROOT = _Path(__file__).resolve().parent.parent
+
+
+from lifeimage.canonical import canonical_json
+
+
+def _extract_tool():
+    spec = _ilu.spec_from_file_location("build_extract_batches", _ROOT / "tools" / "build_extract_batches.py")
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _resume_lines(pid):
+    from lifeimage.extract import numbered
+    return numbered((_ROOT / "data/synthetic/texts_v2" / f"{pid}.resume.txt").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def rebuilt_root(tmp_path):
+    """A root whose data/synthetic is the real one and whose texts_v2 batches were rebuilt by the tool."""
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data/synthetic").symlink_to(_ROOT / "data/synthetic")
+    out = tmp_path / "data/batches/texts_v2"
+    _extract_tool().main(["--texts", "texts_v2", "--out", str(out)])
+    return tmp_path
+
+
+def test_the_rebuild_carries_the_current_texts_and_removes_answers_given_for_older_ones(tmp_path):
+    out = tmp_path / "data/batches/texts_v2"
+    out.mkdir(parents=True)
+    for v in range(3):  # a stale set: batches of an older text and answers to them
+        (out / f"extract.v1.var{v}.jsonl").write_text('{"kind": "header"}\n{"kind": "task", "input": {"lines": ["L1: old text"]}}\n')
+        (out / f"extract.v1.var{v}.answers.jsonl").write_text('{"task_id": "old"}\n')
+    _extract_tool().main(["--texts", "texts_v2", "--out", str(out)])
+    assert not list(out.glob("*.answers.jsonl")), "answers to the old texts must not survive next to the new batches"
+    for v in range(3):
+        tasks = [json.loads(l) for l in (out / f"extract.v1.var{v}.jsonl").read_text().splitlines()[1:]]
+        assert len(tasks) == 40
+        for t in tasks:
+            assert canonical_json(t["input"]["lines"]) == canonical_json(_resume_lines(t["input"]["source"].split(":")[1]))
+
+
+def test_extracted_rows_with_no_answers_yet_are_absent_and_say_so_not_scored_against_old_texts(rebuilt_root):
+    log = []
+    pops = ch.starter_rows("extracted", root=rebuilt_root, log=log)
+    assert set(pops) == {0, 1, 2}
+    assert all(len(by) == 40 and sum(len(r) for r in by.values()) == 0 for by in pops.values())
+    assert [d["mechanism"] for d in log] == ["extract_answers"] * 3 and all("absent" in d["reason"] for d in log)
+
+
+def test_answers_to_other_texts_than_the_current_ones_are_refused(rebuilt_root):
+    base = rebuilt_root / "data/batches/texts_v2/extract.v1.var0"
+    lines = _Path(f"{base}.jsonl").read_text().splitlines()
+    t = json.loads(lines[1])
+    t["input"]["lines"] = ["L1: " + "a resume the persona no longer has"]
+    lines[1] = json.dumps(t)
+    _Path(f"{base}.jsonl").write_text("\n".join(lines) + "\n")
+    _Path(f"{base}.answers.jsonl").write_text(json.dumps({"task_id": t["task_id"], "verdict": "rows", "rows": []}) + "\n")
+    with pytest.raises(ValueError, match="other texts"):
+        ch.starter_rows("extracted", root=rebuilt_root, log=[])
+
+
+def test_new_answers_on_the_current_texts_are_taken_for_the_extracted_row_check(rebuilt_root):
+    from lifeimage.extract import answer_rows
+    truth = ch.starter_rows("resume")
+    pid = next(p for p, rows in sorted(truth.items()) if len(rows) >= 3)
+    mine = truth[pid][:3]
+    for v in range(3):
+        base = rebuilt_root / f"data/batches/texts_v2/extract.v1.var{v}"
+        tasks = [json.loads(l) for l in _Path(f"{base}.jsonl").read_text().splitlines()[1:]]
+        t = next(t for t in tasks if t["input"]["source"] == f"resume:{pid}")
+        a = {"task_id": t["task_id"], "task_type": "extract", "input_hash": t["input_hash"], "variant": v, "model": "haiku-runner",
+             "prompt_version": 1, "verdict": "rows", "rows": answer_rows(mine), "reason": "r"}
+        _Path(f"{base}.answers.jsonl").write_text(json.dumps(a) + "\n")
+    log = []
+    pops = ch.starter_rows("extracted", root=rebuilt_root, log=log)
+    assert all(len(by[pid]) >= 1 and all(r["tier"] == "claimed" for r in by[pid]) for by in pops.values())
+    assert all(len(r) == 0 for by in pops.values() for p, r in by.items() if p != pid)
+    assert not [d for d in log if d["mechanism"] == "extract_answers"]

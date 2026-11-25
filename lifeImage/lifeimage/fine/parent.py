@@ -67,12 +67,12 @@ def build_fine_batches(cands, coarse_cards, *, cache=None, model, prompt_version
     return out
 
 
-def write_fine_batches(batches, out_dir, prompt_version=1):
+def write_fine_batches(batches, out_dir, prompt_version=1, tag=None):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     paths = []
     for (v, n), lines in sorted(batches.items()):
-        p = out / f"{TASK}.v{prompt_version}.var{v}.part{n}.jsonl"
+        p = out / f"{TASK}.v{prompt_version}{f'.{tag}' if tag else ''}.var{v}.part{n}.jsonl"
         p.write_text("\n".join(lines) + "\n", encoding="utf-8")
         paths.append(p)
     return paths

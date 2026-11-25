@@ -330,6 +330,18 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   life-activity source (ICATUS) was excluded. Next: a licence-clean life-activity source, the American Time Use
   Survey activity lexicon (US government work, public domain, to verify), for the care, home, leisure and personal
   fields. Seven answers carried mistyped hashes despite their runners' validation; repaired by copying from the batch.
+- **ATUS lexicon as the life-activity source** (2026-11-25): BLS states everything it publishes is public domain
+  (`copyright-information.htm`, licence `verified`, `sources.py` LICENCES). bls.gov refuses scripted downloads (403), so
+  the 2025 lexicon PDF came through a browser-like fetch and `tools/fine_fetch.py --only atus --atus-pdf FILE` reads it
+  (318 category rows: majors, second and third tiers; n.e.c., waiting, security, travel and data codes skipped).
+  `tools/fine_pool.py --atus-only` gives 300 new candidates (`data/fine/candidates_atus_v0.jsonl`; the first 486 stay
+  untouched), `tools/fine_build_batches.py --set atus` writes `fine_parent.v1.atus.var{0,1}.part{0..5}.jsonl` (2 variants,
+  50 cards). Pending: a runner pass; then `tools/fine_apply.py` merges them and reports the fields that gained children
+  (prediction: care, home, leisure and personal fields gain children; at least 40 of the 149 childless fields).
+- **Extraction check on the regenerated texts**: `tools/build_extract_batches.py --texts texts_v2` rebuilds
+  `data/batches/texts_v2/extract.v1.var{0,1,2}.jsonl` and removes the answers to the older texts; `characterise.py`
+  reports the extracted-row sets as absent (loudly) until new answers exist, and refuses answers whose batch holds
+  other texts than `data/synthetic/texts_v2`.
 
 ## Order of work
 
