@@ -52,3 +52,13 @@ share 0.545, z 1.80 (the variants agree on 82% of fields, so pooling overstates 
 Decisive 81% of tasks (>= 40%: met). Position bias 0.46 / 0.51 (none to speak of). Prediction (>= 55%, z >= 2): **not met**.
 Direction favours the simulation, magnitude small and not significant: the simulated layout is at best slightly better to an
 independent judge, consistent with signal coverage of 3.7% of field pairs. Not adopted; rerun after the signals grow.
+
+## Prediction 3 relatedness (2026-11-25, stated before any relatedness answer exists)
+`relatedness.v1` (prompts/relatedness.v1.md, tools/relatedness.py, lifeimage/relatedness.py): 2,268 pairs (828 adjacent within two
+positions in either layout with no signal, 1,140 within five, 150 controls with strong signal, 150 random pairs at least a quarter
+of the ring apart in both layouts), two variants (canonical and reversed order), 92 batch files of at most 50 in `data/batches/`.
+Baseline on the current code: signal covers 11.9% of pairs within two positions in the axes order and 14.8% in the simulated order.
+- Controls with signal score at least 3 points above random far-apart pairs on average (0-10 scale). Confidence 0.8. Not yet measured.
+- Order bias (reversed minus canonical) within one point on average, variants within one point on at least 70% of pairs. Confidence 0.6.
+- With the judged source on (weight 0.75, floor 0.3) the adjacent-pair coverage rises above 60% and the blinded adjacency
+  judgement favours the simulation by at least 55% (z >= 2) on a rerun. Confidence 0.4 (the earlier effect was small).

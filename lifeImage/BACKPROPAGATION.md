@@ -85,6 +85,11 @@ deleted. Numbering is stable (LI.n).
   spring stricter. Angles settle first without collision; collision then turns on for an effective tessellation.
   Once tuned, the simulation becomes the de facto method of updating the basemap (each version starting from the
   previous layout as its prior). DESIGN, PLAN.
+- **LI.59** (2026-11-25; refines LI.55) Where the layout simulation has no pairwise signal (96% of field pairs; 85-88% of the pairs a
+  layout puts within two positions), pairs are judged directly: `relatedness.v1`, one card per pair, 0-10, three fixed
+  calibration examples, two variants in opposite order, controls with existing signal and random far pairs to calibrate the scale.
+  The answers enter the simulation as the optional 'judged' source (weight and floor governed; empty and loudly degraded until
+  answers exist). PLAN (proposal, not a ruling).
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels

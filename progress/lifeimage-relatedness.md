@@ -1,4 +1,4 @@
-Status: IN PROGRESS (started 2026-11-25)
+Status: DONE 2026-11-25 (batches built, no runner run; answers pending)
 
 ## Goal and acceptance
 Pairwise relatedness judging (relatedness.v1) to grow the layout sim's pairwise signal where missing (signal covers 1127 of
@@ -15,14 +15,18 @@ Baseline (current code, real data): signal covers 11.9% of pairs within 2 positi
   in data/coarse/relatedness_pairs_v1.json; key with task->pair stays in data/batches (gitignored).
 
 ## Done
-(nothing yet)
+tests/test_relatedness.py (11, green; red first at import), lifeimage/relatedness.py, prompts/relatedness.v1.md, tasks.py + validate.py hooks,
+layout_sim 'judged' source (governed w_judged 0.75, judged_floor 0.3; degrades loudly when absent), tools/relatedness.py (build, ingest),
+batches (2,268 pairs: 828 near, 1,140 wide (all available, cap 2,500 not reached), 150 control, 150 random; 92 files, gitignored),
+data/coarse/relatedness_pairs_v1.json, prediction 3 in data/gold/layout_sim_predictions.md, LI.59 in BACKPROPAGATION.md.
+Full suite: 1161 pass (+1 xfail) excluding tests/test_fine_gap.py; its failure belongs to the fine agent.
 
 ## In progress / next
-tests/test_relatedness.py (red), lifeimage/relatedness.py, prompts/relatedness.v1.md, tasks.py + validate.py hooks,
-layout_sim wiring + governed entries, tools/relatedness.py, batches, BACKPROPAGATION note, full suite, push.
+Runner answers (lead): then `python3 tools/relatedness.py ingest`, check calibration gap >= 3, rerun tools/layout_sim.py, rerun adjacency judge.
 
 ## Files touched
-(this note)
+lifeimage/{relatedness,layout_sim,governed,tasks,validate}.py, prompts/relatedness.v1.md, tools/relatedness.py, tests/{test_relatedness,test_layout_sim}.py,
+data/coarse/relatedness_pairs_v1.json, data/gold/layout_sim_predictions.md, BACKPROPAGATION.md, this note.
 
 ## Resume
 cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_relatedness.py
