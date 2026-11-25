@@ -300,6 +300,19 @@ I1-I6); report `data/gold/characterisation_v2_report.md`; images `data/images/v2
   carries the earlier generator's bias; re-extraction (a model run) is needed for a fair reading. Extracted archetype
   0.17 (predicted at least 0.25: not held).
 
+## Characterisation battery v2 (LI.38 grain, LI.39 tone anchor, LI.50 literature bias)
+
+Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_report.md`; images `data/images/v2/`.
+- 38 signatures: 14 held, 10 not held, 14 inconclusive (per-domain calibration effects have the predicted sign,
+  0.06–0.13, intervals include zero).
+- Blind identification, truth rows: calibration 0.47 [0.39, 0.55] (v1 0.31, chance 0.33; held against ≥ 0.45);
+  archetype 0.53 [0.45, 0.61] (inconclusive against ≥ 0.60). Legacy summing: archetype 0.54, calibration 0.36.
+  Extracted rows: archetype 0.17; calibration 0.53, untrustworthy (answers extracted from the old texts, so the old
+  bias): re-extraction needed.
+- Mean luminance 0.031 → 0.168; tone constant derived so a median 40-year-old's typical domain sits at 0.556.
+- Caveat: estimate–truth correlation in the generator is 0.48 against the literature's ~0.29, so the generated
+  people are better calibrated than real ones; calibration should be easier to see in real data, not harder.
+
 ## Fine level, first pass
 
 - 650 candidates from Wikidata unmapped classes (48, CC0), OpenAlex subfields (242, CC0 believed), ISCO minor groups

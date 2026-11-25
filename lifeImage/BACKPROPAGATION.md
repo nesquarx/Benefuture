@@ -73,12 +73,12 @@ deleted. Numbering is stable (LI.n).
   imprints add up per channel; the sum saturates like light, giving per-domain levels. A potential event (a claim or
   prediction) imprints with the level it claims, so red compares with green like for like. Replaces summing row
   magnitudes on one shared scale. DESIGN.
-- **LI.38** (2026-11-25; amends LI.37) Grain marks claimed potential and predictions only: self-assessments, forecasts
+- **LI.38** (2026-11-25; amends LI.37; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) Grain marks claimed potential and predictions only: self-assessments, forecasts
   and claims of capability (rows of channel `prediction`). Tier (claimed, attested, measured) never makes grain; it
   shows only as reduced saturation of the solid colour (measured full, attested slightly less, self-reported pale).
   Knowledge taken in is solid red whatever its tier (pale when self-reported); an event reported by the person is
   placed by what it was (producing: green and blue, taking in: red) and drawn pale. DESIGN.
-- **LI.39** (2026-11-25; amends LI.36) The tone map's constant is a governed value anchored to a reference life: the
+- **LI.39** (2026-11-25; amends LI.36; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) The tone map's constant is a governed value anchored to a reference life: the
   median 40-year-old persona of the generated population has its typical touched domain (median over directly
   imprinted domains of the strongest solid channel) at level 0.5, mid-brightness. The scale is absolute across people:
   a thinner life is dimmer, a richer one brighter, never normalised per person. Default and derivation live in
@@ -97,7 +97,7 @@ deleted. Numbering is stable (LI.n).
   ("Relation metadata"), adopted with this ruling as the basis for the contract update.
 
 ### Synthetic generator
-- **LI.50** (2026-11-25) The generator's self-estimates follow the self-assessment literature, as world parameters with
+- **LI.50** (2026-11-25; lead proposal adopted under the author's go-ahead "keep going" of 2026-11-25, not a direct author ruling) The generator's self-estimates follow the self-assessment literature, as world parameters with
   ranges and sources in `lifeimage/generators/params.py`, never tuned to make a battery pass: bias is domain-specific
   (larger over-estimation where skill is low and feedback sparse, little where feedback is frequent, a
   better-than-average shift, under-estimation among the highly skilled), replacing a uniform small error. PLAN.
