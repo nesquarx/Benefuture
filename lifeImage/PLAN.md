@@ -365,6 +365,12 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   correlate; the mechanical proxies do not capture them. Next: a radius scale judged per card on 0–10 (how advanced
   and specialised; the axes v3 method), coarse first, compared with the mechanical proxies.
 
+- **Interactive viewer** (`4a2236d`; `data/images/interactive/`, 10 files, 0.95 MB): offline HTML; semantic zoom from
+  disc to sector, coarse field and evidence rows (reason, tier, date, channel, contribution); disclosure levels none
+  (pattern only: no labels, ids, row text or zoom in the file), summary, full; a group image (4 personas, re-saturated
+  sum) and a comparison view; deterministic. Open: rows attach at the coarse field because fine domains carry no rows
+  yet; the next step is mapping evidence rows to fine domains.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
