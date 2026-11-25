@@ -277,6 +277,46 @@ function rehabilitate_restraint(base_share::Real, crime_events::Integer, pattern
 end
 
 """
+    restraint_audit_prob(severity, duration, bar; duration_scale = 5.0, floor = 0.05) -> probability
+
+Probability that a forcible restraint by the Administration is audited (`L121` DueProcess; Lean
+`restraint_audit_prob_ref`, author ruling 8.169 c): rises with burden `severity * (1 + duration /
+duration_scale)`, is 1 at and above the governed severity `bar`, and at least `floor` below it.
+"""
+function restraint_audit_prob(severity::Real, duration::Real, bar::Real; duration_scale::Real = 5.0, floor::Real = 0.05)
+    check(isfinite(severity) && severity >= 0 && isfinite(duration) && duration >= 0 && isfinite(bar) && bar > 0 &&
+          isfinite(duration_scale) && duration_scale > 0 && isfinite(floor) && 0 <= floor <= 1,
+          "severity, duration >= 0; bar, duration_scale > 0; floor in [0, 1]")
+    ccall(sym(:bf_restraint_audit_prob), Float64, (Float64, Float64, Float64, Float64, Float64),
+          severity, duration, duration_scale, bar, floor)
+end
+
+"""
+    false_restraint_liability(upheld, kappa, cost) -> liability
+
+Liability of the enforcing entity within the Administration for a restraint (`L120`; Lean
+`false_restraint_liability_ref`, author ruling 8.169 ii): zero when the audit upholds it, else
+`kappa * cost`. The commons funds the audit; the enforcer carries this.
+"""
+function false_restraint_liability(upheld::Bool, kappa::Real, cost::Real)
+    check(isfinite(kappa) && kappa >= 0 && isfinite(cost) && cost >= 0, "kappa and cost non-negative")
+    ccall(sym(:bf_false_restraint_liability), Float64, (UInt8, Float64, Float64), upheld ? 0x01 : 0x00, kappa, cost)
+end
+
+"""
+    credence_restraint_liability(conf, kappa, cost) -> liability
+
+Credence-scaled liability (Lean `credence_restraint_liability_ref`, ruling 8.169 iii, a lead decision
+pending author review): `kappa * cost * clamp(2 conf - 1, 0, 1)`, `conf` the audit's credence that the
+restraint was false. Zero at `conf <= 1/2`; the binary liability at `conf = 1`.
+"""
+function credence_restraint_liability(conf::Real, kappa::Real, cost::Real)
+    check(isfinite(conf) && 0 <= conf <= 1, "conf in [0, 1]")
+    check(isfinite(kappa) && kappa >= 0 && isfinite(cost) && cost >= 0, "kappa and cost non-negative")
+    ccall(sym(:bf_credence_restraint_liability), Float64, (Float64, Float64, Float64), conf, kappa, cost)
+end
+
+"""
     responsibility_factor(is_act, is_informed, has_duty, counterfactual_ratio;
                           severity_scale = 1.0, accident_factor = 0.5) -> factor
 

@@ -969,6 +969,15 @@ Base.@kwdef struct M8EnforcementParams
     mode::Symbol = :bf_enforcement    # :bf_enforcement | :unaudited_coercion | :unenforced
     harm_bound::Float64 = 2.0
     seed::Int = 1
+    # Forcible restraint (8.169, L120/L121): the same audit rule as M3c's restraint (`restraint_audit_prob`,
+    # `false_restraint_liability`), so the guarantee that restraint is audited no longer holds by construction.
+    restraint_audit::Bool = true      # false: free, unchecked restraint (the earlier toy's other extreme)
+    restraint_bar::Float64 = 0.8      # governed: burden at and above which the audit is certain and precedes the restraint
+    restraint_audit_floor::Float64 = 0.05 # governed: audit probability of the lightest restraint
+    restraint_kappa::Float64 = 1.0    # governed: liability weight on the enforcer of an overturned restraint
+    restraint_attempt::Float64 = 0.35 # world: chance per step an enforcing entity attempts forcible restraint
+    justified_share::Float64 = 0.5    # world: share of attempts that were justified (the rest are overeager)
+    restraint_audit_acc::Float64 = 0.9 # world noise: chance an audit judges a restraint's justification correctly
 end
 
 """
@@ -979,7 +988,9 @@ validity (`Ontology.Law`), and civilizational continuity (`Subgoals.Continuity`)
 - Contracts whose projected harm exceeds `harm_bound` are null and void (`invalid_contract_null_and_void`).
 - Tier 1 (`:design_automated`, embedded law debits) and Tier 2 (`:persuasive`) eliminate residual
   societal harm without physical force (`automated_design_eliminates_residual_harm`).
-- Tier 3 (`:forcible_restraint`) is rejected unless audited (`unaudited_forcible_restraint_rejected`).
+- Tier 3 (`:forcible_restraint`) is audited with the shared rule (8.169): probability rising with burden,
+  certain above the bar, below-bar restraint stands until audited; an unjustified restraint that escapes
+  its audit stands and harms (`unaudited_force_abuses`), an overturned one is liable to its enforcer.
 - Across epochs, unbroken append-only memory and `Harm_Intv` (`requires_harm_intervention` when
   `harm_t1 >= harm_t0`) preserve civilizational continuity (`preserves_continuity`).
 """
@@ -991,6 +1002,7 @@ function run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
     invalid_contracts_executed = 0
     unaudited_force_blocked = 0
     unaudited_force_abuses = 0
+    restraints_audited, restraint_run, restraint_liability = 0, 0, 0.0
     residual_harm = 0.0
     harm_interventions = 0
     memory_epochs = Int[]
@@ -1016,8 +1028,28 @@ function run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
             # Automated restorative debit satisfies reparation; any forcible restraint must be audited
             repaired = incident_harm
             residual_harm += max(0.0, incident_harm - repaired)
-            unaudited_attempt = rand(rng) < 0.35
-            unaudited_attempt && (unaudited_force_blocked += 1)
+            if rand(rng) < p.restraint_attempt
+                justified = rand(rng) < p.justified_share
+                sev = 0.3 + 0.7 * rand(rng)
+                run_len = restraint_run
+                restraint_run += 1
+                pa = p.restraint_audit ? restraint_audit_prob(sev, run_len, p.restraint_bar; floor = p.restraint_audit_floor) : 0.0
+                audited = rand(rng) < pa
+                stands = true
+                if audited
+                    restraints_audited += 1
+                    right = rand(rng) < p.restraint_audit_acc
+                    upheld = right ? justified : !justified
+                    restraint_liability += credence_restraint_liability(upheld ? 1 - p.restraint_audit_acc : p.restraint_audit_acc, p.restraint_kappa, sev * incident_harm)
+                    upheld || (unaudited_force_blocked += 1; stands = false)
+                end
+                if stands && !justified
+                    unaudited_force_abuses += 1
+                    residual_harm += 0.6 * incident_harm * sev
+                end
+            else
+                restraint_run = 0
+            end
         elseif p.mode == :unaudited_coercion
             # Unaudited forcible restraint allowed -> coercion abuse harm + incomplete reparation
             unaudited_force_abuses += 1
@@ -1046,6 +1078,8 @@ function run_m8_enforcement(p::M8EnforcementParams = M8EnforcementParams())
         invalid_contracts_executed = invalid_contracts_executed,
         unaudited_force_blocked = unaudited_force_blocked,
         unaudited_force_abuses = unaudited_force_abuses,
+        restraints_audited = restraints_audited,
+        restraint_liability = restraint_liability,
         residual_harm = residual_harm / p.steps,
         harm_interventions = harm_interventions,
         continuity_preserved = continuity_holds && issorted(memory_epochs),

@@ -32,10 +32,7 @@ function along(val, perms)
     vals
 end
 
-function all_perms(n)
-    n == 1 && return [[1]]
-    [insert!(copy(q), j, n) for q in all_perms(n - 1) for j in 1:n]
-end
+include("test_helpers.jl")   # all_perms
 
 @testset "Shapley sampling: acceptance" begin
     # Enumerating every ordering recovers exact Shapley.

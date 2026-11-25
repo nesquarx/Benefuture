@@ -57,6 +57,25 @@ def birth_trajectory_ref (initial predicted : Float) (window : Nat) : Array Floa
 def birth_escrow_ref (initial predicted : Float) (window : Nat) (baseline : Float) : Float :=
   shortfall_ref (birth_trajectory_ref initial predicted window) baseline
 
+/-- Per-period income a child needs to reach the average adult's understanding and happiness by the end of
+    its window (author ruling 8.167b [P]): `cost` per unit of level times the projected shortfall below the
+    targets (a surplus in one does not offset a shortfall in the other), spread over the `remaining`
+    periods. `0` when no period remains. -/
+def baseline_required_ref (cost target_u target_h proj_u proj_h : Float) (remaining : Nat) : Float :=
+  if remaining == 0 then 0.0
+  else cost * (max 0 (target_u - proj_u) + max 0 (target_h - proj_h)) / remaining.toFloat
+
+/-- Baseline income at birth (8.167b [P]): the child is expected to need the full cost, so nothing is
+    projected yet and the whole window remains. -/
+def newborn_baseline_ref (cost target_u target_h : Float) (window : Nat) : Float :=
+  baseline_required_ref cost target_u target_h 0.0 0.0 window
+
+/-- Refinement of the baseline as the child grows (8.167b [P], predict-measure-adapt 8.134): the income
+    moves by `rate` of the way to what the measured trajectory now requires (a shortfall raises it, a
+    surplus lowers it), bounded to `[0, cap]`. -/
+def baseline_refine_ref (current required rate cap : Float) : Float :=
+  min cap (max 0 (current + rate * (required - current)))
+
 /-- Accrued birth escrow over the first `elapsed` steps of the dependency window (8.54 [P]): the
     predicted shortfall along `birth_trajectory_ref` for steps `1..min elapsed window`. Equals `0` at
     `elapsed = 0` and equals `birth_escrow_ref` when `elapsed ≥ window`. -/

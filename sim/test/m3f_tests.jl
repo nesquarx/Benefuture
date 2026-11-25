@@ -38,8 +38,17 @@ balanced(tr) = sum(tr.balance) - tr.endowed ≈ sum(tr.valued_measured) - sum(tr
     cat = shock(:catastrophe; step = 150, share = 0.5, size = 30.0)
     hit = run_m3c(base(events = [cat]); seed = 1)
     @test hit.floor_u[152] < hit.floor_u[150] - 10 && hit.floor_u[end] > hit.floor_u[150]
-    insured = run_m3c(base(events = [cat], repair_efficiency = 1.0, overflow_base = 5.0, overflow_factor = 0.0); seed = 1)
-    @test insured.insured > 0 && insured.floor_u[152] >= insured.floor_u[150] && insured.floor_u[200] > hit.floor_u[200] + 10
+    # Distributional (CI run 45482816133: the one-seed form failed on Linux Julia 1.13.4 where it passed on 1.13.3; floating point moves
+    # single seeds, and the 'restored at once' margin at step 152 is about one unit): over seeds 1:12 the administration's repair always
+    # acts (structural), it removes the catastrophe's dip (hit dip - insured dip beats z = 3, mean > 10), the insured floor does not fall
+    # at the hit (proportion with floor_u[152] >= floor_u[150] - 1, Wilson lower bound > 0.6), and ends above the uninsured one by more than 10.
+    ins_h = [(run_m3c(base(events = [cat]); seed = s),
+              run_m3c(base(events = [cat], repair_efficiency = 1.0, overflow_base = 5.0, overflow_factor = 0.0); seed = s)) for s in 1:12]
+    @test all(t -> t[2].insured > 0, ins_h)
+    @test paired_effect([(h.floor_u[150] - h.floor_u[152]) - (i.floor_u[150] - i.floor_u[152]) for (h, i) in ins_h]; z = 3.0).significant
+    @test mean((h.floor_u[150] - h.floor_u[152]) - (i.floor_u[150] - i.floor_u[152]) for (h, i) in ins_h) > 10
+    @test proportion_interval(count(t -> t[2].floor_u[152] >= t[2].floor_u[150] - 1, ins_h), length(ins_h)).lo > 0.6
+    @test paired_effect([i.floor_u[200] - h.floor_u[200] - 10 for (h, i) in ins_h]; z = 3.0).significant
     # Metric capture: leaf 1's model turns biased; it loses eligibility and its work is priced by
     # its parent; when the capture ends it qualifies again.
     # (A controlled world: the leaf model qualifies before the capture; under realistic noise whether

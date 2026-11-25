@@ -482,3 +482,26 @@ def art_surplus_value_ref (truthDeltaU novelty : Float) : Float :=
 def chain_truth_level_ref (baseLevel : Float) (hops : Array Float) : Float :=
   let b := if baseLevel > 1.0 then 1.0 else if baseLevel < 0.0 then 0.0 else baseLevel
   if b <= 0.0 then 0.0 else propagated_liability_ref b hops
+
+/-- Truth level from the information-handling categoriser (`L134` `Categorize`, author rulings 8.167a, 8.168).
+    `outputs[e]` is expert `e`'s output, the probability it gives the claim being true; `weights[e]` its
+    record weight. The consensus `c = |2m - 1|` (m the weighted mean) is scaled by `memScore`, the agreement
+    of past predictions with outcomes for this class of claim. A provable claim (meaningfully and practically
+    falsifiable now) takes that level; an unprovable one is a hypothesis or opinion and is capped at
+    `capUnprovable` whatever the consensus. The result lies in `[0.01, 0.99]`: a truth level never reaches 0 or 1. -/
+def ih_truth_level_ref (outputs weights : Array Float) (memScore : Float) (provable : Bool)
+    (capUnprovable : Float) : Float := Id.run do
+  let cl (x : Float) : Float := if x > 1.0 then 1.0 else if x < 0.0 then 0.0 else x
+  let mut sw := 0.0
+  let mut sm := 0.0
+  for i in [0 : outputs.size] do
+    let w0 := if i < weights.size then weights[i]! else 0.0
+    let w := if w0 > 0.0 then w0 else 0.0
+    sw := sw + w
+    sm := sm + w * cl outputs[i]!
+  let m := if sw > 0.0 then sm / sw else 0.5
+  let c := Float.abs (2.0 * m - 1.0)
+  let raw := c * cl memScore
+  let capped := if provable then raw else (if raw < cl capUnprovable then raw else cl capUnprovable)
+  let lv := 0.99 * capped
+  return (if lv < 0.01 then 0.01 else lv)

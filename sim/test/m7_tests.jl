@@ -164,6 +164,17 @@ end
     @test birth_accrued_escrow(0.0, 4.0; window = 4, elapsed = 2, baseline = 2.0) ≈ v["birth_accrued_escrow_w4_e2"]
     @test pending_escrow_loss(3.0, 1.0) ≈ v["pending_escrow_loss_m3_e1"]
     @test shortfall([1.0, 2.0, 3.0], 2.5) ≈ v["shortfall_123_base2_5"]
+    # Birth baseline income (8.167b [P]): acceptance against the vectors, and counterexamples.
+    @test newborn_baseline(2.0, 5.0, 4.0; window = 10) ≈ v["newborn_baseline_c2_t5_4_w10"]
+    @test baseline_required(2.0, 5.0, 4.0, 3.0, 6.0; remaining = 5) ≈ v["baseline_required_c2_t5_4_p3_6_r5"]
+    @test baseline_refine(1.0, 3.0; rate = 0.5, cap = 5.0) ≈ v["baseline_refine_raise"]
+    @test baseline_refine(1.0, 0.0; rate = 0.5, cap = 5.0) ≈ v["baseline_refine_lower"]
+    @test baseline_refine(1.0, 30.0; rate = 0.5, cap = 2.0) ≈ v["baseline_refine_capped"]
+    @test baseline_required(2.0, 5.0, 4.0, 9.0, 9.0; remaining = 5) == 0.0           # on or above target: nothing required
+    @test baseline_required(2.0, 5.0, 4.0, 9.0, 1.0; remaining = 5) ≈ 2.0 * 3.0 / 5   # a surplus in u does not offset a shortfall in h
+    @test baseline_required(2.0, 5.0, 4.0, 0.0, 0.0; remaining = 0) == 0.0
+    @test newborn_baseline(2.0, 5.0, 4.0; window = 10) ≈ baseline_required(2.0, 5.0, 4.0, 0.0, 0.0; remaining = 10)
+    @test baseline_refine(1.0, 0.0; rate = 1.0, cap = 5.0) == 0.0                      # never negative
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.5) ≈ 3.0
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 0.0) ≈ 2.5
     @test optimistic_average([1.0, 2.0, 3.0, 4.0], 1.0) ≈ 4.0

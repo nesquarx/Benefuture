@@ -60,4 +60,29 @@ def responsibility_factor_ref (isAct isInformed hasDuty : Bool)
   let sevNN := if severityScale > 0.0 then severityScale else 0.0
   roleWeight * clamp01 counterfactualRatio * sevNN
 
+/-- Audit probability of a forcible restraint (`L121`; ruling 8.169 c): `min 1 (floor + (1 - floor) *
+    burden / bar)`, burden `sev * (1 + dur / durScale)`; 1 at and above the severity bar. Matches
+    `Benefuture.Subgoals.restraint_audit_prob`. Assumes `bar > 0`, `durScale > 0`. -/
+def restraint_audit_prob_ref (sev dur durScale bar floorP : Float) : Float :=
+  let burden := sev * (1.0 + dur / durScale)
+  let raw := floorP + (1.0 - floorP) * (burden / bar)
+  if raw < 1.0 then raw else 1.0
+
+/-- Liability of the enforcing entity (`L120`; ruling 8.169 ii): zero when the audit upholds the
+    restraint, else `max 0 kappa * max 0 cost`. Matches `false_restraint_liability`. -/
+def false_restraint_liability_ref (upheld : Bool) (kappa cost : Float) : Float :=
+  if upheld then 0.0
+  else (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0)
+
+/-- Weight of the audit's credence that the restraint was false (ruling 8.169 iii): `clamp (2 conf - 1)`
+    to [0, 1]; zero at and below one half. Matches `restraint_audit_weight`. -/
+def restraint_audit_weight_ref (conf : Float) : Float :=
+  let w := 2.0 * conf - 1.0
+  if w < 0.0 then 0.0 else if w > 1.0 then 1.0 else w
+
+/-- Credence-scaled liability: `max 0 kappa * max 0 cost * weight conf`. Matches
+    `credence_restraint_liability`. -/
+def credence_restraint_liability_ref (conf kappa cost : Float) : Float :=
+  (if kappa > 0.0 then kappa else 0.0) * (if cost > 0.0 then cost else 0.0) * restraint_audit_weight_ref conf
+
 end BenefutureReference

@@ -295,6 +295,15 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_birth_escrow] def birthEscrow (initial predicted : Float) (window : USize) (baseline : Float) : Float :=
   birth_escrow_ref initial predicted window.toNat baseline
 
+@[export bf_baseline_required] def baselineRequired (cost targetU targetH projU projH : Float) (remaining : USize) : Float :=
+  baseline_required_ref cost targetU targetH projU projH remaining.toNat
+
+@[export bf_newborn_baseline] def newbornBaseline (cost targetU targetH : Float) (window : USize) : Float :=
+  newborn_baseline_ref cost targetU targetH window.toNat
+
+@[export bf_baseline_refine] def baselineRefine (current required rate cap : Float) : Float :=
+  baseline_refine_ref current required rate cap
+
 @[export bf_birth_accrued_escrow] def birthAccruedEscrow (initial predicted : Float) (window elapsed : USize) (baseline : Float) : Float :=
   birth_accrued_escrow_ref initial predicted window.toNat elapsed.toNat baseline
 
@@ -464,6 +473,16 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
   rehabilitate_restraint_ref baseShare crimeEvents.toUInt64.toNat
     patternMin.toUInt64.toNat stepDecay minShare
 
+-- 8.169 / L120, L121: audit probability of forcible restraint; liability of the enforcing entity
+@[export bf_restraint_audit_prob] def restraintAuditProb (sev dur durScale bar floorP : Float) : Float :=
+  restraint_audit_prob_ref sev dur durScale bar floorP
+
+@[export bf_false_restraint_liability] def falseRestraintLiability (upheld : UInt8) (kappa cost : Float) : Float :=
+  false_restraint_liability_ref (upheld != 0) kappa cost
+
+@[export bf_credence_restraint_liability] def credenceRestraintLiability (conf kappa cost : Float) : Float :=
+  credence_restraint_liability_ref conf kappa cost
+
 -- 8.133 & 8.155 / L83: RA estimating domain value per (cost + audit), commons reserve, contraction factor
 @[export bf_ra_value_per_cost] def raValuePerCost (measuredGain resourceCost auditCost fallback : Float) : Float :=
   ra_value_per_cost_ref measuredGain resourceCost auditCost fallback
@@ -521,6 +540,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_chain_truth_level] def chainTruthLevel
     (baseLevel : Float) (hops : FloatArray) : Float :=
   chain_truth_level_ref baseLevel hops.data
+
+@[export bf_ih_truth_level] def ihTruthLevel
+    (outputs weights : FloatArray) (memScore : Float) (provable : UInt8) (capUnprovable : Float) : Float :=
+  ih_truth_level_ref outputs.data weights.data memScore (provable != 0) capUnprovable
 
 -- Parsimony cleanup (`sim/README.md` L1322-1324): ContentionMap & AdvAp governance recount
 @[export bf_contention_map] def contentionMap
