@@ -27,3 +27,5 @@ yellow or white hover), the same point before and after; assertion unchanged. te
 ## Files touched
 tests/js/map_check.cjs, progress/lifeimage-red-diag.md
 Resume: `cd lifeImage && python3 -m pytest -q --no-header 2>&1 | tail`
+
+Final suite: 1 failed (layout_sim adjacency, item 1), 1182 passed, 1 xfailed.
