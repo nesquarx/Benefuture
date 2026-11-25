@@ -305,7 +305,7 @@ def worlds():
 def test_fine_domains_sit_inside_the_arc_of_their_main_parent_and_tile_it():
     with_fine, _ = worlds()
     placed = with_fine.fine
-    assert len(placed) == 786, "every fine domain is placed once"
+    assert len(placed) == len(fine_cards()) == len(set(placed)), "every fine domain is placed once"
     by = FINE_BY_ID()
     from lifeimage.fine.placement import main_parent
     groups = defaultdict(list)
