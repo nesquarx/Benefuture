@@ -5,6 +5,12 @@
   "status": "fetched",
   "url": "https://www.bls.gov/tus/lexicons/lexiconnoex2025.pdf"
  },
+ "doid": {
+  "rows": 13,
+  "status": "fetched",
+  "terms": 12419,
+  "url": "https://purl.obolibrary.org/obo/doid.obo"
+ },
  "esco_isco": {
   "rows": 183,
   "status": "fetched",
@@ -15,10 +21,29 @@
   "status": "fetched",
   "url": "https://ec.europa.eu/esco/api (skills hierarchy)"
  },
+ "getty_aat": {
+  "error_count": 0,
+  "errors": [],
+  "rows": 38,
+  "status": "fetched",
+  "url": "https://vocab.getty.edu/sparql"
+ },
  "icatus": {
   "rows": 221,
   "status": "fetched",
   "url": "https://unstats.un.org/unsd/gender/timeuse/23012019%20ICATUS.pdf"
+ },
+ "mondo": {
+  "rows": 24,
+  "status": "fetched",
+  "terms": 58714,
+  "url": "https://purl.obolibrary.org/obo/mondo.obo"
+ },
+ "onet": {
+  "release": "O*NET 31.0",
+  "rows": 2,
+  "status": "fetched",
+  "url": "https://www.onetcenter.org/dl_files/database/db_31_0_csv/gwas_to_iwas.csv"
  },
  "openalex": {
   "rows": 252,

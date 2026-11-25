@@ -63,6 +63,87 @@ GOVERNED = {
         "default": 0.1,
         "source": "LI.26: inclusion asymmetry p(b|a) - p(a|b) that gives a co-membership direction (`radius.py` PREREQ_MARGIN); assumption.",
     },
+    "layout_sim.pull_cap": {
+        "default": 30.0,
+        "source": "LI.55: degrees at which an attraction saturates (a Huber pull: linear inside, constant beyond), so one far link "
+                  "cannot drag a field across the circle alone while several can; assumption (about the width of a sector's arc).",
+    },
+    "layout_sim.shift_budget": {
+        "default": 100.0,
+        "source": "LI.55 / LI.58: the shift (degrees from the prior angle) the median field's full attraction may cause. The angular spring is "
+                  "weak by ruling (do not constrain angle too much): the prior is the stability term (LI.25) but may give way by about a quarter "
+                  "circle; the radius, judged on its own scale, is held much harder (k_radial).",
+    },
+    "layout_sim.k_polar": {
+        "default": 0.3,
+        "source": "LI.58: stiffness of the weak angular spring to the prior angle (the axes angle, later the previous layout), relative to the median "
+                  "field's total attraction (normalised to 1). Derived: pull_cap / shift_budget = 30 / 100, so a field pulled at saturation by the "
+                  "median total attraction settles at the budget. This is the stability term of LI.25; the stability metrics show the drift it allows.",
+    },
+    "layout_sim.shift_max": {
+        "default": 120.0,
+        "source": "LI.58: hard limit on a field's shift from its prior angle (a third of the circle), a guard so a loose spring can never carry a "
+                  "field to the opposite side; assumption.",
+    },
+    "layout_sim.k_repel": {
+        "default": 2.0,
+        "source": "LI.55: stiffness of the short-range repulsion between fields closer than the sum of their half-widths, relative to the "
+                  "median field's total attraction; twice the attraction per degree so slices keep their order; assumption.",
+    },
+    "layout_sim.rep_floor": {
+        "default": 0.4,
+        "source": "LI.55: degrees added to the half-width sum of two fields as the repulsion range, so fields with no evidence (the "
+                  "minimum slice) still keep a gap; about a quarter of the mean slot (360 / 247); assumption.",
+    },
+    "layout_sim.w_overlap": {"default": 1.0, "source": "LI.55: weight of overlap links (judged by runners, weight per link); the reference source."},
+    "layout_sim.w_upstream": {"default": 1.0, "source": "LI.55: weight of field-to-field upstream links (a parent field is a close neighbour)."},
+    "layout_sim.w_sector": {
+        "default": 0.5,
+        "source": "LI.55: weight of the pull of a field toward the circular mean of its sector (upstream links, by link weight); a sector is "
+                  "broad, so its pull is half an overlap's; assumption.",
+    },
+    "layout_sim.w_comembership": {
+        "default": 0.5,
+        "source": "LI.55: weight of learnt conditional co-membership (annotations by runners, noisy, popularity-biased); half an overlap's; assumption.",
+    },
+    "layout_sim.w_fine": {
+        "default": 0.75,
+        "source": "LI.55: weight of shared fine children (fine cards linking both fields, a nearness signal from the fine level); assumption.",
+    },
+    "layout_sim.w_text": {
+        "default": 0.5,
+        "source": "LI.55: weight of textual nearness (TF-IDF cosine over label, aliases, description and fine children's labels); cheap and "
+                  "partly derived from the same words the axes judges read, so half an overlap's; assumption.",
+    },
+    "layout_sim.support_floor": {
+        "default": 3,
+        "source": "LI.55: least number of annotated items on which a co-membership row stands to count as signal (the file's median support is 2); assumption.",
+    },
+    "layout_sim.weight_cap": {
+        "default": 3.0,
+        "source": "LI.55: each source's weights are divided by their median over pairs with signal, then capped at this multiple, so no source's "
+                  "tail dominates; assumption.",
+    },
+    "layout_sim.text_floor": {"default": 0.10, "source": "LI.55: least TF-IDF cosine that counts as textual signal; assumption."},
+    "layout_sim.text_topk": {
+        "default": 6,
+        "source": "LI.55: a field keeps textual signal only to its k most similar fields (and a pair counts if either keeps it), so the dense "
+                  "cosine matrix stays a nearness signal, not a haze; assumption.",
+    },
+    "layout_sim.inherited_stiffness": {
+        "default": 0.25,
+        "source": "LI.55: share of the polar stiffness a field keeps when it has no axes of its own (its angle is inherited from upstream); assumption.",
+    },
+    "layout_sim.k_radial": {
+        "default": 5.0,
+        "source": "LI.58: stiffness of the strict radial spring to the judged radius (LI.26), relative to the median field's total attraction; "
+                  "five times the weak angular spring's order of magnitude, so the radius stays at the prior.",
+    },
+    "layout_sim.radial_pull": {
+        "default": 0.1,
+        "source": "LI.55: share of the angular attraction that also acts radially (pulls linked fields to similar radii); small, as the radius "
+                  "is judged on its own scale; assumption. The radial state is a diagnostic: bands in the build keep the judged radius.",
+    },
 }
 
 # The reference pool of LI.39: generalist personas aged 40 on the generated population's calibration mix, fixed seeds,

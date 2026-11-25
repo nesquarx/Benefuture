@@ -160,11 +160,13 @@ def build_pool(coarse_cards, source_dir=ROOT / "data" / "fine" / "sources", publ
     return pool, report
 
 
-def new_candidates(rows, existing_pool, coarse_cards, source="atus"):
-    """(candidates, report) for the rows of one further source, only what is new: a row that restates a coarse domain or
-    an existing candidate (by label or alias) is dropped with its reason; the rest are deduplicated among themselves and
-    given ids clear of the existing pool, so the first pool's cards and cached answers are untouched.
-    report: raw = candidates + dropped + merged."""
+def new_candidates(rows, existing_pool, coarse_cards, source="atus", order=None):
+    """(candidates, report) for the rows of one or more further sources, only what is new: a row that restates a coarse
+    domain or an existing candidate (by label or alias) is dropped with its reason; the rest are deduplicated among
+    themselves and given ids clear of the existing pool, so the first pool's cards and cached answers are untouched.
+    A row may carry its own `source` (default `source`), `kind` and `target` (the empty coarse field it was chosen for:
+    a candidate lists every target of the rows it merged as `target_fields`, a trace only). `order` ranks the sources
+    when rows merge. report: raw = candidates + dropped + merged."""
     held = {}
     for c in coarse_cards:
         for l in [c["label"], *(a["text"] for a in c["aliases"])]:
@@ -172,15 +174,18 @@ def new_candidates(rows, existing_pool, coarse_cards, source="atus"):
     for c in existing_pool:
         for l in [c["label"], *c.get("aliases", [])]:
             held.setdefault(dedupe_key(l), f"restates existing candidate {c['id']}")
-    items, dropped = [], []
+    items, dropped, targets = [], [], defaultdict(set)
     for r in rows:
+        src = r.get("source", source)
         hit = held.get(dedupe_key(r["label"]))
         if hit:
-            dropped.append({"label": r["label"], "source": source, "reason": hit})
-        else:
-            items.append(_item(r["label"], source, r["code"], KINDS.get(source, "activity"), r.get("description", ""),
-                               r.get("aliases", []), [r.get("broader", "")]))
-    merged, rep = merge_candidates(items, [source])
+            dropped.append({"label": r["label"], "source": src, "reason": hit})
+            continue
+        items.append(_item(r["label"], src, r["code"], r.get("kind") or KINDS.get(src, "activity"), r.get("description", ""),
+                           r.get("aliases", []), [r.get("broader", "")]))
+        if r.get("target"):
+            targets[dedupe_key(r["label"])].add(r["target"])
+    merged, rep = merge_candidates(items, order or [source])
     taken = {c["id"] for c in existing_pool}
     out = []
     for c in sorted(merged, key=lambda c: c["sources"][0]["code"]):
@@ -190,11 +195,12 @@ def new_candidates(rows, existing_pool, coarse_cards, source="atus"):
             n += 1
             cid = f"{base}_{n}"
         taken.add(cid)
-        out.append(dict(c, id=cid))
+        extra = {"target_fields": sorted(targets[dedupe_key(c["label"])])} if targets.get(dedupe_key(c["label"])) else {}
+        out.append(dict(c, id=cid, **extra))
     out.sort(key=lambda c: c["id"])
     all_dropped = dropped + rep["dropped"]
     return out, {"raw": len(rows), "candidates": len(out), "merged": rep["merged"], "dropped": all_dropped,
-                 "licence_status": LICENCES[source]["status"]}
+                 "licence_status": LICENCES[source]["status"] if source in LICENCES else None}
 
 
 def load_pool(path):

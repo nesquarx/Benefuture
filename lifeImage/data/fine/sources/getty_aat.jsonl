@@ -1,0 +1,38 @@
+{"aliases": [], "broader": "clothing", "code": "aat:300209263", "depth": 1, "descendants": 30, "description": "", "label": "main garments", "target": "clothing_footwear"}
+{"aliases": [], "broader": "clothing", "code": "aat:300209265", "depth": 1, "descendants": 27, "description": "", "label": "outerwear", "target": "clothing_footwear"}
+{"aliases": [], "broader": "clothing", "code": "aat:300209267", "depth": 1, "descendants": 18, "description": "", "label": "underwear", "target": "clothing_footwear"}
+{"aliases": [], "broader": "footwear", "code": "aat:300210021", "depth": 1, "descendants": 0, "description": "", "label": "bootees (infant footwear)", "target": "clothing_footwear"}
+{"aliases": [], "broader": "footwear", "code": "aat:300262817", "depth": 1, "descendants": 0, "description": "", "label": "booties (adult footwear)", "target": "clothing_footwear"}
+{"aliases": [], "broader": "rituals (events)", "code": "aat:300249405", "depth": 1, "descendants": 2, "description": "", "label": "ablutions", "target": "family_rituals"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300069281", "depth": 1, "descendants": 1, "description": "", "label": "Carnival (pre-Lenten festival)", "target": "family_rituals"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300445033", "depth": 1, "descendants": 1, "description": "", "label": "Nahua festivals", "target": "family_rituals"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300260323", "depth": 1, "descendants": 1, "description": "", "label": "harvest festivals", "target": "family_rituals"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300263480", "depth": 1, "descendants": 1, "description": "", "label": "lantern festivals (African festivals)", "target": "family_rituals"}
+{"aliases": [], "broader": "rituals (events)", "code": "aat:300404273", "depth": 1, "descendants": 0, "description": "", "label": "areitos", "target": "family_rituals"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300069124", "depth": 1, "descendants": 24, "description": "", "label": "religious ceremonies", "target": "festivals_events"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300073261", "depth": 1, "descendants": 16, "description": "", "label": "cultural ceremonies", "target": "festivals_events"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300069125", "depth": 1, "descendants": 3, "description": "", "label": "building ceremonies", "target": "festivals_events"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300165866", "depth": 1, "descendants": 2, "description": "", "label": "academic ceremonies", "target": "festivals_events"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300069281", "depth": 1, "descendants": 1, "description": "", "label": "Carnival (pre-Lenten festival)", "target": "festivals_events"}
+{"aliases": [], "broader": "festivals (celebrations)", "code": "aat:300445033", "depth": 1, "descendants": 1, "description": "", "label": "Nahua festivals", "target": "festivals_events"}
+{"aliases": [], "broader": "cosmetics", "code": "aat:300236306", "depth": 1, "descendants": 5, "description": "", "label": "cosmetics", "target": "personal_appearance"}
+{"aliases": [], "broader": "hairstyles", "code": "aat:300379262", "depth": 1, "descendants": 3, "description": "", "label": "facial hairstyles", "target": "personal_appearance"}
+{"aliases": [], "broader": "hairstyles", "code": "aat:300445402", "depth": 1, "descendants": 0, "description": "", "label": "axtlacuilli (women's hairstyle)", "target": "personal_appearance"}
+{"aliases": [], "broader": "hairstyles", "code": "aat:300404709", "depth": 1, "descendants": 0, "description": "", "label": "braids (hairstyle)", "target": "personal_appearance"}
+{"aliases": [], "broader": "hairstyles", "code": "aat:300404710", "depth": 1, "descendants": 0, "description": "", "label": "chignons (hairstyles)", "target": "personal_appearance"}
+{"aliases": [], "broader": "hairstyles", "code": "aat:300445417", "depth": 1, "descendants": 0, "description": "", "label": "cuachic (warrior)", "target": "personal_appearance"}
+{"aliases": [], "broader": "repairing", "code": "aat:300053739", "depth": 1, "descendants": 1, "description": "", "label": "anastylosis", "target": "reuse_repair"}
+{"aliases": [], "broader": "repairing", "code": "aat:300261722", "depth": 1, "descendants": 1, "description": "", "label": "mending", "target": "reuse_repair"}
+{"aliases": [], "broader": "repairing", "code": "aat:300445653", "depth": 1, "descendants": 0, "description": "", "label": "kintsugi", "target": "reuse_repair"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300069124", "depth": 1, "descendants": 24, "description": "", "label": "religious ceremonies", "target": "rites_of_passage"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300073261", "depth": 1, "descendants": 16, "description": "", "label": "cultural ceremonies", "target": "rites_of_passage"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300069125", "depth": 1, "descendants": 3, "description": "", "label": "building ceremonies", "target": "rites_of_passage"}
+{"aliases": [], "broader": "rituals (events)", "code": "aat:300249405", "depth": 1, "descendants": 2, "description": "", "label": "ablutions", "target": "rites_of_passage"}
+{"aliases": [], "broader": "ceremonies", "code": "aat:300165866", "depth": 1, "descendants": 2, "description": "", "label": "academic ceremonies", "target": "rites_of_passage"}
+{"aliases": [], "broader": "rituals (events)", "code": "aat:300404273", "depth": 1, "descendants": 0, "description": "", "label": "areitos", "target": "rites_of_passage"}
+{"aliases": [], "broader": "games", "code": "aat:300222746", "depth": 1, "descendants": 14, "description": "", "label": "board games (activities)", "target": "video_gaming"}
+{"aliases": [], "broader": "games", "code": "aat:300222738", "depth": 1, "descendants": 10, "description": "", "label": "card games (activities)", "target": "video_gaming"}
+{"aliases": [], "broader": "games", "code": "aat:300222725", "depth": 1, "descendants": 7, "description": "", "label": "sports", "target": "video_gaming"}
+{"aliases": [], "broader": "games", "code": "aat:300222752", "depth": 1, "descendants": 5, "description": "", "label": "table games", "target": "video_gaming"}
+{"aliases": [], "broader": "games", "code": "aat:300239662", "depth": 1, "descendants": 2, "description": "", "label": "ball games (general, games)", "target": "video_gaming"}
+{"aliases": [], "broader": "games", "code": "aat:300222755", "depth": 1, "descendants": 2, "description": "", "label": "court games", "target": "video_gaming"}
