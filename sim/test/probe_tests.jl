@@ -3375,4 +3375,70 @@ end
     @test sum(r -> r.tr.challenger_charged, flood) > 0
 end
 
+# The unified world, phase A (author ruling 8.174, WORLD_COVERAGE; P56). One trust network carries the voters' contacts, the rumour
+# (per voter, by the echoes among its contacts), the claims, the adoption vote and the economy's hazard inputs; clusters are never
+# declared but read, nested, from the interaction measured on it (the weight each voter gave each source it heard), per epoch.
+# Predictions before measuring (lead): the unified world runs without stall and the ledger identity holds (0.7); the clusters recover
+# the planted communities (0.7); the Goal pattern is within the margin (0.6; heavy probe). Hypotheses: (1) outcome baseline on the
+# earlier separate worlds: a lie planted in one community does not spread along any network, so what a voter hears of it is unrelated
+# to who its contacts are (correlation of led-astray rate with liar contacts about 0; direction only here, significance in
+# probe_heavy1); unified, it follows the contacts (positive on average); (2) structural, every seed and epoch: levels are nested,
+# nobody hears off the network, the economy runs to the end with the ledger identity; (3) the clusters recover the planted communities
+# (adjusted Rand index above 0.6 in every seed and epoch); (4) gaming, interaction forged to steer the clustering (a sybil clique
+# praising itself, one hub heard by everyone) leaves the honest communities' recovery above the same bar.
+@timed_testset "Probe: unified world, one network drives voters, rumour, claims and economy; clusters emerge nested (P56)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    uw(seed; kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(; kw...))
+    uw(1)   # warm-up: compilation is not the probe's cost
+    t0 = time()
+    runs = [uw(s; liar_community = 1) for s in 1:3]
+    for r in runs
+        u = r.unified
+        @test length(u.epochs) == 3 && all(e -> e.nested, u.epochs)                           # clusters of clusters, every epoch
+        @test all(e -> e.agreement > 0.6, filter(e -> e.interaction > 0, u.epochs)) && u.epochs[end].interaction > 0   # the planted communities are recovered from interaction alone
+        @test all(e -> e.interaction > 0 || length(e.levels) == 1, u.epochs)                  # nothing measured yet: one cluster, recorded loudly in `degraded`
+        @test all(e -> length(e.readings) == length(e.levels), u.epochs)
+        contact = [(i, j) for i in 1:48 for j in u.network.contacts[i]]
+        heard = [(i, j) for i in 1:48, j in 1:48 if u.interaction[i, j] > 0 || any(m -> m[i, j] > 0, u.claims.interaction)]
+        @test all(p -> p in contact, heard) && !isempty(heard)                                # nobody hears off the one network
+        @test length(r.epoch_outcomes) == 3 && all(isfinite, (r.success.floor_u, r.success.floor_h, r.success.median_u, r.success.median_h))   # no stall
+    end
+    # one economy, one ledger: priced actions mint and burn currency by outcomes alone (as the supply probe), on the unified world
+    cr = run_coupled(M3cParams(ToyParams(n = 30, steps = 50, plans = 4), agents[1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                               transactions = true, causal_distribution = true, init_steps = 10, form_count = 10^6),
+                     tr -> M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true);
+                     seed = 1, epoch = 25, continuous = true, unified = UnifiedParams(domains = [1]))
+    tr = cr.econ_trace
+    @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6
+    # outcome baseline (1): the lie's reach follows the contacts only when the contacts are one network (unhandled society, noisy voters, heavy lie)
+    m3 = run_m3c(econ; seed = 1)
+    function reach(seed, net)
+        liars = [i for i in 1:48 if net.planted[i] == 1][1:8]; h = filter(i -> !(i in liars), 1:48)
+        kw = (; m3, econ, ih = false, seed, steps = 8, liars_override = liars, run_economy = false, signal_σ = 6.0, claims_per_step = 10)
+        lc = [count(in(liars), net.contacts[i]) for i in h]
+        (unified = cor(lc, run_ih_world(IhWorldParams(; kw..., network = net, rounds = 2)).voter_led_astray[h]),
+         separate = cor(lc, run_ih_world(IhWorldParams(; kw...)).voter_led_astray[h]))
+    end
+    rc = [reach(s, build_trust_network(48; seed = s)) for s in 1:4]
+    @info "P56 lie reach (corr of led-astray with liar contacts, smoke)" unified = mean(r.unified for r in rc) separate = mean(r.separate for r in rc)
+    @test mean(r.unified for r in rc) > mean(r.separate for r in rc) + 0.1 && abs(mean(r.separate for r in rc)) < 0.15
+    # gaming (4): forged interaction cannot take the honest communities' structure
+    net = build_trust_network(48; seed = 1)
+    W = zeros(48, 48); for i in 1:48, j in net.contacts[i]; W[i, j] += 1.0; end
+    forged = zeros(54, 54); forged[1:48, 1:48] .= W
+    for i in 49:54, j in 49:54; i != j && (forged[i, j] = 50.0); end              # six sybils praise each other loudly
+    raw = cluster_hierarchy(forged); rl = raw.partitions[raw.best]
+    @test adjusted_rand_index(rl[1:48], net.planted) < 0.6                        # counterexample: unbounded interaction lets the clique swamp the honest structure
+    sybil = cluster_hierarchy(attention_normalise(forged)); sl = sybil.partitions[sybil.best]
+    @test adjusted_rand_index(sl[1:48], net.planted) > 0.6 && length(unique(sl[49:54])) == 1 && all(sl[1:48] .!= sl[49])   # an island, merged into no community
+    hub = copy(forged[1:49, 1:49]); hub[1:48, 49] .= 1.0; hub[49, 1:48] .= 1.0     # one account everyone hears, as much as their closest contact
+    hl = cluster_hierarchy(attention_normalise(hub)); @test adjusted_rand_index(hl.partitions[hl.best][1:48], net.planted) > 0.6
+    wall = time() - t0
+    @info "P56 wall time (s)" wall
+    @test wall < 20
+end
+
 probe_total("fast")

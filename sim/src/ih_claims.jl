@@ -103,6 +103,10 @@ Base.@kwdef struct IhWorldParams
     reframe::Float64 = 0.5               # world: chance a claim is framed as unfalsifiable by the extremists (8.168), before infrastructure makes it checkable
     ext_conf::Float64 = 0.99             # an extremist's stated confidence
     unprovable_to_econ::Float64 = 1.0    # glue: weight of the wrong-side weight on unprovable claims added to the economy's side-effect chance (0 = off)
+    network::Any = nothing               # nothing: every claim draws its own contacts (the earlier separate worlds); a `TrustNetwork`: the one persistent network (unified world)
+    rounds::Int = 1                      # times readings pass on before a decision (the network's hops)
+    liars_override::Any = nothing        # nothing: every `liar_stride`-th person; else the colluders (a world property: where the lie starts)
+    run_economy::Bool = true             # false: return the economy's inputs and let the caller run it (`run_coupled` unified)
     seed::Int = 1
 end
 
@@ -129,21 +133,27 @@ Reports the claim measures of `run_ih_claims` and the economy's trace with its `
 """
 function run_ih_world(p::IhWorldParams)
     m3 = p.m3; na = length(m3.agents); nd = size(m3.relevance_leaf, 2)
-    liars = collect(1:p.liar_stride:na)
+    liars = p.liars_override === nothing ? collect(1:p.liar_stride:na) : sort(collect(Int, p.liars_override))
     extremists = p.extremist_frac > 0 ? [i for i in 1:na if i % max(2, round(Int, 1 / p.extremist_frac)) == 2 && !(i in liars)] : Int[]
     bloc = sort(union(liars, extremists))   # extremists are one more fixed-side bloc on the network: M5 spreads, tags and weighs them as it does the colluders
     rng_x = Xoshiro(hash((p.seed, :extremist)))   # own stream, drawn only where extremists exist
     # the shared network's two M8 measurements (one n, one set of colluders)
     t8 = run_m8_truth(M8TruthParams(n = na, steps = 4, echo_copies = length(liars), mode = p.ih ? :bf_truth : :untagged_naive, seed = p.seed))
     z8 = run_m8_ihz(M8IhzParams(n = na, steps = 8, attacker_frac = length(liars) / na, mode = p.ih ? :gated_ihz : :open_ungated, seed = p.seed))
-    defer = clamp(t8.false_adoption, 0.0, 1 - p.advice_stay)
+    # On the trust network each voter's rumour exposure is its own (the echoes among its contacts); else one number for the society.
+    dv = p.network === nothing ? Float64[] : voter_rumour_defer(p.network, liars, p.advice_stay, p.ih; seed = p.seed)
+    defer = p.network === nothing ? clamp(t8.false_adoption, 0.0, 1 - p.advice_stay) : mean(dv)
     base = M5Params(m3, p.domains; decisions = 1, signal_σ = p.signal_σ, deliberation = p.connected, info_handling = p.ih,
                     source_tags = p.ih && p.connected, tag_liars = p.connected ? bloc : Int[], colluders = bloc, stealth = false,
-                    diversity = false, advice_stay = p.advice_stay, advice_avg = 1 - p.advice_stay - defer, advice_defer = defer)
+                    diversity = false, advice_stay = p.advice_stay, advice_avg = 1 - p.advice_stay - defer, advice_defer = defer,
+                    rounds = p.rounds, network = p.network === nothing ? nothing : p.network.contacts, defer_voter = dv)
     rng_t = Xoshiro(hash((p.seed, :truth))); rng_d = Xoshiro(hash((p.seed, :domain)))
     rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
     chit = 0.0; cseen = 0.0; acc = Float64[]; harm = 0.0; peak = 0.0; pay = 0.0; w_unprov = Float64[]; swayed = Float64[]
     infl = Float64[]; infl_unprov = Float64[]; wrong_unprov = Float64[]
+    dec_wrong = zeros(na); dec_seen = zeros(na); dec_right = zeros(na); dec_obs = zeros(na)   # per voter: led astray (reads the liars' side where it is wrong), and right on checkable claims
+    inter = Matrix{Float64}[]; snaps = NamedTuple[]
+    step_inter = zeros(na, na)
     for step in 1:p.steps, c in 1:p.claims_per_step
         k = p.domains[rand(rng_d, 1:length(p.domains))]
         t = rand(rng_t) < 0.5 ? 1.0 : -1.0
@@ -158,6 +168,14 @@ function run_ih_world(p::IhWorldParams)
         rec = r.records
         experts = sortperm(m3.relevance_leaf[:, k]; rev = true)[1:min(p.n_experts, na)]
         out = [e in extremists ? clamp(0.5 + 0.5 * p.ext_conf * bias, 0.01, 0.99) : clamp(0.5 + 0.45 * bias * sign(r.last_signal[e]), 0.01, 0.99) for e in experts]
+        sgn = sign.(r.last_signal)
+        if T < 0   # the shared bias's side is wrong here (checkable claims only: an unfalsifiable one has T = 1)
+            dec_seen .+= 1; dec_wrong .+= sgn .> 0
+        end
+        observable && (dec_obs .+= 1; dec_right .+= sgn .== sign(T))
+        if p.network !== nothing   # measured interaction: the weight each voter gave each source it heard
+            for i in 1:na, (j, w) in zip(r.heard.sources[i], r.heard.weights[i]); step_inter[i, j] += w; end
+        end
         push!(swayed, isempty(r.minds_changed) ? 0.0 : r.minds_changed[end])
         if p.ih
             wts = [max(source_weight(rec[e, k][1], rec[e, k][2]), 0.02) for e in experts]
@@ -177,6 +195,10 @@ function run_ih_world(p::IhWorldParams)
             push!(wrong_unprov, side != t ? lvl : 0.0)
             side != t && (harm += lvl; peak = max(peak, lvl))
         end
+        if p.network !== nothing && c == p.claims_per_step   # one epoch of the unified world ends
+            push!(inter, step_inter); step_inter = zeros(na, na)
+            push!(snaps, (led_astray = dec_wrong ./ max.(dec_seen, 1), seen_wrong_side = copy(dec_seen), accuracy = dec_right ./ max.(dec_obs, 1), seen_checkable = copy(dec_obs)))
+        end
     end
     accuracy = isempty(acc) ? 0.0 : mean(acc)
     n_legit = na - length(liars)
@@ -184,11 +206,14 @@ function run_ih_world(p::IhWorldParams)
     risk = z8.accidental_harm / max(1, n_legit * 8 * 0.5 * M8IhzParams().hazard_harm)
     econ = _with_fields(p.econ, Dict{Symbol,Any}(:p_informed => clamp(accuracy, 0.05, 0.99),
                                                   :p_side => clamp(p.p_side_scale * (risk + p.unprovable_to_econ * wrong_u), 0.0, 1.0)))
-    tr = run_m3c(econ; seed = p.seed)
+    tr = p.run_economy ? run_m3c(econ; seed = p.seed) : nothing
     (accuracy = accuracy, harm = harm, harm_peak = peak, payoff = pay,
      mean_unprovable_weight = isempty(w_unprov) ? 0.0 : mean(w_unprov), swayed = mean(swayed),
      ext_influence = isempty(infl) ? 0.0 : mean(infl), ext_influence_unprovable_peak = isempty(infl_unprov) ? 0.0 : maximum(infl_unprov),
      wrong_unprovable_weight = wrong_u, n_extremists = length(extremists),
      false_adoption = t8.false_adoption, accidental_harm = z8.accidental_harm, p_informed = clamp(accuracy, 0.05, 0.99),
-     tr = tr, pattern = success_pattern(tr))
+     tr = tr, pattern = tr === nothing ? nothing : success_pattern(tr),
+     econ_inputs = (p_informed = econ.p_informed, p_side = econ.p_side), liars = liars, bloc = bloc, extremists = extremists, records = rec,
+     voter_led_astray = dec_wrong ./ max.(dec_seen, 1), voter_accuracy = dec_right ./ max.(dec_obs, 1), voter_defer = dv,
+     interaction = inter, voter_snapshots = snaps)
 end

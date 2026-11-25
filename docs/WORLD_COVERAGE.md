@@ -22,6 +22,7 @@ constructors and defaults in `sim/src/`. Counts are tallied from the table; reco
 | Tru | `run_m8_truth` | [`m8.jl`](../sim/src/m8.jl) | Multi-hop truth level and rumour deduplication |
 | EHR | `run_m8_ehr` | [`m8.jl`](../sim/src/m8.jl) | External aggressors, tit-for-tat, forgiveness |
 | Enf | `run_m8_enforcement` | [`m8.jl`](../sim/src/m8.jl) | Contract screening, three-tier enforcement, continuity and harm intervention |
+| Uni | `run_coupled(...; unified = UnifiedParams())` | [`unified.jl`](../sim/src/unified.jl), [`coupled.jl`](../sim/src/coupled.jl) | Cpl on one trust network (phase A, 8.174): voters' contacts, per-voter rumour exposure (`run_m8_truth`), claims with `ih_truth_level` and extremists (`run_ih_world`), the adoption vote and the economy's hazard inputs; nested clusters read per epoch from measured interaction. Not a matrix column: see Unified world below |
 
 Other worlds are not mechanism-complete: `run_m0`..`run_m3b` (earlier rungs, each a special case of M3c),
 `run_status_quo` ([`status_quo.jl`](../sim/src/status_quo.jl), the comparison arm), `run_programmes`
@@ -148,8 +149,14 @@ Rows 1-52 (row 51 groups four axioms; row 52 groups four unmodelled items).
 | EHR | 1 | 0 | 51 |
 | Enf | 5 | 0 | 47 |
 
-One mechanism group (row 37, categorising truth levels and fact checking against Mem) appears in no world, four more (row 52) are not modelled,
+Unified (Uni, `unified = true`; not a matrix column, it is Cpl with rows 34, 36 and 37 added): 31 W, 9 O, 12 absent (of 52). Row 36 is W per voter (the echoes among a voter's own contacts set its rumour adoption and its weight on advice); row 37 is W through the claims' `ih_truth_level`; row 34 is W as the economy's side-effect chance, network-wide (`run_m8_ihz` has no per-voter structure yet); row 35 reads the voters' contacts instead of the full map; row 29 still declares its binding clusters (the emergent clusters are a read-only measurement, not yet a binding input).
+
+One mechanism group (row 37, categorising truth levels and fact checking against Mem) appears in no matrix column (only in Uni and `run_ih_world`), four more (row 52) are not modelled,
 and four axioms (row 51) live in probes alone.
+
+### Unified world (phase A, 2026-11-25; 8.174; `P56`)
+
+One world: the IH network is the trust network. `build_trust_network` plants communities (a world property, kept only to judge recovery) and gives each person contacts with homophily; `run_ih_world(network = ...)` runs the claim stream on it (M5 `network`: the contacts are the only sources a voter hears, readings pass on `rounds` hops, `defer_voter`: each voter's rumour adoption from `run_m8_truth` at the number of liars among its contacts); `run_coupled(unified = ...)` overrides the governance builder's network, colluders and tag liars with the same ones, keeps the adoption vote reading live records as before, and takes the economy's `p_informed` and `p_side` from the claims. Clusters are never declared: `cluster_hierarchy` reads nested clusters (agglomeration by modularity gain) from the interaction measured on the network (the weight each voter gave each source it heard, attention-normalised so forged praise cannot swamp it), recorded per epoch with per-cluster readings (led astray, checkable-claim accuracy, rumour deferral, reputation). A missing measurement degrades loudly to one cluster (`degraded`: first epoch before any source has a record). Toy assumptions kept: communities are planted by index; hazard access is one network-wide number; the economy's judicial panel, escrow and beings are not yet attributed to clusters (the toy beings are not linked to agents, so no cluster u/h readings); interaction comes from deliberation alone (transactions are the next source); one claim family; phase B (governance, economy and reserves per cluster) not started.
 
 ## (1) Mechanisms that never run together with economy and governance
 
