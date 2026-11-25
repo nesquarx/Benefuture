@@ -26,6 +26,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 
+from .. import levels as lv
 from ..projection import DEFAULT as PROJECTION
 from ..projection import project
 from .basemap import ROOT, read_jsonl
@@ -48,6 +49,7 @@ class Governed:
     grain_dot: float = 0.006  # grain dot size and tile (fractions of the rim radius)
     grain_tile: float = 0.014
     projection: object = PROJECTION
+    levels: object = lv.DEFAULT  # LI.36 levels and the LI.37 channel split (`lifeimage/levels.py`)
 
 
 DEFAULT = Governed()
@@ -59,26 +61,25 @@ def intensity(v, g=DEFAULT):
     return min(1.0, math.log1p(v / g.v0) / math.log1p(g.v_ref / g.v0))
 
 
-def rgb(ch, g=DEFAULT, claimed=False):
-    """(r, g, b) ints from channel values; claimed colours keep `claimed_saturation` of their chroma."""
-    c = [intensity(ch.get(k, 0.0), g) for k in CHANNELS]
+def rgb(ch, g=DEFAULT, claimed=False, levels=False):
+    """(r, g, b) ints from channel values (legacy: log intensity) or levels in [0, 1] (`levels=True`: used as they are);
+    claimed colours keep `claimed_saturation` of their chroma."""
+    c = [min(1.0, max(0.0, ch.get(k, 0.0))) if levels else intensity(ch.get(k, 0.0), g) for k in CHANNELS]
     if claimed:
         grey = math.fsum(c) / 3
         c = [grey + g.claimed_saturation * (x - grey) for x in c]
     return tuple(int(round(255 * x)) for x in c)
 
 
-def parse_time(s):
-    y, m, d = (s.split("-") + ["1", "1"])[:3]
-    return date(int(y), int(m), int(d))
+parse_time = lv.parse_time
+_years = lv.years_between
 
 
-def _years(a, b):
-    return (a - b).days / 365.25
-
-
-def channel_values(rows, cards, governed=DEFAULT, asof=None):
-    """{"solid": {domain: {red, green, blue}}, "claimed": {...}} for one entity's rows."""
+def channel_values(rows, cards, governed=DEFAULT, asof=None, legacy=False):
+    """{"solid": {domain: {red, green, blue}}, "claimed": {...}} for one entity's rows: levels in [0, 1] (LI.36, LI.37), or
+    with `legacy=True` the earlier projection (summed magnitudes, to be drawn on the log scale)."""
+    if not legacy:
+        return lv.channel_levels(rows, cards, governed.levels, asof)
     known = {c["id"] for c in cards}
     live = [r for r in rows if not r["revoked"] and r["channel"] in ("positive", "prediction")]
     for r in live:
@@ -164,7 +165,7 @@ def flange(version, rim=1.0):
             f'<text x="{rim + 0.12:.3f}" y="0.012" font-size="0.03" fill="#9a9a9a" font-family="sans-serif">v{escape(version)}</text></g>')
 
 
-def render_svg(label, cv, bm, governed=DEFAULT, size=640):
+def render_svg(label, cv, bm, governed=DEFAULT, size=640, legacy=False):
     g = governed
     order = sorted(bm.slices.values(), key=lambda s: (s.ring != "sector", s.id))
     outline = "".join(wedge_path(s) for s in order)
@@ -173,7 +174,7 @@ def render_svg(label, cv, bm, governed=DEFAULT, size=640):
         for layer, bucket, flag in (("solid", solid, False), ("claimed", claimed, True)):
             ch = cv.get(layer, {}).get(s.id)
             if ch and any(ch[k] > 0 for k in CHANNELS):
-                bucket.append(f'<path d="{wedge_path(s)}" fill="{hexcolour(rgb(ch, g, flag))}"><title>{escape(s.id)}</title></path>')
+                bucket.append(f'<path d="{wedge_path(s)}" fill="{hexcolour(rgb(ch, g, flag, levels=not legacy))}"><title>{escape(s.id)}</title></path>')
     t = g.grain_tile
     defs = claimed_g = ""
     if claimed:  # the grain mask exists only where there is something claimed to draw

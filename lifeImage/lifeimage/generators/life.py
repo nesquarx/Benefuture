@@ -874,6 +874,9 @@ def generate_persona(seed, archetype="generalist", age=30, as_of="2026-11-24", p
                 continue
             row = {"entity": persona.entity, "relation": t.rel, "memberships": mem, "basemap_version": BASEMAP_VERSION,
                    "channel": "negative" if harm else "positive", "sign": -1 if harm else 1, "entity_kind": "person", "revoked": False}
+            row["production"] = me["production"]
+            if t.test:
+                row["test_kind"] = t.test
             if harm:
                 row["option_set"] = me["option_set"]
             if tier == "claimed":

@@ -192,8 +192,8 @@ def test_older_rows_are_dimmed_by_the_half_life():
     old = done_row("c.physics", 1.0, valid_time="1996-11", tier="attested")
     new = done_row("c.physics", 1.0, valid_time="2026-11", tier="attested")
     gov = im.Governed(half_life_years=15.0)
-    t_old = im.totals(im.channel_values([old, new], cards(), gov, asof="2026-11"))["green"]
-    t_new = im.totals(im.channel_values([new], cards(), gov, asof="2026-11"))["green"]
+    t_old = im.totals(im.channel_values([old, new], cards(), gov, asof="2026-11", legacy=True))["green"]  # raw sums, legacy projection
+    t_new = im.totals(im.channel_values([new], cards(), gov, asof="2026-11", legacy=True))["green"]
     t_old_only = t_old - t_new
     assert 0 < t_old_only < t_new
     assert t_old_only == pytest.approx(t_new * 0.25, rel=0.02)  # 30 years = two half-lives

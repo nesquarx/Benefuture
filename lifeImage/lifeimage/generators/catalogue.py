@@ -36,6 +36,7 @@ class Tpl:
     options: tuple = ()  # harm: ((alternative, harm), ...)
     harm: int = 0
     claim: float = 1.0  # multiplier on the propensity to mention it
+    test: str = ""  # a test or assessment row: "knowing" (a test of what one knows) or "doing" (an assessment of doing the thing)
 
 
 def m(f=None, c=None, o=None, s=None):
@@ -117,7 +118,7 @@ add("school", "learning", "started {school}", m({"c.school_education": 1}, {"c.s
 add("school_achievement", "learning", "{ach}", m({"c.school_education": 1}, {"c.school_education": .5, "c.exams_assessment": .5}, {"c.school_education": 1}, {"c.school_education": 1}),
     "make", mag=.25, record="formal", src="school-record", slots={"ach": ["won the school science prize", "finished the maths challenge in the top ten", "played the lead in the school play", "read the most books in the class", "captained the school team"]}, amin=7, amax=19, roles=("teachers",), claim=.9)
 add("exam", "learning", "passed {exam}", m({"c.exams_assessment": 1}, {"c.school_education": .5, "c.basic_skills": .5}, {"c.school_education": 1}, {"c.school_education": 1}),
-    "make", mag=.5, record="formal", src="exam-board-record", r="Passed {exam}", slots={"exam": ["national secondary exams", "advanced level exams", "the school-leaving certificate", "the baccalaureate-equivalent"]}, amin=15, anchor=True)
+    "make", mag=.5, record="formal", src="exam-board-record", r="Passed {exam}", slots={"exam": ["national secondary exams", "advanced level exams", "the school-leaving certificate", "the baccalaureate-equivalent"]}, amin=15, anchor=True, test="knowing")
 add("degree", "learning", "graduated from {uni} in {field}", m({"c.higher_education": 1}, {"{field_dom}": 1}, {"c.higher_education": 1}, {"c.higher_education": 1}),
     "make", mag=.7, record="formal", src="university-record", r="{degree} in {field}, {uni}", s="I hold a degree in {field}", slots={"uni": ["Ravensworth University", "Eastgate College", "the Hartley Institute", "Northmoor University"], "degree": ["BSc", "BA", "BEng", "MA"]}, amin=19, anchor=True)
 add("degree_start", "learning", "started studying {field} at {uni}", m({"c.higher_education": 1}, {"{field_dom}": 1}, None, {"c.higher_education": 1}),
@@ -203,7 +204,7 @@ add("repair_reuse", "consumption", "{what}", m({"c.reuse_repair": 1}, {"c.reuse_
 
 # ---------------- mobility ----------------
 add("driving_licence", "mobility", "passed my driving test", m({"c.driving": 1}, {"c.driving": .6, "c.road_safety": .4}, {"c.driving": 1}, {"c.road_safety": 1}),
-    "make", mag=.3, record="formal", src="licence-register", amin=17, anchor=True)
+    "make", mag=.3, record="formal", src="licence-register", amin=17, anchor=True, test="doing")
 add("relocation_abroad", "mobility", "moved abroad to {place}", m({"c.migration": 1}, {"c.border_migration_admin": .5, "c.moving_relocation": .5}, {"c.migration": 1}, {"c.migration": 1}),
     "make", mag=.5, record="formal", src="visa-record", slots={"place": ["Canada", "Germany", "Australia", "Spain", "the Netherlands"]}, amin=18, anchor=True)
 
