@@ -1071,6 +1071,8 @@ with everyone deferring 87.2%. Before calibration: 74.8%, 81.0%, 81.6%, 85.7%.)
 On contested questions, hearing both sides weighed by their records, with trials revealing
 outcomes, finds the performant option far more often; deliberation alone hones in slowly.
 
+Composed dormant economy flags (WORLD_COVERAGE step 5, `P55`): `dormant_flags` (`sim/battery/long_horizon.jl`, `dormant = true` in `world` and `coupled_world`, off by default) turns on budget-bound issuance with RA's horizon bound, the RA estimating domain with commons reserve and spend contraction, the converge gate with the legacy funder, `responsibility_reading`, `repair_credit`, `accolade_counterfactual` and proposal predict-measure-adapt. Parsimony: no new mechanism, a builder switch only; capacity 10 per being and regeneration 5% per step are probe-scale world parameters, not thresholds, to be recalibrated before a battery reads them. Gaming: unchanged per flag (RA's bound withholds claims above deliverable value, so overstating capacity gains nothing).
+
 ### Source tags, the full ContentionMap and weight on advice (8.45, 8.60, 8.63)
 
 Composed world (WORLD_COVERAGE step 1, `P51`): the `:bf` builders (`ih_flags`, `sim/battery/long_horizon.jl`) set `deliberation`, `info_handling`,

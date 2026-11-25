@@ -52,8 +52,18 @@ end
 # (the full ContentionMap, 8.44), readings carry origin tags counted once (8.45), AdvAp audits tags against the log (L161).
 ih_flags(on::Bool) = on ? (deliberation = true, info_handling = true, source_tags = true, tag_audit = true, ih_vote = true) : (;)
 
+# Dormant economy flags (step 5 of docs/WORLD_COVERAGE.md, rows 5, 7, 19, 49), composed: budget-bound issuance with RA's horizon bound, the RA
+# estimating domain with commons reserve and spend contraction, the converge gate with the legacy funder, `responsibility_reading`,
+# `repair_credit`, `accolade_counterfactual` and predict-measure-adapt for proposals. Off by default: the budget bound makes deliverable capacity
+# scarce (capacity 10 per being, regeneration 5% per step), so a battery that turns it on measures a different world from the unbounded one;
+# probe scale (`probe_tests.jl`, "dormant economy flags composed"), to be recalibrated before a battery reads it.
+dormant_flags(on::Bool; n::Integer = 120) = on ? (budget = true, endowment = 20.0, capacity = 10.0 * n, regen = 0.05, cost_per_touch = 0.05,
+    ra_rate = 0.2, ra_horizon = 5.0, ra_domain = true, ra_alloc_weight = 1.0, ra_reserve_horizon = 12.0, ra_spend_contract = true,
+    converge_init = true, legacy_funder = true, responsibility_reading = true, repair_credit = true, accolade_counterfactual = true,
+    proposal_pma = true, proposal_eta = 2, proposal_confidence = 1.5) : (;)
+
 function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
-               n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf)
+               n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf, dormant::Bool = false)
     arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
     bf = arm == :bf
     skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
@@ -75,6 +85,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
         ratchet_k = bf ? 3 : 0,
         credence_rule = bf ? :eb : :normal,
         bind_weighted = bf,
+        dormant_flags(dormant && bf)...,
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
                           loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf, ih_flags(ih)...)

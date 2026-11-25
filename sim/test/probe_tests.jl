@@ -3283,4 +3283,54 @@ end
     @test mean(diffs) > 0
 end
 
+# Step 5 of docs/WORLD_COVERAGE.md: the dormant economy flags composed in the coupled world. Each flag has its own probe (P30, P46,
+# RA, converge/legacy/shadow); this one shows they run together over epochs without a stall, with the currency identity intact, and
+# without a Goal-pattern loss beyond what the resource bound itself costs. Interaction recorded: RA's issuance bound claws back claims
+# above the horizon of deliverable value after they are logged in `supply`, so the identity carries `- ra_withheld` exactly.
+@timed_testset "Probe: dormant economy flags composed in the coupled world (step 5; rows 5, 7, 19, 49) (P55)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    ag5 = [DomainAgent([0.65, 0.0, 0.65, 0.0], [0.5, 0.0, 0.5, 0.0], 0.05) for _ in 1:8]
+    # One fixed keyword signature for every arm: a distinct splat compiles the whole constructor again (about 40 s each).
+    w5(; bound = false, rest = false, regen = 0.05, hazard = 0.1, deceit = [zeros(7); 0.8], steps = 72) =
+        M3cParams(ToyParams(n = 40, steps = steps, plans = 8), ag5, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                  transactions = true, causal_distribution = true, init_steps = 20, p_hazard = hazard, repair_efficiency = 0.5,
+                  guardians = [1, 2, 3, 4], deceit = deceit, advap = true,
+                  budget = bound, endowment = 20.0, capacity = 400.0, regen = regen, cost_per_touch = 0.05,
+                  ra_rate = bound ? 0.2 : 0.0, ra_horizon = bound ? 5.0 : 0.0,
+                  ra_domain = rest, ra_alloc_weight = rest ? 1.0 : 0.0, ra_reserve_horizon = rest ? 12.0 : 0.0, ra_spend_contract = rest,
+                  converge_init = rest, legacy_funder = rest, responsibility_reading = rest, repair_credit = rest,
+                  accolade_counterfactual = rest, proposal_pma = rest, proposal_eta = 2, proposal_confidence = 1.5, LEGACY...)
+    gov5(tr) = M5Params(tr, 1:4; decisions = 10, p_delegate = 0.25)
+    run5(s; kws...) = run_coupled(w5(; kws...), gov5; seed = s, epoch = 24, continuous = true, m5_decisions = 40)
+    # Structural: a hazard-free, honest world (the identity's only flows are outcomes), every flag on, three epochs.
+    for s in 1:3
+        r = run5(s; bound = true, rest = true, hazard = 0.0, deceit = zeros(8))
+        t = r.econ_trace
+        @test sum(t.balance) + sum(t.reinvested) - t.endowed ≈ sum(t.supply) + sum(t.lane_supply; init = 0.0) - t.ra_withheld atol = 1e-6
+        @test t.ra_withheld > 0                                  # the bound bites in this world, so the identity's last term is exercised
+        @test t.lane_halted == 0 && length(t.supply) > 0         # no stall
+        @test t.converged && 0 < t.converge_step < 48            # the gate opens within two epochs
+        @test t.legacy_executed > 0                              # the legacy funder carried the score-only start
+        @test all(isfinite, t.balance) && all(>=(0), t.balance)
+    end
+    # Goal pattern (hazards, deception, scarce deliverable capacity). Red: the resource bound itself costs the floor against a world with
+    # no bound (a limit of the world, not of the flags); the other flags add no loss beyond it.
+    S5 = 1:6
+    off   = [run5(s).success for s in S5]
+    bonly = [run5(s; bound = true).success for s in S5]
+    allon = [run5(s; bound = true, rest = true) for s in S5]
+    @test all(r -> r.econ_trace.lane_halted == 0 && length(r.econ_trace.supply) > 0, allon)
+    all_sp = [r.success for r in allon]
+    @test paired_effect([a.floor_u - b.floor_u for (a, b) in zip(bonly, off)]; z = 3.0, direction = :down).significant
+    for f in (:floor_u, :floor_h, :median_u, :median_h)
+        @test !paired_effect([getfield(a, f) - getfield(b, f) for (a, b) in zip(all_sp, bonly)]; z = 3.0, direction = :down).significant
+    end
+    @test !paired_effect([a.worst_drop - b.worst_drop for (a, b) in zip(all_sp, bonly)]; z = 3.0, direction = :up).significant
+    # Ample regeneration: the bound is slack and the whole set does not lose against flags off.
+    ample = [run5(s; bound = true, rest = true, regen = 0.3).success for s in S5]
+    for f in (:floor_u, :floor_h, :median_u, :median_h)
+        @test !paired_effect([getfield(a, f) - getfield(b, f) for (a, b) in zip(ample, off)]; z = 3.0, direction = :down).significant
+    end
+end
+
 probe_total("fast")
