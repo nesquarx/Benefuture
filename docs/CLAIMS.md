@@ -446,8 +446,22 @@ Governance and incentives
   nominal seeds (audit noise), so it is a flag for review, not a verdict. Toy assumptions: eight experts with fixed
   skills, one shared evidence signal per case, false accusation a fixed world rate, capture a fixed log-odds shift, audits
   with fixed accuracy 0.9, a fixed audit capacity, a record-calibration weight estimated on audited convictions only,
-  acquittals never audited (a fully captured panel then acquits everything), the alarm not yet a governance candidate,
-  no currency balance for experts.
+  the alarm not yet a governance candidate, no currency balance for experts.
+- Every judgement is audited, acquittals included (ruling 8.173, simulated in the toy, `sim/test/probe_tests.jl` and
+  `sim/test/probe_heavy3_tests.jl`): random audits of acquittals at a governed rate (0.25), challengeable by victims
+  within the AdvAp budget, charge wrongful acquittals to the experts who voted to acquit by their stated confidence in
+  innocence, and feed the same alarm, which now reads false restraints and false acquittals against upheld verdicts (the
+  Lean predicate `restraint_balance_flawed` is generic over its counts, so no new theorem). Before: a fully captured
+  panel that acquits everything raises the alarm in 0 of 24 seeds (silent failure, about 23 dangerous proposers
+  acquitted per run). After: the alarm fires in 21 of 24 seeds (interval 0.69 to 0.96, z = 2; the lead's prediction of a
+  lower bound above 0.8 is missed: about 7 audited acquittals per run barely reach the minimum of 6 findings). Nominal
+  world: quiet in 24 of 24 seeds (interval lower bound 0.86; the one nominal false alarm of 8.170 vanishes since audited
+  acquittals add correct findings). Justified restraint is not lowered (paired mean +0.024, interval -0.010 to +0.058:
+  non-inferiority above -0.05 holds, two-sided equivalence within 0.05 is not shown). Audit spend under capture rises
+  from 4.7 to 10.0 per run; nominal spend does not move detectably (24.8 to 24.6). Toy assumptions: the audit reads an
+  acquittal with the same fixed accuracy 0.9, the cost of a wrongful acquittal is a proxy (severity times harm), a
+  capture-to-acquit panel with one honest minority expert still convicts and the alarm then fires in only 3 of 8 seeds
+  (exploratory), acquittal audits skipped when capacity is exhausted (logged loudly).
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).

@@ -3333,4 +3333,46 @@ end
     end
 end
 
+# 8.173 (author): every judgement gets random audits and can be AdvAp-challenged, acquittals included. Hypotheses (stated
+# before measuring, lead confidence 0.65): (a) outcome baseline on the current code: a fully captured panel that acquits
+# everything never raises the alarm (silent failure: dangerous proposers go free and nothing flags it); (b) with acquittal
+# audits the alarm fires under capture-to-acquit in most seeds (proportion, lower bound above 0.6 here; the lead predicted 0.8 for the heavy
+# check, measured 0.69: missed); (c) nominal false-alarm rate is reported with its interval; (d) justified restraint is not chilled (equivalence
+# on vs off within 0.05); (e) audit spend rises by roughly the acquittal share (reported); (f) victims flooding challenges
+# are held to the AdvAp budget and charged above the frivolous threshold. Seeds 1:8 (paired); heavy z = 2 in probe_heavy3_tests.jl.
+@timed_testset "Probe: acquittal audits close the silent failure of a captured acquitting panel (8.173)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    # Fully captured towards innocence: every expert shifted by -6 log-odds (counterexample, not a tuned world).
+    bias, cluster = fill(-6.0, 8), fill(1, 8)
+    before = [restraint_world(s; bias = bias, cluster = cluster) for s in 1:8]                  # current code: acquittals unaudited
+    after  = [restraint_world(s; bias = bias, cluster = cluster, acq = true) for s in 1:8]
+    # Red baseline on the outcome: dangerous proposers walk free and the alarm never fires.
+    @test all(r -> r.tr.restraint_missed > 0, before)
+    @test all(r -> r.tr.restraint_alarm_step == 0 && r.tr.acquittal_audits == 0, before)
+    # Acceptance: audited acquittals overturned count as false findings and the alarm fires.
+    alarm = proportion_interval(count(r -> r.tr.restraint_alarm_step > 0, after), length(after); z = 2.0)
+    @test alarm.lo > 0.6
+    @test all(r -> r.tr.acquittals_overturned > 0 && r.tr.acquittal_liability > 0, after)        # the wrongful acquittals are charged to the experts who voted to acquit
+    @test all(r -> r.tr.findings_false > r.tr.findings_true || r.tr.restraint_alarm_step > 0, after)
+    @test any(k -> startswith(k, "restraint justice"), keys(first(after).tr.degraded))           # loud, once per kind
+    # Nominal world: false alarms reported with their interval, justified restraint not chilled, spend change reported.
+    nom_off = [restraint_world(s) for s in 1:8]
+    nom_on  = [restraint_world(s; acq = true) for s in 1:8]
+    quiet = proportion_interval(count(r -> r.tr.restraint_alarm_step == 0, nom_on), length(nom_on); z = 2.0)
+    @test quiet.lo > 0.6
+    @test sum(r -> r.tr.acquittal_audits, nom_on) > 0
+    # Measured (8 and 24 seeds): standing is not lowered (mean +0.04 and +0.02; two-sided equivalence within 0.05 is NOT shown, the
+    # interval reaches +0.058 at 24 seeds, the gain direction being plausible since wrongful acquitters lose voice), so only the
+    # one-sided claim (no chill: lower bound above -0.05) is asserted. Nominal audit spend does not move detectably (24.8 to 24.6 at
+    # 24 seeds: acquittals are about a fifth of judgements, audited at 0.25); under capture it doubles (4.7 to 10.0) because every acquittal is a miss.
+    @test equivalent([a.just_rate - b.just_rate for (a, b) in zip(nom_on, nom_off)]; margin = 0.05, z = 2.0).lo > -0.05
+    @test !paired_effect([a.just_rate - b.just_rate for (a, b) in zip(nom_on, nom_off)]; z = 2.0, direction = :down).significant
+    @test paired_effect([a.tr.restraint_audit_cost - b.tr.restraint_audit_cost for (a, b) in zip(after, before)]; z = 2.0, direction = :up).significant
+    # Gaming: victims flood challenges. Recursion stays within the AdvAp budget, loudly, and repeats are charged.
+    flood = [restraint_world(s; bias = bias, cluster = cluster, acq = true, challenge = 0.9, budget = 1) for s in 1:8]
+    @test all(r -> r.tr.restraint_recursive_audits <= 80 && r.tr.restraint_recursion_refused > 0, flood)
+    @test sum(r -> r.tr.challenger_charged, flood) > 0
+end
+
 probe_total("fast")
