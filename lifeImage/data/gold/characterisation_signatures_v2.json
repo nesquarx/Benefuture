@@ -1,0 +1,133 @@
+{
+  "version": 2,
+  "registered": "2026-11-25",
+  "basis": "definitions (lifeimage/generators/params.py, life.py), rulings LI.36 to LI.39 and LI.50; written before any image was rendered with grain restricted to claimed potential, the anchored tone map or the literature-based estimation bias",
+  "carried_from_v1": "A1-A17, G1, G2 unchanged; C1-C7 superseded by K1-K13",
+  "rule": {
+    "contrast": "effect e = s * (mean(group) - mean(versus)), s = +1 for '>' and -1 for '<'; SE Welch; crit = Student-t 0.975 at Welch df. held: e >= delta and e - crit*SE > 0. not_held: e + crit*SE < delta. inconclusive otherwise.",
+    "proportion": "share of personas with the property; Wilson 95% interval. held: lower >= p0. not_held: upper < p0. inconclusive otherwise.",
+    "band": "held: every listed value inside [lo, hi]. not_held: any outside. no interval (one pooled image).",
+    "paired": "per-persona difference a - b (b may be a constant); effect e = s * mean(diff); SE of the paired differences; crit = Student-t 0.975 at n - 1; held: e >= delta and e - crit*SE > 0; not_held: e + crit*SE < delta; inconclusive otherwise. paired_sets: the same for one feature over the same personas in two projections (sets[0] - sets[1]).",
+    "band_stat": "mean or median of the feature over the records of the optional subset (age_min, age_max) and set; held if inside [lo, hi], else not_held",
+    "identification": "bound min: held if accuracy >= value, not_held if Wilson 95% upper < value, else inconclusive; bound max: held if accuracy <= value, not_held if Wilson 95% lower > value, else inconclusive"
+  },
+  "populations": {
+    "primary": "extended: 8 archetypes x 3 calibrations x 6 replicates = 144 generated personas, truth rows (all tiers), asof = persona as_of",
+    "secondary": "starter: the 40 personas of data/synthetic (truth rows, claimed resume rows, extracted resume rows, legacy projection); verdicts reported but cells hold 1 to 4 personas"
+  },
+  "extended_population": {
+    "seed": "9000 + 1000*archetype_index + 100*calibration_index + rep",
+    "archetype_order": [
+      "student",
+      "shift_worker",
+      "carer",
+      "small_business_owner",
+      "researcher",
+      "retiree",
+      "career_changer",
+      "generalist"
+    ],
+    "calibration_order": [
+      "over",
+      "well",
+      "under"
+    ],
+    "reps": 6,
+    "age": "archetype age_range, replicate r of 6 at age_lo + round((age_hi - age_lo) * r / 5)"
+  },
+  "feature_constants": {
+    "grain_cover": 0.1837,
+    "lit_bin_threshold": 0.1,
+    "merge_gap_degrees": 15,
+    "min_cluster_mass": 0.1,
+    "current_years": 5,
+    "past_years": 10,
+    "luma": [
+      0.2126,
+      0.7152,
+      0.0722
+    ],
+    "claimed_slice_level": 0.05,
+    "gap_margin": 0.1,
+    "low_green": 0.3,
+    "high_green": 0.6,
+    "tier_saturation": {
+      "measured": 1.0,
+      "attested": 0.85,
+      "claimed": 0.5
+    }
+  },
+  "identification_features_added": [
+    "typical_level",
+    "grain_cover",
+    "n_claimed_slices",
+    "claim_gap",
+    "claim_gap_abs",
+    "grain_green_share",
+    "mean_claimed_level",
+    "overclaim_share",
+    "underclaim_share"
+  ],
+  "v1_reference": {
+    "extended_truth": {
+      "archetype": 0.58,
+      "calibration": 0.31
+    },
+    "extended_legacy": {
+      "archetype": 0.56,
+      "calibration": 0.25
+    },
+    "mean_luminance_range": [
+      0.002,
+      0.04
+    ]
+  },
+  "signatures": [
+    {"id": "A1", "kind": "contrast", "statement": "students show little blue (they take in more than they change)", "group": {"archetype": "student"}, "versus": "rest", "feature": "share_blue", "direction": "<", "delta": 0.05, "confidence": "medium"},
+    {"id": "A2", "kind": "contrast", "statement": "students' red is spread wide over the circle", "group": {"archetype": "student"}, "versus": "rest", "feature": "red_spread_entropy", "direction": ">", "delta": 0.03, "confidence": "low"},
+    {"id": "A3", "kind": "contrast", "statement": "students' evidence is recent, so little is dimmed", "group": {"archetype": "student"}, "versus": "rest", "feature": "dimmed_share", "direction": "<", "delta": 0.05, "confidence": "high"},
+    {"id": "A4", "kind": "contrast", "statement": "shift workers show less red than others (little formal learning, few credentials)", "group": {"archetype": "shift_worker"}, "versus": "rest", "feature": "share_red", "direction": "<", "delta": 0.03, "confidence": "low"},
+    {"id": "A5", "kind": "contrast", "statement": "carers' luminance concentrates in the family arc", "group": {"archetype": "carer"}, "versus": "rest", "feature": "arc_share:s.family", "direction": ">", "delta": 0.05, "confidence": "medium"},
+    {"id": "A6", "kind": "contrast", "statement": "carers show more blue (their output changes things for others)", "group": {"archetype": "carer"}, "versus": "rest", "feature": "share_blue", "direction": ">", "delta": 0.03, "confidence": "low"},
+    {"id": "A7", "kind": "contrast", "statement": "small-business owners' luminance concentrates in the work arc", "group": {"archetype": "small_business_owner"}, "versus": "rest", "feature": "arc_share:s.work", "direction": ">", "delta": 0.05, "confidence": "medium"},
+    {"id": "A8", "kind": "contrast", "statement": "researchers' green and blue lie in the science and learning arcs", "group": {"archetype": "researcher"}, "versus": "rest", "feature": "gb_in:s.science+s.learning", "direction": ">", "delta": 0.1, "confidence": "medium"},
+    {"id": "A9", "kind": "contrast", "statement": "researchers' red is less grainy (publications, degrees and records attest their work)", "group": {"archetype": "researcher"}, "versus": "rest", "feature": "red_grain_share", "direction": "<", "delta": 0.05, "confidence": "low"},
+    {"id": "A10", "kind": "contrast", "statement": "retirees show low current luminance", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "current_luminance", "direction": "<", "delta": 0.05, "confidence": "low", "drop_nan": true},
+    {"id": "A11", "kind": "contrast", "statement": "retirees' past domains are brighter than their current ones", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "past_over_current", "direction": ">", "delta": 0.25, "confidence": "low", "drop_nan": true},
+    {"id": "A12", "kind": "contrast", "statement": "retirees' evidence is largely dimmed by age", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "dimmed_share", "direction": ">", "delta": 0.08, "confidence": "high"},
+    {"id": "A13", "kind": "contrast", "statement": "career changers show more separated clusters than others", "group": {"archetype": "career_changer"}, "versus": "rest", "feature": "n_clusters", "direction": ">", "delta": 0.5, "confidence": "low"},
+    {"id": "A14", "kind": "proportion", "statement": "most career changers show two or more clusters", "group": {"archetype": "career_changer"}, "predicate": "n_clusters >= 2", "p0": 0.5, "confidence": "low"},
+    {"id": "A15", "kind": "proportion", "statement": "where a career changer shows two or more clusters, the older cluster is the dimmer", "group": {"archetype": "career_changer"}, "given": "n_clusters >= 2", "predicate": "cluster_age_gap < 0", "p0": 0.6, "confidence": "medium"},
+    {"id": "A16", "kind": "contrast", "statement": "generalists spread their luminance over the circle", "group": {"archetype": "generalist"}, "versus": "rest", "feature": "spread_entropy", "direction": ">", "delta": 0.03, "confidence": "medium"},
+    {"id": "A17", "kind": "contrast", "statement": "generalists have no dominant arc", "group": {"archetype": "generalist"}, "versus": "rest", "feature": "max_arc_share", "direction": "<", "delta": 0.04, "confidence": "medium"},
+    {"id": "G1", "kind": "band", "statement": "the pooled population composite (mean of displayed channels per slice over all personas) tends toward white: each channel share in the band", "feature": "pooled_shares", "lo": 0.27, "hi": 0.4, "confidence": "medium"},
+    {"id": "G2", "kind": "contrast_pooled", "statement": "pooling cancels colour: the composite's chroma is at most half the mean chroma of a single persona", "feature": "pooled_chroma_over_mean_chroma", "direction": "<=", "value": 0.5, "confidence": "medium"},
+    {"id": "K1", "kind": "contrast", "statement": "over-estimators claim potential above demonstrated skill, more than well-calibrated people", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "claim_gap", "direction": ">", "delta": 0.08, "confidence": "medium", "drop_nan": true},
+    {"id": "K2", "kind": "contrast", "statement": "under-estimators claim potential below demonstrated skill, more than well-calibrated people", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "claim_gap", "direction": "<", "delta": 0.05, "confidence": "low", "drop_nan": true},
+    {"id": "K3", "kind": "contrast", "statement": "the extremes separate on the claim gap: over above under", "group": {"calibration": "over"}, "versus": {"calibration": "under"}, "feature": "claim_gap", "direction": ">", "delta": 0.15, "confidence": "medium", "drop_nan": true},
+    {"id": "K4", "kind": "contrast", "statement": "over-estimators: grain is a larger share of grain plus green in the domains they claim", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "grain_green_share", "direction": ">", "delta": 0.05, "confidence": "medium", "drop_nan": true},
+    {"id": "K5", "kind": "contrast", "statement": "under-estimators: grain is a smaller share of grain plus green", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "grain_green_share", "direction": "<", "delta": 0.03, "confidence": "low", "drop_nan": true},
+    {"id": "K6", "kind": "contrast", "statement": "over-estimators claim higher levels", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "mean_claimed_level", "direction": ">", "delta": 0.03, "confidence": "medium", "drop_nan": true},
+    {"id": "K7", "kind": "contrast", "statement": "under-estimators claim lower levels", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "mean_claimed_level", "direction": "<", "delta": 0.02, "confidence": "low", "drop_nan": true},
+    {"id": "K8", "kind": "contrast", "statement": "over-estimators: more of the claimed area exceeds demonstrated skill", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "overclaim_share", "direction": ">", "delta": 0.1, "confidence": "medium", "drop_nan": true},
+    {"id": "K9", "kind": "contrast", "statement": "under-estimators: more of the claimed area falls short of demonstrated skill", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "underclaim_share", "direction": ">", "delta": 0.05, "confidence": "low", "drop_nan": true},
+    {"id": "K10", "kind": "contrast", "statement": "well-calibrated people have a smaller absolute claim gap than over-estimators", "group": {"calibration": "well"}, "versus": {"calibration": "over"}, "feature": "claim_gap_abs", "direction": "<", "delta": 0.05, "confidence": "medium", "drop_nan": true},
+    {"id": "K11", "kind": "contrast", "statement": "well-calibrated people have a smaller absolute claim gap than under-estimators", "group": {"calibration": "well"}, "versus": {"calibration": "under"}, "feature": "claim_gap_abs", "direction": "<", "delta": 0.02, "confidence": "low", "drop_nan": true},
+    {"id": "K12", "kind": "paired", "statement": "the claim gap is larger where demonstrated skill is low than where it is high (paired within persona)", "a": "claim_gap_low_green", "b": "claim_gap_high_green", "direction": ">", "delta": 0.2, "confidence": "medium"},
+    {"id": "K13", "kind": "paired", "statement": "where demonstrated skill is high, claims fall below it", "a": "claim_gap_high_green", "b": 0, "direction": "<", "delta": 0.02, "confidence": "medium"},
+    {"id": "W1", "kind": "band_stat", "statement": "the reference life's typical touched domain sits at mid-brightness: personas aged 36 to 44, median typical level", "feature": "typical_level", "stat": "median", "subset": {"age_min": 36, "age_max": 44}, "lo": 0.35, "hi": 0.65, "confidence": "medium"},
+    {"id": "W2", "kind": "contrast", "statement": "the scale is absolute: students (thin evidence) sit dimmer than others", "group": {"archetype": "student"}, "versus": "rest", "feature": "typical_level", "direction": "<", "delta": 0.05, "confidence": "medium", "drop_nan": true},
+    {"id": "W3", "kind": "band_stat", "statement": "an ordinary life is no longer almost black: mean luminance over the extended population", "feature": "luminance", "stat": "mean", "lo": 0.04, "hi": 0.25, "confidence": "low"},
+    {"id": "W4", "kind": "paired_sets", "statement": "tier shows as saturation: resume-claim images are paler than truth images of the same people", "feature": "chroma", "sets": ["starter resume claims / new", "starter truth / new"], "direction": "<", "delta": 0.1, "confidence": "medium"},
+    {"id": "W5", "kind": "band_stat", "statement": "grain needs a prediction: no starter resume-claim image carries grain", "feature": "grain_cover", "stat": "mean", "set": "starter resume claims / new", "lo": 0.0, "hi": 0.0, "confidence": "high"},
+    {"id": "W6", "kind": "band_stat", "statement": "grain is a minor part of the red: mean grainy share of red over the extended population", "feature": "red_grain_share", "stat": "mean", "lo": 0.05, "hi": 0.4, "confidence": "low"}
+  ],
+  "identification": [
+    {"id": "I1", "set": "extended / new", "label": "archetype", "bound": "min", "value": 0.6, "confidence": "medium"},
+    {"id": "I2", "set": "extended / new", "label": "calibration", "bound": "min", "value": 0.45, "confidence": "low"},
+    {"id": "I3", "set": "starter extracted (var0, var1, var2) / new", "label": "archetype", "bound": "min", "value": 0.25, "confidence": "low"},
+    {"id": "I4", "set": "starter extracted (var0, var1, var2) / new", "label": "calibration", "bound": "min", "value": 0.4, "confidence": "low"},
+    {"id": "I5", "set": "extended / legacy", "label": "archetype", "bound": "max", "value": 0.62, "confidence": "medium"},
+    {"id": "I6", "set": "extended / legacy", "label": "calibration", "bound": "max", "value": 0.4, "confidence": "low"}
+  ]
+}
