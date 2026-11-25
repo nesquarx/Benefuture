@@ -46,6 +46,12 @@ deleted. Numbering is stable (LI.n).
   treated like ICATUS (internal calibration only, LI.19) and consumption domains come from the BLS R-COICOP
   concordance instead. Still open: MeSH terms and ShareAlike sources (UNESCO Thesaurus, schema.org).
   `lifeimage/fine/sources.py`, `ATTRIBUTION.md`.
+- **LI.57** (2026-11-25; refines LI.4) The basemap data is released under a permissive share-and-use licence, so every
+  source must be compatible with permissive redistribution. Consequences (lead reading): ShareAlike sources (UNESCO
+  Thesaurus, schema.org) are excluded, as they would bind the basemap to their terms; attribution sources (CC BY,
+  ODC-By, the WordNet notice) are compatible but rule out a pure CC0 release, so the basemap's licence is an
+  attribution licence (CC BY 4.0 or equivalent) carrying `ATTRIBUTION.md`; MeSH is admissible with its credit line and
+  a dated statement that the copy is not kept current, used only where Disease Ontology and MONDO fall short.
 - **LI.18** (2026-11-25) Publishable means the whole library at v1.0: the API contract, the basemap data release,
   the viewers (LI.52, LI.53) and the Benefuture bridge together, not the basemap alone. PLAN.
 - **LI.19** (2026-11-25; amends LI.17, LI.15) ICATUS is used only for internal calibration (a local benchmark,
