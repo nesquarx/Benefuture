@@ -259,6 +259,24 @@ optimality) → migration table → release. Non-raster images re-render from ro
   v1 texts recovers 0% (strict) and 18% (lenient) of the v2 rows; inflating minus deflating words per resume: over +6.6, well
   +0.4, under -5.1. Next: rerun extraction (3 variants) on texts_v2 and score with the v2 spans in `<id>.spans.json`.
 
+## Characterisation battery v1 (LI.36 levels, LI.37 channels)
+
+Signatures pre-registered and hash-pinned before rendering (`74e84ff`, `data/gold/characterisation_signatures_v1.*`);
+report `data/gold/characterisation_v1_report.md`; images `data/images/v1/`.
+
+- 144 generated personas (6 per archetype × calibration), truth rows: 26 signatures, 6 held, 9 not held, 11
+  inconclusive. Blind identification (leave-one-out nearest centroid): archetype 0.58 [0.49, 0.65] (chance 0.125;
+  predicted ≥ 0.60; legacy summing 0.56); calibration 0.31 (chance 0.33; predicted ≥ 0.70; legacy 0.25): not
+  recoverable.
+- Why calibration vanished: under LI.37 red also carries everything taken in, which every persona does, so claimed
+  potential is a small part of red (grainy-red share about 87% for everyone); the generator's calibration effect on
+  claimed levels is also small (mean claimed red level over 0.21, well 0.16, under 0.14; post hoc).
+- Extracted rows (resume claims only): archetype 0.19, calibration 0.57 (likely an artefact of claims-only rows).
+- Humanity-white: pooled channel shares balance (R 0.35, G 0.28, B 0.37, within band), but slices stay coloured
+  (composite chroma 0.92 of the mean persona's, limit 0.5): 144 people do not saturate every domain.
+- Images are very dark (mean luminance 0.002–0.04): the saturating tone map's constant is set for far more evidence
+  than a regular life holds.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
