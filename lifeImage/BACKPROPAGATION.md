@@ -37,6 +37,12 @@ deleted. Numbering is stable (LI.n).
   three allow commercial use, modification and redistribution without fees; ISCO and ESCO require attribution, carried
   in `ATTRIBUTION.md` and with every release of the basemap. Candidate files built earlier keep the status recorded at
   build time; the next pool build carries `verified`. `lifeimage/fine/sources.py`.
+- **LI.18** (2026-11-25) Publishable means the whole library at v1.0: the API contract, the basemap data release,
+  the viewers (LI.52, LI.53) and the Benefuture bridge together, not the basemap alone. PLAN.
+- **LI.19** (2026-11-25; amends LI.17, LI.15) ICATUS is used only for internal calibration (a local benchmark,
+  never distributed, never a source of shipped domains). Where it shows something is needed, the domain comes from the
+  corresponding elements of the four open sources (OpenAlex, ESCO/ISCO, Wikidata, ATUS) and other openly licensed
+  sources. PLAN, `lifeimage/fine/sources.py`.
 
 ### Domains and basemap
 - **LI.20** (2026-11-20) Domains concern everything, not only work: the backbone of Benefuture's behavioural
@@ -104,6 +110,9 @@ deleted. Numbering is stable (LI.n).
   in particular, which the vector version serves, with selection and search of specific items. The viewer is treated as
   a map: its experience and features follow map conventions (search and fly-to, selection with an information panel,
   labels by zoom, layer toggles per channel, legend, zoom and position indicator, linkable views). DESIGN, PLAN.
+- **LI.54** (2026-11-25; amends LI.35, LI.34) Before v1.0 every coarse field has fine domains, harm included (no
+  field is held at coarse level), and the reputation version with negative records exists alongside the
+  predicted/measured one. DESIGN, PLAN.
 - **LI.35** (2026-11-20) The negative channel comes later; the contract carries sign, tiers and revocation from v0.
   DESIGN.
 
