@@ -29,12 +29,14 @@ from pathlib import Path
 
 import numpy as np
 
+from .degradation import record_degradation
 from .governed import governed
 from .layout import circ_diff
 from .packs import is_sector
+from .relatedness import judged_signal, read_rows
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCES = ("overlap", "upstream", "comembership", "fine", "text")
+SOURCES = ("overlap", "upstream", "comembership", "fine", "text", "judged")
 STEP = 0.5  # fraction of the local force-over-stiffness step taken per iteration (overdamped)
 SETTLE_ITERATIONS = 300  # phase 1: repulsion off
 TESSELLATE_ITERATIONS = 300  # phase 2: repulsion on
@@ -59,13 +61,14 @@ class Params:
     weight_cap: float = None
     text_floor: float = None
     text_topk: int = None
+    judged_floor: float = None
     inherited_stiffness: float = None
 
     def resolved(self):
         g = lambda n: governed("layout_sim." + n)
         w = {s: g("w_" + {"fine": "fine", "text": "text"}.get(s, s)) for s in SOURCES}
         base = {n: g(n) for n in ("k_polar", "k_radial", "pull_cap", "k_repel", "rep_floor", "shift_max", "radial_pull",
-                                  "w_sector", "support_floor", "weight_cap", "text_floor", "text_topk", "inherited_stiffness")}
+                                  "w_sector", "support_floor", "weight_cap", "text_floor", "text_topk", "judged_floor", "inherited_stiffness")}
         base["weights"] = w
         return Params(**{**base, **{k: v for k, v in self.__dict__.items() if v is not None}})
 
@@ -213,8 +216,11 @@ class Signals:
     params: Params = None
 
 
-def signals(cards, fine_cards, comem_rows, params=None):
-    """The attraction between fields from every source, per-source coverage, and the sector groups."""
+def signals(cards, fine_cards, comem_rows, params=None, judged=None, log=None):
+    """The attraction between fields from every source, per-source coverage, and the sector groups. `judged` is
+    `relatedness.judged_signal`'s {(a, b): {"score", "confidence", "n"}}; a pair counts when its score reaches `judged_floor`, with
+    strength score x confidence. Without it the source is empty and, while its weight is positive, the degradation is recorded
+    loudly in `log` (the simulation then runs on the other sources)."""
     P = (params or Params()).resolved()
     fields = sorted(c["id"] for c in cards if not is_sector(c))
     ix = {i: n for n, i in enumerate(fields)}
@@ -242,6 +248,13 @@ def signals(cards, fine_cards, comem_rows, params=None):
             for b in range(a + 1, len(kin)):
                 raw["fine"][kin[a], kin[b]] += 1
                 raw["fine"][kin[b], kin[a]] += 1
+    if judged:
+        for (a, b), v in judged.items():
+            if a in ix and b in ix and a != b and v["score"] >= P.judged_floor:
+                raw["judged"][ix[a], ix[b]] = max(raw["judged"][ix[a], ix[b]], v["score"] * v["confidence"])
+    elif P.weights["judged"] > 0:
+        record_degradation("layout_sim", "layout_sim judged relatedness", "the other sources only",
+                           "no relatedness answers (data/answers/relatedness.jsonl), the judged source is empty", log)
     docs = []
     kids = defaultdict(list)
     for f in fine_cards:
@@ -387,7 +400,8 @@ def compute(root=ROOT, params=None, holdout=True):
     bands, _ = bm.radial_bands(cards, {i: "sector" if is_sector(by[i]) else "field" for i in by}, log)
     prior_r = {i: (bands[i][0] + bands[i][1]) / 2 for i in fields}
     widths = {i: base.slices[i].width for i in fields}
-    sig = signals(cards, fine_cards, comem, params)
+    judged = judged_signal(read_rows(root / "data/answers/relatedness.jsonl"))
+    sig = signals(cards, fine_cards, comem, params, judged=judged, log=log)
     P = sig.params
     stiff = np.array([1.0 if source[i] == "axes" else P.inherited_stiffness for i in sig.ids])
     out = update_layout(sig, {i: prior[i] for i in fields}, prior_r, widths, P, stiff)
@@ -419,7 +433,7 @@ def compute(root=ROOT, params=None, holdout=True):
             w = dict(sig.params.weights)
             w[s] = 0.0
             p2 = replace(sig.params, weights=w)
-            s2 = signals(cards, fine_cards, comem, p2)
+            s2 = signals(cards, fine_cards, comem, p2, judged=judged, log=[])
             o2 = update_layout(s2, {i: prior[i] for i in fields}, prior_r, widths, p2, stiff)
             order2 = [i for i, _ in sorted(o2["angles"].items(), key=lambda t: (t[1], t[0]))]
             order0 = [i for i, _ in sorted(((i, prior[i]) for i in fields), key=lambda t: (t[1], t[0]))]

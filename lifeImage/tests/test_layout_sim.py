@@ -161,7 +161,7 @@ def test_signal_sources_count_pairs_and_report_coverage():
     assert sig.sources["comembership"][i["c.one"], i["c.three"]] == 0  # support 2 < floor
     assert sig.sources["fine"][i["c.one"], i["c.two"]] > 0 and sig.sources["fine"][i["c.one"], i["c.three"]] == 0
     assert sig.sources["text"][i["c.one"], i["c.two"]] > sig.sources["text"][i["c.one"], i["c.three"]]  # food with food
-    assert set(sig.coverage) == {"overlap", "upstream", "comembership", "fine", "text"}
+    assert set(sig.coverage) == {"overlap", "upstream", "comembership", "fine", "text", "judged"}
     assert sig.coverage["overlap"]["pairs"] == 1 and sig.coverage["fine"]["pairs"] == 1
     assert [g[0] for g in sig.groups] == [[i["c.one"], i["c.three"], i["c.two"]]] or len(sig.groups) == 1
     assert np.allclose(sig.combined, sig.combined.T) and np.all(np.diag(sig.combined) == 0)
@@ -205,5 +205,5 @@ def test_real_result_improves_signal_adjacency(result):
 
 def test_coverage_is_reported_per_source(result):
     cov = result["coverage"]
-    assert set(cov) == {"overlap", "upstream", "comembership", "fine", "text"}
-    assert all(0 < c["pairs"] and 0 < c["fields"] <= 247 for c in cov.values())
+    assert set(cov) == {"overlap", "upstream", "comembership", "fine", "text", "judged"}
+    assert all(0 < c["pairs"] and 0 < c["fields"] <= 247 for k, c in cov.items() if k != "judged")  # judged: empty until answers exist

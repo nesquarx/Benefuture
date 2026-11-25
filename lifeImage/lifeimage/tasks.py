@@ -24,6 +24,7 @@ TASK_TYPES = {
     "axis_at": [str(i) for i in range(11)],  # axes v3: abstract 0 to tangible 10, one card per task
     "axis_pg": [str(i) for i in range(11)],  # axes v3: personal and social 0 to global and professional 10
     "adjacency": ["1", "2", "equal"],  # which of two neighbour sets is thematically closer to the field (LI.55)
+    "relatedness": [str(i) for i in range(11)],  # how thematically related two coarse fields are, 0 unrelated to 10 near-synonyms
     "radius": [str(i) for i in range(11)],  # judged radius v1: elementary 0 to highly specialised 10, one coarse field per task
 }
 

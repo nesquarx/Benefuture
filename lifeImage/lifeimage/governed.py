@@ -115,6 +115,17 @@ GOVERNED = {
         "source": "LI.55: weight of textual nearness (TF-IDF cosine over label, aliases, description and fine children's labels); cheap and "
                   "partly derived from the same words the axes judges read, so half an overlap's; assumption.",
     },
+    "layout_sim.w_judged": {
+        "default": 0.75,
+        "source": "LI.55: weight of judged pairwise relatedness (`relatedness.v1`: one runner verdict 0-10 per field pair, mean over two "
+                  "variants scaled to [0,1], times their agreement); a direct judgement of the pair but cheap and a single reading, so the "
+                  "weight of shared fine children, below an overlap's; assumption. Off (empty, degradation logged) until answers exist.",
+    },
+    "layout_sim.judged_floor": {
+        "default": 0.3,
+        "source": "LI.55: least judged relatedness score (0-1, a verdict of 3 of 10) that counts as signal; below it the pair is judged "
+                  "unrelated or barely related, which is the absence of a pull, not a repulsion; assumption.",
+    },
     "layout_sim.support_floor": {
         "default": 3,
         "source": "LI.55: least number of annotated items on which a co-membership row stands to count as signal (the file's median support is 2); assumption.",

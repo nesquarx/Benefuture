@@ -207,6 +207,22 @@ def validate_adjacency_input(task):
     return task
 
 
+def validate_relatedness_input(task):
+    """A relatedness task: `input.first` and `input.second`, two distinct fields, each with at most five children labels."""
+    inp = task["input"]
+    ids = []
+    for k in ("first", "second"):
+        f = inp.get(k)
+        if not isinstance(f, dict) or not f.get("id"):
+            raise ValidationError(f"relatedness {k} must be a field with an id")
+        if not isinstance(f.get("children"), list) or len(f["children"]) > 5:
+            raise ValidationError(f"relatedness {k} children must be a list of at most five labels")
+        ids.append(f["id"])
+    if ids[0] == ids[1]:
+        raise ValidationError("relatedness needs two distinct fields")
+    return task
+
+
 def validate_answer(answer):
     _schema("answer", answer)
     if "weights" in answer:
@@ -227,6 +243,8 @@ def validate_answers(batch_lines, answer_lines):
         t = validate_task(json.loads(line))
         if header["task_type"] == "adjacency":
             validate_adjacency_input(t)
+        if header["task_type"] == "relatedness":
+            validate_relatedness_input(t)
         tasks[t["task_id"]] = t
     seen = set()
     for n, line in enumerate(answer_lines, 1):
