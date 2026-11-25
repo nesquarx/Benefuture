@@ -358,6 +358,13 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   remaining 105 include harm, health conditions, relationships and the arts, which neither source details. Multi-parent
   pairs supported by learnt co-membership 35.1% against a 1.6% baseline.
 
+- **Radius proxies, mechanical** (`1ac3c2c`; seed_v3, fine_v1): coverage specificity 100%, complexity 100%, difficulty
+  19% (ISCO skill levels only). Spearman: complexity–difficulty +0.25 (n 196), complexity–specificity +0.03,
+  difficulty–specificity −0.11 (not significant). Predicted ≥ 0.3 for each pair: missed. The information-content
+  proxy measures how popular a domain is in the evidence, not how specialised it is. LI.26 expects the three to
+  correlate; the mechanical proxies do not capture them. Next: a radius scale judged per card on 0–10 (how advanced
+  and specialised; the axes v3 method), coarse first, compared with the mechanical proxies.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
