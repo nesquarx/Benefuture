@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "registered": "2026-11-25",
+  "basis": "archetype and calibration definitions (lifeimage/generators/params.py, life.py), LI.36 levels and LI.37 channel split; written before any image was rendered with the new channel split",
+  "rule": {
+    "contrast": "effect e = s * (mean(group) - mean(versus)), s = +1 for '>' and -1 for '<'; SE Welch; crit = Student-t 0.975 at Welch df. held: e >= delta and e - crit*SE > 0. not_held: e + crit*SE < delta. inconclusive otherwise.",
+    "proportion": "share of personas with the property; Wilson 95% interval. held: lower >= p0. not_held: upper < p0. inconclusive otherwise.",
+    "band": "held: every listed value inside [lo, hi]. not_held: any outside. no interval (one pooled image)."
+  },
+  "populations": {
+    "primary": "extended: 8 archetypes x 3 calibrations x 6 replicates = 144 generated personas, truth rows (all tiers), asof = persona as_of",
+    "secondary": "starter: the 40 personas of data/synthetic (truth rows, claimed resume rows, extracted resume rows, legacy projection); verdicts reported but cells hold 1 to 4 personas"
+  },
+  "extended_population": {"seed": "9000 + 1000*archetype_index + 100*calibration_index + rep", "archetype_order": ["student", "shift_worker", "carer", "small_business_owner", "researcher", "retiree", "career_changer", "generalist"], "calibration_order": ["over", "well", "under"], "reps": 6, "age": "archetype age_range, replicate r of 6 at age_lo + round((age_hi - age_lo) * r / 5)"},
+  "feature_constants": {"grain_cover": 0.1837, "lit_bin_threshold": 0.10, "merge_gap_degrees": 15, "min_cluster_mass": 0.10, "current_years": 5, "past_years": 10, "luma": [0.2126, 0.7152, 0.0722]},
+  "signatures": [
+    {"id": "C1", "kind": "contrast", "statement": "over-estimators carry a larger grainy share of their red than well-calibrated people", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "red_grain_share", "direction": ">", "delta": 0.05, "confidence": "medium"},
+    {"id": "C2", "kind": "contrast", "statement": "over-estimators show more red overall than well-calibrated people", "group": {"calibration": "over"}, "versus": {"calibration": "well"}, "feature": "share_red", "direction": ">", "delta": 0.04, "confidence": "medium"},
+    {"id": "C3", "kind": "contrast", "statement": "under-estimators show less red overall than well-calibrated people", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "share_red", "direction": "<", "delta": 0.04, "confidence": "medium"},
+    {"id": "C4", "kind": "contrast", "statement": "under-estimators carry a smaller grainy share of their red than well-calibrated people", "group": {"calibration": "under"}, "versus": {"calibration": "well"}, "feature": "red_grain_share", "direction": "<", "delta": 0.05, "confidence": "low"},
+    {"id": "C5", "kind": "contrast", "statement": "the grainy red share separates the extremes: over above under", "group": {"calibration": "over"}, "versus": {"calibration": "under"}, "feature": "red_grain_share", "direction": ">", "delta": 0.10, "confidence": "medium"},
+    {"id": "C6", "kind": "contrast", "statement": "well-calibrated images sit closer to channel balance than over-estimators", "group": {"calibration": "well"}, "versus": {"calibration": "over"}, "feature": "balance_distance", "direction": "<", "delta": 0.03, "confidence": "low"},
+    {"id": "C7", "kind": "contrast", "statement": "well-calibrated images sit closer to channel balance than under-estimators", "group": {"calibration": "well"}, "versus": {"calibration": "under"}, "feature": "balance_distance", "direction": "<", "delta": 0.03, "confidence": "low"},
+    {"id": "A1", "kind": "contrast", "statement": "students show little blue (they take in more than they change)", "group": {"archetype": "student"}, "versus": "rest", "feature": "share_blue", "direction": "<", "delta": 0.05, "confidence": "medium"},
+    {"id": "A2", "kind": "contrast", "statement": "students' red is spread wide over the circle", "group": {"archetype": "student"}, "versus": "rest", "feature": "red_spread_entropy", "direction": ">", "delta": 0.03, "confidence": "low"},
+    {"id": "A3", "kind": "contrast", "statement": "students' evidence is recent, so little is dimmed", "group": {"archetype": "student"}, "versus": "rest", "feature": "dimmed_share", "direction": "<", "delta": 0.05, "confidence": "high"},
+    {"id": "A4", "kind": "contrast", "statement": "shift workers show less red than others (little formal learning, few credentials)", "group": {"archetype": "shift_worker"}, "versus": "rest", "feature": "share_red", "direction": "<", "delta": 0.03, "confidence": "low"},
+    {"id": "A5", "kind": "contrast", "statement": "carers' luminance concentrates in the family arc", "group": {"archetype": "carer"}, "versus": "rest", "feature": "arc_share:s.family", "direction": ">", "delta": 0.05, "confidence": "medium"},
+    {"id": "A6", "kind": "contrast", "statement": "carers show more blue (their output changes things for others)", "group": {"archetype": "carer"}, "versus": "rest", "feature": "share_blue", "direction": ">", "delta": 0.03, "confidence": "low"},
+    {"id": "A7", "kind": "contrast", "statement": "small-business owners' luminance concentrates in the work arc", "group": {"archetype": "small_business_owner"}, "versus": "rest", "feature": "arc_share:s.work", "direction": ">", "delta": 0.05, "confidence": "medium"},
+    {"id": "A8", "kind": "contrast", "statement": "researchers' green and blue lie in the science and learning arcs", "group": {"archetype": "researcher"}, "versus": "rest", "feature": "gb_in:s.science+s.learning", "direction": ">", "delta": 0.10, "confidence": "medium"},
+    {"id": "A9", "kind": "contrast", "statement": "researchers' red is less grainy (publications, degrees and records attest their work)", "group": {"archetype": "researcher"}, "versus": "rest", "feature": "red_grain_share", "direction": "<", "delta": 0.05, "confidence": "low"},
+    {"id": "A10", "kind": "contrast", "statement": "retirees show low current luminance", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "current_luminance", "direction": "<", "delta": 0.05, "confidence": "low", "drop_nan": true},
+    {"id": "A11", "kind": "contrast", "statement": "retirees' past domains are brighter than their current ones", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "past_over_current", "direction": ">", "delta": 0.25, "confidence": "low", "drop_nan": true},
+    {"id": "A12", "kind": "contrast", "statement": "retirees' evidence is largely dimmed by age", "group": {"archetype": "retiree"}, "versus": "rest", "feature": "dimmed_share", "direction": ">", "delta": 0.08, "confidence": "high"},
+    {"id": "A13", "kind": "contrast", "statement": "career changers show more separated clusters than others", "group": {"archetype": "career_changer"}, "versus": "rest", "feature": "n_clusters", "direction": ">", "delta": 0.5, "confidence": "low"},
+    {"id": "A14", "kind": "proportion", "statement": "most career changers show two or more clusters", "group": {"archetype": "career_changer"}, "predicate": "n_clusters >= 2", "p0": 0.5, "confidence": "low"},
+    {"id": "A15", "kind": "proportion", "statement": "where a career changer shows two or more clusters, the older cluster is the dimmer", "group": {"archetype": "career_changer"}, "given": "n_clusters >= 2", "predicate": "cluster_age_gap < 0", "p0": 0.6, "confidence": "medium"},
+    {"id": "A16", "kind": "contrast", "statement": "generalists spread their luminance over the circle", "group": {"archetype": "generalist"}, "versus": "rest", "feature": "spread_entropy", "direction": ">", "delta": 0.03, "confidence": "medium"},
+    {"id": "A17", "kind": "contrast", "statement": "generalists have no dominant arc", "group": {"archetype": "generalist"}, "versus": "rest", "feature": "max_arc_share", "direction": "<", "delta": 0.04, "confidence": "medium"},
+    {"id": "G1", "kind": "band", "statement": "the pooled population composite (mean of displayed channels per slice over all personas) tends toward white: each channel share in the band", "feature": "pooled_shares", "lo": 0.27, "hi": 0.40, "confidence": "medium"},
+    {"id": "G2", "kind": "contrast_pooled", "statement": "pooling cancels colour: the composite's chroma is at most half the mean chroma of a single persona", "feature": "pooled_chroma_over_mean_chroma", "direction": "<=", "value": 0.5, "confidence": "medium"}
+  ]
+}
