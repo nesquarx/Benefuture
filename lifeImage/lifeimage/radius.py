@@ -264,7 +264,7 @@ class Result:
     degraded: list = field(default_factory=list)
 
 
-def compute(coarse, fine, rows, log=None):
+def compute(coarse, fine, rows, log=None, judged=None):
     cards = list(coarse) + list(fine)
     by = {c["id"]: c for c in cards}
     sector = sector_of(cards)
@@ -320,6 +320,15 @@ def compute(coarse, fine, rows, log=None):
         axis[a] = ranked({i: combine({k: rk[k].get(i) for k in ks}) for i in by})
     q = ranked({i: combine({a: axis[a].get(i) for a in AXES}) for i in by})
 
+    # Judged radius (`radius_judged`, 0 to 10 per coarse field): where present it replaces the field's mechanical rank in
+    # the lift below; a coarse field without one keeps the mechanical composite, recorded loudly. None or {} = not used.
+    use = {i: judged[i] / 10 for i in ids_c if judged and judged.get(i) is not None}
+    if judged:
+        miss = [i for i in ids_c if i not in use]
+        if miss:
+            record_degradation(f"radius composite: {', '.join(miss[:5])}" + (f" and {len(miss) - 5} more" if len(miss) > 5 else ""),
+                               "radius_judged", "mechanical radius composite",
+                               f"no judged radius for {len(miss)} of {len(ids_c)} coarse fields", result.degraded)
     composite = {}
     for level in (0, 1, 2):
         for i in sorted(by):
@@ -332,7 +341,7 @@ def compute(coarse, fine, rows, log=None):
             if not parents and sector.get(i) in composite:
                 parents = [sector[i]]
             p = max((composite[u] for u in parents), default=0.0)
-            composite[i] = p + (1 - p) * (STEP_FLOOR + STEP_SPAN * q[i])
+            composite[i] = p + (1 - p) * (STEP_FLOOR + STEP_SPAN * use.get(i, q[i]))
     for i in sorted(by):
         result.radius[i] = {**{a: (round(axis[a][i], 6) if i in axis[a] else None) for a in AXES},
                             "composite": round(composite[i], 6)}
@@ -357,5 +366,7 @@ def compute(coarse, fine, rows, log=None):
                      "difficulty_source": {s: sum(1 for v in diff_source.values() if v == s) for s in ("own", "aggregated")},
                      "correlations": proxy_correlations(table), "disagreement": spread[:25],
                      "confidence": dict(CONFIDENCE)}
+    if judged:
+        result.report["judged"] = {"judged": len(use), "fallback": len(ids_c) - len(use)}
     result.report["negative_pairs"] = negative_pairs(result.report["correlations"])
     return result

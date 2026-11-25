@@ -23,6 +23,7 @@ TASK_TYPES = {
     "axes_pair": ["a", "b", "tie"],  # which of two domains is further toward the named pole of one axis
     "axis_at": [str(i) for i in range(11)],  # axes v3: abstract 0 to tangible 10, one card per task
     "axis_pg": [str(i) for i in range(11)],  # axes v3: personal and social 0 to global and professional 10
+    "radius": [str(i) for i in range(11)],  # judged radius v1: elementary 0 to highly specialised 10, one coarse field per task
 }
 
 

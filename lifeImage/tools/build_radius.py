@@ -31,7 +31,12 @@ def main(argv=None):
     coarse = read(ROOT / "data/coarse/seed_v2.jsonl")
     fine = read(ROOT / "data/fine/fine_v0.jsonl")
     rows = read(ROOT / "data/coarse/comembership_v0.jsonl")
-    res = rd.compute(coarse, fine, rows)
+    judged = {}
+    answers = ROOT / "data/answers/radius.jsonl"  # judged radius v1 (cache of runner answers), when present
+    if answers.exists():
+        from lifeimage.radius_judged import judged_means, owners
+        judged = judged_means(read(answers), owners(coarse))
+    res = rd.compute(coarse, fine, rows, judged=judged)
     for cards, out, sk in ((coarse, "data/coarse/seed_v3.jsonl", False), (fine, "data/fine/fine_v1.jsonl", True)):
         write(ROOT / out, [{**c, "radius": res.radius[c["id"]]} for c in cards], sk)
     rep = res.report
