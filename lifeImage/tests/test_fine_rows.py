@@ -187,7 +187,8 @@ def test_a_fair_share_of_event_rows_names_a_fine_domain_and_the_rest_keep_coarse
     share = named / len(rows)
     assert share >= 0.45, f"{share:.2f} of {len(rows)} event rows name a fine domain"  # predicted 0.45-0.75; measured 0.96 (missed high: the templates use common fields)
     coarse_only = [r for r in rows if not any(m["domain"] in fine_ids for m in r["memberships"])]
-    assert coarse_only, "fields with no fine child keep coarse-only rows"
+    # Coarse-only rows were a transitional state: LI.54 (every field fine) makes an empty set the target, so the
+    # invariant is conditional (lead, 2026-11-25, after the gap set left no template field without a fine child).
     known = {c["id"] for c in coarse_cards()}
     assert all(m["domain"] in known for r in coarse_only for m in r["memberships"])
 
