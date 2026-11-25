@@ -91,7 +91,8 @@ Everything before v1.0 is open to experiment (author, 2026-11-20); `[R]` marks t
   Expertise follows what was done and engaged with (form, content): the shape of mRNA expertise changed only mildly
   over two decades. Impact follows what changed (outcome): mRNA's impact moved from research to health to survival.
   The projection table therefore maps (relation type, participation) to each channel separately.
-- **[R] Potential is predicted expertise and predicted impact; self-assessment counts** (author, 2026-11-21).
+- **[R] Potential is predicted expertise and predicted impact; self-assessment counts** (author, 2026-11-21; channel
+  split amended by LI.37 in `BACKPROPAGATION.md`: red knowledge and potential, green demonstrated skill, blue impact).
   Channels: red potential, green expertise, blue impact (the concept's arrangement 1). The mix shows estimation:
   a mid-career image with much red and little yellow (red + green) or purple (red + blue) shows over-estimation;
   blues, teals and greens without red show under-estimation; a homogeneous blend gives whites and greys with flecks

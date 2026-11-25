@@ -62,6 +62,12 @@ deleted. Numbering is stable (LI.n).
 - **LI.33** (2026-11-21) Potential is predicted expertise and predicted impact, self-assessment included; red
   potential, green expertise, blue impact; the mix shows estimation, not worth. DESIGN.
 - **LI.34** (2026-11-21) Two image versions: predicted/measured now; reputation positive/negative later. DESIGN.
+- **LI.37** (2026-11-25; amends LI.33) Channels follow the source document's split. Red is knowledge and potential:
+  taking in (reading, watching, attending), claims, self-assessment and predictions. Green is demonstrated skill:
+  producing, or doing the thing under assessment. Blue is impact: what the product changes for others. Tests split by
+  what they measure: a test of knowing makes red solid (claimed → measured tier); an assessment of doing is green. The
+  produced/consumed field and a knowing/doing flag on tests choose between red and green. Estimation still reads in
+  the image: grainy red never made solid, and red without green, mean knowing or claiming without doing. DESIGN.
 - **LI.36** (2026-11-24) Channels are levels built from events: each event imprints its own variegated pattern on
   the circle (its memberships across related domains), its weight and decay set the pattern's luminosity, and these
   imprints add up per channel; the sum saturates like light, giving per-domain levels. A potential event (a claim or
