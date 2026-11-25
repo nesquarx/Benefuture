@@ -70,3 +70,13 @@ unsignalled). Rerun: adjacent no-signal share 0.733 -> 0.721 (coverage > 60% pre
 vs rerun B): variant 0, 113 vs 91, share 0.554, z 1.54; variant 1, 103 vs 91, share 0.531, z 0.86; pooled 0.543, z 1.70.
 Prediction (>= 55%, z >= 2): **not met**, again. Two runs agree: the simulation is a small, consistent, non-significant
 improvement to an independent judge. The relaxation with a loose angular prior does not fix adjacency enough to be seen.
+
+## After the fine level grew (lead, 2026-11-25, 1503 fine cards)
+Rerun on the new data: mean adjacent combined similarity 0.301 (shipped order) -> 0.276 (relaxed), no-signal share 0.733 ->
+0.781; mean rank distance of signal pairs 32.9 -> 27.1 (still falls). No bug (progress/lifeimage-red-diag.md): the shipped
+build orders the axes prior's 178 tied fields by their parent's angle, worth +0.079 over an id tie-break; the relaxation
+beats the id-tie-broken prior (0.221 -> 0.276) and lowers its own energy (1.375e6 -> 0.940e6) but not the shipped order.
+Removing any one source gives higher full-signal adjacency (0.32-0.38): more sources pulling locally means more compromise.
+The claim "the simulation improves adjacency over the shipped layout" no longer holds; the test now asserts only what holds
+(signal pairs closer in rank). Reading: a cheap global ordering heuristic beat the local relaxation, which favours a global
+ordering arm (circular seriation) over further force tuning.

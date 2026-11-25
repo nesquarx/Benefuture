@@ -197,10 +197,13 @@ def test_real_result_stays_near_the_axes_and_does_not_fragment_more(result):
     assert st["fragmentation"]["after"]["sectors_split"] <= st["fragmentation"]["before"]["sectors_split"]
 
 
-def test_real_result_improves_signal_adjacency(result):
+def test_real_result_brings_signal_pairs_closer(result):
+    # Restated (lead, 2026-11-25): with the 1503-card fine level the relaxed order no longer beats the shipped order on
+    # mean adjacent similarity (0.301 -> 0.276) or no-signal share (0.733 -> 0.781). The shipped build breaks its 178
+    # tied fields by parent angle (+0.079 over an id tie-break); the relaxation beats the id-tie-broken prior (0.221 ->
+    # 0.276) but not that. Recorded in data/gold/layout_sim_predictions.md; the simulated layout is not adopted.
     m = result["metrics"]["coherence"]
-    assert m["after"]["mean_similarity"] > m["before"]["mean_similarity"]
-    assert m["after"]["no_signal_share"] < m["before"]["no_signal_share"]
+    assert m["after"]["mean_rank_distance"] < m["before"]["mean_rank_distance"]
 
 
 def test_coverage_is_reported_per_source(result):
