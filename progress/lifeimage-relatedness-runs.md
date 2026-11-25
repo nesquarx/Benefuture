@@ -1,4 +1,4 @@
-Status: ACTIVE 2026-11-25 (lead orchestration)
+Status: DONE (2026-11-25; both reruns judged, recorded in lifeImage/data/gold/layout_sim_predictions.md)
 
 ## Goal and acceptance
 Answer all 92 relatedness.v1 batches (var0 and var1, parts 0-45; 4,536 cards) with lifeimage-runner agents, three batches
