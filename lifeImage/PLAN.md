@@ -415,6 +415,12 @@ Signatures pre-registered `883da98`; report `data/gold/characterisation_v2_repor
   beyond what the coarse fields already show. A touched fine domain's median level is 0.376 against 0.449 for a touched coarse
   field.
 
+- **Evidence at the fine level** (`5934e8f`): 96% of event rows name a fine domain; levels form at the fine level and
+  aggregate into coarse fields; fine ring drawn; the viewer zooms coarse → fine → rows. Battery v2 re-measured on fine
+  evidence (signatures unchanged): archetype 0.569 against a same-code coarse control 0.562 (8 vs 7 flips, p = 1.0),
+  calibration 0.451 against 0.472: finer resolution does not change identification (predicted +0.05: missed). The limit
+  is elsewhere (the features or the generator's archetype signal), not resolution. Images grew to ~190 KB each.
+
 ## Order of work
 
 0. Tooling: card schema, task-card format and runner interface, cache, gold-set harness, invariant tests (acceptance
