@@ -3,12 +3,12 @@
  "notes": [
   "[OPEN] Radius within a ring comes from the mechanical proxies of `lifeimage.radius` (LI.26): complexity and specificity cover every domain, difficulty under a fifth (ISCO skill level), and specificity does not yet correlate positively with the other two; novelty (L159) is not used. A domain with no composite spans its whole ring (logged).",
   "[OPEN] Pressure here is the share of the synthetic persona, organisation and public-figure rows, a tiny and unrepresentative sample; real pressure is the smoothed share of recent works, postings and evidence rows (LI.25).",
-  "Slice order is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where present, else the five-point v1/v2 means (logged); ties break by their primary sector's angle, then id."
+  "Field order (LI.66): the pinned seriation order of the default layout; the `axes_v0` layout orders by axes angle. Sector order, and for `axes_v0` the field order, is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where present, else the five-point v1/v2 means (logged); ties break by their primary sector's angle, then id."
  ],
  "shift_degrees": {
   "field": {
-   "max": 42.24877791758422,
-   "mean": 15.79232044968102
+   "max": 122.78074962376436,
+   "mean": 28.692217866695927
   },
   "sector": {
    "max": 56.58114235203743,
@@ -23,7 +23,7 @@
    "r1": 0.696164133157858,
    "ring": "field",
    "source": "axes",
-   "start": 196.154,
+   "start": 228.659,
    "votes": 2,
    "width": 0.36
   },
@@ -34,7 +34,7 @@
    "r1": 0.6183420429382332,
    "ring": "field",
    "source": "axes",
-   "start": 333.986,
+   "start": 340.192,
    "votes": 2,
    "width": 1.03
   },
@@ -45,7 +45,7 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 300.465,
+   "start": 352.627,
    "votes": 2,
    "width": 0.447
   },
@@ -56,7 +56,7 @@
    "r1": 0.8195406176523848,
    "ring": "field",
    "source": "axes",
-   "start": 40.928,
+   "start": 62.642,
    "votes": 2,
    "width": 0.728
   },
@@ -67,7 +67,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 75.582,
+   "start": 64.334,
    "votes": 2,
    "width": 0.355
   },
@@ -78,7 +78,7 @@
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 132.714,
+   "start": 118.725,
    "votes": 2,
    "width": 0.305
   },
@@ -89,7 +89,7 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 61.522,
+   "start": 39.671,
    "votes": 2,
    "width": 0.305
   },
@@ -100,7 +100,7 @@
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 274.313,
+   "start": 236.736,
    "votes": 2,
    "width": 0.314
   },
@@ -111,7 +111,7 @@
    "r1": 0.783476722184754,
    "ring": "field",
    "source": "axes",
-   "start": 18.368,
+   "start": 62.014,
    "votes": 2,
    "width": 0.628
   },
@@ -122,7 +122,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 129.521,
+   "start": 151.421,
    "votes": 2,
    "width": 0.338
   },
@@ -133,7 +133,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 160.785,
+   "start": 151.76,
    "votes": 2,
    "width": 0.452
   },
@@ -144,7 +144,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 109.244,
+   "start": 66.652,
    "votes": 2,
    "width": 0.305
   },
@@ -155,7 +155,7 @@
    "r1": 0.623087292341869,
    "ring": "field",
    "source": "axes",
-   "start": 161.593,
+   "start": 146.238,
    "votes": 2,
    "width": 1.132
   },
@@ -166,7 +166,7 @@
    "r1": 0.7445656770749416,
    "ring": "field",
    "source": "axes",
-   "start": 188.162,
+   "start": 216.255,
    "votes": 2,
    "width": 1.01
   },
@@ -177,7 +177,7 @@
    "r1": 0.7091346792465206,
    "ring": "field",
    "source": "axes",
-   "start": 211.781,
+   "start": 264.367,
    "votes": 2,
    "width": 0.414
   },
@@ -188,7 +188,7 @@
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 75.164,
+   "start": 64.689,
    "votes": 2,
    "width": 0.418
   },
@@ -199,7 +199,7 @@
    "r1": 0.7401365799128231,
    "ring": "field",
    "source": "axes",
-   "start": 289.042,
+   "start": 292.931,
    "votes": 2,
    "width": 1.619
   },
@@ -210,7 +210,7 @@
    "r1": 0.740769477552033,
    "ring": "field",
    "source": "axes",
-   "start": 89.762,
+   "start": 72.454,
    "votes": 2,
    "width": 0.439
   },
@@ -221,7 +221,7 @@
    "r1": 0.666743586855317,
    "ring": "field",
    "source": "axes",
-   "start": 172.046,
+   "start": 199.286,
    "votes": 2,
    "width": 0.92
   },
@@ -232,7 +232,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 231.335,
+   "start": 189.219,
    "votes": 2,
    "width": 0.305
   },
@@ -243,7 +243,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 90.202,
+   "start": 85.359,
    "votes": 2,
    "width": 3.622
   },
@@ -254,7 +254,7 @@
    "r1": 0.8676260093279512,
    "ring": "field",
    "source": "axes",
-   "start": 147.951,
+   "start": 92.278,
    "votes": 2,
    "width": 0.398
   },
@@ -265,7 +265,7 @@
    "r1": 0.717992280414582,
    "ring": "field",
    "source": "axes",
-   "start": 329.557,
+   "start": 45.943,
    "votes": 2,
    "width": 2.387
   },
@@ -276,7 +276,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 265.142,
+   "start": 254.994,
    "votes": 2,
    "width": 4.854
   },
@@ -287,7 +287,7 @@
    "r1": 0.6629473873324084,
    "ring": "field",
    "source": "axes",
-   "start": 235.488,
+   "start": 260.247,
    "votes": 2,
    "width": 3.814
   },
@@ -298,7 +298,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 72.619,
+   "start": 65.442,
    "votes": 2,
    "width": 0.619
   },
@@ -309,7 +309,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 274.008,
+   "start": 286.306,
    "votes": 2,
    "width": 0.305
   },
@@ -320,7 +320,7 @@
    "r1": 0.599677197565208,
    "ring": "field",
    "source": "axes",
-   "start": 331.944,
+   "start": 290.775,
    "votes": 2,
    "width": 0.338
   },
@@ -331,7 +331,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 290.662,
+   "start": 292.374,
    "votes": 2,
    "width": 0.557
   },
@@ -342,7 +342,7 @@
    "r1": 0.9451313541498833,
    "ring": "field",
    "source": "axes",
-   "start": 71.917,
+   "start": 68.01,
    "votes": 2,
    "width": 0.702
   },
@@ -353,7 +353,7 @@
    "r1": 0.719574227934519,
    "ring": "field",
    "source": "axes",
-   "start": 118.532,
+   "start": 137.584,
    "votes": 2,
    "width": 4.699
   },
@@ -364,7 +364,7 @@
    "r1": 0.6053714968495707,
    "ring": "field",
    "source": "axes",
-   "start": 320.045,
+   "start": 285.368,
    "votes": 2,
    "width": 0.328
   },
@@ -375,7 +375,7 @@
    "r1": 0.579430997828421,
    "ring": "field",
    "source": "axes",
-   "start": 336.789,
+   "start": 313.603,
    "votes": 2,
    "width": 0.305
   },
@@ -386,7 +386,7 @@
    "r1": 0.7091346792465206,
    "ring": "field",
    "source": "axes",
-   "start": 233.269,
+   "start": 229.019,
    "votes": 2,
    "width": 0.305
   },
@@ -397,7 +397,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 216.291,
+   "start": 269.947,
    "votes": 2,
    "width": 1.207
   },
@@ -408,7 +408,7 @@
    "r1": 0.544,
    "ring": "field",
    "source": "axes",
-   "start": 7.287,
+   "start": 40.609,
    "votes": 2,
    "width": 0.305
   },
@@ -419,7 +419,7 @@
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 149.229,
+   "start": 117.844,
    "votes": 2,
    "width": 0.88
   },
@@ -430,7 +430,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 214.392,
+   "start": 237.774,
    "votes": 2,
    "width": 0.321
   },
@@ -441,7 +441,7 @@
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 55.174,
+   "start": 322.26,
    "votes": 2,
    "width": 1.621
   },
@@ -452,7 +452,7 @@
    "r1": 0.7287479813440977,
    "ring": "field",
    "source": "axes",
-   "start": 312.651,
+   "start": 22.894,
    "votes": 2,
    "width": 2.006
   },
@@ -463,7 +463,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 129.86,
+   "start": 71.192,
    "votes": 2,
    "width": 0.305
   },
@@ -474,7 +474,7 @@
    "r1": 0.6781321854240424,
    "ring": "field",
    "source": "axes",
-   "start": 194.838,
+   "start": 233.668,
    "votes": 2,
    "width": 1.316
   },
@@ -485,7 +485,7 @@
    "r1": 0.7746191210166925,
    "ring": "field",
    "source": "axes",
-   "start": 293.18,
+   "start": 317.559,
    "votes": 2,
    "width": 1.446
   },
@@ -496,7 +496,7 @@
    "r1": 0.739820427671306,
    "ring": "field",
    "source": "axes",
-   "start": 203.336,
+   "start": 210.33,
    "votes": 2,
    "width": 2.967
   },
@@ -507,7 +507,7 @@
    "r1": 0.7493109264785772,
    "ring": "field",
    "source": "axes",
-   "start": 210.866,
+   "start": 252.557,
    "votes": 2,
    "width": 0.305
   },
@@ -518,7 +518,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 294.626,
+   "start": 309.846,
    "votes": 2,
    "width": 2.69
   },
@@ -529,7 +529,7 @@
    "r1": 0.6116986937731435,
    "ring": "field",
    "source": "axes",
-   "start": 93.824,
+   "start": 88.981,
    "votes": 2,
    "width": 1.969
   },
@@ -540,7 +540,7 @@
    "r1": 0.8410526126675916,
    "ring": "field",
    "source": "axes",
-   "start": 143.976,
+   "start": 145.627,
    "votes": 2,
    "width": 0.305
   },
@@ -551,7 +551,7 @@
    "r1": 0.9302633014559417,
    "ring": "field",
    "source": "axes",
-   "start": 105.585,
+   "start": 145.228,
    "votes": 2,
    "width": 0.399
   },
@@ -562,7 +562,7 @@
    "r1": 0.7711390737353011,
    "ring": "field",
    "source": "axes",
-   "start": 276.428,
+   "start": 264.781,
    "votes": 2,
    "width": 0.364
   },
@@ -573,7 +573,7 @@
    "r1": 0.7518419238792414,
    "ring": "field",
    "source": "axes",
-   "start": 218.0,
+   "start": 227.157,
    "votes": 2,
    "width": 1.502
   },
@@ -584,7 +584,7 @@
    "r1": 0.7562704278851844,
    "ring": "field",
    "source": "axes",
-   "start": 336.479,
+   "start": 69.076,
    "votes": 2,
    "width": 0.31
   },
@@ -595,7 +595,7 @@
    "r1": 0.75563812340215,
    "ring": "field",
    "source": "axes",
-   "start": 351.99,
+   "start": 332.706,
    "votes": 2,
    "width": 0.305
   },
@@ -606,7 +606,7 @@
    "r1": 0.75563812340215,
    "ring": "field",
    "source": "axes",
-   "start": 212.501,
+   "start": 239.614,
    "votes": 2,
    "width": 0.349
   },
@@ -617,7 +617,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 233.574,
+   "start": 286.001,
    "votes": 2,
    "width": 0.305
   },
@@ -628,7 +628,7 @@
    "r1": 0.7461476245948786,
    "ring": "field",
    "source": "axes",
-   "start": 18.997,
+   "start": 336.615,
    "votes": 2,
    "width": 2.236
   },
@@ -639,7 +639,7 @@
    "r1": 0.7085017816073106,
    "ring": "field",
    "source": "axes",
-   "start": 73.238,
+   "start": 287.261,
    "votes": 2,
    "width": 0.305
   },
@@ -650,7 +650,7 @@
    "r1": 0.8091010689643864,
    "ring": "field",
    "source": "axes",
-   "start": 350.002,
+   "start": 291.114,
    "votes": 2,
    "width": 1.26
   },
@@ -661,7 +661,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 75.936,
+   "start": 66.958,
    "votes": 2,
    "width": 0.322
   },
@@ -672,7 +672,7 @@
    "r1": 0.5984119954429636,
    "ring": "field",
    "source": "axes",
-   "start": 300.912,
+   "start": 238.705,
    "votes": 2,
    "width": 0.909
   },
@@ -683,7 +683,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 79.257,
+   "start": 60.956,
    "votes": 2,
    "width": 0.324
   },
@@ -694,7 +694,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 148.349,
+   "start": 149.851,
    "votes": 2,
    "width": 0.88
   },
@@ -705,7 +705,7 @@
    "r1": 0.7379223279098517,
    "ring": "field",
    "source": "axes",
-   "start": 352.295,
+   "start": 44.104,
    "votes": 2,
    "width": 1.839
   },
@@ -716,7 +716,7 @@
    "r1": 0.9451313541498833,
    "ring": "field",
    "source": "axes",
-   "start": 61.827,
+   "start": 323.881,
    "votes": 2,
    "width": 0.574
   },
@@ -727,7 +727,7 @@
    "r1": 0.5642461997367869,
    "ring": "field",
    "source": "axes",
-   "start": 51.684,
+   "start": 43.24,
    "votes": 2,
    "width": 0.537
   },
@@ -738,7 +738,7 @@
    "r1": 0.6116986937731435,
    "ring": "field",
    "source": "axes",
-   "start": 79.581,
+   "start": 107.185,
    "votes": 2,
    "width": 4.816
   },
@@ -749,7 +749,7 @@
    "r1": 0.7711390737353011,
    "ring": "field",
    "source": "axes",
-   "start": 128.702,
+   "start": 112.001,
    "votes": 2,
    "width": 0.82
   },
@@ -760,7 +760,7 @@
    "r1": 0.9153946556058249,
    "ring": "field",
    "source": "axes",
-   "start": 62.401,
+   "start": 324.455,
    "votes": 2,
    "width": 0.317
   },
@@ -771,7 +771,7 @@
    "r1": 0.7066036818458564,
    "ring": "field",
    "source": "axes",
-   "start": 85.536,
+   "start": 82.127,
    "votes": 2,
    "width": 1.744
   },
@@ -782,7 +782,7 @@
    "r1": 0.7113489312494921,
    "ring": "field",
    "source": "axes",
-   "start": 54.847,
+   "start": 334.728,
    "votes": 2,
    "width": 0.327
   },
@@ -793,7 +793,7 @@
    "r1": 0.6933169835156766,
    "ring": "field",
    "source": "axes",
-   "start": 34.772,
+   "start": 333.316,
    "votes": 2,
    "width": 1.412
   },
@@ -804,7 +804,7 @@
    "r1": 0.7635466746894842,
    "ring": "field",
    "source": "axes",
-   "start": 202.576,
+   "start": 222.314,
    "votes": 2,
    "width": 0.37
   },
@@ -815,7 +815,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 211.171,
+   "start": 238.4,
    "votes": 2,
    "width": 0.305
   },
@@ -826,7 +826,7 @@
    "r1": 0.6069534443695077,
    "ring": "field",
    "source": "axes",
-   "start": 215.746,
+   "start": 190.744,
    "votes": 2,
    "width": 0.545
   },
@@ -837,7 +837,7 @@
    "r1": 0.7445656770749416,
    "ring": "field",
    "source": "axes",
-   "start": 165.606,
+   "start": 184.593,
    "votes": 2,
    "width": 1.5
   },
@@ -848,7 +848,7 @@
    "r1": 0.6781321854240424,
    "ring": "field",
    "source": "axes",
-   "start": 320.373,
+   "start": 4.997,
    "votes": 2,
    "width": 7.219
   },
@@ -859,7 +859,7 @@
    "r1": 0.7085017816073106,
    "ring": "field",
    "source": "axes",
-   "start": 71.573,
+   "start": 286.916,
    "votes": 2,
    "width": 0.345
   },
@@ -870,7 +870,7 @@
    "r1": 0.7470966744756058,
    "ring": "field",
    "source": "axes",
-   "start": 130.165,
+   "start": 154.179,
    "votes": 2,
    "width": 0.305
   },
@@ -881,7 +881,7 @@
    "r1": 0.5534904988072713,
    "ring": "field",
    "source": "axes",
-   "start": 248.008,
+   "start": 244.963,
    "votes": 2,
    "width": 7.594
   },
@@ -892,7 +892,7 @@
    "r1": 0.5765838481862396,
    "ring": "field",
    "source": "axes",
-   "start": 225.027,
+   "start": 239.963,
    "votes": 2,
    "width": 5.0
   },
@@ -903,7 +903,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 276.793,
+   "start": 296.997,
    "votes": 2,
    "width": 10.67
   },
@@ -914,7 +914,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 191.632,
+   "start": 202.66,
    "votes": 2,
    "width": 2.019
   },
@@ -925,7 +925,7 @@
    "r1": 0.8413687649091088,
    "ring": "field",
    "source": "axes",
-   "start": 123.597,
+   "start": 147.37,
    "votes": 2,
    "width": 2.481
   },
@@ -936,7 +936,7 @@
    "r1": 0.7293808789833075,
    "ring": "field",
    "source": "axes",
-   "start": 349.282,
+   "start": 21.618,
    "votes": 2,
    "width": 0.72
   },
@@ -947,7 +947,7 @@
    "r1": 0.7208394300567633,
    "ring": "field",
    "source": "axes",
-   "start": 209.261,
+   "start": 236.431,
    "votes": 2,
    "width": 0.305
   },
@@ -958,7 +958,7 @@
    "r1": 0.6053714968495707,
    "ring": "field",
    "source": "axes",
-   "start": 351.263,
+   "start": 314.297,
    "votes": 2,
    "width": 0.727
   },
@@ -969,7 +969,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 173.684,
+   "start": 145.933,
    "votes": 2,
    "width": 0.305
   },
@@ -980,7 +980,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 231.64,
+   "start": 190.439,
    "votes": 2,
    "width": 0.305
   },
@@ -991,7 +991,7 @@
    "r1": 0.7635466746894842,
    "ring": "field",
    "source": "axes",
-   "start": 255.602,
+   "start": 264.062,
    "votes": 2,
    "width": 0.305
   },
@@ -1002,7 +1002,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 186.535,
+   "start": 200.206,
    "votes": 2,
    "width": 0.305
   },
@@ -1013,7 +1013,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 255.907,
+   "start": 200.512,
    "votes": 2,
    "width": 0.962
   },
@@ -1024,7 +1024,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 87.889,
+   "start": 67.28,
    "votes": 2,
    "width": 0.305
   },
@@ -1035,7 +1035,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 269.996,
+   "start": 259.847,
    "votes": 2,
    "width": 0.4
   },
@@ -1046,7 +1046,7 @@
    "r1": 0.6771831355433153,
    "ring": "field",
    "source": "axes",
-   "start": 105.984,
+   "start": 120.859,
    "votes": 2,
    "width": 3.26
   },
@@ -1057,7 +1057,7 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 187.857,
+   "start": 189.524,
    "votes": 2,
    "width": 0.305
   },
@@ -1068,7 +1068,7 @@
    "r1": 0.8973627078720094,
    "ring": "field",
    "source": "axes",
-   "start": 74.273,
+   "start": 69.386,
    "votes": 2,
    "width": 0.891
   },
@@ -1079,7 +1079,7 @@
    "r1": 0.8413687649091088,
    "ring": "field",
    "source": "axes",
-   "start": 167.106,
+   "start": 95.409,
    "votes": 2,
    "width": 4.636
   },
@@ -1090,7 +1090,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 95.793,
+   "start": 152.212,
    "votes": 2,
    "width": 0.319
   },
@@ -1101,7 +1101,7 @@
    "r1": 0.6053714968495707,
    "ring": "field",
    "source": "axes",
-   "start": 6.056,
+   "start": 324.772,
    "votes": 2,
    "width": 1.231
   },
@@ -1112,7 +1112,7 @@
    "r1": 0.6670597390968341,
    "ring": "field",
    "source": "axes",
-   "start": 292.134,
+   "start": 284.933,
    "votes": 2,
    "width": 0.436
   },
@@ -1123,7 +1123,7 @@
    "r1": 0.7493109264785772,
    "ring": "field",
    "source": "axes",
-   "start": 314.657,
+   "start": 282.483,
    "votes": 2,
    "width": 2.45
   },
@@ -1134,7 +1134,7 @@
    "r1": 0.8015086699185693,
    "ring": "field",
    "source": "axes",
-   "start": 36.185,
+   "start": 63.37,
    "votes": 2,
    "width": 0.964
   },
@@ -1145,7 +1145,7 @@
    "r1": 0.6816122327054338,
    "ring": "field",
    "source": "axes",
-   "start": 270.396,
+   "start": 266.061,
    "votes": 2,
    "width": 3.193
   },
@@ -1156,7 +1156,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 53.177,
+   "start": 24.9,
    "votes": 2,
    "width": 1.67
   },
@@ -1167,7 +1167,7 @@
    "r1": 0.666743586855317,
    "ring": "field",
    "source": "axes",
-   "start": 230.027,
+   "start": 195.824,
    "votes": 2,
    "width": 1.308
   },
@@ -1178,7 +1178,7 @@
    "r1": 0.7293808789833075,
    "ring": "field",
    "source": "axes",
-   "start": 317.107,
+   "start": 315.911,
    "votes": 2,
    "width": 1.648
   },
@@ -1189,7 +1189,7 @@
    "r1": 0.6670597390968341,
    "ring": "field",
    "source": "axes",
-   "start": 219.999,
+   "start": 191.289,
    "votes": 2,
    "width": 4.535
   },
@@ -1200,7 +1200,7 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 37.149,
+   "start": 327.025,
    "votes": 2,
    "width": 0.857
   },
@@ -1211,7 +1211,7 @@
    "r1": 0.7619647271695471,
    "ring": "field",
    "source": "axes",
-   "start": 162.725,
+   "start": 142.283,
    "votes": 2,
    "width": 1.4
   },
@@ -1222,7 +1222,7 @@
    "r1": 0.5784819479476939,
    "ring": "field",
    "source": "axes",
-   "start": 292.57,
+   "start": 312.993,
    "votes": 2,
    "width": 0.305
   },
@@ -1233,7 +1233,7 @@
    "r1": 0.7635466746894842,
    "ring": "field",
    "source": "axes",
-   "start": 212.196,
+   "start": 252.862,
    "votes": 2,
    "width": 0.305
   },
@@ -1244,7 +1244,7 @@
    "r1": 0.7277989314633705,
    "ring": "field",
    "source": "axes",
-   "start": 64.466,
+   "start": 39.976,
    "votes": 2,
    "width": 0.321
   },
@@ -1255,7 +1255,7 @@
    "r1": 0.718941330295309,
    "ring": "field",
    "source": "axes",
-   "start": 176.468,
+   "start": 189.829,
    "votes": 2,
    "width": 0.305
   },
@@ -1266,7 +1266,7 @@
    "r1": 0.579430997828421,
    "ring": "field",
    "source": "axes",
-   "start": 173.272,
+   "start": 166.407,
    "votes": 2,
    "width": 0.413
   },
@@ -1277,7 +1277,7 @@
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 62.718,
+   "start": 81.786,
    "votes": 2,
    "width": 0.34
   },
@@ -1288,7 +1288,7 @@
    "r1": 0.666743586855317,
    "ring": "field",
    "source": "axes",
-   "start": 133.019,
+   "start": 154.484,
    "votes": 2,
    "width": 10.957
   },
@@ -1299,7 +1299,7 @@
    "r1": 0.8856579570617666,
    "ring": "field",
    "source": "axes",
-   "start": 78.432,
+   "start": 144.404,
    "votes": 2,
    "width": 0.825
   },
@@ -1310,7 +1310,7 @@
    "r1": 0.7246356295796719,
    "ring": "field",
    "source": "axes",
-   "start": 126.383,
+   "start": 112.821,
    "votes": 2,
    "width": 1.105
   },
@@ -1321,7 +1321,7 @@
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 127.488,
+   "start": 106.524,
    "votes": 2,
    "width": 0.661
   },
@@ -1332,7 +1332,7 @@
    "r1": 0.7619647271695471,
    "ring": "field",
    "source": "axes",
-   "start": 109.965,
+   "start": 153.252,
    "votes": 2,
    "width": 0.305
   },
@@ -1343,7 +1343,7 @@
    "r1": 0.6983783851608295,
    "ring": "field",
    "source": "axes",
-   "start": 96.112,
+   "start": 114.479,
    "votes": 2,
    "width": 0.311
   },
@@ -1354,7 +1354,7 @@
    "r1": 0.8252349169367476,
    "ring": "field",
    "source": "axes",
-   "start": 197.985,
+   "start": 217.265,
    "votes": 2,
    "width": 0.829
   },
@@ -1365,7 +1365,7 @@
    "r1": 0.9201399050094605,
    "ring": "field",
    "source": "axes",
-   "start": 132.299,
+   "start": 143.988,
    "votes": 2,
    "width": 0.415
   },
@@ -1376,7 +1376,7 @@
    "r1": 0.8255510691782648,
    "ring": "field",
    "source": "axes",
-   "start": 126.078,
+   "start": 143.683,
    "votes": 2,
    "width": 0.305
   },
@@ -1387,7 +1387,7 @@
    "r1": 0.7493109264785772,
    "ring": "field",
    "source": "axes",
-   "start": 209.566,
+   "start": 221.333,
    "votes": 2,
    "width": 0.588
   },
@@ -1398,7 +1398,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 84.397,
+   "start": 60.226,
    "votes": 2,
    "width": 0.73
   },
@@ -1409,7 +1409,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 161.237,
+   "start": 152.531,
    "votes": 2,
    "width": 0.356
   },
@@ -1420,7 +1420,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 231.945,
+   "start": 190.134,
    "votes": 2,
    "width": 0.305
   },
@@ -1431,7 +1431,7 @@
    "r1": 0.8410526126675916,
    "ring": "field",
    "source": "axes",
-   "start": 312.208,
+   "start": 223.045,
    "votes": 2,
    "width": 0.443
   },
@@ -1442,7 +1442,7 @@
    "r1": 0.8252349169367476,
    "ring": "field",
    "source": "axes",
-   "start": 98.996,
+   "start": 83.87,
    "votes": 2,
    "width": 1.488
   },
@@ -1453,7 +1453,7 @@
    "r1": 0.8559206653615329,
    "ring": "field",
    "source": "axes",
-   "start": 63.059,
+   "start": 321.187,
    "votes": 2,
    "width": 1.073
   },
@@ -1464,7 +1464,7 @@
    "r1": 0.5765838481862396,
    "ring": "field",
    "source": "axes",
-   "start": 232.25,
+   "start": 253.943,
    "votes": 2,
    "width": 0.549
   },
@@ -1475,7 +1475,7 @@
    "r1": 0.5534904988072713,
    "ring": "field",
    "source": "axes",
-   "start": 217.498,
+   "start": 254.491,
    "votes": 2,
    "width": 0.502
   },
@@ -1486,7 +1486,7 @@
    "r1": 0.9600000000000001,
    "ring": "field",
    "source": "axes",
-   "start": 64.131,
+   "start": 65.107,
    "votes": 2,
    "width": 0.335
   },
@@ -1497,7 +1497,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 158.519,
+   "start": 116.963,
    "votes": 2,
    "width": 0.881
   },
@@ -1508,7 +1508,7 @@
    "r1": 0.9302633014559417,
    "ring": "field",
    "source": "axes",
-   "start": 59.245,
+   "start": 68.711,
    "votes": 2,
    "width": 0.365
   },
@@ -1519,7 +1519,7 @@
    "r1": 0.8442159145512902,
    "ring": "field",
    "source": "axes",
-   "start": 123.231,
+   "start": 152.886,
    "votes": 2,
    "width": 0.366
   },
@@ -1530,7 +1530,7 @@
    "r1": 0.8122643708480849,
    "ring": "field",
    "source": "axes",
-   "start": 176.163,
+   "start": 237.469,
    "votes": 2,
    "width": 0.305
   },
@@ -1541,7 +1541,7 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 41.656,
+   "start": 48.33,
    "votes": 2,
    "width": 10.028
   },
@@ -1552,7 +1552,7 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 273.589,
+   "start": 237.051,
    "votes": 2,
    "width": 0.418
   },
@@ -1563,7 +1563,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 76.259,
+   "start": 58.357,
    "votes": 2,
    "width": 1.868
   },
@@ -1574,7 +1574,7 @@
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 201.63,
+   "start": 234.984,
    "votes": 2,
    "width": 0.947
   },
@@ -1585,7 +1585,7 @@
    "r1": 0.7445656770749416,
    "ring": "field",
    "source": "axes",
-   "start": 202.946,
+   "start": 186.983,
    "votes": 2,
    "width": 0.39
   },
@@ -1596,7 +1596,7 @@
    "r1": 0.8021415675577793,
    "ring": "field",
    "source": "axes",
-   "start": 52.526,
+   "start": 72.107,
    "votes": 2,
    "width": 0.346
   },
@@ -1607,7 +1607,7 @@
    "r1": 0.8043558195607508,
    "ring": "field",
    "source": "axes",
-   "start": 73.543,
+   "start": 71.497,
    "votes": 2,
    "width": 0.305
   },
@@ -1618,7 +1618,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 172.967,
+   "start": 188.303,
    "votes": 2,
    "width": 0.305
   },
@@ -1629,7 +1629,7 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 344.458,
+   "start": 327.882,
    "votes": 2,
    "width": 4.824
   },
@@ -1640,7 +1640,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 233.879,
+   "start": 204.679,
    "votes": 2,
    "width": 1.609
   },
@@ -1651,7 +1651,7 @@
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 256.869,
+   "start": 206.288,
    "votes": 2,
    "width": 4.042
   },
@@ -1662,7 +1662,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 260.911,
+   "start": 279.249,
    "votes": 2,
    "width": 3.234
   },
@@ -1673,7 +1673,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 197.624,
+   "start": 222.684,
    "votes": 2,
    "width": 0.36
   },
@@ -1684,7 +1684,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 239.607,
+   "start": 271.873,
    "votes": 2,
    "width": 7.376
   },
@@ -1695,7 +1695,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 85.127,
+   "start": 92.989,
    "votes": 2,
    "width": 0.409
   },
@@ -1706,7 +1706,7 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 171.741,
+   "start": 153.557,
    "votes": 2,
    "width": 0.305
   },
@@ -1717,7 +1717,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 328.478,
+   "start": 287.871,
    "votes": 2,
    "width": 0.305
   },
@@ -1728,7 +1728,7 @@
    "r1": 0.6781321854240424,
    "ring": "field",
    "source": "axes",
-   "start": 327.592,
+   "start": 315.024,
    "votes": 2,
    "width": 0.887
   },
@@ -1739,7 +1739,7 @@
    "r1": 0.6828774348276782,
    "ring": "field",
    "source": "axes",
-   "start": 56.796,
+   "start": 114.79,
    "votes": 2,
    "width": 0.373
   },
@@ -1750,7 +1750,7 @@
    "r1": 0.601259145085145,
    "ring": "field",
    "source": "axes",
-   "start": 87.279,
+   "start": 73.198,
    "votes": 2,
    "width": 0.305
   },
@@ -1761,7 +1761,7 @@
    "r1": 0.6313125890268959,
    "ring": "field",
    "source": "axes",
-   "start": 191.327,
+   "start": 188.913,
    "votes": 2,
    "width": 0.305
   },
@@ -1772,7 +1772,7 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 297.316,
+   "start": 18.469,
    "votes": 2,
    "width": 3.149
   },
@@ -1783,7 +1783,7 @@
    "r1": 0.6689578388582884,
    "ring": "field",
    "source": "axes",
-   "start": 224.534,
+   "start": 288.482,
    "votes": 2,
    "width": 0.492
   },
@@ -1794,7 +1794,7 @@
    "r1": 0.6227711401003517,
    "ring": "field",
    "source": "axes",
-   "start": 274.627,
+   "start": 288.974,
    "votes": 2,
    "width": 1.801
   },
@@ -1805,7 +1805,7 @@
    "r1": 0.6629473873324084,
    "ring": "field",
    "source": "axes",
-   "start": 232.798,
+   "start": 253.472,
    "votes": 2,
    "width": 0.47
   },
@@ -1816,7 +1816,7 @@
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 17.269,
+   "start": 307.667,
    "votes": 2,
    "width": 1.1
   },
@@ -1827,7 +1827,7 @@
    "r1": 0.6582021379287728,
    "ring": "field",
    "source": "axes",
-   "start": 291.829,
+   "start": 313.298,
    "votes": 2,
    "width": 0.305
   },
@@ -1838,7 +1838,7 @@
    "r1": 0.710399881368765,
    "ring": "field",
    "source": "axes",
-   "start": 189.172,
+   "start": 197.132,
    "votes": 2,
    "width": 2.155
   },
@@ -1849,7 +1849,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 38.006,
+   "start": 43.777,
    "votes": 2,
    "width": 0.327
   },
@@ -1860,7 +1860,7 @@
    "r1": 0.6572530880480457,
    "ring": "field",
    "source": "axes",
-   "start": 319.311,
+   "start": 61.585,
    "votes": 2,
    "width": 0.429
   },
@@ -1871,7 +1871,7 @@
    "r1": 0.9059041567985536,
    "ring": "field",
    "source": "axes",
-   "start": 187.465,
+   "start": 221.921,
    "votes": 2,
    "width": 0.393
   },
@@ -1882,7 +1882,7 @@
    "r1": 0.6781321854240424,
    "ring": "field",
    "source": "axes",
-   "start": 301.82,
+   "start": 341.222,
    "votes": 2,
    "width": 10.388
   },
@@ -1893,7 +1893,7 @@
    "r1": 0.9514585510734558,
    "ring": "field",
    "source": "axes",
-   "start": 100.485,
+   "start": 66.061,
    "votes": 2,
    "width": 0.591
   },
@@ -1904,7 +1904,7 @@
    "r1": 0.8043558195607508,
    "ring": "field",
    "source": "axes",
-   "start": 78.127,
+   "start": 70.887,
    "votes": 2,
    "width": 0.305
   },
@@ -1915,7 +1915,7 @@
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 173.989,
+   "start": 153.862,
    "votes": 2,
    "width": 0.317
   },
@@ -1926,7 +1926,7 @@
    "r1": 0.6135967935345977,
    "ring": "field",
    "source": "axes",
-   "start": 97.751,
+   "start": 136.339,
    "votes": 2,
    "width": 1.245
   },
@@ -1937,7 +1937,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 157.073,
+   "start": 150.731,
    "votes": 2,
    "width": 0.305
   },
@@ -1948,7 +1948,7 @@
    "r1": 0.601259145085145,
    "ring": "field",
    "source": "axes",
-   "start": 336.022,
+   "start": 312.536,
    "votes": 2,
    "width": 0.457
   },
@@ -1959,7 +1959,7 @@
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 343.347,
+   "start": 294.55,
    "votes": 2,
    "width": 1.11
   },
@@ -1970,7 +1970,7 @@
    "r1": 0.6382720904335031,
    "ring": "field",
    "source": "axes",
-   "start": 354.134,
+   "start": 353.074,
    "votes": 2,
    "width": 11.923
   },
@@ -1981,7 +1981,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 157.763,
+   "start": 92.677,
    "votes": 2,
    "width": 0.313
   },
@@ -1992,7 +1992,7 @@
    "r1": 0.8255510691782648,
    "ring": "field",
    "source": "axes",
-   "start": 110.27,
+   "start": 124.119,
    "votes": 2,
    "width": 7.711
   },
@@ -2003,7 +2003,7 @@
    "r1": 0.9179256530064891,
    "ring": "field",
    "source": "axes",
-   "start": 109.549,
+   "start": 115.163,
    "votes": 2,
    "width": 0.415
   },
@@ -2014,7 +2014,7 @@
    "r1": 0.8467469119519543,
    "ring": "field",
    "source": "axes",
-   "start": 52.872,
+   "start": 70.277,
    "votes": 2,
    "width": 0.305
   },
@@ -2025,7 +2025,7 @@
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 40.514,
+   "start": 40.914,
    "votes": 2,
    "width": 0.414
   },
@@ -2036,7 +2036,7 @@
    "r1": 0.6702236341367082,
    "ring": "field",
    "source": "axes",
-   "start": 206.304,
+   "start": 213.297,
    "votes": 2,
    "width": 2.957
   },
@@ -2047,7 +2047,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 215.441,
+   "start": 238.095,
    "votes": 2,
    "width": 0.305
   },
@@ -2058,7 +2058,7 @@
    "r1": 0.7493109264785772,
    "ring": "field",
    "source": "axes",
-   "start": 213.35,
+   "start": 230.035,
    "votes": 2,
    "width": 1.042
   },
@@ -2069,7 +2069,7 @@
    "r1": 0.8347254157440189,
    "ring": "field",
    "source": "axes",
-   "start": 196.515,
+   "start": 231.077,
    "votes": 2,
    "width": 1.11
   },
@@ -2080,7 +2080,7 @@
    "r1": 0.6670597390968341,
    "ring": "field",
    "source": "axes",
-   "start": 33.751,
+   "start": 326.003,
    "votes": 2,
    "width": 1.021
   },
@@ -2091,7 +2091,7 @@
    "r1": 0.6980622329193122,
    "ring": "field",
    "source": "axes",
-   "start": 328.784,
+   "start": 295.661,
    "votes": 2,
    "width": 0.774
   },
@@ -2102,7 +2102,7 @@
    "r1": 0.6256182897425332,
    "ring": "field",
    "source": "axes",
-   "start": 211.476,
+   "start": 188.608,
    "votes": 2,
    "width": 0.305
   },
@@ -2113,7 +2113,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 158.076,
+   "start": 94.966,
    "votes": 2,
    "width": 0.443
   },
@@ -2124,7 +2124,7 @@
    "r1": 0.6528239908859272,
    "ring": "field",
    "source": "axes",
-   "start": 30.326,
+   "start": 26.57,
    "votes": 2,
    "width": 3.425
   },
@@ -2135,7 +2135,7 @@
    "r1": 0.557602850571697,
    "ring": "field",
    "source": "axes",
-   "start": 21.233,
+   "start": 73.503,
    "votes": 2,
    "width": 6.512
   },
@@ -2146,7 +2146,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 57.169,
+   "start": 80.015,
    "votes": 2,
    "width": 1.771
   },
@@ -2157,7 +2157,7 @@
    "r1": 0.7246356295796719,
    "ring": "field",
    "source": "axes",
-   "start": 219.502,
+   "start": 167.371,
    "votes": 2,
    "width": 0.497
   },
@@ -2168,7 +2168,7 @@
    "r1": 0.7293808789833075,
    "ring": "field",
    "source": "axes",
-   "start": 332.283,
+   "start": 335.991,
    "votes": 2,
    "width": 0.624
   },
@@ -2179,7 +2179,7 @@
    "r1": 0.7350751782676702,
    "ring": "field",
    "source": "axes",
-   "start": 210.155,
+   "start": 229.324,
    "votes": 2,
    "width": 0.711
   },
@@ -2190,7 +2190,7 @@
    "r1": 0.6113825415316262,
    "ring": "field",
    "source": "axes",
-   "start": 29.332,
+   "start": 339.197,
    "votes": 2,
    "width": 0.995
   },
@@ -2201,7 +2201,7 @@
    "r1": 0.6885717341120409,
    "ring": "field",
    "source": "axes",
-   "start": 96.422,
+   "start": 90.95,
    "votes": 2,
    "width": 1.328
   },
@@ -2212,7 +2212,7 @@
    "r1": 0.7322280286254889,
    "ring": "field",
    "source": "axes",
-   "start": 175.196,
+   "start": 165.441,
    "votes": 2,
    "width": 0.966
   },
@@ -2223,7 +2223,7 @@
    "r1": 0.696164133157858,
    "ring": "field",
    "source": "axes",
-   "start": 176.773,
+   "start": 174.831,
    "votes": 2,
    "width": 9.762
   },
@@ -2234,7 +2234,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 88.194,
+   "start": 93.398,
    "votes": 2,
    "width": 1.568
   },
@@ -2245,7 +2245,7 @@
    "r1": 0.740769477552033,
    "ring": "field",
    "source": "axes",
-   "start": 64.788,
+   "start": 70.582,
    "votes": 2,
    "width": 0.305
   },
@@ -2256,7 +2256,7 @@
    "r1": 0.7929672209920252,
    "ring": "field",
    "source": "axes",
-   "start": 198.813,
+   "start": 218.093,
    "votes": 2,
    "width": 2.816
   },
@@ -2267,7 +2267,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 246.983,
+   "start": 265.146,
    "votes": 2,
    "width": 0.305
   },
@@ -2278,7 +2278,7 @@
    "r1": 0.7293808789833075,
    "ring": "field",
    "source": "axes",
-   "start": 318.755,
+   "start": 22.338,
    "votes": 2,
    "width": 0.556
   },
@@ -2289,7 +2289,7 @@
    "r1": 0.7635466746894842,
    "ring": "field",
    "source": "axes",
-   "start": 215.018,
+   "start": 220.909,
    "votes": 2,
    "width": 0.424
   },
@@ -2300,7 +2300,7 @@
    "r1": 0.7401365799128231,
    "ring": "field",
    "source": "axes",
-   "start": 288.025,
+   "start": 351.61,
    "votes": 2,
    "width": 1.017
   },
@@ -2311,7 +2311,7 @@
    "r1": 0.6892046317512508,
    "ring": "field",
    "source": "axes",
-   "start": 291.524,
+   "start": 286.611,
    "votes": 2,
    "width": 0.305
   },
@@ -2322,7 +2322,7 @@
    "r1": 0.6183420429382332,
    "ring": "field",
    "source": "axes",
-   "start": 264.837,
+   "start": 253.167,
    "votes": 2,
    "width": 0.305
   },
@@ -2333,7 +2333,7 @@
    "r1": 0.557602850571697,
    "ring": "field",
    "source": "axes",
-   "start": 335.328,
+   "start": 313.908,
    "votes": 2,
    "width": 0.389
   },
@@ -2344,7 +2344,7 @@
    "r1": 0.8707893112116499,
    "ring": "field",
    "source": "axes",
-   "start": 38.333,
+   "start": 319.005,
    "votes": 2,
    "width": 2.181
   },
@@ -2355,7 +2355,7 @@
    "r1": 0.5784819479476939,
    "ring": "field",
    "source": "axes",
-   "start": 292.875,
+   "start": 288.176,
    "votes": 2,
    "width": 0.305
   },
@@ -2366,7 +2366,7 @@
    "r1": 0.7221046321790077,
    "ring": "field",
    "source": "axes",
-   "start": 186.84,
+   "start": 187.678,
    "votes": 2,
    "width": 0.625
   },
@@ -2377,7 +2377,7 @@
    "r1": 0.6069534443695077,
    "ring": "field",
    "source": "axes",
-   "start": 264.144,
+   "start": 269.254,
    "votes": 2,
    "width": 0.693
   },
@@ -2388,7 +2388,7 @@
    "r1": 0.9346918054618848,
    "ring": "field",
    "source": "axes",
-   "start": 157.378,
+   "start": 151.036,
    "votes": 2,
    "width": 0.386
   },
@@ -2399,7 +2399,7 @@
    "r1": 0.8856579570617666,
    "ring": "field",
    "source": "axes",
-   "start": 144.281,
+   "start": 223.487,
    "votes": 2,
    "width": 3.669
   },
@@ -2410,7 +2410,7 @@
    "r1": 0.7777824229003911,
    "ring": "field",
    "source": "axes",
-   "start": 212.85,
+   "start": 235.931,
    "votes": 2,
    "width": 0.5
   },
@@ -2421,7 +2421,7 @@
    "r1": 0.7572194777659115,
    "ring": "field",
    "source": "axes",
-   "start": 337.094,
+   "start": 12.216,
    "votes": 2,
    "width": 6.253
   },
@@ -2432,7 +2432,7 @@
    "r1": 0.6354249407913216,
    "ring": "field",
    "source": "axes",
-   "start": 287.463,
+   "start": 296.435,
    "votes": 2,
    "width": 0.562
   },
@@ -2443,7 +2443,7 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 239.302,
+   "start": 285.696,
    "votes": 2,
    "width": 0.305
   },
@@ -2454,7 +2454,7 @@
    "r1": 0.901158907394918,
    "ring": "field",
    "source": "axes",
-   "start": 159.4,
+   "start": 115.578,
    "votes": 2,
    "width": 1.385
   },
@@ -2465,7 +2465,7 @@
    "r1": 0.7518419238792414,
    "ring": "field",
    "source": "axes",
-   "start": 87.584,
+   "start": 72.893,
    "votes": 2,
    "width": 0.305
   },
@@ -2476,7 +2476,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 291.219,
+   "start": 287.566,
    "votes": 2,
    "width": 0.305
   },
@@ -2487,7 +2487,7 @@
    "r1": 0.740769477552033,
    "ring": "field",
    "source": "axes",
-   "start": 130.47,
+   "start": 119.03,
    "votes": 2,
    "width": 1.829
   },
@@ -2498,7 +2498,7 @@
    "r1": 0.8736364608538313,
    "ring": "field",
    "source": "axes",
-   "start": 150.11,
+   "start": 167.868,
    "votes": 2,
    "width": 6.963
   },
@@ -2509,7 +2509,7 @@
    "r1": 0.6506097388829557,
    "ring": "field",
    "source": "axes",
-   "start": 335.717,
+   "start": 265.756,
    "votes": 2,
    "width": 0.305
   },
@@ -2520,7 +2520,7 @@
    "r1": 0.8774326603767397,
    "ring": "field",
    "source": "axes",
-   "start": 164.124,
+   "start": 232.187,
    "votes": 2,
    "width": 1.481
   },
@@ -2531,7 +2531,7 @@
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 7.593,
+   "start": 29.995,
    "votes": 2,
    "width": 9.676
   },
@@ -2542,7 +2542,7 @@
    "r1": 0.6699068887390155,
    "ring": "field",
    "source": "axes",
-   "start": 28.985,
+   "start": 338.851,
    "votes": 2,
    "width": 0.346
   },
@@ -2553,7 +2553,7 @@
    "r1": 0.7236865796989448,
    "ring": "field",
    "source": "axes",
-   "start": 59.61,
+   "start": 41.328,
    "votes": 2,
    "width": 1.912
   },
@@ -2564,7 +2564,7 @@
    "r1": 0.8091010689643864,
    "ring": "field",
    "source": "axes",
-   "start": 174.306,
+   "start": 186.093,
    "votes": 2,
    "width": 0.89
   },
@@ -2575,7 +2575,7 @@
    "r1": 0.8679421615694684,
    "ring": "field",
    "source": "axes",
-   "start": 73.848,
+   "start": 67.585,
    "votes": 2,
    "width": 0.425
   },
@@ -2586,7 +2586,7 @@
    "r1": 0.6876226842313138,
    "ring": "field",
    "source": "axes",
-   "start": 193.651,
+   "start": 201.473,
    "votes": 2,
    "width": 1.187
   },
@@ -2597,7 +2597,7 @@
    "r1": 0.6313125890268959,
    "ring": "field",
    "source": "axes",
-   "start": 319.74,
+   "start": 265.451,
    "votes": 2,
    "width": 0.305
   },
@@ -2608,7 +2608,7 @@
    "r1": 0.8094172212059036,
    "ring": "field",
    "source": "axes",
-   "start": 332.907,
+   "start": 308.767,
    "votes": 2,
    "width": 1.08
   },
@@ -2619,7 +2619,7 @@
    "r1": 0.8091010689643864,
    "ring": "field",
    "source": "axes",
-   "start": 65.093,
+   "start": 100.045,
    "votes": 2,
    "width": 6.48
   },
@@ -2630,7 +2630,7 @@
    "r1": 0.6629473873324084,
    "ring": "field",
    "source": "axes",
-   "start": 247.288,
+   "start": 271.153,
    "votes": 2,
    "width": 0.72
   },
@@ -2641,7 +2641,7 @@
    "r1": 0.5924015439170837,
    "ring": "field",
    "source": "axes",
-   "start": 101.076,
+   "start": 131.83,
    "votes": 2,
    "width": 4.509
   },
@@ -2652,7 +2652,7 @@
    "r1": 0.5664604517397585,
    "ring": "field",
    "source": "axes",
-   "start": 335.016,
+   "start": 40.297,
    "votes": 2,
    "width": 0.312
   },
@@ -2663,7 +2663,7 @@
    "r1": 0.8021415675577793,
    "ring": "field",
    "source": "axes",
-   "start": 58.94,
+   "start": 71.802,
    "votes": 2,
    "width": 0.305
   },
@@ -2674,7 +2674,7 @@
    "r1": 0.6572530880480457,
    "ring": "field",
    "source": "axes",
-   "start": 27.745,
+   "start": 335.056,
    "votes": 2,
    "width": 0.935
   },
@@ -2685,7 +2685,7 @@
    "r1": 0.7113489312494921,
    "ring": "field",
    "source": "axes",
-   "start": 28.68,
+   "start": 333.011,
    "votes": 2,
    "width": 0.305
   },
@@ -2696,7 +2696,7 @@
    "r1": 0.6771831355433153,
    "ring": "field",
    "source": "axes",
-   "start": 117.981,
+   "start": 166.82,
    "votes": 2,
    "width": 0.551
   },
@@ -2707,7 +2707,7 @@
    "r1": 0.783476722184754,
    "ring": "field",
    "source": "axes",
-   "start": 52.22,
+   "start": 61.28,
    "votes": 2,
    "width": 0.305
   },
@@ -2718,7 +2718,7 @@
    "r1": 0.5879724467549652,
    "ring": "field",
    "source": "axes",
-   "start": 128.149,
+   "start": 113.926,
    "votes": 2,
    "width": 0.553
   },
@@ -2729,7 +2729,7 @@
    "r1": 0.6442825419593831,
    "ring": "field",
    "source": "axes",
-   "start": 214.713,
+   "start": 187.373,
    "votes": 2,
    "width": 0.305
   },
@@ -2910,5 +2910,5 @@
    "width": 42.055
   }
  },
- "version": "0.0.0-draft"
+ "version": "0.0.0-draft+seriation_v0"
 }

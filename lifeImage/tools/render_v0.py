@@ -108,10 +108,11 @@ td,th{{padding:.15rem .8rem .15rem 0;text-align:left;vertical-align:top}} h1,h2{
 """
 
 
-def main(out, legacy=False):
+def main(out, legacy=False, layout=None):
     out.mkdir(parents=True, exist_ok=True)
     cards = bmod.load_all_cards()
-    bm = bmod.build_v0(by_depth=legacy, fine=not legacy)  # the legacy projection keeps the earlier depth-only radius and has no fine ring
+    layout = layout or ("axes_v0" if legacy else bmod.DEFAULT_LAYOUT)  # the legacy images are pinned to the layout they were built on (LI.66)
+    bm = bmod.build_v0(by_depth=legacy, fine=not legacy, layout=layout)  # the legacy projection keeps the earlier depth-only radius and has no fine ring
     ents = im.load_entities()
     total = 0
     asof = {p["id"]: p["as_of"] for p in ch.starter_personas()}
@@ -138,5 +139,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--legacy", action="store_true", help="draw the earlier projection (summed magnitudes on a log scale)")
+    ap.add_argument("--layout", choices=sorted(bmod.LAYOUTS), default=None, help="coarse ring order (default: the adopted layout; legacy: axes_v0)")
     a = ap.parse_args()
-    main(a.out or ROOT / ("data/images/v0" if a.legacy else "data/images/v2"), a.legacy)
+    main(a.out or ROOT / ("data/images/v0" if a.legacy else "data/images/v2"), a.legacy, a.layout)

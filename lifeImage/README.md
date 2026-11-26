@@ -38,6 +38,10 @@ pytest lifeImage/tests
 - `lifeimage/layout.py`, `lifeimage/migration.py`: angles, arcs and the stability invariants between basemap
   versions (containment, circular order, centre drift below a governed epsilon, tombstone gaps), and migration
   tables as sparse linear maps over domain-weight vectors.
+- `lifeimage/layout_migration.py`, `lifeimage/render/basemap.py` (`LAYOUTS`, `build_v0(layout=)`): the coarse ring order is a pinned
+  layout (default `seriation_v0`, version `0.0.0-draft+seriation_v0`, LI.66; `axes_v0` rebuilds the earlier basemap); the per-field angle
+  migration and the stability exceptions (LI.25 targets exceeded, deferred to the clean-up) are in
+  `data/coarse/layout_migration_seriation_v0.json`.
 
 Each invariant has an acceptance test and a counterexample test (a deliberately bad version that must be rejected).
 Governed defaults: `layout.EPSILON` (2 degrees), `layout.INSERT_WIDTH` (3 degrees), `gold.DEFAULT_THRESHOLD` (0.9).

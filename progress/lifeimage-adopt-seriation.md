@@ -19,11 +19,16 @@ Every derived artefact regenerates deterministically; default-tier suite passes 
   lifeimage/layout_migration.py; pinned data/coarse/layout_seriation_v0.json; data/coarse/layout_migration_seriation_v0.json; tests/test_basemap_layout.py (14 green).
 - New version id `0.0.0-draft+seriation_v0`; old `0.0.0-draft` = `layout="axes_v0"`.
 - Shift: vs axes angle old 15.8/32.9/42.2 -> new 28.7/79.7/122.8 (mean/p95/max); old->new centre shift 29.7/78.4/146.0. Exceptions recorded: mean, p95 AND max (122.8 > guard 120, by 2.8 degrees from the pressure-width tiling).
+- Regenerated (twice-identical pmtiles): images/v2 (all), review sheets (coarse_layout default = adopted; new coarse_layout_axes_v0 = earlier), interactive, tiles (pmtiles, levels, offline pages). render_v0 legacy pinned to axes_v0; render_coarse_review --axes-v0.
+- Tile worst-viewport KB z0..z6: 28.8/37.9/54.4/33.6/22.1/17.7/9.0 (before 19.0/24.5/36.0/27.6/15.2/13.6/8.8): the 9-36 KB prediction part FALSE (peak 54.4), 150 KB test bound holds.
+- Docs: BACKPROPAGATION LI.66 adoption note, lifeImage/README entry.
 ## In progress
-regenerating derived artefacts
+full default-tier suite (running)
 ## Next
-regenerate images v2, review sheets, tiles, interactive; full default-tier suite; docs (README/PLAN/BACKPROP LI.66 note)
+fix any suite failures, commit+push, mark DONE
 ## Files touched
 lifeImage/lifeimage/render/basemap.py, lifeImage/lifeimage/layout_migration.py, lifeImage/tests/test_basemap_layout.py, lifeImage/data/coarse/layout_seriation_v0.json, lifeImage/data/coarse/layout_migration_seriation_v0.json
 ## Resume
 `cd lifeImage && python3 -m pytest -q tests/test_basemap_layout.py`
+
+Files also: lifeImage/tools/render_v0.py, lifeImage/tools/render_coarse_review.py, lifeImage/data/images/{v2,review,interactive}/*, lifeImage/data/tiles/*, lifeImage/BACKPROPAGATION.md, lifeImage/README.md

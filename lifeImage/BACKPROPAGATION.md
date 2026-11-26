@@ -124,6 +124,15 @@ deleted. Numbering is stable (LI.n).
   metadata of LI.42 (valid and record time, counterfactual reference for outcomes, place and span). RELATIONS, PLAN.
 - **LI.66** (2026-11-26; author, refines LI.55, LI.60) Seriation is adopted for the coarse ring order; its stability
   (displacement beyond the LI.25 guard targets) is refined in the placement clean-up.
+  Adopted (2026-11-26): basemap `0.0.0-draft+seriation_v0` (pinned in `data/coarse/layout_seriation_v0.json`; the earlier order
+  is `layout="axes_v0"`, version `0.0.0-draft`, still reproducible; no domain id moves, so the id migration is identity).
+  Migration record `data/coarse/layout_migration_seriation_v0.json`: field centre shift from the axes angle 15.8 / 32.9 / 42.2
+  (mean / p95 / max) before, 28.7 / 79.7 / 122.8 after; old to new centre shift 29.7 / 78.4 / 146.0. Exceptions, recorded and
+  loud (`layout_stability`), deferred to the clean-up per LI.66: mean above 25, p95 above 60, and the maximum 2.8 degrees above
+  the 120 guard (the pressure-width tiling adds to the slot displacement, which the seriation holds to 120). Tile load per
+  worst 1024 x 768 viewport at z0 to z6 rose from 19.0 / 24.5 / 36.0 / 27.6 / 15.2 / 13.6 / 8.8 KB to 28.8 / 37.9 / 54.4 / 33.6 /
+  22.1 / 17.7 / 9.0 KB (the order keeps fewer same-sector neighbours, so fewer slices merge into aggregates at coarse zoom);
+  still far inside the 150 KB bound.
 - **LI.67** (2026-11-26; author, refines LI.22, LI.65) Event memberships are wide: extraction and categorisation agents
   name the primary domain, then the next, and so on, until any further categorisation would be bad quality (a stopping
   rule, its threshold governed). Generated event kinds are categorised the same way, so co-membership covers more pairs.
@@ -204,6 +213,9 @@ deleted. Numbering is stable (LI.n).
 
 - **GT.1** Responsibility with no recorded option set: 0.5; with options, 0.1 (no less harmful alternative) to 1 (a
   harmless one existed). `lifeimage/governed.py`; each use of the default logged.
+- **GT.2** (LI.67, proposed) Quality floor of the ranked stopping rule for event memberships: fit score 4 of 10 (`membership.fit_floor`), and the least
+  Jaccard agreement of two variants' domain lists for a merged membership to stand unescalated, 0.5 (`membership.agree_floor`). Both are
+  assumptions until the control battery (`data/gold/membership_wide_predictions.md`) is judged; prompts `membership.v3`, `extract.v2`.
 
 ## Candidate backpropagations to Benefuture
 

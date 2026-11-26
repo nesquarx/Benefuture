@@ -85,8 +85,17 @@ def seriation_basemap():
             "slices": {i: {"ring": s.ring, "start": s.start, "width": s.width, "r0": s.r0, "r1": s.r1} for i, s in sl.items()}}
 
 
-def build(sim=False, seriation=False):
-    bm = seriation_basemap() if seriation else sim_basemap() if sim else json.loads((ROOT / "data/images/v2/basemap.json").read_text())
+def axes_basemap():
+    """The earlier axes-order basemap (layout axes_v0, LI.66), built fresh, in basemap.json's shape."""
+    sys.path.insert(0, str(ROOT))
+    from lifeimage.render import basemap as bmod
+    bm = bmod.build_v0(log=[], layout="axes_v0")
+    return {"version": bm.version, "slices": {i: {"ring": s.ring, "start": s.start, "width": s.width, "r0": s.r0, "r1": s.r1}
+                                              for i, s in bm.slices.items()}}
+
+
+def build(sim=False, seriation=False, axes=False):
+    bm = axes_basemap() if axes else seriation_basemap() if seriation else sim_basemap() if sim else json.loads((ROOT / "data/images/v2/basemap.json").read_text())
     cards = [json.loads(l) for l in (ROOT / "data/coarse/seed_v3.jsonl").read_text().splitlines() if l.strip()]
     by = {c["id"]: c for c in cards}
     sl = bm["slices"]
@@ -157,9 +166,10 @@ def main():
     ap.add_argument("--png", action="store_true")
     ap.add_argument("--layout-sim", action="store_true", help="take angles from data/coarse/layout_sim_v0.json")
     ap.add_argument("--seriation", action="store_true", help="take angles from data/coarse/seriation_v0.json")
+    ap.add_argument("--axes-v0", action="store_true", help="the earlier axes-order basemap (before LI.66), rebuilt")
     args = ap.parse_args()
-    svg, ns, nf = build(args.layout_sim, args.seriation)
-    name = "coarse_layout_seriation" if args.seriation else "coarse_layout_sim" if args.layout_sim else "coarse_layout"
+    svg, ns, nf = build(args.layout_sim, args.seriation, args.axes_v0)
+    name = "coarse_layout_axes_v0" if args.axes_v0 else "coarse_layout_seriation" if args.seriation else "coarse_layout_sim" if args.layout_sim else "coarse_layout"
     d = ROOT / "data/images/review"; d.mkdir(parents=True, exist_ok=True)
     p = d / f"{name}.svg"; p.write_text(svg)
     print(f"{p}: {ns} sectors, {nf} fields")
