@@ -62,13 +62,34 @@ FINE_BAND = 0.5  # governed: a fine domain's radial band as a share of its (narr
 EXTENT_MARGIN = 0.25  # room outside the outermost ring for the orientation flange
 SMOOTHING = 1.0  # governed: additive pressure smoothing (`pressure.py`)
 
+# Coarse ring order (LI.66). A layout is a pinned file holding the field order and the slot angles the tiling is turned to;
+# "axes_v0" is the earlier order (circular order of the axes angles, no file) and keeps the bare card version. The default
+# is the seriation order (LI.60); a new layout never changes a domain id, so the id migration table between versions is identity.
+LAYOUTS = {"axes_v0": None, "seriation_v0": "data/coarse/layout_seriation_v0.json"}
+DEFAULT_LAYOUT = "seriation_v0"
+
+
+def layout_version(card_version, layout):
+    """The basemap version id: the card version for the axes layout, `<card version>+<layout>` for a pinned one."""
+    if layout not in LAYOUTS:
+        raise ValueError(f"unknown layout {layout!r}; known: {sorted(LAYOUTS)}")
+    return card_version if LAYOUTS[layout] is None else f"{card_version}+{layout}"
+
+
+def load_layout(layout, root=None):
+    """The pinned ring order of `layout` ({"order": [...], "angles": {...}}), or None for the axes layout."""
+    if layout not in LAYOUTS:
+        raise ValueError(f"unknown layout {layout!r}; known: {sorted(LAYOUTS)}")
+    return None if LAYOUTS[layout] is None else json.loads((Path(root or ROOT) / LAYOUTS[layout]).read_text(encoding="utf-8"))
+
 OPEN_NOTES = [
     "[OPEN] Radius within a ring comes from the mechanical proxies of `lifeimage.radius` (LI.26): complexity and "
     "specificity cover every domain, difficulty under a fifth (ISCO skill level), and specificity does not yet "
     "correlate positively with the other two; novelty (L159) is not used. A domain with no composite spans its whole ring (logged).",
     "[OPEN] Pressure here is the share of the synthetic persona, organisation and public-figure rows, a tiny and "
     "unrepresentative sample; real pressure is the smoothed share of recent works, postings and evidence rows (LI.25).",
-    "Slice order is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where "
+    "Field order (LI.66): the pinned seriation order of the default layout; the `axes_v0` layout orders by axes angle. "
+    "Sector order, and for `axes_v0` the field order, is the circular order of axes angles, from the 0-10 axes scores (v3, two variants per axis) where "
     "present, else the five-point v1/v2 means (logged); ties break by their primary sector's angle, then id.",
 ]
 
@@ -245,7 +266,28 @@ def radial_bands(cards, ring_of, log=None, by_depth=False):
     return out, sorted(fallback)
 
 
-def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False, fine_cards=None):
+def pinned_order(fields, angle, ring_order, log=None):
+    """[(id, target angle)] in the pinned order. A field the pinned order does not know (added since) goes after the listed
+    field nearest its axes angle, recorded loudly (`layout_order`); a pinned id that no longer exists is dropped."""
+    have = set(fields)
+    order = [i for i in ring_order["order"] if i in have]
+    target = {i: ring_order["angles"].get(i, angle[i]) for i in fields}
+    listed = set(order)
+    new = sorted(i for i in fields if i not in listed)
+    for i in new:
+        k = min(range(len(order)), key=lambda p: (circ_diff(target[order[p]], angle[i]), p))
+        order.insert(k + 1, i)
+        target[i] = angle[i]
+    if new:
+        shown = ", ".join(new[:5]) + (f" and {len(new) - 5} more" if len(new) > 5 else "")
+        record_degradation(f"pinned_order: {shown}", "layout_order", "after the nearest-axes listed field",
+                           f"{len(new)} fields are not in the pinned ring order", log)
+    return [(i, target[i]) for i in order]
+
+
+def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False, fine_cards=None, ring_order=None):
+    """`ring_order` ({"order", "angles"}, see `load_layout`) fixes the order of the field ring (LI.66); none: the circular
+    order of the axes angles. Widths follow pressure either way, sectors always follow their axes angles."""
     by = {c["id"]: c for c in cards}
     if fine_cards:
         rows = coarsen_rows(rows, fine_cards)  # pressure is counted at the coarse fields
@@ -266,7 +308,8 @@ def build(cards, axes, rows, version="0.0.0-draft", log=None, by_depth=False, fi
     fields = sorted((i for i in ids if not is_sector(by[i])),
                     key=lambda i: (round(angle[i], 6), round(angle.get(primary[i], 0.0), 6), i))
     s_arcs = slice_ring([(i, angle[i]) for i in sectors], sector_p, MIN_SECTOR_SLICE)
-    f_arcs = slice_ring([(i, angle[i]) for i in fields], p, MIN_FIELD_SLICE)
+    f_items = pinned_order(fields, angle, ring_order, log) if ring_order else [(i, angle[i]) for i in fields]
+    f_arcs = slice_ring(f_items, p, MIN_FIELD_SLICE)
     bands, fallback = radial_bands(cards, {i: "sector" if is_sector(by[i]) else "field" for i in ids}, log, by_depth)
     slices = {}
     for ring, arcs, press in (("sector", s_arcs, sector_p), ("field", f_arcs, p)):
@@ -349,15 +392,17 @@ def evidence_rows(root=ROOT):
     return rows
 
 
-def build_v0(root=ROOT, by_depth=False, fine=True, log=None):
+def build_v0(root=ROOT, by_depth=False, fine=True, log=None, layout=DEFAULT_LAYOUT):
     """The basemap of the coarse seed (v3) with, unless `fine=False`, the fine level (`data/fine/fine_v1.jsonl`) placed
-    inside it; `log` takes the loud degradation records."""
+    inside it; `log` takes the loud degradation records. `layout` names the coarse ring order (LI.66): the default is the
+    seriation order (version `<card version>+seriation_v0`), `"axes_v0"` rebuilds the earlier basemap (the bare card version)."""
     cards = load_cards(root / "data/coarse/seed_v3.jsonl")
     fine_cards = load_fine(root / "data/fine/fine_v1.jsonl")
     bm = build(cards, axes_means(cards, root / "data/answers/axes.jsonl", [root / f"data/coarse/seed_v{v}.jsonl" for v in (0, 1, 2)],
                                  [root / "data/answers/axis_at.jsonl", root / "data/answers/axis_pg.jsonl"]),
                coarsen_rows(evidence_rows(root), fine_cards),  # pressure is counted at the coarse fields either way
-               cards[0]["basemap_version"], log=log, by_depth=by_depth, fine_cards=fine_cards if fine else None)
+               layout_version(cards[0]["basemap_version"], layout), log=log, by_depth=by_depth,
+               fine_cards=fine_cards if fine else None, ring_order=load_layout(layout, root))
     return bm
 
 
