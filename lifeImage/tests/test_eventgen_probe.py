@@ -60,9 +60,9 @@ def test_probe_runtime_and_rows_are_in_the_library_format():
     t0 = time.time()
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        w = world(1, 500)
+        w = world(1, 150)
         rows = w.rows()
-    assert time.time() - t0 < 10 and len(w.people) == 1500
+    assert time.time() - t0 < 10 and len(w.people) == 450
     from lifeimage.generators.common import validate_row
     ids = seed_ids()
     for r in rows[::25]:

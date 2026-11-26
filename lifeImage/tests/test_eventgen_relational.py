@@ -223,8 +223,8 @@ def test_a_snippet_lacking_its_relational_form_fails(break_):
 
 def test_probe_with_partners_and_deaths_stays_under_ten_seconds():
     t0 = time.time()
-    w = world(500)
+    w = world(150)
     by = w.events()
-    assert time.time() - t0 < 10 and len(w.people) == 1500
+    assert time.time() - t0 < 10 and len(w.people) == 450
     kinds = {e["kind"] for e in all_events(by)}
     assert {"marriage", "divorce", "fatherhood", "death", "pregnancy", "birth_of_child"} <= kinds

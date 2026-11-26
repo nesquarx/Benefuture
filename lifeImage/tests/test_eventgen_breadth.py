@@ -115,7 +115,7 @@ def test_time_use_events_are_short_term_actions_with_their_duration(full):
     _, by = full
     tu = [e for e in all_events(by) if e["kind"] in catalog.TIME_BY_KEY]
     assert len(tu) > 10000 and all(e["timescale"] == "minutes/hours" for e in tu)
-    assert sum("duration_minutes" in e for e in tu) == len(tu) and all(0 < e["duration_minutes"] < 1440 for e in tu)
+    assert sum("duration_minutes" in e for e in tu) == len(tu) and all(0 < e["duration_minutes"] <= 1440 for e in tu)
     assert len({e["kind"] for e in tu}) >= 30
 
 

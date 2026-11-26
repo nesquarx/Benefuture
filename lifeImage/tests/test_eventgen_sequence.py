@@ -118,7 +118,9 @@ def test_shuffled_order_passes_the_rate_head_and_fails_the_sequence_head():
         warnings.simplefilter("ignore")
         rates = rate_head(table(), lambda s: shuffled(World(table(), REGIONS, 1500, s, region_map=RM, domains=False), s), REGIONS, RM, domains=False)
         base = rate_head(table(), lambda s: World(table(), REGIONS, 1500, s, region_map=RM, domains=False), REGIONS, RM, domains=False)
-    assert rates["summary"]["fail"] == 0 and base["summary"]["fail"] == 0              # the rate head cannot tell the shuffled generator apart
+    # the rate head cannot tell the shuffled generator apart, except through the sourced births-outside-marriage share (births now relate to marital state)
+    assert base["summary"]["fail"] == 0
+    assert {r["key"][0] for r in rates["results"] if r["status"] == "fail"} <= {"family.births_outside_marriage"}
     assert rates["summary"]["inconclusive"] <= 3
     rep = head("shuffled", seeds=20)
     assert rep["hard_failing_seeds"] / rep["seeds"] >= 0.95                                # the sequence head flags it on (nearly) every seed
