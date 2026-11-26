@@ -608,6 +608,7 @@ end
 # 8.175 (1) heavy: the interval alarm at z = 2 and z = 1, 24 paired seeds. Prediction (lead, 0.6): z = 1 recovers power (lower bound above 0.6 under capture to guilt),
 # at most one nominal false alarm. Measured: guilt 11 -> 21 of 24, acquit 2 -> 14, partial 0 -> 5, nominal 0 -> 0, nominal with acquittal audits 0 -> 1.
 @timed_testset "Probe (heavy): interval alarm power and false alarms at z = 2 and z = 1 (8.175 (1))" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
     isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
     seeds = 1:24
     fires(f) = count(r -> r.tr.restraint_alarm_step > 0, f)
@@ -621,6 +622,30 @@ end
     @test_broken proportion_interval(fires(acquit.z1), 24; z = 2.0).lo > 0.6   # 14 of 24: the lower bound misses
     @test fires(partial.z1) > fires(partial.z2)
     @test fires(nominal.z1) <= 1 && fires(nominal_acq.z1) <= 1
+end
+
+# 8.175 (2) diagnosis (P63): the composed world (48 agents on four domains, identity and fractal layers) with the dormant economy flags on. Finding: no supply and a
+# converge gate that never opens, with or without the identity and fractal layers (identical traces), without deceit, at 150 steps and at larger capacity: the gate
+# needs every active domain eligible (`currency_eligible` at the status bar 0.9 and `sequential_significant`), and here one domain's leaf model settles at 0.81 to 0.85,
+# below the bar, so the economy stays in score-only start for ever. Not a bug in the layers: an interaction of design (an all-domains conjunction with a domain that
+# is legitimately marginal; `domain_score_only` is already per leaf). Not switched to the :bf builders.
+@timed_testset "Probe (heavy): composed dormant flags stall on a permanently ineligible domain, not on the layers (8.175 (2), P63)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    econ(on) = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+        causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48), overflow_base = 10.0,
+        budget = on, endowment = 20.0, capacity = 300.0, regen = 0.05, cost_per_touch = 0.05, ra_rate = on ? 0.2 : 0.0, ra_horizon = on ? 5.0 : 0.0,
+        ra_domain = on, ra_alloc_weight = on ? 1.0 : 0.0, ra_reserve_horizon = on ? 12.0 : 0.0, ra_spend_contract = on, converge_init = on, legacy_funder = on,
+        responsibility_reading = on, repair_credit = on, accolade_counterfactual = on, proposal_pma = on, proposal_eta = 2, proposal_confidence = 1.5, LEGACY...)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    run(layers) = run_coupled(econ(true), gov; seed = 2, epoch = 25, coupled = false, continuous = true, m5_decisions = 30,
+        unified = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 6, sybils = 12, binding = true), economy = true, fractal = FractalParams()) :
+                           UnifiedParams(liar_community = 1))
+    a, b = run(true).econ_trace, run(false).econ_trace
+    @test length(a.supply) == length(b.supply) == 0 && !a.converged && !b.converged      # the same stall with and without the layers
+    @test a.lane_halted == 0 && a.legacy_executed > 0                                     # the legacy funder keeps the score-only start running
+    @test minimum(a.acc_trace[end]) < minimum(a.leaf_bars)                                # the cause: a domain's model below the status bar
+    @test_broken a.converged                                                              # the composed world with dormant flags and a marginal domain does not leave score-only
 end
 
 probe_total("heavy 3")
