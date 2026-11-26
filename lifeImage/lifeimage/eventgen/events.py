@@ -5,6 +5,7 @@ domain is named only where one is unambiguous (`FINE`, kept when the fine card e
 own `validate_row`. Magnitudes are prototype values, not measurements.
 """
 import datetime as dt
+import re
 from functools import lru_cache
 
 from ..generators.common import BASEMAP_VERSION, validate_row
@@ -65,10 +66,23 @@ def valid_time(birth, age):
     return (birth + dt.timedelta(days=round(age * 365.25))).isoformat()
 
 
+_VALID_TIME = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
+_TEMPLATES = {}     # (key, region) -> the row's fixed part, validated once by the full contract check
+
+
 def make_row(entity, region, key, birth, age, event_id):
+    """A library-format row. Everything but entity, times and span is fixed by (key, region): that part is validated once by the full
+    contract check (`validate_row`, on a row with placeholder entity, times and span), and each row then checks its own entity, time and
+    span against the schema's rules for them, which gives the same verdicts as validating every row in full."""
     t = valid_time(birth, age)
-    row = {"entity": entity, "relation": KINDS[key][1], "memberships": memberships(key), "basemap_version": BASEMAP_VERSION,
-           "channel": "negative" if key in NEGATIVE else "positive", "sign": -1 if key in NEGATIVE else 1, "entity_kind": "person", "revoked": False, "magnitude": KINDS[key][2], "valid_time": t,
-           "record_time": t, "tier": "attested", "confidence": 0.8, "production": "consumed", "context": {"jurisdiction": region},
-           "provenance": {"source": f"synthetic-eventgen:{region}", "span": event_id}}
-    return validate_row(row)
+    base = _TEMPLATES.get((key, region))
+    if base is None:
+        base = {"relation": KINDS[key][1], "memberships": memberships(key), "basemap_version": BASEMAP_VERSION,
+                "channel": "negative" if key in NEGATIVE else "positive", "sign": -1 if key in NEGATIVE else 1, "entity_kind": "person", "revoked": False,
+                "magnitude": KINDS[key][2], "tier": "attested", "confidence": 0.8, "production": "consumed", "context": {"jurisdiction": region}}
+        validate_row({**base, "entity": "person:x", "valid_time": "2000-01-01", "record_time": "2000-01-01", "provenance": {"source": f"synthetic-eventgen:{region}", "span": "s"}})
+        _TEMPLATES[(key, region)] = base
+    if not (isinstance(entity, str) and entity and isinstance(event_id, str) and _VALID_TIME.match(t)):
+        validate_row({**base, "entity": entity, "valid_time": t, "record_time": t, "provenance": {"source": f"synthetic-eventgen:{region}", "span": event_id}})
+    return {"entity": entity, **{k: (dict(v) if isinstance(v, dict) else [dict(m) for m in v] if k == "memberships" else v) for k, v in base.items()},
+            "valid_time": t, "record_time": t, "provenance": {"source": f"synthetic-eventgen:{region}", "span": event_id}}

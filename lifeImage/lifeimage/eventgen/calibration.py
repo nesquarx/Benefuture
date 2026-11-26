@@ -144,13 +144,20 @@ def validate(p, field_ids=None, figures=frozenset()):
     return p
 
 
+_VALIDATED = {}     # id(param) -> param, kept alive so the id stays unique; skips re-validating the same Param in every world's table
+
+
 class Table:
     def __init__(self, params, field_ids=None, figures=None):
         self.params = list(params)
+        memo = figures is None and field_ids is None
         figures = public_figures() if figures is None else figures
         seen = {}
         for p in self.params:
-            validate(p, field_ids, figures)
+            if not (memo and _VALIDATED.get(id(p)) is p):   # a Param is frozen: once valid (default field ids and figures), always valid
+                validate(p, field_ids, figures)
+                if memo:
+                    _VALIDATED[id(p)] = p
             if p.key in seen:
                 raise CalibrationError(f"duplicate key {p.key}")
             seen[p.key] = p
@@ -191,9 +198,22 @@ class Table:
             warnings.warn(f"degraded: {quantity} for {region} substituted by {substitute} ({reason})", stacklevel=3)
 
 
+_PARAMS = {}
+
+
 def load_params(directory=CAL_DIR):
+    """The Params of every file in `directory`; parsed once per file state (path, mtime, size), the Params are frozen and shared."""
+    files = sorted(Path(directory).glob("*.jsonl"))
+    stamp = tuple((str(f), f.stat().st_mtime_ns, f.stat().st_size) for f in files)
+    if stamp not in _PARAMS:
+        _PARAMS.clear()
+        _PARAMS[stamp] = _parse_params(files)
+    return list(_PARAMS[stamp])
+
+
+def _parse_params(files):
     out = []
-    for f in sorted(Path(directory).glob("*.jsonl")):
+    for f in files:
         for line in f.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 d = json.loads(line)
