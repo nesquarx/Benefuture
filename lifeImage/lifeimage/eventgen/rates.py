@@ -84,7 +84,7 @@ def judge(quantity, values, target, confidence, z=None):
 
 def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, seed0=0):
     """Judge every statistic. `make_world(seed)` builds the generated world; `seeds` fixes the seed list, else seeds are added by
-    precision (`eventgen.min_seeds` first, then one at a time until every statistic's z-SE is within half its margin, capped at `eventgen.max_seeds`)."""
+    precision (`eventgen.min_seeds` first, then one at a time until every statistic is decided, capped at `eventgen.max_seeds`)."""
     targets = expected_targets(true_table, regions, region_map)
     zz = governed("eventgen.rate_z") if z is None else z
     series = {k: [] for k in targets}
@@ -104,12 +104,12 @@ def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, s
         n_seeds += 1
 
     def stable():
-        for k, (t, _, _) in targets.items():
+        """Every statistic is decided (pass or fail), not inconclusive: precision is bought only where the verdict still hangs."""
+        for k, (t, p, _) in targets.items():
             v = series[k]
             if len(v) < 2 or any(x != x for x in v):
                 return False
-            se = stdev(v) / math.sqrt(len(v)) * student_inflation(len(v))
-            if zz * se > _margin(k[0], t) / 2:
+            if judge(k[0], v, t, p.confidence if p is not None else "medium", zz)["status"] == "inconclusive":
                 return False
         return True
 
