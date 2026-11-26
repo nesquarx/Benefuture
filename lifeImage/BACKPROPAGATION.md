@@ -115,6 +115,8 @@ deleted. Numbering is stable (LI.n).
   length only. PLAN. Refined (author, same day): the snippets kept for calibration are action/event/outcome records, not
   factoids: someone (a de-identified role) doing something, and what resulted where known. The factual statement stays as
   the rate's provenance; event snippets are paraphrased from individual sources, never rows from sources barring AI use.
+  Event snippets include short-term actions at any timescale (an hour's practice, a meal cooked, a trip to market), not
+  only life transitions; each carries its timescale.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
