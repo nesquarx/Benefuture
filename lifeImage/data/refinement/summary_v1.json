@@ -1,0 +1,3422 @@
+{
+ "records": 511,
+ "by_source": {
+  "disputed": 146,
+  "near_floor": 251,
+  "unjudged": 114
+ },
+ "by_version_source": {
+  "v3": {
+   "disputed": 83,
+   "near_floor": 139,
+   "unjudged": 59
+  },
+  "v4": {
+   "disputed": 63,
+   "near_floor": 112,
+   "unjudged": 55
+  }
+ },
+ "domains": {
+  "c.walking_cycling": {
+   "appearances": 14,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 9,
+    "unjudged": 3
+   },
+   "items": 3
+  },
+  "c.eating_drinking": {
+   "appearances": 13,
+   "by_source": {
+    "disputed": 3,
+    "near_floor": 5,
+    "unjudged": 5
+   },
+   "items": 4
+  },
+  "c.employment_job": {
+   "appearances": 13,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 7,
+    "unjudged": 4
+   },
+   "items": 3
+  },
+  "c.outdoor_recreation": {
+   "appearances": 13,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 8,
+    "unjudged": 3
+   },
+   "items": 3
+  },
+  "s.home": {
+   "appearances": 12,
+   "by_source": {
+    "disputed": 8,
+    "near_floor": 1,
+    "unjudged": 3
+   },
+   "items": 6
+  },
+  "s.self_care": {
+   "appearances": 12,
+   "by_source": {
+    "disputed": 5,
+    "near_floor": 2,
+    "unjudged": 5
+   },
+   "items": 4
+  },
+  "c.retail_work": {
+   "appearances": 11,
+   "by_source": {
+    "disputed": 6,
+    "near_floor": 3,
+    "unjudged": 2
+   },
+   "items": 4
+  },
+  "s.consumption": {
+   "appearances": 11,
+   "by_source": {
+    "disputed": 4,
+    "near_floor": 4,
+    "unjudged": 3
+   },
+   "items": 6
+  },
+  "c.disaster_experience": {
+   "appearances": 10,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 4,
+    "unjudged": 4
+   },
+   "items": 2
+  },
+  "c.home_organisation": {
+   "appearances": 10,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 9
+   },
+   "items": 4
+  },
+  "c.household_planning": {
+   "appearances": 10,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 5,
+    "unjudged": 3
+   },
+   "items": 2
+  },
+  "c.workplace_relations": {
+   "appearances": 10,
+   "by_source": {
+    "near_floor": 10
+   },
+   "items": 5
+  },
+  "s.meaning": {
+   "appearances": 10,
+   "by_source": {
+    "disputed": 4,
+    "unjudged": 6
+   },
+   "items": 2
+  },
+  "s.nature": {
+   "appearances": 10,
+   "by_source": {
+    "disputed": 5,
+    "near_floor": 1,
+    "unjudged": 4
+   },
+   "items": 6
+  },
+  "c.family_ties": {
+   "appearances": 9,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 7,
+    "unjudged": 1
+   },
+   "items": 4
+  },
+  "s.work": {
+   "appearances": 9,
+   "by_source": {
+    "disputed": 4,
+    "near_floor": 2,
+    "unjudged": 3
+   },
+   "items": 5
+  },
+  "c.children_play": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 4,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "c.digital_tool_use": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 3,
+    "near_floor": 2,
+    "unjudged": 3
+   },
+   "items": 2
+  },
+  "c.employment_transition": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 2,
+    "unjudged": 5
+   },
+   "items": 2
+  },
+  "c.religious_community": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 1,
+    "unjudged": 7
+   },
+   "items": 1
+  },
+  "c.retail_shopping": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 4,
+    "near_floor": 3,
+    "unjudged": 1
+   },
+   "items": 4
+  },
+  "s.leisure": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 4,
+    "near_floor": 2,
+    "unjudged": 2
+   },
+   "items": 3
+  },
+  "s.public": {
+   "appearances": 8,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 2,
+    "unjudged": 4
+   },
+   "items": 3
+  },
+  "c.banking_payments": {
+   "appearances": 7,
+   "by_source": {
+    "disputed": 3,
+    "near_floor": 4
+   },
+   "items": 3
+  },
+  "c.basic_skills": {
+   "appearances": 7,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 3,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "c.entrepreneurship": {
+   "appearances": 7,
+   "by_source": {
+    "disputed": 3,
+    "unjudged": 4
+   },
+   "items": 3
+  },
+  "c.exercise_fitness": {
+   "appearances": 7,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 3,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "c.sales_marketing": {
+   "appearances": 7,
+   "by_source": {
+    "disputed": 4,
+    "unjudged": 3
+   },
+   "items": 2
+  },
+  "c.commuting": {
+   "appearances": 6,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 5
+   },
+   "items": 2
+  },
+  "c.medical_care": {
+   "appearances": 6,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 4
+   },
+   "items": 2
+  },
+  "c.political_participation": {
+   "appearances": 6,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 4
+   },
+   "items": 1
+  },
+  "c.saving_investing": {
+   "appearances": 6,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 4,
+    "unjudged": 1
+   },
+   "items": 3
+  },
+  "c.sleep": {
+   "appearances": 6,
+   "by_source": {
+    "disputed": 4,
+    "near_floor": 2
+   },
+   "items": 2
+  },
+  "c.cleaning_laundry": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.cooking": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 1,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "c.food_purchasing": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 3,
+    "near_floor": 2
+   },
+   "items": 3
+  },
+  "c.healthcare_work": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 3
+   },
+   "items": 1
+  },
+  "c.job_search": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 3,
+    "unjudged": 1
+   },
+   "items": 2
+  },
+  "c.language_learning": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 3
+   },
+   "items": 1
+  },
+  "c.physical_health": {
+   "appearances": 5,
+   "by_source": {
+    "near_floor": 5
+   },
+   "items": 4
+  },
+  "c.public_administration": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 3,
+    "unjudged": 1
+   },
+   "items": 2
+  },
+  "c.road_safety": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 2,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "s.mobility": {
+   "appearances": 5,
+   "by_source": {
+    "disputed": 4,
+    "unjudged": 1
+   },
+   "items": 3
+  },
+  "c.childcare_other": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 2
+   },
+   "items": 2
+  },
+  "c.civil_society_advocacy": {
+   "appearances": 4,
+   "by_source": {
+    "near_floor": 4
+   },
+   "items": 3
+  },
+  "c.horticulture_farming": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 3,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.personal_finance": {
+   "appearances": 4,
+   "by_source": {
+    "near_floor": 4
+   },
+   "items": 3
+  },
+  "c.socialising": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 2,
+    "unjudged": 2
+   },
+   "items": 1
+  },
+  "c.spirituality": {
+   "appearances": 4,
+   "by_source": {
+    "near_floor": 4
+   },
+   "items": 1
+  },
+  "c.youth_culture": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 2,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "s.learning": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 3,
+    "near_floor": 1
+   },
+   "items": 3
+  },
+  "s.social": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 1,
+    "unjudged": 1
+   },
+   "items": 3
+  },
+  "s.transitions": {
+   "appearances": 4,
+   "by_source": {
+    "disputed": 2,
+    "unjudged": 2
+   },
+   "items": 2
+  },
+  "c.accident_injury": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.agricultural_science": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 1
+  },
+  "c.border_migration_admin": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.community_groups": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 2
+   },
+   "items": 3
+  },
+  "c.driving": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.energy_systems": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.higher_education": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 1
+  },
+  "c.household_budgeting": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.hygiene_grooming": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 1
+  },
+  "c.neighbours_community": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.news_media": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.nutrition_diet": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 2
+  },
+  "c.online_commerce": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.parenting_young_children": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1,
+    "unjudged": 1
+   },
+   "items": 2
+  },
+  "c.vocational_training": {
+   "appearances": 3,
+   "by_source": {
+    "disputed": 2,
+    "near_floor": 1
+   },
+   "items": 2
+  },
+  "c.weather_climate_adaptation": {
+   "appearances": 3,
+   "by_source": {
+    "near_floor": 3
+   },
+   "items": 1
+  },
+  "c.agri_forestry_fishing_work": {
+   "appearances": 2,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.celebrations": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 2
+  },
+  "c.civil_engineering": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.clothing_footwear": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.creative_writing": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 2
+  },
+  "c.ecology_science": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.home_repair_diy": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.household_gardening": {
+   "appearances": 2,
+   "by_source": {
+    "disputed": 1,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.linguistics_literature": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.management_executive": {
+   "appearances": 2,
+   "by_source": {
+    "unjudged": 2
+   },
+   "items": 1
+  },
+  "c.marriage_wedding": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.moving_relocation": {
+   "appearances": 2,
+   "by_source": {
+    "disputed": 2
+   },
+   "items": 1
+  },
+  "c.music_listening": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.political_discourse": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.poverty_scarcity": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.preventive_health": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.public_safety_emergency": {
+   "appearances": 2,
+   "by_source": {
+    "disputed": 1,
+    "unjudged": 1
+   },
+   "items": 1
+  },
+  "c.tutoring_teaching": {
+   "appearances": 2,
+   "by_source": {
+    "disputed": 1,
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.waste_recycling": {
+   "appearances": 2,
+   "by_source": {
+    "near_floor": 2
+   },
+   "items": 1
+  },
+  "c.arts_humanities_studies": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.birth_of_child": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.borrowing_debt": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.business_administration": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.crafts_hobbies": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.elementary_occupations": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.family_rituals": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.festivals_events": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.film_tv_video": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.finance_accounting": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.government_services": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.home_energy_utilities": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.housing_search": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.human_rights": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.income_earning": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.informal_gig": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.life_purpose": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.medication_adherence": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.medicine_science": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.mental_health": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.occupational_safety": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.performing_arts": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.personal_appearance": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.public_health_science": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.public_transport": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.reproduction_fertility": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.reuse_repair": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.school_education": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.self_provisioning": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.serious_illness": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "c.social_media": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.sociology": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.subscriptions_telecom": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.tourism_travel": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.urban_planning": {
+   "appearances": 1,
+   "by_source": {
+    "near_floor": 1
+   },
+   "items": 1
+  },
+  "c.voting_elections": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  },
+  "s.family": {
+   "appearances": 1,
+   "by_source": {
+    "disputed": 1
+   },
+   "items": 1
+  }
+ },
+ "pairs": [
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.exercise_fitness",
+   "count": 11
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.cooking",
+   "count": 8
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.public_transport",
+   "count": 7
+  },
+  {
+   "candidate": "c.religious_community",
+   "listed": "c.religion_worship",
+   "count": 7
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.sport_participation",
+   "count": 7
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.employment_job",
+   "count": 7
+  },
+  {
+   "candidate": "c.commuting",
+   "listed": "c.public_transport",
+   "count": 6
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.language_learning",
+   "count": 6
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.migration",
+   "count": 6
+  },
+  {
+   "candidate": "c.political_participation",
+   "listed": "c.voting_elections",
+   "count": 6
+  },
+  {
+   "candidate": "c.digital_tool_use",
+   "listed": "c.video_gaming",
+   "count": 5
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.childcare_other",
+   "count": 5
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.commuting",
+   "count": 5
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "c.banking_payments",
+   "count": 5
+  },
+  {
+   "candidate": "c.language_learning",
+   "listed": "c.migration",
+   "count": 5
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.exercise_fitness",
+   "count": 5
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.neighbours_community",
+   "count": 5
+  },
+  {
+   "candidate": "s.meaning",
+   "listed": "c.religion_worship",
+   "count": 5
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.retail_work",
+   "count": 4
+  },
+  {
+   "candidate": "c.basic_skills",
+   "listed": "c.reading",
+   "count": 4
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.road_safety",
+   "count": 4
+  },
+  {
+   "candidate": "c.exercise_fitness",
+   "listed": "c.pet_ownership",
+   "count": 4
+  },
+  {
+   "candidate": "c.exercise_fitness",
+   "listed": "c.walking_cycling",
+   "count": 4
+  },
+  {
+   "candidate": "c.healthcare_work",
+   "listed": "c.exams_assessment",
+   "count": 4
+  },
+  {
+   "candidate": "c.healthcare_work",
+   "listed": "c.vocational_training",
+   "count": 4
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "c.cleaning_laundry",
+   "count": 4
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "c.sleep",
+   "count": 4
+  },
+  {
+   "candidate": "c.medical_care",
+   "listed": "c.retail_shopping",
+   "count": 4
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.sport_participation",
+   "count": 4
+  },
+  {
+   "candidate": "c.spirituality",
+   "listed": "c.religion_worship",
+   "count": 4
+  },
+  {
+   "candidate": "c.spirituality",
+   "listed": "c.religious_community",
+   "count": 4
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.medical_care",
+   "count": 4
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.nutrition_diet",
+   "count": 4
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.outdoor_recreation",
+   "count": 4
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.healthcare_work",
+   "count": 4
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.medical_care",
+   "count": 4
+  },
+  {
+   "candidate": "s.leisure",
+   "listed": "c.outdoor_recreation",
+   "count": 4
+  },
+  {
+   "candidate": "s.leisure",
+   "listed": "s.nature",
+   "count": 4
+  },
+  {
+   "candidate": "s.public",
+   "listed": "c.voting_elections",
+   "count": 4
+  },
+  {
+   "candidate": "c.accident_injury",
+   "listed": "c.disaster_experience",
+   "count": 3
+  },
+  {
+   "candidate": "c.agricultural_science",
+   "listed": "c.horticulture_farming",
+   "count": 3
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.games_play",
+   "count": 3
+  },
+  {
+   "candidate": "c.cleaning_laundry",
+   "listed": "c.hygiene_grooming",
+   "count": 3
+  },
+  {
+   "candidate": "c.commuting",
+   "listed": "s.mobility",
+   "count": 3
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.journalism",
+   "count": 3
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.news_media",
+   "count": 3
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.migration",
+   "count": 3
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.moving_relocation",
+   "count": 3
+  },
+  {
+   "candidate": "c.entrepreneurship",
+   "listed": "c.retail_work",
+   "count": 3
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.pet_ownership",
+   "count": 3
+  },
+  {
+   "candidate": "c.food_purchasing",
+   "listed": "c.retail_shopping",
+   "count": 3
+  },
+  {
+   "candidate": "c.higher_education",
+   "listed": "c.exams_assessment",
+   "count": 3
+  },
+  {
+   "candidate": "c.higher_education",
+   "listed": "c.healthcare_work",
+   "count": 3
+  },
+  {
+   "candidate": "c.higher_education",
+   "listed": "c.vocational_training",
+   "count": 3
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "c.digital_tool_use",
+   "count": 3
+  },
+  {
+   "candidate": "c.hygiene_grooming",
+   "listed": "c.retail_shopping",
+   "count": 3
+  },
+  {
+   "candidate": "c.hygiene_grooming",
+   "listed": "c.shopping_errands",
+   "count": 3
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.banking_payments",
+   "count": 3
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.borrowing_debt",
+   "count": 3
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.entrepreneurship",
+   "count": 3
+  },
+  {
+   "candidate": "c.language_learning",
+   "listed": "c.moving_relocation",
+   "count": 3
+  },
+  {
+   "candidate": "c.nutrition_diet",
+   "listed": "c.cooking",
+   "count": 3
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.household_gardening",
+   "count": 3
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.neighbours_community",
+   "count": 3
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "c.voting_elections",
+   "count": 3
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.entrepreneurship",
+   "count": 3
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.horticulture_farming",
+   "count": 3
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.disaster_experience",
+   "count": 3
+  },
+  {
+   "candidate": "c.sleep",
+   "listed": "s.home",
+   "count": 3
+  },
+  {
+   "candidate": "c.weather_climate_adaptation",
+   "listed": "c.exercise_fitness",
+   "count": 3
+  },
+  {
+   "candidate": "c.weather_climate_adaptation",
+   "listed": "c.outdoor_recreation",
+   "count": 3
+  },
+  {
+   "candidate": "c.weather_climate_adaptation",
+   "listed": "c.sport_participation",
+   "count": 3
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.commuting",
+   "count": 3
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.public_transport",
+   "count": 3
+  },
+  {
+   "candidate": "c.youth_culture",
+   "listed": "c.video_gaming",
+   "count": 3
+  },
+  {
+   "candidate": "s.home",
+   "listed": "c.household_gardening",
+   "count": 3
+  },
+  {
+   "candidate": "s.meaning",
+   "listed": "c.religious_community",
+   "count": 3
+  },
+  {
+   "candidate": "s.mobility",
+   "listed": "c.public_transport",
+   "count": 3
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "c.outdoor_recreation",
+   "count": 3
+  },
+  {
+   "candidate": "c.accident_injury",
+   "listed": "c.road_safety",
+   "count": 2
+  },
+  {
+   "candidate": "c.agri_forestry_fishing_work",
+   "listed": "c.community_groups",
+   "count": 2
+  },
+  {
+   "candidate": "c.agricultural_science",
+   "listed": "c.food_purchasing",
+   "count": 2
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.finance_accounting",
+   "count": 2
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.home_energy_utilities",
+   "count": 2
+  },
+  {
+   "candidate": "c.basic_skills",
+   "listed": "c.children_play",
+   "count": 2
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "c.migration",
+   "count": 2
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "c.moving_relocation",
+   "count": 2
+  },
+  {
+   "candidate": "c.childcare_other",
+   "listed": "c.eating_drinking",
+   "count": 2
+  },
+  {
+   "candidate": "c.childcare_other",
+   "listed": "c.games_play",
+   "count": 2
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.family_ties",
+   "count": 2
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.reading",
+   "count": 2
+  },
+  {
+   "candidate": "c.civil_engineering",
+   "listed": "c.community_groups",
+   "count": 2
+  },
+  {
+   "candidate": "c.civil_engineering",
+   "listed": "c.voting_elections",
+   "count": 2
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.community_groups",
+   "count": 2
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.voting_elections",
+   "count": 2
+  },
+  {
+   "candidate": "c.clothing_footwear",
+   "listed": "c.cleaning_laundry",
+   "count": 2
+  },
+  {
+   "candidate": "c.cooking",
+   "listed": "c.entrepreneurship",
+   "count": 2
+  },
+  {
+   "candidate": "c.cooking",
+   "listed": "c.retail_work",
+   "count": 2
+  },
+  {
+   "candidate": "c.digital_tool_use",
+   "listed": "c.games_play",
+   "count": 2
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.mutual_aid",
+   "count": 2
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.neighbours_community",
+   "count": 2
+  },
+  {
+   "candidate": "c.driving",
+   "listed": "s.work",
+   "count": 2
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.family_ties",
+   "count": 2
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.hospitality_hosting",
+   "count": 2
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.mutual_aid",
+   "count": 2
+  },
+  {
+   "candidate": "c.ecology_science",
+   "listed": "c.outdoor_recreation",
+   "count": 2
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.language_learning",
+   "count": 2
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "s.mobility",
+   "count": 2
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "s.work",
+   "count": 2
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.driving",
+   "count": 2
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.retail_shopping",
+   "count": 2
+  },
+  {
+   "candidate": "c.entrepreneurship",
+   "listed": "c.sales_marketing",
+   "count": 2
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.games_play",
+   "count": 2
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.language_learning",
+   "count": 2
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.marriage_cohabitation",
+   "count": 2
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.migration",
+   "count": 2
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.walking_cycling",
+   "count": 2
+  },
+  {
+   "candidate": "c.food_purchasing",
+   "listed": "c.neighbours_community",
+   "count": 2
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "c.household_gardening",
+   "count": 2
+  },
+  {
+   "candidate": "c.home_repair_diy",
+   "listed": "c.household_gardening",
+   "count": 2
+  },
+  {
+   "candidate": "c.household_budgeting",
+   "listed": "c.banking_payments",
+   "count": 2
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "c.home_energy_utilities",
+   "count": 2
+  },
+  {
+   "candidate": "c.linguistics_literature",
+   "listed": "c.reading",
+   "count": 2
+  },
+  {
+   "candidate": "c.management_executive",
+   "listed": "c.borrowing_debt",
+   "count": 2
+  },
+  {
+   "candidate": "c.management_executive",
+   "listed": "c.entrepreneurship",
+   "count": 2
+  },
+  {
+   "candidate": "c.marriage_wedding",
+   "listed": "c.music_making",
+   "count": 2
+  },
+  {
+   "candidate": "c.marriage_wedding",
+   "listed": "c.performing_arts",
+   "count": 2
+  },
+  {
+   "candidate": "c.medical_care",
+   "listed": "c.vocational_training",
+   "count": 2
+  },
+  {
+   "candidate": "c.medical_care",
+   "listed": "s.learning",
+   "count": 2
+  },
+  {
+   "candidate": "c.music_listening",
+   "listed": "c.crafts_hobbies",
+   "count": 2
+  },
+  {
+   "candidate": "c.music_listening",
+   "listed": "c.tutoring_teaching",
+   "count": 2
+  },
+  {
+   "candidate": "c.neighbours_community",
+   "listed": "c.voting_elections",
+   "count": 2
+  },
+  {
+   "candidate": "c.news_media",
+   "listed": "c.crafts_hobbies",
+   "count": 2
+  },
+  {
+   "candidate": "c.news_media",
+   "listed": "c.tutoring_teaching",
+   "count": 2
+  },
+  {
+   "candidate": "c.nutrition_diet",
+   "listed": "c.eating_drinking",
+   "count": 2
+  },
+  {
+   "candidate": "c.online_commerce",
+   "listed": "c.banking_payments",
+   "count": 2
+  },
+  {
+   "candidate": "c.online_commerce",
+   "listed": "c.household_planning",
+   "count": 2
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.walking_cycling",
+   "count": 2
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "s.home",
+   "count": 2
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.income_earning",
+   "count": 2
+  },
+  {
+   "candidate": "c.physical_health",
+   "listed": "c.eating_drinking",
+   "count": 2
+  },
+  {
+   "candidate": "c.physical_health",
+   "listed": "c.hygiene_grooming",
+   "count": 2
+  },
+  {
+   "candidate": "c.physical_health",
+   "listed": "c.sleep",
+   "count": 2
+  },
+  {
+   "candidate": "c.political_discourse",
+   "listed": "c.voting_elections",
+   "count": 2
+  },
+  {
+   "candidate": "c.poverty_scarcity",
+   "listed": "c.income_earning",
+   "count": 2
+  },
+  {
+   "candidate": "c.preventive_health",
+   "listed": "c.hygiene_grooming",
+   "count": 2
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "c.retail_work",
+   "count": 2
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "c.shopping_errands",
+   "count": 2
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "s.work",
+   "count": 2
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 2
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.retail_shopping",
+   "count": 2
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.weather_climate_adaptation",
+   "count": 2
+  },
+  {
+   "candidate": "c.sales_marketing",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 2
+  },
+  {
+   "candidate": "c.sales_marketing",
+   "listed": "c.entrepreneurship",
+   "count": 2
+  },
+  {
+   "candidate": "c.sales_marketing",
+   "listed": "c.horticulture_farming",
+   "count": 2
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.borrowing_debt",
+   "count": 2
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.community_groups",
+   "count": 2
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.employment_job",
+   "count": 2
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.retail_work",
+   "count": 2
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.voting_elections",
+   "count": 2
+  },
+  {
+   "candidate": "c.socialising",
+   "listed": "c.games_play",
+   "count": 2
+  },
+  {
+   "candidate": "c.tutoring_teaching",
+   "listed": "c.crafts_hobbies",
+   "count": 2
+  },
+  {
+   "candidate": "c.vocational_training",
+   "listed": "s.learning",
+   "count": 2
+  },
+  {
+   "candidate": "c.waste_recycling",
+   "listed": "c.cooking",
+   "count": 2
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.horticulture_farming",
+   "count": 2
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.retail_work",
+   "count": 2
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "s.nature",
+   "count": 2
+  },
+  {
+   "candidate": "s.learning",
+   "listed": "c.crafts_hobbies",
+   "count": 2
+  },
+  {
+   "candidate": "s.leisure",
+   "listed": "c.video_gaming",
+   "count": 2
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "c.hygiene_grooming",
+   "count": 2
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "c.medical_care",
+   "count": 2
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "c.sleep",
+   "count": 2
+  },
+  {
+   "candidate": "s.work",
+   "listed": "c.public_transport",
+   "count": 2
+  },
+  {
+   "candidate": "s.work",
+   "listed": "s.learning",
+   "count": 2
+  },
+  {
+   "candidate": "s.work",
+   "listed": "s.mobility",
+   "count": 2
+  },
+  {
+   "candidate": "c.accident_injury",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.accident_injury",
+   "listed": "c.weather_climate_adaptation",
+   "count": 1
+  },
+  {
+   "candidate": "c.agri_forestry_fishing_work",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.agri_forestry_fishing_work",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "c.agricultural_science",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.arts_humanities_studies",
+   "listed": "c.religion_worship",
+   "count": 1
+  },
+  {
+   "candidate": "c.arts_humanities_studies",
+   "listed": "c.religious_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.entrepreneurship",
+   "count": 1
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.household_planning",
+   "count": 1
+  },
+  {
+   "candidate": "c.banking_payments",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.basic_skills",
+   "listed": "c.crafts_hobbies",
+   "count": 1
+  },
+  {
+   "candidate": "c.basic_skills",
+   "listed": "s.learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.birth_of_child",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.birth_of_child",
+   "listed": "s.self_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "c.employment_transition",
+   "count": 1
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "c.language_learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "s.learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.border_migration_admin",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.borrowing_debt",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.borrowing_debt",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "c.borrowing_debt",
+   "listed": "c.household_budgeting",
+   "count": 1
+  },
+  {
+   "candidate": "c.business_administration",
+   "listed": "c.finance_accounting",
+   "count": 1
+  },
+  {
+   "candidate": "c.business_administration",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.celebrations",
+   "listed": "c.music_making",
+   "count": 1
+  },
+  {
+   "candidate": "c.celebrations",
+   "listed": "c.performing_arts",
+   "count": 1
+  },
+  {
+   "candidate": "c.celebrations",
+   "listed": "c.religion_worship",
+   "count": 1
+  },
+  {
+   "candidate": "c.celebrations",
+   "listed": "c.religious_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.celebrations",
+   "listed": "s.meaning",
+   "count": 1
+  },
+  {
+   "candidate": "c.childcare_other",
+   "listed": "c.family_ties",
+   "count": 1
+  },
+  {
+   "candidate": "c.childcare_other",
+   "listed": "c.socialising",
+   "count": 1
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.basic_skills",
+   "count": 1
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.home_organisation",
+   "count": 1
+  },
+  {
+   "candidate": "c.children_play",
+   "listed": "c.sleep",
+   "count": 1
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.journalism",
+   "count": 1
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "c.saving_investing",
+   "count": 1
+  },
+  {
+   "candidate": "c.civil_society_advocacy",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.clothing_footwear",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "c.music_making",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "c.performing_arts",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "s.social",
+   "count": 1
+  },
+  {
+   "candidate": "c.community_groups",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "c.commuting",
+   "listed": "c.shopping_errands",
+   "count": 1
+  },
+  {
+   "candidate": "c.commuting",
+   "listed": "s.consumption",
+   "count": 1
+  },
+  {
+   "candidate": "c.cooking",
+   "listed": "c.sales_marketing",
+   "count": 1
+  },
+  {
+   "candidate": "c.crafts_hobbies",
+   "listed": "s.learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.creative_writing",
+   "listed": "c.children_play",
+   "count": 1
+  },
+  {
+   "candidate": "c.creative_writing",
+   "listed": "c.journalism",
+   "count": 1
+  },
+  {
+   "candidate": "c.creative_writing",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.creative_writing",
+   "listed": "c.reading",
+   "count": 1
+  },
+  {
+   "candidate": "c.digital_tool_use",
+   "listed": "c.youth_culture",
+   "count": 1
+  },
+  {
+   "candidate": "c.digital_tool_use",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "c.digital_tool_use",
+   "listed": "s.leisure",
+   "count": 1
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.media_publishing",
+   "count": 1
+  },
+  {
+   "candidate": "c.disaster_experience",
+   "listed": "c.socialising",
+   "count": 1
+  },
+  {
+   "candidate": "c.driving",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.driving",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.driving",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.driving",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.eating_drinking",
+   "listed": "c.socialising",
+   "count": 1
+  },
+  {
+   "candidate": "c.ecology_science",
+   "listed": "c.weather_climate_adaptation",
+   "count": 1
+  },
+  {
+   "candidate": "c.elementary_occupations",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "c.elementary_occupations",
+   "listed": "c.entrepreneurship",
+   "count": 1
+  },
+  {
+   "candidate": "c.elementary_occupations",
+   "listed": "c.sales_marketing",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.border_migration_admin",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.healthcare_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.moving_relocation",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_job",
+   "listed": "c.vocational_training",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.borrowing_debt",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.entrepreneurship",
+   "count": 1
+  },
+  {
+   "candidate": "c.employment_transition",
+   "listed": "c.marriage_cohabitation",
+   "count": 1
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.civil_engineering",
+   "count": 1
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.energy_systems",
+   "listed": "c.weather_climate_adaptation",
+   "count": 1
+  },
+  {
+   "candidate": "c.entrepreneurship",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.entrepreneurship",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "c.entrepreneurship",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.exercise_fitness",
+   "listed": "c.outdoor_recreation",
+   "count": 1
+  },
+  {
+   "candidate": "c.exercise_fitness",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_rituals",
+   "listed": "c.children_play",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_rituals",
+   "listed": "c.family_ties",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_rituals",
+   "listed": "c.games_play",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.crafts_hobbies",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.employment_transition",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.exercise_fitness",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.socialising",
+   "count": 1
+  },
+  {
+   "candidate": "c.family_ties",
+   "listed": "c.tutoring_teaching",
+   "count": 1
+  },
+  {
+   "candidate": "c.festivals_events",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.festivals_events",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.film_tv_video",
+   "listed": "c.games_play",
+   "count": 1
+  },
+  {
+   "candidate": "c.film_tv_video",
+   "listed": "c.video_gaming",
+   "count": 1
+  },
+  {
+   "candidate": "c.finance_accounting",
+   "listed": "c.borrowing_debt",
+   "count": 1
+  },
+  {
+   "candidate": "c.finance_accounting",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.finance_accounting",
+   "listed": "c.entrepreneurship",
+   "count": 1
+  },
+  {
+   "candidate": "c.finance_accounting",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.food_purchasing",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "c.food_purchasing",
+   "listed": "c.eating_drinking",
+   "count": 1
+  },
+  {
+   "candidate": "c.food_purchasing",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.government_services",
+   "listed": "c.voting_elections",
+   "count": 1
+  },
+  {
+   "candidate": "c.government_services",
+   "listed": "s.public",
+   "count": 1
+  },
+  {
+   "candidate": "c.home_energy_utilities",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "c.clothing_footwear",
+   "count": 1
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "c.home_organisation",
+   "listed": "s.self_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.horticulture_farming",
+   "listed": "c.income_earning",
+   "count": 1
+  },
+  {
+   "candidate": "c.horticulture_farming",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.horticulture_farming",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.horticulture_farming",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.horticulture_farming",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_budgeting",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_budgeting",
+   "listed": "c.home_energy_utilities",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_gardening",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "c.cleaning_laundry",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "c.online_commerce",
+   "count": 1
+  },
+  {
+   "candidate": "c.household_planning",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "c.housing_search",
+   "listed": "c.home_organisation",
+   "count": 1
+  },
+  {
+   "candidate": "c.human_rights",
+   "listed": "c.political_discourse",
+   "count": 1
+  },
+  {
+   "candidate": "c.human_rights",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.human_rights",
+   "listed": "c.voting_elections",
+   "count": 1
+  },
+  {
+   "candidate": "c.informal_gig",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.employment_transition",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.language_learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.management_executive",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.migration",
+   "count": 1
+  },
+  {
+   "candidate": "c.job_search",
+   "listed": "c.moving_relocation",
+   "count": 1
+  },
+  {
+   "candidate": "c.life_purpose",
+   "listed": "c.religion_worship",
+   "count": 1
+  },
+  {
+   "candidate": "c.life_purpose",
+   "listed": "s.meaning",
+   "count": 1
+  },
+  {
+   "candidate": "c.linguistics_literature",
+   "listed": "c.basic_skills",
+   "count": 1
+  },
+  {
+   "candidate": "c.linguistics_literature",
+   "listed": "c.children_play",
+   "count": 1
+  },
+  {
+   "candidate": "c.management_executive",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.marriage_wedding",
+   "listed": "c.religion_worship",
+   "count": 1
+  },
+  {
+   "candidate": "c.medication_adherence",
+   "listed": "c.exercise_fitness",
+   "count": 1
+  },
+  {
+   "candidate": "c.medication_adherence",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.medication_adherence",
+   "listed": "c.nutrition_diet",
+   "count": 1
+  },
+  {
+   "candidate": "c.medication_adherence",
+   "listed": "c.physical_health",
+   "count": 1
+  },
+  {
+   "candidate": "c.medication_adherence",
+   "listed": "c.walking_cycling",
+   "count": 1
+  },
+  {
+   "candidate": "c.medicine_science",
+   "listed": "c.healthcare_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.medicine_science",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.medicine_science",
+   "listed": "c.vocational_training",
+   "count": 1
+  },
+  {
+   "candidate": "c.mental_health",
+   "listed": "c.physical_health",
+   "count": 1
+  },
+  {
+   "candidate": "c.mental_health",
+   "listed": "c.serious_illness",
+   "count": 1
+  },
+  {
+   "candidate": "c.moving_relocation",
+   "listed": "c.migration",
+   "count": 1
+  },
+  {
+   "candidate": "c.moving_relocation",
+   "listed": "s.learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.moving_relocation",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.music_listening",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.music_listening",
+   "listed": "c.parenting_young_children",
+   "count": 1
+  },
+  {
+   "candidate": "c.neighbours_community",
+   "listed": "c.family_ties",
+   "count": 1
+  },
+  {
+   "candidate": "c.neighbours_community",
+   "listed": "c.pet_ownership",
+   "count": 1
+  },
+  {
+   "candidate": "c.neighbours_community",
+   "listed": "c.public_administration",
+   "count": 1
+  },
+  {
+   "candidate": "c.neighbours_community",
+   "listed": "s.public",
+   "count": 1
+  },
+  {
+   "candidate": "c.news_media",
+   "listed": "c.family_ties",
+   "count": 1
+  },
+  {
+   "candidate": "c.nutrition_diet",
+   "listed": "c.reading",
+   "count": 1
+  },
+  {
+   "candidate": "c.occupational_safety",
+   "listed": "c.birth_of_child",
+   "count": 1
+  },
+  {
+   "candidate": "c.occupational_safety",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.occupational_safety",
+   "listed": "c.pregnancy_birth",
+   "count": 1
+  },
+  {
+   "candidate": "c.online_commerce",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.home_organisation",
+   "count": 1
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "c.pet_ownership",
+   "count": 1
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.outdoor_recreation",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.parenting_young_children",
+   "listed": "c.birth_of_child",
+   "count": 1
+  },
+  {
+   "candidate": "c.parenting_young_children",
+   "listed": "c.crafts_hobbies",
+   "count": 1
+  },
+  {
+   "candidate": "c.parenting_young_children",
+   "listed": "c.family_ties",
+   "count": 1
+  },
+  {
+   "candidate": "c.parenting_young_children",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.parenting_young_children",
+   "listed": "c.pregnancy_birth",
+   "count": 1
+  },
+  {
+   "candidate": "c.performing_arts",
+   "listed": "c.celebrations",
+   "count": 1
+  },
+  {
+   "candidate": "c.performing_arts",
+   "listed": "c.marriage_wedding",
+   "count": 1
+  },
+  {
+   "candidate": "c.performing_arts",
+   "listed": "c.music_making",
+   "count": 1
+  },
+  {
+   "candidate": "c.performing_arts",
+   "listed": "c.religion_worship",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_appearance",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_appearance",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.borrowing_debt",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.household_planning",
+   "count": 1
+  },
+  {
+   "candidate": "c.personal_finance",
+   "listed": "c.self_provisioning",
+   "count": 1
+  },
+  {
+   "candidate": "c.physical_health",
+   "listed": "c.childcare_other",
+   "count": 1
+  },
+  {
+   "candidate": "c.political_discourse",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.poverty_scarcity",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.poverty_scarcity",
+   "listed": "s.consumption",
+   "count": 1
+  },
+  {
+   "candidate": "c.preventive_health",
+   "listed": "s.self_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "c.civil_engineering",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "c.weather_climate_adaptation",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_administration",
+   "listed": "s.public",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_health_science",
+   "listed": "c.exams_assessment",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_health_science",
+   "listed": "c.healthcare_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_health_science",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_safety_emergency",
+   "listed": "c.hospitality_hosting",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_safety_emergency",
+   "listed": "c.mutual_aid",
+   "count": 1
+  },
+  {
+   "candidate": "c.public_transport",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "c.religious_community",
+   "listed": "s.meaning",
+   "count": 1
+  },
+  {
+   "candidate": "c.reproduction_fertility",
+   "listed": "c.birth_of_child",
+   "count": 1
+  },
+  {
+   "candidate": "c.reproduction_fertility",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "c.reproduction_fertility",
+   "listed": "c.pregnancy_birth",
+   "count": 1
+  },
+  {
+   "candidate": "c.reproduction_fertility",
+   "listed": "s.transitions",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "c.food_purchasing",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_shopping",
+   "listed": "c.informal_gig",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.borrowing_debt",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.food_purchasing",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.informal_gig",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "c.job_search",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.retail_work",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "c.reuse_repair",
+   "listed": "c.cleaning_laundry",
+   "count": 1
+  },
+  {
+   "candidate": "c.reuse_repair",
+   "listed": "c.clothing_footwear",
+   "count": 1
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.mutual_aid",
+   "count": 1
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.outdoor_recreation",
+   "count": 1
+  },
+  {
+   "candidate": "c.road_safety",
+   "listed": "c.socialising",
+   "count": 1
+  },
+  {
+   "candidate": "c.sales_marketing",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "c.sales_marketing",
+   "listed": "c.retail_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.entrepreneurship",
+   "count": 1
+  },
+  {
+   "candidate": "c.saving_investing",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.school_education",
+   "listed": "c.childcare_other",
+   "count": 1
+  },
+  {
+   "candidate": "c.school_education",
+   "listed": "c.eating_drinking",
+   "count": 1
+  },
+  {
+   "candidate": "c.self_provisioning",
+   "listed": "c.income_earning",
+   "count": 1
+  },
+  {
+   "candidate": "c.serious_illness",
+   "listed": "c.physical_health",
+   "count": 1
+  },
+  {
+   "candidate": "c.sleep",
+   "listed": "c.home_organisation",
+   "count": 1
+  },
+  {
+   "candidate": "c.social_media",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "c.social_media",
+   "listed": "c.journalism",
+   "count": 1
+  },
+  {
+   "candidate": "c.social_media",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.sociology",
+   "listed": "c.journalism",
+   "count": 1
+  },
+  {
+   "candidate": "c.sociology",
+   "listed": "c.media_publishing",
+   "count": 1
+  },
+  {
+   "candidate": "c.sociology",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "c.subscriptions_telecom",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.subscriptions_telecom",
+   "listed": "c.energy_systems",
+   "count": 1
+  },
+  {
+   "candidate": "c.subscriptions_telecom",
+   "listed": "c.home_energy_utilities",
+   "count": 1
+  },
+  {
+   "candidate": "c.tourism_travel",
+   "listed": "c.outdoor_recreation",
+   "count": 1
+  },
+  {
+   "candidate": "c.tourism_travel",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.tutoring_teaching",
+   "listed": "s.learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.urban_planning",
+   "listed": "c.outdoor_recreation",
+   "count": 1
+  },
+  {
+   "candidate": "c.vocational_training",
+   "listed": "c.employment_job",
+   "count": 1
+  },
+  {
+   "candidate": "c.vocational_training",
+   "listed": "c.language_learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.vocational_training",
+   "listed": "c.migration",
+   "count": 1
+  },
+  {
+   "candidate": "c.vocational_training",
+   "listed": "c.moving_relocation",
+   "count": 1
+  },
+  {
+   "candidate": "c.voting_elections",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "s.leisure",
+   "count": 1
+  },
+  {
+   "candidate": "c.walking_cycling",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.agri_forestry_fishing_work",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.community_groups",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.language_learning",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.migration",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.moving_relocation",
+   "count": 1
+  },
+  {
+   "candidate": "c.workplace_relations",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "c.youth_culture",
+   "listed": "s.leisure",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.banking_payments",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.food_purchasing",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.income_earning",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.public_transport",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.retail_shopping",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "c.shopping_errands",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "s.consumption",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "s.home",
+   "listed": "c.cleaning_laundry",
+   "count": 1
+  },
+  {
+   "candidate": "s.home",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "s.home",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "s.home",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "s.learning",
+   "listed": "c.vocational_training",
+   "count": 1
+  },
+  {
+   "candidate": "s.learning",
+   "listed": "s.family",
+   "count": 1
+  },
+  {
+   "candidate": "s.leisure",
+   "listed": "c.digital_tool_use",
+   "count": 1
+  },
+  {
+   "candidate": "s.mobility",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "c.community_groups",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "c.horticulture_farming",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "s.consumption",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "s.leisure",
+   "count": 1
+  },
+  {
+   "candidate": "s.nature",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "s.public",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "s.public",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "s.public",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "s.public",
+   "listed": "s.nature",
+   "count": 1
+  },
+  {
+   "candidate": "s.public",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "c.healthcare_work",
+   "count": 1
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "s.home",
+   "count": 1
+  },
+  {
+   "candidate": "s.self_care",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "c.neighbours_community",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "c.religious_community",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "s.meaning",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "s.mobility",
+   "count": 1
+  },
+  {
+   "candidate": "s.social",
+   "listed": "s.work",
+   "count": 1
+  },
+  {
+   "candidate": "s.transitions",
+   "listed": "c.birth_of_child",
+   "count": 1
+  },
+  {
+   "candidate": "s.transitions",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "s.transitions",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "s.transitions",
+   "listed": "c.news_media",
+   "count": 1
+  },
+  {
+   "candidate": "s.transitions",
+   "listed": "c.pregnancy_birth",
+   "count": 1
+  },
+  {
+   "candidate": "s.work",
+   "listed": "c.commuting",
+   "count": 1
+  },
+  {
+   "candidate": "s.work",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "s.work",
+   "listed": "c.healthcare_work",
+   "count": 1
+  },
+  {
+   "candidate": "s.work",
+   "listed": "c.medical_care",
+   "count": 1
+  },
+  {
+   "candidate": "s.work",
+   "listed": "s.social",
+   "count": 1
+  }
+ ]
+}

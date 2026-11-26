@@ -19,6 +19,7 @@ from pathlib import Path
 
 from .canonical import canonical_json, content_hash
 from .governed import governed, membership_fit_floor
+from .refinement import candidates_for_item, log_candidates
 from .membership import (DEFAULT_GOLD, DEFAULT_OUT, DEFAULT_PACK, MODEL, item_input, pack_hash, ungrouped_pack)
 from .tasks import DEFAULT_K, DEFAULT_PROMPTS
 from .validate import RANKED_MEMBERSHIP_VERSION, validate_answers
@@ -36,6 +37,7 @@ KIND_TABLE = ROOT / "data" / "events" / "kind_memberships_v1.jsonl"
 SNIPPET_TABLE = ROOT / "data" / "events" / "snippet_memberships_v1.jsonl"
 ESCALATIONS = ROOT / "data" / "answers" / "escalations.membership_wide.jsonl"
 CALIBRATION_DIR = ROOT / "data" / "events" / "calibration"
+REFINEMENT_DIR = ROOT / "data" / "refinement"  # LI.68 refinement log (`refinement.py`), written by the judge and the ingest
 SNIPPET_SAMPLE = 200
 PAIRS_POSSIBLE = 30381  # unordered pairs of the 247 fields (`data/events/coverage_v1.json`)
 
@@ -243,6 +245,18 @@ def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERS
     }
 
 
+def log_calibration(controls, by_item, prompt_version=PROMPT_VERSION, directory=None):
+    """LI.68: log the control battery's refinement candidates (unjudged secondaries, near-floor rejections at this version's floor,
+    disputed domains) to the refinement log. Returns the summary."""
+    floor = membership_fit_floor(prompt_version)
+    recs = []
+    for c in controls:
+        per = by_item.get(c["id"])
+        if per:
+            recs += candidates_for_item(c["id"], next(iter(per.values()))[0], {v: a for v, (_, a) in per.items()}, floor, gold=c)
+    return log_candidates(recs, REFINEMENT_DIR if directory is None else directory)[1]
+
+
 def judged_precision(report):
     """Share of the judged secondary domains (the gold names them fair or bad) that are fair; the pre-registered
     `precision_secondary` counts the unjudged against it and stays the verdict's metric."""
@@ -337,12 +351,13 @@ def merge_item(key, text, variant_answers, *, agree_floor=None):
             "disputed": disputed, "escalate": bool(reasons), "escalate_reasons": reasons}
 
 
-def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS):
+def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS, refinement_dir=None):
     """Merge answers (path pairs of batch and answers file, every variant of every item) into the table at out_path (one row per
     item, sorted by key) and write the escalations (one record per escalated item, with the variants' own lists) to
-    escalation_path. Both files are rewritten. Returns the rows."""
+    escalation_path. Both files are rewritten. Disputed and near-floor domains go to the refinement log (LI.68; never into the
+    table). Returns the rows."""
     got = answers_by_item(pairs)
-    rows, esc = [], []
+    rows, esc, cands = [], [], []
     for key in sorted(got):
         per = got[key]
         if len(per) != variants:
@@ -350,12 +365,15 @@ def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS):
         text = next(iter(per.values()))[0]
         row = merge_item(key, text, {v: a for v, (_, a) in per.items()})
         rows.append(row)
+        va = {v: a for v, (_, a) in per.items()}
+        cands += candidates_for_item(key, text, va, membership_fit_floor(row["prompt_version"]))
         if row["escalate"]:
             esc.append({"key": key, "text": text, "reasons": row["escalate_reasons"],
                         "variants": {str(v): {r: a["ranks"][r] for r in RELS} for v, (_, a) in sorted(per.items())}})
     for path, recs in ((out_path, rows), (escalation_path, esc)):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         Path(path).write_text("".join(canonical_json(r) + "\n" for r in recs), encoding="utf-8")
+    log_candidates(cands, REFINEMENT_DIR if refinement_dir is None else refinement_dir)
     return rows
 
 

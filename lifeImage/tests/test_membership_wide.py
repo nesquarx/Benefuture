@@ -3,11 +3,20 @@ import json
 import statistics
 from pathlib import Path
 
+import pytest
+
 from lifeimage.eventgen.catalog import ALL
 from lifeimage.validate import validate_answers
 
 ROOT = Path(__file__).resolve().parent.parent
 RELS = ("form", "content", "outcome", "setting")
+
+
+@pytest.fixture(autouse=True)
+def _refinement_log_to_tmp(tmp_path, monkeypatch):
+    """The ingest and judge log refinement candidates (LI.68); these tests' fixtures never touch the real log."""
+    import lifeimage.membership_wide as mw
+    monkeypatch.setattr(mw, "REFINEMENT_DIR", tmp_path / "refinement")
 
 
 # ---- the baseline the rule must beat (outcomes of the current code and data) ----
