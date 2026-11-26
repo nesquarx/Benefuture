@@ -3,7 +3,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import os
+
 import pytest
+
+
+def pytest_configure(config):
+    """Tiers (as the parent repository's CI): the default is the fast tier (`-m 'not full'`); BF_TIER=full runs every test; `-m full` runs the heavy tests alone."""
+    if os.environ.get("BF_TIER") == "full" and config.option.markexpr == "not full":
+        config.option.markexpr = ""
 
 
 def make_card(id="d.test", **over):

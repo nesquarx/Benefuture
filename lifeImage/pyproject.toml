@@ -18,3 +18,5 @@ packages = ["lifeimage", "lifeimage.generators", "lifeimage.sources", "lifeimage
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+addopts = "-m 'not full'"
+markers = ["full: heavy tests (large worlds, many seeds); excluded from the default fast tier, run with `-m full` or BF_TIER=full"]
