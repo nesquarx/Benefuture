@@ -243,6 +243,11 @@ struct M3cParams
     profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
     profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
     converge_init::Bool           # hold score-only Phase 1 until a domain converges (`currency_eligible` + `sequential_significant`; 8.136)
+    bar_rule::Symbol              # :brier (1 - Brier/0.25 against the bar) or :murphy (8.177: calibration against the bar, resolution beats the base rate by the domain's margin)
+    res_margin::Float64           # governed (8.177): default resolution margin, a share of the domain's outcome uncertainty (fallback; uncalibrated)
+    res_margins::Vector{Float64}  # governed (8.177): per true domain margins (severity and uncertainty of its impact); beyond the vector `res_margin`
+    murphy_bins::Int              # bins of the Murphy decomposition
+    converge_gate::Symbol         # :domain (default, 8.176: each domain's economy starts when its model clears its bar) or :all (the earlier all-domains conjunction, limiting case)
     legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
     accident_cap::Bool            # L96 / 8.157 ii: bound accident contributor's penalty by its capacity, administration carrying the rest
     mandate_education::Bool       # L96, L116 / 8.157 iv, 8.159: accidents mandate education (recorded exposure), making repeats informed
@@ -280,7 +285,8 @@ struct M3cParams
     restraint_recursion_budget::Int # governed: recursive restraint audits (AdvAp) funded per step
     restraint_challenge::Float64  # world: chance the losing side challenges an audit finding, triggering a recursive audit
     restraint_alarm_ratio::Float64 # governed: false/true audited findings ratio at which the justice process is flagged flawed (8.170 e)
-    restraint_alarm_min::Int      # governed: audited findings needed before the alarm may fire
+    restraint_alarm_min::Int      # governed: audited findings needed before the alarm may fire (0: the interval alone judges small samples, 8.175 (1))
+    restraint_alarm_z::Float64    # governed: confidence (standard errors) at which the audited false share's lower bound must exceed the bar (8.175 (1); interval alarm)
     restraint_audit::Bool         # 8.169 (c, ii): forcible restraint is audited with `restraint_audit_prob`, audit cost from the commons, false restraint liable to the enforcer
     restraint_bar::Float64        # governed: restraint burden at and above which the audit is certain and precedes the restraint (8.169)
     restraint_kappa::Float64      # governed: liability weight of an overturned restraint on its enforcer (8.169)
@@ -293,6 +299,7 @@ struct M3cParams
     false_restraint_severity::Float64 # world: severity of an overeager restraint
     false_restraint_harm::Float64 # world: value lost per unit severity by a wrongly restrained being (harm proxy)
     enforcer_liability_scale::Float64 # world: liability an enforcing entity absorbs before reining in (restraint propensity x exp(-L / scale))
+    allowance::Vector{Float64}    # per agent, the scale on its accumulation allowance (identity currency ceiling, 8.172; read live, 1 = the allowance as is). Balance above it flows to the commons (`reinvested`), never below zero: basic sustenance stays
 end
 
 """
@@ -344,7 +351,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
-                   converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
+                   converge_init::Bool = false, converge_gate::Symbol = :domain, bar_rule::Symbol = :brier, res_margin::Real = 0.1, res_margins::AbstractVector{<:Real} = Float64[], murphy_bins::Integer = 10, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
                    open_entry::Bool = false, entrants::Integer = 0,
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
@@ -354,17 +361,17 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    judges = Float64[], judge_bias = Float64[], judge_cluster = Int[], panel_size::Integer = 5, panel_minority_weight::Real = 1.5,
                    evidence_sep::Real = 1.5, evidence_noise::Real = 1.0, false_accusation_rate::Real = 0.03,
                    enforcer_excess = Float64[], excess_tol::Real = 0.1, restraint_recursion_budget::Integer = 1, restraint_challenge::Real = 0.0,
-                   restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 6, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
+                   restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 0, restraint_alarm_z::Real = 1.0, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
                    restraint_audit_floor::Real = 0.05, restraint_dur_scale::Real = 5.0, restraint_audit_cap::Integer = 2,
                    restraint_audit_acc::Real = 0.9, acquittal_audit::Bool = false, acquittal_audit_rate::Real = 0.25, false_restraint_severity::Real = 0.6, false_restraint_harm::Real = 1.0,
-                   enforcer_liability_scale::Real = 5.0)
+                   enforcer_liability_scale::Real = 5.0, allowance = Float64[])
     check(all(e -> isfinite(e) && e >= 0, judges) && all(isfinite, judge_bias) && all(c -> c in (1, 2), judge_cluster) &&
           (isempty(judge_bias) || length(judge_bias) == length(judges)) && (isempty(judge_cluster) || length(judge_cluster) == length(judges)) &&
           panel_size >= 1 && isfinite(panel_minority_weight) && panel_minority_weight >= 0 && isfinite(evidence_sep) && evidence_sep > 0 &&
           isfinite(evidence_noise) && evidence_noise > 0 && isfinite(false_accusation_rate) && 0 <= false_accusation_rate <= 1 &&
           all(e -> isfinite(e) && e >= 0, enforcer_excess) && isfinite(excess_tol) && excess_tol >= 0 && restraint_recursion_budget >= 0 &&
           isfinite(restraint_challenge) && 0 <= restraint_challenge <= 1 && isfinite(restraint_alarm_ratio) && restraint_alarm_ratio >= 0 &&
-          restraint_alarm_min >= 0,
+          restraint_alarm_min >= 0 && isfinite(restraint_alarm_z) && restraint_alarm_z >= 0,
           "judges, bias, excess, noise non-negative and aligned; clusters 1 or 2; panel at least 1; rates in [0, 1]")
     check(isfinite(restraint_bar) && restraint_bar > 0 &&
           isfinite(restraint_kappa) && restraint_kappa >= 0 && isfinite(restraint_audit_floor) && 0 <= restraint_audit_floor <= 1 &&
@@ -479,7 +486,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
+              converge_init, bar_rule, Float64(res_margin), Float64.(res_margins), Int(murphy_bins), converge_gate, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
@@ -487,9 +494,10 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               repair_credit, accolade_counterfactual,
               collect(Float64, judges), collect(Float64, judge_bias), collect(Int, judge_cluster), Int(panel_size), Float64(panel_minority_weight),
               Float64(evidence_sep), Float64(evidence_noise), Float64(false_accusation_rate), collect(Float64, enforcer_excess), Float64(excess_tol),
-              Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
+              Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), Float64(restraint_alarm_z), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
               Float64(restraint_audit_floor), Float64(restraint_dur_scale), Int(restraint_audit_cap), Float64(restraint_audit_acc), acquittal_audit, Float64(acquittal_audit_rate),
-              Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale))
+              Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale),
+              isempty(allowance) ? ones(length(agents)) : collect(Float64, allowance))
 end
 
 distance(x, y) = sqrt(sum(abs2, x .- y))
@@ -564,6 +572,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # economy and no state is reset between its epochs.
     check(governor === nothing || governor_every >= 1, "a governor needs a positive period")
     th_now, tw_now = Ref(p.threshold), Ref(p.track_window)
+    bar_off = Ref(Float64[])   # scoped status bars (unified world phase D): per true domain, an offset (>= 0, the bar only rises, 8.84) a governor sets from the fractal clusters' decisions
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
@@ -1065,9 +1074,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # The ratchet (8.84): each leaf's bar never falls below what enough of its models have cleared.
     lfloor = zeros(lmax)
     function leaf_bar(j)
-        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_now[], lfloor[j])
+        th_j = min(th_now[] + (ltrue[j] <= length(bar_off[]) ? max(bar_off[][ltrue[j]], 0.0) : 0.0), 1.0)
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_j, lfloor[j])
         q = argmax(μ[:, j])
-        max(relative_bar(th_now[], p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
+        max(relative_bar(th_j, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
     end
     function ratchet!()
         for j in 1:nleaves()
@@ -1084,17 +1094,33 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     removed_leaf(j) = any(e -> e.target == 0 || e.target == j, live(:remove_leaf_models))
     removed_parent(q) = any(e -> e.target == 0 || e.target == q, live(:remove_parent_models))
     pool_capped(j) = any(e -> e.target == 0 || e.target == j, live(:cap_pool_one))
-    leaf_ok_raw(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
-                                       novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
+    res_margin_of(j) = ltrue[j] <= length(p.res_margins) ? p.res_margins[ltrue[j]] : p.res_margin
+    # Records under the accuracy rule's own filter (window, or the decayed span without discounted spans), with their ages.
+    function eligible_records(h, hl)
+        p.accuracy_rule == :window && return collect(window_of(h)), Float64[cur[] - x.step for x in window_of(h)]
+        i0 = searchsortedfirst(h, cur[] - 40hl; by = x -> x isa Real ? x : x.step)
+        r = [x for x in @view(h[i0:end]) if !discounted(x)]
+        r, Float64[cur[] - x.step for x in r]
+    end
+    # A history clears domain j's bar: 1 - Brier/0.25 (`:brier`), or calibration plus resolution over the base rate (`:murphy`, 8.177).
+    function hist_eligible(h, hl, j, bar)
+        if p.bar_rule == :murphy
+            r, ages = eligible_records(h, hl)
+            isempty(r) && return false
+            m = decayed_murphy([x.credence for x in r], [x.outcome for x in r], ages, hl; bins = p.murphy_bins)
+            return murphy_eligible(m.reliability, m.resolution, m.uncertainty, length(h); novel = lnovel[j], threshold = bar,
+                                   novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor, res_margin = res_margin_of(j))
+        end
+        currency_eligible(acc_of(h, hl), length(h); novel = lnovel[j], threshold = bar, novel_threshold = p.novel_threshold,
+                          min_records = p.min_records, novel_floor = p.novel_floor)
+    end
+    leaf_ok_raw(j) = hist_eligible(lhist[j], hl_of(j), j, leaf_bar(j))
     leaf_ok(j) = !removed_leaf(j) && !domain_score_only[j] && leaf_ok_raw(j)
     parent_ok(q) = !removed_parent(q) && currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                                              novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
     function eval_challengers(j; only_if_eligible = false)
         ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records &&
-                       (!only_if_eligible || currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
-                                                               novel = lnovel[j], threshold = leaf_bar(j),
-                                                               novel_threshold = p.novel_threshold, min_records = p.min_records,
-                                                               novel_floor = p.novel_floor))]]
+                       (!only_if_eligible || hist_eligible(mpool[j][k].hist, hl_of(j), j, leaf_bar(j)))]]
         length(ks) > 1 || return top[j]
         brier(h) = [credence_score(x.raw, x.outcome) for x in window_of(h)]
         hlj = hl_of(j)
@@ -1216,7 +1242,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     function check_alarm!()
         # The alarm reads audited findings of both error types against correct verdicts (8.170 e, 8.173): false
         # restraints and false acquittals against upheld verdicts.
-        if restraint_balance_flawed(p.restraint_alarm_min, findings_false[], findings_true[]; ratio = p.restraint_alarm_ratio)
+        if restraint_alarm_interval(p.restraint_alarm_min, findings_false[], findings_true[]; ratio = p.restraint_alarm_ratio, z = p.restraint_alarm_z)
             alarm_count[] += 1
             if alarm_step[] == 0
                 alarm_step[] = cur[]
@@ -1349,6 +1375,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     supplier_income = Ref(0.0)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0), legacy_executed = Ref(0))
     econ_converged = Ref(false)
+    gated_leaves = Int[]   # leaves still in score-only start after the economy opened (8.176)
     converge_step = Ref(0)
     legacy_bal = fill(p.endowment, na)
     leg_th = Ref(1.0)
@@ -1595,7 +1622,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
         L = nleaves()
         cols = [1:L; (lmax + 1):ncol]
         own_rel = (rel_gain .+ rel_loss)[:, cols]
-        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], endowment = p.endowment, endowed = endowed,
+        merge(tr, (μ = μ[:, 1:L], formations = formations, balance = balance[:, cols], being_u = copy(s.u), being_h = copy(s.h), endowment = p.endowment, endowed = endowed,
                    h_pos_own = h_pos[:, cols], h_neg_own = h_neg[:, cols], relevance_own = own_rel,
                    relevance_leaf = own_rel[:, 1:L], relevance_resid = own_rel[:, (L + 1):(L + np)],
                    relevance_parent = reduce(vcat, [relevance_parents(a)' for a in 1:na]),
@@ -1607,7 +1634,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    responsibility_credits = responsibility_credits_applied[], bystander_omissions_exempted = bystander_omissions_exempted[],
                    withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
                    lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
-                   legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[],
+                   legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[], gate_pending = copy(gated_leaves),
                    credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                    cofunder_credit = cofunder_credit[], interaction = interaction[],
                    accolade_credit = accolade_credit[], contract_credit = contract_credit[],
@@ -1780,13 +1807,33 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
-        if p.converge_init && !econ_converged[]
-            active_known = [j for j in 1:nleaves() if !lnovel[j] && (
-                any(a -> !dormant[a] && ltrue[j] <= length(agent_focus[a]) && agent_focus[a][ltrue[j]] > 0.0, 1:na) ||
-                !isempty(lhist[j]))]
-            if !isempty(active_known) && all(j -> domain_converged(lhist[j], leaf_ok(j)), active_known)
-                econ_converged[] = true
-                converge_step[] = step
+        if p.converge_init
+            gate_ok(j) = !removed_leaf(j) && leaf_ok_raw(j)
+            if !econ_converged[]
+                active_known = [j for j in 1:nleaves() if !lnovel[j] && (
+                    any(a -> !dormant[a] && ltrue[j] <= length(agent_focus[a]) && agent_focus[a][ltrue[j]] > 0.0, 1:na) ||
+                    !isempty(lhist[j]))]
+                if !isempty(active_known)
+                    conv = [domain_converged(lhist[j], gate_ok(j)) for j in active_known]
+                    _, any_open, all_open = domain_gate(trues(length(active_known)), conv)   # Lean reference (8.176)
+                    if p.converge_gate == :all ? all_open : any_open
+                        econ_converged[] = true
+                        converge_step[] = step
+                        if p.converge_gate == :domain   # a domain below its bar stays in score-only start, loudly (8.176)
+                            for (j, c) in zip(active_known, conv)
+                                c || (domain_score_only[j] = true; push!(gated_leaves, j))
+                            end
+                        end
+                    end
+                end
+            end
+            for j in copy(gated_leaves)
+                if domain_converged(lhist[j], gate_ok(j))
+                    domain_score_only[j] = false
+                    filter!(!=(j), gated_leaves)
+                else
+                    degrade!("domain economy start", "score-only start for the domain", "domain model below its status bar (8.176)")
+                end
             end
         end
         force_legacy = !isempty(live(:legacy_only))
@@ -2978,7 +3025,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             totals = rel_gain[a, :] .+ rel_loss[a, :]
             totals[col_parent.(1:np)] .= relevance_parents(a)
             for c in 1:ncol
-                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base * base_share[a], p.overflow_factor, totals[c]))
+                excess = overflow(balance[a, c], accumulation_threshold(p.overflow_base * base_share[a] * p.allowance[a], p.overflow_factor, totals[c]))
                 balance[a, c] -= excess
                 reinvested[c] += excess
                 overflow_agent[a] += excess
@@ -3269,6 +3316,17 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 haskey(g, :pv) && g.pv !== nothing && (t = with_params(t, g.pv))
                 haskey(g, :threshold) && g.threshold !== nothing && (th_now[] = Float64(g.threshold))
                 haskey(g, :track_window) && g.track_window !== nothing && (tw_now[] = Int(g.track_window))
+                haskey(g, :bars) && g.bars !== nothing && (bar_off[] = collect(Float64, g.bars))
+                if haskey(g, :settle) && g.settle !== nothing   # the fractal clusters' reserves settle into the economy (phase D): purses, commons, supply
+                    st = g.settle
+                    for a in 1:na
+                        st.purses[a] == 0.0 && continue
+                        balance[a, clamp(argmax(agent_focus[a]), 1, ncol)] += st.purses[a]
+                    end
+                    rsum = sum(reinvested)
+                    rsum > 0 && (reinvested .*= max(0.0, 1 + st.commons / rsum))
+                    isempty(tr.supply) ? push!(tr.supply, st.supply) : (tr.supply[end] += st.supply)
+                end
             end
         end
     end

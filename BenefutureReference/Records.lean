@@ -226,6 +226,26 @@ def binding_admits_weighted_ref (confidences weights : Array Float) (threshold q
     if confidences[i]! ≥ threshold then w := w + max 0.0 (min 1.0 weights[i]!)
   return w ≥ quorumWeight
 
+/-- Identity confidence from attestations ([P], 8.72, 8.167c): a preliminary identity bound at a port of entry starts at
+    `start` (0 for one bound off an entry point, which is flagged) and gains confidence by independent attestation. The
+    attestations arrive in order, each from a cluster (`clusters`, labels as floats) with the attester's own confidence
+    (`weights`, clipped to [0, 1]); an attestation from a cluster that already attested counts `disc` times less for each
+    earlier one (`disc` in [0, 1]), so a ring inside one cluster adds little and independent clusters add the most. Each adds
+    the share `rate` (below 1) of the remaining distance to 1, so the confidence only rises and stays below 1. Participation
+    then amplifies what attestation earned and never replaces it: `part = partCap * p / (p + half)`, confidence
+    `att + (1 - att) * part * att`, so participation without attestation earns nothing. -/
+def identity_confidence_ref (start : Float) (clusters weights : Array Float) (rate disc participation partCap half : Float) : Float := Id.run do
+  let n := min clusters.size weights.size
+  let mut c := start
+  for i in [0:n] do
+    let mut k := 0
+    for j in [0:i] do
+      if clusters[j]! == clusters[i]! then k := k + 1
+    let w := max 0.0 (min 1.0 weights[i]!) * Float.pow disc k.toFloat
+    c := c + (1.0 - c) * rate * w
+  let part := partCap * participation / (participation + half)
+  return c + (1.0 - c) * part * c
+
 /-- Attestation skill read on each side ([P], B2): skill against a coin toss (`choice_skill_ref`
     with model credence 1/2) over the attestations of real entities and, separately, over those of
     false identities; the worse side counts. Pooled skill lets a cluster that vouches for everyone
@@ -409,6 +429,15 @@ def deciding_scope_ref (shares withinHarm : Array Float) (shareMin : Float) : Na
     if withinHarm[i]! >= 0.5 && shares[i]! >= shareMin then
       return i
   return n - 1
+
+/-- Divergence weight (`8.174`, `8.42.3`): uncertainty `u` times the severity discount `max 0 (1 - s * c)`; rises with uncertainty, falls with
+    severity, zero once `s * c >= 1`. Inputs are clamped to `u` in `[0, 1]`, `s` and `c` non-negative. -/
+def divergence_weight_ref (u s c : Float) : Float :=
+  let u := if u < 0.0 then 0.0 else if u > 1.0 then 1.0 else u
+  let s := if s < 0.0 then 0.0 else s
+  let c := if c < 0.0 then 0.0 else c
+  let d := 1.0 - s * c
+  u * (if d > 0.0 then d else 0.0)
 
 /-- Net extended-self feedback across coupled network targets (`L136`, `7.12`, M8):
     sums `max 0 (min 1 c_k) * delta_k` across paired entries. -/

@@ -153,6 +153,15 @@ Base.@kwdef struct UnifiedParams
     domains::Vector{Int} = [1, 2, 3, 4]
     ih_flag::Bool = true
     over::Dict{Symbol,Any} = Dict{Symbol,Any}()
+    identity::Union{Nothing,IdentityParams} = nothing   # entry-point identity binding layer (8.72, 8.167c); nothing: no newcomers or sybils
+    economy::Bool = false        # phase C (a): the identity layer's newcomers and sybils are the economy's trailing agents (one to one), so the currency ceiling acts on their real balances
+    fractal::Any = nothing       # phase C (b): a `FractalParams`; each epoch's cluster decisions run on that epoch's measured clusters, funded from the economy's commons
+    draw_frac::Float64 = 0.5     # governed (phase C b): the share of the undrawn commons an epoch's fractal run may take as its root reserve
+    decisions_per_epoch::Int = 6 # world (phase C b): the cluster decisions taken each epoch
+    scoped::Bool = false         # phase D: each epoch's cluster decisions set the economy's scoped parameters (the status bar per domain; the finer scope wins)
+    settle::Bool = false         # phase D: the fractal's reserves settle into the economy (level-1 balances to the members' purses, the rest back to the commons, mint and burn into the supply)
+    bar_step::Float64 = 0.05     # governed (phase D): how far a decided "raise" lifts a domain's status bar above the economy's own (the bar only rises, 8.84; "hold" leaves it)
+    fractal_truth::Union{Nothing,Vector{Int}} = nothing   # world (tests): the right option (+1 raise, -1 hold) per decision class, in place of the random draw (a planted heterogeneity)
 end
 
 "Set the unified world up: the network, the claim stream on it (a pre-pass over the horizon's epochs), the economy with the claims' outputs as its inputs."
@@ -165,12 +174,23 @@ function unified_setup(econ::M3cParams, up::UnifiedParams, n_epochs::Integer; se
     else
         collect(1:up.liar_stride:na)
     end
+    allow = ones(na); k_id = 0
+    if up.economy
+        up.identity === nothing && throw(ArgumentError("unified economy mapping needs the identity layer"))
+        k_id = up.identity.newcomers + up.identity.sybils
+        check(k_id < na && k_id > 0, "unified: newcomers + sybils are the economy's trailing agents, fewer than the agents")
+        econ = _with_fields(econ, Dict{Symbol,Any}(:allowance => allow))   # the live vector the economy reads; updated at each epoch end
+    end
     m3 = run_m3c(econ; seed = seed)   # the society the claims circulate in (reputations)
     ihp = IhWorldParams(; m3, econ, domains = up.domains, steps = n_epochs, claims_per_step = up.claims_per_epoch, ih = up.ih_flag,
                         network = net, rounds = up.rounds, liars_override = liars, run_economy = false, seed = seed, up.over...)
     cl = run_ih_world(ihp)
     (net = net, claims = cl, econ = _with_fields(econ, Dict{Symbol,Any}(:p_informed => cl.econ_inputs.p_informed, :p_side => cl.econ_inputs.p_side)),
-     bloc = cl.bloc, gov_inter = zeros(na, na), epochs = NamedTuple[], n_epochs = n_epochs)
+     bloc = cl.bloc, gov_inter = zeros(na, na), epochs = NamedTuple[], n_epochs = n_epochs,
+     ident = up.identity === nothing ? nothing :
+             identity_setup(up.identity, up.economy ? (n = na - k_id, planted = net.planted[1:(na - k_id)]) : net, up.communities; seed = seed),
+     economy = up.economy, allow = allow, nm = na - k_id, up = up, fractal = NamedTuple[], drawn = Ref(0.0), commons = Ref(0.0),
+     bars = Ref(zeros(length(econ.known))), scope = Ref(Dict{Int,NamedTuple}()), pending = Ref{Any}(nothing))
 end
 
 "The governance's M5 parameters on the one network: its contacts, its colluders, its rumour exposure."
@@ -182,17 +202,120 @@ function unified_hear!(U, heard)
     for i in eachindex(heard.sources), (j, w) in zip(heard.sources[i], heard.weights[i]); U.gov_inter[i, j] += w; end
 end
 
-"Record epoch `ep`: clusters (nested) from the interaction measured so far, with per-cluster outcome readings."
-function unified_record!(U, ep::Integer, reputation::AbstractMatrix)
+"""
+Beings linked to agents (phase C c): being `b` is served by agent `1 + (b - 1) % na` (a ring: every agent serves about the same number), so a
+cluster of agents has the understanding and happiness of the beings its members serve.
+"""
+agent_of_being(b::Integer, na::Integer) = 1 + (b - 1) % na
+
+"Per-agent readings of the economy's beings (mean understanding and happiness of the beings each agent serves), from a trace that carries them."
+function being_readings(tr, na::Integer)
+    hasproperty(tr, :being_u) || return nothing
+    nb = length(tr.being_u); cnt = zeros(na); su = zeros(na); sh = zeros(na)
+    for b in 1:nb; a = agent_of_being(b, na); cnt[a] += 1; su[a] += tr.being_u[b]; sh[a] += tr.being_h[b]; end
+    (understanding = su ./ max.(cnt, 1), happiness = sh ./ max.(cnt, 1))
+end
+
+"Record epoch `ep`: clusters (nested) from the interaction measured so far, with per-cluster outcome readings (and, given the economy's trace `tr`, the beings' understanding and happiness)."
+function unified_record!(U, ep::Integer, reputation::AbstractMatrix, tr = nothing)
     e = clamp(ep, 1, length(U.claims.interaction))
     W = attention_normalise(reduce(+, U.claims.interaction[1:e]) .+ U.gov_inter)
+    # the identity layer (8.72): newcomers and sybils join the attention matrix, weighted by their confidence once binding is on
+    nm = U.economy ? U.nm : U.net.n
+    isnap = U.ident === nothing ? nothing : identity_advance!(U.ident, U.economy ? attention_normalise(W[1:nm, 1:nm]) : W, ep)
+    isnap === nothing || (W = identity_weighted(U.ident, identity_attention(U.ident, U.economy ? attention_normalise(W[1:nm, 1:nm]) : W)))
+    # phase C (a): the currency ceiling (8.172) acts on the economy agents' real accumulation allowance, relative to a bound member's
+    # (so a member keeps its allowance as it is and an unbound identity falls to basic sustenance, never below it); the economy reads it live
+    if U.economy && isnap !== nothing
+        ref = identity_ceiling(U.ident)[1]
+        U.allow .= clamp.(isnap.ceiling ./ ref, 0.0, 1.0)
+    end
     h = cluster_hierarchy(W); lv = cluster_levels(h)
+    na = U.net.n
     s = U.claims.voter_snapshots[e]
     readings = (led_astray = s.led_astray, accuracy = s.accuracy, rumour_deferral = U.claims.voter_defer, reputation = vec(mean(max.(reputation, 0.0); dims = 2)))
+    br = tr === nothing ? nothing : being_readings(tr, na)
+    br === nothing || (readings = merge(readings, br))
     push!(U.epochs, (epoch = ep, levels = lv, nested = levels_nested(lv), interaction = sum(reduce(+, U.claims.interaction[1:e]) .+ U.gov_inter),
-                     agreement = adjusted_rand_index(lv[findfirst(l -> l.k == h.best, lv)].labels, U.net.planted),
-                     readings = [(k = l.k, clusters = cluster_readings(l.labels, readings)) for l in lv]))
+                     agreement = adjusted_rand_index(lv[findfirst(l -> l.k == h.best, lv)].labels[1:na], U.net.planted),
+                     readings = [(k = l.k, clusters = cluster_readings(l.labels[1:na], readings)) for l in lv], identity = isnap))
+    tr !== nothing && U.up.fractal !== nothing && unified_fractal_epoch!(U, ep, tr)
+end
+
+"A member's vote weight is its own; an economy-mapped newcomer or sybil votes with the ballot weight of its identity confidence (none below the working confidence, 8.72)."
+function unified_vote_scale(U, w::AbstractVector)
+    (U.ident === nothing || !U.economy) && return w
+    vw = identity_vote_weight(U.ident); out = copy(w)
+    for i in (U.nm + 1):length(w); out[i] *= vw[i]; end
+    out
+end
+
+"A sybil economy agent votes against the candidate's merit (as the identity layer's ballots do), any other agent as it reads."
+unified_sybil(U, i::Integer) = U.economy && U.ident !== nothing && U.ident.kind[i] == :sybil
+
+"""
+Phase C (b): the epoch's fractal run. The nested clusters just measured decide `decisions_per_epoch` decisions (`run_fractal`), funded from the
+economy's own commons: the root reserve is `draw_frac` of the commons not yet drawn (`sum(tr.reinvested)`, what overflow above the identity
+ceiling and the accumulation allowance returned), so the clusters together never spend beyond what the economy put in the commons, and each
+level's reserves are shares of its parent's (one currency). The tree's ledger is exact (`sum(balances) = reserve + minted - burnt`).
+"""
+function unified_fractal_epoch!(U, ep::Integer, tr)
+    na = U.net.n; fp = U.up.fractal; up = U.up
+    U.commons[] = sum(max.(tr.reinvested, 0.0))
+    # settled draws leave the commons for real, so the draw is a share of what is there; unsettled draws are tracked (`drawn`) against it
+    root = up.draw_frac * max(U.commons[] - (up.settle ? 0.0 : U.drawn[]), 0.0)
+    labs = [l.labels[1:na] for l in U.epochs[end].levels]
+    if root <= 0
+        push!(U.fractal, (epoch = ep, reserve = 0.0, ledger_gap = 0.0, minted = 0.0, burnt = 0.0, decisions = 0, right_share = NaN, harm_peak = 0.0, drawn = up.settle ? 0.0 : U.drawn[], commons = U.commons[]))
+        return
+    end
+    p = _with_fields(fp, Dict{Symbol,Any}(:reserve => root, :decisions => up.decisions_per_epoch))
+    W = fractal_world(na, p; seed = ep)
+    up.fractal_truth === nothing || (W = merge(W, (τ = copy(up.fractal_truth),)))
+    r = run_fractal(labs, p; seed = ep, world = W)
+    up.settle || (U.drawn[] += root)
+    gap = sum(values(r.balances)) - (root + r.minted - r.burnt)
+    rec = (epoch = ep, reserve = root, ledger_gap = gap, minted = r.minted, burnt = r.burnt, decisions = length(r.decisions), right_share = r.right_share,
+           harm_peak = r.harm_peak, drawn = up.settle ? root : U.drawn[], commons = U.commons[], spent = sum(values(r.spent)), degraded = length(r.degraded))
+    if up.scoped   # phase D (a): the decisions set the economy's scoped parameters; a finer scope wins, a coarser later decision sets only what is undecided
+        U.scope[] = unified_scope(r.decisions, length(U.bars[]))
+        U.bars[] = [haskey(U.scope[], d) && U.scope[][d].option == 1 ? up.bar_step : 0.0 for d in 1:length(U.bars[])]
+        rec = merge(rec, (scope = copy(U.scope[]), bars = copy(U.bars[])))
+    end
+    if up.settle   # phase D (b): the clusters' reserves settle into the economy (the finest clusters' balances to their members' purses, every coarser reserve back to the commons)
+        purses = zeros(na); back = 0.0
+        for ((l, c), b) in r.balances
+            if l == 1
+                m = findall(==(c), r.levels[1]); purses[m] .+= b / length(m)
+            else
+                back += b
+            end
+        end
+        U.pending[] = (purses = purses, commons = back - root, supply = r.minted - r.burnt)
+        rec = merge(rec, (settled = sum(purses), returned = back, settle_gap = sum(purses) + back - (root + r.minted - r.burnt)))
+    end
+    push!(U.fractal, rec)
+end
+
+"""
+The scope each domain's decision settled at (phase D): decisions in order, a decision for a domain replaces the held one only when its scope is as fine or finer
+(level number as low or lower), so a coarser later decision sets only the undecided domains. Domains beyond `nd` have no economy parameter to set.
+"""
+function unified_scope(decisions, nd::Integer)
+    scope = Dict{Int,NamedTuple}()
+    for d in decisions
+        d.class <= nd || continue
+        cur = get(scope, d.class, nothing)
+        (cur === nothing || d.level <= cur.level) && (scope[d.class] = (level = d.level, option = d.option, cluster = d.cluster))
+    end
+    scope
+end
+
+"What the governor hands the economy at an epoch boundary besides thresholds (phase D): the scoped status bars and the pending settlement (taken once)."
+function unified_handover!(U)
+    st = U.pending[]; U.pending[] = nothing
+    (bars = U.up.scoped ? copy(U.bars[]) : nothing, settle = st)
 end
 
 "What the unified world reports: the network, the epochs' nested clusters and readings, the claims' outputs."
-unified_report(U) = (network = U.net, epochs = U.epochs, claims = U.claims, interaction = U.gov_inter, econ_inputs = U.claims.econ_inputs)
+unified_report(U) = (network = U.net, identity = U.ident, allowance = copy(U.allow), fractal = U.fractal, epochs = U.epochs, claims = U.claims, interaction = U.gov_inter, econ_inputs = U.claims.econ_inputs)

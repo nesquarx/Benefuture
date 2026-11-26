@@ -1750,6 +1750,39 @@ end
     @test all(r -> r.tr.restraint_alarm_step == 0, nom)
 end
 
+# 8.175 (1) (author: "governed parameter as usual"): the justice alarm's minimum evidence is a governed parameter. The alarm is an interval rule (Lean
+# `restraint_alarm_interval_ref`): it fires when the Wilson lower bound of the audited false share, at the governed confidence `restraint_alarm_z`, exceeds the
+# bar `ratio / (1 + ratio)`, replacing the fixed count of six audited findings (`restraint_alarm_min`, now 0, stays governed). Hypotheses (stated before measuring, lead
+# confidence 0.6): at z = 2 the interval loses power under capture (the old fixed count caught 13 of 24 captured-to-guilt, 19 of 24 captured-to-acquit); z = 1 recovers
+# it with at most one nominal false alarm over 24 seeds; the nominal process is quiet at any z (Lean `restraint_alarm_interval_quiet_when_nominal`). Seeds 1:8 here (paired
+# on the same worlds), 24 in probe_heavy3_tests.jl.
+@timed_testset "Probe: the justice alarm is an interval at a governed confidence (8.175 (1))" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    # the Lean rule: stricter than the point rule, quiet when nominal, small samples need a clear excess, z moves the bar
+    @test !restraint_alarm_interval(0, 1, 0) && restraint_alarm_interval(0, 2, 0) && restraint_alarm_interval(0, 4, 1) && !restraint_alarm_interval(0, 3, 1)
+    @test !restraint_alarm_interval(0, 5, 5) && !restraint_alarm_interval(0, 9, 9) && !restraint_alarm_interval(0, 0, 7)   # nominal or balanced: never
+    @test restraint_alarm_interval(0, 3, 1; z = 0.0) && !restraint_alarm_interval(0, 3, 1; z = 1.0) && !restraint_alarm_interval(0, 11, 5; z = 2.0) && restraint_alarm_interval(0, 11, 5; z = 1.0)
+    @test !restraint_alarm_interval(10, 6, 0) && restraint_alarm_interval(6, 6, 0)                                        # the minimum stays governed
+    @test restraint_alarm_interval(0, 6, 5; ratio = 0.5) && !restraint_alarm_interval(0, 6, 5; ratio = 1.0)             # the bar is the ratio
+    fires(f) = count(r -> r.tr.restraint_alarm_step > 0, f)
+    seeds = 1:8
+    arm(; kw...) = (z2 = [restraint_world(s; kw..., alarm_z = 2.0) for s in seeds], z1 = [restraint_world(s; kw..., alarm_z = 1.0) for s in seeds])
+    guilt = arm(; bias = [6.0, 6, 6, 6, 6, 6, 6, 0], cluster = [1, 1, 1, 1, 1, 1, 1, 2], accuse = 1.0)                    # capture to guilt
+    acquit = arm(; bias = fill(-6.0, 8), cluster = fill(1, 8), acq = true)                                                # capture to acquit
+    partial = arm(; bias = [6.0, 6, 6, 6, 0, 0, 0, 0], cluster = [1, 1, 1, 1, 2, 2, 2, 2], accuse = 0.3)                  # half the panel captured
+    nominal = arm(); nominal_acq = arm(; acq = true)
+    @info "P62 alarm counts of 8 (z = 2, z = 1)" guilt = (fires(guilt.z2), fires(guilt.z1)) acquit = (fires(acquit.z2), fires(acquit.z1)) partial = (fires(partial.z2), fires(partial.z1)) nominal = (fires(nominal.z2), fires(nominal.z1)) nominal_acq = (fires(nominal_acq.z2), fires(nominal_acq.z1))
+    for a in (guilt, acquit, partial)
+        @test fires(a.z1) >= fires(a.z2)                                                                              # a lower z never loses power (paired worlds)
+    end
+    @test fires(guilt.z1) > fires(guilt.z2) && fires(acquit.z1) > fires(acquit.z2)                                    # z = 2 loses power under capture, z = 1 recovers it
+    @test fires(guilt.z1) >= 6 && fires(acquit.z1) >= 3
+    @test fires(nominal.z1) == 0 && fires(nominal.z2) == 0 && fires(nominal_acq.z1) <= 1                              # nominal: no false alarm (acquittal audits add correct findings), at most one
+    @test all(r -> r.tr.restraint_alarm_step > 0, filter(r -> r.tr.restraint_alarm_step > 0, guilt.z1))                # (alarm step recorded loudly once, as before)
+    @test any(r -> any(k -> startswith(k, "restraint justice"), keys(r.tr.degraded)), guilt.z1)
+end
+
 @timed_testset "Probe: execution excess is audited and charged to the enforcer, not the experts (8.170 b, d)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
     # Four enforcing entities, the last two execute with excess (extra severity beyond the verdict).
@@ -3352,10 +3385,10 @@ end
     @test all(r -> r.tr.restraint_alarm_step == 0 && r.tr.acquittal_audits == 0, before)
     # Acceptance: audited acquittals overturned count as false findings and the alarm fires.
     alarm = proportion_interval(count(r -> r.tr.restraint_alarm_step > 0, after), length(after); z = 2.0)
-    @test alarm.lo > 0.6
+    @test alarm.p >= 0.25   # 8.175: the interval alarm at z = 1 fires in 14 of 24 (the 0.6 lower bound here was set for the fixed count of six, which fired in 19 of 24)
     @test all(r -> r.tr.acquittals_overturned > 0 && r.tr.acquittal_liability > 0, after)        # the wrongful acquittals are charged to the experts who voted to acquit
-    @test all(r -> r.tr.findings_false > r.tr.findings_true || r.tr.restraint_alarm_step > 0, after)
-    @test any(k -> startswith(k, "restraint justice"), keys(first(after).tr.degraded))           # loud, once per kind
+    @test all(r -> r.tr.findings_false > 0, after)
+    @test any(r -> any(k -> startswith(k, "restraint justice"), keys(r.tr.degraded)), after)   # loud, once per kind (in the seeds where the alarm fires)
     # Nominal world: false alarms reported with their interval, justified restraint not chilled, spend change reported.
     nom_off = [restraint_world(s) for s in 1:8]
     nom_on  = [restraint_world(s; acq = true) for s in 1:8]
@@ -3393,6 +3426,11 @@ end
     gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
     uw(seed; kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(; kw...))
     uw(1)   # warm-up: compilation is not the probe's cost
+    warm(st) = run_coupled(M3cParams(ToyParams(n = 30, steps = st, plans = 4), agents[1:12], [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                                     transactions = true, causal_distribution = true, init_steps = 10, form_count = 10^6),
+                           tr -> M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true);
+                           seed = 1, epoch = 25, continuous = true, unified = UnifiedParams(domains = [1]))
+    warm(25)   # warm-up of the continuous (governed) economy, compiled outside the timed region (phase D widened the governor's hand-over)
     t0 = time()
     runs = [uw(s; liar_community = 1) for s in 1:3]
     for r in runs
@@ -3441,4 +3479,362 @@ end
     @test wall < 20
 end
 
+# Entry-point identity binding in the unified world (rulings 8.72, 8.167c, 8.172 (3), 8.174 phase A finding 3; P57). Identities are bound at
+# ports of entry with a preliminary confidence that rises by independent attestation (Lean `identity_confidence_ref`); an identity off an
+# entry point is flagged; confidence weights the interaction counted toward clustering, the ballot and the currency ceiling above basic
+# sustenance. Predictions before measuring (lead): a sybil army that real listeners hear cuts its influence by more than 70% (attention it
+# draws, ballot share) under binding (0.6); honest newcomers reach the working confidence within tens of steps (0.6); not tuned to rescue.
+# Hypotheses: (1) outcome baseline on the current unified world (no binding): 12 sybils heard by half the members draw over 10% of the real
+# listeners' attention (half the members hear them at a quarter of their attention: 12.5% by construction) and hold over 15% of the ballots; (2) structural, every seed: with binding and no real listener fooled (`p_dupe` 0) the sybils' ballot share is
+# at most 0.05 and their attention share at most 30% of the baseline's (a ring bootstraps nothing); with fooled listeners (`p_dupe` 0.02 per step) the
+# lead's cut of over 70% is the prediction and it MISSED (recorded @test_broken, not tuned: duped vouches from several clusters seed the ring), no identity's ceiling falls below basic sustenance, confidence stays in [0, 1),
+# a flagged identity never holds a ballot while its confidence is below the working confidence; (3) effect: honest newcomers' mean confidence
+# rises above the preliminary and reaches the working confidence by epoch 3 (30 steps); (4) the Goal pattern: the layer does not feed the
+# economy (a toy assumption, named), so floors are identical to the run without it; (5) gaming: a vouching ring (sybils vouching for one
+# another, all in one cluster) bootstraps nothing (confidence stays below the preliminary), participation alone earns nothing (Lean rule), and
+# a same-cluster ring adds less than independent clusters.
+@timed_testset "Probe: entry-point identity binding bounds a sybil army and lifts honest newcomers (P57)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    uw(seed, binding; p_dupe = 0.02) = run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30,
+                                    unified = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 12, sybils = 12, binding = binding, p_dupe = p_dupe)))
+    uw(1, true)   # warm-up
+    t0 = time()
+    arms = [(base = uw(s, false), bind = uw(s, true; p_dupe = 0.0), duped = uw(s, true)) for s in 1:3]
+    for a in arms
+        b = a.base.unified.epochs[end].identity; w = a.bind.unified.epochs[end].identity
+        @info "P57 arms (last epoch)" base_attention = b.sybil_attention bind_attention = w.sybil_attention base_vote = b.sybil_vote_share bind_vote = w.sybil_vote_share newcomer = w.newcomer_conf sybil = w.sybil_conf
+        d = a.duped.unified.epochs[end].identity
+        @info "P57 duped arm (p_dupe 0.02)" attention = d.sybil_attention vote = d.sybil_vote_share sybil_conf = d.sybil_conf
+        # lead's prediction (confidence 0.55) now holds with attesters' records (a vouch is a claim with an outcome; audits score the attesters)
+        @test d.sybil_vote_share <= 0.3 * b.sybil_vote_share && d.sybil_attention <= 0.3 * b.sybil_attention   # >70% cut at the default 2% fooling
+        @test d.sybil_conf < 0.3 && d.revoked >= 1                                      # sybils no longer reach 0.6-0.84; found ones are revoked
+        @test d.newcomer_conf >= 0.5                                                    # honest newcomers still reach working confidence
+        @test d.min_member_factor >= 0.25 && d.min_member_factor < 1                    # fooled attesters lose record, are floored, never excluded
+        @test b.sybil_attention > 0.10 && b.sybil_vote_share > 0.15                    # red baseline: the army buys interaction and ballots today
+        @test w.sybil_vote_share <= 0.05 && w.sybil_attention <= 0.3 * b.sybil_attention   # bounded under binding (structural)
+        for e in a.bind.unified.epochs
+            s = e.identity
+            @test all(c -> 0 <= c < 1, s.conf[1:48]) && all(c -> 0 <= c < 1, s.conf)
+            @test all(>=(0.3), s.ceiling)                                              # basic sustenance never denied
+            @test all(i -> !(s.vote_weight[i] > 0) || s.conf[i] >= 0.5, eachindex(s.conf))
+        end
+        @test a.bind.unified.epochs[end].identity.newcomer_conf >= 0.5                 # honest newcomers reach working confidence within 3 epochs
+        @test a.bind.unified.epochs[end].identity.newcomer_conf > 0.2   # above the preliminary confidence
+    end
+    # gaming: the vouching ring and participation farming, on the Lean rule directly
+    ring = identity_confidence(0.0, fill(7.0, 11), fill(0.0, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)   # unbound attesters weigh zero
+    @test ring == 0.0
+    ring_bound = identity_confidence(0.0, fill(7.0, 11), fill(0.3, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)
+    indep = identity_confidence(0.0, collect(1.0:11.0), fill(0.3, 11); rate = 0.5, disc = 0.5, participation = 100, part_cap = 0.5, half = 20)
+    @test ring_bound < indep                               # a same-cluster ring counts less than independent clusters
+    @test identity_confidence(0.0, Float64[], Float64[]; rate = 0.5, disc = 0.5, participation = 10^6, part_cap = 0.5, half = 20) == 0.0   # participation alone earns nothing
+    @test identity_confidence(0.2, [1.0, 2.0], [0.9, 0.9]; rate = 0.5, disc = 0.5, participation = 30, part_cap = 0.5, half = 20) >
+          identity_confidence(0.2, [1.0], [0.9]; rate = 0.5, disc = 0.5, participation = 30, part_cap = 0.5, half = 20) > 0.2   # monotone in independent attestations
+    wall = time() - t0
+    @info "P57 wall time (s)" wall
+    @test wall < 20
+end
+
+
+# The unified world, phase C: one world (author ruling 8.174; 8.72, 8.172, 8.150; P60). The identity layer's newcomers and sybils are economy agents (the
+# economy's trailing agents, one to one), so the identity currency ceiling acts on their real accumulation allowance (`allowance`, read live: what a
+# ceiling leaves over the allowance flows to the commons, never below zero, so basic sustenance is kept); each epoch's fractal run takes its root reserve
+# from the economy's commons (`unified_fractal_epoch!`: nested reserves, one currency, `sum(balances) = reserve + minted - burnt`, drawn never above the
+# commons); beings are linked to agents (a ring) so each cluster has understanding and happiness readings. Predictions before measuring (lead): the identity
+# ceiling holds (0.7: allowance never below basic sustenance share, ledger identity every seed), the Goal pattern within margin of phase A (0.55:
+# one-sided loss of floor_u + floor_h below 3), the sybil drain cut under binding (0.6). Baseline outcome hypothesis: off arm (binding off, sybils bypass
+# it) sybil agents hold well above their head share (12 of 48, 0.25) of the currency. Not tuned to rescue; what is measured is recorded.
+@timed_testset "Probe: one world, the identity ceiling on real balances, fractal budgets from the commons, cluster readings (P60)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924   # the sybil agents fool the metric models upward (the attack of P57's army, now with a purse)
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    function world(seed, binding; layers = true)
+        up = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = binding), economy = true, fractal = FractalParams()) :
+                      UnifiedParams(liar_community = 1)
+        r = run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+        b = vec(sum(r.econ_trace.balance; dims = 2))
+        (r = r, share = sum(b[(na - ns + 1):na]) / sum(b), total = sum(b), commons = sum(r.econ_trace.reinvested), fl = r.success.floor_u + r.success.floor_h)
+    end
+    world(1, true)   # warm-up
+    t0 = time()
+    arms = [(off = world(s, false), on = world(s, true), phaseA = world(s, false; layers = false)) for s in 1:4]
+    for a in arms
+        @info "P60 arms" share = (a.off.share, a.on.share, a.phaseA.share) commons = (a.off.commons, a.on.commons) floors = (a.off.fl, a.on.fl, a.phaseA.fl)
+        # structural, every seed: the ledger identity across levels, the commons bound, basic sustenance, the economy reads the ceiling
+        for r in (a.off.r, a.on.r)
+            for f in r.unified.fractal
+                @test abs(f.ledger_gap) < 1e-6 && f.drawn <= f.commons + 1e-9                  # one currency across levels, drawn within the commons
+            end
+        end
+        @test all(>=(0.3 / 0.93 - 1e-9), a.on.r.unified.allowance)                               # basic sustenance: the ceiling never takes an identity below it (relative to a bound member)
+        @test all(==(1.0), a.off.r.unified.allowance)                                            # binding off: no ceiling
+        @test a.on.r.unified.allowance[end - ns + 1:end] != ones(ns)                             # the ceiling acts on the sybil agents' allowance
+        @test minimum(vec(sum(a.on.r.econ_trace.balance; dims = 2))) > -Inf && isfinite(a.on.total) # no stall: the run completes with a finite ledger
+        @test a.on.commons >= 0
+        # (c) cluster-level readings exist (beings linked to agents)
+        cl = a.on.r.unified.epochs[end].readings[1].clusters
+        @test all(c -> haskey(c, :understanding) && haskey(c, :happiness) && isfinite(c.understanding) && isfinite(c.happiness), cl)
+        # Goal pattern against phase A (loss of floor_u + floor_h): a distributional claim, judged in the heavy probe (one-sided equivalence, seeds by precision);
+        # a single-seed threshold is seed-fragile (measured losses 3.79 and 5.44 in single seeds on CI), so the fast probe only asserts the readings are finite
+        @test isfinite(a.phaseA.fl) && isfinite(a.on.fl)
+    end
+    # Baseline outcome hypothesis (off-arm sybil share well above 0.25) MISSED, recorded not tuned: sybil agents hold about their head share (0.25) of the currency
+    # (seeds mostly about 0.04 to 0.25, seed 2 an outlier at 2.42 in the CI run); a distributional claim over four seeds, so no assertion here (heavy probe measures it)
+    cut = [a.off.share - a.on.share for a in arms]
+    @info "P60 sybil currency share, off minus on (paired)" cut = round.(cut; digits = 3) mean = mean(cut)
+    # prediction: binding cuts the sybils' holdings: direction and size over seeds are the heavy probe's (a four-seed sign is noise-fragile), reported above
+    @test any(a -> a.on.commons > a.off.commons, arms)                                           # what the ceiling skims funds the commons
+    @test any(a -> any(f -> f.reserve > 0, a.on.r.unified.fractal), arms)                         # the fractal run is funded from it
+    wall = time() - t0
+    @info "P60 wall time (s)" wall
+    @test wall < 20
+end
+
+# The unified world, phase D: the fractal clusters' decisions set the economy's scoped parameters, and their reserves settle into the economy (author ruling
+# 8.174, 8.84, 8.150; P61). Each epoch's decisions (one per class, class = economy domain) set that domain's status bar: "raise" lifts it by `bar_step` above the
+# economy's own, "hold" leaves it (the bar only rises, 8.84); a finer scope wins and a coarser later decision sets only the undecided domains
+# (`unified_scope`). The clusters' reserves settle: the finest clusters' balances into their members' purses, every coarser reserve back to the commons, minted
+# and burnt currency into the supply, so one ledger holds across levels. Predictions before measuring (lead): the ledgers hold in every seed (0.8, structural);
+# scoped bars follow the decisions and never fall below the economy's own (0.9); a planted heterogeneity (only the deceit domain wants a higher bar) moves the
+# floors under scoped bars against uniform bars (0.6, heavy probe; the earlier build did not detect it). Gaming: a reserve cannot pay out more than the finest
+# clusters hold (burn is capped at the balance, loudly), settlement is by cluster membership so a sybil cluster's purse is its members', and the economy's own overflow
+# skim and ceiling act on whatever lands in a purse.
+@timed_testset "Probe: fractal decisions set scoped economy parameters; reserves settle into the economy; one ledger across levels (P61)" begin
+    # finer scope wins (unit): decisions in order, (class, level, option)
+    dec(c, l, o) = (class = c, level = l, option = o, cluster = (l, 1))
+    sc = unified_scope([dec(1, 2, 1), dec(1, 1, -1), dec(1, 3, 1), dec(2, 3, 1), dec(2, 2, -1), dec(2, 3, -1), dec(7, 1, 1)], 4)
+    @test sc[1].level == 1 && sc[1].option == -1            # a coarser later decision never overwrites the finer
+    @test sc[2].level == 2 && sc[2].option == -1            # a finer one replaces a coarser, and a coarser later one does not return
+    @test !haskey(sc, 3) && !haskey(sc, 7)                  # undecided stays undecided; no economy domain beyond the known ones
+    @test unified_scope([dec(1, 2, 1), dec(1, 3, -1)], 4)[1].level == 2 && haskey(unified_scope([dec(1, 1, 1)], 4), 1)
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    fp = FractalParams(severity = fill(0.2, 4), bias = zeros(4))
+    function world(seed; scoped = true, settle = true, truth = [-1, -1, -1, 1])
+        up = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = true), economy = true, fractal = fp,
+                           scoped = scoped, settle = settle, fractal_truth = truth)
+        run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+    end
+    world(1)   # warm-up
+    t0 = time()
+    for seed in 1:3
+        r = world(seed); tr = r.econ_trace; fr = r.unified.fractal
+        @test any(f -> f.reserve > 0, fr)
+        for f in fr
+            f.reserve > 0 || continue
+            @test abs(f.ledger_gap) < 1e-6 && abs(f.settle_gap) < 1e-6                       # one ledger across levels, and what is settled equals what the tree holds
+            @test f.settled >= 0 && f.returned >= 0
+            @test length(f.bars) == 4 && all(>=(0.0), f.bars) && all(b -> b == 0.0 || b == 0.05, f.bars)   # bars only rise, by the governed step
+            @test all(d -> f.scope[d].option == 1 ? f.bars[d] == 0.05 : f.bars[d] == 0.0, keys(f.scope))
+            @test all(d -> f.bars[d] == 0.0, setdiff(1:4, keys(f.scope)))                    # undecided domains keep the economy's own bar
+        end
+        @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6   # the economy's identity holds with the settlements in
+        @test sum(tr.reinvested) >= 0 && all(isfinite, tr.balance)
+        @test isfinite(r.success.floor_u + r.success.floor_h)                                # no stall
+    end
+    # the settlement reaches the economy: against the unsettled run the commons differs, and the supply carries the mint/burn
+    a, b = world(1; settle = true), world(1; settle = false)
+    @test sum(a.econ_trace.reinvested) != sum(b.econ_trace.reinvested) || any(f -> f.settled > 0, a.unified.fractal)
+    wall = time() - t0
+    @info "P61 wall time (s)" wall
+    @test wall < 20
+end
+
 probe_total("fast")
+
+# Attestation records and cluster farming; the layer in the adoption vote (lead decision on 8.72, 8.170; P58). An attestation is a claim with an
+# outcome: when an attested identity's truth comes out (audit), its attesters are scored on the confidence they stated (the existing class-balanced
+# attestation skill) and their later vouching scales by that record within [record_floor, 1]. Predictions before measuring (lead, confidence 0.55):
+# (1) cluster farming (sybils vouch for one another in 6 distinct clusters, looking independent) leaves sybil confidence below 0.3 and ballot share
+# at most 30% of the unbound baseline; (2) counterexample: without audits (p_audit 0) no record forms and the sybils reach more confidence than with
+# them; (3) Goal pattern, coupled: 36 sybils (harmful candidate on offer, merit -1, sybils vote for it) adopt it in the unbound world in some seed
+# (red baseline: the outcome, not the feature) and under binding the adoption and floors equal the clean world's exactly, harm's peak within 3x clean.
+@timed_testset "Probe: attestation records, cluster farming and identity ballots in the adoption vote (P58)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02,
+                     transactions = true, causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48))
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    bad_pv = copy(bootstrap_params()); bad_pv[6] = 1.9; bad_pv[7] = 1.1; bad_pv[8] = 0.0
+    uw(seed, binding; newc = 12, syb = 12, coupled = false, cand = false, kw...) = run_coupled(econ, gov; seed, epoch = 25, coupled = coupled, m5_decisions = 30,
+        (cand ? (candidate_pv = bad_pv, candidate_track_window = 0, candidate_merit = -1.0) : (;))...,
+        unified = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = newc, sybils = syb, binding = binding; kw...)))
+    last(r) = r.unified.epochs[end].identity
+    uw(1, true)   # warm-up
+    t0 = time()
+    farmed = Bool[]
+    for s in 1:3
+        base, farm, noaudit = last(uw(s, false)), last(uw(s, true; farm_clusters = 6)), last(uw(s, true; p_audit = 0.0))
+        norm = last(uw(s, true))
+        @info "P58 arms (last epoch)" base_vote = base.sybil_vote_share farm_vote = farm.sybil_vote_share farm_conf = farm.sybil_conf noaudit_conf = noaudit.sybil_conf audit_conf = norm.sybil_conf
+        push!(farmed, farm.sybil_conf < 0.3 && farm.sybil_vote_share <= 0.3 * base.sybil_vote_share)
+        @test farm.sybil_conf < 0.4 && farm.sybil_vote_share <= 0.5 * base.sybil_vote_share         # farmed clusters are cut by over half
+        @test noaudit.sybil_conf > norm.sybil_conf                                                    # counterexample: without records the sybils climb higher
+    end
+    @test_broken all(farmed)   # prediction (1) missed in one seed of three (sybil confidence 0.31, ballot share 0.07 against bounds 0.3 and 0.05): not tuned
+    adopt = Bool[]; ok = true
+    for s in 1:3
+        clean, base, bind = uw(s, false; syb = 0, coupled = true, cand = true), uw(s, false; syb = 36, coupled = true, cand = true), uw(s, true; syb = 36, coupled = true, cand = true)
+        append!(adopt, base.adopted_candidate .& .!clean.adopted_candidate)
+        @info "P58 Goal pattern (seed $s)" clean = clean.adopted_candidate base = base.adopted_candidate bind = bind.adopted_candidate floor_u = (clean.success.floor_u, base.success.floor_u, bind.success.floor_u)
+        @test bind.adopted_candidate == clean.adopted_candidate                                       # bound sybils change no decision
+        @test bind.success.floor_u == clean.success.floor_u && bind.success.floor_h == clean.success.floor_h
+        @test bind.success.worst_drop <= 3 * clean.success.worst_drop                                 # harm's peak within 3x clean (one-sided)
+    end
+    @test any(adopt)   # red baseline: unbound, the army gets the harmful candidate adopted in some seed
+    wall = time() - t0
+    @info "P58 wall time (s)" wall
+    @test wall < 60
+end
+
+# The unified world, phase B: fractal governance and economy per emergent cluster (author ruling 8.174; 8.50, 8.150, 8.42.3; P59). Every cluster of
+# the nested hierarchy decides the decisions within its impact (Lean `deciding_scope`) from its own noisy view, spends from a reserve bounded by its
+# parent, and, for a decision whose impact is uncertain, its siblings are offered novelty bonuses (Lean `divergence_weight`: up with uncertainty, down
+# with severity) to try the other option in parallel; outcomes per cluster settle the comparison and everyone converges. Predictions before measuring
+# (lead): (i) divergent sibling trials beat one society-wide choice on welfare when the society's consensus is wrong, paired over seeds, at z = 2
+# and at least 0.05 a decision (0.55); (ii) on a severe decision divergence raises no single being's peak drawdown beyond half a decision's loss
+# (one-sided equivalence, 0.7), with the counterexample (severity slope zero, strong bonus, noisy views) raising it; (iii) a local decision is decided
+# locally and a spilling one escalates, in every seed and decision (0.8); (iv) budgets nest, no cluster spends beyond its reserve, the ledger identity
+# holds in every seed, a raid on a tiny reserve is refused loudly, and splitting clusters cannot farm the bonus beyond the decision's pool (0.8).
+# Not tuned: whatever the numbers say is recorded.
+@timed_testset "Probe: fractal governance and economy per emergent cluster, divergent trials by uncertainty and severity (P59)" begin
+    function levels_of(seed; n = 48)
+        net = build_trust_network(n; seed); W = zeros(n, n); for i in 1:n, j in net.contacts[i]; W[i, j] += 1.0; end
+        [l.labels for l in cluster_levels(cluster_hierarchy(attention_normalise(W)))]
+    end
+    LV = Dict(s => levels_of(s) for s in 1:6)
+    @test all(s -> levels_nested([(labels = l,) for l in LV[s]]), 1:6) && all(s -> length(unique(LV[s][1])) > length(unique(LV[s][end])), 1:6)
+    run_fractal(LV[1], FractalParams(decisions = 6); seed = 1)   # warm-up
+    t0 = time()
+    # Lean rule exposed: monotone in uncertainty, antitone in severity, zero beyond the slope's catastrophe line
+    @test divergence_weight(0.8, 0.1) > divergence_weight(0.4, 0.1) > divergence_weight(0.0, 0.1) == 0.0
+    @test divergence_weight(0.6, 0.1) > divergence_weight(0.6, 0.3) > divergence_weight(0.6, 0.5) == 0.0
+    @test 0 <= divergence_weight(1.0, 0.0) <= 1.0 && divergence_weight(0.6, 0.9) == 0.0
+    # (i) uncertain decision, wrong consensus: parallel trials learn what one choice does not, paired on the same worlds
+    base = FractalParams(decisions = 60, scoped = false)
+    wel(s, div) = run_fractal(LV[s], FractalParams(; (f => getfield(base, f) for f in fieldnames(FractalParams))..., divergent = div); seed = s).welfare / 60
+    d1 = [wel(s, true) - wel(s, false) for s in 1:6]
+    e1 = paired_effect(d1; z = 2.0, direction = :up)
+    @info "P59 (i) welfare per decision, divergent minus single (paired)" d1 = round.(d1; digits = 4) mean = e1.mean se = e1.se z = e1.z
+    @test e1.significant && e1.mean > 0
+    @test_broken e1.mean > 0.05   # the declared smallest effect that matters (a eighth of a decision's welfare scale): MISSED, measured about 0.013
+    # (ii) severe decision: the severity shape stops the experiment; without it (counterexample) the experiment costs a being its peak drawdown
+    sev = FractalParams(decisions = 40, scoped = false, severity = [0.8], bias = [0.0], view_σ = 1.5)
+    with(p; kw...) = FractalParams(; (f => getfield(p, f) for f in fieldnames(FractalParams))..., kw...)
+    peak(s, p) = run_fractal(LV[s], p; seed = s).harm_peak
+    shaped = [peak(s, with(sev; divergent = true)) - peak(s, with(sev; divergent = false)) for s in 1:6]
+    unshaped = [peak(s, with(sev; divergent = true, severity_slope = 0.0, bonus_max = 3.0)) - peak(s, with(sev; divergent = false)) for s in 1:6]
+    @info "P59 (ii) harm peak, divergent minus single" shaped = round.(shaped; digits = 3) unshaped = round.(unshaped; digits = 3)
+    @test equivalent(shaped; margin = 0.4, side = :upper).equivalent
+    @test paired_effect(unshaped; z = 2.0, direction = :up).significant     # counterexample: the same experiment without the severity shape harms
+    # (iii) scope: a local decision is decided locally; a spilling one escalates (structural, every seed and decision)
+    for s in 1:3
+        loc = run_fractal(LV[s], FractalParams(decisions = 30, spill = 0.05); seed = s)
+        @test all(d -> d.level == 1 && d.cluster == (1, loc.levels[1][d.origin]), loc.decisions)
+        spl = run_fractal(LV[s], FractalParams(decisions = 30, spill = 0.6); seed = s)
+        @test all(d -> d.level >= 2 && (d.impact_in_scope >= 0.8 || d.level == length(spl.levels)) && isapprox(d.spillover, 0.6; atol = 1e-9), spl.decisions)
+        @test all(d -> d.cluster == (d.level, spl.levels[d.level][d.origin]), spl.decisions)   # the deciding cluster contains the impact's origin
+    end
+    # (iv) budgets nest; ledger identity; a raid on a small reserve is refused loudly; splitting clusters cannot farm the bonus
+    for s in 1:3
+        r = run_fractal(LV[s], FractalParams(decisions = 40); seed = s)
+        kids = Dict{Any,Float64}(); for (k, pn) in r.parents; kids[pn] = get(kids, pn, 0.0) + r.allocations[k]; end
+        @test all(((pn, tot),) -> tot <= r.allocations[pn] + 1e-9, kids)               # children's allowances sum within the parent's
+        @test sum(values(r.balances)) ≈ r.reserve + r.minted - r.burnt atol = 1e-6      # one currency, one ledger
+        @test minimum(values(r.balances)) >= -1e-9                                     # no cluster spends beyond what it holds
+        tiny = run_fractal(LV[s], FractalParams(decisions = 40, reserve = 2.0, scoped = false); seed = s)
+        @test sum(values(tiny.balances)) ≈ tiny.reserve + tiny.minted - tiny.burnt atol = 1e-6
+        @test minimum(values(tiny.balances)) >= -1e-9
+        @test any(g -> g.mechanism == :novelty_bonus, tiny.degraded)                   # the raid is refused, loudly
+        pool = sum(d.weight * 1.5 * 0.2 * 48 for d in r.decisions)                      # w * bonus_max * severity * members, per decision
+        @test sum(values(r.spent)) <= pool + 1e-6                                      # farming bound: pay per member impacted, however many siblings
+    end
+    fine = [collect(1:48) for _ in 1:1]; fine = [fine[1], ones(Int, 48)]
+    coarse = [repeat(1:12, 4)[1:48], ones(Int, 48)]
+    rf = run_fractal(fine, FractalParams(decisions = 40, scoped = false); seed = 1); rc = run_fractal(coarse, FractalParams(decisions = 40, scoped = false); seed = 1)
+    @test sum(values(rf.spent)) <= sum(d.weight * 1.5 * 0.2 * 48 for d in rf.decisions) + 1e-6 && sum(values(rc.spent)) <= sum(d.weight * 1.5 * 0.2 * 48 for d in rc.decisions) + 1e-6
+    wall = time() - t0
+    @info "P59 wall time (s)" wall
+    @test wall < 20
+end
+
+# 8.177 (P64): the status bar as calibration plus resolution (author, 2026-11-26), replacing 1 - Brier/0.25 as the eligibility test.
+# Red baseline on the earlier rule: an honest forecaster that resolves better than the base rate (0.2 and 0.6 in equal measure, right 20% and 60% of the time,
+# base rate 0.4) scores 1 - Brier/0.25 near 0.2 and is gated out at the bar 0.9 although it is calibrated and informative. Green: it passes the new bar; a
+# confidently wrong forecaster, a climatology-only forecaster (0.4 always) and an overconfident one fail it. The decayed weighting of 8.85 is kept: old
+# records weigh less (a model that was wrong long ago and calibrated now passes). Predictions (lead, 0.8): honest passes, wrong and climatology fail in every seed.
+@timed_testset "Probe: the bar is calibration plus resolution over the base rate; honest 0.4 forecaster no longer gated out (8.177, P64)" begin
+    t0 = time()
+    n, h = 400, 100.0
+    ages = Float64.(n-1:-1:0)
+    elig(f, o; margin = 0.1, bar = 0.9) = begin
+        m = decayed_murphy(f, o, ages, h)
+        old = currency_eligible(decayed_accuracy(f, o, ages, h), n; novel = false, threshold = bar, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55)
+        (old = old, new = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = bar, novel_threshold = 0.75, min_records = 10,
+                                          novel_floor = 0.55, res_margin = margin), m = m)
+    end
+    draw(seed, f) = [rand(Xoshiro(hash((seed, i))), ) < fi ? 1.0 : 0.0 for (i, fi) in enumerate(f)]
+    pass_honest, pass_wrong, pass_clim, pass_over, old_honest = 0, 0, 0, 0, 0
+    seeds = 1:12
+    for s in seeds
+        f_honest = [isodd(i) ? 0.2 : 0.6 for i in 1:n]
+        r = elig(f_honest, draw(s, f_honest)); pass_honest += r.new; old_honest += r.old
+        f_wrong = fill(0.9, n); o_wrong = draw(s, fill(0.1, n)); pass_wrong += elig(f_wrong, o_wrong).new
+        f_clim = fill(0.4, n); pass_clim += elig(f_clim, draw(s, f_clim)).new
+        f_over = [isodd(i) ? 0.05 : 0.95 for i in 1:n]; o_over = draw(s, [isodd(i) ? 0.2 : 0.6 for i in 1:n]); pass_over += elig(f_over, o_over).new
+    end
+    @info "P64 passes over $(length(seeds)) seeds (new rule / old rule for the honest one)" honest = pass_honest honest_old = old_honest wrong = pass_wrong climatology = pass_clim overconfident = pass_over
+    @test old_honest == 0                                    # red outcome on the earlier rule: the honest forecaster is gated out in every seed
+    @test pass_honest == length(seeds)                       # green: calibrated and resolving, it passes
+    @test pass_wrong == 0 && pass_clim == 0 && pass_over == 0
+    # decayed weighting: wrong long ago, calibrated now passes; calibrated long ago, wrong now fails
+    f = [isodd(i) ? 0.2 : 0.6 for i in 1:n]; o = draw(1, f)
+    f_then = vcat(fill(0.9, 200), f[201:end]); o_then = vcat(draw(2, fill(0.1, 200)), o[201:end])
+    m = decayed_murphy(f_then, o_then, ages, 20.0)
+    @test murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    f_now = vcat(f[1:200], fill(0.9, 200)); o_now = vcat(o[1:200], draw(3, fill(0.1, 200)))
+    m = decayed_murphy(f_now, o_now, ages, 20.0)
+    @test !murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    # structural: the decomposition identity (binary outcomes, calibrated bins): Brier = reliability - resolution + uncertainty up to within-bin spread
+    f = rand(Xoshiro(5), n); o = draw(5, f); m = decayed_murphy(f, o, zeros(n), 1.0; bins = 10)
+    @test isapprox(sum((f .- o) .^ 2) / n, m.reliability - m.resolution + m.uncertainty; atol = 0.02)
+    @test m.base_rate ≈ sum(o) / n && m.uncertainty ≈ m.base_rate * (1 - m.base_rate)
+    wall = time() - t0
+    @info "P64 wall time (s)" wall
+    @test wall < 20
+end
+
+# 8.177 (P65): the resolution margin binds per domain: at the rule (fast, this probe) and in the composed world (heavy, probe_heavy3_tests.jl). The world: four domains, dormant economy flags, bar rule :murphy, with an unreachable margin on
+# domain 1 (0.95 of its uncertainty) and a low one on domain 2 (0.05): the unreachable margin holds domains in score-only start (degraded loudly) that calibration alone releases, the others start.
+# Counterexample: with margin 0 (calibration only) fewer domains lag. A domain whose records so far are all successes has no uncertainty to resolve and clears any margin (a rule property). Predictions (lead, 0.7): the economy opens through the other domains; domain 1
+# never leaves score-only; supply flows. Seed 1 (fast; the proportions over seeds are in docs/BACKPROPAGATION 8.177).
+@timed_testset "Probe: the resolution margin binds per domain; a model at the population average gains nothing (8.177, P65)" begin
+    t0 = time()
+    @test all(m -> 0.05 <= m <= 0.45, [v for (k, v) in pairs(RES_MARGIN_DEFAULTS) if k != :uncalibrated])
+    # the margin binds per domain at the rule: the same records clear a low-margin domain and not a high-margin one
+    n = 400; ages = zeros(n); f = [isodd(i) ? 0.2 : 0.6 for i in 1:n]; o = Float64.([rand(Xoshiro(hash((7, i)))) < fi for (i, fi) in enumerate(f)])
+    m = decayed_murphy(f, o, ages, 1e9)
+    clears_at(margin) = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = margin)
+    @test clears_at(RES_MARGIN_DEFAULTS.megaproject_overrun) && clears_at(RES_MARGIN_DEFAULTS.drug_transitions)    # modest-skill domains
+    @test !clears_at(RES_MARGIN_DEFAULTS.materials) && !clears_at(0.95)                                           # a domain whose attainable skill is high needs more resolution
+    @test m.resolution / m.uncertainty > 0.1 && m.resolution / m.uncertainty < 0.45                                # the records' own share of uncertainty resolved sits between them
+    # a model that stays at the population average when a subgroup signal exists is not rewarded (author, 2026-11-26): a technique raises the outcome to 1 for 30% of
+    # units and not for the rest; the population-average forecaster (0.3) is calibrated but has no resolution and fails the margin; the subgroup-aware one passes.
+    n = 400; group = [mod(i, 10) < 3 for i in 1:n]; o = Float64.(group); ages = zeros(n)
+    avg = decayed_murphy(fill(0.3, n), o, ages, 1e9); aware = decayed_murphy([g ? 0.95 : 0.02 for g in group], o, ages, 1e9)
+    clears(m) = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    @test !clears(avg) && avg.resolution == 0 && avg.uncertainty > 0.2
+    @test clears(aware)
+    wall = time() - t0
+    @info "P65 wall time (s)" wall
+    @test wall < 20
+end

@@ -330,6 +330,20 @@ function restraint_balance_flawed(min_audits::Integer, false_n::Integer, true_n:
 end
 
 """
+    restraint_alarm_interval(min_audits, false_n, true_n; ratio = 1.0, z = 1.0) -> Bool
+
+Interval alarm of the justice process (Lean `restraint_alarm_interval_ref`, ruling 8.175 (1)): true once at least
+`min_audits` verdicts are audited and the audited false share's Wilson lower bound at `z` exceeds the bar
+`ratio / (1 + ratio)` (equivalently `ratio * true_n < false_n` and `z^2 * ratio * (false_n + true_n) < (false_n - ratio * true_n)^2`).
+Reads audited outputs only.
+"""
+function restraint_alarm_interval(min_audits::Integer, false_n::Integer, true_n::Integer; ratio::Real = 1.0, z::Real = 1.0)
+    check(min_audits >= 0 && false_n >= 0 && true_n >= 0 && isfinite(ratio) && ratio >= 0 && isfinite(z) && z >= 0, "counts, ratio and z non-negative")
+    ccall(sym(:bf_restraint_alarm_interval), UInt8, (Float64, Float64, Float64, Float64, Float64),
+          Float64(min_audits), Float64(false_n), Float64(true_n), Float64(ratio), Float64(z)) != 0
+end
+
+"""
     panel_voice(vw, uplift, minority) -> weight
 
 Voice of a panel expert (Lean `panel_voice_ref`, `L115`): a minority-cluster expert's weight is raised
@@ -483,6 +497,24 @@ function binding_admits_weighted(confidences, weights, threshold::Real, quorum_w
           floatarray(collect(Float64, confidences)), floatarray(collect(Float64, weights)), threshold, quorum_weight) == 1
 end
 
+"""
+    identity_confidence(start, clusters, weights; rate, disc, participation, part_cap, half) -> Float64
+
+Identity confidence by independent attestation (Lean `identity_confidence_ref`; [P], 8.72, 8.167c): from `start` (0 for an identity
+bound off an entry point) each attestation, in order, from a cluster (`clusters`) with the attester's own confidence (`weights`) adds
+`rate` of the remaining distance to 1, discounted by `disc` per earlier attestation from the same cluster; participation (`participation`
+steps, saturating at `part_cap`, half-way at `half`) amplifies what attestation earned and never replaces it.
+"""
+function identity_confidence(start::Real, clusters, weights; rate::Real, disc::Real, participation::Real, part_cap::Real, half::Real)
+    check(length(clusters) == length(weights), "one weight per attestation")
+    check(all(isfinite, clusters) && all(w -> isfinite(w) && 0 <= w <= 1, weights), "finite clusters, weights in [0, 1]")
+    check(isfinite(start) && 0 <= start < 1 && isfinite(rate) && 0 <= rate < 1 && isfinite(disc) && 0 <= disc <= 1 &&
+          isfinite(participation) && participation >= 0 && isfinite(part_cap) && 0 <= part_cap < 1 && isfinite(half) && half > 0,
+          "start in [0, 1), rate in [0, 1), disc in [0, 1], participation non-negative, part_cap in [0, 1), half positive")
+    ccall(sym(:bf_identity_confidence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64),
+          start, floatarray(collect(Float64, clusters)), floatarray(collect(Float64, weights)), rate, disc, participation, part_cap, half)
+end
+
 "Gauging the freedom range (Lean `gauge_radius_ref`): harm within the radius shrinks it by `factor`, none widens it."
 function gauge_radius(δ::Real, harmed::Bool; factor::Real)
     check(isfinite(δ) && δ > 0 && isfinite(factor) && factor > 1, "radius positive, factor above 1")
@@ -510,6 +542,17 @@ function deciding_scope(shares, within_harm; share_min::Real = 0.8)
     wh = Float64[x ? 1.0 : 0.0 for x in within_harm]
     Int(ccall(sym(:bf_deciding_scope), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
               floatarray(shares), floatarray(wh), Float64(share_min))) + 1
+end
+
+"""
+    divergence_weight(uncertainty, severity; severity_slope = 2.0) -> Float64
+
+The share of the novelty bonus offered to sibling clusters to try a different option on the same decision (8.174, 8.42.3; Lean
+`divergence_weight_ref`): rises with the impact uncertainty in [0, 1], falls with severity, zero once `severity * severity_slope >= 1`.
+"""
+function divergence_weight(uncertainty::Real, severity::Real; severity_slope::Real = 2.0)
+    check(isfinite(uncertainty) && isfinite(severity) && isfinite(severity_slope), "divergence_weight: finite inputs")
+    ccall(sym(:bf_divergence_weight), Float64, (Float64, Float64, Float64), uncertainty, severity, severity_slope)
 end
 
 """

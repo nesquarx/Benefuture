@@ -1,6 +1,6 @@
 # lifeimage-eventgen3 (Life Image eventgen increment 3: breadth across the circle)
 
-Status: IN PROGRESS (code, tests, README, coverage_v1.json done; final full-suite run not yet confirmed green; then mark DONE)
+Status: DONE (both tiers green: fast 1372 passed in 8:21, full 11 passed in 5:31; see progress/lifeimage-eventgen-speed.md)
 
 ## Goal and acceptance checks
 1 domain state machines (work and careers, health and care, time use, leisure and sport, social and civic, harms), each a probe first;
@@ -45,3 +45,6 @@ cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_eventgen_*
 - Red baseline on increment-2 code: coverage 18/247 (7.3%), 0 time-use Params, record==valid for 100% of events, IND married-by-18 0.168 vs 0.223 (z -4.3), 2 assumed targets.
 - Last eventgen-suite run: 129 passed, 5 failed; all five fixed since (duration cap test uses <=1440, old runtime tests rescaled to 150/region, shuffled test now allows the births-outside-marriage statistic to fail the rate head). Full `python3 -m pytest -q` re-run was started, result not read.
 - Resume: cd lifeImage && python3 -m pytest -q  (then fix failures, mark DONE, push).
+
+## Prediction (c) verdict
+(c) full probe with both heads < 60 s: FAILED (69 s alone, single-size probe). Recorded as failed, limit not relaxed; the probe now has a default small size (6-7 s) and `--full` (35 s) with its own prediction (<= 90 s, met). Other predictions: (a) met (~59-66% fields), (b) met, (d) met (0.228 vs 0.223), (e) met (38 time-use kinds).

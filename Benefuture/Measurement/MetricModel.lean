@@ -380,5 +380,84 @@ abbrev As := Assessment
 /-- Correlation score with established markers (CorrSc in L49–50), the model's stated value. -/
 abbrev CorrSc (mm : MetricModel) : Int := mm.correlationScore
 
+/-! ## Per-domain converge gate (author ruling 8.176)
+  The economy's converge gate opens per domain: a domain whose model clears that domain's status bar starts
+  its economy; a domain below its bar stays in score-only start. Mirrors `domain_open_ref`, `economy_open_ref`
+  and `economy_open_all_ref` in the reference. -/
+
+/-- [R] Domain `j` opens when it is active and its model has converged (ruling 8.176). -/
+def domain_open (active converged : List Bool) : List Bool := List.zipWith (· && ·) active converged
+
+/-- [R] The economy starts as soon as any domain is open (ruling 8.176). -/
+def economy_open (opened : List Bool) : Bool := opened.any id
+
+/-- The earlier all-domains conjunction (limiting case): some domain active and every active one converged. -/
+def economy_open_all (active converged : List Bool) : Bool :=
+  active.any id && (List.zipWith (fun a c => !a || c) active converged).all id
+
+/-- THEOREM (counterexample to the earlier rule): with one active domain below its bar the all-domains
+    conjunction never opens the economy, however the others fare (the P63 stall). -/
+theorem all_domains_gate_stalls_on_lagging_domain :
+    economy_open_all [true, true, true, true] [true, true, true, false] = false := by decide
+
+/-- THEOREM (acceptance): the same world opens per domain, the lagging domain stays closed. -/
+theorem per_domain_gate_opens_despite_lagging_domain :
+    domain_open [true, true, true, true] [true, true, true, false] = [true, true, true, false] ∧
+    economy_open (domain_open [true, true, true, true] [true, true, true, false]) = true := by decide
+
+/-- THEOREM (counterexample): an inactive domain never opens, converged or not. -/
+theorem inactive_domain_never_opens : domain_open [false] [true] = [false] := by decide
+
+/-- THEOREM (counterexample): when no domain's model has converged the economy stays in score-only start. -/
+theorem no_converged_domain_stays_closed (active : List Bool) :
+    economy_open (domain_open active (List.replicate active.length false)) = false := by
+  induction active with
+  | nil => rfl
+  | cons a t ih => simpa [domain_open, economy_open, List.replicate, List.zipWith] using ih
+
+/-- THEOREM: with one converged flag per domain, whatever the earlier conjunction opens, the per-domain gate opens
+    too (it never opens later). -/
+theorem per_domain_gate_opens_whenever_all_gate_does (active converged : List Bool)
+    (hlen : converged.length = active.length) :
+    economy_open_all active converged = true → economy_open (domain_open active converged) = true := by
+  induction active generalizing converged with
+  | nil => simp [economy_open_all]
+  | cons a t ih =>
+    cases converged with
+    | nil => simp at hlen
+    | cons c cs =>
+      cases a <;> cases c <;> simp_all [economy_open_all, economy_open, domain_open, List.zipWith, List.any_cons]
+
+/-! ## The status bar as calibration plus resolution (author ruling 8.177)
+  A model clears a domain's bar when its calibration (1 minus the reliability term of the Murphy decomposition of the Brier
+  score, against the uniform bar) is high and its resolution beats the domain's base rate by the domain's margin. Millionths
+  scale; mirrors `murphy_eligible_ref` in the reference (record count aside). -/
+
+/-- [R] Calibration `1 - reliability / 0.25` reaches `bar` and resolution is at least `margin` times the uncertainty. -/
+def murphy_clears (reliability resolution uncertainty bar margin : Int) : Prop :=
+  4 * reliability ≤ 1000000 - bar ∧ margin * uncertainty ≤ resolution * 1000000
+
+instance (r s u b m : Int) : Decidable (murphy_clears r s u b m) := by unfold murphy_clears; infer_instance
+
+/-- THEOREM (acceptance): a calibrated honest forecaster that resolves better than the base rate passes: forecasts of 0.2 and 0.6
+    in equal measure, right 20% and 60% of the time (base rate 0.4, reliability 0, resolution 0.04, uncertainty 0.24), at bar 0.9
+    and margin 0.1. Its 1 - Brier/0.25 is only 0.2, so the earlier rule gated it out. -/
+theorem calibrated_honest_forecaster_passes : murphy_clears 0 40000 240000 900000 100000 := by decide
+
+/-- THEOREM (counterexample): a confidently wrong forecaster fails: 0.9 where the outcome is 0.1 (reliability 0.64). -/
+theorem confidently_wrong_forecaster_fails : ¬ murphy_clears 640000 0 90000 900000 0 := by decide
+
+/-- THEOREM (counterexample): a climatology-only forecaster fails whatever it is calibrated to: resolution 0 never clears a
+    positive margin when the outcome is uncertain. -/
+theorem climatology_only_fails (u bar margin : Int) (hu : 0 < u) (hm : 0 < margin) :
+    ¬ murphy_clears 0 0 u bar margin := by
+  unfold murphy_clears
+  intro ⟨_, h⟩
+  nlinarith
+
+/-- THEOREM: a model that clears the bar is calibrated to it and resolves at least the margin. -/
+theorem murphy_clears_bounds (r s u b m : Int) (h : murphy_clears r s u b m) :
+    4 * r ≤ 1000000 - b ∧ m * u ≤ s * 1000000 := h
+
 end Benefuture.Measurement
 

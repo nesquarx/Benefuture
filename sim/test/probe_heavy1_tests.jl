@@ -325,7 +325,7 @@ end
         (run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30),
          run_coupled(econ, gov; seed, epoch = 25, coupled = false, m5_decisions = 30, unified = UnifiedParams(liar_community = 1)))
     end
-    g = seeds_until_stable(seed -> (o = both(seed); (o[2].success.floor_u + o[2].success.floor_h) - (o[1].success.floor_u + o[1].success.floor_h)); tol = 1.0, min_seeds = 8, max_seeds = 16)
+    g = seeds_until_stable(seed -> (o = both(seed); (o[2].success.floor_u + o[2].success.floor_h) - (o[1].success.floor_u + o[1].success.floor_h)); tol = 1.0, min_seeds = 16, max_seeds = 32)
     @info "P56 Goal pattern difference (unified - coupled alone)" n = g.n stable = g.stable mean = g.mean se = g.se
     @test equivalent(-g.values; margin = 3.0, side = :upper).equivalent
     rec = [both(s)[2].unified.epochs[end].agreement > 0.6 for s in g.seeds]

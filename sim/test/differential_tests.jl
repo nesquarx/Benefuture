@@ -6,6 +6,7 @@
 # tolerance. Test oracles are deliberately independent transcriptions of the Lean docstrings; the
 # simulation itself never computes rules in Julia.
 
+using BenefutureSim, Test, Random, Statistics
 include("test_helpers.jl")   # all_perms (also used by shapley_sampling_tests.jl), so this file runs alone
 
 const HOSTILE = (NaN, Inf, -Inf, -1.0, -1e-9, 0.0, 1e-300, 1.0, 1.5, 1e12)
@@ -41,6 +42,20 @@ end
 fin(xs...) = all(isfinite, xs)
 
 @testset "Differential: Lean exports against independent oracles, through the guards" begin
+    # 8.177: the bar as calibration plus resolution (oracle transcribes the docstring); 8.176: the per-domain converge gate.
+    @test differential(:murphy_eligible, r -> (hostile(r), hostile(r), hostile(r), rand(r, 0:30), rand(r, 0:12), rand(r, Bool), hostile(r), hostile(r), hostile(r), hostile(r)),
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> fin(rel, res, unc, th, nth, nf, rm) && rel >= 0 && res >= 0 && unc >= 0 && 0 <= nf <= 1 && 0 <= rm <= 1,
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> murphy_eligible(rel, res, unc, n; novel = nov, threshold = th, novel_threshold = nth, min_records = m, novel_floor = nf, res_margin = rm),
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> (n >= max(m, 1) && 1.0 - rel / 0.25 >= (nov ? max(nth, nf) : th) && res >= rm * unc) ? 1.0 : 0.0,
+                       ) == (guard = 0, value = 0)
+    let r = Xoshiro(177), bad = 0
+        for _ in 1:300
+            na = rand(r, 1:6); act = rand(r, Bool, na); cv = rand(r, Bool, na)
+            op, eo, ea = domain_gate(act, cv)
+            bad += (op == (act .& cv)) && eo == any(act .& cv) && ea == (any(act) && all(.!act .| cv)) ? 0 : 1
+        end
+        @test bad == 0
+    end
     @test differential(:settlement, r -> (hostile(r), hostile(r)), fin, settlement, (m, u) -> m - u) == (guard = 0, value = 0)
     @test differential(:supply_delta, r -> (hostile(r), hostile(r), hostile(r)), fin, supply_delta,
                        (g, c, h) -> g - c - h) == (guard = 0, value = 0)
@@ -163,6 +178,11 @@ fin(xs...) = all(isfinite, xs)
                        (m, f, t, q) -> fin(q) && q >= 0,
                        (m, f, t, q) -> restraint_balance_flawed(m, f, t; ratio = q),
                        (m, f, t, q) -> m <= f + t && q * t <= f) == (guard = 0, value = 0)
+    @test differential(:restraint_alarm_interval,
+                       r -> (rand(r, 0:20), rand(r, 0:20), rand(r, 0:20), rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r), rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r)),
+                       (m, f, t, q, z) -> fin(q, z) && q >= 0 && z >= 0,
+                       (m, f, t, q, z) -> restraint_alarm_interval(m, f, t; ratio = q, z = z),
+                       (m, f, t, q, z) -> m <= f + t && q * t < f && z^2 * q * (f + t) < (f - q * t)^2) == (guard = 0, value = 0)
     @test differential(:panel_voice,
                        r -> (rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.5),
                        (w, u, m) -> fin(w, u) && w >= 0 && u >= 0,
@@ -209,6 +229,25 @@ fin(xs...) = all(isfinite, xs)
                        (confs, weights, th, qw) -> all(c -> isfinite(c) && 0 <= c <= 1, confs) && all(isfinite, weights) && isfinite(th) && 0 <= th <= 1 && isfinite(qw) && qw >= 0,
                        binding_admits_weighted,
                        (confs, weights, th, qw) -> sum((clamp(w, 0.0, 1.0) for (c, w) in zip(confs, weights) if c >= th); init = 0.0) >= qw) == (guard = 0, value = 0)
+    @test differential(:identity_confidence,
+                       r -> begin
+                           k = rand(r, 0:6)
+                           cl = Float64[rand(r, 1:3) for _ in 1:k]
+                           ws = [rand(r) < 0.05 ? hostile(r) : rand(r) for _ in 1:k]
+                           (rand(r) < 0.05 ? hostile(r) : 0.9 * rand(r), cl, ws, rand(r) < 0.05 ? hostile(r) : 0.99 * rand(r), rand(r) < 0.05 ? hostile(r) : rand(r),
+                            rand(r) < 0.05 ? hostile(r) : 50.0 * rand(r), rand(r) < 0.05 ? hostile(r) : 0.99 * rand(r), rand(r) < 0.05 ? hostile(r) : 1 + 20 * rand(r))
+                       end,
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> all(isfinite, (s0, rt, ds, pp, pc, hf)) && all(isfinite, ws) && all(w -> 0 <= w <= 1, ws) &&
+                           0 <= s0 < 1 && 0 <= rt < 1 && 0 <= ds <= 1 && pp >= 0 && 0 <= pc < 1 && hf > 0,
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> identity_confidence(s0, cl, ws; rate = rt, disc = ds, participation = pp, part_cap = pc, half = hf),
+                       (s0, cl, ws, rt, ds, pp, pc, hf) -> begin
+                           c = s0
+                           for i in eachindex(cl)
+                               kk = count(==(cl[i]), cl[1:(i - 1)])
+                               c += (1 - c) * rt * (clamp(ws[i], 0, 1) * ds^kk)
+                           end
+                           c + (1 - c) * (pc * pp / (pp + hf)) * c
+                       end) == (guard = 0, value = 0)
     @test differential(:deciding_scope,
                        r -> begin
                            n = rand(r, 1:6)

@@ -12,7 +12,7 @@ end
 # Needs BenefutureSim, `legacy.jl` (LEGACY) loaded. Returns the trace and the outcome measures.
 const RESTRAINT_JUDGES = [0.3, 0.5, 0.8, 0.5, 0.4, 0.6, 0.7, 0.5]   # evidence-reading noise per expert (skills vary)
 function restraint_world(seed::Int; audit = true, kappa = 1.0, acc = 0.9, bias = Float64[], cluster = Int[], accuse = 0.03,
-                         excess = Float64[], challenge = 0.0, budget = 1, cap = 2, panel = 5, judges = RESTRAINT_JUDGES, acq = false, acq_rate = 0.25)
+                         excess = Float64[], challenge = 0.0, budget = 1, cap = 2, panel = 5, judges = RESTRAINT_JUDGES, acq = false, acq_rate = 0.25, alarm_z = 1.0, alarm_min = 0)
     agr = vcat([DomainAgent([0.7, 0.6], [0.7, 0.3], 0.0)], [DomainAgent([0.6, 0.6], [0.5, 0.5], 0.0) for _ in 1:3])
     p = M3cParams(ToyParams(n = 30, steps = 80, plans = 6), agr, [1, 1], trues(2);
                   λpos = 0.05, λneg = 0.02, transactions = true, causal_distribution = true,
@@ -23,9 +23,26 @@ function restraint_world(seed::Int; audit = true, kappa = 1.0, acc = 0.9, bias =
                   judges = judges, judge_bias = bias, judge_cluster = cluster, panel_size = panel, false_accusation_rate = accuse,
                   enforcer_excess = excess, restraint_challenge = challenge, restraint_recursion_budget = budget,
                   restraint_audit = audit, restraint_kappa = kappa, restraint_audit_acc = acc, restraint_audit_cap = cap,
-                  acquittal_audit = acq, acquittal_audit_rate = acq_rate)
+                  acquittal_audit = acq, acquittal_audit_rate = acq_rate, restraint_alarm_z = alarm_z, restraint_alarm_min = alarm_min)
     tr = run_m3c(p; seed = seed)
     (tr = tr, false_eff = Float64(tr.false_restraints_effective), true_eff = Float64(tr.justified_restraints_effective),
      just_rate = tr.justified_restraints_effective / max(1, tr.justified_restraints + tr.restraint_missed),
      ratio = tr.false_restraints_effective / max(1, tr.justified_restraints_effective))
+end
+
+
+# The composed world of P63 (8.176): 48 agents on four domains, dormant economy flags on; `layers` adds the identity and fractal layers.
+function composed_gate_world(seed; layers = false, steps = 75, kw...)
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    on = true
+    econ = M3cParams(ToyParams(n = 30, steps = steps, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+        causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48), overflow_base = 10.0,
+        budget = on, endowment = 20.0, capacity = 300.0, regen = 0.05, cost_per_touch = 0.05, ra_rate = 0.2, ra_horizon = 5.0,
+        ra_domain = on, ra_alloc_weight = 1.0, ra_reserve_horizon = 12.0, ra_spend_contract = on, converge_init = on, legacy_funder = on,
+        responsibility_reading = on, repair_credit = on, accolade_counterfactual = on, proposal_pma = on, proposal_eta = 2, proposal_confidence = 1.5, LEGACY..., kw...)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    run_coupled(econ, gov; seed = seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30,
+        unified = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 6, sybils = 12, binding = true), economy = true, fractal = FractalParams()) :
+                           UnifiedParams(liar_community = 1))
 end

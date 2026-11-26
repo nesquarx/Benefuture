@@ -751,6 +751,41 @@ reflexive, strategic human institutions (institution-produced).
    climatology or likelihood ratio test, preventing trivial constant-prediction models from falsely
    claiming high accuracy status bars.
 
+### 8.5 Per-domain resolution margins (author ruling 8.177, 2026-11-26)
+
+The status bar is no longer 1 - Brier. A model clears a domain's bar when (a) its calibration (1 minus the reliability term of the Murphy
+decomposition of its Brier score, over the decayed record) reaches the uniform governed bar (default 0.9), and (b) its resolution beats the
+domain's base rate by the domain's own margin: resolution at least `margin` times the domain's outcome uncertainty (a Brier-skill-style share).
+Reason: 1 - Brier caps a perfectly calibrated forecaster at 1 - p(1 - p) (an honest 0.4 scores 0.76 on the unit scale, 0.04 on the 0.25 scale used
+by `credence_accuracy`), so a marginal domain can sit below 0.9 because its outcomes are uncertain, not because its model is bad (8.176: the 0.81
+domain had base rate 0.889, reliability 0.071, resolution 0.0275: perfectly calibrated at that resolution it would still reach only 0.72).
+
+Default margin = half the best published skill over climatology (Brier skill score where a Brier pair is given in 8.2, otherwise R^2), to the nearest 0.05, floored
+at 0.05 so a climatology-only forecaster never clears. Half, not all, because the bar is an entry requirement and rises with refinement (8.84); the
+severity and uncertainty of a domain's impact (8.172) may raise it per domain, a [P] adjustment with no source, not applied in the defaults.
+Confidence is that of the family's entry in 8.2 and, for the conversion, low to medium (a Brier pair gives a skill score directly; R^2 is a
+different baseline, the mean, not climatology). `RES_MARGIN_DEFAULTS` (`sim/src/domains.jl`) holds the table.
+
+| Domain family (8.2) | Published skill used | Margin | Confidence |
+|---|---|---|---|
+| 1 short-range NWP | Brier 0.06-0.09 vs climatology 0.18 (skill 0.58) | 0.30 | medium-high |
+| 2 medium-range and ENSO | ENSO r = 0.80, ACC 0.78 (skill about 0.6; no Brier pair) | 0.30 | low (uncalibrated: conversion) |
+| 3 materials | R^2 0.92 | 0.45 | medium |
+| 4 semiconductor yield | R^2 0.94 | 0.45 | medium |
+| 5 actuarial mortality | R^2 above 0.95 | 0.45 (capped) | medium |
+| 6 ICU deterioration | Brier 0.08 vs 0.11 (skill 0.27) | 0.15 | medium |
+| 7 oncology survival | Brier 0.15 vs 0.22 (skill 0.32) | 0.15 | medium |
+| 8 drug transitions | Brier 0.17 vs 0.21 (skill 0.19) | 0.10 | medium |
+| 9 crop yield | R^2 0.82 vs trend 0.50 (skill over trend 0.64) | 0.30 | medium |
+| 10 megaproject overruns | Brier 0.18 vs unconditional 0.18 (skill about 0) | 0.05 (floor) | medium |
+| 11 software estimation | AUC 0.80, no Brier pair | 0.10 fallback | uncalibrated |
+| 12 macroeconomic | GDP R^2 0.20-0.35; recession skill about 0 | 0.10 | low |
+| 13 corporate credit default | AUC 0.92; Brier pair inconsistent with the stated prevalence | 0.10 fallback | uncalibrated |
+| 14 geopolitical | Brier skill 0.30-0.40 | 0.20 | high |
+| 15 electoral | Brier 0.08 vs 0.14 (skill 0.43) | 0.20 | medium-high |
+
+The calibration bar stays uniform (0.9 fallback; clusters may raise a domain's, 8.84). Where no source exists the fallback 0.10 stands and is marked uncalibrated.
+
 ---
 
 ## 9. Status-quo institutions (R6)

@@ -183,6 +183,23 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_relative_bar] def relativeBar (established coarse alternative : Float) : Float :=
   relative_bar_ref established coarse alternative
 
+@[export bf_decayed_murphy] def decayedMurphy (credences outcomes ages : FloatArray) (h : Float) (bins : USize) : FloatArray :=
+  ⟨decayed_murphy_ref credences.data outcomes.data ages.data h bins.toNat⟩
+
+@[export bf_murphy_eligible] def murphyEligible (reliability resolution uncertainty records minRecords : Float) (novel : UInt8)
+    (threshold novelThreshold novelFloor resMargin : Float) : UInt8 :=
+  if murphy_eligible_ref reliability resolution uncertainty records minRecords (novel == 1) threshold novelThreshold novelFloor resMargin then 1 else 0
+
+/-- Per-domain converge gate (8.176): flags travel as 0/1 floats. -/
+@[export bf_domain_open] def domainOpen (active converged : FloatArray) : FloatArray :=
+  ⟨(domain_open_ref (active.data.map (· != 0.0)) (converged.data.map (· != 0.0))).map fun b => if b then 1.0 else 0.0⟩
+
+@[export bf_economy_open] def economyOpen (opened : FloatArray) : UInt8 :=
+  if economy_open_ref (opened.data.map (· != 0.0)) then 1 else 0
+
+@[export bf_economy_open_all] def economyOpenAll (active converged : FloatArray) : UInt8 :=
+  if economy_open_all_ref (active.data.map (· != 0.0)) (converged.data.map (· != 0.0)) then 1 else 0
+
 @[export bf_cc_share] def ccShare (part sideTotal : Float) : Float := cc_share_ref part sideTotal
 
 @[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=
@@ -346,6 +363,9 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_binding_admits_weighted] def bindingAdmitsWeighted (confidences weights : FloatArray) (threshold quorumWeight : Float) : UInt8 :=
   if binding_admits_weighted_ref confidences.data weights.data threshold quorumWeight then 1 else 0
 
+@[export bf_identity_confidence] def identityConfidence (start : Float) (clusters weights : FloatArray) (rate disc participation partCap half : Float) : Float :=
+  identity_confidence_ref start clusters.data weights.data rate disc participation partCap half
+
 @[export bf_class_balanced_skill] def classBalancedSkill (credences outcomes : FloatArray) : Float :=
   class_balanced_skill_ref credences.data outcomes.data
 
@@ -486,6 +506,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 -- 8.170 / L115, L117: restraint-balance alarm over audited findings; minority uplift of panel voices
 @[export bf_restraint_balance_flawed] def restraintBalanceFlawed (minAudits falseN trueN ratio : Float) : UInt8 :=
   if restraint_balance_flawed_ref minAudits.toUInt64.toNat falseN.toUInt64.toNat trueN.toUInt64.toNat ratio then 1 else 0
+@[export bf_restraint_alarm_interval] def restraintAlarmInterval (minAudits falseN trueN ratio z : Float) : UInt8 :=
+  if restraint_alarm_interval_ref minAudits.toUInt64.toNat falseN.toUInt64.toNat trueN.toUInt64.toNat ratio z then 1 else 0
 
 @[export bf_panel_voice] def panelVoice (vw uplift : Float) (minority : UInt8) : Float :=
   panel_voice_ref vw uplift (minority != 0)
@@ -510,6 +532,10 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_deciding_scope] def decidingScope
     (shares withinHarm : FloatArray) (shareMin : Float) : UInt64 :=
   (deciding_scope_ref shares.data withinHarm.data shareMin).toUInt64
+
+-- 8.174 / 8.42.3: divergence weight of novelty-bonused parallel trials
+@[export bf_divergence_weight] def divergenceWeight (u s c : Float) : Float :=
+  divergence_weight_ref u s c
 
 -- M8 (`7.12`, `7.14`, `B25`): extended-self feedback, multi-hop influence liability, end-of-horizon score
 @[export bf_extended_self_feedback] def extendedSelfFeedback

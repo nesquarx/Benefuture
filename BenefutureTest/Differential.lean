@@ -347,6 +347,14 @@ theorem decidingScopeQ_spec (scopes : List (ℚ × Bool)) (shareMin : ℚ) :
         (scopes.map (fun sw => ((sw.1 : ℝ), sw.2))) (shareMin : ℝ) :=
   decidingScopeFromQ_spec 0 scopes shareMin
 
+def divergenceWeightQ (u s c : ℚ) : ℚ := u * max 0 (1 - s * c)
+
+theorem divergenceWeightQ_spec (u s c : ℚ) :
+    (divergenceWeightQ u s c : ℝ) = Benefuture.Systems.divergence_weight (u : ℝ) (s : ℝ) (c : ℝ) := by
+  unfold divergenceWeightQ Benefuture.Systems.divergence_weight
+  push_cast
+  rfl
+
 def extendedSelfFeedbackQ : List ℚ → List ℚ → ℚ
   | c :: cs, d :: ds => max 0 (min 1 c) * d + extendedSelfFeedbackQ cs ds
   | _, _ => 0
@@ -1173,6 +1181,14 @@ def runAll : IO Unit := do
     let f := deciding_scope_ref (Array.mk (shares.map ratToFloat)) (Array.mk withinF) (ratToFloat m)
     let q := decidingScopeQ (shares.zip within) m
     (f == q, g)
+  checkAll "divergence_weight" 400 41 fun g =>
+    let (u0, g) := g.below 17
+    let (s0, g) := g.below 25
+    let (c0, g) := g.below 9
+    let u : ℚ := (u0 : ℚ) / 16
+    let s : ℚ := (s0 : ℚ) / 16
+    let c : ℚ := (c0 : ℚ) / 4
+    (divergence_weight_ref (ratToFloat u) (ratToFloat s) (ratToFloat c) == ratToFloat (divergenceWeightQ u s c), g)
   checkAll "extended_self_feedback" 400 28 fun g =>
     let (c0, g) := g.below 33
     let (c1, g) := g.below 33

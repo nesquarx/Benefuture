@@ -90,6 +90,14 @@ def credence_restraint_liability_ref (conf kappa cost : Float) : Float :=
 def restraint_balance_flawed_ref (minAudits falseN trueN : Nat) (ratio : Float) : Bool :=
   minAudits ≤ falseN + trueN && ratio * trueN.toFloat ≤ falseN.toFloat
 
+/-- Interval alarm (ruling 8.175 (1)): at least `minAudits` verdicts audited, `ratio * trueN < falseN`
+    and `z^2 * ratio * (falseN + trueN) < (falseN - ratio * trueN)^2` (the Wilson lower bound of the false
+    share exceeds the bar `ratio / (1 + ratio)` at `z`). Matches `restraint_alarm_interval`. -/
+def restraint_alarm_interval_ref (minAudits falseN trueN : Nat) (ratio z : Float) : Bool :=
+  let f := falseN.toFloat
+  let t := trueN.toFloat
+  minAudits ≤ falseN + trueN && ratio * t < f && z * z * ratio * (f + t) < (f - ratio * t) * (f - ratio * t)
+
 /-- Voice of a panel expert (`L115`): minority clusters get the weight raised by `uplift`, never
     lowered. Matches `panel_voice`. -/
 def panel_voice_ref (vw uplift : Float) (minority : Bool) : Float :=
