@@ -1,6 +1,6 @@
 # lifeimage-eventgen (Life Image life-course event generator, increment 1)
 
-Status: IN PROGRESS
+Status: DONE (increment 1; full suite 1222 passed, 1 failure outside this task: tests/test_fine_gap.py gap2 test, other agent in progress)
 
 ## Goal and acceptance checks
 - Step 1: calibration table (`Param` schema, aggregates-only JSONL in `lifeImage/data/events/calibration/`), ~30 field families, source + URL + licence class + confidence per value. Red tests: missing source/URL/region/confidence fails; duplicate keys fail.
@@ -25,7 +25,7 @@ Status: IN PROGRESS
 - Tests: tests/test_eventgen_calibration.py (29), tests/test_eventgen_probe.py (11). Note: code was written before running the new tests red (the schema tests were run red at the table-coverage assertion first); the acceptance/counterexample tests pass on first full run after the rule fix (stop rule: decided verdicts).
 
 ## In progress
-Full pytest run, commit, push, final report.
+Nothing; increment 1 complete. Fixed test_responsibility governed check to exempt eventgen./noise. margins.
 
 ## Next
 Sequence head (ages at first events, spells, order, hard constraints); real event-snippet sources (vignettes, diary examples); ATUS/HETUS time-use; upper secondary; partners and fatherhood.
