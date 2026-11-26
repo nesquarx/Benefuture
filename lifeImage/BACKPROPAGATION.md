@@ -105,6 +105,10 @@ deleted. Numbering is stable (LI.n).
   figures). The outcome is a dataset and generator that produce realistic events as text or preformatted records, covering
   essentially any part of the circle and re-targetable as domains are refined; generator and verifier are trained
   adversarially, the verifier judging real-world-ness against calibration sources. PLAN.
+- **LI.63** (2026-11-26; author, scopes LI.61, LI.62) Life Image (basemap and library) is non-commercial, as is all of
+  Benefuture. Event sources serve only as base data and verification for the non-ML visualisations: no model training and no
+  ingestion of their rows. Non-commercial terms therefore permit their use; sources whose terms bar AI tools or training feed
+  only statistics computed by code (no agent reads their rows). EVENT_SOURCE_SCOUT, PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels

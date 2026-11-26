@@ -1,3 +1,5 @@
+> **Author ruling LI.63 (2026-11-26):** Life Image and Benefuture are non-commercial; these sources are base data and verification for non-ML visualisations only (no model training, no ingestion of rows). Non-commercial terms are usable; sources barring AI tools or training feed only code-computed statistics. The verifier's text discriminator and the generator's style cards therefore use no rows from those sources.
+
 # Event source scout: datasets and models for large synthetic life-course event sets
 
 Scouted 2026-11-25 (Life Image, branch `claude/inspiring-cannon-uxvdxq`). Scout only: nothing was downloaded into the repository, no LLM runner batches were used.
