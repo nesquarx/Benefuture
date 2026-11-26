@@ -1,6 +1,6 @@
 # lifeimage-eventgen2 (Life Image eventgen increment 2: relational events, partners/deaths, sequence head)
 
-Status: IN PROGRESS
+Status: DONE (full suite 1286 passed, 1 xfailed)
 
 ## Goal and acceptance checks
 A relational events (LI.65): layers A (4 memberships, partition of unity), B (participant records, responsibility by freedom, impacts, acting_for/under_agreement/informed), D (part_of, causes, re_description, concurrent), LI.42 metadata (valid/record time, place/span, counterfactual on outcomes); calibration event snippets get a relational form.
@@ -34,7 +34,7 @@ Acceptance: `cd lifeImage && python3 -m pytest -q` green; probe one command.
 Findings: premarital-first-birth share depends strongly on region through marriage age (FRA 0.47, KEN 0.24, IND 0.11), so the single assumed target is judged only where women marry before 25; world-level fallback Params are no valid soft targets (FRA married-by-18 world value 19% vs 1%): such statistics are left unjudged, recorded as degraded.
 
 ## In progress
-final full-suite run, commit and push, mark DONE.
+nothing; increment 2 complete.
 
 ## Next
 Real premarital/nonmarital birth data (OECD SF2.4, DHS); marriage-age distribution with a heavier early tail (IND); spells and event-history comparison; registration-lag noise (record time); spouse death and remarriage; upper secondary; work events (employer role).
