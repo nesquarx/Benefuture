@@ -1,4 +1,4 @@
-# lifeimage-event-scout (IN PROGRESS)
+# lifeimage-event-scout (DONE)
 Goal: lifeImage/data/events/EVENT_SOURCE_SCOUT.md - scout of datasets/models for large realistic synthetic life-course event sets (SHIP/CALIBRATION/EXCLUDED), synthesis, architecture, first 3 steps. Nothing downloaded.
 RULING LI.61 (author, relayed): event-generation datasets are never shipped; all internal calibration. Classes now: USABLE (terms allow internal research use: open/registration/DUA we could sign), COSTLY (institutional agreement/enclave; say what it takes), EXCLUDED (terms forbid). Panels/sequences first-class. Metric: fields reachable from usable, and from usable+costly.
 DIRECTION (author, relayed): global + multilingual, not US/UK-centric. Per source: countries/regions, languages, multilingual questionnaires? Synthesis: region x life-stage table, languages table, weakest regions. Regions: SSA, MENA, South Asia, East Asia&Pacific, Latin America, Europe&Central Asia, North America. Multilingual: Wikidata labels, ESCO 28 langs, event-text corpora for categorisation tests.
@@ -12,3 +12,6 @@ Done: read CLAUDE.md, LI.17/19/54/56/57, generator shape.
 Next: web-verify licences (Synthea, CDC milestones, NHANES/NCES/ACS/BLS/O*NET public domain; ONS OGL; OECD; World Bank; IPUMS; MTUS; Wikidata; DHS; NCVS), write doc, commit, push.
 Resume: git pull; read this note; write lifeImage/data/events/EVENT_SOURCE_SCOUT.md
 Files: lifeImage/data/events/EVENT_SOURCE_SCOUT.md, this note.
+UPDATE: social-media direction + GAN outcome goal (author) received; registry written at scratchpad src.py (77+ sources); field-coverage macro mapping gives upper bound 95%; sample audit of 30 fields (seed 61): 21 direct, 8 partial, 1 none (70%/97%). Next: generate doc from src.py (script build.py in scratchpad), commit, push, mark DONE.
+
+DONE 2026-11-26: EVENT_SOURCE_SCOUT.md written (80 sources: 68 usable, 10 costly, 2 excluded; sections 0-8 incl. social media, GAN architecture, first 3 steps, prediction judged). Source registry script lives in scratchpad only; doc is the artefact. Resume: nothing pending beyond author terms pass.
