@@ -20,16 +20,18 @@ Status: IN PROGRESS
 - Probe regions default KEN, IND, FRA (FRA absent from the table: degrades to World Bank region / world). Head targets are the nested effective shares (clips recorded as degraded).
 
 ## Done
-(none yet)
+- Calibration: `lifeimage/eventgen/calibration.py`, `tools/eventgen_fetch.py`, `data/events/calibration/{aggregates_v1.jsonl,regions.json,public_figures.txt,README.md}`: 37 field families, 8 strata kinds, WB/WPP/ILOSTAT/Eurostat, source statements + event snippets with timescales.
+- Probe world `world.py`, rows `events.py`, rate head `rates.py`, `probe.py`, governed `governed.py` (merged into lifeimage/governed.py), README in package.
+- Tests: tests/test_eventgen_calibration.py (29), tests/test_eventgen_probe.py (11). Note: code was written before running the new tests red (the schema tests were run red at the table-coverage assertion first); the acceptance/counterexample tests pass on first full run after the rule fix (stop rule: decided verdicts).
 
 ## In progress
-Fetching aggregates.
+Full pytest run, commit, push, final report.
 
 ## Next
-Schema + red tests, fetch tool, table, probe, rate head, docs (governed + parsimony), README of package.
+Sequence head (ages at first events, spells, order, hard constraints); real event-snippet sources (vignettes, diary examples); ATUS/HETUS time-use; upper secondary; partners and fatherhood.
 
 ## Files touched
-progress/lifeimage-eventgen.md
+progress/lifeimage-eventgen.md; lifeImage/lifeimage/eventgen/*; lifeImage/lifeimage/governed.py (appended merge block); lifeImage/pyproject.toml (package list); lifeImage/tools/eventgen_fetch.py; lifeImage/data/events/calibration/*; lifeImage/tests/test_eventgen_*.py
 
 ## Resume
-cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_eventgen*.py
+cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_eventgen_calibration.py tests/test_eventgen_probe.py && python3 -m lifeimage.eventgen.probe
