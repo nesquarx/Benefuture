@@ -109,6 +109,10 @@ deleted. Numbering is stable (LI.n).
   Benefuture. Event sources serve only as base data and verification for the non-ML visualisations: no model training and no
   ingestion of their rows. Non-commercial terms therefore permit their use; sources whose terms bar AI tools or training feed
   only statistics computed by code (no agent reads their rows). EVENT_SOURCE_SCOUT, PLAN.
+- **LI.64** (2026-11-26; author, refines LI.61) Every event distribution or rate the generator uses keeps a sanitized
+  snippet of the source statement that gives it (the sentence, table row with headers, or indicator definition), with its
+  locator and retrieval date, for later recalibration and re-verification. No identities, no individual records, quotation
+  length only. PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
