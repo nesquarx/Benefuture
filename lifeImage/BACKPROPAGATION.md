@@ -223,3 +223,15 @@ Each moves to `docs/BACKPROPAGATION.md` when confirmed by the work or the author
 - **BP.15** Outcome measured against the predicted counterfactual credits prevention. RELATIONS.
 - **BP.16** L96 `Responsibility(Informed, Counterfactual, Severity, Duty)` needs a freedom term (alternatives
   available), from LI.40. RELATIONS.
+
+### Eventgen increment 3 findings (proposals, for the author's review; not rulings)
+- **P.EG3.1** Time-use and labour-force sources disagree where a person's day at work is concerned: India's 2019 time-use survey reports more men aged 15-29 working on a diary day than the
+  ILO modelled labour-force curve has employed (any work activity counts in a diary, a week's reference in a labour-force survey). The generator ties diary work to the career and caps it at the
+  share employed, recorded as degraded; a cross-source reconciliation (own-account and unpaid family work) belongs in `docs/CALIBRATION`-style notes for the event sources.
+- **P.EG3.2** No retrievable source gives the share of first births before first marriage (OECD SF2.4 and DHS STATcompiler returned no usable indicator; Eurostat `demo_fagec` gives births
+  by the mother's legal marital status). The assumed target was removed; the sourced births-outside-marriage share replaces it and calibrates the relative hazard of unmarried women
+  per region. Candidate for a later increment: DHS marital-status and birth-history aggregates when reachable.
+- **P.EG3.3** A single normal marriage-age spread cannot give both the singulate mean age and the share married by 18 (India: 16.8% against 22.3%); the early-component mixture solved
+  from the stratum's own share fixes it (22.8%). Candidate home: RELATIONS (event model notes) and the corpus's marriage-age statistics.
+- **P.EG3.4** Field pairs co-occur inside one event only (2.1% of the 30381 pairs at 2000 x 3): LI.60's co-membership overlap list will be sparse for most pairs. Composite events
+  (a trip that includes shopping and a meal; a workday with its commute, already linked part_of) and life-level co-membership (fields touched in the same person-year) are candidates.

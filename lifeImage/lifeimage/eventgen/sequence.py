@@ -121,7 +121,7 @@ def _domains(by, evs, pid, flag, sex):
     inside a marriage."""
     minwork, minoff, minret = governed("eventgen.min_working_age"), governed("eventgen.min_offending_age"), governed("eventgen.retirement_min_age")
     starts = [e for e in evs if e["kind"] in ("industry_work_start", "service_work_start", "farm_work_start", "self_employment_start")]
-    jobs = sorted(starts + by.get("job_change", []) + by.get("reemployment", []) + by.get("job_loss", []) + by.get("retirement", []), key=lambda e: e["valid_time"])
+    jobs = sorted(starts + by.get("job_search_start", []) + by.get("job_change", []) + by.get("reemployment", []) + by.get("job_loss", []) + by.get("retirement", []), key=lambda e: e["valid_time"])
     for e in jobs:
         if age_of(e) < minwork - TOL:
             flag("work_before_minimum_age", pid, f"{e['kind']} at {age_of(e):.1f}")

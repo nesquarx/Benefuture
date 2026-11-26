@@ -15,7 +15,7 @@ from lifeimage.generators.common import seed_ids
 
 REGIONS = ("KEN", "IND", "FRA")
 RM = cal.load_regions()
-KNOWN_SOFT_FLAG = ("seq.share_married_by_18", "20-24", "f", "IND")   # the normal marriage-age model (sd 4) puts 17% of Indian women married by 18, the table says 22%
+MARRIED_BY_18_IND = ("seq.share_married_by_18", "20-24", "f", "IND")   # one normal spread put 17% of Indian women married by 18 against the table's 22%; the early component fixes it
 
 
 def table():
@@ -80,16 +80,16 @@ def test_true_generator_has_zero_hard_violations_on_every_seed_and_passes_soft_c
     rep = head(seeds=16)
     assert rep["hard_failing_seeds"] == 0 and rep["hard_codes"] == {}
     failing = [r["key"] for r in rep["soft"] if r["status"] == "fail"]
-    assert set(failing) <= {KNOWN_SOFT_FLAG}, [r for r in rep["soft"] if r["status"] == "fail"]
+    assert not failing, [r for r in rep["soft"] if r["status"] == "fail"]
     calibrated = [r for r in rep["soft"] if r["calibration"] == "param" and r["status"] == "pass"]
     assert len(calibrated) >= 3 and rep["calibrated_passing"] >= 3
     assert {r["key"][0] for r in calibrated} >= {"seq.mean_age_first_marriage", "seq.mean_age_childbearing", "seq.median_age_primary_completion"}
 
 
-def test_the_known_soft_flag_is_a_real_miss_within_detectable_effect():
+def test_the_early_marriage_tail_removes_the_india_miss():
     rep = head(seeds=16)
-    r = next(x for x in rep["soft"] if x["key"] == KNOWN_SOFT_FLAG)
-    assert r["status"] == "fail" and r["z"] <= -2 and r["effect"] < -r["margin"]
+    r = next(x for x in rep["soft"] if x["key"] == MARRIED_BY_18_IND)
+    assert r["status"] == "pass" and abs(r["effect"]) < r["margin"]
 
 
 def test_soft_checks_use_only_the_regions_own_stratum_and_say_so():
@@ -97,10 +97,10 @@ def test_soft_checks_use_only_the_regions_own_stratum_and_say_so():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         tg = soft_targets(t, REGIONS, RM)
-    assert not any(k[3] == "FRA" and k[0] != "seq.median_age_primary_completion" for k in tg)   # FRA has only world-level or default values
+    assert {k[0] for k in tg if k[3] == "FRA"} <= {"seq.median_age_primary_completion", "seq.births_outside_marriage_share"}   # FRA has only world-level or default values, and its region's births outside marriage
     assert any(d["substitute"] == "statistic unjudged" and d["region"] == "FRA" for d in t.degraded)
-    assert ("seq.premarital_first_birth_share", "all", "f", "KEN") in tg and ("seq.premarital_first_birth_share", "all", "f", "FRA") not in tg
-    assert {v[1] for v in tg.values()} == {"param", "derived", "assumed"}
+    assert ("seq.births_outside_marriage_share", "all", "f", "FRA") in tg and ("seq.births_outside_marriage_share", "all", "f", "KEN") not in tg
+    assert {v[1] for v in tg.values()} == {"param", "derived"}
 
 
 def test_descriptive_median_and_iqr_of_first_events_are_reported():
@@ -116,8 +116,8 @@ def test_descriptive_median_and_iqr_of_first_events_are_reported():
 def test_shuffled_order_passes_the_rate_head_and_fails_the_sequence_head():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        rates = rate_head(table(), lambda s: shuffled(World(table(), REGIONS, 1500, s, region_map=RM), s), REGIONS, RM)
-        base = rate_head(table(), lambda s: World(table(), REGIONS, 1500, s, region_map=RM), REGIONS, RM)
+        rates = rate_head(table(), lambda s: shuffled(World(table(), REGIONS, 1500, s, region_map=RM, domains=False), s), REGIONS, RM, domains=False)
+        base = rate_head(table(), lambda s: World(table(), REGIONS, 1500, s, region_map=RM, domains=False), REGIONS, RM, domains=False)
     assert rates["summary"]["fail"] == 0 and base["summary"]["fail"] == 0              # the rate head cannot tell the shuffled generator apart
     assert rates["summary"]["inconclusive"] <= 3
     rep = head("shuffled", seeds=20)
@@ -128,7 +128,7 @@ def test_shuffled_order_passes_the_rate_head_and_fails_the_sequence_head():
 def test_births_ignoring_marriage_are_flagged_softly_not_as_a_hard_failure():
     base, bad = head(seeds=12), head(seeds=12, noise=IGNORES_MARRIAGE)
     assert bad["hard_failing_seeds"] == 0 and bad["hard_codes"] == {}                   # coherent lives: no hard rule is broken
-    key = lambda r: r["key"][0] == "seq.premarital_first_birth_share" and r["key"][3] in ("KEN", "IND")   # noqa: E731
+    key = lambda r: r["key"][0] == "seq.births_outside_marriage_share" and r["key"][3] == "FRA"   # noqa: E731
     for r in filter(key, bad["soft"]):
         assert r["status"] == "fail" and r["z"] >= 2 and r["effect"] > r["margin"]
     for r in filter(key, base["soft"]):
@@ -139,14 +139,14 @@ def test_births_ignoring_marriage_are_flagged_softly_not_as_a_hard_failure():
         for s in range(1, 9):
             out.append(soft_statistics(life_records(mk(s)), REGIONS)[k])
         return out
-    k = ("seq.premarital_first_birth_share", "all", "f", "KEN")
+    k = ("seq.births_outside_marriage_share", "all", "f", "FRA")
     m, se, z = paired_effect(series(make(500, noise=IGNORES_MARRIAGE), k), series(make(500), k))
-    assert m > 0.15 and z >= 2
+    assert m > 0.10 and z >= 2
 
 
 def test_marginal_asfr_is_preserved_by_marital_state_dependence():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        rep = rate_head(table(), lambda s: World(table(), REGIONS, 1500, s, region_map=RM), REGIONS, RM)
+        rep = rate_head(table(), lambda s: World(table(), REGIONS, 1500, s, region_map=RM, domains=False), REGIONS, RM, domains=False)
     assert rep["summary"]["fail"] == 0 and rep["summary"]["inconclusive"] == 0
     assert any(r["key"][0] == "mortality.prob_death_0_40" and r["status"] == "pass" for r in rep["results"])

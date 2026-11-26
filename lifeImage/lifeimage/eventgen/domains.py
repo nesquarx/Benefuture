@@ -36,6 +36,7 @@ VICTIM = {"theft_victim": "harm.theft_recorded_rate", "burglary_victim": "harm.b
           "assault_victim": "harm.assault_recorded_rate", "sexual_violence_victim": "harm.sexual_violence_recorded_rate", "fraud_victim": "harm.fraud_recorded_rate",
           "cyber_victim": "harm.cybercrime_recorded_rate"}
 ENTRY = ("industry_work_start", "service_work_start", "farm_work_start", "self_employment_start")
+LF_ENTRY = ("job_search_start",) + ENTRY
 JOB_START = ENTRY + ("job_change", "reemployment")
 # adoption events: (Param quantity, divisor of its value, mean age, sd, minimum age); the person adopts with probability = the Param's share, at a truncated-normal age
 ADOPT = {"migration": ("mobility.migrant_stock", 100, 26.0, 6.0, 18.0), "account_opening": ("money.account_ownership", 100, 24.0, 6.0, 15.0),
@@ -136,6 +137,7 @@ def derive(table, region, regions, S):
     D["vocational"] = vs / 100 if vs is not None else None
     D["harm"] = _derive_harm(table, region, regions, step)
     D["tu"], D["groups"] = _derive_time_use(table, region, regions, step)
+    _note_employment_cap(table, D, region, step)
     return D
 
 
@@ -181,8 +183,9 @@ BAND_EDGES = {"15-24": (15, 25), "25-54": (25, 55), "55-64": (55, 65), "65+": (6
 
 
 def lfp_curve(v):
-    """Labour-force participation by single year of age 15..70 for one sex: linear between band midpoints, rescaled per band so each band's mean is the Param."""
-    nodes = [(15.0, 0.25 * v["15-24"]), (19.5, v["15-24"]), (39.5, v["25-54"]), (59.5, v["55-64"]), (67.5, v["65+"])]
+    """Labour-force participation by single year of age 15..69 for one sex: rising through the youth band, a plateau over the prime ages (27-50), falling through
+    the 55-64 and 65+ band midpoints, rescaled per band so each band's mean is the Param."""
+    nodes = [(15.0, 0.25 * v["15-24"]), (19.5, v["15-24"]), (27.0, v["25-54"]), (50.0, v["25-54"]), (59.5, v["55-64"]), (67.5, v["65+"])]
 
     def interp(a):
         if a <= nodes[0][0]:
@@ -200,6 +203,31 @@ def lfp_curve(v):
         for a in range(lo, hi):
             out[a] = min(1.0, raw[a] * c)
     return out
+
+
+def lfp_path(lfp, u, minage, retmin):
+    """(entry, retirement) ages of a person with latent draw u: in the labour force at age x iff u < f(x), f the participation curve interpolated linearly
+    through its year midpoints (so the share in the labour force at every age is the curve); entry is the first upward crossing at or after `minage`, the
+    retirement the first downward crossing after the entry and `retmin`; None where the curve never exceeds u (no entry) or never falls back below it."""
+    pts = [(a + 0.5, lfp[a]) for a in range(15, 70)]
+    entry = minage if pts[0][1] > u else None
+    if entry is None:
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            if y0 <= u < y1:
+                entry = x0 + (u - y0) / (y1 - y0) * (x1 - x0)
+                break
+    if entry is None:
+        return None, None
+    start = max(entry, retmin)
+    at_start = next((y0 + (y1 - y0) * (start - x0) / (x1 - x0) for (x0, y0), (x1, y1) in zip(pts, pts[1:]) if x0 <= start <= x1), pts[-1][1])
+    if at_start <= u:   # a curve that has already fallen below u before the minimum retirement age: the exit is recorded at that age
+        return entry, start
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        if x1 > start and y0 > u >= y1:
+            x = x0 + (y0 - u) / (y0 - y1) * (x1 - x0)
+            if x >= start:
+                return entry, x
+    return entry, None
 
 
 def _derive_health(table, region, regions, step):
@@ -327,6 +355,15 @@ def _derive_time_use(table, region, regions, step):
                 for g in catalog.INDIA_GROUPS:
                     gp = groups.get((g, sx, ib))
                     members = [k for k in catalog.TIME if k.group == g and (k.key, sx, hb) in tu]
+                    if g == "employment" and gp is not None and ("employment", sx, hb) in tu and ("travel_work", sx, hb) in tu:
+                        # the journey to work follows a day at work (nested, not independent): the group's participation is the participation in work, the group's minutes
+                        # the day's work plus its journey, in the European proportions
+                        (pe, me, _), (pt, mt, _) = tu[("employment", sx, hb)], tu[("travel_work", sx, hb)]
+                        share = min(1.0, pt / pe) if pe > 0 else 0.0
+                        rm = min(cap, max(1 / cap, gp["m"] / (me + share * mt))) if "m" in gp and me + share * mt > 0 else 1.0
+                        tu[("employment", sx, hb)] = (gp["p"], me * rm, "group")
+                        tu[("travel_work", sx, hb)] = (min(1.0, share * gp["p"]), mt * rm, "group")
+                        continue
                     if gp is None or not members:
                         if gp is not None and g == "own_use":
                             k = K["own_use_production"]
@@ -349,6 +386,28 @@ def _derive_time_use(table, region, regions, step):
             table.degrade(step, f"time.participation.{kk[0]}", region, "ECS profile (cross-region)", "no time-use Param for the region or its World Bank region; the European profile stands in")
             break
     return tu, groups
+
+
+def eff_employment(W, sx, lo, hi, p):
+    """Share of diary days with work the generator can reach in the age span [lo, hi): a person works only in a job, so the share cannot exceed the share employed
+    (labour-force participation times one minus unemployment) at each age; the source's rate is the target where it is lower (the cap is recorded)."""
+    ages = range(max(int(lo), 15), min(int(hi), 70))
+    if W.get("lfp") is None or not ages:
+        return p
+    return sum(min(p, p_employed(W, sx, a + 0.5)) for a in ages) / len(ages)
+
+
+def _note_employment_cap(table, D, region, step):
+    W = D["work"]
+    if W.get("lfp") is None:
+        return
+    for sx in "fm":
+        for lo, hi, b in TU:
+            v = D["tu"].get(("employment", sx, b))
+            if v is not None and eff_employment(W, sx, lo, hi, v[0]) < 0.97 * v[0]:
+                table.degrade(step, "time.participation.employment", region, "share employed (cap)",
+                              f"diary days at work ({100 * v[0]:.0f}% for {sx}, {b}) exceed the share employed at those ages: capped, the source's labour-force and time-use rates disagree")
+                return
 
 
 def _solve_rho(ps, target, cap):
@@ -400,23 +459,29 @@ def _work(X, W, rng, sx, end, horizon):
     lfp = W["lfp"][sx]
     minage = governed("eventgen.min_working_age")
     u = rng.random()
-    ue, ur, usec, uself = rng.random(), rng.random(), rng.random(), rng.random()
-    entry = next((a + ue for a in range(minage, 70) if u < lfp[a]), None)
+    usec, uself = rng.random(), rng.random()
+    entry, retire = lfp_path(lfp, u, float(minage), float(governed("eventgen.retirement_min_age")))
     if entry is None or entry >= end:
         return
-    retire = None
-    for a in range(max(int(entry) + 1, governed("eventgen.retirement_min_age")), 70):
-        if u >= lfp[a]:
-            retire = a + ur
-            break
     stop = min(end, retire if retire is not None else horizon)
     farm, selfemp = usec < W["agri"], (usec >= W["agri"] and uself < W["self"])
     kind0 = "farm_work_start" if farm else "self_employment_start" if selfemp else ("industry_work_start" if rng.random() < W["industry_share"] else "service_work_start")
-    X.events.append((kind0, entry))
     wage = not (farm or selfemp)
     unemp_u, unemp_y = W["unemp"]["adult"], W["unemp"]["youth"]
     D_sp = W["spell_years"]
-    t = entry
+    U0 = unemp_y if entry < 25 and unemp_y is not None else unemp_u
+    first_search, ufs = rng.random(), rng.random()
+    if U0 is not None and first_search < U0:   # the labour market is entered at its stationary state: a share U starts with a spell of search
+        te = entry + (-D_sp * math.log(max(ufs, 1e-12)))
+        X.events.append(("job_search_start", entry))
+        _spell_end(X, "job_search_start", entry, te, end)
+        if te >= stop:
+            return
+        entry_job = te
+    else:
+        entry_job = entry
+    X.events.append((kind0, entry_job))
+    t = entry_job
     while t < stop:
         a = int(t)
         U = unemp_y if a < 25 and unemp_y is not None else unemp_u
@@ -717,7 +782,7 @@ def _stats_work(out, P, r, D):
     un = {"adult": [0.0, 0.0], "youth": [0.0, 0.0]}
     for p in P:
         end = _end(p)
-        entry = next((a for k, a in p.events if k in ENTRY), None)
+        entry = min((a for k, a in p.events if k in LF_ENTRY), default=None)
         retire = next((a for k, a in p.events if k == "retirement"), None)
         for b, (lo, hi) in BAND_EDGES.items():
             n = max(0.0, min(end, hi) - lo)
@@ -731,7 +796,7 @@ def _stats_work(out, P, r, D):
         for lo, hi, key in ((15, 25, "youth"), (15, 71, "adult")):
             un[key][1] += max(0.0, min(stop, hi) - max(entry, lo))
             for k, a in p.events:
-                if k == "job_loss":
+                if k in ("job_loss", "job_search_start"):
                     e = min(p.spans.get((k, a), a), stop)
                     un[key][0] += max(0.0, min(e, hi) - max(a, lo))
     for (b, sx), (n, d) in lf.items():
@@ -859,17 +924,30 @@ def targets(table, regions, region_map):
         for k in {kk[0] for kk in D["tu"]}:
             for sx in "fm":
                 ps = [D["tu"][(k, sx, b)] for _, _, b in TU if (k, sx, b) in D["tu"]]
-                for _, _, b in TU:
-                    if (k, sx, b) in D["tu"] and D["tu"][(k, sx, b)][0] >= JUDGE_MIN_SHARE:
-                        out[(f"time.participation.{k}", b, sx, r)] = (100 * D["tu"][(k, sx, b)][0], conf(f"time.participation.{k}"), False)
-                if ps:
-                    out[(f"time.participation.{k}", "all", sx, r)] = (100 * sum(x[0] for x in ps) / len(ps), conf(f"time.participation.{k}"), False)
+                eff = {}
+                for lo, hi, b in TU:
+                    if (k, sx, b) in D["tu"]:
+                        p = D["tu"][(k, sx, b)][0]
+                        if k == "employment":
+                            p = eff_employment(D["work"], sx, lo, hi, p)
+                        elif k == "travel_work" and ("employment", sx, b) in D["tu"]:
+                            pe = D["tu"][("employment", sx, b)][0]
+                            p = eff_employment(D["work"], sx, lo, hi, pe) * (min(1.0, p / pe) if pe > 0 else 0.0)
+                        eff[b] = p
+                        if p >= JUDGE_MIN_SHARE:
+                            out[(f"time.participation.{k}", b, sx, r)] = (100 * p, conf(f"time.participation.{k}"), False)
+                if eff:
+                    out[(f"time.participation.{k}", "all", sx, r)] = (100 * sum(eff.values()) / len(eff), conf(f"time.participation.{k}"), False)
                 num = sum(x[0] * x[1] for x in ps)
                 den = sum(x[0] for x in ps)
                 if den > 0:
                     out[(f"time.minutes.{k}", "all", sx, r)] = (num / den, conf(f"time.minutes.{k}"), False)
         for (g, sx, ib), v in D["groups"].items():
-            out[(f"time.group.participation.{g}", ib, sx, r)] = (100 * v["p"], conf(f"time.group.participation.{g}"), False)
+            p = v["p"]
+            if g == "employment":
+                hbs = [(lo, hi) for lo, hi, b in TU if INDIA_BAND[b] == ib]
+                p = sum(eff_employment(D["work"], sx, lo, hi, v["p"]) for lo, hi in hbs) / len(hbs)
+            out[(f"time.group.participation.{g}", ib, sx, r)] = (100 * p, conf(f"time.group.participation.{g}"), False)
             if "m" in v:
                 out[(f"time.group.minutes.{g}", ib, sx, r)] = (v["m"], conf(f"time.group.minutes.{g}"), False)
         W = D["work"]

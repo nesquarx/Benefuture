@@ -26,7 +26,7 @@ def world(seed=1, n=1500, regions=REGIONS, tab=None, **kw):
 def head(gen_table_fn=None, **kw):
     true = table()
     mk = (lambda s: world(s, tab=gen_table_fn())) if gen_table_fn else (lambda s: world(s))
-    return rate_head(true, mk, REGIONS, RM, **kw)
+    return rate_head(true, mk, REGIONS, RM, **{"domains": False, **kw})
 
 
 @pytest.mark.parametrize("seed0", [0, 1000])

@@ -96,7 +96,7 @@ ROLE_ENTITY = {   # role -> (id template, kind); {region} {pid} {n} (index of th
     "customer": ("customer:{pid}:{n}", "person"), "dependent": ("dependent:{pid}", "person"), "friend": ("friend:{pid}", "person"),
     "neighbour": ("neighbour:{pid}:{n}", "person"), "care_recipient": ("care_recipient:{pid}:{n}", "person"), "offender": ("offender:{pid}:{n}", "person"),
     "victim": ("victim:{pid}:{n}", "person"), "immigration": ("agency:{region}:immigration_authority", "organisation"), "bank": ("bank:{region}", "organisation"),
-    "telecom": ("telecom:{region}", "organisation")}
+    "telecom": ("telecom:{region}", "organisation"), "employment_service": ("agency:{region}:employment_service", "organisation")}
 ORG_PREFIX = ("school:", "agency:", "employer:", "clinic:", "club:", "polling:", "shop:", "venue:", "transit:", "police:", "court:", "bank:", "telecom:")
 EXT = catalog.BY_KEY
 OPTION = {}

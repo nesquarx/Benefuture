@@ -83,7 +83,9 @@ def test_responsibility_follows_freedom_and_missing_option_sets_degrade_loudly()
     assert {d["mechanism"] for d in log} == {"responsibility_from_freedom"} and all("governed default" in d["substitute"] for d in log)
     items = {d["step"] for d in log}
     flagged = [e for e in all_events(by) if e["id"] in items]
-    assert flagged and {e["kind"] for e in flagged} <= {"marriage", "school_dropout", "divorce"}
+    from lifeimage.eventgen import catalog
+    missing = {k.key for k in catalog.ALL if any(r[4] == ("missing",) for r in k.roles) or k.family in ("work", "civic", "harm")}   # a minor's act or a domain with no option set
+    assert flagged and {e["kind"] for e in flagged} <= {"marriage", "school_dropout", "divorce"} | missing
     for e in all_events(by):
         for p in e["participants"]:
             if p["contribution"] == 0:

@@ -26,3 +26,25 @@ def shuffled(world, seed=0):
     for p in world.people:   # the death age follows the (shuffled) death event; events keep their kind-wise order from the generator's list
         p.death = next((a for k, a in p.events if k == "death"), None)
     return world
+
+
+def career_blind(world, seed=0, kind="employment"):
+    """The gaming case of the work machine: the diary's `kind` events (days at work) are permuted among the diary days of the same region, sex and age band,
+    so every participation rate and every minutes-per-participant mean the rate head reads is unchanged while a day at work falls on people with no job
+    (children, the retired, the unemployed). The rate head cannot tell it from the true generator; the sequence head must."""
+    from .domains import band_of
+    rng = random.Random(f"careerblind|{seed}")
+    cells = {}
+    for p in world.people:
+        for a in p.diary:
+            cells.setdefault((p.region, p.sex, band_of(a)), []).append((p, a))
+    for days in cells.values():
+        pairs = [(((kind, a) in p.minutes), p.minutes.get((kind, a))) for p, a in days]
+        rng.shuffle(pairs)
+        for (p, a), (has, m) in zip(days, pairs):
+            p.events = [e for e in p.events if e != (kind, a)]
+            p.minutes.pop((kind, a), None)
+            if has:
+                p.events.append((kind, a))
+                p.minutes[(kind, a)] = m
+    return world
