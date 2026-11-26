@@ -25,7 +25,8 @@ def world(seed=1, n=1500, regions=REGIONS, tab=None, **kw):
 
 def head(gen_table_fn=None, **kw):
     true = table()
-    mk = (lambda s: world(s, tab=gen_table_fn())) if gen_table_fn else (lambda s: world(s))
+    # the family and schooling head reads no domain event, and the family statistics are the same with or without the domain machines (own random streams)
+    mk = (lambda s: world(s, tab=gen_table_fn(), domains=False)) if gen_table_fn else (lambda s: world(s, domains=False))
     return rate_head(true, mk, REGIONS, RM, **{"domains": False, **kw})
 
 

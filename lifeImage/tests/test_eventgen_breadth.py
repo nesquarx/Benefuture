@@ -243,12 +243,14 @@ def test_each_domain_hard_rule_flags_its_violation(code, events, sex):
     assert code in hard_violations(life(*events, sex=sex))
 
 
+@pytest.mark.full
 def test_true_generator_has_zero_hard_violations_in_every_seed():
     for seed in range(1, 7):
         v = hard_violations([{"pid": p.pid, "region": p.region, "sex": p.sex, "events": evs} for p, evs in zip(world(400, seed).people, world(400, seed).events(light=True).values())])
         assert v == {}, (seed, {k: x[1] for k, x in v.items()})
 
 
+@pytest.mark.full
 def test_days_at_work_on_people_without_a_job_pass_the_rate_head_and_fail_the_sequence_head():
     """Gaming counterexample: permuting days at work among diary days keeps every participation rate; it must break the coherence of the lives."""
     def blind(s):
@@ -272,6 +274,18 @@ def seq(variant_table=None, seeds=10, n=500, noise=None, regions=REGIONS):
         return sequence_head(table(), lambda s: world(n, s, regions, variant_table() if variant_table else None, noise=noise), regions, RM, seeds=seeds)
 
 
+def test_marriage_mixture_probe_reproduces_the_early_share_at_the_stratum_mean_and_a_single_normal_does_not():
+    """Fast probe of the early-tail mechanism (the heavy head tests are in the full tier): analytic, no world."""
+    from lifeimage.eventgen import marriage
+    m = marriage.model(22.0, 3.0, 0.223)
+    single = marriage.model(22.0, 3.0, None)
+    assert abs(m.cdf(18.0) - 0.223) < 0.005 and m.w > 0
+    assert single.w == 0 and single.cdf(18.0) < 0.223 - 0.03          # the miss the early component removes
+    xs = [m.ppf((i + 0.5) / 2000) for i in range(2000)]
+    assert abs(sum(xs) / len(xs) - 22.0) < 0.15                       # the mean age at first marriage is still the stratum's
+
+
+@pytest.mark.full
 def test_india_married_by_18_passes_after_the_early_tail_change():
     """Hypothesis (judged again, not tuned): with the early component set from the WDI share married by 18, the generated share is equivalent to the Param within
     the governed margin (5 points) in India; the mean age at first marriage is still the singulate mean."""
@@ -284,6 +298,7 @@ def test_india_married_by_18_passes_after_the_early_tail_change():
     assert not [x["key"] for x in rep["soft"] if x["status"] == "fail"]
 
 
+@pytest.mark.full
 def test_a_single_normal_marriage_age_reproduces_the_miss():
     """Counterexample: without the married-by-18 Param the generator falls back to one normal spread and the head flags India again (z <= -2)."""
     def no_b18():
@@ -305,17 +320,19 @@ def test_the_births_outside_marriage_target_is_sourced_and_no_assumed_target_rem
         assert f"eventgen.{name}" not in GOVERNED
 
 
+@pytest.mark.full
 def test_births_outside_marriage_match_the_source_where_it_exists():
     rep = seq(seeds=12)
     r = next(x for x in rep["soft"] if x["key"] == ("seq.births_outside_marriage_share", "all", "f", "FRA"))
     assert r["status"] == "pass", r
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        head = rate_head(table(), lambda s: world(1000, s), REGIONS, RM, seeds=10, domains=False)
+        head = rate_head(table(), lambda s: world(1000, s, domains=False), REGIONS, RM, seeds=10, domains=False)
     b = next(x for x in head["results"] if x["key"][0] == "family.births_outside_marriage")
     assert b["key"][3] == "FRA" and b["status"] != "fail"
 
 
+@pytest.mark.full
 def test_births_ignoring_marriage_fail_the_sourced_target():
     rep = seq(noise=IGNORES_MARRIAGE, seeds=10)
     r = next(x for x in rep["soft"] if x["key"] == ("seq.births_outside_marriage_share", "all", "f", "FRA"))

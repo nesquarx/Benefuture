@@ -76,6 +76,7 @@ def test_each_hard_rule_flags_its_violation(code, events, sex):
 
 
 # ---- the generator itself ----
+@pytest.mark.full
 def test_true_generator_has_zero_hard_violations_on_every_seed_and_passes_soft_checks():
     rep = head(seeds=16)
     assert rep["hard_failing_seeds"] == 0 and rep["hard_codes"] == {}
@@ -86,6 +87,7 @@ def test_true_generator_has_zero_hard_violations_on_every_seed_and_passes_soft_c
     assert {r["key"][0] for r in calibrated} >= {"seq.mean_age_first_marriage", "seq.mean_age_childbearing", "seq.median_age_primary_completion"}
 
 
+@pytest.mark.full
 def test_the_early_marriage_tail_removes_the_india_miss():
     rep = head(seeds=16)
     r = next(x for x in rep["soft"] if x["key"] == MARRIED_BY_18_IND)
@@ -113,6 +115,7 @@ def test_descriptive_median_and_iqr_of_first_events_are_reported():
 
 
 # ---- counterexamples ----
+@pytest.mark.full
 def test_shuffled_order_passes_the_rate_head_and_fails_the_sequence_head():
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -127,6 +130,7 @@ def test_shuffled_order_passes_the_rate_head_and_fails_the_sequence_head():
     assert {"event_after_death", "divorce_without_prior_marriage", "school_levels_out_of_order", "link_violates_time_or_span"} <= set(rep["hard_codes"])
 
 
+@pytest.mark.full
 def test_births_ignoring_marriage_are_flagged_softly_not_as_a_hard_failure():
     base, bad = head(seeds=12), head(seeds=12, noise=IGNORES_MARRIAGE)
     assert bad["hard_failing_seeds"] == 0 and bad["hard_codes"] == {}                   # coherent lives: no hard rule is broken
