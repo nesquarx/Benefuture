@@ -137,6 +137,10 @@ deleted. Numbering is stable (LI.n).
   name the primary domain, then the next, and so on, until any further categorisation would be bad quality (a stopping
   rule, its threshold governed). Generated event kinds are categorised the same way, so co-membership covers more pairs.
   PLAN, prompts.
+- **LI.68** (2026-11-26; author, refines LI.67) Plausible domains are logged as refinement candidates, not discarded:
+  domains an agent lists that the gold set neither accepts nor rejects, and rejected domains just below the floor, go to a
+  refinement log (item, relation, domain, fit, agent, variant) feeding gold-set completion, new fine domains and
+  domain-domain links; they never enter memberships without passing the floor. PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
