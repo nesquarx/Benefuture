@@ -20,7 +20,10 @@ using BenefutureSim, Statistics, Random, Printf, Dates
 # only in `MECHANISM_FIELDS`. `stress` (:stressed | :unstressed) switches catastrophes, outages and
 # capture; research breakthroughs occur in both.
 const WORLD_ONLY = get(ENV, "BF_WORLD_ONLY", "") != ""
-const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule, :bind_weighted)
+# The dormant economy flags (`dormant_flags`) are Bf mechanisms and the resource parameters only they read, so the `:bf` arm differs from `:status_quo` in them (8.176).
+const ECON_MECHANISM_FIELDS = (:accuracy_rule, :advap, :ratchet_k, :credence_rule, :bind_weighted,
+    :budget, :endowment, :capacity, :regen, :cost_per_touch, :ra_rate, :ra_horizon, :ra_domain, :ra_alloc_weight, :ra_reserve_horizon, :ra_spend_contract,
+    :converge_init, :legacy_funder, :responsibility_reading, :repair_credit, :accolade_counterfactual, :proposal_pma, :proposal_eta, :proposal_confidence)
 const GOV_MECHANISM_FIELDS = (:advap, :deliberation, :info_handling, :source_tags, :tag_audit, :ih_vote)
 const WORLD_ARMS = (:bf, :status_quo)
 
