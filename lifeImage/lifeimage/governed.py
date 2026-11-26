@@ -13,11 +13,11 @@ GOVERNED = {
         "source": "LI.40: responsibility when no less harmful alternative was open; coercion lowers it, never to 0.",
     },
     "levels.tone_k": {
-        "default": 0.1509,
+        "default": 0.15012,
         "source": "LI.39: the tone map's constant; derived by `derive_tone_k` so the median 40-year-old persona of the generated "
                   "population has its typical touched coarse field at level 0.5 (mid-brightness). Absolute across people. "
                   "Re-derived on fine evidence (LI.51: 0.16388 before, the coarse field now aggregating its fine children), and again when the fine level grew "
-                  "786 -> 1503 cards (0.15862 before), and when the base fine set gained its third variant (0.15291 before).",
+                  "786 -> 1503 cards (0.15862 before), and when the base fine set gained its third variant (0.15291 before), and when every coarse field gained a fine child (0.1509 before).",
     },
     "levels.saturation_measured": {
         "default": 1.0,

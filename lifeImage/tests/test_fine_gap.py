@@ -208,7 +208,7 @@ def test_gap2_covers_the_nine_childless_fields_and_duplicates_no_existing_fine_i
     ids = [c["id"] for c in cands]
     assert len(set(ids)) == len(ids)
     taken = {c["id"] for n in ("candidates_v0", "candidates_atus_v0", "candidates_gap_v0") for c in read(ROOT / f"data/fine/{n}.jsonl")}
-    taken |= {c["id"] for c in read(ROOT / "data/fine/fine_v0.jsonl")}
+    # fine_v0 is checked through the earlier pools only: once gap2 is merged its own ids are in fine_v0 (lead, 2026-11-26)
     assert not taken & set(ids)
     assert all(s["licence_status"] == "verified" for c in cands for s in c["sources"])
     assert not any(s["source"] in ("icatus", "coicop") for c in cands for s in c["sources"])

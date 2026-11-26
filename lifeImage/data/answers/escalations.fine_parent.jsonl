@@ -317,3 +317,91 @@
 {"id":"f.tipping","kept":{"s.consumption":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
 {"id":"f.urbanization","kept":{"c.migration":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
 {"id":"f.zud","kept":{"c.disaster_experience":0.55,"c.weather_climate_adaptation":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.model","kept":{"s.leisure":0.4,"s.work":0.6},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"new_field","1":"overlap","2":"upstream"}}
+{"id":"f.activity_children_education_nonhh_related_s","kept":{"s.social":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.activity_extracurricular_government_student","kept":{"s.learning":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.activity_health_public","kept":{"c.preventive_health":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.appliance_tool_toy","kept":{"c.children_play":0.3,"s.home":0.7},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.as_exercise_job_part_sport","kept":{"c.exercise_fitness":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.as_job_leisure_part_relaxing_socializing","kept":{"s.work":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.attending_children_event_household_non_s","kept":{"c.childcare_other":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.building_house_other_site_structure_wildlife","kept":{"c.construction_trades":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.call_care_from_personal_professional_provider_service_telephone","kept":{"c.everyday_conversation":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.care_personal_professional_service","kept":{"c.personal_services_work":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.clothing_collecting_delivering_good_other","kept":{"c.volunteering":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.conference_meeting_school","kept":{"c.school_education":0.55,"s.family":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.craft_food_generating_hobby_income","kept":{"c.crafts_hobbies":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.garden_lawn_service","kept":{"s.home":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.hh_mail_message_personal","kept":{"c.everyday_conversation":0.4,"c.household_planning":0.6},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.home_security","kept":{"c.home_repair_diy":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.homework_research","kept":{"s.learning":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.maint_repair_service_vehicle","kept":{"s.mobility":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.maintenance_repair_service_using_vehicle","kept":{"s.consumption":0.4,"s.mobility":0.6},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.organizing_preparing","kept":{"c.household_planning":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.service_veterinary","kept":{"c.pet_ownership":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.writing","kept":{"c.business_administration":0.529412,"c.creative_writing":0.470588},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.accessibility","kept":{"c.disability_adaptation":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.admission_fee","kept":{"s.consumption":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.adultery","kept":{"c.sexuality":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.agreement_contract_negotiate","kept":{"c.legal_system":0.5,"s.work":0.5},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.analgesic","kept":{"c.medical_care":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.anarchism_green","kept":{"c.political_discourse":0.55,"s.nature":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.baby_shaken_syndrome","kept":{"c.child_abuse_neglect":0.55,"c.physical_health":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.betrayal","kept":{"s.social":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.bioethics","kept":{"c.biotechnology":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.business_model_subscription","kept":{"s.work":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.camp_concentration","kept":{"s.harm":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.cancer_musculoskeletal_system","kept":{"c.physical_health":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.cancer_organ_system","kept":{"c.physical_health":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.child_marriage","kept":{"c.marriage_cohabitation":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.climate_finance","kept":{"s.nature":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.conspiracy_theory","kept":{"c.misinformation_defamation":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.consumer_direct","kept":{"c.sales_marketing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.controversy","kept":{"s.social":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.cop_suicide","kept":{"c.policing_enforcement":0.35,"c.self_harm_suicide":0.65},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.corporal_home_punishment","kept":{"c.child_abuse_neglect":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.dating_interfaith","kept":{"c.partnership_romance":0.6,"s.meaning":0.4},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.dating_online_service","kept":{"c.partnership_romance":0.5,"c.social_media":0.5},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.dating_sugar","kept":{"c.partnership_romance":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.electoral_fraud","kept":{"c.fraud_deception":0.55,"c.voting_elections":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.engagement_ring","kept":{"c.marriage_wedding":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.eruption_limnic","kept":{"c.disaster_experience":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.false_flag","kept":{"c.fraud_deception":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.feminist_spirituality","kept":{"s.meaning":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.friendship_people","kept":{"c.friendship":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.gender_identity","kept":{"c.sexuality":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.get","kept":{"c.divorce":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.grant_repatriation","kept":{"c.migration":0.6,"c.welfare_benefits":0.4},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.health_literacy","kept":{"s.self_care":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.homelessness","kept":{"c.housing_search":0.45,"c.poverty_scarcity":0.55},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.hospitality_service","kept":{"c.tourism_travel":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.identity_mistaken","kept":{"c.identity_change":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"overlap","1":"overlap"}}
+{"id":"f.impact_investing","kept":{"c.saving_investing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.incest","kept":{"c.sexual_violence":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.investing_responsible_socially","kept":{"c.saving_investing":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.joke_practical","kept":{"s.social":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.kidnapping","kept":{"s.harm":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.kitchen_soup","kept":{"c.charity_giving":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.lease_operating","kept":{"s.consumption":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.locust_plague","kept":{"c.disaster_experience":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.management_online_reputation","kept":{"c.reputation_gossip":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.murdersuicide","kept":{"c.self_harm_suicide":0.5,"c.violence_assault":0.5},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.neet","kept":{"s.learning":0.45,"s.work":0.55},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.phreaking","kept":{"s.technology":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.propaganda","kept":{"c.misinformation_defamation":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.prostitution","kept":{"c.sexuality":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.pyramid_scheme","kept":{"c.fraud_deception":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.quackery","kept":{"c.alternative_medicine":0.6,"c.fraud_deception":0.4},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.repair","kept":{"c.reuse_repair":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.restoration","kept":{"c.cultural_visits":0.352941,"c.skilled_trades":0.647059},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.selling_wife","kept":{"s.family":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.slum","kept":{"c.housing_search":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.sodomy","kept":{"c.sexuality":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.student_union","kept":{"c.higher_education":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.sunscreen","kept":{"c.hygiene_grooming":0.45,"c.preventive_health":0.55},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.tengrism","kept":{"s.meaning":1},"reason":"no parent named by >= 2 variants","task_type":"fine_parent","votes":{"0":"upstream","1":"upstream"}}
+{"id":"f.tipping","kept":{"s.consumption":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.urbanization","kept":{"c.migration":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"overlap","1":"upstream"}}
+{"id":"f.zud","kept":{"c.disaster_experience":0.55,"c.weather_climate_adaptation":0.45},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.abortion","kept":{"c.reproduction_fertility":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
+{"id":"f.fishing_illegal_unregulated_unreported","kept":{"c.environmental_harm":1},"reason":"no verdict majority","task_type":"fine_parent","votes":{"0":"upstream","1":"overlap"}}
