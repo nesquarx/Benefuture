@@ -151,6 +151,11 @@ def _fit_floor(floor):
     return governed("membership.fit_floor")
 
 
+def membership_fit_floor(prompt_version):
+    from .governed import membership_fit_floor as f
+    return f(prompt_version)
+
+
 def _int_fit(x):
     return isinstance(x, int) and not isinstance(x, bool) and 0 <= x <= FIT_MAX
 
@@ -215,8 +220,9 @@ def validate_ranked_types(types, ranks, want, ids=None, where="", floor=None):
 
 
 def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
-    """A v3 membership answer: verdict "membership", `types` and `ranks` over the vocabulary's real types (no placebo),
-    ranked per `validate_ranked_types`, and `other` (string or null)."""
+    """A v3+ membership answer: verdict "membership", `types` and `ranks` over the vocabulary's real types (no placebo),
+    ranked per `validate_ranked_types`, and `other` (string or null). Without `floor`, the floor is that of the answer's
+    prompt_version when it carries one (v3: 4, v4: 5; `governed.membership_fit_floor`), else the governed v3 floor."""
     if answer.get("verdict") != "membership":
         raise ValidationError(f"membership verdict must be 'membership', not {answer.get('verdict')!r}")
     for k in ("types", "ranks", "other"):
@@ -224,6 +230,10 @@ def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
             raise ValidationError(f"a ranked membership answer needs {k}")
     if isinstance(answer["other"], str) and not answer["other"].strip():
         raise ValidationError("other must name a relation or be null, not blank")
+    pv = answer.get("prompt_version")
+    if floor is None and isinstance(pv, int) and not isinstance(pv, bool):
+        from .governed import membership_fit_floor
+        floor = membership_fit_floor(pv)
     validate_ranked_types(answer["types"], answer["ranks"], real_types(vocab), ids, floor=floor)
     return answer
 
@@ -375,7 +385,7 @@ def validate_answers(batch_lines, answer_lines):
             vocab = header["task_type"].split(".", 1)[1]
             try:
                 if header["prompt_version"] >= RANKED_MEMBERSHIP_VERSION:
-                    validate_ranked_membership_answer(a, vocab, ids)
+                    validate_ranked_membership_answer(a, vocab, ids, floor=membership_fit_floor(header["prompt_version"]))
                 else:
                     validate_membership_answer(a, vocab, ids)
             except ValidationError as e:

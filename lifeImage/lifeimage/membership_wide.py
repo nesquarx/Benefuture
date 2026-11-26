@@ -18,13 +18,14 @@ import statistics
 from pathlib import Path
 
 from .canonical import canonical_json, content_hash
-from .governed import governed
+from .governed import governed, membership_fit_floor
 from .membership import (DEFAULT_GOLD, DEFAULT_OUT, DEFAULT_PACK, MODEL, item_input, pack_hash, ungrouped_pack)
 from .tasks import DEFAULT_K, DEFAULT_PROMPTS
 from .validate import RANKED_MEMBERSHIP_VERSION, validate_answers
 
 ROOT = Path(__file__).resolve().parent.parent
-PROMPT_VERSION = RANKED_MEMBERSHIP_VERSION
+PROMPT_VERSION = RANKED_MEMBERSHIP_VERSION  # v3, kept reproducible; `LATEST_PROMPT_VERSION` is the one under calibration
+LATEST_PROMPT_VERSION = 4  # floor 5 (`governed.membership_fit_floor`)
 VOCAB = "A3S"
 TASK_TYPE = f"membership.{VOCAB}"
 RELS = ("form", "content", "outcome", "setting")
@@ -165,7 +166,7 @@ def _listed(answer, rel):
     return None if rk is None else [e["domain"] for e in rk["listed"]]
 
 
-def calibration_report(controls, by_item, floor=None):
+def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERSION):
     """Judge the control battery against its pre-registered predictions. `by_item`: {item id: {variant: (text, answer)}}.
 
     Cells are (control, variant, relation) where the control's gold names the relation (`fair`). A secondary domain is any listed
@@ -173,7 +174,7 @@ def calibration_report(controls, by_item, floor=None):
     `bad` (the gold names it) or `unjudged` (the gold names neither: the lead reviews these, they count against precision).
     Padding on single-domain controls = share of their cells with a secondary domain outside `fair`. Recall = share of `required`
     domains listed. Decoy hits = decoy cells listing a `bad` domain. Widths: median listed domains over non-null cells."""
-    floor = governed("membership.fit_floor") if floor is None else floor
+    floor = membership_fit_floor(prompt_version) if floor is None else floor
     n_sec = ok_sec = 0
     unjudged, bad_sec = [], []
     pad_cells = pad_hit = 0
@@ -219,11 +220,16 @@ def calibration_report(controls, by_item, floor=None):
     padding = pad_hit / pad_cells if pad_cells else None
     medians = {g: {r: med(w[r]) for r in RELS} for g, w in widths.items()}
     multi_ok = all((medians["multi"][r] or 0) >= 2 for r in ("form", "content"))
+    n_judged = ok_sec + len(bad_sec)
     return {
         "floor": floor,
+        "prompt_version": prompt_version,
         "cells_judged": {"secondary": n_sec, "single": pad_cells, "decoy": decoy_cells, "required": req_total},
         "median_listed": medians,
-        "precision_secondary": prec,
+        "precision_secondary": prec,  # the pre-registered metric: unjudged secondaries count against
+        "precision_judged": ok_sec / n_judged if n_judged else None,  # reported beside it: fair share of the judged secondaries
+        "n_unjudged": len(unjudged),
+        "n_bad": len(bad_sec),
         "unjudged_secondary": unjudged,
         "bad_secondary": bad_sec,
         "padding_single": padding,
@@ -235,6 +241,50 @@ def calibration_report(controls, by_item, floor=None):
             "padding_single_at_most_0.10": padding is not None and padding <= 0.10,
         },
     }
+
+
+def judged_precision(report):
+    """Share of the judged secondary domains (the gold names them fair or bad) that are fair; the pre-registered
+    `precision_secondary` counts the unjudged against it and stays the verdict's metric."""
+    return report["precision_judged"]
+
+
+def _pack_labels(pack_text):
+    out = {}
+    for line in pack_text.splitlines():
+        parts = [x.strip() for x in line.split("|")]
+        if len(parts) >= 2 and " " not in parts[0] and "." in parts[0]:
+            out[parts[0]] = parts[1]
+    return out
+
+
+def unjudged_review(controls, by_item, labels, version=PROMPT_VERSION, floor=None):
+    """Markdown for the lead/author: every secondary domain the gold names neither fair nor bad, per control item, with the
+    variant, relation, the answer's fit and the gold's fair and bad lists, so the gold can be extended by judgement. The
+    pre-registered verdict is not changed by this review."""
+    rep = calibration_report(controls, by_item, floor=floor, prompt_version=version)
+    byid = {c["id"]: c for c in controls}
+    groups = {}
+    for cid, v, rel, d in rep["unjudged_secondary"]:
+        groups.setdefault(cid, []).append((v, rel, d))
+    out = [f"# Unjudged secondary domains of the membership.v{version} calibration battery",
+           "",
+           f"{rep['n_unjudged']} secondary domains (second and later listed) were named by neither the gold `fair` nor its `bad` list, in "
+           f"{len(groups)} of {len(controls)} control items. The pre-registered precision (`precision_secondary` = "
+           f"{rep['precision_secondary']:.4f}) counts every one against; the fair share of the judged secondaries is "
+           f"{rep['precision_judged']:.4f} ({rep['n_bad']} bad of {rep['cells_judged']['secondary'] - rep['n_unjudged']} judged). "
+           "The pre-registered verdict stays the pre-registered metric; this file is for review (add each domain to the control's "
+           "`fair` or `bad` list in `data/gold/membership_wide_controls_v0.jsonl` only by a recorded ruling).",
+           ""]
+    for cid in sorted(groups):
+        c = byid[cid]
+        out += [f"## {cid} ({c['group']}): {c['text']}", ""]
+        for v, rel, d in sorted(groups[cid], key=lambda x: (x[1], x[2], x[0])):
+            rk = by_item[cid][v][1]["ranks"][rel]["listed"]
+            fit = next(e["fit"] for e in rk if e["domain"] == d)
+            out.append(f"- {rel}, variant {v}: `{d}` ({labels.get(d, '?')}), fit {fit}; list {[e['domain'] for e in rk]}")
+        out += [f"- gold fair {c.get('fair', {})}; bad {c.get('bad', {})}", ""]
+    return "\n".join(out)
 
 
 # ---- the ingest ----

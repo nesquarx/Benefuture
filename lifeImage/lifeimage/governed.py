@@ -38,6 +38,13 @@ GOVERNED = {
                   "score the rubric calls a fair, if minor, categorisation (3 is `loosely related`, the layout_sim.judged_floor reading of 3 of 10 as "
                   "barely related). Assumption; calibrated by the membership.v3 control battery (`data/gold/membership_wide_predictions.md`), then governed.",
     },
+    "membership.fit_floor.v4": {
+        "default": 5,
+        "source": "LI.67: quality floor of `membership.v4`, raised from 4 by the pre-registered rule after the v3 calibration battery failed "
+                  "secondary precision (0.69 < 0.8) and single-domain padding (0.55 > 0.10) (`data/gold/membership_wide_predictions.md`, v3 judged). "
+                  "5 is the lowest score the v4 scale calls a real secondary aspect a careful reader would accept. Assumption; calibrated by the "
+                  "membership.v4 control battery, then governed. v3 answers keep `membership.fit_floor` (4).",
+    },
     "membership.agree_floor": {
         "default": 0.5,
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "
@@ -224,6 +231,11 @@ def derive_tone_k(seeds=REFERENCE_SEEDS):
 def governed(name):
     """The governed default of `name`; unknown names raise KeyError."""
     return GOVERNED[name]["default"]
+
+
+def membership_fit_floor(prompt_version):
+    """The fit floor of a membership prompt version (LI.67): v3 keeps `membership.fit_floor`, v4 and later use `membership.fit_floor.v4`."""
+    return governed("membership.fit_floor.v4") if prompt_version >= 4 else governed("membership.fit_floor")
 
 # Event generator thresholds and noise parameters (`eventgen/governed.py`).
 from .eventgen.governed import GOVERNED_EVENTGEN  # noqa: E402

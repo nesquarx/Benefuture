@@ -448,3 +448,79 @@ def test_predictions_are_registered_before_measuring():
     s = (ROOT / "data" / "gold" / "membership_wide_predictions.md").read_text(encoding="utf-8")
     assert "2-4" in s and ">= 0.8" in s and "<= 0.10" in s and "Confidence 0.5" in s and "ETA" in s
     assert "ranks" in (PROMPTS / "RUNNER.md").read_text(encoding="utf-8")
+
+
+# ======== membership.v4: the floor raised to 5 by the pre-registered rule (v3 stays reproducible) ========
+from lifeimage.governed import membership_fit_floor
+from lifeimage.membership_wide import (LATEST_PROMPT_VERSION, judged_precision, read_instructions, unjudged_review)
+
+
+def _v4_answer(form_ranks, form_types, version=4):
+    a = json.loads(_answer(version, form_types, form_ranks))
+    return json.dumps(a)
+
+
+def test_the_floor_is_chosen_by_prompt_version_and_governed():
+    assert membership_fit_floor(3) == 4 and membership_fit_floor(4) == 5 and membership_fit_floor(5) == 5
+    assert governed("membership.fit_floor") == 4  # v3's value stays
+    assert governed("membership.fit_floor.v4") == 5 and GOVERNED["membership.fit_floor.v4"]["source"].startswith("LI.67")
+    assert LATEST_PROMPT_VERSION == 4
+
+
+def test_v4_rejects_a_listed_domain_at_fit_4_and_v3_accepts_it():
+    ranks = {"listed": [{"domain": "c.cooking", "fit": 9}, {"domain": "c.sleep", "fit": 4}], "rejected": {"domain": "c.nutrition_diet", "fit": 3}}
+    types = {"c.cooking": 0.7, "c.sleep": 0.3}
+    assert validate_answers(_batch(3), [_v4_answer(ranks, types, 3)]) == []
+    errs = validate_answers(_batch(4), [_v4_answer(ranks, types, 4)])
+    assert errs and any("below the floor 5" in e for e in errs), errs
+
+
+def test_v4_rejects_a_stop_while_the_best_rejected_is_at_least_5_and_v3_accepts_5_only_as_a_stop_error():
+    ranks = {"listed": [{"domain": "c.cooking", "fit": 9}], "rejected": {"domain": "c.sleep", "fit": 4}}
+    assert validate_answers(_batch(4), [_v4_answer(ranks, {"c.cooking": 1.0}, 4)]) == []  # a 4 now stops the list
+    assert any("stopped early" in e for e in validate_answers(_batch(3), [_v4_answer(ranks, {"c.cooking": 1.0}, 3)]))  # and v3 says it belongs
+    ranks["rejected"]["fit"] = 5
+    errs = validate_answers(_batch(4), [_v4_answer(ranks, {"c.cooking": 1.0}, 4)])
+    assert errs and any("stopped early" in e and "floor 5" in e for e in errs), errs
+
+
+def test_v4_prompt_states_floor_5_and_its_examples_validate_at_5_but_not_all_at_the_v3_floor_text():
+    s = read_instructions(4)
+    assert "at least 5" in s and "below 5" in s and "least 4" not in s and "below 4" not in s and "4 or more" not in s
+    blocks = re.findall(r'Event: "(.*?)"\n```json\n(.*?)\n```', s, re.S)
+    assert len(blocks) >= 3
+    gold = {i["text"].strip().lower() for i in load_items_v2(DEFAULT_GOLD)} | {c["text"].strip().lower() for c in load_controls()}
+    for event, js in blocks:
+        ans = json.loads(js)
+        validate_ranked_types(ans["types"], ans["ranks"], WANT, IDS, floor=5)
+        assert event.strip().lower() not in gold
+    assert any(len(v or {}) >= 3 for _, js in blocks for v in json.loads(js)["types"].values())
+    assert any(json.loads(js)["types"]["form"] and len(json.loads(js)["types"]["form"]) == 1 for _, js in blocks)
+    assert (PROMPTS / "membership.v3.md").exists() and "at least 4" in (PROMPTS / "membership.v3.md").read_text(encoding="utf-8")
+
+
+def test_v4_batches_carry_prompt_version_4_and_v3_batches_are_unchanged():
+    b4 = build_wide_batches(calibration_items(), PACK, prompt_version=4)
+    h = json.loads(b4[(0, 0)][0])
+    assert h["prompt_version"] == 4 and h["prefix"].startswith(read_instructions(4))
+    assert json.loads(b4[(0, 0)][1])["prompt_version"] == 4
+    assert json.loads(build_wide_batches(calibration_items(), PACK)[(0, 0)][0])["prompt_version"] == 3
+
+
+def test_judge_reports_precision_both_ways_and_lists_unjudged_for_review():
+    by = {"cal.s": {0: ("t", _ans({"form": ["c.a", "c.x"], "content": ["c.a", "c.b"]}))},
+          "cal.m": {0: ("t", _ans({"form": ["c.a", "c.b", "c.c"]}))},
+          "cal.d": {0: ("t", _ans({"form": ["c.a", "c.q"]}))}}
+    r = calibration_report(_controls(), by)
+    assert r["precision_secondary"] == 3 / 5  # pre-registered: unjudged counts against
+    assert r["precision_judged"] == 3 / 4 and judged_precision(r) == 3 / 4  # fair share of judged (fair 3, bad 1)
+    assert r["n_unjudged"] == 1 and r["n_bad"] == 1
+    md = unjudged_review(_controls(), by, {"c.q": "Quiet", "c.a": "A"}, version=3)
+    assert "cal.d" in md and "c.q" in md and "Quiet" in md and "pre-registered" in md
+    assert "## cal.s" not in md
+
+
+def test_v4_predictions_are_registered_before_any_v4_answer_exists():
+    s = (ROOT / "data" / "gold" / "membership_wide_predictions.md").read_text(encoding="utf-8")
+    assert "v3 judged" in s and "0.6919" in s and "membership.v4" in s and "Confidence 0.4" in s
+    assert not list((ROOT / "data" / "batches").glob("membership.A3S.v4.calibration.var*.part0.answers.jsonl"))
