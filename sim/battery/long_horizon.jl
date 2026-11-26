@@ -62,8 +62,12 @@ dormant_flags(on::Bool; n::Integer = 120) = on ? (budget = true, endowment = 20.
     converge_init = true, legacy_funder = true, responsibility_reading = true, repair_credit = true, accolade_counterfactual = true,
     proposal_pma = true, proposal_eta = 2, proposal_confidence = 1.5) : (;)
 
+# The unified world for the `:bf` arm (8.176, 8.177): identity binding with newcomers and sybils, the economy's ceiling, fractal clusters; with the dormant
+# economy flags and the per-domain converge gate the composed world no longer stalls (P63: 0 of 24 seeds). The `:status_quo` arm runs without it.
+bf_unified() = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 2, sybils = 2, binding = true), economy = true, fractal = FractalParams())
+
 function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, steps::Integer = 1200,
-               n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf, dormant::Bool = false)
+               n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf, dormant::Bool = arm == :bf)
     arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
     bf = arm == :bf
     skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
@@ -89,7 +93,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
     )
     gov(trace) = M5Params(trace, 1:4; decisions = decisions, colluders = colluders, stealth = true,
                           loyalty = 2.0, p_delegate = 0.2, p_new_model = 0.01, advap = bf, ih_flags(ih)...)
-    (econ = econ, gov = gov)
+    (econ = econ, gov = gov, unified = bf ? bf_unified() : false)
 end
 # ---------------------------------------------------------------------------------------------------
 
@@ -248,7 +252,7 @@ const COUPLED_METRICS = [
 
 function run_l33_arm(seed::Integer; arm::Symbol, stress::Symbol, steps::Integer, epoch::Integer, m5_decisions::Integer)
     w = world(seed; arm = arm, stress = stress, steps = steps, decisions = m5_decisions)
-    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions, continuous = true)
+    tr = run_coupled(w.econ, w.gov; seed = seed, epoch = epoch, coupled = true, m5_decisions = m5_decisions, continuous = true, unified = w.unified)
     sp = tr.success
     (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u,
      median_h = sp.median_h, worst_drop = sp.worst_drop, gov_acc = tr.gov_acc)

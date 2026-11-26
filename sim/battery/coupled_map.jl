@@ -17,7 +17,7 @@ const Z_CM = 3.0
 
 function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, open_entry::Bool = false,
                        entrants::Integer = 0, adaptive_proposals::Bool = false, p_new_model::Real = 0.01,
-                       over::Dict{Symbol,Any} = Dict{Symbol,Any}(), ih::Bool = arm == :bf, dormant::Bool = false)
+                       over::Dict{Symbol,Any} = Dict{Symbol,Any}(), ih::Bool = arm == :bf, dormant::Bool = arm == :bf)
     bf = arm == :bf
     skills0 = draw_skills(Xoshiro(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
     skills = entrants > 0 ? vcat(skills0, draw_skills(Xoshiro(20261115 + seed), entrants, 4, [1, 3]; median = 0.6)) : skills0
@@ -48,14 +48,14 @@ function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, o
     )
     gov(trace) = M5Params(trace, 1:4; decisions = 60, colluders = colluders, stealth = true,
                           loyalty = 2.0, p_delegate = 0.2, p_new_model = Float64(p_new_model), advap = bf, ih_flags(ih)...)
-    (econ = econ, gov = gov)
+    (econ = econ, gov = gov, unified = bf ? bf_unified() : false)
 end
 
 function run_cm_breakeven(steps::Integer, seed::Integer)
     m5_dec = max(60, steps ÷ 2)
     function eval_arm(; arm::Symbol, oe::Bool = false, ent::Int = 0, adap::Bool = false)
         w = coupled_world(seed; arm = arm, steps = steps, open_entry = oe, entrants = ent, adaptive_proposals = adap)
-        res = run_coupled(w.econ, w.gov; seed = seed, epoch = 24, coupled = true, m5_decisions = m5_dec, continuous = true)
+        res = run_coupled(w.econ, w.gov; seed = seed, epoch = 24, coupled = true, m5_decisions = m5_dec, continuous = true, unified = w.unified)
         sp = res.success
         et = res.econ_trace
         (floor_u = sp.floor_u, floor_h = sp.floor_h, median_u = sp.median_u, median_h = sp.median_h,
@@ -81,7 +81,7 @@ const CM_THRESH_ARMS = [
 
 function eval_coupled_threshold(over::Dict{Symbol,Any}, seed::Integer)
     w = coupled_world(seed; arm = :bf, steps = 600, p_new_model = 0.05, over = over)
-    res = run_coupled(w.econ, w.gov; seed = seed, epoch = 25, coupled = true, m5_decisions = 60, continuous = true)
+    res = run_coupled(w.econ, w.gov; seed = seed, epoch = 25, coupled = true, m5_decisions = 60, continuous = true, unified = w.unified)
     sp = res.success
     et = res.econ_trace
     standing(i) = sum(et.balance[i, :]) + et.overflow_agent[i]
