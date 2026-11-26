@@ -58,7 +58,6 @@ def derive_setup(table, region, regions):
     s = {"region": region, "params": {}, "clipped": []}
     s["asfr"] = {b: val(look("fertility.asfr", b, "f"), 0.0) for b in BANDS}
     s["srb"] = val(look("fertility.sex_ratio_at_birth", "0"), 105.0)
-    s["tfr"] = val(look("fertility.tfr", "15-49", "f"))
     s["smam"] = {sx: val(look("family.age_first_marriage", "all", sx), 27.0) for sx in "fm"}
     s["pre"] = min(1.0, val(look("education.preprimary_gross_enrolment", "3-5"), 0.0) / 100)
     s["entry_age"] = round(val(look("education.primary_entry_age", "all"), 6.0))

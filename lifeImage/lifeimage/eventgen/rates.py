@@ -82,14 +82,14 @@ def judge(quantity, values, target, confidence, z=None):
             "z": zeff, "margin": margin, "seeds": n}
 
 
-def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None):
+def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, seed0=0):
     """Judge every statistic. `make_world(seed)` builds the generated world; `seeds` fixes the seed list, else seeds are added by
     precision (`eventgen.min_seeds` first, then one at a time until every statistic's z-SE is within half its margin, capped at `eventgen.max_seeds`)."""
     targets = expected_targets(true_table, regions, region_map)
     zz = governed("eventgen.rate_z") if z is None else z
     series = {k: [] for k in targets}
     n_seeds = 0
-    seed = 0
+    seed = seed0
     degraded_worlds = []
 
     def add():
