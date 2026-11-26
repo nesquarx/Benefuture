@@ -529,7 +529,9 @@ def test_judge_reports_precision_both_ways_and_lists_unjudged_for_review():
     assert "## cal.s" not in md
 
 
-def test_v4_predictions_are_registered_before_any_v4_answer_exists():
+def test_v4_predictions_are_registered_before_the_v4_verdict():
+    # Restated (lead, 2026-11-26): the answers now exist; the pre-registration must precede the judged section in the record.
     s = (ROOT / "data" / "gold" / "membership_wide_predictions.md").read_text(encoding="utf-8")
     assert "v3 judged" in s and "0.6919" in s and "membership.v4" in s and "Confidence 0.4" in s
-    assert not list((ROOT / "data" / "batches").glob("membership.A3S.v4.calibration.var*.part0.answers.jsonl"))
+    if "## v4 judged" in s:
+        assert s.index("Confidence 0.4") < s.index("## v4 judged")
