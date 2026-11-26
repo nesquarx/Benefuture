@@ -13,7 +13,7 @@ WIKIDATA_ROOTS = {
     "cybersecurity": ["Q3510521", "Q189900", "Q4071928", "Q631425", "Q14001", "Q141090"],  # computer/information security, cyberattack, vulnerability, malware, encryption
     "environmental_harm": ["Q1156265", "Q58734", "Q183129", "Q131123", "Q34577", "Q169940", "Q1134541"],  # environmental crime, pollution, water/air, poaching, deforestation, dumping
     "hospitality_hosting": ["Q815825", "Q1495452", "Q27686", "Q18089644"],  # hospitality, hospitality industry, hotel, guest
-    "medication_adherence": ["Q67144513", "Q12140", "Q701216", "Q718753", "Q1895998", "Q16251540", "Q1761396", "Q3355478", "Q45959", "Q3388529", "Q1154971", "Q3505252", "Q7144988"],  # adherence, medication, pharmacotherapy, drug interaction
+    "medication_adherence": ["Q67144513", "Q701216", "Q718753", "Q1895998", "Q16251540", "Q1761396", "Q3355478", "Q45959", "Q3388529", "Q1154971", "Q3505252", "Q7144988"],  # adherence, medication, pharmacotherapy, drug interaction
     "parenting_adolescents": ["Q131774", "Q2353731", "Q1217379", "Q11943008", "Q933555", "Q784843", "Q1352982", "Q108257739", "Q124707901", "Q2493173", "Q535691", "Q1195344", "Q28130149", "Q1204559", "Q101065", "Q407784", "Q305", "Q6665312"],  # adolescence, parenting (education), raising a child, adolescent psychology
     "reproduction_fertility": ["Q179399", "Q25862", "Q122224", "Q1280670", "Q28693", "Q964401", "Q1981388"],  # infertility, ART, contraception, family planning, miscarriage, fertility, reproductive health
     "self_provisioning": ["Q2787508", "Q1572679", "Q59095998", "Q124946", "Q2991771", "Q173514", "Q38695", "Q36963", "Q14373"],  # subsistence, household production, gardening, foraging, preservation, cooking, hunting, fishing

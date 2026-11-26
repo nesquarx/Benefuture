@@ -1,5 +1,5 @@
 {
- "candidates": 139,
+ "candidates": 128,
  "dropped": [
   {
    "label": "occupational therapy",
@@ -47,6 +47,31 @@
    "source": "wikidata"
   },
   {
+   "label": "parenting",
+   "reason": "restates existing candidate f.parenting",
+   "source": "wikidata"
+  },
+  {
+   "label": "physical education",
+   "reason": "restates existing candidate f.education_physical",
+   "source": "wikidata"
+  },
+  {
+   "label": "hunting",
+   "reason": "restates existing candidate f.hunting",
+   "source": "wikidata"
+  },
+  {
+   "label": "fishing",
+   "reason": "restates existing candidate f.fishing",
+   "source": "wikidata"
+  },
+  {
+   "label": "flood",
+   "reason": "restates existing candidate f.flood",
+   "source": "wikidata"
+  },
+  {
    "label": "iron",
    "reason": "restates existing candidate f.iron",
    "source": "wikidata"
@@ -87,31 +112,6 @@
    "source": "wikidata"
   },
   {
-   "label": "parenting",
-   "reason": "restates existing candidate f.parenting",
-   "source": "wikidata"
-  },
-  {
-   "label": "physical education",
-   "reason": "restates existing candidate f.education_physical",
-   "source": "wikidata"
-  },
-  {
-   "label": "hunting",
-   "reason": "restates existing candidate f.hunting",
-   "source": "wikidata"
-  },
-  {
-   "label": "fishing",
-   "reason": "restates existing candidate f.fishing",
-   "source": "wikidata"
-  },
-  {
-   "label": "flood",
-   "reason": "restates existing candidate f.flood",
-   "source": "wikidata"
-  },
-  {
    "label": "Lodging-houses",
    "reason": "restates existing candidate f.house_lodging",
    "source": "lcsh"
@@ -124,7 +124,7 @@
  ],
  "licence_status": "verified",
  "merged": 12,
- "raw": 175,
+ "raw": 164,
  "sources": [
   "wikidata",
   "doid",

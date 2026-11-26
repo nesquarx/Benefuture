@@ -15,6 +15,8 @@ Status: IN PROGRESS
 - Do not touch lifeimage/fine/gap2.py, tools/fine_*; existing generator untouched.
 - Raw downloads (WPP, ILOSTAT bulk) live only in scratchpad; only aggregates are committed.
 
+- LI.64 (lead, mid-task): every Param carries `snippet` (short sanitized source statement), `snippet_locator` (page/table/indicator code), `retrieved` (date); a Param without a snippet must carry `snippet_missing` (reason) and confidence low; schema test enforces. Aggregates and documentation only.
+
 ## Done
 (none yet)
 
