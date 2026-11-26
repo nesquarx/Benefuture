@@ -443,6 +443,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             win = pm && adopt_ep > 0 ? (w = success_pattern(snap; from = adopt_ep * epoch + 1); w.floor_u + w.floor_h) : nothing
             govern_epoch!(ep, snap, success_pattern(snap; from = max(1, step - epoch + 1)), win)
             ret = (pv = pv_cur, threshold = th_cur, track_window = tw_cur)
+            U === nothing || (ret = merge(ret, unified_handover!(U)))   # phase D: scoped status bars and the fractal's settlement
             push!(live_history, (pv = copy(ret.pv), threshold = ret.threshold, track_window = ret.track_window))
             ret
         end)

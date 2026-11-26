@@ -158,6 +158,10 @@ Base.@kwdef struct UnifiedParams
     fractal::Any = nothing       # phase C (b): a `FractalParams`; each epoch's cluster decisions run on that epoch's measured clusters, funded from the economy's commons
     draw_frac::Float64 = 0.5     # governed (phase C b): the share of the undrawn commons an epoch's fractal run may take as its root reserve
     decisions_per_epoch::Int = 6 # world (phase C b): the cluster decisions taken each epoch
+    scoped::Bool = false         # phase D: each epoch's cluster decisions set the economy's scoped parameters (the status bar per domain; the finer scope wins)
+    settle::Bool = false         # phase D: the fractal's reserves settle into the economy (level-1 balances to the members' purses, the rest back to the commons, mint and burn into the supply)
+    bar_step::Float64 = 0.05     # governed (phase D): how far a decided "raise" lifts a domain's status bar above the economy's own (the bar only rises, 8.84; "hold" leaves it)
+    fractal_truth::Union{Nothing,Vector{Int}} = nothing   # world (tests): the right option (+1 raise, -1 hold) per decision class, in place of the random draw (a planted heterogeneity)
 end
 
 "Set the unified world up: the network, the claim stream on it (a pre-pass over the horizon's epochs), the economy with the claims' outputs as its inputs."
@@ -185,7 +189,8 @@ function unified_setup(econ::M3cParams, up::UnifiedParams, n_epochs::Integer; se
      bloc = cl.bloc, gov_inter = zeros(na, na), epochs = NamedTuple[], n_epochs = n_epochs,
      ident = up.identity === nothing ? nothing :
              identity_setup(up.identity, up.economy ? (n = na - k_id, planted = net.planted[1:(na - k_id)]) : net, up.communities; seed = seed),
-     economy = up.economy, allow = allow, nm = na - k_id, up = up, fractal = NamedTuple[], drawn = Ref(0.0), commons = Ref(0.0))
+     economy = up.economy, allow = allow, nm = na - k_id, up = up, fractal = NamedTuple[], drawn = Ref(0.0), commons = Ref(0.0),
+     bars = Ref(zeros(length(econ.known))), scope = Ref(Dict{Int,NamedTuple}()), pending = Ref{Any}(nothing))
 end
 
 "The governance's M5 parameters on the one network: its contacts, its colluders, its rumour exposure."
@@ -255,20 +260,61 @@ ceiling and the accumulation allowance returned), so the clusters together never
 level's reserves are shares of its parent's (one currency). The tree's ledger is exact (`sum(balances) = reserve + minted - burnt`).
 """
 function unified_fractal_epoch!(U, ep::Integer, tr)
-    na = U.net.n; fp = U.up.fractal
+    na = U.net.n; fp = U.up.fractal; up = U.up
     U.commons[] = sum(max.(tr.reinvested, 0.0))
-    root = U.up.draw_frac * max(U.commons[] - U.drawn[], 0.0)
+    # settled draws leave the commons for real, so the draw is a share of what is there; unsettled draws are tracked (`drawn`) against it
+    root = up.draw_frac * max(U.commons[] - (up.settle ? 0.0 : U.drawn[]), 0.0)
     labs = [l.labels[1:na] for l in U.epochs[end].levels]
     if root <= 0
-        push!(U.fractal, (epoch = ep, reserve = 0.0, ledger_gap = 0.0, minted = 0.0, burnt = 0.0, decisions = 0, right_share = NaN, harm_peak = 0.0, drawn = U.drawn[], commons = U.commons[]))
+        push!(U.fractal, (epoch = ep, reserve = 0.0, ledger_gap = 0.0, minted = 0.0, burnt = 0.0, decisions = 0, right_share = NaN, harm_peak = 0.0, drawn = up.settle ? 0.0 : U.drawn[], commons = U.commons[]))
         return
     end
-    p = _with_fields(fp, Dict{Symbol,Any}(:reserve => root, :decisions => U.up.decisions_per_epoch))
-    r = run_fractal(labs, p; seed = ep)
-    U.drawn[] += root
+    p = _with_fields(fp, Dict{Symbol,Any}(:reserve => root, :decisions => up.decisions_per_epoch))
+    W = fractal_world(na, p; seed = ep)
+    up.fractal_truth === nothing || (W = merge(W, (τ = copy(up.fractal_truth),)))
+    r = run_fractal(labs, p; seed = ep, world = W)
+    up.settle || (U.drawn[] += root)
     gap = sum(values(r.balances)) - (root + r.minted - r.burnt)
-    push!(U.fractal, (epoch = ep, reserve = root, ledger_gap = gap, minted = r.minted, burnt = r.burnt, decisions = length(r.decisions), right_share = r.right_share,
-                      harm_peak = r.harm_peak, drawn = U.drawn[], commons = U.commons[], spent = sum(values(r.spent)), degraded = length(r.degraded)))
+    rec = (epoch = ep, reserve = root, ledger_gap = gap, minted = r.minted, burnt = r.burnt, decisions = length(r.decisions), right_share = r.right_share,
+           harm_peak = r.harm_peak, drawn = up.settle ? root : U.drawn[], commons = U.commons[], spent = sum(values(r.spent)), degraded = length(r.degraded))
+    if up.scoped   # phase D (a): the decisions set the economy's scoped parameters; a finer scope wins, a coarser later decision sets only what is undecided
+        U.scope[] = unified_scope(r.decisions, length(U.bars[]))
+        U.bars[] = [haskey(U.scope[], d) && U.scope[][d].option == 1 ? up.bar_step : 0.0 for d in 1:length(U.bars[])]
+        rec = merge(rec, (scope = copy(U.scope[]), bars = copy(U.bars[])))
+    end
+    if up.settle   # phase D (b): the clusters' reserves settle into the economy (the finest clusters' balances to their members' purses, every coarser reserve back to the commons)
+        purses = zeros(na); back = 0.0
+        for ((l, c), b) in r.balances
+            if l == 1
+                m = findall(==(c), r.levels[1]); purses[m] .+= b / length(m)
+            else
+                back += b
+            end
+        end
+        U.pending[] = (purses = purses, commons = back - root, supply = r.minted - r.burnt)
+        rec = merge(rec, (settled = sum(purses), returned = back, settle_gap = sum(purses) + back - (root + r.minted - r.burnt)))
+    end
+    push!(U.fractal, rec)
+end
+
+"""
+The scope each domain's decision settled at (phase D): decisions in order, a decision for a domain replaces the held one only when its scope is as fine or finer
+(level number as low or lower), so a coarser later decision sets only the undecided domains. Domains beyond `nd` have no economy parameter to set.
+"""
+function unified_scope(decisions, nd::Integer)
+    scope = Dict{Int,NamedTuple}()
+    for d in decisions
+        d.class <= nd || continue
+        cur = get(scope, d.class, nothing)
+        (cur === nothing || d.level <= cur.level) && (scope[d.class] = (level = d.level, option = d.option, cluster = d.cluster))
+    end
+    scope
+end
+
+"What the governor hands the economy at an epoch boundary besides thresholds (phase D): the scoped status bars and the pending settlement (taken once)."
+function unified_handover!(U)
+    st = U.pending[]; U.pending[] = nothing
+    (bars = U.up.scoped ? copy(U.bars[]) : nothing, settle = st)
 end
 
 "What the unified world reports: the network, the epochs' nested clusters and readings, the claims' outputs."

@@ -280,7 +280,8 @@ struct M3cParams
     restraint_recursion_budget::Int # governed: recursive restraint audits (AdvAp) funded per step
     restraint_challenge::Float64  # world: chance the losing side challenges an audit finding, triggering a recursive audit
     restraint_alarm_ratio::Float64 # governed: false/true audited findings ratio at which the justice process is flagged flawed (8.170 e)
-    restraint_alarm_min::Int      # governed: audited findings needed before the alarm may fire
+    restraint_alarm_min::Int      # governed: audited findings needed before the alarm may fire (0: the interval alone judges small samples, 8.175 (1))
+    restraint_alarm_z::Float64    # governed: confidence (standard errors) at which the audited false share's lower bound must exceed the bar (8.175 (1); interval alarm)
     restraint_audit::Bool         # 8.169 (c, ii): forcible restraint is audited with `restraint_audit_prob`, audit cost from the commons, false restraint liable to the enforcer
     restraint_bar::Float64        # governed: restraint burden at and above which the audit is certain and precedes the restraint (8.169)
     restraint_kappa::Float64      # governed: liability weight of an overturned restraint on its enforcer (8.169)
@@ -355,7 +356,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    judges = Float64[], judge_bias = Float64[], judge_cluster = Int[], panel_size::Integer = 5, panel_minority_weight::Real = 1.5,
                    evidence_sep::Real = 1.5, evidence_noise::Real = 1.0, false_accusation_rate::Real = 0.03,
                    enforcer_excess = Float64[], excess_tol::Real = 0.1, restraint_recursion_budget::Integer = 1, restraint_challenge::Real = 0.0,
-                   restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 6, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
+                   restraint_alarm_ratio::Real = 1.0, restraint_alarm_min::Integer = 0, restraint_alarm_z::Real = 1.0, restraint_audit::Bool = false, restraint_bar::Real = 0.8, restraint_kappa::Real = 1.0,
                    restraint_audit_floor::Real = 0.05, restraint_dur_scale::Real = 5.0, restraint_audit_cap::Integer = 2,
                    restraint_audit_acc::Real = 0.9, acquittal_audit::Bool = false, acquittal_audit_rate::Real = 0.25, false_restraint_severity::Real = 0.6, false_restraint_harm::Real = 1.0,
                    enforcer_liability_scale::Real = 5.0, allowance = Float64[])
@@ -365,7 +366,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
           isfinite(evidence_noise) && evidence_noise > 0 && isfinite(false_accusation_rate) && 0 <= false_accusation_rate <= 1 &&
           all(e -> isfinite(e) && e >= 0, enforcer_excess) && isfinite(excess_tol) && excess_tol >= 0 && restraint_recursion_budget >= 0 &&
           isfinite(restraint_challenge) && 0 <= restraint_challenge <= 1 && isfinite(restraint_alarm_ratio) && restraint_alarm_ratio >= 0 &&
-          restraint_alarm_min >= 0,
+          restraint_alarm_min >= 0 && isfinite(restraint_alarm_z) && restraint_alarm_z >= 0,
           "judges, bias, excess, noise non-negative and aligned; clusters 1 or 2; panel at least 1; rates in [0, 1]")
     check(isfinite(restraint_bar) && restraint_bar > 0 &&
           isfinite(restraint_kappa) && restraint_kappa >= 0 && isfinite(restraint_audit_floor) && 0 <= restraint_audit_floor <= 1 &&
@@ -488,7 +489,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               repair_credit, accolade_counterfactual,
               collect(Float64, judges), collect(Float64, judge_bias), collect(Int, judge_cluster), Int(panel_size), Float64(panel_minority_weight),
               Float64(evidence_sep), Float64(evidence_noise), Float64(false_accusation_rate), collect(Float64, enforcer_excess), Float64(excess_tol),
-              Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
+              Int(restraint_recursion_budget), Float64(restraint_challenge), Float64(restraint_alarm_ratio), Int(restraint_alarm_min), Float64(restraint_alarm_z), restraint_audit, Float64(restraint_bar), Float64(restraint_kappa),
               Float64(restraint_audit_floor), Float64(restraint_dur_scale), Int(restraint_audit_cap), Float64(restraint_audit_acc), acquittal_audit, Float64(acquittal_audit_rate),
               Float64(false_restraint_severity), Float64(false_restraint_harm), Float64(enforcer_liability_scale),
               isempty(allowance) ? ones(length(agents)) : collect(Float64, allowance))
@@ -566,6 +567,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # economy and no state is reset between its epochs.
     check(governor === nothing || governor_every >= 1, "a governor needs a positive period")
     th_now, tw_now = Ref(p.threshold), Ref(p.track_window)
+    bar_off = Ref(Float64[])   # scoped status bars (unified world phase D): per true domain, an offset (>= 0, the bar only rises, 8.84) a governor sets from the fractal clusters' decisions
     rng, mrng = Xoshiro(seed), Xoshiro(hash((seed, :measurement)))
     drng, crng = Xoshiro(hash((seed, :domain))), Xoshiro(hash((seed, :classification)))
     nrng = Xoshiro(hash((seed, :noise)))  # the extra noise sources, so their absence changes nothing else
@@ -1067,9 +1069,10 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     # The ratchet (8.84): each leaf's bar never falls below what enough of its models have cleared.
     lfloor = zeros(lmax)
     function leaf_bar(j)
-        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_now[], lfloor[j])
+        th_j = min(th_now[] + (ltrue[j] <= length(bar_off[]) ? max(bar_off[][ltrue[j]], 0.0) : 0.0), 1.0)
+        (bar_rel[] || (trial.on[] && trial.leaves[ltrue[j]])) || return max(th_j, lfloor[j])
         q = argmax(μ[:, j])
-        max(relative_bar(th_now[], p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
+        max(relative_bar(th_j, p.coarse_threshold, parent_ok(q) ? parent_acc(q) : p.coarse_threshold), lfloor[j])
     end
     function ratchet!()
         for j in 1:nleaves()
@@ -1218,7 +1221,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     function check_alarm!()
         # The alarm reads audited findings of both error types against correct verdicts (8.170 e, 8.173): false
         # restraints and false acquittals against upheld verdicts.
-        if restraint_balance_flawed(p.restraint_alarm_min, findings_false[], findings_true[]; ratio = p.restraint_alarm_ratio)
+        if restraint_alarm_interval(p.restraint_alarm_min, findings_false[], findings_true[]; ratio = p.restraint_alarm_ratio, z = p.restraint_alarm_z)
             alarm_count[] += 1
             if alarm_step[] == 0
                 alarm_step[] = cur[]
@@ -3271,6 +3274,17 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 haskey(g, :pv) && g.pv !== nothing && (t = with_params(t, g.pv))
                 haskey(g, :threshold) && g.threshold !== nothing && (th_now[] = Float64(g.threshold))
                 haskey(g, :track_window) && g.track_window !== nothing && (tw_now[] = Int(g.track_window))
+                haskey(g, :bars) && g.bars !== nothing && (bar_off[] = collect(Float64, g.bars))
+                if haskey(g, :settle) && g.settle !== nothing   # the fractal clusters' reserves settle into the economy (phase D): purses, commons, supply
+                    st = g.settle
+                    for a in 1:na
+                        st.purses[a] == 0.0 && continue
+                        balance[a, clamp(argmax(agent_focus[a]), 1, ncol)] += st.purses[a]
+                    end
+                    rsum = sum(reinvested)
+                    rsum > 0 && (reinvested .*= max(0.0, 1 + st.commons / rsum))
+                    isempty(tr.supply) ? push!(tr.supply, st.supply) : (tr.supply[end] += st.supply)
+                end
             end
         end
     end

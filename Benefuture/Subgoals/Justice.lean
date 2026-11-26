@@ -638,6 +638,89 @@ theorem restraint_balance_flawed_mono (minAudits f1 f2 trueN : ℕ) (ratio : ℝ
   have : (f1 : ℝ) ≤ f2 := by exact_mod_cast hle
   linarith
 
+/-- Interval alarm of the justice process (ruling 8.175 (1); `L115`, `L117` J): the audited false
+    share exceeds the share the bar `ratio` allows (`ratio / (1 + ratio)`) with its Wilson lower
+    bound at `z` standard errors, over at least `minAudits` audited verdicts. The Wilson interval
+    inverts the score test, so "the lower bound exceeds the bar" is, without a square root or a
+    division, `ratio * trueN < falseN` and `z^2 * ratio * (falseN + trueN) < (falseN - ratio * trueN)^2`.
+    It reads audited outputs only. At `z = 0` it is the point rule with a strict bar. -/
+def restraint_alarm_interval (minAudits falseN trueN : ℕ) (ratio z : ℝ) : Prop :=
+  minAudits ≤ falseN + trueN ∧ ratio * (trueN : ℝ) < (falseN : ℝ) ∧
+    z ^ 2 * ratio * ((falseN : ℝ) + trueN) < ((falseN : ℝ) - ratio * trueN) ^ 2
+
+/-- The interval alarm is stricter than the point alarm: whenever it fires, the point alarm fires. -/
+theorem restraint_alarm_interval_implies_point (minAudits falseN trueN : ℕ) (ratio z : ℝ)
+    (h : restraint_alarm_interval minAudits falseN trueN ratio z) :
+    restraint_balance_flawed minAudits falseN trueN ratio :=
+  ⟨h.1, le_of_lt h.2.1⟩
+
+/-- Counterexample guard: a nominal process (false findings at or below `ratio` times the true ones)
+    is never flagged, at any confidence. -/
+theorem restraint_alarm_interval_quiet_when_nominal (minAudits falseN trueN : ℕ) (ratio z : ℝ)
+    (h : (falseN : ℝ) ≤ ratio * trueN) :
+    ¬ restraint_alarm_interval minAudits falseN trueN ratio z := by
+  rintro ⟨_, h2, _⟩
+  linarith
+
+/-- Too few audits to judge: no alarm. -/
+theorem restraint_alarm_interval_below_min_audits (minAudits falseN trueN : ℕ) (ratio z : ℝ)
+    (h : falseN + trueN < minAudits) :
+    ¬ restraint_alarm_interval minAudits falseN trueN ratio z := by
+  rintro ⟨h1, _⟩
+  omega
+
+/-- At `z = 0` the interval alarm is the point rule with a strict bar. -/
+theorem restraint_alarm_interval_zero_z (minAudits falseN trueN : ℕ) (ratio : ℝ) :
+    restraint_alarm_interval minAudits falseN trueN ratio 0 ↔
+      minAudits ≤ falseN + trueN ∧ ratio * (trueN : ℝ) < (falseN : ℝ) := by
+  constructor
+  · rintro ⟨h1, h2, _⟩
+    exact ⟨h1, h2⟩
+  · rintro ⟨h1, h2⟩
+    refine ⟨h1, h2, ?_⟩
+    have : 0 < ((falseN : ℝ) - ratio * trueN) := by linarith
+    simpa using pow_pos this 2
+
+/-- A higher confidence level never makes the alarm easier to raise: an alarm at `z2` stands at every
+    smaller `z1 ≥ 0`. -/
+theorem restraint_alarm_interval_antitone_z (minAudits falseN trueN : ℕ) (ratio z1 z2 : ℝ)
+    (hr : 0 ≤ ratio) (hz : 0 ≤ z1) (hle : z1 ≤ z2)
+    (h : restraint_alarm_interval minAudits falseN trueN ratio z2) :
+    restraint_alarm_interval minAudits falseN trueN ratio z1 := by
+  obtain ⟨h1, h2, h3⟩ := h
+  refine ⟨h1, h2, ?_⟩
+  have hn : (0:ℝ) ≤ ratio * ((falseN : ℝ) + trueN) := by positivity
+  have hz2 : z1 ^ 2 ≤ z2 ^ 2 := by nlinarith
+  nlinarith [mul_le_mul_of_nonneg_right hz2 hn]
+
+/-- More false findings never lower the interval alarm (given a non-negative bar). -/
+theorem restraint_alarm_interval_mono (minAudits f1 f2 trueN : ℕ) (ratio z : ℝ)
+    (hr : 0 ≤ ratio) (hle : f1 ≤ f2)
+    (h : restraint_alarm_interval minAudits f1 trueN ratio z) :
+    restraint_alarm_interval minAudits f2 trueN ratio z := by
+  obtain ⟨h1, h2, h3⟩ := h
+  have hf : (f1 : ℝ) ≤ f2 := by exact_mod_cast hle
+  refine ⟨by omega, by linarith, ?_⟩
+  set d1 : ℝ := (f1 : ℝ) - ratio * trueN with hd1
+  set k : ℝ := z ^ 2 * ratio with hk
+  have hk0 : 0 ≤ k := by positivity
+  have hd1pos : 0 < d1 := by linarith
+  have hsum : d1 ≤ (f1 : ℝ) + trueN := by
+    have : 0 ≤ ratio * (trueN : ℝ) := by positivity
+    have : (0:ℝ) ≤ trueN := Nat.cast_nonneg _
+    linarith
+  -- d1^2 > k (f1 + T) >= k d1, so d1 > k
+  have hdk : k < d1 := by
+    by_contra hcon
+    have hcon := not_lt.mp hcon
+    nlinarith [mul_le_mul_of_nonneg_right hsum hk0]
+  set δ : ℝ := (f2 : ℝ) - f1 with hδ
+  have hδ0 : 0 ≤ δ := by linarith
+  have e1 : ((f2 : ℝ) - ratio * trueN) = d1 + δ := by rw [hd1, hδ]; ring
+  have e2 : z ^ 2 * ratio * ((f2 : ℝ) + trueN) = k * ((f1 : ℝ) + trueN) + k * δ := by rw [hk, hδ]; ring
+  rw [e1, e2]
+  nlinarith [mul_nonneg hδ0 hδ0, mul_nonneg hδ0 hd1pos.le, mul_le_mul_of_nonneg_left hdk.le hδ0]
+
 /-- Voice of a panel expert (`L115` `LqCfdBfDm`, minority clusters get `VW↑`): a minority-cluster
     expert's vote weight is raised by `uplift` (never lowered), a majority expert's is unchanged. -/
 noncomputable def panel_voice (vw uplift : ℝ) (minority : Bool) : ℝ :=

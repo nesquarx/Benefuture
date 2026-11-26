@@ -565,6 +565,43 @@ end
     @test minimum(values(fr.balances)) >= -1e-9
 end
 
+# The unified world, phase D (P61 heavy; fast version in probe_tests.jl). Prediction (lead, before measuring, confidence 0.6; the earlier build measured
+# +0.19 +- 0.44 at 14 seeds and missed 0.6): with a planted heterogeneity (only domain 4, where the deceit sits, wants a higher status bar), scoped bars (raise
+# domain 4 alone) beat uniform bars (raise every domain) on floor_u + floor_h, paired seeds on the same worlds, z = 2, smallest effect that matters 0.5; and beat
+# no raise at all. Structural in every seed: both ledgers. Not tuned to rescue; what is measured is recorded.
+@timed_testset "Probe (heavy): scoped economy parameters under a planted heterogeneity, one ledger across levels (P61)" begin
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    fp = FractalParams(severity = fill(0.2, 4), bias = zeros(4))
+    function world(seed, truth; bar_step = 0.08)
+        up = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = true), economy = true, fractal = fp,
+                           scoped = true, settle = true, fractal_truth = truth, bar_step = bar_step)
+        run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+    end
+    cache = Dict{Int,Any}()
+    arms(seed) = get!(cache, seed) do
+        (scoped = world(seed, [-1, -1, -1, 1]), uniform = world(seed, [1, 1, 1, 1]), none = world(seed, [-1, -1, -1, -1]))
+    end
+    fl(r) = r.success.floor_u + r.success.floor_h
+    r1 = seeds_until_stable(s -> (a = arms(s); fl(a.scoped) - fl(a.uniform)); tol = 0.3, min_seeds = 8, max_seeds = 24)
+    r2 = seeds_until_stable(s -> (a = arms(s); fl(a.scoped) - fl(a.none)); tol = 0.3, min_seeds = 8, max_seeds = 24)
+    @info "P61 heavy (i) scoped minus uniform bars (floor_u + floor_h)" n = r1.n stable = r1.stable mean = r1.mean se = r1.se
+    @info "P61 heavy (i) scoped minus no raise (floor_u + floor_h)" n = r2.n stable = r2.stable mean = r2.mean se = r2.se
+    for s in keys(cache), r in values(cache[s]), f in r.unified.fractal
+        f.reserve > 0 || continue
+        @test abs(f.ledger_gap) < 1e-6 && abs(f.settle_gap) < 1e-6
+    end
+    for s in keys(cache), r in values(cache[s])
+        tr = r.econ_trace
+        @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6
+    end
+    @test_broken paired_effect(r1.values; z = 2.0, direction = :up).significant && r1.mean > 0.5   # PLACEHOLDER pending measurement
+end
+
 probe_total("heavy 3")
 
 

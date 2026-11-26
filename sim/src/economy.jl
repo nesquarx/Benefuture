@@ -330,6 +330,20 @@ function restraint_balance_flawed(min_audits::Integer, false_n::Integer, true_n:
 end
 
 """
+    restraint_alarm_interval(min_audits, false_n, true_n; ratio = 1.0, z = 1.0) -> Bool
+
+Interval alarm of the justice process (Lean `restraint_alarm_interval_ref`, ruling 8.175 (1)): true once at least
+`min_audits` verdicts are audited and the audited false share's Wilson lower bound at `z` exceeds the bar
+`ratio / (1 + ratio)` (equivalently `ratio * true_n < false_n` and `z^2 * ratio * (false_n + true_n) < (false_n - ratio * true_n)^2`).
+Reads audited outputs only.
+"""
+function restraint_alarm_interval(min_audits::Integer, false_n::Integer, true_n::Integer; ratio::Real = 1.0, z::Real = 1.0)
+    check(min_audits >= 0 && false_n >= 0 && true_n >= 0 && isfinite(ratio) && ratio >= 0 && isfinite(z) && z >= 0, "counts, ratio and z non-negative")
+    ccall(sym(:bf_restraint_alarm_interval), UInt8, (Float64, Float64, Float64, Float64, Float64),
+          Float64(min_audits), Float64(false_n), Float64(true_n), Float64(ratio), Float64(z)) != 0
+end
+
+"""
     panel_voice(vw, uplift, minority) -> weight
 
 Voice of a panel expert (Lean `panel_voice_ref`, `L115`): a minority-cluster expert's weight is raised

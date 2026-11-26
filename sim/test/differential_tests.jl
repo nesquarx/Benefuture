@@ -164,6 +164,11 @@ fin(xs...) = all(isfinite, xs)
                        (m, f, t, q) -> fin(q) && q >= 0,
                        (m, f, t, q) -> restraint_balance_flawed(m, f, t; ratio = q),
                        (m, f, t, q) -> m <= f + t && q * t <= f) == (guard = 0, value = 0)
+    @test differential(:restraint_alarm_interval,
+                       r -> (rand(r, 0:20), rand(r, 0:20), rand(r, 0:20), rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r), rand(r) < 0.1 ? hostile(r) : 3.0 * rand(r)),
+                       (m, f, t, q, z) -> fin(q, z) && q >= 0 && z >= 0,
+                       (m, f, t, q, z) -> restraint_alarm_interval(m, f, t; ratio = q, z = z),
+                       (m, f, t, q, z) -> m <= f + t && q * t < f && z^2 * q * (f + t) < (f - q * t)^2) == (guard = 0, value = 0)
     @test differential(:panel_voice,
                        r -> (rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.1 ? hostile(r) : 3 * rand(r), rand(r) < 0.5),
                        (w, u, m) -> fin(w, u) && w >= 0 && u >= 0,

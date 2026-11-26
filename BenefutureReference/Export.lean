@@ -489,6 +489,8 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 -- 8.170 / L115, L117: restraint-balance alarm over audited findings; minority uplift of panel voices
 @[export bf_restraint_balance_flawed] def restraintBalanceFlawed (minAudits falseN trueN ratio : Float) : UInt8 :=
   if restraint_balance_flawed_ref minAudits.toUInt64.toNat falseN.toUInt64.toNat trueN.toUInt64.toNat ratio then 1 else 0
+@[export bf_restraint_alarm_interval] def restraintAlarmInterval (minAudits falseN trueN ratio z : Float) : UInt8 :=
+  if restraint_alarm_interval_ref minAudits.toUInt64.toNat falseN.toUInt64.toNat trueN.toUInt64.toNat ratio z then 1 else 0
 
 @[export bf_panel_voice] def panelVoice (vw uplift : Float) (minority : UInt8) : Float :=
   panel_voice_ref vw uplift (minority != 0)

@@ -1750,6 +1750,39 @@ end
     @test all(r -> r.tr.restraint_alarm_step == 0, nom)
 end
 
+# 8.175 (1) (author: "governed parameter as usual"): the justice alarm's minimum evidence is a governed parameter. The alarm is an interval rule (Lean
+# `restraint_alarm_interval_ref`): it fires when the Wilson lower bound of the audited false share, at the governed confidence `restraint_alarm_z`, exceeds the
+# bar `ratio / (1 + ratio)`, replacing the fixed count of six audited findings (`restraint_alarm_min`, now 0, stays governed). Hypotheses (stated before measuring, lead
+# confidence 0.6): at z = 2 the interval loses power under capture (the old fixed count caught 13 of 24 captured-to-guilt, 19 of 24 captured-to-acquit); z = 1 recovers
+# it with at most one nominal false alarm over 24 seeds; the nominal process is quiet at any z (Lean `restraint_alarm_interval_quiet_when_nominal`). Seeds 1:8 here (paired
+# on the same worlds), 24 in probe_heavy3_tests.jl.
+@timed_testset "Probe: the justice alarm is an interval at a governed confidence (8.175 (1))" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    # the Lean rule: stricter than the point rule, quiet when nominal, small samples need a clear excess, z moves the bar
+    @test !restraint_alarm_interval(0, 1, 0) && restraint_alarm_interval(0, 2, 0) && restraint_alarm_interval(0, 4, 1) && !restraint_alarm_interval(0, 3, 1)
+    @test !restraint_alarm_interval(0, 5, 5) && !restraint_alarm_interval(0, 9, 9) && !restraint_alarm_interval(0, 0, 7)   # nominal or balanced: never
+    @test restraint_alarm_interval(0, 3, 1; z = 0.0) && !restraint_alarm_interval(0, 3, 1; z = 1.0) && !restraint_alarm_interval(0, 11, 5; z = 2.0) && restraint_alarm_interval(0, 11, 5; z = 1.0)
+    @test !restraint_alarm_interval(10, 6, 0) && restraint_alarm_interval(6, 6, 0)                                        # the minimum stays governed
+    @test restraint_alarm_interval(0, 6, 5; ratio = 0.5) && !restraint_alarm_interval(0, 6, 5; ratio = 1.0)             # the bar is the ratio
+    fires(f) = count(r -> r.tr.restraint_alarm_step > 0, f)
+    seeds = 1:8
+    arm(; kw...) = (z2 = [restraint_world(s; kw..., alarm_z = 2.0) for s in seeds], z1 = [restraint_world(s; kw..., alarm_z = 1.0) for s in seeds])
+    guilt = arm(; bias = [6.0, 6, 6, 6, 6, 6, 6, 0], cluster = [1, 1, 1, 1, 1, 1, 1, 2], accuse = 1.0)                    # capture to guilt
+    acquit = arm(; bias = fill(-6.0, 8), cluster = fill(1, 8), acq = true)                                                # capture to acquit
+    partial = arm(; bias = [6.0, 6, 6, 6, 0, 0, 0, 0], cluster = [1, 1, 1, 1, 2, 2, 2, 2], accuse = 0.3)                  # half the panel captured
+    nominal = arm(); nominal_acq = arm(; acq = true)
+    @info "P62 alarm counts of 8 (z = 2, z = 1)" guilt = (fires(guilt.z2), fires(guilt.z1)) acquit = (fires(acquit.z2), fires(acquit.z1)) partial = (fires(partial.z2), fires(partial.z1)) nominal = (fires(nominal.z2), fires(nominal.z1)) nominal_acq = (fires(nominal_acq.z2), fires(nominal_acq.z1))
+    for a in (guilt, acquit, partial)
+        @test fires(a.z1) >= fires(a.z2)                                                                              # a lower z never loses power (paired worlds)
+    end
+    @test fires(guilt.z1) > fires(guilt.z2) && fires(acquit.z1) > fires(acquit.z2)                                    # z = 2 loses power under capture, z = 1 recovers it
+    @test fires(guilt.z1) >= 6 && fires(acquit.z1) >= 3
+    @test fires(nominal.z1) == 0 && fires(nominal.z2) == 0 && fires(nominal_acq.z1) <= 1                              # nominal: no false alarm (acquittal audits add correct findings), at most one
+    @test all(r -> r.tr.restraint_alarm_step > 0, filter(r -> r.tr.restraint_alarm_step > 0, guilt.z1))                # (alarm step recorded loudly once, as before)
+    @test any(r -> any(k -> startswith(k, "restraint justice"), keys(r.tr.degraded)), guilt.z1)
+end
+
 @timed_testset "Probe: execution excess is audited and charged to the enforcer, not the experts (8.170 b, d)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
     # Four enforcing entities, the last two execute with excess (extra severity beyond the verdict).
@@ -3558,6 +3591,60 @@ end
     @test any(a -> any(f -> f.reserve > 0, a.on.r.unified.fractal), arms)                         # the fractal run is funded from it
     wall = time() - t0
     @info "P60 wall time (s)" wall
+    @test wall < 20
+end
+
+# The unified world, phase D: the fractal clusters' decisions set the economy's scoped parameters, and their reserves settle into the economy (author ruling
+# 8.174, 8.84, 8.150; P61). Each epoch's decisions (one per class, class = economy domain) set that domain's status bar: "raise" lifts it by `bar_step` above the
+# economy's own, "hold" leaves it (the bar only rises, 8.84); a finer scope wins and a coarser later decision sets only the undecided domains
+# (`unified_scope`). The clusters' reserves settle: the finest clusters' balances into their members' purses, every coarser reserve back to the commons, minted
+# and burnt currency into the supply, so one ledger holds across levels. Predictions before measuring (lead): the ledgers hold in every seed (0.8, structural);
+# scoped bars follow the decisions and never fall below the economy's own (0.9); a planted heterogeneity (only the deceit domain wants a higher bar) moves the
+# floors under scoped bars against uniform bars (0.6, heavy probe; the earlier build did not detect it). Gaming: a reserve cannot pay out more than the finest
+# clusters hold (burn is capped at the balance, loudly), settlement is by cluster membership so a sybil cluster's purse is its members', and the economy's own overflow
+# skim and ceiling act on whatever lands in a purse.
+@timed_testset "Probe: fractal decisions set scoped economy parameters; reserves settle into the economy; one ledger across levels (P61)" begin
+    # finer scope wins (unit): decisions in order, (class, level, option)
+    dec(c, l, o) = (class = c, level = l, option = o, cluster = (l, 1))
+    sc = unified_scope([dec(1, 2, 1), dec(1, 1, -1), dec(1, 3, 1), dec(2, 3, 1), dec(2, 2, -1), dec(2, 3, -1), dec(7, 1, 1)], 4)
+    @test sc[1].level == 1 && sc[1].option == -1            # a coarser later decision never overwrites the finer
+    @test sc[2].level == 2 && sc[2].option == -1            # a finer one replaces a coarser, and a coarser later one does not return
+    @test !haskey(sc, 3) && !haskey(sc, 7)                  # undecided stays undecided; no economy domain beyond the known ones
+    @test unified_scope([dec(1, 2, 1), dec(1, 3, -1)], 4)[1].level == 2 && haskey(unified_scope([dec(1, 1, 1)], 4), 1)
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    na, nn, ns = 48, 6, 12
+    deceit = zeros(na); deceit[(na - ns + 1):na] .= 0.924
+    econ = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+                     causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, na), deceit = deceit, overflow_base = 10.0)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    fp = FractalParams(severity = fill(0.2, 4), bias = zeros(4))
+    function world(seed; scoped = true, settle = true, truth = [-1, -1, -1, 1])
+        up = UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = nn, sybils = ns, binding = true), economy = true, fractal = fp,
+                           scoped = scoped, settle = settle, fractal_truth = truth)
+        run_coupled(econ, gov; seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30, unified = up)
+    end
+    world(1)   # warm-up
+    t0 = time()
+    for seed in 1:3
+        r = world(seed); tr = r.econ_trace; fr = r.unified.fractal
+        @test any(f -> f.reserve > 0, fr)
+        for f in fr
+            f.reserve > 0 || continue
+            @test abs(f.ledger_gap) < 1e-6 && abs(f.settle_gap) < 1e-6                       # one ledger across levels, and what is settled equals what the tree holds
+            @test f.settled >= 0 && f.returned >= 0
+            @test length(f.bars) == 4 && all(>=(0.0), f.bars) && all(b -> b == 0.0 || b == 0.05, f.bars)   # bars only rise, by the governed step
+            @test all(d -> f.scope[d].option == 1 ? f.bars[d] == 0.05 : f.bars[d] == 0.0, keys(f.scope))
+            @test all(d -> f.bars[d] == 0.0, setdiff(1:4, keys(f.scope)))                    # undecided domains keep the economy's own bar
+        end
+        @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6   # the economy's identity holds with the settlements in
+        @test sum(tr.reinvested) >= 0 && all(isfinite, tr.balance)
+        @test isfinite(r.success.floor_u + r.success.floor_h)                                # no stall
+    end
+    # the settlement reaches the economy: against the unsettled run the commons differs, and the supply carries the mint/burn
+    a, b = world(1; settle = true), world(1; settle = false)
+    @test sum(a.econ_trace.reinvested) != sum(b.econ_trace.reinvested) || any(f -> f.settled > 0, a.unified.fractal)
+    wall = time() - t0
+    @info "P61 wall time (s)" wall
     @test wall < 20
 end
 
