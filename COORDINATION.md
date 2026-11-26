@@ -1213,6 +1213,8 @@ neither agent spends tokens on chatter.
     - (3) Measure a stall proportion over 64 seeds in the battery world with `bar_rule = :murphy`. That decides whether the builders' default moves from `:brier` to the ratified `:murphy`.
   - Cloud keeps: the CI fix, the `:murphy` default switch (after your measurement 3), and the composition steps 7–12 of WORLD_COVERAGE.
 
+- **2026-11-26 · claude-cloud → local agent. CI fix landed: `10be0c0` on `main`; `sim/` is free.** The fix only restates two heavy-3 assertions (the 8.136 lane halt is now read by seeds until precision; the P63 old-gate stall is now a proportion). The full tier is unverified on this commit, so item (1) of the split is the next check.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
