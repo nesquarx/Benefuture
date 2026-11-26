@@ -100,10 +100,17 @@ end
                        transactions = true, init_steps = 5, min_records = 15, threshold = 0.85,
                        model_z = 3.0, cost_per_touch = 0.25, converge_init = true, legacy_funder = true)
 
-    clocks = [run_m3c(P_clock; seed = s) for s in 1:16]
-    convs  = [run_m3c(P_conv; seed = s) for s in 1:16]
+    # Seeds by precision (paired, common random numbers): the smallest lane-halt reduction that matters is 60 of about 150 halted lane-steps, so the stopping rule reads
+    # the paired difference until its t-inflated se is at most 20 (z = 3 then detects 60), 16 to 48 seeds, count reported. The per-domain gate (8.176) opens the converge
+    # arm earlier (steps 20 to 30, was 31 to 48), so its reduction is smaller (mean 60, se 24 at 16 seeds, was 100) but still positive; 16 seeds no longer carry z = 3.
+    runs = Dict{Int,Any}()
+    pair(s) = get!(runs, s) do; (run_m3c(P_clock; seed = s), run_m3c(P_conv; seed = s)); end
+    halts = seeds_until_stable(s -> (c = pair(s); c[1].lane_halted - c[2].lane_halted); tol = 20.0, min_seeds = 16, max_seeds = 48)
+    @info "P-8.136 lane-halt reduction (clock less converge-gated)" n = halts.n stable = halts.stable mean = halts.mean se = halts.se
+    clocks = [pair(s)[1] for s in halts.seeds]
+    convs  = [pair(s)[2] for s in halts.seeds]
     @test all(c -> c.converged && c.converge_step > 5 && c.legacy_executed > 0, convs)
-    @test paired_effect([cl.lane_halted - cv.lane_halted for (cl, cv) in zip(clocks, convs)]; z = 3.0, direction = :up).significant
+    @test paired_effect(halts.values; z = 3.0, direction = :up).significant
     @test paired_effect([cv.floor_u[end] - cl.floor_u[end] for (cl, cv) in zip(clocks, convs)]; z = 3.0, direction = :up).significant
 
     # Counterexample: unpredictable / noisy domain never converges; stays score-only with legacy carrying work and Bf balances untouched.
@@ -640,17 +647,24 @@ end
 @timed_testset "Probe (heavy): composed dormant flags: per-domain gate lets supply flow, lagging domain degraded loudly (8.176, P63)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
     isdefined(@__MODULE__, :composed_gate_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
-    for seed in 1:3
+    # Claim kinds: the per-domain gate's outcomes are structural (every seed); the earlier all-domains gate's stall is a regime, a proportion with its interval over 12 seeds
+    # (Linux CI and Mac differ on single seeds: seed 2 converges late at step 63 on Mac, and a stalled seed can sit at 0.9008 against the bar 0.9, so "a model below the bar
+    # at the end" is not structural). Measured on Linux, Mac: 10 of 12 stall under `:all`, 9 of those 10 end with a domain below the bar, all 12 flow under `:domain`.
+    seeds = 1:12
+    stalls = 0; below = 0
+    for seed in seeds
         old = composed_gate_world(seed; layers = true, converge_gate = :all).econ_trace
         new = composed_gate_world(seed; layers = true).econ_trace
-        new_nolayers = composed_gate_world(seed; layers = false).econ_trace
-        @test length(old.supply) == 0 && !old.converged                                   # the stall as an outcome: no supply
-        @test minimum(old.acc_trace[end]) < minimum(old.leaf_bars)                        # its cause: a domain's model below the bar
-        @test new.converged && length(new.supply) > 0                                     # supply flows
+        stalled = length(old.supply) == 0 && !old.converged
+        stalls += stalled; below += stalled && minimum(old.acc_trace[end]) < minimum(old.leaf_bars)
+        @test new.converged && length(new.supply) > 0                                     # supply flows, in every seed (structural), stalled under :all or not
         @test any(k -> occursin("domain economy start", k), keys(new.degraded))           # the lagging domain is logged loudly
         @test new.degraded[first(filter(k -> occursin("domain economy start", k), collect(keys(new.degraded))))].count > 0
-        @test new_nolayers.converged && length(new_nolayers.supply) > 0                   # not the layers
+        seed <= 3 && @test (cn = composed_gate_world(seed; layers = false).econ_trace; cn.converged && length(cn.supply) > 0)   # not the layers
     end
+    @info "P63 heavy: all-domains gate stalls" stalls = stalls below_bar = below of = length(seeds)
+    @test proportion_interval(stalls, length(seeds); z = 2.0).lo > 0.5                  # the stall as an outcome: a majority of seeds, with its interval
+end
 end
 
 # 8.177 (P65, heavy): the resolution margin binds per domain in the composed world (bar rule :murphy, dormant flags, four domains, 75 steps, seeds 1:3): an unreachable margin
