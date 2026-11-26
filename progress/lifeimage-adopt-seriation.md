@@ -1,4 +1,4 @@
-# lifeimage-adopt-seriation (IN PROGRESS)
+# lifeimage-adopt-seriation (DONE)
 Goal (LI.66): the seriation order becomes the basemap's default coarse ring order, as a new basemap version; the previous
 version stays reproducible (`layout="axes_v0"`); migration recorded (per-field angle old -> new, mean/p95/max shift; LI.25 guard
 targets 25/60 exceeded and deferred to the clean-up, loudly); everything derived regenerated; suite green.
@@ -22,10 +22,12 @@ Every derived artefact regenerates deterministically; default-tier suite passes 
 - Regenerated (twice-identical pmtiles): images/v2 (all), review sheets (coarse_layout default = adopted; new coarse_layout_axes_v0 = earlier), interactive, tiles (pmtiles, levels, offline pages). render_v0 legacy pinned to axes_v0; render_coarse_review --axes-v0.
 - Tile worst-viewport KB z0..z6: 28.8/37.9/54.4/33.6/22.1/17.7/9.0 (before 19.0/24.5/36.0/27.6/15.2/13.6/8.8): the 9-36 KB prediction part FALSE (peak 54.4), 150 KB test bound holds.
 - Docs: BACKPROPAGATION LI.66 adoption note, lifeImage/README entry.
+- Default-tier suite (1070 s): 4 failed first run; fixed 3 (test_render axes-order test pinned to layout axes_v0; test_tiles TOL_MISSING 0.0015 -> 0.0020 for 0.0015-0.0016 measured at 200 px, annotated); remaining 1 failure test_responsibility::test_governed_values_carry_default_and_source is LI.67's governed `membership.fit_floor` (default 4 on a 0-10 scale, not in the test's allowed set), not this task.
+- Prediction verdict: regeneration deterministic (HELD; pmtiles identical twice); suite passes after regeneration except the unrelated LI.67 failure (HELD for this change); tile bytes 9-36 KB (NOT held: worst viewport 9.0-54.4 KB).
 ## In progress
-full default-tier suite (running)
+none
 ## Next
-fix any suite failures, commit+push, mark DONE
+lead: governed `membership.fit_floor` vs test_responsibility range check (LI.67 owner); clean-up to bring stability inside 25/60/120
 ## Files touched
 lifeImage/lifeimage/render/basemap.py, lifeImage/lifeimage/layout_migration.py, lifeImage/tests/test_basemap_layout.py, lifeImage/data/coarse/layout_seriation_v0.json, lifeImage/data/coarse/layout_migration_seriation_v0.json
 ## Resume

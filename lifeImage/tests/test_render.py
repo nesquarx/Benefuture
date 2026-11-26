@@ -54,7 +54,7 @@ def test_fields_sit_at_the_angle_of_their_mean_axes_position():
 
 
 def test_circular_order_of_fields_follows_axes_angle():
-    bm = bmod.build_v0()
+    bm = bmod.build_v0(layout="axes_v0")  # the earlier layout; the default (seriation, LI.66) orders by similarity (test_basemap_layout.py)
     fields = [s for s in bm.slices.values() if s.ring == "field"]
     seq = [s.axes_angle for s in sorted(fields, key=lambda s: s.start)]
     k = seq.index(min(seq))
