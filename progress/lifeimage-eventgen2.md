@@ -20,13 +20,27 @@ Acceptance: `cd lifeImage && python3 -m pytest -q` green; probe one command.
 - Births become marital-state dependent with the marginal ASFR preserved (h_married = ASFR / (M(a) + r (1-M(a)))); this couples births to marriage noise (existing independence test amended).
 
 ## Done
-(nothing yet beyond red tests)
+- World: deaths (own stream; WDI infant/under-5, WPP 40q0, Gompertz 40-50), spouse gap, divorce (Param or governed default, degraded), marital-state births with marginal ASFR preserved, fatherhood; rate head reads survivors / woman-years and checks 40q0 (72 statistics pass).
+- `relational.py`: layers A, B (library participation format + responsibility by freedom, degraded defaults logged), D (part_of, causes, concurrent; re_description validated only), LI.42 metadata, relational event snippets (1120 in the committed table), `World.events()`, `entities()`.
+- `sequence.py`, `variants.py`: hard checks (zero tolerance) and soft statistics with significance rule; shuffled-order and births-ignore-marriage counterexamples.
+- Tests: tests/test_eventgen_relational.py (26), tests/test_eventgen_sequence.py (21); calibration/probe tests amended (EV helper, noise coupling).
+- README of the package updated; probe prints both heads and counterexamples.
 
-## In progress / next
-implement world changes, relational.py, sequence.py, snippet relational forms, tests, README.
+## Measurements and prediction verdicts
+- (a) HOLDS: every generated event passes validate_event (validated at build, 14570 events for 1500 people) and a strict validate_row on a sample.
+- (b) HOLDS: shuffled order passes the rate head (0 fail of 72) and fails the sequence head on 60/60 seeds (also 40 people per region).
+- (c) HOLDS: world + rows + relational events for 500 x 3 in about 3.7 s.
+- (d) HOLDS: 11 calibrated (Param) soft statistics pass; one known soft flag: IND share married by 18 (0.17 vs 0.22, z -4; sd of marriage age too narrow).
+Findings: premarital-first-birth share depends strongly on region through marriage age (FRA 0.47, KEN 0.24, IND 0.11), so the single assumed target is judged only where women marry before 25; world-level fallback Params are no valid soft targets (FRA married-by-18 world value 19% vs 1%): such statistics are left unjudged, recorded as degraded.
+
+## In progress
+final full-suite run, commit and push, mark DONE.
+
+## Next
+Real premarital/nonmarital birth data (OECD SF2.4, DHS); marriage-age distribution with a heavier early tail (IND); spells and event-history comparison; registration-lag noise (record time); spouse death and remarriage; upper secondary; work events (employer role).
 
 ## Files touched
-progress/lifeimage-eventgen2.md; lifeImage/tests/test_eventgen_red2.py
+progress/lifeimage-eventgen2.md; lifeImage/lifeimage/eventgen/{world,events,rates,calibration,governed,probe,relational,sequence,variants}.py and README.md; lifeImage/tests/test_eventgen_{calibration,probe,relational,sequence}.py; lifeImage/tools/{eventgen_fetch,eventgen_relationalise}.py; lifeImage/data/events/calibration/aggregates_v1.jsonl
 
 ## Resume
-cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_eventgen_calibration.py tests/test_eventgen_probe.py
+cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_eventgen_calibration.py tests/test_eventgen_probe.py tests/test_eventgen_relational.py tests/test_eventgen_sequence.py && python3 -m lifeimage.eventgen.probe
