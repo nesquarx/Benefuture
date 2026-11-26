@@ -22,7 +22,10 @@ row and `both` in the participation record.
 """
 import datetime as dt
 import json
+import math
 import re
+import zlib
+from statistics import NormalDist
 
 from ..degradation import record_degradation
 from ..events import LINK_TYPES, SYMMETRIC
@@ -31,11 +34,12 @@ from ..governed import governed
 from ..participation import validate_participation_answer
 from ..responsibility import responsibility_from_freedom
 from ..validate import ValidationError, validate_entity
+from . import catalog
 from . import events as ev
 
 A_RELS = ("form", "content", "outcome", "setting")
-ORDER = ("born", "preschool", "school_start", "primary_complete", "secondary_start", "secondary_complete", "tertiary_start", "tertiary_complete",
-         "school_dropout", "marriage", "divorce", "pregnancy", "birth_of_child", "fatherhood", "death")
+ORDER = ["born", "preschool", "school_start", "primary_complete", "secondary_start", "secondary_complete", "tertiary_start", "tertiary_complete",
+         "school_dropout", "marriage", "divorce", "pregnancy", "birth_of_child", "fatherhood", "death"]
 LEVEL = {"preschool": "early_childhood", "school_start": "primary", "primary_complete": "primary", "secondary_start": "secondary",
          "secondary_complete": "secondary", "tertiary_start": "tertiary", "tertiary_complete": "tertiary", "school_dropout": "school"}
 QUANTITY = {"born": "fertility.sex_ratio_at_birth", "preschool": "education.preprimary_gross_enrolment", "school_start": "education.primary_net_enrolment",
@@ -82,10 +86,54 @@ LABEL = {"self": "the person", "mother": "the mother", "parent": "a parent", "sp
 CONF = {"causal": 0.8, "part_of": 0.95, "concurrent": 0.5, "causes_marriage": 0.6}
 _ISO = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
 
+# ---- kinds of the breadth increment (catalog.py) registered beside the family and schooling kinds ----
+CIVIL = frozenset({"born", "marriage", "divorce", "death"})
+ROLE_ENTITY = {   # role -> (id template, kind); {region} {pid} {n} (index of the event among those of its kind) {job} (jobs started so far) {kind}
+    "employer": ("employer:{region}:{pid}:{job}", "organisation"), "clinic": ("clinic:{region}", "organisation"), "club": ("club:{region}:{kind}", "organisation"),
+    "polling": ("polling:{region}", "organisation"), "shop": ("shop:{region}", "organisation"), "venue": ("venue:{region}:{kind}", "organisation"),
+    "transit": ("transit:{region}", "organisation"), "police": ("police:{region}", "organisation"), "criminal_court": ("court:{region}:criminal", "organisation"),
+    "agency": ("agency:{region}:pension_authority", "organisation"), "school_general": ("school:{region}:general", "organisation"),
+    "customer": ("customer:{pid}:{n}", "person"), "dependent": ("dependent:{pid}", "person"), "friend": ("friend:{pid}", "person"),
+    "neighbour": ("neighbour:{pid}:{n}", "person"), "care_recipient": ("care_recipient:{pid}:{n}", "person"), "offender": ("offender:{pid}:{n}", "person"),
+    "victim": ("victim:{pid}:{n}", "person"), "immigration": ("agency:{region}:immigration_authority", "organisation"), "bank": ("bank:{region}", "organisation"),
+    "telecom": ("telecom:{region}", "organisation")}
+ORG_PREFIX = ("school:", "agency:", "employer:", "clinic:", "club:", "polling:", "shop:", "venue:", "transit:", "police:", "court:", "bank:", "telecom:")
+EXT = catalog.BY_KEY
+OPTION = {}
+JOB_START = frozenset(("industry_work_start", "service_work_start", "farm_work_start", "self_employment_start", "job_change", "reemployment"))   # kinds that start a job (domains.JOB_START)
+
+
+def _register():
+    for k in catalog.ALL:
+        def dist(doms):
+            return {d: 1 / len(doms) for d in doms}
+        ev.KINDS[k.key] = (ev._m(dist(k.form), dist(k.content), dist(k.outcome), dist(k.setting)), k.rel, k.mag)
+        if k.neg:
+            ev.NEGATIVE = ev.NEGATIVE | {k.key}
+        if k.key not in ORDER:
+            ORDER.append(k.key)
+        if any(r[0] == "school" for r in k.roles) and k.family != "time":
+            LEVEL[k.key] = "vocational"
+        COURSE[k.key] = k.course
+        QUANTITY[k.key] = k.quantity
+        HARM[k.key] = k.harm
+        SPECS[k.key] = [(("school_general" if r[0] == "school" and k.family == "time" else r[0]), r[1], r[2], r[3]) for r in k.roles]
+        for r in k.roles:
+            OPTION[(k.key, "school_general" if r[0] == "school" and k.family == "time" else r[0])] = r[4]
+            LABEL.setdefault(r[0], r[0].replace("_", " "))
+            LABEL.setdefault("school_general", "the school")
+
+
+_register()
+
 
 # ---- entities ----
-def entity_id(role, p, n, region, kind, other_parent):
+def entity_id(role, p, n, region, kind, other_parent, job=0):
     pid = p.pid
+    if kind in EXT and role == "offender" and kind == "partner_violence_victim":
+        return f"spouse:{pid}"
+    if role in ROLE_ENTITY:
+        return ROLE_ENTITY[role][0].format(region=region, pid=pid, n=n, job=job, kind=kind)
     if role == "self":
         return f"person:{pid}"
     if role == "other_parent":
@@ -100,7 +148,7 @@ def entity_id(role, p, n, region, kind, other_parent):
 
 
 def entity_kind(eid):
-    return "organisation" if eid.startswith(("school:", "agency:")) else "person"
+    return "organisation" if eid.startswith(ORG_PREFIX) else "person"
 
 
 def entities(events_by_person):
@@ -122,32 +170,49 @@ def _with_counterfactual(mems, cf):
     return [dict(m, counterfactual=cf) if m["rel"] == "outcome" else dict(m) for m in mems]
 
 
+_MEMS = {}
+
+
+def event_memberships(kind, region):
+    """Layer A of a kind in a region (one shared, never mutated list per pair: every event of the kind reads the same memberships and counterfactual)."""
+    key = (kind, region)
+    if key not in _MEMS:
+        _MEMS[key] = _with_counterfactual(ev.memberships(kind), counterfactual(kind, region))
+    return _MEMS[key]
+
+
 # ---- the person's events ----
 def person_events(world, p, light=False):
     """The relational events of a person in time order, with their links; degradations go to `world.relational_degraded`."""
     log = world.relational_degraded
     birth = _birth()
     preg_len, horizon, minor = governed("eventgen.pregnancy_years"), governed("eventgen.horizon_age"), governed("eventgen.minor_age")
+    lag = (world.seed, world.noise)
     marriage = next((a for k, a in p.events if k == "marriage"), None)
     divorce = next((a for k, a in p.events if k == "divorce"), None)
     births = sorted(a for k, a in p.events if k == "birth_of_child")
     raw = []   # (kind, start age, end age, child index)
     for k, a in p.events:
         child = births.index(a) + 1 if k == "birth_of_child" else 0
-        end = divorce if (k == "marriage" and divorce is not None) else (p.death if p.death is not None else float(horizon)) if k == "marriage" else a
+        end = divorce if (k == "marriage" and divorce is not None) else (p.death if p.death is not None else float(horizon)) if k == "marriage" else p.spans.get((k, a), a)
         raw.append((k, a, end, child))
         if k == "birth_of_child":
             raw.append(("pregnancy", a - preg_len, a, child))
     raw.sort(key=lambda e: (e[1], ORDER.index(e[0])))
     events = []
-    fathered = 0
+    fathered, jobs, seen = 0, 0, {}
     for n, (kind, age, end, child) in enumerate(raw):
         if kind == "fatherhood":
             fathered += 1
             child = fathered
+        if kind in EXT:
+            if kind in JOB_START:
+                jobs += 1
+            seen[kind] = seen.get(kind, 0) + 1
+            child = seen[kind]
         married_now = marriage is not None and marriage <= age + 1e-9 and (divorce is None or age < divorce)
         other = f"spouse:{p.pid}" if married_now else f"partner:{p.pid}:{child}"
-        events.append(_event(p, kind, age, end, f"ev:{p.pid}-{n:02d}", child, other, minor, log, birth, light))
+        events.append(_event(p, kind, age, end, f"ev:{p.pid}-{n:03d}", child, other, minor, log, birth, light, lag, jobs))
     _link(events, raw, marriage, world.noise["nonmarital_birth_relative_hazard"])
     return events
 
@@ -157,17 +222,38 @@ def _birth():
     return BIRTH_DATE
 
 
-def _event(p, kind, age, end, eid, child, other, minor, log, birth, light=False):
+_N = NormalDist()
+
+
+def record_time(seed, noise, pid, kind, age, birth, t=None):
+    """Valid time plus a registration lag: lognormal days (median by civil or other event, governed sigma), a deterministic function of (seed, person, kind,
+    age) so arms of an experiment share it; a median of 0 records on the day."""
+    t = t or birth + dt.timedelta(days=round(age * 365.25))
+    med = noise["registration_lag_civil_days" if kind in CIVIL else "registration_lag_other_days"]
+    if med <= 0:
+        return t.isoformat()
+    u = min(1 - 1e-9, max(1e-9, zlib.crc32(f"{seed}|{pid}|{kind}|{age:.4f}".encode()) / 2**32))
+    return (t + dt.timedelta(days=round(med * math.exp(noise["registration_lag_sigma"] * _N.inv_cdf(u))))).isoformat()
+
+
+def _event(p, kind, age, end, eid, child, other, minor, log, birth, light=False, lag=None, job=0):
     region = p.region
-    t = ev.valid_time(birth, age)
-    mems = _with_counterfactual(ev.memberships(kind), counterfactual(kind, region))
+    td = birth + dt.timedelta(days=round(age * 365.25))
+    t = td.isoformat()
+    rt = record_time(lag[0], lag[1], p.pid, kind, age, birth, td) if lag else t
+    mems = event_memberships(kind, region)
     adult = age >= minor
+    ext = {}
+    if kind in EXT:
+        ext = {"timescale": EXT[kind].timescale}
+        if kind in p.minutes or (kind, age) in p.minutes:
+            ext["duration_minutes"] = round(p.minutes[(kind, age)], 1)
     if light:   # times, kinds, spans and links only (the sequence head); participants and rows are built and validated in full mode
-        return {"id": eid, "kind": kind, "place": region, "valid_time": t, "record_time": t, "span": {"start": t, "end": ev.valid_time(birth, end)},
-                "memberships": mems, "participants": [], "roles": {}, "rows": [], "links": []}
-    specs = [s for s in SPECS[kind] if not (s[0] == "parent" and adult)]
+        return {"id": eid, "kind": kind, "place": region, "valid_time": t, "record_time": rt, "span": {"start": t, "end": t if end == age else ev.valid_time(birth, end)},
+                "memberships": mems, "participants": [], "roles": {}, "rows": [], "links": [], **ext}
+    specs = [s for s in SPECS[kind] if not (s[0] == "parent" and adult and kind not in EXT)]
     total = sum(s[1] for s in specs)
-    ids = {s[0]: entity_id(s[0], p, child, region, kind, other) for s in specs}
+    ids = {s[0]: entity_id(s[0], p, child, region, kind, other, job) for s in specs}
     if kind == "fatherhood":
         ids["mother"] = f"spouse:{p.pid}"
     harm = HARM.get(kind, 1 if kind == "marriage" and not adult else 0)
@@ -183,15 +269,22 @@ def _event(p, kind, age, end, eid, child, other, minor, log, birth, light=False)
                  "informed": _informed(kind, role), "volition": None, "volition_record": None, "production": prod, "option_set": option}
         entries.append(entry)
         roles[pid] = role
-        rows.append(_row(kind, role, entry, mems, region, t, eid))
-    event = {"id": eid, "kind": kind, "statement": _statement(kind, p, age), "place": region, "valid_time": t, "record_time": t,
-             "span": {"start": t, "end": ev.valid_time(birth, end)}, "memberships": mems, "participants": entries, "roles": roles, "rows": rows, "links": []}
+        rows.append(_row(kind, role, entry, mems, region, t, eid, rt))
+    event = {"id": eid, "kind": kind, "statement": _statement(kind, p, age), "place": region, "valid_time": t, "record_time": rt,
+             "span": {"start": t, "end": ev.valid_time(birth, end)}, "memberships": mems, "participants": entries, "roles": roles, "rows": rows, "links": [], **ext}
     return validate_event(event)
 
 
 def _option_set(kind, role, adult):
     """The alternatives open to the participant: modelled for a free adult act, missing (None, logged by the responsibility rule) where the
     act is by a minor or the other party of a divorce, whose freedom the generator does not model."""
+    if kind in EXT:
+        o = OPTION.get((kind, role))
+        if o is None or o[0] == "zero":
+            return []
+        if o[0] == "missing" or (role == "self" and not adult and EXT[kind].family in ("work", "civic", "harm")):
+            return None
+        return [{"alternative": o[1], "harm": o[2]}]
     if kind == "death" or role in ("child", "family"):
         return []
     if (role == "self" and not adult and kind in ("marriage", "school_dropout")) or (role == "spouse" and kind == "divorce"):
@@ -200,7 +293,14 @@ def _option_set(kind, role, adult):
     return [{"alternative": alt, "harm": h}]
 
 
+AGREEMENT = {("employer", "self"): "employment contract", ("employer", "employer"): "employment contract", ("agency", "self"): "pension law",
+             ("agency", "agency"): "pension law", ("polling", "polling"): "electoral law", ("criminal_court", "criminal_court"): "criminal law",
+             ("criminal_court", "self"): "criminal law"}
+
+
 def _agreement(kind, role):
+    if kind in EXT:
+        return AGREEMENT.get((role, role)) if role != "self" else ("employment contract" if EXT[kind].family == "work" else "criminal law" if kind == "conviction" else None)
     if kind == "marriage":
         return "marriage registration law" if role == "registry" else "marriage contract"
     if kind == "divorce":
@@ -211,6 +311,8 @@ def _agreement(kind, role):
 
 
 def _informed(kind, role):
+    if kind in EXT:
+        return None
     if kind == "marriage" and role in ("self", "spouse"):
         return "the terms of the marriage contract"
     if kind in LEVEL and role == "parent":
@@ -218,13 +320,13 @@ def _informed(kind, role):
     return None
 
 
-def _row(kind, role, entry, mems, region, t, eid):
+def _row(kind, role, entry, mems, region, t, eid, rt=None):
     eidn = entry["id"]
     rel = ev.KINDS[kind][1] if role == "self" else "structural" if entity_kind(eidn) == "organisation" else "causal" if entry["contribution"] >= 0.3 else "impacted"
     neg = kind in ev.NEGATIVE
     row = {"entity": eidn, "relation": rel, "memberships": [dict(m) for m in mems], "basemap_version": ev.BASEMAP_VERSION,
            "channel": "negative" if neg else "positive", "sign": -1 if neg else 1, "entity_kind": entity_kind(eidn), "revoked": False,
-           "magnitude": ev.KINDS[kind][2], "valid_time": t, "record_time": t, "tier": "attested", "confidence": 0.8,
+           "magnitude": ev.KINDS[kind][2], "valid_time": t, "record_time": rt or t, "tier": "attested", "confidence": 0.8,
            "context": {"jurisdiction": region}, "provenance": {"source": f"synthetic-eventgen:{region}", "span": eid}}
     if entry["production"] is not None:
         row["production"] = "consumed" if entry["production"] == "consumed" else "produced"
@@ -235,6 +337,8 @@ def _row(kind, role, entry, mems, region, t, eid):
 
 def _statement(kind, p, age):
     who = "woman" if p.sex == "f" else "man"
+    if kind in EXT:
+        return f"{EXT[kind].stmt.format(who='child' if kind == 'vaccination' else who, place=p.region)} at age {age:.1f}."
     text = {"born": f"A {who} was born in {p.region}", "preschool": f"A child in {p.region} started preschool", "school_start": f"A child in {p.region} started primary school",
             "primary_complete": f"A pupil in {p.region} completed primary school", "secondary_start": f"A pupil in {p.region} started secondary school",
             "secondary_complete": f"A student in {p.region} completed lower secondary school", "tertiary_start": f"A student in {p.region} started tertiary education",
@@ -271,6 +375,11 @@ def _link(events, raw, marriage, nonmarital_hazard):
         pregs = [g for g in by.get("pregnancy", []) if g["span"]["end"] == b["valid_time"]]
         if pregs:
             add(b, pregs[0], "part_of", CONF["part_of"])
+    for tw in by.get("travel_work", []):   # the travel is part of the main job (HETUS code AC1A includes related travel)
+        for emp in by.get("employment", []):
+            if emp["valid_time"] == tw["valid_time"]:
+                add(tw, emp, "part_of", CONF["part_of"])
+                break
     drop = first("school_dropout")
     if drop and mar:   # no source here supports early marriage causing dropout in the model: only the temporal reading
         if _overlap(drop, mar, governed("eventgen.concurrent_window_years")):
@@ -337,6 +446,8 @@ def check_core(memberships, participants, roles, valid_time, record_time, span, 
     for f, v in (("valid_time", valid_time), ("record_time", record_time)):
         if not isinstance(v, str) or not _ISO.match(v):
             raise ValidationError(f"{f} missing or malformed: {v!r}")
+    if isinstance(record_time, str) and isinstance(valid_time, str) and record_time < valid_time:
+        raise ValidationError(f"record_time {record_time} precedes valid_time {valid_time}")
     if not isinstance(span, dict) or not span.get("start") or not span.get("end") or span["end"] < span["start"] or span["start"] != valid_time:
         raise ValidationError(f"span must run from the valid time to a later or equal end, not {span!r}")
     if not isinstance(place, str) or not place.strip():

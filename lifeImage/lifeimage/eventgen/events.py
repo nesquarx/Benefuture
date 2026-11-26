@@ -55,6 +55,9 @@ def memberships(key):
             d = fine.get(d, d)
             acc[(d, rel)] = acc.get((d, rel), 0.0) + x
     out = [{"domain": d, "rel": rel, "weight": round(x, 6)} for (d, rel), x in acc.items()]
+    for rel in {m["rel"] for m in out}:   # rounding must not move a relation's total off 1
+        group = [m for m in out if m["rel"] == rel]
+        group[-1]["weight"] = round(1 - sum(m["weight"] for m in group[:-1]), 6)
     return out
 
 

@@ -22,9 +22,11 @@ from ..governed import governed
 from ..validate import ValidationError
 from .rates import judge
 from .relational import validate_links
-from .world import BIRTH_DATE, derive_setup, trunc_normal_mu
+from .marriage import model as marriage_model
+from .world import BIRTH_DATE, derive_setup
 
 _N = NormalDist()
+TOL = 0.01   # years: event dates are rounded to the day
 SCHOOL = ("school_start", "primary_complete", "secondary_start", "secondary_complete", "tertiary_start", "tertiary_complete")
 
 
@@ -80,6 +82,10 @@ def hard_violations(records):
         if (r["sex"] == "m" and by.get("birth_of_child")) or (r["sex"] == "f" and by.get("fatherhood")):
             flag("parenthood_of_wrong_sex", pid, r["sex"])
         _schooling(by, pid, flag)
+        _domains(by, evs, pid, flag, r["sex"])
+        for e in evs:
+            if e["record_time"] < e["valid_time"]:
+                flag("record_before_valid_time", pid, f"{e['kind']} recorded {e['record_time']} before it happened {e['valid_time']}")
         try:
             validate_links(evs)
         except ValidationError as exc:
@@ -102,6 +108,57 @@ def _schooling(by, pid, flag):
         flag("school_levels_out_of_order", pid, "schooling continues after dropout")
     if "school_dropout" in t and "school_start" not in t:
         flag("school_level_without_previous", pid, "dropout without school_start")
+
+
+def _span(e):
+    return _d(e["valid_time"]), _d(e["span"]["end"])
+
+
+def _domains(by, evs, pid, flag, sex):
+    """Hard rules of the work, harm and care machines: no work before the minimum working age; retirement follows a start of work, at or after the governed
+    minimum age; every reemployment ends a job-loss spell and no job loss starts inside another; a day at work lies inside a spell of employment;
+    no suspected offence or conviction before the minimum age of criminal responsibility and a conviction follows a suspected offence; partner violence only
+    inside a marriage."""
+    minwork, minoff, minret = governed("eventgen.min_working_age"), governed("eventgen.min_offending_age"), governed("eventgen.retirement_min_age")
+    starts = [e for e in evs if e["kind"] in ("industry_work_start", "service_work_start", "farm_work_start", "self_employment_start")]
+    jobs = sorted(starts + by.get("job_change", []) + by.get("reemployment", []) + by.get("job_loss", []) + by.get("retirement", []), key=lambda e: e["valid_time"])
+    for e in jobs:
+        if age_of(e) < minwork - TOL:
+            flag("work_before_minimum_age", pid, f"{e['kind']} at {age_of(e):.1f}")
+    if by.get("retirement"):
+        ret = by["retirement"][0]
+        if not starts or _d(starts[0]["valid_time"]) > _d(ret["valid_time"]):
+            flag("retirement_without_work", pid, "retirement before any start of work")
+        if age_of(ret) < minret - TOL:
+            flag("retirement_before_minimum_age", pid, f"retirement at {age_of(ret):.1f}")
+        if len(by["retirement"]) > 1:
+            flag("retirement_without_work", pid, "two retirements")
+    spells = sorted(by.get("job_loss", []), key=lambda e: e["valid_time"])
+    for a, b in zip(spells, spells[1:]):
+        if _d(b["valid_time"]) < _d(a["span"]["end"]):
+            flag("job_loss_inside_spell", pid, f"{b['valid_time']} inside spell to {a['span']['end']}")
+    for e in by.get("reemployment", []):
+        if not any(_d(s["span"]["end"]) == _d(e["valid_time"]) or abs((_d(s["span"]["end"]) - _d(e["valid_time"])).days) <= 1 for s in spells):
+            flag("reemployment_without_job_loss", pid, e["valid_time"])
+    ret = _d(by["retirement"][0]["valid_time"]) if by.get("retirement") else None
+    for e in by.get("employment", []):
+        t = _d(e["valid_time"])
+        ok = starts and _d(starts[0]["valid_time"]) <= t and (ret is None or t <= ret) and not any(_d(s["valid_time"]) < t < _d(s["span"]["end"]) for s in spells)
+        if not ok:
+            flag("work_day_outside_employment", pid, f"employment on {e['valid_time']}")
+    for k in ("suspected_offence", "conviction"):
+        for e in by.get(k, []):
+            if age_of(e) < minoff - TOL:
+                flag("offence_before_minimum_age", pid, f"{k} at {age_of(e):.1f}")
+    sus = [_d(e["valid_time"]) for e in by.get("suspected_offence", [])]
+    for e in by.get("conviction", []):
+        if not any(s <= _d(e["valid_time"]) for s in sus):
+            flag("conviction_without_suspicion", pid, e["valid_time"])
+    mar, div = by.get("marriage", []), by.get("divorce", [])
+    for e in by.get("partner_violence_victim", []):
+        t = _d(e["valid_time"])
+        if not mar or t < _d(mar[0]["valid_time"]) or (div and t >= _d(div[0]["valid_time"])):
+            flag("partner_violence_outside_union", pid, e["valid_time"])
 
 
 # ---- soft statistics ----
@@ -130,6 +187,10 @@ def soft_statistics(records, regions):
                 ages = [age_of(e) for r in Q for e in r["events"] if e["kind"] == "birth_of_child"]
                 out[("seq.mean_age_childbearing", "15-49", "f", rg)] = mean(ages) if ages else nan
                 out[("seq.share_married_by_18", "20-24", "f", rg)] = (sum(a < 18 for a in marr) / len(Q)) if Q else nan
+                bm = [(_first(r["events"], "marriage"), _first(r["events"], "divorce"), [age_of(e) for e in r["events"] if e["kind"] == "birth_of_child"]) for r in Q]
+                nb = sum(len(b) for _, _, b in bm)
+                outside = sum(1 for m, dv, b in bm for a in b if m is None or a < age_of(m) or (dv is not None and a >= age_of(dv)))
+                out[("seq.births_outside_marriage_share", "all", "f", rg)] = outside / nb if nb else nan
                 mothers = [r for r in Q if _first(r["events"], "birth_of_child")]
                 pre = [r for r in mothers if not (m := _first(r["events"], "marriage")) or _d(_first(r["events"], "birth_of_child")["valid_time"]) < _d(m["valid_time"])]
                 out[("seq.premarital_first_birth_share", "all", "f", rg)] = len(pre) / len(mothers) if mothers else nan
@@ -173,9 +234,9 @@ def soft_targets(table, regions, region_map):
         for sx in "fm":
             p = own("family.age_first_marriage", "all", sx)
             if p is not None:
-                mu = trunc_normal_mu(S["smam"][sx], sd, 15.0)
-                a = _N.cdf((15.0 - mu) / sd)
-                q = lambda f: _N.inv_cdf(a + f * (1 - a)) * sd + mu  # noqa: E731
+                M = marriage_model(S["smam"][sx], sd, S["married_by_18"] / governed("eventgen.partnership_ever_share") if sx == "f" and S["married_by_18"] is not None else None,
+                                   governed("noise.marriage_early_mean"), governed("noise.marriage_early_sd"), float(governed("eventgen.minor_age")))
+                q = M.ppf
                 out[("seq.mean_age_first_marriage", "all", sx, rg)] = (S["smam"][sx], "param", p.confidence, my)
                 out[("seq.median_age_first_marriage", "all", sx, rg)] = (q(0.5), "derived", p.confidence, my)
                 out[("seq.iqr_age_first_marriage", "all", sx, rg)] = (q(0.75) - q(0.25), "derived", "low", 2 * my)
@@ -187,9 +248,9 @@ def soft_targets(table, regions, region_map):
         b = own("family.married_by_18", "20-24", "f")
         if b is not None:
             out[("seq.share_married_by_18", "20-24", "f", rg)] = (b.value / 100, "param", b.confidence, mp)
-        if table.get("family.age_first_marriage", "all", "f", rg) is not None and S["smam"]["f"] < governed("eventgen.premarital_rare_below_smam"):
-            out[("seq.premarital_first_birth_share", "all", "f", rg)] = (governed("eventgen.premarital_first_birth_share"), "assumed", "low",
-                                                                         governed("eventgen.premarital_margin"))
+        bo = own("family.births_outside_marriage", "all", "f")
+        if bo is not None:   # Eurostat live births by the mother's legal marital status; the share of first births before marriage has no source and is reported only
+            out[("seq.births_outside_marriage_share", "all", "f", rg)] = (bo.value / 100, "param", bo.confidence, governed("eventgen.seq_margin_prop"))
     return out
 
 

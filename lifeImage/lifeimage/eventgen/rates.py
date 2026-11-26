@@ -13,7 +13,8 @@ import math
 from statistics import NormalDist, mean, stdev
 
 from ..governed import governed
-from .world import BANDS, World, derive_setup
+from .domains import targets as domain_targets
+from .world import BANDS, World, derive_setup, own_param
 
 UNITS = {"fertility.asfr": "per1000", "fertility.tfr": "births_per_woman", "fertility.sex_ratio_at_birth": "ratio",
          "family.age_first_marriage": "years", "mortality.prob_death_0_40": "per1000"}  # all "share:*" statistics are in percent
@@ -21,6 +22,13 @@ SHARE_PARAM = {"primary_entry": "education.primary_net_enrolment", "primary_comp
                "secondary_entry": "education.progression_to_secondary", "lower_secondary_completion": "education.lower_secondary_completion",
                "tertiary_entry": "education.tertiary_gross_enrolment", "tertiary_completion": "education.tertiary_bachelor_attainment",
                "preschool": "education.preprimary_gross_enrolment"}
+
+
+class _ConfParam:
+    """A stand-in for the Param of a derived target: only its confidence class and stratum are read by the head."""
+
+    def __init__(self, confidence):
+        self.confidence, self.region = confidence, None
 
 
 def student_inflation(n):
@@ -31,10 +39,10 @@ def student_inflation(n):
     return t / z
 
 
-def expected_targets(table, regions, region_map):
+def expected_targets(table, regions, region_map, domains=True):
     """{(quantity, band, sex, region): (target, param_or_None, clipped)} from the true table, in statistic units."""
     out = {}
-    for r in regions:
+    for r in ([] if domains == "only" else regions):
         S = derive_setup(table, r, region_map)
         for b in BANDS:
             out[("fertility.asfr", b, "f", r)] = (S["asfr"][b], table.lookup("fertility.asfr", b, "f", r, region_map, f"head:{r}"), False)
@@ -49,11 +57,26 @@ def expected_targets(table, regions, region_map):
                     continue  # derived from completion and progression, not a Param of its own; checked through primary_completion and lower_secondary
                 out[("share:" + share, "all", sx, r)] = (100 * v, None, share in clipped)
         out[("share:preschool", "all", "all", r)] = (100 * S["pre"], None, False)
+        if S["births_outside"] is not None:
+            out[("family.births_outside_marriage", "all", "f", r)] = (100 * S["births_outside"], own_param(table, "family.births_outside_marriage", "all", "f", r, region_map), False)
+    if domains:   # True: with the family and schooling statistics; "only": the domain statistics alone; False: without
+        for k, (t, conf, clipped) in domain_targets(table, regions, region_map).items():
+            out[k] = (t, _ConfParam(conf), clipped)
     return out
 
 
+def unit_of(quantity):
+    if quantity in UNITS:
+        return UNITS[quantity]
+    if quantity.startswith(("time.minutes", "time.group.minutes")):
+        return "minutes"
+    if quantity.startswith("harm.") and quantity.endswith(("rate",)) or quantity == "health.tb_incidence":
+        return "per100k"
+    return "pct"
+
+
 def _margin(quantity, target):
-    unit = UNITS.get(quantity, "pct")
+    unit = unit_of(quantity)
     return max(governed("eventgen.rate_margin_rel") * abs(target), governed(f"eventgen.margin_floor.{unit}"))
 
 
@@ -84,10 +107,10 @@ def judge(quantity, values, target, confidence, z=None, margin=None):
             "z": zeff, "margin": margin, "seeds": n}
 
 
-def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, seed0=0):
+def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, seed0=0, domains=True):
     """Judge every statistic. `make_world(seed)` builds the generated world; `seeds` fixes the seed list, else seeds are added by
     precision (`eventgen.min_seeds` first, then one at a time until every statistic is decided, capped at `eventgen.max_seeds`)."""
-    targets = expected_targets(true_table, regions, region_map)
+    targets = expected_targets(true_table, regions, region_map, domains)
     zz = governed("eventgen.rate_z") if z is None else z
     series = {k: [] for k in targets}
     n_seeds = 0
@@ -102,7 +125,7 @@ def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None, s
             degraded_worlds.extend(w.degraded)
         st = w.statistics()
         for k in targets:
-            series[k].append(st[k])
+            series[k].append(st.get(k, float("nan")))
         n_seeds += 1
 
     def stable():

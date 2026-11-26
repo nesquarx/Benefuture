@@ -25,7 +25,9 @@ from statistics import NormalDist
 
 from ..generators.common import stream
 from ..governed import governed
+from . import domains as _domains
 from . import events as ev
+from . import marriage as mm
 from .calibration import load_regions
 
 BIRTH_DATE = dt.date(1973, 7, 1)
@@ -36,7 +38,9 @@ _N = NormalDist()
 
 def noise_defaults():
     return {k: governed(f"noise.{k}") for k in ("fertility_frailty_sd", "marriage_age_sd", "school_entry_delay_p", "nonmarital_birth_relative_hazard",
-                                                 "spouse_age_gap_sd")}
+                                                 "spouse_age_gap_sd", "time_use_minutes_sd",
+                                                 "registration_lag_civil_days", "registration_lag_other_days", "registration_lag_sigma", "marriage_early_mean",
+                                                 "marriage_early_sd")}
 
 
 def _stream(seed, region, mechanism):
@@ -53,6 +57,17 @@ def trunc_normal_mu(mean, sd, lo):
         m = (a + b) / 2
         a, b = (m, b) if tm(m) < mean else (a, m)
     return (a + b) / 2
+
+
+def own_param(table, quantity, band, sex, region, regions):
+    """The Param of the region's own stratum (the country or its World Bank region), else None; no substitution, nothing recorded."""
+    for r in (region, regions.get(region)):
+        if r:
+            for sx in dict.fromkeys((sex, "all")):
+                p = table.get(quantity, band, sx, r)
+                if p is not None:
+                    return p
+    return None
 
 
 def derive_setup(table, region, regions):
@@ -98,7 +113,31 @@ def derive_setup(table, region, regions):
     if d is None:
         table.degrade(step, "family.divorces_per_100_marriages", region, f"governed default {governed('eventgen.divorce_share_default')}", "no divorce Param at any level")
     s["divorce_share"] = min(0.9, d.value / 100) if d is not None else governed("eventgen.divorce_share_default")
+    b18 = own_param(table, "family.married_by_18", "20-24", "f", region, regions)
+    s["married_by_18"] = b18.value / 100 if b18 is not None else None
+    bom = own_param(table, "family.births_outside_marriage", "all", "f", region, regions)
+    s["births_outside"] = bom.value / 100 if bom is not None else None
     return s
+
+
+def solve_nonmarital_hazard(S, married_share, target):
+    """The relative birth hazard r of unmarried women (births outside marriage / births) such that the share of births outside marriage is `target`:
+    sum_a asfr_a (1-M_a) r / (M_a + r (1-M_a)) over sum_a asfr_a is increasing in r (bisection on [0.001, 1]; a target beyond r = 1, births ignoring marriage,
+    gives r = 1)."""
+    ages = range(15, 50)
+    asfr = {a: S["asfr"][BANDS[(a - 15) // 5]] for a in ages}
+    M = {a: married_share(a + 0.5, "f") for a in ages}
+    tot = sum(asfr.values())
+
+    def share(r):
+        return sum(asfr[a] * (1 - M[a]) * r / (M[a] + r * (1 - M[a])) for a in ages) / tot if tot else 0.0
+    if target >= share(1.0):
+        return 1.0
+    lo, hi = 0.001, 1.0
+    for _ in range(50):
+        m = (lo + hi) / 2
+        lo, hi = (m, hi) if share(m) < target else (lo, m)
+    return (lo + hi) / 2
 
 
 def mortality_hazards(im, u5, q40, table, step, region):
@@ -144,16 +183,24 @@ class Person:
     region: str
     sex: str
     events: list  # [(key, age)]
-    death: float = None   # age at death; None when alive at the horizon
+    death: float = None   # age at death; None when alive at the family horizon (50); a later death is a "death" event with `death_late`
     spouse: dict = None   # {"gap": years the spouse is older (+) or younger (-) than the person}
+    death_late: float = None   # age at death between the family horizon and the life horizon
+    spans: dict = dataclasses.field(default_factory=dict)      # {(kind, age): end age} of events that last
+    minutes: dict = dataclasses.field(default_factory=dict)    # {(kind, age): minutes} of time-use events
+    diary: list = dataclasses.field(default_factory=list)      # ages of the diary days
+    occasions: list = dataclasses.field(default_factory=list)  # start ages of the survey reference years
+    occ_hits: list = dataclasses.field(default_factory=list)   # (kind, reference-year start age) of annual-participation events
 
 
 class World:
-    def __init__(self, table, regions=("KEN", "IND", "FRA"), n_per_region=170, seed=1, noise=None, region_map=None):
+    def __init__(self, table, regions=("KEN", "IND", "FRA"), n_per_region=170, seed=1, noise=None, region_map=None, domains=True):
         self.table, self.seed, self.regions = table, seed, tuple(regions)
         self.noise = {**noise_defaults(), **(noise or {})}
+        self._explicit = frozenset(noise or {})
         self.region_map = region_map if region_map is not None else load_regions()
         self.setups = {r: derive_setup(table, r, self.region_map) for r in self.regions}
+        self.domains = {r: _domains.derive(table, r, self.region_map, self.setups[r]) for r in self.regions} if domains else {}
         self.people = [p for r in self.regions for p in self._region(r, n_per_region)]
 
     @property
@@ -167,12 +214,20 @@ class World:
         horizon, L, TY = governed("eventgen.horizon_age"), governed("eventgen.lower_secondary_years"), governed("eventgen.tertiary_years")
         slope, preg = governed("eventgen.mortality_gompertz_slope"), governed("eventgen.pregnancy_years")
         r, sdm, ever_share = nz["nonmarital_birth_relative_hazard"], nz["marriage_age_sd"], governed("eventgen.partnership_ever_share")
-        mus = {sx: trunc_normal_mu(S["smam"][sx], sdm, 15.0) for sx in "fm"}
-        a_cdf = {sx: _N.cdf((15.0 - mus[sx]) / sdm) for sx in "fm"}
+        cutoff = float(governed("eventgen.minor_age"))
+        MM = {sx: mm.model(S["smam"][sx], sdm, (S["married_by_18"] / ever_share if sx == "f" and S["married_by_18"] is not None else None),
+                           nz["marriage_early_mean"], nz["marriage_early_sd"], cutoff) for sx in "fm"}
+        if S["married_by_18"] is None:
+            self.table.degrade(f"setup:{region}", "family.married_by_18", region, "single normal marriage-age distribution", "no married-by-18 Param of the region's own stratum")
         gap_mean = S["smam"]["m"] - S["smam"]["f"]
 
         def married_share(x, sx):  # probability a person of sex sx is ever-married by age x (the marriage-age distribution is that of the person's own sex)
-            return 0.0 if x < 15 else ever_share * (_N.cdf((x - mus[sx]) / sdm) - a_cdf[sx]) / (1 - a_cdf[sx])
+            return 0.0 if x < 15 else ever_share * MM[sx].cdf(x)
+
+        r_calibrated = False
+        if S["births_outside"] is not None and "nonmarital_birth_relative_hazard" not in self._explicit:
+            r, r_calibrated = solve_nonmarital_hazard(S, married_share, S["births_outside"]), True
+        S["r"], S["r_calibrated"], S["marriage_model"] = r, r_calibrated, MM
 
         def birth_hazards(a, sx_mother="f"):
             """(married, unmarried) annual birth probability for a woman in year-age a (marginal ASFR preserved), with the hazard cap recorded."""
@@ -184,6 +239,7 @@ class World:
             return min(0.95, hm), min(0.95, r * hm)
 
         BH = {a: birth_hazards(a) for a in range(15, 50)}
+        dom = self.domains.get(region)
         out = []
         for i in range(n):
             sx = "m" if R["sex"].random() < S["srb"] / (100 + S["srb"]) else "f"
@@ -225,7 +281,7 @@ class World:
                     ev_.append(("school_dropout", float(ea + 1 + int(ud[0] * (S["prim_dur"] - 1)))))
             marriage = div = None
             if ever < ever_share:
-                marriage = _N.inv_cdf(a_cdf[sx] + um * (1 - a_cdf[sx])) * sdm + mus[sx]
+                marriage = MM[sx].ppf(um)
                 ev_.append(("marriage", marriage))
                 if udiv < S["divorce_share"]:
                     div = marriage + max(0.5, -governed("eventgen.divorce_mean_duration") * math.log(max(udur, 1e-12)))
@@ -252,7 +308,18 @@ class World:
             kept = [e for e in ev_ if e[1] <= horizon and (dead is None or e[1] < dead)]
             if dead is not None:
                 kept.append(("death", dead))
-            out.append(Person(f"{region}-{i:04d}", region, sx, kept, dead, spouse if any(k == "marriage" for k, _ in kept) else None))
+            dead_late = None
+            person = Person(f"{region}-{i:04d}", region, sx, kept, dead, spouse if any(k == "marriage" for k, _ in kept) else None)
+            if dom is not None:
+                life = governed("eventgen.life_horizon_age")
+                dead_late = death_age(S["mort"][sx]["h"], udeath, slope, life) if dead is None else None
+                X = _domains.person_extra(dom, seed, region, i, sx, kept, dead if dead is not None else (dead_late if dead_late is not None else float(life)), nz)
+                person.events = kept + X.events
+                person.spans, person.minutes, person.diary, person.occasions, person.occ_hits = X.spans, X.minutes, X.diary, X.occasions, X.occ_hits
+                if dead_late is not None:
+                    person.events.append(("death", dead_late))
+                    person.death_late = dead_late
+            out.append(person)
         return out
 
     def rows(self):
@@ -312,4 +379,21 @@ class World:
                     out[("share:" + share, "all", sx, r)] = 100 * sum(has(p, key) for p in Q) / n
             Q = [p for p in P if p.death is None]
             out[("share:preschool", "all", "all", r)] = 100 * sum(any(e[0] == "preschool" for e in p.events) for p in Q) / len(Q)
+            out.update(self._births_outside(r, wm))
+        if self.domains:
+            out.update(_domains.statistics(self))
         return out
+
+    def _births_outside(self, r, women):
+        """Share of births (to women alive at the family horizon) outside marriage: the mother unmarried or divorced at the birth."""
+        n = m = 0
+        for p in women:
+            if p.death is not None:
+                continue
+            mar = next((a for k, a in p.events if k == "marriage"), None)
+            div = next((a for k, a in p.events if k == "divorce"), None)
+            for k, a in p.events:
+                if k == "birth_of_child":
+                    n += 1
+                    m += mar is None or a < mar or (div is not None and a >= div)
+        return {("family.births_outside_marriage", "all", "f", r): 100 * m / n if n else float("nan")}
