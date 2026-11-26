@@ -179,7 +179,7 @@ LIFE = [
           "registered as looking for a first job", "searched for weeks before starting work", timescale="weeks-months", neg=True, harm=1),
     _life("job_loss", "work", "impacted", 0.6, ["c.job_loss"], ["c.job_loss", "c.employment_transition", "c.welfare_benefits"],
           ["c.poverty_scarcity", "c.job_search", "c.welfare_benefits"], ["c.employment_job", "c.government_services"],
-          [("self", 0.2, "produced", [("self", -1, 2)], ("zero",)), ("employer", 0.8, "produced", [("self", -1, 2)], free("keep the worker", 2))],
+          [("self", 0.2, "produced", [("self", -1, 2)], ("zero",)), ("employer", 0.8, "produced", [("self", -1, 2)], free("keep the worker", 0))],
           "A {who} in {place} lost a job and began looking for work", "the person keeps the job", "work.unemployment", "was laid off and began looking for a new job",
           "went without pay while searching", timescale="weeks-months", neg=True, harm=2),
     _life("reemployment", "work", "structural", 0.5, ["c.employment_transition"], ["c.job_search", "c.employment_transition", "c.employment_job"],

@@ -636,7 +636,7 @@ def _diary(X, D, rng, sx, end, noise, employed=None):
                 continue
             worked = worked or k.key == "employment"
             X.events.append((k.key, a))
-            X.minutes[(k.key, a)] = v[1] * math.exp(sd * z - sd * sd / 2)
+            X.minutes[(k.key, a)] = min(1440.0, v[1] * math.exp(sd * z - sd * sd / 2))   # a day has 1440 minutes
 
 
 def _harm(X, Hm, rng, sx, end, marriage, divorce):
