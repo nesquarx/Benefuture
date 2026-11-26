@@ -122,6 +122,12 @@ deleted. Numbering is stable (LI.n).
   (contribution, production, responsibility by freedom with the option set, impact per affected party, and the records
   acting for, under agreement, informed), event to event (part_of, causes, re_description, concurrent), with the relation
   metadata of LI.42 (valid and record time, counterfactual reference for outcomes, place and span). RELATIONS, PLAN.
+- **LI.66** (2026-11-26; author, refines LI.55, LI.60) Seriation is adopted for the coarse ring order; its stability
+  (displacement beyond the LI.25 guard targets) is refined in the placement clean-up.
+- **LI.67** (2026-11-26; author, refines LI.22, LI.65) Event memberships are wide: extraction and categorisation agents
+  name the primary domain, then the next, and so on, until any further categorisation would be bad quality (a stopping
+  rule, its threshold governed). Generated event kinds are categorised the same way, so co-membership covers more pairs.
+  PLAN, prompts.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
