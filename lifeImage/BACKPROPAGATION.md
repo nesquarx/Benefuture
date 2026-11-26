@@ -112,7 +112,9 @@ deleted. Numbering is stable (LI.n).
 - **LI.64** (2026-11-26; author, refines LI.61) Every event distribution or rate the generator uses keeps a sanitized
   snippet of the source statement that gives it (the sentence, table row with headers, or indicator definition), with its
   locator and retrieval date, for later recalibration and re-verification. No identities, no individual records, quotation
-  length only. PLAN.
+  length only. PLAN. Refined (author, same day): the snippets kept for calibration are action/event/outcome records, not
+  factoids: someone (a de-identified role) doing something, and what resulted where known. The factual statement stays as
+  the rate's provenance; event snippets are paraphrased from individual sources, never rows from sources barring AI use.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
