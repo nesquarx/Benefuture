@@ -20,6 +20,8 @@ WIKIDATA_ROOTS = {
     "weather_climate_adaptation": ["Q260607", "Q11663", "Q1277161", "Q125928", "Q43059", "Q8068"],  # adaptation, weather, extreme weather, climate change
 }
 # Wikidata subclasses that are off-topic for the field they were reached from (a leaf of another domain, a person, a work)
+# fields whose roots are specific clinical or family terms known in few Wikipedias: the sitelink floor is lower
+MIN_SITELINKS = {"medication_adherence": 3}
 SKIP_LABELS = {k.lower() for k in (
     "alternative medicine", "blood transfusion", "conversion therapy", "defibrillation", "gene therapy", "immunotherapy",
     "surgical operation", "probiotics", "physiotherapy", "speech-language pathology", "traumatology", "Narcotherapy", "therapy",
@@ -30,7 +32,8 @@ SKIP_LABELS = {k.lower() for k in (
     "Food", "falconry", "safari", "whaling", "braising", "grilling", "roasting", "Earthquakes", "Paleoclimatology",
     "female reproductive organ benign neoplasm", "female reproductive organ cancer", "male reproductive organ cancer",
     "ovarian disease", "uterine disease", "Human cloning", "cloud", "april weather", "space weather", "drizzle",
-    "Climate oscillation", "Entertaining", "ice hotel", "minshuku", "Taarof", "xenia", "Cross-media pollution")}
+    "Climate oscillation", "Entertaining", "ice hotel", "minshuku", "Taarof", "xenia", "Cross-media pollution", "flagellation", "foot whipping", "gauntlet", "torture", "lockdown", "deluge myth",
+    "school corporal punishment", "anticoagulant", "antidepressant", "Diuretics", "statin")}
 
 LCSH_ROOTS = {
     "counselling_therapy": ["Counseling", "Psychotherapy"],

@@ -207,7 +207,7 @@ def _api(params):
     return API + "?" + urllib.parse.urlencode({"format": "json", **params})
 
 
-def fetch_wikidata_gap_api(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, search_limit=SEARCH_LIMIT, log=None):
+def fetch_wikidata_gap_api(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, search_limit=SEARCH_LIMIT, log=None, min_sitelinks=MIN_SITELINKS):
     """(rows, dropped, errors) like `fetch_wikidata_gap`, through the MediaWiki API: the direct subclasses of each root
     (search `haswbstatement:P279=<root>`, at most `search_limit`) and the root itself, labelled in English with their
     sitelink counts by `wbgetentities` (50 ids a call)."""
@@ -254,7 +254,7 @@ def fetch_wikidata_gap_api(fetch, roots=WIKIDATA_ROOTS, cap=FIELD_CAP, search_li
                 continue
             bds = [binding(root, 0)] + [binding(q, 1) for q in kids.get(root, []) if q in info]
             depth_of = {_qid(b): int(b["k"]["value"]) for b in reversed(bds)}
-            got, drp = wikidata_rows(bds, field, info[root]["label"], depth_of)
+            got, drp = wikidata_rows(bds, field, info[root]["label"], depth_of, min_sitelinks)
             dropped += [dict(d, field=field) for d in drp]
             for r in got:
                 if r["code"] not in seen:

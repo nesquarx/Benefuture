@@ -1,5 +1,5 @@
 {
- "candidates": 189,
+ "candidates": 139,
  "dropped": [
   {
    "label": "occupational therapy",
@@ -97,26 +97,6 @@
    "source": "wikidata"
   },
   {
-   "label": "scout method",
-   "reason": "restates existing candidate f.method_scout",
-   "source": "wikidata"
-  },
-  {
-   "label": "shared parenting",
-   "reason": "restates existing candidate f.parenting_shared",
-   "source": "wikidata"
-  },
-  {
-   "label": "attachment parenting",
-   "reason": "restates existing candidate f.attachment_parenting",
-   "source": "wikidata"
-  },
-  {
-   "label": "tiger parenting",
-   "reason": "restates existing candidate f.parenting_tiger",
-   "source": "wikidata"
-  },
-  {
    "label": "hunting",
    "reason": "restates existing candidate f.hunting",
    "source": "wikidata"
@@ -124,6 +104,11 @@
   {
    "label": "fishing",
    "reason": "restates existing candidate f.fishing",
+   "source": "wikidata"
+  },
+  {
+   "label": "flood",
+   "reason": "restates existing candidate f.flood",
    "source": "wikidata"
   },
   {
@@ -139,7 +124,7 @@
  ],
  "licence_status": "verified",
  "merged": 12,
- "raw": 228,
+ "raw": 175,
  "sources": [
   "wikidata",
   "doid",

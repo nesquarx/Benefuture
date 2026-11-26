@@ -6,14 +6,8 @@
   "url": "https://purl.obolibrary.org/obo/doid.obo"
  },
  "lcsh": {
-  "error_count": 1,
-  "errors": [
-   {
-    "error": "HTTPError: HTTP Error 404: Not Found",
-    "field": "medication_adherence",
-    "root": "Self-medication"
-   }
-  ],
+  "error_count": 0,
+  "errors": [],
   "rows": 54,
   "status": "fetched",
   "url": "https://id.loc.gov/authorities/subjects/label/{label}.json"
@@ -28,7 +22,7 @@
   "error_count": 0,
   "errors": [],
   "method": "MediaWiki API, root and direct subclasses, first 100 per root",
-  "rows": 168,
+  "rows": 142,
   "status": "fetched",
   "url": "https://www.wikidata.org/w/api.php"
  }

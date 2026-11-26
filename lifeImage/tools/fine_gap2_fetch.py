@@ -21,6 +21,19 @@ FETCH = functools.partial(http_fetch, retries=2, pause=0.3)
 OBO = {"doid": ("https://purl.obolibrary.org/obo/doid.obo", gap2.DOID_ROOTS)}
 
 
+def refetch_fields(fields):
+    """Fetch again only `fields` (with their own sitelink floor, gap2.MIN_SITELINKS) and replace their rows in wikidata.jsonl."""
+    fetch = functools.partial(http_fetch, retries=4, pause=1.0)
+    old = [r for r in S.read_jsonl(OUT / "wikidata.jsonl") if r["target"] not in fields]
+    new = []
+    for f in fields:
+        r, _, e = gap.fetch_wikidata_gap_api(fetch, roots={f: gap2.WIKIDATA_ROOTS[f]}, cap=gap2.CAP,
+                                             min_sitelinks=gap2.MIN_SITELINKS.get(f, gap.MIN_SITELINKS))
+        new += r
+        print(f, len(r), "rows", len(e), "errors", flush=True)
+    S.write_jsonl(old + [r for r in new if r["label"].lower() not in gap2.SKIP_LABELS], OUT / "wikidata.jsonl")
+
+
 def get_wikidata():
     import time
     fetch = functools.partial(http_fetch, retries=4, pause=1.0)
@@ -56,7 +69,10 @@ GETTERS = {"wikidata": get_wikidata, "lcsh": get_lcsh, "doid": lambda: _obo("doi
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", nargs="*", choices=sorted(GETTERS))
+    ap.add_argument("--refetch-fields", nargs="*", help="refetch only these fields' Wikidata rows (then exit)")
     a = ap.parse_args(argv)
+    if a.refetch_fields:
+        return refetch_fields(a.refetch_fields)
     OUT.mkdir(parents=True, exist_ok=True)
     net_path = OUT / "network.json"
     net = json.loads(net_path.read_text()) if net_path.exists() else {}
