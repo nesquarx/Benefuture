@@ -1,6 +1,6 @@
 # lifeimage-wide-memberships (LI.67: wide event memberships by a ranked stopping rule)
 
-Status: IN PROGRESS
+Status: DONE
 
 ## Goal and acceptance checks
 1. `prompts/membership.v3.md`, `prompts/extract.v2.md`: per relation, domains listed in decreasing weight, primary first, adding while the next domain is a fair
@@ -33,7 +33,7 @@ Status: IN PROGRESS
 - Batches written (gitignored) in `lifeImage/data/batches/`: calibration 2 files, kinds 4, snippets 8.
 
 ## In progress
-- Full default-tier test run; commit and push.
+- (none) Default tier: 1377 passed; remaining failures are test_render circular order and two test_tiles cases (basemap adoption agent files, not mine); the responsibility governed-range test is fixed.
 
 ## Next (lead)
 1. Run `membership.A3S.v3.calibration.var{0,1}.part0.jsonl` with lifeimage-runner agents, then `python3 lifeImage/tools/build_membership_wide.py judge`; compare to `data/gold/membership_wide_predictions.md`; adapt floor per its decision rule.
