@@ -1,0 +1,400 @@
+{
+ "bad_secondary": [
+  [
+   "cal.s01",
+   0,
+   "content",
+   "c.physical_health"
+  ],
+  [
+   "cal.s10",
+   1,
+   "content",
+   "c.early_childhood_education"
+  ],
+  [
+   "cal.s11",
+   0,
+   "content",
+   "c.energy_systems"
+  ]
+ ],
+ "cells_judged": {
+  "decoy": 32,
+  "required": 54,
+  "secondary": 202,
+  "single": 58
+ },
+ "decoy_hit_rate": 0.0,
+ "floor": 5,
+ "median_listed": {
+  "all": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 2.0,
+   "setting": 2.0
+  },
+  "decoy": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2.0
+  },
+  "multi": {
+   "content": 3.0,
+   "form": 3.0,
+   "outcome": 2.0,
+   "setting": 2
+  },
+  "single": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2
+  }
+ },
+ "n_bad": 3,
+ "n_unjudged": 55,
+ "padding_single": 0.4482758620689655,
+ "precision_judged": 0.9795918367346939,
+ "precision_secondary": 0.7128712871287128,
+ "predictions": {
+  "median_listed_multi_form_content_at_least_2": true,
+  "padding_single_at_most_0.10": false,
+  "precision_secondary_at_least_0.8": false
+ },
+ "prompt_version": 4,
+ "recall_required": 0.9629629629629629,
+ "unjudged_secondary": [
+  [
+   "cal.s01",
+   0,
+   "form",
+   "s.self_care"
+  ],
+  [
+   "cal.s03",
+   1,
+   "form",
+   "c.exercise_fitness"
+  ],
+  [
+   "cal.s04",
+   0,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s04",
+   0,
+   "content",
+   "s.public"
+  ],
+  [
+   "cal.s04",
+   1,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s04",
+   1,
+   "content",
+   "s.public"
+  ],
+  [
+   "cal.s06",
+   0,
+   "form",
+   "c.digital_tool_use"
+  ],
+  [
+   "cal.s06",
+   0,
+   "content",
+   "s.leisure"
+  ],
+  [
+   "cal.s06",
+   1,
+   "form",
+   "c.digital_tool_use"
+  ],
+  [
+   "cal.s07",
+   0,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s07",
+   0,
+   "content",
+   "s.meaning"
+  ],
+  [
+   "cal.s07",
+   0,
+   "content",
+   "c.religious_community"
+  ],
+  [
+   "cal.s07",
+   0,
+   "setting",
+   "s.meaning"
+  ],
+  [
+   "cal.s07",
+   1,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s07",
+   1,
+   "content",
+   "c.religious_community"
+  ],
+  [
+   "cal.s08",
+   0,
+   "content",
+   "s.work"
+  ],
+  [
+   "cal.s08",
+   1,
+   "content",
+   "c.employment_job"
+  ],
+  [
+   "cal.s09",
+   0,
+   "content",
+   "s.home"
+  ],
+  [
+   "cal.s09",
+   0,
+   "setting",
+   "s.nature"
+  ],
+  [
+   "cal.s10",
+   0,
+   "form",
+   "c.basic_skills"
+  ],
+  [
+   "cal.s11",
+   0,
+   "form",
+   "c.household_planning"
+  ],
+  [
+   "cal.s11",
+   1,
+   "form",
+   "c.household_planning"
+  ],
+  [
+   "cal.s12",
+   0,
+   "setting",
+   "s.nature"
+  ],
+  [
+   "cal.s12",
+   1,
+   "content",
+   "c.outdoor_recreation"
+  ],
+  [
+   "cal.m01",
+   0,
+   "content",
+   "s.transitions"
+  ],
+  [
+   "cal.m01",
+   0,
+   "setting",
+   "s.work"
+  ],
+  [
+   "cal.m01",
+   1,
+   "setting",
+   "s.self_care"
+  ],
+  [
+   "cal.m02",
+   0,
+   "form",
+   "c.sales_marketing"
+  ],
+  [
+   "cal.m02",
+   0,
+   "content",
+   "s.nature"
+  ],
+  [
+   "cal.m02",
+   0,
+   "content",
+   "s.consumption"
+  ],
+  [
+   "cal.m02",
+   0,
+   "setting",
+   "c.horticulture_farming"
+  ],
+  [
+   "cal.m02",
+   0,
+   "setting",
+   "c.retail_work"
+  ],
+  [
+   "cal.m02",
+   1,
+   "form",
+   "c.retail_work"
+  ],
+  [
+   "cal.m04",
+   0,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m04",
+   0,
+   "content",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m04",
+   1,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m04",
+   1,
+   "content",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m06",
+   0,
+   "form",
+   "c.public_safety_emergency"
+  ],
+  [
+   "cal.m06",
+   1,
+   "form",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.m06",
+   1,
+   "outcome",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.m07",
+   1,
+   "form",
+   "c.healthcare_work"
+  ],
+  [
+   "cal.m09",
+   0,
+   "setting",
+   "s.social"
+  ],
+  [
+   "cal.m09",
+   0,
+   "setting",
+   "s.work"
+  ],
+  [
+   "cal.m10",
+   0,
+   "setting",
+   "s.meaning"
+  ],
+  [
+   "cal.m11",
+   0,
+   "form",
+   "c.management_executive"
+  ],
+  [
+   "cal.m11",
+   1,
+   "form",
+   "c.management_executive"
+  ],
+  [
+   "cal.m12",
+   1,
+   "form",
+   "c.walking_cycling"
+  ],
+  [
+   "cal.d01",
+   0,
+   "form",
+   "c.entrepreneurship"
+  ],
+  [
+   "cal.d01",
+   0,
+   "form",
+   "c.cooking"
+  ],
+  [
+   "cal.d01",
+   1,
+   "form",
+   "c.cooking"
+  ],
+  [
+   "cal.d03",
+   0,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.d03",
+   1,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.d04",
+   0,
+   "content",
+   "s.self_care"
+  ],
+  [
+   "cal.d05",
+   1,
+   "form",
+   "c.socialising"
+  ],
+  [
+   "cal.d07",
+   0,
+   "content",
+   "s.consumption"
+  ]
+ ]
+}

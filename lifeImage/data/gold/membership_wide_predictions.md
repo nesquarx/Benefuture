@@ -57,3 +57,13 @@ Also reported: the fair share of judged secondaries (`precision_judged`), decoy 
 
 ETA: judged when the lead has the two v4 answers files. If any of 1-4 still fails, the next step is an author decision, not a higher floor: the gold
 set's unjudged domains may need judging (they are the likeliest cause of a low precision and of "padding" counted against the rule).
+
+## v4 judged (lead, 2026-11-26)
+Floor 5. Median listed: all 2/2/2/2 (form, content, outcome, setting); multi form 3, content 3 (prediction met). Precision of
+secondary domains, pre-registered metric (unjudged count against): 0.713 (< 0.8, **failed**); among judged secondaries 0.980
+(3 bad, 55 unjudged). Padding on single-domain controls 0.448 (> 0.10, **failed**). Recall of required 0.963 (>= 0.85, met).
+Decoy hit rate 0.000 (v3 0.0625). Against v3 the floor halved the bad domains (6 -> 3), removed decoy hits and raised recall,
+but barely moved the pre-registered metrics: what fails them is the unjudged set (55) and secondary domains on single-domain
+controls that the gold calls neither fair nor bad. By the pre-registered rule, the next step is the author's decision; the
+lead's reading is that the gold set is incomplete, not the floor too low (raising it further would narrow memberships against
+LI.67). Per LI.68 the unjudged domains are refinement candidates.
