@@ -467,6 +467,14 @@ Governance and incentives
   acquittal with the same fixed accuracy 0.9, the cost of a wrongful acquittal is a proxy (severity times harm), a
   capture-to-acquit panel with one honest minority expert still convicts and the alarm then fires in only 3 of 8 seeds
   (exploratory), acquittal audits skipped when capacity is exhausted (logged loudly).
+- The justice alarm is an interval at a governed confidence (8.175 (1)): it fires when the Wilson lower bound of the audited false share, at `z`, exceeds the bar
+  `ratio / (1 + ratio)`, replacing the fixed count of six findings. Proved in Lean ([`restraint_alarm_interval_implies_point`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_alarm_interval_quiet_when_nominal`](../Benefuture/Subgoals/Justice.lean), [`restraint_alarm_interval_below_min_audits`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_alarm_interval_zero_z`](../Benefuture/Subgoals/Justice.lean), [`restraint_alarm_interval_antitone_z`](../Benefuture/Subgoals/Justice.lean),
+  [`restraint_alarm_interval_mono`](../Benefuture/Subgoals/Justice.lean)); the reference function matches it (differential test). Simulated over 24 paired seeds
+  (z = 2 / z = 1): captured to guilt 11 / 21 of 24, captured to acquit 2 / 14, partial capture 0 / 5, nominal 0 / 0, nominal with acquittal audits 0 / 1. Default
+  z = 1 (power is recovered; the cost is at most one nominal false alarm in 24). Captured-to-acquit lower bound above 0.6 is missed (14 of 24). Toy: capture is a
+  fixed log-odds shift; z is a governed threshold (`sim/README.md`).
 - The modelled transitions (`Step`) keep memory append-only, identities injective and escrow sound
   ([`step_preserves_mem`](../Benefuture/Systems/State.lean), [`step_preserves_id`](../Benefuture/Systems/State.lean),
   [`step_preserves_escrow_soundness`](../Benefuture/Systems/State.lean)).

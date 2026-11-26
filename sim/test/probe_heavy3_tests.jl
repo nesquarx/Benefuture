@@ -605,6 +605,24 @@ end
     @test all(==(0.0), r1.values) && all(==(0.0), r2.values)   # the honest record: no effect detected, not a rescue
 end
 
+# 8.175 (1) heavy: the interval alarm at z = 2 and z = 1, 24 paired seeds. Prediction (lead, 0.6): z = 1 recovers power (lower bound above 0.6 under capture to guilt),
+# at most one nominal false alarm. Measured: guilt 11 -> 21 of 24, acquit 2 -> 14, partial 0 -> 5, nominal 0 -> 0, nominal with acquittal audits 0 -> 1.
+@timed_testset "Probe (heavy): interval alarm power and false alarms at z = 2 and z = 1 (8.175 (1))" begin
+    isdefined(@__MODULE__, :restraint_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    seeds = 1:24
+    fires(f) = count(r -> r.tr.restraint_alarm_step > 0, f)
+    arm(; kw...) = (z2 = [restraint_world(s; kw..., alarm_z = 2.0) for s in seeds], z1 = [restraint_world(s; kw..., alarm_z = 1.0) for s in seeds])
+    guilt = arm(; bias = [6.0, 6, 6, 6, 6, 6, 6, 0], cluster = [1, 1, 1, 1, 1, 1, 1, 2], accuse = 1.0)
+    acquit = arm(; bias = fill(-6.0, 8), cluster = fill(1, 8), acq = true)
+    partial = arm(; bias = [6.0, 6, 6, 6, 0, 0, 0, 0], cluster = [1, 1, 1, 1, 2, 2, 2, 2], accuse = 0.3)
+    nominal = arm(); nominal_acq = arm(; acq = true)
+    @info "interval alarm of 24 (z = 2, z = 1)" guilt = (fires(guilt.z2), fires(guilt.z1)) acquit = (fires(acquit.z2), fires(acquit.z1)) partial = (fires(partial.z2), fires(partial.z1)) nominal = (fires(nominal.z2), fires(nominal.z1)) nominal_acq = (fires(nominal_acq.z2), fires(nominal_acq.z1))
+    @test proportion_interval(fires(guilt.z1), 24; z = 2.0).lo > 0.6
+    @test_broken proportion_interval(fires(acquit.z1), 24; z = 2.0).lo > 0.6   # 14 of 24: the lower bound misses
+    @test fires(partial.z1) > fires(partial.z2)
+    @test fires(nominal.z1) <= 1 && fires(nominal_acq.z1) <= 1
+end
+
 probe_total("heavy 3")
 
 
