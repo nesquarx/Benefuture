@@ -1,4 +1,4 @@
-Status: IN PROGRESS 2026-11-25
+Status: DONE 2026-11-26
 
 ## Goal and acceptance
 Second gap candidate set `gap2` for nine coarse fields with no fine child (cybersecurity, environmental_harm, hospitality_hosting,
@@ -21,3 +21,10 @@ roots -> fetch -> pool -> batches -> test -> commit.
 
 ## Files touched
 progress/lifeimage-fine-gap2.md
+
+## Final
+Targets: counselling_therapy replaces therapy_social_work (lead, after base re-merge). data/fine/candidates_gap2_v0.jsonl: 131 candidates
+(counselling 11, cybersecurity 17, environmental_harm 20, hospitality 13, medication_adherence 10, parenting_adolescents 12,
+reproduction_fertility 20, self_provisioning 12, weather_climate_adaptation 16). Sources: wikidata 110, lcsh 29, doid 1 (rows merged across sources).
+Batches (gitignored): data/batches/fine_parent.v1.gap2.var{0,1}.part{0,1,2}.jsonl (50/50/31 cards). Not run. pytest: 1210 passed, 1 xfailed.
+Rebuild: python3 lifeImage/tools/fine_gap2_fetch.py (then --refetch-fields medication_adherence); fine_pool.py --gap2-only; fine_build_batches.py --set gap2.

@@ -152,17 +152,43 @@ EV = {
 }
 
 
+# Timescale of the main phrasing when it is not a life transition.
+TS = {"work.unemployment": "weeks-months", "work.youth_unemployment": "weeks-months", "work.agriculture_employment": "years",
+      "work.self_employment": "years", "money.extreme_poverty": "day", "health.undernourishment": "weeks-months",
+      "health.basic_handwashing": "day", "health.physicians": "minutes/hours", "tech.internet_use": "day",
+      "tech.mobile_subscriptions": "day", "home.electricity_access": "day", "time.unpaid_domestic_care_share": "day",
+      "work.labour_force_participation": "weeks-months", "health.stunting_under5": "years", "mortality.life_expectancy": "years",
+      "mortality.life_expectancy_wpp": "years", "education.primary_duration": "years", "education.secondary_duration": "years",
+      "education.primary_net_enrolment": "years", "education.vocational_share_secondary": "years"}
+# Short-term actions behind a quantity (time-use and activity items phrased as action records): (action, outcome, timescale, extra domains).
+SHORT = {
+    "time.unpaid_domestic_care_share": [("cooked the evening meal and cleared up for the family after the day's work", None, "minutes/hours", ["c.cooking"]),
+                                        ("spent the morning washing clothes and tidying the home", None, "minutes/hours", [])],
+    "work.labour_force_participation": [("worked a full shift and travelled home", None, "day", ["c.commuting"])],
+    "health.basic_handwashing": [("washed hands with soap before preparing food", None, "minutes/hours", ["c.hygiene_grooming"])],
+    "tech.internet_use": [("looked up information online and messaged relatives during a break", None, "minutes/hours", ["c.social_media"])],
+    "health.physicians": [("waited at a clinic and was examined by a doctor", "left with a diagnosis or prescription", "minutes/hours", [])],
+    "money.account_ownership": [("paid a bill from a phone account", None, "minutes/hours", ["c.online_commerce"])],
+    "education.primary_net_enrolment": [("attended a morning of lessons at primary school", None, "day", [])],
+    "education.preprimary_gross_enrolment": [("spent the morning playing and singing in a pre-primary group", None, "day", ["c.children_play"])],
+    "fertility.asfr": [("attended a prenatal check-up", None, "minutes/hours", ["c.medical_care"])],
+    "health.measles_immunisation": [("was held still while a nurse gave an injection", None, "minutes/hours", [])],
+}
+
+
 def event_snippet(p):
-    """One de-identified event record for a Param: actor from its stratum, the quantity's event phrasing, its domain tag."""
+    """De-identified event records for a Param: actor from its stratum, the quantity's event phrasings (a transition, and a short-term action where one exists), its domain tags."""
     if p.quantity not in EV:
-        return None
-    action, outcome = EV[p.quantity]
+        return []
     who = {"f": "woman", "m": "man", "all": "person"}[p.sex]
     band = f" aged {p.age_band}" if re.fullmatch(r"\d+(-\d+|\+)", p.age_band) else ""
     where = PLACES[p.region]
     actor = f"A {who}{band} " + ("in " + where if where != "the world" else "anywhere in the world")
-    return {"actor": actor, "action": action, "outcome": outcome, "domains": [p.field], "source_id": p.source_id,
-            "locator": p.snippet_locator, "sanitization": "paraphrase of what the indicator counts; no individual record, name or place below country"}
+    action, outcome = EV[p.quantity]
+    items = [(action, outcome, TS.get(p.quantity, "life transition"), [])] + SHORT.get(p.quantity, [])
+    return [{"actor": actor, "action": a, "outcome": o, "timescale": t, "domains": [p.field] + x, "source_id": p.source_id,
+             "locator": p.snippet_locator, "sanitization": "paraphrase of what the indicator or activity code counts; no individual record, name or place below country"}
+            for a, o, t, x in items]
 
 
 def get(url, tries=3):
@@ -305,7 +331,7 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     wb, miss = wb_params()
     params = wb + wpp_params(work) + ilo_params(work) + eurostat_params()
-    params = [dataclasses.replace(p, event_snippets=[e] if (e := event_snippet(p)) else [],
+    params = [dataclasses.replace(p, event_snippets=event_snippet(p),
                                   snippet_missing="" if p.quantity in EV else "no event phrasing written for this quantity") for p in params]
     Table(params)  # validates and rejects duplicate keys
     CAL_DIR.mkdir(parents=True, exist_ok=True)

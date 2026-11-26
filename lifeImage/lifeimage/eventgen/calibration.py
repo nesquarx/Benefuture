@@ -4,7 +4,7 @@ Only aggregates enter the repository (LI.61, LI.63, LI.64): a published rate, sh
 microdata. Each `Param` names its source, URL, licence class, confidence, the age band, sex and region it holds for, and
 carries (LI.64) its provenance as `source_statement` (the factual statement that gives the value, with `snippet_locator` and
 `retrieved`) and `event_snippets`: records of someone doing something and, where present, what resulted (actor, action,
-outcome, domain tags, source id, locator, sanitization note), kept for recalibration and verification. Event snippets are
+outcome, timescale, domain tags, source id, locator, sanitization note), kept for recalibration and verification. Event snippets are
 paraphrases without personal names (public figures excepted, see `public_figures.txt`), identifying detail or individual rows.
 A Param lacking either states why in `snippet_missing`; one lacking its source statement has confidence low.
 
@@ -26,7 +26,8 @@ SEXES = ("f", "m", "all")
 WORLD = "WLD"
 WB_REGIONS = frozenset({"EAS", "ECS", "LCN", "MEA", "NAC", "SAS", "SSF", WORLD})
 SNIPPET_MAX = 400
-EVENT_KEYS = ("actor", "action", "outcome", "domains", "source_id", "locator", "sanitization")
+TIMESCALES = ("minutes/hours", "day", "weeks-months", "years", "life transition")
+EVENT_KEYS = ("actor", "action", "outcome", "timescale", "domains", "source_id", "locator", "sanitization")
 # Capitalised words an event snippet may carry besides a sentence's first word: places, regions, institutions, languages.
 PLACE_WORDS = frozenset("""Africa African Asia Asian Europe European America American Americas Latin Caribbean Pacific East South North West
 Central Sub-Saharan Saharan Middle Kenya India Germany Brazil China Egypt Kenyan Indian German Brazilian Chinese Egyptian
@@ -56,6 +57,8 @@ def validate_event_snippet(e, figures=frozenset()):
     for k in ("actor", "action", "source_id", "locator", "sanitization"):
         if not str(e[k]).strip():
             raise CalibrationError(f"event snippet without {k}")
+    if e["timescale"] not in TIMESCALES:
+        raise CalibrationError(f"event snippet timescale {e['timescale']!r} not in {TIMESCALES}")
     if not e["domains"] or not all(str(d).startswith("c.") for d in e["domains"]):
         raise CalibrationError("event snippet needs coarse domain tags")
     text = " ".join(str(e[k] or "") for k in ("actor", "action", "outcome"))
