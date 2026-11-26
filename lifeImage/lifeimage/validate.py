@@ -139,6 +139,95 @@ def validate_membership_answer(answer, vocab, ids=None):
     return answer
 
 
+FIT_MAX = 10
+RANKED_MEMBERSHIP_VERSION = 3  # membership prompt versions from here on carry the ranked stopping rule (LI.67)
+RANKED_EXTRACT_VERSION = 2  # extract prompt versions from here on carry it
+
+
+def _fit_floor(floor):
+    if floor is not None:
+        return floor
+    from .governed import governed
+    return governed("membership.fit_floor")
+
+
+def _int_fit(x):
+    return isinstance(x, int) and not isinstance(x, bool) and 0 <= x <= FIT_MAX
+
+
+def validate_ranked_types(types, ranks, want, ids=None, where="", floor=None):
+    """LI.67: per relation, `types` is null or {domain: weight} in rank order, and `ranks` null exactly then, else
+    {"listed": [{"domain", "fit"}...], "rejected": {"domain", "fit"}}. Rejected: lists that are unranked (fits or weights
+    rise down the list), a listed domain below the floor, weights not summing to 1, and a list that stopped while its best
+    rejected domain is at or above the floor (or that is not auditable: no rejected domain)."""
+    floor = _fit_floor(floor)
+    pre = f"{where}: " if where else ""
+    if not isinstance(types, dict) or sorted(types) != sorted(want):
+        raise ValidationError(f"{pre}types must be exactly {sorted(want)}")
+    if not isinstance(ranks, dict) or sorted(ranks) != sorted(want):
+        raise ValidationError(f"{pre}ranks must be exactly {sorted(want)} (the fit record of the ranked stopping rule)")
+    for t in want:
+        ws, rk = types[t], ranks[t]
+        if ws is None or rk is None:
+            if ws is not None or rk is not None:
+                raise ValidationError(f"{pre}{t}: types and ranks must both be null or both be given")
+            continue
+        if not isinstance(ws, dict) or not ws:
+            raise ValidationError(f"{pre}{t}: types must be null or a non-empty {{domain: weight}} map")
+        if any(isinstance(w, bool) or not isinstance(w, (int, float)) or w <= 0 for w in ws.values()):
+            raise ValidationError(f"{pre}{t}: weights must be positive numbers")
+        _sums_to_one([{"weight": w} for w in ws.values()], f"{pre}{t} membership")
+        if ids is not None:
+            for i in ws:
+                if i not in ids:
+                    raise ValidationError(f"{pre}{i} is not in the pack")
+        if not isinstance(rk, dict) or set(rk) != {"listed", "rejected"}:
+            raise ValidationError(f"{pre}{t}: ranks must have exactly listed and rejected")
+        listed = rk["listed"]
+        if not isinstance(listed, list) or not listed or not all(isinstance(e, dict) and set(e) == {"domain", "fit"} for e in listed):
+            raise ValidationError(f"{pre}{t}: listed must be a non-empty list of {{domain, fit}}")
+        doms = [e["domain"] for e in listed]
+        if doms != list(ws):
+            raise ValidationError(f"{pre}{t}: listed domains {doms} differ from the weighted domains {list(ws)} (order included)")
+        fits = [e["fit"] for e in listed]
+        if not all(_int_fit(f) for f in fits):
+            raise ValidationError(f"{pre}{t}: fits must be integers 0 to {FIT_MAX}")
+        for d, f in zip(doms, fits):
+            if f < floor:
+                raise ValidationError(f"{pre}{t}: {d} is listed with fit {f}, below the floor {floor}")
+        if any(a < b for a, b in zip(fits, fits[1:])):
+            raise ValidationError(f"{pre}{t}: unranked, fits {fits} rise down the list")
+        wl = list(ws.values())
+        if any(a < b - WEIGHT_TOL for a, b in zip(wl, wl[1:])):
+            raise ValidationError(f"{pre}{t}: unranked, weights {wl} rise down the list")
+        rej = rk["rejected"]
+        if not isinstance(rej, dict) or set(rej) != {"domain", "fit"} or not _int_fit(rej["fit"]):
+            raise ValidationError(f"{pre}{t}: rejected must be {{domain, fit}} with an integer fit (the stopping point is audited)")
+        if rej["domain"] in doms:
+            raise ValidationError(f"{pre}{t}: the rejected domain {rej['domain']} is also listed")
+        if ids is not None and rej["domain"] not in ids:
+            raise ValidationError(f"{pre}{rej['domain']} is not in the pack")
+        if rej["fit"] >= floor:
+            raise ValidationError(f"{pre}{t}: stopped early, the best rejected domain {rej['domain']} has fit {rej['fit']}, at or above the floor {floor}")
+    if all(types[t] is None for t in want):
+        raise ValidationError(f"{pre}every relation is null")
+    return types
+
+
+def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
+    """A v3 membership answer: verdict "membership", `types` and `ranks` over the vocabulary's real types (no placebo),
+    ranked per `validate_ranked_types`, and `other` (string or null)."""
+    if answer.get("verdict") != "membership":
+        raise ValidationError(f"membership verdict must be 'membership', not {answer.get('verdict')!r}")
+    for k in ("types", "ranks", "other"):
+        if k not in answer:
+            raise ValidationError(f"a ranked membership answer needs {k}")
+    if isinstance(answer["other"], str) and not answer["other"].strip():
+        raise ValidationError("other must name a relation or be null, not blank")
+    validate_ranked_types(answer["types"], answer["ranks"], real_types(vocab), ids, floor=floor)
+    return answer
+
+
 EXTRACT_KEYS = {"span", "relation", "channel", "magnitude", "valid_time", "types"}
 EXTRACT_CHANNELS = ("positive", "prediction")  # the negative channel is reserved
 EXTRACT_MAGNITUDE_MAX = 1.5
@@ -146,11 +235,12 @@ _SPAN = re.compile(r"^L(\d+)$")
 _VALID_TIME = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
 
 
-def validate_extract_answer(answer, task, ids=None):
+def validate_extract_answer(answer, task, ids=None, ranked=False, floor=None):
     """An extract answer: verdict "rows" and `rows`, each row exactly span (`L<n>` of a non-blank line of the task's
     `lines`), relation (an event relation), channel (positive or prediction), magnitude (0 to 1.5), valid_time (null or a
     date) and `types` (exactly the A3S types, each null or {domain: weight} summing to 1, ids in the pack when given,
-    at least one non-null). An answer with no rows is valid."""
+    at least one non-null). An answer with no rows is valid. With `ranked` (extract v2, LI.67) each row also carries `ranks`
+    and its lists obey the ranked stopping rule (`validate_ranked_types`)."""
     if answer.get("verdict") != "rows":
         raise ValidationError(f"extract verdict must be 'rows', not {answer.get('verdict')!r}")
     rows = answer.get("rows")
@@ -160,8 +250,9 @@ def validate_extract_answer(answer, task, ids=None):
     want = sorted(real_types("A3S"))
     for n, r in enumerate(rows):
         where = f"row {n}"
-        if not isinstance(r, dict) or set(r) != EXTRACT_KEYS:
-            raise ValidationError(f"{where}: keys must be exactly {sorted(EXTRACT_KEYS)}")
+        keys = EXTRACT_KEYS | {"ranks"} if ranked else EXTRACT_KEYS
+        if not isinstance(r, dict) or set(r) != keys:
+            raise ValidationError(f"{where}: keys must be exactly {sorted(keys)}")
         m = _SPAN.match(r["span"]) if isinstance(r["span"], str) else None
         if not m or int(m.group(1)) not in lines:
             raise ValidationError(f"{where}: span {r['span']!r} is not a line of the text")
@@ -176,6 +267,9 @@ def validate_extract_answer(answer, task, ids=None):
         if vt is not None and not (isinstance(vt, str) and _VALID_TIME.match(vt)):
             raise ValidationError(f"{where}: valid_time {vt!r} is neither null nor YYYY[-MM[-DD]]")
         types = r["types"]
+        if ranked:
+            validate_ranked_types(types, r["ranks"], want, ids, where=where, floor=floor)
+            continue
         if not isinstance(types, dict) or sorted(types) != want:
             raise ValidationError(f"{where}: types must be exactly {want}")
         if all(ws is None for ws in types.values()):
@@ -274,12 +368,16 @@ def validate_answers(batch_lines, answer_lines):
                 errors.append(f"line {n}: {e}")
         if extract:
             try:
-                validate_extract_answer(a, t, ids)
+                validate_extract_answer(a, t, ids, ranked=header["prompt_version"] >= RANKED_EXTRACT_VERSION)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
         if membership:
+            vocab = header["task_type"].split(".", 1)[1]
             try:
-                validate_membership_answer(a, header["task_type"].split(".", 1)[1], ids)
+                if header["prompt_version"] >= RANKED_MEMBERSHIP_VERSION:
+                    validate_ranked_membership_answer(a, vocab, ids)
+                else:
+                    validate_membership_answer(a, vocab, ids)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
     for missing in sorted(set(tasks) - seen):

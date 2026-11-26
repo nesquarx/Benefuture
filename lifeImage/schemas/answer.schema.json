@@ -17,6 +17,7 @@
     "upstream": {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}},
     "overlap": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "types": {"type": "object", "additionalProperties": {"anyOf": [{"type": "null"}, {"type": "object", "additionalProperties": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}}]}},
+    "ranks": {"type": "object"},
     "other": {"type": ["string", "null"]},
     "rows": {"type": "array", "items": {"type": "object"}},
     "reason": {"type": "string", "minLength": 1, "pattern": "^[^\\n]*$"},

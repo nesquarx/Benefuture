@@ -31,6 +31,18 @@ GOVERNED = {
         "default": 0.5,
         "source": "LI.38: share kept when the person reports it themselves (pale); the earlier claimed-layer saturation.",
     },
+    "membership.fit_floor": {
+        "default": 4,
+        "source": "LI.67: quality floor of the ranked stopping rule: a domain joins an event's membership in a relation only while its fit score "
+                  "(0 no relation .. 10 the event plainly is that domain) is at least this; the first domain below it ends the list. 4 is the lowest "
+                  "score the rubric calls a fair, if minor, categorisation (3 is `loosely related`, the layout_sim.judged_floor reading of 3 of 10 as "
+                  "barely related). Assumption; calibrated by the membership.v3 control battery (`data/gold/membership_wide_predictions.md`), then governed.",
+    },
+    "membership.agree_floor": {
+        "default": 0.5,
+        "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "
+                  "(`lifeimage/membership_wide.py` ingest); a differing primary domain always escalates. Assumption.",
+    },
     "tiles.min_slice_px": {
         "default": 1.0,
         "source": "LI.52: a tile at zoom z ships a slice only when both its on-screen arc width (at mid radius) and its radial depth "
