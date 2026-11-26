@@ -277,6 +277,54 @@ def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
 def relative_bar_ref (established coarse alternative : Float) : Float :=
   max coarse (min established alternative)
 
+/-- Murphy decomposition of the Brier score of credences against outcomes (author ruling 8.177), each record weighted by its age
+    under half-life `h` (the decayed weighting of 8.85) and credences binned into `bins` equal bins on [0, 1]. Returns
+    #[reliability, resolution, uncertainty, base rate]: reliability is the weighted mean squared gap between a bin's mean credence
+    and its mean outcome (0 when calibrated), resolution the weighted spread of the bins' mean outcomes around the base rate (0 for a
+    climatology-only forecaster), uncertainty the weighted variance of the outcomes. No weight gives all zeros. -/
+def decayed_murphy_ref (credences outcomes ages : Array Float) (h : Float) (bins : Nat) : Array Float := Id.run do
+  let n := min credences.size (min outcomes.size ages.size)
+  let nb := max bins 1
+  let mut sw := 0.0
+  let mut so := 0.0
+  let mut bw := Array.replicate nb 0.0
+  let mut bf := Array.replicate nb 0.0
+  let mut bo := Array.replicate nb 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    let f := min 1.0 (max 0.0 credences[i]!)
+    let k := min (nb - 1) (Float.floor (f * nb.toFloat)).toUInt64.toNat
+    sw := sw + w
+    so := so + w * outcomes[i]!
+    bw := bw.set! k (bw[k]! + w)
+    bf := bf.set! k (bf[k]! + w * f)
+    bo := bo.set! k (bo[k]! + w * outcomes[i]!)
+  if sw ≤ 0.0 then return #[0.0, 0.0, 0.0, 0.0]
+  let base := so / sw
+  let mut rel := 0.0
+  let mut res := 0.0
+  for k in [0:nb] do
+    if bw[k]! > 0.0 then
+      let gap := bf[k]! / bw[k]! - bo[k]! / bw[k]!
+      let spread := bo[k]! / bw[k]! - base
+      rel := rel + bw[k]! * gap * gap / sw
+      res := res + bw[k]! * spread * spread / sw
+  let mut unc := 0.0
+  for i in [0:n] do
+    let w := decay_weight_ref ages[i]! h
+    let d := outcomes[i]! - base
+    unc := unc + w * d * d / sw
+  return #[rel, res, unc, base]
+
+/-- The status bar as calibration plus resolution (author ruling 8.177, replacing 1 - Brier): a model clears the bar when it has at
+    least `minRecords` records (and one), its calibration `1 - reliability / 0.25` reaches the bar (`threshold`, or a novel domain's
+    `max novelThreshold novelFloor`), and its resolution beats the domain's base rate by the domain's margin: resolution at least
+    `resMargin` times the uncertainty (a climatology-only forecaster has resolution 0 and never clears a positive margin). -/
+def murphy_eligible_ref (reliability resolution uncertainty records minRecords : Float) (novel : Bool)
+    (threshold novelThreshold novelFloor resMargin : Float) : Bool :=
+  let bar := if novel then max novelThreshold novelFloor else threshold
+  records ≥ max minRecords 1.0 && 1.0 - reliability / 0.25 ≥ bar && resolution ≥ resMargin * uncertainty
+
 /-- Per-domain converge gate (author ruling 8.176): a domain's economy starts when that domain is active
     and its model has converged (cleared that domain's status bar with significance); a domain below its
     bar stays in score-only start. Flags are read pairwise; a missing `converged` entry counts as not converged. -/

@@ -3766,3 +3766,75 @@ end
     @info "P59 wall time (s)" wall
     @test wall < 20
 end
+
+# 8.177 (P64): the status bar as calibration plus resolution (author, 2026-11-26), replacing 1 - Brier/0.25 as the eligibility test.
+# Red baseline on the earlier rule: an honest forecaster that resolves better than the base rate (0.2 and 0.6 in equal measure, right 20% and 60% of the time,
+# base rate 0.4) scores 1 - Brier/0.25 near 0.2 and is gated out at the bar 0.9 although it is calibrated and informative. Green: it passes the new bar; a
+# confidently wrong forecaster, a climatology-only forecaster (0.4 always) and an overconfident one fail it. The decayed weighting of 8.85 is kept: old
+# records weigh less (a model that was wrong long ago and calibrated now passes). Predictions (lead, 0.8): honest passes, wrong and climatology fail in every seed.
+@timed_testset "Probe: the bar is calibration plus resolution over the base rate; honest 0.4 forecaster no longer gated out (8.177, P64)" begin
+    t0 = time()
+    n, h = 400, 100.0
+    ages = Float64.(n-1:-1:0)
+    elig(f, o; margin = 0.1, bar = 0.9) = begin
+        m = decayed_murphy(f, o, ages, h)
+        old = currency_eligible(decayed_accuracy(f, o, ages, h), n; novel = false, threshold = bar, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55)
+        (old = old, new = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = bar, novel_threshold = 0.75, min_records = 10,
+                                          novel_floor = 0.55, res_margin = margin), m = m)
+    end
+    draw(seed, f) = [rand(Xoshiro(hash((seed, i))), ) < fi ? 1.0 : 0.0 for (i, fi) in enumerate(f)]
+    pass_honest, pass_wrong, pass_clim, pass_over, old_honest = 0, 0, 0, 0, 0
+    seeds = 1:12
+    for s in seeds
+        f_honest = [isodd(i) ? 0.2 : 0.6 for i in 1:n]
+        r = elig(f_honest, draw(s, f_honest)); pass_honest += r.new; old_honest += r.old
+        f_wrong = fill(0.9, n); o_wrong = draw(s, fill(0.1, n)); pass_wrong += elig(f_wrong, o_wrong).new
+        f_clim = fill(0.4, n); pass_clim += elig(f_clim, draw(s, f_clim)).new
+        f_over = [isodd(i) ? 0.05 : 0.95 for i in 1:n]; o_over = draw(s, [isodd(i) ? 0.2 : 0.6 for i in 1:n]); pass_over += elig(f_over, o_over).new
+    end
+    @info "P64 passes over $(length(seeds)) seeds (new rule / old rule for the honest one)" honest = pass_honest honest_old = old_honest wrong = pass_wrong climatology = pass_clim overconfident = pass_over
+    @test old_honest == 0                                    # red outcome on the earlier rule: the honest forecaster is gated out in every seed
+    @test pass_honest == length(seeds)                       # green: calibrated and resolving, it passes
+    @test pass_wrong == 0 && pass_clim == 0 && pass_over == 0
+    # decayed weighting: wrong long ago, calibrated now passes; calibrated long ago, wrong now fails
+    f = [isodd(i) ? 0.2 : 0.6 for i in 1:n]; o = draw(1, f)
+    f_then = vcat(fill(0.9, 200), f[201:end]); o_then = vcat(draw(2, fill(0.1, 200)), o[201:end])
+    m = decayed_murphy(f_then, o_then, ages, 20.0)
+    @test murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    f_now = vcat(f[1:200], fill(0.9, 200)); o_now = vcat(o[1:200], draw(3, fill(0.1, 200)))
+    m = decayed_murphy(f_now, o_now, ages, 20.0)
+    @test !murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    # structural: the decomposition identity (binary outcomes, calibrated bins): Brier = reliability - resolution + uncertainty up to within-bin spread
+    f = rand(Xoshiro(5), n); o = draw(5, f); m = decayed_murphy(f, o, zeros(n), 1.0; bins = 10)
+    @test isapprox(sum((f .- o) .^ 2) / n, m.reliability - m.resolution + m.uncertainty; atol = 0.02)
+    @test m.base_rate ≈ sum(o) / n && m.uncertainty ≈ m.base_rate * (1 - m.base_rate)
+    wall = time() - t0
+    @info "P64 wall time (s)" wall
+    @test wall < 20
+end
+
+# 8.177 (P65): the resolution margin binds per domain: at the rule (fast, this probe) and in the composed world (heavy, probe_heavy3_tests.jl). The world: four domains, dormant economy flags, bar rule :murphy, with an unreachable margin on
+# domain 1 (0.95 of its uncertainty) and a low one on domain 2 (0.05): the unreachable margin holds domains in score-only start (degraded loudly) that calibration alone releases, the others start.
+# Counterexample: with margin 0 (calibration only) fewer domains lag. A domain whose records so far are all successes has no uncertainty to resolve and clears any margin (a rule property). Predictions (lead, 0.7): the economy opens through the other domains; domain 1
+# never leaves score-only; supply flows. Seed 1 (fast; the proportions over seeds are in docs/BACKPROPAGATION 8.177).
+@timed_testset "Probe: the resolution margin binds per domain; a model at the population average gains nothing (8.177, P65)" begin
+    t0 = time()
+    @test all(m -> 0.05 <= m <= 0.45, [v for (k, v) in pairs(RES_MARGIN_DEFAULTS) if k != :uncalibrated])
+    # the margin binds per domain at the rule: the same records clear a low-margin domain and not a high-margin one
+    n = 400; ages = zeros(n); f = [isodd(i) ? 0.2 : 0.6 for i in 1:n]; o = Float64.([rand(Xoshiro(hash((7, i)))) < fi for (i, fi) in enumerate(f)])
+    m = decayed_murphy(f, o, ages, 1e9)
+    clears_at(margin) = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = margin)
+    @test clears_at(RES_MARGIN_DEFAULTS.megaproject_overrun) && clears_at(RES_MARGIN_DEFAULTS.drug_transitions)    # modest-skill domains
+    @test !clears_at(RES_MARGIN_DEFAULTS.materials) && !clears_at(0.95)                                           # a domain whose attainable skill is high needs more resolution
+    @test m.resolution / m.uncertainty > 0.1 && m.resolution / m.uncertainty < 0.45                                # the records' own share of uncertainty resolved sits between them
+    # a model that stays at the population average when a subgroup signal exists is not rewarded (author, 2026-11-26): a technique raises the outcome to 1 for 30% of
+    # units and not for the rest; the population-average forecaster (0.3) is calibrated but has no resolution and fails the margin; the subgroup-aware one passes.
+    n = 400; group = [mod(i, 10) < 3 for i in 1:n]; o = Float64.(group); ages = zeros(n)
+    avg = decayed_murphy(fill(0.3, n), o, ages, 1e9); aware = decayed_murphy([g ? 0.95 : 0.02 for g in group], o, ages, 1e9)
+    clears(m) = murphy_eligible(m.reliability, m.resolution, m.uncertainty, n; novel = false, threshold = 0.9, novel_threshold = 0.75, min_records = 10, novel_floor = 0.55, res_margin = 0.1)
+    @test !clears(avg) && avg.resolution == 0 && avg.uncertainty > 0.2
+    @test clears(aware)
+    wall = time() - t0
+    @info "P65 wall time (s)" wall
+    @test wall < 20
+end

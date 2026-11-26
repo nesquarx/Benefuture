@@ -428,5 +428,36 @@ theorem per_domain_gate_opens_whenever_all_gate_does (active converged : List Bo
     | cons c cs =>
       cases a <;> cases c <;> simp_all [economy_open_all, economy_open, domain_open, List.zipWith, List.any_cons]
 
+/-! ## The status bar as calibration plus resolution (author ruling 8.177)
+  A model clears a domain's bar when its calibration (1 minus the reliability term of the Murphy decomposition of the Brier
+  score, against the uniform bar) is high and its resolution beats the domain's base rate by the domain's margin. Millionths
+  scale; mirrors `murphy_eligible_ref` in the reference (record count aside). -/
+
+/-- [R] Calibration `1 - reliability / 0.25` reaches `bar` and resolution is at least `margin` times the uncertainty. -/
+def murphy_clears (reliability resolution uncertainty bar margin : Int) : Prop :=
+  4 * reliability ≤ 1000000 - bar ∧ margin * uncertainty ≤ resolution * 1000000
+
+instance (r s u b m : Int) : Decidable (murphy_clears r s u b m) := by unfold murphy_clears; infer_instance
+
+/-- THEOREM (acceptance): a calibrated honest forecaster that resolves better than the base rate passes: forecasts of 0.2 and 0.6
+    in equal measure, right 20% and 60% of the time (base rate 0.4, reliability 0, resolution 0.04, uncertainty 0.24), at bar 0.9
+    and margin 0.1. Its 1 - Brier/0.25 is only 0.2, so the earlier rule gated it out. -/
+theorem calibrated_honest_forecaster_passes : murphy_clears 0 40000 240000 900000 100000 := by decide
+
+/-- THEOREM (counterexample): a confidently wrong forecaster fails: 0.9 where the outcome is 0.1 (reliability 0.64). -/
+theorem confidently_wrong_forecaster_fails : ¬ murphy_clears 640000 0 90000 900000 0 := by decide
+
+/-- THEOREM (counterexample): a climatology-only forecaster fails whatever it is calibrated to: resolution 0 never clears a
+    positive margin when the outcome is uncertain. -/
+theorem climatology_only_fails (u bar margin : Int) (hu : 0 < u) (hm : 0 < margin) :
+    ¬ murphy_clears 0 0 u bar margin := by
+  unfold murphy_clears
+  intro ⟨_, h⟩
+  nlinarith
+
+/-- THEOREM: a model that clears the bar is calibrated to it and resolves at least the margin. -/
+theorem murphy_clears_bounds (r s u b m : Int) (h : murphy_clears r s u b m) :
+    4 * r ≤ 1000000 - b ∧ m * u ≤ s * 1000000 := h
+
 end Benefuture.Measurement
 

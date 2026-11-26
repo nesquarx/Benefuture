@@ -243,6 +243,10 @@ struct M3cParams
     profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
     profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
     converge_init::Bool           # hold score-only Phase 1 until a domain converges (`currency_eligible` + `sequential_significant`; 8.136)
+    bar_rule::Symbol              # :brier (1 - Brier/0.25 against the bar) or :murphy (8.177: calibration against the bar, resolution beats the base rate by the domain's margin)
+    res_margin::Float64           # governed (8.177): default resolution margin, a share of the domain's outcome uncertainty (fallback; uncalibrated)
+    res_margins::Vector{Float64}  # governed (8.177): per true domain margins (severity and uncertainty of its impact); beyond the vector `res_margin`
+    murphy_bins::Int              # bins of the Murphy decomposition
     converge_gate::Symbol         # :domain (default, 8.176: each domain's economy starts when its model clears its bar) or :all (the earlier all-domains conjunction, limiting case)
     legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
     accident_cap::Bool            # L96 / 8.157 ii: bound accident contributor's penalty by its capacity, administration carrying the rest
@@ -347,7 +351,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
-                   converge_init::Bool = false, converge_gate::Symbol = :domain, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
+                   converge_init::Bool = false, converge_gate::Symbol = :domain, bar_rule::Symbol = :brier, res_margin::Real = 0.1, res_margins::AbstractVector{<:Real} = Float64[], murphy_bins::Integer = 10, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
                    open_entry::Bool = false, entrants::Integer = 0,
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
@@ -482,7 +486,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, converge_gate, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
+              converge_init, bar_rule, Float64(res_margin), Float64.(res_margins), Int(murphy_bins), converge_gate, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
@@ -1090,17 +1094,33 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     removed_leaf(j) = any(e -> e.target == 0 || e.target == j, live(:remove_leaf_models))
     removed_parent(q) = any(e -> e.target == 0 || e.target == q, live(:remove_parent_models))
     pool_capped(j) = any(e -> e.target == 0 || e.target == j, live(:cap_pool_one))
-    leaf_ok_raw(j) = currency_eligible(leaf_acc(j), length(lhist[j]); novel = lnovel[j], threshold = leaf_bar(j),
-                                       novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
+    res_margin_of(j) = ltrue[j] <= length(p.res_margins) ? p.res_margins[ltrue[j]] : p.res_margin
+    # Records under the accuracy rule's own filter (window, or the decayed span without discounted spans), with their ages.
+    function eligible_records(h, hl)
+        p.accuracy_rule == :window && return collect(window_of(h)), Float64[cur[] - x.step for x in window_of(h)]
+        i0 = searchsortedfirst(h, cur[] - 40hl; by = x -> x isa Real ? x : x.step)
+        r = [x for x in @view(h[i0:end]) if !discounted(x)]
+        r, Float64[cur[] - x.step for x in r]
+    end
+    # A history clears domain j's bar: 1 - Brier/0.25 (`:brier`), or calibration plus resolution over the base rate (`:murphy`, 8.177).
+    function hist_eligible(h, hl, j, bar)
+        if p.bar_rule == :murphy
+            r, ages = eligible_records(h, hl)
+            isempty(r) && return false
+            m = decayed_murphy([x.credence for x in r], [x.outcome for x in r], ages, hl; bins = p.murphy_bins)
+            return murphy_eligible(m.reliability, m.resolution, m.uncertainty, length(h); novel = lnovel[j], threshold = bar,
+                                   novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor, res_margin = res_margin_of(j))
+        end
+        currency_eligible(acc_of(h, hl), length(h); novel = lnovel[j], threshold = bar, novel_threshold = p.novel_threshold,
+                          min_records = p.min_records, novel_floor = p.novel_floor)
+    end
+    leaf_ok_raw(j) = hist_eligible(lhist[j], hl_of(j), j, leaf_bar(j))
     leaf_ok(j) = !removed_leaf(j) && !domain_score_only[j] && leaf_ok_raw(j)
     parent_ok(q) = !removed_parent(q) && currency_eligible(parent_acc(q), length(phist[q]); novel = false, threshold = p.coarse_threshold,
                                                              novel_threshold = p.novel_threshold, min_records = p.min_records, novel_floor = p.novel_floor)
     function eval_challengers(j; only_if_eligible = false)
         ks = [top[j]; [k for k in eachindex(mpool[j]) if k != top[j] && length(mpool[j][k].hist) >= p.takeover_records &&
-                       (!only_if_eligible || currency_eligible(acc_of(mpool[j][k].hist, hl_of(j)), length(mpool[j][k].hist);
-                                                               novel = lnovel[j], threshold = leaf_bar(j),
-                                                               novel_threshold = p.novel_threshold, min_records = p.min_records,
-                                                               novel_floor = p.novel_floor))]]
+                       (!only_if_eligible || hist_eligible(mpool[j][k].hist, hl_of(j), j, leaf_bar(j)))]]
         length(ks) > 1 || return top[j]
         brier(h) = [credence_score(x.raw, x.outcome) for x in window_of(h)]
         hlj = hl_of(j)
@@ -1614,7 +1634,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                    responsibility_credits = responsibility_credits_applied[], bystander_omissions_exempted = bystander_omissions_exempted[],
                    withhold_premium = withhold_totals.premium[], withhold_refunded = withhold_totals.refunded[], withhold_clawback = withhold_totals.clawback[], withhold_reward = withhold_totals.reward[], withhold_discovered = withhold_totals.discovered[] > 0, withhold_agent_net = sup_scarcity_gain .- sup_clawback .+ sup_reward, withhold_stopped = withhold_stopped[],
                    lane_executed = lane.executed[], lane_halted = lane.halted[], lane_screened_out = lane.screened_out[], init_executed = lane.init_executed[], declined = lane.declined[],
-                   legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[],
+                   legacy_executed = lane.legacy_executed[], converged = econ_converged[], converge_step = converge_step[], gate_pending = copy(gated_leaves),
                    credit_pos = credit_pos, credit_neg = credit_neg, upstream_pos = upstream_pos, upstream_neg = upstream_neg,
                    cofunder_credit = cofunder_credit[], interaction = interaction[],
                    accolade_credit = accolade_credit[], contract_credit = contract_credit[],

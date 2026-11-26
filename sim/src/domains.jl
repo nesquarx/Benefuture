@@ -295,6 +295,33 @@ function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::
 end
 
 """
+    decayed_murphy(credences, outcomes, ages, h; bins = 10) -> (reliability, resolution, uncertainty, base_rate)
+
+Murphy decomposition of the Brier score with age-weighted records (Lean `decayed_murphy_ref`; author ruling 8.177, decay 8.85).
+"""
+function decayed_murphy(credences, outcomes, ages, h::Real; bins::Integer = 10)
+    check(length(credences) == length(outcomes) == length(ages) && h > 0 && bins >= 1, "one age and outcome per credence; positive half-life; at least one bin")
+    check(all(isfinite, credences) && all(isfinite, outcomes) && all(isfinite, ages), "finite records")
+    r = lean_floats(ccall(sym(:bf_decayed_murphy), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Csize_t),
+                          floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)), floatarray(collect(Float64, ages)), h, bins))
+    (reliability = r[1], resolution = r[2], uncertainty = r[3], base_rate = r[4])
+end
+
+"""
+    murphy_eligible(reliability, resolution, uncertainty, records; novel, threshold, novel_threshold, min_records, novel_floor, res_margin)
+
+Whether a domain's model clears its status bar as calibration (`1 - reliability / 0.25 >= bar`) and resolution (`>= res_margin * uncertainty`),
+Lean `murphy_eligible_ref`, author ruling 8.177. Both `threshold` and `res_margin` are governed, the margin per domain.
+"""
+function murphy_eligible(reliability::Real, resolution::Real, uncertainty::Real, records::Integer; novel::Bool, threshold::Real, novel_threshold::Real,
+                         min_records::Integer, novel_floor::Real, res_margin::Real)
+    check(all(isfinite, (reliability, resolution, uncertainty, threshold, novel_threshold)) && reliability >= 0 && resolution >= 0 && uncertainty >= 0 && records >= 0 && min_records >= 0 &&
+          0 <= novel_floor <= 1 && 0 <= res_margin <= 1, "decomposition terms non-negative, floor and margin in [0, 1], counts non-negative")
+    ccall(sym(:bf_murphy_eligible), UInt8, (Float64, Float64, Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
+          reliability, resolution, uncertainty, records, min_records, novel, threshold, novel_threshold, novel_floor, res_margin) == 1
+end
+
+"""
     domain_gate(active, converged) -> (open, economy_open, economy_open_all)
 
 The per-domain converge gate (Lean `domain_open_ref`, `economy_open_ref`; author ruling 8.176): a domain's economy starts when it
@@ -390,3 +417,15 @@ const COMPONENT_FALLBACKS = (
     (component = :resource_issuance, consumes = :capacity_and_rate_records, primary = "uncapped net credit issuance (`supply_delta`)",
      condition = "claims reach `ra_horizon` deliverable headroom or unfunded StandCoin halts", fallback = "headroom cap (`issuance_headroom`, 8.133) and contracted baseline pricing (`ra_rate`, 8.71)"),
 )
+
+"""
+    RES_MARGIN_DEFAULTS
+
+Per-domain default resolution margins (author ruling 8.177; `docs/CALIBRATION.md` 8.5): the share of a domain's outcome uncertainty a model must
+resolve above the base rate, half the best published skill over climatology (Brier skill score or R²) to the nearest 0.05, floored at 0.05 so that a
+climatology-only forecaster never clears. `uncalibrated` names the families with no usable source, which keep the fallback `M3cParams.res_margin` 0.1.
+"""
+const RES_MARGIN_DEFAULTS = (short_range_nwp = 0.30, medium_range_climate = 0.30, materials = 0.45, semiconductor_yield = 0.45, mortality = 0.45,
+                             icu_deterioration = 0.15, oncology_survival = 0.15, drug_transitions = 0.10, crop_yield = 0.30, megaproject_overrun = 0.05,
+                             software_estimation = 0.10, macroeconomic = 0.10, credit_default = 0.10, geopolitical = 0.20, electoral = 0.20,
+                             uncalibrated = (:software_estimation, :credit_default, :medium_range_climate))

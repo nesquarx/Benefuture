@@ -183,6 +183,13 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_relative_bar] def relativeBar (established coarse alternative : Float) : Float :=
   relative_bar_ref established coarse alternative
 
+@[export bf_decayed_murphy] def decayedMurphy (credences outcomes ages : FloatArray) (h : Float) (bins : USize) : FloatArray :=
+  ⟨decayed_murphy_ref credences.data outcomes.data ages.data h bins.toNat⟩
+
+@[export bf_murphy_eligible] def murphyEligible (reliability resolution uncertainty records minRecords : Float) (novel : UInt8)
+    (threshold novelThreshold novelFloor resMargin : Float) : UInt8 :=
+  if murphy_eligible_ref reliability resolution uncertainty records minRecords (novel == 1) threshold novelThreshold novelFloor resMargin then 1 else 0
+
 /-- Per-domain converge gate (8.176): flags travel as 0/1 floats. -/
 @[export bf_domain_open] def domainOpen (active converged : FloatArray) : FloatArray :=
   ⟨(domain_open_ref (active.data.map (· != 0.0)) (converged.data.map (· != 0.0))).map fun b => if b then 1.0 else 0.0⟩

@@ -653,6 +653,23 @@ end
     end
 end
 
+# 8.177 (P65, heavy): the resolution margin binds per domain in the composed world (bar rule :murphy, dormant flags, four domains, 75 steps, seeds 1:3): an unreachable margin
+# (0.95 of a domain's uncertainty) on domain 1 holds domains in score-only start that calibration alone (margin 0) releases; the economy still opens through the others.
+@timed_testset "Probe (heavy): the resolution margin binds per domain in the composed world (8.177, P65)" begin
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    isdefined(@__MODULE__, :composed_gate_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    lag_bound, lag_cal = 0, 0
+    for seed in 1:3
+        bound = composed_gate_world(seed; bar_rule = :murphy, res_margins = [0.95, 0.05, 0.05, 0.05]).econ_trace
+        calonly = composed_gate_world(seed; bar_rule = :murphy, res_margin = 0.0).econ_trace
+        @test bound.converged && length(bound.supply) > 0
+        @test any(k -> occursin("domain economy start", k), keys(bound.degraded)) || isempty(bound.gate_pending)
+        lag_bound += length(bound.gate_pending); lag_cal += length(calonly.gate_pending)
+    end
+    @info "P65 heavy: domains still in score-only start at the end" bound = lag_bound calibration_only = lag_cal
+    @test lag_bound >= lag_cal
+end
+
 probe_total("heavy 3")
 
 

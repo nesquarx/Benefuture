@@ -42,6 +42,20 @@ end
 fin(xs...) = all(isfinite, xs)
 
 @testset "Differential: Lean exports against independent oracles, through the guards" begin
+    # 8.177: the bar as calibration plus resolution (oracle transcribes the docstring); 8.176: the per-domain converge gate.
+    @test differential(:murphy_eligible, r -> (hostile(r), hostile(r), hostile(r), rand(r, 0:30), rand(r, 0:12), rand(r, Bool), hostile(r), hostile(r), hostile(r), hostile(r)),
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> fin(rel, res, unc, th, nth, nf, rm) && rel >= 0 && res >= 0 && unc >= 0 && 0 <= nf <= 1 && 0 <= rm <= 1,
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> murphy_eligible(rel, res, unc, n; novel = nov, threshold = th, novel_threshold = nth, min_records = m, novel_floor = nf, res_margin = rm),
+                       (rel, res, unc, n, m, nov, th, nth, nf, rm) -> (n >= max(m, 1) && 1.0 - rel / 0.25 >= (nov ? max(nth, nf) : th) && res >= rm * unc) ? 1.0 : 0.0,
+                       ) == (guard = 0, value = 0)
+    let r = Xoshiro(177), bad = 0
+        for _ in 1:300
+            na = rand(r, 1:6); act = rand(r, Bool, na); cv = rand(r, Bool, na)
+            op, eo, ea = domain_gate(act, cv)
+            bad += (op == (act .& cv)) && eo == any(act .& cv) && ea == (any(act) && all(.!act .| cv)) ? 0 : 1
+        end
+        @test bad == 0
+    end
     @test differential(:settlement, r -> (hostile(r), hostile(r)), fin, settlement, (m, u) -> m - u) == (guard = 0, value = 0)
     @test differential(:supply_delta, r -> (hostile(r), hostile(r), hostile(r)), fin, supply_delta,
                        (g, c, h) -> g - c - h) == (guard = 0, value = 0)
