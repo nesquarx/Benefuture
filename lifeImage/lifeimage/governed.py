@@ -146,6 +146,26 @@ GOVERNED = {
         "default": 0.25,
         "source": "LI.55: share of the polar stiffness a field keeps when it has no axes of its own (its angle is inherited from upstream); assumption.",
     },
+    "layout_sim.seriation_lambda": {
+        "default": 1.0 / 120.0,
+        "source": "LI.60: price of one degree of displacement (slot angle from the axes-prior angle) in units of combined similarity in the "
+                  "seriation cost -similarity + lambda x displacement. Derived from the guard, not tuned: a displacement the size of the guard "
+                  "(120 degrees) costs one median-strength adjacency (normalised source similarity 1). A sweep is reported as sensitivity only.",
+    },
+    "layout_sim.seriation_guard": {
+        "default": 120.0,
+        "source": "LI.60 / LI.25 / LI.58: hard limit (degrees) on a field's displacement in the seriation order; the same value as the force "
+                  "simulation's `layout_sim.shift_max` (a third of the circle), so the arms are held to one stability guard; assumption.",
+    },
+    "layout_sim.seriation_restarts": {
+        "default": 8,
+        "source": "LI.60: deterministic starts of the seriation heuristic besides the shipped order (3 greedy chains from the fields at "
+                  "the first slots, the rest seeded double-bridge kicks of the best order so far); the best cost wins. Compute budget, assumption.",
+    },
+    "layout_sim.seriation_kick_seed": {
+        "default": 60,
+        "source": "LI.60: seed of the double-bridge kicks (a fixed number so the heuristic is deterministic); the value carries no meaning.",
+    },
     "layout_sim.k_radial": {
         "default": 5.0,
         "source": "LI.58: stiffness of the strict radial spring to the judged radius (LI.26), relative to the median field's total attraction; "

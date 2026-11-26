@@ -80,3 +80,73 @@ Removing any one source gives higher full-signal adjacency (0.32-0.38): more sou
 The claim "the simulation improves adjacency over the shipped layout" no longer holds; the test now asserts only what holds
 (signal pairs closer in rank). Reading: a cheap global ordering heuristic beat the local relaxation, which favours a global
 ordering arm (circular seriation) over further force tuning.
+
+## Seriation arm (LI.60; written before the seriation was run on the data)
+Arm C: the circular order of the 247 coarse fields found by a heuristic for the Hamiltonian cycle that minimises
+cost = -(combined similarity of circularly adjacent fields) + lambda x (angular displacement of each field's slot from its axes-prior
+angle), summed over the ring (`lifeimage/seriation.py`). Slots are the shipped order's tiled slice centres (a field at ring position p
+takes slot p's angle); the displacement guard is `layout_sim.shift_max` (LI.25/LI.58, 120 degrees); `seriation.lambda` is 1/120 per
+degree (a displacement the size of the guard costs one median-strength adjacency; derived from the guard, not tuned, see
+`governed.py`); sectors may split no more than the shipped order (16). Heuristic: the shipped order and `seriation.restarts`
+deterministic starts (greedy chain, seeded kicks), each improved by 2-opt, Or-opt (segments of 1-3) and slot rotations, best kept;
+no randomness beyond the fixed seeds. The order enters `basemap.build` as unit axes vectors like `tiled_slices`, so widths and radii
+are unchanged. A = shipped order (axes placement tiled), B = force simulation (current governed defaults, tiled), both
+recomputed on the same signals as C. All similarities use the same combined matrix.
+
+Named groups (explicit ids): arts and religion = `c.arts_humanities_studies`, `c.visual_arts`, `c.performing_arts`,
+`c.religion_worship`, `c.religious_community`; mathematics and statistics = `c.mathematics`, `c.statistics_data`; agriculture =
+`c.horticulture_farming`, `c.agricultural_science`, `c.agri_forestry_fishing_work`, `c.fishing_hunting_foraging`; housing =
+`c.housing_search`. Outlier present = an arts/religion field circularly adjacent to a mathematics/statistics field; housing with an
+agriculture field as a neighbour (stricter than "between two").
+
+Baseline on the current code (the red test): in A, `c.arts_humanities_studies` is adjacent to `c.statistics_data` and
+`c.housing_search` is adjacent to `c.horticulture_farming`.
+
+Predictions (lead, confidence 0.6 unless stated; C against A, and against B where stated):
+1. Mean adjacent combined similarity of C >= 1.2 x A. C also >= B (confidence 0.7: B is below A on current data).
+2. No-signal share of C <= 0.9 x A.
+3. Mean circular rank distance of signal pairs of C below A (confidence 0.7; an optimiser of adjacency tends to pull signal pairs together, but a ring order only controls adjacency).
+4. Named outliers: no arts/religion field adjacent to mathematics/statistics in C; no agriculture field beside housing in C.
+5. Stability: mean tiled shift from the axes angle <= 25 degrees (guard max <= 120 by construction; p95 <= 60, confidence 0.5); sectors split <= 16 (enforced by construction); extra runs <= A's (confidence 0.4, not enforced).
+6. Blinded adjacency (run later by the lead, A vs C, two variants): C preferred in >= 58% of decisive judgements with z >= 2 in each variant. Confidence 0.5.
+Counterexample cases (tests): lambda very large returns the shipped/prior order; lambda 0 is free, displacement unbounded except by the guard.
+Sensitivity (reported, not used to retune the headline): lambda x {0, 0.25, 4, 1000}.
+
+### Seriation arm: results (2026-11-26, governed defaults; deterministic, no seeds; `data/coarse/seriation_v0.json`, `tools/seriation.py`)
+Runtime about 20 s per arm (pure Python, 9 starts: shipped, 3 greedy, 5 kicks; best from a kick). Same signals for A, B and C.
+
+| arm | mean adjacent similarity | no-signal share | mean rank distance (signal pairs) | tiled shift mean / p95 / max | sectors split | extra runs |
+|---|---|---|---|---|---|---|
+| A shipped | 0.337 | 0.729 | 33.0 | 15.8 / 32.9 / 42.2 | 16 | 166 |
+| B force sim | 0.352 | 0.777 | 27.3 | 24.4 / 61.3 / 105.2 | 16 | 185 |
+| C seriation | 2.243 | 0.093 | 34.1 | 28.7 / 79.7 / 122.8 | 16 | 97 |
+
+Verdicts: 1 mean similarity C = 6.7 x A (>= 1.2: met), C > B (met). 2 no-signal share C = 0.13 x A (<= 0.9: met). 3 mean rank
+distance of signal pairs C 34.1 against A 33.0: **not met** (a ring order controls adjacency only; the pairs it pulls together
+leave other signal pairs where they were or farther). 4 named outliers: both removed in C (arts_humanities_studies no longer beside
+statistics_data, housing beside no agriculture field): met (B also removes them). 5 stability: mean tiled shift 28.7 > 25 **not met**,
+p95 79.7 > 60 **not met**; sectors split 16 = A's (met, enforced); extra runs 97 <= 166 (met). The guard holds on the slots (maximum slot
+displacement <= 120, tested) but the tiled slice centres of the 247 variable-width slices drift from the slots: tiled maximum 122.8, so
+"max <= 120 by construction" was wrong for the tiled centre (it holds for the slot). 6 blinded adjacency: not yet run (lead).
+
+Reading. Combined similarity is both what C optimises and what 1 and 2 measure, so 1 and 2 are sanity checks (the circularity of
+metric 1 above); the independent check is prediction 6. A large share of the gain costs no displacement: with lambda x 1000 (a
+near-hard prior) C still reaches mean similarity 1.64 and no-signal share 0.24 at mean tiled shift 15.3 (A: 15.8), because the axes
+prior leaves 178 of 247 fields tied (127 distinct angles) and free to reorder within the tie. The shipped tie-break (parent angle)
+uses only part of that freedom.
+
+Sensitivity (lambda multiples of the default, reported not used to retune; the default stays the pre-registered one):
+
+| lambda x | mean similarity | no-signal | rank dist | tiled shift mean / p95 / max | extra runs |
+|---|---|---|---|---|---|
+| 0 | 2.141 | 0.105 | 43.4 | 45.6 / 103.1 / 121.5 | 101 |
+| 0.25 | 2.217 | 0.081 | 33.8 | 32.3 / 74.3 / 127.0 | 104 |
+| 1 (default) | 2.243 | 0.093 | 34.1 | 28.7 / 79.7 / 122.8 | 97 |
+| 4 | 2.130 | 0.138 | 34.3 | 20.0 / 53.6 / 98.0 | 105 |
+| 1000 | 1.639 | 0.239 | 33.4 | 15.3 / 47.8 / 101.1 | 101 |
+
+Lambda x 4 (1/30 per degree) would meet every stability prediction (mean 20.0, p95 53.6, max 98) at 95% of the default's similarity
+gain; choosing it now would be a post-hoc tune, so it is offered to the lead as a decision, not adopted. Note lambda 0 does not give
+the highest similarity (2.141 < 2.243): the heuristic is not exact and the greedy and kick starts end in different local optima.
+Blinded batches (shipped A against seriation C, two variants, 247 fields each, `adjacency.v1`): `data/batches/seriation/`
+(gitignored), key `data/ephemeral/seriation/adjacency.v1.key.json` (gitignored, set 1 versus layout A or C per task).

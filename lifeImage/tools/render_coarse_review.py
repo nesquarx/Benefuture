@@ -75,8 +75,18 @@ def sim_basemap():
             "slices": {i: {"ring": s.ring, "start": s.start, "width": s.width, "r0": s.r0, "r1": s.r1} for i, s in sl.items()}}
 
 
-def build(sim=False):
-    bm = sim_basemap() if sim else json.loads((ROOT / "data/images/v2/basemap.json").read_text())
+def seriation_basemap():
+    """The seriation order (data/coarse/seriation_v0.json, LI.60) tiled by the basemap build, in basemap.json's shape."""
+    sys.path.insert(0, str(ROOT))
+    from lifeimage import layout_sim
+    res = json.loads((ROOT / "data/coarse/seriation_v0.json").read_text())
+    sl = layout_sim.tiled_slices(res)
+    return {"version": f"{res['version']} (circular seriation)",
+            "slices": {i: {"ring": s.ring, "start": s.start, "width": s.width, "r0": s.r0, "r1": s.r1} for i, s in sl.items()}}
+
+
+def build(sim=False, seriation=False):
+    bm = seriation_basemap() if seriation else sim_basemap() if sim else json.loads((ROOT / "data/images/v2/basemap.json").read_text())
     cards = [json.loads(l) for l in (ROOT / "data/coarse/seed_v3.jsonl").read_text().splitlines() if l.strip()]
     by = {c["id"]: c for c in cards}
     sl = bm["slices"]
@@ -133,7 +143,8 @@ def build(sim=False):
         out.append(f'<text x="{x:.1f}" y="{y:.1f}" font-size="20" letter-spacing="3" fill="#7a7266" text-anchor="middle" '
                    f'dominant-baseline="middle">{name}</text>')
     out.append(f'<text x="40" y="50" font-size="26" fill="#3a352e">Life Image coarse layout, basemap {escape(str(bm.get("version")))}</text>')
-    how = "polar force simulation (axes as a weak prior, attraction along links, repulsion)" if sim else "judged axes"
+    how = ("circular seriation (ring order maximising adjacent similarity, displacement from the axes priced)" if seriation else
+           "polar force simulation (axes as a weak prior, attraction along links, repulsion)" if sim else "judged axes")
     out.append(f'<text x="40" y="82" font-size="15" fill="#7a7266">{len(sectors)} sectors (inner ring) and {len(fields)} fields. '
                f'Angle: {how}. Radial band: judged advanced/specialised score (dashed rings at 0.25 steps). '
                'Width: domain pressure (synthetic sample, provisional). Colour: main sector.</text>')
@@ -145,9 +156,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--png", action="store_true")
     ap.add_argument("--layout-sim", action="store_true", help="take angles from data/coarse/layout_sim_v0.json")
+    ap.add_argument("--seriation", action="store_true", help="take angles from data/coarse/seriation_v0.json")
     args = ap.parse_args()
-    svg, ns, nf = build(args.layout_sim)
-    name = "coarse_layout_sim" if args.layout_sim else "coarse_layout"
+    svg, ns, nf = build(args.layout_sim, args.seriation)
+    name = "coarse_layout_seriation" if args.seriation else "coarse_layout_sim" if args.layout_sim else "coarse_layout"
     d = ROOT / "data/images/review"; d.mkdir(parents=True, exist_ok=True)
     p = d / f"{name}.svg"; p.write_text(svg)
     print(f"{p}: {ns} sectors, {nf} fields")
