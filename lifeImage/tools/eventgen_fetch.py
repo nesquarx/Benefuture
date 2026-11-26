@@ -19,6 +19,9 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import dataclasses  # noqa: E402
+import re  # noqa: E402
+
 from lifeimage.eventgen.calibration import CAL_DIR, Param, Table, dump_params  # noqa: E402
 
 TODAY = date.today().isoformat()
@@ -66,15 +69,14 @@ WB = [
     ("SN.ITK.DEFC.ZS", "health.undernourishment", "c.eating_drinking", "% of population", "all", "all", "medium", "FAO prevalence of undernourishment"),
     ("SH.STA.HYGN.ZS", "health.basic_handwashing", "c.hygiene_grooming", "% of population", "all", "all", "medium", "WHO and UNICEF JMP"),
     ("SH.MED.PHYS.ZS", "health.physicians", "c.medical_care", "per 1000 people", "all", "all", "medium", "WHO; supply of care"),
-    ("SH.STA.SUIC.P5.FE", "harm.suicide_mortality", "c.self_harm_suicide", "per 100000 population", "f", "all", "medium", "WHO age-standardised"),
-    ("SH.STA.SUIC.P5.MA", "harm.suicide_mortality", "c.self_harm_suicide", "per 100000 population", "m", "all", "medium", "WHO age-standardised"),
+    ("SH.STA.SUIC.FE.P5", "harm.suicide_mortality", "c.self_harm_suicide", "per 100000 population", "f", "all", "medium", "WHO age-standardised"),
+    ("SH.STA.SUIC.MA.P5", "harm.suicide_mortality", "c.self_harm_suicide", "per 100000 population", "m", "all", "medium", "WHO age-standardised"),
     ("VC.IHR.PSRC.P5", "harm.homicide", "c.violence_assault", "per 100000 population", "all", "all", "medium", "UNODC"),
     ("SG.VAW.1549.ZS", "harm.partner_violence_12m", "c.domestic_abuse", "% of ever-partnered women 15-49", "f", "15-49", "medium", "population surveys; physical and/or sexual, last 12 months"),
     ("SL.UEM.TOTL.ZS", "work.unemployment", "c.job_search", "% of labour force", "all", "15+", "medium", "ILO modelled estimate"),
     ("SL.UEM.1524.ZS", "work.youth_unemployment", "c.employment_transition", "% of labour force 15-24", "all", "15-24", "medium", "ILO modelled estimate"),
     ("SL.EMP.SELF.ZS", "work.self_employment", "c.entrepreneurship", "% of employment", "all", "15+", "medium", "ILO modelled estimate"),
     ("SL.AGR.EMPL.ZS", "work.agriculture_employment", "c.agri_forestry_fishing_work", "% of employment", "all", "15+", "medium", "ILO modelled estimate"),
-    ("SL.ISV.IFRM.ZS", "work.informal_employment", "c.informal_gig", "% of employment", "all", "15+", "medium", "ILO; sparse country coverage"),
     ("SI.POV.DDAY", "money.extreme_poverty", "c.poverty_scarcity", "% of population", "all", "all", "medium", "World Bank PIP, international poverty line"),
     ("FX.OWN.TOTL.ZS", "money.account_ownership", "c.banking_payments", "% of adults 15+", "all", "15+", "medium", "Global Findex"),
     ("SM.POP.TOTL.ZS", "mobility.migrant_stock", "c.migration", "% of population", "all", "all", "medium", "international migrant stock (UN DESA)"),
@@ -85,6 +87,82 @@ WB = [
     ("SG.TIM.UWRK.FE", "time.unpaid_domestic_care_share", "c.cleaning_laundry", "% of 24-hour day", "f", "15+", "medium", "time-use surveys; domestic work and care combined; regional aggregates only"),
     ("SG.TIM.UWRK.MA", "time.unpaid_domestic_care_share", "c.cleaning_laundry", "% of 24-hour day", "m", "15+", "medium", "time-use surveys; domestic work and care combined; regional aggregates only"),
 ]
+
+
+PLACES = {"KEN": "Kenya", "IND": "India", "DEU": "Germany", "BRA": "Brazil", "USA": "the United States", "CHN": "China", "EGY": "Egypt",
+          "SSF": "Sub-Saharan Africa", "SAS": "South Asia", "ECS": "Europe and Central Asia", "LCN": "Latin America and the Caribbean",
+          "NAC": "North America", "EAS": "East Asia and Pacific", "MEA": "the Middle East and North Africa", "WLD": "the world"}
+# Event phrasings of each quantity's definition: (action, outcome or None). The actor is built from the stratum. These are
+# de-identified paraphrases of what the indicator counts (a survey or register item phrased as an event), not cases.
+EV = {
+    "education.preprimary_gross_enrolment": ("started attending a pre-primary programme", "began formal learning before primary school"),
+    "education.primary_entry_age": ("entered the first grade of primary school at the official entry age", None),
+    "education.primary_duration": ("went through every grade of primary school in turn", None),
+    "education.secondary_duration": ("spent the full official length of secondary school in class", None),
+    "education.primary_net_enrolment": ("was enrolled in primary school at the age that grade is meant for", None),
+    "education.primary_completion": ("reached and finished the last grade of primary school", "held a primary school completion"),
+    "education.progression_to_secondary": ("moved on from primary to secondary school", "began lower secondary education"),
+    "education.lower_secondary_completion": ("finished the last grade of lower secondary school", "held a lower secondary completion"),
+    "education.tertiary_gross_enrolment": ("enrolled in a university or other tertiary course after secondary school", None),
+    "education.tertiary_bachelor_attainment": ("completed a bachelor's degree or equivalent", "held a tertiary qualification in adulthood"),
+    "education.adult_literacy": ("could read and write a short simple statement about everyday life", "counted as literate"),
+    "education.youth_literacy": ("could read and write a short simple statement about everyday life", "counted as literate"),
+    "education.vocational_share_secondary": ("followed a vocational programme in secondary school", None),
+    "family.age_first_marriage": ("entered a first marriage", "ended single life at about this age"),
+    "family.married_by_18": ("married before turning 18", "left the single, school-age life early"),
+    "family.married_by_15": ("married before turning 15", "left the single, school-age life early"),
+    "family.contraceptive_prevalence": ("used a method to avoid pregnancy", "postponed or limited childbearing"),
+    "fertility.tfr": ("gave birth to children over the reproductive years", "ended with a completed family size"),
+    "fertility.asfr": ("gave birth to a child", "became a parent or added to the family"),
+    "fertility.mean_age_childbearing": ("gave birth to a child", "became a parent at about this age"),
+    "fertility.sex_ratio_at_birth": ("was born", "was recorded as a boy or a girl at birth"),
+    "health.skilled_birth_attendance": ("gave birth with a doctor, nurse or midwife present", "delivered under skilled care"),
+    "health.maternal_mortality_ratio": ("died of causes linked to pregnancy or childbirth", "left a newborn without its mother"),
+    "mortality.infant": ("died in the first year of life", None),
+    "mortality.under5": ("died before the fifth birthday", None),
+    "mortality.under5_wpp": ("died before the fifth birthday", None),
+    "mortality.life_expectancy": ("lived to an old age", None),
+    "mortality.life_expectancy_wpp": ("lived to an old age", None),
+    "mortality.prob_death_0_40": ("died before the age of 40", None),
+    "health.ncd_mortality_30_70": ("died between 30 and 70 of heart disease, cancer, diabetes or chronic lung disease", None),
+    "health.road_traffic_deaths": ("died in a road traffic crash", None),
+    "health.measles_immunisation": ("received a measles vaccination in the second year of life", "was protected against measles"),
+    "health.stunting_under5": ("grew far less than expected for age through chronic undernutrition", "was recorded as stunted"),
+    "health.undernourishment": ("went without enough food to meet energy needs over a year", None),
+    "health.basic_handwashing": ("washed hands with soap and water at home", None),
+    "health.physicians": ("consulted a physician about a health problem", None),
+    "harm.suicide_mortality": ("died by suicide", None),
+    "harm.homicide": ("was killed in an intentional homicide", None),
+    "harm.partner_violence_12m": ("was physically or sexually attacked by a partner in the past year", "reported the violence to an interviewer"),
+    "work.unemployment": ("was without work, available and looking for a job", None),
+    "work.youth_unemployment": ("was without work, available and looking for a first job", None),
+    "work.self_employment": ("worked for themselves rather than for an employer", None),
+    "work.agriculture_employment": ("worked in farming, forestry or fishing", None),
+    "work.labour_force_participation": ("was in work or looking for work during the week", None),
+    "money.extreme_poverty": ("lived on less than the international poverty line per day", None),
+    "money.account_ownership": ("opened and used a bank or mobile-money account", "gained access to formal payments"),
+    "mobility.migrant_stock": ("moved to live in another country", "became part of the migrant population there"),
+    "tech.internet_use": ("used the internet in the past three months", None),
+    "tech.mobile_subscriptions": ("took out a mobile phone subscription", None),
+    "civic.women_in_parliament": ("won a seat in the national parliament", "sat in the legislature"),
+    "home.electricity_access": ("lived in a home connected to electricity", None),
+    "time.unpaid_domestic_care_share": ("spent part of each day on unpaid housework and care for family", None),
+    "family.crude_divorce_rate": ("divorced after a marriage", "ended the marriage in court"),
+    "family.divorces_per_100_marriages": ("divorced after a marriage", "ended the marriage in court"),
+}
+
+
+def event_snippet(p):
+    """One de-identified event record for a Param: actor from its stratum, the quantity's event phrasing, its domain tag."""
+    if p.quantity not in EV:
+        return None
+    action, outcome = EV[p.quantity]
+    who = {"f": "woman", "m": "man", "all": "person"}[p.sex]
+    band = f" aged {p.age_band}" if re.fullmatch(r"\d+(-\d+|\+)", p.age_band) else ""
+    where = PLACES[p.region]
+    actor = f"A {who}{band} " + ("in " + where if where != "the world" else "anywhere in the world")
+    return {"actor": actor, "action": action, "outcome": outcome, "domains": [p.field], "source_id": p.source_id,
+            "locator": p.snippet_locator, "sanitization": "paraphrase of what the indicator counts; no individual record, name or place below country"}
 
 
 def get(url, tries=3):
@@ -124,7 +202,7 @@ def wb_params():
             snippet = f'{r["indicator"]["value"]}, {r["country"]["value"]}, {r["date"]}: {r["value"]:g}'
             out.append(Param(field=field, quantity=quantity, value=float(r["value"]), unit=unit, age_band=band, sex=sex, region=region,
                              year=int(r["date"]), source_id="WB-WDI", source_url=f"https://data.worldbank.org/indicator/{ind}",
-                             licence="open", confidence=conf, notes=note, snippet=snippet,
+                             licence="open", confidence=conf, notes=note, source_statement=snippet,
                              snippet_locator=f"World Bank WDI indicator {ind} (API v2, most recent value)", retrieved=TODAY))
             n += 1
         if n == 0:
@@ -147,7 +225,7 @@ def wpp_params(work):
                              age_band=r["AgeGrp"], sex="f", region=code, year=2023, source_id="UN-WPP2024",
                              source_url="https://population.un.org/wpp/downloads?folder=Standard%20Projections&group=CSV%20format",
                              licence="open", confidence="medium", notes="WPP medium variant estimate for 2023 (model-based)",
-                             snippet=f'Age-specific fertility rate (births per 1,000 women), {r["Location"]}, {r["AgeGrp"]}, 2023: {float(r["ASFR"]):g}',
+                             source_statement=f'Age-specific fertility rate (births per 1,000 women), {r["Location"]}, {r["AgeGrp"]}, 2023: {float(r["ASFR"]):g}',
                              snippet_locator="WPP2024_Fertility_by_Age5.csv column ASFR", retrieved=TODAY))
     ind = getfile(WPP + "WPP2024_Demographic_Indicators_Medium.csv.gz", work / "wpp_ind.csv.gz")
     cols = [("MAC", "fertility.mean_age_childbearing", "c.birth_of_child", "years", "f", "15-49", "Mean age of childbearing (years)"),
@@ -169,7 +247,7 @@ def wpp_params(work):
                 out.append(Param(field=field, quantity=q, value=v, unit=unit, age_band=band, sex=sex, region=code, year=2023,
                                  source_id="UN-WPP2024", source_url="https://population.un.org/wpp/downloads?folder=Standard%20Projections&group=CSV%20format",
                                  licence="open", confidence="medium", notes="WPP medium variant estimate for 2023 (model-based)",
-                                 snippet=f'{label}, {r["Location"]}, 2023: {v:g}',
+                                 source_statement=f'{label}, {r["Location"]}, 2023: {v:g}',
                                  snippet_locator=f"WPP2024_Demographic_Indicators_Medium.csv column {col}", retrieved=TODAY))
     return out
 
@@ -189,7 +267,7 @@ def ilo_params(work):
                              age_band=bands[r["classif1"]], sex=sexes[r["sex"]], region=code, year=2023, source_id="ILOSTAT-modelled",
                              source_url="https://ilostat.ilo.org/data/", licence="unread", confidence="medium",
                              notes="ILO modelled estimates, indicator EAP_2WAP_SEX_AGE_RT; licence terms page not readable (403 in the scout), believed CC BY 4.0",
-                             snippet=f'Labour force participation rate by sex and age (%), {r["ref_area"]}, {bands[r["classif1"]]}, {sexes[r["sex"]]}, 2023: {v:g}',
+                             source_statement=f'Labour force participation rate by sex and age (%), {r["ref_area"]}, {bands[r["classif1"]]}, {sexes[r["sex"]]}, 2023: {v:g}',
                              snippet_locator="ILOSTAT indicator EAP_2WAP_SEX_AGE_RT_A (bulk csv row)", retrieved=TODAY))
     return out
 
@@ -209,7 +287,7 @@ def eurostat_params():
         out.append(Param(field="c.divorce", quantity=q, value=float(vals[i]), unit=unit, age_band="all", sex="all", region="DEU", year=int(year),
                          source_id="Eurostat-demo_ndivind", source_url="https://ec.europa.eu/eurostat/databrowser/view/demo_ndivind/default/table",
                          licence="open", confidence="high", notes="national registration data; Germany only in this table",
-                         snippet=f"{label}, Germany, {year}: {vals[i]:g}", snippet_locator=f"Eurostat demo_ndivind indic_de={ind} geo=DE",
+                         source_statement=f"{label}, Germany, {year}: {vals[i]:g}", snippet_locator=f"Eurostat demo_ndivind indic_de={ind} geo=DE",
                          retrieved=TODAY))
     return out
 
@@ -227,6 +305,8 @@ def main():
     work.mkdir(parents=True, exist_ok=True)
     wb, miss = wb_params()
     params = wb + wpp_params(work) + ilo_params(work) + eurostat_params()
+    params = [dataclasses.replace(p, event_snippets=[e] if (e := event_snippet(p)) else [],
+                                  snippet_missing="" if p.quantity in EV else "no event phrasing written for this quantity") for p in params]
     Table(params)  # validates and rejects duplicate keys
     CAL_DIR.mkdir(parents=True, exist_ok=True)
     dump_params(params, CAL_DIR / "aggregates_v1.jsonl")

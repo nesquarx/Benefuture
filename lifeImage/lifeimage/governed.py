@@ -192,3 +192,8 @@ def derive_tone_k(seeds=REFERENCE_SEEDS):
 def governed(name):
     """The governed default of `name`; unknown names raise KeyError."""
     return GOVERNED[name]["default"]
+
+# Event generator thresholds and noise parameters (`eventgen/governed.py`).
+from .eventgen.governed import GOVERNED_EVENTGEN  # noqa: E402
+
+GOVERNED.update(GOVERNED_EVENTGEN)

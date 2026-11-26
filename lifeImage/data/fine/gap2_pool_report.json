@@ -1,5 +1,5 @@
 {
- "candidates": 128,
+ "candidates": 131,
  "dropped": [
   {
    "label": "occupational therapy",
@@ -72,46 +72,6 @@
    "source": "wikidata"
   },
   {
-   "label": "iron",
-   "reason": "restates existing candidate f.iron",
-   "source": "wikidata"
-  },
-  {
-   "label": "copper",
-   "reason": "restates existing candidate f.copper",
-   "source": "wikidata"
-  },
-  {
-   "label": "aluminium",
-   "reason": "restates existing candidate f.aluminium",
-   "source": "wikidata"
-  },
-  {
-   "label": "medication",
-   "reason": "restates existing candidate f.medication",
-   "source": "wikidata"
-  },
-  {
-   "label": "vaccine",
-   "reason": "restates existing candidate f.vaccine",
-   "source": "wikidata"
-  },
-  {
-   "label": "hormone",
-   "reason": "restates existing candidate f.hormone",
-   "source": "wikidata"
-  },
-  {
-   "label": "antibiotic",
-   "reason": "restates existing candidate f.antibiotic",
-   "source": "wikidata"
-  },
-  {
-   "label": "analgesic",
-   "reason": "restates existing candidate f.analgesic",
-   "source": "wikidata"
-  },
-  {
    "label": "Lodging-houses",
    "reason": "restates existing candidate f.house_lodging",
    "source": "lcsh"
@@ -124,7 +84,7 @@
  ],
  "licence_status": "verified",
  "merged": 12,
- "raw": 164,
+ "raw": 159,
  "sources": [
   "wikidata",
   "doid",

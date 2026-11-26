@@ -8,10 +8,17 @@ from lifeimage.eventgen import calibration as cal
 from lifeimage.generators.common import seed_ids
 
 
+def EV(**over):
+    e = dict(actor="A woman aged 20-24 in Kenya", action="gave birth to a child", outcome="became a parent", domains=["c.birth_of_child"],
+             source_id="WPP2024", locator="WPP2024_Fertility_by_Age5 ASFR", sanitization="paraphrase; no individual record")
+    e.update(over)
+    return e
+
+
 def P(**over):
     base = dict(field="c.birth_of_child", quantity="fertility.asfr", value=100.0, unit="per 1000 women", age_band="20-24", sex="f",
                 region="KEN", year=2023, source_id="WPP2024", source_url="https://population.un.org/wpp/", licence="open",
-                confidence="medium", snippet="Age-specific fertility rate, 20-24, Kenya, 2023: 100", snippet_locator="WPP2024_Fertility_by_Age5 ASFR",
+                confidence="medium", source_statement="Age-specific fertility rate, 20-24, Kenya, 2023: 100", event_snippets=[EV()], snippet_locator="WPP2024_Fertility_by_Age5 ASFR",
                 retrieved="2026-11-26")
     base.update(over)
     return cal.Param(**base)
@@ -25,16 +32,34 @@ def test_incomplete_params_fail(bad):
         cal.Table([P(**bad)], seed_ids())
 
 
-def test_snippet_rules():
+def test_source_statement_and_snippet_rules():
     with pytest.raises(cal.CalibrationError):
-        cal.Table([P(snippet="")])                                   # no snippet, no reason
+        cal.Table([P(source_statement="", event_snippets=[])])                       # nothing, no reason
     with pytest.raises(cal.CalibrationError):
-        cal.Table([P(snippet="", snippet_missing="page 403")])        # reason but confidence not low
-    cal.Table([P(snippet="", snippet_missing="page 403", confidence="low")])
+        cal.Table([P(event_snippets=[])])                                            # no event snippet, no reason
+    cal.Table([P(event_snippets=[], snippet_missing="no event phrasing written")])
     with pytest.raises(cal.CalibrationError):
-        cal.Table([P(snippet="x" * 500)])                            # a page, not a quotation
+        cal.Table([P(source_statement="", snippet_missing="page 403")])              # reason given but confidence not low
+    cal.Table([P(source_statement="", snippet_missing="page 403", confidence="low")])
+    with pytest.raises(cal.CalibrationError):
+        cal.Table([P(source_statement="x" * 500)])                                   # a page, not a quotation
     with pytest.raises(cal.CalibrationError):
         cal.Table([P(retrieved="")])
+
+
+@pytest.mark.parametrize("bad", [dict(actor=""), dict(action=""), dict(domains=[]), dict(domains=["fertility"]), dict(locator=""),
+                                 dict(sanitization=""), dict(actor="A woman called Maria Lopez in Kenya"),
+                                 dict(outcome="She later met John Smith"), dict(action="x" * 500)])
+def test_bad_event_snippets_fail(bad):
+    with pytest.raises(cal.CalibrationError):
+        cal.Table([P(event_snippets=[EV(**bad)])], figures=frozenset())
+
+
+def test_public_figures_may_be_named_and_places_may_appear():
+    cal.Table([P(event_snippets=[EV(actor="Angela Merkel in Germany", action="left office")])], figures=frozenset({"Angela Merkel"}))
+    with pytest.raises(cal.CalibrationError):
+        cal.Table([P(event_snippets=[EV(actor="Angela Merkel in Germany", action="left office")])], figures=frozenset())
+    cal.Table([P(event_snippets=[EV(actor="A woman in Sub-Saharan Africa", action="left school to marry")])], figures=frozenset())
 
 
 def test_duplicate_keys_fail():
@@ -63,4 +88,4 @@ def test_committed_table_is_valid_and_covers_families():
     assert len(fams) >= 30, sorted(fams)
     assert all(p.source_url.startswith("http") for p in t.params)
     assert {p.region_kind for p in t.params} == {"country", "region", "world"}
-    assert {f.name for f in dataclasses.fields(cal.Param)} >= {"snippet", "snippet_locator", "retrieved", "snippet_missing"}
+    assert {f.name for f in dataclasses.fields(cal.Param)} >= {"source_statement", "event_snippets", "snippet_locator", "retrieved", "snippet_missing"}

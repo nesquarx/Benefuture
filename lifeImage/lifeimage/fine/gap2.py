@@ -33,7 +33,10 @@ SKIP_LABELS = {k.lower() for k in (
     "female reproductive organ benign neoplasm", "female reproductive organ cancer", "male reproductive organ cancer",
     "ovarian disease", "uterine disease", "Human cloning", "cloud", "april weather", "space weather", "drizzle",
     "Climate oscillation", "Entertaining", "ice hotel", "minshuku", "Taarof", "xenia", "Cross-media pollution", "flagellation", "foot whipping", "gauntlet", "torture", "lockdown", "deluge myth",
-    "school corporal punishment", "anticoagulant", "antidepressant", "Diuretics", "statin")}
+    "school corporal punishment", "anticoagulant", "antidepressant", "Diuretics", "statin",
+    "topical steroid addiction", "chelation therapy", "cytokine release syndrome", "heparin-induced thrombocytopenia",
+    "neuroleptic malignant syndrome", "thrombolysis", "zoopharmacognosy", "premedication", "drug resistance",
+    "medication overuse headache", "cervical cap", "diaphragm", "contraceptive sponge", "Contaminated forests")}
 
 LCSH_ROOTS = {
     "counselling_therapy": ["Counseling", "Psychotherapy"],
