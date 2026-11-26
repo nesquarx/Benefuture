@@ -117,6 +117,11 @@ deleted. Numbering is stable (LI.n).
   the rate's provenance; event snippets are paraphrased from individual sources, never rows from sources barring AI use.
   Event snippets include short-term actions at any timescale (an hour's practice, a meal cooked, a trip to market), not
   only life transitions; each carries its timescale.
+- **LI.65** (2026-11-26; author, refines LI.62, LI.64) Source statements and snippets may be of arbitrary detail, but every
+  extracted or generated event is relational: event to domain (form, content, outcome, setting), entity to event
+  (contribution, production, responsibility by freedom with the option set, impact per affected party, and the records
+  acting for, under agreement, informed), event to event (part_of, causes, re_description, concurrent), with the relation
+  metadata of LI.42 (valid and record time, counterfactual reference for outcomes, place and span). RELATIONS, PLAN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
