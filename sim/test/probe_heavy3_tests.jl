@@ -599,7 +599,10 @@ end
         tr = r.econ_trace
         @test sum(tr.balance) + sum(tr.reinvested) - tr.endowed ≈ sum(tr.supply) + sum(tr.lane_supply; init = 0.0) atol = 1e-6
     end
-    @test_broken paired_effect(r1.values; z = 2.0, direction = :up).significant && r1.mean > 0.5   # PLACEHOLDER pending measurement
+    # MEASURED (8 seeds, prediction 0.6 MISSED again): the three arms give identical floors (difference exactly 0.0 in every seed): the economy's welfare does
+    # not move with the status bar in this world (the bar at 0.9 plus 0.08 binds no leaf differently), so the planted heterogeneity cannot show. Not tuned.
+    @test_broken paired_effect(r1.values; z = 2.0, direction = :up).significant && r1.mean > 0.5
+    @test all(==(0.0), r1.values) && all(==(0.0), r2.values)   # the honest record: no effect detected, not a rescue
 end
 
 probe_total("heavy 3")
