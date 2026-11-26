@@ -25,6 +25,7 @@ Status: IN PROGRESS
 - events.v1 assigns no domains, so no events.v2; extract.v2 prompt + validator (`ranked=True` by header prompt_version >= 2) added, extract batch builder untouched.
 - Baseline measured: catalog medians form 1, content 3, outcome 2, setting 1 (the brief said 1-2; content is 3); coverage 2.1%.
 - Ingest: memberships = domains every variant listed (mean weights renormalised); confidence = Jaccard agreement + per-domain share; disputed domains kept apart; escalate on differing primary, agreement < floor, or relation null in some variants only.
+- Floor stays on the 0-10 fit scale (integer scores match the prompt text and validator); `membership.` added to the unitless exemption in `tests/test_responsibility.py` (lead's request, one-line reason: converting to 0.4 would couple prompt wording to a share).
 - Items: kinds `kind.<key>` text = statement without place (+ outcome text when the kind has one); 200 snippets sampled round-robin over quantities (distinct actions first); 32 controls.
 
 ## Done

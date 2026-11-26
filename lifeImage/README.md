@@ -25,8 +25,11 @@ Python 3.11+, with `jsonschema` and `pytest`; nothing from the parent repository
 
 ```
 python -m pip install jsonschema pytest
-pytest lifeImage/tests
+pytest lifeImage/tests            # fast tier (default)
+BF_TIER=full pytest lifeImage/tests   # every test; `-m full` runs the heavy tier alone
 ```
+
+Tiers: tests marked `full` (large worlds, many seeds; `pyproject.toml` markers) are excluded by default (`addopts = -m 'not full'`), mirroring the parent repository's fast/full CI split.
 
 - `schemas/`: JSON Schemas (draft 2020-12) for cards, tasks, answers and evidence rows; `lifeimage/validate.py` adds
   the rules a schema cannot state (weights sum to 1, tombstone successors, answers matching their tasks).

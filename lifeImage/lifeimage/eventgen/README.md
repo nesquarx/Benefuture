@@ -4,9 +4,9 @@ A generator of synthetic life events driven by a calibration table of published 
 its verifier (`data/events/EVENT_SOURCE_SCOUT.md` section 6). A probe: family formation, schooling, partners, fatherhood, divorce and deaths.
 Increment 2 makes every event relational (LI.65) and adds the sequence head. Increment 3 adds breadth across the circle (work, health, time use, leisure, civic life, harms).
 
-Run the probe alone: `cd lifeImage && python3 -m lifeimage.eventgen.probe` (about 50 s: the world with its relational events, the rate head, the domain
-head, the sequence head, four counterexamples and the coverage). Coverage report: `python3 -m lifeimage.eventgen.coverage` (writes `data/events/coverage_v1.json`).
-Tests: `python3 -m pytest -q tests/test_eventgen_calibration.py tests/test_eventgen_probe.py tests/test_eventgen_relational.py tests/test_eventgen_sequence.py tests/test_eventgen_breadth.py`.
+Run the probe alone: `cd lifeImage && python3 -m lifeimage.eventgen.probe` (about 6 s: the small world, 3 seeds per head: the relational events, the rate head, the domain
+head, the sequence head, four counterexamples and the coverage; `--full` runs the larger world with both heads at precision-rule seeds, about 35 s). Coverage report: `python3 -m lifeimage.eventgen.coverage` (writes `data/events/coverage_v1.json`).
+Tests are tiered like the parent repository's CI: the default (`pytest -q`) is the fast tier, the heavy tests (large worlds, many seeds) carry `@pytest.mark.full` and run with `python3 -m pytest -q -m full` (heavy alone) or `BF_TIER=full python3 -m pytest -q` (everything). Every mechanism keeps a fast probe test (`test_the_default_probe_runs_in_seconds_and_exercises_every_mechanism_once` and the small unit tests); a full-tier test moves tier, it loses no check. `tests/test_eventgen_speed.py` holds the outputs fixed on fixed seeds (golden fingerprint). Eventgen tests: `python3 -m pytest -q tests/test_eventgen_calibration.py tests/test_eventgen_probe.py tests/test_eventgen_relational.py tests/test_eventgen_sequence.py tests/test_eventgen_breadth.py`.
 Rebuild the tables: `python3 tools/eventgen_fetch.py` (v1: schooling, family, WDI, WPP, ILOSTAT) and `python3 tools/eventgen_fetch_domains.py` (v2: Eurostat, India's time-use
 survey, WDI, V-Dem, WHO; needs `pdftotext`); both download to a temporary directory and write only aggregates.
 
