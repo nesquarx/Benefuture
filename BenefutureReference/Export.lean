@@ -183,6 +183,16 @@ private def bools (a : FloatArray) : Array Bool := a.data.map (· > 0.5)
 @[export bf_relative_bar] def relativeBar (established coarse alternative : Float) : Float :=
   relative_bar_ref established coarse alternative
 
+/-- Per-domain converge gate (8.176): flags travel as 0/1 floats. -/
+@[export bf_domain_open] def domainOpen (active converged : FloatArray) : FloatArray :=
+  ⟨(domain_open_ref (active.data.map (· != 0.0)) (converged.data.map (· != 0.0))).map fun b => if b then 1.0 else 0.0⟩
+
+@[export bf_economy_open] def economyOpen (opened : FloatArray) : UInt8 :=
+  if economy_open_ref (opened.data.map (· != 0.0)) then 1 else 0
+
+@[export bf_economy_open_all] def economyOpenAll (active converged : FloatArray) : UInt8 :=
+  if economy_open_all_ref (active.data.map (· != 0.0)) (converged.data.map (· != 0.0)) then 1 else 0
+
 @[export bf_cc_share] def ccShare (part sideTotal : Float) : Float := cc_share_ref part sideTotal
 
 @[export bf_cause_settlement] def causeSettlement (cc total upfrontPaid : Float) : Float :=

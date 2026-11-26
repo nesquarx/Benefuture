@@ -380,5 +380,53 @@ abbrev As := Assessment
 /-- Correlation score with established markers (CorrSc in L49–50), the model's stated value. -/
 abbrev CorrSc (mm : MetricModel) : Int := mm.correlationScore
 
+/-! ## Per-domain converge gate (author ruling 8.176)
+  The economy's converge gate opens per domain: a domain whose model clears that domain's status bar starts
+  its economy; a domain below its bar stays in score-only start. Mirrors `domain_open_ref`, `economy_open_ref`
+  and `economy_open_all_ref` in the reference. -/
+
+/-- [R] Domain `j` opens when it is active and its model has converged (ruling 8.176). -/
+def domain_open (active converged : List Bool) : List Bool := List.zipWith (· && ·) active converged
+
+/-- [R] The economy starts as soon as any domain is open (ruling 8.176). -/
+def economy_open (opened : List Bool) : Bool := opened.any id
+
+/-- The earlier all-domains conjunction (limiting case): some domain active and every active one converged. -/
+def economy_open_all (active converged : List Bool) : Bool :=
+  active.any id && (List.zipWith (fun a c => !a || c) active converged).all id
+
+/-- THEOREM (counterexample to the earlier rule): with one active domain below its bar the all-domains
+    conjunction never opens the economy, however the others fare (the P63 stall). -/
+theorem all_domains_gate_stalls_on_lagging_domain :
+    economy_open_all [true, true, true, true] [true, true, true, false] = false := by decide
+
+/-- THEOREM (acceptance): the same world opens per domain, the lagging domain stays closed. -/
+theorem per_domain_gate_opens_despite_lagging_domain :
+    domain_open [true, true, true, true] [true, true, true, false] = [true, true, true, false] ∧
+    economy_open (domain_open [true, true, true, true] [true, true, true, false]) = true := by decide
+
+/-- THEOREM (counterexample): an inactive domain never opens, converged or not. -/
+theorem inactive_domain_never_opens : domain_open [false] [true] = [false] := by decide
+
+/-- THEOREM (counterexample): when no domain's model has converged the economy stays in score-only start. -/
+theorem no_converged_domain_stays_closed (active : List Bool) :
+    economy_open (domain_open active (List.replicate active.length false)) = false := by
+  induction active with
+  | nil => rfl
+  | cons a t ih => simpa [domain_open, economy_open, List.replicate, List.zipWith] using ih
+
+/-- THEOREM: with one converged flag per domain, whatever the earlier conjunction opens, the per-domain gate opens
+    too (it never opens later). -/
+theorem per_domain_gate_opens_whenever_all_gate_does (active converged : List Bool)
+    (hlen : converged.length = active.length) :
+    economy_open_all active converged = true → economy_open (domain_open active converged) = true := by
+  induction active generalizing converged with
+  | nil => simp [economy_open_all]
+  | cons a t ih =>
+    cases converged with
+    | nil => simp at hlen
+    | cons c cs =>
+      cases a <;> cases c <;> simp_all [economy_open_all, economy_open, domain_open, List.zipWith, List.any_cons]
+
 end Benefuture.Measurement
 

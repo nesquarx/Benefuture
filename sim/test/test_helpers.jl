@@ -29,3 +29,20 @@ function restraint_world(seed::Int; audit = true, kappa = 1.0, acc = 0.9, bias =
      just_rate = tr.justified_restraints_effective / max(1, tr.justified_restraints + tr.restraint_missed),
      ratio = tr.false_restraints_effective / max(1, tr.justified_restraints_effective))
 end
+
+
+# The composed world of P63 (8.176): 48 agents on four domains, dormant economy flags on; `layers` adds the identity and fractal layers.
+function composed_gate_world(seed; layers = false, steps = 75, kw...)
+    isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
+    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+    on = true
+    econ = M3cParams(ToyParams(n = 30, steps = steps, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
+        causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48), overflow_base = 10.0,
+        budget = on, endowment = 20.0, capacity = 300.0, regen = 0.05, cost_per_touch = 0.05, ra_rate = 0.2, ra_horizon = 5.0,
+        ra_domain = on, ra_alloc_weight = 1.0, ra_reserve_horizon = 12.0, ra_spend_contract = on, converge_init = on, legacy_funder = on,
+        responsibility_reading = on, repair_credit = on, accolade_counterfactual = on, proposal_pma = on, proposal_eta = 2, proposal_confidence = 1.5, LEGACY..., kw...)
+    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
+    run_coupled(econ, gov; seed = seed, epoch = 25, coupled = false, continuous = true, m5_decisions = 30,
+        unified = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 6, sybils = 12, binding = true), economy = true, fractal = FractalParams()) :
+                           UnifiedParams(liar_community = 1))
+end

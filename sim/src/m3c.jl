@@ -243,6 +243,7 @@ struct M3cParams
     profile_mode::Symbol          # :measured (`classify_sig`) or :declared (bypass to agent's claimed leaf; counterexample)
     profile_gamers::Vector{Int}   # target leaf claimed by each agent (0: honest)
     converge_init::Bool           # hold score-only Phase 1 until a domain converges (`currency_eligible` + `sequential_significant`; 8.136)
+    converge_gate::Symbol         # :domain (default, 8.176: each domain's economy starts when its model clears its bar) or :all (the earlier all-domains conjunction, limiting case)
     legacy_funder::Bool           # during unconverged Phase 1, run legacy status-quo funder separately from Bf balances (8.136)
     accident_cap::Bool            # L96 / 8.157 ii: bound accident contributor's penalty by its capacity, administration carrying the rest
     mandate_education::Bool       # L96, L116 / 8.157 iv, 8.159: accidents mandate education (recorded exposure), making repeats informed
@@ -346,7 +347,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
                    bind_compromised = Int[], p_reveal::Real = 0.0, bind_weighted::Bool = false, p_newcomer::Real = 0.0, attest_pooled::Bool = false, bind_quorum_weight::Real = 1.0,
                    slander = Int[], on_off::Integer = 0, events = Shock[], forks = Tuple{Int,Int,Int,Float64}[], fork_rule::Symbol = :split, merges = Tuple{Int,Int,Int}[], ra_rate::Real = 0.0, ra_horizon::Real = 0.0, budget::Bool = false, supplier::Integer = 0, supply_share::Real = 0.0, withhold::Real = 0.0, supply_cartel = Int[], withhold_reporter::Integer = 0,
                    model_collude::Real = 0.0, model_collude_bias::Real = 2.0, collude_actors = Int[], profile_mode::Symbol = :measured, profile_gamers = Int[],
-                   converge_init::Bool = false, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
+                   converge_init::Bool = false, converge_gate::Symbol = :domain, legacy_funder::Bool = false, accident_cap::Bool = true, mandate_education::Bool = true,
                    open_entry::Bool = false, entrants::Integer = 0,
                    sanction_escalate::Bool = true, sanction_pattern_min::Integer = 3, sanction_restraint_decay::Real = 0.7, sanction_min_share::Real = 0.1,
                    ra_domain::Bool = false, ra_alloc_weight::Real = 0.0, ra_reserve_horizon::Real = 0.0, ra_spend_contract::Bool = false, ra_audit_per_step = Float64[],
@@ -481,7 +482,7 @@ function M3cParams(toy::ToyParams, agents, leaf_parent, known; λpos::Real, λne
               isempty(slander) ? zeros(Int, length(agents)) : collect(Int, slander), on_off, collect(Shock, events),
               hazard_heavy, hazard_α, hazard_cap, collect(Tuple{Int,Int,Int,Float64}, forks), fork_rule, collect(Tuple{Int,Int,Int}, merges), ra_rate, ra_horizon, budget, supplier, supply_share, withhold, collect(Int, supply_cartel), withhold_reporter,
               model_collude, model_collude_bias, collect(Int, collude_actors), profile_mode, collect(Int, profile_gamers),
-              converge_init, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
+              converge_init, converge_gate, legacy_funder, accident_cap, mandate_education, open_entry, Int(entrants),
               sanction_escalate, Int(sanction_pattern_min), Float64(sanction_restraint_decay), Float64(sanction_min_share),
               ra_domain, Float64(ra_alloc_weight), Float64(ra_reserve_horizon), ra_spend_contract, collect(Float64, ra_audit_per_step),
               responsibility_reading, Float64(responsibility_counterfactual), Float64(responsibility_severity), Float64(responsibility_accident_factor),
@@ -1354,6 +1355,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
     supplier_income = Ref(0.0)
     lane = (executed = Ref(0), halted = Ref(0), screened_out = Ref(0), cofunded = Ref(0.0), init_executed = Ref(0), declined = Ref(0), legacy_executed = Ref(0))
     econ_converged = Ref(false)
+    gated_leaves = Int[]   # leaves still in score-only start after the economy opened (8.176)
     converge_step = Ref(0)
     legacy_bal = fill(p.endowment, na)
     leg_th = Ref(1.0)
@@ -1785,13 +1787,33 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
-        if p.converge_init && !econ_converged[]
-            active_known = [j for j in 1:nleaves() if !lnovel[j] && (
-                any(a -> !dormant[a] && ltrue[j] <= length(agent_focus[a]) && agent_focus[a][ltrue[j]] > 0.0, 1:na) ||
-                !isempty(lhist[j]))]
-            if !isempty(active_known) && all(j -> domain_converged(lhist[j], leaf_ok(j)), active_known)
-                econ_converged[] = true
-                converge_step[] = step
+        if p.converge_init
+            gate_ok(j) = !removed_leaf(j) && leaf_ok_raw(j)
+            if !econ_converged[]
+                active_known = [j for j in 1:nleaves() if !lnovel[j] && (
+                    any(a -> !dormant[a] && ltrue[j] <= length(agent_focus[a]) && agent_focus[a][ltrue[j]] > 0.0, 1:na) ||
+                    !isempty(lhist[j]))]
+                if !isempty(active_known)
+                    conv = [domain_converged(lhist[j], gate_ok(j)) for j in active_known]
+                    _, any_open, all_open = domain_gate(trues(length(active_known)), conv)   # Lean reference (8.176)
+                    if p.converge_gate == :all ? all_open : any_open
+                        econ_converged[] = true
+                        converge_step[] = step
+                        if p.converge_gate == :domain   # a domain below its bar stays in score-only start, loudly (8.176)
+                            for (j, c) in zip(active_known, conv)
+                                c || (domain_score_only[j] = true; push!(gated_leaves, j))
+                            end
+                        end
+                    end
+                end
+            end
+            for j in copy(gated_leaves)
+                if domain_converged(lhist[j], gate_ok(j))
+                    domain_score_only[j] = false
+                    filter!(!=(j), gated_leaves)
+                else
+                    degrade!("domain economy start", "score-only start for the domain", "domain model below its status bar (8.176)")
+                end
             end
         end
         force_legacy = !isempty(live(:legacy_only))

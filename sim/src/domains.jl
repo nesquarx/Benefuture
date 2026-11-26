@@ -294,6 +294,22 @@ function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::
           acc, records, min_records, novel, threshold, novel_threshold, novel_floor) == 1
 end
 
+"""
+    domain_gate(active, converged) -> (open, economy_open, economy_open_all)
+
+The per-domain converge gate (Lean `domain_open_ref`, `economy_open_ref`; author ruling 8.176): a domain's economy starts when it
+is active and converged; the economy starts when any domain is open. `economy_open_all` is the earlier all-domains conjunction
+(limiting case, `economy_open_all_ref`).
+"""
+function domain_gate(active, converged)
+    check(length(active) == length(converged), "one converged flag per domain")
+    fa = floatarray(Float64.(collect(active))); fc = floatarray(Float64.(collect(converged)))
+    opened = lean_floats(ccall(sym(:bf_domain_open), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(Float64.(collect(active))), floatarray(Float64.(collect(converged))))) .!= 0.0
+    eo = ccall(sym(:bf_economy_open), UInt8, (Ptr{Cvoid},), floatarray(Float64.(opened))) == 1
+    ea = ccall(sym(:bf_economy_open_all), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}), fa, fc) == 1
+    (opened, eo, ea)
+end
+
 "Resource cost per unit by availability: `base` × capacity / available, what remains floored at `floor_share` of capacity (governed): exhaustion dear but finite."
 function scarcity_cost(base::Real, available::Real, capacity::Real; floor_share::Real)
     check(isfinite(base) && base >= 0 && isfinite(available) && available >= 0 && isfinite(capacity) && capacity > 0 && 0 < floor_share <= 1,

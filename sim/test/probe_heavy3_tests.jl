@@ -633,28 +633,24 @@ end
     @test fires(nominal.z1) <= 1 && fires(nominal_acq.z1) <= 1
 end
 
-# 8.175 (2) diagnosis (P63): the composed world (48 agents on four domains, identity and fractal layers) with the dormant economy flags on. Finding: no supply and a
-# converge gate that never opens, with or without the identity and fractal layers (identical traces), without deceit, at 150 steps and at larger capacity: the gate
-# needs every active domain eligible (`currency_eligible` at the status bar 0.9 and `sequential_significant`), and here one domain's leaf model settles at 0.81 to 0.85,
-# below the bar, so the economy stays in score-only start for ever. Not a bug in the layers: an interaction of design (an all-domains conjunction with a domain that
-# is legitimately marginal; `domain_score_only` is already per leaf). Not switched to the :bf builders.
-@timed_testset "Probe (heavy): composed dormant flags stall on a permanently ineligible domain, not on the layers (8.175 (2), P63)" begin
-    agents = [DomainAgent([k == l ? 0.1 + 0.4 * (r - 1) / 11 : 0.0 for l in 1:4], [k == l ? 1.0 : 0.0 for l in 1:4], 0.0) for k in 1:4 for r in 1:12]
+# 8.176 per-domain converge gate (P63): the composed world (48 agents on four domains, identity and fractal layers) with the dormant economy flags on.
+# Red baseline (the earlier all-domains gate, `converge_gate = :all`, seeds 1:3): no supply and a gate that never opens, with or without the identity and fractal
+# layers (identical traces), because one domain's leaf model settles at 0.81 to 0.84, below the bar 0.9 (a different domain each seed). Green (`:domain`, the
+# author ruling of 2026-11-26): supply flows in the domains that clear their bar, the lagging domain stays in score-only start and is logged `degraded`.
+@timed_testset "Probe (heavy): composed dormant flags: per-domain gate lets supply flow, lagging domain degraded loudly (8.176, P63)" begin
     isdefined(@__MODULE__, :LEGACY) || include(joinpath(@__DIR__, "legacy.jl"))
-    econ(on) = M3cParams(ToyParams(n = 30, steps = 75, plans = 6), agents, [1, 1, 2, 2], trues(4); λpos = 0.05, λneg = 0.02, transactions = true,
-        causal_distribution = true, init_steps = 10, guardians = [1, 13, 25, 37], diligence = fill(0.9, 48), overflow_base = 10.0,
-        budget = on, endowment = 20.0, capacity = 300.0, regen = 0.05, cost_per_touch = 0.05, ra_rate = on ? 0.2 : 0.0, ra_horizon = on ? 5.0 : 0.0,
-        ra_domain = on, ra_alloc_weight = on ? 1.0 : 0.0, ra_reserve_horizon = on ? 12.0 : 0.0, ra_spend_contract = on, converge_init = on, legacy_funder = on,
-        responsibility_reading = on, repair_credit = on, accolade_counterfactual = on, proposal_pma = on, proposal_eta = 2, proposal_confidence = 1.5, LEGACY...)
-    gov(tr) = M5Params(tr, 1:4; decisions = 1, deliberation = true, info_handling = true, source_tags = true, ih_vote = true, p_delegate = 0.2)
-    run(layers) = run_coupled(econ(true), gov; seed = 2, epoch = 25, coupled = false, continuous = true, m5_decisions = 30,
-        unified = layers ? UnifiedParams(liar_community = 1, identity = IdentityParams(newcomers = 6, sybils = 12, binding = true), economy = true, fractal = FractalParams()) :
-                           UnifiedParams(liar_community = 1))
-    a, b = run(true).econ_trace, run(false).econ_trace
-    @test length(a.supply) == length(b.supply) == 0 && !a.converged && !b.converged      # the same stall with and without the layers
-    @test a.lane_halted == 0 && a.legacy_executed > 0                                     # the legacy funder keeps the score-only start running
-    @test minimum(a.acc_trace[end]) < minimum(a.leaf_bars)                                # the cause: a domain's model below the status bar
-    @test_broken a.converged                                                              # the composed world with dormant flags and a marginal domain does not leave score-only
+    isdefined(@__MODULE__, :composed_gate_world) || include(joinpath(@__DIR__, "test_helpers.jl"))
+    for seed in 1:3
+        old = composed_gate_world(seed; layers = true, converge_gate = :all).econ_trace
+        new = composed_gate_world(seed; layers = true).econ_trace
+        new_nolayers = composed_gate_world(seed; layers = false).econ_trace
+        @test length(old.supply) == 0 && !old.converged                                   # the stall as an outcome: no supply
+        @test minimum(old.acc_trace[end]) < minimum(old.leaf_bars)                        # its cause: a domain's model below the bar
+        @test new.converged && length(new.supply) > 0                                     # supply flows
+        @test any(k -> occursin("domain economy start", k), keys(new.degraded))           # the lagging domain is logged loudly
+        @test new.degraded[first(filter(k -> occursin("domain economy start", k), collect(keys(new.degraded))))].count > 0
+        @test new_nolayers.converged && length(new_nolayers.supply) > 0                   # not the layers
+    end
 end
 
 probe_total("heavy 3")

@@ -277,6 +277,20 @@ def currency_eligible_ref (accuracy records minRecords : Float) (novel : Bool)
 def relative_bar_ref (established coarse alternative : Float) : Float :=
   max coarse (min established alternative)
 
+/-- Per-domain converge gate (author ruling 8.176): a domain's economy starts when that domain is active
+    and its model has converged (cleared that domain's status bar with significance); a domain below its
+    bar stays in score-only start. Flags are read pairwise; a missing `converged` entry counts as not converged. -/
+def domain_open_ref (active converged : Array Bool) : Array Bool :=
+  (Array.range active.size).map fun j => active[j]! && converged.getD j false
+
+/-- The economy starts as soon as any domain's gate is open (ruling 8.176). -/
+def economy_open_ref (opened : Array Bool) : Bool := opened.any id
+
+/-- The earlier all-domains conjunction (limiting case, kept as the counterexample): the economy starts only
+    when some domain is active and every active domain has converged. -/
+def economy_open_all_ref (active converged : Array Bool) : Bool :=
+  active.any id && (Array.range active.size).all fun j => !active[j]! || converged.getD j false
+
 /--
   Resource cost by availability (L83, StandCoin: charges resource cost as per availability): the
   base rate scaled by capacity over what remains, with what remains floored at a thousandth of
