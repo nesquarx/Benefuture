@@ -65,9 +65,9 @@ def derive_setup(table, region, regions):
     s["prim_dur"] = round(val(look("education.primary_duration", "all"), 6.0))
     s["sec_dur"] = round(val(look("education.secondary_duration", "all"), 6.0))
     prog = min(1.0, val(look("education.progression_to_secondary", "all"), 100.0) / 100)
-    lsc = val(look("education.lower_secondary_completion", "all"), 0.0) / 100
-    ter = val(look("education.tertiary_gross_enrolment", "all"), 0.0) / 100
-    ba = val(look("education.tertiary_bachelor_attainment", "all"), 0.0) / 100
+    lsc = val(look("education.lower_secondary_completion", LAST_GRADE_AGE), 0.0) / 100
+    ter = val(look("education.tertiary_gross_enrolment", "5 years after secondary"), 0.0) / 100
+    ba = val(look("education.tertiary_bachelor_attainment", "25+"), 0.0) / 100
     s["shares"] = {}
     for sx in "fm":
         raw = [min(1.0, val(look("education.primary_net_enrolment", PRIMARY_AGE, sx), 0.0) / 100),

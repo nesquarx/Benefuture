@@ -16,6 +16,8 @@ Status: IN PROGRESS
 - Raw downloads (WPP, ILOSTAT bulk) live only in scratchpad; only aggregates are committed.
 
 - LI.64 (lead, mid-task): every Param carries `snippet` (short sanitized source statement), `snippet_locator` (page/table/indicator code), `retrieved` (date); a Param without a snippet must carry `snippet_missing` (reason) and confidence low; schema test enforces. Aggregates and documentation only.
+- LI.64 correction (lead): `snippet` renamed `source_statement` (factoid provenance, with `snippet_locator`, `retrieved`); new `event_snippets` = event records (actor, action, outcome nullable, timescale in {minutes/hours, day, weeks-months, years, life transition}, domains, source_id, locator, sanitization); test fails without actor/action/timescale or with a personal name not on `data/events/calibration/public_figures.txt`; each Param has >=1 event snippet or `snippet_missing`. Event snippets here are paraphrases of what each indicator/activity counts (definition-derived), not cases; real case vignettes and time-use diary examples (ATUS/HETUS not fetchable: BLS 403) remain to be added.
+- Probe regions default KEN, IND, FRA (FRA absent from the table: degrades to World Bank region / world). Head targets are the nested effective shares (clips recorded as degraded).
 
 ## Done
 (none yet)

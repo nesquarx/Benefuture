@@ -38,8 +38,7 @@ def expected_targets(table, regions, region_map):
         S = derive_setup(table, r, region_map)
         for b in BANDS:
             out[("fertility.asfr", b, "f", r)] = (S["asfr"][b], table.lookup("fertility.asfr", b, "f", r, region_map, f"head:{r}"), False)
-        if S["tfr"] is not None:
-            out[("fertility.tfr", "15-49", "f", r)] = (S["tfr"], table.lookup("fertility.tfr", "15-49", "f", r, region_map, f"head:{r}"), False)
+        out[("fertility.tfr", "15-49", "f", r)] = (5 * sum(S["asfr"].values()) / 1000, out[("fertility.asfr", "30-34", "f", r)][1], False)  # sum of the band targets
         out[("fertility.sex_ratio_at_birth", "0", "all", r)] = (S["srb"], table.lookup("fertility.sex_ratio_at_birth", "0", "all", r, region_map, f"head:{r}"), False)
         for sx in "fm":
             out[("family.age_first_marriage", "all", sx, r)] = (S["smam"][sx], table.lookup("family.age_first_marriage", "all", sx, r, region_map, f"head:{r}"), False)
@@ -133,3 +132,16 @@ def rate_head(true_table, make_world, regions, region_map, seeds=None, z=None):
         results.append({"key": k, "clipped": clipped, "confidence": conf, "param_region": p.region if p else None, **r})
     summary = {s: sum(r["status"] == s for r in results) for s in ("pass", "fail", "inconclusive")}
     return {"results": results, "summary": summary, "seeds": n_seeds, "degraded": true_table.degraded}
+
+
+def table_coherence(table, region_map, rel=0.10):
+    """Internal consistency of the table itself: 5 x sum of ASFR vs the TFR Param, where both exist for the same stratum (a stratum pair
+    that disagrees by more than `rel` points at a source or vintage problem, not a generator one)."""
+    out = []
+    for p in table.params:
+        if p.quantity == "fertility.tfr":
+            a = [table.get("fertility.asfr", b, "f", p.region) for b in BANDS]
+            if all(a):
+                s = 5 * sum(x.value for x in a) / 1000
+                out.append({"region": p.region, "tfr": p.value, "asfr_sum": s, "ok": abs(s - p.value) <= rel * p.value})
+    return out

@@ -9,7 +9,7 @@ from lifeimage.generators.common import seed_ids
 
 
 def EV(**over):
-    e = dict(actor="A woman aged 20-24 in Kenya", action="gave birth to a child", outcome="became a parent", domains=["c.birth_of_child"],
+    e = dict(actor="A woman aged 20-24 in Kenya", action="gave birth to a child", outcome="became a parent", timescale="life transition", domains=["c.birth_of_child"],
              source_id="WPP2024", locator="WPP2024_Fertility_by_Age5 ASFR", sanitization="paraphrase; no individual record")
     e.update(over)
     return e
@@ -47,7 +47,7 @@ def test_source_statement_and_snippet_rules():
         cal.Table([P(retrieved="")])
 
 
-@pytest.mark.parametrize("bad", [dict(actor=""), dict(action=""), dict(domains=[]), dict(domains=["fertility"]), dict(locator=""),
+@pytest.mark.parametrize("bad", [dict(actor=""), dict(action=""), dict(timescale=""), dict(timescale="sometime"), dict(domains=[]), dict(domains=["fertility"]), dict(locator=""),
                                  dict(sanitization=""), dict(actor="A woman called Maria Lopez in Kenya"),
                                  dict(outcome="She later met John Smith"), dict(action="x" * 500)])
 def test_bad_event_snippets_fail(bad):
@@ -89,3 +89,10 @@ def test_committed_table_is_valid_and_covers_families():
     assert all(p.source_url.startswith("http") for p in t.params)
     assert {p.region_kind for p in t.params} == {"country", "region", "world"}
     assert {f.name for f in dataclasses.fields(cal.Param)} >= {"source_statement", "event_snippets", "snippet_locator", "retrieved", "snippet_missing"}
+
+
+def test_committed_table_has_transitions_and_short_term_actions():
+    t = cal.load_table(field_ids=seed_ids())
+    scales = {e["timescale"] for p in t.params for e in p.event_snippets}
+    assert "life transition" in scales and {"minutes/hours", "day"} & scales
+    assert all(p.event_snippets or p.snippet_missing for p in t.params)

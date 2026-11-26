@@ -174,7 +174,7 @@ class Table:
                         label = sub if sx == sex else f"{sub}:sex={sx}"
                         self.degrade(step, quantity, region, label, f"no {quantity} {age_band} {sex} for {region}")
                     return p
-        self.degrade(step, quantity, region, "none", f"no {quantity} {age_band} {sex} at any level for {region}")
+        self.degrade(step, quantity, region, "none", f"caller default used: no {quantity} {age_band} {sex} at any level for {region}")
         return None
 
     def degrade(self, step, quantity, region, substitute, reason):
