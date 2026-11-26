@@ -100,14 +100,17 @@ def test_incoherent_shares_are_clipped_loudly_and_head_targets_follow_the_clip()
 
 
 def test_each_noise_parameter_moves_only_its_own_mechanism():
+    """Streams are per mechanism, so a noise parameter moves its own mechanism and what depends on it by construction: births depend on
+    marital state (increment 2), hence on the marriage-age spread; schooling, marriage, deaths and divorces do not depend on fertility."""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         base, fr, ma, de = (world(3, 200, noise=n) for n in ({}, {"fertility_frailty_sd": 0.4}, {"marriage_age_sd": 6.0}, {"school_entry_delay_p": 0.4}))
     ev = lambda w, keys: [[e for e in p.events if e[0] in keys] for p in w.people]  # noqa: E731
     school = ("preschool", "school_start", "primary_complete", "secondary_start", "secondary_complete", "tertiary_start", "tertiary_complete")
-    assert ev(base, ("marriage",)) == ev(fr, ("marriage",)) and ev(base, school) == ev(fr, school)
-    assert ev(base, ("birth_of_child",)) == ev(ma, ("birth_of_child",)) and ev(base, school) == ev(ma, school)
-    assert ev(base, ("birth_of_child", "marriage")) == ev(de, ("birth_of_child", "marriage"))
+    own = ("marriage", "divorce", "death")
+    assert ev(base, own) == ev(fr, own) and ev(base, school) == ev(fr, school)
+    assert ev(base, ("marriage",)) != ev(ma, ("marriage",)) and ev(base, school) == ev(ma, school) and ev(base, ("death",)) == ev(ma, ("death",))
+    assert ev(base, ("birth_of_child", "marriage", "death")) == ev(de, ("birth_of_child", "marriage", "death"))
     assert ev(base, ("birth_of_child",)) != ev(fr, ("birth_of_child",))
 
 

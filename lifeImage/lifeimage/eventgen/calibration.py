@@ -27,7 +27,7 @@ WORLD = "WLD"
 WB_REGIONS = frozenset({"EAS", "ECS", "LCN", "MEA", "NAC", "SAS", "SSF", WORLD})
 SNIPPET_MAX = 400
 TIMESCALES = ("minutes/hours", "day", "weeks-months", "years", "life transition")
-EVENT_KEYS = ("actor", "action", "outcome", "timescale", "domains", "source_id", "locator", "sanitization")
+EVENT_KEYS = ("actor", "action", "outcome", "timescale", "domains", "source_id", "locator", "sanitization", "relational")
 # Capitalised words an event snippet may carry besides a sentence's first word: places, regions, institutions, languages.
 PLACE_WORDS = frozenset("""Africa African Asia Asian Europe European America American Americas Latin Caribbean Pacific East South North West
 Central Sub-Saharan Saharan Middle Kenya India Germany Brazil China Egypt Kenyan Indian German Brazilian Chinese Egyptian
@@ -67,6 +67,12 @@ def validate_event_snippet(e, figures=frozenset()):
     names = personal_names(text, figures)
     if names:
         raise CalibrationError(f"event snippet carries a personal name {names} not on the public-figure list")
+    from .relational import validate_relational_snippet   # LI.65: the free text stays, and its relational form must be complete
+    from ..validate import ValidationError
+    try:
+        validate_relational_snippet(e["relational"])
+    except (ValidationError, KeyError, TypeError) as exc:
+        raise CalibrationError(f"event snippet's relational form is incomplete: {exc}") from exc
 
 
 class CalibrationError(ValueError):

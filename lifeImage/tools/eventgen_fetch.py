@@ -333,6 +333,8 @@ def main():
     params = wb + wpp_params(work) + ilo_params(work) + eurostat_params()
     params = [dataclasses.replace(p, event_snippets=event_snippet(p),
                                   snippet_missing="" if p.quantity in EV else "no event phrasing written for this quantity") for p in params]
+    from lifeimage.eventgen.relational import relationalise_params
+    params = relationalise_params(params)   # LI.65: each event snippet gets its relational form
     Table(params)  # validates and rejects duplicate keys
     CAL_DIR.mkdir(parents=True, exist_ok=True)
     dump_params(params, CAL_DIR / "aggregates_v1.jsonl")

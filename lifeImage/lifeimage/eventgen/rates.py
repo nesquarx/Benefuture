@@ -16,7 +16,7 @@ from ..governed import governed
 from .world import BANDS, World, derive_setup
 
 UNITS = {"fertility.asfr": "per1000", "fertility.tfr": "births_per_woman", "fertility.sex_ratio_at_birth": "ratio",
-         "family.age_first_marriage": "years"}  # all "share:*" statistics are in percent
+         "family.age_first_marriage": "years", "mortality.prob_death_0_40": "per1000"}  # all "share:*" statistics are in percent
 SHARE_PARAM = {"primary_entry": "education.primary_net_enrolment", "primary_completion": "education.primary_completion",
                "secondary_entry": "education.progression_to_secondary", "lower_secondary_completion": "education.lower_secondary_completion",
                "tertiary_entry": "education.tertiary_gross_enrolment", "tertiary_completion": "education.tertiary_bachelor_attainment",
@@ -41,6 +41,7 @@ def expected_targets(table, regions, region_map):
         out[("fertility.tfr", "15-49", "f", r)] = (5 * sum(S["asfr"].values()) / 1000, out[("fertility.asfr", "30-34", "f", r)][1], False)  # sum of the band targets
         out[("fertility.sex_ratio_at_birth", "0", "all", r)] = (S["srb"], table.lookup("fertility.sex_ratio_at_birth", "0", "all", r, region_map, f"head:{r}"), False)
         for sx in "fm":
+            out[("mortality.prob_death_0_40", "0-40", sx, r)] = (1000 * S["mort"][sx]["q40"], table.lookup("mortality.prob_death_0_40", "0-40", sx, r, region_map, f"head:{r}"), False)
             out[("family.age_first_marriage", "all", sx, r)] = (S["smam"][sx], table.lookup("family.age_first_marriage", "all", sx, r, region_map, f"head:{r}"), False)
             clipped = {c["share"] for c in S["clipped"] if c["sex"] == sx}
             for share, v in S["shares"][sx].items():
@@ -63,14 +64,15 @@ def paired_effect(a, b):
     return mean(d), se, (mean(d) / se if se > 0 else (0.0 if mean(d) == 0 else math.inf))
 
 
-def judge(quantity, values, target, confidence, z=None):
+def judge(quantity, values, target, confidence, z=None, margin=None):
     z = governed("eventgen.rate_z") if z is None else z
     n = len(values)
     m = mean(values)
     se = stdev(values) / math.sqrt(n) * student_inflation(n) if n > 1 else float("inf")
     se_cal = governed(f"eventgen.cal_se_rel.{confidence}") * abs(target)
     comb = math.hypot(se, se_cal)
-    eff, margin = m - target, _margin(quantity, target)
+    eff = m - target
+    margin = _margin(quantity, target) if margin is None else margin
     zeff = eff / comb if comb > 0 else 0.0
     if abs(zeff) >= z and abs(eff) > margin:
         status = "fail"

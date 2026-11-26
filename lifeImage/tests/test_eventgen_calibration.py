@@ -5,6 +5,7 @@ import warnings
 import pytest
 
 from lifeimage.eventgen import calibration as cal
+from lifeimage.eventgen.relational import relational_form
 from lifeimage.generators.common import seed_ids
 
 
@@ -12,6 +13,11 @@ def EV(**over):
     e = dict(actor="A woman aged 20-24 in Kenya", action="gave birth to a child", outcome="became a parent", timescale="life transition", domains=["c.birth_of_child"],
              source_id="WPP2024", locator="WPP2024_Fertility_by_Age5 ASFR", sanitization="paraphrase; no individual record")
     e.update(over)
+    if "relational" not in over:   # the relational form (LI.65) of the snippet as it stands; a snippet too broken to extract keeps the form of the base one
+        try:
+            e["relational"] = relational_form(e, "fertility.asfr", 2023, "KEN", 100.0, "per 1000 women")
+        except Exception:  # noqa: BLE001
+            e["relational"] = relational_form({**e, "actor": "A woman", "domains": ["c.birth_of_child"]}, "fertility.asfr", 2023, "KEN", 100.0, "per 1000 women")
     return e
 
 

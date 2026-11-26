@@ -21,15 +21,21 @@ KINDS = {  # key: (memberships, relation, magnitude)
     "primary_complete": (_m({"c.school_education": 1}, {"c.school_education": .5, "c.exams_assessment": .5}, {"c.school_education": 1}, {"c.school_education": 1}), "impacted", 0.4),
     "secondary_start": (_m({"c.school_education": 1}, {"c.school_education": 1}, {"c.school_education": 1}, {"c.school_education": 1}), "impacted", 0.3),
     "secondary_complete": (_m({"c.exams_assessment": 1}, {"c.school_education": .5, "c.exams_assessment": .5}, {"c.school_education": 1}, {"c.school_education": 1}), "impacted", 0.5),
-    "tertiary_start": (_m({"c.higher_education": 1}, {"c.higher_education": 1}, None, {"c.higher_education": 1}), "impacted", 0.4),
+    "tertiary_start": (_m({"c.higher_education": 1}, {"c.higher_education": 1}, {"c.higher_education": 1}, {"c.higher_education": 1}), "impacted", 0.4),
     "tertiary_complete": (_m({"c.higher_education": 1}, {"c.higher_education": 1}, {"c.higher_education": 1}, {"c.higher_education": 1}), "impacted", 0.6),
     "school_dropout": (_m({"c.school_education": 1}, {"c.school_education": 1}, {"c.school_education": 1}, {"c.school_education": 1}), "impacted", 0.3),
     "marriage": (_m({"c.marriage_wedding": 1}, {"c.marriage_cohabitation": 1}, {"c.family_ties": 1}, {"c.family_rituals": 1}), "structural", 0.6),
     "birth_of_child": (_m({"c.birth_of_child": 1}, {"c.pregnancy_birth": .4, "c.parenting_young_children": .6}, {"c.family_ties": 1}, {"c.medical_care": 1}), "causal", 0.8),
+    "fatherhood": (_m({"c.birth_of_child": 1}, {"c.parenting_young_children": 1}, {"c.family_ties": 1}, {"c.medical_care": 1}), "causal", 0.6),
+    "pregnancy": (_m({"c.pregnancy_birth": 1}, {"c.pregnancy_birth": 1}, {"c.family_ties": 1}, {"c.medical_care": 1}), "causal", 0.7),
+    "divorce": (_m({"c.divorce": 1}, {"c.divorce": 1}, {"c.family_ties": 1}, {"c.legal_system": 1}), "structural", 0.6),
+    "death": (_m({"c.death_dying": 1}, {"c.death_dying": 1}, {"c.bereavement": 1}, {"c.medical_care": 1}), "impacted", 1.0),
 }
+NEGATIVE = frozenset({"school_dropout", "divorce", "death"})  # events recorded on the negative channel (rare harm is recorded)
 FINE = {"born": {}, "preschool": {"c.early_childhood_education": "f.preschool"},
         "marriage": {"c.marriage_cohabitation": "f.marriage", "c.marriage_wedding": "f.wedding"},
-        "birth_of_child": {"c.birth_of_child": "f.childbirth"}}
+        "birth_of_child": {"c.birth_of_child": "f.childbirth"}, "pregnancy": {"c.pregnancy_birth": "f.pregnancy"},
+        "divorce": {"c.divorce": "f.divorce"}, "death": {"c.death_dying": "f.death"}}
 
 
 @lru_cache(maxsize=1)
@@ -59,7 +65,7 @@ def valid_time(birth, age):
 def make_row(entity, region, key, birth, age, event_id):
     t = valid_time(birth, age)
     row = {"entity": entity, "relation": KINDS[key][1], "memberships": memberships(key), "basemap_version": BASEMAP_VERSION,
-           "channel": "positive", "sign": 1, "entity_kind": "person", "revoked": False, "magnitude": KINDS[key][2], "valid_time": t,
+           "channel": "negative" if key in NEGATIVE else "positive", "sign": -1 if key in NEGATIVE else 1, "entity_kind": "person", "revoked": False, "magnitude": KINDS[key][2], "valid_time": t,
            "record_time": t, "tier": "attested", "confidence": 0.8, "production": "consumed", "context": {"jurisdiction": region},
            "provenance": {"source": f"synthetic-eventgen:{region}", "span": event_id}}
     return validate_row(row)

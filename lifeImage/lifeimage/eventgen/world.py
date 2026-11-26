@@ -9,9 +9,13 @@ entry records it. Missing strata degrade country -> region -> world (`Table.look
 
 Each mechanism draws from its own random stream per (seed, region, mechanism) and the same number of draws per person whether
 or not the gate opens, so changing one mechanism's parameter moves only that mechanism and arms of an experiment share seeds.
-Not modelled (named toy assumptions): deaths, partners (a marriage has no spouse; births ignore marital state, so marginal
-rates can be right while sequences are wrong, the reason the sequence head comes next), fatherhood, upper-secondary completion,
-migration, cohort change (period rates of one year are applied to every age).
+Increment 2 adds: deaths (piecewise-constant hazards from the infant, under-five and 40q0 mortality Params, a Gompertz rise
+after 40; own stream), a spouse entity at marriage (age gap from the male-female difference of the marriage-age Params), divorce
+(share of marriages from the divorce Param, else a governed default logged as degraded), births that depend on marital state
+(married hazard h = ASFR / (M(a) + r (1 - M(a))), unmarried r h, so the marginal ASFR is preserved) and fatherhood (a married
+man fathers the births of his spouse at her age). The sequence head (`sequence.py`) judges the order these produce.
+Not modelled (named toy assumptions): spouse death and remarriage, children as people, upper-secondary completion, migration,
+cohort change (period rates of one year are applied to every age), widowhood, men's births outside marriage.
 """
 import dataclasses
 import datetime as dt
@@ -31,7 +35,8 @@ _N = NormalDist()
 
 
 def noise_defaults():
-    return {k: governed(f"noise.{k}") for k in ("fertility_frailty_sd", "marriage_age_sd", "school_entry_delay_p")}
+    return {k: governed(f"noise.{k}") for k in ("fertility_frailty_sd", "marriage_age_sd", "school_entry_delay_p", "nonmarital_birth_relative_hazard",
+                                                 "spouse_age_gap_sd")}
 
 
 def _stream(seed, region, mechanism):
@@ -83,7 +88,48 @@ def derive_setup(table, region, regions):
                 table.degrade(step, f"education.{n}", region, "preceding level's share", f"raw share {r:.3f} exceeds the level before it ({bound:.3f}); nested shares must not rise")
             eff.append(e)
         s["shares"][sx] = dict(zip(names, eff))
+    s["mort"] = {}
+    im = val(look("mortality.infant", "all"), 30.0) / 1000
+    u5 = max(im, val(look("mortality.under5", "all"), 40.0) / 1000)
+    for sx in "fm":
+        q40 = val(look("mortality.prob_death_0_40", "0-40", sx), 100.0) / 1000
+        s["mort"][sx] = mortality_hazards(im, u5, q40, table, step, region)
+    d = look("family.divorces_per_100_marriages", "all")
+    if d is None:
+        table.degrade(step, "family.divorces_per_100_marriages", region, f"governed default {governed('eventgen.divorce_share_default')}", "no divorce Param at any level")
+    s["divorce_share"] = min(0.9, d.value / 100) if d is not None else governed("eventgen.divorce_share_default")
     return s
+
+
+def mortality_hazards(im, u5, q40, table, step, region):
+    """Piecewise-constant hazards [0,1), [1,5), [5,40) from infant, under-five and 40q0 survival (a 40q0 not above the under-five
+    mortality is incoherent: the 5-40 hazard falls to a floor and the effective 40q0 is recorded), and the effective 40q0."""
+    S1, S5, S40 = 1 - im, 1 - u5, 1 - q40
+    h0 = -math.log(S1)
+    h1 = -math.log(S5 / S1) / 4 if S5 < S1 else 0.0
+    if S40 < S5:
+        h2 = -math.log(S40 / S5) / 35
+    else:
+        h2 = 1e-5
+        table.degrade(step, "mortality.prob_death_0_40", region, "floor hazard", f"40q0 {q40:.3f} is not above under-five mortality {u5:.3f}")
+    return {"h": (h0, h1, h2), "q40": q40 if S40 < S5 else 1 - S5 * math.exp(-35 * h2)}
+
+
+def death_age(h, u, slope, horizon):
+    """Age at death for survival draw u in (0,1) under the hazards of `mortality_hazards`; None when beyond the horizon."""
+    h0, h1, h2 = h
+    e = -math.log(max(u, 1e-12))
+    if e < h0:
+        return e / h0
+    e -= h0
+    if h1 > 0 and e < 4 * h1:
+        return 1 + e / h1
+    e -= 4 * h1
+    if e < 35 * h2:
+        return 5 + e / h2
+    e -= 35 * h2
+    a = 40 + math.log(e * slope / h2 + 1) / slope
+    return a if a <= horizon else None
 
 
 def misspecify(table, quantity, factor):
@@ -98,6 +144,8 @@ class Person:
     region: str
     sex: str
     events: list  # [(key, age)]
+    death: float = None   # age at death; None when alive at the horizon
+    spouse: dict = None   # {"gap": years the spouse is older (+) or younger (-) than the person}
 
 
 class World:
@@ -115,10 +163,27 @@ class World:
     def _region(self, region, n):
         S, nz, seed = self.setups[region], self.noise, self.seed
         R = {m: _stream(seed, region, m) for m in ("sex", "preschool", "entry", "delay", "pc", "prog", "lsc", "ter", "ba", "drop", "ever", "marriage_age",
-                                                    "fertility", "frailty")}
+                                                    "fertility", "frailty", "death", "divorce", "spouse", "male_fertility")}
         horizon, L, TY = governed("eventgen.horizon_age"), governed("eventgen.lower_secondary_years"), governed("eventgen.tertiary_years")
-        mus = {sx: trunc_normal_mu(S["smam"][sx], nz["marriage_age_sd"], 15.0) for sx in "fm"}
-        a_cdf = {sx: _N.cdf((15.0 - mus[sx]) / nz["marriage_age_sd"]) for sx in "fm"}
+        slope, preg = governed("eventgen.mortality_gompertz_slope"), governed("eventgen.pregnancy_years")
+        r, sdm, ever_share = nz["nonmarital_birth_relative_hazard"], nz["marriage_age_sd"], governed("eventgen.partnership_ever_share")
+        mus = {sx: trunc_normal_mu(S["smam"][sx], sdm, 15.0) for sx in "fm"}
+        a_cdf = {sx: _N.cdf((15.0 - mus[sx]) / sdm) for sx in "fm"}
+        gap_mean = S["smam"]["m"] - S["smam"]["f"]
+
+        def married_share(x, sx):  # probability a person of sex sx is ever-married by age x (the marriage-age distribution is that of the person's own sex)
+            return 0.0 if x < 15 else ever_share * (_N.cdf((x - mus[sx]) / sdm) - a_cdf[sx]) / (1 - a_cdf[sx])
+
+        def birth_hazards(a, sx_mother="f"):
+            """(married, unmarried) annual birth probability for a woman in year-age a (marginal ASFR preserved), with the hazard cap recorded."""
+            asfr = S["asfr"][BANDS[(a - 15) // 5]] / 1000
+            m = married_share(a + 0.5, sx_mother)
+            hm = asfr / (m + r * (1 - m))
+            if hm > 0.95:
+                self.table.degrade(f"setup:{region}", "fertility.asfr", region, "hazard cap 0.95", f"married-state birth hazard {hm:.2f} at age {a} exceeds one year's probability")
+            return min(0.95, hm), min(0.95, r * hm)
+
+        BH = {a: birth_hazards(a) for a in range(15, 50)}
         out = []
         for i in range(n):
             sx = "m" if R["sex"].random() < S["srb"] / (100 + S["srb"]) else "f"
@@ -126,6 +191,9 @@ class World:
             u = {k: R[k].random() for k in ("preschool", "entry", "delay", "pc", "prog", "lsc", "ter", "ba")}
             ud = [R["drop"].random() for _ in range(3)]
             ever, um = R["ever"].random(), R["marriage_age"].random()
+            udeath = R["death"].random()
+            udiv, udur = R["divorce"].random(), R["divorce"].random()
+            ugap = R["spouse"].gauss(0, 1)
             ev_ = [("born", 0.0)]
             ea = S["entry_age"] + (1 if u["delay"] < nz["school_entry_delay_p"] else 0)
             if u["preschool"] < S["pre"]:
@@ -155,43 +223,85 @@ class World:
                             ev_.append(("school_dropout", float(pe + 1 + int(ud[1] * (L - 1)))))
                 else:
                     ev_.append(("school_dropout", float(ea + 1 + int(ud[0] * (S["prim_dur"] - 1)))))
-            if ever < governed("eventgen.partnership_ever_share"):
-                x = _N.inv_cdf(a_cdf[sx] + um * (1 - a_cdf[sx])) * nz["marriage_age_sd"] + mus[sx]
-                ev_.append(("marriage", x))
+            marriage = div = None
+            if ever < ever_share:
+                marriage = _N.inv_cdf(a_cdf[sx] + um * (1 - a_cdf[sx])) * sdm + mus[sx]
+                ev_.append(("marriage", marriage))
+                if udiv < S["divorce_share"]:
+                    div = marriage + max(0.5, -governed("eventgen.divorce_mean_duration") * math.log(max(udur, 1e-12)))
+                    ev_.append(("divorce", div))
+            spouse = {"gap": (gap_mean + nz["spouse_age_gap_sd"] * ugap) * (1 if sx == "f" else -1)} if marriage is not None else None
             if sx == "f":
                 fr = math.exp(nz["fertility_frailty_sd"] * R["frailty"].gauss(0, 1) - nz["fertility_frailty_sd"] ** 2 / 2)
                 for age in range(15, 50):
                     d = R["fertility"].random()
-                    if d < min(0.95, S["asfr"][BANDS[(age - 15) // 5]] / 1000 * fr):
-                        ev_.append(("birth_of_child", age + R["fertility"].random() * 0.0 + 0.5))
-            out.append(Person(f"{region}-{i:04d}", region, sx, [e for e in ev_ if e[1] <= horizon]))
+                    hm, hu = BH[age]
+                    p = (hm if marriage is not None and marriage < age + 0.5 else hu) * fr
+                    if d < min(0.95, p):
+                        ev_.append(("birth_of_child", age + 0.75 + 0.25 * R["fertility"].random()))
+            else:
+                fr = math.exp(nz["fertility_frailty_sd"] * R["male_fertility"].gauss(0, 1) - nz["fertility_frailty_sd"] ** 2 / 2)
+                for age in range(15, 50):
+                    d, ub = R["male_fertility"].random(), R["male_fertility"].random()
+                    if marriage is None or marriage >= age + 0.5 or (div is not None and div <= age + 0.5):
+                        continue
+                    sa = int(age + 0.5 - spouse["gap"])  # the spouse's age in this year
+                    if 15 <= sa < 50 and d < min(0.95, BH[sa][0] * fr):
+                        ev_.append(("fatherhood", age + 0.75 + 0.25 * ub))
+            dead = death_age(S["mort"][sx]["h"], udeath, slope, horizon)
+            kept = [e for e in ev_ if e[1] <= horizon and (dead is None or e[1] < dead)]
+            if dead is not None:
+                kept.append(("death", dead))
+            out.append(Person(f"{region}-{i:04d}", region, sx, kept, dead, spouse if any(k == "marriage" for k, _ in kept) else None))
         return out
 
     def rows(self):
-        """Library-format rows of every event (validated); one per event."""
+        """Library-format rows of every event (validated); one per event (the subject's row; `events()` carries every participant's)."""
         out = []
         for p in self.people:
             for n, (key, age) in enumerate(p.events):
                 out.append(ev.make_row(f"person:{p.pid}", p.region, key, BIRTH_DATE, age, f"ev:{p.pid}-{n:02d}"))
         return out
 
+    def events(self, light=False):
+        """Relational events (LI.65) of every person: {pid: [event, ...]}; see `relational.py`. Degradations go to `relational_degraded`.
+        `light` skips the participant records and rows (the sequence head reads only times, kinds, spans and links)."""
+        from . import relational
+        self.relational_degraded = []
+        return {p.pid: relational.person_events(self, p, light) for p in self.people}
+
+    def entities(self):
+        """Every entity the events name, in the library's entity form ({id, kind})."""
+        from . import relational
+        return relational.entities(self.events())
+
     def statistics(self):
-        """Generated statistics per (quantity, age_band, sex, region), in the units of `rates.UNITS`."""
+        """Generated statistics per (quantity, age_band, sex, region), in the units of `rates.UNITS`.
+        Shares, marriage age and the sex ratio are taken among people alive at the horizon (death is independent of everything else
+        here, so survivors are an unbiased sample of the life course), births per woman-year lived in the band, mortality over everyone."""
+        horizon = governed("eventgen.horizon_age")
         out = {}
         for r in self.regions:
             P = [p for p in self.people if p.region == r]
             wm = [p for p in P if p.sex == "f"]
             births = defaultdict(int)
+            years = defaultdict(float)
             for p in wm:
+                end = min(horizon, p.death if p.death is not None else horizon)
                 for k, a in p.events:
                     if k == "birth_of_child":
                         births[BANDS[int(a - 15) // 5]] += 1
+                for j, b in enumerate(BANDS):
+                    lo = 15 + 5 * j
+                    years[b] += max(0.0, min(end, lo + 5) - lo)
             for b in BANDS:
-                out[("fertility.asfr", b, "f", r)] = 1000 * births[b] / (5 * len(wm)) if wm else float("nan")
-            out[("fertility.tfr", "15-49", "f", r)] = sum(births.values()) / len(wm) if wm else float("nan")
+                out[("fertility.asfr", b, "f", r)] = 1000 * births[b] / years[b] if years[b] else float("nan")
+            out[("fertility.tfr", "15-49", "f", r)] = 5 * sum(out[("fertility.asfr", b, "f", r)] for b in BANDS) / 1000
             out[("fertility.sex_ratio_at_birth", "0", "all", r)] = 100 * sum(p.sex == "m" for p in P) / max(1, sum(p.sex == "f" for p in P))
             for sx in "fm":
                 Q = [p for p in P if p.sex == sx]
+                out[("mortality.prob_death_0_40", "0-40", sx, r)] = 1000 * sum(p.death is not None and p.death < 40 for p in Q) / len(Q) if Q else float("nan")
+                Q = [p for p in Q if p.death is None]
                 n = len(Q) or float("nan")
                 has = lambda p, k: any(e[0] == k for e in p.events)  # noqa: E731
                 ages = [a for p in Q for k, a in p.events if k == "marriage"]
@@ -200,6 +310,6 @@ class World:
                                    ("lower_secondary_completion", "secondary_complete"), ("tertiary_entry", "tertiary_start"),
                                    ("tertiary_completion", "tertiary_complete")):
                     out[("share:" + share, "all", sx, r)] = 100 * sum(has(p, key) for p in Q) / n
-            Q = P
+            Q = [p for p in P if p.death is None]
             out[("share:preschool", "all", "all", r)] = 100 * sum(any(e[0] == "preschool" for e in p.events) for p in Q) / len(Q)
         return out
