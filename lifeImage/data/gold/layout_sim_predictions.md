@@ -150,3 +150,14 @@ gain; choosing it now would be a post-hoc tune, so it is offered to the lead as 
 the highest similarity (2.141 < 2.243): the heuristic is not exact and the greedy and kick starts end in different local optima.
 Blinded batches (shipped A against seriation C, two variants, 247 fields each, `adjacency.v1`): `data/batches/seriation/`
 (gitignored), key `data/ephemeral/seriation/adjacency.v1.key.json` (gitignored, set 1 versus layout A or C per task).
+
+## Seriation arm, blinded adjacency judged (lead, 2026-11-26)
+`adjacency.v1`, Haiku runners, 247 fields x 2 variants, shipped order (A) vs circular seriation at the pre-registered lambda
+(B in the key; key held in data/ephemeral/seriation/): variant 0, B 230 vs A 9, 8 ties, share 0.962, z 14.3; variant 1, B 229
+vs A 12, 6 ties, share 0.950, z 14.0 (pooled 459 vs 21, z 20.0; per-variant z is the honest figure). Decisive 97% of tasks;
+position bias 0.54 / 0.43. Prediction (>= 58%, z >= 2 per variant; z >= 3 for README): **met**, far beyond (the force sim
+reached 54%). Caveat: the combined similarity includes a TF-IDF text source, so part of what the judge rewards (labels that
+read alike) is also what seriation optimised; the judge is still independent of the matrix and reads meaning. Stability
+remains unmet at this lambda (mean shift 28.7, p95 79.7 against 25 and 60); a stiffer lambda (x4 met every stability
+prediction keeping 95% of the similarity gain) is an author decision and, being chosen after this result, needs its own
+blinded check before adoption.
