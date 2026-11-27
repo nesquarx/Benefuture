@@ -261,11 +261,11 @@ def blind_candidates(task, answer):
 
 # ---- the ingest ----
 def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYNONYMS, escalation_path=ESCALATIONS, refinement_dir=None,
-                    variants=VARIANTS):
+                    variants=VARIANTS, merge=None):
     """Merge pass 1 and pass 2 answers (path pairs of batch and answers files; every variant of every item) into the table at out_path
     (one row per item: the merged memberships with agreement as confidence, the merged blind labels, the pass-1 relational extraction per
     variant), write the escalations (one record per escalated item), update the synonym log and log the new-domain candidates to the
-    refinement log (never into the table). A pass-2 answer built on another pass-1 answer than the one read is refused. Returns the rows."""
+    refinement log (never into the table). `merge` names the variant merge rule (`membership_wide.MERGE_RULES`, default the support-weighted union). A pass-2 answer built on another pass-1 answer than the one read is refused. Returns the rows."""
     blind = answers_by_item(blind_pairs)
     got = defaultdict(dict)
     cells, cands = {}, []
@@ -284,7 +284,7 @@ def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYN
         if len(per) != variants:
             raise ValueError(f"{key}: pass-2 answers from variants {sorted(per)}, expected {variants}")
         text = blind[key][min(per)][0]
-        row = merge_item(key, text, {v: a for v, (_, a) in per.items()})
+        row = merge_item(key, text, {v: a for v, (_, a) in per.items()}, rule=merge)
         mb = merge_blind(key, {v: blind[key][v][1] for v in per})
         row["blind"] = {"labels": mb["labels"], "confidence": mb["confidence"]}
         row["relational"] = {str(v): blind[key][v][1]["relational"] for v in sorted(per)}

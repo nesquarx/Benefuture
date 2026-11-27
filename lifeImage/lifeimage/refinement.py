@@ -19,9 +19,10 @@ def text_hash(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
-def candidates_for_item(item_id, text, variant_answers, floor, gold=None):
+def candidates_for_item(item_id, text, variant_answers, floor, gold=None, disputed_only=None):
     """Candidate records of one item. `variant_answers`: {variant: validated ranked answer}. `gold`: the control (dict with `fair`
-    and `bad` lists per relation) or None for items with no gold (kinds, snippets: only near_floor and disputed apply)."""
+    and `bad` lists per relation) or None for items with no gold (kinds, snippets: only near_floor and disputed apply). `disputed_only`: when
+    given, a set of (relation, domain) the merge left out; a single-variant domain outside it is in the memberships and is not logged as disputed."""
     out = []
     k = len(variant_answers)
     ih = text_hash(text)
@@ -51,7 +52,7 @@ def candidates_for_item(item_id, text, variant_answers, floor, gold=None):
                     continue
                 if fair_known and i > 0:
                     rec(d, e["fit"], "unjudged")
-                if k > 1 and sum(1 for b in variant_answers.values() if b["ranks"][rel] and d in [x["domain"] for x in b["ranks"][rel]["listed"]]) == 1:
+                if k > 1 and (disputed_only is None or (rel, d) in disputed_only) and sum(1 for b in variant_answers.values() if b["ranks"][rel] and d in [x["domain"] for x in b["ranks"][rel]["listed"]]) == 1:
                     rec(d, e["fit"], "disputed")
     return out
 

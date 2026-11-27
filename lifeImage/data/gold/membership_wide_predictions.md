@@ -131,3 +131,35 @@ touched by it); 4 and 5 on kinds and snippets are the out-of-sample test. ETA: j
 Decision if 4 or 5 fail: the floor is the suspect (lower it, the log of dropped domains shows the cost) before any other change; if 2 or 3 fail,
 the floor rises or the dropped domains of the log are reviewed; the merge is one rule among the options, so the pre-registered fallback is the
 fine-grid floor between 0.1 and 0.2 that holds precision, reported with the sweep.
+
+## Support-weighted union merge judged (2026-11-27)
+Floor 0.2 (`membership.single_support_floor`), v4 answers, gold v1 (`data/gold/membership_wide_merged_support_union_v4_gold_v1.json`; the intersection
+baseline beside it, `..._intersection_...`). Kinds and snippets re-ingested with the new rule.
+
+| # | Prediction | Result | Verdict |
+|---|------------|--------|---------|
+| 1 | merged recall >= 0.96 | 0.963 (26 of 27; the intersection merge also 0.963 on these answers) | **met** |
+| 2 | `precision_secondary` >= 0.80 | 0.881 (intersection 0.908) | **met** |
+| 3 | `padding_single_complete` <= 0.35 | 0.138 (intersection 0.103) | **met** |
+| 4 | median listed >= 2, form and content, kinds and snippets | kinds 2 and 2, snippets 2 and 2 (intersection: 1 everywhere); mean per non-null cell 1.81 (1.47) | **met** |
+| 5 | pair coverage of kinds+snippets >= 3x 0.655% (>= 597 pairs) | 284 pairs, 0.93% (1.43x) | **failed** |
+
+Escalated items unchanged (kinds 42 of 83, snippets 116 of 200): the escalation reasons are the same, only the lists no longer empty. Single-variant
+domains dropped to the refinement log (`disputed`): 31 in kinds, 156 in snippets.
+
+Floor sweep (pre-registered fallback), same answers, controls with gold v1 and kinds+snippets together:
+
+| floor | recall | precision_secondary | padding (complete) | pairs | share of pairs | mean listed per cell |
+|---|---|---|---|---|---|---|
+| intersection | 0.963 | 0.908 | 0.103 | 199 | 0.66% | 1.47 |
+| 0.20 (governed) | 0.963 | 0.881 | 0.138 | 284 | 0.93% | 1.81 |
+| 0.15 | 0.963 | 0.808 | 0.310 | 328 | 1.08% | 1.94 |
+| 0.10 | 0.963 | 0.780 | 0.414 | 367 | 1.21% | 2.03 |
+| 0.00 (pure union) | 0.963 | 0.788 | 0.414 | 369 | 1.21% | 2.03 |
+
+Reading: prediction 5 fails at the ceiling, not at the floor: even the pure union of the two variants reaches 369 pairs (1.85x), because each
+variant lists about two domains per relation and the variants mostly list the same ones. Lowering the floor below 0.2 buys 44 to 85 pairs and costs
+precision (0.78 to 0.81 at 0.15 and below, under the 0.80 target at 0.10) and padding (0.31 to 0.41); the governed 0.2 is the widest floor
+that meets 1 to 3 with margin, and 0.15 meets them narrowly. Pair coverage of 3x needs more listed domains per event (more variants, or
+a wider prompt), not a different merge; recorded for the lead's decision. Confidence in these figures: recall rests on 27 cells (one cell 0.037), the
+floor was tuned on the same controls (4 on kinds and snippets is the out-of-sample result and holds).

@@ -388,22 +388,22 @@ def test_variants_agreeing_merge_into_weights_with_full_confidence():
     assert r["confidence"]["form"]["agreement"] == 1.0 and not r["escalate"] and r["source"] == "kind"
 
 
-def test_disagreements_escalate_and_the_agreed_core_is_kept():
+def test_intersection_merge_escalates_and_keeps_only_the_agreed_core():
     a = _mk({"form": ["c.a", "c.b", "c.c"]})
     b = _mk({"form": ["c.a", "c.b", "c.d"]})
-    r = merge_item("kind.x", "t", {0: a, 1: b})
+    r = merge_item("kind.x", "t", {0: a, 1: b}, rule="intersection")
     assert set(r["memberships"]["form"]) == {"c.a", "c.b"} and abs(sum(r["memberships"]["form"].values()) - 1) < 1e-9
     assert r["disputed"]["form"] == {"c.c": 0.5, "c.d": 0.5} and r["confidence"]["form"]["agreement"] == 0.5
     assert not r["escalate"]  # Jaccard 2/4 meets the floor and the primary agrees
     c = _mk({"form": ["c.a", "c.b", "c.c", "c.d"]})
     d = _mk({"form": ["c.a", "c.e", "c.f", "c.g"]})
-    r2 = merge_item("kind.x", "t", {0: c, 1: d})
+    r2 = merge_item("kind.x", "t", {0: c, 1: d}, rule="intersection")
     assert r2["escalate"] and any("below" in x for x in r2["escalate_reasons"])
-    e = merge_item("kind.x", "t", {0: _mk({"form": ["c.a"]}), 1: _mk({"form": ["c.b"]})})
+    e = merge_item("kind.x", "t", {0: _mk({"form": ["c.a"]}), 1: _mk({"form": ["c.b"]})}, rule="intersection")
     assert e["memberships"]["form"] is None and e["escalate"]
-    f = merge_item("kind.x", "t", {0: _mk({"form": ["c.a", "c.b"]}), 1: _mk({"form": ["c.b", "c.a"]})})
+    f = merge_item("kind.x", "t", {0: _mk({"form": ["c.a", "c.b"]}), 1: _mk({"form": ["c.b", "c.a"]})}, rule="intersection")
     assert any("primary domains differ" in x for x in f["escalate_reasons"])
-    g = merge_item("kind.x", "t", {0: _mk({"form": ["c.a"], "outcome": ["c.a"]}), 1: _mk({"form": ["c.a"]})})
+    g = merge_item("kind.x", "t", {0: _mk({"form": ["c.a"], "outcome": ["c.a"]}), 1: _mk({"form": ["c.a"]})}, rule="intersection")
     assert g["escalate"] and g["memberships"]["outcome"] is None
 
 

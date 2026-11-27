@@ -1,0 +1,95 @@
+{
+ "bad_secondary": [
+  [
+   "cal.s07",
+   0,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.m04",
+   0,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m11",
+   0,
+   "form",
+   "c.management_executive"
+  ]
+ ],
+ "cells_judged": {
+  "decoy": 16,
+  "required": 27,
+  "secondary": 65,
+  "single": 29
+ },
+ "decoy_hit_rate": 0.0625,
+ "floor": 5,
+ "gold": "v1",
+ "median_listed": {
+  "all": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2
+  },
+  "decoy": {
+   "content": 1.5,
+   "form": 1.0,
+   "outcome": null,
+   "setting": 1.5
+  },
+  "multi": {
+   "content": 3.0,
+   "form": 2.5,
+   "outcome": 1,
+   "setting": 1
+  },
+  "single": {
+   "content": 1.0,
+   "form": 2.0,
+   "outcome": 1,
+   "setting": 2.0
+  }
+ },
+ "merge": "intersection",
+ "n_bad": 3,
+ "n_unjudged": 0,
+ "n_unsure": 3,
+ "padding_single": 0.10344827586206896,
+ "padding_single_complete": 0.10344827586206896,
+ "precision_judged": 0.9516129032258065,
+ "precision_secondary": 0.9076923076923077,
+ "predictions": {
+  "median_listed_multi_form_content_at_least_2": true,
+  "padding_single_at_most_0.10": false,
+  "padding_single_complete_at_most_0.25": true,
+  "precision_secondary_at_least_0.8": true
+ },
+ "prompt_version": 4,
+ "recall_required": 0.9629629629629629,
+ "unjudged_secondary": [],
+ "unsure_secondary": [
+  [
+   "cal.s04",
+   0,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s06",
+   0,
+   "form",
+   "c.digital_tool_use"
+  ],
+  [
+   "cal.d03",
+   0,
+   "content",
+   "c.eating_drinking"
+  ]
+ ],
+ "variants_merged": 2
+}

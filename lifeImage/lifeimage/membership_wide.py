@@ -6,7 +6,9 @@ rejected domain (`validate.validate_ranked_types` enforces it). This module buil
 calibrates the floor, the generated event kinds, a sample of calibration snippets: 2 variants, at most 50 tasks per file),
 judges the battery, and merges the variants' answers into the table the event generator can read later
 (`data/events/kind_memberships_v1.jsonl`): the agreed domains with their weights, the agreement as confidence, the
-disagreements escalated. No model is run here.
+disagreements escalated. The merge rule is chosen by name (`MERGE_RULES`): the support-weighted union (default: every listed domain, a
+lone variant's domain kept above the governed `membership.single_support_floor`, the rest logged as `disputed`) or the intersection
+(a domain only if every variant lists it; kept reproducible, it loses the widening). No model is run here.
 
 The batch prefix is the instructions and the coarse pack only; every variable part is in the task lines, so a runner reusing
 one prefix across the parts of a variant gets cache hits. Variant i orders the pack by a fixed hash shuffle (as the other
@@ -38,6 +40,8 @@ SNIPPET_TABLE = ROOT / "data" / "events" / "snippet_memberships_v1.jsonl"
 ESCALATIONS = ROOT / "data" / "answers" / "escalations.membership_wide.jsonl"
 CALIBRATION_DIR = ROOT / "data" / "events" / "calibration"
 REFINEMENT_DIR = ROOT / "data" / "refinement"  # LI.68 refinement log (`refinement.py`), written by the judge and the ingest
+MERGE_RULES = ("intersection", "support_union")
+DEFAULT_MERGE = "support_union"
 SNIPPET_SAMPLE = 200
 PAIRS_POSSIBLE = 30381  # unordered pairs of the 247 fields (`data/events/coverage_v1.json`)
 
@@ -318,17 +322,28 @@ def unjudged_review(controls, by_item, labels, version=PROMPT_VERSION, floor=Non
 
 
 # ---- the ingest ----
+def disputed_filter(row):
+    """`candidates_for_item` keywords limiting the `disputed` records to what the row's merge left out (all of them for the intersection)."""
+    if row["merge"] != "support_union":
+        return {}
+    return {"disputed_only": {(rel, d) for rel, ds in row["disputed"].items() for d in ds}}
+
+
 def _jaccard(sets):
     union = set().union(*sets)
     return len(set.intersection(*sets)) / len(union) if union else 1.0
 
 
-def merge_item(key, text, variant_answers, *, agree_floor=None):
-    """One table row from the variants' (validated, ranked) answers of one item. A relation's memberships are the domains every
-    variant listed, weights the mean over variants renormalised; confidence is the Jaccard agreement of the lists, with the share
-    of variants behind each domain. Escalate when the primary domain differs, the agreement is below the governed floor, or a
-    relation applies in some variants only."""
+def merge_item(key, text, variant_answers, *, agree_floor=None, rule=None, single_support_floor=None):
+    """One table row from the variants' (validated, ranked) answers of one item, by the merge rule `rule` (`MERGE_RULES`, default
+    `DEFAULT_MERGE`). Both rules give per relation the Jaccard agreement of the lists as confidence and escalate when the primary domain
+    differs, the agreement is below the governed floor, or a relation applies in some variants only; they differ in which domains the
+    memberships keep (`_merge_intersection`, `_merge_support_union`)."""
+    rule = DEFAULT_MERGE if rule is None else rule
+    if rule not in MERGE_RULES:
+        raise ValueError(f"unknown merge rule {rule!r}; one of {list(MERGE_RULES)}")
     agree_floor = governed("membership.agree_floor") if agree_floor is None else agree_floor
+    floor = governed("membership.single_support_floor") if single_support_floor is None else single_support_floor
     k = len(variant_answers)
     memberships, confidence, disputed, reasons = {}, {}, {}, []
     for rel in RELS:
@@ -340,38 +355,108 @@ def merge_item(key, text, variant_answers, *, agree_floor=None):
         if any(p is None for p in per):
             reasons.append(f"{rel}: applies in {sum(p is not None for p in per)} of {k} variants")
         given = [set(p) for p in per if p]
-        agreed = set.intersection(*given) if len(given) == k else set()
         share = {d: sum(d in p for p in per if p) / k for d in set().union(*given)}
         jac = _jaccard(given) if len(given) == k else 0.0
-        if agreed:
-            raw = {d: sum(p[d] for p in per) / k for d in agreed}
-            order = sorted(agreed, key=lambda d: (-raw[d], d))
-            total = sum(raw.values())
-            memberships[rel] = {d: raw[d] / total for d in order}
+        if rule == "intersection":
+            kept, dropped = _merge_intersection(per, given, k), {}
+            memberships[rel] = kept
         else:
-            memberships[rel] = None
-        confidence[rel] = {"agreement": jac, "domains": dict(sorted(share.items(), key=lambda x: (-x[1], x[0])))}
-        dis = {d: s for d, s in share.items() if d not in agreed}
+            kept, dropped = _merge_support_union(per, k, floor)
+            memberships[rel] = kept
+        conf = {"agreement": jac, "domains": dict(sorted(share.items(), key=lambda x: (-x[1], x[0])))}
+        if rule == "support_union":
+            conf["support"] = {d: share[d] for d in (kept or {})}
+        confidence[rel] = conf
+        dis = {d: share[d] for d in (dropped if rule == "support_union" else set(share) - set(kept or ()))}
         if dis:
             disputed[rel] = dict(sorted(dis.items()))
         firsts = {l[0] for l in lists if l}
+        agreed = set.intersection(*given) if len(given) == k else set()
         if len(given) == k and len(firsts) > 1:
             reasons.append(f"{rel}: primary domains differ {sorted(firsts)}")
         if len(given) == k and jac < agree_floor:
             reasons.append(f"{rel}: agreement {jac:.2f} below {agree_floor}")
-        if len(given) == k and not agreed:
+        if rule == "intersection" and len(given) == k and not agreed:
             reasons.append(f"{rel}: no domain listed by every variant")
     first = next(iter(variant_answers.values()))
+    agrees = [c["agreement"] for c in confidence.values()]
     return {"key": key, "text": text, "source": key.split(".", 1)[0], "prompt_version": first["prompt_version"],
-            "model": first["model"], "variants": k, "memberships": memberships, "confidence": confidence,
+            "model": first["model"], "variants": k, "merge": rule, "memberships": memberships, "confidence": confidence,
+            "row_confidence": sum(agrees) / len(agrees) if agrees else 1.0,
             "disputed": disputed, "escalate": bool(reasons), "escalate_reasons": reasons}
 
 
-def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS, refinement_dir=None):
+def _renormalised(raw, order):
+    total = sum(raw[d] for d in order)
+    return {d: raw[d] / total for d in order}
+
+
+def _merge_intersection(per, given, k):
+    """The domains every variant listed, weights the mean over variants renormalised; None when there are none."""
+    agreed = set.intersection(*given) if len(given) == k else set()
+    if not agreed:
+        return None
+    raw = {d: sum(p[d] for p in per) / k for d in agreed}
+    return _renormalised(raw, sorted(agreed, key=lambda d: (-raw[d], d)))
+
+
+def _merge_support_union(per, k, floor):
+    """(kept memberships, dropped domains). Every listed domain is a candidate, its weight the mean over the k variants (0 where a variant
+    does not list it, nor applies), renormalised over the kept. A domain listed by one variant only (k > 1) is dropped when its mean
+    weight is below `floor`; the best domain by mean weight is always kept, so a relation never empties."""
+    raw = {}
+    for p in per:
+        for d, w in (p or {}).items():
+            raw[d] = raw.get(d, 0.0) + w / k
+    count = {d: sum(1 for p in per if p and d in p) for d in raw}
+    order = sorted(raw, key=lambda d: (-raw[d], d))
+    keep = [d for d in order if not (k > 1 and count[d] == 1 and raw[d] < floor)]
+    if not keep:
+        keep = order[:1]
+    return _renormalised(raw, keep), [d for d in order if d not in keep]
+
+
+def merged_answer(variant_answers, rule=None, single_support_floor=None):
+    """The merged list of one item as one answer (`types`, `ranks`: a domain's fit is the rounded mean of the fits of the variants
+    listing it, the rejected domain the first variant's) for the calibration judge."""
+    row = merge_item("x.x", "", variant_answers, rule=rule, single_support_floor=single_support_floor)
+    vs = [a for _, a in sorted(variant_answers.items())]
+    ranks = {}
+    for rel in RELS:
+        m = row["memberships"][rel]
+        if not m:
+            ranks[rel] = None
+            continue
+        fits = {d: [e["fit"] for a in vs if a["ranks"][rel] for e in a["ranks"][rel]["listed"] if e["domain"] == d] for d in m}
+        rej = next(a["ranks"][rel]["rejected"] for a in vs if a["ranks"][rel])
+        ranks[rel] = {"listed": [{"domain": d, "fit": int(round(sum(fits[d]) / len(fits[d])))} for d in m], "rejected": rej}
+    first = vs[0]
+    return {"task_id": "merged", "variant": 0, "model": first["model"], "prompt_version": first["prompt_version"],
+            "types": row["memberships"], "ranks": ranks}
+
+
+def merged_calibration_report(controls, by_item, *, rule=None, floor=None, prompt_version=PROMPT_VERSION, complete_gold=False,
+                              single_support_floor=None):
+    """`calibration_report` of the merged lists: each item's variants merged by `rule` into one answer, then judged as in the report
+    over single answers (recall, precision, padding, widths). `by_item`: {item id: {variant: (text, answer)}}."""
+    rule = DEFAULT_MERGE if rule is None else rule
+    merged = {}
+    for k, per in by_item.items():
+        va = {v: a for v, (_, a) in per.items()}
+        text = next(iter(per.values()))[0]
+        merged[k] = {0: (text, merged_answer(va, rule, single_support_floor))}
+    rep = calibration_report(controls, merged, floor=floor, prompt_version=prompt_version, complete_gold=complete_gold)
+    rep["merge"] = rule
+    rep["variants_merged"] = max((len(p) for p in by_item.values()), default=0)
+    return rep
+
+
+def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS, refinement_dir=None, merge=None):
     """Merge answers (path pairs of batch and answers file, every variant of every item) into the table at out_path (one row per
     item, sorted by key) and write the escalations (one record per escalated item, with the variants' own lists) to
     escalation_path. Both files are rewritten. Disputed and near-floor domains go to the refinement log (LI.68; never into the
-    table). Returns the rows."""
+    table); under the support-weighted union only the domains the merge dropped are `disputed`, the kept single-support ones are in the
+    table with their support. `merge` names the rule (`MERGE_RULES`). Returns the rows."""
     got = answers_by_item(pairs)
     rows, esc, cands = [], [], []
     for key in sorted(got):
@@ -379,10 +464,10 @@ def ingest(pairs, out_path, escalation_path=ESCALATIONS, *, variants=VARIANTS, r
         if len(per) != variants:
             raise ValueError(f"{key}: answers from variants {sorted(per)}, expected {variants}")
         text = next(iter(per.values()))[0]
-        row = merge_item(key, text, {v: a for v, (_, a) in per.items()})
+        row = merge_item(key, text, {v: a for v, (_, a) in per.items()}, rule=merge)
         rows.append(row)
         va = {v: a for v, (_, a) in per.items()}
-        cands += candidates_for_item(key, text, va, membership_fit_floor(row["prompt_version"]))
+        cands += candidates_for_item(key, text, va, membership_fit_floor(row["prompt_version"]), **disputed_filter(row))
         if row["escalate"]:
             esc.append({"key": key, "text": text, "reasons": row["escalate_reasons"],
                         "variants": {str(v): {r: a["ranks"][r] for r in RELS} for v, (_, a) in sorted(per.items())}})

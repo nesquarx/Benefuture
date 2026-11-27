@@ -420,7 +420,13 @@ def test_ingest_escalates_when_the_variants_disagree_on_the_primary_domain(tmp_p
         return a
     pairs, mp, out, kw, rows = _ingest(tmp_path, make=make)
     by = {r["key"]: r for r in rows}
-    assert by["cal.b"]["memberships"]["form"] == {"c.hygiene_grooming": 1.0}  # only the domain both variants listed
+    # support-weighted union (default): both variants' domains are kept, the one both listed outweighs the lone one
+    assert set(by["cal.b"]["memberships"]["form"]) == {"c.hygiene_grooming", "c.cooking"} and by["cal.b"]["merge"] == "support_union"
+    assert by["cal.b"]["memberships"]["form"]["c.hygiene_grooming"] > by["cal.b"]["memberships"]["form"]["c.cooking"]
+    assert by["cal.b"]["confidence"]["form"]["support"] == {"c.hygiene_grooming": 1.0, "c.cooking": 0.5}
+    old = {r["key"]: r for r in tp.ingest_two_pass(pairs, mp, tmp_path / "o2.jsonl", **{**kw, "synonyms_path": tmp_path / "s2.jsonl",
+                                                                                          "escalation_path": tmp_path / "e2.jsonl"}, merge="intersection")}
+    assert old["cal.b"]["memberships"]["form"] == {"c.hygiene_grooming": 1.0}  # the old rule, by name: only the domain both variants listed
     assert by["cal.b"]["escalate"] and any("primary domains differ" in r for r in by["cal.b"]["escalate_reasons"])
     assert by["cal.b"]["confidence"]["form"]["agreement"] == 0.5
     assert not by["cal.a"]["escalate"]

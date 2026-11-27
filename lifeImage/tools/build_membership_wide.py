@@ -9,7 +9,9 @@ Usage (from the repository root); `--version N` picks the prompt version (defaul
   python3 lifeImage/tools/build_membership_wide.py judge --version 3|4 --gold v1   # re-judge the answers against the completed gold (LI.69)
   python3 lifeImage/tools/build_membership_wide.py gold-batches   # gold-completion batches (task gold_judge) for the v3 and v4 unjudged domains
   python3 lifeImage/tools/build_membership_wide.py gold-ingest    # agreed verdicts -> membership_wide_controls_v1.jsonl, disputes -> membership_wide_disputed_v1.md
-  python3 lifeImage/tools/build_membership_wide.py ingest kinds       # merges the answers into data/events/kind_memberships_v1.jsonl
+  python3 lifeImage/tools/build_membership_wide.py judge-merged [--version N] [--gold v1] [--merge RULE]   # the merged lists judged as one answer
+      # (RULE: support_union (default) or intersection; data/gold/membership_wide_merged_<RULE>_v<N>_gold_<G>.json)
+  python3 lifeImage/tools/build_membership_wide.py ingest kinds [--merge RULE]   # merges the answers into data/events/kind_memberships_v1.jsonl
   python3 lifeImage/tools/build_membership_wide.py ingest snippets    # ... data/events/snippet_memberships_v1.jsonl
 Order: run the calibration batches first (two files), judge, and only then the kinds and snippets batches.
 """
@@ -22,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 from lifeimage import gold_judge as gj  # noqa: E402
 from lifeimage.membership import DEFAULT_OUT, DEFAULT_PACK  # noqa: E402
-from lifeimage.membership_wide import (ESCALATIONS, KIND_TABLE, LATEST_PROMPT_VERSION, SNIPPET_TABLE, TASK_TYPE, answers_by_item,  # noqa: E402
+from lifeimage.membership_wide import (DEFAULT_MERGE, ESCALATIONS, merged_calibration_report, KIND_TABLE, LATEST_PROMPT_VERSION, SNIPPET_TABLE, TASK_TYPE, answers_by_item,  # noqa: E402
                                        build_wide_batches, calibration_items, calibration_report, ingest, kind_items, log_calibration,
                                        load_controls, unjudged_review, _pack_labels, snippet_items, width_summary, write_wide_batches)
 
@@ -40,13 +42,14 @@ def files(name, version=LATEST_PROMPT_VERSION):
 if __name__ == "__main__":
     args = sys.argv[1:]
     opts = {}
-    for flag in ("--version", "--sets", "--gold"):
+    for flag in ("--version", "--sets", "--gold", "--merge"):
         if flag in args:
             i = args.index(flag)
             opts[flag] = args[i + 1]
             del args[i:i + 2]
     version = int(opts.get("--version", LATEST_PROMPT_VERSION))
     gold = opts.get("--gold", "v0")
+    merge = opts.get("--merge", DEFAULT_MERGE)
     sets = opts.get("--sets", "calibration").split(",")
     cmd = args[0] if args else ""
     sys.argv = [sys.argv[0]] + args
@@ -72,6 +75,16 @@ if __name__ == "__main__":
             log_calibration(load_controls(), answers_by_item(pairs), version)  # LI.68: candidates to data/refinement/
         print(json.dumps({k: v for k, v in rep.items() if k not in ("unjudged_secondary", "bad_secondary")}, indent=1, sort_keys=True))
         print(f"{len(rep['unjudged_secondary'])} unjudged and {len(rep['bad_secondary'])} bad secondary domains listed in {out.relative_to(ROOT)}")
+    elif cmd == "judge-merged":
+        pairs = files("calibration", version)
+        if not pairs or any(not a.exists() for _, a in pairs):
+            sys.exit("calibration answers missing")
+        controls = load_controls(gj.CONTROLS_V1) if gold == "v1" else load_controls()
+        rep = merged_calibration_report(controls, answers_by_item(pairs), rule=merge, prompt_version=version, complete_gold=gold == "v1")
+        out = ROOT / "data" / "gold" / f"membership_wide_merged_{merge}_v{version}_gold_{gold}.json"
+        out.write_text(json.dumps(rep, indent=1, sort_keys=True, default=list) + "\n", encoding="utf-8")
+        print(json.dumps({k: v for k, v in rep.items() if k not in ("unjudged_secondary", "bad_secondary", "unsure_secondary")}, indent=1, sort_keys=True))
+        print(out.relative_to(ROOT))
     elif cmd in ("gold-batches", "gold-ingest"):
         if cmd == "gold-batches":
             by = {}
@@ -114,7 +127,7 @@ if __name__ == "__main__":
         missing = [str(a.name) for _, a in pairs if not a.exists()]
         if not pairs or missing:
             sys.exit(f"{name} answers missing: {missing or 'no batch files (run `batches`)'}")
-        rows = ingest(pairs, TABLES[name], ESCALATIONS.with_name(f"escalations.membership_wide.{name}.jsonl"))
+        rows = ingest(pairs, TABLES[name], ESCALATIONS.with_name(f"escalations.membership_wide.{name}.jsonl"), merge=merge)
         print(json.dumps(width_summary(rows), indent=1, sort_keys=True))
     else:
         sys.exit(__doc__)
