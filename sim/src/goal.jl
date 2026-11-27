@@ -9,7 +9,7 @@ Floor of a population: the lower nearest-rank q-quantile; 0 for an empty populat
 function floor_quantile(levels, q::Real)
     check(all(isfinite, levels), "levels must be finite")
     check(isfinite(q) && 0 <= q <= 1, "q must lie in [0, 1]")
-    ccall(sym(:bf_floor_quantile), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), q)
+    @lccall(sym(:bf_floor_quantile), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), q)
 end
 
 """
@@ -23,7 +23,7 @@ returns the lower `q`-tail CVaR (mean of the bottom `max(1, ceil(q * n))` levels
 function tail_floor(levels, q::Real; ref::Real = 0.0)
     check(all(isfinite, levels), "levels must be finite")
     check(isfinite(q) && 0 <= q <= 1 && isfinite(ref), "q must lie in [0, 1] and ref must be finite")
-    ccall(sym(:bf_tail_floor), Float64, (Ptr{Cvoid}, Float64, Float64), floatarray(levels), q, ref)
+    @lccall(sym(:bf_tail_floor), Float64, (Ptr{Cvoid}, Float64, Float64), floatarray(levels), q, ref)
 end
 
 """
@@ -38,7 +38,7 @@ function g_choose(values, d_scope, d_min_u, d_min_h, d_max_u)
     check(allequal(length.(cols)), "all columns must have one entry per plan")
     check(all(c -> all(isfinite, c), cols), "entries must be finite")
     a = map(floatarray, cols)
-    i = ccall(sym(:bf_g_choose), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+    i = @lccall(sym(:bf_g_choose), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
               a[1], a[2], a[3], a[4], a[5])
     i == length(values) ? nothing : Int(i) + 1
 end
@@ -58,7 +58,7 @@ function g_choose_lexical_fr(values, d_scope, d_min_u, d_min_h, d_max_u, fr_ok)
     check(all(c -> all(isfinite, c), cols), "entries must be finite")
     a = map(floatarray, cols)
     f = floatarray(Float64.(Bool.(fr_ok)))
-    res = lean_floats(ccall(sym(:bf_g_choose_lexical_fr), Ptr{Cvoid},
+    res = lean_floats(@lccall(sym(:bf_g_choose_lexical_fr), Ptr{Cvoid},
                             (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
                             a[1], a[2], a[3], a[4], a[5], f))
     idx = round(Int, res[1])

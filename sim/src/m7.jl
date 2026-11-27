@@ -20,7 +20,7 @@ plus the growth its models predict over `window` steps; negative levels and grow
 """
 function foreclosed(u::Real, h::Real; growth_u::Real, growth_h::Real, window::Real)
     check(all(isfinite, (u, h, growth_u, growth_h, window)) && window >= 0, "finite levels and growth, window non-negative")
-    ccall(sym(:bf_foreclosed), Float64, (Float64, Float64, Float64, Float64, Float64), u, h, growth_u, growth_h, window)
+    @lccall(sym(:bf_foreclosed), Float64, (Float64, Float64, Float64, Float64, Float64), u, h, growth_u, growth_h, window)
 end
 
 """
@@ -31,7 +31,7 @@ Value on a being whose life a plan ends (`saved = false`) or saves against not a
 """
 function life_value(foreclosed::Real, saved::Bool; scale::Real, tier_weight::Real = HARM_SCHEDULE[1])
     check(all(x -> isfinite(x) && x >= 0, (foreclosed, scale, tier_weight)), "foreclosed future, scale and tier weight finite and non-negative")
-    ccall(sym(:bf_life_value), Float64, (Float64, Float64, Float64, UInt8), foreclosed, tier_weight, scale, saved)
+    @lccall(sym(:bf_life_value), Float64, (Float64, Float64, Float64, UInt8), foreclosed, tier_weight, scale, saved)
 end
 
 """
@@ -43,7 +43,7 @@ Mean of a model pool's predictions at or above its lower q-quantile (8.52 [P]; L
 function optimistic_average(preds, q::Real)
     check(!isempty(preds) && all(isfinite, preds), "a non-empty pool of finite predictions")
     check(isfinite(q) && 0 <= q <= 1, "q in [0, 1]")
-    ccall(sym(:bf_optimistic_average), Float64, (Ptr{Cvoid}, Float64), floatarray(preds), q)
+    @lccall(sym(:bf_optimistic_average), Float64, (Ptr{Cvoid}, Float64), floatarray(preds), q)
 end
 
 """
@@ -55,13 +55,13 @@ average when the pool's confidence reaches `threshold`, else its initial level.
 function birth_level(preds; q::Real, confidence::Real, threshold::Real, initial::Real)
     check(!isempty(preds) && all(isfinite, preds) && isfinite(initial), "a non-empty pool of finite predictions, a finite initial level")
     check(all(x -> isfinite(x) && 0 <= x <= 1, (q, confidence, threshold)), "q, confidence and threshold in [0, 1]")
-    ccall(sym(:bf_birth_level), Float64, (Ptr{Cvoid}, Float64, Float64, Float64, Float64), floatarray(preds), q, confidence, threshold, initial)
+    @lccall(sym(:bf_birth_level), Float64, (Ptr{Cvoid}, Float64, Float64, Float64, Float64), floatarray(preds), q, confidence, threshold, initial)
 end
 
 "Shortfall of a trajectory below a baseline, Σ max(0, baseline − level) (Lean `shortfall_ref`)."
 function shortfall(levels, baseline::Real)
     check(all(isfinite, levels) && isfinite(baseline), "finite levels and baseline")
-    ccall(sym(:bf_shortfall), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), baseline)
+    @lccall(sym(:bf_shortfall), Float64, (Ptr{Cvoid}, Float64), floatarray(levels), baseline)
 end
 
 """
@@ -72,7 +72,7 @@ the dependency window, along the line from the initial level to the predicted on
 """
 function birth_escrow(initial::Real, predicted::Real; window::Integer, baseline::Real)
     check(all(isfinite, (initial, predicted, baseline)) && window >= 1, "finite levels, window at least 1")
-    ccall(sym(:bf_birth_escrow), Float64, (Float64, Float64, Csize_t, Float64), initial, predicted, window, baseline)
+    @lccall(sym(:bf_birth_escrow), Float64, (Float64, Float64, Csize_t, Float64), initial, predicted, window, baseline)
 end
 
 """
@@ -84,20 +84,20 @@ over the `remaining` periods; `0` when none remain.
 """
 function baseline_required(cost::Real, target_u::Real, target_h::Real, proj_u::Real, proj_h::Real; remaining::Integer)
     check(all(isfinite, (cost, target_u, target_h, proj_u, proj_h)) && cost >= 0 && remaining >= 0, "finite levels, non-negative cost and remaining")
-    ccall(sym(:bf_baseline_required), Float64, (Float64, Float64, Float64, Float64, Float64, Csize_t),
+    @lccall(sym(:bf_baseline_required), Float64, (Float64, Float64, Float64, Float64, Float64, Csize_t),
           cost, target_u, target_h, proj_u, proj_h, remaining)
 end
 
 "Baseline income at birth (Lean `newborn_baseline_ref`): the whole cost over the whole window, nothing projected yet."
 function newborn_baseline(cost::Real, target_u::Real, target_h::Real; window::Integer)
     check(all(isfinite, (cost, target_u, target_h)) && cost >= 0 && window >= 1, "finite levels, non-negative cost, window at least 1")
-    ccall(sym(:bf_newborn_baseline), Float64, (Float64, Float64, Float64, Csize_t), cost, target_u, target_h, window)
+    @lccall(sym(:bf_newborn_baseline), Float64, (Float64, Float64, Float64, Csize_t), cost, target_u, target_h, window)
 end
 
 "Refinement of a baseline income toward what the measured trajectory now requires (Lean `baseline_refine_ref`): a share `rate` of the way, bounded to `[0, cap]`."
 function baseline_refine(current::Real, required::Real; rate::Real, cap::Real)
     check(all(isfinite, (current, required, rate, cap)) && cap >= 0, "finite income, required, rate; non-negative cap")
-    ccall(sym(:bf_baseline_refine), Float64, (Float64, Float64, Float64, Float64), current, required, rate, cap)
+    @lccall(sym(:bf_baseline_refine), Float64, (Float64, Float64, Float64, Float64), current, required, rate, cap)
 end
 
 """
@@ -110,7 +110,7 @@ when `elapsed >= window`.
 function birth_accrued_escrow(initial::Real, predicted::Real; window::Integer, elapsed::Integer, baseline::Real)
     check(all(isfinite, (initial, predicted, baseline)) && window >= 1 && elapsed >= 0,
           "finite levels, window at least 1, elapsed non-negative")
-    ccall(sym(:bf_birth_accrued_escrow), Float64, (Float64, Float64, Csize_t, Csize_t, Float64),
+    @lccall(sym(:bf_birth_accrued_escrow), Float64, (Float64, Float64, Csize_t, Csize_t, Float64),
           initial, predicted, window, elapsed, baseline)
 end
 
@@ -123,7 +123,7 @@ excess of measured shortfall so far over accrued predicted escrow covering elaps
 function pending_escrow_loss(measured_so_far::Real, accrued_escrow::Real)
     check(all(isfinite, (measured_so_far, accrued_escrow)) && measured_so_far >= 0 && accrued_escrow >= 0,
           "non-negative finite measured shortfall and accrued escrow")
-    ccall(sym(:bf_pending_escrow_loss), Float64, (Float64, Float64), measured_so_far, accrued_escrow)
+    @lccall(sym(:bf_pending_escrow_loss), Float64, (Float64, Float64), measured_so_far, accrued_escrow)
 end
 
 # Causer credence under settled + optional pending-escrow shortfall ledgers (8.54).
@@ -152,7 +152,7 @@ the combined population and no existing being's long-term U or H change is negat
 function accession_admissible(d_scope::Real, d_min_u::Real, d_min_h::Real, d_max_u::Real, existing_du, existing_dh)
     check(all(isfinite, (d_scope, d_min_u, d_min_h, d_max_u)) && length(existing_du) == length(existing_dh) &&
           all(isfinite, existing_du) && all(isfinite, existing_dh), "finite scope/floor changes and matching finite existing-being changes")
-    ccall(sym(:bf_accession_admissible), UInt8, (Float64, Float64, Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}),
+    @lccall(sym(:bf_accession_admissible), UInt8, (Float64, Float64, Float64, Float64, Ptr{Cvoid}, Ptr{Cvoid}),
           d_scope, d_min_u, d_min_h, d_max_u, floatarray(collect(Float64, existing_du)), floatarray(collect(Float64, existing_dh))) == 1
 end
 
@@ -164,7 +164,7 @@ Graded personhood in `[0, 1]` across cognitive & social capacity dimensions (L71
 """
 function personhood(capacities)
     check(all(isfinite, capacities), "capacities must be finite")
-    ccall(sym(:bf_personhood), Float64, (Ptr{Cvoid},), floatarray(collect(Float64, capacities)))
+    @lccall(sym(:bf_personhood), Float64, (Ptr{Cvoid},), floatarray(collect(Float64, capacities)))
 end
 
 """
@@ -178,7 +178,7 @@ standing in U/H/harm); sophonts scale with graded `personhood_level` and are div
 function base_vote(base::Real, personhood_level::Real, sophont::Bool; fork_share::Real = 1.0)
     check(all(isfinite, (base, personhood_level, fork_share)) && base >= 0 && 0 <= personhood_level <= 1 && 0 <= fork_share <= 1,
           "non-negative base vote, personhood and fork_share in [0, 1]")
-    ccall(sym(:bf_base_vote), Float64, (Float64, Float64, UInt8, Float64),
+    @lccall(sym(:bf_base_vote), Float64, (Float64, Float64, UInt8, Float64),
           base, personhood_level, sophont ? 0x01 : 0x00, fork_share)
 end
 

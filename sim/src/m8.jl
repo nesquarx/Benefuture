@@ -15,7 +15,7 @@ function extended_self_feedback(couplings, deltas)
     check(length(couplings) == length(deltas) &&
           all(isfinite, couplings) && all(isfinite, deltas),
           "equal-length finite couplings and deltas")
-    ccall(sym(:bf_extended_self_feedback), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+    @lccall(sym(:bf_extended_self_feedback), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
           floatarray(couplings), floatarray(deltas))
 end
 
@@ -28,7 +28,7 @@ Multi-hop upstream causal liability (`L8`, `7.14`, M8; Lean `propagated_liabilit
 function propagated_liability(direct_harm::Real, controls)
     check(isfinite(direct_harm) && all(isfinite, controls),
           "finite direct_harm and controls")
-    ccall(sym(:bf_propagated_liability), Float64, (Float64, Ptr{Cvoid}),
+    @lccall(sym(:bf_propagated_liability), Float64, (Float64, Ptr{Cvoid}),
           Float64(direct_harm), floatarray(controls))
 end
 
@@ -49,7 +49,7 @@ function end_of_horizon_score(own_remaining::Real, alive::Bool, couplings, delta
           all(isfinite, couplings) && all(isfinite, deltas) &&
           all(isfinite, (causal_share, delayed_outcome, ideological_share, ideological_gain)),
           "finite inputs and equal-length couplings and deltas")
-    ccall(sym(:bf_end_of_horizon_score), Float64,
+    @lccall(sym(:bf_end_of_horizon_score), Float64,
           (Float64, UInt8, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           Float64(own_remaining), UInt8(alive ? 1 : 0),
           floatarray(couplings), floatarray(deltas),
@@ -76,7 +76,7 @@ function end_of_horizon_predicted_score(immediate_own::Real, future_own::Real,
           all(isfinite, couplings) && all(isfinite, deltas) &&
           all(isfinite, (causal_share, delayed_outcome, ideological_share, ideological_gain)),
           "finite inputs and equal-length couplings and deltas")
-    ccall(sym(:bf_end_of_horizon_predicted_score), Float64,
+    @lccall(sym(:bf_end_of_horizon_predicted_score), Float64,
           (Float64, Float64, UInt8, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           Float64(immediate_own), Float64(future_own), UInt8(alive_at_outcome ? 1 : 0),
           floatarray(couplings), floatarray(deltas),
@@ -93,7 +93,7 @@ Residual InfoHazard exposure risk (`L127`, `B21`, M8; Lean `ihz_access_risk_ref`
 function ihz_access_risk(clearance::Real, req_ed::Real; potential_harm::Real)
     check(all(isfinite, (clearance, req_ed, potential_harm)),
           "finite clearance, req_ed and potential_harm")
-    ccall(sym(:bf_ihz_access_risk), Float64, (Float64, Float64, Float64),
+    @lccall(sym(:bf_ihz_access_risk), Float64, (Float64, Float64, Float64),
           Float64(clearance), Float64(req_ed), Float64(potential_harm))
 end
 
@@ -107,7 +107,7 @@ function art_success_score(intent, reception)
     check(length(intent) == length(reception) &&
           all(isfinite, intent) && all(isfinite, reception),
           "equal-length finite intent and reception spreads")
-    ccall(sym(:bf_art_success_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+    @lccall(sym(:bf_art_success_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
           floatarray(intent), floatarray(reception))
 end
 
@@ -120,7 +120,7 @@ Lean `art_surplus_value_ref`).
 function art_surplus_value(truth_delta_u::Real, novelty::Real)
     check(isfinite(truth_delta_u) && isfinite(novelty),
           "finite truth_delta_u and novelty")
-    ccall(sym(:bf_art_surplus_value), Float64, (Float64, Float64),
+    @lccall(sym(:bf_art_surplus_value), Float64, (Float64, Float64),
           Float64(truth_delta_u), Float64(novelty))
 end
 
@@ -133,7 +133,7 @@ Multi-hop propagated truth level (`Tr_lvl`, `L133`, M8; Lean `chain_truth_level_
 function chain_truth_level(base_level::Real, hops)
     check(isfinite(base_level) && all(isfinite, hops),
           "finite base_level and hop reliabilities")
-    ccall(sym(:bf_chain_truth_level), Float64, (Float64, Ptr{Cvoid}),
+    @lccall(sym(:bf_chain_truth_level), Float64, (Float64, Ptr{Cvoid}),
           Float64(base_level), floatarray(hops))
 end
 

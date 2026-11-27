@@ -1807,6 +1807,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             end
         end
         ratchet!(); push!(bar_trace, leaf_bar(1)); push!(acc_trace, [leaf_acc(j) for j in 1:nleaves()]); push!(rate_trace, [rate_of(j) for j in 1:nleaves()])
+        TRACE_CALLS[] && trace_mark("m3c seed=$seed step=$step", bar_trace[end], acc_trace[end], rate_trace[end])
         if p.converge_init
             gate_ok(j) = !removed_leaf(j) && leaf_ok_raw(j)
             if !econ_converged[]
@@ -2039,6 +2040,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                  ToyPlan(own_plans[j].du .+ sum(l -> l[2].du, ups[j]), own_plans[j].dh .+ sum(l -> l[2].dh, ups[j])) for j in eachindex(own_plans)]
         # Carry out action j by agent a; the outcome is measured by the markers.
         function perform!(j, a)
+            TRACE_CALLS[] && trace_mark("perform step=$(cur[]) j=$j a=$a", own_plans[j].du, own_plans[j].dh, rngsig(rng), rngsig(srng), rngsig(hrng), rngsig(mrng), rngsig(nrng))
             own_done = carried_out(rng, p.agents[a].sloppiness, own_plans[j])
             # A created hazard is direct harm: a crime if foreseen, an accident if not; repaired either way.
             if p.p_side > 0 && rand(srng) < p.p_side
@@ -2062,6 +2064,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     end
                 end
             end
+            TRACE_CALLS[] && trace_mark("perform-side step=$(cur[]) j=$j a=$a", rngsig(srng), own_done.du, own_done.dh)
             # Laundering (M6): harm dumped on beings outside what the action measurably touches; it
             # surfaces with no apparent cause, to be examined (`examine!`).
             if p.launder[a] > 0 && rand(srng) < p.launder[a]
@@ -2085,6 +2088,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                 push!(out, (a, mean(own_done.du[m]), mean(own_done.dh[m]), up_raw[j]))
                 length(out) > p.recent_outputs && popfirst!(out)
             end
+            TRACE_CALLS[] && trace_mark("perform-end step=$(cur[]) j=$j a=$a", rngsig(srng), rngsig(rng), done.du, done.dh)
             done, seen, plan_value(seen, t)
         end
         # Outcome-first causal distribution (author rulings, BACKPROPAGATION 8.16–8.18). Each being
@@ -2118,6 +2122,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
                     v(mask) = assessed_value((funded(mask) ? eff.du[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].du[b] : 0.0 for r in 1:nu); init = 0.0),
                                              (funded(mask) ? eff.dh[b] : 0.0) + sum((hasup(mask, r) ? up_ests[r].dh[b] : 0.0 for r in 1:nu); init = 0.0), t)
                     srng = Xoshiro(hash((seed, :shapley, t, j, b)))
+                    TRACE_CALLS[] && trace_mark("shapley-seed step=$(cur[]) j=$j b=$b", rngsig(srng), hash((seed, :shapley, t, j, b)))
                     who_fam = fork_family[who]
                     φ = length(unique(who_fam)) < length(unique(who)) ?
                         bound_shapley_shares(v, who_fam; rng = srng) :
@@ -2405,6 +2410,7 @@ function run_m3c(p::M3cParams; seed, governor = nothing, governor_every::Integer
             if p.ra_domain && p.ra_spend_contract && spend_scale[] < 1.0 && rand(nrng) >= spend_scale[]
                 budget.unfunded[] += 1; return
             end
+            TRACE_CALLS[] && trace_mark("attempt step=$(cur[]) j=$j a=$a", sum(max.(balance[a, :], 0.0)), costs[j], available, plan.du, plan.dh)
             if p.budget
                 if sum(max.(balance[a, :], 0.0)) < costs[j]
                     budget.unfunded[] += 1; return
