@@ -1,0 +1,61 @@
+{
+ "controls": 32,
+ "distinct_synonyms": 766,
+ "escalated_controls": 27,
+ "items": 32,
+ "median_listed": {
+  "all": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2.0
+  },
+  "decoy": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1,
+   "setting": 1.5
+  },
+  "multi": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2
+  },
+  "single": {
+   "content": 2.0,
+   "form": 2.5,
+   "outcome": 1,
+   "setting": 2
+  }
+ },
+ "n_bad": 13,
+ "n_unjudged": 55,
+ "new_domain_candidates": 11,
+ "noise_labels": 8,
+ "padding_single_complete_merged": 0.27586206896551724,
+ "padding_single_merged": 0.6206896551724138,
+ "pass1_domain_ids": 0,
+ "precision_judged": 0.8839285714285714,
+ "precision_secondary": 0.5657142857142857,
+ "precision_secondary_merged": 0.5157894736842106,
+ "predictions": {
+  "at_least_10_synonyms": true,
+  "at_least_3_candidates": true,
+  "escalated_controls_at_most_24_of_32": false,
+  "pass1_labels_never_contain_domain_ids": true,
+  "precision_judged_at_least_0.95": false,
+  "recall_at_least_v4_minus_0.05": false,
+  "recall_each_variant_at_least_0.913": false,
+  "recall_merged_at_least_0.926": false
+ },
+ "recall_by_variant": {
+  "0": 0.7777777777777778,
+  "1": 0.7407407407407407
+ },
+ "recall_required": 0.7592592592592593,
+ "recall_required_merged": 0.7407407407407407,
+ "recall_v4": 0.9629629629629629,
+ "unlabelled_adds": 8,
+ "unmatched_labels": 8
+}
