@@ -13,6 +13,7 @@ const CM_SEED = let i = findfirst(a -> startswith(a, "--seed="), ARGS); i === no
 const CM_OUT  = let i = findfirst(a -> startswith(a, "--out-jls="), ARGS); i === nothing ? "" : String(split(ARGS[i], "="; limit = 2)[2]) end
 const CM_STEPS = let i = findfirst(a -> startswith(a, "--steps="), ARGS); i === nothing ? 120 : parse(Int, split(ARGS[i], "=")[2]) end
 const CM_ARM_IDX = let i = findfirst(a -> startswith(a, "--arm-idx="), ARGS); i === nothing ? 0 : parse(Int, split(ARGS[i], "=")[2]) end
+const CM_CACHE_DIR = let i = findfirst(a -> startswith(a, "--cache-dir="), ARGS); i === nothing ? "" : String(split(ARGS[i], "="; limit = 2)[2]) end
 const Z_CM = 3.0
 
 function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, open_entry::Bool = false,
@@ -93,19 +94,28 @@ function eval_coupled_threshold(over::Dict{Symbol,Any}, seed::Integer)
      lane = Float64(et.lane_executed))
 end
 
+function write_jls_atomic(path::AbstractString, val)
+    mkpath(dirname(path))
+    tmp = path * ".tmp.$(getpid())"
+    serialize(tmp, val)
+    mv(tmp, path; force = true)
+end
+
 if CM_TASK == "breakeven"
-    serialize(CM_OUT, run_cm_breakeven(CM_STEPS, CM_SEED))
+    write_jls_atomic(CM_OUT, run_cm_breakeven(CM_STEPS, CM_SEED))
 elseif CM_TASK == "thresh_base"
-    serialize(CM_OUT, eval_coupled_threshold(Dict{Symbol,Any}(), CM_SEED))
+    write_jls_atomic(CM_OUT, eval_coupled_threshold(Dict{Symbol,Any}(), CM_SEED))
 elseif CM_TASK == "thresh_arm"
     f, v = CM_THRESH_ARMS[CM_ARM_IDX]
-    serialize(CM_OUT, eval_coupled_threshold(Dict{Symbol,Any}(f => v), CM_SEED))
+    write_jls_atomic(CM_OUT, eval_coupled_threshold(Dict{Symbol,Any}(f => v), CM_SEED))
 else
     function run_main()
         t0 = time()
         commit = current_commit()
         prog_path = joinpath(@__DIR__, "state", "coupled_map.progress")
         mkpath(dirname(prog_path))
+        cache_dir = isempty(CM_CACHE_DIR) ? joinpath(@__DIR__, "cache", "coupled_map_$(commit)") : CM_CACHE_DIR
+        mkpath(cache_dir)
         HORIZONS = [120, 240, 360, 480, 600]
         BE_SEEDS = collect(1:24)
         TH_SEEDS = collect(1:16)
@@ -114,7 +124,6 @@ else
         done_cnt = Threads.Atomic{Int}(0)
 
         function spawn_jobs(jobs)
-            tmpdir = mktempdir()
             outs = Vector{Any}(undef, length(jobs))
             next_i = Threads.Atomic{Int}(1)
             script = @__FILE__
@@ -124,22 +133,23 @@ else
                     i = Threads.atomic_add!(next_i, 1)
                     i > length(jobs) && break
                     job = jobs[i]
-                    out = joinpath(tmpdir, "job_$i.jls")
-                    cmd = Cmd(vcat(Base.julia_cmd().exec, ["--project=$proj", script, job.args..., "--out-jls=$out"]))
-                    Base.run(cmd)
+                    out = joinpath(cache_dir, "$(job.key).jls")
+                    if !isfile(out)
+                        cmd = Cmd([Base.julia_cmd().exec[1], "-t", "1", "--project=$proj", script, job.args..., "--out-jls=$out"])
+                        Base.run(cmd)
+                    end
                     outs[i] = deserialize(out)
                     n = Threads.atomic_add!(done_cnt, 1) + 1
                     progress_tick!(pt, n, job.label)
                 end
             end
-            rm(tmpdir; recursive = true, force = true)
             outs
         end
 
-        println("Running coupled_map (workers=$CM_WORKERS, total units=$total_units)...")
+        println("Running coupled_map (workers=$CM_WORKERS, total units=$total_units, cache=$cache_dir)...")
         flush(stdout)
 
-        be_jobs = [(args = ["--task=breakeven", "--steps=$h", "--seed=$s"], label = "breakeven h=$h s=$s")
+        be_jobs = [(key = "be_h$(h)_s$(s)", args = ["--task=breakeven", "--steps=$h", "--seed=$s"], label = "breakeven h=$h s=$s")
                    for h in HORIZONS for s in BE_SEEDS]
         be_flat = spawn_jobs(be_jobs)
         be_res = Dict{Int,Vector{Any}}(h => Any[] for h in HORIZONS)
@@ -149,10 +159,10 @@ else
             push!(be_res[h], be_flat[idx])
         end
 
-        th_base_jobs = [(args = ["--task=thresh_base", "--seed=$s"], label = "thresh base s=$s") for s in TH_SEEDS]
+        th_base_jobs = [(key = "th_base_s$(s)", args = ["--task=thresh_base", "--seed=$s"], label = "thresh base s=$s") for s in TH_SEEDS]
         th_base = spawn_jobs(th_base_jobs)
 
-        th_arm_jobs = [(args = ["--task=thresh_arm", "--arm-idx=$ai", "--seed=$s"], label = "thresh arm=$ai s=$s")
+        th_arm_jobs = [(key = "th_arm$(ai)_s$(s)", args = ["--task=thresh_arm", "--arm-idx=$ai", "--seed=$s"], label = "thresh arm=$ai s=$s")
                        for ai in eachindex(CM_THRESH_ARMS) for s in TH_SEEDS]
         th_flat = spawn_jobs(th_arm_jobs)
         th_res = [Any[] for _ in eachindex(CM_THRESH_ARMS)]
