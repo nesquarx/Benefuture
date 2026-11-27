@@ -25,6 +25,7 @@ TASK_TYPES = {
     "axis_pg": [str(i) for i in range(11)],  # axes v3: personal and social 0 to global and professional 10
     "adjacency": ["1", "2", "equal"],  # which of two neighbour sets is thematically closer to the field (LI.55)
     "relatedness": [str(i) for i in range(11)],  # how thematically related two coarse fields are, 0 unrelated to 10 near-synonyms
+    "gold_judge": ["fair", "bad", "unsure"],  # LI.69: is a domain a fair listing for an item under a relation (completes the calibration gold)
     "radius": [str(i) for i in range(11)],  # judged radius v1: elementary 0 to highly specialised 10, one coarse field per task
 }
 

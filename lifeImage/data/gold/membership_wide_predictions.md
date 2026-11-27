@@ -67,3 +67,26 @@ but barely moved the pre-registered metrics: what fails them is the unjudged set
 controls that the gold calls neither fair nor bad. By the pre-registered rule, the next step is the author's decision; the
 lead's reading is that the gold set is incomplete, not the floor too low (raising it further would narrow memberships against
 LI.67). Per LI.68 the unjudged domains are refinement candidates.
+
+## Gold completion and v3/v4 re-score (pre-registered 2026-11-27, before any gold-judge answer exists; LI.69; confidence 0.5)
+
+Rule under test: the unjudged (item, relation, domain) triples of the v3 and v4 calibration (deduplicated) are judged by runners (task `gold_judge.v1`,
+2 variants with the gold's fair and bad lists in opposite order). Agreed verdicts (`fair` or `bad` from both variants) extend the gold as
+`data/gold/membership_wide_controls_v1.jsonl` (v0 kept; provenance per added entry); a disagreement or any `unsure` goes to the author review file
+`data/gold/membership_wide_disputed_v1.md` and stays out of v1 (recorded there as `unsure`) until reviewed. The existing answers are then re-judged
+against v1: `judge --version 3|4 --gold v1`, reports `membership_wide_calibration_report_v{3,4}_gold_v1.json`.
+
+Definition change, explicit: with the completed gold, padding on single-domain controls counts a cell only if it lists a secondary domain that the gold
+calls `bad` or `unsure` (`padding_single_complete`); a domain the gold judged `fair` no longer counts, and a domain nobody has judged is not counted but
+reported (`n_unjudged`). The old definition (secondary domain outside `fair`, unjudged counted) is still computed and reported as `padding_single`.
+The pre-registered precision metric (unjudged and unsure count against) and the judged-only metric are both kept.
+
+| # | Prediction (v1 gold) | Metric | Smallest effect that matters |
+|---|----------------------|--------|------------------------------|
+| 1 | v4 precision holds with the complete gold | `precision_secondary` (pre-registered form) on v4 | >= 0.8 |
+| 2 | v4 padding on plain events falls | `padding_single_complete` on v4 | <= 0.25 |
+| 3 | v3 is worse than v4 | v3 `precision_secondary` < v4's, and v3 `padding_single_complete` > v4's | both directions |
+
+ETA: judged when the lead has the four gold-judge answers files. Decision if 1 or 2 fails: the floor is not raised on this evidence alone; the remaining
+`bad` and `unsure` additions are the refinement candidates (LI.68) and the rubric text is the suspect. If 3 fails, the floor change from 4 to 5 bought nothing
+on the complete gold and is reconsidered by the author.

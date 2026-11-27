@@ -168,18 +168,23 @@ def _listed(answer, rel):
     return None if rk is None else [e["domain"] for e in rk["listed"]]
 
 
-def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERSION):
+def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERSION, complete_gold=False):
     """Judge the control battery against its pre-registered predictions. `by_item`: {item id: {variant: (text, answer)}}.
 
     Cells are (control, variant, relation) where the control's gold names the relation (`fair`). A secondary domain is any listed
     domain after the first. Precision of secondary domains = share in the control's `fair` list for that relation; the rest are
     `bad` (the gold names it) or `unjudged` (the gold names neither: the lead reviews these, they count against precision).
     Padding on single-domain controls = share of their cells with a secondary domain outside `fair`. Recall = share of `required`
-    domains listed. Decoy hits = decoy cells listing a `bad` domain. Widths: median listed domains over non-null cells."""
+    domains listed. Decoy hits = decoy cells listing a `bad` domain. Widths: median listed domains over non-null cells.
+
+    `complete_gold` (LI.69, gold v1: the unjudged domains were judged by runners): a secondary the control lists as `unsure` (a
+    dispute awaiting the author) is counted apart (`n_unsure`, never fair), and the report adds `padding_single_complete`, the share
+    of single-domain cells with a secondary the gold calls `bad` or `unsure`; a domain nobody judged is not counted there (it is in
+    `n_unjudged`). `padding_single` (outside `fair`) is still computed and reported."""
     floor = membership_fit_floor(prompt_version) if floor is None else floor
     n_sec = ok_sec = 0
-    unjudged, bad_sec = [], []
-    pad_cells = pad_hit = 0
+    unjudged, bad_sec, unsure_sec = [], [], []
+    pad_cells = pad_hit = pad_complete_hit = 0
     req_total = req_hit = 0
     decoy_cells = decoy_hit = 0
     widths = {g: {r: [] for r in RELS} for g in ("single", "multi", "decoy", "all")}
@@ -196,6 +201,7 @@ def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERS
                 if fair is None:
                     continue
                 bad = set(c.get("bad", {}).get(rel, []))
+                unsure = set(c.get("unsure", {}).get(rel, [])) if complete_gold else set()
                 sec = lst[1:]
                 outside = [d for d in sec if d not in fair]
                 for d in sec:
@@ -204,11 +210,14 @@ def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERS
                         ok_sec += 1
                     elif d in bad:
                         bad_sec.append((c["id"], v, rel, d))
+                    elif d in unsure:
+                        unsure_sec.append((c["id"], v, rel, d))
                     else:
                         unjudged.append((c["id"], v, rel, d))
                 if c["group"] == "single":
                     pad_cells += 1
                     pad_hit += bool(outside)
+                    pad_complete_hit += any(d in bad or d in unsure for d in sec)
                 if c["group"] == "decoy":
                     decoy_cells += 1
                     decoy_hit += any(d in bad for d in lst)
@@ -223,7 +232,12 @@ def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERS
     medians = {g: {r: med(w[r]) for r in RELS} for g, w in widths.items()}
     multi_ok = all((medians["multi"][r] or 0) >= 2 for r in ("form", "content"))
     n_judged = ok_sec + len(bad_sec)
+    extra = {}
+    if complete_gold:
+        pc = pad_complete_hit / pad_cells if pad_cells else None
+        extra = {"gold": "v1", "padding_single_complete": pc, "n_unsure": len(unsure_sec), "unsure_secondary": unsure_sec}
     return {
+        **extra,
         "floor": floor,
         "prompt_version": prompt_version,
         "cells_judged": {"secondary": n_sec, "single": pad_cells, "decoy": decoy_cells, "required": req_total},
@@ -241,6 +255,8 @@ def calibration_report(controls, by_item, floor=None, prompt_version=PROMPT_VERS
             "median_listed_multi_form_content_at_least_2": multi_ok,
             "precision_secondary_at_least_0.8": prec is not None and prec >= 0.8,
             "padding_single_at_most_0.10": padding is not None and padding <= 0.10,
+            **({"padding_single_complete_at_most_0.25": extra["padding_single_complete"] is not None and extra["padding_single_complete"] <= 0.25}
+               if complete_gold else {}),
         },
     }
 
