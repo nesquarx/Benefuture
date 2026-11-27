@@ -26,6 +26,7 @@ TASK_TYPES = {
     "adjacency": ["1", "2", "equal"],  # which of two neighbour sets is thematically closer to the field (LI.55)
     "relatedness": [str(i) for i in range(11)],  # how thematically related two coarse fields are, 0 unrelated to 10 near-synonyms
     "gold_judge": ["fair", "bad", "unsure"],  # LI.69: is a domain a fair listing for an item under a relation (completes the calibration gold)
+    "label_match": ["match", "partial", "none"],  # LI.71: does a run's category list hold the author's label, in the same sense
     "radius": [str(i) for i in range(11)],  # judged radius v1: elementary 0 to highly specialised 10, one coarse field per task
 }
 

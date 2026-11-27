@@ -273,7 +273,63 @@ def _line(x):
     return isinstance(x, str) and bool(x.strip()) and "\n" not in x
 
 
-def validate_blind_answer(answer, ids=None, floor=None, max_labels=None):
+BLIND_UNKNOWN = "unknown"
+
+
+def _validate_blind_lists_v2(bl):
+    """`blind.v2` (LI.71): every relation a list of {label, weight, gloss} from the most specific category to the most generic, weights strictly
+    decreasing and summing to 1 (within `blind.v2.weight_tolerance`), at most `blind.v2.max_labels` entries, at most one `unknown` marker (the
+    residual weight, last), no duplicate label in a relation, and a label repeated across relations carrying a different gloss in each. Form,
+    content and setting are lists (a setting the statement does not give is `unknown`); the outcome may be null (measured, not required).
+    Lists shorter than `blind.v2.min_labels` are accepted here and reported by `two_pass.thin_relations`."""
+    from .governed import governed
+    tol, top = governed("blind.v2.weight_tolerance"), governed("blind.v2.max_labels")
+    glosses = {}
+    for rel in BLIND_RELS:
+        ls = bl[rel]
+        if ls is None:
+            if rel != "outcome":
+                raise ValidationError(f"{rel}: a list of categories is required (use an unknown marker for a setting the statement does not give)")
+            continue
+        if not isinstance(ls, list) or not ls:
+            raise ValidationError(f"{rel}: null or a non-empty list of categories")
+        if len(ls) > top:
+            raise ValidationError(f"{rel}: {len(ls)} categories, at most {top}")
+        seen, weights, unknown = set(), [], []
+        for i, e in enumerate(ls):
+            if not isinstance(e, dict) or set(e) != {"label", "weight", "gloss"}:
+                raise ValidationError(f"{rel}: each category must be exactly {{label, weight, gloss}}")
+            lab = e["label"]
+            if not isinstance(lab, str) or not lab.strip() or len(lab) > BLIND_LABEL_MAX:
+                raise ValidationError(f"{rel}: a label is a phrase of 1 to {BLIND_LABEL_MAX} characters")
+            if not _line(e["gloss"]):
+                raise ValidationError(f"{rel}: {lab!r} needs a non-empty one-line gloss")
+            w = e["weight"]
+            if isinstance(w, bool) or not isinstance(w, (int, float)) or not 0 < w <= 1:
+                raise ValidationError(f"{rel}: weight of {lab!r} must be a number above 0 and at most 1")
+            n = norm_label(lab)
+            if n in seen:
+                raise ValidationError(f"{rel}: duplicate label {lab!r}")
+            seen.add(n)
+            weights.append(w)
+            if n == BLIND_UNKNOWN:
+                unknown.append(i)
+            else:
+                glosses.setdefault(n, []).append((rel, norm_label(e["gloss"])))
+        if len(unknown) > 1:
+            raise ValidationError(f"{rel}: at most one unknown marker")
+        if unknown and unknown[0] != len(ls) - 1:
+            raise ValidationError(f"{rel}: the unknown marker ends the list (it is the most generic)")
+        if any(a <= b for a, b in zip(weights, weights[1:])):
+            raise ValidationError(f"{rel}: weights must be strictly decreasing down the list, got {weights}")
+        if abs(sum(weights) - 1) > tol:
+            raise ValidationError(f"{rel}: weights sum to {sum(weights):.3f}, not 1 (tolerance {tol})")
+    for n, uses in glosses.items():
+        if len(uses) > 1 and len({g for _, g in uses}) < len(uses):
+            raise ValidationError(f"label {n!r} is repeated under {[r for r, _ in uses]} and needs a gloss of its own in each relation")
+
+
+def validate_blind_answer(answer, ids=None, floor=None, max_labels=None, version=1):
     """A pass-1 answer: verdict "blind", `blind` with exactly the four relations (each null or a ranked list of {label, fit, gloss}: labels
     of one to 60 characters, integer fits 0-10 not below the blind floor and not rising, at most `blind.max_labels`, no duplicate labels, a
     one-line gloss), at least one non-null, and `relational` (participants, action, outcome with counterfactual, links). No string anywhere
@@ -289,7 +345,9 @@ def validate_blind_answer(answer, ids=None, floor=None, max_labels=None):
     bl = answer["blind"]
     if not isinstance(bl, dict) or sorted(bl) != sorted(BLIND_RELS):
         raise ValidationError(f"blind must have exactly the keys {sorted(BLIND_RELS)}")
-    for rel in BLIND_RELS:
+    if version >= 2:
+        _validate_blind_lists_v2(bl)
+    for rel in BLIND_RELS if version < 2 else ():
         ls = bl[rel]
         if ls is None:
             continue
@@ -317,7 +375,7 @@ def validate_blind_answer(answer, ids=None, floor=None, max_labels=None):
             fits.append(e["fit"])
         if any(a < b for a, b in zip(fits, fits[1:])):
             raise ValidationError(f"{rel}: unranked, fits {fits} rise down the list")
-    if all(bl[r] is None for r in BLIND_RELS):
+    if version < 2 and all(bl[r] is None for r in BLIND_RELS):
         raise ValidationError("every relation is null")
     rel = answer["relational"]
     if not isinstance(rel, dict) or set(rel) != {"participants", "action", "outcome", "links"}:
@@ -622,7 +680,13 @@ def validate_answers(batch_lines, answer_lines):
                 errors.append(f"line {n}: {e}")
         if blind:
             try:
-                validate_blind_answer(a)
+                validate_blind_answer(a, version=header["prompt_version"])
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
+        if header["task_type"] == "label_match":
+            try:
+                from .label_match import validate_label_match_answer
+                validate_label_match_answer(a, t)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
         if mapping:

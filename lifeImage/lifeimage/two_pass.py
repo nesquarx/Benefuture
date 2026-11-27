@@ -22,6 +22,7 @@ candidate new domains to the refinement log with source `blind_unmatched` (LI.68
 No model is run here.
 """
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -39,6 +40,7 @@ from .validate import (BLIND_RELS, ValidationError, blind_refs, domain_ids_in, n
 ROOT = Path(__file__).resolve().parent.parent
 BLIND_TASK, MAP_TASK = "blind", "map"
 BLIND_VERSION = MAP_VERSION = 1  # the defaults keep the first versions reproducible
+LATEST_BLIND_VERSION = 2  # LI.71: weighted categories from the most specific to the most generic (`prompts/blind.v2.md`); v1 stays reproducible
 LATEST_MAP_VERSION = 2  # the hybrid pass 2 (`prompts/map.v2.md`): memberships from the event text, labels as hints
 VARIANTS = 2
 MAX_TASKS = 50
@@ -134,11 +136,12 @@ def write_blind_batches(name, batches, out_dir=DEFAULT_OUT, prompt_version=BLIND
     return _write(name, BLIND_TASK, prompt_version, batches, out_dir)
 
 
-def pilot_blind_batches(out_dir=DEFAULT_OUT):
-    """Write the pass-1 pilot batches (controls, snippets; 2 variants; at most 50 per file); returns the paths."""
+def pilot_blind_batches(out_dir=DEFAULT_OUT, prompt_version=BLIND_VERSION, sets=None):
+    """Write the pass-1 pilot batches (controls, snippets, or the named `sets`; 2 variants; at most 50 per file) of a prompt version; returns the paths."""
     paths = []
     for name, items in pilot_items().items():
-        paths += write_blind_batches(name, build_blind_batches(items), out_dir)
+        if sets is None or name in sets:
+            paths += write_blind_batches(name, build_blind_batches(items, prompt_version=prompt_version), out_dir, prompt_version)
     return paths
 
 
@@ -150,7 +153,8 @@ def load_domain_cards(coarse=COARSE_CARDS, fine=FINE_CARDS):
 def blind_view(answer):
     """What the mapper sees of a pass-1 answer: the labels per relation with refs `<relation>.<index>`."""
     return {rel: None if answer["blind"][rel] is None else
-            [{"ref": f"{rel}.{i}", "label": e["label"], "fit": e["fit"], "gloss": e["gloss"]} for i, e in enumerate(answer["blind"][rel])]
+            [{"ref": f"{rel}.{i}", "label": e["label"], **({"fit": e["fit"]} if "fit" in e else {"weight": e["weight"]}), "gloss": e["gloss"]}
+             for i, e in enumerate(answer["blind"][rel])]
             for rel in BLIND_RELS}
 
 
@@ -416,3 +420,52 @@ def two_pass_report(controls, blind_by_item, map_by_item, *, synonyms, candidate
 def _strings_of(answer):
     from .validate import _strings
     return list(_strings({"blind": answer["blind"], "relational": answer["relational"]}))
+
+
+# ---- blind.v2 (LI.71): thin lists and the judge of the pre-registered predictions ----
+def thin_relations(answer, minimum=None):
+    """The relations of a `blind.v2` answer listing fewer than `blind.v2.min_labels` categories (an `unknown` marker is not a category; a null
+    outcome lists none)."""
+    from .validate import BLIND_UNKNOWN
+    minimum = governed("blind.v2.min_labels") if minimum is None else minimum
+    return [rel for rel in BLIND_RELS
+            if len([e for e in answer["blind"][rel] or [] if norm_label(e["label"]) != BLIND_UNKNOWN]) < minimum]
+
+
+def _median(xs):
+    xs = sorted(xs)
+    n = len(xs)
+    return None if not n else (xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2)
+
+
+def blind_v2_report(blind_by_item, judged, *, partial_credit=0.5):
+    """Judge `data/gold/blind_v2_predictions.md`. `blind_by_item`: {item: {variant: (text, answer)}} of validated `blind.v2` answers; `judged`:
+    [(label_match task, answer)] (empty before the judge has run). Counts are real categories (the `unknown` marker excluded, a null outcome is 0);
+    the author-match share of a relation is (match + partial_credit x partial) over the author's labels of that relation, pooled over the two
+    author items and the variants; cooking counts the d01 form and content labels containing the word cook."""
+    from .validate import BLIND_UNKNOWN
+    answers = [(k, v, a) for k, per in sorted(blind_by_item.items()) for v, (_, a) in sorted(per.items())]
+    counts = {rel: [len([e for e in a["blind"][rel] or [] if norm_label(e["label"]) != BLIND_UNKNOWN]) for _, _, a in answers] for rel in BLIND_RELS}
+    med = {rel: _median(counts[rel]) for rel in ("form", "content", "outcome")}
+    present = sum(1 for _, _, a in answers if a["blind"]["outcome"]) / len(answers) if answers else None
+    cooking = sum(1 for k, _, a in answers if k == "cal.d01" for rel in ("form", "content") for e in a["blind"][rel] or []
+                  if re.search(r"\bcook", e["label"].lower()))
+    share, strict = {}, {}
+    for rel in BLIND_RELS:
+        rows = [a["verdict"] for t, a in judged if t["input"]["relation"] == rel]
+        if rows:
+            share[rel] = (rows.count("match") + partial_credit * rows.count("partial")) / len(rows)
+            strict[rel] = rows.count("match") / len(rows)
+    out = {
+        "median_labels": med, "outcome_present": present, "cooking_in_d01_form_or_content": cooking,
+        "author_match_share": share, "author_match_strict": strict, "n_answers": len(answers), "n_judged": len(judged),
+        "thin_answers": sum(1 for _, _, a in answers if thin_relations(a)),
+        "setting_unknown": sum(1 for _, _, a in answers if any(norm_label(e["label"]) == BLIND_UNKNOWN for e in a["blind"]["setting"])),
+        "predictions": {
+            "median_labels_at_least_4": bool(answers) and all(m is not None and m >= 4 for m in med.values()),
+            "outcome_present_at_least_0.9": present is not None and present >= 0.9,
+            "author_match_at_least_0.6_each_relation": (set(share) == set(BLIND_RELS) and all(x >= 0.6 for x in share.values())) if share else None,
+            "no_cooking_in_cal_d01_form_or_content": cooking == 0,
+        },
+    }
+    return out

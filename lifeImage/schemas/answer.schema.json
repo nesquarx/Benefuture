@@ -21,6 +21,7 @@
     "other": {"type": ["string", "null"]},
     "rows": {"type": "array", "items": {"type": "object"}},
     "blind": {"type": "object"},
+    "run_ref": {"type": ["string", "null"]},
     "relational": {"type": "object"},
     "labels": {"type": "array", "items": {"type": "object"}},
     "unlabelled_add": {"type": "array", "items": {"type": "object"}},

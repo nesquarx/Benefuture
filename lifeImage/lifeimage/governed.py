@@ -54,6 +54,19 @@ GOVERNED = {
         "default": 6,
         "source": "LI.70: most blind labels per relation in pass 1 (a bound on the review load of pass 2, as the width of the v3 and v4 lists is bounded in practice). Assumption.",
     },
+    "blind.v2.max_labels": {
+        "default": 8,
+        "source": "LI.71: most categories per relation in `blind.v2` (the author's 4 to 8, specific to generic). Enforced.",
+    },
+    "blind.v2.min_labels": {
+        "default": 4,
+        "source": "LI.71: fewest categories per relation the `blind.v2` prompt asks for. Measured (`two_pass.thin_relations`, pre-registered in "
+                  "`data/gold/blind_v2_predictions.md`), not enforced: the author's own outcome example lists two, and a setting may be `unknown`. Assumption.",
+    },
+    "blind.v2.weight_tolerance": {
+        "default": 0.02,
+        "source": "LI.71: how far the weights of one `blind.v2` relation may sum from 1 (runners write two decimals, up to 8 of them). Assumption.",
+    },
     "membership.agree_floor": {
         "default": 0.5,
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "
