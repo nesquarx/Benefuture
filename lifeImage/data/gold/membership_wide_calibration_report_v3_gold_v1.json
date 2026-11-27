@@ -1,0 +1,339 @@
+{
+ "bad_secondary": [
+  [
+   "cal.s01",
+   0,
+   "form",
+   "s.self_care"
+  ],
+  [
+   "cal.s02",
+   0,
+   "form",
+   "s.self_care"
+  ],
+  [
+   "cal.s02",
+   1,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.s03",
+   0,
+   "content",
+   "c.family_ties"
+  ],
+  [
+   "cal.s03",
+   1,
+   "form",
+   "c.exercise_fitness"
+  ],
+  [
+   "cal.s04",
+   1,
+   "content",
+   "c.political_discourse"
+  ],
+  [
+   "cal.s05",
+   0,
+   "form",
+   "s.home"
+  ],
+  [
+   "cal.s06",
+   1,
+   "content",
+   "c.youth_culture"
+  ],
+  [
+   "cal.s07",
+   0,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s07",
+   1,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s09",
+   0,
+   "content",
+   "c.horticulture_farming"
+  ],
+  [
+   "cal.s10",
+   0,
+   "form",
+   "c.children_play"
+  ],
+  [
+   "cal.s11",
+   0,
+   "form",
+   "c.online_commerce"
+  ],
+  [
+   "cal.s11",
+   0,
+   "content",
+   "c.energy_systems"
+  ],
+  [
+   "cal.s11",
+   1,
+   "form",
+   "c.household_budgeting"
+  ],
+  [
+   "cal.m02",
+   0,
+   "form",
+   "c.entrepreneurship"
+  ],
+  [
+   "cal.m03",
+   0,
+   "form",
+   "c.news_media"
+  ],
+  [
+   "cal.m04",
+   0,
+   "form",
+   "c.employment_job"
+  ],
+  [
+   "cal.m04",
+   1,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m05",
+   0,
+   "form",
+   "c.saving_investing"
+  ],
+  [
+   "cal.m07",
+   0,
+   "form",
+   "c.healthcare_work"
+  ],
+  [
+   "cal.m07",
+   1,
+   "form",
+   "c.healthcare_work"
+  ],
+  [
+   "cal.d05",
+   0,
+   "form",
+   "c.socialising"
+  ],
+  [
+   "cal.d05",
+   0,
+   "content",
+   "c.children_play"
+  ],
+  [
+   "cal.d08",
+   0,
+   "content",
+   "c.weather_climate_adaptation"
+  ],
+  [
+   "cal.d08",
+   1,
+   "content",
+   "c.weather_climate_adaptation"
+  ]
+ ],
+ "cells_judged": {
+  "decoy": 32,
+  "required": 54,
+  "secondary": 211,
+  "single": 58
+ },
+ "decoy_hit_rate": 0.125,
+ "floor": 4,
+ "gold": "v1",
+ "median_listed": {
+  "all": {
+   "content": 2.5,
+   "form": 2.0,
+   "outcome": 2.0,
+   "setting": 2.0
+  },
+  "decoy": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1,
+   "setting": 2
+  },
+  "multi": {
+   "content": 3.0,
+   "form": 3.0,
+   "outcome": 2,
+   "setting": 2
+  },
+  "single": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2.0
+  }
+ },
+ "n_bad": 26,
+ "n_unjudged": 0,
+ "n_unsure": 21,
+ "padding_single": 0.43103448275862066,
+ "padding_single_complete": 0.43103448275862066,
+ "precision_judged": 0.8631578947368421,
+ "precision_secondary": 0.7772511848341233,
+ "predictions": {
+  "median_listed_multi_form_content_at_least_2": true,
+  "padding_single_at_most_0.10": false,
+  "padding_single_complete_at_most_0.25": false,
+  "precision_secondary_at_least_0.8": false
+ },
+ "prompt_version": 3,
+ "recall_required": 0.9259259259259259,
+ "unjudged_secondary": [],
+ "unsure_secondary": [
+  [
+   "cal.s04",
+   0,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s04",
+   1,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s04",
+   1,
+   "setting",
+   "c.public_administration"
+  ],
+  [
+   "cal.s08",
+   0,
+   "content",
+   "c.employment_job"
+  ],
+  [
+   "cal.s08",
+   1,
+   "content",
+   "c.employment_job"
+  ],
+  [
+   "cal.s09",
+   0,
+   "form",
+   "s.home"
+  ],
+  [
+   "cal.s10",
+   0,
+   "content",
+   "c.basic_skills"
+  ],
+  [
+   "cal.s12",
+   0,
+   "content",
+   "c.outdoor_recreation"
+  ],
+  [
+   "cal.s12",
+   0,
+   "setting",
+   "s.nature"
+  ],
+  [
+   "cal.s12",
+   1,
+   "content",
+   "c.outdoor_recreation"
+  ],
+  [
+   "cal.m02",
+   1,
+   "form",
+   "c.sales_marketing"
+  ],
+  [
+   "cal.m03",
+   0,
+   "content",
+   "c.parenting_young_children"
+  ],
+  [
+   "cal.m06",
+   0,
+   "outcome",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.m06",
+   1,
+   "outcome",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.m11",
+   1,
+   "form",
+   "c.job_search"
+  ],
+  [
+   "cal.d01",
+   0,
+   "form",
+   "c.entrepreneurship"
+  ],
+  [
+   "cal.d01",
+   1,
+   "form",
+   "c.entrepreneurship"
+  ],
+  [
+   "cal.d02",
+   0,
+   "form",
+   "s.consumption"
+  ],
+  [
+   "cal.d02",
+   1,
+   "form",
+   "c.retail_shopping"
+  ],
+  [
+   "cal.d03",
+   0,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.d03",
+   1,
+   "content",
+   "c.eating_drinking"
+  ]
+ ]
+}

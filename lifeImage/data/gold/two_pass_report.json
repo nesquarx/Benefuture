@@ -1,0 +1,47 @@
+{
+ "distinct_synonyms": 488,
+ "items": 32,
+ "median_listed": {
+  "all": {
+   "content": 2,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 1
+  },
+  "decoy": {
+   "content": 1,
+   "form": 1.5,
+   "outcome": 1,
+   "setting": 1
+  },
+  "multi": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1,
+   "setting": 1
+  },
+  "single": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 1
+  }
+ },
+ "n_bad": 2,
+ "n_unjudged": 50,
+ "new_domain_candidates": 4,
+ "noise_labels": 42,
+ "pass1_domain_ids": 0,
+ "precision_judged": 0.967741935483871,
+ "precision_secondary": 0.5357142857142857,
+ "predictions": {
+  "at_least_10_synonyms": true,
+  "at_least_3_candidates": true,
+  "pass1_labels_never_contain_domain_ids": true,
+  "precision_judged_at_least_0.95": true,
+  "recall_at_least_v4_minus_0.05": false
+ },
+ "recall_required": 0.6296296296296297,
+ "recall_v4": 0.9629629629629629,
+ "unmatched_labels": 44
+}

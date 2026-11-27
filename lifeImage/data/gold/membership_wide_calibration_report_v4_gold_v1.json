@@ -1,0 +1,279 @@
+{
+ "bad_secondary": [
+  [
+   "cal.s01",
+   0,
+   "form",
+   "s.self_care"
+  ],
+  [
+   "cal.s01",
+   0,
+   "content",
+   "c.physical_health"
+  ],
+  [
+   "cal.s03",
+   1,
+   "form",
+   "c.exercise_fitness"
+  ],
+  [
+   "cal.s07",
+   0,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s07",
+   1,
+   "form",
+   "c.religious_community"
+  ],
+  [
+   "cal.s09",
+   0,
+   "setting",
+   "s.nature"
+  ],
+  [
+   "cal.s10",
+   0,
+   "form",
+   "c.basic_skills"
+  ],
+  [
+   "cal.s10",
+   1,
+   "content",
+   "c.early_childhood_education"
+  ],
+  [
+   "cal.s11",
+   0,
+   "content",
+   "c.energy_systems"
+  ],
+  [
+   "cal.m01",
+   1,
+   "setting",
+   "s.self_care"
+  ],
+  [
+   "cal.m04",
+   0,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m04",
+   1,
+   "form",
+   "c.employment_transition"
+  ],
+  [
+   "cal.m06",
+   0,
+   "form",
+   "c.public_safety_emergency"
+  ],
+  [
+   "cal.m06",
+   1,
+   "form",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.m07",
+   1,
+   "form",
+   "c.healthcare_work"
+  ],
+  [
+   "cal.m09",
+   0,
+   "setting",
+   "s.social"
+  ],
+  [
+   "cal.m11",
+   0,
+   "form",
+   "c.management_executive"
+  ],
+  [
+   "cal.m11",
+   1,
+   "form",
+   "c.management_executive"
+  ],
+  [
+   "cal.d01",
+   0,
+   "form",
+   "c.cooking"
+  ],
+  [
+   "cal.d01",
+   1,
+   "form",
+   "c.cooking"
+  ],
+  [
+   "cal.d05",
+   1,
+   "form",
+   "c.socialising"
+  ]
+ ],
+ "cells_judged": {
+  "decoy": 32,
+  "required": 54,
+  "secondary": 202,
+  "single": 58
+ },
+ "decoy_hit_rate": 0.09375,
+ "floor": 5,
+ "gold": "v1",
+ "median_listed": {
+  "all": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 2.0,
+   "setting": 2.0
+  },
+  "decoy": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2.0
+  },
+  "multi": {
+   "content": 3.0,
+   "form": 3.0,
+   "outcome": 2.0,
+   "setting": 2
+  },
+  "single": {
+   "content": 2.0,
+   "form": 2.0,
+   "outcome": 1.0,
+   "setting": 2
+  }
+ },
+ "n_bad": 21,
+ "n_unjudged": 0,
+ "n_unsure": 16,
+ "padding_single": 0.29310344827586204,
+ "padding_single_complete": 0.29310344827586204,
+ "precision_judged": 0.8870967741935484,
+ "precision_secondary": 0.8168316831683168,
+ "predictions": {
+  "median_listed_multi_form_content_at_least_2": true,
+  "padding_single_at_most_0.10": false,
+  "padding_single_complete_at_most_0.25": false,
+  "precision_secondary_at_least_0.8": true
+ },
+ "prompt_version": 4,
+ "recall_required": 0.9629629629629629,
+ "unjudged_secondary": [],
+ "unsure_secondary": [
+  [
+   "cal.s04",
+   0,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s04",
+   1,
+   "form",
+   "c.political_participation"
+  ],
+  [
+   "cal.s06",
+   0,
+   "form",
+   "c.digital_tool_use"
+  ],
+  [
+   "cal.s06",
+   1,
+   "form",
+   "c.digital_tool_use"
+  ],
+  [
+   "cal.s08",
+   0,
+   "content",
+   "s.work"
+  ],
+  [
+   "cal.s08",
+   1,
+   "content",
+   "c.employment_job"
+  ],
+  [
+   "cal.s12",
+   0,
+   "setting",
+   "s.nature"
+  ],
+  [
+   "cal.s12",
+   1,
+   "content",
+   "c.outdoor_recreation"
+  ],
+  [
+   "cal.m01",
+   0,
+   "content",
+   "s.transitions"
+  ],
+  [
+   "cal.m02",
+   0,
+   "form",
+   "c.sales_marketing"
+  ],
+  [
+   "cal.m02",
+   0,
+   "setting",
+   "c.horticulture_farming"
+  ],
+  [
+   "cal.m06",
+   1,
+   "outcome",
+   "c.disaster_experience"
+  ],
+  [
+   "cal.d01",
+   0,
+   "form",
+   "c.entrepreneurship"
+  ],
+  [
+   "cal.d03",
+   0,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.d03",
+   1,
+   "content",
+   "c.eating_drinking"
+  ],
+  [
+   "cal.d07",
+   0,
+   "content",
+   "s.consumption"
+  ]
+ ]
+}

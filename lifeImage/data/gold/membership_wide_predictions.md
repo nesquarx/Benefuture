@@ -90,3 +90,14 @@ The pre-registered precision metric (unjudged and unsure count against) and the 
 ETA: judged when the lead has the four gold-judge answers files. Decision if 1 or 2 fails: the floor is not raised on this evidence alone; the remaining
 `bad` and `unsure` additions are the refinement candidates (LI.68) and the rubric text is the suspect. If 3 fails, the floor change from 4 to 5 bought nothing
 on the complete gold and is reconsidered by the author.
+
+## Gold completion judged (lead, 2026-11-27)
+`gold_judge.v1`: 71 unjudged (item, relation, domain) triples, 2 variants; agreed verdicts extend the gold as
+`membership_wide_controls_v1.jsonl`; 20 disputed (variants differ or unsure) await the author in
+`membership_wide_disputed_v1.md`, counted as unsure meanwhile. Re-scored against v1 gold:
+v4: precision (pre-registered metric) 0.817 (>= 0.8, **met**); padding on single-domain controls, complete definition (gold-bad
+or unsure) 0.293 (<= 0.25, **failed**, narrowly; the 20 disputes count as unsure here); recall 0.963; judged bad 21; decoy hits
+0.094. v3: precision 0.777, padding 0.431, recall 0.926, bad 26, decoy hits 0.125. v3 worse than v4 on both (**met**). The
+completed gold found more bad secondaries than the v0 gold implied (v4: 3 -> 21), so precision among judged fell to 0.887; the
+pre-registered metric rose because nothing is unjudged now. The padding verdict may change once the author rules on the 20
+disputes; it is not re-judged until then.
