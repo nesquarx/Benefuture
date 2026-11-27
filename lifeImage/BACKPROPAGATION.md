@@ -163,6 +163,26 @@ deleted. Numbering is stable (LI.n).
   only 1.85x). Diagnosis of the two-pass recall loss (`data/gold/two_pass_diagnosis.md`): most of it is pass 2 allocating a label to one fine domain; the
   hybrid `map.v2` (memberships from the event text with the blind labels as hints, a label matching several domains, `unlabelled_add`) is built, not run
   (`data/gold/two_pass_predictions.md`, hybrid section). Pair coverage beyond 1.85x needs more listed domains per event (a wider prompt or more variants).
+- **LI.71** (2026-11-27; author, refines LI.22, LI.51, LI.67, LI.70) How domains and categorisation work:
+  - Each relation is its own facet: form is the type of act (sale, retail, exchange, financial transaction); content is the
+    things and interactions involved (bread, baked goods, food, direct person-to-person transaction); outcome is the concrete
+    change of state for each party (money in, inventory spent; ticket obtained, seat booked, promise held); setting is the
+    venue and sphere as far as the statement gives it (market, stall, point of sale, retail, commerce; otherwise unknown). The
+    key action decides, not the actor's name or occupation. A domain may sit in several relations when it truly applies to
+    each, but not by default.
+  - Agents list categories from the most specific to the most generic, weight decreasing; the leafier the better, since
+    parents and major relatives follow from the classification.
+  - Domains form a graph, not a tree: a leaf can have several parents (a ticket is a document, a booking and a promissory
+    note, and not a subdomain of travel, since tickets exist for other things), and senses are distinct domains (an issue
+    ticket is a separate thing). Bread is a subdomain of baked goods, itself of food.
+  - On the image a leaf colours its own pattern strongly at the edge, with some bleed to its parents and relations as the
+    classification provides.
+  - Worked examples (author's blind categories, decreasing weight): "A baker sells bread at the market": form sale, retail,
+    exchange, financial transaction; content bread, baked goods, food, direct human-to-human transaction; outcome money
+    input, inventory spent; setting market, stall/store/shop, point of sale, retail, commerce, business. "A woman buys a train
+    ticket": form purchase, booking, travel planning, logistics; content ticket/pass, receipt, train, public transportation;
+    outcome ticket obtained, promise obtained, seat booked, documentation; setting point of sale (rest unknown). PLAN,
+    prompts, DESIGN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
