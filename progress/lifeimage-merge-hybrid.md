@@ -1,6 +1,6 @@
 # lifeimage-merge-hybrid
 
-Status: IN PROGRESS
+Status: DONE
 
 ## Goal and acceptance checks
 Task A: support-weighted union merge (rule `support_union`, old `intersection` kept by name) for membership_wide and two_pass; governed
@@ -22,11 +22,17 @@ See the two predictions files (registered before scoring).
 - Task A done: red tests (tests/test_merge_union.py), merge rules in membership_wide.py (`rule=`), `merged_calibration_report`, tool `judge-merged`, kinds and snippets re-ingested;
   verdicts in membership_wide_predictions.md (1-4 met, 5 pair coverage failed at the ceiling: pure union 1.85x).
 
-## In progress / Next
-Task B (map.v2): red tests, prompt, validator (version-aware), builder, ingest, report, batches.
+- Task B done except final full-suite check: prompts/map.v2.md, validate_map_answer(version=2) + unlabelled_add, two_pass (pilot_map_batches, table_path, unlabelled_adds,
+  report with per-variant and merged recall), tools/build_two_pass.py --version/--gold/--merge, schema, tests/test_map_v2.py (23), predictions registered before
+  implementation. map.v2 batches built (not run): lifeImage/data/batches/map.v2.{controls,snippets}.var{0,1}.part0.jsonl (gitignored; rebuild with
+  `python3 lifeImage/tools/build_two_pass.py map --version 2`).
+- map.v1 under the new merge on the controls (gold v1): intersection recall 0.619, union 0.741 (precision 0.607).
+
+## In progress / Next (full default tier: 1509 passed)
+Full default tier green, commit, push, mark DONE. Lead runs map.v2 batches then `build_two_pass.py ingest --version 2` and `judge --version 2`.
 
 ## Files touched
-lifeimage/governed.py, lifeimage/membership_wide.py, lifeimage/refinement.py, lifeimage/two_pass.py, tools/build_membership_wide.py, tests/test_merge_union.py, tests/test_membership_wide.py, tests/test_two_pass.py, README.md, data/gold/membership_wide_predictions.md, data/gold/membership_wide_merged_*.json, data/events/*_memberships_v1.jsonl, data/answers/escalations.membership_wide.*.jsonl
+lifeimage/validate.py, schemas/answer.schema.json, prompts/map.v2.md, tests/test_map_v2.py, tools/build_two_pass.py, data/gold/two_pass_predictions.md, BACKPROPAGATION.md, data/events/two_pass_memberships_v1.jsonl, data/answers/escalations.two_pass.jsonl, lifeimage/governed.py, lifeimage/membership_wide.py, lifeimage/refinement.py, lifeimage/two_pass.py, tools/build_membership_wide.py, tests/test_merge_union.py, tests/test_membership_wide.py, tests/test_two_pass.py, README.md, data/gold/membership_wide_predictions.md, data/gold/membership_wide_merged_*.json, data/events/*_memberships_v1.jsonl, data/answers/escalations.membership_wide.*.jsonl
 
 ## Resume
 cd /home/user/Benefuture/lifeImage && python3 -m pytest -q tests/test_membership_wide.py tests/test_two_pass.py

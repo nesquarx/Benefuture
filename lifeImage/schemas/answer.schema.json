@@ -23,6 +23,7 @@
     "blind": {"type": "object"},
     "relational": {"type": "object"},
     "labels": {"type": "array", "items": {"type": "object"}},
+    "unlabelled_add": {"type": "array", "items": {"type": "object"}},
     "reason": {"type": "string", "minLength": 1, "pattern": "^[^\\n]*$"},
     "run_id": {"type": "string"}
   }

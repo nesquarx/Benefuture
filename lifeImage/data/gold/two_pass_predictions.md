@@ -45,3 +45,30 @@ domains 0.630 against v4's 0.963 (>= 0.913 required: **failed**, by a wide margi
 rarely agree on the full list, and the merge keeps only domains both variants listed. 42 noise labels, 44 unmatched.
 Not yet diagnosed: whether recall is lost in pass 1 (blind labels never name the required category), in pass 2 (labels named
 but mapped elsewhere or below the floor), or in the merge (each variant has the domain, not both).
+
+## Hybrid pass 2 `map.v2` (pre-registered 2026-11-27, before any map.v2 answer exists; LI.70 refined by `data/gold/two_pass_diagnosis.md`; confidence 0.55 for the set)
+
+Rule under test: pass 1 `blind.v1` unchanged (its answers are reused); pass 2 `map.v2` (`prompts/map.v2.md`) builds the memberships by the v4 rule (floor 5)
+from the event text over the whole pack, with the blind labels as hints; a label may match several domains (a fine domain and its coarse parent;
+one `match` entry per domain); a listed domain no label of that relation matched is an `unlabelled_add` (obvious domains only); synonym logging and the
+review of unmatched labels (`new_domain_candidate`, `noise`) stay. Variants merged by the support-weighted union (`membership.single_support_floor`,
+`data/gold/membership_wide_predictions.md`). Judged over the 32 controls against gold v1 and the 50 snippets for the ledgers; map.v1 stays reproducible
+(`--version 1`). Batches: `python3 lifeImage/tools/build_two_pass.py map --version 2` (`data/batches/map.v2.{controls,snippets}.var{0,1}.part0.jsonl`),
+judged by `build_two_pass.py judge --version 2`. Base: v4 one pass, per variant 0.963 (26 of 27 cells), merged 0.963; map.v1 per variant 0.630.
+
+| # | Prediction | Metric | Smallest effect that matters |
+|---|------------|--------|------------------------------|
+| 1 | Per-variant recall returns to the v4 range | recall of gold `required` per variant (27 cells each), each variant | >= 0.913 (v4 0.963 minus 0.05); expected 0.925 to 0.963 |
+| 2 | Merged recall at least as good | recall of `required` of the merged lists (support-weighted union) | >= 0.926 (25 of 27) |
+| 3 | Judged secondaries stay real | share of judged secondaries (gold fair against bad), per variant | >= 0.95 |
+| 4 | Escalations bounded | controls escalated under the merge (v4 21 of 32; map.v1 28 of 32) | <= 24 of 32 |
+| 5 | Blind labels still reveal synonyms | distinct (label, domain) synonym pairs over the 82 pilot items (map.v1: 488) | >= 10 |
+| 6 | Blind labels still reveal missing domains | distinct non-noise new-domain candidates, source `blind_unmatched` | >= 3 |
+
+Also reported, no prediction attached: merged `precision_secondary` (gold v1, unjudged and unsure against) and padding (complete definition), the number of
+`unlabelled_add` entries (and per relation), the share of labels matched to more than one domain, agreement of the variants, the median listed per relation.
+Adapted from the diagnosis's pre-registered line: the diagnosis fixed per-variant recall >= 0.913, judged precision >= 0.95, at most 24 of 32 controls
+escalated, at least 10 synonyms and 3 candidates (0.55); this section adds the merged recall (2) because the merge is now the support-weighted union.
+Decision if 1 fails: the hybrid is no better than the one-label-one-domain mapper; run v4 one pass beside blind labels (pass 1 as a logger only) rather than
+extend pass 2. If 3 fails: the unlabelled additions over-reach (check their share of the secondaries). If 4 fails: escalation is a property of two short
+lists, not of the mapper; report it and do not tune the agreement floor on this pilot.

@@ -11,6 +11,11 @@ Pass 2 reads only validated pass-1 answers, and its input hash includes the pass
 pass 1, so the two chains stay independent; the variants of pass 2 differ in pack order, those of pass 1 in the order the relations are
 read (the prefix is otherwise one stable text, for cache hits; every variable part is in the task lines).
 
+Pass 2 `map.v2` (LI.70 refined by `data/gold/two_pass_diagnosis.md`, the hybrid): the memberships are built by the v4 rule from the event text over
+the whole pack, the blind labels being hints; a label may match several domains (a fine domain and its coarse parent: one `match` entry each), and
+a listed domain no label of its relation matched is named in `unlabelled_add`. Synonym logging and the review of unmatched labels stay. `map.v1`
+(one label, one domain, memberships from matched domains only) stays reproducible (`MAP_VERSION`, the default; `LATEST_MAP_VERSION` is v2).
+
 The ingest merges the 2 variants (agreement as confidence, escalation on disagreement) into a memberships table, aggregates the synonyms
 (blind label to domain, with counts and match confidence) into `data/refinement/synonyms_v1.jsonl` (feeds domain aliases), and writes the
 candidate new domains to the refinement log with source `blind_unmatched` (LI.68, LI.69). Candidates and noise never enter memberships.
@@ -24,7 +29,7 @@ from .canonical import canonical_json, content_hash
 from .governed import governed, membership_fit_floor
 from .membership import DEFAULT_OUT, MODEL
 from .membership_wide import (REFINEMENT_DIR as _MW_REFINEMENT_DIR, calibration_items, calibration_report, merge_item,  # noqa: F401
-                              answers_by_item, snippet_items)
+                              merged_calibration_report, answers_by_item, snippet_items)
 from .packs import domain_pack, pack_entries  # noqa: F401
 from .refinement import RELS, append_candidates, blind_unmatched_record, log_candidates, read_log, text_hash
 from .tasks import DEFAULT_PROMPTS
@@ -33,7 +38,8 @@ from .validate import (BLIND_RELS, ValidationError, blind_refs, domain_ids_in, n
 
 ROOT = Path(__file__).resolve().parent.parent
 BLIND_TASK, MAP_TASK = "blind", "map"
-BLIND_VERSION = MAP_VERSION = 1
+BLIND_VERSION = MAP_VERSION = 1  # the defaults keep the first versions reproducible
+LATEST_MAP_VERSION = 2  # the hybrid pass 2 (`prompts/map.v2.md`): memberships from the event text, labels as hints
 VARIANTS = 2
 MAX_TASKS = 50
 PILOT_SNIPPETS = 50
@@ -42,6 +48,26 @@ SYNONYMS = ROOT / "data" / "refinement" / "synonyms_v1.jsonl"
 TABLE = ROOT / "data" / "events" / "two_pass_memberships_v1.jsonl"
 ESCALATIONS = ROOT / "data" / "answers" / "escalations.two_pass.jsonl"
 REPORT = ROOT / "data" / "gold" / "two_pass_report.json"
+
+
+def _versioned(path, version):
+    if version == 1:
+        return path
+    name = path.name
+    return path.with_name(name.replace("_v1.", f"_v{version}.") if "_v1." in name else f"{path.stem}.v{version}{path.suffix}")
+
+
+def table_path(version=MAP_VERSION):
+    """The memberships table of a pass-2 prompt version (the v1 table keeps its path)."""
+    return _versioned(TABLE, version)
+
+
+def escalation_path(version=MAP_VERSION):
+    return _versioned(ESCALATIONS, version)
+
+
+def report_path(version=MAP_VERSION):
+    return REPORT if version == 1 else REPORT.with_name(f"two_pass_report_v{version}.json")
 COARSE_CARDS = ROOT / "data" / "coarse" / "seed_v3.jsonl"
 FINE_CARDS = ROOT / "data" / "fine" / "fine_v1.jsonl"
 READING_ORDER = {0: ("form", "content", "outcome", "setting"), 1: ("setting", "outcome", "content", "form")}
@@ -166,6 +192,23 @@ def write_map_batches(name, batches, out_dir=DEFAULT_OUT, prompt_version=MAP_VER
     return _write(name, MAP_TASK, prompt_version, batches, out_dir)
 
 
+def pilot_map_batches(version=LATEST_MAP_VERSION, out_dir=DEFAULT_OUT, blind_dir=DEFAULT_OUT, cards=None):
+    """Write the pass-2 pilot batches (`map.v<version>.{controls,snippets}`, 2 variants, at most 50 per file) from the validated pass-1 answers in
+    `blind_dir`; returns the paths. Raises ValueError when a pass-1 answers file is missing."""
+    cards = load_domain_cards() if cards is None else cards
+    paths = []
+    for name in pilot_items():
+        pairs = []
+        for v in range(VARIANTS):
+            bp = Path(blind_dir) / f"{BLIND_TASK}.v{BLIND_VERSION}.{name}.var{v}.part0.jsonl"
+            ap = bp.with_name(bp.name.replace(".jsonl", ".answers.jsonl"))
+            if not ap.exists():
+                raise ValueError(f"pass-1 answers missing: {ap.name}")
+            pairs.append((bp, ap))
+        paths += write_map_batches(name, build_map_batches(pairs, cards, prompt_version=version), out_dir, version)
+    return paths
+
+
 # ---- merging ----
 def merge_blind(key, variant_answers):
     """Merge the variants' pass-1 answers of one item: per relation the labels (normalised, with the mean fit over the variants that gave
@@ -222,7 +265,8 @@ def synonym_cells(task, answer):
     for e in answer["labels"]:
         if e["action"] == "match":
             rel, blind = refs[e["ref"]]
-            out[f"{item}|v{v}|{ah}|{e['ref']}"] = {"label": norm_label(blind["label"]), "domain": e["domain"], "relation": rel,
+            cell = f"{item}|v{v}|{ah}|{e['ref']}" + (f"|{e['domain']}" if answer["prompt_version"] >= 2 else "")  # v2: a label may match several domains
+            out[cell] = {"label": norm_label(blind["label"]), "domain": e["domain"], "relation": rel,
                                                   "kind": e["kind"], "match": e["match"], "item": item}
     return out
 
@@ -259,6 +303,17 @@ def blind_candidates(task, answer):
             for e in answer["labels"] if e["action"] == "new_domain_candidate"]
 
 
+def unlabelled_adds(variant_answers):
+    """{relation: {domain: share of the variants naming it an `unlabelled_add`}} of one item's pass-2 answers (empty before `map.v2`)."""
+    k = len(variant_answers)
+    out = {}
+    for _, a in sorted(variant_answers.items()):
+        for e in a.get("unlabelled_add", []):
+            out.setdefault(e["relation"], {}).setdefault(e["domain"], 0)
+            out[e["relation"]][e["domain"]] += 1 / k
+    return {r: dict(sorted(d.items())) for r, d in sorted(out.items())}
+
+
 # ---- the ingest ----
 def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYNONYMS, escalation_path=ESCALATIONS, refinement_dir=None,
                     variants=VARIANTS, merge=None):
@@ -289,6 +344,8 @@ def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYN
         row["blind"] = {"labels": mb["labels"], "confidence": mb["confidence"]}
         row["relational"] = {str(v): blind[key][v][1]["relational"] for v in sorted(per)}
         row["pass"] = "two_pass"
+        row["map_version"] = next(iter(per.values()))[1]["prompt_version"]
+        row["unlabelled_add"] = unlabelled_adds({v: a for v, (_, a) in per.items()})
         row["escalate_reasons"] = row["escalate_reasons"] + [f"blind {r}" for r in mb["escalate_reasons"]]
         row["escalate"] = bool(row["escalate_reasons"])
         rows.append(row)
@@ -304,33 +361,56 @@ def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYN
 
 
 # ---- the judge ----
-def two_pass_report(controls, blind_by_item, map_by_item, *, synonyms, candidates, v4_recall, floor=None):
+def two_pass_report(controls, blind_by_item, map_by_item, *, synonyms, candidates, v4_recall, floor=None, complete_gold=False):
     """Judge the pre-registered predictions (`data/gold/two_pass_predictions.md`). `blind_by_item`, `map_by_item`: {item: {variant: (text,
     answer)}}. Recall of the gold-required domains and precision among judged secondaries come from the v4 calibration judge applied to the
-    pass-2 memberships; synonyms are the distinct (label, domain) pairs of kind synonym; candidates the distinct proposed new domains of the
-    refinement records of source `blind_unmatched` (every one reviewed non-noise by the mapper); pass-1 labels are checked structurally."""
+    pass-2 memberships, pooled over the variants (`recall_required`), for each variant (`recall_by_variant`) and for the merged lists
+    (`recall_required_merged`, the default merge rule); synonyms are the distinct (label, domain) pairs of kind synonym; candidates the
+    distinct proposed new domains of the refinement records of source `blind_unmatched` (every one reviewed non-noise by the mapper); pass-1
+    labels are checked structurally; `escalated_controls` counts the controls the merge escalates, `unlabelled_adds` the `unlabelled_add`
+    entries of map.v2 answers (0 for map.v1)."""
     floor = membership_fit_floor(4) if floor is None else floor
-    rep = calibration_report(controls, map_by_item, floor=floor, prompt_version=4)
+    rep = calibration_report(controls, map_by_item, floor=floor, prompt_version=4, complete_gold=complete_gold)
+    variants = sorted({v for per in map_by_item.values() for v in per})
+    by_variant = {}
+    for v in variants:
+        one = {k: {v: per[v]} for k, per in map_by_item.items() if v in per}
+        by_variant[v] = calibration_report(controls, one, floor=floor, prompt_version=4, complete_gold=complete_gold)["recall_required"]
+    merged = merged_calibration_report(controls, map_by_item, floor=floor, prompt_version=4, complete_gold=complete_gold)
+    cids = {c["id"] for c in controls}
+    escalated = sum(1 for k, per in map_by_item.items() if k in cids and len(per) > 1
+                    and merge_item(k, "", {v: a for v, (_, a) in per.items()})["escalate"])
     ids = sum(len(domain_ids_in(s)) for per in blind_by_item.values() for _, (_, a) in per.items()
               for s in _strings_of(a))
     syn = {(s["label"], s["domain"]) for s in synonyms if s["kinds"].get("synonym")}
     new = {c["domain"] for c in candidates if c["source"] == "blind_unmatched"}
-    noise = sum(1 for per in map_by_item.values() for _, (_, a) in per.items() for e in a["labels"] if e["action"] == "noise")
-    unmatched = sum(1 for per in map_by_item.values() for _, (_, a) in per.items() for e in a["labels"] if e["action"] != "match")
-    rec, prec = rep["recall_required"], rep["precision_judged"]
-    return {
-        "recall_required": rec, "recall_v4": v4_recall, "precision_judged": prec, "precision_secondary": rep["precision_secondary"],
+    answers = [a for per in map_by_item.values() for _, (_, a) in per.items()]
+    noise = sum(1 for a in answers for e in a["labels"] if e["action"] == "noise")
+    unmatched = sum(1 for a in answers for e in a["labels"] if e["action"] != "match")
+    adds = sum(len(a.get("unlabelled_add", [])) for a in answers)
+    rec, prec, mrec = rep["recall_required"], rep["precision_judged"], merged["recall_required"]
+    out = {
+        "recall_required": rec, "recall_by_variant": by_variant, "recall_required_merged": mrec,
+        "precision_secondary_merged": merged["precision_secondary"], "padding_single_merged": merged["padding_single"],
+        "recall_v4": v4_recall, "precision_judged": prec, "precision_secondary": rep["precision_secondary"],
         "n_unjudged": rep["n_unjudged"], "n_bad": rep["n_bad"], "median_listed": rep["median_listed"],
         "distinct_synonyms": len(syn), "new_domain_candidates": len(new), "noise_labels": noise, "unmatched_labels": unmatched,
+        "unlabelled_adds": adds, "escalated_controls": escalated, "controls": len(cids & set(map_by_item)),
         "pass1_domain_ids": ids, "items": len(map_by_item),
         "predictions": {
             "recall_at_least_v4_minus_0.05": rec is not None and rec >= v4_recall - 0.05,
+            "recall_each_variant_at_least_0.913": bool(by_variant) and all(r is not None and r >= 0.913 for r in by_variant.values()),
+            "recall_merged_at_least_0.926": mrec is not None and mrec >= 0.926,
             "precision_judged_at_least_0.95": prec is not None and prec >= 0.95,
+            "escalated_controls_at_most_24_of_32": escalated <= 24,
             "at_least_10_synonyms": len(syn) >= 10,
             "at_least_3_candidates": len(new) >= 3,
             "pass1_labels_never_contain_domain_ids": ids == 0,
         },
     }
+    if complete_gold:
+        out["padding_single_complete_merged"] = merged["padding_single_complete"]
+    return out
 
 
 def _strings_of(answer):

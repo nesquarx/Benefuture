@@ -156,6 +156,13 @@ deleted. Numbering is stable (LI.n).
   pass 2 rejects ids outside the pack, unranked or below-floor lists, domains no blind label matched and unmatched labels without a review),
   synonym log `data/refinement/synonyms_v1.jsonl`, refinement source `blind_unmatched`; the pass-2 pack carries the 1,897 coarse and fine domains
   (about 62k tokens); predictions in `data/gold/two_pass_predictions.md` (pilot: the 32 controls and 50 snippets). Adoption waits for the pilot.
+  Merge and hybrid (2026-11-27, lead decision under LI.67 and LI.68; not yet an author ruling): the variants' lists are merged by a support-weighted union
+  (`membership.single_support_floor` 0.2; a lone variant's domain below it goes to the refinement log as `disputed`), the intersection kept by name;
+  judged on the v4 calibration (recall 0.963, precision 0.881, padding 0.138 against 0.96, 0.80, 0.35: met) and on the kinds and snippets (median
+  listed 2 in form and content: met; field-pair coverage 0.93% against the pre-registered 3x of 0.655%: failed, the pure union of the two variants reaches
+  only 1.85x). Diagnosis of the two-pass recall loss (`data/gold/two_pass_diagnosis.md`): most of it is pass 2 allocating a label to one fine domain; the
+  hybrid `map.v2` (memberships from the event text with the blind labels as hints, a label matching several domains, `unlabelled_add`) is built, not run
+  (`data/gold/two_pass_predictions.md`, hybrid section). Pair coverage beyond 1.85x needs more listed domains per event (a wider prompt or more variants).
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels

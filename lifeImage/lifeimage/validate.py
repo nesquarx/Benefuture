@@ -361,18 +361,22 @@ def blind_refs(task):
     return out
 
 
-def validate_map_answer(answer, task, entries, floor=None):
+def validate_map_answer(answer, task, entries, floor=None, version=1):
     """A pass-2 answer: verdict "map"; `types` and `ranks` obey the ranked stopping rule at the v4 floor over ids of the pack (all four
     relations may be null when nothing matched); `labels` holds exactly one entry per blind label of the task: a `match` (pack id, kind
     exact or synonym, `match` confidence strictly between 0 and 1; `exact` only when the label equals the domain's label or an alias), a
     `new_domain_candidate` (proposed_label, gloss, 1-3 nearest ids, a coarse or sector parent) or a `noise` (reason). Every domain of
-    `types[rel]` must be matched by a blind label of that relation: an unanchored domain is not a two-pass membership."""
+    `types[rel]` must be matched by a blind label of that relation: an unanchored domain is not a two-pass membership.
+
+    `version` 2 (`map.v2`, the hybrid): a label may have several `match` entries (distinct domains: a fine domain and its coarse parent), a
+    `new_domain_candidate` or a `noise` is its only entry; the answer also carries `unlabelled_add`, a list of `{relation, domain}` naming
+    every listed domain that no label of its relation matched (and only those): a listed domain is anchored by a label or named there, never both."""
     if floor is None:
         from .governed import membership_fit_floor
         floor = membership_fit_floor(4)
     if answer.get("verdict") != "map":
         raise ValidationError(f"map verdict must be 'map', not {answer.get('verdict')!r}")
-    for k in ("types", "ranks", "labels"):
+    for k in ("types", "ranks", "labels") + (("unlabelled_add",) if version >= 2 else ()):
         if k not in answer:
             raise ValidationError(f"a map answer needs {k}")
     ids = set(entries)
@@ -382,14 +386,16 @@ def validate_map_answer(answer, task, entries, floor=None):
     if not isinstance(labels, list):
         raise ValidationError("labels must be a list with one entry per blind label")
     seen, matched = set(), {r: set() for r in BLIND_RELS}
+    pairs, review = set(), set()
     for e in labels:
         if not isinstance(e, dict) or not isinstance(e.get("ref"), str):
             raise ValidationError("each label entry needs a ref")
         ref = e["ref"]
         if ref not in refs:
             raise ValidationError(f"unknown ref {ref!r}")
-        if ref in seen:
-            raise ValidationError(f"ref {ref!r} appears twice")
+        multi = version >= 2 and e.get("action") == "match" and ref in seen and ref not in review
+        if ref in seen and not multi:
+            raise ValidationError(f"ref {ref!r} appears twice" + (" (a new_domain_candidate or a noise is the only entry of its ref)" if version >= 2 else ""))
         seen.add(ref)
         rel, blind = refs[ref]
         act = e.get("action")
@@ -411,8 +417,12 @@ def validate_map_answer(answer, task, entries, floor=None):
             ent = entries[e["domain"]]
             if e["kind"] == "exact" and norm_label(blind["label"]) not in {norm_label(ent["label"]), *map(norm_label, ent["aliases"])}:
                 raise ValidationError(f"{ref}: kind exact, but {blind['label']!r} equals neither the label nor an alias of {e['domain']} (use synonym)")
+            if (ref, e["domain"]) in pairs:
+                raise ValidationError(f"{ref}: {e['domain']} appears twice for the same label (duplicate match)")
+            pairs.add((ref, e["domain"]))
             matched[rel].add(e["domain"])
         elif act == "new_domain_candidate":
+            review.add(ref)
             for k in ("proposed_label", "gloss"):
                 if not _line(e[k]):
                     raise ValidationError(f"{ref}: {k} must be a non-empty line")
@@ -424,16 +434,44 @@ def validate_map_answer(answer, task, entries, floor=None):
                     raise ValidationError(f"{ref}: {i} is not in the pack")
             if not e["parent"].startswith(("c.", "s.")):
                 raise ValidationError(f"{ref}: parent {e['parent']} must be a coarse field or a sector")
-        elif not _line(e["reason"]):
-            raise ValidationError(f"{ref}: a noise entry needs a one-line reason")
+        else:
+            review.add(ref)
+            if not _line(e["reason"]):
+                raise ValidationError(f"{ref}: a noise entry needs a one-line reason")
     missing = sorted(set(refs) - seen)
     if missing:
         raise ValidationError(f"every blind label needs exactly one entry (a match or a review); none for {missing}")
+    added = _validate_unlabelled(answer, ids, matched) if version >= 2 else set()
     for rel in BLIND_RELS:
         for d in answer["types"][rel] or {}:
-            if d not in matched[rel]:
-                raise ValidationError(f"{rel}: {d} is anchored by no blind label of {rel}")
+            if d not in matched[rel] and (rel, d) not in added:
+                raise ValidationError(f"{rel}: {d} is anchored by no blind label of {rel} and is not named in unlabelled_add")
     return answer
+
+
+def _validate_unlabelled(answer, ids, matched):
+    """The set of (relation, domain) of a map.v2 answer's `unlabelled_add`: a list of exactly-keyed entries naming domains listed in `types`
+    of that relation that no label of the relation matched, each once."""
+    add = answer["unlabelled_add"]
+    if not isinstance(add, list):
+        raise ValidationError("unlabelled_add must be a list (empty when none)")
+    out = set()
+    for e in add:
+        if not isinstance(e, dict) or set(e) != {"relation", "domain"}:
+            raise ValidationError("each unlabelled_add entry needs exactly the keys ['domain', 'relation']")
+        rel, d = e["relation"], e["domain"]
+        if rel not in BLIND_RELS:
+            raise ValidationError(f"unlabelled_add: relation {rel!r} is not in {list(BLIND_RELS)}")
+        if d not in ids:
+            raise ValidationError(f"unlabelled_add: {d} is not in the pack")
+        if d not in (answer["types"][rel] or {}):
+            raise ValidationError(f"unlabelled_add: {d} is not listed in types of {rel}")
+        if d in matched[rel]:
+            raise ValidationError(f"unlabelled_add: {d} is matched by a label of {rel}; it is not unlabelled, remove it from unlabelled_add")
+        if (rel, d) in out:
+            raise ValidationError(f"unlabelled_add: {rel} {d} appears twice (duplicate)")
+        out.add((rel, d))
+    return out
 
 
 EXTRACT_KEYS = {"span", "relation", "channel", "magnitude", "valid_time", "types"}
@@ -589,7 +627,7 @@ def validate_answers(batch_lines, answer_lines):
                 errors.append(f"line {n}: {e}")
         if mapping:
             try:
-                validate_map_answer(a, t, entries)
+                validate_map_answer(a, t, entries, version=header["prompt_version"])
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
         if membership:
