@@ -665,7 +665,6 @@ end
     @info "P63 heavy: all-domains gate stalls" stalls = stalls below_bar = below of = length(seeds)
     @test proportion_interval(stalls, length(seeds); z = 2.0).lo > 0.5                  # the stall as an outcome: a majority of seeds, with its interval
 end
-end
 
 # 8.177 (P65, heavy): the resolution margin binds per domain in the composed world (bar rule :murphy, dormant flags, four domains, 75 steps, seeds 1:3): an unreachable margin
 # (0.95 of a domain's uncertainty) on domain 1 holds domains in score-only start that calibration alone (margin 0) releases; the economy still opens through the others.

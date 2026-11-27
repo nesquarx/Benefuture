@@ -141,6 +141,14 @@ deleted. Numbering is stable (LI.n).
   domains an agent lists that the gold set neither accepts nor rejects, and rejected domains just below the floor, go to a
   refinement log (item, relation, domain, fit, agent, variant) feeding gold-set completion, new fine domains and
   domain-domain links; they never enter memberships without passing the floor. PLAN.
+- **LI.69** (2026-11-27; author, refines LI.67, LI.68) Membership v4 is adopted provisionally; the 55 domains its calibration
+  gold neither accepts nor rejects are judged by runners, the author reviewing only disputed cases, and v4 is re-scored against
+  the completed gold. Logging suggested (plausible) domains as refinement candidates is constant: every categorising or
+  extraction run writes them. PLAN.
+- **LI.70** (2026-11-27; author, refines LI.67, LI.68) Extraction runs in two passes. Pass 1 (blind): an agent suggests the
+  event's possible categories without seeing the existing domains. Pass 2: an agent with the domain set allocates the matches,
+  logs synonyms (blind label to domain) and reviews the non-matching suggestions as candidate new domain entries (to the
+  refinement log). PLAN, prompts.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
