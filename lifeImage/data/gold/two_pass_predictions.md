@@ -72,3 +72,13 @@ escalated, at least 10 synonyms and 3 candidates (0.55); this section adds the m
 Decision if 1 fails: the hybrid is no better than the one-label-one-domain mapper; run v4 one pass beside blind labels (pass 1 as a logger only) rather than
 extend pass 2. If 3 fails: the unlabelled additions over-reach (check their share of the secondaries). If 4 fails: escalation is a property of two short
 lists, not of the mapper; report it and do not tune the agreement floor on this pilot.
+
+## map.v2 (hybrid) judged (lead, 2026-11-27)
+Same pass-1 answers; pass 2 by the v4 rule from the event text with blind labels as hints; support-weighted union merge.
+Recall of required: variant 0 0.778, variant 1 0.741 (>= 0.913 each: **failed**), merged 0.741 (>= 0.926: **failed**); map.v1 was
+0.630 per variant. Precision among judged secondaries 0.884 (>= 0.95: **failed**; 13 bad, 55 not in gold v1). Controls escalated
+27 of 32 (<= 24: **failed**). Synonyms 793 distinct cells and new-domain candidates 11 on controls (13 overall), noise labels 8,
+unlabelled adds 8 (met). Pass-1 domain ids 0 (met). The hybrid recovered about a third of the gap to one-pass v4 (recall 0.963,
+judged precision 0.887 on gold v1) and none of the precision. Reading: two-pass is weaker than one-pass for allocating
+memberships, and strong for discovery (synonyms, new-domain candidates). Lead's proposal to the author: memberships from the
+one-pass v4 prompt; the blind pass kept for discovery only, its labels logged as synonyms and candidates (LI.68-70).

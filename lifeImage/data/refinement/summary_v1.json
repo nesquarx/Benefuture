@@ -1,7 +1,7 @@
 {
- "records": 2432,
+ "records": 2440,
  "by_source": {
-  "blind_unmatched": 5,
+  "blind_unmatched": 13,
   "disputed": 716,
   "near_floor": 1597,
   "unjudged": 114
@@ -9,6 +9,9 @@
  "by_version_source": {
   "v1": {
    "blind_unmatched": 5
+  },
+  "v2": {
+   "blind_unmatched": 8
   },
   "v3": {
    "disputed": 83,
@@ -1452,6 +1455,13 @@
    },
    "items": 1
   },
+  "new:age_grade_progression": {
+   "appearances": 2,
+   "by_source": {
+    "blind_unmatched": 2
+   },
+   "items": 2
+  },
   "new:child_health": {
    "appearances": 2,
    "by_source": {
@@ -1599,7 +1609,35 @@
    },
    "items": 1
   },
+  "new:disclosure_of_abuse": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
   "new:food_hygiene": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:food_hygiene_and_safety": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:food_safety": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:home_security": {
    "appearances": 1,
    "by_source": {
     "blind_unmatched": 1
@@ -1614,6 +1652,20 @@
    "items": 1
   },
   "new:public_road_clearance": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:public_speaking": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:reporting_violence_to_authorities": {
    "appearances": 1,
    "by_source": {
     "blind_unmatched": 1
@@ -5220,6 +5272,11 @@
    "count": 2
   },
   {
+   "candidate": "new:age_grade_progression",
+   "listed": "c.school_education",
+   "count": 2
+  },
+  {
    "candidate": "new:child_health",
    "listed": "c.physical_health",
    "count": 2
@@ -8190,6 +8247,11 @@
    "count": 1
   },
   {
+   "candidate": "new:disclosure_of_abuse",
+   "listed": "c.domestic_abuse",
+   "count": 1
+  },
+  {
    "candidate": "new:food_hygiene",
    "listed": "c.cooking",
    "count": 1
@@ -8197,6 +8259,36 @@
   {
    "candidate": "new:food_hygiene",
    "listed": "c.hygiene_grooming",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_hygiene_and_safety",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_hygiene_and_safety",
+   "listed": "c.hygiene_grooming",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_safety",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_safety",
+   "listed": "c.public_health_science",
+   "count": 1
+  },
+  {
+   "candidate": "new:home_security",
+   "listed": "c.home_repair_diy",
+   "count": 1
+  },
+  {
+   "candidate": "new:home_security",
+   "listed": "c.theft_property_crime",
    "count": 1
   },
   {
@@ -8217,6 +8309,26 @@
   {
    "candidate": "new:public_road_clearance",
    "listed": "c.road_safety",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_speaking",
+   "listed": "c.performing_arts",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_speaking",
+   "listed": "c.political_participation",
+   "count": 1
+  },
+  {
+   "candidate": "new:reporting_violence_to_authorities",
+   "listed": "c.domestic_abuse",
+   "count": 1
+  },
+  {
+   "candidate": "new:reporting_violence_to_authorities",
+   "listed": "c.policing_enforcement",
    "count": 1
   },
   {
