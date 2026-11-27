@@ -1,0 +1,31 @@
+{
+ "author_match_share": {
+  "content": 0.9375,
+  "form": 1.0,
+  "outcome": 0.9583333333333334,
+  "setting": 0.7142857142857143
+ },
+ "author_match_strict": {
+  "content": 0.9375,
+  "form": 1.0,
+  "outcome": 0.9166666666666666,
+  "setting": 0.5714285714285714
+ },
+ "cooking_in_d01_form_or_content": 0,
+ "median_labels": {
+  "content": 4.0,
+  "form": 4.0,
+  "outcome": 4.0
+ },
+ "n_answers": 64,
+ "n_judged": 58,
+ "outcome_present": 1.0,
+ "predictions": {
+  "author_match_at_least_0.6_each_relation": true,
+  "median_labels_at_least_4": true,
+  "no_cooking_in_cal_d01_form_or_content": true,
+  "outcome_present_at_least_0.9": true
+ },
+ "setting_unknown": 42,
+ "thin_answers": 56
+}

@@ -30,3 +30,13 @@ the prompt's width or outcome instruction is too weak, so strengthen that paragr
 runner; if 3 fails with the examples in the prompt, the runners do not read them, so the format rules are the problem; if 4 fails, the key-action
 rule is not holding even for the case the prompt shows. One re-run on a changed prompt before any adoption; the prompt version is recorded with
 every result. Pass 2 (`map.v2`) reads `fit`, not `weight`; its adaptation to weighted, glossed categories waits for this pilot.
+
+## Pilot judged (lead, 2026-11-27)
+64 answers (32 controls x 2 variants). Median labels per relation 4 / 4 / 4 (form, content, outcome; >= 4 met, but 56 of 64
+answers have at least one relation under 4 labels and no run went beyond 4 in the sample read: runs stop at the minimum).
+Outcome present 1.00 (>= 0.9 met). Author-label match on cal.d01 and cal.d02 (partial = 0.5): form 1.00, content 0.94, outcome
+0.96, setting 0.71 (strict: 1.00, 0.94, 0.92, 0.57) (>= 0.6 each met). No cooking label in cal.d01 form or content (met).
+Confound as registered: cal.d01 and cal.d02 are the in-prompt examples, so the match tests faithful use, not generalisation.
+Lead's reading of held-out samples (data/gold/blind_v2_sample.md): facets separated, concrete objects and venues, outcome
+always filled; but order is not reliably specific-to-generic, weights are formulaic (0.4/0.3/0.2/0.1), some labels sit in
+the wrong facet (polling station under content), and lists stop at four. Held-out author categorisations needed.
