@@ -127,7 +127,10 @@ still pass; the readings themselves have not been re-run and may shift. Readings
 8.33 say so. Readings taken before the calibration (`docs/CALIBRATION.md`; markers 0.05, models
 0.15/0.3/0.45, no execution noise, no side harm, thin hazards, signal noise 1) used the old
 defaults: the tests pinned to them say so (`LEGACY`), and the readings re-measured under the
-calibrated defaults are marked below.
+calibrated defaults are marked below. Deterministic cross-platform numerics (`FloatDet` +
+`DetRNG` + left-to-right reductions, `8.178`) landed on 2026-11-27 so seeded readings repeat
+bit-identically across OS, CPU SIMD width, thread count, and Julia versions; earlier readings
+taken under platform `libm` / `Random.Xoshiro` may differ on single seeds.
 
 ## M0 observations
 
