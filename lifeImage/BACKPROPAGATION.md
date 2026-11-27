@@ -177,6 +177,9 @@ deleted. Numbering is stable (LI.n).
     ticket is a separate thing). Bread is a subdomain of baked goods, itself of food.
   - On the image a leaf colours its own pattern strongly at the edge, with some bleed to its parents and relations as the
     classification provides.
+  - Placement (author, same day): a multi-parent leaf sits on the circle under the parent with the strongest tie (measured,
+    e.g. by co-membership support); its other parents and co-domains need no placement of their own, since the event record
+    paints the relevant co-domains anyway.
   - Worked examples (author's blind categories, decreasing weight): "A baker sells bread at the market": form sale, retail,
     exchange, financial transaction; content bread, baked goods, food, direct human-to-human transaction; outcome money
     input, inventory spent; setting market, stall/store/shop, point of sale, retail, commerce, business. "A woman buys a train
