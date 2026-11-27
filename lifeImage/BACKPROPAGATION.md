@@ -124,6 +124,9 @@ deleted. Numbering is stable (LI.n).
   metadata of LI.42 (valid and record time, counterfactual reference for outcomes, place and span). RELATIONS, PLAN.
 - **LI.66** (2026-11-26; author, refines LI.55, LI.60) Seriation is adopted for the coarse ring order; its stability
   (displacement beyond the LI.25 guard targets) is refined in the placement clean-up.
+  Exception list for the clean-up (author, 2026-11-27, "as long as we take care of it later"): the stability targets (mean
+  25, p95 60, max 120 degrees) and the 200 px tiled-render missing-area tolerance raised 0.0015 -> 0.0020 after adoption
+  (tests/test_tiles.py) are restored there.
   Adopted (2026-11-26): basemap `0.0.0-draft+seriation_v0` (pinned in `data/coarse/layout_seriation_v0.json`; the earlier order
   is `layout="axes_v0"`, version `0.0.0-draft`, still reproducible; no domain id moves, so the id migration is identity).
   Migration record `data/coarse/layout_migration_seriation_v0.json`: field centre shift from the axes angle 15.8 / 32.9 / 42.2
