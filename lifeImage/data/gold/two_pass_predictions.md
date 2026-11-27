@@ -35,3 +35,13 @@ second reading order) before blaming pass 2; if 2 fails, the mapper over-matches
 the domain set is already wide enough for these items or the review is conservative, so run the kinds and snippets at scale before concluding.
 One re-run on a changed prompt (a new version, the old stays) before any adoption; the pass-1 and pass-2 prompt versions are recorded with every
 result.
+
+## Pilot judged (lead, 2026-11-27)
+82 items (32 controls, 50 snippets), 2 variants per pass. Pass-1 labels containing domain ids: 0 (structural, met). Distinct
+synonyms logged: 488 (>= 10, met). New-domain candidates judged non-noise by the mapper: 4 on controls (5 overall; e.g.
+public infrastructure works, public road clearance, child health, food hygiene) (>= 3, met). Precision among judged secondaries
+0.968 (2 bad, 50 unjudged; >= 0.95, met); pre-registered-style precision with unjudged against 0.536. Recall of gold-required
+domains 0.630 against v4's 0.963 (>= 0.913 required: **failed**, by a wide margin). Escalations 70 of 82 items: the two variants
+rarely agree on the full list, and the merge keeps only domains both variants listed. 42 noise labels, 44 unmatched.
+Not yet diagnosed: whether recall is lost in pass 1 (blind labels never name the required category), in pass 2 (labels named
+but mapped elsewhere or below the floor), or in the merge (each variant has the domain, not both).

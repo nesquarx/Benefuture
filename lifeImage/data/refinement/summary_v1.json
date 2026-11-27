@@ -1,11 +1,15 @@
 {
- "records": 511,
+ "records": 516,
  "by_source": {
+  "blind_unmatched": 5,
   "disputed": 146,
   "near_floor": 251,
   "unjudged": 114
  },
  "by_version_source": {
+  "v1": {
+   "blind_unmatched": 5
+  },
   "v3": {
    "disputed": 83,
    "near_floor": 139,
@@ -727,6 +731,13 @@
    },
    "items": 1
   },
+  "new:child_health": {
+   "appearances": 2,
+   "by_source": {
+    "blind_unmatched": 2
+   },
+   "items": 2
+  },
   "c.arts_humanities_studies": {
    "appearances": 1,
    "by_source": {
@@ -976,6 +987,27 @@
    "appearances": 1,
    "by_source": {
     "disputed": 1
+   },
+   "items": 1
+  },
+  "new:food_hygiene": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:public_infrastructure_works": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
+   },
+   "items": 1
+  },
+  "new:public_road_clearance": {
+   "appearances": 1,
+   "by_source": {
+    "blind_unmatched": 1
    },
    "items": 1
   },
@@ -1806,6 +1838,16 @@
   {
    "candidate": "c.waste_recycling",
    "listed": "c.cooking",
+   "count": 2
+  },
+  {
+   "candidate": "new:child_health",
+   "listed": "c.physical_health",
+   "count": 2
+  },
+  {
+   "candidate": "new:child_health",
+   "listed": "f.child_health_pediatrics_perinatology",
    "count": 2
   },
   {
@@ -3176,6 +3218,36 @@
   {
    "candidate": "c.youth_culture",
    "listed": "s.leisure",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_hygiene",
+   "listed": "c.cooking",
+   "count": 1
+  },
+  {
+   "candidate": "new:food_hygiene",
+   "listed": "c.hygiene_grooming",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_infrastructure_works",
+   "listed": "c.construction_trades",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_infrastructure_works",
+   "listed": "c.saving_investing",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_road_clearance",
+   "listed": "c.disaster_experience",
+   "count": 1
+  },
+  {
+   "candidate": "new:public_road_clearance",
+   "listed": "c.road_safety",
    "count": 1
   },
   {
