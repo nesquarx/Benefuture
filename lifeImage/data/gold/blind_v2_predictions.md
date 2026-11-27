@@ -19,7 +19,7 @@ or `none`; its batch is built from the validated answers (`build_two_pass.py lab
 Also reported, no prediction attached: the strict match share (`match` only), the answers with any relation under 4 categories (`thin_answers`),
 the answers whose setting is `unknown`, the validator's rejections on first writing, and the weights' shape (the share going to the first label).
 
-Confound, stated before measuring: cal.d01 and cal.d02 are the two events whose author categorisations are the in-prompt worked examples, so
+Known confound, stated before measuring: cal.d01 and cal.d02 are the two events whose author categorisations are the in-prompt worked examples, so
 predictions 3 and 4 measure whether a run uses the examples faithfully (and the example format), not whether it generalises to unseen events; a
 pass is expected and weak evidence. A generalisation test needs a held-out author-categorised event or two (an open request to the author:
 categorise two more controls by hand, then judge them the same way). Predictions 1 and 2 are not affected, the examples being only four of the
