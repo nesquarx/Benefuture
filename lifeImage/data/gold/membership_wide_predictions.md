@@ -101,3 +101,33 @@ or unsure) 0.293 (<= 0.25, **failed**, narrowly; the 20 disputes count as unsure
 completed gold found more bad secondaries than the v0 gold implied (v4: 3 -> 21), so precision among judged fell to 0.887; the
 pre-registered metric rose because nothing is unjudged now. The padding verdict may change once the author rules on the 20
 disputes; it is not re-judged until then.
+
+## Support-weighted union merge (pre-registered 2026-11-27, before any re-score; LI.67 widening, LI.68 logging; confidence 0.5)
+
+Context (lead): with the intersection merge (a domain kept only if every variant lists it) the widening is lost. v4 calibration answers list 2 to 3
+domains per relation, the merged kinds (83) and snippets (200) have a median of 1 per relation, 42 of 83 and 116 of 200 items are escalated, and the
+field-pair coverage is 0.31% (kinds), 0.55% (snippets), 0.655% (both, 199 of 30,381 pairs).
+
+Rule under test (`merge_item(..., rule="support_union")`; the old rule stays as `rule="intersection"`): every domain any variant lists is a candidate;
+its merged weight is the mean over the variants (0 where unlisted), renormalised per relation; each kept domain carries `support` (share of variants
+listing it) and the row a confidence (mean agreement over its relations). A domain listed by one variant only (with more than one variant) whose mean
+weight is below the governed `membership.single_support_floor` (0.2, `lifeimage/governed.py`; chosen from the calibration data, source stated there)
+is not kept: it goes to the refinement log with source `disputed`. A relation never empties (the best domain by mean weight is kept). Escalation stays
+for a differing primary domain, agreement below `membership.agree_floor` and a relation applying in some variants only; it no longer empties lists.
+The calibration judge scores the merged list as one answer (`merged_calibration_report`), against gold v1 (`complete_gold`), v4 answers.
+
+| # | Prediction | Metric | Smallest effect that matters |
+|---|------------|--------|------------------------------|
+| 1 | Recall survives the merge | merged recall of the gold `required` domains, 27 cells | >= 0.96 (v4 per variant 0.963) |
+| 2 | Secondary precision holds | `precision_secondary` (unjudged and unsure count against), merged lists, gold v1 | >= 0.80 |
+| 3 | Padding is bounded | `padding_single_complete` (a secondary the gold calls bad or unsure) on single-domain controls, merged lists | <= 0.35 |
+| 4 | The kind and snippet memberships widen | median listed domains per relation over non-null cells, kinds and snippets, form and content | >= 2 each, in both sets |
+| 5 | Pair coverage widens | share of the 30,381 field pairs inside one row's memberships, kinds and snippets together | >= 3x the intersection figure (0.655%, 199 pairs), so >= 597 pairs |
+
+Also reported, no prediction attached: escalated items (kinds 42 of 83, snippets 116 of 200 under the intersection), the number of single-variant
+domains dropped to the log, the intersection merge's own recall, precision and padding on the same answers (the baseline), mean domains per cell.
+Out-of-sample note: the floor was set on the calibration answers, so 1 to 3 on the controls are in-sample for that one number (recall is not
+touched by it); 4 and 5 on kinds and snippets are the out-of-sample test. ETA: judged in this session from the existing answers, no runner needed.
+Decision if 4 or 5 fail: the floor is the suspect (lower it, the log of dropped domains shows the cost) before any other change; if 2 or 3 fail,
+the floor rises or the dropped domains of the log are reviewed; the merge is one rule among the options, so the pre-registered fallback is the
+fine-grid floor between 0.1 and 0.2 that holds precision, reported with the sweep.

@@ -59,6 +59,16 @@ GOVERNED = {
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "
                   "(`lifeimage/membership_wide.py` ingest); a differing primary domain always escalates. Assumption.",
     },
+    "membership.single_support_floor": {
+        "default": 0.2,
+        "source": "LI.67 widening, LI.68 logging: in the support-weighted union merge of the variants' lists, a domain listed by only one variant "
+                  "stays in the merged membership only if its mean weight over the variants (0 where unlisted) is at least this; below it the domain "
+                  "goes to the refinement log (source `disputed`). Chosen from the v4 calibration answers against the v1 gold (104 single-variant "
+                  "domains over the controls): the smallest floor on a 0.01 grid at which the kept single-variant domains reach a judged "
+                  "precision (fair over fair, bad and unsure) of 0.80 is 0.19, rounded to 0.2 (two variants: a lone listing keeps its domain "
+                  "from weight 0.4 up). At 0.1 the kept share is 0.66 fair, at 0.15 0.67. Set before any re-score (`data/gold/membership_wide_predictions.md`); "
+                  "tuned on the calibration data it is then scored on, so the kinds and snippets verdicts are the out-of-sample test. Assumption.",
+    },
     "tiles.min_slice_px": {
         "default": 1.0,
         "source": "LI.52: a tile at zoom z ships a slice only when both its on-screen arc width (at mid radius) and its radial depth "
