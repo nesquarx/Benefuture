@@ -32,6 +32,10 @@ For an `extract` batch the line also carries `"rows": [...]` as the prefix descr
 For a `links` batch the line also carries `"upstream": {"<id>": <weight>}` and `"overlap": ["<id>", ...]` as the
 prefix describes (ids from the pack in the prefix; no self-links; upstream weights sum to 1).
 
+For a `blind` batch (pass 1 of two-pass extraction) the line also carries `"blind"` and `"relational"` as the prefix describes (free labels, no
+domain ids); for a `map` batch (pass 2) it carries `"types"`, `"ranks"` and `"labels"` (ids from the pack in the prefix, one `labels` entry per blind
+label of the task).
+
 ## Rules
 
 - Judge each task on its own input alone. Do not use answers to earlier tasks, and do not guess what other variants
@@ -42,7 +46,7 @@ prefix describes (ids from the pack in the prefix; no self-links; upstream weigh
 - Use only information in the task and the prefix. If the input is insufficient, still give the best allowed
   verdict and say so in the reason.
 - The verdict must be copied exactly from `allowed_verdicts`. Never invent a verdict.
-- Never skip, merge or reorder tasks, and never add keys or extra lines beyond those above and those the prefix asks for (membership tasks add `types` and `other`; membership prompt v3 tasks also add `ranks`, the fit record of the ranked stopping rule, as the prefix describes; extract prompt v2 rows each add `ranks`).
+- Never skip, merge or reorder tasks, and never add keys or extra lines beyond those above and those the prefix asks for (membership tasks add `types` and `other`; blind tasks add `blind` and `relational`; map tasks add `types`, `ranks` and `labels`; membership prompt v3 tasks also add `ranks`, the fit record of the ranked stopping rule, as the prefix describes; extract prompt v2 rows each add `ranks`).
 - Keep scratch files only in your own subfolder of the scratchpad, named after your batch file; never share filenames with other runs.
 - Write nothing else to the answers file: no commentary, no code fences.
 

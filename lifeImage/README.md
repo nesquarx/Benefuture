@@ -47,4 +47,4 @@ Tiers: tests marked `full` (large worlds, many seeds; `pyproject.toml` markers) 
   `data/coarse/layout_migration_seriation_v0.json`.
 
 Each invariant has an acceptance test and a counterexample test (a deliberately bad version that must be rejected).
-Governed defaults: `layout.EPSILON` (2 degrees), `layout.INSERT_WIDTH` (3 degrees), `gold.DEFAULT_THRESHOLD` (0.9).
+Governed defaults: `layout.EPSILON` (2 degrees), `layout.INSERT_WIDTH` (3 degrees), `gold.DEFAULT_THRESHOLD` (0.9), `blind.fit_floor` (4) and `blind.max_labels` (6, LI.70 pass 1 of two-pass extraction).

@@ -1,7 +1,8 @@
 """LI.68: the refinement log. Plausible domains that membership answers list or just reject are logged, never discarded and never
 merged into memberships. Sources: `unjudged` (listed secondary the control gold neither accepts nor rejects), `near_floor`
 (the best rejected domain, fit = floor - 1, and the gold does not judge it), `disputed` (listed by one variant only, gold
-silent). They feed gold-set completion, fine-domain proposals and domain-domain link proposals (`data/refinement/README.md`).
+silent). They feed gold-set completion, fine-domain proposals and domain-domain link proposals (`data/refinement/README.md`). `blind_unmatched` (LI.70) is a blind label of the two-pass extraction that matched no domain and that the mapper
+reviewed as a new-domain candidate.
 
 The log (`candidates_v1.jsonl`) is append-safe: records merge by key (item, relation, domain, source, prompt version, variant),
 sorted by key. The summary (`summary_v1.json`) is recomputed from the whole log."""
@@ -10,7 +11,7 @@ import json
 from pathlib import Path
 
 RELS = ("form", "content", "outcome", "setting")
-SOURCES = ("unjudged", "near_floor", "disputed")
+SOURCES = ("unjudged", "near_floor", "disputed", "blind_unmatched")
 KEY_FIELDS = ("item", "relation", "domain", "source", "prompt_version", "variant")
 
 
@@ -108,3 +109,17 @@ def log_candidates(records, directory):
     s = summarise(rows)
     (d / "summary_v1.json").write_text(json.dumps(s, indent=1, sort_keys=False, ensure_ascii=False) + "\n", encoding="utf-8")
     return rows, s
+
+
+def slug(label):
+    import re
+    return re.sub(r"[^a-z0-9]+", "_", label.lower()).strip("_")
+
+
+def blind_unmatched_record(item_id, text, variant, prompt_version, relation, blind, review):
+    """LI.70: the refinement record of one blind label the mapper reviewed as `new_domain_candidate`. `blind`: the blind label
+    ({"label", "fit", "gloss"}); `review`: the mapper's entry (proposed_label, gloss, nearest, parent). The domain is `new:<slug>` (a proposal,
+    never a pack id); `fit` is the blind fit, `listed` the nearest existing domains (feeding the candidate-link pairs of `summarise`)."""
+    return {"item": item_id, "item_hash": text_hash(text), "relation": relation, "domain": f"new:{slug(review['proposed_label'])}", "fit": blind["fit"],
+            "prompt_version": prompt_version, "variant": variant, "source": "blind_unmatched", "listed": list(review["nearest"]),
+            "label": blind["label"], "proposed_label": review["proposed_label"], "gloss": review["gloss"], "parent": review["parent"]}

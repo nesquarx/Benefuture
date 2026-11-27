@@ -9,7 +9,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from .membership import VOCABS, real_types
-from .packs import pack_ids
+from .packs import pack_entries, pack_ids
 from .vocab import EVENT_RELATIONS, LINK_RELS, MEMBERSHIP_RELS, UPSTREAM
 
 SCHEMA_DIR = Path(__file__).resolve().parent.parent / "schemas"
@@ -160,7 +160,7 @@ def _int_fit(x):
     return isinstance(x, int) and not isinstance(x, bool) and 0 <= x <= FIT_MAX
 
 
-def validate_ranked_types(types, ranks, want, ids=None, where="", floor=None):
+def validate_ranked_types(types, ranks, want, ids=None, where="", floor=None, allow_all_null=False):
     """LI.67: per relation, `types` is null or {domain: weight} in rank order, and `ranks` null exactly then, else
     {"listed": [{"domain", "fit"}...], "rejected": {"domain", "fit"}}. Rejected: lists that are unranked (fits or weights
     rise down the list), a listed domain below the floor, weights not summing to 1, and a list that stopped while its best
@@ -214,7 +214,7 @@ def validate_ranked_types(types, ranks, want, ids=None, where="", floor=None):
             raise ValidationError(f"{pre}{rej['domain']} is not in the pack")
         if rej["fit"] >= floor:
             raise ValidationError(f"{pre}{t}: stopped early, the best rejected domain {rej['domain']} has fit {rej['fit']}, at or above the floor {floor}")
-    if all(types[t] is None for t in want):
+    if all(types[t] is None for t in want) and not allow_all_null:
         raise ValidationError(f"{pre}every relation is null")
     return types
 
@@ -235,6 +235,204 @@ def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
         from .governed import membership_fit_floor
         floor = membership_fit_floor(pv)
     validate_ranked_types(answer["types"], answer["ranks"], real_types(vocab), ids, floor=floor)
+    return answer
+
+
+# ---- two-pass extraction (LI.70): pass 1 blind, pass 2 map ----
+BLIND_RELS = ("form", "content", "outcome", "setting")
+BLIND_LINK_TYPES = ("part_of", "causes", "re_description", "concurrent")
+BLIND_LABEL_MAX = 60
+_DOMAIN_ID = re.compile(r"\b[csf]\.[a-z][a-z0-9_]*\b")
+
+
+def norm_label(label):
+    """A blind label compared case-, space- and punctuation-insensitively."""
+    return re.sub(r"[^a-z0-9]+", " ", label.lower()).strip()
+
+
+def domain_ids_in(text, ids=None):
+    """Domain-id-like tokens in `text` (the dotted `c.`, `f.`, `s.` form), and, given the pack's ids, any of them present verbatim."""
+    found = set(_DOMAIN_ID.findall(text))
+    if ids:
+        found |= {i for i in ids if i in text}
+    return sorted(found)
+
+
+def _strings(obj):
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _strings(v)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _strings(v)
+
+
+def _line(x):
+    return isinstance(x, str) and bool(x.strip()) and "\n" not in x
+
+
+def validate_blind_answer(answer, ids=None, floor=None, max_labels=None):
+    """A pass-1 answer: verdict "blind", `blind` with exactly the four relations (each null or a ranked list of {label, fit, gloss}: labels
+    of one to 60 characters, integer fits 0-10 not below the blind floor and not rising, at most `blind.max_labels`, no duplicate labels, a
+    one-line gloss), at least one non-null, and `relational` (participants, action, outcome with counterfactual, links). No string anywhere
+    may be a domain id: pass 1 does not see the domain set."""
+    from .governed import governed
+    floor = governed("blind.fit_floor") if floor is None else floor
+    max_labels = governed("blind.max_labels") if max_labels is None else max_labels
+    if answer.get("verdict") != "blind":
+        raise ValidationError(f"blind verdict must be 'blind', not {answer.get('verdict')!r}")
+    for k in ("blind", "relational"):
+        if k not in answer:
+            raise ValidationError(f"a blind answer needs {k} (relational extraction, LI.65)" if k == "relational" else f"a blind answer needs {k}")
+    bl = answer["blind"]
+    if not isinstance(bl, dict) or sorted(bl) != sorted(BLIND_RELS):
+        raise ValidationError(f"blind must have exactly the keys {sorted(BLIND_RELS)}")
+    for rel in BLIND_RELS:
+        ls = bl[rel]
+        if ls is None:
+            continue
+        if not isinstance(ls, list) or not ls:
+            raise ValidationError(f"{rel}: null or a non-empty list of labels")
+        if len(ls) > max_labels:
+            raise ValidationError(f"{rel}: {len(ls)} labels, at most {max_labels}")
+        seen, fits = set(), []
+        for e in ls:
+            if not isinstance(e, dict) or set(e) != {"label", "fit", "gloss"}:
+                raise ValidationError(f"{rel}: each label must be exactly {{label, fit, gloss}}")
+            lab = e["label"]
+            if not isinstance(lab, str) or not lab.strip() or len(lab) > BLIND_LABEL_MAX:
+                raise ValidationError(f"{rel}: a label is a phrase of 1 to {BLIND_LABEL_MAX} characters")
+            if not _line(e["gloss"]):
+                raise ValidationError(f"{rel}: {lab!r} needs a non-empty one-line gloss")
+            if not _int_fit(e["fit"]):
+                raise ValidationError(f"{rel}: fit of {lab!r} must be an integer 0 to {FIT_MAX}")
+            if e["fit"] < floor:
+                raise ValidationError(f"{rel}: {lab!r} is listed with fit {e['fit']}, below the blind floor {floor}")
+            n = norm_label(lab)
+            if n in seen:
+                raise ValidationError(f"{rel}: duplicate label {lab!r}")
+            seen.add(n)
+            fits.append(e["fit"])
+        if any(a < b for a, b in zip(fits, fits[1:])):
+            raise ValidationError(f"{rel}: unranked, fits {fits} rise down the list")
+    if all(bl[r] is None for r in BLIND_RELS):
+        raise ValidationError("every relation is null")
+    rel = answer["relational"]
+    if not isinstance(rel, dict) or set(rel) != {"participants", "action", "outcome", "links"}:
+        raise ValidationError("relational must have exactly participants, action, outcome and links")
+    refs = set()
+    if not isinstance(rel["participants"], list):
+        raise ValidationError("relational participants must be a list")
+    for p in rel["participants"]:
+        if not isinstance(p, dict) or set(p) != {"ref", "role"} or not _line(p["ref"]) or not _line(p["role"]):
+            raise ValidationError("each participant must be {ref, role} with a ref and a role")
+        if p["ref"] in refs:
+            raise ValidationError(f"participant ref {p['ref']!r} is used twice")
+        refs.add(p["ref"])
+    if not _line(rel["action"]):
+        raise ValidationError("relational action must be a non-empty line")
+    o = rel["outcome"]
+    if o is not None and (not isinstance(o, dict) or set(o) != {"text", "counterfactual"} or not _line(o["text"])
+                          or not (o["counterfactual"] is None or _line(o["counterfactual"]))):
+        raise ValidationError("relational outcome must be null or {text, counterfactual} (counterfactual a line or null)")
+    if not isinstance(rel["links"], list):
+        raise ValidationError("relational links must be a list")
+    for l in rel["links"]:
+        if not isinstance(l, dict) or set(l) != {"type", "other"} or l["type"] not in BLIND_LINK_TYPES or not _line(l["other"]):
+            raise ValidationError(f"each link must be {{type, other}} with type in {list(BLIND_LINK_TYPES)}")
+    bad = sorted({i for s in _strings({"blind": bl, "relational": rel, "reason": answer.get("reason", "")}) for i in domain_ids_in(s, ids)})
+    if bad:
+        raise ValidationError(f"pass 1 must not use domain ids, found {bad}")
+    return answer
+
+
+MAP_ACTIONS = ("match", "new_domain_candidate", "noise")
+MAP_KINDS = ("exact", "synonym")
+
+
+def blind_refs(task):
+    """{ref: (relation, label entry)} of a map task's blind labels."""
+    out = {}
+    for rel in BLIND_RELS:
+        for e in (task["input"]["blind"].get(rel) or []):
+            out[e["ref"]] = (rel, e)
+    return out
+
+
+def validate_map_answer(answer, task, entries, floor=None):
+    """A pass-2 answer: verdict "map"; `types` and `ranks` obey the ranked stopping rule at the v4 floor over ids of the pack (all four
+    relations may be null when nothing matched); `labels` holds exactly one entry per blind label of the task: a `match` (pack id, kind
+    exact or synonym, `match` confidence strictly between 0 and 1; `exact` only when the label equals the domain's label or an alias), a
+    `new_domain_candidate` (proposed_label, gloss, 1-3 nearest ids, a coarse or sector parent) or a `noise` (reason). Every domain of
+    `types[rel]` must be matched by a blind label of that relation: an unanchored domain is not a two-pass membership."""
+    if floor is None:
+        from .governed import membership_fit_floor
+        floor = membership_fit_floor(4)
+    if answer.get("verdict") != "map":
+        raise ValidationError(f"map verdict must be 'map', not {answer.get('verdict')!r}")
+    for k in ("types", "ranks", "labels"):
+        if k not in answer:
+            raise ValidationError(f"a map answer needs {k}")
+    ids = set(entries)
+    validate_ranked_types(answer["types"], answer["ranks"], BLIND_RELS, ids, floor=floor, allow_all_null=True)
+    refs = blind_refs(task)
+    labels = answer["labels"]
+    if not isinstance(labels, list):
+        raise ValidationError("labels must be a list with one entry per blind label")
+    seen, matched = set(), {r: set() for r in BLIND_RELS}
+    for e in labels:
+        if not isinstance(e, dict) or not isinstance(e.get("ref"), str):
+            raise ValidationError("each label entry needs a ref")
+        ref = e["ref"]
+        if ref not in refs:
+            raise ValidationError(f"unknown ref {ref!r}")
+        if ref in seen:
+            raise ValidationError(f"ref {ref!r} appears twice")
+        seen.add(ref)
+        rel, blind = refs[ref]
+        act = e.get("action")
+        if act not in MAP_ACTIONS:
+            raise ValidationError(f"{ref}: action {act!r} is not in {list(MAP_ACTIONS)}")
+        want = {"match": {"ref", "action", "domain", "kind", "match"},
+                "new_domain_candidate": {"ref", "action", "proposed_label", "gloss", "nearest", "parent"},
+                "noise": {"ref", "action", "reason"}}[act]
+        if set(e) != want:
+            raise ValidationError(f"{ref}: keys of a {act} must be exactly {sorted(want)}")
+        if act == "match":
+            if e["domain"] not in ids:
+                raise ValidationError(f"{ref}: {e['domain']} is not in the pack")
+            if e["kind"] not in MAP_KINDS:
+                raise ValidationError(f"{ref}: kind {e['kind']!r} is not in {list(MAP_KINDS)}")
+            m = e["match"]
+            if isinstance(m, bool) or not isinstance(m, (int, float)) or not 0 < m < 1:
+                raise ValidationError(f"{ref}: match {m!r} must be a number strictly between 0 and 1")
+            ent = entries[e["domain"]]
+            if e["kind"] == "exact" and norm_label(blind["label"]) not in {norm_label(ent["label"]), *map(norm_label, ent["aliases"])}:
+                raise ValidationError(f"{ref}: kind exact, but {blind['label']!r} equals neither the label nor an alias of {e['domain']} (use synonym)")
+            matched[rel].add(e["domain"])
+        elif act == "new_domain_candidate":
+            for k in ("proposed_label", "gloss"):
+                if not _line(e[k]):
+                    raise ValidationError(f"{ref}: {k} must be a non-empty line")
+            near = e["nearest"]
+            if not isinstance(near, list) or not 1 <= len(near) <= 3 or len(set(near)) != len(near):
+                raise ValidationError(f"{ref}: nearest must be 1 to 3 distinct pack ids")
+            for i in [*near, e["parent"]]:
+                if i not in ids:
+                    raise ValidationError(f"{ref}: {i} is not in the pack")
+            if not e["parent"].startswith(("c.", "s.")):
+                raise ValidationError(f"{ref}: parent {e['parent']} must be a coarse field or a sector")
+        elif not _line(e["reason"]):
+            raise ValidationError(f"{ref}: a noise entry needs a one-line reason")
+    missing = sorted(set(refs) - seen)
+    if missing:
+        raise ValidationError(f"every blind label needs exactly one entry (a match or a review); none for {missing}")
+    for rel in BLIND_RELS:
+        for d in answer["types"][rel] or {}:
+            if d not in matched[rel]:
+                raise ValidationError(f"{rel}: {d} is anchored by no blind label of {rel}")
     return answer
 
 
@@ -341,6 +539,9 @@ def validate_answers(batch_lines, answer_lines):
     header = json.loads(batch_lines[0])
     membership = header["task_type"].startswith("membership.")
     extract = header["task_type"] == "extract"
+    blind = header["task_type"] == "blind"
+    mapping = header["task_type"] == "map"
+    entries = pack_entries(header["prefix"]) if mapping else None
     ids = pack_ids(header["prefix"]) if header["task_type"] == "links" or membership or extract else None
     tasks = {}
     for line in batch_lines[1:]:
@@ -379,6 +580,16 @@ def validate_answers(batch_lines, answer_lines):
         if extract:
             try:
                 validate_extract_answer(a, t, ids, ranked=header["prompt_version"] >= RANKED_EXTRACT_VERSION)
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
+        if blind:
+            try:
+                validate_blind_answer(a)
+            except ValidationError as e:
+                errors.append(f"line {n}: {e}")
+        if mapping:
+            try:
+                validate_map_answer(a, t, entries)
             except ValidationError as e:
                 errors.append(f"line {n}: {e}")
         if membership:

@@ -1,0 +1,338 @@
+"""LI.70: two-pass extraction.
+
+Pass 1, blind (`prompts/blind.v1.md`): a runner reads an event, of any detail, and suggests its categories in its own words for each
+relation (form, content, outcome, setting) with a fit and a gloss, plus the relational extraction of LI.65. It never sees the domain
+set: no domain id appears in the prefix or the input (`validate.validate_blind_answer` rejects any in the answer).
+
+Pass 2, map (`prompts/map.v1.md`): a runner with the domain pack (coarse and fine, aliases, short descriptions) and the pass-1 answer
+allocates every blind label to a domain id (exact or synonym, with a match confidence), builds the memberships by the v4 stopping
+rule (floor 5) from the matched domains only, and reviews every label that matched nothing: `new_domain_candidate` or `noise`.
+Pass 2 reads only validated pass-1 answers, and its input hash includes the pass-1 answer hash. Variant v of pass 2 reads variant v of
+pass 1, so the two chains stay independent; the variants of pass 2 differ in pack order, those of pass 1 in the order the relations are
+read (the prefix is otherwise one stable text, for cache hits; every variable part is in the task lines).
+
+The ingest merges the 2 variants (agreement as confidence, escalation on disagreement) into a memberships table, aggregates the synonyms
+(blind label to domain, with counts and match confidence) into `data/refinement/synonyms_v1.jsonl` (feeds domain aliases), and writes the
+candidate new domains to the refinement log with source `blind_unmatched` (LI.68, LI.69). Candidates and noise never enter memberships.
+No model is run here.
+"""
+import json
+from collections import defaultdict
+from pathlib import Path
+
+from .canonical import canonical_json, content_hash
+from .governed import governed, membership_fit_floor
+from .membership import DEFAULT_OUT, MODEL
+from .membership_wide import (REFINEMENT_DIR as _MW_REFINEMENT_DIR, calibration_items, calibration_report, merge_item,  # noqa: F401
+                              answers_by_item, snippet_items)
+from .packs import domain_pack, pack_entries  # noqa: F401
+from .refinement import RELS, append_candidates, blind_unmatched_record, log_candidates, read_log, text_hash
+from .tasks import DEFAULT_PROMPTS
+from .validate import (BLIND_RELS, ValidationError, blind_refs, domain_ids_in, norm_label, validate_answers,  # noqa: F401
+                       validate_blind_answer, validate_map_answer)
+
+ROOT = Path(__file__).resolve().parent.parent
+BLIND_TASK, MAP_TASK = "blind", "map"
+BLIND_VERSION = MAP_VERSION = 1
+VARIANTS = 2
+MAX_TASKS = 50
+PILOT_SNIPPETS = 50
+REFINEMENT_DIR = _MW_REFINEMENT_DIR
+SYNONYMS = ROOT / "data" / "refinement" / "synonyms_v1.jsonl"
+TABLE = ROOT / "data" / "events" / "two_pass_memberships_v1.jsonl"
+ESCALATIONS = ROOT / "data" / "answers" / "escalations.two_pass.jsonl"
+REPORT = ROOT / "data" / "gold" / "two_pass_report.json"
+COARSE_CARDS = ROOT / "data" / "coarse" / "seed_v3.jsonl"
+FINE_CARDS = ROOT / "data" / "fine" / "fine_v1.jsonl"
+READING_ORDER = {0: ("form", "content", "outcome", "setting"), 1: ("setting", "outcome", "content", "form")}
+
+
+def _header(task_type, prompt_version, prefix, model):
+    return json.dumps({"kind": "header", "task_type": task_type, "model": model, "prompt_version": prompt_version, "prefix": prefix},
+                      sort_keys=True, ensure_ascii=False)
+
+
+def _instructions(task_type, prompt_version, prompts_dir):
+    return (Path(prompts_dir) / f"{task_type}.v{prompt_version}.md").read_text(encoding="utf-8").rstrip("\n")
+
+
+def _parts(lines, max_tasks):
+    return {p // max_tasks: lines[p:p + max_tasks] for p in range(0, len(lines), max_tasks)}
+
+
+def _write(name, task_type, prompt_version, batches, out_dir):
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    paths = []
+    for (v, p), lines in sorted(batches.items()):
+        path = out / f"{task_type}.v{prompt_version}.{name}.var{v}.part{p}.jsonl"
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        paths.append(path)
+    return paths
+
+
+# ---- pass 1 ----
+def pilot_items():
+    """The pilot item sets: the 32 membership calibration controls and 50 calibration event snippets."""
+    return {"controls": calibration_items(), "snippets": snippet_items(PILOT_SNIPPETS)}
+
+
+def blind_prefix(variant, prompt_version=BLIND_VERSION, prompts_dir=DEFAULT_PROMPTS):
+    order = ", ".join(READING_ORDER[variant % len(READING_ORDER)])
+    return (f"{_instructions(BLIND_TASK, prompt_version, prompts_dir)}\n\n## Reading order\n\nIn this reading, think through the relations "
+            f"in this order: {order}. The answer object keeps its four keys.\n")
+
+
+def blind_input(item):
+    return {"item": {"id": item["id"], "text": item["text"]}}
+
+
+def build_blind_batches(items, *, variants=VARIANTS, max_tasks=MAX_TASKS, prompt_version=BLIND_VERSION, model=MODEL, prompts_dir=DEFAULT_PROMPTS):
+    """{(variant, part): [header, task lines...]}: the header of variant v holds the instructions and the reading order of v (no domain id,
+    the same in every part), each part at most `max_tasks` tasks sorted by item id."""
+    batches = {}
+    for v in range(variants):
+        header = _header(BLIND_TASK, prompt_version, blind_prefix(v, prompt_version, prompts_dir), model)
+        lines = []
+        for it in sorted(items, key=lambda i: i["id"]):
+            inp = blind_input(it)
+            h = content_hash(inp)
+            lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": BLIND_TASK, "prompt_version": prompt_version,
+                                         "input_hash": h, "variant": v, "k": variants, "input": inp, "allowed_verdicts": ["blind"]}))
+        for p, chunk in _parts(lines, max_tasks).items():
+            batches[(v, p)] = [header] + chunk
+    return batches
+
+
+def write_blind_batches(name, batches, out_dir=DEFAULT_OUT, prompt_version=BLIND_VERSION):
+    return _write(name, BLIND_TASK, prompt_version, batches, out_dir)
+
+
+def pilot_blind_batches(out_dir=DEFAULT_OUT):
+    """Write the pass-1 pilot batches (controls, snippets; 2 variants; at most 50 per file); returns the paths."""
+    paths = []
+    for name, items in pilot_items().items():
+        paths += write_blind_batches(name, build_blind_batches(items), out_dir)
+    return paths
+
+
+# ---- pass 2 ----
+def load_domain_cards(coarse=COARSE_CARDS, fine=FINE_CARDS):
+    return [json.loads(l) for p in (coarse, fine) for l in Path(p).read_text(encoding="utf-8").splitlines() if l.strip()]
+
+
+def blind_view(answer):
+    """What the mapper sees of a pass-1 answer: the labels per relation with refs `<relation>.<index>`."""
+    return {rel: None if answer["blind"][rel] is None else
+            [{"ref": f"{rel}.{i}", "label": e["label"], "fit": e["fit"], "gloss": e["gloss"]} for i, e in enumerate(answer["blind"][rel])]
+            for rel in BLIND_RELS}
+
+
+def pass1_hash(answer):
+    """The hash of what pass 1 produced (its categories and relational extraction), carried in every pass-2 input."""
+    return content_hash({"blind": answer["blind"], "relational": answer["relational"]})
+
+
+def map_prefix(cards, variant, prompt_version=MAP_VERSION, prompts_dir=DEFAULT_PROMPTS):
+    return f"{_instructions(MAP_TASK, prompt_version, prompts_dir)}\n\nThe domain pack follows.\n{domain_pack(cards, variant)}"
+
+
+def build_map_batches(blind_pairs, cards, *, variants=VARIANTS, max_tasks=MAX_TASKS, prompt_version=MAP_VERSION, model=MODEL,
+                      prompts_dir=DEFAULT_PROMPTS):
+    """{(variant, part): [header, task lines...]} of pass 2 over validated pass-1 answers (`blind_pairs`: (batch, answers) paths; raises
+    ValueError on an invalid answer). Variant v reads the pass-1 variant v. The input holds the item, the blind labels, the pass-1 input and
+    answer hashes and the pack hash, so a changed pass-1 answer is a different task."""
+    got = answers_by_item(blind_pairs)
+    phash = content_hash({"pack": domain_pack(cards, 0)})[:16]
+    batches = {}
+    for v in range(variants):
+        header = _header(MAP_TASK, prompt_version, map_prefix(cards, v, prompt_version, prompts_dir), model)
+        lines = []
+        for key in sorted(got):
+            if v not in got[key]:
+                raise ValueError(f"{key}: no pass-1 answer from variant {v}")
+            text, ans = got[key][v]
+            inp = {"item": {"id": key, "text": text}, "blind": blind_view(ans),
+                   "pass1": {"input_hash": ans["input_hash"], "answer_hash": pass1_hash(ans)}, "pack": phash}
+            h = content_hash(inp)
+            lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": MAP_TASK, "prompt_version": prompt_version,
+                                         "input_hash": h, "variant": v, "k": variants, "input": inp, "allowed_verdicts": ["map"]}))
+        for p, chunk in _parts(lines, max_tasks).items():
+            batches[(v, p)] = [header] + chunk
+    return batches
+
+
+def write_map_batches(name, batches, out_dir=DEFAULT_OUT, prompt_version=MAP_VERSION):
+    return _write(name, MAP_TASK, prompt_version, batches, out_dir)
+
+
+# ---- merging ----
+def merge_blind(key, variant_answers):
+    """Merge the variants' pass-1 answers of one item: per relation the labels (normalised, with the mean fit over the variants that gave
+    them and the share of variants behind each), the Jaccard agreement of the label sets as confidence, and an escalation only when a
+    relation applies in some variants and not in others (label wording differs between runs without disagreement; the domain-level
+    disagreement is escalated by the pass-2 merge)."""
+    k = len(variant_answers)
+    labels, confidence, reasons = {}, {}, []
+    for rel in BLIND_RELS:
+        per = [a["blind"][rel] for _, a in sorted(variant_answers.items())]
+        given = [p for p in per if p]
+        if not given:
+            labels[rel] = None
+            continue
+        if len(given) < k:
+            reasons.append(f"{rel}: applies in {len(given)} of {k} variants")
+        by = defaultdict(list)
+        names = {}
+        for p in given:
+            for e in p:
+                n = norm_label(e["label"])
+                by[n].append(e["fit"])
+                names.setdefault(n, e["label"])
+        sets = [{norm_label(e["label"]) for e in p} for p in given]
+        union = set().union(*sets)
+        jac = len(set.intersection(*sets)) / len(union) if len(given) == k else 0.0
+        order = sorted(by, key=lambda n: (-sum(by[n]) / len(by[n]), n))
+        labels[rel] = [{"label": names[n], "fit": sum(by[n]) / len(by[n]), "variants": len(by[n])} for n in order]
+        confidence[rel] = {"agreement": jac, "labels": {n: len(by[n]) / k for n in order}}
+    return {"key": key, "variants": k, "labels": labels, "confidence": confidence, "escalate": bool(reasons), "escalate_reasons": reasons}
+
+
+# ---- the ledgers: synonyms and candidates ----
+def _read_map(pairs):
+    """[(task, answer)] over validated (batch, answers) path pairs of pass 2."""
+    out = []
+    for bp, ap in pairs:
+        b = Path(bp).read_text(encoding="utf-8").splitlines()
+        a = Path(ap).read_text(encoding="utf-8").splitlines()
+        errs = validate_answers(b, a)
+        if errs:
+            raise ValueError(f"{ap}: {len(errs)} validation errors, first: {errs[0]}")
+        tasks = {json.loads(l)["task_id"]: json.loads(l) for l in b[1:]}
+        out += [(tasks[json.loads(l)["task_id"]], json.loads(l)) for l in a]
+    return out
+
+
+def synonym_cells(task, answer):
+    """{cell: observation} of every matched label of one pass-2 answer. A cell is item, variant, pass-1 answer hash and ref, so reading
+    the same answers again changes nothing."""
+    item, v, ah = task["input"]["item"]["id"], task["variant"], task["input"]["pass1"]["answer_hash"][:8]
+    refs = blind_refs(task)
+    out = {}
+    for e in answer["labels"]:
+        if e["action"] == "match":
+            rel, blind = refs[e["ref"]]
+            out[f"{item}|v{v}|{ah}|{e['ref']}"] = {"label": norm_label(blind["label"]), "domain": e["domain"], "relation": rel,
+                                                  "kind": e["kind"], "match": e["match"], "item": item}
+    return out
+
+
+def update_synonyms(cells, path):
+    """Merge observation cells into the synonym log at path: one record per (label, domain) with count, distinct items, kinds, relations
+    and mean match confidence, plus its cells (which make a re-read idempotent). Rewritten sorted by label and domain; returns the records."""
+    merged = {}
+    for r in read_log(path):
+        merged.update(r["cells"])
+    merged.update(cells)
+    groups = defaultdict(dict)
+    for c, o in merged.items():
+        groups[(o["label"], o["domain"])][c] = o
+    recs = []
+    for (label, domain), cs in sorted(groups.items()):
+        kinds, rels = defaultdict(int), defaultdict(int)
+        for o in cs.values():
+            kinds[o["kind"]] += 1
+            rels[o["relation"]] += 1
+        recs.append({"label": label, "domain": domain, "count": len(cs), "items": len({o["item"] for o in cs.values()}),
+                     "kinds": dict(sorted(kinds.items())), "relations": dict(sorted(rels.items())),
+                     "match_mean": round(sum(o["match"] for o in cs.values()) / len(cs), 4), "cells": dict(sorted(cs.items()))})
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text("".join(json.dumps(r, sort_keys=True, ensure_ascii=False) + "\n" for r in recs), encoding="utf-8")
+    return recs
+
+
+def blind_candidates(task, answer):
+    """Refinement records (source `blind_unmatched`) of the new-domain candidates of one pass-2 answer."""
+    refs = blind_refs(task)
+    item = task["input"]["item"]
+    return [blind_unmatched_record(item["id"], item["text"], task["variant"], answer["prompt_version"], *refs[e["ref"]], e)
+            for e in answer["labels"] if e["action"] == "new_domain_candidate"]
+
+
+# ---- the ingest ----
+def ingest_two_pass(blind_pairs, map_pairs, out_path=TABLE, *, synonyms_path=SYNONYMS, escalation_path=ESCALATIONS, refinement_dir=None,
+                    variants=VARIANTS):
+    """Merge pass 1 and pass 2 answers (path pairs of batch and answers files; every variant of every item) into the table at out_path
+    (one row per item: the merged memberships with agreement as confidence, the merged blind labels, the pass-1 relational extraction per
+    variant), write the escalations (one record per escalated item), update the synonym log and log the new-domain candidates to the
+    refinement log (never into the table). A pass-2 answer built on another pass-1 answer than the one read is refused. Returns the rows."""
+    blind = answers_by_item(blind_pairs)
+    got = defaultdict(dict)
+    cells, cands = {}, []
+    for task, ans in _read_map(map_pairs):
+        key, v = task["input"]["item"]["id"], task["variant"]
+        if key not in blind or v not in blind[key]:
+            raise ValueError(f"{key}: pass-2 variant {v} has no pass-1 answer")
+        if task["input"]["pass1"]["answer_hash"] != pass1_hash(blind[key][v][1]):
+            raise ValueError(f"{key}: pass-2 variant {v} was built on a different pass-1 answer than the one read")
+        got[key][v] = (task, ans)
+        cells.update(synonym_cells(task, ans))
+        cands += blind_candidates(task, ans)
+    rows, esc = [], []
+    for key in sorted(got):
+        per = got[key]
+        if len(per) != variants:
+            raise ValueError(f"{key}: pass-2 answers from variants {sorted(per)}, expected {variants}")
+        text = blind[key][min(per)][0]
+        row = merge_item(key, text, {v: a for v, (_, a) in per.items()})
+        mb = merge_blind(key, {v: blind[key][v][1] for v in per})
+        row["blind"] = {"labels": mb["labels"], "confidence": mb["confidence"]}
+        row["relational"] = {str(v): blind[key][v][1]["relational"] for v in sorted(per)}
+        row["pass"] = "two_pass"
+        row["escalate_reasons"] = row["escalate_reasons"] + [f"blind {r}" for r in mb["escalate_reasons"]]
+        row["escalate"] = bool(row["escalate_reasons"])
+        rows.append(row)
+        if row["escalate"]:
+            esc.append({"key": key, "text": text, "reasons": row["escalate_reasons"],
+                        "variants": {str(v): {r: a["ranks"][r] for r in RELS} for v, (_, a) in sorted(per.items())}})
+    for path, recs in ((out_path, rows), (escalation_path, esc)):
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text("".join(canonical_json(r) + "\n" for r in recs), encoding="utf-8")
+    update_synonyms(cells, synonyms_path)
+    log_candidates(cands, REFINEMENT_DIR if refinement_dir is None else refinement_dir)
+    return rows
+
+
+# ---- the judge ----
+def two_pass_report(controls, blind_by_item, map_by_item, *, synonyms, candidates, v4_recall, floor=None):
+    """Judge the pre-registered predictions (`data/gold/two_pass_predictions.md`). `blind_by_item`, `map_by_item`: {item: {variant: (text,
+    answer)}}. Recall of the gold-required domains and precision among judged secondaries come from the v4 calibration judge applied to the
+    pass-2 memberships; synonyms are the distinct (label, domain) pairs of kind synonym; candidates the distinct proposed new domains of the
+    refinement records of source `blind_unmatched` (every one reviewed non-noise by the mapper); pass-1 labels are checked structurally."""
+    floor = membership_fit_floor(4) if floor is None else floor
+    rep = calibration_report(controls, map_by_item, floor=floor, prompt_version=4)
+    ids = sum(len(domain_ids_in(s)) for per in blind_by_item.values() for _, (_, a) in per.items()
+              for s in _strings_of(a))
+    syn = {(s["label"], s["domain"]) for s in synonyms if s["kinds"].get("synonym")}
+    new = {c["domain"] for c in candidates if c["source"] == "blind_unmatched"}
+    noise = sum(1 for per in map_by_item.values() for _, (_, a) in per.items() for e in a["labels"] if e["action"] == "noise")
+    unmatched = sum(1 for per in map_by_item.values() for _, (_, a) in per.items() for e in a["labels"] if e["action"] != "match")
+    rec, prec = rep["recall_required"], rep["precision_judged"]
+    return {
+        "recall_required": rec, "recall_v4": v4_recall, "precision_judged": prec, "precision_secondary": rep["precision_secondary"],
+        "n_unjudged": rep["n_unjudged"], "n_bad": rep["n_bad"], "median_listed": rep["median_listed"],
+        "distinct_synonyms": len(syn), "new_domain_candidates": len(new), "noise_labels": noise, "unmatched_labels": unmatched,
+        "pass1_domain_ids": ids, "items": len(map_by_item),
+        "predictions": {
+            "recall_at_least_v4_minus_0.05": rec is not None and rec >= v4_recall - 0.05,
+            "precision_judged_at_least_0.95": prec is not None and prec >= 0.95,
+            "at_least_10_synonyms": len(syn) >= 10,
+            "at_least_3_candidates": len(new) >= 3,
+            "pass1_labels_never_contain_domain_ids": ids == 0,
+        },
+    }
+
+
+def _strings_of(answer):
+    from .validate import _strings
+    return list(_strings({"blind": answer["blind"], "relational": answer["relational"]}))

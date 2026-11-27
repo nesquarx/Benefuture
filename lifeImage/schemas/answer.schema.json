@@ -20,6 +20,9 @@
     "ranks": {"type": "object"},
     "other": {"type": ["string", "null"]},
     "rows": {"type": "array", "items": {"type": "object"}},
+    "blind": {"type": "object"},
+    "relational": {"type": "object"},
+    "labels": {"type": "array", "items": {"type": "object"}},
     "reason": {"type": "string", "minLength": 1, "pattern": "^[^\\n]*$"},
     "run_id": {"type": "string"}
   }

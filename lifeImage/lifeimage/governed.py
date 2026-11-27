@@ -45,6 +45,15 @@ GOVERNED = {
                   "5 is the lowest score the v4 scale calls a real secondary aspect a careful reader would accept. Assumption; calibrated by the "
                   "membership.v4 control battery, then governed. v3 answers keep `membership.fit_floor` (4).",
     },
+    "blind.fit_floor": {
+        "default": 4,
+        "source": "LI.70: least fit (0-10) of a blind label in pass 1 of two-pass extraction. One below the membership floor of 5 (`membership.fit_floor.v4`) so "
+                  "that near-floor categories are observed and reach the mapper's review; the floor of the memberships themselves is applied in pass 2. Assumption.",
+    },
+    "blind.max_labels": {
+        "default": 6,
+        "source": "LI.70: most blind labels per relation in pass 1 (a bound on the review load of pass 2, as the width of the v3 and v4 lists is bounded in practice). Assumption.",
+    },
     "membership.agree_floor": {
         "default": 0.5,
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "

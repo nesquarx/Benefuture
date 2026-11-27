@@ -103,7 +103,7 @@ def test_the_default_is_warned_loudly_once_per_mechanism():
 
 def test_governed_values_carry_default_and_source():
     for name, g in GOVERNED.items():
-        unitless = name.startswith(("layout_sim.", "eventgen.", "noise.", "membership."))  # degrees, counts, ratios (LI.55) and event-generator margins and ages, not shares; membership.fit_floor is a 0-10 fit score (LI.67)
+        unitless = name.startswith(("layout_sim.", "eventgen.", "noise.", "membership.", "blind."))  # degrees, counts, ratios (LI.55) and event-generator margins and ages, not shares; membership.fit_floor and blind.fit_floor are 0-10 fit scores (LI.67, LI.70)
         assert (unitless and g["default"] >= 0 or 0 <= g["default"] <= 1) and g["source"].strip(), name
     assert governed("responsibility.floor") < governed("responsibility.no_option_set") < 1
     with pytest.raises(KeyError):

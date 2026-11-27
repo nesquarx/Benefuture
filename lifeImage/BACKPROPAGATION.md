@@ -152,6 +152,10 @@ deleted. Numbering is stable (LI.n).
   event's possible categories without seeing the existing domains. Pass 2: an agent with the domain set allocates the matches,
   logs synonyms (blind label to domain) and reviews the non-matching suggestions as candidate new domain entries (to the
   refinement log). PLAN, prompts.
+  Built (2026-11-27, not yet run): `blind.v1` and `map.v1` prompts, `lifeimage/two_pass.py`, validators in `validate.py` (pass 1 rejects domain ids,
+  pass 2 rejects ids outside the pack, unranked or below-floor lists, domains no blind label matched and unmatched labels without a review),
+  synonym log `data/refinement/synonyms_v1.jsonl`, refinement source `blind_unmatched`; the pass-2 pack carries the 1,897 coarse and fine domains
+  (about 62k tokens); predictions in `data/gold/two_pass_predictions.md` (pilot: the 32 controls and 50 snippets). Adoption waits for the pilot.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels

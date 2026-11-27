@@ -91,3 +91,52 @@ def write_pack(cards, root):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(coarse_pack(cards), encoding="utf-8")
     return path
+
+
+# ---- the domain pack of two-pass extraction (LI.70): coarse and fine, with aliases and short descriptions ----
+DOMAIN_PACK_MARK = "# domain pack"
+FINE_DESC_CHARS = 90  # a fine domain's description is cut to this many characters at a word boundary
+PACK_ALIASES = 2  # aliases listed per domain
+
+
+def _cut(text, n):
+    text = _WS.sub(" ", text).strip()
+    if len(text) <= n:
+        return text
+    return text[:n].rsplit(" ", 1)[0].rstrip(",;:") + "..."
+
+
+def _domain_line(card):
+    cell = lambda s: _WS.sub(" ", s.replace("|", "/")).strip()
+    aliases = "; ".join(cell(a["text"]) for a in card.get("aliases", [])[:PACK_ALIASES])
+    desc = cell(card["description"]) if not card["id"].startswith("f.") else cell(_cut(card["description"], FINE_DESC_CHARS))
+    if card["id"].startswith("f."):
+        up = _heaviest_upstream(card)
+        desc += f" [{up}]" if up else ""
+    return f"{card['id']} | {cell(card['label'])} | {aliases} | {desc}"
+
+
+def domain_pack(cards, variant=0):
+    """The pass-2 pack: one line per domain, `id | label | aliases | description`; sectors, then coarse fields, then fine domains
+    (each with its coarse parent in brackets), each block by id (variant 0) or by a fixed hash shuffle (variant i)."""
+    key = (lambda c: c["id"]) if variant == 0 else (lambda c: _variant_key(variant, c["id"]))
+    blocks = [sorted((c for c in cards if c["id"].startswith(pre)), key=key) for pre in ("s.", "c.", "f.")]
+    ordered = [c for b in blocks for c in b]
+    if len(ordered) != len(cards):
+        raise ValueError("every domain id must start with s., c. or f.")
+    body = "\n".join(_domain_line(c) for c in ordered) + "\n"
+    version = basemap_version(cards)
+    return f"{DOMAIN_PACK_MARK} | basemap {version} | {len(cards)} domains | ~{-(-len(body) // 4)} tokens\n{body}"
+
+
+def pack_entries(text):
+    """{id: {"label", "aliases", "description"}} of a domain pack found after its header in `text` (instructions before it are ignored)."""
+    at = text.find(DOMAIN_PACK_MARK)
+    if at < 0:
+        raise ValueError("no domain pack in the text")
+    out = {}
+    for l in text[at:].splitlines()[1:]:
+        parts = l.split(" | ")
+        if len(parts) == 4:
+            out[parts[0]] = {"label": parts[1], "aliases": [a for a in parts[2].split("; ") if a], "description": parts[3]}
+    return out
