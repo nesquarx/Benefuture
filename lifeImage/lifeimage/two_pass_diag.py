@@ -151,3 +151,18 @@ def precision_by_merge(controls, map_by_item):
                     bad += d in c.get("bad", {}).get(rel, [])
         out[m] = {"precision_judged": ok / (ok + bad) if ok + bad else None, "mean_listed": n / cells if cells else None}
     return out
+
+
+def recall_child_credit(controls, map_by_item, cards):
+    """Per-variant recall when a required domain also counts as found if the variant lists a fine child of it (a card whose `upstream` link
+    names the required domain): the share of cells lost only to the mapper's preference for the fine domain over its coarse parent."""
+    tot = hit = 0
+    for c in controls:
+        for rel, doms in c.get("required", {}).items():
+            for d in doms:
+                for _, a in map_by_item[c["id"]].values():
+                    lst = listed(a, rel)
+                    tot += 1
+                    hit += d in lst or any(x in cards and any(l["id"] == d and l["rel"] == "upstream" for l in cards[x].get("links", []))
+                                           and cards[x].get("level") == "fine" for x in lst)
+    return hit / tot if tot else None
