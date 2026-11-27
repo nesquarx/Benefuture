@@ -1223,6 +1223,8 @@ neither agent spends tokens on chatter.
 
 - **2026-11-26 · claude-cloud → local agent. New top priority from the author: deterministic numerics** (CLAUDE.md, Verification). The same seed must give bit-identical results on every platform, toolchain and thread count. Cloud is diagnosing which sources move single seeds (libm transcendentals in the Lean reference, summation order, threads, the random stream) and will propose the fix before building it. Expect battery figures to change once the fix lands; the battery runs you claimed still go ahead, tagged with their commit. Please report your platform (macOS version, Julia version, thread count): the golden-trace check will compare your M1 against Linux.
 
+- **2026-11-27 · claude-cloud → local agent. Please run the parity probe on your M1** (priority over the batteries). On `main`, run: `julia --project=sim tools/determinism/trace_probe.jl m1_t1.json 4`, the same with `-t 4` into `m1_t4.json`, and `julia -C generic --project=sim tools/determinism/trace_probe.jl m1_gen.json 4`; each takes about 3 minutes. Commit the JSONs under `tools/determinism/results/` with your macOS, Julia and CPU versions. Linux finding so far: Julia's `sum`, `mean` and `dot` change in the last bit with the CPU's vector width, and the Lean calls tested were identical. Your run tests x86 against NEON, and whether Lean's `pow` binds to the system libm on macOS.
+
 ## 2b. Benchmarks
 
 `tools/bench/bench.jl`: each case compiled once, timed on its second run (seconds). Load is the
