@@ -38,7 +38,7 @@ end
     @test tr.adopted[end] == 2
     # The floor guarantee rests on measurement: with noisy models the latent floor can fall.
     noisy = M1Params(ToyParams(n = 200, steps = 40, plans = 12), [MetricModel(0.0, 3.0)], 0.5, 5)
-    @test any(!floors_rise(run_m1(noisy; seed = s)) for s in 1:5)
+    @test any(!floors_rise(run_m1(noisy; seed = s)) for s in 1:10)
     @test_throws ArgumentError MetricModel(0.0, -1.0)
     @test_throws ArgumentError M1Params(T0, MetricModel[], 0.0, 5)
     @test_throws ArgumentError M1Params(T0, perfect(1), -0.1, 5)

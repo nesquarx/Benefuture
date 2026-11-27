@@ -3,6 +3,8 @@
   Computable reference for settling probabilistic escrow (L84, L96), over Float.
 -/
 
+import BenefutureReference.FloatDet
+
 namespace BenefutureReference
 
 /--
@@ -67,7 +69,7 @@ def shapley_sampled_ref (n m : Nat) (perms vals : Array Float) : Array Float :=
   inequality itself is cited, not proved).
 -/
 def shapley_sample_count_ref (n : Nat) (eps delta : Float) : Nat :=
-  (Float.ceil (Float.log (2.0 * n.toFloat / delta) / (2.0 * eps * eps))).toUInt64.toNat
+  (Float.ceil (det_log (2.0 * n.toFloat / delta) / (2.0 * eps * eps))).toUInt64.toNat
 
 /-- The switch of L94: contributions come from the causal assessment (MM_CE) when its confidence
     reaches the threshold, else from traversing the transaction substrate (L95). -/
@@ -78,7 +80,7 @@ def cc_assessed_ref (confidence threshold : Float) : Bool := confidence ≥ thre
   separation, decay^degree, and normalised; nothing to share when no link contributed.
 -/
 def traversal_shares_ref (netC degree : Array Float) (decay : Float) : Array Float :=
-  let w := (netC.zip degree).map fun (c, d) => c * Float.pow decay d
+  let w := (netC.zip degree).map fun (c, d) => c * det_pow decay d
   let total := w.foldl (· + ·) 0.0
   if total ≤ 0.0 then w.map fun _ => 0.0 else w.map (· / total)
 

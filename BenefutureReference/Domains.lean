@@ -5,6 +5,8 @@
   (Ontology.Reputation).
 -/
 
+import BenefutureReference.FloatDet
+
 namespace BenefutureReference
 
 /-- A domain profile is a partition of unity: non-negative shares summing to 1 (to 1e-9). -/
@@ -36,7 +38,7 @@ def classify_ref (dists : Array Float) (threshold temperature : Float) : Array F
   if matched.isEmpty then (dists.map fun _ => 0.0).push 1.0
   else
     let m := matched.foldl min matched[0]!
-    let w := dists.map fun d => if d ≤ threshold then Float.exp (-(d * d - m * m) / temperature) else 0.0
+    let w := dists.map fun d => if d ≤ threshold then det_exp (-(d * d - m * m) / temperature) else 0.0
     let s := w.foldl (· + ·) 0.0
     (w.map (· / s)).push 0.0
 
@@ -146,7 +148,7 @@ def normal_cdf_ref (x : Float) : Float :=
   let z := x.abs / Float.sqrt 2.0
   let t := 1.0 / (1.0 + 0.3275911 * z)
   let poly := t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
-  let erf := 1.0 - poly * Float.exp (-(z * z))
+  let erf := 1.0 - poly * det_exp (-(z * z))
   if x ≥ 0.0 then 0.5 * (1.0 + erf) else 0.5 * (1.0 - erf)
 
 /-- A model's credence that an action's assessed value is positive (L84: P(As(V, A, t0) > 0);
@@ -199,10 +201,10 @@ def choice_skill_ref (credences modelCredences outcomes : Array Float) : Float :
     (muted), a very busy domain keeps a longer horizon than a fixed record count would give it (less
     volatile) and a very slow one a shorter one (it pivots faster). No transactions yet: the reference. -/
 def decay_halflife_ref (rate refRate refHalflife mute : Float) : Float :=
-  if rate ≤ 0.0 || refRate ≤ 0.0 then refHalflife else refHalflife * Float.pow (refRate / rate) mute
+  if rate ≤ 0.0 || refRate ≤ 0.0 then refHalflife else refHalflife * det_pow (refRate / rate) mute
 
 /-- A record's weight at `age` steps under half-life `h`: 2^(−age / h). -/
-def decay_weight_ref (age h : Float) : Float := Float.pow 2.0 (-(max age 0.0) / h)
+def decay_weight_ref (age h : Float) : Float := det_pow 2.0 (-(max age 0.0) / h)
 
 /-- Accuracy as the quality of credences (`credence_accuracy_ref`), each record weighted by its age
     under half-life `h` (author ruling 8.85): 1 − weighted Brier / 0.25, floored at 0; no record, 0. -/
@@ -236,7 +238,7 @@ def decayed_mean_se_ref (xs ages : Array Float) (h : Float) : Array Float := Id.
   let mut sv := 0.0
   for i in [0:n] do
     let w := decay_weight_ref ages[i]! h
-    sv := sv + w * (xs[i]! - m) ^ 2
+    sv := sv + w * sq (xs[i]! - m)
   let neff := sw * sw / sw2
   if neff < 2.0 then return #[m, 1.0e300]
   return #[m, Float.sqrt (sv / sw * neff / (neff - 1.0) / neff)]

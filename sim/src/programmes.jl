@@ -23,7 +23,7 @@ function run_programmes(; seed::Integer, tiered::Bool = true, n::Integer = 20, s
                         joy::Real = 0.3, h_retention::Real = 0.3, drill::Real = 0.5, pred_σ::Real = 0.1)
     check(n >= class >= 1 && steps >= 1 && 0 <= p_paradigm <= 1 && 0 < ε <= 1 && 0 <= h_retention <= 1 && pred_σ >= 0 &&
           all(x -> isfinite(x) && x >= 0, (leap, increment, joy, drill)), "valid programme world")
-    rng = Xoshiro(seed); prng = Xoshiro(hash((seed, :predictions))); erng = Xoshiro(hash((seed, :effects)))
+    rng = DetRNG(seed); prng = det_rng(seed, :predictions); erng = det_rng(seed, :effects)
     u = 1.0 .+ rand(rng, n); h0 = 50.0; h = fill(h0, n); teachable = u ./ 2
     bp = NamedTuple{PARAM_FIELDS}(Tuple(bootstrap_params()))
     kw = (harm_wt = 1.0, α = bp.alpha, β = bp.beta, γ = bp.gamma, λ = bp.lambda, qp = bp.q_plus, qm = bp.q_minus)

@@ -39,8 +39,8 @@ and the weighted payoff of all decisions. Reuses `count_once`-free path: experts
 step 2b (network, M5, M3c).
 """
 function run_ih_claims(p::IhClaimsParams)
-    rng_t = Xoshiro(hash((p.seed, :truth))); rng_e = Xoshiro(hash((p.seed, :expert_noise)))
-    rng_s = Xoshiro(hash((p.seed, :skill)))
+    rng_t = det_rng(p.seed, :truth); rng_e = det_rng(p.seed, :expert_noise)
+    rng_s = det_rng(p.seed, :skill)
     skill = [e <= round(Int, p.frac_biased * p.experts) ? 0.0 : 0.3 + 0.5 * rand(rng_s) for e in 1:p.experts]   # a third are uninformed: they follow the shared bias even where the claim is checkable
     hit = zeros(p.experts); seen = zeros(p.experts)
     chit = 0.0; cseen = 0.0
@@ -136,7 +136,7 @@ function run_ih_world(p::IhWorldParams)
     liars = p.liars_override === nothing ? collect(1:p.liar_stride:na) : sort(collect(Int, p.liars_override))
     extremists = p.extremist_frac > 0 ? [i for i in 1:na if i % max(2, round(Int, 1 / p.extremist_frac)) == 2 && !(i in liars)] : Int[]
     bloc = sort(union(liars, extremists))   # extremists are one more fixed-side bloc on the network: M5 spreads, tags and weighs them as it does the colluders
-    rng_x = Xoshiro(hash((p.seed, :extremist)))   # own stream, drawn only where extremists exist
+    rng_x = det_rng(p.seed, :extremist)   # own stream, drawn only where extremists exist
     # the shared network's two M8 measurements (one n, one set of colluders)
     t8 = run_m8_truth(M8TruthParams(n = na, steps = 4, echo_copies = length(liars), mode = p.ih ? :bf_truth : :untagged_naive, seed = p.seed))
     z8 = run_m8_ihz(M8IhzParams(n = na, steps = 8, attacker_frac = length(liars) / na, mode = p.ih ? :gated_ihz : :open_ungated, seed = p.seed))
@@ -147,7 +147,7 @@ function run_ih_world(p::IhWorldParams)
                     source_tags = p.ih && p.connected, tag_liars = p.connected ? bloc : Int[], colluders = bloc, stealth = false,
                     diversity = false, advice_stay = p.advice_stay, advice_avg = 1 - p.advice_stay - defer, advice_defer = defer,
                     rounds = p.rounds, network = p.network === nothing ? nothing : p.network.contacts, defer_voter = dv)
-    rng_t = Xoshiro(hash((p.seed, :truth))); rng_d = Xoshiro(hash((p.seed, :domain)))
+    rng_t = det_rng(p.seed, :truth); rng_d = det_rng(p.seed, :domain)
     rec = [[0.0, 0.0] for _ in 1:na, _ in 1:nd]
     chit = 0.0; cseen = 0.0; acc = Float64[]; harm = 0.0; peak = 0.0; pay = 0.0; w_unprov = Float64[]; swayed = Float64[]
     infl = Float64[]; infl_unprov = Float64[]; wrong_unprov = Float64[]
@@ -164,7 +164,7 @@ function run_ih_world(p::IhWorldParams)
         # in the bias frame +1 is the shared bias's side; an unfalsifiable claim is perceived as the bias side by everyone
         T = observable ? t * bias : 1.0
         over = Dict{Symbol,Any}(:p_apparent => observable ? 1.0 : 0.0, :domains => [k])
-        r = run_m5(_with_fields(base, over); seed = Int(hash((p.seed, :claim, step, c)) & 0x7fffffff), records = rec, truths = [T])
+        r = run_m5(_with_fields(base, over); seed = stream_int_seed(p.seed, :claim, step, c), records = rec, truths = [T])
         rec = r.records
         experts = sortperm(m3.relevance_leaf[:, k]; rev = true)[1:min(p.n_experts, na)]
         out = [e in extremists ? clamp(0.5 + 0.5 * p.ext_conf * bias, 0.01, 0.99) : clamp(0.5 + 0.45 * bias * sign(r.last_signal[e]), 0.01, 0.99) for e in experts]

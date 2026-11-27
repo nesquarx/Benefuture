@@ -594,7 +594,7 @@ function replay_decision(case_dict::AbstractDict; thresholds...)
             elseif length(sources) == 1
                 opt["pred_confidence"] = first(values(src_map))
             elseif !isempty(src_map)
-                opt["pred_confidence"] = mean(values(src_map))
+                opt["pred_confidence"] = mean(src_map[k] for k in sort!(collect(keys(src_map))))
             end
         end
     end

@@ -447,12 +447,12 @@ function stackexchange_domain_network(answers::Vector{Dict{String,String}}; top_
 end
 
 """
-    calibrate_stackexchange_skills(answers; rng = MersenneTwister(1)) -> NamedTuple
+    calibrate_stackexchange_skills(answers; rng = DetRNG(1)) -> NamedTuple
 
 Calibrate per-domain log-normal skill heterogeneity `(median, log_sd)` and user record stabilization
 threshold `n_learn` from settled answer scores and acceptances, and sample matching `draw_skills`.
 """
-function calibrate_stackexchange_skills(answers::Vector{Dict{String,String}}; rng::AbstractRNG = MersenneTwister(1))
+function calibrate_stackexchange_skills(answers::Vector{Dict{String,String}}; rng::AbstractRNG = DetRNG(1))
     check(!isempty(answers), "non-empty Stack Exchange answers required")
     sites = sort(unique([String(strip(r["site"])) for r in answers]))
     by_site_user = Dict{Tuple{String,String},Vector{Tuple{Int,Float64}}}()

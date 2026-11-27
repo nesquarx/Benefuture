@@ -225,12 +225,12 @@ largest share of total weight one voter held (`max_share`) and the largest singl
 (`max_single`), both as shares of the total.
 """
 function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
-    rng = Xoshiro(seed)
-    trng = Xoshiro(hash((seed, :split_trial)))  # its own stream: diversity changes no other draw
+    rng = DetRNG(seed)
+    trng = det_rng(seed, :split_trial)  # its own stream: diversity changes no other draw
     # Imperfect agents (8.31): each voter's noise ceiling per domain, inverse to its skill there on
     # average; each locale's ceiling; choices draw noise on their own stream.
-    arng, crng = Xoshiro(hash((seed, :ability))), Xoshiro(hash((seed, :choice)))
-    mrng = Xoshiro(hash((seed, :misconception)))  # correlated misconception among non-specialists (8.90)
+    arng, crng = det_rng(seed, :ability), det_rng(seed, :choice)
+    mrng = det_rng(seed, :misconception)  # correlated misconception among non-specialists (8.90)
     caps = ability_caps(arng, max.(p.skills, 0.0); base = p.signal_σ, gain = p.skill_gain, spread = p.ability_spread)
     local_caps = vec(ability_caps(arng, zeros(p.trial_units, 1); base = p.local_σ, gain = 0.0, spread = p.ability_spread))
     correct_trace = Bool[]
@@ -267,7 +267,7 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     out_of_audit(j, k) = p.audit_window > 0 && audited_out(count(record[j, k]), length(record[j, k]); min_records = p.audit_min_records, threshold = p.audit_threshold)
     # AdvAp: hidden decisions the bloc falsified since the last revelation, kept for repair, and
     # whether each decision ends right (a repaired decision may change).
-    vrng = Xoshiro(hash((seed, :advap)))
+    vrng = det_rng(seed, :advap)
     falsified = NamedTuple{(:n, :k, :truth, :held, :votes, :delegated, :total),Tuple{Int,Int,Float64,Vector{Float64},Vector{Float64},BitVector,Float64}}[]
     right_now, hidden_flag = Bool[], Bool[]
     adv = (established = Ref(0), rewards = Ref(0.0), liability = Ref(0.0), gain_forgone = Ref(0.0), recounted = Ref(0))
@@ -279,11 +279,11 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     end
     # Clean deliberation: each voter's contacts (a fixed social network), each domain's models, and
     # every source's full record of published readings on apparent decisions (right, total).
-    nrng = Xoshiro(hash((seed, :deliberation)))
+    nrng = det_rng(seed, :deliberation)
     contacts = p.network !== nothing ? p.network : [p.deliberation ? [j for j in randperm(nrng, na)[1:min(p.n_contacts + 1, na)] if j != i][1:min(p.n_contacts, na - 1)] : Int[] for i in 1:na]
     p.network === nothing || check(length(contacts) == na && all(c -> all(j -> 1 <= j <= na, c), contacts), "one contact list per voter, among the voters")
     nd = size(p.reputation, 2)
-    advw = advice_weights(p, na, nd, Xoshiro(hash((seed, :advice))))  # weight on advice per person and domain (8.63)
+    advw = advice_weights(p, na, nd, det_rng(seed, :advice))  # weight on advice per person and domain (8.63)
     minds_trace = Float64[]
     mods = [[(id = k, σ = p.model_σ0, rec = [0.0, 0.0])] for k in 1:nd]
     # `records`: the sources' accumulated (right, wrong) from earlier runs of the same society (a composed world's
@@ -306,7 +306,7 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     # Source tags (8.45): tags falsified and caught; AdvAp's echo audit over each person's outputs
     # presented as its own, against the reading its sources gave it (raw counts: entries never
     # decay, 8.42.4); the persons it flagged. Votes split on their own stream.
-    grng = Xoshiro(hash((seed, :tags)))
+    grng = det_rng(seed, :tags)
     liar = falses(na); liar[p.tag_liars] .= true
     tags_false, tags_caught = Ref(0), Ref(0)
     agree, n_out = zeros(na), zeros(na)
@@ -318,10 +318,10 @@ function run_m5(p::M5Params; seed, records = nothing, truths = nothing)
     launders(j) = liar[j] && p.tag_lie == :omit && !flagged[j]
     misattributes(j) = liar[j] && p.tag_lie == :misattribute
     # Voters who manufacture exposure (adversary): a share of the voters, on their own stream.
-    makers = Set(randperm(Xoshiro(hash((seed, :posthoc))), na)[1:round(Int, p.posthoc_share * na)])
+    makers = Set(randperm(det_rng(seed, :posthoc), na)[1:round(Int, p.posthoc_share * na)])
     maker_share = Float64[]  # their share of the total weight, per decision
     # Technology Network cluster attestation state (8.70, L18): separate stream preserves baselines when off.
-    tnrng = Xoshiro(hash((seed, :tn_bind)))
+    tnrng = det_rng(seed, :tn_bind)
     tn_active = p.bind_quorum > 0 || p.bind_weighted
     attest_cred = [Float64[] for _ in 1:p.bind_clusters]
     attest_out = [Float64[] for _ in 1:p.bind_clusters]
@@ -790,7 +790,7 @@ end
 
 "Gamma(a, 1) by Marsaglia and Tsang (2000), boosted for a < 1; Beta as a ratio of gammas."
 function gamma_draw(rng, a)
-    a < 1 && return gamma_draw(rng, a + 1) * rand(rng)^(1 / a)
+    a < 1 && return gamma_draw(rng, a + 1) * det_pow(rand(rng), 1 / a)
     d = a - 1 / 3; c = 1 / sqrt(9d)
     while true
         x = randn(rng); v = (1 + c * x)^3

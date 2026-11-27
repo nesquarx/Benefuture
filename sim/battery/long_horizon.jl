@@ -73,7 +73,7 @@ function world(seed::Integer; arm::Symbol = :bf, stress::Symbol = :stressed, ste
                n_agents::Integer = 12, decisions::Integer = 1200, ih::Bool = arm == :bf, dormant::Bool = arm == :bf)
     arm in WORLD_ARMS || error("arm must be one of $WORLD_ARMS")
     bf = arm == :bf
-    skills = draw_skills(Xoshiro(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
+    skills = draw_skills(DetRNG(20261102 + seed), n_agents, 4, [1, 3]; median = 0.6)
     agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:n_agents]
     deceit = zeros(n_agents); deceit[n_agents - 1] = 1.0; deceit[n_agents] = 1.0   # steady, and the on-off one
     frivolous = zeros(n_agents); frivolous[n_agents - 2] = 0.5                      # the slanderer

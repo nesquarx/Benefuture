@@ -1,12 +1,26 @@
 name: Determinism probe
-# Manual only. Runs tools/determinism/trace_probe.jl in each environment and uploads the JSON;
-# compare any two with `python3 tools/determinism/compare.py A.json B.json`.
+# Runs tools/determinism/trace_probe.jl across OSes, Julia versions, CPU targets, and thread counts,
+# then verifies zero bit differences in the `verify` job (`compare.py --check`).
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'BenefutureReference/**'
+      - 'BenefutureReference.lean'
+      - 'lakefile.toml'
+      - 'sim/src/deterministic.jl'
+      - 'tools/determinism/**'
+      - '.github/workflows/determinism.yml'
   workflow_dispatch:
     inputs:
       seeds:
         description: "comma-separated seeds"
         default: "4"
+
+concurrency:
+  group: determinism-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
 jobs:
   probe:
     strategy:
@@ -15,26 +29,83 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         julia: ["1.13.3"]
         threads: ["1", "4"]
+        cpu_flag: [""]
         include:
-          - { os: ubuntu-latest, julia: "1.13.4", threads: "1" }
-          - { os: macos-latest, julia: "1.13.4", threads: "1" }
+          - { os: ubuntu-latest, julia: "1.11.3", threads: "1", cpu_flag: "" }
+          - { os: ubuntu-latest, julia: "1.13.4", threads: "1", cpu_flag: "" }
+          - { os: macos-latest, julia: "1.13.4", threads: "1", cpu_flag: "" }
+          - { os: ubuntu-latest, julia: "1.13.4", threads: "1", cpu_flag: "-C generic" }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: julia-actions/setup-julia@v2
-        with: { version: "${{ matrix.julia }}" }
-      - name: Toolchains (Lean)
-        run: tools/setup/toolchains.sh
+        with:
+          version: "${{ matrix.julia }}"
+
+      - name: Cache the Lean toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean-toolchain') }}
+
+      - name: Install elan
+        run: |
+          if [ ! -x "$HOME/.elan/bin/elan" ]; then
+            curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          fi
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install the Lean toolchain
+        run: |
+          for attempt in 1 2 3 4; do
+            elan toolchain install "$(cat lean-toolchain)" && exit 0
+            sleep $((attempt * 15))
+          done
+          exit 1
+
+      - name: Build the Lean reference library
+        run: lake build BenefutureReference:shared
+
       - name: Instantiate
         run: julia --project=sim -e 'using Pkg; Pkg.instantiate()'
+
       - name: Probe
         env:
           JULIA_NUM_THREADS: ${{ matrix.threads }}
         run: |
-          export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
           mkdir -p out
-          julia --project=sim tools/determinism/trace_probe.jl "out/${{ matrix.os }}-j${{ matrix.julia }}-t${{ matrix.threads }}.json" "${{ inputs.seeds }}" | tee out/summary.txt
+          SEEDS="${{ inputs.seeds || '4' }}"
+          TAG="${{ matrix.os }}-j${{ matrix.julia }}-t${{ matrix.threads }}"
+          if [ -n "${{ matrix.cpu_flag }}" ]; then
+            TAG="${TAG}-gen"
+          fi
+          julia ${{ matrix.cpu_flag }} --project=sim tools/determinism/trace_probe.jl "out/${TAG}.json" "${SEEDS}" | tee out/summary.txt
+
       - uses: actions/upload-artifact@v4
         with:
-          name: determinism-${{ matrix.os }}-j${{ matrix.julia }}-t${{ matrix.threads }}
+          name: determinism-${{ matrix.os }}-j${{ matrix.julia }}-t${{ matrix.threads }}-${{ matrix.cpu_flag != '' && 'gen' || 'native' }}
           path: out/
+
+  verify:
+    needs: probe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Compare all traces bit-for-bit
+        run: |
+          SEEDS="${{ inputs.seeds || '4' }}"
+          FILES=(artifacts/*/*.json)
+          echo "Found ${#FILES[@]} probe JSON files"
+          [ "${#FILES[@]}" -ge 2 ]
+          BASE="${FILES[0]}"
+          if [ "${SEEDS}" = "4" ] && [ -f "tools/determinism/results/m1_t1.json" ]; then
+            python3 tools/determinism/compare.py --check tools/determinism/results/m1_t1.json "${BASE}"
+          fi
+          for f in "${FILES[@]}"; do
+            echo "=== Checking ${f} against ${BASE} ==="
+            python3 tools/determinism/compare.py --check "${BASE}" "${f}"
+          done

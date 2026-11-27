@@ -372,19 +372,19 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     shortfall = [Float64[] for _ in 1:p.n]; taught_n = zeros(Int, p.n); audits_by_report = Ref(0); audited_at = zeros(Int, p.n)
     check(!traits || (!central && n_items >= 1 && 0 < breakthrough < 1 && practice_per_u >= 0),
           "traits mode (8.98, 8.109): G per entity")
-    rng = Xoshiro(seed)
-    trng, rrng = Xoshiro(hash((seed, :reception))), Xoshiro(hash((seed, :research)))
-    vrng = Xoshiro(hash((seed, :views)))  # entities' views and predictions
+    rng = DetRNG(seed)
+    trng, rrng = det_rng(seed, :reception), det_rng(seed, :research)
+    vrng = det_rng(seed, :views)  # entities' views and predictions
     # Teachers differ (3.7): each being's lessons carry a persistent log-normal multiplier of mean 1 on ε
     # (`teacher_cv`; 0 is the limiting case of identical teachers), on its own stream.
-    quality = lognormal_mean1(Xoshiro(hash((seed, :teachers))), teacher_cv, p.n)
+    quality = lognormal_mean1(det_rng(seed, :teachers), teacher_cv, p.n)
     # A learner's reception is log-normal of mean 1 (a few learn a lot; 3.7), so ε stays the mean share of the gap.
     receive(n) = exp.(reception_σ .* randn(trng, n) .- reception_σ^2 / 2)
     # Personal happiness profiles (8.129, author 2026-11-08): each being's split of a happiness change over the
     # kinds (eudaimonic, shareable, satisficing, baseline, median, sensory peak), a world property on its own stream;
     # mostly satisficing on average, varying by being.
     hprof = if tiers && h_profiles
-        hrng = Xoshiro(hash((seed, :happiness_profiles)))
+        hrng = det_rng(seed, :happiness_profiles)
         m = [0.15, 0.15, 0.4, 0.1, 0.1, 0.1]
         P = [m[k] * exp(0.5 * randn(hrng)) for _ in 1:p.n, k in 1:6]
         P ./ sum(P; dims = 2)
@@ -400,7 +400,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     # rest of M7 (G, views, happiness, floors) reads them as before. Work becomes practice, lessons pass
     # models and explanation, research finds better bundles.
     if traits
-        xrng = Xoshiro(hash((seed, :traits)))
+        xrng = det_rng(seed, :traits)
         twt = rand(xrng, n_items); twt ./= sum(twt)
         tms = 0.1 .+ 0.35 .* rand(xrng, p.n, n_items); tmc = 0.1 .+ 0.6 .* rand(xrng, p.n, n_items)
         tce = 0.2 .+ 0.5 .* rand(xrng, p.n, n_items)
@@ -459,7 +459,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             researching = if research_choice
                 map(1:p.n) do b
                     rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-                    ch = clamp(p_research * rel^rel_exponent * novelty[b], 0.0, 1.0)
+                    ch = clamp(p_research * det_pow(rel, rel_exponent) * novelty[b], 0.0, 1.0)
                     g = ch * research_gain / p.th
                     pl = random_plan(rng, p); work = ToyPlan(action_scale .* pl.du, action_scale .* pl.dh)
                     vw = tiers ? tiered_plan_value(work, p, s.u, s.h; hprof) : plan_value(work, p)
@@ -478,7 +478,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             for b in findall(researching)
                 tr.spent[] += research_cost
                 rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-                chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+                chance = clamp(p_research * det_pow(rel, rel_exponent) * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
                 if rand(rrng) < chance
                     if traits
                         i = rand(xrng, 1:n_items)   # a better bundle on one item (lower spread or, a breakthrough, lower complexity)
@@ -499,7 +499,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             workforce = 1 - count(researching) / p.n
             peak = maximum(s.u)  # after this step's research: innovation is counted against it
             # Ordinary work carries no one past the frontier, but for rare in-job innovation near the top.
-            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
+            near = [peak > med ? det_pow(clamp((s.u[b] - med) / (peak - med), 0.0, 1.0), near_exponent) : 0.0 for b in 1:p.n]
             function capped(pl)
                 cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
                 ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
@@ -634,7 +634,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
     h_at_acc = Float64[]
     degraded = NamedTuple{(:step, :reason),Tuple{Int,Symbol}}[]
     nha_bearers = Int[]
-    arng = Xoshiro(hash((seed, :accession)))
+    arng = det_rng(seed, :accession)
     nu_start = Ref(Float64(accession_u))   # newcomers' starting level (in traits mode, read from their traits)
 
     for step in 1:p.steps
@@ -665,7 +665,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             for b in findall(researching)
                 tr.spent[] += research_cost
                 rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-                chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+                chance = clamp(p_research * det_pow(rel, rel_exponent) * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
                 if rand(rrng) < chance
                     gain = research_gain * exp(gain_σ * randn(rrng))
                     new = s.u[b] + gain
@@ -676,7 +676,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             end
             workforce = 1 - count(researching) / p.n
             peak = maximum(s.u)
-            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:p.n]
+            near = [peak > med ? det_pow(clamp((s.u[b] - med) / (peak - med), 0.0, 1.0), near_exponent) : 0.0 for b in 1:p.n]
             capped_pre = pl -> begin
                 cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:p.n]
                 ToyPlan([pl.du[b] > 0 ? min(pl.du[b], cap[b]) : pl.du[b] for b in 1:p.n], pl.dh)
@@ -775,7 +775,7 @@ function run_m7(p::ToyParams; seed, ε::Real = CALIBRATED.ε, research_share::Re
             end
 
             # Ordinary plans over 1:n_cur
-            near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:n_cur]
+            near = [peak > med ? det_pow(clamp((s.u[b] - med) / (peak - med), 0.0, 1.0), near_exponent) : 0.0 for b in 1:n_cur]
             for _ in 1:p.plans
                 du, dh = random_plan_over(rng, p, trues(n_cur))
                 cap = [rand(rrng) < p_innovate * near[b] ? Inf : max(0.0, peak - s.u[b]) for b in 1:n_cur]
@@ -1008,8 +1008,8 @@ function run_births(p::ToyParams; seed, p_birth::Real = 0.02, window::Integer = 
     check(all(x -> isfinite(x) && x >= 0, (birth_pred_σ, birth_spread, settle_σ, birth_joy, income, endowment, gamer_bias,
                                          action_scale, view_σ, pred_σ)), "scatters, joy, income, endowment and bias non-negative")
     rng = Xoshiro(seed)
-    vrng, brng = Xoshiro(hash((seed, :views))), Xoshiro(hash((seed, :births)))
-    mrng, srng = Xoshiro(hash((seed, :birth_predictions))), Xoshiro(hash((seed, :settlement)))
+    vrng, brng = det_rng(seed, :views), det_rng(seed, :births)
+    mrng, srng = det_rng(seed, :birth_predictions), det_rng(seed, :settlement)
     s = toy_state(p, rng)
     n0 = p.n
     gamer = [b <= round(Int, gamers * n0) for b in 1:n0]
@@ -1291,8 +1291,8 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
           near_exponent, tacit_initial, novelty_initial, birth_pred_σ, birth_spread, settle_σ, birth_joy,
           income, endowment, gamer_bias, action_scale, view_σ, pred_σ)), "scales, costs and dispersions non-negative")
     rng = Xoshiro(seed)
-    rrng, vrng = Xoshiro(hash((seed, :pop_research))), Xoshiro(hash((seed, :pop_views)))
-    brng, mrng, srng = Xoshiro(hash((seed, :pop_births))), Xoshiro(hash((seed, :pop_pred))), Xoshiro(hash((seed, :pop_settle)))
+    rrng, vrng = det_rng(seed, :pop_research), det_rng(seed, :pop_views)
+    brng, mrng, srng = det_rng(seed, :pop_births), det_rng(seed, :pop_pred), det_rng(seed, :pop_settle)
     s = toy_state(p, rng)
     n0 = p.n
     gamer = [b <= round(Int, gamers * n0) for b in 1:n0]
@@ -1302,7 +1302,7 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
     posted_b, baseline_b, short_b = zeros(n0), zeros(n0), zeros(n0)
     novelty, tacit, quality = fill(Float64(novelty_initial), n0), fill(Float64(tacit_initial), n0), ones(n0)
     bb = BirthBaseline(n0; on = birth_baseline, cost = bb_cost, rate = bb_rate, cap_mult = bb_cap, levy_cap = bb_levy_cap,
-                       meas_σ = bb_meas_σ, income_per_adult = income, rng = Xoshiro(hash((seed, :baseline))))
+                       meas_σ = bb_meas_σ, income_per_adult = income, rng = det_rng(seed, :baseline))
     tr = (floor_u = Float64[], floor_h = Float64[], median_u = Float64[], median_h = Float64[], peak_u = Float64[],
           worst_drop = Float64[], raw_floor_u = Float64[], population = Int[], actions = Int[],
           births = Ref(0), settled = Ref(0), posted = Ref(0.0), measured = Ref(0.0), clawback = Ref(0.0), refund = Ref(0.0),
@@ -1336,7 +1336,7 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
         for b in findall(researching)
             tr.spent[] += research_cost
             rel = peak > 0 ? clamp(s.u[b] / peak, 0.0, 1.0) : 0.0
-            chance = clamp(p_research * rel^rel_exponent * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
+            chance = clamp(p_research * det_pow(rel, rel_exponent) * novelty[b] * exp(research_σ * randn(rrng)), 0.0, 1.0)
             if rand(rrng) < chance
                 gain = research_gain * exp(gain_σ * randn(rrng))
                 new = s.u[b] + gain
@@ -1346,7 +1346,7 @@ function run_population_world(p::ToyParams; seed, p_research::Real = 0.05, resea
             end
         end
         peak = maximum(s.u); med = median(s.u)
-        near = [peak > med ? clamp((s.u[b] - med) / (peak - med), 0.0, 1.0)^near_exponent : 0.0 for b in 1:n]
+        near = [peak > med ? det_pow(clamp((s.u[b] - med) / (peak - med), 0.0, 1.0), near_exponent) : 0.0 for b in 1:n]
         ru = reading()
         total_du, total_dh, acted, newborns = zeros(n), zeros(n), 0, Any[]
         lesson_du, lesson_cap = zeros(n), fill(-Inf, n)

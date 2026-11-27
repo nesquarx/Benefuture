@@ -19,8 +19,8 @@ function coupled_world(seed::Integer; arm::Symbol = :bf, steps::Integer = 120, o
                        entrants::Integer = 0, adaptive_proposals::Bool = false, p_new_model::Real = 0.01,
                        over::Dict{Symbol,Any} = Dict{Symbol,Any}(), ih::Bool = arm == :bf, dormant::Bool = arm == :bf)
     bf = arm == :bf
-    skills0 = draw_skills(Xoshiro(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
-    skills = entrants > 0 ? vcat(skills0, draw_skills(Xoshiro(20261115 + seed), entrants, 4, [1, 3]; median = 0.6)) : skills0
+    skills0 = draw_skills(DetRNG(20261102 + seed), 12, 4, [1, 3]; median = 0.6)
+    skills = entrants > 0 ? vcat(skills0, draw_skills(DetRNG(20261115 + seed), entrants, 4, [1, 3]; median = 0.6)) : skills0
     na = 12 + entrants
     agents = [DomainAgent(skills[a, :], [0.5, 0.0, 0.5, 0.0], CALIBRATED.sloppiness) for a in 1:na]
     deceit = zeros(na); deceit[11] = 1.0; deceit[12] = 1.0

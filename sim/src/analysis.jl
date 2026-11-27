@@ -1,6 +1,6 @@
 # Trace analysis: how long a run must be, and how many seeds, before a reading means something.
 
-using Statistics
+# using Statistics provided selectively by BenefutureSim
 
 "Running mean: entry t is the mean of the first t values."
 running_mean(xs) = isempty(xs) ? Float64[] : cumsum(Float64.(xs)) ./ (1:length(xs))

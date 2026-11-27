@@ -11,7 +11,7 @@
 #     the economy's measured outcomes, so a harmful threshold candidate on offer cannot be
 #     rejected by outcomes.
 
-using Random, Statistics
+# using Random, Statistics provided selectively by BenefutureSim
 
 const COUPLED_GOV_FIELDS = [1, 2, 3, 6, 7, 8]
 
@@ -117,9 +117,9 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
     U === nothing || (econ = U.econ)
     na = length(econ.agents)
     nd = count(econ.known)
-    grng = Xoshiro(hash((seed, :coupled_gov)))
-    arng = Xoshiro(hash((seed, :coupled_ability)))
-    crng = Xoshiro(hash((seed, :coupled_choice)))
+    grng = det_rng(seed, :coupled_gov)
+    arng = det_rng(seed, :coupled_ability)
+    crng = det_rng(seed, :coupled_choice)
 
     pv_inc = incumbent_pv === nothing ? bootstrap_params() : collect(Float64, incumbent_pv)
     pv_cur = copy(pv_inc)
@@ -377,7 +377,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         if gp.ih_vote && gp.deliberation
             rep_v = max.(reputation, 0.0)
             sum(rep_v) <= 0 && (rep_v = fill(1e-3, size(rep_v)))
-            vote_run = run_m5(_with_m5_vote(gp, rep_v, k); seed = Int(hash((seed, :coupled_vote, ep)) & 0x7fffffff),
+            vote_run = run_m5(_with_m5_vote(gp, rep_v, k); seed = stream_int_seed(seed, :coupled_vote, ep),
                               records = src_rec, truths = [read_truth])
             U === nothing || unified_hear!(U, vote_run.heard)
             readings = vote_run.last_signal
@@ -391,7 +391,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
         if U !== nothing && U.ident !== nothing && !U.economy && cand_active
             nvoting = count(!, delegated)
             tally += identity_ballots(U.ident, read_truth, sum(held[i] for i in 1:na if !delegated[i]; init = 0.0) / max(1, nvoting),
-                                      Xoshiro(hash((seed, :identity_vote, ep))))
+                                      det_rng(seed, :identity_vote, ep))
         end
         chose_cand = cand_active && tally > 0 && !(coupled && rejected)
         if chose_cand && cvi   # eligible only if its predicted per-epoch outcome beats the incumbent's measured record by the significance rule
@@ -427,7 +427,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
                 if sum(rep_m5) <= 0
                     rep_m5 = fill(1e-3, size(rep_m5))
                 end
-                tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = Int(hash((seed, :coupled_m5, ep)) & 0x7fffffff), records = src_rec)
+                tr_m5 = run_m5(_with_m5_rep_dec(gp, rep_m5, dec_ep); seed = stream_int_seed(seed, :coupled_m5, ep), records = src_rec)
                 # IH weighs sources by their records: carry them across epochs (live, decayed by their own rule), not a fresh table.
                 U === nothing || unified_hear!(U, tr_m5.heard)
                 gp.deliberation && gp.info_handling && (src_rec = tr_m5.records)
@@ -454,7 +454,7 @@ function run_coupled(econ::M3cParams, gov; seed::Integer, epoch::Integer = 25,
             ep_init = ep == 1 ? min(econ.init_steps, epoch ÷ 2) : 0
             p_ep = _with_econ_epoch(econ, pv_cur, epoch; threshold = th_cur, track_window = tw_cur,
                                     init_steps = ep_init, step_offset = (ep - 1) * epoch)
-            tr_ep = run_m3c(p_ep; seed = Int(hash((seed, :epoch, ep)) & 0x7fffffff))
+            tr_ep = run_m3c(p_ep; seed = stream_int_seed(seed, :epoch, ep))
 
             # Stitch step-by-step deltas onto the running state trace.
             du_fl = diff(tr_ep.floor_u)

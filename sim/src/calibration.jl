@@ -7,7 +7,7 @@
 # swept by the batteries. Governed thresholds are not touched. Every figure is listed with its
 # source in `sim/README.md` (Noise).
 
-using Random
+# using Random provided selectively by BenefutureSim
 
 """
 The calibrated defaults, one place (`docs/CALIBRATION.md` section in the comments). The old values
@@ -58,7 +58,7 @@ end
 "One Pareto draw of tail exponent `α` and median 1, capped at `cap` (event sizes; 3.9)."
 function pareto_median1(rng::AbstractRNG, α::Real, cap::Real)
     check(isfinite(α) && α > 0 && cap >= 1, "exponent positive, cap at least the median")
-    min(cap, 2.0^(-1 / α) * (1 - rand(rng))^(-1 / α))
+    min(cap, det_pow(2.0, -1 / α) * det_pow(1 - rand(rng), -1 / α))
 end
 
 """

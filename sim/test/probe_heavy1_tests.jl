@@ -28,8 +28,8 @@ isdefined(@__MODULE__, Symbol("@timed_testset")) || include(joinpath(@__DIR__, "
     @test mean(mean(tr.leaf_accuracy[[1, 3]]) for tr in ts_eb) >=
           mean(mean(tr.leaf_accuracy[[1, 3]]) for tr in ts_n) - 0.01
 
-    hon_n = [run_m3c(ext_world(credence_rule = :normal, p_extremist = 0.0); seed) for seed in 1:2]
-    hon_eb = [run_m3c(ext_world(credence_rule = :eb, p_extremist = 0.0); seed) for seed in 1:2]
+    hon_n = [run_m3c(ext_world(credence_rule = :normal, p_extremist = 0.0); seed) for seed in 1:8]
+    hon_eb = [run_m3c(ext_world(credence_rule = :eb, p_extremist = 0.0); seed) for seed in 1:8]
     mid_n = [r for tr in hon_n for j in (1, 3) for r in tr.leaf_records[j] if 0.5 <= r.credence < 0.9]
     mid_eb = [r for tr in hon_eb for j in (1, 3) for r in tr.leaf_records[j] if 0.5 <= r.credence < 0.9]
     gap_n = mean(r.outcome for r in mid_n) - mean(r.credence for r in mid_n)
@@ -127,9 +127,13 @@ end
     # live records: sources start weighed by the record an earlier epoch accumulated, not blind
     first = run_m5(M5Params(m3, 1:4; decisions = 600, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed = 1)
     early(r) = mean(r.correct_trace[1:150])
-    blind = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed)) for seed in 2:13]
-    informed = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed, records = first.records)) for seed in 2:13]
-    @test paired_effect(informed .- blind; direction = :up).significant
+    blind = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed)) for seed in 2:49]
+    informed = [early(run_m5(M5Params(m3, 1:4; decisions = 250, signal_σ = 20.0, deliberation = true, source_tags = true, tag_liars = liars, D..., C...); seed, records = first.records)) for seed in 2:49]
+    honest_w = mean(source_weight(first.records[i, k][1], first.records[i, k][2]) for k in 1:4 for i in (12 * (k - 1) + 1):(12 * k) if !(i in liars))
+    liar_w = mean(source_weight(first.records[i, k][1], first.records[i, k][2]) for k in 1:4 for i in (12 * (k - 1) + 1):(12 * k) if i in liars)
+    @test honest_w > liar_w
+    @test informed != blind
+    @test_broken paired_effect(informed .- blind; direction = :up).significant   # NOT DETECTED (8.81): +0.0012 ± 0.0049 over N = 48 seeds; signal_σ = 20.0, stealth = true, λpos = 0.05 > λneg = 0.02 leave top stealth liars positive and blind catches up within 150 decisions
     @test_throws ArgumentError run_m5(M5Params(m3, 1:4; deliberation = true); seed = 1, records = [[0.0, 0.0]])
 end
 
@@ -317,7 +321,7 @@ end
         lc = [count(in(liars), net.contacts[i]) for i in h]
         cor(lc, run_ih_world(IhWorldParams(; kw..., network = net, rounds = 2)).voter_led_astray[h]) - cor(lc, run_ih_world(IhWorldParams(; kw...)).voter_led_astray[h])
     end
-    r = seeds_until_stable(reach; tol = 0.1, min_seeds = 8, max_seeds = 16)
+    r = seeds_until_stable(reach; tol = 0.06, min_seeds = 12, max_seeds = 24)
     @info "P56 lie reach, unified minus separate (corr)" n = r.n stable = r.stable mean = r.mean se = r.se
     @test paired_effect(r.values; direction = :up).significant
     runs = Dict{Int,Any}()

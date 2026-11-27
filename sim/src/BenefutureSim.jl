@@ -7,7 +7,14 @@ the rules act on. Rules are checked against the test vectors in `spec/vectors/`.
 """
 module BenefutureSim
 
-export phi, net_synergy, squashed_synergy
+import Random, Statistics, LinearAlgebra, Dates
+using Random: AbstractRNG, MersenneTwister, randperm, shuffle, shuffle!
+using Statistics: median, quantile
+using LinearAlgebra: Symmetric, I, cholesky, diag, issuccess
+
+export check, check_vector, sy, net_synergy, squashed_synergy, phi
+export DetRNG, det_rng, stream_seed, stream_int_seed, det_ldexp, det_exp, det_log_dd, det_log, det_log1p, det_log2, det_pow, det_hypot
+export det_sum, det_mean, det_var, det_std, det_dot, det_cor, det_matvec, det_matvec_t, lean_det_exp, lean_det_log, lean_det_log1p, lean_det_pow
 export tiered_value, tier_schedules, run_programmes, meta_multiplier
 export HARM_SCHEDULE, assess, signed_synergy, harm_weight, value_on_being, fr_permissible
 export floor_quantile, tail_floor, g_choose, g_choose_lexical_fr, g_choose_dist
@@ -30,6 +37,7 @@ export foreclosed, life_value, optimistic_average, birth_level, shortfall, birth
 export DomainAgent, M3Params, run_m3, M3bParams, run_m3b, M3cParams, run_m3c, recount, recount_μ, recount_models, recount_cc, Shock, shock, run_coupled, StatusQuoParams, run_status_quo
 export difference_in_differences, synthetic_control, combine_counterfactuals, AsOfRecord, AsOfStore, append_record!, records_as_of, replay_forecasts, diebold_mariano, load_replay_case, load_case_records, HistoricalCaseRecord, replay_decision, evaluate_replay_suite, replay_baselines, replay_scores, replay_sensitivity, replay_rule_battery, replay_credence, replay_credence_stats, contrast_check, QuantileForecastRecord, QuantileStore, replay_quantile_forecasts, load_archive_store, window_scores, rolling_report
 
+include("deterministic.jl")
 include("lean.jl")
 include("calibration.jl")
 include("synergy.jl")

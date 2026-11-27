@@ -313,13 +313,13 @@ end
     # Tagged but unaudited, a listener takes a claimed side at its word, so the lie still costs
     # decisions; audited, the claim is read against the log, every falsified tag is caught and
     # debited to its maker, and the cost is mostly gone.
-    honest = run_m5(talk(source_tags = true); seed = 1)
+    honest = [run_m5(talk(source_tags = true); seed) for seed in seeds]
     unaudited_lies = mean(run_m5(talk(source_tags = true, tag_audit = false, tag_liars = liars, tag_lie = :misattribute); seed).correct for seed in seeds)
     audited_lies = [run_m5(talk(source_tags = true, tag_liars = liars, tag_lie = :misattribute); seed) for seed in seeds]
-    @test unaudited_lies < mean(run_m5(talk(source_tags = true); seed).correct for seed in seeds) - 0.01
+    @test unaudited_lies < mean(r.correct for r in honest) - 0.01
     @test all(r.tags_detected == r.tags_falsified > 0 for r in audited_lies)
     @test mean(r.correct for r in audited_lies) > unaudited_lies
-    @test audited_lies[1].correct >= honest.correct - 0.02
+    @test mean(r.correct for r in audited_lies) >= mean(r.correct for r in honest) - 0.02
     # Laundering by omission: a launderer republishes what it heard as its own and votes it with its
     # full weight. AdvAp's echo audit flags most launderers (agreement with what they heard far above
     # independence) and few honest voters; flagged, their readings are split like anyone's.
