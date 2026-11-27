@@ -3,7 +3,7 @@
 # when the hash of the Lean sources differs from the hash stamped beside it, so loading the
 # package never re-runs Lake when the rules are unchanged.
 
-using Libdl, SHA
+using Libdl, SHA, Random
 
 const REPO = normpath(joinpath(@__DIR__, "..", ".."))
 const SO_EXT = Sys.isapple() ? ".dylib" : ".so"
@@ -12,6 +12,75 @@ const STAMP = LIBFILE * ".sha256"
 const LIB = Ref{Ptr{Cvoid}}(C_NULL)
 const SYMS = Ref(Dict{Symbol,Ptr{Cvoid}}())
 const SYMS_LOCK = ReentrantLock()
+
+# Opt-in call tracing (BF_TRACE_CALLS=path): every `@lccall` Lean call logs its name, inputs and outputs
+# (Float64 as hex bit patterns, FloatArrays element-wise), and `trace_mark` writes step markers with state
+# hashes, to the file. Diagnostic only: when the variable is unset the only cost is one `TRACE_CALLS[]` read
+# per call and no behaviour changes (probe hash identical with and without; see tools/determinism).
+const TRACE_CALLS = Ref(false)
+const TRACE_IO = Ref{Union{IO,Nothing}}(nothing)
+const TRACE_SEQ = Ref(0)
+
+function trace_init()
+    path = get(ENV, "BF_TRACE_CALLS", "")
+    TRACE_CALLS[] = false
+    if !isempty(path)
+        TRACE_IO[] = open(path, "w")
+        TRACE_SEQ[] = 0
+        TRACE_CALLS[] = true
+        atexit(() -> (io = TRACE_IO[]; io === nothing || (flush(io); close(io); TRACE_IO[] = nothing; TRACE_CALLS[] = false)))
+    end
+    nothing
+end
+
+trace_hex(x::Float64) = string(reinterpret(UInt64, x), base = 16, pad = 16)
+trace_hex(x::Integer) = string(x)
+trace_hex(x::Ptr) = x == C_NULL ? "null" : (UInt(x) & 1) == 1 ? "box" * string(UInt(x)) : "[" * join(trace_hex.(lean_floats_peek(x)), ",") * "]"
+trace_hex(x) = string(x)
+
+# Non-destructive read of a FloatArray: lean_floats releases one reference, so take an extra one first.
+lean_floats_peek(a::Ptr{Cvoid}) = lean_floats(lean_inc!(a))
+
+trace_ins(args...) = map(trace_hex, args)
+
+function trace_call(name, ins, out)
+    io = TRACE_IO[]; io === nothing && return nothing
+    TRACE_SEQ[] += 1
+    println(io, "C ", TRACE_SEQ[], " ", name, " in=", join(ins, ";"), " out=", trace_hex(out))
+    nothing
+end
+
+"Generator state, for trace marks."
+rngsig(r::Random.AbstractRNG) = UInt64[getfield(r, i) for i in 1:fieldcount(typeof(r))]
+
+"Step marker with a state hash: `tag`, then the values hashed (Float64 arrays by bit pattern)."
+function trace_mark(tag, vals...)
+    TRACE_CALLS[] || return nothing
+    io = TRACE_IO[]; io === nothing && return nothing
+    part(v) = v isa AbstractArray ? join(map(x -> x isa AbstractFloat ? trace_hex(Float64(x)) : string(x), vec(v)), ",") : v isa AbstractFloat ? trace_hex(Float64(v)) : string(v)
+    ps = [part(v) for v in vals]
+    h(x) = bytes2hex(SHA.sha256(x))[1:12]
+    println(io, "S ", tag, " ", h(join(ps, ";")), " parts=", join(h.(ps), ","))
+    nothing
+end
+
+"`ccall` for a Lean export, traced when BF_TRACE_CALLS is set: `@lccall(sym(:f), RT, (T...), args...)`."
+macro lccall(f, rt, types, args...)
+    name = f isa Expr && f.head === :call && f.args[1] === :sym && f.args[2] isa QuoteNode ? string(f.args[2].value) : string(f)
+    tmps = [gensym(:a) for _ in args]
+    out = gensym(:r); ins = gensym(:ins)
+    esc(quote
+        if TRACE_CALLS[]
+            $([:($t = $a) for (t, a) in zip(tmps, args)]...)
+            $ins = trace_ins($(tmps...))
+            $out = ccall($f, $rt, $types, $(tmps...))
+            trace_call($name, $ins, $out)
+            $out
+        else
+            ccall($f, $rt, $types, $(args...))
+        end
+    end)
+end
 
 function tool(name)
     path = Sys.which(name)
@@ -68,6 +137,7 @@ function load_lean_lib()
     lock(SYMS_LOCK) do
         SYMS[] = Dict{Symbol,Ptr{Cvoid}}()
     end
+    trace_init()
     nothing
 end
 

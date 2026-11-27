@@ -23,7 +23,7 @@ Synergy potential of one side: `Σ wᵢ aᵢ^q + κ √(Σ_{i<j} wᵢ wⱼ (aᵢ
 """
 function phi(items, q::Real, κ::Real)
     check_items(items)
-    ccall(sym(:bf_phi), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+    @lccall(sym(:bf_phi), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
           floatarray(mags(items)), floatarray(weights(items)), q, κ)
 end
 
@@ -38,7 +38,7 @@ function net_synergy(pos, neg; λ::Real, κ::Real, qp::Real, qm::Real)
     check(qp > 0 && qm > 0, "exponents must be positive")
     check_items(pos)
     check_items(neg)
-    ccall(sym(:bf_sy), Float64,
+    @lccall(sym(:bf_sy), Float64,
           (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           floatarray(mags(pos)), floatarray(weights(pos)), floatarray(mags(neg)), floatarray(weights(neg)),
           λ, κ, qp, qm)
@@ -53,5 +53,5 @@ function squashed_synergy(s::Real; ν::Real, h::Real)
     check(isfinite(s) && isfinite(ν) && isfinite(h), "inputs must be finite")
     check(ν > 0, "ν must be positive")
     check(h >= 0, "h must be non-negative")
-    ccall(sym(:bf_sy_hat), Float64, (Float64, Float64, Float64), s, ν, h)
+    @lccall(sym(:bf_sy_hat), Float64, (Float64, Float64, Float64), s, ν, h)
 end

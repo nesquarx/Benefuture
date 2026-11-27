@@ -10,7 +10,7 @@ Unprovable claims: the same, capped at `cap_unprovable`. Always within [0.01, 0.
 function ih_truth_level(outputs, weights, mem_score::Real, provable::Bool, cap_unprovable::Real)
     check(length(outputs) == length(weights) && all(isfinite, outputs) && all(isfinite, weights) &&
           isfinite(mem_score) && isfinite(cap_unprovable), "finite outputs, weights, mem_score and cap")
-    ccall(sym(:bf_ih_truth_level), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, UInt8, Float64),
+    @lccall(sym(:bf_ih_truth_level), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, UInt8, Float64),
           floatarray(outputs), floatarray(weights), Float64(mem_score), UInt8(provable ? 1 : 0), Float64(cap_unprovable))
 end
 

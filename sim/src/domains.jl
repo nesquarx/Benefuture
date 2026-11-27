@@ -5,7 +5,7 @@
 "A domain profile is valid when its shares are non-negative and sum to one."
 function profile_valid(shares)
     all(isfinite, shares) || return false
-    ccall(sym(:bf_profile_valid), UInt8, (Ptr{Cvoid},), floatarray(shares)) == 1
+    @lccall(sym(:bf_profile_valid), UInt8, (Ptr{Cvoid},), floatarray(shares)) == 1
 end
 
 """
@@ -18,14 +18,14 @@ function attribute(shares, cc::Real, pos::Real, neg::Real)
     check(profile_valid(shares), "shares must be a partition of unity")
     check(isfinite(cc) && 0 <= cc <= 1, "causal contribution must lie in [0, 1]")
     check(isfinite(pos) && isfinite(neg) && pos >= 0 && neg >= 0, "contributions must be non-negative")
-    f(s, c) = ccall(sym(:bf_attribute), Float64, (Float64, Float64, Float64), s, cc, c)
+    f(s, c) = @lccall(sym(:bf_attribute), Float64, (Float64, Float64, Float64), s, cc, c)
     ([f(s, pos) for s in shares], [f(s, neg) for s in shares])
 end
 
 "Rate at which a signed contribution's relevance decays: λpos for gains, λneg for losses."
 function decay_rate_for(signed::Real; λpos::Real, λneg::Real)
     check(all(isfinite, (signed, λpos, λneg)) && λpos >= 0 && λneg >= 0, "rates must be finite and non-negative")
-    ccall(sym(:bf_decay_rate_for), Float64, (Float64, Float64, Float64), signed, λpos, λneg)
+    @lccall(sym(:bf_decay_rate_for), Float64, (Float64, Float64, Float64), signed, λpos, λneg)
 end
 
 """
@@ -39,7 +39,7 @@ function classify(dists; threshold::Real, temperature::Real)
     check(!isempty(dists) && all(d -> isfinite(d) && d >= 0, dists), "distances must be non-negative")
     check(isfinite(threshold) && threshold >= 0 && isfinite(temperature) && temperature > 0,
           "threshold must be non-negative and temperature positive")
-    [ccall(sym(:bf_classify_at), Float64, (Ptr{Cvoid}, Float64, Float64, Csize_t),
+    [@lccall(sym(:bf_classify_at), Float64, (Ptr{Cvoid}, Float64, Float64, Csize_t),
            floatarray(dists), threshold, temperature, i) for i in 0:length(dists)]
 end
 
@@ -47,13 +47,13 @@ end
 function accumulation_threshold(base::Real, factor::Real, relevance::Real)
     check(!isnan(base) && base >= 0 && isfinite(factor) && factor >= 0 && isfinite(relevance),
           "base and factor must be non-negative, relevance finite")
-    ccall(sym(:bf_accumulation_threshold), Float64, (Float64, Float64, Float64), base, factor, relevance)
+    @lccall(sym(:bf_accumulation_threshold), Float64, (Float64, Float64, Float64), base, factor, relevance)
 end
 
 "The part of a balance above its accumulation threshold, to be reinvested in the domain."
 function overflow(balance::Real, threshold::Real)
     check(isfinite(balance) && !isnan(threshold), "balance must be finite")
-    ccall(sym(:bf_overflow), Float64, (Float64, Float64), balance, threshold)
+    @lccall(sym(:bf_overflow), Float64, (Float64, Float64), balance, threshold)
 end
 
 # Arrays returned by Lean (`bf_fa_size`, `bf_fa_get`, `bf_fa_drop`).
@@ -93,7 +93,7 @@ rowmajor(μ::AbstractMatrix) = vec(permutedims(μ))
 "An action's membership in a parent: its signature's projection on the parent's, clamped to [0, 1]."
 function projection_membership(sig, parent)
     check(length(sig) == length(parent) && all(isfinite, sig) && all(isfinite, parent), "signatures must match in length")
-    ccall(sym(:bf_projection_membership), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(sig), floatarray(parent))
+    @lccall(sym(:bf_projection_membership), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(sig), floatarray(parent))
 end
 
 """
@@ -106,7 +106,7 @@ predicted value over its own uncertainty, through the normal distribution functi
 function credence(predicted::Real, uncertainty::Real; cap::Real = 0.99)
     check(isfinite(predicted) && !isnan(uncertainty) && uncertainty >= 0, "finite prediction, non-negative uncertainty")
     check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
-    ccall(sym(:bf_credence), Float64, (Float64, Float64, Float64), predicted, uncertainty, cap)
+    @lccall(sym(:bf_credence), Float64, (Float64, Float64, Float64), predicted, uncertainty, cap)
 end
 
 """
@@ -121,7 +121,7 @@ function eb_credence(predicted::Real, err_var::Real, prior_mean::Real, prior_var
     check(all(isfinite, (predicted, err_var, prior_mean, prior_var)) && err_var >= 0 && prior_var >= 0,
           "finite prediction/prior and non-negative variances")
     check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
-    ccall(sym(:bf_eb_credence), Float64, (Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_eb_credence), Float64, (Float64, Float64, Float64, Float64, Float64),
           predicted, err_var, prior_mean, prior_var, cap)
 end
 
@@ -133,7 +133,7 @@ The half-life over which a domain's accuracy is averaged (Lean `decay_halflife_r
 """
 function decay_halflife(rate::Real; ref_rate::Real, ref_halflife::Real, mute::Real)
     check(isfinite(rate) && rate >= 0 && ref_rate > 0 && ref_halflife > 0 && 0 <= mute <= 1, "rate ≥ 0, positive references, mute in [0, 1]")
-    ccall(sym(:bf_decay_halflife), Float64, (Float64, Float64, Float64, Float64), rate, ref_rate, ref_halflife, mute)
+    @lccall(sym(:bf_decay_halflife), Float64, (Float64, Float64, Float64, Float64), rate, ref_rate, ref_halflife, mute)
 end
 
 """
@@ -143,7 +143,7 @@ Accuracy as the quality of credences, each record weighted by 2^(−age/h) (Lean
 """
 function decayed_accuracy(credences, outcomes, ages, h::Real)
     check(length(credences) == length(outcomes) == length(ages) && h > 0, "one credence, outcome and age per record; positive half-life")
-    ccall(sym(:bf_decayed_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    @lccall(sym(:bf_decayed_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)), floatarray(collect(Float64, ages)), h)
 end
 
@@ -154,7 +154,7 @@ Age-weighted mean and its standard error over the effective number of records (L
 """
 function decayed_mean_se(xs, ages, h::Real)
     check(length(xs) == length(ages) && h > 0, "one age per value; positive half-life")
-    r = lean_floats(ccall(sym(:bf_decayed_mean_se), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    r = lean_floats(@lccall(sym(:bf_decayed_mean_se), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
                           floatarray(collect(Float64, xs)), floatarray(collect(Float64, ages)), h))
     (r[1], r[2])
 end
@@ -167,7 +167,7 @@ models clear the bar it rises to the `k`-th best accuracy less `margin`; it neve
 """
 function ratchet_bar(accuracies, bar::Real; k::Integer, margin::Real)
     check(all(isfinite, accuracies) && 0 <= bar <= 1 && k >= 0 && 0 <= margin <= 1, "finite accuracies, bar and margin in [0, 1], k ≥ 0")
-    ccall(sym(:bf_ratchet_bar), Float64, (Ptr{Cvoid}, Float64, Csize_t, Float64), floatarray(collect(Float64, accuracies)), bar, k, margin)
+    @lccall(sym(:bf_ratchet_bar), Float64, (Ptr{Cvoid}, Float64, Csize_t, Float64), floatarray(collect(Float64, accuracies)), bar, k, margin)
 end
 
 """
@@ -180,7 +180,7 @@ is a coin toss. The normal `credence` over the errors' spread is its limiting ca
 function record_credence(predicted::Real, errors; cap::Real = 0.99)
     check(isfinite(predicted) && all(isfinite, errors), "a finite prediction and finite errors")
     check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
-    ccall(sym(:bf_record_credence), Float64, (Float64, Ptr{Cvoid}, Float64), predicted, floatarray(collect(Float64, errors)), cap)
+    @lccall(sym(:bf_record_credence), Float64, (Float64, Ptr{Cvoid}, Float64), predicted, floatarray(collect(Float64, errors)), cap)
 end
 
 """
@@ -193,7 +193,7 @@ function decayed_record_credence(predicted::Real, errors, ages, h::Real; cap::Re
     check(isfinite(predicted) && length(errors) == length(ages) && all(isfinite, errors) && all(isfinite, ages) && h > 0,
           "finite prediction, matching errors and ages, positive half-life")
     check(0.5 <= cap <= 1, "credence cap in [0.5, 1]")
-    ccall(sym(:bf_decayed_record_credence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+    @lccall(sym(:bf_decayed_record_credence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
           predicted, floatarray(collect(Float64, errors)), floatarray(collect(Float64, ages)), h, cap)
 end
 
@@ -205,7 +205,7 @@ Time-decayed root mean square of `errors` under half-life `h` (Lean `decayed_rms
 function decayed_rms(errors, ages, h::Real)
     check(length(errors) == length(ages) && all(isfinite, errors) && all(isfinite, ages) && h > 0,
           "matching finite errors and ages, positive half-life")
-    ccall(sym(:bf_decayed_rms), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    @lccall(sym(:bf_decayed_rms), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           floatarray(collect(Float64, errors)), floatarray(collect(Float64, ages)), h)
 end
 
@@ -220,7 +220,7 @@ function choice_skill(credences, model_credences, outcomes)
     check(length(credences) == length(model_credences) == length(outcomes), "one credence, model credence and outcome per choice")
     check(all(c -> 0 <= c <= 1, credences) && all(c -> 0 <= c <= 1, model_credences) && all(o -> o in (0, 1), outcomes),
           "credences in [0, 1], outcomes 0 or 1")
-    ccall(sym(:bf_choice_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+    @lccall(sym(:bf_choice_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
           floatarray(collect(Float64, credences)), floatarray(collect(Float64, model_credences)), floatarray(collect(Float64, outcomes)))
 end
 
@@ -233,7 +233,7 @@ guessing, 1 perfect; outcomes are 1 (assessed value positive) or 0.
 function credence_accuracy(credences, outcomes)
     check(length(credences) == length(outcomes) && all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes),
           "one credence in [0, 1] per outcome of 0 or 1")
-    ccall(sym(:bf_credence_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(credences), floatarray(outcomes))
+    @lccall(sym(:bf_credence_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(credences), floatarray(outcomes))
 end
 
 """
@@ -249,7 +249,7 @@ function classify_network(parent_mem, leaf_dists, μ::AbstractMatrix; parent_thr
     check(all(d -> isfinite(d) && d >= 0, leaf_dists), "distances must be non-negative")
     check(0 < parent_threshold <= 1 && 0 <= μ_min <= 1 && isfinite(leaf_threshold) && leaf_threshold >= 0 &&
           isfinite(temperature) && temperature > 0, "thresholds in range and temperature positive")
-    lean_floats(ccall(sym(:bf_classify_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+    lean_floats(@lccall(sym(:bf_classify_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
                       floatarray(parent_mem), floatarray(leaf_dists), floatarray(rowmajor(μ)),
                       parent_threshold, μ_min, leaf_threshold, temperature))
 end
@@ -259,38 +259,38 @@ function fallback_network(μ::AbstractMatrix, leaf_ok, parent_ok, shares)
     np, nl = size(μ)
     check(length(leaf_ok) == nl && length(parent_ok) == np && length(shares) == nl + np + 1, "one flag per node, one share per slot")
     check(profile_valid(shares), "shares must be a partition of unity")
-    lean_floats(ccall(sym(:bf_fallback_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+    lean_floats(@lccall(sym(:bf_fallback_network), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
                       floatarray(rowmajor(μ)), floatarray(Float64.(leaf_ok)), floatarray(Float64.(parent_ok)), floatarray(shares)))
 end
 
 "An amount aggregated at a parent: Σ μ(leaf) × amount(leaf)."
 function aggregate_at_parent(μ_row, amounts)
     check(length(μ_row) == length(amounts) && all(isfinite, amounts), "one amount per leaf")
-    ccall(sym(:bf_aggregate_at_parent), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(μ_row), floatarray(amounts))
+    @lccall(sym(:bf_aggregate_at_parent), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(μ_row), floatarray(amounts))
 end
 
 "Fuzzy subsethood of x in y over remembered actions, weighted by causal evidence `ce`."
 function subsethood(mx, my, ce)
     check(length(mx) == length(my) == length(ce) && all(>=(0), mx) && all(>=(0), my) && all(>=(0), ce), "non-negative memberships")
-    ccall(sym(:bf_subsethood), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}), floatarray(mx), floatarray(my), floatarray(ce))
+    @lccall(sym(:bf_subsethood), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}), floatarray(mx), floatarray(my), floatarray(ce))
 end
 
 "An overlap degree moved by one logged action: a long-term rolling average; no action, no change."
 function membership_rolling(μ::Real, m_leaf::Real, m_parent::Real; rate::Real)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (μ, m_leaf, m_parent, rate)), "degrees, memberships and rate lie in [0, 1]")
-    ccall(sym(:bf_membership_rolling), Float64, (Float64, Float64, Float64, Float64), μ, m_leaf, m_parent, rate)
+    @lccall(sym(:bf_membership_rolling), Float64, (Float64, Float64, Float64, Float64), μ, m_leaf, m_parent, rate)
 end
 
 "A model's accuracy in [0, 1] from its score (negative mean squared error); also its escrow confidence."
 function accuracy(score::Real)
     check(isfinite(score) && score <= 0, "a score is a negative mean squared error")
-    ccall(sym(:bf_accuracy), Float64, (Float64,), score)
+    @lccall(sym(:bf_accuracy), Float64, (Float64,), score)
 end
 
 "Whether a domain's model may back its currency (novel domains: after `min_records`, never below `novel_floor`, 8.35; governed)."
 function currency_eligible(acc::Real, records::Integer; novel::Bool, threshold::Real, novel_threshold::Real, min_records::Integer, novel_floor::Real)
     check(isfinite(acc) && 0 <= acc <= 1 && records >= 0 && min_records >= 0 && 0 <= novel_floor <= 1, "accuracy and floor in [0, 1], counts non-negative")
-    ccall(sym(:bf_currency_eligible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64),
+    @lccall(sym(:bf_currency_eligible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64),
           acc, records, min_records, novel, threshold, novel_threshold, novel_floor) == 1
 end
 
@@ -302,7 +302,7 @@ Murphy decomposition of the Brier score with age-weighted records (Lean `decayed
 function decayed_murphy(credences, outcomes, ages, h::Real; bins::Integer = 10)
     check(length(credences) == length(outcomes) == length(ages) && h > 0 && bins >= 1, "one age and outcome per credence; positive half-life; at least one bin")
     check(all(isfinite, credences) && all(isfinite, outcomes) && all(isfinite, ages), "finite records")
-    r = lean_floats(ccall(sym(:bf_decayed_murphy), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Csize_t),
+    r = lean_floats(@lccall(sym(:bf_decayed_murphy), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Csize_t),
                           floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)), floatarray(collect(Float64, ages)), h, bins))
     (reliability = r[1], resolution = r[2], uncertainty = r[3], base_rate = r[4])
 end
@@ -317,7 +317,7 @@ function murphy_eligible(reliability::Real, resolution::Real, uncertainty::Real,
                          min_records::Integer, novel_floor::Real, res_margin::Real)
     check(all(isfinite, (reliability, resolution, uncertainty, threshold, novel_threshold)) && reliability >= 0 && resolution >= 0 && uncertainty >= 0 && records >= 0 && min_records >= 0 &&
           0 <= novel_floor <= 1 && 0 <= res_margin <= 1, "decomposition terms non-negative, floor and margin in [0, 1], counts non-negative")
-    ccall(sym(:bf_murphy_eligible), UInt8, (Float64, Float64, Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_murphy_eligible), UInt8, (Float64, Float64, Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
           reliability, resolution, uncertainty, records, min_records, novel, threshold, novel_threshold, novel_floor, res_margin) == 1
 end
 
@@ -331,9 +331,9 @@ is active and converged; the economy starts when any domain is open. `economy_op
 function domain_gate(active, converged)
     check(length(active) == length(converged), "one converged flag per domain")
     fa = floatarray(Float64.(collect(active))); fc = floatarray(Float64.(collect(converged)))
-    opened = lean_floats(ccall(sym(:bf_domain_open), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(Float64.(collect(active))), floatarray(Float64.(collect(converged))))) .!= 0.0
-    eo = ccall(sym(:bf_economy_open), UInt8, (Ptr{Cvoid},), floatarray(Float64.(opened))) == 1
-    ea = ccall(sym(:bf_economy_open_all), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}), fa, fc) == 1
+    opened = lean_floats(@lccall(sym(:bf_domain_open), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(Float64.(collect(active))), floatarray(Float64.(collect(converged))))) .!= 0.0
+    eo = @lccall(sym(:bf_economy_open), UInt8, (Ptr{Cvoid},), floatarray(Float64.(opened))) == 1
+    ea = @lccall(sym(:bf_economy_open_all), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}), fa, fc) == 1
     (opened, eo, ea)
 end
 
@@ -341,7 +341,7 @@ end
 function scarcity_cost(base::Real, available::Real, capacity::Real; floor_share::Real)
     check(isfinite(base) && base >= 0 && isfinite(available) && available >= 0 && isfinite(capacity) && capacity > 0 && 0 < floor_share <= 1,
           "base and availability must be non-negative, capacity positive, floor share in (0, 1]")
-    ccall(sym(:bf_scarcity_cost), Float64, (Float64, Float64, Float64, Float64), base, available, capacity, floor_share)
+    @lccall(sym(:bf_scarcity_cost), Float64, (Float64, Float64, Float64, Float64), base, available, capacity, floor_share)
 end
 
 """
@@ -353,13 +353,13 @@ never below the coarse bar.
 """
 function relative_bar(established::Real, coarse::Real, alternative::Real)
     check(all(isfinite, (established, coarse, alternative)) && 0 < coarse <= established <= 1, "bars finite, 0 < coarse ≤ established ≤ 1")
-    ccall(sym(:bf_relative_bar), Float64, (Float64, Float64, Float64), established, coarse, alternative)
+    @lccall(sym(:bf_relative_bar), Float64, (Float64, Float64, Float64), established, coarse, alternative)
 end
 
 function report_penalty(unfounded::Real, threshold::Real; audit_cost::Real)
     check(unfounded >= 0 && isfinite(threshold) && threshold >= 0, "count and threshold non-negative")
     check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
-    ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
+    @lccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
 end
 
 """
@@ -370,7 +370,7 @@ Pinball loss for quantile `q` in (0, 1): `(y - y_hat) * (q - I(y < y_hat))` (Koe
 function pinball_loss(q::Real, predicted::Real, outcome::Real)
     check(0 < q < 1, "quantile q must lie in (0, 1)")
     check(isfinite(predicted) && isfinite(outcome), "finite prediction and outcome")
-    ccall(sym(:bf_pinball_loss), Float64, (Float64, Float64, Float64), q, predicted, outcome)
+    @lccall(sym(:bf_pinball_loss), Float64, (Float64, Float64, Float64), q, predicted, outcome)
 end
 
 """
@@ -385,7 +385,7 @@ function quantile_score(quantiles, predictions, outcomes, scale::Real)
     check(all(q -> 0 < q < 1, quantiles), "quantiles must lie in (0, 1)")
     check(all(isfinite, predictions) && all(isfinite, outcomes), "finite predictions and outcomes")
     check(isfinite(scale) && scale > 0, "positive finite scale")
-    ccall(sym(:bf_quantile_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    @lccall(sym(:bf_quantile_score), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           floatarray(collect(Float64, quantiles)), floatarray(collect(Float64, predictions)), floatarray(collect(Float64, outcomes)), scale)
 end
 

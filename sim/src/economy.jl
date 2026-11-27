@@ -14,8 +14,8 @@ Probabilistic escrow: pay `p_win` of the nominal value upfront and hold the rest
 function escrow_split(nominal::Real, p_win::Real)
     check(isfinite(nominal), "nominal value must be finite")
     probability(p_win)
-    (ccall(sym(:bf_escrow_upfront), Float64, (Float64, Float64), nominal, p_win),
-     ccall(sym(:bf_escrow_hold), Float64, (Float64, Float64), nominal, p_win))
+    (@lccall(sym(:bf_escrow_upfront), Float64, (Float64, Float64), nominal, p_win),
+     @lccall(sym(:bf_escrow_hold), Float64, (Float64, Float64), nominal, p_win))
 end
 
 """
@@ -26,7 +26,7 @@ Reputation's relevance after `dt` without new contribution, decaying continuousl
 function reputation_decay(score::Real, dt::Real; rate::Real)
     check(all(isfinite, (score, dt, rate)), "inputs must be finite")
     check(dt >= 0 && rate >= 0, "elapsed time and rate must be non-negative")
-    ccall(sym(:bf_rep_decay), Float64, (Float64, Float64, Float64), score, dt, rate)
+    @lccall(sym(:bf_rep_decay), Float64, (Float64, Float64, Float64), score, dt, rate)
 end
 
 """
@@ -40,7 +40,7 @@ function resource_cost(physical; compute::Real, network::Real, time::Real,
     check_items(physical)
     xs = (compute, network, time, compute_cost, network_cost, time_cost)
     check(all(isfinite, xs) && all(>=(0), xs), "resource amounts and costs must be non-negative")
-    ccall(sym(:bf_resource_cost), Float64,
+    @lccall(sym(:bf_resource_cost), Float64,
           (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64),
           floatarray(mags(physical)), floatarray(weights(physical)),
           compute, network, time, compute_cost, network_cost, time_cost)
@@ -50,20 +50,20 @@ end
 function transaction_price(cost::Real, credit::Real, p_win::Real)
     check(isfinite(cost) && isfinite(credit), "cost and credit must be finite")
     probability(p_win)
-    ccall(sym(:bf_transaction_price), Float64, (Float64, Float64, Float64), cost, credit, p_win)
+    @lccall(sym(:bf_transaction_price), Float64, (Float64, Float64, Float64), cost, credit, p_win)
 end
 
 "Change in currency supply: measured good less resource cost less harm."
 function supply_delta(good::Real, cost::Real, harm::Real)
     check(all(isfinite, (good, cost, harm)), "inputs must be finite")
-    ccall(sym(:bf_supply_delta), Float64, (Float64, Float64, Float64), good, cost, harm)
+    @lccall(sym(:bf_supply_delta), Float64, (Float64, Float64, Float64), good, cost, harm)
 end
 
 "A currency's efficiency: value generated per resource and time consumed."
 function competition_efficiency(dV::Real, cost::Real, dt::Real)
     check(all(isfinite, (dV, cost, dt)), "inputs must be finite")
     check(cost + dt > 0, "resource and time consumed must be positive")
-    ccall(sym(:bf_competition_efficiency), Float64, (Float64, Float64, Float64), dV, cost, dt)
+    @lccall(sym(:bf_competition_efficiency), Float64, (Float64, Float64, Float64), dV, cost, dt)
 end
 
 """
@@ -73,20 +73,20 @@ Settlement of escrow: the measured value less what was paid upfront; negative is
 """
 function settlement(measured::Real, upfront::Real)
     check(isfinite(measured) && isfinite(upfront), "inputs must be finite")
-    ccall(sym(:bf_settlement), Float64, (Float64, Float64), measured, upfront)
+    @lccall(sym(:bf_settlement), Float64, (Float64, Float64), measured, upfront)
 end
 
 "A contributor's share of one side of an outcome: its part over the side's total, in [0, 1]."
 function cc_share(part::Real, side_total::Real)
     check(isfinite(part) && isfinite(side_total) && side_total != 0, "side total must be finite and non-zero")
     check(sign(part) * sign(side_total) >= 0, "a part lies on its side's sign")
-    ccall(sym(:bf_cc_share), Float64, (Float64, Float64), part, side_total)
+    @lccall(sym(:bf_cc_share), Float64, (Float64, Float64), part, side_total)
 end
 
 "Causal distribution: contribution × outcome, net of escrow already paid upfront."
 function cause_settlement(cc::Real, total::Real, upfront::Real)
     check(isfinite(total) && isfinite(upfront) && 0 <= cc <= 1, "contribution in [0, 1], amounts finite")
-    ccall(sym(:bf_cause_settlement), Float64, (Float64, Float64, Float64), cc, total, upfront)
+    @lccall(sym(:bf_cause_settlement), Float64, (Float64, Float64, Float64), cc, total, upfront)
 end
 
 """
@@ -97,7 +97,7 @@ an accolade outside contract, the contracted share under contract; nothing out o
 """
 function carry_fee(maker_pos::Real, contracted::Bool; accolade_rate::Real, contract_share::Real)
     check(isfinite(maker_pos) && 0 <= accolade_rate <= 1 && 0 <= contract_share <= 1, "rates in [0, 1], share finite")
-    ccall(sym(:bf_carry_fee), Float64, (Float64, Float64, Float64, UInt8), maker_pos, accolade_rate, contract_share, contracted)
+    @lccall(sym(:bf_carry_fee), Float64, (Float64, Float64, Float64, UInt8), maker_pos, accolade_rate, contract_share, contracted)
 end
 
 """
@@ -110,7 +110,7 @@ function shapley(v)
     n = round(Int, log2(length(v)))
     check(length(v) >= 1 && 2^n == length(v) && all(isfinite, v), "one finite value per coalition (2^n of them)")
     n == 0 && return Float64[]
-    lean_floats(ccall(sym(:bf_shapley), Ptr{Cvoid}, (Csize_t, Ptr{Cvoid}), n, floatarray(v)))
+    lean_floats(@lccall(sym(:bf_shapley), Ptr{Cvoid}, (Csize_t, Ptr{Cvoid}), n, floatarray(v)))
 end
 
 # Governed thresholds for Shapley shares (sim/README.md, Governed thresholds): exact up to
@@ -133,14 +133,14 @@ function shapley_sampled(perms::AbstractMatrix{<:Integer}, vals::AbstractMatrix{
     check(m >= 1 && size(vals) == (n + 1, m) && all(isfinite, vals), "at least one ordering and n + 1 finite values along each")
     check(all(k -> sort(perms[:, k]) == 1:n, 1:m), "each column an ordering of 1:n")
     n == 0 && return Float64[]
-    lean_floats(ccall(sym(:bf_shapley_sampled), Ptr{Cvoid}, (Csize_t, Csize_t, Ptr{Cvoid}, Ptr{Cvoid}),
+    lean_floats(@lccall(sym(:bf_shapley_sampled), Ptr{Cvoid}, (Csize_t, Csize_t, Ptr{Cvoid}, Ptr{Cvoid}),
                       n, m, floatarray(vec(perms) .- 1), floatarray(vec(vals))))
 end
 
 "Orderings to sample for Shapley shares among n contributors (Lean `shapley_sample_count_ref`): ⌈ln(2n/δ) / (2ε²)⌉."
 function shapley_sample_count(n::Integer; ε::Real, δ::Real)
     check(n >= 1 && isfinite(ε) && 0 < ε < 1 && isfinite(δ) && 0 < δ < 1, "n positive, ε and δ in (0, 1)")
-    Int(ccall(sym(:bf_shapley_sample_count), Csize_t, (Csize_t, Float64, Float64), n, ε, δ))
+    Int(@lccall(sym(:bf_shapley_sample_count), Csize_t, (Csize_t, Float64, Float64), n, ε, δ))
 end
 
 """
@@ -212,7 +212,7 @@ end
 "Whether contributions come from the causal assessment (confident enough) rather than traversal (L94)."
 function cc_assessed(confidence::Real; threshold::Real)
     check(all(x -> isfinite(x) && 0 <= x <= 1, (confidence, threshold)), "confidence and threshold in [0, 1]")
-    ccall(sym(:bf_cc_assessed), UInt8, (Float64, Float64), confidence, threshold) == 1
+    @lccall(sym(:bf_cc_assessed), UInt8, (Float64, Float64), confidence, threshold) == 1
 end
 
 "Fallback shares by traversal (L95): net contributions weighted by decay^degree of separation, normalised."
@@ -220,13 +220,13 @@ function traversal_shares(net_contribution, degree; decay::Real)
     check(length(net_contribution) == length(degree) && all(x -> isfinite(x) && x >= 0, net_contribution) &&
           all(d -> isfinite(d) && d >= 0, degree), "one non-negative contribution and degree per link")
     check(isfinite(decay) && 0 < decay <= 1, "decay in (0, 1]")
-    lean_floats(ccall(sym(:bf_traversal_shares), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    lean_floats(@lccall(sym(:bf_traversal_shares), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
                       floatarray(net_contribution), floatarray(degree), decay))
 end
 
 "Crime (L116): harm through informed volition or informed inaction against a committed action; else accident."
 is_crime(informed::Bool, volition::Bool, breached_duty::Bool) =
-    ccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1
+    @lccall(sym(:bf_is_crime), UInt8, (UInt8, UInt8, UInt8), informed, volition, breached_duty) == 1
 
 """
     accident_split(harm, capacity) -> (contributor, admin)
@@ -238,8 +238,8 @@ and the administration carries the rest (`contributor + admin == harm`).
 function accident_split(harm::Real, capacity::Real)
     check(isfinite(harm) && harm >= 0 && isfinite(capacity) && capacity >= 0,
           "harm and capacity must be finite and non-negative")
-    (ccall(sym(:bf_accident_contributor), Float64, (Float64, Float64), harm, capacity),
-     ccall(sym(:bf_accident_admin), Float64, (Float64, Float64), harm, capacity))
+    (@lccall(sym(:bf_accident_contributor), Float64, (Float64, Float64), harm, capacity),
+     @lccall(sym(:bf_accident_admin), Float64, (Float64, Float64), harm, capacity))
 end
 
 """
@@ -254,7 +254,7 @@ function sanction_escrow_credence(credence::Real, neg_share::Real, deceptions::I
     check(0 <= credence <= 1 && 0 <= neg_share <= 1 && deceptions >= 0 && dom_neg_events >= 0 && pattern_min >= 0 &&
           isfinite(growth) && growth >= 0 && isfinite(floor) && 0 < floor <= 0.5,
           "credence and share in [0, 1]; counts >= 0; growth >= 0; floor in (0, 0.5]")
-    ccall(sym(:bf_sanction_escrow_credence), Float64,
+    @lccall(sym(:bf_sanction_escrow_credence), Float64,
           (Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           credence, neg_share, Float64(deceptions), Float64(dom_neg_events), Float64(pattern_min), growth, floor)
 end
@@ -271,7 +271,7 @@ function rehabilitate_restraint(base_share::Real, crime_events::Integer, pattern
     check(isfinite(base_share) && base_share >= 0 && crime_events >= 0 && pattern_min >= 0 &&
           isfinite(decay) && 0 <= decay <= 1 && isfinite(min_share) && 0 <= min_share <= base_share,
           "base_share >= 0; counts >= 0; decay in [0, 1]; min_share in [0, base_share]")
-    ccall(sym(:bf_rehabilitate_restraint), Float64,
+    @lccall(sym(:bf_rehabilitate_restraint), Float64,
           (Float64, Float64, Float64, Float64, Float64),
           base_share, Float64(crime_events), Float64(pattern_min), decay, min_share)
 end
@@ -287,7 +287,7 @@ function restraint_audit_prob(severity::Real, duration::Real, bar::Real; duratio
     check(isfinite(severity) && severity >= 0 && isfinite(duration) && duration >= 0 && isfinite(bar) && bar > 0 &&
           isfinite(duration_scale) && duration_scale > 0 && isfinite(floor) && 0 <= floor <= 1,
           "severity, duration >= 0; bar, duration_scale > 0; floor in [0, 1]")
-    ccall(sym(:bf_restraint_audit_prob), Float64, (Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_restraint_audit_prob), Float64, (Float64, Float64, Float64, Float64, Float64),
           severity, duration, duration_scale, bar, floor)
 end
 
@@ -300,7 +300,7 @@ Liability of the enforcing entity within the Administration for a restraint (`L1
 """
 function false_restraint_liability(upheld::Bool, kappa::Real, cost::Real)
     check(isfinite(kappa) && kappa >= 0 && isfinite(cost) && cost >= 0, "kappa and cost non-negative")
-    ccall(sym(:bf_false_restraint_liability), Float64, (UInt8, Float64, Float64), upheld ? 0x01 : 0x00, kappa, cost)
+    @lccall(sym(:bf_false_restraint_liability), Float64, (UInt8, Float64, Float64), upheld ? 0x01 : 0x00, kappa, cost)
 end
 
 """
@@ -313,7 +313,7 @@ restraint was false. Zero at `conf <= 1/2`; the binary liability at `conf = 1`.
 function credence_restraint_liability(conf::Real, kappa::Real, cost::Real)
     check(isfinite(conf) && 0 <= conf <= 1, "conf in [0, 1]")
     check(isfinite(kappa) && kappa >= 0 && isfinite(cost) && cost >= 0, "kappa and cost non-negative")
-    ccall(sym(:bf_credence_restraint_liability), Float64, (Float64, Float64, Float64), conf, kappa, cost)
+    @lccall(sym(:bf_credence_restraint_liability), Float64, (Float64, Float64, Float64), conf, kappa, cost)
 end
 
 """
@@ -325,7 +325,7 @@ of true restraint. Reads audited outputs only.
 """
 function restraint_balance_flawed(min_audits::Integer, false_n::Integer, true_n::Integer; ratio::Real = 1.0)
     check(min_audits >= 0 && false_n >= 0 && true_n >= 0 && isfinite(ratio) && ratio >= 0, "counts and ratio non-negative")
-    ccall(sym(:bf_restraint_balance_flawed), UInt8, (Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_restraint_balance_flawed), UInt8, (Float64, Float64, Float64, Float64),
           Float64(min_audits), Float64(false_n), Float64(true_n), Float64(ratio)) != 0
 end
 
@@ -339,7 +339,7 @@ Reads audited outputs only.
 """
 function restraint_alarm_interval(min_audits::Integer, false_n::Integer, true_n::Integer; ratio::Real = 1.0, z::Real = 1.0)
     check(min_audits >= 0 && false_n >= 0 && true_n >= 0 && isfinite(ratio) && ratio >= 0 && isfinite(z) && z >= 0, "counts, ratio and z non-negative")
-    ccall(sym(:bf_restraint_alarm_interval), UInt8, (Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_restraint_alarm_interval), UInt8, (Float64, Float64, Float64, Float64, Float64),
           Float64(min_audits), Float64(false_n), Float64(true_n), Float64(ratio), Float64(z)) != 0
 end
 
@@ -351,7 +351,7 @@ by `uplift` (never lowered); a majority expert's is unchanged.
 """
 function panel_voice(vw::Real, uplift::Real, minority::Bool)
     check(isfinite(vw) && vw >= 0 && isfinite(uplift) && uplift >= 0, "weight and uplift non-negative")
-    ccall(sym(:bf_panel_voice), Float64, (Float64, Float64, UInt8), Float64(vw), Float64(uplift), minority ? 0x01 : 0x00)
+    @lccall(sym(:bf_panel_voice), Float64, (Float64, Float64, UInt8), Float64(vw), Float64(uplift), minority ? 0x01 : 0x00)
 end
 
 """
@@ -367,7 +367,7 @@ function responsibility_factor(is_act::Bool, is_informed::Bool, has_duty::Bool, 
                                severity_scale::Real = 1.0, accident_factor::Real = 0.5)
     check(all(isfinite, (counterfactual_ratio, severity_scale, accident_factor)),
           "responsibility inputs must be finite")
-    ccall(sym(:bf_responsibility_factor), Float64,
+    @lccall(sym(:bf_responsibility_factor), Float64,
           (UInt8, UInt8, UInt8, Float64, Float64, Float64),
           UInt8(is_act), UInt8(is_informed), UInt8(has_duty),
           Float64(counterfactual_ratio), Float64(severity_scale), Float64(accident_factor))
@@ -381,14 +381,14 @@ const PARAM_FIELDS = (:alpha, :beta, :gamma, :delta, :kappa, :q_plus, :q_minus, 
 
 "The bootstrap parameter vector (`bootstrapParams`)."
 function bootstrap_params()
-    check(ccall(sym(:bf_param_count), Csize_t, (Ptr{Cvoid},), C_NULL) == length(PARAM_FIELDS), "field lists must agree")
-    lean_floats(ccall(sym(:bf_bootstrap_params), Ptr{Cvoid}, (Ptr{Cvoid},), C_NULL))
+    check(@lccall(sym(:bf_param_count), Csize_t, (Ptr{Cvoid},), C_NULL) == length(PARAM_FIELDS), "field lists must agree")
+    lean_floats(@lccall(sym(:bf_bootstrap_params), Ptr{Cvoid}, (Ptr{Cvoid},), C_NULL))
 end
 
 "Whether a parameter vector is admissible: the ranges and joint constraints the proofs rely on."
 function admissible(v)
     length(v) == length(PARAM_FIELDS) && all(isfinite, v) || return false
-    ccall(sym(:bf_admissible), UInt8, (Ptr{Cvoid},), floatarray(v)) == 1
+    @lccall(sym(:bf_admissible), UInt8, (Ptr{Cvoid},), floatarray(v)) == 1
 end
 
 """
@@ -401,7 +401,7 @@ function select_candidate(means, ses; z::Real)
     check(length(means) == length(ses) >= 1 && all(isfinite, means) && all(x -> isfinite(x) && x >= 0, ses),
           "one finite mean and non-negative standard error per candidate")
     check(isfinite(z) && z >= 0, "z non-negative")
-    Int(ccall(sym(:bf_select_candidate), Csize_t, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(means), floatarray(ses), z)) + 1
+    Int(@lccall(sym(:bf_select_candidate), Csize_t, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(means), floatarray(ses), z)) + 1
 end
 
 """
@@ -414,7 +414,7 @@ Full support where predictions are scored (Lean `explore_pick_ref`; Chen, Kash, 
 function explore_pick(u::Real, share::Real, n::Integer)
     check(isfinite(u) && 0 <= u <= 1 && isfinite(share) && 0 <= share <= 1, "draw and share in [0, 1]")
     check(n >= 0, "count non-negative")
-    Int(ccall(sym(:bf_explore_pick), Csize_t, (Float64, Float64, Csize_t), u, share, n))
+    Int(@lccall(sym(:bf_explore_pick), Csize_t, (Float64, Float64, Csize_t), u, share, n))
 end
 
 """
@@ -427,7 +427,7 @@ function binding_admits(confidences, threshold::Real; quorum::Integer)
     check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && isfinite(threshold) && 0 <= threshold <= 1,
           "confidences and threshold in [0, 1]")
     check(quorum >= 0, "quorum non-negative")
-    ccall(sym(:bf_binding_admits), UInt8, (Ptr{Cvoid}, Float64, Csize_t), floatarray(confidences), threshold, quorum) == 1
+    @lccall(sym(:bf_binding_admits), UInt8, (Ptr{Cvoid}, Float64, Csize_t), floatarray(confidences), threshold, quorum) == 1
 end
 
 """
@@ -440,20 +440,20 @@ reporter is paid one exploit per exploiter plus the bonus.
 """
 function self_report_payout(n::Real, e::Real, bonus::Real)
     check(isfinite(n) && n >= 0 && isfinite(e) && e >= 0 && isfinite(bonus) && bonus >= 0, "exploits, gain and bonus non-negative")
-    ccall(sym(:bf_self_report_payout), Float64, (Float64, Float64, Float64), n, e, bonus)
+    @lccall(sym(:bf_self_report_payout), Float64, (Float64, Float64, Float64), n, e, bonus)
 end
 "Justice for a detected false report (Lean `false_report_charge_ref`; 8.82): the harm caused, the reward received and the audit."
 function false_report_charge(harm::Real, reward::Real, audit_cost::Real)
     check(all(x -> isfinite(x) && x >= 0, (harm, reward, audit_cost)), "harm, reward and audit non-negative")
-    ccall(sym(:bf_false_report_charge), Float64, (Float64, Float64, Float64), harm, reward, audit_cost)
+    @lccall(sym(:bf_false_report_charge), Float64, (Float64, Float64, Float64), harm, reward, audit_cost)
 end
 function caught_charge(clawback::Real, bonus::Real, audit_cost::Real)
     check(all(x -> isfinite(x) && x >= 0, (clawback, bonus, audit_cost)), "clawback, bonus and audit non-negative")
-    ccall(sym(:bf_caught_charge), Float64, (Float64, Float64, Float64), clawback, bonus, audit_cost)
+    @lccall(sym(:bf_caught_charge), Float64, (Float64, Float64, Float64), clawback, bonus, audit_cost)
 end
 function caught_reward(clawback::Real, n::Real, bonus::Real)
     check(all(x -> isfinite(x) && x >= 0, (clawback, n, bonus)), "clawback, exploits and bonus non-negative")
-    ccall(sym(:bf_caught_reward), Float64, (Float64, Float64, Float64), clawback, n, bonus)
+    @lccall(sym(:bf_caught_reward), Float64, (Float64, Float64, Float64), clawback, n, bonus)
 end
 
 """
@@ -466,7 +466,7 @@ h · (1 − p_F + margin · p_O).
 """
 function ehr_expected_response(h::Real, re_pos::Real, re_neg::Real; alpha::Real, delta::Real, margin::Real)
     check(all(x -> isfinite(x) && x >= 0, (h, re_pos, re_neg, alpha, delta, margin)), "harm, ledgers, weights and margin non-negative")
-    ccall(sym(:bf_ehr_expected_response), Float64, (Float64, Float64, Float64, Float64, Float64, Float64), alpha, delta, margin, h, re_pos, re_neg)
+    @lccall(sym(:bf_ehr_expected_response), Float64, (Float64, Float64, Float64, Float64, Float64, Float64), alpha, delta, margin, h, re_pos, re_neg)
 end
 
 """
@@ -478,7 +478,7 @@ toss over real entities and over false identities separately, the worse side kep
 function class_balanced_skill(credences, outcomes)
     check(length(credences) == length(outcomes), "one credence per outcome")
     check(all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes), "credences in [0, 1], outcomes 0 or 1")
-    ccall(sym(:bf_class_balanced_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
+    @lccall(sym(:bf_class_balanced_skill), Float64, (Ptr{Cvoid}, Ptr{Cvoid}),
           floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
 end
 
@@ -493,7 +493,7 @@ function binding_admits_weighted(confidences, weights, threshold::Real, quorum_w
     check(length(confidences) == length(weights), "one weight per cluster")
     check(all(c -> isfinite(c) && 0 <= c <= 1, confidences) && all(isfinite, weights) && 0 <= threshold <= 1 && quorum_weight >= 0,
           "confidences and threshold in [0, 1], finite weights, quorum weight non-negative")
-    ccall(sym(:bf_binding_admits_weighted), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
+    @lccall(sym(:bf_binding_admits_weighted), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64),
           floatarray(collect(Float64, confidences)), floatarray(collect(Float64, weights)), threshold, quorum_weight) == 1
 end
 
@@ -511,21 +511,21 @@ function identity_confidence(start::Real, clusters, weights; rate::Real, disc::R
     check(isfinite(start) && 0 <= start < 1 && isfinite(rate) && 0 <= rate < 1 && isfinite(disc) && 0 <= disc <= 1 &&
           isfinite(participation) && participation >= 0 && isfinite(part_cap) && 0 <= part_cap < 1 && isfinite(half) && half > 0,
           "start in [0, 1), rate in [0, 1), disc in [0, 1], participation non-negative, part_cap in [0, 1), half positive")
-    ccall(sym(:bf_identity_confidence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_identity_confidence), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64),
           start, floatarray(collect(Float64, clusters)), floatarray(collect(Float64, weights)), rate, disc, participation, part_cap, half)
 end
 
 "Gauging the freedom range (Lean `gauge_radius_ref`): harm within the radius shrinks it by `factor`, none widens it."
 function gauge_radius(δ::Real, harmed::Bool; factor::Real)
     check(isfinite(δ) && δ > 0 && isfinite(factor) && factor > 1, "radius positive, factor above 1")
-    ccall(sym(:bf_gauge_radius), Float64, (Float64, UInt8, Float64), δ, harmed, factor)
+    @lccall(sym(:bf_gauge_radius), Float64, (Float64, UInt8, Float64), δ, harmed, factor)
 end
 
 "Controlled perturbation: `cand` if admissible and within δ of `cur` in every governed field, else `cur`."
 function perturb(cur, cand, fields; δ::Real)
     check(length(cur) == length(cand) == length(PARAM_FIELDS) && all(isfinite, cand), "two full parameter vectors")
     check(all(i -> 1 <= i <= length(PARAM_FIELDS), fields) && isfinite(δ) && δ >= 0, "fields in range, δ non-negative")
-    lean_floats(ccall(sym(:bf_perturb_step), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    lean_floats(@lccall(sym(:bf_perturb_step), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
                       floatarray(cur), floatarray(cand), floatarray(Float64.(fields) .- 1), δ))
 end
 
@@ -540,7 +540,7 @@ function deciding_scope(shares, within_harm; share_min::Real = 0.8)
     check(!isempty(shares) && length(shares) == length(within_harm), "non-empty shares and matching harm flags")
     check(all(isfinite, shares) && isfinite(share_min), "shares and share_min finite")
     wh = Float64[x ? 1.0 : 0.0 for x in within_harm]
-    Int(ccall(sym(:bf_deciding_scope), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    Int(@lccall(sym(:bf_deciding_scope), UInt64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64),
               floatarray(shares), floatarray(wh), Float64(share_min))) + 1
 end
 
@@ -552,7 +552,7 @@ The share of the novelty bonus offered to sibling clusters to try a different op
 """
 function divergence_weight(uncertainty::Real, severity::Real; severity_slope::Real = 2.0)
     check(isfinite(uncertainty) && isfinite(severity) && isfinite(severity_slope), "divergence_weight: finite inputs")
-    ccall(sym(:bf_divergence_weight), Float64, (Float64, Float64, Float64), uncertainty, severity, severity_slope)
+    @lccall(sym(:bf_divergence_weight), Float64, (Float64, Float64, Float64), uncertainty, severity, severity_slope)
 end
 
 """
@@ -564,13 +564,13 @@ gain to a single entity plus `share` of the harm the revelation prevents, at lea
 function advap_reward(exploit_gain::Real, prevented_harm::Real; share::Real, floor::Real)
     check(isfinite(exploit_gain) && isfinite(prevented_harm), "gain and harm finite")
     check(isfinite(share) && share >= 0 && isfinite(floor) && floor >= 0, "share and floor finite, non-negative")
-    ccall(sym(:bf_advap_reward), Float64, (Float64, Float64, Float64, Float64), exploit_gain, prevented_harm, share, floor)
+    @lccall(sym(:bf_advap_reward), Float64, (Float64, Float64, Float64, Float64), exploit_gain, prevented_harm, share, floor)
 end
 
 "What an established exploit's causal chain is charged: the reward and the audit (Lean `advap_liability_ref`)."
 function advap_liability(reward::Real; audit_cost::Real)
     check(isfinite(reward) && isfinite(audit_cost) && audit_cost >= 0, "reward finite, audit cost finite, non-negative")
-    ccall(sym(:bf_advap_liability), Float64, (Float64, Float64), reward, audit_cost)
+    @lccall(sym(:bf_advap_liability), Float64, (Float64, Float64), reward, audit_cost)
 end
 
 """
@@ -585,7 +585,7 @@ function advap_recount_correct(held, votes, active, truth::Real)
           all(isfinite, held) && all(isfinite, votes) && isfinite(truth),
           "equal-length finite held weights, votes, active flags, and finite truth")
     act = Float64[x == true || (x isa Real && x != 0) ? 1.0 : 0.0 for x in active]
-    ccall(sym(:bf_advap_recount_correct), UInt8,
+    @lccall(sym(:bf_advap_recount_correct), UInt8,
           (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           floatarray(held), floatarray(votes), floatarray(act), Float64(truth)) == 1
 end
@@ -599,7 +599,7 @@ its audit once the reporter's unfounded reports in the window exceed `threshold`
 function report_penalty(unfounded::Integer, threshold::Real; audit_cost::Real)
     check(unfounded >= 0 && isfinite(threshold) && threshold >= 0, "count and threshold non-negative")
     check(isfinite(audit_cost) && audit_cost >= 0, "audit cost finite, non-negative")
-    ccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
+    @lccall(sym(:bf_report_penalty), Float64, (Float64, Float64, Float64), unfounded, threshold, audit_cost)
 end
 
 """
@@ -613,7 +613,7 @@ function escape_accept(means, ses; gains::Real, harms::Real, irreparable::Intege
     check(length(means) == length(ses) == 2 && all(isfinite, means) && all(s -> isfinite(s) && s >= 0, ses), "incumbent and proposal: finite means, standard errors")
     check(isfinite(gains) && gains >= 0 && isfinite(harms) && harms >= 0 && irreparable >= 0, "gains, harms and irreparable count non-negative")
     check(isfinite(z) && z >= 0, "z non-negative")
-    ccall(sym(:bf_escape_accept), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_escape_accept), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           floatarray(Float64.(means)), floatarray(Float64.(ses)), gains, harms, irreparable, z) == 1
 end
 
@@ -625,7 +625,7 @@ pulled towards a coin toss in proportion (Lean `ratchet_credence_ref`; L84; 8.42
 """
 function ratchet_credence(credence::Real, neg_share::Real)
     check(0 <= credence <= 1 && 0 <= neg_share <= 1, "credence and negative share in [0, 1]")
-    ccall(sym(:bf_ratchet_credence), Float64, (Float64, Float64), credence, neg_share)
+    @lccall(sym(:bf_ratchet_credence), Float64, (Float64, Float64), credence, neg_share)
 end
 
 """
@@ -636,7 +636,7 @@ oldest first) exceeds `z`; a non-deceptive interval resets it (Lean `persistence
 """
 function persistence(significance; z::Real = 2.0)
     check(all(isfinite, significance) && isfinite(z), "significances and z finite")
-    Int(ccall(sym(:bf_persistence), UInt32, (Ptr{Cvoid}, Float64), floatarray(Float64.(significance)), z))
+    Int(@lccall(sym(:bf_persistence), UInt32, (Ptr{Cvoid}, Float64), floatarray(Float64.(significance)), z))
 end
 
 """
@@ -661,31 +661,31 @@ the factor at most `cap` (Lean `escalated_credence_ref`; 8.91).
 function escalated_credence(credence::Real, neg_share::Real, persistence::Integer; growth::Real = 0.5, cap::Real = 4.0)
     check(0 <= credence <= 1 && 0 <= neg_share <= 1, "credence and negative share in [0, 1]")
     check(persistence >= 0 && isfinite(growth) && growth > 0 && isfinite(cap) && cap >= 1, "persistence non-negative, growth positive, cap at least 1")
-    ccall(sym(:bf_escalated_credence), Float64, (Float64, Float64, Float64, Float64, Float64), credence, neg_share, persistence, growth, cap)
+    @lccall(sym(:bf_escalated_credence), Float64, (Float64, Float64, Float64, Float64, Float64), credence, neg_share, persistence, growth, cap)
 end
 
 "Event probability from an as-of record of `k` occurrences in `n` trials, Laplace-smoothed (Lean `event_rate_ref`; 8.87)."
 function event_rate(k::Real, n::Real)
     check(0 <= k <= n && isfinite(n), "0 ≤ k ≤ n")
-    ccall(sym(:bf_event_rate), Float64, (Float64, Float64), k, n)
+    @lccall(sym(:bf_event_rate), Float64, (Float64, Float64), k, n)
 end
 
 "Sources' probabilities pooled by their record weights (Lean `pooled_probability_ref`; 8.87)."
 function pooled_probability(probs, weights)
     check(length(probs) == length(weights) && all(p -> 0 <= p <= 1, probs) && all(>=(0), weights), "one weight ≥ 0 per probability in [0, 1]")
-    ccall(sym(:bf_pooled_probability), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, weights)))
+    @lccall(sym(:bf_pooled_probability), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, weights)))
 end
 
 "An option's expected effect over its scenarios (Lean `expected_effect_ref`; 8.87)."
 function expected_effect(probs, effects)
     check(length(probs) == length(effects) && all(isfinite, effects), "one effect per probability")
-    ccall(sym(:bf_expected_effect), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, effects)))
+    @lccall(sym(:bf_expected_effect), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, probs)), floatarray(collect(Float64, effects)))
 end
 
 "Escrow credence after `repeats` discovered deceptions (Lean `repeat_escrow_credence_ref`; author ruling on 8.91)."
 function repeat_escrow_credence(credence::Real, neg_share::Real, repeats::Integer; growth::Real, floor::Real)
     check(0 <= credence <= 1 && 0 <= neg_share <= 1 && repeats >= 0 && growth >= 0 && 0 < floor <= 0.5, "credence, share in [0, 1]; repeats ≥ 0; growth ≥ 0; floor in (0, 0.5]")
-    ccall(sym(:bf_repeat_escrow_credence), Float64, (Float64, Float64, Csize_t, Float64, Float64), credence, neg_share, repeats, growth, floor)
+    @lccall(sym(:bf_repeat_escrow_credence), Float64, (Float64, Float64, Csize_t, Float64, Float64), credence, neg_share, repeats, growth, floor)
 end
 
 """
@@ -700,7 +700,7 @@ function pragmatic_understanding(map_fit::Real, wt, ce, acc, cy; th::Real = 0.0)
     check(0 <= map_fit <= 1 && all(x -> 0 <= x <= 1, ce) && all(x -> 0 <= x <= 1, acc) && all(x -> 0 <= x <= 1, cy) && all(>=(0), wt),
           "map fit, explanation, accuracy and complexity in [0, 1]; weights non-negative")
     f(x) = floatarray(collect(Float64, x))
-    ccall(sym(:bf_pragmatic_understanding), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
+    @lccall(sym(:bf_pragmatic_understanding), Float64, (Float64, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64),
           Float64(map_fit), f(wt), f(ce), f(acc), f(cy), Float64(th))
 end
 
@@ -708,80 +708,80 @@ end
 function relative_accuracy(credences, outcomes)
     check(length(credences) == length(outcomes) && all(c -> 0 <= c <= 1, credences) && all(o -> o in (0, 1), outcomes),
           "one credence in [0, 1] per outcome of 0 or 1")
-    ccall(sym(:bf_relative_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
+    @lccall(sym(:bf_relative_accuracy), Float64, (Ptr{Cvoid}, Ptr{Cvoid}), floatarray(collect(Float64, credences)), floatarray(collect(Float64, outcomes)))
 end
 
 "Measurement chains (8.107): whether the dependency graph `adj` (adj[i, j] > 0: reading i takes j as input) is acyclic (Lean `acyclic_ref`)."
 function chains_acyclic(adj::AbstractMatrix)
     n = size(adj, 1); check(size(adj, 2) == n, "square dependency matrix")
-    ccall(sym(:bf_acyclic), UInt8, (Ptr{Cvoid}, Csize_t), floatarray(vec(permutedims(Float64.(adj)))), n) == 1
+    @lccall(sym(:bf_acyclic), UInt8, (Ptr{Cvoid}, Csize_t), floatarray(vec(permutedims(Float64.(adj)))), n) == 1
 end
 
 "Overlap-discounted pooling of readings (8.107, Lean `pooled_reading_ref`): (value, effective credence)."
 function pooled_reading(values, credences, overlap::AbstractMatrix)
     n = length(values); check(length(credences) == n && size(overlap) == (n, n), "one credence per reading, n × n overlap")
-    r = lean_floats(ccall(sym(:bf_pooled_reading), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+    r = lean_floats(@lccall(sym(:bf_pooled_reading), Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
                           floatarray(collect(Float64, values)), floatarray(collect(Float64, credences)), floatarray(vec(permutedims(Float64.(overlap))))))
     (value = r[1], credence = r[2])
 end
 
 "Divergence between chains (8.107, Lean `chains_diverge_ref`): some pair differs by more than `z` combined standard errors."
 chains_diverge(values, ses; z::Real = 3.0) =
-    ccall(sym(:bf_chains_diverge), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(collect(Float64, values)), floatarray(collect(Float64, ses)), Float64(z)) == 1
+    @lccall(sym(:bf_chains_diverge), UInt8, (Ptr{Cvoid}, Ptr{Cvoid}, Float64), floatarray(collect(Float64, values)), floatarray(collect(Float64, ses)), Float64(z)) == 1
 
 "Strong per-being reading over the long-term projection with understanding offsetting happiness (Lean `lt_offset_admissible_ref`; author ruling 8.116)."
 lt_offset_admissible(du, dh, base_h; nha::Bool = false, retention = 0.3, compounding = 1.5, offset_scale = 0.05, soft_bar = 0.05) =
-    ccall(sym(:bf_lt_offset_admissible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_lt_offset_admissible), UInt8, (Float64, Float64, Float64, UInt8, Float64, Float64, Float64, Float64),
           Float64(du), Float64(dh), Float64(base_h), UInt8(nha), Float64(retention), Float64(compounding), Float64(offset_scale), Float64(soft_bar)) == 1
 
 "Environmental health harm blocks an option beyond the least among the options (Lean `env_health_blocked_ref`; author ruling 8.118)."
 env_health_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
-    ccall(sym(:bf_env_health_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
+    @lccall(sym(:bf_env_health_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
 
 "A confidence ballot's weight (Lean `cfd_ballot_weight_ref`; LqCfdBfDm, author ruling 8.121)."
 cfd_ballot_weight(vw, calibration, logodds; cap = 10.0) =
-    ccall(sym(:bf_cfd_ballot_weight), Float64, (Float64, Float64, Float64, Float64), Float64(vw), Float64(calibration), Float64(logodds), Float64(cap))
+    @lccall(sym(:bf_cfd_ballot_weight), Float64, (Float64, Float64, Float64, Float64), Float64(vw), Float64(calibration), Float64(logodds), Float64(cap))
 
 "Undeclared copying: standardised differences agreeing far closer than independent noise allows (Lean `copies_ref`; 8.111, 8.121)."
 copies(diffs; min_n::Integer = 20, below::Real = 0.2) =
-    ccall(sym(:bf_copies), UInt8, (Ptr{Cvoid}, Csize_t, Float64), floatarray(Float64.(diffs)), Csize_t(min_n), Float64(below)) == 1
+    @lccall(sym(:bf_copies), UInt8, (Ptr{Cvoid}, Csize_t, Float64), floatarray(Float64.(diffs)), Csize_t(min_n), Float64(below)) == 1
 
 "Copied judgments err together: shared-error share near one and above the typical pair's (Lean `coerror_copy_ref`; 8.121)."
 coerror_copy(both, either; min_either::Real = 10, med_share::Real = 0.0, floor_share::Real = 0.9, margin::Real = 0.3) =
-    ccall(sym(:bf_coerror_copy), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_coerror_copy), UInt8, (Float64, Float64, Float64, Float64, Float64, Float64),
           Float64(both), Float64(either), Float64(min_either), Float64(med_share), Float64(floor_share), Float64(margin)) == 1
 
 "A signed error's mean is significant under repeated looks: beyond z·√(1 + ln(n/n0)) standard errors (Lean `sequential_significant_ref`; 8.107)."
 sequential_significant(mean, sd, n; n0::Integer = 5, z::Real = 3.0) =
-    ccall(sym(:bf_sequential_significant), UInt8, (Float64, Float64, Csize_t, Csize_t, Float64), Float64(mean), Float64(sd), Csize_t(n), Csize_t(n0), Float64(z)) == 1
+    @lccall(sym(:bf_sequential_significant), UInt8, (Float64, Float64, Csize_t, Csize_t, Float64), Float64(mean), Float64(sd), Csize_t(n), Csize_t(n0), Float64(z)) == 1
 
 "A fork's part of an identity's amount (balance, liability, reputation, base vote), conserving the family total (Lean `fork_split_ref`; L123, 8.34)."
-fork_split(amount, shares) = lean_floats(ccall(sym(:bf_fork_split), Ptr{Cvoid}, (Float64, Ptr{Cvoid}), Float64(amount), floatarray(Float64.(shares))))
+fork_split(amount, shares) = lean_floats(@lccall(sym(:bf_fork_split), Ptr{Cvoid}, (Float64, Ptr{Cvoid}), Float64(amount), floatarray(Float64.(shares))))
 
 "Policy-level irreparable harm blocks an option beyond the least among the options (Lean `irreparable_blocked_ref`; author ruling 8.124)."
 irreparable_blocked(harm, least; tol = 1e-9, nha::Bool = false) =
-    ccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
+    @lccall(sym(:bf_irreparable_blocked), UInt8, (Float64, Float64, Float64, UInt8), Float64(harm), Float64(least), Float64(tol), UInt8(nha)) == 1
 
 "Irreparable harm in death-equivalents: deaths plus persistent understanding loss (Lean `irreparable_equivalent_ref`; on 8.124)."
 irreparable_equivalent(deaths, du, pop, base_u, base_h; compounding = 1.5, persistence = 0.5) =
-    ccall(sym(:bf_irreparable_equivalent), Float64, (Float64, Float64, Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_irreparable_equivalent), Float64, (Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           Float64(deaths), Float64(du), Float64(pop), Float64(base_u), Float64(base_h), Float64(compounding), Float64(persistence))
 
 "New issuance allowed so claims outstanding stay within `horizon` steps of deliverable value (Lean `issuance_headroom_ref`; L83, 8.133)."
 issuance_headroom(claims, deliverable_per_step, horizon) =
-    ccall(sym(:bf_issuance_headroom), Float64, (Float64, Float64, Float64), Float64(claims), Float64(deliverable_per_step), Float64(horizon))
+    @lccall(sym(:bf_issuance_headroom), Float64, (Float64, Float64, Float64), Float64(claims), Float64(deliverable_per_step), Float64(horizon))
 
 "A measured outcome is on track when it reaches the prediction less the confidence band (Lean `prediction_on_track_ref`; 8.134)."
 prediction_on_track(measured, predicted, confidence_band) =
-    ccall(sym(:bf_prediction_on_track), UInt8, (Float64, Float64, Float64), Float64(measured), Float64(predicted), Float64(confidence_band)) == 1
+    @lccall(sym(:bf_prediction_on_track), UInt8, (Float64, Float64, Float64), Float64(measured), Float64(predicted), Float64(confidence_band)) == 1
 
 "A decision is judged once its ETA plus ETA grace has elapsed (Lean `resolution_due_ref`; 8.134)."
 resolution_due(steps_since_adoption, eta, eta_grace) =
-    ccall(sym(:bf_resolution_due), UInt8, (Csize_t, Csize_t, Csize_t), Csize_t(steps_since_adoption), Csize_t(eta), Csize_t(eta_grace)) == 1
+    @lccall(sym(:bf_resolution_due), UInt8, (Csize_t, Csize_t, Csize_t), Csize_t(steps_since_adoption), Csize_t(eta), Csize_t(eta_grace)) == 1
 
 "Deliverable value per step: supply × regeneration rate × value per unit (Lean `deliverable_value_ref`; L83, 8.133)."
 deliverable_value(supply, regen_rate, unit_value) =
-    ccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))
+    @lccall(sym(:bf_deliverable_value), Float64, (Float64, Float64, Float64), Float64(supply), Float64(regen_rate), Float64(unit_value))
 
 """
     ra_value_per_cost(measured_gain, resource_cost; audit_cost = 0.0, fallback = resource_cost) -> value_per_cost
@@ -791,7 +791,7 @@ L83, rulings 8.133 & 8.155): measured `U`/`H` value delivered divided by `resour
 """
 function ra_value_per_cost(measured_gain::Real, resource_cost::Real; audit_cost::Real = 0.0, fallback::Real = resource_cost)
     check(all(isfinite, (measured_gain, resource_cost, audit_cost, fallback)), "RA inputs must be finite")
-    ccall(sym(:bf_ra_value_per_cost), Float64, (Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_ra_value_per_cost), Float64, (Float64, Float64, Float64, Float64),
           Float64(measured_gain), Float64(resource_cost), Float64(audit_cost), Float64(fallback))
 end
 
@@ -803,7 +803,7 @@ Commons reserve target estimated by resource accounting for progressive-complexi
 """
 function ra_commons_reserve(expected_need::Real, fallback_rate::Real; horizon::Real = 1.0)
     check(all(isfinite, (expected_need, fallback_rate, horizon)), "RA reserve inputs must be finite")
-    ccall(sym(:bf_ra_commons_reserve), Float64, (Float64, Float64, Float64),
+    @lccall(sym(:bf_ra_commons_reserve), Float64, (Float64, Float64, Float64),
           Float64(expected_need), Float64(fallback_rate), Float64(horizon))
 end
 
@@ -816,7 +816,7 @@ Resource-accounting contraction multiplier (Lean `ra_contraction_factor_ref`; 8.
 function ra_contraction_factor(claims::Real, deliverable_cap::Real; rate::Real = 0.0, min_scale::Real = 0.1)
     check(all(isfinite, (claims, deliverable_cap, rate, min_scale)) && 0 <= rate <= 1 && 0 <= min_scale <= 1,
           "RA contraction inputs finite, rate & min_scale in [0, 1]")
-    ccall(sym(:bf_ra_contraction_factor), Float64, (Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_ra_contraction_factor), Float64, (Float64, Float64, Float64, Float64),
           Float64(claims), Float64(deliverable_cap), Float64(rate), Float64(min_scale))
 end
 
@@ -830,7 +830,7 @@ reward and the audit cost.
 function withhold_charge(market_premium::Real, reward::Real; audit_cost::Real)
     check(isfinite(market_premium) && isfinite(reward) && isfinite(audit_cost) && audit_cost >= 0,
           "premium and reward finite; audit cost finite, non-negative")
-    ccall(sym(:bf_withhold_charge), Float64, (Float64, Float64, Float64),
+    @lccall(sym(:bf_withhold_charge), Float64, (Float64, Float64, Float64),
           Float64(market_premium), Float64(reward), Float64(audit_cost))
 end
 
@@ -846,7 +846,7 @@ function withhold_reward(own_liability::Real, remaining_premium::Real;
                          share::Real, floor::Real, has_coconspirators::Bool = false, self_report::Bool = false)
     check(isfinite(own_liability) && isfinite(remaining_premium), "liabilities finite")
     check(isfinite(share) && share >= 0 && isfinite(floor) && floor >= 0, "share and floor finite, non-negative")
-    ccall(sym(:bf_withhold_reward), Float64, (Float64, Float64, Float64, Float64, UInt8, UInt8),
+    @lccall(sym(:bf_withhold_reward), Float64, (Float64, Float64, Float64, Float64, UInt8, UInt8),
           Float64(own_liability), Float64(remaining_premium), Float64(share), Float64(floor),
           UInt8(has_coconspirators), UInt8(self_report))
 end
@@ -867,7 +867,7 @@ function effective_independent_judges(both::AbstractMatrix, either::AbstractMatr
     check(isfinite(min_either) && min_either >= 0 && isfinite(baseline) && 0 <= baseline < 1,
           "min_either non-negative, baseline in [0, 1)")
     flat(M) = floatarray([Float64(M[i, j]) for i in 1:n for j in 1:n])
-    ccall(sym(:bf_effective_independent_judges), Float64,
+    @lccall(sym(:bf_effective_independent_judges), Float64,
           (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Csize_t, Float64, Float64),
           flat(both), flat(either), flat(prior), Csize_t(n), Float64(min_either), Float64(baseline))
 end
@@ -881,6 +881,6 @@ Required trust at a layer: halves per effectively independent cluster and floors
 function trust_cascade(shared_floor::Real, unmitigated::Real, eff_clusters::Real)
     check(isfinite(shared_floor) && shared_floor >= 0 && isfinite(unmitigated) && unmitigated >= 0 &&
           isfinite(eff_clusters) && eff_clusters >= 0, "trust cascade inputs finite and non-negative")
-    ccall(sym(:bf_trust_cascade), Float64, (Float64, Float64, Float64),
+    @lccall(sym(:bf_trust_cascade), Float64, (Float64, Float64, Float64),
           Float64(shared_floor), Float64(unmitigated), Float64(eff_clusters))
 end

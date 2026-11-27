@@ -5,10 +5,10 @@
 const HARM_SCHEDULE = Float64[]
 
 function load_harm_schedule!()
-    n = ccall(sym(:bf_harm_schedule_len), Csize_t, (Ptr{Cvoid},), Ptr{Cvoid}(1))
+    n = @lccall(sym(:bf_harm_schedule_len), Csize_t, (Ptr{Cvoid},), Ptr{Cvoid}(1))
     empty!(HARM_SCHEDULE)
     for i in 0:(n - 1)
-        push!(HARM_SCHEDULE, ccall(sym(:bf_harm_schedule_at), Float64, (Csize_t,), i))
+        push!(HARM_SCHEDULE, @lccall(sym(:bf_harm_schedule_at), Float64, (Csize_t,), i))
     end
 end
 
@@ -21,7 +21,7 @@ of the context's threshold of significance. Before or at t0 only the prediction 
 function assess(predicted::Real, counter::Real, measured::Real; t::Real, t0::Real, th::Real)
     check(all(isfinite, (predicted, counter, measured, t, t0, th)), "inputs must be finite")
     check(th > 0, "threshold of significance must be positive")
-    ccall(sym(:bf_as), Float64, (Float64, Float64, Float64, Float64, Float64, Float64),
+    @lccall(sym(:bf_as), Float64, (Float64, Float64, Float64, Float64, Float64, Float64),
           predicted, counter, measured, t, t0, th)
 end
 
@@ -37,7 +37,7 @@ function signed_synergy(items; λ::Real, κ::Real, qp::Real, qm::Real)
     end
     check(all(isfinite, (λ, κ, qp, qm)), "parameters must be finite")
     check(λ >= 0 && κ >= 0 && qp > 0 && qm > 0, "λ, κ non-negative and exponents positive")
-    ccall(sym(:bf_sy_signed), Float64,
+    @lccall(sym(:bf_sy_signed), Float64,
           (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64),
           floatarray([x for (x, _, _) in items]), floatarray([w for (_, w, _) in items]),
           floatarray([w for (_, _, w) in items]), λ, κ, qp, qm)
@@ -53,7 +53,7 @@ function harm_weight(tiers; λ::Real, κ::Real = bootstrap_params()[10], q::Real
     check_items(tiers)
     check(isfinite(λ) && λ >= 0, "λ must be finite and non-negative")
     check(isfinite(κ) && κ >= 0 && isfinite(q) && q > 1, "κ must be non-negative and q > 1")
-    ccall(sym(:bf_ha_wt_params), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
+    @lccall(sym(:bf_ha_wt_params), Float64, (Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64),
           floatarray(mags(tiers)), floatarray(weights(tiers)), λ, κ, q)
 end
 
@@ -69,7 +69,7 @@ function value_on_being(u::Real, h::Real, n::Real; harm_wt::Real,
     check(isfinite(harm_wt) && harm_wt >= 1, "harm weight must be at least 1")
     check(1 > α > β > γ > 0, "priorities must satisfy 1 > α > β > γ > 0")
     check(λ >= 0 && qp > 0 && qm > 0, "λ non-negative and exponents positive")
-    ccall(sym(:bf_v), Float64,
+    @lccall(sym(:bf_v), Float64,
           (Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           u, h, n, α, β, γ, harm_wt, λ, qp, qm)
 end
@@ -90,7 +90,7 @@ function fr_permissible(irreparable::Real, irreversible::Real, longterm::Real, p
           "harm amounts non-negative, confidence in [0, 1]")
     check(0 < th_conf <= 1 && th_high > 0 && length(severities) == 5 && all(x -> isfinite(x) && x > 0, severities),
           "freedom gate thresholds must be positive and severities positive")
-    ccall(sym(:bf_fr_permissible_params), UInt8,
+    @lccall(sym(:bf_fr_permissible_params), UInt8,
           (Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           irreparable, irreversible, longterm, passing, time_loss, confidence,
           th_conf, th_high, severities[1], severities[2], severities[3], severities[4], severities[5]) == 1
@@ -102,7 +102,7 @@ end
 The default priority tier schedules from the Lean reference (8.129; governed thresholds, each may be governed per
 domain and passed to `tiered_value` as `su`, `sh`, `sn`).
 """
-tier_schedules() = Tuple([ccall(sym(:bf_tier_schedule_at), Float64, (Csize_t, Csize_t), w, i) for i in 0:5] for w in 0:2)
+tier_schedules() = Tuple([@lccall(sym(:bf_tier_schedule_at), Float64, (Csize_t, Csize_t), w, i) for i in 0:5] for w in 0:2)
 
 """
     tiered_value(u, h, n; harm_wt, α, β, γ, λ, qp, qm, su, sh, sn)
@@ -123,7 +123,7 @@ function tiered_value(u::AbstractVector{<:Real}, h::AbstractVector{<:Real}, n::A
     check(isfinite(harm_wt) && harm_wt >= 1, "harm weight must be at least 1")
     check(1 > α > β > γ > 0, "priorities must satisfy 1 > α > β > γ > 0")
     check(λ >= 0 && qp > 0 && qm > 0, "λ non-negative and exponents positive")
-    ccall(sym(:bf_tiered_value_sched), Float64,
+    @lccall(sym(:bf_tiered_value_sched), Float64,
           (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Float64, Float64, Float64, Float64, Float64, Float64, Float64),
           floatarray(Float64.(u)), floatarray(Float64.(h)), floatarray(Float64.(n)),
           floatarray(Float64.(su)), floatarray(Float64.(sh)), floatarray(Float64.(sn)), α, β, γ, harm_wt, λ, qp, qm)
@@ -136,4 +136,4 @@ How much a meta level's understanding compounds (author, 2026-11-08, on 8.131; L
 over levels, peaking at practical meta levels and fading as they grow abstract. Governed; defaults are judgment.
 """
 meta_multiplier(level::Real; amp::Real = 1.0, peak::Real = 2.0, width::Real = 1.0) =
-    ccall(sym(:bf_meta_multiplier), Float64, (Float64, Float64, Float64, Float64), Float64(level), Float64(amp), Float64(peak), Float64(width))
+    @lccall(sym(:bf_meta_multiplier), Float64, (Float64, Float64, Float64, Float64), Float64(level), Float64(amp), Float64(peak), Float64(width))
