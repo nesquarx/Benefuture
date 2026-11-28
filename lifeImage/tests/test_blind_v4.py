@@ -25,24 +25,27 @@ def _rel(links=None):
     return {"participants": [{"ref": "p1", "role": "seller"}], "action": "sells bread", "outcome": {"text": "money in", "counterfactual": None}, "links": links or []}
 
 
-def _blind(tag="a", zero_unknown=True):
+def _blind(tag="a", zero_unknown=True, competence=True):
     unk = _w("unknown", 0 if zero_unknown else 0.2, "the statement says nothing more")
     setting = [_w(f"market {tag}", 0.4), _w(f"stall {tag}", 0.28), _w(f"retail {tag}", 0.19), _w(f"commerce {tag}", 0.13)]
     if not zero_unknown:
         setting = [_w(f"market {tag}", 0.45), _w(f"retail {tag}", 0.35)]
-    return {
+    b = {
         "form": [_w(f"sale {tag}", 0.34), _w(f"retail {tag}x", 0.24), _w(f"exchange {tag}", 0.18), _w(f"financial transaction {tag}", 0.14), _w(f"commerce {tag}x", 0.1)],
         "content": [_w(f"selling {tag}", 0.34), _w(f"bread {tag}", 0.28), _w(f"baked goods {tag}", 0.21), _w(f"food {tag}", 0.17)],
         "outcome": [_w(f"money received {tag}", 0.6), _w(f"inventory spent {tag}", 0.4)],
         "setting": setting + [unk]}
+    if competence:
+        b["competence"] = [_w(f"selling skill {tag}", 0.4, "serving buyers"), _w(f"handling cash {tag}", 0.33, "giving change"), _w(f"trade know-how {tag}", 0.27, "how markets work")]
+    return b
 
 
-def _event(i, tag, zero_unknown=True):
-    return {"id": f"e{i}", "text": f"event {i}", "blind": _blind(tag, zero_unknown), "relational": _rel()}
+def _event(i, tag, zero_unknown=True, competence=True):
+    return {"id": f"e{i}", "text": f"event {i}", "blind": _blind(tag, zero_unknown, competence), "relational": _rel()}
 
 
-def good(n=1, zero_unknown=True):
-    evs = [_event(i, chr(96 + i), zero_unknown) for i in range(1, n + 1)]
+def good(n=1, zero_unknown=True, competence=True):
+    evs = [_event(i, chr(96 + i), zero_unknown, competence) for i in range(1, n + 1)]
     if n > 1:
         evs[0]["relational"]["links"] = [{"type": "concurrent", "other": "e2"}]
         evs[1]["relational"]["links"] = [{"type": "concurrent", "other": "e1"}]
@@ -51,7 +54,7 @@ def good(n=1, zero_unknown=True):
 
 # ---- the baseline: the outcomes v4 replaces, true of v3 today ----
 def test_baseline_v3_accepts_a_thin_unknown_heavy_setting_and_an_empty_outcome_for_a_completed_act():
-    a = good(1, zero_unknown=False)  # setting: market 0.45, retail 0.35, unknown 0.2 (v3 weights unknown)
+    a = good(1, zero_unknown=False, competence=False)  # v3: four facets; unknown weighted
     a["events"][0]["blind"]["setting"] = [_w("market", 0.55), _w("unknown", 0.45)]  # one label, unknown carries nearly half the weight
     a["events"][0]["blind"]["outcome"] = None  # a completed sale with no outcome
     a["events"][0]["blind"]["form"] = [_w("sale", 1.0)]
@@ -78,7 +81,7 @@ def test_v4_rejects_what_v3_accepted():
         validate_blind_answer(c, version=4)
 
 
-@pytest.mark.parametrize("facet,keep", [("form", 4), ("content", 3), ("setting", 3), ("outcome", 1)])
+@pytest.mark.parametrize("facet,keep", [("form", 4), ("content", 3), ("setting", 3), ("outcome", 1), ("competence", 2)])
 def test_v4_enforces_the_minimum_list_lengths(facet, keep):
     a = good(1)
     ls = [e for e in a["events"][0]["blind"][facet] if e["label"] != "unknown"][:keep]
@@ -164,9 +167,9 @@ def test_v4_keeps_v3_structure_and_rejects_ids_and_oversize():
 
 
 def test_v3_validation_is_unchanged():
-    validate_blind_answer(good(1, zero_unknown=False), version=3)
+    validate_blind_answer(good(1, zero_unknown=False, competence=False), version=3)
     with pytest.raises(ValidationError):
-        validate_blind_answer(good(1), version=3)  # a zero-weight unknown is v4 only
+        validate_blind_answer(good(1, competence=False), version=3)  # a zero-weight unknown is v4 only
 
 
 def test_equal_step_ladders_ignore_a_zero_weight_unknown():
@@ -214,7 +217,7 @@ def test_prompt_v4_states_the_verdict_lessons_as_rules():
     p = re.sub(r"\s+", " ", _prompt())
     for needle in ("at least 5", "at least 4", "at least 2", "short_reason", "up to 10", "zero weight", "weight 0", "the event itself makes true",
                    "likely but unstated", "another entity", "the activity itself first", "concrete to generic", "ordinary inference",
-                   "split", "part_of", "causes", "concurrent", "perspective", "issue ticket", "no fixed ladder", "stops where the statement stops"):
+                   "split", "part_of", "causes", "concurrent", "actor", "issue ticket", "no fixed ladder", "the setting stops", "competence", "exercise, not mastery", "acting entity", "at least 3"):
         assert needle in p, needle
 
 
@@ -258,6 +261,8 @@ def test_pilot_v4_batches_cover_the_32_controls_in_two_variants_without_ids(tmp_
 # ---- label_match: held-out author labels incl. the accepted commuter outcomes, rejected outcomes as negatives ----
 def test_held_out_includes_the_accepted_commuter_outcomes_and_the_rejected_ones_are_negatives():
     assert lm.HELD_OUT["cal.s08"]["outcome"] == ["journey made", "time spent travelling"]
+    assert lm.HELD_OUT["cal.s08"]["competence"] == ["bus travel", "recognising a bus", "getting on and off", "pedestrian navigation", "reading street signs"]
+    assert "competence" not in lm.HELD_OUT["cal.s04"]
     assert lm.NEGATIVE_LABELS == {"cal.s08": {"outcome": ["arrival at work", "passenger carried"]}}
 
 
@@ -280,7 +285,7 @@ def test_label_match_v4_batches_cover_in_prompt_held_out_and_negative_labels(tmp
     pairs = _pairs(tmp_path)
     b = lm.build_label_match_batches(pairs, authors={**lm.AUTHOR_LABELS, **lm.HELD_OUT}, negatives=lm.NEGATIVE_LABELS)
     tasks = [json.loads(l) for v in b.values() for l in v[1:]]
-    per_variant = 16 + 13 + (9 + 4 + 2 + 6) + 2 + (5 + 3 + 4 + 4)
+    per_variant = 16 + 13 + (9 + 4 + 2 + 6 + 5) + 2 + (5 + 3 + 4 + 4)
     assert len(tasks) == 2 * per_variant
     neg = [t for t in tasks if t["input"]["item"]["id"] == "cal.s08" and t["input"]["relation"] == "outcome"]
     assert sorted({t["input"]["author_label"] for t in neg}) == ["arrival at work", "journey made", "passenger carried", "time spent travelling"]
@@ -303,7 +308,8 @@ def test_report_v4_judges_the_pre_registered_predictions(tmp_path):
     pairs = _pairs(tmp_path, n_events=2)
     b = lm.build_label_match_batches(pairs, authors={**lm.AUTHOR_LABELS, **lm.HELD_OUT}, negatives=lm.NEGATIVE_LABELS)
     rep = tp.blind_v4_report(tp.answers_by_item(pairs), _judge(b, lambda t: ("match", "r0")))
-    assert rep["median_labels"] == {"form": 5, "content": 4, "outcome": 2, "setting": 4}
+    assert rep["median_labels"] == {"form": 5, "content": 4, "outcome": 2, "setting": 4, "competence": 3}
+    assert rep["competence_form_overlap_share"] == 0.0 and rep["predictions"]["competence_form_overlap_at_most_20pct"] is True
     assert rep["short_reason_share"] == 0.0
     assert rep["predictions"]["median_labels_at_least_minimum"] is True and rep["predictions"]["short_reason_at_most_15pct"] is True
     assert rep["predictions"]["maize_split_in_both_variants"] is True
@@ -320,14 +326,14 @@ def test_report_v4_counts_short_reasons_and_unknown_weight():
     a["events"][0]["short_reason"] = {"outcome": "no change shown"}
     meta = {"task_id": "x", "input_hash": "h", "variant": 0, "prompt_version": 4, "model": "m", "task_type": "blind"}
     rep = tp.blind_v4_report({"cal.m02": {0: ("t", {**a, **meta})}}, [])
-    assert rep["short_reason_share"] == 0.25 and rep["predictions"]["short_reason_at_most_15pct"] is False
+    assert rep["short_reason_share"] == 0.2 and rep["predictions"]["short_reason_at_most_15pct"] is False
     assert rep["predictions"]["maize_split_in_both_variants"] is False
 
 
 # ---- the pre-registration ----
 def test_predictions_are_preregistered_before_any_answer_exists():
     t = (ROOT / "data" / "gold" / "blind_v4_predictions.md").read_text(encoding="utf-8")
-    for needle in ("Confidence 0.55", "0.6", "cal.s08", "cal.s04", "journey made", "time spent travelling", "arrival at work", "passenger carried",
+    for needle in ("competence", "20%", "bus travel", "at least 2", "Confidence 0.55", "0.6", "cal.s08", "cal.s04", "journey made", "time spent travelling", "arrival at work", "passenger carried",
                    "cal.m02", "15%", "0.8", "median", "short_reason", "blind.v4", "label_match.v1", "both"):
         assert needle in t, needle
     assert not list((ROOT / "data" / "batches").glob("blind.v4.*.answers.jsonl")) or "judged" in t
@@ -337,5 +343,50 @@ def test_governed_values_of_blind_v4_are_listed():
     from lifeimage.governed import GOVERNED
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     for k, d in (("blind.v4.min_form", 5), ("blind.v4.min_setting", 4), ("blind.v4.min_content", 4), ("blind.v4.min_outcome", 2),
-                 ("blind.v4.short_reason_ceiling", 0.15)):
+                 ("blind.v4.min_competence", 3), ("blind.v4.short_reason_ceiling", 0.15)):
         assert GOVERNED[k]["default"] == d and k in readme
+
+
+# ---- the fifth facet: competence (LI.73) ----
+def test_v4_competence_is_required_and_a_fifth_facet():
+    a = good(1)
+    del a["events"][0]["blind"]["competence"]
+    with pytest.raises(ValidationError, match="exactly the keys"):
+        validate_blind_answer(a, version=4)
+    b = good(1)
+    b["events"][0]["blind"]["competence"] = None
+    with pytest.raises(ValidationError, match="competence"):
+        validate_blind_answer(b, version=4)
+    b["events"][0]["short_reason"] = {"competence": "the statement shows no skill exercised"}
+    validate_blind_answer(b, version=4)
+    with pytest.raises(ValidationError):
+        validate_blind_answer(good(1), version=3)  # v3 has four facets only
+
+
+def test_v4_competence_may_repeat_a_form_label_only_with_a_distinct_gloss():
+    a = good(1)
+    a["events"][0]["blind"]["competence"][0]["label"] = "sale a"
+    a["events"][0]["blind"]["competence"][0]["gloss"] = "handing goods over for money"  # the form gloss of "sale a" is "handing goods over for money"
+    with pytest.raises(ValidationError, match="gloss"):
+        validate_blind_answer(a, version=4)
+    a["events"][0]["blind"]["competence"][0]["gloss"] = "the skill of selling, not the act"
+    validate_blind_answer(a, version=4)
+    assert tp.competence_form_overlap(a["events"][0]["blind"]) == ["sale a"]
+
+
+def test_v4_competence_lists_follow_the_list_rules():
+    a = good(1)
+    a["events"][0]["blind"]["competence"] = [_w("c1", 0.5), _w("c2", 0.6), _w("c3", 0.1)]
+    with pytest.raises(ValidationError, match="decreas|sum"):
+        validate_blind_answer(a, version=4)
+
+
+def test_prompt_v4_competence_rules_and_new_event_example():
+    p = re.sub(r"\s+", " ", _prompt())
+    low = p.lower()
+    for needle in ("only competences the event actually requires or shows", "the acting entity only", "exercise, not mastery", "explains fractions"):
+        assert needle.lower() in low, needle
+    assert "competence" in json.dumps([json.loads(b) for b in re.findall(r"```json\n(.*?)\n```", _prompt(), re.S)])
+    for b in re.findall(r"```json\n(.*?)\n```", _prompt(), re.S):
+        for e in json.loads(b)["events"]:
+            assert len(e["blind"]["competence"]) >= 3 or "competence" in e.get("short_reason", {})
