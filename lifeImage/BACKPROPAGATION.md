@@ -209,9 +209,24 @@ deleted. Numbering is stable (LI.n).
   - Built (2026-11-28, not yet run): `blind.v3` (`prompts/blind.v3.md`, `validate.py` version 3, `two_pass.blind_v3_report`, `label_match.HELD_OUT` and
     `NEGATIVE_LABELS`), pre-registered in `data/gold/blind_v3_predictions.md`; the held-out commuter and ballot lists and the two rejected outcomes
     are judged, never prompted. LI.72 gives no accepted outcome for the commuter: the author's list is requested.
+  - Built (2026-11-28, not yet run; refines the v3 pilot verdict in `data/gold/blind_v3_predictions.md`): `blind.v4` (`prompts/blind.v4.md`, `validate.py`
+    version 4, `two_pass.blind_v4_report`): minimum list lengths enforced (form 5, content 4, setting 4, outcome 2; fewer only with a per-facet
+    `short_reason`), outcome = what the event itself makes true for the actor (sequels and other entities' acts excluded; contrast example "a man posts a
+    letter"), `unknown` a zero-weight terminator, content the activity first. The commuter's accepted outcomes "journey made" and "time spent travelling" are
+    held-out labels. Pre-registered in `data/gold/blind_v4_predictions.md` (confidence 0.55). The prompt illustrates setting inference with a ferry, not
+    the bus, so the held-out setting stays unprompted.
   - Open (author's question, lead's proposal pending ratification): a fifth relation for the expertise an event exercises
     or helps form (commuting: bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street
     signs). PLAN, prompts, DESIGN.
+- **LI.73** (2026-11-28; author, resolves the LI.72 open item) A fifth event relation, `competence`: the skills and
+  knowledge the event exercises or demonstrates for the acting entity (commuting: bus travel, recognising a bus, getting on
+  and off, pedestrian navigation, reading street signs). Name chosen by the lead over "uses" (collides with resources consumed,
+  layer B production), "skill" (too narrow: excludes knowledge) and "exercise" (collides with physical exercise); `competence`
+  follows ESCO's skills/competences and maps onto the skill domains already in the graph. Rules: only competences the event
+  actually requires or shows, specific to generic with decreasing weight; weight by how much the event exercises each; it
+  records exercise, not mastery (levels still come from accumulated evidence); it applies to the acting entity only (a
+  teacher's event exercises teaching; the learner's own events build the learner's). It feeds the green (demonstrated skill)
+  channel directly. PLAN, prompts, RELATIONS, DESIGN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
