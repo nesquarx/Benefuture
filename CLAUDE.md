@@ -1,7 +1,7 @@
 # Benefuture — agent notes
 
 ## Read first
-- `COORDINATION.md`: multi-agent task registry, claims, and collision avoidance (check and register before starting).
+- `COORDINATION.md`: multi-agent task registry, claims, and collision avoidance (check and register before starting). Keep it lean: settled messages and finished tasks move to `docs/archive/COORDINATION_<date>.md` (author, 2026-11-28).
 - `docs/CODING_STYLE.md`: the principal's methodology (dual-suite tests first, atemporal docs, zero speculative patching).
 - `docs/DESIGN_PRINCIPLES.md`: outset design invariants and pre-build checklist distilled from `docs/BACKPROPAGATION.md` rulings; check before adding mechanisms or asking for rulings.
 - `docs/PLAN.md` Part 2 (direction) every turn; Part 1 (history) only when needed.
@@ -46,6 +46,7 @@ Status tags: `[R]` ratified by the author, `[P]` proposed, `[OPEN]` unresolved, 
 - Deterministic numerics (author, 2026-11-26; top priority): the same seed must give bit-identical results on every platform, toolchain and thread count, or the library and the premise of the simulations are weakened. Rules and the world model use only operations that are exact and identical everywhere (IEEE +, -, *, /, sqrt, in a fixed order), deterministic software implementations in place of platform maths libraries, no fused or fast-math contraction, fixed summation order, no thread-dependent reductions, and a random stream stable across versions; a cross-platform golden-trace check in CI guards it. Distributional claims stay the rule for statistics, never a substitute for reproducibility.
 
 ## Working
+- Issues solved (author, 2026-11-28): when a failure, divergence, red CI or stall occurs, consult `docs/ISSUES_SOLVED.md` (past mistakes, causes, fixes, guards) before diagnosing; it is not read first. Add an entry only once a solution is validated.
 - Parsimony. Before adding a mechanism, establish that no existing one handles the case: an outcome recorded with its measured outputs mints or destroys currency, causal distribution shares it, laws and contracts learn from it. The simulation should need nothing beyond the Lean and the pseudocode; where it does, the extra is named in `sim/README.md` (Parsimony audit) as introduced, with the reason, and is a candidate for removal. Actively look for introduced mechanisms that native ones already cover, and for redundancy in the corpus (proposals go to `docs/BACKPROPAGATION.md`).
 - Gaming. For every mechanism added, ask how it can be gamed or complied with maliciously before building it (a payment for braking rewards near misses), and record the answer with it; plausible exploits become M6 tests.
 - Duties stay minimal, but are real (author ruling 8.46): some contribution and participation is a duty (voting above a threshold, care not to harm others in obvious ways), and the line where a duty becomes a recommendation is a governed threshold. Freedom pushes back on duties and laws: they protect only against outcomes beyond the freedom harm boundary. Never model duties as a separate rule set binding agents; they are contracts and communicated laws, assessed through ordinary outcomes.
