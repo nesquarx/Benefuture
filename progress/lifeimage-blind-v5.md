@@ -1,4 +1,4 @@
-Status: IN PROGRESS 2026-11-28
+Status: DONE 2026-11-28 (pass-1 batches built, not run; label_match batches are built from the answers, so they wait for them; default tier 1676 passed, 1 xfailed)
 
 ## Goal and acceptance
 `blind.v5` (v1-v4 kept), changing only: (1) form lists role and purpose besides the act (new in-prompt event: an exam); (2) competence lists concrete
@@ -30,7 +30,7 @@ One sitting; default tier green; confidence 0.8. Measurement predictions: `lifeI
 - Built (gitignored): `lifeImage/data/batches/blind.v5.controls.var{0,1}.part0.jsonl` (40 tasks each).
 
 ## In progress
-full default-tier run after the last change
+(nothing)
 
 ## Next
 After the blind.v5 answers exist: `python3 tools/build_two_pass.py label_match --blind-version 5`, run them, `python3 tools/build_two_pass.py report_v5`.
