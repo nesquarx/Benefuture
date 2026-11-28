@@ -48,3 +48,14 @@ levels) before changing wording. If 5 fails, the weights instruction is ignored:
 a formula and drop them as a signal. If 4 fails, the form instruction does not push to role, purpose and regularity. One re-run on a changed prompt before
 any adoption; the prompt version is recorded with every result. ETA: minutes of runner time for 64 answers and 132 judgements; judged by the lead on
 the first complete set. Pass 2 (`map.v2`) reads `blind` and `fit`; its adaptation to events, weights and glosses waits for this pilot.
+
+## Pilot judged (lead, 2026-11-28)
+64 answers, 136 label-match judgements. Met: maize split into >= 2 events in both variants; neither rejected outcome
+produced (0 of 4 judgements matched); equal-step ladders 1.6% of eligible lists (<= 25%); in-prompt match 0.862 (>= 0.8).
+**Failed**: held-out author match (partial 0.5) per facet, ballot (cal.s04) form 0.75, content 0.75, outcome 0.625, setting
+0.625 (passes); commuter (cal.s08) form 0.61, content 0.375, outcome 0.00, setting 0.33 (fails three facets); median labels
+form 3 (>= 5 failed), content 2, outcome 1, setting 1; `unknown` in 66 setting lists. Reading: v3 overcorrected. The
+"supported outcomes only" rule removed outcomes the event itself makes true (journey made, time spent travelling); "as long as
+the event supports" let runners stop at 1-3 labels; `unknown` absorbed setting weight; content reverted to objects. Next:
+blind.v4 (minimum list lengths; outcome = what the event itself makes true, excluding likely-but-unstated sequels; `unknown` a
+zero-weight terminator; content = the activity first, then objects).
