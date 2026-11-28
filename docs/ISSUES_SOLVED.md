@@ -1,6 +1,6 @@
 # Issues solved
 
-Each entry records a mistake once made, how it showed, its root cause, the fix, and the guard that keeps it from returning. Read before touching the area; add an entry when an issue is closed. Rulings and source changes stay in `docs/BACKPROPAGATION.md`; this file is about failure modes of the work.
+Each entry records a mistake once made, how it showed, its root cause, the fix, and the guard that keeps it from returning. Read before touching the area. Add an entry only once the solution is validated (red test now green, CI or cross-environment check passed); work in progress stays out (author, 2026-11-28). Rulings and source changes stay in `docs/BACKPROPAGATION.md`; this file is about failure modes of the work.
 
 Format: **symptom** · cause · fix (commit) · guard · lesson.
 
@@ -17,10 +17,8 @@ Format: **symptom** · cause · fix (commit) · guard · lesson.
 - **Patch before probe.** · Fixes were proposed for divergence before the cause was located in every environment. · Withdrawn; probed here, CI and M1 first (author). · `docs/CODING_STYLE.md`. · Validate the root cause in every affected environment, then fix.
 - **"Drop a bit for parity" proposal.** · Rounding to fewer bits cannot guarantee parity: values near a rounding boundary still split. · Rejected. · — · Parity needs exact, ordered operations, not lower precision.
 - **Seed-fragile assertions turned CI red (P60/P61 ade2a45; 8.136, P63 dc7f087).** · Tests asserted single-seed values or 'k of 3'. · Restated distributionally (540e51e, 10be0c0). · Significance rules in `CLAUDE.md`. · Claims are proportions with intervals, effects by the z rule, no-effects by equivalence.
-- **No-effect left as `@test_broken` (P51).** · Non-significance treated as a test state. · Restating as an equivalence test with a stated margin. · `equivalent` in `sim/src/methods.jl`. · Absence of evidence is tested, not shelved.
 - **Duplicated work across agents.** · A determinism fix was briefed while the local agent had already landed it (2ed2cdc). · Pull and read `COORDINATION.md` §2a before briefing. · Session hook alerts on `COORDINATION.md` changes. · Check the registry first, every time.
 
 ## Gates and scoring
 
 - **Unified world stalled on one lagging domain.** · The converge gate required all domains. · Per-domain gate, lagging domain score-only and logged `degraded` (8.176). · `all_domains_gate_stalls_on_lagging_domain`. · Gates open per unit, never on the worst member.
-- **`:murphy` stalled a calibrated forecaster at base rate ≥ 0.99.** · A fixed resolution floor (0.1 × uncertainty) with 10 bins cannot see resolution near certainty. · Detectability test (8.179). · Seed-10 red test. · A floor must be detectable at the sample size, or it measures the estimator, not skill.
