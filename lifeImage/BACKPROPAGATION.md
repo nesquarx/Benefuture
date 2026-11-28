@@ -205,6 +205,9 @@ deleted. Numbering is stable (LI.n).
     ballot at the polling station": form voting, civic participation, electoral process, decision making, democracy;
     content ballot, election, public decision; outcome vote cast, vote entered in count, ballot used, turnout counted;
     setting polling station, election, civic life, democratic polity.
+  - Built (2026-11-28, not yet run): `blind.v3` (`prompts/blind.v3.md`, `validate.py` version 3, `two_pass.blind_v3_report`, `label_match.HELD_OUT` and
+    `NEGATIVE_LABELS`), pre-registered in `data/gold/blind_v3_predictions.md`; the held-out commuter and ballot lists and the two rejected outcomes
+    are judged, never prompted. LI.72 gives no accepted outcome for the commuter: the author's list is requested.
   - Open (author's question, lead's proposal pending ratification): a fifth relation for the expertise an event exercises
     or helps form (commuting: bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street
     signs). PLAN, prompts, DESIGN.

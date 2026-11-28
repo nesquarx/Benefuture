@@ -34,13 +34,13 @@ from .membership_wide import (REFINEMENT_DIR as _MW_REFINEMENT_DIR, calibration_
 from .packs import domain_pack, pack_entries  # noqa: F401
 from .refinement import RELS, append_candidates, blind_unmatched_record, log_candidates, read_log, text_hash
 from .tasks import DEFAULT_PROMPTS
-from .validate import (BLIND_RELS, ValidationError, blind_refs, domain_ids_in, norm_label, validate_answers,  # noqa: F401
+from .validate import (BLIND_RELS, BLIND_UNKNOWN, ValidationError, blind_refs, domain_ids_in, norm_label, validate_answers,  # noqa: F401
                        validate_blind_answer, validate_map_answer)
 
 ROOT = Path(__file__).resolve().parent.parent
 BLIND_TASK, MAP_TASK = "blind", "map"
 BLIND_VERSION = MAP_VERSION = 1  # the defaults keep the first versions reproducible
-LATEST_BLIND_VERSION = 2  # LI.71: weighted categories from the most specific to the most generic (`prompts/blind.v2.md`); v1 stays reproducible
+LATEST_BLIND_VERSION = 3  # LI.72: a list of events, each categorised on its own (`prompts/blind.v3.md`); v1 (fit) and v2 (weights, one event) stay reproducible
 LATEST_MAP_VERSION = 2  # the hybrid pass 2 (`prompts/map.v2.md`): memberships from the event text, labels as hints
 VARIANTS = 2
 MAX_TASKS = 50
@@ -107,8 +107,9 @@ def pilot_items():
 
 def blind_prefix(variant, prompt_version=BLIND_VERSION, prompts_dir=DEFAULT_PROMPTS):
     order = ", ".join(READING_ORDER[variant % len(READING_ORDER)])
+    keys = "Each event's blind object keeps its four keys." if prompt_version >= 3 else "The answer object keeps its four keys."
     return (f"{_instructions(BLIND_TASK, prompt_version, prompts_dir)}\n\n## Reading order\n\nIn this reading, think through the relations "
-            f"in this order: {order}. The answer object keeps its four keys.\n")
+            f"in this order: {order}. {keys}\n")
 
 
 def blind_input(item):
@@ -466,6 +467,75 @@ def blind_v2_report(blind_by_item, judged, *, partial_credit=0.5):
             "outcome_present_at_least_0.9": present is not None and present >= 0.9,
             "author_match_at_least_0.6_each_relation": (set(share) == set(BLIND_RELS) and all(x >= 0.6 for x in share.values())) if share else None,
             "no_cooking_in_cal_d01_form_or_content": cooking == 0,
+        },
+    }
+    return out
+
+
+# ---- blind.v3 (LI.71, LI.72): events, held-out author labels, the quality signals ----
+def event_blinds(answer):
+    """The `blind` objects of an answer, one per event (a `blind.v2` answer is one event)."""
+    return [e["blind"] for e in answer["events"]] if "events" in answer else [answer["blind"]]
+
+
+def _labels(bl, rel):
+    return [e for e in bl[rel] or [] if norm_label(e["label"]) != BLIND_UNKNOWN]
+
+
+def blind_v3_report(blind_by_item, judged, *, partial_credit=0.5, held_floor=0.6, in_prompt_floor=0.8, ladder_ceiling=0.25, form_median=None):
+    """Judge `data/gold/blind_v3_predictions.md`. `blind_by_item`: {item: {variant: (text, answer)}} of validated `blind.v3` answers; `judged`:
+    [(label_match task, answer)] (empty before the judge has run). Match share = (match + partial_credit x partial) over the author's labels, pooled
+    over the variants. Held-out cells are (item, relation) of `label_match.HELD_OUT` with at least one accepted label; the rejected outcomes
+    (`NEGATIVE_LABELS`) are counted apart: produced means a `match` verdict (a `partial` is reported, not counted). A ladder is a list of at least
+    `blind.v3.ladder_min_labels` entries in exactly equal weight steps (`validate.equal_step_ladders`); its `share` is over all non-null lists (the facets of
+    the pre-registration), and over those of that many entries or more as `share_eligible`."""
+    from .label_match import AUTHOR_LABELS, HELD_OUT, NEGATIVE_LABELS
+    from .validate import equal_step_ladders
+    form_median = governed("blind.v3.min_labels") if form_median is None else form_median
+    ladder_min = governed("blind.v3.ladder_min_labels")
+    answers = [(k, v, a) for k, per in sorted(blind_by_item.items()) for v, (_, a) in sorted(per.items())]
+    events_per = {}
+    for k, v, a in answers:
+        events_per.setdefault(k, {})[v] = len(a["events"])
+    counts = {rel: [len(_labels(bl, rel)) for _, _, a in answers for bl in event_blinds(a)] for rel in BLIND_RELS}
+    med = {rel: _median(counts[rel]) for rel in BLIND_RELS}
+    lists = [(rel, bl) for _, _, a in answers for bl in event_blinds(a) for rel in BLIND_RELS if bl[rel]]
+    ladders = sum(len(equal_step_ladders(bl)) for _, _, a in answers for bl in event_blinds(a))
+    eligible = sum(1 for rel, bl in lists if len(bl[rel]) >= ladder_min)
+    ladder = {"flagged": ladders, "lists": len(lists), "eligible": eligible, "share": ladders / len(lists) if lists else None,
+              "share_eligible": ladders / eligible if eligible else None}
+
+    def credit(rows):
+        return (rows.count("match") + partial_credit * rows.count("partial")) / len(rows) if rows else None
+
+    def negative(t):
+        return t["input"]["author_label"] in NEGATIVE_LABELS.get(t["input"]["item"]["id"], {}).get(t["input"]["relation"], [])
+    held, neg, prompt_rows, strict = {}, {}, [], {}
+    for t, a in judged:
+        item, rel, lab = t["input"]["item"]["id"], t["input"]["relation"], t["input"]["author_label"]
+        if negative(t):
+            c = neg.setdefault(item, {}).setdefault(lab, {"match": 0, "partial": 0, "none": 0})
+            c[a["verdict"]] += 1
+        elif item in HELD_OUT:
+            held.setdefault(item, {}).setdefault(rel, []).append(a["verdict"])
+        elif item in AUTHOR_LABELS:
+            prompt_rows.append(a["verdict"])
+    heldout = {k: {rel: credit(rows) for rel, rows in per.items()} for k, per in held.items()}
+    heldout_strict = {k: {rel: rows.count("match") / len(rows) for rel, rows in per.items()} for k, per in held.items()}
+    cells = [x for per in heldout.values() for x in per.values()]
+    maize = events_per.get("cal.m02")
+    out = {
+        "n_answers": len(answers), "n_judged": len(judged), "events_per_answer": events_per, "median_labels": med, "ladder": ladder,
+        "heldout_match": heldout, "heldout_match_strict": heldout_strict, "negatives": neg,
+        "in_prompt_match": credit(prompt_rows), "in_prompt_match_strict": prompt_rows.count("match") / len(prompt_rows) if prompt_rows else None,
+        "unknown_setting_lists": sum(1 for _, _, a in answers for bl in event_blinds(a) if any(norm_label(e["label"]) == BLIND_UNKNOWN for e in bl["setting"])),
+        "predictions": {
+            "heldout_match_at_least_0.6": min(cells) >= held_floor if cells else None,
+            "no_rejected_outcome_produced": (not any(c["match"] for per in neg.values() for c in per.values())) if neg else None,
+            "maize_split_in_both_variants": (len(maize) >= 2 and all(n >= 2 for n in maize.values())) if maize else None,
+            "median_form_labels_at_least_5": med["form"] is not None and med["form"] >= form_median,
+            "equal_step_ladders_at_most_25pct": (ladder["share"] <= ladder_ceiling) if ladder["share"] is not None else None,
+            "in_prompt_match_at_least_0.8": (credit(prompt_rows) >= in_prompt_floor) if prompt_rows else None,
         },
     }
     return out

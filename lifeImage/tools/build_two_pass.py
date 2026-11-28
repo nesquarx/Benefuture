@@ -10,6 +10,9 @@ Usage (from the repository root); sets are `controls` (the 32 membership calibra
   python3 lifeImage/tools/build_two_pass.py pilot --blind-version 2 --sets controls   # LI.71 `blind.v2` pass-1 batches: blind.v2.controls.var{0,1}.part0.jsonl
   python3 lifeImage/tools/build_two_pass.py label_match           # judge batches (label_match.v1.blind_v2.part*.jsonl) from the validated blind.v2 controls answers
   python3 lifeImage/tools/build_two_pass.py report_v2             # data/gold/blind_v2_report.json against data/gold/blind_v2_predictions.md
+  python3 lifeImage/tools/build_two_pass.py pilot --blind-version 3 --sets controls   # LI.72 `blind.v3` pass-1 batches: blind.v3.controls.var{0,1}.part0.jsonl
+  python3 lifeImage/tools/build_two_pass.py label_match --blind-version 3   # judge batches label_match.v1.blind_v3.part*.jsonl: in-prompt, held-out and rejected labels
+  python3 lifeImage/tools/build_two_pass.py report_v3             # data/gold/blind_v3_report.json against data/gold/blind_v3_predictions.md
   python3 lifeImage/tools/build_two_pass.py status                # which batch and answers files exist
 Order: pilot, run the pass-1 batches, map, run the pass-2 batches, ingest, judge. Batch files are gitignored (data/batches).
 """
@@ -83,8 +86,21 @@ if __name__ == "__main__":
         print(json.dumps({k: v for k, v in rep.items() if k != "median_listed"}, indent=1, sort_keys=True))
     elif cmd == "label_match":
         from lifeimage import label_match as lm
-        for p in lm.write_label_match_batches("blind_v2", lm.build_label_match_batches(need(files("blind", "controls", 2), "blind.v2")), DEFAULT_OUT):
+        bv = int(opts.get("--blind-version", 2))
+        kw = {"authors": {**lm.AUTHOR_LABELS, **lm.HELD_OUT}, "negatives": lm.NEGATIVE_LABELS} if bv >= 3 else {}
+        for p in lm.write_label_match_batches(f"blind_v{bv}", lm.build_label_match_batches(need(files("blind", "controls", bv), f"blind.v{bv}"), **kw), DEFAULT_OUT):
             print(p.relative_to(ROOT), len(p.read_text(encoding="utf-8").splitlines()) - 1, "tasks")
+    elif cmd == "report_v3":
+        blind = tp.answers_by_item(need(files("blind", "controls", 3), "blind.v3"))
+        judged = []
+        batch_files = sorted(p for p in DEFAULT_OUT.glob("label_match.v1.blind_v3.part*.jsonl") if not p.name.endswith(".answers.jsonl"))
+        for bp, ap in need([(p, p.with_name(p.name.replace(".jsonl", ".answers.jsonl"))) for p in batch_files], "label_match"):
+            b, a = bp.read_text(encoding="utf-8").splitlines(), ap.read_text(encoding="utf-8").splitlines()
+            tasks = {json.loads(l)["task_id"]: json.loads(l) for l in b[1:]}
+            judged += [(tasks[json.loads(l)["task_id"]], json.loads(l)) for l in a]
+        rep = tp.blind_v3_report(blind, judged)
+        (ROOT / "data" / "gold" / "blind_v3_report.json").write_text(json.dumps(rep, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps(rep, indent=1, sort_keys=True))
     elif cmd == "report_v2":
         from lifeimage import label_match as lm
         blind = tp.answers_by_item(need(files("blind", "controls", 2), "blind.v2"))
@@ -103,5 +119,6 @@ if __name__ == "__main__":
                 pairs = files(t, n, version if t == "map" else 1)
                 print(t, n, [(b.name, a.exists()) for b, a in pairs])
         print("blind.v2 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 2)])
+        print("blind.v3 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 3)])
     else:
         sys.exit(__doc__)

@@ -67,6 +67,24 @@ GOVERNED = {
         "default": 0.02,
         "source": "LI.71: how far the weights of one `blind.v2` relation may sum from 1 (runners write two decimals, up to 8 of them). Assumption.",
     },
+    "blind.v3.max_labels": {
+        "default": 10,
+        "source": "LI.72: most categories per relation and event in `blind.v3` (lists as long as the event supports; the author's lists run 4 to 9). Enforced.",
+    },
+    "blind.v3.min_labels": {
+        "default": 5,
+        "source": "LI.72: median categories the `blind.v3` prompt aims at for form (the author's commuter form lists 9). Measured, pre-registered in "
+                  "`data/gold/blind_v3_predictions.md`, not enforced. Assumption.",
+    },
+    "blind.v3.max_events": {
+        "default": 6,
+        "source": "LI.72: most events one `blind.v3` answer may hold (a guard against a runaway split; statements are one to a few events). Enforced. Assumption.",
+    },
+    "blind.v3.ladder_min_labels": {
+        "default": 3,
+        "source": "LI.72: fewest entries of a list that can be flagged as an equal-step weight ladder (`validate.equal_step_ladders`; two entries are no ladder). "
+                  "A flag in the quality report, never a rejection. Assumption.",
+    },
     "membership.agree_floor": {
         "default": 0.5,
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "

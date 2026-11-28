@@ -276,14 +276,14 @@ def _line(x):
 BLIND_UNKNOWN = "unknown"
 
 
-def _validate_blind_lists_v2(bl):
+def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels"):
     """`blind.v2` (LI.71): every relation a list of {label, weight, gloss} from the most specific category to the most generic, weights strictly
     decreasing and summing to 1 (within `blind.v2.weight_tolerance`), at most `blind.v2.max_labels` entries, at most one `unknown` marker (the
     residual weight, last), no duplicate label in a relation, and a label repeated across relations carrying a different gloss in each. Form,
     content and setting are lists (a setting the statement does not give is `unknown`); the outcome may be null (measured, not required).
     Lists shorter than `blind.v2.min_labels` are accepted here and reported by `two_pass.thin_relations`."""
     from .governed import governed
-    tol, top = governed("blind.v2.weight_tolerance"), governed("blind.v2.max_labels")
+    tol, top = governed("blind.v2.weight_tolerance"), governed(max_key)
     glosses = {}
     for rel in BLIND_RELS:
         ls = bl[rel]
@@ -329,6 +329,96 @@ def _validate_blind_lists_v2(bl):
             raise ValidationError(f"label {n!r} is repeated under {[r for r, _ in uses]} and needs a gloss of its own in each relation")
 
 
+BLIND_EVENT_ID = re.compile(r"^e[1-9][0-9]*$")
+
+
+def equal_step_ladders(bl):
+    """The relations of one event's `blind` object whose weights fall in exactly equal steps (the 0.4/0.3/0.2/0.1 formula): at least
+    `blind.v3.ladder_min_labels` entries, every consecutive difference the same at two decimals. A flag for the quality report, never a rejection
+    (a real ladder can occur; a ladder on most facets says the weights are formula, not centrality)."""
+    from .governed import governed
+    need = governed("blind.v3.ladder_min_labels")
+    out = []
+    for rel in BLIND_RELS:
+        ls = bl.get(rel) or []
+        if len(ls) < need:
+            continue
+        w = [round(e["weight"] * 100) for e in ls]
+        if len({a - b for a, b in zip(w, w[1:])}) == 1:
+            out.append(rel)
+    return out
+
+
+def _validate_blind_answer_v3(answer, ids):
+    """`blind.v3` (LI.71, LI.72): the answer holds `events`, a list of at least one (at most `blind.v3.max_events`), each exactly {id, text, blind,
+    relational}: ids `e1`, `e2`, ... in order; `blind` the four relations as in v2 but up to `blind.v3.max_labels` entries; `relational` the LI.65
+    block, its links to the other events by id (`part_of`, `causes`, `concurrent`). An answer of several events links them (at least one link
+    naming another event; a link naming an id names an existing event other than its own). No top-level blind or relational. No domain ids anywhere."""
+    from .governed import governed
+    evs = answer.get("events")
+    if "blind" in answer or "relational" in answer:
+        raise ValidationError("a blind.v3 answer holds events, each with its own blind and relational; no top-level blind or relational")
+    if not isinstance(evs, list) or not evs:
+        raise ValidationError("a blind.v3 answer needs events: a non-empty list (a compound statement is split into several events)")
+    top = governed("blind.v3.max_events")
+    if len(evs) > top:
+        raise ValidationError(f"events: {len(evs)} events, at most {top}")
+    names = [f"e{i}" for i in range(1, len(evs) + 1)]
+    for n, e in zip(names, evs):
+        if not isinstance(e, dict) or set(e) != {"id", "text", "blind", "relational"}:
+            raise ValidationError("each event must be exactly {id, text, blind, relational}")
+        if e["id"] != n:
+            raise ValidationError(f"event ids run e1, e2, ... in order: expected {n!r}, got {e['id']!r}")
+        if not _line(e["text"]):
+            raise ValidationError(f"{n}: text must be a non-empty line restating the event")
+        bl = e["blind"]
+        if not isinstance(bl, dict) or sorted(bl) != sorted(BLIND_RELS):
+            raise ValidationError(f"{n}: blind must have exactly the keys {sorted(BLIND_RELS)}")
+        _validate_blind_lists_v2(bl, "blind.v3.max_labels")
+        _validate_relational(e["relational"])
+    linked = False
+    for n, e in zip(names, evs):
+        for l in e["relational"]["links"]:
+            if BLIND_EVENT_ID.match(l["other"]):
+                if l["other"] == n:
+                    raise ValidationError(f"{n}: a link cannot name the event itself")
+                if l["other"] not in names:
+                    raise ValidationError(f"{n}: link names {l['other']!r}, which is not one of the events {names}")
+                linked = True
+    if len(evs) > 1 and not linked:
+        raise ValidationError("an answer of several events must link them: at least one link (part_of, causes or concurrent) naming another event's id")
+    bad = sorted({i for s in _strings({"events": evs, "reason": answer.get("reason", "")}) for i in domain_ids_in(s, ids)})
+    if bad:
+        raise ValidationError(f"pass 1 must not use domain ids, found {bad}")
+    return answer
+
+
+def _validate_relational(rel):
+    """The relational extraction of one event (LI.65): participants, action, outcome with counterfactual, links."""
+    if not isinstance(rel, dict) or set(rel) != {"participants", "action", "outcome", "links"}:
+        raise ValidationError("relational must have exactly participants, action, outcome and links")
+    refs = set()
+    if not isinstance(rel["participants"], list):
+        raise ValidationError("relational participants must be a list")
+    for p in rel["participants"]:
+        if not isinstance(p, dict) or set(p) != {"ref", "role"} or not _line(p["ref"]) or not _line(p["role"]):
+            raise ValidationError("each participant must be {ref, role} with a ref and a role")
+        if p["ref"] in refs:
+            raise ValidationError(f"participant ref {p['ref']!r} is used twice")
+        refs.add(p["ref"])
+    if not _line(rel["action"]):
+        raise ValidationError("relational action must be a non-empty line")
+    o = rel["outcome"]
+    if o is not None and (not isinstance(o, dict) or set(o) != {"text", "counterfactual"} or not _line(o["text"])
+                          or not (o["counterfactual"] is None or _line(o["counterfactual"]))):
+        raise ValidationError("relational outcome must be null or {text, counterfactual} (counterfactual a line or null)")
+    if not isinstance(rel["links"], list):
+        raise ValidationError("relational links must be a list")
+    for l in rel["links"]:
+        if not isinstance(l, dict) or set(l) != {"type", "other"} or l["type"] not in BLIND_LINK_TYPES or not _line(l["other"]):
+            raise ValidationError(f"each link must be {{type, other}} with type in {list(BLIND_LINK_TYPES)}")
+
+
 def validate_blind_answer(answer, ids=None, floor=None, max_labels=None, version=1):
     """A pass-1 answer: verdict "blind", `blind` with exactly the four relations (each null or a ranked list of {label, fit, gloss}: labels
     of one to 60 characters, integer fits 0-10 not below the blind floor and not rising, at most `blind.max_labels`, no duplicate labels, a
@@ -339,6 +429,8 @@ def validate_blind_answer(answer, ids=None, floor=None, max_labels=None, version
     max_labels = governed("blind.max_labels") if max_labels is None else max_labels
     if answer.get("verdict") != "blind":
         raise ValidationError(f"blind verdict must be 'blind', not {answer.get('verdict')!r}")
+    if version >= 3:
+        return _validate_blind_answer_v3(answer, ids)
     for k in ("blind", "relational"):
         if k not in answer:
             raise ValidationError(f"a blind answer needs {k} (relational extraction, LI.65)" if k == "relational" else f"a blind answer needs {k}")
@@ -377,30 +469,8 @@ def validate_blind_answer(answer, ids=None, floor=None, max_labels=None, version
             raise ValidationError(f"{rel}: unranked, fits {fits} rise down the list")
     if version < 2 and all(bl[r] is None for r in BLIND_RELS):
         raise ValidationError("every relation is null")
-    rel = answer["relational"]
-    if not isinstance(rel, dict) or set(rel) != {"participants", "action", "outcome", "links"}:
-        raise ValidationError("relational must have exactly participants, action, outcome and links")
-    refs = set()
-    if not isinstance(rel["participants"], list):
-        raise ValidationError("relational participants must be a list")
-    for p in rel["participants"]:
-        if not isinstance(p, dict) or set(p) != {"ref", "role"} or not _line(p["ref"]) or not _line(p["role"]):
-            raise ValidationError("each participant must be {ref, role} with a ref and a role")
-        if p["ref"] in refs:
-            raise ValidationError(f"participant ref {p['ref']!r} is used twice")
-        refs.add(p["ref"])
-    if not _line(rel["action"]):
-        raise ValidationError("relational action must be a non-empty line")
-    o = rel["outcome"]
-    if o is not None and (not isinstance(o, dict) or set(o) != {"text", "counterfactual"} or not _line(o["text"])
-                          or not (o["counterfactual"] is None or _line(o["counterfactual"]))):
-        raise ValidationError("relational outcome must be null or {text, counterfactual} (counterfactual a line or null)")
-    if not isinstance(rel["links"], list):
-        raise ValidationError("relational links must be a list")
-    for l in rel["links"]:
-        if not isinstance(l, dict) or set(l) != {"type", "other"} or l["type"] not in BLIND_LINK_TYPES or not _line(l["other"]):
-            raise ValidationError(f"each link must be {{type, other}} with type in {list(BLIND_LINK_TYPES)}")
-    bad = sorted({i for s in _strings({"blind": bl, "relational": rel, "reason": answer.get("reason", "")}) for i in domain_ids_in(s, ids)})
+    _validate_relational(answer["relational"])
+    bad = sorted({i for s in _strings({"blind": bl, "relational": answer["relational"], "reason": answer.get("reason", "")}) for i in domain_ids_in(s, ids)})
     if bad:
         raise ValidationError(f"pass 1 must not use domain ids, found {bad}")
     return answer

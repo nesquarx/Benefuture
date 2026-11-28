@@ -33,9 +33,29 @@ AUTHOR_LABELS = {
 }
 
 
+# LI.72, the author's held-out categorisations (never in any prompt): the commuter (cal.s08) and the ballot (cal.s04), in decreasing weight. LI.72 names
+# no accepted outcome for the commuter, only the two rejected ones below, so its outcome list is empty and its outcome is judged by the negatives alone.
+HELD_OUT = {
+    "cal.s08": {"form": ["commuting", "passenger", "travel in bus", "travel in public transport", "transportation", "going to work",
+                         "work related activities", "preparation for work", "regular activity"],
+                "content": ["bus ride", "vehicle ride", "journey", "getting on/off vehicle"],
+                "outcome": [],
+                "setting": ["inside bus", "inside vehicle", "public transport", "vehicle traffic", "road networks", "surface travel"]},
+    "cal.s04": {"form": ["voting", "civic participation", "electoral process", "decision making", "democracy"],
+                "content": ["ballot", "election", "public decision"],
+                "outcome": ["vote cast", "vote entered in count", "ballot used", "turnout counted"],
+                "setting": ["polling station", "election", "civic life", "democratic polity"]},
+}
+# The author's rejected outcomes (LI.72): "arrival at work" is not stated; "passenger carried" is the bus's event. Judged like any author label, but a
+# match is a failure of the run; the judge is not told (the task input is the same as for an accepted label).
+NEGATIVE_LABELS = {"cal.s08": {"outcome": ["arrival at work", "passenger carried"]}}
+
+
 def run_view(answer, rel):
-    """The run's categories of one relation as the judge sees them: refs `r0`, `r1`, ... (the `unknown` marker is not a category)."""
-    entries = answer["blind"][rel] or []
+    """The run's categories of one relation as the judge sees them: refs `r0`, `r1`, ... (the `unknown` marker is not a category). A `blind.v3`
+    answer's events are read in order and their lists run on (the judge compares the author's event with the whole run)."""
+    blinds = [e["blind"] for e in answer["events"]] if "events" in answer else [answer["blind"]]
+    entries = [e for bl in blinds for e in (bl[rel] or [])]
     return [{"ref": f"r{i}", "label": e["label"], "gloss": e["gloss"]} for i, e in enumerate(e for e in entries if norm_label(e["label"]) != BLIND_UNKNOWN)]
 
 
@@ -43,22 +63,26 @@ def _instructions(prompts_dir=DEFAULT_PROMPTS):
     return (Path(prompts_dir) / f"{TASK}.v{VERSION}.md").read_text(encoding="utf-8").rstrip("\n")
 
 
-def build_label_match_batches(blind_pairs, *, max_tasks=MAX_TASKS, model=MODEL, prompts_dir=DEFAULT_PROMPTS):
+def build_label_match_batches(blind_pairs, *, max_tasks=MAX_TASKS, model=MODEL, prompts_dir=DEFAULT_PROMPTS, authors=None, negatives=None):
     """{part: [header, task lines...]}: one task per (variant, author item, relation, author label) over the validated `blind.v2` answers
-    (`blind_pairs`: (batch, answers) paths), at most `max_tasks` per part. Variant v of the judge reads variant v of the run."""
+    (`blind_pairs`: (batch, answers) paths), at most `max_tasks` per part. Variant v of the judge reads variant v of the run. `authors` ({item:
+    {relation: labels}}, default the LI.71 in-prompt examples) and `negatives` (the author's rejected labels, appended to their relation) widen it for
+    `blind.v3` (the held-out categorisations, `HELD_OUT`, `NEGATIVE_LABELS`)."""
+    authors = AUTHOR_LABELS if authors is None else authors
+    negatives = negatives or {}
     from .two_pass import answers_by_item
     got = answers_by_item(blind_pairs)
     header = json.dumps({"kind": "header", "task_type": TASK, "model": model, "prompt_version": VERSION, "prefix": _instructions(prompts_dir)},
                         sort_keys=True, ensure_ascii=False)
     lines = []
     for v in sorted({v for per in got.values() for v in per}):
-        for key in sorted(AUTHOR_LABELS):
+        for key in sorted(authors):
             if key not in got or v not in got[key]:
                 raise ValueError(f"{key}: no blind answer from variant {v}")
             text, ans = got[key][v]
             for rel in BLIND_RELS:
                 run = run_view(ans, rel)
-                for label in AUTHOR_LABELS[key][rel]:
+                for label in authors[key][rel] + negatives.get(key, {}).get(rel, []):
                     inp = {"item": {"id": key, "text": text}, "relation": rel, "author_label": label, "run": run}
                     h = content_hash(inp)
                     lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": TASK, "prompt_version": VERSION,
