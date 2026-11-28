@@ -186,6 +186,28 @@ deleted. Numbering is stable (LI.n).
     ticket": form purchase, booking, travel planning, logistics; content ticket/pass, receipt, train, public transportation;
     outcome ticket obtained, promise obtained, seat booked, documentation; setting point of sale (rest unknown). PLAN,
     prompts, DESIGN.
+- **LI.72** (2026-11-28; author, refines LI.71) Answers on leaf domains, and held-out categorisations:
+  - Bleed is the natural spread that many processed events produce, not a rule: no bleed coefficient on relation links or
+    parents (LI.30 stands).
+  - A leaf's radius follows its uniqueness and complexity (the radius mechanism), not a fixed level.
+  - A multi-parent leaf is placed by co-occurrence (the strongest-tie parent).
+  - Senses are kept apart by distinct phrasal names (ticket, issue ticket), not by sense ids.
+  - A leaf with no placed parent is impossible by construction; if it happens it stays off the image.
+  - Is-a links are seeded from public ontologies, then grown from blind labels.
+  - Categorisation lessons from the author's held-out examples: form names the act at every level including role, purpose
+    and regularity (commuting, passenger, travel in bus, travel in public transport, transportation, going to work, work
+    related activities, preparation for work, regular activity); content names the doing and what it involves (bus ride,
+    vehicle ride, journey, getting on/off vehicle); outcome only what the statement supports, from the actor's perspective
+    (arrival at work rejected: not stated; passenger carried rejected: that is the bus's event); setting runs concrete to
+    generic (inside bus, inside vehicle, public transport, vehicle traffic, road networks, surface travel). A compound
+    statement is several events (growing maize and selling the surplus are two).
+  - Author categorisations (gold, held out from prompts): "A commuter rides the bus to work" as above; "A woman casts her
+    ballot at the polling station": form voting, civic participation, electoral process, decision making, democracy;
+    content ballot, election, public decision; outcome vote cast, vote entered in count, ballot used, turnout counted;
+    setting polling station, election, civic life, democratic polity.
+  - Open (author's question, lead's proposal pending ratification): a fifth relation for the expertise an event exercises
+    or helps form (commuting: bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street
+    signs). PLAN, prompts, DESIGN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
