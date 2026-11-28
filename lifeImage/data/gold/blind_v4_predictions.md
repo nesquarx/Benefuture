@@ -63,3 +63,15 @@ counted") is missing and add a second contrast example, never a lexical rule. If
 sharpen the contrast. If 6 fails (many `short_reason`), the minimums ask for padding: read the reasons given before relaxing a minimum. If 5 fails, the
 longer lists crowd out the examples. One re-run on a changed prompt before any adoption; the prompt version is recorded with every result. ETA: minutes of
 runner time for 64 answers and 142 judgements; judged by the lead on the first complete set.
+
+## Pilot judged (lead, 2026-11-28)
+Held-out author match (partial 0.5): ballot (cal.s04) form 0.75, content 0.75, outcome 0.625, setting 0.75 (all >= 0.6);
+commuter (cal.s08) form 0.583, content 0.625, outcome 0.875, setting 0.708, competence 0.35 -> **failed** on commuter form
+(by 0.017) and competence (2-of-5 per variant also failed). Met: in-prompt 0.922; maize split in both variants; medians at the
+minimums (form 5, content 5, setting 4, outcome 2, competence 3); `short_reason` on 0.7% of facets; no rejected outcome fully
+matched. Caveats: the rejected outcomes were judged partial 3 times of 4 (arrival at work 1, passenger carried 2): close
+paraphrases appear; the competence/form overlap metric reported null while its prediction reads false (report defect to fix,
+not a measured failure). Against v3 the commuter rose from 0.61/0.375/0.00/0.33 to 0.58/0.625/0.875/0.71 (form flat).
+Reading: v4 fixes outcome, content and setting; form still misses role and purpose (passenger, preparation for work) and
+competence is coarser than the author's (using public transport vs recognising a bus, getting on and off, reading street
+signs).
