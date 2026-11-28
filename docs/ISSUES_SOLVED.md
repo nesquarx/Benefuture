@@ -1,6 +1,6 @@
 # Issues solved
 
-Each entry records a mistake once made, how it showed, its root cause, the fix, and the guard that keeps it from returning. Read before touching the area. Add an entry only once the solution is validated (red test now green, CI or cross-environment check passed); work in progress stays out (author, 2026-11-28). Rulings and source changes stay in `docs/BACKPROPAGATION.md`; this file is about failure modes of the work.
+Each entry records a mistake once made, how it showed, its root cause, the fix, and the guard that keeps it from returning. Consult it when an issue occurs (failure, divergence, red CI, stall), not as first reading. Add an entry only once the solution is validated (red test now green, CI or cross-environment check passed); work in progress stays out (author, 2026-11-28). Rulings and source changes stay in `docs/BACKPROPAGATION.md`; this file is about failure modes of the work.
 
 Format: **symptom** · cause · fix (commit) · guard · lesson.
 
