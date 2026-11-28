@@ -226,8 +226,8 @@ deleted. Numbering is stable (LI.n).
   actually requires or shows, specific to generic with decreasing weight; weight by how much the event exercises each; it
   records exercise, not mastery (levels still come from accumulated evidence); it applies to the acting entity only (a
   teacher's event exercises teaching; the learner's own events build the learner's). It feeds the green (demonstrated skill)
-  channel directly. Displayed as "skills required" (author's phrasing; defined to include the know-how the event needs);
-  `competence` stays the internal key. PLAN, prompts, RELATIONS, DESIGN.
+  channel directly. Name confirmed by the author: `competence`, defined in prompts as the skills and know-how the event
+  requires of the acting entity. PLAN, prompts, RELATIONS, DESIGN.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
