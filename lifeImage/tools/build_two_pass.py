@@ -15,6 +15,9 @@ Usage (from the repository root); sets are `controls` (the 32 membership calibra
   python3 lifeImage/tools/build_two_pass.py pilot --blind-version 4 --sets controls   # LI.73 `blind.v4` pass-1 batches: blind.v4.controls.var{0,1}.part0.jsonl
   python3 lifeImage/tools/build_two_pass.py label_match --blind-version 4   # judge batches label_match.v1.blind_v4.part*.jsonl (held-out incl. accepted commuter outcomes; rejected ones as negatives)
   python3 lifeImage/tools/build_two_pass.py report_v4             # data/gold/blind_v4_report.json against data/gold/blind_v4_predictions.md
+  python3 lifeImage/tools/build_two_pass.py pilot --blind-version 5 --sets controls   # LI.74 blind.v5 controls: the 32 controls plus 8 profile statements (and any fresh author items): blind.v5.controls.var{0,1}.part0.jsonl
+  python3 lifeImage/tools/build_two_pass.py label_match --blind-version 5   # judge batches label_match.v1.blind_v5.part*.jsonl (development set, rejected outcomes, fresh items)
+  python3 lifeImage/tools/build_two_pass.py report_v5             # data/gold/blind_v5_report.json against data/gold/blind_v5_predictions.md
   python3 lifeImage/tools/build_two_pass.py report_v3             # data/gold/blind_v3_report.json against data/gold/blind_v3_predictions.md
   python3 lifeImage/tools/build_two_pass.py status                # which batch and answers files exist
 Order: pilot, run the pass-1 batches, map, run the pass-2 batches, ingest, judge. Batch files are gitignored (data/batches).
@@ -93,7 +96,7 @@ if __name__ == "__main__":
         kw = {"authors": {**lm.AUTHOR_LABELS, **lm.held_out(bv)}, "negatives": lm.NEGATIVE_LABELS} if bv >= 3 else {}
         for p in lm.write_label_match_batches(f"blind_v{bv}", lm.build_label_match_batches(need(files("blind", "controls", bv), f"blind.v{bv}"), **kw), DEFAULT_OUT):
             print(p.relative_to(ROOT), len(p.read_text(encoding="utf-8").splitlines()) - 1, "tasks")
-    elif cmd in ("report_v3", "report_v4"):
+    elif cmd in ("report_v3", "report_v4", "report_v5"):
         bv = int(cmd[-1])
         blind = tp.answers_by_item(need(files("blind", "controls", bv), f"blind.v{bv}"))
         judged = []
@@ -102,7 +105,7 @@ if __name__ == "__main__":
             b, a = bp.read_text(encoding="utf-8").splitlines(), ap.read_text(encoding="utf-8").splitlines()
             tasks = {json.loads(l)["task_id"]: json.loads(l) for l in b[1:]}
             judged += [(tasks[json.loads(l)["task_id"]], json.loads(l)) for l in a]
-        rep = (tp.blind_v4_report if bv == 4 else tp.blind_v3_report)(blind, judged)
+        rep = {3: tp.blind_v3_report, 4: tp.blind_v4_report, 5: tp.blind_v5_report}[bv](blind, judged)
         (ROOT / "data" / "gold" / f"blind_v{bv}_report.json").write_text(json.dumps(rep, indent=1, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps(rep, indent=1, sort_keys=True))
     elif cmd == "report_v2":
@@ -125,5 +128,6 @@ if __name__ == "__main__":
         print("blind.v2 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 2)])
         print("blind.v3 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 3)])
         print("blind.v4 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 4)])
+        print("blind.v5 controls", [(b.name, a.exists()) for b, a in files("blind", "controls", 5)])
     else:
         sys.exit(__doc__)

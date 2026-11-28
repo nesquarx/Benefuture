@@ -1,0 +1,8 @@
+{"id": "prof.01", "text": "A woman is a nurse at a county hospital.", "mode": "role"}
+{"id": "prof.02", "text": "A man is the treasurer of a village football club.", "mode": "role"}
+{"id": "prof.03", "text": "A man holds a category B driving licence.", "mode": "credential"}
+{"id": "prof.04", "text": "A woman holds a master's degree in chemistry.", "mode": "credential"}
+{"id": "prof.05", "text": "A teenager plans to study law after school.", "mode": "plan"}
+{"id": "prof.06", "text": "A retired engineer plans to learn the violin.", "mode": "plan"}
+{"id": "prof.07", "text": "I'm good with numbers.", "mode": "self_assessment"}
+{"id": "prof.08", "text": "A girl rates herself a strong swimmer.", "mode": "self_assessment"}

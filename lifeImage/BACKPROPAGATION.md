@@ -235,6 +235,12 @@ deleted. Numbering is stable (LI.n).
   the basis, so the basis follows the record's validation, not the agent's reading. Agents mark each statement's mode (event
   occurred, claim, plan, credential, role, self-assessment); the pipeline assigns the basis from mode and validation. PLAN,
   RELATIONS, prompts.
+  - Built (2026-11-28, not yet run; refines the v4 pilot verdict in `data/gold/blind_v4_predictions.md`): `blind.v5` (`prompts/blind.v5.md`, `validate.py` version 5,
+    `two_pass.blind_v5_report`, `two_pass.competence_basis`): per-event `mode` (the six values, required) and `layers` {role, purpose, sub_skill} (labels of the form and
+    competence lists, or a declared `none`), form naming the actor's role and the purpose, competence naming concrete sub-skills first, the outcome contrast
+    naming sequels and other entities' acts even when paraphrased, eight invented profile statements in the pilot controls (`data/gold/profile_statements_v0.jsonl`),
+    the overlap metric reporting a number with near-copies, and `label_match.HELD_OUT_FRESH` (the slot for the author's fresh categorisations: the commuter and the ballot
+    are now a development set, having guided three revisions). Pre-registered in `data/gold/blind_v5_predictions.md` (confidence 0.5).
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels

@@ -241,6 +241,8 @@ def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
 # ---- two-pass extraction (LI.70): pass 1 blind, pass 2 map ----
 BLIND_RELS = ("form", "content", "outcome", "setting")
 BLIND_RELS_V4 = BLIND_RELS + ("competence",)  # `blind.v4` (LI.73): the skills and know-how the event requires of the acting entity
+BLIND_MODES = ("occurred", "claim", "plan", "credential", "role", "self_assessment")  # `blind.v5` (LI.74): what kind of statement an event is
+BLIND_LAYERS = ("role", "purpose", "sub_skill")  # `blind.v5`: the form labels naming the actor's role and the act's purpose, the concrete competence
 BLIND_LINK_TYPES = ("part_of", "causes", "re_description", "concurrent")
 BLIND_LABEL_MAX = 60
 _DOMAIN_ID = re.compile(r"\b[csf]\.[a-z][a-z0-9_]*\b")
@@ -375,9 +377,12 @@ def _validate_blind_answer_v3(answer, ids, version=3):
         raise ValidationError(f"events: {len(evs)} events, at most {top}")
     names = [f"e{i}" for i in range(1, len(evs) + 1)]
     for n, e in zip(names, evs):
-        keys = {"id", "text", "blind", "relational"} | ({"short_reason"} & set(e) if version >= 4 and isinstance(e, dict) else set())
+        keys = {"id", "text", "blind", "relational"} | ({"mode", "layers"} if version >= 5 else set()) | ({"short_reason"} & set(e) if version >= 4 and isinstance(e, dict) else set())
         if not isinstance(e, dict) or set(e) != keys:
-            raise ValidationError("each event must be exactly {id, text, blind, relational}" + (" (and optionally short_reason)" if version >= 4 else ""))
+            raise ValidationError("each event must be exactly {id, text, " + ("mode, layers, " if version >= 5 else "") + "blind, relational}"
+                                  + (" (and optionally short_reason)" if version >= 4 else ""))
+        if version >= 5 and e["mode"] not in BLIND_MODES:
+            raise ValidationError(f"{n}: mode must be one of {list(BLIND_MODES)}, not {e['mode']!r}")
         if e["id"] != n:
             raise ValidationError(f"event ids run e1, e2, ... in order: expected {n!r}, got {e['id']!r}")
         if not _line(e["text"]):
@@ -389,6 +394,8 @@ def _validate_blind_answer_v3(answer, ids, version=3):
         if version >= 4:
             _validate_blind_lists_v2(bl, "blind.v3.max_labels", zero_unknown=True, optional=("outcome", "setting", "competence"), rels=rels)
             _check_minimums(n, bl, e.get("short_reason"))
+            if version >= 5:
+                _check_layers(n, bl, e["layers"])
         else:
             _validate_blind_lists_v2(bl, "blind.v3.max_labels")
         _validate_relational(e["relational"])
@@ -432,6 +439,39 @@ def _check_minimums(name, bl, short_reason):
     for rel, (have, need) in short.items():
         if rel not in (short_reason or {}):
             raise ValidationError(f"{name}: {rel} lists {have} categories, at least {need} (or give a short_reason for {rel})")
+
+
+def _check_layers(name, bl, layers):
+    """`blind.v5`: the event declares which form labels are the actor's role and the act's purpose, and which competence label is its concrete sub-skill:
+    `layers` is exactly {role, purpose, sub_skill}, each a label of the matching list (`role` and `purpose` of the form list and two different labels;
+    `sub_skill` among the first `blind.v5.concrete_first_share` of the competence list, rounded up, so concrete skills come before broader capabilities) or
+    `{"none": one-line reason}` when the statement implies no such layer."""
+    import math
+    from .governed import governed
+    if not isinstance(layers, dict) or set(layers) != set(BLIND_LAYERS):
+        raise ValidationError(f"{name}: layers must be exactly {list(BLIND_LAYERS)}, each a label or {{\"none\": reason}}")
+    form = [norm_label(e["label"]) for e in bl["form"] if norm_label(e["label"]) != BLIND_UNKNOWN]
+    comp = [norm_label(e["label"]) for e in bl["competence"] or [] if norm_label(e["label"]) != BLIND_UNKNOWN]
+    picked = {}
+    for key in BLIND_LAYERS:
+        v = layers[key]
+        if isinstance(v, dict):
+            if set(v) != {"none"} or not _line(v["none"]):
+                raise ValidationError(f"{name}: layers {key} is a label or {{\"none\": one-line reason}}")
+            continue
+        if not isinstance(v, str) or not v.strip():
+            raise ValidationError(f"{name}: layers {key} is a label or {{\"none\": one-line reason}}, not {v!r}")
+        n = norm_label(v)
+        pool = comp if key == "sub_skill" else form
+        if n not in pool:
+            raise ValidationError(f"{name}: layers {key} {v!r} is not a label of the {'competence' if key == 'sub_skill' else 'form'} list")
+        if key == "sub_skill":
+            reach = max(1, math.ceil(len(comp) * governed("blind.v5.concrete_first_share")))
+            if pool.index(n) >= reach:
+                raise ValidationError(f"{name}: layers sub_skill {v!r} is too broad: it must be among the first {reach} competences (concrete skills come first)")
+        picked[key] = n
+    if "role" in picked and picked.get("role") == picked.get("purpose"):
+        raise ValidationError(f"{name}: layers role and purpose are two different form labels")
 
 
 def _validate_relational(rel):

@@ -40,7 +40,7 @@ from .validate import (BLIND_RELS, BLIND_RELS_V4, BLIND_UNKNOWN, ValidationError
 ROOT = Path(__file__).resolve().parent.parent
 BLIND_TASK, MAP_TASK = "blind", "map"
 BLIND_VERSION = MAP_VERSION = 1  # the defaults keep the first versions reproducible
-LATEST_BLIND_VERSION = 4  # LI.73: v3's events with minimum list lengths, the actor's own outcomes, a zero-weight `unknown` (`prompts/blind.v4.md`); v1 (fit), v2 (weights, one event), v3 stay reproducible
+LATEST_BLIND_VERSION = 5  # LI.74: v4 plus per-event `mode`, declared role/purpose/sub-skill layers (`prompts/blind.v5.md`); v4 (minimum lengths, competence), LI.73: v3's events with minimum list lengths, the actor's own outcomes, a zero-weight `unknown` (`prompts/blind.v4.md`); v1 (fit), v2 (weights, one event), v3 stay reproducible
 LATEST_MAP_VERSION = 2  # the hybrid pass 2 (`prompts/map.v2.md`): memberships from the event text, labels as hints
 VARIANTS = 2
 MAX_TASKS = 50
@@ -100,9 +100,31 @@ def _write(name, task_type, prompt_version, batches, out_dir):
 
 
 # ---- pass 1 ----
-def pilot_items():
-    """The pilot item sets: the 32 membership calibration controls and 50 calibration event snippets."""
-    return {"controls": calibration_items(), "snippets": snippet_items(PILOT_SNIPPETS)}
+PROFILE = ROOT / "data" / "gold" / "profile_statements_v0.jsonl"
+
+
+def _profile_rows(path=PROFILE):
+    return [json.loads(l) for l in Path(path).read_text(encoding="utf-8").splitlines() if l.strip()]
+
+
+def profile_items(path=PROFILE):
+    """LI.74: the eight invented profile-like statements (a role, a credential, a plan, a self-assessment; two each) as pilot items. The gold mode is not in the item."""
+    return [{"id": r["id"], "text": r["text"]} for r in _profile_rows(path)]
+
+
+def profile_gold(path=PROFILE):
+    """{profile item id: the intended mode}, the gold the `blind.v5` report scores the agents' `mode` against (never part of a task)."""
+    return {r["id"]: r["mode"] for r in _profile_rows(path)}
+
+
+def pilot_items(prompt_version=None):
+    """The pilot item sets: the 32 membership calibration controls and 50 calibration event snippets. From `blind.v5` the controls also hold the eight
+    profile statements and any fresh author-categorised items (`label_match.HELD_OUT_FRESH`), so the 32 controls of earlier versions stay as they were."""
+    controls = calibration_items()
+    if prompt_version is not None and prompt_version >= 5:
+        from .label_match import fresh_items
+        controls = controls + profile_items() + fresh_items()
+    return {"controls": controls, "snippets": snippet_items(PILOT_SNIPPETS)}
 
 
 def blind_prefix(variant, prompt_version=BLIND_VERSION, prompts_dir=DEFAULT_PROMPTS):
@@ -140,7 +162,7 @@ def write_blind_batches(name, batches, out_dir=DEFAULT_OUT, prompt_version=BLIND
 def pilot_blind_batches(out_dir=DEFAULT_OUT, prompt_version=BLIND_VERSION, sets=None):
     """Write the pass-1 pilot batches (controls, snippets, or the named `sets`; 2 variants; at most 50 per file) of a prompt version; returns the paths."""
     paths = []
-    for name, items in pilot_items().items():
+    for name, items in pilot_items(prompt_version).items():
         if sets is None or name in sets:
             paths += write_blind_batches(name, build_blind_batches(items, prompt_version=prompt_version), out_dir, prompt_version)
     return paths
@@ -585,4 +607,122 @@ def blind_v4_report(blind_by_item, judged, *, partial_credit=0.5):
     rep["short_reason_facets"] = short
     rep["minimums"] = {rel: governed(key) for rel, key in V4_MINIMUMS.items()}
     rep["setting_unknown_weights_zero"] = all(e["weight"] == 0 for e in (x for ev in events for x in ev["blind"]["setting"] or []) if norm_label(e["label"]) == BLIND_UNKNOWN)
+    return rep
+
+
+# ---- blind.v5 (LI.74): mode, the competence basis, layers, a metric that catches near-copies ----
+VALIDATION_TIERS = ("formal", "attested", "claimed", "none")  # the record's validation (LI.74): formal and attested validate; a claim or no record does not
+VALIDATED = ("formal", "attested")
+
+
+def competence_basis(mode, validation):
+    """LI.74: the basis of an event's competence, assigned by the pipeline and never by the agent's reading: `demonstrated` only when the event is marked
+    `occurred` and its record is validated (`formal` or `attested`); otherwise `predicted` (a claim, a plan, a credential, a role or a self-assessment is predicted
+    competence even when its record is formal, and an occurred event nobody validated is predicted until it is). `validation` None means no validation."""
+    from .validate import BLIND_MODES
+    if mode not in BLIND_MODES:
+        raise ValueError(f"mode must be one of {list(BLIND_MODES)}, not {mode!r}")
+    validation = "none" if validation is None else validation
+    if validation not in VALIDATION_TIERS:
+        raise ValueError(f"validation must be one of {list(VALIDATION_TIERS)} or None, not {validation!r}")
+    return "demonstrated" if mode == "occurred" and validation in VALIDATED else "predicted"
+
+
+NEAR_COPY_JACCARD = 0.6  # a reporting parameter of the overlap metric, not a rule gate: stemmed word sets of two labels overlapping at least this much
+_STOP = {"of", "the", "a", "an", "to", "and", "in", "on", "for", "with", "by"}
+
+
+def _stem(word):
+    for suf in ("ing", "ed", "es", "s", "e"):
+        if word.endswith(suf) and len(word) - len(suf) >= 2:
+            return word[:-len(suf)]
+    return word
+
+
+def _stems(label):
+    return {_stem(w) for w in norm_label(label).split() if w not in _STOP}
+
+
+def competence_form_overlap_detail(bl):
+    """The competence labels of a `blind.v4`/`v5` event that copy a form label: `identical` (the same normalised label, as `competence_form_overlap`) and `near`
+    (identical, or stemmed word sets with Jaccard at least `NEAR_COPY_JACCARD`: "use of public transport" against "using public transport")."""
+    form = [(norm_label(e["label"]), _stems(e["label"])) for e in bl["form"] or []]
+    ident, near = [], []
+    for e in bl["competence"] or []:
+        n, st = norm_label(e["label"]), _stems(e["label"])
+        if any(n == fn for fn, _ in form):
+            ident.append(e["label"])
+            near.append(e["label"])
+        elif st and any(fs and len(st & fs) / len(st | fs) >= NEAR_COPY_JACCARD for _, fs in form):
+            near.append(e["label"])
+    return {"identical": ident, "near": near}
+
+
+def blind_v5_report(blind_by_item, judged, *, partial_credit=0.5):
+    """Judge `data/gold/blind_v5_predictions.md`: `blind_v4_report`'s measures with the v5 thresholds. Development set (`label_match.DEVELOPMENT_ITEMS`: the commuter
+    cal.s08 and the ballot cal.s04) cells against commuter form 0.7 and competence 0.5, ballot every facet 0.6; the fresh author items (`HELD_OUT_FRESH`) apart, undecided
+    while the slot is empty; the rejected outcomes judged on `match` or `partial` (at most 1 of the 4 judgements); the in-prompt match at 0.85; the mode of each profile
+    statement against its gold (an answer is correct when every one of its events carries the gold mode); and the competence/form overlap as a number over events
+    (identical labels, the pre-registered line) with the label-level shares and the near-copies reported beside it."""
+    from .label_match import HELD_OUT_FRESH, NEGATIVE_LABELS
+    rep = blind_v4_report(blind_by_item, judged, partial_credit=partial_credit)
+    p = rep["predictions"]
+    for k in ("no_rejected_outcome_produced", "in_prompt_match_at_least_0.8", "heldout_match_at_least_0.6_each_facet_each_item",
+              "competence_s08_at_least_2_matched_each_variant"):
+        p.pop(k, None)
+    answers = [(k, v, a) for k, per in sorted(blind_by_item.items()) for v, (_, a) in sorted(per.items())]
+    events = [e for _, _, a in answers for e in a["events"]]
+    heldout = rep["heldout_match"]
+    cell = lambda item, rel: heldout.get(item, {}).get(rel)
+    p["commuter_form_at_least_0.7"] = None if cell("cal.s08", "form") is None else cell("cal.s08", "form") >= 0.7
+    p["commuter_competence_at_least_0.5"] = None if cell("cal.s08", "competence") is None else cell("cal.s08", "competence") >= 0.5
+    ballot = [cell("cal.s04", r) for r in BLIND_RELS]
+    p["ballot_all_facets_at_least_0.6"] = None if any(x is None for x in ballot) else all(x >= 0.6 for x in ballot)
+    credit = (rep["in_prompt_match"])
+    p["in_prompt_match_at_least_0.85"] = None if credit is None else credit >= 0.85
+    # rejected outcomes: match or partial both count against the run
+    bad = total = 0
+    for t, a in judged:
+        if t["input"]["author_label"] in NEGATIVE_LABELS.get(t["input"]["item"]["id"], {}).get(t["input"]["relation"], []):
+            total += 1
+            bad += a["verdict"] in ("match", "partial")
+    rep["negatives_judged"] = {"judgements": total, "match_or_partial": bad}
+    p["rejected_outcomes_bad_at_most_1_of_4"] = None if not total else bad / total <= 0.25
+    # fresh author items, apart from the development set
+    fresh = {}
+    for t, a in judged:
+        item = t["input"]["item"]["id"]
+        if item in HELD_OUT_FRESH:
+            fresh.setdefault(item, {}).setdefault(t["input"]["relation"], []).append(a["verdict"])
+    rep["heldout_fresh"] = {k: {rel: (rows.count("match") + partial_credit * rows.count("partial")) / len(rows) for rel, rows in per.items()} for k, per in fresh.items()}
+    cells = [x for per in rep["heldout_fresh"].values() for x in per.values()]
+    p["fresh_held_out_at_least_0.6"] = None if not cells else min(cells) >= 0.6
+    # mode of the profile statements; the modes elsewhere are reported
+    gold = profile_gold()
+    prof = [(k, a) for k, _, a in answers if k in gold]
+    ok = sum(1 for k, a in prof if all(e["mode"] == gold[k] for e in a["events"]))
+    rep["mode_profile"] = {"correct": ok, "total": len(prof), "share": ok / len(prof)} if prof else {"correct": 0, "total": 0, "share": None}
+    p["mode_correct_at_least_90pct_of_profile"] = None if not prof else ok / len(prof) >= 0.9
+    other = {}
+    for k, _, a in answers:
+        if k not in gold:
+            for e in a["events"]:
+                other[e["mode"]] = other.get(e["mode"], 0) + 1
+    rep["mode_counts_other_items"] = dict(sorted(other.items()))
+    # competence/form overlap: a number over events (always, when there are events), the near-copies beside it
+    details = [competence_form_overlap_detail(e["blind"]) for e in events]
+    n_comp = sum(len(_labels(e["blind"], "competence")) for e in events)
+    ne = len(events)
+    ov = {"events": ne, "events_identical": sum(1 for d in details if d["identical"]), "events_near": sum(1 for d in details if d["near"]),
+          "labels": n_comp, "labels_identical": sum(len(d["identical"]) for d in details), "labels_near": sum(len(d["near"]) for d in details)}
+    ov["share_events_identical"] = ov["events_identical"] / ne if ne else None
+    ov["share_events_near"] = ov["events_near"] / ne if ne else None
+    ov["share_labels_identical"] = ov["labels_identical"] / n_comp if n_comp else None
+    ov["share_labels_near"] = ov["labels_near"] / n_comp if n_comp else None
+    rep["competence_form_overlap"] = ov
+    rep["competence_form_overlap_share"] = ov["share_events_identical"]
+    p["competence_form_overlap_at_most_20pct"] = None if ov["share_events_identical"] is None else ov["share_events_identical"] <= 0.2
+    # layers declared none
+    rep["layers_none"] = {k: sum(1 for e in events if isinstance(e["layers"][k], dict)) for k in ("role", "purpose", "sub_skill")}
+    rep["layers_none"]["events"] = ne
     return rep

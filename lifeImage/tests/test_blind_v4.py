@@ -255,7 +255,7 @@ def test_pilot_v4_batches_cover_the_32_controls_in_two_variants_without_ids(tmp_
         assert h["prompt_version"] == 4 and h["task_type"] == "blind" and len(lines) - 1 == 32
         assert h["prefix"].startswith(_prompt().rstrip("\n")) and not ID.search(p.read_text(encoding="utf-8"))
         assert json.loads(lines[1])["prompt_version"] == 4
-    assert tp.LATEST_BLIND_VERSION == 4
+    assert tp.LATEST_BLIND_VERSION >= 4
 
 
 # ---- label_match: held-out author labels incl. the accepted commuter outcomes, rejected outcomes as negatives ----

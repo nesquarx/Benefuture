@@ -109,6 +109,11 @@ GOVERNED = {
         "source": "LI.73 (author): fewest real skill and know-how labels (`competence`) per event in `blind.v4` (the author's commuter lists five). Enforced unless "
                   "the event's `short_reason` names the facet. Assumption.",
     },
+    "blind.v5.concrete_first_share": {
+        "default": 0.5,
+        "source": "LI.74 (blind.v4 verdict: competence was coarser than the author's fine skills): the share of a competence list, from the top and rounded up, "
+                  "in which the event's declared concrete `sub_skill` must sit, so concrete sub-skills precede broader capabilities. Enforced. Assumption.",
+    },
     "blind.v4.short_reason_ceiling": {
         "default": 0.15,
         "source": "LI.73: most share of facets (over all events) that may carry a `short_reason` before the minimums are read as unmet by the prompt rather than "

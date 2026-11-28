@@ -50,9 +50,25 @@ HELD_OUT = {
 }
 # The author's rejected outcomes (LI.72): "arrival at work" is not stated; "passenger carried" is the bus's event. Judged like any author label, but a
 # match is a failure of the run; the judge is not told (the task input is the same as for an accepted label).
+# LI.74 overfitting note: the commuter and the ballot have guided three prompt revisions (v3 to v5), so they are a development set and no longer a clean held-out
+# test. `HELD_OUT_FRESH` is the slot for the author's fresh categorisations of items no prompt revision has seen: {item id: {"text": the statement, "form": [...],
+# "content": [...], "outcome": [...], "setting": [...], "competence": [...]}} (any facet may be absent), empty until the author provides them. From `blind.v5` a
+# fresh item joins the pilot controls and is judged apart from the development set (`two_pass.blind_v5_report`, `heldout_fresh`).
+DEVELOPMENT_ITEMS = ("cal.s08", "cal.s04")
+HELD_OUT_FRESH = {}
+
+
+def fresh_items():
+    """The pilot items of the fresh author categorisations, {id, text} (empty until the author provides them)."""
+    return [{"id": k, "text": d["text"]} for k, d in sorted(HELD_OUT_FRESH.items())]
+
+
 def held_out(blind_version):
-    """The held-out author labels a `blind` version can be judged on: `competence` (LI.73) exists from version 4."""
-    return {k: {r: v for r, v in d.items() if blind_version >= 4 or r != "competence"} for k, d in HELD_OUT.items()}
+    """The held-out author labels a `blind` version can be judged on: `competence` (LI.73) exists from version 4, the fresh items (LI.74) from version 5."""
+    out = {k: {r: v for r, v in d.items() if blind_version >= 4 or r != "competence"} for k, d in HELD_OUT.items()}
+    if blind_version >= 5:
+        out.update({k: {r: list(v) for r, v in d.items() if r != "text" and v} for k, d in HELD_OUT_FRESH.items()})
+    return out
 
 
 NEGATIVE_LABELS = {"cal.s08": {"outcome": ["arrival at work", "passenger carried"]}}
