@@ -9,6 +9,14 @@ Red test first (v3 accepts an unknown-heavy one-label setting, a null outcome, a
 (held-out cal.s08, cal.s04 incl. accepted commuter outcomes; rejected outcomes negatives). Pre-registration `lifeImage/data/gold/blind_v4_predictions.md`
 (confidence 0.55). Acceptance: `cd lifeImage && python3 -m pytest -q` green; no LLM batch run.
 
+## Added (author ruling LI.73, mid-task)
+Fifth facet `competence` (name confirmed by the author): skills and know-how the event requires of the acting entity (the minimum, not incidental; exercise,
+not mastery; acting entity only). Required per event, min 3 (`blind.v4.min_competence`), up to 10, null only with `short_reason`; shares a label with form only
+with a distinct gloss. Prompt example on a new event (teacher explains fractions) plus competence lists in every example. `label_match.HELD_OUT["cal.s08"]
+["competence"]` (5 author labels), `label_match.held_out(version)` (v3 excludes it). Report: median competence labels, `competence_form_overlap_share`,
+`competence_s08_matched`; predictions 7-9 in the pre-registration. label_match path now 142 tasks/3 parts. Answer schema: `events` items are generic
+objects, so no change needed.
+
 ## Predictions (work)
 One sitting; default tier green; confidence 0.8. Measurement predictions: the pre-registration file (6 lines).
 
@@ -21,7 +29,7 @@ One sitting; default tier green; confidence 0.8. Measurement predictions: the pr
 - Governed: blind.v4.min_{form,content,outcome,setting}, short_reason_ceiling (README + governed.py).
 
 ## Done
-- Red `lifeImage/tests/test_blind_v4.py` (22 of 24 failed first; baseline shows v3 accepts the thin answer), then green.
+- Red `lifeImage/tests/test_blind_v4.py` (22 of 24 failed first; competence tests added red first, 22 of 29 failed; baseline shows v3 accepts the thin answer), then green.
 - `validate.py` (zero_unknown, `_check_minimums`, version 4), `governed.py`, README, `two_pass.py` (LATEST_BLIND_VERSION 4, `blind_v4_report`),
   `tools/build_two_pass.py` (pilot/label_match `--blind-version 4`, `report_v4`, status), `prompts/blind.v4.md`, predictions file, LI.72 Built line.
 - Built (gitignored): `lifeImage/data/batches/blind.v4.controls.var{0,1}.part0.jsonl` (32 tasks each).

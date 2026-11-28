@@ -213,7 +213,7 @@ deleted. Numbering is stable (LI.n).
     version 4, `two_pass.blind_v4_report`): minimum list lengths enforced (form 5, content 4, setting 4, outcome 2; fewer only with a per-facet
     `short_reason`), outcome = what the event itself makes true for the actor (sequels and other entities' acts excluded; contrast example "a man posts a
     letter"), `unknown` a zero-weight terminator, content the activity first. The commuter's accepted outcomes "journey made" and "time spent travelling" are
-    held-out labels. Pre-registered in `data/gold/blind_v4_predictions.md` (confidence 0.55). The prompt illustrates setting inference with a ferry, not
+    held-out labels, as are the commuter's five competences; `blind.v4` adds the fifth facet `competence` (skills and know-how the event requires of the acting entity). Pre-registered in `data/gold/blind_v4_predictions.md` (confidence 0.55). The prompt illustrates setting inference with a ferry, not
     the bus, so the held-out setting stays unprompted.
   - Open (author's question, lead's proposal pending ratification): a fifth relation for the expertise an event exercises
     or helps form (commuting: bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street

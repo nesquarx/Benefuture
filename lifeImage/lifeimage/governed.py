@@ -104,6 +104,11 @@ GOVERNED = {
         "source": "LI.73: fewest real categories of setting per event in `blind.v4`, `unknown` being no category (v3 median 1, `unknown` in 66 lists). Enforced "
                   "unless the event's `short_reason` names the facet. Assumption.",
     },
+    "blind.v4.min_competence": {
+        "default": 3,
+        "source": "LI.73 (author): fewest real skill and know-how labels (`competence`) per event in `blind.v4` (the author's commuter lists five). Enforced unless "
+                  "the event's `short_reason` names the facet. Assumption.",
+    },
     "blind.v4.short_reason_ceiling": {
         "default": 0.15,
         "source": "LI.73: most share of facets (over all events) that may carry a `short_reason` before the minimums are read as unmet by the prompt rather than "

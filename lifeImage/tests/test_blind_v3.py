@@ -249,7 +249,7 @@ def _pairs(tmp_path, n_events=1):
 
 
 def test_label_match_v3_batches_cover_in_prompt_held_out_and_negative_labels(tmp_path):
-    b = lm.build_label_match_batches(_pairs(tmp_path), authors={**lm.AUTHOR_LABELS, **lm.HELD_OUT}, negatives=lm.NEGATIVE_LABELS)
+    b = lm.build_label_match_batches(_pairs(tmp_path), authors={**lm.AUTHOR_LABELS, **lm.held_out(3)}, negatives=lm.NEGATIVE_LABELS)
     tasks = [json.loads(l) for v in b.values() for l in v[1:]]
     per_variant = 16 + 13 + (9 + 4 + 2 + 6) + 2 + (5 + 3 + 4 + 4)
     assert len(tasks) == 2 * per_variant and all(len(v) - 1 <= 50 for v in b.values())
@@ -280,7 +280,7 @@ def _judge(b, make):
 
 def test_report_judges_the_v3_predictions(tmp_path):
     pairs = _pairs(tmp_path, n_events=2)
-    b = lm.build_label_match_batches(pairs, authors={**lm.AUTHOR_LABELS, **lm.HELD_OUT}, negatives=lm.NEGATIVE_LABELS)
+    b = lm.build_label_match_batches(pairs, authors={**lm.AUTHOR_LABELS, **lm.held_out(3)}, negatives=lm.NEGATIVE_LABELS)
     def judge(t):  # held-out labels half matched (partial), in-prompt matched, negatives matched (the failure the report must show)
         if t["input"]["item"]["id"] in lm.HELD_OUT and t["input"]["author_label"] not in ("arrival at work", "passenger carried"):
             return ("partial", "r0")

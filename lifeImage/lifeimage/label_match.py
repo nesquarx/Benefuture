@@ -12,7 +12,7 @@ from pathlib import Path
 from .canonical import canonical_json, content_hash
 from .membership import DEFAULT_OUT, MODEL
 from .tasks import DEFAULT_PROMPTS
-from .validate import BLIND_RELS, BLIND_UNKNOWN, ValidationError, norm_label
+from .validate import BLIND_RELS, BLIND_RELS_V4, BLIND_UNKNOWN, ValidationError, norm_label
 
 TASK = "label_match"
 VERSION = 1
@@ -40,7 +40,9 @@ HELD_OUT = {
                          "work related activities", "preparation for work", "regular activity"],
                 "content": ["bus ride", "vehicle ride", "journey", "getting on/off vehicle"],
                 "outcome": ["journey made", "time spent travelling"],
-                "setting": ["inside bus", "inside vehicle", "public transport", "vehicle traffic", "road networks", "surface travel"]},
+                "setting": ["inside bus", "inside vehicle", "public transport", "vehicle traffic", "road networks", "surface travel"],
+                # LI.73 (author): the skills and know-how the event requires of the acting entity (`blind.v4` only; v3 answers have no such facet)
+                "competence": ["bus travel", "recognising a bus", "getting on and off", "pedestrian navigation", "reading street signs"]},
     "cal.s04": {"form": ["voting", "civic participation", "electoral process", "decision making", "democracy"],
                 "content": ["ballot", "election", "public decision"],
                 "outcome": ["vote cast", "vote entered in count", "ballot used", "turnout counted"],
@@ -48,6 +50,11 @@ HELD_OUT = {
 }
 # The author's rejected outcomes (LI.72): "arrival at work" is not stated; "passenger carried" is the bus's event. Judged like any author label, but a
 # match is a failure of the run; the judge is not told (the task input is the same as for an accepted label).
+def held_out(blind_version):
+    """The held-out author labels a `blind` version can be judged on: `competence` (LI.73) exists from version 4."""
+    return {k: {r: v for r, v in d.items() if blind_version >= 4 or r != "competence"} for k, d in HELD_OUT.items()}
+
+
 NEGATIVE_LABELS = {"cal.s08": {"outcome": ["arrival at work", "passenger carried"]}}
 
 
@@ -80,9 +87,10 @@ def build_label_match_batches(blind_pairs, *, max_tasks=MAX_TASKS, model=MODEL, 
             if key not in got or v not in got[key]:
                 raise ValueError(f"{key}: no blind answer from variant {v}")
             text, ans = got[key][v]
-            for rel in BLIND_RELS:
-                run = run_view(ans, rel)
-                for label in authors[key][rel] + negatives.get(key, {}).get(rel, []):
+            for rel in BLIND_RELS_V4:
+                labels = authors[key].get(rel, []) + negatives.get(key, {}).get(rel, [])
+                run = run_view(ans, rel) if labels else []
+                for label in labels:
                     inp = {"item": {"id": key, "text": text}, "relation": rel, "author_label": label, "run": run}
                     h = content_hash(inp)
                     lines.append(canonical_json({"kind": "task", "task_id": f"{h[:16]}-v{v}", "task_type": TASK, "prompt_version": VERSION,

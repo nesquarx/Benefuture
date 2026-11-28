@@ -13,10 +13,14 @@ LI.65 relational block, the author's baker and ticket examples, the held-out com
    concrete to generic as far as the statement and ordinary inference about the stated act allow before `unknown` (the prompt's illustration is a ferry, not
    the held-out bus).
 4. Content: the activity itself first, then the objects and interactions.
+5. A fifth facet, `competence` (author ruling LI.73): the skills and know-how the event requires of the acting entity (the minimum it needs, not skills it could
+   incidentally involve; exercise, not mastery; the acting entity only), specific to generic with decreasing weights; required on each event, at least 3 real
+   labels (fewer only with a `short_reason`; null only with one), up to 10; a label shared with form needs a distinct gloss (the validator rejects the same
+   gloss). Taught with a new-event example ("a teacher explains fractions to a class": the teacher's skills, not the pupils' learning).
 Pilot: the 32 membership calibration controls, 2 variants (`data/batches/blind.v4.controls.var{0,1}.part0.jsonl`, built by
 `python3 lifeImage/tools/build_two_pass.py pilot --blind-version 4 --sets controls`, not run). Judging: `label_match.v1` unchanged, batches
-`data/batches/label_match.v1.blind_v4.part*.jsonl` built from the validated answers by `build_two_pass.py label_match --blind-version 4` (132 tasks, 3 parts),
-with the author's held-out labels (`label_match.HELD_OUT`: the commuter's accepted outcomes "journey made" and "time spent travelling" now included) and the
+`data/batches/label_match.v1.blind_v4.part*.jsonl` built from the validated answers by `build_two_pass.py label_match --blind-version 4` (142 tasks, 3 parts),
+with the author's held-out labels (`label_match.HELD_OUT`, now with the commuter's five competences bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street signs; and the commuter's accepted outcomes "journey made" and "time spent travelling" now included) and the
 rejected outcomes "arrival at work" and "passenger carried" as negatives; report `build_two_pass.py report_v4` (`two_pass.blind_v4_report`). The commuter and
 ballot categorisations are in no prompt, so a match measures generalisation, not use of an example. Confidence 0.55 for the set; each line is a separate claim and the
 set can fail in parts.
@@ -26,9 +30,12 @@ set can fail in parts.
 | 1 | The runs generalise to the author's held-out categories, in every facet, for both items | per (item, facet) cell of cal.s08 (commuter) and cal.s04 (ballot), the share of the author's accepted labels a run's lists match in the same sense, pooled over the two variants, `partial` counting 0.5; eight cells (form, content, outcome, setting of each) | >= 0.6 in every cell, for BOTH cal.s08 and cal.s04 |
 | 2 | No rejected outcome is produced | on cal.s08, `match` verdicts of "arrival at work" and "passenger carried" over the two variants (a `partial` is reported, not counted; the judge is not told these are negative) | 0 matches in either variant |
 | 3 | A compound statement is split | events in the answers to the maize control cal.m02 | >= 2 events in both variants |
-| 4 | The lists are as long as the minimums | median number of real labels per facet over all events of the 64 answers | form >= 5, setting >= 4, content >= 4, outcome >= 2 (all four) |
+| 4 | The lists are as long as the minimums | median number of real labels per facet over all events of the 64 answers | form >= 5, setting >= 4, content >= 4, outcome >= 2 (all four) and competence >= 3 (line 7) |
 | 5 | The author's in-prompt examples stay faithful | author-label match share on cal.d01 and cal.d02 (29 labels), all facets pooled, `partial` 0.5 | >= 0.8 |
-| 6 | The minimums are met by the statements, not waived | share of facets (events times four) carrying a `short_reason` | <= 15% |
+| 6 | The minimums are met by the statements, not waived | share of facets (events times five) carrying a `short_reason` | <= 15% |
+| 7 | Competence lists are long enough | median number of real competence labels per event (`two_pass.blind_v4_report`) | >= 3 (part of the all-facet medians of line 4, which now includes competence) |
+| 8 | Competence is not a copy of form | share of events with a competence label identical to a form label (same normalised label; the validator already forces a distinct gloss, so this counts the near-copies that keep the label) | <= 20% of events |
+| 9 | The author's commuter competences are found | on cal.s08, distinct author competences (bus travel, recognising a bus, getting on and off, pedestrian navigation, reading street signs) with a `match` verdict, per variant (a `partial` is reported, not counted) | at least 2 of 5 in each variant |
 
 Also reported, no prediction attached: strict (`match` only) shares per cell; the medians of every facet; events per answer for every control; the facets
 where the validator first rejected an answer; the `partial` verdicts on the negative labels; the share of null outcomes and null settings; the share of
@@ -55,4 +62,4 @@ Reading and adaptation (decision rule, before the numbers): if 1 fails on one it
 counted") is missing and add a second contrast example, never a lexical rule. If 2 fails, the outcome rule lets sequels or other entities' acts through:
 sharpen the contrast. If 6 fails (many `short_reason`), the minimums ask for padding: read the reasons given before relaxing a minimum. If 5 fails, the
 longer lists crowd out the examples. One re-run on a changed prompt before any adoption; the prompt version is recorded with every result. ETA: minutes of
-runner time for 64 answers and 132 judgements; judged by the lead on the first complete set.
+runner time for 64 answers and 142 judgements; judged by the lead on the first complete set.

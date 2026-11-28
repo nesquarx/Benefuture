@@ -240,6 +240,7 @@ def validate_ranked_membership_answer(answer, vocab, ids=None, floor=None):
 
 # ---- two-pass extraction (LI.70): pass 1 blind, pass 2 map ----
 BLIND_RELS = ("form", "content", "outcome", "setting")
+BLIND_RELS_V4 = BLIND_RELS + ("competence",)  # `blind.v4` (LI.73): the skills and know-how the event requires of the acting entity
 BLIND_LINK_TYPES = ("part_of", "causes", "re_description", "concurrent")
 BLIND_LABEL_MAX = 60
 _DOMAIN_ID = re.compile(r"\b[csf]\.[a-z][a-z0-9_]*\b")
@@ -276,7 +277,7 @@ def _line(x):
 BLIND_UNKNOWN = "unknown"
 
 
-def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels", zero_unknown=False, optional=("outcome",)):
+def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels", zero_unknown=False, optional=("outcome",), rels=None):
     """`blind.v2` (LI.71): every relation a list of {label, weight, gloss} from the most specific category to the most generic, weights strictly
     decreasing and summing to 1 (within `blind.v2.weight_tolerance`), at most `blind.v2.max_labels` entries, at most one `unknown` marker (the
     residual weight, last), no duplicate label in a relation, and a label repeated across relations carrying a different gloss in each. Form,
@@ -287,7 +288,7 @@ def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels", zero_unknown=Fal
     from .governed import governed
     tol, top = governed("blind.v2.weight_tolerance"), governed(max_key)
     glosses = {}
-    for rel in BLIND_RELS:
+    for rel in rels or BLIND_RELS:
         ls = bl[rel]
         if ls is None:
             if rel not in optional:
@@ -345,7 +346,7 @@ def equal_step_ladders(bl):
     from .governed import governed
     need = governed("blind.v3.ladder_min_labels")
     out = []
-    for rel in BLIND_RELS:
+    for rel in BLIND_RELS_V4:
         ls = [e for e in bl.get(rel) or [] if not (norm_label(e["label"]) == BLIND_UNKNOWN and e["weight"] == 0)]  # a v4 zero-weight terminator is no step
         if len(ls) < need:
             continue
@@ -382,10 +383,11 @@ def _validate_blind_answer_v3(answer, ids, version=3):
         if not _line(e["text"]):
             raise ValidationError(f"{n}: text must be a non-empty line restating the event")
         bl = e["blind"]
-        if not isinstance(bl, dict) or sorted(bl) != sorted(BLIND_RELS):
-            raise ValidationError(f"{n}: blind must have exactly the keys {sorted(BLIND_RELS)}")
+        rels = BLIND_RELS_V4 if version >= 4 else BLIND_RELS
+        if not isinstance(bl, dict) or sorted(bl) != sorted(rels):
+            raise ValidationError(f"{n}: blind must have exactly the keys {sorted(rels)}")
         if version >= 4:
-            _validate_blind_lists_v2(bl, "blind.v3.max_labels", zero_unknown=True, optional=("outcome", "setting"))
+            _validate_blind_lists_v2(bl, "blind.v3.max_labels", zero_unknown=True, optional=("outcome", "setting", "competence"), rels=rels)
             _check_minimums(n, bl, e.get("short_reason"))
         else:
             _validate_blind_lists_v2(bl, "blind.v3.max_labels")
@@ -407,7 +409,8 @@ def _validate_blind_answer_v3(answer, ids, version=3):
     return answer
 
 
-V4_MINIMUMS = {"form": "blind.v4.min_form", "content": "blind.v4.min_content", "outcome": "blind.v4.min_outcome", "setting": "blind.v4.min_setting"}
+V4_MINIMUMS = {"form": "blind.v4.min_form", "content": "blind.v4.min_content", "outcome": "blind.v4.min_outcome", "setting": "blind.v4.min_setting",
+              "competence": "blind.v4.min_competence"}
 
 
 def _check_minimums(name, bl, short_reason):

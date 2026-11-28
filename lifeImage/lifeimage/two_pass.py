@@ -34,7 +34,7 @@ from .membership_wide import (REFINEMENT_DIR as _MW_REFINEMENT_DIR, calibration_
 from .packs import domain_pack, pack_entries  # noqa: F401
 from .refinement import RELS, append_candidates, blind_unmatched_record, log_candidates, read_log, text_hash
 from .tasks import DEFAULT_PROMPTS
-from .validate import (BLIND_RELS, BLIND_UNKNOWN, ValidationError, blind_refs, domain_ids_in, norm_label, validate_answers,  # noqa: F401
+from .validate import (BLIND_RELS, BLIND_RELS_V4, BLIND_UNKNOWN, ValidationError, blind_refs, domain_ids_in, norm_label, validate_answers,  # noqa: F401
                        validate_blind_answer, validate_map_answer)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -542,6 +542,12 @@ def blind_v3_report(blind_by_item, judged, *, partial_credit=0.5, held_floor=0.6
 
 
 # ---- blind.v4 (LI.73): minimum lengths, the actor's own outcomes, a zero-weight `unknown` ----
+def competence_form_overlap(bl):
+    """The labels a `blind.v4` event lists under both competence and form (the same normalised label; the validator already demands a distinct gloss)."""
+    form = {norm_label(e["label"]) for e in bl["form"] or []}
+    return [e["label"] for e in bl["competence"] or [] if norm_label(e["label"]) in form]
+
+
 def blind_v4_report(blind_by_item, judged, *, partial_credit=0.5):
     """Judge `data/gold/blind_v4_predictions.md`: `blind_v3_report`'s measures (held-out and in-prompt match, the rejected outcomes, the maize split, the
     medians of real labels per facet and event) read against the v4 minimums (`blind.v4.min_*`), and the share of facets carrying a `short_reason`
@@ -551,16 +557,29 @@ def blind_v4_report(blind_by_item, judged, *, partial_credit=0.5):
     rep = blind_v3_report(blind_by_item, judged, partial_credit=partial_credit)
     events = [e for per in blind_by_item.values() for _, (_, a) in sorted(per.items()) for e in a["events"]]
     short = sum(len(e.get("short_reason") or {}) for e in events)
-    share = short / (len(events) * len(BLIND_RELS)) if events else None
+    share = short / (len(events) * len(BLIND_RELS_V4)) if events else None
     cells = rep["heldout_match"]
     want = {(k, rel) for k in ("cal.s08", "cal.s04") for rel in BLIND_RELS}
     got = {(k, rel): v for k, per in cells.items() for rel, v in per.items()}
-    meds = rep["median_labels"]
+    meds = dict(rep["median_labels"])
+    meds["competence"] = _median([len(_labels(e["blind"], "competence")) for e in events])
+    rep["median_labels"] = meds
+    overlap = sum(1 for e in events if competence_form_overlap(e["blind"])) / len(events) if events else None
+    rep["competence_form_overlap_share"] = overlap
+    s08 = {}
+    for t, a in judged:
+        if t["input"]["item"]["id"] == "cal.s08" and t["input"]["relation"] == "competence":
+            s08.setdefault(t["variant"], set())
+            if a["verdict"] == "match":
+                s08[t["variant"]].add(t["input"]["author_label"])
+    rep["competence_s08_matched"] = {v: sorted(x) for v, x in sorted(s08.items())}
     p = rep["predictions"]
     for k in ("median_form_labels_at_least_5", "equal_step_ladders_at_most_25pct", "heldout_match_at_least_0.6"):
         p.pop(k, None)
     p["heldout_match_at_least_0.6_each_facet_each_item"] = (all(got[c] >= 0.6 for c in want) if want <= set(got) else None) if got else None
     p["median_labels_at_least_minimum"] = all(meds[rel] is not None and meds[rel] >= governed(key) for rel, key in V4_MINIMUMS.items())
+    p["competence_form_overlap_at_most_20pct"] = overlap is not None and overlap <= 0.2
+    p["competence_s08_at_least_2_matched_each_variant"] = all(len(x) >= 2 for x in s08.values()) if s08 else None
     p["short_reason_at_most_15pct"] = share is not None and share <= governed("blind.v4.short_reason_ceiling")
     rep["short_reason_share"] = share
     rep["short_reason_facets"] = short

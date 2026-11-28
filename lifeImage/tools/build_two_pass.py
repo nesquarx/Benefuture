@@ -90,7 +90,7 @@ if __name__ == "__main__":
     elif cmd == "label_match":
         from lifeimage import label_match as lm
         bv = int(opts.get("--blind-version", 2))
-        kw = {"authors": {**lm.AUTHOR_LABELS, **lm.HELD_OUT}, "negatives": lm.NEGATIVE_LABELS} if bv >= 3 else {}
+        kw = {"authors": {**lm.AUTHOR_LABELS, **lm.held_out(bv)}, "negatives": lm.NEGATIVE_LABELS} if bv >= 3 else {}
         for p in lm.write_label_match_batches(f"blind_v{bv}", lm.build_label_match_batches(need(files("blind", "controls", bv), f"blind.v{bv}"), **kw), DEFAULT_OUT):
             print(p.relative_to(ROOT), len(p.read_text(encoding="utf-8").splitlines()) - 1, "tasks")
     elif cmd in ("report_v3", "report_v4"):

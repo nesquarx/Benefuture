@@ -217,7 +217,7 @@ def test_prompt_v4_states_the_verdict_lessons_as_rules():
     p = re.sub(r"\s+", " ", _prompt())
     for needle in ("at least 5", "at least 4", "at least 2", "short_reason", "up to 10", "zero weight", "weight 0", "the event itself makes true",
                    "likely but unstated", "another entity", "the activity itself first", "concrete to generic", "ordinary inference",
-                   "split", "part_of", "causes", "concurrent", "actor", "issue ticket", "no fixed ladder", "the setting stops", "competence", "exercise, not mastery", "acting entity", "at least 3"):
+                   "split", "part_of", "causes", "concurrent", "actor", "issue ticket", "no fixed ladder", "the setting stops", "competence", "skills and know-how", "acting entity", "at least 3"):
         assert needle in p, needle
 
 
@@ -366,7 +366,7 @@ def test_v4_competence_is_required_and_a_fifth_facet():
 def test_v4_competence_may_repeat_a_form_label_only_with_a_distinct_gloss():
     a = good(1)
     a["events"][0]["blind"]["competence"][0]["label"] = "sale a"
-    a["events"][0]["blind"]["competence"][0]["gloss"] = "handing goods over for money"  # the form gloss of "sale a" is "handing goods over for money"
+    a["events"][0]["blind"]["competence"][0]["gloss"] = "a gloss"  # the form gloss of "sale a" is the default "a gloss"
     with pytest.raises(ValidationError, match="gloss"):
         validate_blind_answer(a, version=4)
     a["events"][0]["blind"]["competence"][0]["gloss"] = "the skill of selling, not the act"
@@ -384,7 +384,7 @@ def test_v4_competence_lists_follow_the_list_rules():
 def test_prompt_v4_competence_rules_and_new_event_example():
     p = re.sub(r"\s+", " ", _prompt())
     low = p.lower()
-    for needle in ("only competences the event actually requires or shows", "the acting entity only", "exercise, not mastery", "explains fractions"):
+    for needle in ("competence", "skills and know-how the event requires of the acting entity", "the minimum it needs", "not skills it could incidentally involve", "explains fractions"):
         assert needle.lower() in low, needle
     assert "competence" in json.dumps([json.loads(b) for b in re.findall(r"```json\n(.*?)\n```", _prompt(), re.S)])
     for b in re.findall(r"```json\n(.*?)\n```", _prompt(), re.S):
