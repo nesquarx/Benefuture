@@ -1,22 +1,22 @@
 # Adversarial attack search
 
-Build: commit 102474a (with any uncommitted changes at the time).
+Build: commit 4ef9182 (with any uncommitted changes at the time).
 
 Attacker strategies optimised by the cross-entropy method (population 8, 4 iterations) to minimise the success pattern's margin (1: the unattacked world; below 0: a criterion failed), within a budget of 1.0 (one attack at the top of its realistic range). Search on fixed seeds; the worst strategy re-checked on held-out seeds.
 
-## economy (M3c) (15.2 minutes)
+## economy (M3c) (4.2 minutes)
 
-Worst strategy: `(bloc = [5, 6, 7, 8], deceit = 0.0, launder = 0.8956406845106938, frivolous = 0.01912315926190236, capture = 0.42707615946401567, target = 3, windows = [(79, 11), (101, 11), (123, 11)])`.
+Worst strategy: `(bloc = [5, 6, 7, 8], deceit = 1.048251435330191, launder = 0.44581239499836195, frivolous = 0.030061887335869737, capture = 0.0, target = 4, windows = [(88, 53), (194, 53)])`.
 
-Margin on the search seeds 0.362; on held-out seeds 0.382 (per seed: 0.35, 0.37, 0.38, 0.43). Bloc's wealth relative to honest agents, over the unattacked run: -2.70. The framework holds.
+Margin on the search seeds 0.337; on held-out seeds 0.357 (per seed: 0.37, 0.42, 0.30, 0.34). Bloc's wealth relative to honest agents, over the unattacked run: -0.11. The framework holds.
 
-Best margin by iteration: 0.678, 0.649, 0.562, 0.362.
+Best margin by iteration: 0.348, 0.348, 0.344, 0.337.
 
-## governance (M5) (0.3 minutes)
+## governance (M5) (0.4 minutes)
 
-Worst strategy: `(colluders = [21, 20, 16, 11, 10, 24, 25, 48, 50, 45, 40, 44, 37, 34, 75, 74, 70, 69, 63, 61, 64, 98, 94, 92, 95, 88, 85, 93], domains = [1, 2, 3, 4], stealth = false, fork_copies = 1, loyalty = 4.58354519356704)`.
+Worst strategy: `(colluders = [23, 16, 21, 11, 14, 6, 18, 15, 48, 41, 37, 39, 46, 38, 34, 49, 73, 64, 75, 69, 70, 58, 68, 74, 99, 100, 92, 97, 87, 96, 89, 98], domains = [1, 2, 3, 4], stealth = false, fork_copies = 1, loyalty = 3.0870136824330596)`.
 
-Margin on the search seeds 0.205; on held-out seeds 0.202 (per seed: 0.95, 0.95, 0.94, 0.97, 0.96, 0.94). The framework holds.
+Margin on the search seeds 0.197; on held-out seeds 0.194 (per seed: 0.96, 0.93, 0.96, 0.94, 0.94, 0.94). The framework holds.
 
-Best margin by iteration: 0.228, 0.205, 0.205, 0.205.
+Best margin by iteration: 0.233, 0.197, 0.197, 0.197.
 

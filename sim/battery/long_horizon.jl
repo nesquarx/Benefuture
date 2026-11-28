@@ -10,7 +10,7 @@
 #   4. High-Seed Open-Question Sweeps (64 paired seeds on 8.85 800-step model takeover, 64 paired seeds
 #      on 8.81 marginal-domain overpromising, and 32 paired seeds on 8.86 accession size scaling).
 
-using BenefutureSim, Statistics, Random, Printf, Dates, Serialization
+using BenefutureSim, Statistics, Random, Printf, Dates
 
 # ---- L3.1: one world, many arms ------------------------------------------------------------------
 # `world(seed; arm, stress)` returns the economy (`econ`) and a governance builder (`gov(trace)`) for
@@ -215,6 +215,7 @@ function parallel_map(f, xs)
 end
 
 if !WORLD_ONLY
+using Serialization
 const LH_WORKERS = get(CLI_ARGS, "workers", 1)
 const LH_CACHE_DIR = get(CLI_ARGS, "cache_dir", "")
 const LH_TASK = get(CLI_ARGS, "lh_task", "")
