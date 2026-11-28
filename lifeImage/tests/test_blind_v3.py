@@ -224,7 +224,7 @@ def test_held_out_author_labels_are_the_li72_lists():
     assert h["cal.s08"]["form"][:3] == ["commuting", "passenger", "travel in bus"] and len(h["cal.s08"]["form"]) == 9
     assert h["cal.s08"]["content"] == ["bus ride", "vehicle ride", "journey", "getting on/off vehicle"]
     assert h["cal.s08"]["setting"][:2] == ["inside bus", "inside vehicle"] and len(h["cal.s08"]["setting"]) == 6
-    assert h["cal.s08"]["outcome"] == []  # LI.72 names no accepted outcome: only the two rejected ones
+    assert h["cal.s08"]["outcome"] == ["journey made", "time spent travelling"]  # LI.72 (corrected by the lead from the author's message)
     assert h["cal.s04"]["form"] == ["voting", "civic participation", "electoral process", "decision making", "democracy"]
     assert h["cal.s04"]["outcome"] == ["vote cast", "vote entered in count", "ballot used", "turnout counted"]
     assert h["cal.s04"]["setting"] == ["polling station", "election", "civic life", "democratic polity"]
@@ -251,10 +251,10 @@ def _pairs(tmp_path, n_events=1):
 def test_label_match_v3_batches_cover_in_prompt_held_out_and_negative_labels(tmp_path):
     b = lm.build_label_match_batches(_pairs(tmp_path), authors={**lm.AUTHOR_LABELS, **lm.HELD_OUT}, negatives=lm.NEGATIVE_LABELS)
     tasks = [json.loads(l) for v in b.values() for l in v[1:]]
-    per_variant = 16 + 13 + (9 + 4 + 0 + 6) + 2 + (5 + 3 + 4 + 4)
+    per_variant = 16 + 13 + (9 + 4 + 2 + 6) + 2 + (5 + 3 + 4 + 4)
     assert len(tasks) == 2 * per_variant and all(len(v) - 1 <= 50 for v in b.values())
     neg = [t for t in tasks if t["input"]["item"]["id"] == "cal.s08" and t["input"]["relation"] == "outcome"]
-    assert sorted({t["input"]["author_label"] for t in neg}) == ["arrival at work", "passenger carried"] and len(neg) == 4
+    assert sorted({t["input"]["author_label"] for t in neg}) == ["arrival at work", "journey made", "passenger carried", "time spent travelling"] and len(neg) == 8
     assert set(tasks[0]["input"]) == {"item", "relation", "author_label", "run"}  # the judge is not told which labels are negative
     assert not ID.search("\n".join(sum(b.values(), [])))
 
@@ -289,7 +289,7 @@ def test_report_judges_the_v3_predictions(tmp_path):
     assert rep["events_per_answer"]["cal.d01"] == {0: 2, 1: 2}
     assert rep["median_labels"]["form"] == 5
     assert rep["ladder"]["share"] == 0.0
-    assert rep["heldout_match"]["cal.s04"]["form"] == 0.5 and "outcome" not in rep["heldout_match"]["cal.s08"]
+    assert rep["heldout_match"]["cal.s04"]["form"] == 0.5 and "outcome" in rep["heldout_match"]["cal.s08"]
     assert rep["negatives"]["cal.s08"]["arrival at work"]["match"] == 2 and rep["predictions"]["no_rejected_outcome_produced"] is False
     assert rep["in_prompt_match"] == 1.0 and rep["predictions"]["in_prompt_match_at_least_0.8"] is True
     assert rep["predictions"]["heldout_match_at_least_0.6"] is False

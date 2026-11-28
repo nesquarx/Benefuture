@@ -39,7 +39,7 @@ HELD_OUT = {
     "cal.s08": {"form": ["commuting", "passenger", "travel in bus", "travel in public transport", "transportation", "going to work",
                          "work related activities", "preparation for work", "regular activity"],
                 "content": ["bus ride", "vehicle ride", "journey", "getting on/off vehicle"],
-                "outcome": [],
+                "outcome": ["journey made", "time spent travelling"],
                 "setting": ["inside bus", "inside vehicle", "public transport", "vehicle traffic", "road networks", "surface travel"]},
     "cal.s04": {"form": ["voting", "civic participation", "electoral process", "decision making", "democracy"],
                 "content": ["ballot", "election", "public decision"],

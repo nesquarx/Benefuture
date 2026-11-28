@@ -198,7 +198,8 @@ deleted. Numbering is stable (LI.n).
     and regularity (commuting, passenger, travel in bus, travel in public transport, transportation, going to work, work
     related activities, preparation for work, regular activity); content names the doing and what it involves (bus ride,
     vehicle ride, journey, getting on/off vehicle); outcome only what the statement supports, from the actor's perspective
-    (arrival at work rejected: not stated; passenger carried rejected: that is the bus's event); setting runs concrete to
+    (commuter: journey made, time spent travelling; arrival at work rejected: not stated; passenger carried rejected:
+    that is the bus's event); setting runs concrete to
     generic (inside bus, inside vehicle, public transport, vehicle traffic, road networks, surface travel). A compound
     statement is several events (growing maize and selling the surplus are two).
   - Author categorisations (gold, held out from prompts): "A commuter rides the bus to work" as above; "A woman casts her
