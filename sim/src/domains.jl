@@ -70,15 +70,18 @@ function lean_inc!(a::Ptr{Cvoid})
     a
 end
 
-"An array returned by Lean, read (each read consumes a reference, taken first) and released."
+"""
+An array returned by Lean, read and released (one reference consumed). A FloatArray is a Lean scalar
+array: header (8 bytes), `m_size` at offset 8, `m_capacity` at 16, then the contiguous doubles at 24
+(`lean.h`, `lean_sarray_object`). The size is cross-checked against `bf_fa_size` and the doubles are copied
+in one `unsafe_copyto!`, bit for bit what the element-wise `bf_fa_get` readback produced.
+"""
 function lean_floats(a::Ptr{Cvoid})
     lock(SYMS_LOCK) do
-        n = Int(ccall(sym(:bf_fa_size), Csize_t, (Ptr{Cvoid},), lean_inc!(a)))
-        p_get = sym(:bf_fa_get)
+        n = Int(unsafe_load(Ptr{Csize_t}(a + 8)))
+        check(n == Int(ccall(sym(:bf_fa_size), Csize_t, (Ptr{Cvoid},), lean_inc!(a))), "FloatArray layout mismatch")
         xs = Vector{Float64}(undef, n)
-        for i in 0:(n - 1)
-            xs[i + 1] = ccall(p_get, Float64, (Ptr{Cvoid}, Csize_t), lean_inc!(a), i)
-        end
+        n > 0 && unsafe_copyto!(pointer(xs), Ptr{Float64}(a + 24), n)
         ccall(sym(:bf_fa_drop), UInt8, (Ptr{Cvoid},), a)
         xs
     end

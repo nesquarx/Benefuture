@@ -155,7 +155,20 @@ end
 
 "Build a Lean `FloatArray`; ownership passes to the Lean call that receives it."
 function floatarray(xs)
-    a = ccall(sym(:bf_fa_mk), Ptr{Cvoid}, (Csize_t,), length(xs))
+    n = length(xs)
+    a = ccall(sym(:bf_fa_mk), Ptr{Cvoid}, (Csize_t,), n)
+    if n > 0 && unsafe_load(Ptr{Csize_t}(a + 16)) >= n && unsafe_load(Ptr{Csize_t}(a + 8)) == 0
+        # Bulk fill: write the doubles into the reserved buffer and set `m_size` (same bytes as n pushes
+        # that never reallocate; layout as in `lean_floats`).
+        p = Ptr{Float64}(a + 24)
+        i = 0
+        for x in xs
+            unsafe_store!(p, Float64(x), (i += 1))
+        end
+        unsafe_store!(Ptr{Csize_t}(a + 8), Csize_t(i))
+        i == n || error("floatarray: length changed during fill")
+        return a
+    end
     p_push = sym(:bf_fa_push)
     for x in xs
         a = ccall(p_push, Ptr{Cvoid}, (Ptr{Cvoid}, Float64), a, Float64(x))
