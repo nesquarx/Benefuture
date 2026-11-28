@@ -228,6 +228,13 @@ deleted. Numbering is stable (LI.n).
   teacher's event exercises teaching; the learner's own events build the learner's). It feeds the green (demonstrated skill)
   channel directly. Name confirmed by the author: `competence`, defined in prompts as the skills and know-how the event
   requires of the acting entity. PLAN, prompts, RELATIONS, DESIGN.
+- **LI.74** (2026-11-28; author, refines LI.73, LI.36–LI.42) Competence has a basis: demonstrated or predicted. Demonstrated
+  only from validated events (formal or attested records); competence from non-validated event types (claims, self-reports)
+  and from profile statements (credentials, roles, enrolment, plans, self-assessment) is predicted (speculated) until
+  validated. Demonstrated feeds the green channel, predicted the red; the evidence tier (claimed, attested, verified) decides
+  the basis, so the basis follows the record's validation, not the agent's reading. Agents mark each statement's mode (event
+  occurred, claim, plan, credential, role, self-assessment); the pipeline assigns the basis from mode and validation. PLAN,
+  RELATIONS, prompts.
 - **LI.27** (2026-11-20) The visual shape is expected to come out right by construction. PLAN.
 
 ### Image and channels
