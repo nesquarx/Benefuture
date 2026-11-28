@@ -1,0 +1,137 @@
+# Task: blind (pass 1 of two-pass extraction), version 4
+
+You read one statement, of any detail, and categorise it, in your own words, the way a careful person would file it. You are not given any list of
+categories, and you must not try to recall or invent identifiers for one: write plain short phrases. A second reader later maps your phrases onto a
+fixed list, so a phrase must say clearly which thing it means. Each task gives `input.item`: the text of one statement. Use only these instructions
+and the item.
+
+Benefuture reads outputs only: beliefs and preferences are not directly accessible. Judge an event by what is observable in its text. Never infer
+intentions, motives or beliefs; a stated intention is itself something said, and counts only as what it represents.
+
+## Step 1: split the statement into events
+
+A statement may hold several events: acts that could each happen without the other, each with its own outcome. Split first, then categorise each
+event on its own. A statement that joins two acts with "and", "then" or "while" is two events (a worker who cleans a machine and orders a part
+has done two things). Do not split one act into its steps or its parties: a sale with a seller and a buyer is one event. Most statements are one event.
+Each event gets an `id` (`e1`, `e2`, ... in the order stated), a `text` (a short clause restating that event), its four facets and its relational
+block. Events of one statement are linked through the relational block's `links`: `part_of`, `causes` or `concurrent`, with `other` the `id` of
+the other event ("e2"); an answer of several events links them, a single event has no link to another event.
+
+## Step 2: the four facets of each event
+
+Each facet answers a different question about the event, so the lists differ. The key action decides, never the actor's name or occupation: a
+baker who sells bread is doing a sale, not baking; a surgeon on stage is acting. Think of what a careful person would file the event under, at every
+level from the most specific to the broad field, and list all of it: the lists are meant to be long.
+
+Minimum lengths (real labels, `unknown` not counted): form at least 5, content at least 4, setting at least 4, outcome at least 2; at most 10 each.
+Fewer is allowed only for a facet the statement really cannot fill, and then the event carries a `short_reason` for that facet (see the answer
+format). A short list without a reason is rejected. A facet is not short because you stopped early: a more generic label that still truly applies
+(the sector, the field, the kind of activity it belongs to) is always available.
+
+- form: the type of act, named at every level: the act itself, the actor's role in it, its purpose, and its regularity where the statement shows
+  one (a yearly shot is an annual routine, a repeated trip a regular activity), listed most specific first. Name what is done, apart from what it is about
+  and what it changes.
+- content: the activity itself first (the purchase, the posting, the lesson), then the objects and interactions involved in it, the stages of the
+  act and the things handled (bread, baked goods, food, a direct person-to-person transaction). A venue is not content (it belongs to the setting),
+  nor is a result (the outcome).
+- outcome: what the event itself makes true for the actor: the state changes that hold by the event's occurrence (money received, a ticket held, a
+  letter posted, time spent), whether or not the statement spells them out. Left out: a likely but unstated sequel, which needs a further event to
+  hold (a letter delivered, a patient cured, a plant grown), and another entity's act, which is that entity's own event (what a clerk, a vehicle
+  or an institution does in turn). Never an intention, never what the event was meant to do. A prevented harm counts when the statement shows it.
+  List at least 2 where the act makes that many true (an act with a counterparty or a cost nearly always does: something gained and something
+  used); a null outcome needs a `short_reason`.
+- setting: the venue and sphere, concrete to generic (the place, the building, the institution, the sector). Go as far as the statement and ordinary
+  inference about the stated act allow: an act done on a ferry implies being on a ferry, on a vessel, on the waterways, whether or not the text says
+  so. Never guess a place the text does not state or show and that the act does not imply. Where the statement and the act give nothing more, the
+  list ends (and may close with `unknown`, below).
+
+## Categories
+
+For each facet list the categories in order, as many as the event supports, from the minimum up to 10 (a rich event takes 6 to 10). Within a chain each
+label is more generic than the one before: the first is the most specific and the last the broad field the rest sit in. The leafier the better, since a
+specific category carries its parents with it. A facet's list does not repeat itself or pad with a category that only shares a keyword with the event.
+
+- `label`: a short phrase of one to five words in everyday or professional wording ("sale", "baked goods", "seat booked"). Never an identifier,
+  never a code, never a dotted name.
+- `weight`: how central the label is to the event within its facet: a number above 0, the weights of one facet
+  adding up to 1 (the `unknown` terminator aside, below), never rising down
+  the list and never equal between two entries (two decimals are enough). Weights reflect centrality, not rank alone: there is no fixed ladder
+  of steps (0.4, 0.3, 0.2, 0.1 is a formula, not a judgement); one label may carry half the facet, and a few generic ones may share a small remainder.
+- `gloss`: one line that fixes the sense of the label, so a reader with a list cannot confuse it with another sense of the same word:
+  "ticket (a document entitling travel)" is not "issue ticket (a tracked work item)". Always write one.
+
+`unknown` is a terminator and no category: it may end a list when the statement and the ordinary inference about the act run out, and it then carries
+zero weight (weight 0, written `"weight": 0`); the real labels before it still sum to 1. It never takes weight from them, never stands in for a label the act supports, and
+never counts towards the minimum. At most one per facet, always last, with a gloss. A list without it is complete as it stands.
+
+The same category may appear under more than one facet only when it truly applies to each, never by default; its gloss then says what it is in
+each (retail as a type of act, and retail as the sphere where it happens).
+
+## The relational block of each event
+
+Besides the categories, record the event's relational structure as the text states it, at whatever detail the text has:
+
+- `participants`: the entities in the event, each `{"ref": "p1", "role": <one or two words>}` with refs `p1`, `p2`, and so on, distinct. The
+  list may be empty when the text names nobody.
+- `action`: one short line naming what is done or happens.
+- `outcome`: `null` when no observable change is stated or directly shown, otherwise
+  `{"text": <what changed>, "counterfactual": <what would otherwise have happened, or null when the text does not say or show it>}`.
+  Never invent the counterfactual.
+- `links`: relations to other events of the statement or to other occurrences the text states, each `{"type": <type>, "other": <the id of the other
+  event, or a short label of an occurrence outside the statement>}` with type one of `part_of`, `causes`, `re_description`, `concurrent`. Empty
+  when the text states none.
+
+## Answer
+
+The verdict is the string `blind`. Besides the usual keys the answer line carries `events`: a list of at least one event, each
+`{"id", "text", "blind", "relational"}` and, only when a facet is short, `"short_reason"`. `blind` is an object with exactly the keys `form`,
+`content`, `outcome`, `setting` (each a list of `{"label", "weight", "gloss"}` from the most specific to the most generic; `outcome` and `setting`
+may be `null` only with a `short_reason`) and `relational` is the block above. `short_reason` is an object naming only the facets that fall below
+their minimum, each with one line saying why the statement cannot fill it: `{"setting": "no place is stated and the act implies none"}`. Most events
+have none. There is no top-level `blind` or `relational`.
+
+Give a one-line reason naming the key action of each event. Worked examples follow. The first two are the author's own categorisations of two events,
+given here exactly as the author wrote them, then rendered as answers in this version's format (the weights and glosses are added; the outcome gives
+the actor's change; the content gains the activity first; lists the author stopped short are carried on by ordinary inference to the minimum). The
+others are invented. In every example the weights are only illustrative: yours follow the event.
+
+The author's example 1. "A baker sells bread at the market": form sale, retail, exchange, financial transaction; content bread, baked goods,
+food, direct human-to-human transaction; outcome money input, inventory spent; setting market, stall/store/shop, point of sale, retail, commerce,
+business.
+
+Event: "A baker sells bread at the market"
+```json
+{"events": [{"id": "e1", "text": "a baker sells bread at the market", "blind": {"form": [{"label": "sale", "weight": 0.34, "gloss": "handing goods over for money"}, {"label": "retail", "weight": 0.24, "gloss": "selling to final customers"}, {"label": "exchange", "weight": 0.18, "gloss": "goods given for value received"}, {"label": "financial transaction", "weight": 0.14, "gloss": "a payment between two parties"}, {"label": "trade", "weight": 0.1, "gloss": "buying and selling in general"}], "content": [{"label": "selling bread", "weight": 0.3, "gloss": "the act of handing loaves over for money"}, {"label": "bread", "weight": 0.26, "gloss": "the loaves sold"}, {"label": "baked goods", "weight": 0.2, "gloss": "flour products baked in an oven"}, {"label": "food", "weight": 0.14, "gloss": "things made to be eaten"}, {"label": "direct human-to-human transaction", "weight": 0.1, "gloss": "buyer and seller face to face, no platform between"}], "outcome": [{"label": "money input", "weight": 0.58, "gloss": "the baker's takings go up"}, {"label": "inventory spent", "weight": 0.42, "gloss": "the baker has fewer loaves"}], "setting": [{"label": "market", "weight": 0.28, "gloss": "an open place where traders sell"}, {"label": "stall/store/shop", "weight": 0.22, "gloss": "the trader's counter or premises"}, {"label": "point of sale", "weight": 0.18, "gloss": "where payment is taken"}, {"label": "retail", "weight": 0.14, "gloss": "the sphere of selling to consumers, here the place not the act"}, {"label": "commerce", "weight": 0.1, "gloss": "trade in general"}, {"label": "business", "weight": 0.08, "gloss": "an enterprise earning a living"}, {"label": "unknown", "weight": 0, "gloss": "the statement says nothing beyond the trade"}]}, "relational": {"participants": [{"ref": "p1", "role": "seller"}, {"ref": "p2", "role": "buyer"}], "action": "sells bread", "outcome": {"text": "money changes hands for bread", "counterfactual": null}, "links": []}}]}
+```
+
+The author's example 2. "A woman buys a train ticket": form purchase, booking, travel planning, logistics; content ticket/pass, receipt,
+train, public transportation; outcome ticket obtained, promise obtained, seat booked, documentation; setting point of sale (rest unknown).
+
+Event: "A woman buys a train ticket"
+```json
+{"events": [{"id": "e1", "text": "a woman buys a train ticket", "blind": {"form": [{"label": "purchase", "weight": 0.3, "gloss": "buying a good or a right for money"}, {"label": "booking", "weight": 0.24, "gloss": "reserving a seat or a place in advance"}, {"label": "travel planning", "weight": 0.18, "gloss": "arranging a journey ahead of time"}, {"label": "logistics", "weight": 0.15, "gloss": "organising the movement of people or things"}, {"label": "use of public transport", "weight": 0.13, "gloss": "the purpose: to be able to travel on a shared service"}], "content": [{"label": "buying a ticket", "weight": 0.28, "gloss": "the act of paying for a travel right"}, {"label": "ticket/pass", "weight": 0.24, "gloss": "a document entitling travel, or a pass for a period"}, {"label": "receipt", "weight": 0.18, "gloss": "proof of payment"}, {"label": "train", "weight": 0.16, "gloss": "the rail vehicle the ticket is for"}, {"label": "public transportation", "weight": 0.14, "gloss": "shared transport open to anyone who pays"}], "outcome": [{"label": "ticket obtained", "weight": 0.33, "gloss": "the woman holds a travel document"}, {"label": "promise obtained", "weight": 0.27, "gloss": "the operator is bound to carry her"}, {"label": "seat booked", "weight": 0.22, "gloss": "a place is held for her on the journey"}, {"label": "documentation", "weight": 0.18, "gloss": "a record of the purchase now exists"}], "setting": [{"label": "point of sale", "weight": 0.38, "gloss": "where the ticket is paid for"}, {"label": "retail", "weight": 0.26, "gloss": "the sphere of selling to consumers, here the place not the act"}, {"label": "rail transport service", "weight": 0.2, "gloss": "the operator's carrying service the ticket belongs to"}, {"label": "services sector", "weight": 0.16, "gloss": "the part of the economy that sells services"}, {"label": "unknown", "weight": 0, "gloss": "the statement names no venue beyond the sale"}]}, "relational": {"participants": [{"ref": "p1", "role": "buyer"}, {"ref": "p2", "role": "operator"}], "action": "buys a train ticket", "outcome": {"text": "she holds a ticket for a train journey", "counterfactual": null}, "links": []}}]}
+```
+
+A third example, an invented event for the outcome rule. Event: "A man posts a letter at the post office"
+```json
+{"events": [{"id": "e1", "text": "a man posts a letter at the post office", "blind": {"form": [{"label": "posting a letter", "weight": 0.26, "gloss": "handing mail in to be sent"}, {"label": "mailing", "weight": 0.22, "gloss": "sending something through the post"}, {"label": "use of a postal service", "weight": 0.18, "gloss": "relying on an operator that carries mail"}, {"label": "sending a message", "weight": 0.14, "gloss": "getting words to someone elsewhere"}, {"label": "communication", "weight": 0.12, "gloss": "passing information between people"}, {"label": "personal errand", "weight": 0.08, "gloss": "a small task done for oneself"}], "content": [{"label": "posting", "weight": 0.32, "gloss": "the act of handing the letter in"}, {"label": "letter", "weight": 0.24, "gloss": "the written item sent"}, {"label": "postage", "weight": 0.2, "gloss": "payment for carrying the mail"}, {"label": "written message", "weight": 0.14, "gloss": "words put on paper for someone"}, {"label": "postal service", "weight": 0.1, "gloss": "the operator that carries mail"}], "outcome": [{"label": "letter posted", "weight": 0.42, "gloss": "the letter is now in the postal system and out of his hands"}, {"label": "postage paid", "weight": 0.34, "gloss": "the fee for carrying it is settled"}, {"label": "money spent", "weight": 0.24, "gloss": "his cash is down by the fee"}], "setting": [{"label": "post office", "weight": 0.38, "gloss": "the counter where mail is handed in"}, {"label": "postal service", "weight": 0.26, "gloss": "the operator whose premises these are"}, {"label": "public service", "weight": 0.2, "gloss": "a service run for everyone, here the sphere"}, {"label": "services sector", "weight": 0.16, "gloss": "the part of the economy that sells services"}, {"label": "unknown", "weight": 0, "gloss": "the statement says nothing beyond the post office"}]}, "relational": {"participants": [{"ref": "p1", "role": "sender"}], "action": "posts a letter", "outcome": {"text": "the letter has been handed in for posting", "counterfactual": null}, "links": []}}]}
+```
+Outcome, in contrast. Included: letter posted, postage paid, money spent: each holds because the posting happened, for the man. Left out: "letter
+delivered" (a likely sequel, not true until later events; the statement does not say it), and "mail accepted and sorted" (what the post office and its
+staff do is their own event, not the man's outcome). The same cut applies to "a patient cured" after a treatment, or "seedlings grown" after sowing.
+
+A fourth example, an invented event with long lists: the form runs from the act through the actor's role, the purpose and the regularity; the setting
+stops where the statement and ordinary inference stop; the outcome names what the act itself makes true (protection is not stated and needs later events,
+so it is left out). Event: "A nurse at a school clinic gives a child the yearly flu vaccine"
+```json
+{"events": [{"id": "e1", "text": "a nurse at a school clinic gives a child the yearly flu vaccine", "blind": {"form": [{"label": "giving a vaccine", "weight": 0.22, "gloss": "injecting a vaccine into a person"}, {"label": "immunisation", "weight": 0.17, "gloss": "making a person resistant to an infection"}, {"label": "nursing care", "weight": 0.15, "gloss": "care given by a nurse, the actor's role"}, {"label": "preventive health care", "weight": 0.13, "gloss": "acting before illness to stop it, the purpose"}, {"label": "health protection of a child", "weight": 0.11, "gloss": "keeping a young person well"}, {"label": "school health service", "weight": 0.09, "gloss": "care provided to pupils by their school"}, {"label": "annual routine", "weight": 0.07, "gloss": "done once every year"}, {"label": "regular activity", "weight": 0.06, "gloss": "repeated at a fixed interval"}], "content": [{"label": "giving a vaccination", "weight": 0.24, "gloss": "the act of giving one dose"}, {"label": "flu vaccine", "weight": 0.21, "gloss": "the vaccine given against influenza"}, {"label": "injection", "weight": 0.17, "gloss": "a needle used to give a dose"}, {"label": "vaccination schedule", "weight": 0.14, "gloss": "the routine shots offered to children"}, {"label": "influenza", "weight": 0.12, "gloss": "the viral infection prevented"}, {"label": "infectious disease", "weight": 0.08, "gloss": "illness spread between people"}, {"label": "child health", "weight": 0.04, "gloss": "the health of children as a field"}], "outcome": [{"label": "vaccine dose given", "weight": 0.55, "gloss": "the child has received one dose"}, {"label": "dose stock used", "weight": 0.45, "gloss": "the clinic has one dose fewer"}], "setting": [{"label": "school clinic", "weight": 0.38, "gloss": "a health room inside a school"}, {"label": "school health service", "weight": 0.27, "gloss": "the care the school provides to pupils, here the place"}, {"label": "school", "weight": 0.2, "gloss": "the institution where children are taught"}, {"label": "education sector", "weight": 0.15, "gloss": "the part of society that teaches"}, {"label": "unknown", "weight": 0, "gloss": "the statement says nothing beyond the school"}]}, "relational": {"participants": [{"ref": "p1", "role": "nurse"}, {"ref": "p2", "role": "child"}], "action": "gives a flu vaccine", "outcome": {"text": "the child has received a dose", "counterfactual": null}, "links": []}}]}
+```
+
+A fifth example, an invented compound statement, split into two events that are linked as concurrent, one of them showing a `short_reason`. Event:
+"A teacher marks the homework and phones a parent about a pupil's absence"
+```json
+{"events": [{"id": "e1", "text": "a teacher marks the homework", "blind": {"form": [{"label": "marking", "weight": 0.3, "gloss": "checking pupils' work and grading it"}, {"label": "assessing pupils' work", "weight": 0.24, "gloss": "judging how well pupils have learned"}, {"label": "teaching work", "weight": 0.2, "gloss": "the teacher's role"}, {"label": "education", "weight": 0.14, "gloss": "the sphere of instruction"}, {"label": "regular school duty", "weight": 0.12, "gloss": "a task repeated through the school term"}], "content": [{"label": "marking homework", "weight": 0.32, "gloss": "the act of grading set work"}, {"label": "homework", "weight": 0.25, "gloss": "work set to be done outside lessons"}, {"label": "written work", "weight": 0.2, "gloss": "pupils' texts and exercises"}, {"label": "learning", "weight": 0.14, "gloss": "what pupils are meant to gain"}, {"label": "education", "weight": 0.09, "gloss": "the field of instruction, here the subject matter"}], "outcome": [{"label": "homework marked", "weight": 0.6, "gloss": "the set of work now carries marks"}, {"label": "marks recorded", "weight": 0.4, "gloss": "the pupils' results are written down"}], "setting": [{"label": "education sector", "weight": 0.6, "gloss": "the part of society that teaches"}, {"label": "public service", "weight": 0.4, "gloss": "a service run for everyone, here the sphere"}, {"label": "unknown", "weight": 0, "gloss": "the statement names no place"}]}, "relational": {"participants": [{"ref": "p1", "role": "teacher"}], "action": "marks the homework", "outcome": {"text": "the homework is marked", "counterfactual": null}, "links": [{"type": "concurrent", "other": "e2"}]}, "short_reason": {"setting": "no place is stated and marking can happen at school or at home; only the sphere of a teacher's work follows from the act"}}, {"id": "e2", "text": "the teacher phones a parent about a pupil's absence", "blind": {"form": [{"label": "phoning a parent", "weight": 0.3, "gloss": "a telephone call to a pupil's parent"}, {"label": "reporting an absence", "weight": 0.24, "gloss": "telling someone a pupil was not there"}, {"label": "school-home communication", "weight": 0.2, "gloss": "contact between a school and families"}, {"label": "pupil welfare follow-up", "weight": 0.14, "gloss": "checking on a pupil's wellbeing"}, {"label": "school administration", "weight": 0.12, "gloss": "the running of a school"}], "content": [{"label": "phone call about an absence", "weight": 0.3, "gloss": "the act of calling to report that a pupil was away"}, {"label": "absence", "weight": 0.24, "gloss": "a pupil missing from school"}, {"label": "parent", "weight": 0.2, "gloss": "the adult responsible for the pupil"}, {"label": "pupil attendance", "weight": 0.15, "gloss": "whether pupils turn up"}, {"label": "school-home relationship", "weight": 0.11, "gloss": "the tie between a school and a family"}], "outcome": [{"label": "absence reported", "weight": 0.55, "gloss": "the parent has been told of the absence"}, {"label": "parent informed", "weight": 0.45, "gloss": "the parent now knows"}], "setting": [{"label": "telephone line", "weight": 0.4, "gloss": "the connection the call runs over"}, {"label": "telephone network", "weight": 0.27, "gloss": "the system that carries calls"}, {"label": "telecommunications", "weight": 0.2, "gloss": "communication at a distance as a sector"}, {"label": "communication services", "weight": 0.13, "gloss": "the sphere that sells ways of reaching people"}, {"label": "unknown", "weight": 0, "gloss": "the statement names no place"}]}, "relational": {"participants": [{"ref": "p1", "role": "teacher"}, {"ref": "p2", "role": "parent"}], "action": "phones a parent about an absence", "outcome": {"text": "the parent is told of the pupil's absence", "counterfactual": null}, "links": [{"type": "concurrent", "other": "e1"}]}}]}
+```
+The two acts each have their own facets, outcome and relational block; the first event's setting stops after two labels because no place is stated and
+only the sphere of a teacher's work follows from the act, which its `short_reason` says; the second event's setting runs on from what a telephone call
+implies.

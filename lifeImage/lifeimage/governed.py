@@ -85,6 +85,30 @@ GOVERNED = {
         "source": "LI.72: fewest entries of a list that can be flagged as an equal-step weight ladder (`validate.equal_step_ladders`; two entries are no ladder). "
                   "A flag in the quality report, never a rejection. Assumption.",
     },
+    "blind.v4.min_form": {
+        "default": 5,
+        "source": "LI.73: fewest real categories of form per event in `blind.v4` (the v3 pilot gave a median of 3; the author's lists run 4 to 9). Enforced "
+                  "unless the event's `short_reason` names the facet. Assumption.",
+    },
+    "blind.v4.min_content": {
+        "default": 4,
+        "source": "LI.73: fewest real categories of content per event in `blind.v4` (v3 median 2). Enforced unless the event's `short_reason` names the facet. Assumption.",
+    },
+    "blind.v4.min_outcome": {
+        "default": 2,
+        "source": "LI.73: fewest real categories of outcome per event in `blind.v4` (v3 median 1; the author's commuter and ballot outcomes list 2 and 4). Enforced "
+                  "unless the event's `short_reason` names the facet. Assumption.",
+    },
+    "blind.v4.min_setting": {
+        "default": 4,
+        "source": "LI.73: fewest real categories of setting per event in `blind.v4`, `unknown` being no category (v3 median 1, `unknown` in 66 lists). Enforced "
+                  "unless the event's `short_reason` names the facet. Assumption.",
+    },
+    "blind.v4.short_reason_ceiling": {
+        "default": 0.15,
+        "source": "LI.73: most share of facets (over all events) that may carry a `short_reason` before the minimums are read as unmet by the prompt rather than "
+                  "by the statements. Measured (`two_pass.blind_v4_report`, `data/gold/blind_v4_predictions.md`), not enforced. Assumption.",
+    },
     "membership.agree_floor": {
         "default": 0.5,
         "source": "LI.67: least Jaccard agreement of two variants' domain lists in one relation for the merged list to stand without escalation "

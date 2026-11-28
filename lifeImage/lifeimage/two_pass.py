@@ -40,7 +40,7 @@ from .validate import (BLIND_RELS, BLIND_UNKNOWN, ValidationError, blind_refs, d
 ROOT = Path(__file__).resolve().parent.parent
 BLIND_TASK, MAP_TASK = "blind", "map"
 BLIND_VERSION = MAP_VERSION = 1  # the defaults keep the first versions reproducible
-LATEST_BLIND_VERSION = 3  # LI.72: a list of events, each categorised on its own (`prompts/blind.v3.md`); v1 (fit) and v2 (weights, one event) stay reproducible
+LATEST_BLIND_VERSION = 4  # LI.73: v3's events with minimum list lengths, the actor's own outcomes, a zero-weight `unknown` (`prompts/blind.v4.md`); v1 (fit), v2 (weights, one event), v3 stay reproducible
 LATEST_MAP_VERSION = 2  # the hybrid pass 2 (`prompts/map.v2.md`): memberships from the event text, labels as hints
 VARIANTS = 2
 MAX_TASKS = 50
@@ -539,3 +539,31 @@ def blind_v3_report(blind_by_item, judged, *, partial_credit=0.5, held_floor=0.6
         },
     }
     return out
+
+
+# ---- blind.v4 (LI.73): minimum lengths, the actor's own outcomes, a zero-weight `unknown` ----
+def blind_v4_report(blind_by_item, judged, *, partial_credit=0.5):
+    """Judge `data/gold/blind_v4_predictions.md`: `blind_v3_report`'s measures (held-out and in-prompt match, the rejected outcomes, the maize split, the
+    medians of real labels per facet and event) read against the v4 minimums (`blind.v4.min_*`), and the share of facets carrying a `short_reason`
+    (over all events times the four facets; at most `blind.v4.short_reason_ceiling`). The held-out claim needs every facet of both items
+    (cal.s08 and cal.s04) at 0.6 or more; a missing cell leaves it undecided (None)."""
+    from .validate import V4_MINIMUMS
+    rep = blind_v3_report(blind_by_item, judged, partial_credit=partial_credit)
+    events = [e for per in blind_by_item.values() for _, (_, a) in sorted(per.items()) for e in a["events"]]
+    short = sum(len(e.get("short_reason") or {}) for e in events)
+    share = short / (len(events) * len(BLIND_RELS)) if events else None
+    cells = rep["heldout_match"]
+    want = {(k, rel) for k in ("cal.s08", "cal.s04") for rel in BLIND_RELS}
+    got = {(k, rel): v for k, per in cells.items() for rel, v in per.items()}
+    meds = rep["median_labels"]
+    p = rep["predictions"]
+    for k in ("median_form_labels_at_least_5", "equal_step_ladders_at_most_25pct", "heldout_match_at_least_0.6"):
+        p.pop(k, None)
+    p["heldout_match_at_least_0.6_each_facet_each_item"] = (all(got[c] >= 0.6 for c in want) if want <= set(got) else None) if got else None
+    p["median_labels_at_least_minimum"] = all(meds[rel] is not None and meds[rel] >= governed(key) for rel, key in V4_MINIMUMS.items())
+    p["short_reason_at_most_15pct"] = share is not None and share <= governed("blind.v4.short_reason_ceiling")
+    rep["short_reason_share"] = share
+    rep["short_reason_facets"] = short
+    rep["minimums"] = {rel: governed(key) for rel, key in V4_MINIMUMS.items()}
+    rep["setting_unknown_weights_zero"] = all(e["weight"] == 0 for e in (x for ev in events for x in ev["blind"]["setting"] or []) if norm_label(e["label"]) == BLIND_UNKNOWN)
+    return rep

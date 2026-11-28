@@ -276,19 +276,21 @@ def _line(x):
 BLIND_UNKNOWN = "unknown"
 
 
-def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels"):
+def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels", zero_unknown=False, optional=("outcome",)):
     """`blind.v2` (LI.71): every relation a list of {label, weight, gloss} from the most specific category to the most generic, weights strictly
     decreasing and summing to 1 (within `blind.v2.weight_tolerance`), at most `blind.v2.max_labels` entries, at most one `unknown` marker (the
     residual weight, last), no duplicate label in a relation, and a label repeated across relations carrying a different gloss in each. Form,
     content and setting are lists (a setting the statement does not give is `unknown`); the outcome may be null (measured, not required).
-    Lists shorter than `blind.v2.min_labels` are accepted here and reported by `two_pass.thin_relations`."""
+    Lists shorter than `blind.v2.min_labels` are accepted here and reported by `two_pass.thin_relations`.
+    `zero_unknown` (`blind.v4`): the `unknown` marker has weight exactly 0 and is no label; the listed labels fall strictly and sum to 1 without it.
+    `optional` names the relations that may be null (v4 adds the setting; the minimum lengths are checked by `_check_minimums`)."""
     from .governed import governed
     tol, top = governed("blind.v2.weight_tolerance"), governed(max_key)
     glosses = {}
     for rel in BLIND_RELS:
         ls = bl[rel]
         if ls is None:
-            if rel != "outcome":
+            if rel not in optional:
                 raise ValidationError(f"{rel}: a list of categories is required (use an unknown marker for a setting the statement does not give)")
             continue
         if not isinstance(ls, list) or not ls:
@@ -305,13 +307,17 @@ def _validate_blind_lists_v2(bl, max_key="blind.v2.max_labels"):
             if not _line(e["gloss"]):
                 raise ValidationError(f"{rel}: {lab!r} needs a non-empty one-line gloss")
             w = e["weight"]
-            if isinstance(w, bool) or not isinstance(w, (int, float)) or not 0 < w <= 1:
-                raise ValidationError(f"{rel}: weight of {lab!r} must be a number above 0 and at most 1")
             n = norm_label(lab)
+            if zero_unknown and n == BLIND_UNKNOWN:
+                if isinstance(w, bool) or not isinstance(w, (int, float)) or w != 0:
+                    raise ValidationError(f"{rel}: the unknown marker has zero weight (weight 0), not {w!r}; the listed labels sum to 1")
+            elif isinstance(w, bool) or not isinstance(w, (int, float)) or not 0 < w <= 1:
+                raise ValidationError(f"{rel}: weight of {lab!r} must be a number above 0 and at most 1")
             if n in seen:
                 raise ValidationError(f"{rel}: duplicate label {lab!r}")
             seen.add(n)
-            weights.append(w)
+            if not (zero_unknown and n == BLIND_UNKNOWN):
+                weights.append(w)
             if n == BLIND_UNKNOWN:
                 unknown.append(i)
             else:
@@ -340,7 +346,7 @@ def equal_step_ladders(bl):
     need = governed("blind.v3.ladder_min_labels")
     out = []
     for rel in BLIND_RELS:
-        ls = bl.get(rel) or []
+        ls = [e for e in bl.get(rel) or [] if not (norm_label(e["label"]) == BLIND_UNKNOWN and e["weight"] == 0)]  # a v4 zero-weight terminator is no step
         if len(ls) < need:
             continue
         w = [round(e["weight"] * 100) for e in ls]
@@ -349,11 +355,14 @@ def equal_step_ladders(bl):
     return out
 
 
-def _validate_blind_answer_v3(answer, ids):
+def _validate_blind_answer_v3(answer, ids, version=3):
     """`blind.v3` (LI.71, LI.72): the answer holds `events`, a list of at least one (at most `blind.v3.max_events`), each exactly {id, text, blind,
     relational}: ids `e1`, `e2`, ... in order; `blind` the four relations as in v2 but up to `blind.v3.max_labels` entries; `relational` the LI.65
     block, its links to the other events by id (`part_of`, `causes`, `concurrent`). An answer of several events links them (at least one link
-    naming another event; a link naming an id names an existing event other than its own). No top-level blind or relational. No domain ids anywhere."""
+    naming another event; a link naming an id names an existing event other than its own). No top-level blind or relational. No domain ids anywhere.
+    `version` 4 (`blind.v4`, LI.73): the `unknown` marker has weight 0, the setting may be null, and each facet lists at least `blind.v4.min_*` real labels
+    (form 5, content 4, outcome 2, setting 4; `unknown` is no label, null lists none) unless the event's optional `short_reason` ({facet: one line}) names it;
+    a `short_reason` names only a facet that is short."""
     from .governed import governed
     evs = answer.get("events")
     if "blind" in answer or "relational" in answer:
@@ -365,8 +374,9 @@ def _validate_blind_answer_v3(answer, ids):
         raise ValidationError(f"events: {len(evs)} events, at most {top}")
     names = [f"e{i}" for i in range(1, len(evs) + 1)]
     for n, e in zip(names, evs):
-        if not isinstance(e, dict) or set(e) != {"id", "text", "blind", "relational"}:
-            raise ValidationError("each event must be exactly {id, text, blind, relational}")
+        keys = {"id", "text", "blind", "relational"} | ({"short_reason"} & set(e) if version >= 4 and isinstance(e, dict) else set())
+        if not isinstance(e, dict) or set(e) != keys:
+            raise ValidationError("each event must be exactly {id, text, blind, relational}" + (" (and optionally short_reason)" if version >= 4 else ""))
         if e["id"] != n:
             raise ValidationError(f"event ids run e1, e2, ... in order: expected {n!r}, got {e['id']!r}")
         if not _line(e["text"]):
@@ -374,7 +384,11 @@ def _validate_blind_answer_v3(answer, ids):
         bl = e["blind"]
         if not isinstance(bl, dict) or sorted(bl) != sorted(BLIND_RELS):
             raise ValidationError(f"{n}: blind must have exactly the keys {sorted(BLIND_RELS)}")
-        _validate_blind_lists_v2(bl, "blind.v3.max_labels")
+        if version >= 4:
+            _validate_blind_lists_v2(bl, "blind.v3.max_labels", zero_unknown=True, optional=("outcome", "setting"))
+            _check_minimums(n, bl, e.get("short_reason"))
+        else:
+            _validate_blind_lists_v2(bl, "blind.v3.max_labels")
         _validate_relational(e["relational"])
     linked = False
     for n, e in zip(names, evs):
@@ -391,6 +405,30 @@ def _validate_blind_answer_v3(answer, ids):
     if bad:
         raise ValidationError(f"pass 1 must not use domain ids, found {bad}")
     return answer
+
+
+V4_MINIMUMS = {"form": "blind.v4.min_form", "content": "blind.v4.min_content", "outcome": "blind.v4.min_outcome", "setting": "blind.v4.min_setting"}
+
+
+def _check_minimums(name, bl, short_reason):
+    """`blind.v4`: each facet lists at least its minimum of real labels (the `unknown` terminator is none, a null list has none), or the event's
+    `short_reason` gives that facet one line saying why not; a `short_reason` names only a facet that is short."""
+    from .governed import governed
+    short = {}
+    for rel, key in V4_MINIMUMS.items():
+        have = len([e for e in bl[rel] or [] if norm_label(e["label"]) != BLIND_UNKNOWN])
+        if have < governed(key):
+            short[rel] = (have, governed(key))
+    if short_reason is not None and (not isinstance(short_reason, dict) or not short_reason):
+        raise ValidationError(f"{name}: short_reason is an object {{facet: one line}}")
+    for rel, why in (short_reason or {}).items():
+        if rel not in V4_MINIMUMS or not _line(why):
+            raise ValidationError(f"{name}: short_reason names a facet of {sorted(V4_MINIMUMS)} with a non-empty one-line reason")
+        if rel not in short:
+            raise ValidationError(f"{name}: short_reason for {rel}, which already lists its minimum of {governed(V4_MINIMUMS[rel])}")
+    for rel, (have, need) in short.items():
+        if rel not in (short_reason or {}):
+            raise ValidationError(f"{name}: {rel} lists {have} categories, at least {need} (or give a short_reason for {rel})")
 
 
 def _validate_relational(rel):
@@ -430,7 +468,7 @@ def validate_blind_answer(answer, ids=None, floor=None, max_labels=None, version
     if answer.get("verdict") != "blind":
         raise ValidationError(f"blind verdict must be 'blind', not {answer.get('verdict')!r}")
     if version >= 3:
-        return _validate_blind_answer_v3(answer, ids)
+        return _validate_blind_answer_v3(answer, ids, version)
     for k in ("blind", "relational"):
         if k not in answer:
             raise ValidationError(f"a blind answer needs {k} (relational extraction, LI.65)" if k == "relational" else f"a blind answer needs {k}")

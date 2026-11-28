@@ -215,7 +215,7 @@ def test_pilot_v3_batches_cover_the_32_controls_in_two_variants_without_ids(tmp_
         assert h["prompt_version"] == 3 and h["task_type"] == "blind" and len(lines) - 1 == 32
         assert h["prefix"].startswith(_prompt().rstrip("\n")) and not ID.search(p.read_text(encoding="utf-8"))
         assert json.loads(lines[1])["prompt_version"] == 3
-    assert tp.LATEST_BLIND_VERSION == 3
+    assert tp.LATEST_BLIND_VERSION >= 3
 
 
 # ---- label_match against the author's held-out categorisations ----
